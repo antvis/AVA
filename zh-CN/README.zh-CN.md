@@ -28,7 +28,7 @@
 
 - [API 接口文档](API.zh-CN.md)
 - [教程示例](EXAMPLES.zh-CN.md)
-- Wiki 百科
+- [Wiki 百科](https://github.com/antvis/AVA/wiki)
 
 ## 贡献
 
@@ -38,7 +38,7 @@
 
   <img src="https://gw.alipayobjects.com/zos/antfincdn/Qv%24T%24KQJpx/19199542.png" alt="AntV" width="60" style="margin: 0 20px; vertical-align: middle;">
 
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/4xL%24WTWZen/deepinsight-logo.svg" alt="DeepInsight" width="180" style="margin: 0 14px; padding: 4px 6px; vertical-align: middle; background-color:#000">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/1V8%24AMxRRy/3794630be86d8bb484b9a86f8aead2d1.jpg" alt="DeepInsight" width="180" style="margin: 0 20px; vertical-align: middle;">
 
   <img src="https://gw.alipayobjects.com/zos/antfincdn/dDCkaw%26DcH/TB1HVktD9tYBeNjSspkXXbU8VXa-120-60.svg" alt="FBI" width="100" style="margin: 0 20px; vertical-align: middle;">
 
