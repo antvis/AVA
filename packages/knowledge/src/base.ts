@@ -6,8 +6,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Single Line Chart',
     alias: ['Line', 'Line Chart', 'Basic Line Chart'],
     family: ['LineCharts'],
-    def:
-      'A single line chart is a chart that uses one line with segments to show changes in data in a ordinal dimension.',
+    def: 'A single line chart uses one line with segments to show changes in data in a ordinal dimension.',
     purpose: ['Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -24,8 +23,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Multi Line Chart',
     alias: ['Multi Line', 'Multi-Line', 'Multi-Line Chart', 'Lines'],
     family: ['LineCharts'],
-    def:
-      'A multi line chart is a chart that uses multiple lines with segments to show changes in data in a ordinal dimension.',
+    def: 'A multi line chart uses multiple lines with segments to show changes in data in a ordinal dimension.',
     purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
