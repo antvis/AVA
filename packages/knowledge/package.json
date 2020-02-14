@@ -1,0 +1,46 @@
+{
+  "name": "@antv/knowledge",
+  "version": "0.1.3-alpha.5",
+  "description": "Chart Knowledge Base",
+  "main": "lib/index.js",
+  "browser": "dist/index.js",
+  "module": "es/index.js",
+  "files": [
+    "src",
+    "es",
+    "dist",
+    "lib"
+  ],
+  "scripts": {
+    "build": "rm -rf lib && tsc --pretty",
+    "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
+    "prepublish": "npm run module && npm run build && npm run pack",
+    "pack": "webpack --config=webpack.config.js",
+    "lint": "eslint --ext .ts src __tests__",
+    "api": "rm -rf typings && api-extractor run -v"
+  },
+  "dependencies": {
+    "tslib": "^1.10.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-export-default-from": "^7.7.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/plugin-transform-runtime": "^7.6.2",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.7.4",
+    "@babel/runtime": "^7.6.3",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  },
+  "author": "AFX",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "gitHead": "9454d7380763ac65dce5b643fb24d285d8c2ed66"
+}
