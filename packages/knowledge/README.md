@@ -1,4 +1,4 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./zh-CN/README.zh-CN.md)
 
 <h1 align="center">
   <p>Chart Knowledge Base (CKB)</p>
@@ -17,7 +17,7 @@ A knowledge base stores the wiki for every type of visualization.
 
 Chart Knowledge Base (CKB) is a library offers knowledge base for chart wikis in a JSON format. The JSON is like this:
 
-```json
+```js
 {
   single_line_chart: {
     id: 'single_line_chart',
@@ -78,7 +78,7 @@ const knowledgeBase = CKBJson();
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
 
-## API Reference
+## Documentation
 
 For more usages, please check the [API Reference](./API.md).
 
