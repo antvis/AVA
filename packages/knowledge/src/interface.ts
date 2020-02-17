@@ -37,6 +37,9 @@ export type Shape = typeof SHAPE_OPTIONS[number];
 export const LOM_OPTIONS = ['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Continuous', 'Time'] as const;
 export type LevelOfMeasurement = typeof LOM_OPTIONS[number];
 
+/**
+ * @beta
+ */
 export interface DataPrerequisite {
   minQty: number;
   maxQty: number | '*';
@@ -61,6 +64,9 @@ export const CHANNEL_OPTIONS = [
 ] as const;
 export type Channel = typeof CHANNEL_OPTIONS[number];
 
+/**
+ * @beta
+ */
 export interface ChartKnowledge {
   id: string;
   name: string;
