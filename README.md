@@ -1,7 +1,7 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./zh-CN/README.zh-CN.md)
 
 <div align="center">
-  <img width="200" height="120" src="./img/logo.svg" alt="AVA logo">
+  <img width="200" height="120" src="./common/img/logo.svg" alt="AVA logo">
 </div>
 
 <div align="center">
@@ -12,9 +12,9 @@
 
 ----
 
-<a href="https://d3js.org"><img src="./img/vectorA.svg" align="left" hspace="10" vspace="6"></a>
+<a href="https://d3js.org"><img src="./common/img/vectorA.svg" align="left" hspace="10" vspace="6"></a>
 
-**AVA** (![](./img/vectorASymbol.svg) Visual Analytics) is a framework (or a solution) for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is from *Alibaba*, and its goal is to become an *Automated*, *AI driven* solution that supports *Augmented* analytics.
+**AVA** (![](./common/img/vectorASymbol.svg) Visual Analytics) is a framework (or a solution) for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is from *Alibaba*, and its goal is to become an *Automated*, *AI driven* solution that supports *Augmented* analytics.
 
 <br />
 

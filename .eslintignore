@@ -6,8 +6,6 @@ es/
 dist/
 temp/
 typings/
-apis/
-lerna-debug.log
-yarn-error.log
-.vscode
-yarn.lock
+docs/
+jest.config.js
+webpack.config.js

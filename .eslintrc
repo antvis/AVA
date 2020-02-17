@@ -1,0 +1,40 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "impliedStrict": true
+  },
+  "rules": {
+    "no-sparse-arrays": 0,
+    "no-inner-declarations": 0,
+    "prettier/prettier": 2,
+    "@typescript-eslint/indent": 0,
+    "no-constant-condition": 0,
+    "@typescript-eslint/no-unused-vars": [
+      2,
+      {
+        "args": "after-used",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/explicit-function-return-type": 0,
+    "@typescript-eslint/no-empty-function": 0,
+    "@typescript-eslint/explicit-member-accessibility": [2, { "accessibility": "no-public" }],
+    "@typescript-eslint/no-non-null-assertion": 0,
+    "@typescript-eslint/no-use-before-define": [2, { "functions": false }],
+    "@typescript-eslint/no-namespace": 0,
+    "@typescript-eslint/ban-ts-ignore": 0,
+    "@typescript-eslint/no-empty-interface": 1,
+    "@typescript-eslint/camelcase": 0,
+    "@typescript-eslint/no-explicit-any": 0
+  }
+}

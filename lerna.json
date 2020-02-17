@@ -1,0 +1,19 @@
+{
+  "packages": [
+    "packages/knowledge"
+  ],
+  "npmClient": "yarn",
+  "command": {
+    "publish": {
+      "--no-push": true,
+      "--no-commit-hooks": true,
+      "registry": "https://registry.npmjs.org/"
+    },
+    "bootstrap": {
+      "npmClientArgs": [
+        "--no-lockfile"
+      ]
+    }
+  },
+  "version": "0.1.3-alpha.0"
+}
