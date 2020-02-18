@@ -14,6 +14,12 @@ function newBase() {
   return JSON.parse(JSON.stringify(base));
 }
 
+/**
+ * @param lang - Language of the CKB.
+ * @param completed - True if only charts with fully completed knowledge should be included. Default is false.
+ *
+ * @beta
+ */
 export function CKBJson(lang: Language = 'en-US', completed = false) {
   const base = newBase();
   const CKB: ChartKnowledgeBase = {} as ChartKnowledgeBase;
@@ -78,6 +84,11 @@ export function CKBJson(lang: Language = 'en-US', completed = false) {
   return CKBJ;
 }
 
+/**
+ * @param chartKnowledge - Knowledge of the added chart.
+ * @param trans - Versions of translation for the name, alias and definition of the added chart.
+ * @beta
+ */
 export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language, TransKnowledgeProps>) {
   const id = chartKnowledge.id;
   base[id] = chartKnowledge;

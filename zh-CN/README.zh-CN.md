@@ -24,6 +24,28 @@
   <img src="https://gw.alipayobjects.com/zos/antfincdn/QTJPYXJpjW/avademo.gif" alt="AVA demo">
 </div>
 
+## 包
+
+### 📦 [AVA/CKB](./packages/knowledge/README.md)
+
+CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中包含了基于经验总结的关于可视化和图表的各种基本知识和观察。图表的推荐必须基于这些基本概念。
+
+同时，这个包也让开发图表类型筛选相关的产品变得非常简单。
+
+```js
+@antv/knowledge
+```
+
+### 📦 AVA/DataWizard
+
+DataWizard 是一个 js/ts 的前端数据处理类库。在 AVA 的框架中，它被用来“理解”输入端的数据集。不过，它也可以独立地被用来开发一些数学统计、数据模拟之类的功能。
+
+### 📦 AVA/ChartAdvisor
+
+ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
+
+ChartAdvisor 是 AVA 的核心部分。它基于数据和分析需求来推荐图表类型和具体的图表细节设置。
+
 ## 资源
 
 - [API 接口文档](API.zh-CN.md)

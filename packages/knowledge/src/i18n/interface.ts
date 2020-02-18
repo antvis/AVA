@@ -11,6 +11,9 @@ interface Concepts {
   lom: Record<LevelOfMeasurement, string>;
 }
 
+/**
+ * @beta
+ */
 export interface TransKnowledgeProps {
   name: string;
   alias: string[];

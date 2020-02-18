@@ -9,6 +9,10 @@ import {
 } from './interface';
 import { Language, I18N } from './i18n';
 
+/**
+ * @param lang - Language of the options.
+ * @beta
+ */
 export function CKBOptions(lang: Language = 'en-US') {
   if (lang && lang != 'en-US') {
     const translator = I18N(lang);
