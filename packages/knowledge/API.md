@@ -10,18 +10,18 @@
 
 ### Arguments
 
-- **lang** - Language of the CKB content.
-  - `optional`
-  - `type`: *Language* extends string
-  - `default`: 'en-US'
-  - `options`:
-    - 'en-US'
-    - 'zh-CN'
+* **lang** * Language of the CKB content.
+  * `optional`
+  * `type`: *Language* extends string
+  * `default`: 'en-US'
+  * `options`:
+    * 'en-US'
+    * 'zh-CN'
 
-- **completed** - To include incompleted charts or not.
-  - `optional`
-  - `type`: *boolean*
-  - `default`: false
+* **completed** * To include incompleted charts or not.
+  * `optional`
+  * `type`: *boolean*
+  * `default`: false
 
 ### Returns
 
@@ -76,13 +76,13 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 ### Arguments
 
-- **chartKnowledge** - Chart Knowledge object for the custom chart.
-  - `required`
-  - `type`: *ChartKnowledge* extends object
+* **chartKnowledge** * Chart Knowledge object for the custom chart.
+  * `required`
+  * `type`: *ChartKnowledge* extends object
 
-- **trans** - To include incompleted charts or not.
-  - `required`
-  - `type`: *Record<Language, TransKnowledgeProps>*
+* **trans** * To include incompleted charts or not.
+  * `required`
+  * `type`: *Record<Language, TransKnowledgeProps>*
 
 ### Returns
 
@@ -123,100 +123,100 @@ addChart(
 
 ### Arguments
 
-- **lang** - Language of property options.
-  - `optional`
-  - `type`: *Language* extends string
-  - `default`: 'en-US'
-  - `options`:
-    - 'en-US'
-    - 'zh-CN'
+* **lang** * Language of property options.
+  * `optional`
+  * `type`: *Language* extends string
+  * `default`: 'en-US'
+  * `options`:
+    * 'en-US'
+    * 'zh-CN'
 
 ### Returns
 
-*object* - contains the following keys:
+*object* * contains the following keys:
 
 #### `CKBOptions().family`
 
 > Types of chart similarity or so called *Chart Family*.
 
-- LineCharts
-- ColumnCharts
-- BarCharts
-- PieCharts
-- AreaCharts
-- ScatterCharts
-- FunnelCharts
-- HeatmapCharts
-- RadarCharts
-- Others
+* LineCharts
+* ColumnCharts
+* BarCharts
+* PieCharts
+* AreaCharts
+* ScatterCharts
+* FunnelCharts
+* HeatmapCharts
+* RadarCharts
+* Others
 
 #### `CKBOptions().category`
 
 > Types of higher level of chart taxonomy or so called *Graphic Category*.
 
-- Statistic
-- Diagram
-- Graph
-- Map
+* Statistic
+* Diagram
+* Graph
+* Map
 
 #### `CKBOptions().purpose`
 
 > Types of purpose for which the visualization is used.
 
-- Comparison
-- Trend
-- Distribution
-- Rank
-- Proportion
-- Composition
+* Comparison
+* Trend
+* Distribution
+* Rank
+* Proportion
+* Composition
 
 #### `CKBOptions().coord`
 
 > Types of *Coordinate Systems*.
 
-- NumberLine
-- Cartesian2D
-- SymmetricCartesian
-- Cartesian3D
-- Polar
-- NodeLink
-- Radar
+* NumberLine
+* Cartesian2D
+* SymmetricCartesian
+* Cartesian3D
+* Polar
+* NodeLink
+* Radar
 
 #### `CKBOptions().shape`
 
 > Shapes of the skeleton of visualization.
 
-- Lines
-- Bars
-- Round
-- Square
-- Area
-- Scatter
-- Symmetric
+* Lines
+* Bars
+* Round
+* Square
+* Area
+* Scatter
+* Symmetric
 
 #### `CKBOptions().channel`
 
 > *Visual Channels*.
 
-- Position
-- Length
-- Color
-- Area
-- Angle
-- ArcLength
-- Direction
-- Size
+* Position
+* Length
+* Color
+* Area
+* Angle
+* ArcLength
+* Direction
+* Size
 
 #### `CKBOptions().lom`
 
 > *Level of Measurement*.
 
-- Nominal
-- Ordinal
-- Interval
-- Discrete
-- Continuous
-- Time
+* Nominal
+* Ordinal
+* Interval
+* Discrete
+* Continuous
+* Time
 
 ### Examples
 

@@ -4,10 +4,16 @@
 
 ```ts
 
-// @public (undocumented)
+// @beta (undocumented)
 export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language, TransKnowledgeProps>): void;
 
-// @public (undocumented)
+// @beta (undocumented)
+export type Channel = typeof CHANNEL_OPTIONS[number];
+
+// @beta (undocumented)
+export const CHANNEL_OPTIONS: readonly ["Position", "Length", "Color", "Area", "Angle", "ArcLength", "Direction", "Size"];
+
+// @beta (undocumented)
 export interface ChartKnowledge {
     // (undocumented)
     alias: string[];
@@ -33,10 +39,36 @@ export interface ChartKnowledge {
     shape: Shape[];
 }
 
-// @public (undocumented)
+// @beta (undocumented)
+export interface ChartKnowledgeJSON {
+    // (undocumented)
+    alias: string[];
+    // (undocumented)
+    category: string[];
+    // (undocumented)
+    channel: string[];
+    // (undocumented)
+    coord: string[];
+    // (undocumented)
+    dataPres: DataPrerequisiteJSON[];
+    // (undocumented)
+    def: string;
+    // (undocumented)
+    family: string[];
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    purpose: string[];
+    // (undocumented)
+    shape: string[];
+}
+
+// @beta (undocumented)
 export function CKBJson(lang?: Language, completed?: boolean): Record<string, ChartKnowledgeJSON>;
 
-// @public (undocumented)
+// @beta (undocumented)
 export function CKBOptions(lang?: Language): {
     family: string[];
     category: string[];
@@ -47,7 +79,13 @@ export function CKBOptions(lang?: Language): {
     lom: string[];
 };
 
-// @public (undocumented)
+// @beta (undocumented)
+export const COORD_TYPE_OPTIONS: readonly ["NumberLine", "Cartesian2D", "SymmetricCartesian", "Cartesian3D", "Polar", "NodeLink", "Radar"];
+
+// @beta (undocumented)
+export type CoordinateSystem = typeof COORD_TYPE_OPTIONS[number];
+
+// @beta (undocumented)
 export interface DataPrerequisite {
     // (undocumented)
     fieldConditions: LevelOfMeasurement[];
@@ -57,10 +95,50 @@ export interface DataPrerequisite {
     minQty: number;
 }
 
-// @public (undocumented)
+// @beta (undocumented)
+export interface DataPrerequisiteJSON {
+    // (undocumented)
+    fieldConditions: string[];
+    // (undocumented)
+    maxQty: number | '*';
+    // (undocumented)
+    minQty: number;
+}
+
+// @beta (undocumented)
+export type Family = typeof FAMILY_OPTIONS[number];
+
+// @beta (undocumented)
+export const FAMILY_OPTIONS: readonly ["LineCharts", "ColumnCharts", "BarCharts", "PieCharts", "AreaCharts", "ScatterCharts", "FunnelCharts", "HeatmapCharts", "RadarCharts", "Others"];
+
+// @beta (undocumented)
+export const GRAPHIC_CATEGORY_OPTIONS: readonly ["Statistic", "Diagram", "Graph", "Map"];
+
+// @beta (undocumented)
+export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
+
+// @beta (undocumented)
 export type Language = 'en-US' | 'zh-CN';
 
-// @public (undocumented)
+// @beta (undocumented)
+export type LevelOfMeasurement = typeof LOM_OPTIONS[number];
+
+// @beta (undocumented)
+export const LOM_OPTIONS: readonly ["Nominal", "Ordinal", "Interval", "Discrete", "Continuous", "Time"];
+
+// @beta (undocumented)
+export type Purpose = typeof PURPOSE_OPTIONS[number];
+
+// @beta (undocumented)
+export const PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition"];
+
+// @beta (undocumented)
+export type Shape = typeof SHAPE_OPTIONS[number];
+
+// @beta (undocumented)
+export const SHAPE_OPTIONS: readonly ["Lines", "Bars", "Round", "Square", "Area", "Scatter", "Symmetric"];
+
+// @beta (undocumented)
 export interface TransKnowledgeProps {
     // (undocumented)
     alias: string[];
