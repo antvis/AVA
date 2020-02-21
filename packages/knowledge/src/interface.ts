@@ -1,5 +1,8 @@
 import { ChartID } from './chartID';
 
+/**
+ * @beta
+ */
 export const FAMILY_OPTIONS = [
   'LineCharts',
   'ColumnCharts',
@@ -12,11 +15,25 @@ export const FAMILY_OPTIONS = [
   'RadarCharts',
   'Others',
 ] as const;
+
+/**
+ * @beta
+ */
 export type Family = typeof FAMILY_OPTIONS[number];
 
+/**
+ * @beta
+ */
 export const PURPOSE_OPTIONS = ['Comparison', 'Trend', 'Distribution', 'Rank', 'Proportion', 'Composition'] as const;
+
+/**
+ * @beta
+ */
 export type Purpose = typeof PURPOSE_OPTIONS[number];
 
+/**
+ * @beta
+ */
 export const COORD_TYPE_OPTIONS = [
   'NumberLine',
   'Cartesian2D',
@@ -26,15 +43,40 @@ export const COORD_TYPE_OPTIONS = [
   'NodeLink',
   'Radar',
 ] as const;
+
+/**
+ * @beta
+ */
 export type CoordinateSystem = typeof COORD_TYPE_OPTIONS[number];
 
+/**
+ * @beta
+ */
 export const GRAPHIC_CATEGORY_OPTIONS = ['Statistic', 'Diagram', 'Graph', 'Map'] as const;
+
+/**
+ * @beta
+ */
 export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
 
+/**
+ * @beta
+ */
 export const SHAPE_OPTIONS = ['Lines', 'Bars', 'Round', 'Square', 'Area', 'Scatter', 'Symmetric'] as const;
+
+/**
+ * @beta
+ */
 export type Shape = typeof SHAPE_OPTIONS[number];
 
+/**
+ * @beta
+ */
 export const LOM_OPTIONS = ['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Continuous', 'Time'] as const;
+
+/**
+ * @beta
+ */
 export type LevelOfMeasurement = typeof LOM_OPTIONS[number];
 
 /**
@@ -46,12 +88,18 @@ export interface DataPrerequisite {
   fieldConditions: LevelOfMeasurement[];
 }
 
+/**
+ * @beta
+ */
 export interface DataPrerequisiteJSON {
   minQty: number;
   maxQty: number | '*';
   fieldConditions: string[];
 }
 
+/**
+ * @beta
+ */
 export const CHANNEL_OPTIONS = [
   'Position',
   'Length',
@@ -62,6 +110,10 @@ export const CHANNEL_OPTIONS = [
   'Direction',
   'Size',
 ] as const;
+
+/**
+ * @beta
+ */
 export type Channel = typeof CHANNEL_OPTIONS[number];
 
 /**
@@ -83,6 +135,9 @@ export interface ChartKnowledge {
 
 export type ChartKnowledgeBase = Record<ChartID, ChartKnowledge>;
 
+/**
+ * @beta
+ */
 export interface ChartKnowledgeJSON {
   id: string;
   name: string;

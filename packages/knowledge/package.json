@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "browser": "dist/index.js",
   "module": "es/index.js",
+  "typings": "typings/knowledge.d.ts",
   "files": [
     "src",
     "es",

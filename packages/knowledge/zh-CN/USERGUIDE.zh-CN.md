@@ -67,7 +67,7 @@ basic_pie_chart: {
 * 坐标系 coordinate system
 * 形状 shape
 * 视觉通道 visual channel
-* 所需数据条件 data prerequites
+* 所需数据条件 data prerequisites
 
 ### 图形类别 graphic category
 
