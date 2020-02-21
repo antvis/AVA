@@ -8,5 +8,7 @@
 
 |  Package | Description |
 |  --- | --- |
+|  [@antv/dw-analyzer](./dw-analyzer.md) | Analysis field type |
+|  [@antv/dw-random](./dw-random.md) | Random generate value |
 |  [@antv/knowledge](./knowledge.md) |  |
 

@@ -1,0 +1,33 @@
+{
+  "name": "@antv/dw-random",
+  "version": "0.0.2-alpha.11",
+  "description": "",
+  "private": false,
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "typings": "typings/dw-random.d.ts",
+  "scripts": {
+    "build": "rm -rf lib && tsc --pretty",
+    "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
+    "prepublish": "npm run module && npm run api && npm run build",
+    "api": "rm -rf types && api-extractor run -v",
+    "lint": "eslint --ext .ts src __tests__"
+  },
+  "dependencies": {
+    "date-fns": "^2.0.1",
+    "mersenne-twister": "^1.1.0",
+    "randexp": "^0.5.3",
+    "tslib": "^1.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "keywords": [],
+  "author": "yuanjiefeng",
+  "devDependencies": {
+    "@types/mersenne-twister": "^1.1.2",
+    "typescript": "^3.2.2"
+  },
+  "gitHead": "20d90967d4c5337daf9d0919b95e14db8f4e4db9"
+}

@@ -12,14 +12,6 @@
 |  [CKBJson(lang, completed)](./knowledge.ckbjson.md) | <b><i>(BETA)</i></b> |
 |  [CKBOptions(lang)](./knowledge.ckboptions.md) | <b><i>(BETA)</i></b> |
 
-## Interfaces
-
-|  Interface | Description |
-|  --- | --- |
-|  [ChartKnowledge](./knowledge.chartknowledge.md) | <b><i>(BETA)</i></b> |
-|  [DataPrerequisite](./knowledge.dataprerequisite.md) | <b><i>(BETA)</i></b> |
-|  [TransKnowledgeProps](./knowledge.transknowledgeprops.md) | <b><i>(BETA)</i></b> |
-
 ## Type Aliases
 
 |  Type Alias | Description |

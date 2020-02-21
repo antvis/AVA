@@ -1,7 +1,5 @@
 {
-  "packages": [
-    "packages/knowledge"
-  ],
+  "packages": ["packages/knowledge", "packages/datawizard/*"],
   "npmClient": "yarn",
   "command": {
     "publish": {
@@ -10,9 +8,7 @@
       "registry": "https://registry.npmjs.org/"
     },
     "bootstrap": {
-      "npmClientArgs": [
-        "--no-lockfile"
-      ]
+      "npmClientArgs": ["--no-lockfile"]
     }
   },
   "version": "0.1.3-alpha.0"
