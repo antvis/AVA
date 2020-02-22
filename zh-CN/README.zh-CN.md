@@ -46,7 +46,7 @@ autoChart(container, data, {toolbar: true, development: true});
 
 ## 包
 
-### 📦 [AVA/CKB](./packages/knowledge/README.md)
+### 📦 [AVA/CKB](../packages/knowledge/zh-CN/README.zh-CN.md)
 
 CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中包含了基于经验总结的关于可视化和图表的各种基本知识和观察。图表的推荐必须基于这些基本概念。
 
@@ -56,19 +56,23 @@ CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中�
 @antv/knowledge
 ```
 
-### 📦 AVA/DataWizard
+### 📦 [AVA/DataWizard](../packages/datawizard/zh-CN/README.zh-CN.md)
 
 DataWizard 是一个 js/ts 的前端数据处理类库。在 AVA 的框架中，它被用来“理解”输入端的数据集。不过，它也可以独立地被用来开发一些数学统计、数据模拟之类的功能。
 
-### 📦 AVA/ChartAdvisor
+```js
+@antv/dw-analyzer // to understand a dataset
+@antv/dw-random // to generate random mock data
+```
 
-ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
+### 📦 AVA/ChartAdvisor
 
 ChartAdvisor 是 AVA 的核心部分。它基于数据和分析需求来推荐图表类型和具体的图表细节设置。
 
 ## 资源
 
-- [API 接口文档](API.zh-CN.md)
+- [API 接口文档](../docs/api/index.md)
+- [`autoChart` 临时接口文档](API.zh-CN.md)
 - [教程示例](EXAMPLES.zh-CN.md)
 - [Wiki 百科](https://github.com/antvis/AVA/wiki)
 
