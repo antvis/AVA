@@ -57,9 +57,14 @@ At the same time, this package also facilitates us to develop products of chart 
 @antv/knowledge
 ```
 
-### 📦 AVA/DataWizard
+### 📦 [AVA/DataWizard](./packages/datawizard/README.md)
 
 DataWizard is a js/ts library for data processing. In the AVA framework, it is used to 'understand' the input dataset. However, it can also be used independently to develop some statistical or data mocking functions.
+
+```js
+@antv/dw-analyzer // to understand a dataset
+@antv/dw-random // to generate random mock data
+```
 
 ### 📦 AVA/ChartAdvisor
 
@@ -67,7 +72,8 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
 
 ## Resources
 
-- [API Reference](API.md)
+- [API Reference](docs/api/index.md)
+- [`autoChart` API](API.md)
 - [Examples](EXAMPLES.md)
 - [Wiki](https://github.com/antvis/AVA/wiki)
 

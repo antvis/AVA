@@ -11,7 +11,6 @@ A knowledge base stores the wiki for every type of visualization.
 
 [![Version](https://badgen.net/npm/v/@antv/knowledge)](https://www.npmjs.com/@antv/knowledge)
 [![NPM downloads](http://img.shields.io/npm/dm/@antv/knowledge.svg)](http://npmjs.com/@antv/knowledge)
-![Latest commit](https://badgen.net/github/last-commit/antvis/knowledge)
 
 </div>
 
