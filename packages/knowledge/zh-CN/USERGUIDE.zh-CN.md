@@ -3,18 +3,18 @@
 * [图表类型](#图表类型)
 * [分类的粒度](#分类的粒度)
 * [分类的角度](#分类的角度)
-  * [图形类别](#图形类别-graphic-category)
-  * [图表大类](#图表大类-chart-family)
-  * [分析目的](#分析目的-purpose-of-analysis)
-  * [坐标系](#坐标系-coordinate-system)
-  * [形状](#形状-shape)
-  * [视觉通道](#视觉通道-visual-channel)
-  * [所需数据条件](#所需数据条件-data-prerequites)
-    * [度量级别](#度量级别-level-of-measurement)
+  * [图形类别 graphic category](#图形类别-graphic-category)
+  * [图表大类 chart family](#图表大类-chart-family)
+  * [分析目的 purpose of analysis](#分析目的-purpose-of-analysis)
+  * [坐标系 coordinate system](#坐标系-coordinate-system)
+  * [形状 shape](#形状-shape)
+  * [视觉通道 visual channel](#视觉通道-visual-channel)
+  * [所需数据条件 data prerequisites](#所需数据条件-data-prerequisites)
+    * [度量级别 level of measurement](#度量级别-level-of-measurement)
 * [图表的基本信息](#图表的基本信息)
-  * [名称](#名称-name)
-  * [别名](#别名-alias)
-  * [定义](#定义-def)
+  * [名称 name](#名称-name)
+  * [别名 alias](#别名-alias)
+  * [定义 def](#定义-def)
 
 ## 图表类型
 
@@ -120,7 +120,7 @@ basic_pie_chart: {
 
 * `NumberLine` *数轴* - 一维坐标系
 * `Cartesian2D` *二维直角坐标系* - 又叫笛卡尔坐标系
-* `SymmetricCartesian` *对称直角坐标系* - 在二维直角坐标系的基础上，图形以某一周为中心向两侧发展
+* `SymmetricCartesian` *对称直角坐标系* - 在二维直角坐标系的基础上，图形以某一轴为中心向两侧发展
 * `Cartesian3D` *三维直角坐标系* - 三维笛卡尔坐标系
 * `Polar` *极坐标系* - 多用于圆形的图形布局
 * `NodeLink` *点线网络* - 用于关系图
