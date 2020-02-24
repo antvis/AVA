@@ -2,9 +2,9 @@
 
 如果想要针对某个特定的包进行贡献，请在浏览完「通用代码贡献规范」后，特别查阅一下具体包的贡献规范细节。其中有些贡献类型是针对**非开发人员**的。
 
-- AVA/CKB 特殊贡献规范
-- AVA/DataWizard 特殊贡献规范
-- AVA/ChartAdvisor 特殊贡献规范
+* [AVA/CKB 特殊贡献规范](../packages/knowledge/zh-CN/CONTRIBUTING.zh-CN.md)
+* AVA/DataWizard 特殊贡献规范
+* AVA/ChartAdvisor 特殊贡献规范
  
 # 通用代码贡献规范
 
@@ -13,16 +13,16 @@
 
 ## 语言
 
-- 源码和注释中的内容必须使用英语。
-- 所有的 issue 和 PR 中描述语言推荐使用英语，部分情况下为描述准确性也可以选择使用中文。
+* 源码和注释中的内容必须使用英语。
+* 所有的 issue 和 PR 中描述语言推荐使用英语，部分情况下为描述准确性也可以选择使用中文。
 
 我们优先使用英语，是为了服务更广泛的开发者、深化国际化合作共建，也为了避免不同语言间重复提交问题。
 
 ## 提交 issue
 
-- 请确定 issue 的类型。
-- 请避免提交重复的 issue，在提交之前搜索现有的 issue。
-- 在标签(分类参考**标签分类**), 标题 或者内容中体现明确的意图。
+* 请确定 issue 的类型。
+* 请避免提交重复的 issue，在提交之前搜索现有的 issue。
+* 在标签(分类参考**标签分类**), 标题 或者内容中体现明确的意图。
 
 随后 AntV 负责人会确认 issue 意图，更新合适的标签，关联 milestone，指派开发者。
 
@@ -76,15 +76,15 @@ $ git push origin branch-name
 
 提交 commit 的类型，包括以下几种
 
-- feat: 新功能
-- fix: 修复问题
-- docs: 修改文档
-- style: 修改代码格式，不影响代码逻辑
-- refactor: 重构代码，理论上不影响现有功能
-- perf: 提升性能
-- test: 增加修改测试用例
-- chore: 修改工具相关（包括但不限于文档、代码生成等）
-- deps: 升级依赖
+* feat: 新功能
+* fix: 修复问题
+* docs: 修改文档
+* style: 修改代码格式，不影响代码逻辑
+* refactor: 重构代码，理论上不影响现有功能
+* perf: 提升性能
+* test: 增加修改测试用例
+* chore: 修改工具相关（包括但不限于文档、代码生成等）
+* deps: 升级依赖
 
 （2）scope
 
@@ -100,8 +100,8 @@ $ git push origin branch-name
 
 （5）footer
 
-- **当有非兼容修改(Breaking Change)时必须在这里描述清楚**
-- 关联相关 issue，如 `Closes #1, Closes #2, #3`
+* **当有非兼容修改(Breaking Change)时必须在这里描述清楚**
+* 关联相关 issue，如 `Closes #1, Closes #2, #3`
 
 示例
 
@@ -129,8 +129,8 @@ AVA 基于 [semver] 语义化版本号进行发布。
 
 `master` 分支为当前稳定发布的版本。
 
-- 直接从 `master` 切出开发分支
-- 所有 API 的废弃都需要在当前的稳定版本上 `deprecate` 提示，并保证在当前的稳定版本上一直兼容到新版本的发布。
+* 直接从 `master` 切出开发分支
+* 所有 API 的废弃都需要在当前的稳定版本上 `deprecate` 提示，并保证在当前的稳定版本上一直兼容到新版本的发布。
 
 ### 发布策略
 
@@ -138,19 +138,19 @@ AVA 基于 [semver] 语义化版本号进行发布。
 
 #### 准备工作
 
-- 建立 milestone，确认需求关联 milestone，指派和更新 issues。
+* 建立 milestone，确认需求关联 milestone，指派和更新 issues。
 
 #### 发布前
 
-- 确认当前 Milestone 所有的 issue 都已关闭或可延期，完成性能测试。
-- 发起一个新的 [Release Proposal MR]，按照 [node CHANGELOG] 进行 `History` 的编写，修正文档中与版本相关的内容，commits 可以自动生成。`$ npm run commits`
-- 指定下一个大版本的 PM。
+* 确认当前 Milestone 所有的 issue 都已关闭或可延期，完成性能测试。
+* 发起一个新的 [Release Proposal MR]，按照 [node CHANGELOG] 进行 `History` 的编写，修正文档中与版本相关的内容，commits 可以自动生成。`$ npm run commits`
+* 指定下一个大版本的 PM。
 
 #### 发布时
 
-- 将老的稳定版本（master）备份到以当前大版本为名字的分支上（例如 `1.x`），并设置 tag 为 {v}.x`（ v 为当前版本，例如 `1.x`）。
-- 发布新的稳定版本到 [npm]，并通知上层框架进行更新。
-- `npm publish` 之前，请先阅读[『我是如何发布一个 npm 包的』]。
+* 将老的稳定版本（master）备份到以当前大版本为名字的分支上（例如 `1.x`），并设置 tag 为 {v}.x`（ v 为当前版本，例如 `1.x`）。
+* 发布新的稳定版本到 [npm]，并通知上层框架进行更新。
+* `npm publish` 之前，请先阅读[『我是如何发布一个 npm 包的』]。
 
 
 [semver]: http://semver.org/lang/zh-CN/

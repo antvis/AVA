@@ -2,9 +2,9 @@
 
 To contribute to specific package, you may want to check relevant guide for each package after skimming the general one. Some specific guides contains content for non-developers.
 
-- Contribution Guide for AVA/CKB
-- Contribution Guide for AVA/DataWizard
-- Contribution Guide for AVA/ChartAdvisor
+* [Contribution Guide for AVA/CKB](./packages/knowledge/CONTRIBUTING.md)
+* Contribution Guide for AVA/DataWizard
+* Contribution Guide for AVA/ChartAdvisor
 
 # General Contribution Guide
 
@@ -13,16 +13,16 @@ or make any change as you wish and submit an [PR](https://github.com/antvis/AVA/
 
 ## Language
 
-- All code and comments must be written in English.
-- The description language in all issues and Pull Requests is recommended to be English, and in some cases Chinese can also be selected for description accuracy.
+* All code and comments must be written in English.
+* The description language in all issues and Pull Requests is recommended to be English, and in some cases Chinese can also be selected for description accuracy.
 
 We give priority to English to serve a wider range of developers, to deepen international cooperation and co-construction, and to avoid duplicate submissions between different languages.
 
 ## Reporting New Issues
 
-- Please specify what kind of issue it is.
-- Before you report an issue, please search for related issues. Make sure you are not going to open a duplicate issue.
-- Explain your purpose clearly in tags(see **Useful Tags**), title, or content.
+* Please specify what kind of issue it is.
+* Before you report an issue, please search for related issues. Make sure you are not going to open a duplicate issue.
+* Explain your purpose clearly in tags(see **Useful Tags**), title, or content.
 
 AntV group members will confirm the purpose of the issue, replace more accurate tags for it, identify related milestone, and assign developers working on it.
 
@@ -74,15 +74,15 @@ You are encouraged to use [angular commit-message-format](https://github.com/ang
 
 Must be one of the following:
 
-- feat: A new feature
-- fix: A bug fix
-- docs: Documentation-only changes
-- style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-- refactor: A code change that neither fixes a bug nor adds a feature
-- perf: A code change that improves performance
-- test: Adding missing tests
-- chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
-- deps: Updates about dependencies
+* feat: A new feature
+* fix: A bug fix
+* docs: Documentation-only changes
+* style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+* refactor: A code change that neither fixes a bug nor adds a feature
+* perf: A code change that improves performance
+* test: Adding missing tests
+* chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
+* deps: Updates about dependencies
 
 （2）scope
 
@@ -98,8 +98,8 @@ Feel free to add more content in the body, if you think subject is not self-expl
 
 （5）footer
 
-- **If the commit is a Breaking Change, please note it clearly in this part.**
-- related issues, like `Closes #1, Closes #2, #3`
+* **If the commit is a Breaking Change, please note it clearly in this part.**
+* related issues, like `Closes #1, Closes #2, #3`
 
 e.g.
 
@@ -129,8 +129,8 @@ AVA uses semantic versioning in release process based on [semver].
 
 `master` branch is the latest stable version. 
 
-- just checkout develop branch from `master`
-- All new features will be added into `master` or `next` branch as well as all bug-fix except security issues. In such way, we can motivate developers to update to the latest stable version.
+* just checkout develop branch from `master`
+* All new features will be added into `master` or `next` branch as well as all bug-fix except security issues. In such way, we can motivate developers to update to the latest stable version.
 
 
 ### Release Strategy
@@ -139,14 +139,14 @@ In the release of every stable version, there will be a PM who has the following
 
 #### Preparation
 
-- Set up milestone. Confirm that request is related to milestone.
+* Set up milestone. Confirm that request is related to milestone.
 
 #### Before Release
 
-- Confirm that performance test is passed and all issues in current Milestone are either closed or can be delayed to later versions.
-- Open a new [Release Proposal MR], and write `History` as [node CHANGELOG]. Don't forget to correct content in documentation which is related to the releasing version. Commits can be generated automatically.
+* Confirm that performance test is passed and all issues in current Milestone are either closed or can be delayed to later versions.
+* Open a new [Release Proposal MR], and write `History` as [node CHANGELOG]. Don't forget to correct content in documentation which is related to the releasing version. Commits can be generated automatically.
 `$ npm run commits`
-- Nominate PM for next stable version.
+* Nominate PM for next stable version.
 
 [semver]: http://semver.org/lang/zh-CN/
 [Release proposal MR]: https://github.com/nodejs/node/pull/4181
