@@ -81,7 +81,9 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 ## 文档
 
-更多用法请见 [API Reference](../API.md).
+* 更多用法请见 [CKB 简易 API](../API.md)
+* 详细[API 文档](../../../docs/api/knowledge.md)
+* [用户指南](./USERGUIDE.zh-CN.md)
 
 ## 证书
 

@@ -1,6 +1,7 @@
 {
   "default": true,
   "MD003": { "style": "atx" },
+  "ul-style": { "style": "asterisk" },
   "MD007": { "indent": 2 },
   "line-length": false,
   "no-hard-tabs": false,
