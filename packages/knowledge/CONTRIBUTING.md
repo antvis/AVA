@@ -38,6 +38,18 @@ After that, you can help us by creating an [issue](https://github.com/antvis/AVA
 
 GitHub issues are like comment board where you post your comment, advices, bugs you found, etc.
 
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" />
+</div>
+<br>
+
+Create a new issue on the [issue page](https://github.com/antvis/AVA/issues).
+
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" />
+</div>
+<br>
+
 You don't have to do anything about coding. We will reply you to discuss with you. If your suggestions are accepted, we will do the coding things.
 
 * To Modify the Knowledge of a Chart Type?

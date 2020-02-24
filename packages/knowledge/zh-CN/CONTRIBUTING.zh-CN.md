@@ -38,6 +38,19 @@
 
 GitHub 的 issues 是一个类似评论区的功能，你可以在这里留下你的想法、建议、发现的 bug，等等。
 
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" />
+</div>
+<br>
+
+在 [issue 标签页](https://github.com/antvis/AVA/issues) 新建一个 issue。
+
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" />
+</div>
+<br>
+
+
 你不需要写任何代码，只需要留下你的建议，我们会回复你并和你讨论。如果你的建议被采用了，我们会负责相关的代码修改。
 
 * 修改一个已有图表的知识内容？
