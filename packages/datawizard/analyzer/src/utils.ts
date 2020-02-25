@@ -25,7 +25,7 @@ export function isFloat(source: any): boolean {
 }
 
 export function isDate(source: any): boolean {
-  if (Object.getPrototypeOf(source) === Date.prototype) return true;
+  if (source && Object.getPrototypeOf(source) === Date.prototype) return true;
   if (typeof source === 'string') return isDateString(source);
   return false;
 }
