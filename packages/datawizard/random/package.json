@@ -10,7 +10,7 @@
     "build": "rm -rf lib && tsc --pretty",
     "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
     "prepublish": "npm run module && npm run api && npm run build",
-    "api": "rm -rf types && api-extractor run -v",
+    "api": "rm -rf typings && api-extractor run -v",
     "lint": "eslint --ext .ts src __tests__"
   },
   "dependencies": {

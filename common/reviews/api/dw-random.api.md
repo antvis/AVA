@@ -47,7 +47,7 @@ export class ChAddressRandom extends BasicRandom {
     road(): string;
 }
 
-// @public
+// @public (undocumented)
 export interface CharacterOptions {
     // (undocumented)
     lower?: boolean;
