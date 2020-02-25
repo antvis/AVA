@@ -261,13 +261,13 @@ export function type(array: any[]): FieldInfo {
     const meta: FieldMeta = {};
     types.forEach((item: string) => {
       if (item === 'date') {
-        meta.date = type(list.filter(isDate)) as DateFieldInfo;
+        meta.date = type(nonNullArray.filter(isDate)) as DateFieldInfo;
       } else if (item === 'integer') {
-        meta.integer = type(list.filter(isInteger)) as NumberFieldInfo;
+        meta.integer = type(nonNullArray.filter(isInteger)) as NumberFieldInfo;
       } else if (item === 'float') {
-        meta.float = type(list.filter(isFloat)) as NumberFieldInfo;
+        meta.float = type(nonNullArray.filter(isFloat)) as NumberFieldInfo;
       } else if (item === 'string') {
-        meta.string = type(list.filter((item) => WhatType(item) === 'string')) as StringFieldInfo;
+        meta.string = type(nonNullArray.filter((item) => WhatType(item) === 'string')) as StringFieldInfo;
       }
     });
     fieldInfo.meta = meta;
