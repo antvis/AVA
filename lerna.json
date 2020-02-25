@@ -1,9 +1,8 @@
 {
-  "packages": ["packages/knowledge", "packages/datawizard/*"],
+  "packages": ["packages/datawizard/*", "packages/knowledge"],
   "npmClient": "yarn",
   "command": {
     "publish": {
-      "--no-push": true,
       "--no-commit-hooks": true,
       "registry": "https://registry.npmjs.org/"
     },
