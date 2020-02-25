@@ -71,10 +71,10 @@ ChartAdvisor 是 AVA 的核心部分。它基于数据和分析需求来推荐�
 
 ## 资源
 
-- [API 接口文档](../docs/api/index.md)
-- [`autoChart` 临时接口文档](API.zh-CN.md)
-- [教程示例](EXAMPLES.zh-CN.md)
-- [Wiki 百科](https://github.com/antvis/AVA/wiki)
+* [API 接口文档](../docs/api/index.md)
+* [`autoChart` 临时接口文档](API.zh-CN.md)
+* [教程示例](EXAMPLES.zh-CN.md)
+* [Wiki 百科](https://github.com/antvis/AVA/wiki)
 
 ## 贡献
 
@@ -86,6 +86,11 @@ ChartAdvisor 是 AVA 的核心部分。它基于数据和分析需求来推荐�
   <img src="https://gw.alipayobjects.com/zos/antfincdn/dDCkaw%26DcH/TB1HVktD9tYBeNjSspkXXbU8VXa-120-60.svg" alt="FBI" width="100" align="middle" hspace="20">
   <a href="https://github.com/Kanaries"><img src="https://gw.alipayobjects.com/zos/antfincdn/lwdITX3bOY/d398c9ee92e4e79a4ea92e7a24b166fe.jpg" alt="Kanaries" width="180" align="middle" hspace="20"></a>
 </div>
+<br>
+
+我们欢迎任何共建。请先阅读 [贡献指南](./CONTRIBUTING.zh-CN.md)。欢迎通过 [pull requests](https://github.com/antvis/AVA/pulls) 或 [GitHub issues](https://github.com/antvis/AVA/issues) 向我们提供你的想法。让我们一起来把 AVA 做得更好！
+
+> 强烈推荐阅读 [《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way)、[《如何向开源社区提问题》](https://github.com/seajs/seajs/issues/545) 和 [《如何有效地报告 Bug》](http://www.chiark.greenend.org.uk/%7Esgtatham/bugs-cn.html)、[《如何向开源项目提交无法解答的问题》](https://zhuanlan.zhihu.com/p/25795393)，更好的问题更容易获得帮助。
 
 ## 友情链接
 
