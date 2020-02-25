@@ -1,12 +1,12 @@
-# 指定包的贡献规范 🌟
+# 指定包的贡献指南 🌟
 
-如果想要针对某个特定的包进行贡献，请在浏览完「通用代码贡献规范」后，特别查阅一下具体包的贡献规范细节。其中有些贡献类型是针对**非开发人员**的。
+如果想要针对某个特定的包进行贡献，请在浏览完「通用代码贡献指南」后，特别查阅一下具体包的贡献指南细节。其中有些贡献类型是针对**非开发人员**的。
 
-* [AVA/CKB 特殊贡献规范](../packages/knowledge/zh-CN/CONTRIBUTING.zh-CN.md)
-* AVA/DataWizard 特殊贡献规范
-* AVA/ChartAdvisor 特殊贡献规范
+* [AVA/CKB 特殊贡献指南](../packages/knowledge/zh-CN/CONTRIBUTING.zh-CN.md)
+* AVA/DataWizard 特殊贡献指南
+* AVA/ChartAdvisor 特殊贡献指南
  
-# 通用代码贡献规范
+# 通用代码贡献指南
 
 有任何疑问，欢迎提交 [issue](https://github.com/antvis/AVA/issues)，
 或者直接修改提交 [PR](https://github.com/antvis/AVA/pulls)!

@@ -72,12 +72,12 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
 
 ## Resources
 
-- [API Reference](docs/api/index.md)
-- [`autoChart` API](API.md)
-- [Examples](EXAMPLES.md)
-- [Wiki](https://github.com/antvis/AVA/wiki)
+* [API Reference](docs/api/index.md)
+* [`autoChart` API](API.md)
+* [Examples](EXAMPLES.md)
+* [Wiki](https://github.com/antvis/AVA/wiki)
 
-## Contribution
+## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 **AVA** is jointly built by multiple core data visualization technology or product teams within Alibaba Group, including **AntV** & **DeepInsight** of Ant Financial, **FBI** of New Retail Technology Business Group and **Kanaries** of Freshhema.
 
@@ -87,6 +87,9 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
   <img src="https://gw.alipayobjects.com/zos/antfincdn/dDCkaw%26DcH/TB1HVktD9tYBeNjSspkXXbU8VXa-120-60.svg" alt="FBI" width="100" align="middle" hspace="20">
   <a href="https://github.com/Kanaries"><img src="https://gw.alipayobjects.com/zos/antfincdn/lwdITX3bOY/d398c9ee92e4e79a4ea92e7a24b166fe.jpg" alt="Kanaries" width="180" align="middle" hspace="20"></a>
 </div>
+<br>
+
+We welcome all contributions. Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) first. You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
 
 ## Links
 

@@ -1,6 +1,6 @@
-# AVA/CKB 代码贡献规范
+# AVA/CKB 代码贡献指南
 
-首先请确保你已经浏览过 [通用代码贡献规范](../../../zh-CN/CONTRIBUTING.zh-CN.md)。
+首先请确保你已经浏览过 [通用代码贡献指南](../../../zh-CN/CONTRIBUTING.zh-CN.md)。
 
 请阅读 [用户指南](./USERGUIDE.zh-CN.md) 来了解图表知识库中的对图表类型信息的记录结构和相关概念。
 
