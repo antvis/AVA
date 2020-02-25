@@ -12,6 +12,7 @@ import {
   pearson,
 } from '../src';
 import { isDateString } from '../src/is-date';
+import { isDate } from '../src/utils';
 
 test('check a string is a date', () => {
   expect(isDateString('199912')).toBe(true);
@@ -439,4 +440,10 @@ test('date cols', () => {
   console.log(d);
   expect(d.minimum).toBe(new Date('2019/01/01').getTime());
   expect(d.maximum).toBe(new Date('2019/01/02').getTime());
+});
+
+test('should return false if source is null in isDate method', () => {
+  const source = null;
+  const info = isDate(source);
+  expect(info).toBe(false);
 });
