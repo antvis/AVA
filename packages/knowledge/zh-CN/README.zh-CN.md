@@ -85,6 +85,14 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 * 详细[API 文档](../../../docs/api/knowledge.md)
 * [用户指南](./USERGUIDE.zh-CN.md)
 
+## 贡献
+
+我们欢迎任何共建。请先阅读 [通用贡献指南](../../../zh-CN/CONTRIBUTING.zh-CN.md) 和 [AVA/CKB 代码贡献指南](./CONTRIBUTING.zh-CN.md)。
+
+欢迎通过 [pull requests](https://github.com/antvis/AVA/pulls) 或 [GitHub issues](https://github.com/antvis/AVA/issues) 向我们提供你的想法。让我们一起来把 AVA 做得更好！
+
+> 强烈推荐阅读 [《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way)、[《如何向开源社区提问题》](https://github.com/seajs/seajs/issues/545) 和 [《如何有效地报告 Bug》](http://www.chiark.greenend.org.uk/%7Esgtatham/bugs-cn.html)、[《如何向开源项目提交无法解答的问题》](https://zhuanlan.zhihu.com/p/25795393)，更好的问题更容易获得帮助。
+
 ## 证书
 
 MIT

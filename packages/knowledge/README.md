@@ -83,6 +83,12 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 * Detailed [API Reference](../../docs/api/knowledge.md)
 * [User Guide](./USERGUIDE.md)
 
+## Contribution
+
+We welcome all contributions. Please read [General Contribution Guide](../../CONTRIBUTING.md) and [Contribution Guide for AVA/CKB](./CONTRIBUTING.md) first.
+
+You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
+
 ## License
 
 MIT
