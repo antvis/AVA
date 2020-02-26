@@ -30,6 +30,10 @@ export function isDate(source: any): boolean {
   return false;
 }
 
+export function isTimestampStr(source: any): boolean {
+  return /^\d{4}(0?[1-9]|1[012])(0?[1-9][12]\d|3[01])/.test(source);
+}
+
 export function unique(array: any[]): any[] {
   return Array.from(new Set(array));
 }

@@ -299,6 +299,24 @@ test('int date', () => {
 });
 
 test('date cols', () => {
+  const data = [
+    '1546272000000',
+    '1546358400000',
+    '1546444800000',
+    '1563206400000',
+    '1563292800000',
+    '1563379200000',
+    '1563465600000',
+  ];
+  const d = type(data);
+  expect(d.type).toBe('integer');
+  expect(d.recommendation).toBe('date');
+  console.log(d);
+  expect(d.minimum).toBe(new Date(1546272000000).getTime());
+  expect(d.maximum).toBe(new Date(1563465600000).getTime());
+});
+
+test('date cols', () => {
   const data = ['20190101', '20190102', '20190103', '20190716', '20190717', '20190718', '20190719'];
   const d = type(data);
   expect(d.type).toBe('integer');

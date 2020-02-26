@@ -16,7 +16,18 @@
  */
 
 import * as Stat from './statistic';
-import { unique, assert, isDate, isNull, isFloat, isInteger, removeEmptyRow, intDatePartners, isDigit } from './utils';
+import {
+  unique,
+  assert,
+  isDate,
+  isNull,
+  isFloat,
+  isInteger,
+  removeEmptyRow,
+  intDatePartners,
+  isDigit,
+  isTimestampStr,
+} from './utils';
 
 /**
  * Determine what type a value is, may be one of [integer float date string null]
@@ -182,7 +193,7 @@ function analyzeDate(array: Array<string | Date>, isInteger = false): Omit<DateF
       const str = `${item}`;
       if (str.length === 8) return new Date(`${str.substr(0, 4)}/${str.substr(4, 2)}/${str.substr(6, 2)}`).getTime();
     }
-    return new Date(item).getTime();
+    return new Date(isTimestampStr ? Number(item) : item).getTime();
   });
   return {
     minimum: Stat.min(list),
