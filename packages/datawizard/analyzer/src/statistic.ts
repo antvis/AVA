@@ -24,6 +24,52 @@ export function max(array: number[]): number {
 }
 
 /**
+ * Return the minimum index of the array
+ * @param array - The array to process
+ * @public
+ */
+export function minIndex(array: number[]): number {
+  const value = cache.get<number>(array, 'minIndex');
+  if (value !== undefined) return value;
+  return cache.set(array, 'minIndex', minIdx(array));
+}
+
+function minIdx(array: number[]) {
+  let min = array[0];
+  let idx = 0;
+  for (const key in array) {
+    if (array[key] < min) {
+      idx = Number(key);
+      min = array[key];
+    }
+  }
+  return idx;
+}
+
+/**
+ * Return the maximum index of the array
+ * @param array - The array to process
+ * @public
+ */
+export function maxIndex(array: number[]): number {
+  const value = cache.get<number>(array, 'maxIndex');
+  if (value !== undefined) return value;
+  return cache.set(array, 'maxIndex', maxIdx(array));
+}
+
+function maxIdx(array: number[]) {
+  let max = array[0];
+  let idx = 0;
+  for (const key in array) {
+    if (array[key] > max) {
+      idx = Number(key);
+      max = array[key];
+    }
+  }
+  return idx;
+}
+
+/**
  * Return the sum of the array
  * @param array - The array to process
  * @public
