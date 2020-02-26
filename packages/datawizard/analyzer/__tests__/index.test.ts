@@ -304,9 +304,30 @@ test('date cols', () => {
   expect(d.type).toBe('integer');
   expect(d.recommendation).toBe('date');
   console.log(d);
-  expect(d.minimum).toBe(new Date('2019/01/01').getTime());
-  expect(d.maximum).toBe(new Date('2019/07/19').getTime());
+  expect(d.minimum).toBe('20190101');
+  expect(d.maximum).toBe('20190719');
 });
+
+test('date cols', () => {
+  const data = ['2019/01/01', '2019/01/02', '2019/01/03', '2019/07/16', '2019/07/17', '2019/07/18', '2019/07/19'];
+  const d = type(data);
+  expect(d.type).toBe('date');
+  expect(d.recommendation).toBe('date');
+  console.log(d);
+  expect(d.minimum).toBe('2019/01/01');
+  expect(d.maximum).toBe('2019/07/19');
+});
+
+test('date cols', () => {
+  const data = ['2019-01-01', '2019-01-02', '2019-01-03', '2019-07-16', '2019-07-17', '2019-07-18', '2019-07-19'];
+  const d = type(data);
+  expect(d.type).toBe('date');
+  expect(d.recommendation).toBe('date');
+  console.log(d);
+  expect(d.minimum).toBe('2019-01-01');
+  expect(d.maximum).toBe('2019-07-19');
+});
+
 test('date cols', () => {
   const data = [
     '20190101',
@@ -438,8 +459,8 @@ test('date cols', () => {
   expect(d.type).toBe('integer');
   expect(d.recommendation).toBe('date');
   console.log(d);
-  expect(d.minimum).toBe(new Date('2019/01/01').getTime());
-  expect(d.maximum).toBe(new Date('2019/01/02').getTime());
+  expect(d.minimum).toBe('20190101');
+  expect(d.maximum).toBe('20190102');
 });
 
 test('should return false if source is null in isDate method', () => {
