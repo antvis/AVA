@@ -31,7 +31,7 @@ export const base: ChartKnowledgeBase = {
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
-      { minQty: 2, maxQty: '*', fieldConditions: ['Interval'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
   },
@@ -49,7 +49,6 @@ export const base: ChartKnowledgeBase = {
     shape: ['Lines'],
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
-      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
@@ -69,7 +68,7 @@ export const base: ChartKnowledgeBase = {
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
-      { minQty: 2, maxQty: '*', fieldConditions: ['Interval'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
   },
@@ -292,8 +291,8 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Ordinal', 'Time'] },
-      { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Ordinal', 'Time', 'Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
   },
@@ -752,7 +751,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
@@ -770,7 +769,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
