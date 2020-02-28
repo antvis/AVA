@@ -6,8 +6,8 @@
 
 // @public
 export interface DateFieldInfo extends FieldInfo {
-    maximum: number;
-    minimum: number;
+    maximum: string | number | Date;
+    minimum: string | number | Date;
 }
 
 // @public

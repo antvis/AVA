@@ -9,5 +9,5 @@ maximum date
 <b>Signature:</b>
 
 ```typescript
-maximum: number;
+maximum: string | number | Date;
 ```

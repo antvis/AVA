@@ -9,5 +9,5 @@ minimum date
 <b>Signature:</b>
 
 ```typescript
-minimum: number;
+minimum: string | number | Date;
 ```
