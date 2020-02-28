@@ -95,9 +95,9 @@ export interface NumberFieldInfo extends FieldInfo {
  */
 export interface DateFieldInfo extends FieldInfo {
   /** minimum date */
-  minimum: number;
+  minimum: string | number | Date;
   /** maximum date */
-  maximum: number;
+  maximum: string | number | Date;
 }
 
 /**
@@ -185,8 +185,8 @@ function analyzeDate(array: Array<string | Date>, isInteger = false): Omit<DateF
     return new Date(item).getTime();
   });
   return {
-    minimum: Stat.min(list),
-    maximum: Stat.max(list),
+    minimum: array[Stat.minIndex(list)],
+    maximum: array[Stat.maxIndex(list)],
   };
 }
 
