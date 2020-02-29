@@ -15,6 +15,11 @@ export const FAMILY_OPTIONS = [
   'RadarCharts',
   'TreeGraph',
   'GeneralGraph',
+  'PolygonLayer',
+  'Map',
+  'Heatmap',
+  'LineLayer',
+  'PointLayer',
   'Others',
 ] as const;
 
@@ -26,7 +31,18 @@ export type Family = typeof FAMILY_OPTIONS[number];
 /**
  * @beta
  */
-export const PURPOSE_OPTIONS = ['Comparison', 'Trend', 'Distribution', 'Rank', 'Proportion', 'Composition', 'Relation', 'Hierarchy', 'Flow', 'Cluster'] as const;
+export const PURPOSE_OPTIONS = [
+  'Comparison',
+  'Trend',
+  'Distribution',
+  'Rank',
+  'Proportion',
+  'Composition',
+  'Relation',
+  'Hierarchy',
+  'Flow',
+  'Cluster',
+] as const;
 
 /**
  * @beta
@@ -113,7 +129,7 @@ export const CHANNEL_OPTIONS = [
   'Size',
   'Opacity',
   'Stroke',
-  'LineWidth'
+  'LineWidth',
 ] as const;
 
 /**

@@ -597,9 +597,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -641,9 +639,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -817,9 +813,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -833,9 +827,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -849,9 +841,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -865,9 +855,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -881,9 +869,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -897,9 +883,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -913,9 +897,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -929,9 +911,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -945,9 +925,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -961,9 +939,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -972,14 +948,13 @@ export const base: ChartKnowledgeBase = {
     name: 'Radial Graph Layout',
     alias: [],
     family: ['GeneralGraph'],
-    def: 'A type of graph layout which places a focus node on the center and the others on the concentrics centered at the focus node according to the shortest path length to the it.',
+    def:
+      'A type of graph layout which places a focus node on the center and the others on the concentrics centered at the focus node according to the shortest path length to the it.',
     purpose: ['Relation'],
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -993,9 +968,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -1009,9 +982,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -1025,9 +996,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Cartesian2D'],
     category: ['Graph'],
     shape: ['NodeLink'],
-    dataPres: [
-      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }
-    ],
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
   },
 
@@ -1161,7 +1130,7 @@ export const base: ChartKnowledgeBase = {
     id: 'hexagonal_heat_map',
     name: 'Hexagonal Heat Map',
     alias: [],
-    family: ['Map', 'HeatMap'],
+    family: ['Map', 'Heatmap'],
     def: '',
     purpose: ['Comparison', 'Relation', 'Cluster'],
     coord: [],
@@ -1175,7 +1144,7 @@ export const base: ChartKnowledgeBase = {
     id: 'hexagonal_heat_map_3d',
     name: '3D Hexagonal Heat Map',
     alias: [],
-    family: ['Map', 'HeatMap'],
+    family: ['Map', 'Heatmap'],
     def: '',
     purpose: ['Comparison', 'Relation', 'Cluster'],
     coord: [],
@@ -1189,7 +1158,7 @@ export const base: ChartKnowledgeBase = {
     id: 'classical_heat_map',
     name: 'Classical Heat Map',
     alias: [],
-    family: ['Map', 'HeatMap'],
+    family: ['Map', 'Heatmap'],
     def: '',
     purpose: ['Comparison', 'Relation', 'Cluster'],
     coord: [],
@@ -1203,7 +1172,7 @@ export const base: ChartKnowledgeBase = {
     id: 'grid_heat_map',
     name: 'Gird Heat Map',
     alias: [],
-    family: ['Map', 'HeatMap'],
+    family: ['Map', 'Heatmap'],
     def: '',
     purpose: ['Comparison', 'Relation', 'Cluster'],
     coord: [],
