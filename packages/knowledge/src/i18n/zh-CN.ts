@@ -45,6 +45,7 @@ export const zhCN: TranslateList = {
       Polar: '极坐标系',
       NodeLink: '点线关系网络',
       Radar: '雷达型坐标系',
+      Other: '其他',
     },
     shape: {
       Lines: '线形',
@@ -76,6 +77,11 @@ export const zhCN: TranslateList = {
       Nominal: '无序名词',
       Ordinal: '有序名词',
       Time: '时间',
+    },
+    recRate: {
+      Recommended: '推荐',
+      'Use with Caution': '慎用',
+      'Not Recommended': '不推荐',
     },
   },
   chartTypes: {
@@ -239,9 +245,9 @@ export const zhCN: TranslateList = {
       alias: [],
       def: 'TBD',
     },
-    nightingale_chart: {
-      name: '',
-      alias: [],
+    rose_chart: {
+      name: '玫瑰图',
+      alias: ['南丁格尔图'],
       def: 'TBD',
     },
 
@@ -319,8 +325,14 @@ export const zhCN: TranslateList = {
 
     heatmap: {
       name: '热力图',
-      alias: [],
+      alias: ['区块热力图'],
       def: '热力图，是一种通过对色块着色来显示数据的统计图表。',
+    },
+
+    density_heatmap: {
+      name: '密度热力图',
+      alias: ['热力图'],
+      def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计图表。',
     },
 
     gauge_chart: {
@@ -493,6 +505,11 @@ export const zhCN: TranslateList = {
       name: '',
       alias: [],
       def: 'TBD',
+    },
+    liquid_chart: {
+      name: '水波图',
+      alias: ['进度球'],
+      def: '一种用来表示进度的拟物化示意图',
     },
   },
 };

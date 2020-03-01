@@ -16,6 +16,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
+    recRate: 'Recommended',
   },
 
   multi_line_chart: {
@@ -34,6 +35,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
+    recRate: 'Recommended',
   },
 
   single_step_line_chart: {
@@ -52,6 +54,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
+    recRate: 'Recommended',
   },
 
   multi_step_line_chart: {
@@ -71,6 +74,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
+    recRate: 'Recommended',
   },
 
   basic_area_chart: {
@@ -88,6 +92,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position'],
+    recRate: 'Recommended',
   },
 
   multi_color_area_chart: {
@@ -107,6 +112,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Position'],
+    recRate: 'Recommended',
   },
 
   stacked_area_chart: {
@@ -126,6 +132,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Length'],
+    recRate: 'Recommended',
   },
 
   percent_stacked_area_chart: {
@@ -145,6 +152,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Length'],
+    recRate: 'Recommended',
   },
 
   interval_area_chart: {
@@ -159,6 +167,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   stream_chart: {
@@ -173,6 +182,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   basic_column_chart: {
@@ -191,6 +201,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position'],
+    recRate: 'Recommended',
   },
 
   multi_color_column_chart: {
@@ -209,6 +220,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position'],
+    recRate: 'Recommended',
   },
 
   grouped_column_chart: {
@@ -227,6 +239,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
+    recRate: 'Recommended',
   },
 
   stacked_column_chart: {
@@ -245,6 +258,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
+    recRate: 'Recommended',
   },
 
   percent_stacked_column_chart: {
@@ -263,6 +277,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length'],
+    recRate: 'Recommended',
   },
 
   interval_column_chart: {
@@ -277,6 +292,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   waterfall_chart: {
@@ -295,6 +311,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
+    recRate: 'Recommended',
   },
 
   histogram: {
@@ -309,6 +326,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Bars'],
     dataPres: [{ minQty: 1, maxQty: 1, fieldConditions: ['Interval'] }],
     channel: ['Position'],
+    recRate: 'Recommended',
   },
 
   basic_bar_chart: {
@@ -327,6 +345,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position'],
+    recRate: 'Recommended',
   },
 
   multi_color_bar_chart: {
@@ -345,6 +364,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position'],
+    recRate: 'Recommended',
   },
 
   grouped_bar_chart: {
@@ -363,6 +383,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
+    recRate: 'Recommended',
   },
 
   stacked_bar_chart: {
@@ -381,6 +402,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
+    recRate: 'Recommended',
   },
 
   percent_stacked_bar_chart: {
@@ -399,6 +421,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length'],
+    recRate: 'Recommended',
   },
 
   interval_bar_chart: {
@@ -413,6 +436,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   radial_bar_chart: {
@@ -427,6 +451,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   mirror_bar_chart: {
@@ -441,6 +466,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   basic_pie_chart: {
@@ -459,12 +485,13 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Angle', 'Area', 'Color'],
+    recRate: 'Recommended',
   },
 
   donut_chart: {
     id: 'donut_chart',
     name: 'Donut Chart',
-    alias: ['Donut', 'Doughnut', 'Doughnut Chart'],
+    alias: ['Donut', 'Doughnut', 'Doughnut Chart', 'Ring Chart'],
     family: ['PieCharts'],
     def:
       'A donut chart is a variation on a Pie chart except it has a round hole in the center which makes it look like a donut.',
@@ -477,6 +504,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['ArcLength'],
+    recRate: 'Recommended',
   },
 
   nested_pie_chart: {
@@ -491,12 +519,13 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
-  nightingale_chart: {
-    id: 'nightingale_chart',
-    name: '',
-    alias: [],
+  rose_chart: {
+    id: 'rose_chart',
+    name: 'Rose Chart',
+    alias: ['Nightingale Chart'],
     family: [],
     def: '',
     purpose: [],
@@ -505,6 +534,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   basic_scatter_plot: {
@@ -520,6 +550,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Scatter'],
     dataPres: [{ minQty: 2, maxQty: 2, fieldConditions: ['Interval'] }],
     channel: ['Position'],
+    recRate: 'Recommended',
   },
 
   multi_color_scatter_plot: {
@@ -538,6 +569,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Position'],
+    recRate: 'Recommended',
   },
 
   basic_bubble_chart: {
@@ -553,6 +585,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Scatter'],
     dataPres: [{ minQty: 3, maxQty: 3, fieldConditions: ['Interval'] }],
     channel: ['Position', 'Size'],
+    recRate: 'Recommended',
   },
 
   multi_color_bubble_chart: {
@@ -571,6 +604,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Position', 'Size'],
+    recRate: 'Recommended',
   },
 
   non_ribbon_chord_diagram: {
@@ -585,6 +619,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   arc_diagram: {
@@ -599,6 +634,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   chord_diagram: {
@@ -613,6 +649,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   treemap: {
@@ -627,6 +664,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   sankey_diagram: {
@@ -641,6 +679,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   basic_funnel_chart: {
@@ -659,6 +698,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length'],
+    recRate: 'Recommended',
   },
 
   overlapping_funnel_chart: {
@@ -673,6 +713,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   mirror_funnel_chart: {
@@ -691,6 +732,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Length', 'Direction'],
+    recRate: 'Recommended',
   },
 
   boxplot: {
@@ -705,15 +747,16 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   heatmap: {
     id: 'heatmap',
     name: 'Heatmap',
-    alias: ['Heat Map'],
+    alias: [],
     family: ['HeatmapCharts'],
     def:
-      'A heat map is a graphical representation of data where the individual values contained in a matrix are represented as colors.',
+      'A heatmap is a graphical representation of data where the individual values contained in a matrix are represented as colors.',
     purpose: ['Distribution'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -723,6 +766,22 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
+    recRate: 'Recommended',
+  },
+
+  density_heatmap: {
+    id: 'density_heatmap',
+    name: 'Density Heatmap',
+    alias: ['Heatmap'],
+    family: ['HeatmapCharts'],
+    def: 'A density heatmap is a heatmap for representing the density of dots.',
+    purpose: ['Distribution'],
+    coord: ['Cartesian2D'],
+    category: ['Statistic'],
+    shape: ['Area'],
+    dataPres: [{ minQty: 3, maxQty: 3, fieldConditions: ['Interval'] }],
+    channel: ['Color', 'Position', 'Area'],
+    recRate: 'Recommended',
   },
 
   gauge_chart: {
@@ -737,6 +796,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   basic_radar_chart: {
@@ -755,6 +815,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
+    recRate: 'Recommended',
   },
 
   multi_color_radar_chart: {
@@ -773,6 +834,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
+    recRate: 'Recommended',
   },
 
   wordcloud: {
@@ -787,6 +849,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   candlestick_chart: {
@@ -801,6 +864,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   compact_box_tree: {
@@ -815,6 +879,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   dendrogram: {
@@ -829,6 +894,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   indented_tree: {
@@ -843,6 +909,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   radial_tree: {
@@ -857,6 +924,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   flow_diagram: {
@@ -871,6 +939,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   fruchterman_layout_graph: {
@@ -885,6 +954,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   force_directed_layout_graph: {
@@ -899,6 +969,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   circular_layout_graph: {
@@ -913,6 +984,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   spiral_layout_graph: {
@@ -927,6 +999,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   radial_layout_graph: {
@@ -942,6 +1015,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   concentric_layout_graph: {
@@ -956,6 +1030,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   grid_layout_graph: {
@@ -970,6 +1045,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Network'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] }],
     channel: ['Color', 'Size', 'Opacity', 'Stroke', 'LineWidth'],
+    recRate: 'Recommended',
   },
 
   symbol_map: {
@@ -984,6 +1060,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   chart_map: {
@@ -998,6 +1075,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   column_map_3d: {
@@ -1012,6 +1090,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   scatter_map: {
@@ -1026,6 +1105,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   path_map: {
@@ -1040,6 +1120,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   isoline_map: {
@@ -1054,6 +1135,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   arc_map_3d: {
@@ -1068,6 +1150,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   choropleth_map: {
@@ -1082,6 +1165,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   choropleth_map_3d: {
@@ -1096,6 +1180,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   hexagonal_heat_map: {
@@ -1110,6 +1195,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   hexagonal_heat_map_3d: {
@@ -1124,6 +1210,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   classical_heat_map: {
@@ -1138,6 +1225,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   grid_heat_map: {
@@ -1152,6 +1240,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   packed_circles: {
@@ -1166,6 +1255,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   polar_treemap: {
@@ -1180,6 +1270,7 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
   },
 
   sunburst_diagram: {
@@ -1194,5 +1285,21 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
+  },
+
+  liquid_chart: {
+    id: 'liquid_chart',
+    name: 'Liquid Chart',
+    alias: ['Liquid Ball', 'Progress Ball'],
+    family: ['Others'],
+    def: 'Liquid chart is a diagram to represent progress.',
+    purpose: ['Composition'],
+    coord: ['Other'],
+    category: ['Diagram'],
+    shape: ['Round'],
+    dataPres: [{ minQty: 2, maxQty: 2, fieldConditions: ['Interval'] }],
+    channel: ['Position'],
+    recRate: 'Not Recommended',
   },
 };

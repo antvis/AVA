@@ -58,6 +58,7 @@ export const COORD_TYPE_OPTIONS = [
   'Polar',
   'NodeLink',
   'Radar',
+  'Other',
 ] as const;
 
 /**
@@ -138,6 +139,16 @@ export type Channel = typeof CHANNEL_OPTIONS[number];
 /**
  * @beta
  */
+export const RECOMMEND_RATING_OPTIONS = ['Recommended', 'Use with Caution', 'Not Recommended'] as const;
+
+/**
+ * @beta
+ */
+export type RecommendRating = typeof RECOMMEND_RATING_OPTIONS[number];
+
+/**
+ * @beta
+ */
 export interface ChartKnowledge {
   id: string;
   name: string;
@@ -150,6 +161,7 @@ export interface ChartKnowledge {
   shape: Shape[];
   dataPres: DataPrerequisite[];
   channel: Channel[];
+  recRate: RecommendRating;
 }
 
 export type ChartKnowledgeBase = Record<ChartID, ChartKnowledge>;
@@ -169,6 +181,7 @@ export interface ChartKnowledgeJSON {
   shape: string[];
   dataPres: DataPrerequisiteJSON[];
   channel: string[];
+  recRate: string;
 }
 
 export type ChartKnowledgeBaseJSON = Record<string, ChartKnowledgeJSON>;

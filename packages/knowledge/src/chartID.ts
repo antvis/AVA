@@ -28,7 +28,7 @@ const CHART_ID_OPTIONS = [
   'basic_pie_chart',
   'donut_chart',
   'nested_pie_chart',
-  'nightingale_chart',
+  'rose_chart',
   'basic_scatter_plot',
   'multi_color_scatter_plot',
   'basic_bubble_chart',
@@ -43,6 +43,7 @@ const CHART_ID_OPTIONS = [
   'mirror_funnel_chart',
   'boxplot',
   'heatmap',
+  'density_heatmap',
   'gauge_chart',
   'basic_radar_chart',
   'multi_color_radar_chart',
@@ -76,6 +77,7 @@ const CHART_ID_OPTIONS = [
   'packed_circles',
   'polar_treemap',
   'sunburst_diagram',
+  'liquid_chart',
 ] as const;
 
 export type ChartID = typeof CHART_ID_OPTIONS[number] | string;
