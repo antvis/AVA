@@ -16,8 +16,6 @@ export const FAMILY_OPTIONS = [
   'TreeGraph',
   'GeneralGraph',
   'PolygonLayer',
-  'Map',
-  'Heatmap',
   'LineLayer',
   'PointLayer',
   'Others',
@@ -80,7 +78,7 @@ export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
 /**
  * @beta
  */
-export const SHAPE_OPTIONS = ['Lines', 'Bars', 'Round', 'Square', 'Area', 'Scatter', 'Symmetric', 'NodeLink'] as const;
+export const SHAPE_OPTIONS = ['Lines', 'Bars', 'Round', 'Square', 'Area', 'Scatter', 'Symmetric', 'Network'] as const;
 
 /**
  * @beta
