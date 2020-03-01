@@ -174,6 +174,12 @@ export const zhCN: TranslateList = {
       def: 'TBD',
     },
 
+    range_column_chart: {
+      name: '区间柱状图',
+      alias: [],
+      def: '区间柱状图是一种特殊的柱状图，柱子不一定要从 0 开始，而是用柱子长度表示一个从起始值到终止值的区间。',
+    },
+
     waterfall_chart: {
       name: '瀑布图',
       alias: ['桥图'],
@@ -218,15 +224,29 @@ export const zhCN: TranslateList = {
       alias: [],
       def: 'TBD',
     },
+
+    range_bar_chart: {
+      name: '区间条形图',
+      alias: [],
+      def: '区间条形图是一种特殊的条形图，条不一定要从 0 开始，而是用长度表示一个从起始值到终止值的区间。',
+    },
+
     radial_bar_chart: {
       name: '',
       alias: [],
       def: 'TBD',
     },
+
     mirror_bar_chart: {
       name: '',
       alias: [],
       def: 'TBD',
+    },
+
+    bullet_chart: {
+      name: '子弹图',
+      alias: ['靶心图', '标靶图'],
+      def: '子弹图可用于将度量的绩效可视化并与目标值和定性刻度。',
     },
 
     basic_pie_chart: {
@@ -234,6 +254,7 @@ export const zhCN: TranslateList = {
       alias: [],
       def: '通过扇形区块的颜色和弧长（角度、面积）来展现数据的分类和占比情况。',
     },
+
     donut_chart: {
       name: '环图',
       alias: ['甜甜圈图'],

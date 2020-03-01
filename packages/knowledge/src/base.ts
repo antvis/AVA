@@ -295,6 +295,24 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
+  range_column_chart: {
+    id: 'range_column_chart',
+    name: 'Range Column Chart',
+    alias: [],
+    family: ['ColumnCharts'],
+    def: 'A column chart that does not have to start from zero axis.',
+    purpose: ['Comparison'],
+    coord: ['Cartesian2D'],
+    category: ['Statistic'],
+    shape: ['Bars'],
+    dataPres: [
+      { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+    ],
+    channel: ['Length'],
+    recRate: 'Recommended',
+  },
+
   waterfall_chart: {
     id: 'waterfall_chart',
     name: 'Waterfall Chart',
@@ -439,6 +457,24 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
+  range_bar_chart: {
+    id: 'range_bar_chart',
+    name: 'Range Bar Chart',
+    alias: [],
+    family: ['BarCharts'],
+    def: 'A bar chart that does not have to start from zero axis.',
+    purpose: ['Comparison'],
+    coord: ['Cartesian2D'],
+    category: ['Statistic'],
+    shape: ['Bars'],
+    dataPres: [
+      { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+    ],
+    channel: ['Length'],
+    recRate: 'Recommended',
+  },
+
   radial_bar_chart: {
     id: 'radial_bar_chart',
     name: '',
@@ -466,6 +502,25 @@ export const base: ChartKnowledgeBase = {
     shape: [],
     dataPres: [],
     channel: [],
+    recRate: 'Recommended',
+  },
+
+  bullet_chart: {
+    id: 'bullet_chart',
+    name: 'Bullet Chart',
+    alias: [],
+    family: ['BarCharts'],
+    def:
+      'A bullet graph is a variation of a bar graph developed by Stephen Few. Seemingly inspired by the traditional thermometer charts and progress bars found in many dashboards, the bullet graph serves as a replacement for dashboard gauges and meters.',
+    purpose: ['Proportion'],
+    coord: ['Cartesian2D'],
+    category: ['Statistic'],
+    shape: ['Bars'],
+    dataPres: [
+      { minQty: 3, maxQty: 3, fieldConditions: ['Interval'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+    ],
+    channel: ['Position', 'Color'],
     recRate: 'Recommended',
   },
 
