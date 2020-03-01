@@ -6,6 +6,7 @@ import {
   SHAPE_OPTIONS,
   CHANNEL_OPTIONS,
   LOM_OPTIONS,
+  RECOMMEND_RATING_OPTIONS,
 } from './interface';
 import { Language, I18N } from './i18n';
 
@@ -28,6 +29,7 @@ export function CKBOptions(lang: Language = 'en-US') {
         shape: Object.values(concepts.shape),
         channel: Object.values(concepts.channel),
         lom: Object.values(concepts.lom),
+        recRate: Object.values(concepts.recRate),
       };
     }
   }
@@ -40,5 +42,6 @@ export function CKBOptions(lang: Language = 'en-US') {
     shape: [...SHAPE_OPTIONS] as string[],
     channel: [...CHANNEL_OPTIONS] as string[],
     lom: [...LOM_OPTIONS] as string[],
+    recRate: [...RECOMMEND_RATING_OPTIONS] as string[],
   };
 }

@@ -45,6 +45,7 @@ export const zhCN: TranslateList = {
       Polar: '极坐标系',
       NodeLink: '点线关系网络',
       Radar: '雷达型坐标系',
+      Other: '其他',
     },
     shape: {
       Lines: '线形',
@@ -76,6 +77,11 @@ export const zhCN: TranslateList = {
       Nominal: '无序名词',
       Ordinal: '有序名词',
       Time: '时间',
+    },
+    recRate: {
+      Recommended: '推荐',
+      'Use with Caution': '慎用',
+      'Not Recommended': '不推荐',
     },
   },
   chartTypes: {
@@ -168,6 +174,12 @@ export const zhCN: TranslateList = {
       def: 'TBD',
     },
 
+    range_column_chart: {
+      name: '区间柱状图',
+      alias: [],
+      def: '区间柱状图是一种特殊的柱状图，柱子不一定要从 0 开始，而是用柱子长度表示一个从起始值到终止值的区间。',
+    },
+
     waterfall_chart: {
       name: '瀑布图',
       alias: ['桥图'],
@@ -212,15 +224,29 @@ export const zhCN: TranslateList = {
       alias: [],
       def: 'TBD',
     },
+
+    range_bar_chart: {
+      name: '区间条形图',
+      alias: [],
+      def: '区间条形图是一种特殊的条形图，条不一定要从 0 开始，而是用长度表示一个从起始值到终止值的区间。',
+    },
+
     radial_bar_chart: {
       name: '',
       alias: [],
       def: 'TBD',
     },
+
     mirror_bar_chart: {
       name: '',
       alias: [],
       def: 'TBD',
+    },
+
+    bullet_chart: {
+      name: '子弹图',
+      alias: ['靶心图', '标靶图'],
+      def: '子弹图可用于将度量的绩效可视化并与目标值和定性刻度。',
     },
 
     basic_pie_chart: {
@@ -228,6 +254,7 @@ export const zhCN: TranslateList = {
       alias: [],
       def: '通过扇形区块的颜色和弧长（角度、面积）来展现数据的分类和占比情况。',
     },
+
     donut_chart: {
       name: '环图',
       alias: ['甜甜圈图'],
@@ -239,9 +266,9 @@ export const zhCN: TranslateList = {
       alias: [],
       def: 'TBD',
     },
-    nightingale_chart: {
-      name: '',
-      alias: [],
+    rose_chart: {
+      name: '玫瑰图',
+      alias: ['南丁格尔图'],
       def: 'TBD',
     },
 
@@ -319,8 +346,14 @@ export const zhCN: TranslateList = {
 
     heatmap: {
       name: '热力图',
-      alias: [],
+      alias: ['区块热力图'],
       def: '热力图，是一种通过对色块着色来显示数据的统计图表。',
+    },
+
+    density_heatmap: {
+      name: '密度热力图',
+      alias: ['热力图'],
+      def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计图表。',
     },
 
     gauge_chart: {
@@ -493,6 +526,11 @@ export const zhCN: TranslateList = {
       name: '',
       alias: [],
       def: 'TBD',
+    },
+    liquid_chart: {
+      name: '水波图',
+      alias: ['进度球'],
+      def: '一种用来表示进度的拟物化示意图',
     },
   },
 };

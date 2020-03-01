@@ -1,4 +1,13 @@
-import { GraphicCategory, Family, Purpose, CoordinateSystem, Shape, Channel, LevelOfMeasurement } from '../interface';
+import {
+  GraphicCategory,
+  Family,
+  Purpose,
+  CoordinateSystem,
+  Shape,
+  Channel,
+  LevelOfMeasurement,
+  RecommendRating,
+} from '../interface';
 import { ChartID } from '../chartID';
 
 interface Concepts {
@@ -9,6 +18,7 @@ interface Concepts {
   shape: Record<Shape, string>;
   channel: Record<Channel, string>;
   lom: Record<LevelOfMeasurement, string>;
+  recRate: Record<RecommendRating, string>;
 }
 
 /**
