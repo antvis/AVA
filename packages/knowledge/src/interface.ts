@@ -13,6 +13,11 @@ export const FAMILY_OPTIONS = [
   'FunnelCharts',
   'HeatmapCharts',
   'RadarCharts',
+  'TreeGraph',
+  'GeneralGraph',
+  'PolygonLayer',
+  'LineLayer',
+  'PointLayer',
   'Others',
 ] as const;
 
@@ -24,7 +29,18 @@ export type Family = typeof FAMILY_OPTIONS[number];
 /**
  * @beta
  */
-export const PURPOSE_OPTIONS = ['Comparison', 'Trend', 'Distribution', 'Rank', 'Proportion', 'Composition'] as const;
+export const PURPOSE_OPTIONS = [
+  'Comparison',
+  'Trend',
+  'Distribution',
+  'Rank',
+  'Proportion',
+  'Composition',
+  'Relation',
+  'Hierarchy',
+  'Flow',
+  'Cluster',
+] as const;
 
 /**
  * @beta
@@ -62,7 +78,7 @@ export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
 /**
  * @beta
  */
-export const SHAPE_OPTIONS = ['Lines', 'Bars', 'Round', 'Square', 'Area', 'Scatter', 'Symmetric'] as const;
+export const SHAPE_OPTIONS = ['Lines', 'Bars', 'Round', 'Square', 'Area', 'Scatter', 'Symmetric', 'Network'] as const;
 
 /**
  * @beta
@@ -109,6 +125,9 @@ export const CHANNEL_OPTIONS = [
   'ArcLength',
   'Direction',
   'Size',
+  'Opacity',
+  'Stroke',
+  'LineWidth',
 ] as const;
 
 /**
