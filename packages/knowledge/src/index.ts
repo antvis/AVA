@@ -10,6 +10,7 @@ export {
   GraphicCategory,
   Shape,
   Channel,
+  RecommendRating,
   ChartKnowledgeJSON,
   FAMILY_OPTIONS,
   PURPOSE_OPTIONS,
@@ -18,6 +19,7 @@ export {
   SHAPE_OPTIONS,
   LOM_OPTIONS,
   CHANNEL_OPTIONS,
+  RECOMMEND_RATING_OPTIONS,
   DataPrerequisiteJSON,
 } from './interface';
 export { Language } from './i18n';
