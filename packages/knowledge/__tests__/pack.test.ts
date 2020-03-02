@@ -7,7 +7,7 @@ test('PACK', () => {
   const ckb1 = CKBJson();
   const keys1 = Object.keys(ckb1);
   const values1 = Object.values(ckb1);
-  expect(keys1.length).toBe(88);
+  expect(keys1.length).toBe(84);
   expect(keys1.includes('nested_pie_chart')).toBe(true);
   expect(values1.find((e) => e.name === '饼图')).toBe(undefined);
 

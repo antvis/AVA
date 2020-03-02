@@ -523,26 +523,6 @@ export const zhCN: TranslateList = {
       def:
         '使用网格区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
     },
-    choropleth_world_district: {
-      name: '世界地图',
-      alias: [],
-      def: '世界地图填充图',
-    },
-    choropleth_china_province_district: {
-      name: '中国地图-省级',
-      alias: [],
-      def: '中国省级地图填充图',
-    },
-    choropleth_china_city_district: {
-      name: '中国地图-市级',
-      alias: [],
-      def: '中国地图市级填充图',
-    },
-    choropleth_china_county_district: {
-      name: '中国地图-县级',
-      alias: [],
-      def: '中国地图县级填充图',
-    },
     bubble_map: {
       name: '气泡图',
       alias: [],
