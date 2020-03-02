@@ -59,8 +59,7 @@ export const zhCN: TranslateList = {
       Scatter: '散点形',
       Symmetric: '对称形',
       Network: '网络形',
-      Fill: '填充',
-      Bubble: '气泡',
+      Map: '地图',
     },
     channel: {
       Position: '位置',
@@ -74,6 +73,7 @@ export const zhCN: TranslateList = {
       Opacity: '透明度',
       Stroke: '线色',
       LineWidth: '线粗',
+      Lightness: '亮度',
     },
     lom: {
       Continuous: '连续',
@@ -524,7 +524,7 @@ export const zhCN: TranslateList = {
         '使用网格区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
     },
     bubble_map: {
-      name: '气泡图',
+      name: '气泡地图',
       alias: [],
       def:
         '指地图上用一个形状相同、面积大小和数值成正比的圆点来定位的地图，是散点图的扩展，用于表达离散现象分布特征的地图。',

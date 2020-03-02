@@ -91,8 +91,7 @@ export const SHAPE_OPTIONS = [
   'Scatter',
   'Symmetric',
   'Network',
-  'Fill',
-  'Bubble',
+  'Map',
 ] as const;
 
 /**
@@ -143,6 +142,7 @@ export const CHANNEL_OPTIONS = [
   'Opacity',
   'Stroke',
   'LineWidth',
+  'Lightness',
 ] as const;
 
 /**
