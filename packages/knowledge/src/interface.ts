@@ -40,7 +40,6 @@ export const PURPOSE_OPTIONS = [
   'Relation',
   'Hierarchy',
   'Flow',
-  'Cluster',
   'Spatial',
 ] as const;
 

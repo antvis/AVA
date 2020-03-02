@@ -36,7 +36,6 @@ export const zhCN: TranslateList = {
       Relation: '关系',
       Hierarchy: '层级',
       Flow: '流向',
-      Cluster: '聚类',
       Spatial: '空间',
     },
     coord: {
