@@ -18,6 +18,7 @@ export const FAMILY_OPTIONS = [
   'PolygonLayer',
   'LineLayer',
   'PointLayer',
+  'HeatmapLayer',
   'Others',
 ] as const;
 
@@ -40,6 +41,7 @@ export const PURPOSE_OPTIONS = [
   'Hierarchy',
   'Flow',
   'Cluster',
+  'Spatial',
 ] as const;
 
 /**
@@ -58,6 +60,7 @@ export const COORD_TYPE_OPTIONS = [
   'Polar',
   'NodeLink',
   'Radar',
+  'Geo',
   'Other',
 ] as const;
 
@@ -79,7 +82,18 @@ export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
 /**
  * @beta
  */
-export const SHAPE_OPTIONS = ['Lines', 'Bars', 'Round', 'Square', 'Area', 'Scatter', 'Symmetric', 'Network'] as const;
+export const SHAPE_OPTIONS = [
+  'Lines',
+  'Bars',
+  'Round',
+  'Square',
+  'Area',
+  'Scatter',
+  'Symmetric',
+  'Network',
+  'Fill',
+  'Bubble',
+] as const;
 
 /**
  * @beta

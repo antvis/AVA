@@ -17,6 +17,7 @@ export const zhCN: TranslateList = {
       PointLayer: '点图层类',
       LineLayer: '线图层类',
       PolygonLayer: '面图层类',
+      HeatmapLayer: '地图热力图类',
       Others: '其他类',
     },
     category: {
@@ -36,6 +37,7 @@ export const zhCN: TranslateList = {
       Hierarchy: '层级',
       Flow: '流向',
       Cluster: '聚类',
+      Spatial: '空间',
     },
     coord: {
       NumberLine: '数轴',
@@ -45,6 +47,7 @@ export const zhCN: TranslateList = {
       Polar: '极坐标系',
       NodeLink: '点线关系网络',
       Radar: '雷达型坐标系',
+      Geo: '地理坐标系',
       Other: '其他',
     },
     shape: {
@@ -56,6 +59,8 @@ export const zhCN: TranslateList = {
       Scatter: '散点形',
       Symmetric: '对称形',
       Network: '网络形',
+      Fill: '填充',
+      Bubble: '气泡',
     },
     channel: {
       Position: '位置',
@@ -450,27 +455,29 @@ export const zhCN: TranslateList = {
     symbol_map: {
       name: '符号地图',
       alias: [],
-      def: 'TBD',
+      def:
+        '散点地图的变体，用具象的图标指代抽象的圆点，无需图例就能直观看出数据点代表的内容，常用于地图上重要地标的显示或数据量较少时的信息表达。',
     },
     chart_map: {
       name: '复合图表地图',
       alias: [],
-      def: 'TBD',
+      def: '是定点地图的变体，使用二维统计图表代替点状符号的一种特殊复合形式。',
     },
     column_map_3d: {
       name: '3D 柱状图',
       alias: [],
-      def: 'TBD',
+      def: '用形状大小相同的柱状体代替点状符号，高度与数值大小映射共同表达离散现象分布特征的地图',
     },
     scatter_map: {
       name: '散点地图',
       alias: [],
-      def: 'TBD',
+      def: '指地图上可用一个形状大小相同的圆点来定位，用表达离散现象分布特征的地图，如人口、农作物、动植物等的分布',
     },
     path_map: {
       name: '路径地图',
       alias: [],
-      def: 'TBD',
+      def:
+        '指需要用一连串首尾不闭合的点坐标对（xi,yi）来定位的一类图层。属于半依比例图层，线端点依附地图比例缩放，但线的粗细不会变化。',
     },
     isoline_map: {
       name: '等值线地图',
@@ -480,37 +487,53 @@ export const zhCN: TranslateList = {
     arc_map_3d: {
       name: '3D 弧线地图',
       alias: [],
-      def: 'TBD',
+      def:
+        '将两个点的连线绘制成弧形，绘制的弧线可以是贝塞尔曲线，大圆航线，通常用来表示两种地理事物关系和联系，或者人口迁移，物流起点目的地等。',
     },
     choropleth_map: {
       name: '填充地图',
       alias: [],
-      def: 'TBD',
+      def: '填充图，也叫分级统计图，可在地图上不同领土区域进行着色，查看区域间的分布对比情况',
     },
     choropleth_map_3d: {
       name: '3D 填充地图',
       alias: [],
-      def: 'TBD',
+      def: '填充地图的增强实现，通过三维视角中的高度模拟真实地物的高度。',
     },
     hexagonal_heat_map: {
       name: '蜂窝热力地图',
       alias: [],
-      def: 'TBD',
+      def:
+        '使用六边形将地图区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
     },
     hexagonal_heat_map_3d: {
       name: '3D 蜂窝热力地图',
       alias: [],
-      def: 'TBD',
+      def:
+        '使用3D 六边形将地图区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
     },
     classical_heat_map: {
       name: '热力地图',
       alias: [],
-      def: 'TBD',
+      def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计地图。',
     },
     grid_heat_map: {
       name: '网格热力地图',
       alias: [],
-      def: 'TBD',
+      def:
+        '使用网格区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
+    },
+    bubble_map: {
+      name: '气泡图',
+      alias: [],
+      def:
+        '指地图上用一个形状相同、面积大小和数值成正比的圆点来定位的地图，是散点图的扩展，用于表达离散现象分布特征的地图。',
+    },
+    bubble_light_map: {
+      name: '亮点地图',
+      alias: [],
+      def:
+        '散点图的变形，指用一个点代表一个值，连续渐进颜色代表数值大小，并通过色彩的叠加的达到效果增强，专为海量散点数据运用而生，解决远视角下，点颜色无法区分问题',
     },
     packed_circles: {
       name: '',

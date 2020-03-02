@@ -11,7 +11,7 @@
     "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
     "prepublish": "npm run module && npm run build && npm run api && npm run pack",
     "pack": "webpack --config=webpack.config.js",
-    "lint": "eslint --ext .ts src __tests__",
+    "lint": "eslint --ext .ts  src __tests__",
     "api": "rm -rf typings && api-extractor run -v"
   },
   "dependencies": {
