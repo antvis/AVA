@@ -1,6 +1,6 @@
 {
   "name": "@antv/knowledge",
-  "version": "0.1.3-alpha.13",
+  "version": "0.1.3-alpha.14",
   "description": "Chart Knowledge Base",
   "main": "lib/index.js",
   "browser": "dist/index.js",
