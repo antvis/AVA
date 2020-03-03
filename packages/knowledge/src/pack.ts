@@ -91,7 +91,7 @@ export function CKBJson(lang: Language = 'en-US', completed = false) {
  */
 export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language, TransKnowledgeProps>) {
   const id = chartKnowledge.id;
-  base[id] = chartKnowledge;
+  base[id as ChartID] = chartKnowledge;
 
   const langs = Object.keys(trans) as Language[];
 
@@ -100,7 +100,7 @@ export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language,
     if (!transList) {
       // do nothing
     } else {
-      transList.chartTypes[id] = trans[lang];
+      transList.chartTypes[id as ChartID] = trans[lang];
     }
   });
 }

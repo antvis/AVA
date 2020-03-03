@@ -89,37 +89,21 @@ export const zhCN: TranslateList = {
     },
   },
   chartTypes: {
-    single_line_chart: {
-      name: '单折线图',
-      alias: ['折线图', '线图', '基础折线图'],
-      def: '使用一条折线的线段显示数据在一个具有顺序性的维度上的变化。',
+    line_chart: {
+      name: '折线图',
+      alias: ['折线图', '线图'],
+      def: '使用折线的线段显示数据在一个具有顺序性的维度上的变化。',
     },
-    multi_line_chart: {
-      name: '多折线图',
-      alias: ['折线图', '线图', '多色折线图'],
-      def: '使用多条折线的线段显示数据在一个具有顺序性的维度上的变化。',
-    },
-    single_step_line_chart: {
-      name: '单线阶梯图',
-      alias: ['阶梯图', '基础阶梯图'],
-      def:
-        '阶梯线图用于表示连续时间跨度内的数据，它通常用于显示某变量随时间的变化模式：是上升还是下降，是否存在周期性的循环？因此，相对于独立的数据点，折线图关注的是全局趋势。',
-    },
-    multi_step_line_chart: {
-      name: '多线阶梯图',
-      alias: ['阶梯图', '多色阶梯图'],
+    step_line_chart: {
+      name: '阶梯图',
+      alias: ['阶梯线'],
       def:
         '折线根据分类字段分为多根在 x 方向（时间）的信息是完全一致、颜色及 y 方向（变量）信息不一致的折线，通常用作同一时间区间内多个变量发展趋势的对比。',
     },
-    basic_area_chart: {
-      name: '基础面积图',
-      alias: ['单面积图', '面积图'],
-      def: '使用一个带填充区域的线段显示数据在一个具有顺序性的维度上的变化。',
-    },
-    multi_color_area_chart: {
-      name: '多面积图',
-      alias: ['面积图', '重叠面积图', '多色面积图'],
-      def: '使用多个带填充区域的线段显示数据在一个具有顺序性的维度上的变化。',
+    area_chart: {
+      name: '面积图',
+      alias: [],
+      def: '使用带填充区域的线段显示数据在一个具有顺序性的维度上的变化。',
     },
     stacked_area_chart: {
       name: '堆叠面积图',
@@ -144,15 +128,10 @@ export const zhCN: TranslateList = {
       def: 'TBD',
     },
 
-    basic_column_chart: {
-      name: '基础柱状图',
-      alias: ['柱状图', '单柱状图'],
-      def: '使用单色柱形显示维度的数值。横轴显示分类维度，纵轴显示相应的值。',
-    },
-    multi_color_column_chart: {
-      name: '多色柱状图',
-      alias: ['柱状图'],
-      def: '使用多色柱形显示维度的数值。横轴显示分类维度，纵轴显示相应的值。',
+    column_chart: {
+      name: '柱状图',
+      alias: ['柱形图'],
+      def: '使用柱形显示维度的数值。横轴显示分类维度，纵轴显示相应的值。',
     },
     grouped_column_chart: {
       name: '分组柱状图',
@@ -195,15 +174,10 @@ export const zhCN: TranslateList = {
       alias: [],
       def: '直方图是一种统计报告图，由一系列高度不等的纵向条纹或线段表示数据分布的情况。',
     },
-    basic_bar_chart: {
-      name: '基础条形图',
-      alias: ['条形图', '单色条形图'],
-      def: '使用单色条形显示维度的数值。纵轴显示分类维度，横轴显示相应的值。',
-    },
-    multi_color_bar_chart: {
-      name: '多色条形图',
-      alias: ['条形图'],
-      def: '使用多色条形显示维度的数值。纵轴显示分类维度，横轴显示相应的值。',
+    bar_chart: {
+      name: '条形图',
+      alias: ['条状图'],
+      def: '使用条形显示维度的数值。纵轴显示分类维度，横轴显示相应的值。',
     },
     grouped_bar_chart: {
       name: '分组条形图',
@@ -276,26 +250,16 @@ export const zhCN: TranslateList = {
       def: 'TBD',
     },
 
-    basic_scatter_plot: {
-      name: '基础散点图',
-      alias: ['散点图'],
-      def: '散点图是将所有的数据以点的形式展现在平面直角坐标系上的统计图表。',
+    scatter_plot: {
+      name: '散点图',
+      alias: [],
+      def: '散点图是将所有的数据以不同颜色的点的形式展现在平面直角坐标系上的统计图表。',
     },
-    multi_color_scatter_plot: {
-      name: '多色散点图',
-      alias: ['散点图'],
-      def: '多色散点图是将所有的数据以不同颜色的点的形式展现在平面直角坐标系上的统计图表。',
-    },
-    basic_bubble_chart: {
-      name: '基础气泡图',
-      alias: ['气泡图'],
-      def: '气泡图是一种多变量的统计图表，由笛卡尔坐标系（直角坐标系）和大小不一的圆组成，可以看作是散点图的变形。',
-    },
-    multi_color_bubble_chart: {
-      name: '多色气泡图',
-      alias: ['气泡图'],
+    bubble_chart: {
+      name: '气泡图',
+      alias: [],
       def:
-        '多色气泡图是一种多变量的统计图表，由笛卡尔坐标系（直角坐标系）和大小不一、颜色不同的圆组成，可以看作是散点图的变形。',
+        '气泡图是一种多变量的统计图表，由笛卡尔坐标系（直角坐标系）和大小不一、颜色不同的圆组成，可以看作是散点图的变形。',
     },
 
     non_ribbon_chord_diagram: {
@@ -366,15 +330,9 @@ export const zhCN: TranslateList = {
       def: 'TBD',
     },
 
-    basic_radar_chart: {
-      name: '单线雷达图',
-      alias: [],
-      def:
-        '将多个维度的数据量映射到坐标轴上，这些坐标轴起始于同一个圆心点，通常结束于圆周边缘，将同一组的点使用线连接起来。',
-    },
-    multi_color_radar_chart: {
-      name: '多线雷达图',
-      alias: [],
+    radar_chart: {
+      name: '雷达图',
+      alias: ['蛛网图'],
       def:
         '将不同系列的多个维度的数据量映射到坐标轴上，这些坐标轴起始于同一个圆心点，通常结束于圆周边缘，将同一组的点使用线连接起来，用颜色区分系列。',
     },

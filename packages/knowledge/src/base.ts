@@ -1,107 +1,52 @@
 import { ChartKnowledgeBase } from './interface';
 
 export const base: ChartKnowledgeBase = {
-  single_line_chart: {
-    id: 'single_line_chart',
-    name: 'Single Line Chart',
-    alias: ['Line', 'Line Chart', 'Basic Line Chart'],
+  line_chart: {
+    id: 'line_chart',
+    name: 'Line Chart',
+    alias: ['Lines'],
     family: ['LineCharts'],
-    def: 'A single line chart uses one line with segments to show changes in data in a ordinal dimension.',
-    purpose: ['Trend'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Lines'],
-    dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Position', 'Direction'],
-    recRate: 'Recommended',
-  },
-
-  multi_line_chart: {
-    id: 'multi_line_chart',
-    name: 'Multi Line Chart',
-    alias: ['Multi Line', 'Multi-Line', 'Multi-Line Chart', 'Lines'],
-    family: ['LineCharts'],
-    def: 'A multi line chart uses multiple lines with segments to show changes in data in a ordinal dimension.',
+    def: 'A line chart uses lines with segments to show changes in data in a ordinal dimension.',
     purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Lines'],
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
     recRate: 'Recommended',
   },
 
-  single_step_line_chart: {
-    id: 'single_step_line_chart',
-    name: 'Single Step Line Chart',
-    alias: ['Step Line', 'Step Chart', 'Single Step Chart'],
+  step_line_chart: {
+    id: 'step_line_chart',
+    name: 'Step Line Chart',
+    alias: ['Step Lines'],
     family: ['LineCharts'],
     def:
-      'A single step line chart is a single line chart in which points are connected by horizontal and vertical line segments, looking like steps of a staircase.',
-    purpose: ['Trend'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Lines'],
-    dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Position', 'Direction'],
-    recRate: 'Recommended',
-  },
-
-  multi_step_line_chart: {
-    id: 'multi_step_line_chart',
-    name: 'Multi Step Line Chart',
-    alias: ['Step Lines', 'Multi Step Chart'],
-    family: ['LineCharts'],
-    def:
-      'A step line chart is a multi line chart in which points of each line are connected by horizontal and vertical line segments, looking like steps of a staircase.',
+      'A step line chart is a line chart in which points of each line are connected by horizontal and vertical line segments, looking like steps of a staircase.',
     purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Lines'],
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
     recRate: 'Recommended',
   },
 
-  basic_area_chart: {
-    id: 'basic_area_chart',
-    name: 'Basic Area Chart',
-    alias: ['Area Chart', 'Single Area Chart'],
-    family: ['AreaCharts'],
-    def: 'A basic area chart uses a line segment with a filled area to show the change in data in a ordinal dimension.',
-    purpose: ['Trend'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Area'],
-    dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Position'],
-    recRate: 'Recommended',
-  },
-
-  multi_color_area_chart: {
-    id: 'multi_color_area_chart',
-    name: 'Multi Color Area Chart',
-    alias: ['Area Chart', 'Multi Area Chart', 'Overlap Area Chart'],
+  area_chart: {
+    id: 'area_chart',
+    name: 'Area Chart',
+    alias: [],
     family: ['AreaCharts'],
     def:
-      'A multi color area chart uses series of line segments with overlapped areas to show the change in data in a ordinal dimension.',
+      'An area chart uses series of line segments with overlapped areas to show the change in data in a ordinal dimension.',
     purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -109,7 +54,7 @@ export const base: ChartKnowledgeBase = {
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Position'],
     recRate: 'Recommended',
@@ -185,41 +130,22 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  basic_column_chart: {
-    id: 'basic_column_chart',
-    name: 'Basic Column Chart',
-    alias: ['Column', 'Column Chart', 'Single Color Column Chart'],
+  column_chart: {
+    id: 'column_chart',
+    name: 'Column Chart',
+    alias: ['Columns'],
     family: ['ColumnCharts'],
     def:
-      'A basic column chart uses columns to display the value of the dimension. The horizontal axis shows the classification dimension and the vertical axis shows the corresponding value.',
+      'A column chart uses series of columns to display the value of the dimension. The horizontal axis shows the classification dimension and the vertical axis shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
-    channel: ['Position'],
-    recRate: 'Recommended',
-  },
-
-  multi_color_column_chart: {
-    id: 'multi_color_column_chart',
-    name: 'Multi Color Column Chart',
-    alias: ['Column', 'Column Chart'],
-    family: ['ColumnCharts'],
-    def:
-      'A multi color column chart uses series of columns to display the value of the dimension. The horizontal axis shows the classification dimension and the vertical axis shows the corresponding value.',
-    purpose: ['Comparison', 'Distribution', 'Rank'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Bars'],
-    dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Position'],
+    channel: ['Position', 'Color'],
     recRate: 'Recommended',
   },
 
@@ -347,41 +273,22 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  basic_bar_chart: {
-    id: 'basic_bar_chart',
-    name: 'Basic Bar Chart',
-    alias: ['Bar', 'Bar Chart', 'Single Color Bar Chart'],
+  bar_chart: {
+    id: 'bar_chart',
+    name: 'Bar Chart',
+    alias: ['Bars'],
     family: ['BarCharts'],
     def:
-      'A basic bar chart uses bars to display the value of the dimension. The vertical axis shows the classification dimension and the horizontal axis shows the corresponding value.',
+      'A bar chart uses series of bars to display the value of the dimension. The vertical axis shows the classification dimension and the horizontal axis shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
-    channel: ['Position'],
-    recRate: 'Recommended',
-  },
-
-  multi_color_bar_chart: {
-    id: 'multi_color_bar_chart',
-    name: 'Multi Color Bar Chart',
-    alias: ['Bar', 'Bar Chart'],
-    family: ['BarCharts'],
-    def:
-      'A multi color bar chart uses series of bars to display the value of the dimension. The vertical axis shows the classification dimension and the horizontal axis shows the corresponding value.',
-    purpose: ['Comparison', 'Distribution', 'Rank'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Bars'],
-    dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Position'],
+    channel: ['Position', 'Color'],
     recRate: 'Recommended',
   },
 
@@ -592,71 +499,39 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  basic_scatter_plot: {
-    id: 'basic_scatter_plot',
-    name: 'Basic Scatter Plot',
+  scatter_plot: {
+    id: 'scatter_plot',
+    name: 'Scatter Plot',
     alias: ['Scatter Chart', 'Scatterplot'],
     family: ['ScatterCharts'],
     def:
-      'A basic scatter plot is a type of plot or mathematical diagram using Cartesian coordinates to display values for typically two variables for a set of data.',
-    purpose: ['Distribution'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Scatter'],
-    dataPres: [{ minQty: 2, maxQty: 2, fieldConditions: ['Interval'] }],
-    channel: ['Position'],
-    recRate: 'Recommended',
-  },
-
-  multi_color_scatter_plot: {
-    id: 'multi_color_scatter_plot',
-    name: 'Multi Color Scatter Plot',
-    alias: ['Scatter Chart', 'Scatterplot'],
-    family: ['ScatterCharts'],
-    def:
-      'A multi color scatter plot is a type of plot or mathematical diagram using Cartesian coordinates to display values for typically two variables for series of data.',
+      'A scatter plot is a type of plot or mathematical diagram using Cartesian coordinates to display values for typically two variables for series of data.',
     purpose: ['Comparison', 'Distribution'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Scatter'],
     dataPres: [
       { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Position'],
     recRate: 'Recommended',
   },
 
-  basic_bubble_chart: {
-    id: 'basic_bubble_chart',
-    name: 'Basic Bubble Chart',
+  bubble_chart: {
+    id: 'bubble_chart',
+    name: 'Bubble Chart',
     alias: ['Bubble Chart'],
     family: ['ScatterCharts'],
     def:
-      'A basic bubble chart is a type of chart that displays three dimensions of data with x, y positions and circle size.',
-    purpose: ['Comparison', 'Distribution'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Scatter'],
-    dataPres: [{ minQty: 3, maxQty: 3, fieldConditions: ['Interval'] }],
-    channel: ['Position', 'Size'],
-    recRate: 'Recommended',
-  },
-
-  multi_color_bubble_chart: {
-    id: 'multi_color_bubble_chart',
-    name: 'Multi Color Bubble Chart',
-    alias: ['Bubble Chart'],
-    family: ['ScatterCharts'],
-    def:
-      'A multi color bubble chart is a type of chart that displays four dimensions of data with x, y positions, circle size and circle color.',
+      'A bubble chart is a type of chart that displays four dimensions of data with x, y positions, circle size and circle color.',
     purpose: ['Comparison', 'Distribution'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Scatter'],
     dataPres: [
       { minQty: 3, maxQty: 3, fieldConditions: ['Interval'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Color', 'Position', 'Size'],
     recRate: 'Recommended',
@@ -854,38 +729,19 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  basic_radar_chart: {
-    id: 'basic_radar_chart',
-    name: 'Basic Radar Chart',
+  radar_chart: {
+    id: 'radar_chart',
+    name: 'Radar Chart',
     alias: ['Web Chart', 'Spider Chart', 'Star Chart', 'Cobweb Chart', 'Irregular Polygon', 'Kiviat diagram'],
     family: ['RadarCharts'],
     def:
-      'A basic radar chart maps the data volume of multiple dimensions onto the axes. Starting at the same center point, usually ending at the edge of the circle, connecting the same set of points using lines.',
+      'A radar chart maps series of data volume of multiple dimensions onto the axes. Starting at the same center point, usually ending at the edge of the circle, connecting the same set of points using lines.',
     purpose: ['Comparison'],
     coord: ['Radar'],
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Color', 'Position'],
-    recRate: 'Recommended',
-  },
-
-  multi_color_radar_chart: {
-    id: 'multi_color_radar_chart',
-    name: 'Multi Color Radar Chart',
-    alias: ['Web Chart', 'Spider Chart', 'Star Chart', 'Cobweb Chart', 'Irregular Polygon', 'Kiviat diagram'],
-    family: ['RadarCharts'],
-    def:
-      'A multi color radar chart maps series of data volume of multiple dimensions onto the axes. Starting at the same center point, usually ending at the edge of the circle, connecting the same set of points using lines.',
-    purpose: ['Comparison'],
-    coord: ['Radar'],
-    category: ['Statistic'],
-    shape: ['Round'],
-    dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
