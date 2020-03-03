@@ -431,8 +431,8 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  basic_pie_chart: {
-    id: 'basic_pie_chart',
+  pie_chart: {
+    id: 'pie_chart',
     name: 'Pie Chart',
     alias: ['Circle Chart', 'Pie'],
     family: ['PieCharts'],
@@ -612,13 +612,13 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  basic_funnel_chart: {
-    id: 'basic_funnel_chart',
-    name: 'Basic Funnel Chart',
+  funnel_chart: {
+    id: 'funnel_chart',
+    name: 'Funnel Chart',
     alias: [],
     family: ['FunnelCharts'],
     def:
-      'A basic funnel chart is often used to represent stages in a sales process and show the amount of potential revenue for each stage.',
+      'A funnel chart is often used to represent stages in a sales process and show the amount of potential revenue for each stage.',
     purpose: ['Trend'],
     coord: ['SymmetricCartesian'],
     category: ['Statistic'],

@@ -227,7 +227,7 @@ export const zhCN: TranslateList = {
       def: '子弹图可用于将度量的绩效可视化并与目标值和定性刻度。',
     },
 
-    basic_pie_chart: {
+    pie_chart: {
       name: '饼图',
       alias: [],
       def: '通过扇形区块的颜色和弧长（角度、面积）来展现数据的分类和占比情况。',
@@ -288,10 +288,10 @@ export const zhCN: TranslateList = {
       def: '桑基图，是一种表现流程的示意图，用于描述一组值到另一组值的流向。分支的宽度对应了数据流量的大小。',
     },
 
-    basic_funnel_chart: {
-      name: '基础漏斗图',
-      alias: ['漏斗图'],
-      def: '基础漏斗图，形如“漏斗”，用于单流程分析，在开始和结束之间由N个流程环节组成。',
+    funnel_chart: {
+      name: '漏斗图',
+      alias: [],
+      def: '漏斗图，形如“漏斗”，用于单流程分析，在开始和结束之间由N个流程环节组成。',
     },
 
     overlapping_funnel_chart: {
