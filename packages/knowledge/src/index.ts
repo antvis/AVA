@@ -24,4 +24,4 @@ export {
 } from './interface';
 export { Language } from './i18n';
 export { TransKnowledgeProps } from './i18n/interface';
-export { ChartID } from './chartID';
+export { ChartID, CHART_ID_OPTIONS } from './chartID';

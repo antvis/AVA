@@ -13,6 +13,9 @@ export type Channel = typeof CHANNEL_OPTIONS[number];
 // @beta (undocumented)
 export const CHANNEL_OPTIONS: readonly ["Position", "Length", "Color", "Area", "Angle", "ArcLength", "Direction", "Size", "Opacity", "Stroke", "LineWidth", "Lightness"];
 
+// @public (undocumented)
+export type ChartID = typeof CHART_ID_OPTIONS[number];
+
 // @beta (undocumented)
 export interface ChartKnowledge {
     // (undocumented)

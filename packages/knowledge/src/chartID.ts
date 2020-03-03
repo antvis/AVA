@@ -1,4 +1,7 @@
-const CHART_ID_OPTIONS = [
+/**
+ * @beta
+ */
+export const CHART_ID_OPTIONS = [
   'line_chart',
   'step_line_chart',
   'area_chart',
@@ -77,4 +80,7 @@ const CHART_ID_OPTIONS = [
   'liquid_chart',
 ] as const;
 
+/**
+ * @beta
+ */
 export type ChartID = typeof CHART_ID_OPTIONS[number];
