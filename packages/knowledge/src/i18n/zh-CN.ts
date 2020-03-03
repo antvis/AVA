@@ -471,7 +471,7 @@ export const zhCN: TranslateList = {
     },
     classical_heat_map: {
       name: '热力地图',
-      alias: [],
+      alias: ['热力图'],
       def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计地图。',
     },
     grid_heat_map: {
