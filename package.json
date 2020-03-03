@@ -46,7 +46,7 @@
     "webpack-cli": "^3.3.9"
   },
   "dependencies": {
-    "lerna": "^3.16.4"
+    "lerna": "^3.20.2"
   },
   "config": {
     "commitizen": {
