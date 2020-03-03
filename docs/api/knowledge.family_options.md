@@ -11,5 +11,5 @@
 <b>Signature:</b>
 
 ```typescript
-FAMILY_OPTIONS: readonly ["LineCharts", "ColumnCharts", "BarCharts", "PieCharts", "AreaCharts", "ScatterCharts", "FunnelCharts", "HeatmapCharts", "RadarCharts", "Others"]
+FAMILY_OPTIONS: readonly ["LineCharts", "ColumnCharts", "BarCharts", "PieCharts", "AreaCharts", "ScatterCharts", "FunnelCharts", "HeatmapCharts", "RadarCharts", "TreeGraph", "GeneralGraph", "PolygonLayer", "LineLayer", "PointLayer", "HeatmapLayer", "Others"]
 ```

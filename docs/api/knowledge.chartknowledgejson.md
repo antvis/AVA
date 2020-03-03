@@ -28,5 +28,6 @@ export interface ChartKnowledgeJSON
 |  [id](./knowledge.chartknowledgejson.id.md) | <code>string</code> | <b><i>(BETA)</i></b> |
 |  [name](./knowledge.chartknowledgejson.name.md) | <code>string</code> | <b><i>(BETA)</i></b> |
 |  [purpose](./knowledge.chartknowledgejson.purpose.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
+|  [recRate](./knowledge.chartknowledgejson.recrate.md) | <code>string</code> | <b><i>(BETA)</i></b> |
 |  [shape](./knowledge.chartknowledgejson.shape.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
 

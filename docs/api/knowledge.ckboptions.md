@@ -18,6 +18,7 @@ export declare function CKBOptions(lang?: Language): {
     shape: string[];
     channel: string[];
     lom: string[];
+    recRate: string[];
 };
 ```
 
@@ -37,5 +38,6 @@ export declare function CKBOptions(lang?: Language): {
     shape: string[];
     channel: string[];
     lom: string[];
+    recRate: string[];
 }`
 

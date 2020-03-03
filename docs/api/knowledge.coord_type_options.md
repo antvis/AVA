@@ -11,5 +11,5 @@
 <b>Signature:</b>
 
 ```typescript
-COORD_TYPE_OPTIONS: readonly ["NumberLine", "Cartesian2D", "SymmetricCartesian", "Cartesian3D", "Polar", "NodeLink", "Radar"]
+COORD_TYPE_OPTIONS: readonly ["NumberLine", "Cartesian2D", "SymmetricCartesian", "Cartesian3D", "Polar", "NodeLink", "Radar", "Geo", "Other"]
 ```

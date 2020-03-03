@@ -11,5 +11,5 @@
 <b>Signature:</b>
 
 ```typescript
-CHANNEL_OPTIONS: readonly ["Position", "Length", "Color", "Area", "Angle", "ArcLength", "Direction", "Size"]
+CHANNEL_OPTIONS: readonly ["Position", "Length", "Color", "Area", "Angle", "ArcLength", "Direction", "Size", "Opacity", "Stroke", "LineWidth", "Lightness"]
 ```

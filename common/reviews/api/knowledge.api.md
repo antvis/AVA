@@ -11,7 +11,7 @@ export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language,
 export type Channel = typeof CHANNEL_OPTIONS[number];
 
 // @beta (undocumented)
-export const CHANNEL_OPTIONS: readonly ["Position", "Length", "Color", "Area", "Angle", "ArcLength", "Direction", "Size", "Opacity", "Stroke", "LineWidth"];
+export const CHANNEL_OPTIONS: readonly ["Position", "Length", "Color", "Area", "Angle", "ArcLength", "Direction", "Size", "Opacity", "Stroke", "LineWidth", "Lightness"];
 
 // @beta (undocumented)
 export interface ChartKnowledge {
@@ -85,7 +85,7 @@ export function CKBOptions(lang?: Language): {
 };
 
 // @beta (undocumented)
-export const COORD_TYPE_OPTIONS: readonly ["NumberLine", "Cartesian2D", "SymmetricCartesian", "Cartesian3D", "Polar", "NodeLink", "Radar", "Other"];
+export const COORD_TYPE_OPTIONS: readonly ["NumberLine", "Cartesian2D", "SymmetricCartesian", "Cartesian3D", "Polar", "NodeLink", "Radar", "Geo", "Other"];
 
 // @beta (undocumented)
 export type CoordinateSystem = typeof COORD_TYPE_OPTIONS[number];
@@ -114,7 +114,7 @@ export interface DataPrerequisiteJSON {
 export type Family = typeof FAMILY_OPTIONS[number];
 
 // @beta (undocumented)
-export const FAMILY_OPTIONS: readonly ["LineCharts", "ColumnCharts", "BarCharts", "PieCharts", "AreaCharts", "ScatterCharts", "FunnelCharts", "HeatmapCharts", "RadarCharts", "TreeGraph", "GeneralGraph", "PolygonLayer", "LineLayer", "PointLayer", "Others"];
+export const FAMILY_OPTIONS: readonly ["LineCharts", "ColumnCharts", "BarCharts", "PieCharts", "AreaCharts", "ScatterCharts", "FunnelCharts", "HeatmapCharts", "RadarCharts", "TreeGraph", "GeneralGraph", "PolygonLayer", "LineLayer", "PointLayer", "HeatmapLayer", "Others"];
 
 // @beta (undocumented)
 export const GRAPHIC_CATEGORY_OPTIONS: readonly ["Statistic", "Diagram", "Graph", "Map"];
@@ -135,7 +135,7 @@ export const LOM_OPTIONS: readonly ["Nominal", "Ordinal", "Interval", "Discrete"
 export type Purpose = typeof PURPOSE_OPTIONS[number];
 
 // @beta (undocumented)
-export const PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition", "Relation", "Hierarchy", "Flow", "Cluster"];
+export const PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition", "Relation", "Hierarchy", "Flow", "Spatial"];
 
 // @beta (undocumented)
 export const RECOMMEND_RATING_OPTIONS: readonly ["Recommended", "Use with Caution", "Not Recommended"];
@@ -147,7 +147,7 @@ export type RecommendRating = typeof RECOMMEND_RATING_OPTIONS[number];
 export type Shape = typeof SHAPE_OPTIONS[number];
 
 // @beta (undocumented)
-export const SHAPE_OPTIONS: readonly ["Lines", "Bars", "Round", "Square", "Area", "Scatter", "Symmetric", "Network"];
+export const SHAPE_OPTIONS: readonly ["Lines", "Bars", "Round", "Square", "Area", "Scatter", "Symmetric", "Network", "Map"];
 
 // @beta (undocumented)
 export interface TransKnowledgeProps {

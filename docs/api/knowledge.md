@@ -32,6 +32,7 @@
 |  [GRAPHIC\_CATEGORY\_OPTIONS](./knowledge.graphic_category_options.md) | <b><i>(BETA)</i></b> |
 |  [LOM\_OPTIONS](./knowledge.lom_options.md) | <b><i>(BETA)</i></b> |
 |  [PURPOSE\_OPTIONS](./knowledge.purpose_options.md) | <b><i>(BETA)</i></b> |
+|  [RECOMMEND\_RATING\_OPTIONS](./knowledge.recommend_rating_options.md) | <b><i>(BETA)</i></b> |
 |  [SHAPE\_OPTIONS](./knowledge.shape_options.md) | <b><i>(BETA)</i></b> |
 
 ## Type Aliases
@@ -45,5 +46,6 @@
 |  [Language](./knowledge.language.md) | <b><i>(BETA)</i></b> |
 |  [LevelOfMeasurement](./knowledge.levelofmeasurement.md) | <b><i>(BETA)</i></b> |
 |  [Purpose](./knowledge.purpose.md) | <b><i>(BETA)</i></b> |
+|  [RecommendRating](./knowledge.recommendrating.md) | <b><i>(BETA)</i></b> |
 |  [Shape](./knowledge.shape.md) | <b><i>(BETA)</i></b> |
 
