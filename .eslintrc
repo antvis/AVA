@@ -35,6 +35,7 @@
     "@typescript-eslint/ban-ts-ignore": 0,
     "@typescript-eslint/no-empty-interface": 1,
     "@typescript-eslint/camelcase": 0,
-    "@typescript-eslint/no-explicit-any": 0
+    "@typescript-eslint/no-explicit-any": 0,
+    "@typescript-eslint/type-annotation-spacing": 0
   }
 }

@@ -27,6 +27,7 @@
 |  Variable | Description |
 |  --- | --- |
 |  [CHANNEL\_OPTIONS](./knowledge.channel_options.md) | <b><i>(BETA)</i></b> |
+|  [CHART\_ID\_OPTIONS](./knowledge.chart_id_options.md) | <b><i>(BETA)</i></b> |
 |  [COORD\_TYPE\_OPTIONS](./knowledge.coord_type_options.md) | <b><i>(BETA)</i></b> |
 |  [FAMILY\_OPTIONS](./knowledge.family_options.md) | <b><i>(BETA)</i></b> |
 |  [GRAPHIC\_CATEGORY\_OPTIONS](./knowledge.graphic_category_options.md) | <b><i>(BETA)</i></b> |
@@ -40,6 +41,7 @@
 |  Type Alias | Description |
 |  --- | --- |
 |  [Channel](./knowledge.channel.md) | <b><i>(BETA)</i></b> |
+|  [ChartID](./knowledge.chartid.md) | <b><i>(BETA)</i></b> |
 |  [CoordinateSystem](./knowledge.coordinatesystem.md) | <b><i>(BETA)</i></b> |
 |  [Family](./knowledge.family.md) | <b><i>(BETA)</i></b> |
 |  [GraphicCategory](./knowledge.graphiccategory.md) | <b><i>(BETA)</i></b> |

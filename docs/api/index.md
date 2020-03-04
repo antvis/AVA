@@ -8,6 +8,7 @@
 
 |  Package | Description |
 |  --- | --- |
+|  [@antv/chart-advisor](./chart-advisor.md) | 自动图表 |
 |  [@antv/dw-analyzer](./dw-analyzer.md) | Analysis field type |
 |  [@antv/dw-random](./dw-random.md) | Random generate value |
 |  [@antv/knowledge](./knowledge.md) |  |
