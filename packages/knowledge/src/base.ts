@@ -447,7 +447,7 @@ export const base: ChartKnowledgeBase = {
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Angle', 'Area', 'Color'],
-    recRate: 'Recommended',
+    recRate: 'Use with Caution',
   },
 
   donut_chart: {
@@ -487,16 +487,20 @@ export const base: ChartKnowledgeBase = {
   rose_chart: {
     id: 'rose_chart',
     name: 'Rose Chart',
-    alias: ['Nightingale Chart'],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
+    alias: ['Nightingale Chart', 'Polar Area Chart', 'Coxcomb Chart'],
+    family: ['PieCharts'],
+    def:
+      'Nightingale Rose Chart is a peculiar combination of the Radar Chart and Stacked Column Chart types of data visualization.',
+    purpose: ['Comparison', 'Composition', 'Proportion'],
+    coord: ['Polar'],
+    category: ['Statistic'],
+    shape: ['Round'],
+    dataPres: [
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
+    ],
+    channel: ['Angle', 'Color', 'Length'],
+    recRate: 'Use with Caution',
   },
 
   scatter_plot: {

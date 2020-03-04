@@ -246,8 +246,9 @@ export const zhCN: TranslateList = {
     },
     rose_chart: {
       name: '玫瑰图',
-      alias: ['南丁格尔图'],
-      def: 'TBD',
+      alias: ['南丁格尔图', '鸡冠花图', '极坐标面积图'],
+      def:
+        '统计学家和医学改革家佛罗伦萨‧南丁格尔在克里米亚战争期间创造了这种图表。尽管外形很像饼图，但本质上来说，南丁格尔玫瑰图更像在极坐标下绘制的柱状图或堆叠柱状图。只不过，它用半径来反映数值。',
     },
 
     scatter_plot: {
@@ -471,7 +472,7 @@ export const zhCN: TranslateList = {
     },
     classical_heat_map: {
       name: '热力地图',
-      alias: ['热力图'],
+      alias: [],
       def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计地图。',
     },
     grid_heat_map: {
