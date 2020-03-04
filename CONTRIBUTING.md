@@ -1,5 +1,7 @@
 # Guide for Specific Package 🌟
 
+**We sincerely invite you to click on the ⭐ star in the upper right corner of this page to follow this project, which will allow you to receive our latest news in time. Thank you!**
+
 To contribute to specific package, you may want to check relevant guide for each package after skimming the general one. Some specific guides contains content for non-developers.
 
 * [Contribution Guide for AVA/CKB](./packages/knowledge/CONTRIBUTING.md)

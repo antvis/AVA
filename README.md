@@ -46,7 +46,7 @@ autoChart(container, data, {toolbar: true, development: true});
 
 ## Packages
 
-### 📦 [AVA/CKB](./packages/knowledge/README.md)
+### 📦 [AVA/CKB](https://github.com/antvis/AVA/tree/master/packages/knowledge)
 
 CKB stands for Chart Knowledge Base. This package is the KB where empirical knowledge about visualization and charts is stored. The chart recommendation is based on it.
 
@@ -54,10 +54,10 @@ At the same time, this package also facilitates us to develop products of chart 
 
 
 ```js
-@antv/knowledge
+@antv/knowledge // to get the chart knowledge base
 ```
 
-### 📦 [AVA/DataWizard](./packages/datawizard/README.md)
+### 📦 [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/datawizard)
 
 DataWizard is a js/ts library for data processing. In the AVA framework, it is used to 'understand' the input dataset. However, it can also be used independently to develop some statistical or data mocking functions.
 
@@ -66,9 +66,13 @@ DataWizard is a js/ts library for data processing. In the AVA framework, it is u
 @antv/dw-random // to generate random mock data
 ```
 
-### 📦 AVA/ChartAdvisor
+### 📦 [AVA/ChartAdvisor](https://github.com/antvis/AVA/tree/master/packages/chart-advisor)
 
 ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
+
+```js
+@antv/chart-advisor // to make charts automatically
+```
 
 ## Resources
 
@@ -89,7 +93,7 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
 </div>
 <br>
 
-We welcome all contributions. Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) first. You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
+We welcome all contributions. Please read our [Contributing Guide](./CONTRIBUTING.md) first. You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
 
 ## Links
 

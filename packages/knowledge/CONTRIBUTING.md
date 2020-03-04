@@ -1,5 +1,7 @@
 # Contribution Guide for AVA/CKB
 
+**We sincerely invite you to click on the ⭐ star in the upper right corner of this page to follow this project, which will allow you to receive our latest news in time. Thank you!**
+
 First of all, please make sure you have read the [General Contribution Guide](../../CONTRIBUTING.md).
 
 Check the [User Guide](./USERGUIDE.md) to learn the properties of a Knowledge of Chart Types.
