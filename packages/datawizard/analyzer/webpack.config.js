@@ -2,9 +2,11 @@ const path = require('path');
 module.exports = {
   mode: 'production',
   devtool: 'cheap-module-source-map',
-  entry: './src/index',
+  entry: {
+    app: './src/index',
+  },
   output: {
-    library: 'Advisor',
+    library: 'Analyzer',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, 'dist/'),
     filename: 'index.js',

@@ -9,8 +9,9 @@
   "scripts": {
     "build": "rm -rf lib && tsc --pretty",
     "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
-    "prepublish": "npm run module && npm run build && npm run api",
+    "prepublish": "npm run module && npm run build && npm run api && npm run pack",
     "api": "rm -rf typings && api-extractor run -v",
+    "pack": "webpack --config=webpack.config.js",
     "lint": "eslint --ext .ts src __tests__"
   },
   "dependencies": {
@@ -24,11 +25,19 @@
   },
   "license": "MIT",
   "keywords": [],
-  "author": "yuanjiefeng",
+  "author": "AFX",
   "devDependencies": {
     "@microsoft/api-extractor": "^7.7.0",
     "@types/mersenne-twister": "^1.1.2",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-typescript": "^7.7.4",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
   },
   "gitHead": "20d90967d4c5337daf9d0919b95e14db8f4e4db9"
 }

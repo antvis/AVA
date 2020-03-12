@@ -23,12 +23,7 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: 'commonjs' }]],
-          plugins: [
-            '@babel/plugin-transform-runtime',
-            '@babel/plugin-proposal-export-default-from',
-            '@babel/plugin-proposal-class-properties',
-            '@babel/plugin-proposal-object-rest-spread',
-          ],
+          plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-object-rest-spread'],
         },
       },
     ],
