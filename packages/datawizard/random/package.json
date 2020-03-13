@@ -3,6 +3,7 @@
   "version": "0.1.3-alpha.18",
   "description": "",
   "private": false,
+  "browser": "dist/index.js",
   "main": "lib/index.js",
   "module": "es/index.js",
   "typings": "typings/dw-random.d.ts",
