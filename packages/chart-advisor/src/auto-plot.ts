@@ -2,7 +2,7 @@ import { AdvisorOptions, Advice, analyze, Channels } from './advisor';
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
 import MAP from './channels';
-import { uuid, translate } from './util';
+import { uuid, translate, createLayer, DEFAULT_FEEDBACK } from './util';
 
 export interface Configs {
   title?: string;
@@ -31,8 +31,9 @@ function getConfig(advice: Advice, { title, theme, description, data }: Configs)
   return { ...configs, theme, data };
 }
 
-interface AutoPlotOptions extends AdvisorOptions {
+export interface AutoPlotOptions extends AdvisorOptions {
   theme?: string;
+  feedback?: (container: HTMLDivElement) => void;
 }
 
 /**
@@ -70,6 +71,8 @@ export class AutoPlot extends EventEmitter {
 
   private options: AutoPlotOptions;
   private data: any[];
+  private feedbackLayer: HTMLDivElement;
+  private feedback: (container: HTMLDivElement) => void;
 
   /**
    * Constructor
@@ -94,27 +97,31 @@ export class AutoPlot extends EventEmitter {
         canvasLayout: width / height > 1 ? 'landscape' : 'portrait',
       };
     }
+    this.container = container;
+    this.feedbackLayer = createLayer(container);
     const advices = analyze(data, options);
     this.advices = advices;
-    if (this.advices.length === 0) {
-      throw new Error('推荐不了图表');
-    }
     this.options = options;
+    this.feedback = this.options.feedback || DEFAULT_FEEDBACK('暂无推荐');
     this.data = data;
-    this.container = container;
-    // 如果和上次的结果一样 可以认定为是重复渲染，然后使用上次的index
-    if (advices.length === oldAdvices.length && advices.every((item, i) => item.type === advices[i].type)) {
-      this.render(oldIndex);
-    } else if (type) {
-      let index = 0;
-      for (let i = 0; i < advices.length; i++) {
-        if (advices[i].type === type) {
-          index = i;
-        }
-      }
-      this.render(index);
+    if (this.advices.length === 0) {
+      // throw new Error('推荐不了图表');
+      this.feedback(this.feedbackLayer);
     } else {
-      this.render(0);
+      // 如果和上次的结果一样 可以认定为是重复渲染，然后使用上次的index
+      if (advices.length === oldAdvices.length && advices.every((item, i) => item.type === advices[i].type)) {
+        this.render(oldIndex);
+      } else if (type) {
+        let index = 0;
+        for (let i = 0; i < advices.length; i++) {
+          if (advices[i].type === type) {
+            index = i;
+          }
+        }
+        this.render(index);
+      } else {
+        this.render(0);
+      }
     }
   }
 
@@ -147,6 +154,7 @@ export class AutoPlot extends EventEmitter {
   destroy() {
     if (this.plot && !this.plot.destroyed) {
       this.plot.destroy();
+      this.container.removeChild(this.feedbackLayer);
       this.plot = undefined;
     }
   }

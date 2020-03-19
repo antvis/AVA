@@ -5,9 +5,8 @@ import { DummyPlot } from './dummy-plot';
 import { isEqual, pick } from '@antv/util';
 import { AdvisorOptions, Advice } from './advisor';
 import { Preferences } from './rules';
-import { EmptyContent } from './empty-content';
 import { MockPanel } from './mock-panel';
-
+import { createLayer, DEFAULT_FEEDBACK } from './util';
 export { Preferences };
 
 const CACHES: Map<HTMLElement, AutoChart> = new Map();
@@ -28,27 +27,22 @@ function CheckAndClean(): void {
 window.requestAnimationFrame(CheckAndClean);
 
 /**
- * 无数据的填充逻辑
- * @public
- */
-export interface NoDataRenderer {
-  /**
-   * 填充无数据样式
-   * @param container - 图表container
-   */
-  render(container: HTMLElement): void;
-  /**
-   * 销毁渲染到容器的内容
-   * @param container - 图表container
-   */
-  destroy(container: HTMLElement): void;
-}
-
-/**
  * autochart 配置项
  * @public
  */
-export interface AutoChartOptions extends AdvisorOptions {
+export interface AutoChartOptions {
+  /**
+   * 分析目的
+   */
+  purpose?: string;
+  /**
+   * 标题
+   */
+  title?: string;
+  /**
+   * 描述
+   */
+  description?: string;
   /**
    * 使用的数据字段
    */
@@ -73,7 +67,9 @@ export interface AutoChartOptions extends AdvisorOptions {
   /**
    * 无数据的渲染逻辑
    */
-  noDataContent?: NoDataRenderer;
+  noDataContent?: (container: HTMLDivElement) => void;
+  /** 物推荐的渲染逻辑 */
+  feedback?: (container: HTMLDivElement) => void;
 }
 
 export { AdvisorOptions };
@@ -109,9 +105,11 @@ export class AutoChart {
 
   private container!: HTMLElement;
   private rendered = false;
+  private noDataLayer: HTMLDivElement;
 
   constructor(container: HTMLElement) {
     this.container = container;
+    this.noDataLayer = createLayer(container);
   }
 
   private development!: boolean;
@@ -120,7 +118,7 @@ export class AutoChart {
   private toolbar?: Toolbar;
   private configPanel?: ConfigPanel;
   private plot?: AutoPlot | DummyPlot;
-  private noDataContent?: NoDataRenderer;
+  private noDataContent!: (container: HTMLDivElement) => void;
   private mockPanel?: MockPanel;
   private isMocked = false;
 
@@ -130,7 +128,7 @@ export class AutoChart {
     this.isMocked = false;
     this.options = options || {};
     const { fields, development, noDataContent } = this.options;
-    this.noDataContent = noDataContent || new EmptyContent(this.container);
+    this.noDataContent = noDataContent || DEFAULT_FEEDBACK('暂无数据');
     this.data = fields && fields.length > 0 ? data.map((item) => pick(item, fields)) : data;
     this.development =
       (development === undefined && process.env.NODE_ENV === 'development') ||
@@ -154,7 +152,7 @@ export class AutoChart {
         config = result.config;
         this.mockPanel.destroy();
       } else {
-        noDataContent!.render(container);
+        noDataContent(this.noDataLayer);
         return;
       }
     }
@@ -177,12 +175,11 @@ export class AutoChart {
         oldIndex
       );
 
-      if (toolbar) {
+      if (toolbar && this.plot.advices.length > 0) {
         this.toolbar = new Toolbar(this.plot);
       }
     }
-
-    if (development) {
+    if (development && this.plot.plot) {
       this.configPanel = new ConfigPanel(this.plot, this.isMocked);
     }
   }
@@ -191,7 +188,7 @@ export class AutoChart {
    * 清除上次渲染遗留的元素
    */
   destroy() {
-    if (this.noDataContent) this.noDataContent.destroy(this.container);
+    this.container.removeChild(this.noDataLayer);
     if (this.configPanel) this.configPanel.destroy();
     if (this.toolbar) this.toolbar.destroy();
     if (this.plot) this.plot.destroy();

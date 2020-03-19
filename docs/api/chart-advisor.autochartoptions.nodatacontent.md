@@ -9,5 +9,5 @@
 <b>Signature:</b>
 
 ```typescript
-noDataContent?: NoDataRenderer;
+noDataContent?: (container: HTMLDivElement) => void;
 ```

@@ -4,6 +4,7 @@
 
 ## Preferences interface
 
+偏好选项
 
 <b>Signature:</b>
 

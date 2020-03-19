@@ -32,8 +32,6 @@
 
 |  Interface | Description |
 |  --- | --- |
-|  [AdvisorOptions](./chart-advisor.advisoroptions.md) |  |
 |  [AutoChartOptions](./chart-advisor.autochartoptions.md) | autochart 配置项 |
-|  [NoDataRenderer](./chart-advisor.nodatarenderer.md) | 无数据的填充逻辑 |
-|  [Preferences](./chart-advisor.preferences.md) |  |
+|  [Preferences](./chart-advisor.preferences.md) | 偏好选项 |
 

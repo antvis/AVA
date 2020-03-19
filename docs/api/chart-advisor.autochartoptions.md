@@ -9,7 +9,7 @@ autochart 配置项
 <b>Signature:</b>
 
 ```typescript
-export interface AutoChartOptions extends AdvisorOptions 
+export interface AutoChartOptions 
 ```
 
 ## Properties
@@ -17,10 +17,14 @@ export interface AutoChartOptions extends AdvisorOptions
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [config](./chart-advisor.autochartoptions.config.md) | <code>{</code><br/><code>        type: string;</code><br/><code>        configs: any;</code><br/><code>    }</code> | g2plot配置 |
+|  [description](./chart-advisor.autochartoptions.description.md) | <code>string</code> | 描述 |
 |  [development](./chart-advisor.autochartoptions.development.md) | <code>boolean</code> | 开发模式 |
+|  [feedback](./chart-advisor.autochartoptions.feedback.md) | <code>(container: HTMLDivElement) =&gt; void</code> | 物推荐的渲染逻辑 |
 |  [fields](./chart-advisor.autochartoptions.fields.md) | <code>string[]</code> | 使用的数据字段 |
-|  [noDataContent](./chart-advisor.autochartoptions.nodatacontent.md) | <code>NoDataRenderer</code> | 无数据的渲染逻辑 |
+|  [noDataContent](./chart-advisor.autochartoptions.nodatacontent.md) | <code>(container: HTMLDivElement) =&gt; void</code> | 无数据的渲染逻辑 |
 |  [preferences](./chart-advisor.autochartoptions.preferences.md) | <code>Preferences</code> | 偏好选项 |
+|  [purpose](./chart-advisor.autochartoptions.purpose.md) | <code>string</code> | 分析目的 |
 |  [theme](./chart-advisor.autochartoptions.theme.md) | <code>string</code> | 主题 |
+|  [title](./chart-advisor.autochartoptions.title.md) | <code>string</code> | 标题 |
 |  [toolbar](./chart-advisor.autochartoptions.toolbar.md) | <code>boolean</code> | 是否显示图表切换界面 |
 

@@ -18,7 +18,7 @@
  * @packageDocumentation
  */
 
-import { AutoChart, AutoChartOptions, AdvisorOptions, Preferences, NoDataRenderer } from './auto-chart';
+import { AutoChart, AutoChartOptions, Preferences } from './auto-chart';
 
 /**
  * 自动图表
@@ -35,4 +35,4 @@ export async function autoChart(
   await AutoChart.create(container, data, options);
 }
 
-export { AutoChartOptions, AdvisorOptions, Preferences, NoDataRenderer };
+export { AutoChartOptions, Preferences };

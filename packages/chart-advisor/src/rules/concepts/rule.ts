@@ -11,6 +11,7 @@ export interface DataProps {
 }
 
 /**
+ * 偏好选项
  * @public
  */
 export interface Preferences {

@@ -66,9 +66,9 @@ export class ConfigPanel {
     this.plotInst = plotInst;
     this.needCopyData = needCopyData;
     const { container } = plotInst;
+    this.chartContainer = container;
     container.addEventListener('mouseenter', this.mouseEnterHandler);
     container.addEventListener('mouseleave', this.mouseLeaveHandler);
-    this.chartContainer = container;
     this.initIframe();
     this.initTrigger();
     container.appendChild(this.trigger);

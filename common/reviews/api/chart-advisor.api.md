@@ -4,38 +4,28 @@
 
 ```ts
 
-// @public (undocumented)
-export interface AdvisorOptions {
-    description?: string;
-    preferences?: Preferences;
-    purpose?: string;
-    title?: string;
-}
-
 // @public
 export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
 // @public
-export interface AutoChartOptions extends AdvisorOptions {
+export interface AutoChartOptions {
     config?: {
         type: string;
         configs: any;
     };
+    description?: string;
     development?: boolean;
+    feedback?: (container: HTMLDivElement) => void;
     fields?: string[];
-    noDataContent?: NoDataRenderer;
+    noDataContent?: (container: HTMLDivElement) => void;
     preferences?: Preferences;
+    purpose?: string;
     theme?: string;
+    title?: string;
     toolbar?: boolean;
 }
 
 // @public
-export interface NoDataRenderer {
-    destroy(container: HTMLElement): void;
-    render(container: HTMLElement): void;
-}
-
-// @public (undocumented)
 export interface Preferences {
     // (undocumented)
     canvasLayout: 'landscape' | 'portrait';
