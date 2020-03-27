@@ -71,8 +71,8 @@ autoChart(container, data, {toolbar: true, development: true});
 但如果你想要在线上正式产品中使用本项目，请务必锁定版本，并保持关注本项目的更新进展。
 
 
-* [快速接口文档](./API.md)
-* [详细 API Reference](../../docs/api/chart-advisor.md)
+* [快速接口文档](./API.zh-CN.md)
+* [详细 API Reference](../../../docs/api/chart-advisor.md)
 
 ## 贡献
 
