@@ -58,7 +58,7 @@ export function translate(term: ChartID | string): string {
     // treemap: 'TreeMap',
   };
 
-  return CHART_ID_TO_G2PLOT_TYPE_MAPPING[term as ChartID] || '';
+  return CHART_ID_TO_G2PLOT_TYPE_MAPPING[term as ChartID] || term;
 }
 
 export function createLayer(container: HTMLElement): HTMLDivElement {

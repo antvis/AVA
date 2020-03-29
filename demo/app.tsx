@@ -35,7 +35,7 @@ class App extends React.Component {
           title="expect: Pie"
         /> */}
 
-        <AutoChart data={DataSamples.ForChartType('stacked_bar_chart')} title="测试" description="测试" />
+        <AutoChart data={[]} title="测试" description="测试" />
 
         <AutoChart
           data={DataSamples.ForChartType('percent_stacked_bar_chart')}
