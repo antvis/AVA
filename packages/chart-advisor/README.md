@@ -14,7 +14,7 @@ Chart recommendation and based on dataset and analysis needs.
 
 </div>
 
-## Demo
+## Demo - autoChart
 
 ```html
 <div id="mountNode"></div>
