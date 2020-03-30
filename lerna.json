@@ -9,9 +9,8 @@
     "version": {
       "allowBranch": "master",
       "gitRemote": "upstream",
-      "commitHooks": false,
-      "push": false,
-      "gitTagVersion": false
+      "--no-push": true,
+      "--no-commit-hooks": true
     },
     "publish": {
       "registry": "https://registry.npmjs.org/"
@@ -22,5 +21,5 @@
       ]
     }
   },
-  "version": "0.1.3-alpha.21"
+  "version": "0.1.3-alpha.22"
 }
