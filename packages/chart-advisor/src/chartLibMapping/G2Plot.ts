@@ -1,5 +1,6 @@
-import { Channels } from './advisor';
-const MAP: { [type: string]: Channels } = {
+import { Mapping } from './index';
+
+const G2PLOT_MAPPING: Mapping = {
   line_chart: {
     x: 'xField',
     y: 'yField',
@@ -131,4 +132,4 @@ const MAP: { [type: string]: Channels } = {
   // wordcloud
 };
 
-export default MAP;
+export default G2PLOT_MAPPING;

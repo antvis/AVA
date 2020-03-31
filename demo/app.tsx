@@ -1,11 +1,11 @@
 import * as React from 'react';
 import AutoChart from './auto-chart';
-import { DataSamples } from './data-samples';
+// import { DataSamples } from './data-samples';
 class App extends React.Component {
   render() {
     return (
       <>
-        {/* <AutoChart
+        <AutoChart
           data={[
             { f1: '2019-01', f2: 100 },
             { f1: '2019-02', f2: 300 },
@@ -15,17 +15,17 @@ class App extends React.Component {
           title="expect: Line"
         />
 
-        <AutoChart
+        {/* <AutoChart
           data={[
             { f1: 'a', f2: 100 },
             { f1: 'b', f2: 300 },
-            { f1: 'c', f2: 340 },
+            { f1: 'c', f2: 430 },
             { f1: 'd', f2: 630 },
           ]}
           title="expect: Column"
-        />
+        /> */}
 
-        <AutoChart
+        {/* <AutoChart
           data={[
             { f1: 'a', f2: 70 },
             { f1: 'b', f2: 120 },
@@ -35,13 +35,13 @@ class App extends React.Component {
           title="expect: Pie"
         /> */}
 
-        <AutoChart data={[]} title="测试" description="测试" />
+        {/* <AutoChart data={[]} title="测试" description="测试" /> */}
 
-        <AutoChart
+        {/* <AutoChart
           data={DataSamples.ForChartType('percent_stacked_bar_chart')}
           purpose="Proportion"
           title="expect: Percentage Stacked Bar"
-        />
+        /> */}
 
         {/* <AutoChart data={DataSamples.ForChartType('line_chart')} title="expect: Line" />
         <AutoChart data={DataSamples.ForChartType('area_chart')} title="expect: Area" /> */}
