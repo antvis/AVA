@@ -4,6 +4,9 @@
 
 ```ts
 
+import * as DWAnalyzer from '@antv/dw-analyzer';
+import { LevelOfMeasurement } from '@antv/knowledge';
+
 // @public
 export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
@@ -25,11 +28,20 @@ export interface AutoChartOptions {
     toolbar?: boolean;
 }
 
+// @beta
+export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions): Advice[];
+
+// @beta
+export function dataToDataProps(data: any[]): FieldInfo[];
+
 // @public
 export interface Preferences {
     // (undocumented)
     canvasLayout: 'landscape' | 'portrait';
 }
+
+// @beta
+export function specToLibConfig(advice: Advice, libraryName: ChartLibrary): any;
 
 
 ```

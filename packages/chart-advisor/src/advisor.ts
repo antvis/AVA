@@ -2,6 +2,7 @@ import { CKBJson, LevelOfMeasurement as LOM, ChartID as ChartType } from '@antv/
 import Rules, { Rule, Preferences } from './rules';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { translate } from './util';
+import { ChartLibrary, getMappingForLib } from './chartLibMapping';
 
 const Wiki = CKBJson('en-US', true);
 
@@ -17,6 +18,9 @@ export interface Channels {
   size?: string;
 }
 
+/**
+ * @beta
+ */
 export interface Advice {
   type: string;
   channels: Channels;
@@ -45,7 +49,10 @@ export interface AdvisorOptions {
   description?: string;
 }
 
-interface FieldInfo extends DWAnalyzer.FieldInfo {
+/**
+ * @beta
+ */
+export interface FieldInfo extends DWAnalyzer.FieldInfo {
   name: string;
   levelOfMeasurements: LOM[];
 }
@@ -68,20 +75,15 @@ function intersects(array1: any[], array2: any[]): boolean {
   return array2.some((e) => array1.includes(e));
 }
 
-export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
-  console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
-  console.log(data);
-  console.log('🍯🍯🍯🍯🍯🍯 options 🍯🍯🍯🍯🍯🍯');
-  console.log(options);
+/**
+ * Return Data Properties of dataset.
+ * @beta
+ */
+export function dataToDataProps(data: any[]): FieldInfo[] {
+  const dataTypeInfos = DWAnalyzer.typeAll(data);
+  const dataProps: FieldInfo[] = [];
 
-  const purpose = options ? options.purpose : '';
-  const preferences = options ? options.preferences : undefined;
-
-  const datap = DWAnalyzer.typeAll(data);
-
-  const dataP: FieldInfo[] = [];
-
-  datap.forEach((info) => {
+  dataTypeInfos.forEach((info) => {
     const lom = [];
     if (DWAnalyzer.isNominal(info)) lom.push('Nominal');
     if (DWAnalyzer.isOrdinal(info)) lom.push('Ordinal');
@@ -92,11 +94,19 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     const newInfo: FieldInfo = { ...info, levelOfMeasurements: lom as LOM[] };
 
-    dataP.push(newInfo);
+    dataProps.push(newInfo);
   });
 
-  console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
-  console.log(dataP);
+  return dataProps;
+}
+
+/**
+ * Return Specification list of recommend charts from data properties.
+ * @beta
+ */
+export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions): Advice[] {
+  const purpose = options ? options.purpose : '';
+  const preferences = options ? options.preferences : undefined;
 
   const allTypes = Object.keys(Wiki) as ChartType[];
 
@@ -110,7 +120,7 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
     let hardScore = 1;
     Rules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(t as ChartType)).forEach(
       (hr: Rule) => {
-        const score = hr.check({ dataProps: dataP, chartType: t, purpose, preferences });
+        const score = hr.check({ dataProps, chartType: t, purpose, preferences });
         hardScore *= score;
 
         // console.log('H rule: ', hr.id, ' ; charttype: ', t);
@@ -122,7 +132,7 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
     let softScore = 0;
     Rules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(t as ChartType)).forEach(
       (sr: Rule) => {
-        const score = sr.check({ dataProps: dataP, chartType: t, purpose, preferences });
+        const score = sr.check({ dataProps, chartType: t, purpose, preferences });
         softScore += score;
 
         // console.log('S rule: ', sr.id, ' ; charttype: ', t);
@@ -140,8 +150,8 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
     const channels: Channels = {};
     // for Pie | Donut
     if (t === 'pie_chart' || t === 'donut_chart') {
-      const field4Color = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
-      const field4Angle = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const field4Angle = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4Angle && field4Color) {
         channels.color = field4Color.name;
@@ -153,9 +163,9 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Line
     if (t === 'line_chart' || t == 'step_line_chart') {
-      const field4X = dataP.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
-      const field4Y = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
-      const field4Color = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const field4X = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
+      const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
 
       if (field4Color) {
         channels.color = field4Color.name;
@@ -171,8 +181,8 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Area
     if (t === 'area_chart') {
-      const field4X = dataP.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
-      const field4Y = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4X = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
+      const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4X && field4Y) {
         channels.x = field4X.name;
@@ -184,13 +194,13 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Bar
     if (t === 'bar_chart') {
-      const nominalFields = dataP.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
       const sortedNominalFields = nominalFields.sort(compare);
 
       const field4Y = sortedNominalFields[0];
       const field4Color = sortedNominalFields[1];
 
-      const field4X = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4X = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4X && field4Y) {
         channels.y = field4Y.name;
@@ -205,13 +215,13 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Column
     if (t === 'column_chart') {
-      const nominalFields = dataP.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
       const sortedNominalFields = nominalFields.sort(compare);
 
       const field4X = sortedNominalFields[0];
       const field4Color = sortedNominalFields[1];
 
-      const field4Y = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4X && field4Y) {
         channels.y = field4Y.name;
@@ -226,13 +236,13 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for GroupedBar | StackedBar | PercentageStackedBar
     if (t === 'grouped_bar_chart' || t === 'stacked_bar_chart' || t === 'percent_stacked_bar_chart') {
-      const nominalFields = dataP.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
 
       const sortedNominalFields = nominalFields.sort(compare);
 
       const field4Y1 = sortedNominalFields[0];
       const field4Y2 = sortedNominalFields[1];
-      const field4X = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4X = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4Y1 && field4Y2 && field4X) {
         channels.y = field4Y1.name;
@@ -245,13 +255,13 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for GroupedColumn | StackedColumn | PercentageStackedColumn
     if (t === 'grouped_column_chart' || t === 'stacked_column_chart' || t === 'percent_stacked_column_chart') {
-      const nominalFields = dataP.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
 
       const sortedNominalFields = nominalFields.sort(compare);
 
       const field4X1 = sortedNominalFields[0];
       const field4X2 = sortedNominalFields[1];
-      const field4Y = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4X1 && field4X2 && field4Y) {
         channels.x = field4X1.name;
@@ -264,9 +274,9 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for StackedArea | PercentageStackedArea
     if (t === 'stacked_area_chart' || t === 'percent_stacked_area_chart') {
-      const field4X1 = dataP.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
-      const field4X2 = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
-      const field4Y = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4X1 = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
+      const field4X2 = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4X1 && field4X2 && field4Y) {
         channels.x = field4X1.name;
@@ -279,13 +289,13 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Radar
     if (t === 'radar_chart') {
-      const nominalFields = dataP.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
 
       const sortedNominalFields = nominalFields.sort(compare);
 
       const field4Angle = sortedNominalFields[0];
       const field4Series = sortedNominalFields[1];
-      const field4Radius = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4Radius = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4Angle && field4Series && field4Radius) {
         channels.angle = field4Angle.name;
@@ -298,14 +308,14 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Scatter
     if (t === 'scatter_plot') {
-      const intervalFields = dataP.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       const sortedIntervalFields = intervalFields.sort(compare);
 
       const field4X = sortedIntervalFields[0];
       const field4Y = sortedIntervalFields[1];
 
-      const field4Color = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
 
       if (field4X && field4Y) {
         channels.x = field4X.name;
@@ -320,7 +330,7 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Bubble
     if (t === 'bubble_chart') {
-      const intervalFields = dataP.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       const triple = {
         x: intervalFields[0],
@@ -344,7 +354,7 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
       const field4Y = triple.y;
       const field4Size = triple.size;
 
-      const field4Color = dataP.find((field) => intersects(field.levelOfMeasurements, ['Nominal']));
+      const field4Color = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Nominal']));
 
       if (field4X && field4Y && field4Size && field4Color) {
         channels.x = field4X.name;
@@ -358,7 +368,7 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for Histogram
     if (t === 'histogram') {
-      const field = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
       if (field) {
         channels.x = field.name;
       } else {
@@ -368,11 +378,11 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
 
     // for heatmap
     if (t === 'heatmap') {
-      const axisFields = dataP.filter((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal']));
+      const axisFields = dataProps.filter((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal']));
       const sortedFields = axisFields.sort(compare);
       const field4X = sortedFields[0];
       const field4Y = sortedFields[1];
-      const field4Color = dataP.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
       if (field4X && field4Y && field4Color) {
         channels.x = field4X.name;
@@ -408,4 +418,44 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
   console.log(resultList);
 
   return resultList;
+}
+
+/**
+ * Return Specification list of recommend charts from dataset.
+ * @todo rename it as `dataToSpecs` and export it
+ */
+export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
+  console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
+  console.log(data);
+  console.log('🍯🍯🍯🍯🍯🍯 options 🍯🍯🍯🍯🍯🍯');
+  console.log(options);
+
+  const dataProps = dataToDataProps(data);
+
+  console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
+  console.log(dataProps);
+
+  const adviceList: Advice[] = dataPropsToSpecs(dataProps, options);
+
+  return adviceList;
+}
+
+/**
+ * Return configs for specific charting library from advice.
+ * @beta
+ */
+export function specToLibConfig(advice: Advice, libraryName: ChartLibrary) {
+  const mapping = getMappingForLib(libraryName);
+  const { type, channels } = advice;
+
+  const configs: any = {};
+
+  for (const [key, value] of Object.entries(channels)) {
+    const channel = mapping[type][key as keyof Channels];
+    if (channel) {
+      configs[channel] = value;
+    }
+  }
+
+  return configs;
 }

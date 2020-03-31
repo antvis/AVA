@@ -133,10 +133,6 @@ export class ConfigPanel {
    */
   changeType() {
     const { type } = this.plotInst;
-    console.log('config type-----');
-    console.log(type);
-    // @ts-ignore
-    console.log(translate(type));
     if (type)
       this.iframe.src = `${PATH_PREFIX}/config-panel.html?type=${translate(type)}&cancopydata=${this.needCopyData}`;
   }

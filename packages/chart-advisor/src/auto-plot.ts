@@ -1,7 +1,6 @@
-import { AdvisorOptions, Advice, analyze, Channels } from './advisor';
+import { AdvisorOptions, Advice, analyze, specToLibConfig } from './advisor';
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
-import MAP from './channels';
 import { uuid, translate, createLayer, DEFAULT_FEEDBACK } from './util';
 
 export interface Configs {
@@ -18,14 +17,7 @@ export interface Configs {
  * @param configs - 配置
  */
 function getConfig(advice: Advice, { title, theme, description, data }: Configs): any {
-  const { type, channels } = advice;
-  const configs: any = {};
-  for (const [key, value] of Object.entries(channels)) {
-    const channel = MAP[type][key as keyof Channels];
-    if (channel) {
-      configs[channel] = value;
-    }
-  }
+  const configs: any = { ...specToLibConfig(advice, 'G2Plot') };
   if (title) configs.title = { visible: true, text: title };
   if (description) configs.description = { visible: true, text: description };
   return { ...configs, theme, data };
