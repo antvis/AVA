@@ -71,6 +71,4 @@ import * as DWAnalyzer from '@antv/dw-analyzer';
 const dataPropSchema = DWAnalyzer.typeAll(dataset);
 ```
 
-
-
-
+and then add levelOfMeasurements to it.
