@@ -1,5 +1,6 @@
 import * as React from 'react';
 import AutoChart from './auto-chart';
+// import { DataSamples } from './data-samples';
 
 export function AutoChartTest() {
   return (

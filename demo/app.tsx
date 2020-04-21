@@ -3,8 +3,6 @@ import { AutoChartTest } from './AutoChartTest';
 import { PipelineTest } from './PipelineTest';
 import { FindInsightTest } from './FindInsightTest';
 
-// import { DataSamples } from './data-samples';
-
 type TestType = 'autoChart' | 'pipeline' | 'insights';
 
 interface TestState {
@@ -15,7 +13,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     this.state = {
-      test: 'autoChart',
+      test: 'pipeline',
     };
   }
 
