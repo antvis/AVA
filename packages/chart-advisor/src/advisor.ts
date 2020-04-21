@@ -1,4 +1,4 @@
-import { CKBJson, LevelOfMeasurement as LOM, ChartID as ChartType } from '@antv/knowledge';
+import { CKBJson, LevelOfMeasurement as LOM, ChartID } from '@antv/knowledge';
 import Rules, { Rule, Preferences } from './rules';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { translate } from './util';
@@ -25,7 +25,7 @@ export interface Channels {
  * @beta
  */
 export interface Advice {
-  type: string;
+  type: ChartID;
   channels: Channels;
   score: number;
 }
@@ -111,7 +111,7 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
 
-  const allTypes = Object.keys(Wiki) as ChartType[];
+  const allTypes = Object.keys(Wiki) as ChartID[];
 
   const list: Advice[] = allTypes.map((t) => {
     // anaylze score
@@ -121,7 +121,7 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
     const record: Record<string, number> = {};
 
     let hardScore = 1;
-    Rules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(t as ChartType)).forEach(
+    Rules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(t as ChartID)).forEach(
       (hr: Rule) => {
         const score = hr.check({ dataProps, chartType: t, purpose, preferences });
         hardScore *= score;
@@ -133,7 +133,7 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
     );
 
     let softScore = 0;
-    Rules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(t as ChartType)).forEach(
+    Rules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(t as ChartID)).forEach(
       (sr: Rule) => {
         const score = sr.check({ dataProps, chartType: t, purpose, preferences });
         softScore += score;
@@ -448,17 +448,28 @@ export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
  * @beta
  */
 export function specToLibConfig(advice: Advice, libraryName: ChartLibrary) {
-  const mapping = getMappingForLib(libraryName);
+  const { typeMapping, configMapping } = getMappingForLib(libraryName);
   const { type, channels } = advice;
+
+  const libConfig: any = {};
+
+  if (type && typeMapping[type]) {
+    libConfig.type = typeMapping[type];
+  }
 
   const configs: any = {};
 
   for (const [key, value] of Object.entries(channels)) {
-    const channel = mapping[type][key as keyof Channels];
-    if (channel) {
-      configs[channel] = value;
+    const configMapForType = configMapping[type];
+    if (configMapForType) {
+      const channel = configMapForType[key as keyof Channels];
+      if (channel) {
+        configs[channel] = value;
+      }
     }
   }
 
-  return configs;
+  libConfig.configs = configs;
+
+  return libConfig;
 }

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DataSamples } from './data-samples';
-import { dataToDataProps, dataPropsToSpecs, specToLibConfig } from '../packages/chart-advisor';
+import { dataToDataProps, dataPropsToSpecs, specToLibConfig } from '../packages/chart-advisor/src/index';
 
 function prettyJSON(json: any) {
   return JSON.stringify(
@@ -61,7 +61,7 @@ export function PipelineTest() {
 
   const dataProps = dataToDataProps(datasample);
   const specs = dataPropsToSpecs(dataProps);
-  const libConfigs = specs.map((spec) => specToLibConfig(spec, 'G2Plot')).filter((e) => Object.keys(e).length > 0);
+  const libConfigs = specs.map((spec) => specToLibConfig(spec, 'G2Plot')).filter((e) => e.type && e.configs);
 
   const dataInJSON = (
     <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
