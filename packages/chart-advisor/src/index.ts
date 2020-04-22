@@ -36,3 +36,15 @@ export async function autoChart(
 }
 
 export { AutoChartOptions, Preferences };
+
+export {
+  dataToDataProps,
+  dataPropsToSpecs,
+  specToLibConfig,
+  FieldInfo,
+  Advice,
+  AdvisorOptions,
+  Channels,
+} from './advisor';
+
+export { ChartLibrary } from './chartLibMapping';

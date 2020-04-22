@@ -4,6 +4,27 @@
 
 ```ts
 
+import * as DWAnalyzer from '@antv/dw-analyzer';
+import { LevelOfMeasurement } from '@antv/knowledge';
+
+// @beta (undocumented)
+export interface Advice {
+    // (undocumented)
+    channels: Channels;
+    // (undocumented)
+    score: number;
+    // (undocumented)
+    type: string;
+}
+
+// @public (undocumented)
+export interface AdvisorOptions {
+    description?: string;
+    preferences?: Preferences;
+    purpose?: string;
+    title?: string;
+}
+
 // @public
 export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
@@ -25,11 +46,53 @@ export interface AutoChartOptions {
     toolbar?: boolean;
 }
 
+// @beta (undocumented)
+export interface Channels {
+    // (undocumented)
+    angle?: string;
+    // (undocumented)
+    color?: string;
+    // (undocumented)
+    radius?: string;
+    // (undocumented)
+    series?: string;
+    // (undocumented)
+    size?: string;
+    // (undocumented)
+    x?: string;
+    // (undocumented)
+    x2?: string;
+    // (undocumented)
+    y?: string;
+    // (undocumented)
+    y2?: string;
+}
+
+// @beta (undocumented)
+export type ChartLibrary = 'G2Plot' | 'antdCharts';
+
+// @beta
+export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions): Advice[];
+
+// @beta
+export function dataToDataProps(data: any[]): FieldInfo[];
+
+// @beta (undocumented)
+export interface FieldInfo extends DWAnalyzer.FieldInfo {
+    // (undocumented)
+    levelOfMeasurements: LevelOfMeasurement[];
+    // (undocumented)
+    name: string;
+}
+
 // @public
 export interface Preferences {
     // (undocumented)
     canvasLayout: 'landscape' | 'portrait';
 }
+
+// @beta
+export function specToLibConfig(advice: Advice, libraryName: ChartLibrary): any;
 
 
 ```
