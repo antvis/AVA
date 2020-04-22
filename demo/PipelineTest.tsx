@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useRef, useEffect } from 'react';
+import * as G2Plot from '@antv/g2plot';
 import { DataSamples } from './data-samples';
 import { dataToDataProps, dataPropsToSpecs, specToLibConfig } from '../packages/chart-advisor/src/index';
 
@@ -63,6 +64,18 @@ export function PipelineTest() {
   const specs = dataPropsToSpecs(dataProps);
   const libConfigs = specs.map((spec) => specToLibConfig(spec, 'G2Plot')).filter((e) => e.type && e.configs);
 
+  const { type, configs } = libConfigs[0];
+  // @ts-ignore
+  const ChartConstructor = G2Plot[type];
+  const chartdom = useRef(null);
+  useEffect(() => {
+    const chart = new ChartConstructor(chartdom.current, {
+      data: datasample,
+      ...configs,
+    });
+    chart.render();
+  });
+
   const dataInJSON = (
     <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
       <h3>Data in JSON</h3>
@@ -111,6 +124,11 @@ export function PipelineTest() {
           console.log(libConfigs);
           return `check console for '📝 libConfigs'`;
         })}
+      </div>
+      {/* chart */}
+      <div>
+        <h3>chart top1</h3>
+        <div ref={chartdom}></div>
       </div>
     </>
   );

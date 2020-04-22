@@ -17,7 +17,7 @@ export interface Configs {
  * @param configs - 配置
  */
 function getConfig(advice: Advice, { title, theme, description, data }: Configs): any {
-  const configs: any = { ...specToLibConfig(advice, 'G2Plot') };
+  const configs: any = { ...specToLibConfig(advice, 'G2Plot').configs };
   if (title) configs.title = { visible: true, text: title };
   if (description) configs.description = { visible: true, text: description };
   return { ...configs, theme, data };
