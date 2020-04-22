@@ -4,6 +4,7 @@
 
 ```ts
 
+import { ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { LevelOfMeasurement } from '@antv/knowledge';
 
@@ -14,7 +15,7 @@ export interface Advice {
     // (undocumented)
     score: number;
     // (undocumented)
-    type: string;
+    type: ChartID;
 }
 
 // @public (undocumented)
