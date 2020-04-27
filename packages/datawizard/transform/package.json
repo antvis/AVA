@@ -6,7 +6,6 @@
     "lib",
     "dist"
   ],
-  "private": true,
   "main": "lib/index.js",
   "module": "es/index.js",
   "typings": "typings/dw-transfrom.d.ts",
