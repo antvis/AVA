@@ -2,44 +2,44 @@ import { aggregate } from '../src';
 import { RowData } from '../src/util/helper';
 
 const rows: RowData[] = [
-  { count: 1, type: 'A' },
-  { count: 3, type: 'B' },
-  { count: 4, type: 'B' },
-  { count: 9, type: 'A' },
-  { count: 8, type: 'B' },
-  { count: 1, type: 'A' },
-  { count: 2, type: 'A' },
-  { count: 5, type: 'C' },
-  { count: 0, type: 'A' },
-  { count: 7, type: 'C' },
+  { quantity: 1, type: 'A' },
+  { quantity: 3, type: 'B' },
+  { quantity: 4, type: 'B' },
+  { quantity: 9, type: 'A' },
+  { quantity: 8, type: 'B' },
+  { quantity: 1, type: 'A' },
+  { quantity: 2, type: 'A' },
+  { quantity: 5, type: 'C' },
+  { quantity: 0, type: 'A' },
+  { quantity: 7, type: 'C' },
 ];
 
 test('aggregate', () => {
   expect(
     aggregate(rows, {
       groupBy: 'type',
-      as: ['count'],
+      as: ['quantity'],
       op: ['count'],
     })
   ).toEqual([
-    { count: 5, type: 'A' },
-    { count: 3, type: 'B' },
-    { count: 2, type: 'C' },
+    { quantity: 5, type: 'A' },
+    { quantity: 3, type: 'B' },
+    { quantity: 2, type: 'C' },
   ]);
 });
 
 test('aggregate', () => {
   expect(
     aggregate(rows, {
-      fields: ['count'],
+      fields: ['quantity'],
       groupBy: 'type',
-      as: ['sum'],
+      as: ['quantity_sum'],
       op: ['sum'],
     })
   ).toEqual([
-    { sum: 13, count: 1, type: 'A' },
-    { sum: 15, count: 3, type: 'B' },
-    { sum: 12, count: 5, type: 'C' },
+    { quantity_sum: 13, quantity: 1, type: 'A' },
+    { quantity_sum: 15, quantity: 3, type: 'B' },
+    { quantity_sum: 12, quantity: 5, type: 'C' },
   ]);
 });
 

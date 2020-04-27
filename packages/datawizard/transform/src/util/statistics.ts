@@ -1,6 +1,7 @@
 export {
   sum,
   average,
+  average as avg,
   mean,
   min,
   max,
@@ -19,6 +20,7 @@ export function count(rows: any[]): number {
 export function distinct(rows: any[]): number {
   return Array.from(new Set(rows)).length;
 }
+export { distinct as countd };
 
 export function valid(rows: any[]): number {
   return rows.length - rows.filter((item: any) => [null, undefined, NaN].includes(item)).length;
@@ -31,6 +33,7 @@ export function valid(rows: any[]): number {
 export type Operations =
   | 'sum'
   | 'average'
+  | 'avg' // equals to 'average'
   | 'mean'
   | 'min'
   | 'max'
@@ -42,4 +45,5 @@ export type Operations =
   | 'product'
   | 'count'
   | 'distinct'
+  | 'countd' // equals to 'distinct'
   | 'valid';
