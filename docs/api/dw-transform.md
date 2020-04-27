@@ -11,12 +11,14 @@ data transfroms
 |  Function | Description |
 |  --- | --- |
 |  [aggregate(rows, options)](./dw-transform.aggregate.md) |  |
+|  [parse(data, schemas)](./dw-transform.parse.md) | <b><i>(BETA)</i></b> |
 
 ## Interfaces
 
 |  Interface | Description |
 |  --- | --- |
 |  [AggregateParams](./dw-transform.aggregateparams.md) |  |
+|  [TransformSchema](./dw-transform.transformschema.md) | <b><i>(BETA)</i></b> |
 
 ## Type Aliases
 

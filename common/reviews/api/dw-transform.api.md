@@ -4,6 +4,21 @@
 
 ```ts
 
+// @beta (undocumented)
+export interface Action {
+    // (undocumented)
+    as: string | null;
+    // (undocumented)
+    field: string | null;
+    // (undocumented)
+    options?: FillNullOptions;
+    // (undocumented)
+    type: ActionType;
+}
+
+// @beta (undocumented)
+export type ActionType = AggregationType | ConversionType | FillType;
+
 // @public (undocumented)
 export function aggregate(rows: RowData[], options: AggregateParams): RowData[];
 
@@ -19,11 +34,72 @@ export interface AggregateParams {
     op: Operations[];
 }
 
+// @beta (undocumented)
+export const AGGREGATION: ["sum", "max", "min", "average", "avg", "median", "count", "distinct", "countd"];
+
+// @beta (undocumented)
+export type AggregationType = typeof AGGREGATION[number];
+
+// @beta (undocumented)
+export const CONVERSION: ["toString", "toFloat", "toInt"];
+
+// @beta (undocumented)
+export type ConversionType = typeof CONVERSION[number];
+
+// @beta (undocumented)
+export const FILL: ["fillNull", "removeNull"];
+
+// @beta (undocumented)
+export type FillNullOptions = FillNullOptionsBySmart | FillNullOptionsByAgg | FillNullOptionsByValue;
+
+// @beta (undocumented)
+export interface FillNullOptionsByAgg {
+    // (undocumented)
+    cfg: {
+        agg: AggregationType;
+    };
+    // (undocumented)
+    type: Extract<FillNullType, 'byAgg'>;
+}
+
+// @beta (undocumented)
+export interface FillNullOptionsBySmart {
+    // (undocumented)
+    type: Extract<FillNullType, 'bySmart'>;
+}
+
+// @beta (undocumented)
+export interface FillNullOptionsByValue {
+    // (undocumented)
+    cfg: {
+        value: string | number;
+    };
+    // (undocumented)
+    type: Extract<FillNullType, 'byValue'>;
+}
+
+// @beta (undocumented)
+export type FillNullType = 'bySmart' | 'byAgg' | 'byValue';
+
+// @beta (undocumented)
+export type FillType = typeof FILL[number];
+
 // @public
-export type Operations = 'sum' | 'average' | 'mean' | 'min' | 'max' | 'median' | 'variance' | 'stdevp' | 'stdev' | 'mode' | 'product' | 'count' | 'distinct' | 'valid';
+export type Operations = 'sum' | 'average' | 'avg' | 'mean' | 'min' | 'max' | 'median' | 'variance' | 'stdevp' | 'stdev' | 'mode' | 'product' | 'count' | 'distinct' | 'countd' | 'valid';
+
+// @beta (undocumented)
+export function parse(data: RowData[], schemas: TransformSchema | TransformSchema[]): RowData[];
 
 // @public
 export type RowData = Record<string, any>;
+
+// @beta (undocumented)
+export interface TransformSchema {
+    // (undocumented)
+    actions: Action[];
+    // (undocumented)
+    groupBy?: string[];
+}
 
 
 ```

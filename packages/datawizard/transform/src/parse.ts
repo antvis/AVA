@@ -6,33 +6,72 @@ import { oneMoreValue } from './smartMock';
 
 const tuple = <T extends string[]>(...args: T) => args;
 
-const AGGREGATION = tuple('sum', 'max', 'min', 'average', 'avg', 'median', 'count', 'distinct', 'countd');
-type AggregationType = typeof AGGREGATION[number];
+/**
+ * @beta
+ */
+export const AGGREGATION = tuple('sum', 'max', 'min', 'average', 'avg', 'median', 'count', 'distinct', 'countd');
 
-const CONVERSION = tuple('toString', 'toFloat', 'toInt');
-type ConversionType = typeof CONVERSION[number];
+/**
+ * @beta
+ */
+export type AggregationType = typeof AGGREGATION[number];
 
-const FILL = tuple('fillNull', 'removeNull');
-type FillType = typeof FILL[number];
+/**
+ * @beta
+ */
+export const CONVERSION = tuple('toString', 'toFloat', 'toInt');
 
-type FillNullType = 'bySmart' | 'byAgg' | 'byValue';
+/**
+ * @beta
+ */
+export type ConversionType = typeof CONVERSION[number];
 
-interface FillNullOptionsBySmart {
+/**
+ * @beta
+ */
+export const FILL = tuple('fillNull', 'removeNull');
+
+/**
+ * @beta
+ */
+export type FillType = typeof FILL[number];
+
+/**
+ * @beta
+ */
+export type FillNullType = 'bySmart' | 'byAgg' | 'byValue';
+
+/**
+ * @beta
+ */
+export interface FillNullOptionsBySmart {
   type: Extract<FillNullType, 'bySmart'>;
 }
-interface FillNullOptionsByAgg {
+
+/**
+ * @beta
+ */
+export interface FillNullOptionsByAgg {
   type: Extract<FillNullType, 'byAgg'>;
   cfg: {
     agg: AggregationType;
   };
 }
-interface FillNullOptionsByValue {
+
+/**
+ * @beta
+ */
+export interface FillNullOptionsByValue {
   type: Extract<FillNullType, 'byValue'>;
   cfg: {
     value: string | number;
   };
 }
-type FillNullOptions = FillNullOptionsBySmart | FillNullOptionsByAgg | FillNullOptionsByValue;
+
+/**
+ * @beta
+ */
+export type FillNullOptions = FillNullOptionsBySmart | FillNullOptionsByAgg | FillNullOptionsByValue;
 
 export function isFillNullOptionsBySmart(options: any): options is FillNullOptionsBySmart {
   return options.type === 'bySmart';
@@ -44,8 +83,14 @@ export function isFillNullOptionsByValue(options: any): options is FillNullOptio
   return options.type === 'byValue';
 }
 
+/**
+ * @beta
+ */
 export type ActionType = AggregationType | ConversionType | FillType;
 
+/**
+ * @beta
+ */
 export interface Action {
   type: ActionType;
   field: string | null;
@@ -53,6 +98,9 @@ export interface Action {
   options?: FillNullOptions;
 }
 
+/**
+ * @beta
+ */
 export interface TransformSchema {
   groupBy?: string[];
   actions: Action[];
@@ -198,6 +246,9 @@ function parseSingleSchema(data: RowData[], schema: TransformSchema): RowData[] 
   return result;
 }
 
+/**
+ * @beta
+ */
 export function parse(data: RowData[], schemas: TransformSchema | TransformSchema[]): RowData[] {
   let result = data;
   const schemaArray = Array.isArray(schemas) ? schemas : [schemas];
