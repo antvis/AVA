@@ -61,7 +61,7 @@ export function isOrdinal(info: FieldInfo): boolean;
 export function isTime(info: FieldInfo): boolean;
 
 // @public
-export function isUinque(info: FieldInfo): boolean;
+export function isUnique(info: FieldInfo): boolean;
 
 // @public
 export interface NumberFieldInfo extends FieldInfo {

@@ -30,7 +30,7 @@ Analysis field type
 |  [isNominal(info)](./dw-analyzer.isnominal.md) | Checks if field is a nominal |
 |  [isOrdinal(info)](./dw-analyzer.isordinal.md) | Checks if field is an ordinal |
 |  [isTime(info)](./dw-analyzer.istime.md) | Checks if field is a time |
-|  [isUinque(info)](./dw-analyzer.isuinque.md) | Checks if field is an uinque |
+|  [isUnique(info)](./dw-analyzer.isunique.md) | Checks if field is an unique |
 |  [pearson(info1, info2)](./dw-analyzer.pearson.md) | Return the Pearson CorrelationCoefficient of two Field |
 |  [type(array)](./dw-analyzer.type.md) | Analysis field type |
 |  [typeAll(array, fields)](./dw-analyzer.typeall.md) | Analyze the type of all fields in an array |
