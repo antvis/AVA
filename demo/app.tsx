@@ -2,8 +2,18 @@ import * as React from 'react';
 import { AutoChartTest } from './AutoChartTest';
 import { PipelineTest } from './PipelineTest';
 import { FindInsightTest } from './FindInsightTest';
+import { DataTransformTest } from './DataTransformTest';
 
-type TestType = 'autoChart' | 'pipeline' | 'insights';
+const tuple = <T extends string[]>(...args: T) => args;
+
+const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform');
+type TestType = typeof TESTS[number];
+const testComponents: Record<TestType, any> = {
+  autoChart: <AutoChartTest />,
+  pipeline: <PipelineTest />,
+  insights: <FindInsightTest />,
+  dataTransform: <DataTransformTest />,
+};
 
 interface TestState {
   test: TestType;
@@ -13,7 +23,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     this.state = {
-      test: 'pipeline',
+      test: 'dataTransform',
     };
   }
 
@@ -28,30 +38,17 @@ class App extends React.Component<{}, TestState> {
     const nav = (
       <nav>
         <ul>
-          <li
-            onClick={() => {
-              this.setTest('autoChart');
-            }}
-            style={{ color: `${test === 'autoChart' ? 'blue' : 'black'}` }}
-          >
-            autoChart
-          </li>
-          <li
-            onClick={() => {
-              this.setTest('pipeline');
-            }}
-            style={{ color: `${test === 'pipeline' ? 'blue' : 'black'}` }}
-          >
-            pipeline
-          </li>
-          <li
-            onClick={() => {
-              this.setTest('insights');
-            }}
-            style={{ color: `${test === 'insights' ? 'blue' : 'black'}` }}
-          >
-            insights
-          </li>
+          {TESTS.map((t, index) => (
+            <li
+              key={index}
+              onClick={() => {
+                this.setTest(t);
+              }}
+              style={{ color: `${test === t ? 'blue' : 'black'}` }}
+            >
+              {`${t}`}
+            </li>
+          ))}
         </ul>
       </nav>
     );
@@ -59,9 +56,7 @@ class App extends React.Component<{}, TestState> {
     return (
       <>
         {nav}
-        {test === 'autoChart' ? <AutoChartTest /> : null}
-        {test === 'pipeline' ? <PipelineTest /> : null}
-        {test === 'insights' ? <FindInsightTest /> : null}
+        {testComponents[test]}
       </>
     );
   }

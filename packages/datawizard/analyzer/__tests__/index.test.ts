@@ -1,7 +1,7 @@
 import {
   type,
   typeAll,
-  isUinque,
+  isUnique,
   isOrdinal,
   isTime,
   isConst,
@@ -59,7 +59,7 @@ test('analyze intege', () => {
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
   expect(info.stdev.toFixed(4)).toBe('2.8723');
-  expect(isUinque(info)).toBe(true);
+  expect(isUnique(info)).toBe(true);
   expect(info.count).toBe(10);
   expect(info.distinct).toBe(10);
   expect(info.missing).toBe(0);
@@ -76,7 +76,7 @@ test('analyze string integer', () => {
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
   expect(info.stdev.toFixed(4)).toBe('2.8723');
-  expect(isUinque(info)).toBe(true);
+  expect(isUnique(info)).toBe(true);
   expect(info.count).toBe(10);
   expect(info.distinct).toBe(10);
   expect(info.missing).toBe(0);
@@ -261,7 +261,7 @@ test('test isOrdinal ', () => {
 });
 
 test('test is xxx', () => {
-  expect(isUinque(type([1, 2, 3, 4, 5, 6, 7, 8]))).toBe(true);
+  expect(isUnique(type([1, 2, 3, 4, 5, 6, 7, 8]))).toBe(true);
   expect(isTime(type(['1999', '2000', '2001', '2002', '2003', '2004', '2005']))).toBe(true);
   expect(isConst(type([1, 1, 1, 1, 1]))).toBe(true);
   expect(isContinuous(type([1.2, 2, 3, 4, 5, 6, 7]))).toBe(true);

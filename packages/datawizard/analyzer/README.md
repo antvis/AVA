@@ -52,7 +52,7 @@ console.log(fieldInfo);
 ### Analyzer Multiple Fields
 
 ```typescript
-import { typeAll, isUinque } from '@antv/dw-analyzer';
+import { typeAll, isUnique } from '@antv/dw-analyzer';
 const data = [
   { x: 1, y: 1, z: 1 },
   { x: 2, y: 4, z: 4 },
@@ -63,7 +63,7 @@ const data = [
 
 const fieldInfo = typeAll(data);
 
-console.log(isUinque(info.fields.x));
+console.log(isUnique(info.fields.x));
 // true
 
 console.log(fieldInfo);
@@ -129,12 +129,12 @@ const fieldInfo = type(data);
 ### String
 
 ```typescript
-import { type, isUinque } from '@antv/dw-analyzer';
+import { type, isUnique } from '@antv/dw-analyzer';
 const data = ['A', 'B', '', 'D', 'EAT'];
 
 const fieldInfo = type(data);
 
-console.log(isUinque(fieldInfo));
+console.log(isUnique(fieldInfo));
 // false beacuase of the empty value
 
 console.log(fieldInfo);

@@ -54,7 +54,7 @@ console.log(fieldInfo);
 多字段会计算数字类(integer/float)字段的 Pearson 相关系数
 
 ```typescript
-import { typeAll, isUinque } from '@antv/dw-analyzer';
+import { typeAll, isUnique } from '@antv/dw-analyzer';
 
 const data = [
   { x: 1, y: 1, z: 1 },
@@ -66,7 +66,7 @@ const data = [
 
 const fieldInfo = typeAll(data);
 
-console.log(isUinque(info.fields.x));
+console.log(isUnique(info.fields.x));
 // true
 
 console.log(fieldInfo);
@@ -132,12 +132,12 @@ console.log(fieldInfo);
 ### String
 
 ```typescript
-import { type, isUinque } from '@antv/dw-analyzer';
+import { type, isUnique } from '@antv/dw-analyzer';
 const data = ['A', 'B', '', 'D', 'EAT'];
 
 const fieldInfo = type(data);
 
-console.log(isUinque(fieldInfo));
+console.log(isUnique(fieldInfo));
 // false 有空值
 
 console.log(fieldInfo);

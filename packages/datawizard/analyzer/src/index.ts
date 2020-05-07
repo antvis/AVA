@@ -380,11 +380,11 @@ export function isConst(info: FieldInfo): boolean {
 }
 
 /**
- * Checks if field is an uinque
+ * Checks if field is an unique
  * @param info - The {@link FieldInfo} to processs
  * @public
  */
-export function isUinque(info: FieldInfo): boolean {
+export function isUnique(info: FieldInfo): boolean {
   return info.distinct === info.count;
 }
 
