@@ -28,3 +28,5 @@ export {
   FILL,
   FillType,
 } from './parse';
+
+export { autoTransform, AutoTransformResult } from './autoTransform';

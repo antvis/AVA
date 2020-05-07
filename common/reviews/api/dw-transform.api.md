@@ -41,6 +41,17 @@ export const AGGREGATION: ["sum", "max", "min", "average", "avg", "median", "cou
 export type AggregationType = typeof AGGREGATION[number];
 
 // @beta (undocumented)
+export function autoTransform(data: RowData[]): AutoTransformResult;
+
+// @beta (undocumented)
+export interface AutoTransformResult {
+    // (undocumented)
+    result: RowData;
+    // (undocumented)
+    schemas: TransformSchema[];
+}
+
+// @beta (undocumented)
 export const CONVERSION: ["toString", "toFloat", "toInt"];
 
 // @beta (undocumented)

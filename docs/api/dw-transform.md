@@ -17,13 +17,31 @@ data transfroms
 
 |  Interface | Description |
 |  --- | --- |
+|  [Action](./dw-transform.action.md) | <b><i>(BETA)</i></b> |
 |  [AggregateParams](./dw-transform.aggregateparams.md) |  |
+|  [FillNullOptionsByAgg](./dw-transform.fillnulloptionsbyagg.md) | <b><i>(BETA)</i></b> |
+|  [FillNullOptionsBySmart](./dw-transform.fillnulloptionsbysmart.md) | <b><i>(BETA)</i></b> |
+|  [FillNullOptionsByValue](./dw-transform.fillnulloptionsbyvalue.md) | <b><i>(BETA)</i></b> |
 |  [TransformSchema](./dw-transform.transformschema.md) | <b><i>(BETA)</i></b> |
+
+## Variables
+
+|  Variable | Description |
+|  --- | --- |
+|  [AGGREGATION](./dw-transform.aggregation.md) | <b><i>(BETA)</i></b> |
+|  [CONVERSION](./dw-transform.conversion.md) | <b><i>(BETA)</i></b> |
+|  [FILL](./dw-transform.fill.md) | <b><i>(BETA)</i></b> |
 
 ## Type Aliases
 
 |  Type Alias | Description |
 |  --- | --- |
+|  [ActionType](./dw-transform.actiontype.md) | <b><i>(BETA)</i></b> |
+|  [AggregationType](./dw-transform.aggregationtype.md) | <b><i>(BETA)</i></b> |
+|  [ConversionType](./dw-transform.conversiontype.md) | <b><i>(BETA)</i></b> |
+|  [FillNullOptions](./dw-transform.fillnulloptions.md) | <b><i>(BETA)</i></b> |
+|  [FillNullType](./dw-transform.fillnulltype.md) | <b><i>(BETA)</i></b> |
+|  [FillType](./dw-transform.filltype.md) | <b><i>(BETA)</i></b> |
 |  [Operations](./dw-transform.operations.md) | aggregate operation |
 |  [RowData](./dw-transform.rowdata.md) | 数据行 |
 
