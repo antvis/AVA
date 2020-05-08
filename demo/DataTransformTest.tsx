@@ -1,23 +1,9 @@
 import React, { useRef, useEffect } from 'react';
-import { prettyJSON, JSONToTable } from './utils';
+import { dataInJSON, dataInTable } from './utils';
 import { autoChart } from '../packages/chart-advisor/src';
 import { autoTransform } from '../packages/datawizard/transform/src';
 
 export function DataTransformTest() {
-  const dataInJSON = (data: any) => (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
-      <h4>Data in JSON</h4>
-      <textarea style={{ height: '100%', overflowY: 'scroll' }} defaultValue={prettyJSON(data)} />
-    </div>
-  );
-
-  const dataInTable = (data: any) => (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
-      <h4>Data in Table</h4>
-      <div style={{ height: '100%', overflowY: 'scroll' }}>{JSONToTable(data)}</div>
-    </div>
-  );
-
   const datasample = [
     { name: 'Alice', gender: 'Male', height: 180 },
     { name: 'Bob', gender: 'Female', height: 165 },
@@ -66,7 +52,9 @@ export function DataTransformTest() {
         {dataInTable(aggChosenColumns)}
         <div style={{ width: '30%' }} ref={chartdom3}></div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-evenly', height: '200px' }}>{dataInJSON(schemas)}</div>
+      <div style={{ display: 'flex', justifyContent: 'space-evenly', height: '200px' }}>
+        {dataInJSON(schemas, 'Schema')}
+      </div>
     </>
   );
 }

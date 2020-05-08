@@ -53,3 +53,17 @@ export function JSONToTable(jsonArray: any) {
     </table>
   );
 }
+
+export const dataInJSON = (data: any, title = 'Data in JSON') => (
+  <div style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
+    <h4>{title}</h4>
+    <textarea style={{ height: '100%', overflowY: 'scroll' }} defaultValue={prettyJSON(data)} />
+  </div>
+);
+
+export const dataInTable = (data: any, title = 'Data in Table') => (
+  <div style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
+    <h4>{title}</h4>
+    <div style={{ height: '100%', overflowY: 'scroll' }}>{JSONToTable(data)}</div>
+  </div>
+);

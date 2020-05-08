@@ -23,7 +23,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     this.state = {
-      test: 'dataTransform',
+      test: 'insights',
     };
   }
 

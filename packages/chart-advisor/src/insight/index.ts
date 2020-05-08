@@ -113,7 +113,7 @@ class CorrelationInsightWorker extends InsightWorker {
           ['integer', 'float'].includes(columnProps[i].type as TypeSpecifics) &&
           columnProps[j].type !== null &&
           ['integer', 'float'].includes(columnProps[j].type as TypeSpecifics) &&
-          pearsonCorr(columns[i] as number[], columns[j] as number[]) > THRESHOLD
+          Math.abs(pearsonCorr(columns[i] as number[], columns[j] as number[])) > THRESHOLD
         ) {
           insights.push({
             type: 'Correlation',
