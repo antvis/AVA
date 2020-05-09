@@ -1,5 +1,4 @@
-import { RowData } from '@antv/dw-transform/typings/dw-transform';
-// import { RowData } from '@antv/dw-transform';
+import { RowData } from '@antv/dw-transform';
 import { type as typeAnalyze, TypeSpecifics } from '@antv/dw-analyzer';
 
 const tuple = <T extends string[]>(...args: T) => args;
