@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { AutoChartTest } from './AutoChartTest';
 import { PipelineTest } from './PipelineTest';
-import { FindInsightTest } from './FindInsightTest';
+import { FindInsightTest } from './FindInsightTest/index';
 import { DataTransformTest } from './DataTransformTest';
 
 const tuple = <T extends string[]>(...args: T) => args;

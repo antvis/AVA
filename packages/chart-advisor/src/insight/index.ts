@@ -1,6 +1,7 @@
 import { RowData } from '@antv/dw-transform/typings/dw-transform';
 // import { RowData } from '@antv/dw-transform';
 import { type as typeAnalyze, TypeSpecifics } from '@antv/dw-analyzer';
+import { Insight } from 'visual-insights';
 
 const tuple = <T extends string[]>(...args: T) => args;
 
@@ -146,3 +147,8 @@ export function insightsFromData(data: RowData[]): Insight[] {
 
   return allInsights;
 }
+
+// todo: use Insight.IntentionWorkerCollection to register custom workers.
+const getInsightSpaces = Insight.getVisSpaces;
+
+export { getInsightSpaces };

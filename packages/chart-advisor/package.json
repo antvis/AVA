@@ -25,7 +25,8 @@
     "@antv/g2plot": "^0.11.35",
     "@antv/knowledge": "^0.1.3-alpha.18",
     "@antv/thumbnails": "^0.2.1-alpha.0",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "visual-insights": "^0.4.4"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
