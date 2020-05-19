@@ -1,5 +1,4 @@
-import { RowData } from '@antv/dw-transform/typings/dw-transform';
-// import { RowData } from '@antv/dw-transform';
+import { RowData } from '@antv/dw-transform';
 import { type as typeAnalyze, TypeSpecifics, isUnique } from '@antv/dw-analyzer';
 import { Insight } from 'visual-insights';
 
