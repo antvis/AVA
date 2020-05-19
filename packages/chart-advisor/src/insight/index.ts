@@ -1,5 +1,6 @@
 import { RowData } from '@antv/dw-transform';
-import { type as typeAnalyze, TypeSpecifics, isUnique } from '@antv/dw-analyzer';
+import { type as typeAnalyze, TypeSpecifics } from '@antv/dw-analyzer';
+import { isUnique } from '@antv/dw-analyzer';
 import { Insight } from 'visual-insights';
 
 const tuple = <T extends string[]>(...args: T) => args;
