@@ -1,6 +1,6 @@
-import { typeAll, isUnique } from '@antv/dw-analyzer';
+import { typeAll } from '@antv/dw-analyzer';
 import { RowData } from './util/helper';
-import { parse, TransformSchema } from './parse';
+import { parse, TransformSchema, AggregationType } from './parse';
 
 /**
  * @beta
@@ -13,11 +13,33 @@ export interface AutoTransformResult {
 /**
  * @beta
  */
-export function autoTransform(data: RowData[]): AutoTransformResult {
-  const result: AutoTransformResult = {
-    result: [],
-    schemas: [],
-  };
+export type RenameOption = boolean | 'origin' | 'brackets' | 'underline' | Function;
+
+function rename(originStr: string, aggType: AggregationType, option: RenameOption = 'brackets'): string {
+  if (option === false || option === 'origin') {
+    return originStr;
+  }
+
+  if (option === true || option === 'brackets' || !option) {
+    return `${aggType.toUpperCase()}(${originStr})`;
+  }
+
+  if (option === 'underline') {
+    return `${aggType.toUpperCase()}_${originStr}`;
+  }
+
+  if (typeof option === 'function') {
+    return String(option(originStr, aggType));
+  }
+
+  throw new Error(`Invalid rename option ${option}`);
+}
+
+/**
+ * @beta
+ */
+export function autoSchema(data: RowData[], renameOption: RenameOption = 'brackets'): TransformSchema[] {
+  const schemas: TransformSchema[] = [];
 
   const schema: TransformSchema = {
     actions: [],
@@ -29,7 +51,7 @@ export function autoTransform(data: RowData[]): AutoTransformResult {
   const toNotGroupBy: string[] = [];
 
   dataAnalyze.forEach((col) => {
-    if (col.recommendation === 'string' && !isUnique(col)) {
+    if (['string', 'date', 'boolean'].includes(col.recommendation)) {
       toGroupBy.push(col.name);
     } else {
       toNotGroupBy.push(col.name);
@@ -42,11 +64,23 @@ export function autoTransform(data: RowData[]): AutoTransformResult {
       schema.actions.push({
         type: 'sum',
         field: colName,
-        as: `SUM(${colName})`,
+        as: rename(colName, 'sum', renameOption),
       });
     });
-    result.schemas.push(schema);
+    schemas.push(schema);
   }
+
+  return schemas;
+}
+
+/**
+ * @beta
+ */
+export function autoTransform(data: RowData[], renameOption: RenameOption = 'brackets'): AutoTransformResult {
+  const result: AutoTransformResult = {
+    result: [],
+    schemas: autoSchema(data, renameOption),
+  };
 
   result.result = parse(data, result.schemas);
 
