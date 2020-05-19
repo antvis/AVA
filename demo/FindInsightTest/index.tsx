@@ -1,55 +1,109 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AVAChart } from './Charts';
-import { dataInTable, dataInJSON, Record, debounce } from '../utils';
-import { getInsightSpaces } from '../../packages/chart-advisor/src/insight';
+import { dataInTable, dataInJSON, debounce } from '../utils';
+import {
+  getInsightSpaces,
+  IWorker,
+  workerCollection,
+  ISpace,
+  DefaultIWorker,
+} from '../../packages/chart-advisor/src/insight';
 import ReactJson from 'react-json-view';
+import { RowData } from '../../packages/datawizard/transform/src';
 
-function sum(dataSource: Record[], measures: string[]): Record {
-  const result: Record = {};
-  measures.forEach((mea) => {
-    result[mea] = 0;
-  });
-  return dataSource.reduce((total, record) => {
-    measures.forEach((mea) => {
-      total[mea] += record[mea];
-    });
-    return total;
-  }, result);
-}
+const exampleIWorkerName = 'cardinality';
+
+const exampleIWorker: IWorker = async (aggData, dimensions, measures) => {
+  if (dimensions.length === 0 || measures.length === 0 || aggData.length === 0) return null;
+  const sig = 1 / (dimensions.length * measures.length * aggData.length);
+  return {
+    dimensions,
+    measures,
+    significance: sig,
+    type: exampleIWorkerName,
+  };
+};
+workerCollection.register(exampleIWorkerName, exampleIWorker);
+
+const WORKER_LIST: Array<{ id: string; name: string }> = [
+  {
+    id: DefaultIWorker.cluster,
+    name: '群簇(Cluster)',
+  },
+  {
+    id: DefaultIWorker.trend,
+    name: '趋势(Trend)',
+  },
+  {
+    id: DefaultIWorker.outlier,
+    name: '异常(Outlier)',
+  },
+  {
+    id: exampleIWorkerName,
+    name: '基数(Cardinality)',
+  },
+];
 
 export function FindInsightTest() {
-  const [dataSource, setDataSource] = useState<Record[]>([]);
+  const [dataSource, setDataSource] = useState<RowData[]>([]);
   const [sig, setSig] = useState(0.5);
   const [filteredInsights, setFilteredInsights] = useState<any[]>([]);
+  const [insightSpaces, setInsightSpaces] = useState<ISpace[]>([]);
+  const [workerStatus, setWorkerStatus] = useState<boolean[]>(WORKER_LIST.map(() => true));
 
   useEffect(() => {
     fetch('https://vega.github.io/vega-datasets/data/cars.json')
       .then((res) => res.json())
-      .then((res: Record[]) => {
+      .then((res: RowData[]) => {
         setDataSource(res);
       });
   }, []);
-
-  const devInsights = useMemo(() => {
-    if (dataSource.length === 0) return [];
-    return getInsightSpaces({
-      dataSource: dataSource,
-      dimensions: ['Year', 'Origin'],
-      measures: ['Miles_per_Gallon', 'Cylinders', 'Displacement', 'Horsepower', 'Weight_in_lbs', 'Acceleration'],
-    });
-  }, [dataSource]);
+  useEffect(() => {
+    if (dataSource.length > 0) {
+      // 使用workerCollection.enable(workerId, 状态)，来决定洞察计算时是否会调用该worker
+      workerStatus.forEach((status, index) => {
+        workerCollection.enable(WORKER_LIST[index].id, status);
+      });
+      getInsightSpaces({
+        dataSource: dataSource,
+        fields: [
+          'Year',
+          'Origin',
+          'Miles_per_Gallon',
+          'Cylinders',
+          'Displacement',
+          'Horsepower',
+          'Weight_in_lbs',
+          'Acceleration',
+        ],
+        collection: workerCollection,
+      }).then((spaces) => {
+        setInsightSpaces(spaces);
+      });
+    }
+  }, [dataSource, workerStatus]);
 
   const _setFilteredInsights = useCallback(
     debounce((threshold: number) => {
-      const insights = devInsights.filter((space) => space.significance >= threshold);
+      const insights = insightSpaces.filter((space) => space.significance >= threshold);
       setFilteredInsights(insights);
     }, 300),
-    [devInsights]
+    [insightSpaces]
   );
 
   useEffect(() => {
     _setFilteredInsights(sig);
-  }, [sig, devInsights]);
+  }, [sig, insightSpaces]);
+
+  const onWorkerStatusChange = useCallback((e) => {
+    const workerId = e.target.name;
+    const workerIndex = WORKER_LIST.findIndex((w) => w.id === workerId);
+    setWorkerStatus((status) => {
+      const nextStatus = [...status];
+      nextStatus[workerIndex] = !nextStatus[workerIndex];
+      return nextStatus;
+    });
+  }, []);
 
   return (
     <>
@@ -62,17 +116,29 @@ export function FindInsightTest() {
       {/* <div style={{ display: 'flex', justifyContent: 'space-evenly', minHeight: '200px', maxHeight: '300px' }}>
         {dataInJSON(insights, 'insights found:')}
       </div> */}
-      Insight Significance: {sig} <br />
-      <input
-        type="range"
-        min="0"
-        max="100"
-        value={Math.round(sig * 100)}
-        onChange={(e) => {
-          setSig(Number(e.target.value) / 100);
-        }}
-        id="myRange"
-      />
+      <div style={{ padding: '2em' }}>
+        <div>
+          洞察显著性阈值(Threshold of Insight Significance): {sig} <br />
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={Math.round(sig * 100)}
+            onChange={(e) => {
+              setSig(Number(e.target.value) / 100);
+            }}
+            name="threshold-range"
+          />
+        </div>
+        <div>
+          {WORKER_LIST.map((worker, wIndex) => (
+            <div key={worker.id} style={{ display: 'inline-block', marginRight: '20px' }}>
+              <span>{worker.name}</span>
+              <input checked={workerStatus[wIndex]} onChange={onWorkerStatusChange} type="checkbox" name={worker.id} />
+            </div>
+          ))}
+        </div>
+      </div>
       <div
         style={{
           display: 'flex',
@@ -94,13 +160,17 @@ export function FindInsightTest() {
         }}
       >
         {filteredInsights.slice(0, 20).map((chart) => (
-          <AVAChart
+          <div
+            style={{ width: '480px', height: '420px' }}
             key={`${chart.type}-${chart.dimensions.join('-')}|${chart.measures.join('-')}`}
-            dataSource={dataSource}
-            dimensions={chart.dimensions}
-            measures={chart.measures}
-            aggregator={sum}
-          />
+          >
+            <AVAChart
+              dataSource={dataSource}
+              dimensions={chart.dimensions}
+              measures={chart.measures}
+              aggregator="sum"
+            />
+          </div>
         ))}
       </div>
     </>

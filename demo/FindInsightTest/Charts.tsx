@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
-import { aggregate, Record, Aggregator } from '../utils';
+import { aggregate, Operations } from '../../packages/datawizard/transform/src';
 import { autoChart } from '../../packages/chart-advisor/src';
 import { RowData } from '../../packages/datawizard/transform/typings/dw-transform';
 import ReactJson from 'react-json-view';
@@ -14,10 +14,10 @@ function filterDataByFields(data: RowData[], fields: string[]): RowData[] {
   });
 }
 interface AVAChartProps {
-  dataSource: Record[];
+  dataSource: RowData[];
   dimensions: string[];
   measures: string[];
-  aggregator: Aggregator;
+  aggregator: Operations;
 }
 
 export const AVAChart: React.FC<AVAChartProps> = (props) => {
@@ -28,7 +28,12 @@ export const AVAChart: React.FC<AVAChartProps> = (props) => {
 
   const viewData = useMemo(() => {
     const fields = [...dimensions, ...measures];
-    const aggData = aggregate(dataSource, dimensions, measures, aggregator);
+    const aggData = aggregate(dataSource, {
+      as: measures,
+      fields: measures,
+      groupBy: dimensions,
+      op: measures.map(() => aggregator),
+    });
     return filterDataByFields(aggData, fields);
   }, [dataSource, dimensions, measures, aggregator]);
   useEffect(() => {
