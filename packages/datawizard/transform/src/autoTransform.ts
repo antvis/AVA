@@ -15,10 +15,7 @@ export interface AutoTransformResult {
  */
 export type RenameOption = boolean | 'origin' | 'brackets' | 'underline' | Function;
 
-/**
- * @beta
- */
-export function rename(originStr: string, aggType: AggregationType, option: RenameOption = 'brackets'): string {
+function rename(originStr: string, aggType: AggregationType, option: RenameOption = 'brackets'): string {
   if (option === false || option === 'origin') {
     return originStr;
   }
