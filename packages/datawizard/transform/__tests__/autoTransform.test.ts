@@ -1,16 +1,4 @@
-import { autoTransform, rename } from '../src/autoTransform';
-
-test('rename', () => {
-  expect(rename('field1', 'sum')).toEqual('SUM(field1)');
-  expect(rename('field2', 'average', 'brackets')).toEqual('AVERAGE(field2)');
-  expect(rename('field3', 'count', 'underline')).toEqual('COUNT_field3');
-  expect(rename('field4', 'max', 'origin')).toEqual('field4');
-  expect(rename('field5', 'max', false)).toEqual('field5');
-  expect(rename('field6', 'max', true)).toEqual('MAX(field6)');
-  expect(rename('field7', 'sum', (originStr, aggType) => `${originStr}+${aggType}`)).toEqual('field7+sum');
-  expect(rename('field8', 'max', () => `nothing`)).toEqual('nothing');
-  expect(rename('field9', 'max', () => false)).toEqual('false');
-});
+import { autoTransform } from '../src/autoTransform';
 
 test('autoTransform', () => {
   expect(
