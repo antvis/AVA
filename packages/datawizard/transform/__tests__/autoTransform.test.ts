@@ -47,6 +47,46 @@ test('autoTransform', () => {
 });
 
 test('autoTransform', () => {
+  expect(
+    autoTransform(
+      [
+        { gender: 'Male', height: 180 },
+        { gender: 'Female', height: 165 },
+        { gender: 'Male', height: 170 },
+      ],
+      'underline'
+    ).schemas
+  ).toEqual([
+    {
+      groupBy: ['gender'],
+      actions: [
+        {
+          type: 'sum',
+          field: 'height',
+          as: 'SUM_height',
+        },
+      ],
+    },
+  ]);
+});
+
+test('autoTransform', () => {
+  expect(
+    autoTransform(
+      [
+        { gender: 'Male', height: 180 },
+        { gender: 'Female', height: 165 },
+        { gender: 'Male', height: 170 },
+      ],
+      'underline'
+    ).result
+  ).toEqual([
+    { gender: 'Male', SUM_height: 350 },
+    { gender: 'Female', SUM_height: 165 },
+  ]);
+});
+
+test('autoTransform', () => {
   const data = [
     { date1: '2019-12-01 08:00:00', count1: 379.44, type1: 'HOTEL1' },
     { date1: '2019-12-01 08:00:00', count1: 140.24, type1: 'GAME1' },
