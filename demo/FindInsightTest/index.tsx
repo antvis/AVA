@@ -129,13 +129,20 @@ export function FindInsightTest() {
               setSig(Number(e.target.value) / 100);
             }}
             name="threshold-range"
+            id="threshold-range"
           />
         </div>
         <div>
           {WORKER_LIST.map((worker, wIndex) => (
             <div key={worker.id} style={{ display: 'inline-block', marginRight: '20px' }}>
               <label htmlFor={worker.id}>{worker.name}</label>
-              <input checked={workerStatus[wIndex]} onChange={onWorkerStatusChange} type="checkbox" name={worker.id} />
+              <input
+                checked={workerStatus[wIndex]}
+                onChange={onWorkerStatusChange}
+                type="checkbox"
+                name={worker.id}
+                id={worker.id}
+              />
             </div>
           ))}
         </div>
