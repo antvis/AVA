@@ -175,7 +175,7 @@ const getInsightSpaces = async function(props: GetInsightSpacesProps): Promise<I
     collection,
     dimensions: _dimensions,
     measures: _measures,
-    enableUniqueFields,
+    enableUniqueFields = true,
   } = props;
   if (dataSource.length === 0) return [];
   if (typeof _dimensions !== 'undefined' && typeof _measures !== 'undefined') {

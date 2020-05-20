@@ -15,7 +15,7 @@ const exampleIWorkerName = 'cardinality';
 
 const exampleIWorker: IWorker = async (aggData, dimensions, measures) => {
   if (dimensions.length === 0 || measures.length === 0 || aggData.length === 0) return null;
-  const sig = 1 / (dimensions.length * measures.length * aggData.length);
+  const sig = 1 / Math.pow(dimensions.length * measures.length * aggData.length, 1 / 4);
   return {
     dimensions,
     measures,
@@ -77,6 +77,7 @@ export function FindInsightTest() {
           'Acceleration',
         ],
         collection: workerCollection,
+        enableUniqueFields: false,
       }).then((spaces) => {
         setInsightSpaces(spaces);
       });
