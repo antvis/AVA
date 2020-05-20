@@ -32,6 +32,7 @@ export const AVAChart: React.FC<AVAChartProps> = (props) => {
       as: measures,
       fields: measures,
       groupBy: dimensions,
+      // eslint-disable-next-line react/prop-types
       op: measures.map(() => aggregator),
     });
     return filterDataByFields(aggData, fields);

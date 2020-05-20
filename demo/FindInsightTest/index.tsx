@@ -119,7 +119,7 @@ export function FindInsightTest() {
       </div> */}
       <div style={{ padding: '2em' }}>
         <div>
-          洞察显著性阈值(Threshold of Insight Significance): {sig} <br />
+          <label htmlFor="threshold-range">洞察显著性阈值(Threshold of Insight Significance): {sig}</label>
           <input
             type="range"
             min="0"
@@ -134,7 +134,7 @@ export function FindInsightTest() {
         <div>
           {WORKER_LIST.map((worker, wIndex) => (
             <div key={worker.id} style={{ display: 'inline-block', marginRight: '20px' }}>
-              <span>{worker.name}</span>
+              <label htmlFor={worker.id}>{worker.name}</label>
               <input checked={workerStatus[wIndex]} onChange={onWorkerStatusChange} type="checkbox" name={worker.id} />
             </div>
           ))}
