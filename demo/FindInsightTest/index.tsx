@@ -121,36 +121,36 @@ export function FindInsightTest() {
         <div>
           <label id="threshold-range-label" htmlFor="threshold-range">
             洞察显著性阈值(Threshold of Insight Significance): {sig}
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={Math.round(sig * 100)}
+              onChange={(e) => {
+                setSig(Number(e.target.value) / 100);
+              }}
+              name="threshold-range"
+              id="threshold-range"
+              aria-label="Threshold Range"
+              aria-labelledby="threshold-range-label"
+            />
           </label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={Math.round(sig * 100)}
-            onChange={(e) => {
-              setSig(Number(e.target.value) / 100);
-            }}
-            name="threshold-range"
-            id="threshold-range"
-            aria-label="Threshold Range"
-            aria-labelledby="threshold-range-label"
-          />
         </div>
         <div>
           {WORKER_LIST.map((worker, wIndex) => (
             <div key={worker.id} style={{ display: 'inline-block', marginRight: '20px' }}>
               <label htmlFor={worker.id} id={`label-${worker.id}`}>
                 {worker.name}
+                <input
+                  checked={workerStatus[wIndex]}
+                  onChange={onWorkerStatusChange}
+                  type="checkbox"
+                  name={worker.id}
+                  id={worker.id}
+                  aria-label={worker.name}
+                  aria-labelledby={`label-${worker.id}`}
+                />
               </label>
-              <input
-                checked={workerStatus[wIndex]}
-                onChange={onWorkerStatusChange}
-                type="checkbox"
-                name={worker.id}
-                id={worker.id}
-                aria-label={worker.name}
-                aria-labelledby={`label-${worker.id}`}
-              />
             </div>
           ))}
         </div>
