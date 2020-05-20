@@ -11,7 +11,6 @@
 |  [@antv/chart-advisor](./chart-advisor.md) | 自动图表 |
 |  [@antv/dw-analyzer](./dw-analyzer.md) | Analysis field type |
 |  [@antv/dw-random](./dw-random.md) | Random generate value |
-|  [@antv/dw-transform](./dw-transform.md) | data transfroms |
-|  [@antv/dw-transforms](./dw-transforms.md) | data transfroms |
+|  [@antv/dw-transform](./dw-transform.md) | data transforms |
 |  [@antv/knowledge](./knowledge.md) |  |
 

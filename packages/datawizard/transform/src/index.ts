@@ -1,5 +1,5 @@
 /**
- * data transfroms
+ * data transforms
  *
  * @packageDocumentation
  */

@@ -4,13 +4,15 @@
 
 ## dw-transform package
 
-data transfroms
+data transforms
 
 ## Functions
 
 |  Function | Description |
 |  --- | --- |
 |  [aggregate(rows, options)](./dw-transform.aggregate.md) |  |
+|  [autoSchema(data, renameOption)](./dw-transform.autoschema.md) | <b><i>(BETA)</i></b> |
+|  [autoTransform(data, renameOption)](./dw-transform.autotransform.md) | <b><i>(BETA)</i></b> |
 |  [parse(data, schemas)](./dw-transform.parse.md) | <b><i>(BETA)</i></b> |
 
 ## Interfaces
@@ -19,6 +21,7 @@ data transfroms
 |  --- | --- |
 |  [Action](./dw-transform.action.md) | <b><i>(BETA)</i></b> |
 |  [AggregateParams](./dw-transform.aggregateparams.md) |  |
+|  [AutoTransformResult](./dw-transform.autotransformresult.md) | <b><i>(BETA)</i></b> |
 |  [FillNullOptionsByAgg](./dw-transform.fillnulloptionsbyagg.md) | <b><i>(BETA)</i></b> |
 |  [FillNullOptionsBySmart](./dw-transform.fillnulloptionsbysmart.md) | <b><i>(BETA)</i></b> |
 |  [FillNullOptionsByValue](./dw-transform.fillnulloptionsbyvalue.md) | <b><i>(BETA)</i></b> |
@@ -43,5 +46,6 @@ data transfroms
 |  [FillNullType](./dw-transform.fillnulltype.md) | <b><i>(BETA)</i></b> |
 |  [FillType](./dw-transform.filltype.md) | <b><i>(BETA)</i></b> |
 |  [Operations](./dw-transform.operations.md) | aggregate operation |
+|  [RenameOption](./dw-transform.renameoption.md) | <b><i>(BETA)</i></b> |
 |  [RowData](./dw-transform.rowdata.md) | 数据行 |
 
