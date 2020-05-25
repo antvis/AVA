@@ -73,7 +73,7 @@ export interface Channels {
 export type ChartLibrary = 'G2Plot' | 'antdCharts';
 
 // @beta
-export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions): Advice[];
+export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @beta
 export function dataToDataProps(data: any[]): FieldInfo[];
