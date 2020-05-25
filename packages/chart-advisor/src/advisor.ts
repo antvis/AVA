@@ -107,7 +107,7 @@ export function dataToDataProps(data: any[]): FieldInfo[] {
  * Return Specification list of recommend charts from data properties.
  * @beta
  */
-export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions): Advice[] {
+export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog = false): Advice[] {
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
 
@@ -126,8 +126,8 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
         const score = hr.check({ dataProps, chartType: t, purpose, preferences });
         hardScore *= score;
 
-        // console.log('H rule: ', hr.id, ' ; charttype: ', t);
-        // console.log(score);
+        // if (showLog) console.log('H rule: ', hr.id, ' ; charttype: ', t);
+        // if (showLog) console.log(score);
         record[hr.id] = score;
       }
     );
@@ -138,16 +138,16 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
         const score = sr.check({ dataProps, chartType: t, purpose, preferences });
         softScore += score;
 
-        // console.log('S rule: ', sr.id, ' ; charttype: ', t);
-        // console.log(score);
+        // if (showLog) console.log('S rule: ', sr.id, ' ; charttype: ', t);
+        // if (showLog) console.log(score);
         record[sr.id] = score;
       }
     );
 
     score = hardScore * (1 + softScore);
 
-    console.log('💯score: ', score, '=', hardScore, '* (1 +', softScore, ') ;charttype: ', t);
-    console.log(record);
+    if (showLog) console.log('💯score: ', score, '=', hardScore, '* (1 +', softScore, ') ;charttype: ', t);
+    if (showLog) console.log(record);
 
     // analyze channels
     const channels: Channels = {};
@@ -417,8 +417,8 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
 
   const resultList = list.filter((e) => e.score && e.score !== 0 && translate(e.type)).sort(compareAdvices);
 
-  console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
-  console.log(resultList);
+  if (showLog) console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
+  if (showLog) console.log(resultList);
 
   return resultList;
 }
@@ -427,16 +427,16 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
  * Return Specification list of recommend charts from dataset.
  * @todo rename it as `dataToSpecs` and export it
  */
-export function analyze(data: any[], options?: AdvisorOptions): Advice[] {
-  console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
-  console.log(data);
-  console.log('🍯🍯🍯🍯🍯🍯 options 🍯🍯🍯🍯🍯🍯');
-  console.log(options);
+export function analyze(data: any[], options?: AdvisorOptions, showLog = false): Advice[] {
+  if (showLog) console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
+  if (showLog) console.log(data);
+  if (showLog) console.log('🍯🍯🍯🍯🍯🍯 options 🍯🍯🍯🍯🍯🍯');
+  if (showLog) console.log(options);
 
   const dataProps = dataToDataProps(data);
 
-  console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
-  console.log(dataProps);
+  if (showLog) console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
+  if (showLog) console.log(dataProps);
 
   const adviceList: Advice[] = dataPropsToSpecs(dataProps, options);
 
