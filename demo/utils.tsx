@@ -57,7 +57,7 @@ export function JSONToTable(jsonArray: any) {
 export const dataInJSON = (data: any, title = 'Data in JSON') => (
   <div style={{ display: 'flex', flexDirection: 'column', width: '30%' }}>
     <h4>{title}</h4>
-    <textarea style={{ height: '100%', overflowY: 'scroll' }} defaultValue={prettyJSON(data)} />
+    <textarea style={{ height: '100%', overflowY: 'scroll' }} value={prettyJSON(data)} readOnly />
   </div>
 );
 
@@ -67,3 +67,20 @@ export const dataInTable = (data: any, title = 'Data in Table') => (
     <div style={{ height: '100%', overflowY: 'scroll' }}>{JSONToTable(data)}</div>
   </div>
 );
+
+export interface Record {
+  [key: string]: any;
+}
+
+export function debounce(func: Function, delay: number) {
+  let timer: NodeJS.Timeout | null = null;
+  function debounced(props: any) {
+    if (timer !== null) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(function() {
+      func(props);
+    }, delay);
+  }
+  return debounced;
+}

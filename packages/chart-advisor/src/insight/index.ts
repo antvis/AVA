@@ -1,5 +1,6 @@
 import { RowData } from '@antv/dw-transform';
-import { type as typeAnalyze, TypeSpecifics } from '@antv/dw-analyzer';
+import { type as typeAnalyze, TypeSpecifics, isUnique } from '@antv/dw-analyzer';
+import { Insight } from 'visual-insights';
 
 const tuple = <T extends string[]>(...args: T) => args;
 
@@ -60,6 +61,7 @@ type Column = Array<string | number | null>;
 interface ColumnProp {
   title: string | null;
   type: TypeSpecifics | null;
+  isUnique?: boolean;
 }
 
 interface ColumnFrame {
@@ -81,9 +83,12 @@ function rowDataToColumnFrame(rows: RowData[]): ColumnFrame {
 
   titles.forEach((title) => {
     const column = rows.map((row: RowData) => row[title]);
+    const anaResult = typeAnalyze(column);
+
     columnProps.push({
       title: title,
-      type: typeAnalyze(column).recommendation,
+      type: anaResult.recommendation,
+      isUnique: isUnique(anaResult),
     });
     columns.push(column);
   });
@@ -145,3 +150,62 @@ export function insightsFromData(data: RowData[]): Insight[] {
 
   return allInsights;
 }
+
+// todo: use Insight.IntentionWorkerCollection to register custom workers.
+// const simpleWorker: Insight.IntentionWorker
+export type IWorker = Insight.IntentionWorker;
+export type ISpace = Insight.InsightSpace;
+export const DefaultIWorker = Insight.DefaultIWorker;
+
+const workerCollection = Insight.IntentionWorkerCollection.init();
+
+interface GetInsightSpacesProps {
+  dataSource: RowData[];
+  fields?: string[];
+  dimensions?: string[];
+  measures?: string[];
+  enableUniqueFields?: boolean;
+  collection?: Insight.IntentionWorkerCollection;
+}
+
+const getInsightSpaces = async function(props: GetInsightSpacesProps): Promise<ISpace[]> {
+  const {
+    dataSource,
+    fields: _fields,
+    collection,
+    dimensions: _dimensions,
+    measures: _measures,
+    enableUniqueFields = true,
+  } = props;
+  if (dataSource.length === 0) return [];
+  if (typeof _dimensions !== 'undefined' && typeof _measures !== 'undefined') {
+    return Insight.getVisSpaces({
+      dataSource,
+      dimensions: _dimensions,
+      measures: _measures,
+      collection,
+    });
+  }
+  const fields: string[] = typeof _fields === 'undefined' ? Object.keys(dataSource[0]) : _fields;
+  const colFrame = rowDataToColumnFrame(dataSource);
+
+  const dimensions: string[] = colFrame.columnProps
+    .filter((col) => col.title !== null && fields.includes(col.title))
+    .filter((col) => !(col.type === 'integer' || col.type === 'float'))
+    .filter((col) => enableUniqueFields || !col.isUnique)
+    .map((col) => col.title) as string[];
+
+  const measures: string[] = colFrame.columnProps
+    .filter((col) => col.title !== null && fields.includes(col.title))
+    .filter((col) => col.type === 'integer' || col.type === 'float')
+    .map((col) => col.title) as string[];
+
+  return Insight.getVisSpaces({
+    dataSource,
+    dimensions,
+    measures,
+    collection,
+  });
+};
+
+export { getInsightSpaces, workerCollection };

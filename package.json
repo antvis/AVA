@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "@antv/g2plot": "^1.0.3",
-    "lerna": "^3.16.4"
+    "react-json-view": "^1.19.1"
   },
   "config": {
     "commitizen": {
