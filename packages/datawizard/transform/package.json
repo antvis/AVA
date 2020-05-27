@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-transform",
-  "version": "0.1.3-alpha.31",
+  "version": "0.1.3-beta.4",
   "description": "",
   "browser": "dist/index.js",
   "main": "lib/index.js",
@@ -15,7 +15,7 @@
     "lint": "eslint --ext .ts src __tests__"
   },
   "dependencies": {
-    "@antv/dw-analyzer": "^0.1.3-alpha.31",
+    "@antv/dw-analyzer": "^0.1.3-beta.4",
     "@antv/dw-random": "^0.1.3-alpha.19",
     "@antv/util": "^2.0.0",
     "regression": "^2.0.0",
@@ -29,7 +29,14 @@
   "keywords": [],
   "author": "AFX",
   "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-typescript": "^7.7.4",
+    "@microsoft/api-extractor": "^7.8.0",
     "@types/regression": "^2.0.0",
+    "babel-loader": "^8.0.6",
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"

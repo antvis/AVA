@@ -1,5 +1,5 @@
 /**
- * data transfroms
+ * data transforms
  *
  * @packageDocumentation
  */
@@ -29,4 +29,4 @@ export {
   FillType,
 } from './parse';
 
-export { autoTransform, AutoTransformResult } from './autoTransform';
+export { autoTransform, autoSchema, RenameOption, AutoTransformResult } from './autoTransform';
