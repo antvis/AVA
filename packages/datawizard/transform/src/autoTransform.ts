@@ -6,7 +6,7 @@ import { parse, TransformSchema, AggregationType } from './parse';
  * @beta
  */
 export interface AutoTransformResult {
-  result: RowData;
+  result: RowData[];
   schemas: TransformSchema[];
 }
 
@@ -15,7 +15,10 @@ export interface AutoTransformResult {
  */
 export type RenameOption = boolean | 'origin' | 'brackets' | 'underline' | Function;
 
-function rename(originStr: string, aggType: AggregationType, option: RenameOption = 'brackets'): string {
+/**
+ * @beta
+ */
+export function rename(originStr: string, aggType: AggregationType, option: RenameOption = 'brackets'): string {
   if (option === false || option === 'origin') {
     return originStr;
   }

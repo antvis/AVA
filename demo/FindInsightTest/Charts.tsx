@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
-import { aggregate, Operations } from '../../packages/datawizard/transform/src';
+import { autoTransform } from '../../packages/datawizard/transform/src';
 import { autoChart } from '../../packages/chart-advisor/src';
 import { RowData } from '../../packages/datawizard/transform/typings/dw-transform';
 import ReactJson from 'react-json-view';
@@ -15,31 +15,25 @@ function filterDataByFields(data: RowData[], fields: string[]): RowData[] {
 }
 interface AVAChartProps {
   dataSource: RowData[];
-  dimensions: string[];
-  measures: string[];
-  aggregator: Operations;
+  fields: string[];
+  options: any;
 }
 
 export const AVAChart: React.FC<AVAChartProps> = (props) => {
   // eslint-disable-next-line react/prop-types
-  const { dataSource, dimensions, measures, aggregator } = props;
+  const { dataSource, fields, options } = props;
   const container = useRef<HTMLDivElement>(null);
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const viewData = useMemo(() => {
-    const fields = [...dimensions, ...measures];
-    const aggData = aggregate(dataSource, {
-      as: measures,
-      fields: measures,
-      groupBy: dimensions,
-      // eslint-disable-next-line react/prop-types
-      op: measures.map(() => aggregator),
-    });
-    return filterDataByFields(aggData, fields);
-  }, [dataSource, dimensions, measures, aggregator]);
+    const filteredData = filterDataByFields(dataSource, fields);
+    const { result } = autoTransform(filteredData, false);
+    return result;
+  }, [dataSource, fields]);
+
   useEffect(() => {
     if (container.current) {
-      autoChart(container.current, viewData);
+      autoChart(container.current, viewData, options);
     }
   }, [viewData]);
 

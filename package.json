@@ -57,7 +57,7 @@
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
-    "@antv/g2plot": "^1.0.3",
+    "@antv/g2plot": "^1.1.4",
     "react-json-view": "^1.19.1"
   },
   "config": {
