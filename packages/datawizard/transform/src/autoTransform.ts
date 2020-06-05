@@ -41,7 +41,11 @@ export function rename(originStr: string, aggType: AggregationType, option: Rena
 /**
  * @beta
  */
-export function autoSchema(data: RowData[], renameOption: RenameOption = 'brackets'): TransformSchema[] {
+export function autoSchema(
+  data: RowData[],
+  renameOption: RenameOption = 'brackets',
+  defaultAgg: AggregationType = 'sum'
+): TransformSchema[] {
   const schemas: TransformSchema[] = [];
 
   const schema: TransformSchema = {
@@ -65,9 +69,9 @@ export function autoSchema(data: RowData[], renameOption: RenameOption = 'bracke
     schema.groupBy = toGroupBy;
     toNotGroupBy.forEach((colName) => {
       schema.actions.push({
-        type: 'sum',
+        type: defaultAgg,
         field: colName,
-        as: rename(colName, 'sum', renameOption),
+        as: rename(colName, defaultAgg, renameOption),
       });
     });
     schemas.push(schema);
@@ -79,10 +83,14 @@ export function autoSchema(data: RowData[], renameOption: RenameOption = 'bracke
 /**
  * @beta
  */
-export function autoTransform(data: RowData[], renameOption: RenameOption = 'brackets'): AutoTransformResult {
+export function autoTransform(
+  data: RowData[],
+  renameOption: RenameOption = 'brackets',
+  defaultAgg: AggregationType = 'sum'
+): AutoTransformResult {
   const result: AutoTransformResult = {
     result: [],
-    schemas: autoSchema(data, renameOption),
+    schemas: autoSchema(data, renameOption, defaultAgg),
   };
 
   result.result = parse(data, result.schemas);

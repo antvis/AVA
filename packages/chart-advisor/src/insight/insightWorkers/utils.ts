@@ -1,6 +1,6 @@
 import { RowData } from '@antv/dw-transform';
 import { Insight as VisualInsight } from 'visual-insights';
-import { type as typeAnalyze, TypeSpecifics, isUnique } from '@antv/dw-analyzer';
+import { type as typeAnalyze, TypeSpecifics, isUnique, isTime, isInterval } from '@antv/dw-analyzer';
 import { Insight, InsightProps } from '..';
 import { InsightType, Worker } from '.';
 import { getInsightSpaces } from '../fromVisualInsights';
@@ -25,9 +25,11 @@ export function pearsonCorr(d1: number[], d2: number[]) {
 
 type Column = Array<string | number | null>;
 interface ColumnProp {
-  title: string | null;
+  title: string;
   type: TypeSpecifics | null;
   isUnique?: boolean;
+  isTime?: boolean;
+  isInterval?: boolean;
 }
 
 interface ColumnFrame {
@@ -38,7 +40,7 @@ interface ColumnFrame {
 export function rowDataToColumnFrame(rows: RowData[]): ColumnFrame {
   if (!rows || rows.length === 0) {
     return {
-      columnProps: [{ title: null, type: null }],
+      columnProps: [{ title: '', type: null }],
       columns: [[]],
     };
   }
@@ -55,6 +57,8 @@ export function rowDataToColumnFrame(rows: RowData[]): ColumnFrame {
       title: title,
       type: anaResult.recommendation,
       isUnique: isUnique(anaResult),
+      isTime: isTime(anaResult),
+      isInterval: isInterval(anaResult),
     });
     columns.push(column);
   });
@@ -63,6 +67,35 @@ export function rowDataToColumnFrame(rows: RowData[]): ColumnFrame {
     columnProps: columnProps,
     columns: columns,
   };
+}
+
+export function columnsToRowData(columns: Column[], titles: string[]): RowData[] | null {
+  if (!columns.length || !titles.length || columns.length !== titles.length) {
+    return null;
+  }
+
+  const rowLength = columns[0].length;
+
+  // Lengths of columns should be same.
+  for (let k = 0; k < columns.length; k++) {
+    if (columns[k].length !== rowLength) {
+      return null;
+    }
+  }
+
+  const result: RowData[] = [];
+
+  for (let i = 0; i < rowLength; i++) {
+    const row: RowData = {};
+
+    for (let j = 0; j < columns.length; j++) {
+      row[titles[j]] = columns[j][i];
+    }
+
+    result.push(row);
+  }
+
+  return result;
 }
 
 export function insightSpaceToInsight(space: InsightSpace): Insight {

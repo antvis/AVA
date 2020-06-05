@@ -41,15 +41,15 @@ export const AGGREGATION: ["sum", "max", "min", "average", "avg", "median", "cou
 export type AggregationType = typeof AGGREGATION[number];
 
 // @beta (undocumented)
-export function autoSchema(data: RowData[], renameOption?: RenameOption): TransformSchema[];
+export function autoSchema(data: RowData[], renameOption?: RenameOption, defaultAgg?: AggregationType): TransformSchema[];
 
 // @beta (undocumented)
-export function autoTransform(data: RowData[], renameOption?: RenameOption): AutoTransformResult;
+export function autoTransform(data: RowData[], renameOption?: RenameOption, defaultAgg?: AggregationType): AutoTransformResult;
 
 // @beta (undocumented)
 export interface AutoTransformResult {
     // (undocumented)
-    result: RowData;
+    result: RowData[];
     // (undocumented)
     schemas: TransformSchema[];
 }
