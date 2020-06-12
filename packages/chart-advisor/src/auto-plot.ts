@@ -135,6 +135,8 @@ export class AutoPlot extends EventEmitter {
       plot.updateConfig(configs);
     } else {
       if (plot) plot.destroy();
+      console.log(' 🐛🐛🐛 type');
+      console.log(type);
       // @ts-ignore
       this.plot = new G2Plot[translate(type)](container, configs);
     }

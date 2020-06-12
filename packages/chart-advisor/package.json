@@ -22,7 +22,7 @@
   "dependencies": {
     "@antv/dw-analyzer": "^0.1.3-beta.4",
     "@antv/dw-transform": "^0.1.3-beta.4",
-    "@antv/g2plot": "^0.11.35",
+    "@antv/g2plot": "^1.1.6",
     "@antv/knowledge": "^0.1.3-alpha.18",
     "@antv/thumbnails": "^0.2.1-alpha.0",
     "tslib": "^1.10.0",

@@ -12,6 +12,10 @@ export interface Insight {
   type: InsightType | 'SomeInsight';
   fields: string[];
   insightProps?: InsightProps;
+  present?: {
+    data: RowData[];
+    fields: string[];
+  };
 }
 
 export async function insightsFromData(data: RowData[]): Promise<Insight[]> {

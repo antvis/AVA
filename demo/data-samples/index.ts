@@ -13,6 +13,8 @@ import { sample10 } from './sample10';
 import { sample11 } from './sample11';
 import { sample12 } from './sample12';
 
+import superstore from './superstore.min.json';
+
 const sampleList: DataSample[] = [
   sample1,
   sample2,
@@ -50,3 +52,5 @@ export const DataSamples = {
     return result;
   },
 };
+
+export { superstore };

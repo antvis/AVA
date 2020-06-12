@@ -1,6 +1,6 @@
 import { RowData } from '@antv/dw-transform';
 import { Insight as VisualInsight } from 'visual-insights';
-import { type as typeAnalyze, TypeSpecifics, isUnique, isTime, isInterval } from '@antv/dw-analyzer';
+import { type as typeAnalyze, TypeSpecifics, isUnique, isTime, isInterval, FieldInfo } from '@antv/dw-analyzer';
 import { Insight, InsightProps } from '..';
 import { InsightType, Worker } from '.';
 import { getInsightSpaces } from '../fromVisualInsights';
@@ -30,6 +30,7 @@ interface ColumnProp {
   isUnique?: boolean;
   isTime?: boolean;
   isInterval?: boolean;
+  fieldInfo?: FieldInfo;
 }
 
 interface ColumnFrame {
@@ -59,6 +60,7 @@ export function rowDataToColumnFrame(rows: RowData[]): ColumnFrame {
       isUnique: isUnique(anaResult),
       isTime: isTime(anaResult),
       isInterval: isInterval(anaResult),
+      fieldInfo: anaResult,
     });
     columns.push(column);
   });
@@ -69,9 +71,9 @@ export function rowDataToColumnFrame(rows: RowData[]): ColumnFrame {
   };
 }
 
-export function columnsToRowData(columns: Column[], titles: string[]): RowData[] | null {
+export function columnsToRowData(columns: Column[], titles: string[]): RowData[] {
   if (!columns.length || !titles.length || columns.length !== titles.length) {
-    return null;
+    return [];
   }
 
   const rowLength = columns[0].length;
@@ -79,7 +81,7 @@ export function columnsToRowData(columns: Column[], titles: string[]): RowData[]
   // Lengths of columns should be same.
   for (let k = 0; k < columns.length; k++) {
     if (columns[k].length !== rowLength) {
-      return null;
+      return [];
     }
   }
 
@@ -162,4 +164,24 @@ export function visualInsightWorkerToAVAWorker(viWorkerId: VisualInsightWorkerID
   };
 
   return AVAWorker;
+}
+
+export function isMonotonicInc(array: number[]): boolean {
+  for (let i = 1; i < array.length; i++) {
+    if (array[i - 1] > array[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function isMonotonicDec(array: number[]): boolean {
+  for (let i = 1; i < array.length; i++) {
+    if (array[i - 1] < array[i]) {
+      return false;
+    }
+  }
+
+  return true;
 }

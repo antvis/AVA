@@ -3,6 +3,7 @@ import { Insight } from '..';
 
 import { correlationIW } from './correlation';
 import { monotonicityIW } from './monotonicity';
+import { majorFactorsIW } from './major';
 import { trendIW as viTrendIW } from './vi-trend';
 
 const tuple = <T extends string[]>(...args: T) => args;
@@ -10,8 +11,8 @@ const tuple = <T extends string[]>(...args: T) => args;
 export const INSIGHT_TYPES = tuple(
   'Correlation',
   'Monotonicity',
-  // todo...
   'MajorFactors',
+  // todo...
   'CategoryOutliers',
   'TimeSeriesOutliers',
   'OverallTrends',
@@ -26,6 +27,7 @@ export type Worker = (data: RowData[]) => Insight[] | Promise<Insight[]>;
 export const insightWorkers: Partial<Record<InsightType, Worker>> = {
   Correlation: correlationIW,
   Monotonicity: monotonicityIW,
+  MajorFactors: majorFactorsIW,
   // OverallTrends: viTrendIW,
 };
 
