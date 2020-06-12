@@ -11,11 +11,11 @@ export function FindInsightTest() {
   const [insights, setInsights] = useState<Insight[]>([]);
 
   useEffect(() => {
-    // fetch('https://vega.github.io/vega-datasets/data/cars.json')
-    //   .then((res) => res.json())
-    //   .then((res: RowData[]) => {
-    //     setDataSource(res);
-    //   });
+    fetch('https://vega.github.io/vega-datasets/data/cars.json')
+      .then((res) => res.json())
+      .then((res: RowData[]) => {
+        setDataSource(res);
+      });
 
     // test for monotonicity
     // setDataSource([
@@ -27,7 +27,7 @@ export function FindInsightTest() {
     //   { date: '1990-01-01', sex: 1, weight: 10 },
     // ]);
 
-    setDataSource(superstore as RowData[]);
+    // setDataSource(superstore as RowData[]);
   }, []);
   useEffect(() => {
     if (dataSource.length > 0) {
