@@ -1,23 +1,10 @@
 import { RowData } from '@antv/dw-transform';
-import { InsightType, insightWorkers, Worker } from './insightWorkers';
+import { insightWorkers, Worker } from './insightWorkers';
+import { Insight, InsightProps } from './interfaces';
 
-export interface InsightProps {
-  dimensions?: string[];
-  measures?: string[];
-  score?: number;
-  detail?: any;
-}
-
-export interface Insight {
-  type: InsightType | 'SomeInsight';
-  fields: string[];
-  insightProps?: InsightProps;
-  present?: {
-    data: RowData[];
-    fields: string[];
-  };
-}
-
+/**
+ * @beta
+ */
 export async function insightsFromData(data: RowData[]): Promise<Insight[]> {
   // logic here...
 
@@ -33,3 +20,5 @@ export async function insightsFromData(data: RowData[]): Promise<Insight[]> {
 
   return allInsights;
 }
+
+export { Insight, InsightProps };

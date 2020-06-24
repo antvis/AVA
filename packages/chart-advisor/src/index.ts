@@ -48,3 +48,7 @@ export {
 } from './advisor';
 
 export { ChartLibrary } from './chartLibMapping';
+
+export { insightsFromData, Insight, InsightProps } from './insight';
+
+export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';
