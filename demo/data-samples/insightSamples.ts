@@ -57,4 +57,17 @@ export const insightSamples: DataSample[] = [
       { date: '2020-01-12', GDP: 200 },
     ],
   },
+  {
+    insights: ['CategoryOutliers'],
+    data: [
+      { x: 10, y: 12 },
+      { x: 20, y: 25 },
+      { x: 200, y: 200 },
+      { x: 40, y: 42 },
+      { x: 50, y: 57 },
+      { x: 60, y: 60 },
+      { x: 70, y: 78 },
+      { x: 80, y: 82 },
+    ],
+  },
 ];

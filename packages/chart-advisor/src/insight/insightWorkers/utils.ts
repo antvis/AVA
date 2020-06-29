@@ -12,6 +12,8 @@ import {
 import { Insight, InsightProps } from '..';
 import { InsightType, Worker } from '.';
 import { getInsightSpaces } from '../fromVisualInsights';
+import { dataToDataProps } from '../../advisor';
+import { Field } from 'visual-insights/build/esm/commonTypes';
 
 export function pearsonCorr(d1: number[], d2: number[]) {
   const { min, pow, sqrt } = Math;
@@ -201,5 +203,20 @@ export function normalizeArray(array: number[]): number[] {
   const min = Math.min(...array);
   return array.map((val) => {
     return (val - min) / (max - min);
+  });
+}
+
+export function outliersFilters(dataProps: FieldInfo[]): Function[] {
+  const threshold = 3;
+  return dataProps.map((dp: any) => {
+    if (dp.recommendation === 'float' || dp.recommendation === 'integer') {
+      const q1 = dp.percentile25;
+      const q3 = dp.percentile75;
+      const iqr = Math.abs(q3 - q1);
+      const lowThreshold = q1 - threshold * iqr;
+      const highThreshold = q3 + threshold * iqr;
+      return (v: number) => v < lowThreshold || v > highThreshold;
+    }
+    return (_: any) => false;
   });
 }

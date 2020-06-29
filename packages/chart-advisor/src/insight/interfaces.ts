@@ -21,5 +21,6 @@ export interface Insight {
   present?: {
     data: RowData[];
     fields: string[];
+    configs: any;
   };
 }
