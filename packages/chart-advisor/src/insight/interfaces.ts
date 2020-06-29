@@ -1,5 +1,6 @@
 import { RowData } from '@antv/dw-transform';
 import { InsightType } from './insightWorkers';
+import { ChartID, Purpose } from '@antv/knowledge';
 
 /**
  * @beta
@@ -16,11 +17,14 @@ export interface InsightProps {
  */
 export interface Insight {
   type: InsightType | 'SomeInsight';
+  description?: string;
   fields: string[];
   insightProps?: InsightProps;
   present?: {
-    data: RowData[];
     fields: string[];
-    configs: any;
+    type?: ChartID;
+    encoding?: any;
+    purpose?: Purpose[];
+    data?: RowData[];
   };
 }

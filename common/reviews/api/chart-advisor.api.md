@@ -97,13 +97,14 @@ export interface Insight {
     present?: {
         data: RowData[];
         fields: string[];
+        configs?: any;
     };
     // (undocumented)
     type: InsightType | 'SomeInsight';
 }
 
 // @beta (undocumented)
-export const INSIGHT_TYPES: ["Correlation", "Monotonicity", "MajorFactors", "CategoryOutliers", "TimeSeriesOutliers", "OverallTrends", "Seasonality", "ChangePoints"];
+export const INSIGHT_TYPES: ["Correlation", "Monotonicity", "MajorFactors", "OverallTrends", "CategoryOutliers", "TimeSeriesOutliers", "Seasonality", "ChangePoints"];
 
 // @beta (undocumented)
 export interface InsightProps {

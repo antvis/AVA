@@ -33,6 +33,10 @@ export const AVAChart: React.FC<AVAChartProps> = (props) => {
 
   useEffect(() => {
     if (container.current) {
+      console.log('viewData');
+      console.log(viewData);
+      console.log('options');
+      console.log(options);
       autoChart(container.current, viewData, options);
     }
   }, [viewData]);

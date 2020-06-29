@@ -5,6 +5,7 @@ import { correlationIW } from './correlation';
 import { monotonicityIW } from './monotonicity';
 import { majorFactorsIW } from './major';
 import { overallTrendsIW } from './overallTrends';
+import { outlierIW } from './outlier';
 
 import { trendIW as viTrendIW } from './vi-trend';
 
@@ -18,8 +19,8 @@ export const INSIGHT_TYPES = tuple(
   'Monotonicity',
   'MajorFactors',
   'OverallTrends',
-  // todo...
   'CategoryOutliers',
+  // todo...
   'TimeSeriesOutliers',
   'Seasonality',
   'ChangePoints'
@@ -43,7 +44,8 @@ export const insightWorkers: Partial<Record<InsightType, Worker>> = {
   Monotonicity: monotonicityIW,
   MajorFactors: majorFactorsIW,
   OverallTrends: overallTrendsIW,
+  CategoryOutliers: outlierIW,
   // OverallTrends: viTrendIW,
 };
 
-export { correlationIW, viTrendIW, monotonicityIW, overallTrendsIW };
+export { correlationIW, viTrendIW, monotonicityIW, overallTrendsIW, outlierIW };

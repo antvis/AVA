@@ -12,8 +12,6 @@ import {
 import { Insight, InsightProps } from '..';
 import { InsightType, Worker } from '.';
 import { getInsightSpaces } from '../fromVisualInsights';
-import { dataToDataProps } from '../../advisor';
-import { Field } from 'visual-insights/build/esm/commonTypes';
 
 export function pearsonCorr(d1: number[], d2: number[]) {
   const { min, pow, sqrt } = Math;

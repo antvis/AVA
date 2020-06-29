@@ -60,14 +60,14 @@ export const insightSamples: DataSample[] = [
   {
     insights: ['CategoryOutliers'],
     data: [
-      { x: 10, y: 12 },
-      { x: 20, y: 25 },
-      { x: 200, y: 200 },
-      { x: 40, y: 42 },
-      { x: 50, y: 57 },
-      { x: 60, y: 60 },
-      { x: 70, y: 78 },
-      { x: 80, y: 82 },
+      { x: 'a', y: 12 },
+      { x: 'b', y: 25 },
+      { x: 'c', y: 400 },
+      { x: 'd', y: 42 },
+      { x: 'e', y: 57 },
+      { x: 'f', y: 60 },
+      { x: 'g', y: 78 },
+      { x: 'h', y: 82 },
     ],
   },
 ];

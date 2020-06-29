@@ -33,7 +33,7 @@ export function FindInsightTest() {
   };
 
   const [insights, setInsights] = useState<Insight[]>([]);
-  const [sampleName, setSampleName] = useState<string>('OverallTrends'); //xxx: sampleGetters[0].name
+  const [sampleName, setSampleName] = useState<string>('CategoryOutliers'); //xxx: sampleGetters[0].name
   const [dataSource, setDataSource] = useState<RowData[]>(dataFromSampleName(sampleName));
 
   useEffect(() => {
@@ -58,6 +58,19 @@ export function FindInsightTest() {
   const genDesc = (insight: Insight): string => {
     // todo: rename insights
     return insight.type;
+  };
+
+  const genOptions = (insight: Insight): any => {
+    const options: any = { title: genTitle(insight), description: genDesc(insight) };
+
+    if (insight.present && insight.present.type) {
+      const config: any = { type: insight.present.type };
+      if (insight.present.encoding) {
+        config.configs = insight.present.encoding;
+      }
+      options.config = config;
+    }
+    return options;
   };
 
   return (
@@ -108,7 +121,7 @@ export function FindInsightTest() {
             <AVAChart
               dataSource={insight.present && insight.present.data ? insight.present.data : dataSource}
               fields={insight.present && insight.present.fields ? insight.present.fields : insight.fields}
-              options={{ title: genTitle(insight), description: genDesc(insight) }}
+              options={genOptions(insight)}
             />
           </div>
         ))}
