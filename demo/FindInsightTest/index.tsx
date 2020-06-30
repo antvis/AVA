@@ -7,6 +7,7 @@ import { RowData } from '../../packages/datawizard/transform/src';
 import { insightSamples } from '../data-samples';
 
 import { INSIGHT_TYPES } from '../../packages/chart-advisor';
+import { InsightType } from '../../packages/chart-advisor/temp';
 
 const sampleGetters: { name: string; getter: Function }[] = [];
 
@@ -32,8 +33,10 @@ export function FindInsightTest() {
     return sampleData as RowData[];
   };
 
+  const initSample: InsightType = 'Correlation';
+
   const [insights, setInsights] = useState<Insight[]>([]);
-  const [sampleName, setSampleName] = useState<string>('CategoryOutliers'); //xxx: sampleGetters[0].name
+  const [sampleName, setSampleName] = useState<string>(initSample); //xxx: sampleGetters[0].name
   const [dataSource, setDataSource] = useState<RowData[]>(dataFromSampleName(sampleName));
 
   useEffect(() => {
@@ -57,7 +60,7 @@ export function FindInsightTest() {
 
   const genDesc = (insight: Insight): string => {
     // todo: rename insights
-    return insight.type;
+    return `${insight.type}${insight.description ? '\n' : null}${insight.description ? insight.description : null}`;
   };
 
   const genOptions = (insight: Insight): any => {
@@ -70,6 +73,11 @@ export function FindInsightTest() {
       }
       options.config = config;
     }
+
+    if (insight.present && insight.present.purpose) {
+      options.purpose = insight.present.purpose[0] || insight.present.purpose;
+    }
+
     return options;
   };
 

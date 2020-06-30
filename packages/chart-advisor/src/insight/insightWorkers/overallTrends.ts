@@ -48,12 +48,18 @@ export const overallTrendsIW: Worker = function(data: RowData[]): Insight[] {
           const orderFieldNor = normalizeArray(orderField);
           const valueFieldNor = normalizeArray(valueField);
 
-          console.log(Math.abs(pearsonCorr(orderFieldNor, valueFieldNor)));
+          const p = pearsonCorr(orderFieldNor, valueFieldNor);
 
-          if (Math.abs(pearsonCorr(orderFieldNor, valueFieldNor)) > THRESHOLD) {
+          if (Math.abs(p) > THRESHOLD) {
             insights.push({
               type: 'OverallTrends',
+              description: `'${columnProps[j].title}' is trending ${p > 0 ? 'upwards' : 'downwards'} with '${
+                columnProps[i].title
+              }'`,
               fields: [columnProps[i].title as string, columnProps[j].title as string],
+              present: {
+                purpose: ['Trend'],
+              },
             });
           }
         }

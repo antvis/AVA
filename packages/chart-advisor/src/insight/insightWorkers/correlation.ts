@@ -21,7 +21,11 @@ export const correlationIW: Worker = function(data: RowData[]): Insight[] {
       ) {
         insights.push({
           type: 'Correlation',
+          description: `There is a correlation between '${columnProps[i].title}' and '${columnProps[j].title}'`,
           fields: [columnProps[i].title as string, columnProps[j].title as string],
+          present: {
+            purpose: ['Distribution'],
+          },
         });
       }
     }

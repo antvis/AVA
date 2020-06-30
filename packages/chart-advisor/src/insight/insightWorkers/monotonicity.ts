@@ -29,15 +29,16 @@ export const monotonicityIW: Worker = function(data: RowData[]): Insight[] {
               let direction = null;
 
               if (isMonotonicInc(sortedMeasureCol)) {
-                direction = 'increasing';
+                direction = 'increase';
               }
               if (isMonotonicDec(sortedMeasureCol)) {
-                direction = 'decreasing';
+                direction = 'decrease';
               }
 
               if (direction) {
                 const insight: Insight = {
                   type: 'Monotonicity',
+                  description: `'${measureTitle}' ${direction}s monotonically with '${dimensionTitle}'`,
                   fields: [dimensionTitle, measureTitle],
                   insightProps: {
                     dimensions: [dimensionTitle],
@@ -46,6 +47,9 @@ export const monotonicityIW: Worker = function(data: RowData[]): Insight[] {
                     detail: {
                       direction,
                     },
+                  },
+                  present: {
+                    purpose: ['Trend'],
                   },
                 };
                 insights.push(insight);

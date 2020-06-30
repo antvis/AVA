@@ -7,6 +7,7 @@
 import { ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { LevelOfMeasurement } from '@antv/knowledge';
+import { Purpose } from '@antv/knowledge';
 import { RowData } from '@antv/dw-transform';
 
 // @beta (undocumented)
@@ -90,14 +91,18 @@ export interface FieldInfo extends DWAnalyzer.FieldInfo {
 // @beta (undocumented)
 export interface Insight {
     // (undocumented)
+    description?: string;
+    // (undocumented)
     fields: string[];
     // (undocumented)
     insightProps?: InsightProps;
     // (undocumented)
     present?: {
-        data: RowData[];
-        fields: string[];
-        configs?: any;
+        fields?: string[];
+        type?: ChartID;
+        encoding?: any;
+        purpose?: Purpose[];
+        data?: RowData[];
     };
     // (undocumented)
     type: InsightType | 'SomeInsight';

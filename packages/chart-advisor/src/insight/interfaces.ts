@@ -21,7 +21,7 @@ export interface Insight {
   fields: string[];
   insightProps?: InsightProps;
   present?: {
-    fields: string[];
+    fields?: string[];
     type?: ChartID;
     encoding?: any;
     purpose?: Purpose[];

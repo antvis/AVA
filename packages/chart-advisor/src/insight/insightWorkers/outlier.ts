@@ -37,10 +37,39 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
         });
 
         if (hasInsight) {
-          console.log(subdata);
+          let dimension = '';
+          let measure = '';
+
+          if (columnProps[i].isInterval) {
+            dimension = columnProps[j].title;
+            measure = columnProps[i].title;
+          } else {
+            dimension = columnProps[i].title;
+            measure = columnProps[j].title;
+          }
+
+          const outlierSeries = subdata.filter((row) => row.isOutlier).map((row) => row[dimension]);
+          let outlierSeriesStr = '';
+          if (outlierSeries.length === 1) {
+            outlierSeriesStr = `'${outlierSeries[0]}'`;
+          } else {
+            for (let i = 0; i < outlierSeries.length; i++) {
+              if (i === outlierSeries.length - 1) {
+                outlierSeriesStr += ` and '${outlierSeries[i]}'`;
+              } else if (i === 0) {
+                outlierSeriesStr += `'${outlierSeries[i]}'`;
+              } else {
+                outlierSeriesStr += `, '${outlierSeries[i]}'`;
+              }
+            }
+          }
+          const description = `${outlierSeriesStr} ${outlierSeries.length === 1 ? 'is' : 'are'} noticeable ${
+            outlierSeries.length === 1 ? 'outlier' : 'outliers'
+          } for '${measure}'`;
 
           const insight: Insight = {
             type: 'CategoryOutliers',
+            description,
             fields: [columnProps[i].title, columnProps[j].title],
             present: {
               data: subdata,

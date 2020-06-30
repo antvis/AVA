@@ -26,7 +26,7 @@ export const majorFactorsIW: Worker = function(data: RowData[]): Insight[] {
 
         maxKeys.forEach((key) => {
           const count = valueMap[key];
-          if (count / countSum > THRESHOLD) {
+          if (count / countSum >= THRESHOLD) {
             const columnTitle = columnProps[i].title;
             const countTitle = `COUNT(${columnTitle})`;
 
@@ -37,10 +37,12 @@ export const majorFactorsIW: Worker = function(data: RowData[]): Insight[] {
 
             const insight: Insight = {
               type: 'MajorFactors',
+              description: `'${key}' occupies for the majority of '${columnTitle}' by ${(count / countSum) * 100}%`,
               fields: [columnTitle],
               present: {
                 data: presentData,
                 fields: [columnTitle, countTitle],
+                purpose: ['Proportion'],
               },
             };
 
