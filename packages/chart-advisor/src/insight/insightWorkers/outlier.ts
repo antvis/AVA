@@ -24,8 +24,6 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
           const valueJ = columns[j][index];
           newRow[columnProps[j].title] = valueJ;
 
-          console.log(valueI, valueJ, filters[i](valueI));
-
           newRow.isOutlier =
             (columnProps[i].isInterval && filters[i](valueI)) || (columnProps[j].isInterval && filters[j](valueJ));
 
@@ -74,6 +72,7 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
             present: {
               data: subdata,
               fields: [columnProps[i].title, columnProps[j].title, 'isOutlier'],
+              purpose: ['Distribution'],
               encoding: {
                 colorField: 'isOutlier',
               },

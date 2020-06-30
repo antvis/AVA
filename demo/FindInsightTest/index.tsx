@@ -6,22 +6,15 @@ import ReactJson from 'react-json-view';
 import { RowData } from '../../packages/datawizard/transform/src';
 import { insightSamples } from '../data-samples';
 
-import { INSIGHT_TYPES } from '../../packages/chart-advisor';
-import { InsightType } from '../../packages/chart-advisor/temp';
-
 const sampleGetters: { name: string; getter: Function }[] = [];
 
-INSIGHT_TYPES.forEach((t) => {
-  const sample = insightSamples.find((s) => s.insights && s.insights.includes(t));
-  if (sample && sample.data) {
-    const data = sample.data;
-    sampleGetters.push({
-      name: t,
-      getter: () => {
-        return data;
-      },
-    });
-  }
+insightSamples.forEach((s) => {
+  sampleGetters.push({
+    name: s.name,
+    getter: () => {
+      return s.data;
+    },
+  });
 });
 
 export function FindInsightTest() {
@@ -33,7 +26,7 @@ export function FindInsightTest() {
     return sampleData as RowData[];
   };
 
-  const initSample: InsightType = 'Correlation';
+  const initSample = 'CompanyInfo';
 
   const [insights, setInsights] = useState<Insight[]>([]);
   const [sampleName, setSampleName] = useState<string>(initSample); //xxx: sampleGetters[0].name

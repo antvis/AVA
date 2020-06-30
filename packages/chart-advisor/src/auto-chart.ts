@@ -12,7 +12,7 @@ export { Preferences };
 const CACHES: Map<HTMLElement, AutoChart> = new Map();
 
 /**
- * 清理已经销毁的container绑定的AutoChart实例
+ * clean the instance binding with the destroyed container
  */
 function CheckAndClean(): void {
   for (const [container, chart] of CACHES.entries()) {
@@ -27,48 +27,48 @@ function CheckAndClean(): void {
 window.requestAnimationFrame(CheckAndClean);
 
 /**
- * autochart 配置项
+ * autochart configs
  * @public
  */
 export interface AutoChartOptions {
   /**
-   * 分析目的
+   * purpose for analysis
    */
   purpose?: string;
   /**
-   * 标题
+   * title
    */
   title?: string;
   /**
-   * 描述
+   * description
    */
   description?: string;
   /**
-   * 使用的数据字段
+   * data columns(fields)
    */
   fields?: string[];
-  /** 偏好选项 */
+  /** preferences */
   preferences?: Preferences;
-  /** 是否显示图表切换界面 */
+  /** chart type swith tool */
   toolbar?: boolean;
-  /** 开发模式 */
+  /** dev mode */
   development?: boolean;
   /**
-   * 主题
+   * theme
    */
   theme?: string;
   /**
-   * g2plot配置
+   * g2plot configs
    */
   config?: {
     type: string;
     configs: any;
   };
   /**
-   * 无数据的渲染逻辑
+   * render while no data
    */
   noDataContent?: (container: HTMLDivElement) => void;
-  /** 物推荐的渲染逻辑 */
+  /** render while no recommend result */
   feedback?: (container: HTMLDivElement) => void;
 }
 
