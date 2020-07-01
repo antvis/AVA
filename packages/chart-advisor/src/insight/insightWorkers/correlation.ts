@@ -25,6 +25,12 @@ export const correlationIW: Worker = function(data: RowData[]): Insight[] {
           fields: [columnProps[i].title as string, columnProps[j].title as string],
           present: {
             purpose: ['Distribution'],
+            type: 'scatter_plot',
+            encoding: {
+              x: columnProps[i].title as string,
+              y: columnProps[j].title as string,
+            },
+            configs: { xAxis: { title: { visible: true } }, yAxis: { title: { visible: true } } },
           },
         });
       }

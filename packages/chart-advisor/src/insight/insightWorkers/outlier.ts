@@ -17,6 +17,17 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
       if (columnProps[i].isInterval || columnProps[j].isInterval) {
         let hasInsight = false;
 
+        let dimensionTitle;
+        let measureTitle;
+
+        if (columnProps[i].isInterval) {
+          dimensionTitle = columnProps[j].title;
+          measureTitle = columnProps[i].title;
+        } else {
+          dimensionTitle = columnProps[i].title;
+          measureTitle = columnProps[j].title;
+        }
+
         const subdata = columns[i].map((valueI, index) => {
           const newRow: any = {};
 
@@ -65,6 +76,8 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
             outlierSeries.length === 1 ? 'outlier' : 'outliers'
           } for '${measure}'`;
 
+          const chartType = columnProps[i].isInterval && columnProps[j].isInterval ? 'scatter_plot' : 'column_chart';
+
           const insight: Insight = {
             type: 'CategoryOutliers',
             description,
@@ -73,9 +86,13 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
               data: subdata,
               fields: [columnProps[i].title, columnProps[j].title, 'isOutlier'],
               purpose: ['Distribution'],
+              type: chartType,
               encoding: {
-                colorField: 'isOutlier',
+                x: dimensionTitle,
+                y: measureTitle,
+                color: 'isOutlier',
               },
+              configs: { xAxis: { title: { visible: true } }, yAxis: { title: { visible: true } } },
             },
           };
 

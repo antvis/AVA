@@ -59,6 +59,12 @@ export const overallTrendsIW: Worker = function(data: RowData[]): Insight[] {
               fields: [columnProps[i].title as string, columnProps[j].title as string],
               present: {
                 purpose: ['Trend'],
+                type: 'line_chart',
+                encoding: {
+                  x: columnProps[i].title,
+                  y: columnProps[j].title,
+                },
+                configs: { xAxis: { title: { visible: true } }, yAxis: { title: { visible: true } } },
               },
             });
           }

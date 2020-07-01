@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AVAChart } from './Charts';
 import { dataInTable, dataInJSON } from '../utils';
-import { insightsFromData, Insight } from '../../packages/chart-advisor/src';
+import { insightsFromData, Insight, getMappingForLib, Channels } from '../../packages/chart-advisor/src';
 import ReactJson from 'react-json-view';
 import { RowData } from '../../packages/datawizard/transform/src';
 import { insightSamples } from '../data-samples';
@@ -60,9 +60,38 @@ export function FindInsightTest() {
     const options: any = { title: genTitle(insight), description: genDesc(insight) };
 
     if (insight.present && insight.present.type) {
-      const config: any = { type: insight.present.type };
+      const { typeMapping, configMapping } = getMappingForLib('G2Plot');
+      const config: any = { type: typeMapping[insight.present.type] };
+
       if (insight.present.encoding) {
-        config.configs = insight.present.encoding;
+        const configs: any = {};
+
+        for (const [key, value] of Object.entries(insight.present.encoding)) {
+          const configMapForType = configMapping[insight.present.type];
+          if (configMapForType) {
+            const channel = configMapForType[key as keyof Channels];
+            if (channel) {
+              configs[channel] = value;
+            }
+          }
+        }
+
+        config.configs = configs;
+
+        const defaultConfigs = {
+          title: {
+            visible: !!genTitle(insight),
+            text: genTitle(insight),
+          },
+          description: {
+            visible: !!genDesc(insight),
+            text: genDesc(insight),
+          },
+        };
+
+        if (insight.present && insight.present.configs) {
+          config.configs = { ...defaultConfigs, ...config.configs, ...insight.present.configs };
+        }
       }
       options.config = config;
     }

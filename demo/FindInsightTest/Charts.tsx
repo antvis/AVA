@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
-import { autoTransform } from '../../packages/datawizard/transform/src';
+// import { autoTransform } from '../../packages/datawizard/transform/src';
 import { autoChart } from '../../packages/chart-advisor/src';
 import { RowData } from '../../packages/datawizard/transform/typings/dw-transform';
 import ReactJson from 'react-json-view';
@@ -27,16 +27,13 @@ export const AVAChart: React.FC<AVAChartProps> = (props) => {
 
   const viewData = useMemo(() => {
     const filteredData = filterDataByFields(dataSource, fields);
-    const { result } = autoTransform(filteredData, false);
-    return result;
+    // const { result } = autoTransform(filteredData, false);
+    // return result;
+    return filteredData;
   }, [dataSource, fields]);
 
   useEffect(() => {
     if (container.current) {
-      console.log('viewData');
-      console.log(viewData);
-      console.log('options');
-      console.log(options);
       autoChart(container.current, viewData, options);
     }
   }, [viewData]);

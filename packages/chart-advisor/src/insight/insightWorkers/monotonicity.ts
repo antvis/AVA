@@ -50,6 +50,12 @@ export const monotonicityIW: Worker = function(data: RowData[]): Insight[] {
                   },
                   present: {
                     purpose: ['Trend'],
+                    type: 'line_chart',
+                    encoding: {
+                      x: dimensionTitle,
+                      y: measureTitle,
+                    },
+                    configs: { xAxis: { title: { visible: true } }, yAxis: { title: { visible: true } } },
                   },
                 };
                 insights.push(insight);

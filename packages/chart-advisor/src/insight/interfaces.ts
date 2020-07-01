@@ -26,5 +26,6 @@ export interface Insight {
     encoding?: any;
     purpose?: Purpose[];
     data?: RowData[];
+    configs?: any;
   };
 }
