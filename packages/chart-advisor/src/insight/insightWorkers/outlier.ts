@@ -83,7 +83,10 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
             description,
             fields: [columnProps[i].title, columnProps[j].title],
             present: {
-              data: subdata,
+              data: subdata.map((row) => {
+                row.isOutlier = row.isOutlier ? 'Outlier' : 'Not';
+                return row;
+              }),
               fields: [columnProps[i].title, columnProps[j].title, 'isOutlier'],
               purpose: ['Distribution'],
               type: chartType,
@@ -92,7 +95,11 @@ export const outlierIW: Worker = function(data: RowData[]): Insight[] {
                 y: measureTitle,
                 color: 'isOutlier',
               },
-              configs: { xAxis: { title: { visible: true } }, yAxis: { title: { visible: true } } },
+              configs: {
+                xAxis: { title: { visible: true } },
+                yAxis: { title: { visible: true } },
+                color: ['#5B8FF9', '#ff99c3'],
+              },
             },
           };
 

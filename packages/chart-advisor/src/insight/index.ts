@@ -8,6 +8,10 @@ import { Insight, InsightProps } from './interfaces';
 export async function insightsFromData(data: RowData[]): Promise<Insight[]> {
   // logic here...
 
+  console.log('😋😋😋😋😋');
+  console.log('data');
+  console.log(data);
+
   // workers
   const workers = Object.values(insightWorkers) as Worker[];
 
