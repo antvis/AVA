@@ -74,6 +74,9 @@ export interface Channels {
 // @beta (undocumented)
 export type ChartLibrary = 'G2Plot' | 'antdCharts';
 
+// @beta (undocumented)
+export type ConfigMapping = Partial<Record<ChartID, Channels>>;
+
 // @beta
 export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
@@ -87,6 +90,9 @@ export interface FieldInfo extends DWAnalyzer.FieldInfo {
     // (undocumented)
     name: string;
 }
+
+// @beta (undocumented)
+export function getMappingForLib(libraryName: ChartLibrary): Mapping;
 
 // @beta (undocumented)
 export interface Insight {
@@ -103,6 +109,7 @@ export interface Insight {
         encoding?: any;
         purpose?: Purpose[];
         data?: RowData[];
+        configs?: any;
     };
     // (undocumented)
     type: InsightType | 'SomeInsight';
@@ -132,6 +139,14 @@ export type InsightType = typeof INSIGHT_TYPES[number];
 // @beta (undocumented)
 export const insightWorkers: Partial<Record<InsightType, Worker_2>>;
 
+// @beta (undocumented)
+export interface Mapping {
+    // (undocumented)
+    configMapping: ConfigMapping;
+    // (undocumented)
+    typeMapping: TypeMapping;
+}
+
 // @public
 export interface Preferences {
     // (undocumented)
@@ -140,6 +155,9 @@ export interface Preferences {
 
 // @beta
 export function specToLibConfig(advice: Advice, libraryName: ChartLibrary): any;
+
+// @beta (undocumented)
+export type TypeMapping = Partial<Record<ChartID, string>>;
 
 // @beta (undocumented)
 type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;

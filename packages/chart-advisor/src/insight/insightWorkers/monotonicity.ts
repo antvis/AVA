@@ -1,5 +1,4 @@
-// import { RowData, AGGREGATION } from '@antv/dw-transform';
-import { RowData, autoTransform, AggregationType } from '../../../../datawizard/transform';
+import { RowData, autoTransform, AggregationType } from '@antv/dw-transform';
 import { Insight } from '..';
 import { Worker } from '.';
 import { rowDataToColumnFrame, columnsToRowData, isMonotonicDec, isMonotonicInc } from './utils';

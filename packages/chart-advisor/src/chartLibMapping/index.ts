@@ -3,9 +3,19 @@ import { G2PLOT_TYPE_MAPPING, G2PLOT_CONFIG_MAPPING } from './G2Plot';
 
 import { Channels } from '../advisor';
 
+/**
+ * @beta
+ */
 export type ConfigMapping = Partial<Record<ChartID, Channels>>;
+
+/**
+ * @beta
+ */
 export type TypeMapping = Partial<Record<ChartID, string>>;
 
+/**
+ * @beta
+ */
 export interface Mapping {
   typeMapping: TypeMapping;
   configMapping: ConfigMapping;
@@ -26,6 +36,9 @@ const configMappings: { [libraryName in ChartLibrary]: ConfigMapping } = {
   antdCharts: G2PLOT_CONFIG_MAPPING,
 };
 
+/**
+ * @beta
+ */
 export function getMappingForLib(libraryName: ChartLibrary): Mapping {
   return {
     typeMapping: typeMappings[libraryName],
