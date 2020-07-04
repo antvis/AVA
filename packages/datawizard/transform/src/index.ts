@@ -30,3 +30,5 @@ export {
 } from './parse';
 
 export { autoTransform, autoSchema, RenameOption, AutoTransformResult } from './autoTransform';
+
+export { Dataset, extractors, compositeExtractor } from './dataset';
