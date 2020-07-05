@@ -1,6 +1,6 @@
 import { typeAll, isInterval } from '@antv/dw-analyzer';
 import { RowData } from './util/helper';
-import { AggregationType } from './parse';
+import { AggregationType, AGGREGATION } from './parse';
 import { aggregate } from './aggregate';
 
 /**
@@ -88,10 +88,17 @@ export const percentExtractor: Extractor = (siblingGroup) => {
   return results;
 };
 
+const tuple = <T extends string[]>(...args: T) => args;
+
 /**
  * @beta
  */
-export type ExtractorType = 'rank' | 'percent';
+export const EXTRACTORS = tuple('rank', 'percent');
+
+/**
+ * @beta
+ */
+export type ExtractorType = typeof EXTRACTORS[number];
 
 /**
  * @beta
@@ -115,6 +122,17 @@ export type AggExtractorPair = {
 export type SubExtractorPair = {
   extractor: ExtractorType;
   dimension: string;
+};
+
+/**
+ * @beta
+ */
+export type AllSubspaceDatasetOptions = {
+  dimensions?: string[];
+  measures?: string[];
+  aggregations?: AggregationType[];
+  extractors?: ExtractorType[];
+  depth?: number;
 };
 
 /**
@@ -221,7 +239,8 @@ export class Dataset {
 
   siblingGroup(subspace: Subspace, dimension: string): SiblingGroup {
     if (!this._dimensionTitles.includes(dimension)) {
-      throw new Error('No such dimension.');
+      console.log(JSON.stringify(subspace));
+      throw new Error(`No such dimension: ${dimension}.`);
     }
 
     const defineSubspace = subspace;
@@ -260,14 +279,64 @@ export class Dataset {
       dataset: siblingGroupDataset,
     };
   }
+
+  allSubspaceDataset(options?: AllSubspaceDatasetOptions): RowData[][] {
+    const MAX_DEPTH = 3;
+
+    const dimensions: string[] = (options && options.dimensions) || this._dimensionTitles;
+    const measures: string[] = (options && options.measures) || this._measureTitles;
+    const aggregations: AggregationType[] = (options && options.aggregations) || AGGREGATION;
+    const extractors: ExtractorType[] = (options && options.extractors) || EXTRACTORS;
+    const depth: number = options && options.depth && options.depth < MAX_DEPTH ? options.depth : MAX_DEPTH;
+
+    // traverse siblingGroups - by combinations of (subspaces & dimensions)
+
+    const defineArray = dimensions.map((_) => '*');
+
+    const allSiblingGroups = dimensions.map((d) => this.siblingGroup(this.subspace(defineArray), d));
+
+    // traverse subspaceDatasets - by combinations of (siblingGroups & aggs & measures & extractors & depth)
+
+    const allSubspaceDatasets: RowData[][] = [];
+
+    allSiblingGroups.forEach((sg) => {
+      measures.forEach((measure) => {
+        aggregations.forEach((agg) => {
+          const possibleExtractorPairs: SubExtractorPair[] = [];
+          extractors.forEach((extractor) => {
+            dimensions.forEach((dimension) => {
+              possibleExtractorPairs.push({ extractor, dimension });
+            });
+          });
+
+          let extractorPairs: SubExtractorPair[] = [];
+          for (let x = 0; x < possibleExtractorPairs.length; x++) {
+            for (let y = 0; y < possibleExtractorPairs.length; y++) {
+              extractorPairs = [possibleExtractorPairs[x], possibleExtractorPairs[y]];
+            }
+          }
+
+          for (let i = 0; i < depth; i++) {
+            const subDataset: RowData[] = compositeExtractor(sg, { agg, measure }, extractorPairs, i);
+            allSubspaceDatasets.push(subDataset);
+          }
+        });
+      });
+    });
+
+    return allSubspaceDatasets;
+  }
 }
 
+/**
+ * @beta
+ */
 export function compositeExtractor(
   siblingGroup: SiblingGroup,
   aggPair: AggExtractorPair,
   extractorPairs: SubExtractorPair[] = [],
   depth: number = extractorPairs.length + 1
-) {
+): RowData[] {
   let result = [];
 
   let t = depth < 1 ? 1 : depth;
@@ -298,29 +367,42 @@ export function compositeExtractor(
     as: [measure],
     op: [agg],
   });
-  result = data1;
+  // rename
+  result = data1.map((row) => {
+    const newRow: RowData = {};
+    Object.keys(row)
+      .filter((k) => k !== measure)
+      .forEach((k) => {
+        newRow[k] = row[k];
+      });
+    newRow[`${measure}_${agg}`] = row[measure];
+    return newRow;
+  });
 
   // then, t-1 round of extracting
 
   for (let i = 0; i < t - 1; i++) {
     // each round of extracting
-    const { extractor: extractorType, dimension: extractByDimension } = extractorPairs[i];
-    const extractor = extractors[extractorType];
     const tempDataset = new Dataset(result);
-    const rColumn = extractor(tempDataset.siblingGroup(tempDataset.subspace(), extractByDimension))[0];
+    const { extractor: extractorType, dimension: extractByDimension } = extractorPairs[i];
 
-    const extractedResult: any[] = [];
-    const newMeasureName = `${tempDataset.measureTitles[0]}_${extractorType}`;
-    result.forEach((row, index) => {
-      const newRow: RowData = {};
-      tempDataset.dimensionTitles.forEach((d) => {
-        newRow[d] = row[d];
+    if (tempDataset.dimensionTitles.includes(extractByDimension)) {
+      const extractor = extractors[extractorType];
+      const rColumn = extractor(tempDataset.siblingGroup(tempDataset.subspace(), extractByDimension))[0];
+
+      const extractedResult: RowData[] = [];
+      const newMeasureName = `${tempDataset.measureTitles[0]}_${extractorType}`;
+      result.forEach((row, index) => {
+        const newRow: RowData = {};
+        tempDataset.dimensionTitles.forEach((d) => {
+          newRow[d] = row[d];
+        });
+        newRow[newMeasureName] = rColumn[index];
+        extractedResult.push(newRow);
       });
-      newRow[newMeasureName] = rColumn[index];
-      extractedResult.push(newRow);
-    });
 
-    result = extractedResult;
+      result = extractedResult;
+    }
   }
 
   return result;
