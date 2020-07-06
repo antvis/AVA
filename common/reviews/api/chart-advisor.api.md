@@ -4,9 +4,11 @@
 
 ```ts
 
+import { AllSubspaceDatasetOptions } from '@antv/dw-transform';
 import { ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { LevelOfMeasurement } from '@antv/knowledge';
+import { Purpose } from '@antv/knowledge';
 import { RowData } from '@antv/dw-transform';
 
 // @beta (undocumented)
@@ -73,6 +75,9 @@ export interface Channels {
 // @beta (undocumented)
 export type ChartLibrary = 'G2Plot' | 'antdCharts';
 
+// @beta (undocumented)
+export type ConfigMapping = Partial<Record<ChartID, Channels>>;
+
 // @beta
 export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
@@ -88,22 +93,31 @@ export interface FieldInfo extends DWAnalyzer.FieldInfo {
 }
 
 // @beta (undocumented)
+export function getMappingForLib(libraryName: ChartLibrary): Mapping;
+
+// @beta (undocumented)
 export interface Insight {
+    // (undocumented)
+    description?: string;
     // (undocumented)
     fields: string[];
     // (undocumented)
     insightProps?: InsightProps;
     // (undocumented)
     present?: {
-        data: RowData[];
-        fields: string[];
+        fields?: string[];
+        type?: ChartID;
+        encoding?: any;
+        purpose?: Purpose[];
+        data?: RowData[];
+        configs?: any;
     };
     // (undocumented)
     type: InsightType | 'SomeInsight';
 }
 
 // @beta (undocumented)
-export const INSIGHT_TYPES: ["Correlation", "Monotonicity", "MajorFactors", "CategoryOutliers", "TimeSeriesOutliers", "OverallTrends", "Seasonality", "ChangePoints"];
+export const INSIGHT_TYPES: ["Correlation", "Monotonicity", "MajorFactors", "OverallTrends", "CategoryOutliers", "TimeSeriesOutliers", "Seasonality", "ChangePoints"];
 
 // @beta (undocumented)
 export interface InsightProps {
@@ -121,10 +135,21 @@ export interface InsightProps {
 export function insightsFromData(data: RowData[]): Promise<Insight[]>;
 
 // @beta (undocumented)
+export function insightsFromDataset(data: RowData[], options?: AllSubspaceDatasetOptions): Promise<Insight[]>;
+
+// @beta (undocumented)
 export type InsightType = typeof INSIGHT_TYPES[number];
 
 // @beta (undocumented)
 export const insightWorkers: Partial<Record<InsightType, Worker_2>>;
+
+// @beta (undocumented)
+export interface Mapping {
+    // (undocumented)
+    configMapping: ConfigMapping;
+    // (undocumented)
+    typeMapping: TypeMapping;
+}
 
 // @public
 export interface Preferences {
@@ -134,6 +159,9 @@ export interface Preferences {
 
 // @beta
 export function specToLibConfig(advice: Advice, libraryName: ChartLibrary): any;
+
+// @beta (undocumented)
+export type TypeMapping = Partial<Record<ChartID, string>>;
 
 // @beta (undocumented)
 type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;

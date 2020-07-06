@@ -17,6 +17,22 @@ export function AutoChartTest() {
 
       {/* <AutoChart
         data={[
+          {
+            isOutlier: false,
+            population: 391,
+            revenue: 1164,
+          },
+          {
+            isOutlier: true,
+            population: 51,
+            revenue: 250,
+          },
+        ]}
+        purpose="Distribution"
+      /> */}
+
+      {/* <AutoChart
+        data={[
           { f1: 'a', f2: 100 },
           { f1: 'b', f2: 300 },
           { f1: 'c', f2: 430 },

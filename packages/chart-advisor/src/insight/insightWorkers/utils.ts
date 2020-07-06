@@ -1,6 +1,14 @@
 import { RowData } from '@antv/dw-transform';
 import { Insight as VisualInsight } from 'visual-insights';
-import { type as typeAnalyze, TypeSpecifics, isUnique, isTime, isInterval, FieldInfo } from '@antv/dw-analyzer';
+import {
+  type as typeAnalyze,
+  TypeSpecifics,
+  isUnique,
+  isTime,
+  isInterval,
+  isOrdinal,
+  FieldInfo,
+} from '@antv/dw-analyzer';
 import { Insight, InsightProps } from '..';
 import { InsightType, Worker } from '.';
 import { getInsightSpaces } from '../fromVisualInsights';
@@ -30,6 +38,7 @@ interface ColumnProp {
   isUnique?: boolean;
   isTime?: boolean;
   isInterval?: boolean;
+  isOrdinal?: boolean;
   fieldInfo?: FieldInfo;
 }
 
@@ -60,6 +69,7 @@ export function rowDataToColumnFrame(rows: RowData[]): ColumnFrame {
       isUnique: isUnique(anaResult),
       isTime: isTime(anaResult),
       isInterval: isInterval(anaResult),
+      isOrdinal: isOrdinal(anaResult),
       fieldInfo: anaResult,
     });
     columns.push(column);
@@ -168,7 +178,7 @@ export function visualInsightWorkerToAVAWorker(viWorkerId: VisualInsightWorkerID
 
 export function isMonotonicInc(array: number[]): boolean {
   for (let i = 1; i < array.length; i++) {
-    if (array[i - 1] > array[i]) {
+    if (array[i - 1] >= array[i]) {
       return false;
     }
   }
@@ -178,10 +188,33 @@ export function isMonotonicInc(array: number[]): boolean {
 
 export function isMonotonicDec(array: number[]): boolean {
   for (let i = 1; i < array.length; i++) {
-    if (array[i - 1] < array[i]) {
+    if (array[i - 1] <= array[i]) {
       return false;
     }
   }
 
   return true;
+}
+
+export function normalizeArray(array: number[]): number[] {
+  const max = Math.max(...array);
+  const min = Math.min(...array);
+  return array.map((val) => {
+    return (val - min) / (max - min);
+  });
+}
+
+export function outliersFilters(dataProps: FieldInfo[]): Function[] {
+  const threshold = 3;
+  return dataProps.map((dp: any) => {
+    if (dp.recommendation === 'float' || dp.recommendation === 'integer') {
+      const q1 = dp.percentile25;
+      const q3 = dp.percentile75;
+      const iqr = Math.abs(q3 - q1);
+      const lowThreshold = q1 - threshold * iqr;
+      const highThreshold = q3 + threshold * iqr;
+      return (v: number) => v < lowThreshold || v > highThreshold;
+    }
+    return (_: any) => false;
+  });
 }

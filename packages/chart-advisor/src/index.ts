@@ -47,8 +47,8 @@ export {
   Channels,
 } from './advisor';
 
-export { ChartLibrary } from './chartLibMapping';
+export { ChartLibrary, getMappingForLib, Mapping, TypeMapping, ConfigMapping } from './chartLibMapping';
 
-export { insightsFromData, Insight, InsightProps } from './insight';
+export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';
