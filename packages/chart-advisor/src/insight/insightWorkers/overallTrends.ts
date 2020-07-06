@@ -60,6 +60,7 @@ export const overallTrendsIW: Worker = function(data: RowData[]): Insight[] {
               present: {
                 purpose: ['Trend'],
                 type: 'line_chart',
+                data,
                 encoding: {
                   x: columnProps[i].title,
                   y: columnProps[j].title,

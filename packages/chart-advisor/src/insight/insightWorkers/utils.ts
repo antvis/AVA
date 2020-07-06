@@ -178,7 +178,7 @@ export function visualInsightWorkerToAVAWorker(viWorkerId: VisualInsightWorkerID
 
 export function isMonotonicInc(array: number[]): boolean {
   for (let i = 1; i < array.length; i++) {
-    if (array[i - 1] > array[i]) {
+    if (array[i - 1] >= array[i]) {
       return false;
     }
   }
@@ -188,7 +188,7 @@ export function isMonotonicInc(array: number[]): boolean {
 
 export function isMonotonicDec(array: number[]): boolean {
   for (let i = 1; i < array.length; i++) {
-    if (array[i - 1] < array[i]) {
+    if (array[i - 1] <= array[i]) {
       return false;
     }
   }

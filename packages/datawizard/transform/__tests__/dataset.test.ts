@@ -100,11 +100,27 @@ test('extractor', () => {
 
 test('allSubspaceDataset', () => {
   const dataset = new Dataset(data1);
-  expect(
-    dataset.allSubspaceDataset({
-      measures: ['population', 'revenue'],
-      aggregations: ['sum', 'avg'],
-      depth: 3,
-    }).length
-  ).toBe(36); // (3 dim * 2 agg * 2 ext) * 3 = 36
+  const subDatasets = dataset.allSubspaceDataset({
+    measures: ['population', 'revenue'],
+    aggregations: ['sum', 'avg'],
+    depth: 3,
+  });
+  expect(subDatasets.map((dataset) => Object.keys(dataset[0]))).toStrictEqual([
+    ['date', 'population_sum'],
+    ['date', 'population_avg'],
+    ['date', 'revenue_sum'],
+    ['date', 'revenue_avg'],
+    ['quarter', 'population_sum'],
+    ['quarter', 'population_avg'],
+    ['quarter', 'revenue_sum'],
+    ['quarter', 'revenue_avg'],
+    ['team', 'population_sum'],
+    ['team', 'population_sum_percent'],
+    ['team', 'population_avg'],
+    ['team', 'population_avg_percent'],
+    ['team', 'revenue_sum'],
+    ['team', 'revenue_sum_percent'],
+    ['team', 'revenue_avg'],
+    ['team', 'revenue_avg_percent'],
+  ]);
 });

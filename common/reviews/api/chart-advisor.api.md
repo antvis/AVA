@@ -4,6 +4,7 @@
 
 ```ts
 
+import { AllSubspaceDatasetOptions } from '@antv/dw-transform';
 import { ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { LevelOfMeasurement } from '@antv/knowledge';
@@ -132,6 +133,9 @@ export interface InsightProps {
 
 // @beta (undocumented)
 export function insightsFromData(data: RowData[]): Promise<Insight[]>;
+
+// @beta (undocumented)
+export function insightsFromDataset(data: RowData[], options?: AllSubspaceDatasetOptions): Promise<Insight[]>;
 
 // @beta (undocumented)
 export type InsightType = typeof INSIGHT_TYPES[number];

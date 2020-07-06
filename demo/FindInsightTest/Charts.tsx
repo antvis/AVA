@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 // import { autoTransform } from '../../packages/datawizard/transform/src';
-import { autoChart } from '../../packages/chart-advisor/src';
+import { autoChart, Insight } from '../../packages/chart-advisor/src';
 import { RowData } from '../../packages/datawizard/transform/typings/dw-transform';
 import ReactJson from 'react-json-view';
 
@@ -14,6 +14,7 @@ function filterDataByFields(data: RowData[], fields: string[]): RowData[] {
   });
 }
 interface AVAChartProps {
+  insight: Insight;
   dataSource: RowData[];
   fields: string[];
   options: any;
@@ -21,7 +22,7 @@ interface AVAChartProps {
 
 export const AVAChart: React.FC<AVAChartProps> = (props) => {
   // eslint-disable-next-line react/prop-types
-  const { dataSource, fields, options } = props;
+  const { insight, dataSource, fields, options } = props;
   const container = useRef<HTMLDivElement>(null);
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
@@ -44,7 +45,7 @@ export const AVAChart: React.FC<AVAChartProps> = (props) => {
         setShowDetail((v) => !v);
       }}
     >
-      <div ref={container}></div>
+      <div ref={container} style={{ height: '400px' }}></div>
       {showDetail && (
         <div
           style={{
@@ -57,7 +58,7 @@ export const AVAChart: React.FC<AVAChartProps> = (props) => {
             overflow: 'auto',
           }}
         >
-          <ReactJson src={viewData} />
+          <ReactJson src={{ insight, data: viewData }} />
         </div>
       )}
     </div>

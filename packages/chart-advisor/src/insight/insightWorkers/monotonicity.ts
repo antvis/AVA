@@ -50,6 +50,7 @@ export const monotonicityIW: Worker = function(data: RowData[]): Insight[] {
                   present: {
                     purpose: ['Trend'],
                     type: 'line_chart',
+                    data: subData,
                     encoding: {
                       x: dimensionTitle,
                       y: measureTitle,

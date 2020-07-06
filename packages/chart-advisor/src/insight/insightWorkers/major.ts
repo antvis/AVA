@@ -43,6 +43,15 @@ export const majorFactorsIW: Worker = function(data: RowData[]): Insight[] {
                 data: presentData,
                 fields: [columnTitle, countTitle],
                 purpose: ['Proportion'],
+                type: 'pie_chart',
+                encoding: {
+                  color: columnTitle,
+                  angle: countTitle,
+                },
+                configs: {
+                  xAxis: { title: { visible: true } },
+                  yAxis: { title: { visible: true } },
+                },
               },
             };
 

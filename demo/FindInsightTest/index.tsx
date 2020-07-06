@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AVAChart } from './Charts';
 import { dataInTable, dataInJSON } from '../utils';
-import { insightsFromData, Insight, getMappingForLib, Channels } from '../../packages/chart-advisor/src';
+import { insightsFromDataset, Insight, getMappingForLib, Channels } from '../../packages/chart-advisor/src';
 import ReactJson from 'react-json-view';
 import { RowData } from '../../packages/datawizard/transform/src';
 import { insightSamples } from '../data-samples';
@@ -26,7 +26,7 @@ export function FindInsightTest() {
     return sampleData as RowData[];
   };
 
-  const initSample = 'CompanyInfo';
+  const initSample = 'TeamInfo';
 
   const [insights, setInsights] = useState<Insight[]>([]);
   const [sampleName, setSampleName] = useState<string>(initSample); //xxx: sampleGetters[0].name
@@ -34,7 +34,9 @@ export function FindInsightTest() {
 
   useEffect(() => {
     if (dataSource.length > 0) {
-      insightsFromData(dataSource).then((insights) => {
+      insightsFromDataset(dataSource, {
+        aggregations: ['sum', 'avg', 'count', 'distinct', 'max', 'min'],
+      }).then((insights) => {
         console.log('🉑🉑🉑🉑 insights');
         console.log(insights);
         setInsights(insights);
@@ -146,9 +148,10 @@ export function FindInsightTest() {
           flexWrap: 'wrap',
         }}
       >
-        {insights.slice(0, 20).map((insight) => (
-          <div style={{ width: '480px', height: '420px' }} key={`${insight.type}-${insight.fields.join('-')}`}>
+        {insights.slice(0, 40).map((insight, index) => (
+          <div style={{ width: '480px', height: '420px' }} key={`${insight.type}-${insight.fields.join('-')}-${index}`}>
             <AVAChart
+              insight={insight}
               dataSource={insight.present && insight.present.data ? insight.present.data : dataSource}
               fields={insight.present && insight.present.fields ? insight.present.fields : insight.fields}
               options={genOptions(insight)}

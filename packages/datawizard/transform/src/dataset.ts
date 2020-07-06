@@ -297,7 +297,7 @@ export class Dataset {
 
     // traverse subspaceDatasets - by combinations of (siblingGroups & aggs & measures & extractors & depth)
 
-    const allSubspaceDatasets: RowData[][] = [];
+    let allSubspaceDatasets: RowData[][] = [];
 
     allSiblingGroups.forEach((sg) => {
       measures.forEach((measure) => {
@@ -316,10 +316,31 @@ export class Dataset {
             }
           }
 
+          // remove duplicates
+          const resultsDiffDepth: RowData[][] = [];
           for (let i = 0; i < depth; i++) {
             const subDataset: RowData[] = compositeExtractor(sg, { agg, measure }, extractorPairs, i);
-            allSubspaceDatasets.push(subDataset);
+
+            let hasDuplication = false;
+            for (let j = 0; j < resultsDiffDepth.length; j++) {
+              if (
+                Object.keys(resultsDiffDepth[j][0])
+                  .sort()
+                  .join(',') ===
+                Object.keys(subDataset[0])
+                  .sort()
+                  .join(',')
+              ) {
+                hasDuplication = true;
+                break;
+              }
+            }
+            if (!hasDuplication) {
+              resultsDiffDepth.push(subDataset);
+            }
           }
+
+          allSubspaceDatasets = allSubspaceDatasets.concat(resultsDiffDepth);
         });
       });
     });
@@ -338,9 +359,6 @@ export function compositeExtractor(
   depth: number = extractorPairs.length + 1
 ): RowData[] {
   let result = [];
-
-  let t = depth < 1 ? 1 : depth;
-  t = t > 1 + extractorPairs.length ? 1 + extractorPairs.length : t;
 
   const { define, datasetInfo } = siblingGroup;
   const { dimension: defineDimension, subspace: defineSubspace } = define;
@@ -380,6 +398,9 @@ export function compositeExtractor(
   });
 
   // then, t-1 round of extracting
+
+  let t = depth < 1 ? 1 : depth;
+  t = t > 1 + extractorPairs.length ? 1 + extractorPairs.length : t;
 
   for (let i = 0; i < t - 1; i++) {
     // each round of extracting
