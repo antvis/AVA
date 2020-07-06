@@ -7,7 +7,7 @@ test('rename', () => {
   expect(rename('field4', 'max', 'origin')).toEqual('field4');
   expect(rename('field5', 'max', false)).toEqual('field5');
   expect(rename('field6', 'max', true)).toEqual('MAX(field6)');
-  expect(rename('field7', 'sum', (originStr, aggType) => `${originStr}+${aggType}`)).toEqual('field7+sum');
+  expect(rename('field7', 'sum', (originStr: any, aggType: any) => `${originStr}+${aggType}`)).toEqual('field7+sum');
   expect(rename('field8', 'max', () => `nothing`)).toEqual('nothing');
   expect(rename('field9', 'max', () => false)).toEqual('false');
 });

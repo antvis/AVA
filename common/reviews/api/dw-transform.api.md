@@ -19,6 +19,12 @@ export interface Action {
 // @beta (undocumented)
 export type ActionType = AggregationType | ConversionType | FillType;
 
+// @beta (undocumented)
+export type AggExtractorPair = {
+    agg: AggregationType;
+    measure: string;
+};
+
 // @public (undocumented)
 export function aggregate(rows: RowData[], options: AggregateParams): RowData[];
 
@@ -41,24 +47,77 @@ export const AGGREGATION: ["sum", "max", "min", "average", "avg", "median", "cou
 export type AggregationType = typeof AGGREGATION[number];
 
 // @beta (undocumented)
-export function autoSchema(data: RowData[], renameOption?: RenameOption): TransformSchema[];
+export type AllSubspaceDatasetOptions = {
+    dimensions?: string[];
+    measures?: string[];
+    aggregations?: AggregationType[];
+    extractors?: ExtractorType[];
+    depth?: number;
+};
 
 // @beta (undocumented)
-export function autoTransform(data: RowData[], renameOption?: RenameOption): AutoTransformResult;
+export function autoSchema(data: RowData[], renameOption?: RenameOption, defaultAgg?: AggregationType): TransformSchema[];
+
+// @beta (undocumented)
+export function autoTransform(data: RowData[], renameOption?: RenameOption, defaultAgg?: AggregationType): AutoTransformResult;
 
 // @beta (undocumented)
 export interface AutoTransformResult {
     // (undocumented)
-    result: RowData;
+    result: RowData[];
     // (undocumented)
     schemas: TransformSchema[];
 }
+
+// @beta (undocumented)
+export type ColumnInfo = {
+    name: string;
+    data: any[];
+    domain: any[];
+};
+
+// @beta (undocumented)
+export function compositeExtractor(siblingGroup: SiblingGroup, aggPair: AggExtractorPair, extractorPairs?: SubExtractorPair[], depth?: number): RowData[];
 
 // @beta (undocumented)
 export const CONVERSION: ["toString", "toFloat", "toInt"];
 
 // @beta (undocumented)
 export type ConversionType = typeof CONVERSION[number];
+
+// @beta (undocumented)
+export class Dataset {
+    constructor(dataset: RowData[]);
+    // (undocumented)
+    allSubspaceDataset(options?: AllSubspaceDatasetOptions): RowData[][];
+    // (undocumented)
+    get dataset(): RowData[];
+    set dataset(dataset: RowData[]);
+    // (undocumented)
+    get dimensions(): ColumnInfo[];
+    // (undocumented)
+    get dimensionTitles(): string[];
+    // (undocumented)
+    get measures(): ColumnInfo[];
+    // (undocumented)
+    get measureTitles(): string[];
+    // (undocumented)
+    siblingGroup(subspace: Subspace, dimension: string): SiblingGroup;
+    // (undocumented)
+    subspace(defineArray?: string[]): Subspace;
+}
+
+// @beta (undocumented)
+export type Extractor = (siblingGroup: SiblingGroup) => Measure[];
+
+// @beta (undocumented)
+export const EXTRACTORS: ["rank", "percent"];
+
+// @beta (undocumented)
+export const extractors: Record<ExtractorType, Extractor>;
+
+// @beta (undocumented)
+export type ExtractorType = typeof EXTRACTORS[number];
 
 // @beta (undocumented)
 export const FILL: ["fillNull", "removeNull"];
@@ -98,6 +157,9 @@ export type FillNullType = 'bySmart' | 'byAgg' | 'byValue';
 // @beta (undocumented)
 export type FillType = typeof FILL[number];
 
+// @beta (undocumented)
+export type Measure = number[];
+
 // @public
 export type Operations = 'sum' | 'average' | 'avg' | 'mean' | 'min' | 'max' | 'median' | 'variance' | 'stdevp' | 'stdev' | 'mode' | 'product' | 'count' | 'distinct' | 'countd' | 'valid';
 
@@ -109,6 +171,32 @@ export type RenameOption = boolean | 'origin' | 'brackets' | 'underline' | Funct
 
 // @public
 export type RowData = Record<string, any>;
+
+// @beta (undocumented)
+export type SiblingGroup = {
+    datasetInfo: {
+        dimensionTitles: string[];
+        measureTitles: string[];
+    };
+    define: {
+        subspace: Subspace;
+        dimension: string;
+    };
+    subspaceList: Subspace[];
+    dataset: RowData[];
+};
+
+// @beta (undocumented)
+export type SubExtractorPair = {
+    extractor: ExtractorType;
+    dimension: string;
+};
+
+// @beta (undocumented)
+export type Subspace = {
+    define: Record<string, string>;
+    dataset: RowData[];
+};
 
 // @beta (undocumented)
 export interface TransformSchema {

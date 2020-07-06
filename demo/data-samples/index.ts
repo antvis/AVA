@@ -13,6 +13,8 @@ import { sample10 } from './sample10';
 import { sample11 } from './sample11';
 import { sample12 } from './sample12';
 
+import { insightSamples } from './insightSamples';
+
 const sampleList: DataSample[] = [
   sample1,
   sample2,
@@ -32,7 +34,12 @@ type qty = 'First' | 'Random' | 'All';
 
 export const DataSamples = {
   ForChartType: (type: ChartID, qty: qty = 'First') => {
-    const filteredSamples = sampleList.filter((sample) => sample.props.for.includes(type));
+    const filteredSamples = sampleList.filter((sample) => {
+      if (!sample.props) {
+        return false;
+      }
+      return sample.props.for.includes(type);
+    });
     if (!filteredSamples || filteredSamples.length < 1) {
       return [];
     }
@@ -50,3 +57,5 @@ export const DataSamples = {
     return result;
   },
 };
+
+export { insightSamples };

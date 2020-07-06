@@ -1,5 +1,5 @@
 import * as G2Plot from '@antv/g2plot';
-import { uuid } from './util';
+import { uuid, translate } from './util';
 
 export interface DummyPlotConfig {
   type: string;
@@ -28,7 +28,7 @@ export class DummyPlot {
     this.currentConfigs = { ...configs, data };
     this.type = type;
     // @ts-ignore
-    this.plot = new G2Plot[type](container, { ...configs, data });
+    this.plot = new G2Plot[translate(type)](container, { ...configs, data });
     this.plot.render();
   }
 
