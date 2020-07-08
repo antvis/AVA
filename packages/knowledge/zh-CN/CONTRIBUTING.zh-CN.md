@@ -10,20 +10,20 @@
 
 ### 修改一个已有图表的知识内容
 
-1. 在 [`AVA/packages/knowledge/src/base.ts`](./src/base.ts) 中找到这个具体图表类型，修改其内容。
-2. 如果你的修改涉及到图表的名称（name）、别名（alias）、定义（def），请到 [`AVA/packages/knowledge/src/i18n/`](./src/i18n/) 路径下提供各语言版本的相关翻译。
+1. 在 [`AVA/packages/knowledge/src/base.ts`](../src/base.ts) 中找到这个具体图表类型，修改其内容。
+2. 如果你的修改涉及到图表的名称（name）、别名（alias）、定义（def），请到 [`AVA/packages/knowledge/src/i18n/`](../src/i18n/) 路径下提供各语言版本的相关翻译。
 3. 提交 [PR](https://github.com/antvis/AVA/pulls)，或者先开一个 [issue](https://github.com/antvis/AVA/issues) 来和我们讨论。
 
 ### 新增一个图表类型
 
-1. 在 [`AVA/packages/knowledge/src/chartID.ts`](./src/chartID.ts) 给你要新增的图表类型定义一个 ID，确保其未被占用。
-2. 在 [`AVA/packages/knowledge/src/base.ts`](./src/base.ts) 中加入这个图表类型的知识内容。
-3. 在 [`AVA/packages/knowledge/src/i18n/`](./src/i18n/) 路径下提供各语言版本的翻译。
+1. 在 [`AVA/packages/knowledge/src/chartID.ts`](../src/chartID.ts) 给你要新增的图表类型定义一个 ID，确保其未被占用。
+2. 在 [`AVA/packages/knowledge/src/base.ts`](../src/base.ts) 中加入这个图表类型的知识内容。
+3. 在 [`AVA/packages/knowledge/src/i18n/`](../src/i18n/) 路径下提供各语言版本的翻译。
 4. 提交 [PR](https://github.com/antvis/AVA/pulls)，或者先开一个 [issue](https://github.com/antvis/AVA/issues) 来和我们讨论。
 
 ### 修改图表知识的分类角度的可选值
 
-1. 在 [`AVA/packages/knowledge/src/interface.ts`](./src/interface.ts) 中找到对应角度的 OPTION 数组。
+1. 在 [`AVA/packages/knowledge/src/interface.ts`](../src/interface.ts) 中找到对应角度的 OPTION 数组。
 2. 修改其值并提交 [PR](https://github.com/antvis/AVA/pulls)，或者先开一个 [issue](https://github.com/antvis/AVA/issues) 来和我们讨论。
 
 ## 致 非开发者
@@ -32,7 +32,7 @@
 
 如果你还没有 GitHub 账号，先 [申请一个](https://github.com/join)。这很值得。
 
-阅读 [用户指南](./USERGUIDE.md) 来了解图表知识库中的对图表类型信息的记录结构和相关概念。
+阅读 [用户指南](./USERGUIDE.zh-CN.md) 来了解图表知识库中的对图表类型信息的记录结构和相关概念。
 
 然后，你可以通过提交 [issue](https://github.com/antvis/AVA/issues) 或 [pull request](https://github.com/antvis/AVA/pulls) 的方式来提供你的建议。
 
