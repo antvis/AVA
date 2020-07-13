@@ -1,26 +1,22 @@
 import React, { useRef, useEffect } from 'react';
-import * as G2Plot from '@antv/g2plot';
 import { DataSamples } from './data-samples';
-import { dataToDataProps, dataPropsToSpecs, specToLibConfig } from '../packages/chart-advisor/src/index';
+import { dataToDataProps, dataPropsToSpecs, specToLibConfig, ChartLibrary, adaptRender } from '../packages/chart-advisor/src/index';
 import { prettyJSON, JSONToTable } from './utils';
 
+// test for different adaptor
+const CHART_LIB: ChartLibrary = 'G2';
+
 export function PipelineTest() {
-  const datasample = DataSamples.ForChartType('percent_stacked_bar_chart');
+  const datasample = DataSamples.ForChartType('grouped_bar_chart');
 
   const dataProps = dataToDataProps(datasample);
   const specs = dataPropsToSpecs(dataProps);
-  const libConfigs = specs.map((spec) => specToLibConfig(spec, 'G2Plot')).filter((e) => e.type && e.configs);
+  const libConfigs = specs.map((spec) => specToLibConfig(spec, CHART_LIB)).filter((e) => e.type && e.configs);
 
-  const { type, configs } = libConfigs[0];
-  // @ts-ignore
-  const ChartConstructor = G2Plot[type];
   const chartdom = useRef(null);
+
   useEffect(() => {
-    const chart = new ChartConstructor(chartdom.current, {
-      data: datasample,
-      ...configs,
-    });
-    chart.render();
+    adaptRender(chartdom.current!, datasample, CHART_LIB, libConfigs[0]);
   });
 
   const dataInJSON = (
@@ -65,7 +61,7 @@ export function PipelineTest() {
       </div>
       {/* lib config */}
       <div>
-        <h3>lib config (G2Plot)</h3>
+        <h3>lib config ({CHART_LIB})</h3>
         {[libConfigs].map((libConfigs) => {
           console.log('📝 libConfigs');
           console.log(libConfigs);

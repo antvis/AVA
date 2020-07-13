@@ -3,6 +3,7 @@ import Rules, { Rule, Preferences } from './rules';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { translate } from './util';
 import { ChartLibrary, getMappingForLib } from './chartLibMapping';
+import { GeometryOption } from '@antv/g2/lib/interface';
 
 const Wiki = CKBJson('en-US', true);
 
@@ -19,6 +20,9 @@ export interface Channels {
   radius?: string;
   series?: string;
   size?: string;
+
+  // fit for G2 GeometryOption
+  geometry?: GeometryOption;
 }
 
 /**
@@ -450,6 +454,7 @@ export function analyze(data: any[], options?: AdvisorOptions, showLog = false):
 export function specToLibConfig(advice: Advice, libraryName: ChartLibrary) {
   const { typeMapping, configMapping } = getMappingForLib(libraryName);
   const { type, channels } = advice;
+  console.log('type: ', type);
 
   const libConfig: any = {};
 
@@ -463,13 +468,26 @@ export function specToLibConfig(advice: Advice, libraryName: ChartLibrary) {
     const configMapForType = configMapping[type];
     if (configMapForType) {
       const channel = configMapForType[key as keyof Channels];
-      if (channel) {
+      if (typeof channel === 'string') {
         configs[channel] = value;
       }
     }
   }
 
-  libConfig.configs = configs;
+  if (libraryName === 'G2Plot') {
+    libConfig.configs = configs;
+  } else if (libraryName === 'G2') {
+    // channels to geometries
+    const geometry: GeometryOption = {
+      ...configMapping[type]?.geometry,
+      position: `${configs.x}${configs.y ? `*${configs.y}` : ''}`,
 
+      // hick code
+      color: configs.color ? configs.color : configs.x2,
+    };
+    libConfig.configs = {
+      geometries: [geometry],
+    };
+  }
   return libConfig;
 }
