@@ -454,8 +454,6 @@ export function analyze(data: any[], options?: AdvisorOptions, showLog = false):
 export function specToLibConfig(advice: Advice, libraryName: ChartLibrary) {
   const { typeMapping, configMapping } = getMappingForLib(libraryName);
   const { type, channels } = advice;
-  console.log('type: ', type);
-
   const libConfig: any = {};
 
   if (type && typeMapping[type]) {
@@ -474,17 +472,26 @@ export function specToLibConfig(advice: Advice, libraryName: ChartLibrary) {
     }
   }
 
+  console.log('type: ', configs);
+
   if (libraryName === 'G2Plot') {
     libConfig.configs = configs;
   } else if (libraryName === 'G2') {
     // channels to geometries
     const geometry: GeometryOption = {
       ...configMapping[type]?.geometry,
-      position: `${configs.x}${configs.y ? `*${configs.y}` : ''}`,
-
-      // hick code
-      color: configs.color ? configs.color : configs.x2,
     };
+
+    if (configs.x && configs.y) {
+      geometry.position = `${configs.x}*${configs.y}`;
+    }
+
+    if (configs.color) {
+      geometry.color = configs.color;
+    } else if (configs.x2) {
+      geometry.color = configs.x2;
+    }
+
     libConfig.configs = {
       geometries: [geometry],
     };

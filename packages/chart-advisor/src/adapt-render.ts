@@ -6,18 +6,18 @@
 import * as G2Plot from '@antv/g2plot';
 import { Chart } from '@antv/g2';
 
-// import { Advice, specToLibConfig, } from './advisor';
 import { ChartLibrary } from './chartLibMapping';
 
 type RenderFn = (dom: HTMLElement, data: any[], configs: any, type: any) => void;
 
-const g2plotRender: RenderFn = (dom, data, type, configs) => {
+const g2plotRender: RenderFn = (dom, data, configs, type) => {
   // @ts-ignore
   const chart = new G2Plot[type](dom, {
     data,
     ...configs,
   });
   chart.render();
+  return chart;
 };
 
 const g2Render: RenderFn = (dom, data, configs) => {
@@ -33,20 +33,17 @@ const g2Render: RenderFn = (dom, data, configs) => {
     },
   });
   chart.render();
+  return chart;
 };
 
 export function adaptRender(dom: HTMLElement, data: any[], libraryName: ChartLibrary, libConfig: any) {
   const { type, configs } = libConfig;
-  // console.log('configs: ', configs, type);
-
   switch (libraryName) {
     case 'G2Plot':
-      g2plotRender(dom, data, configs, type);
-      return;
+      return g2plotRender(dom, data, configs, type);
     case 'G2':
-      g2Render(dom, data, configs, type);
-      return;
+      return g2Render(dom, data, configs, type);
     default:
-      g2plotRender(dom, data, configs, type);
+      return g2plotRender(dom, data, configs, type);
   }
 }

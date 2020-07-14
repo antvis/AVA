@@ -2,16 +2,30 @@ import { TypeMapping, ConfigMapping } from './index';
 
 /** @beta */
 export const G2_CONFIG_MAPPING: ConfigMapping = {
-  // line_chart: {
-  //   x: 'xField',
-  //   y: 'yField',
-  //   color: 'seriesField',
-  // },
+  line_chart: {
+    geometry: {
+      type: 'line',
+    },
+    x: 'x',
+    y: 'y',
+    color: 'color',
+  },
   // area_chart: {
-  //   x: 'xField',
-  //   y: 'yField',
+  //   geometry: {
+  //     type: 'area',
+  //   },
+  //   x: 'x',
+  //   y: 'y',
   // },
-  bar_chart: {
+  // bar_chart: {
+  //   geometry: {
+  //     type: 'interval',
+  //   },
+  //   x: 'x',
+  //   y: 'y',
+  //   color: 'color',
+  // },
+  column_chart: {
     geometry: {
       type: 'interval',
     },
@@ -19,15 +33,14 @@ export const G2_CONFIG_MAPPING: ConfigMapping = {
     y: 'y',
     color: 'color',
   },
-  // column_chart: {
-  //   x: 'xField',
-  //   y: 'yField',
-  //   color: 'colorField',
-  // },
-  // pie_chart: {
-  //   angle: 'angleField',
-  //   color: 'colorField',
-  // },
+  pie_chart: {
+    geometry: {
+      type: 'interval',
+      adjust: 'stack',
+    },
+    angle: 'angle',
+    color: 'color',
+  },
   // // Donut
   // donut_chart: {
   //   angle: 'angleField',
@@ -151,14 +164,14 @@ export const G2_CONFIG_MAPPING: ConfigMapping = {
  * G2's type is not required for paint, but required for autoChart
  */
 export const G2_TYPE_MAPPING: TypeMapping = {
-  // line_chart: 'Line',
+  line_chart: 'line_chart',
   // step_line_chart: 'StepLine',
-  // area_chart: 'Area',
+  area_chart: 'area_chart',
   // stacked_area_chart: 'StackedArea',
   // percent_stacked_area_chart: 'PercentageStackedArea',
 
   // column_chart: 'Column',
-  grouped_column_chart: 'GroupedColumn',
+  grouped_column_chart: 'grouped_column_chart',
   // stacked_column_chart: 'StackedColumn',
   // percent_stacked_column_chart: 'PercentageStackedColumn',
 
@@ -173,7 +186,7 @@ export const G2_TYPE_MAPPING: TypeMapping = {
   // donut_chart: 'Donut',
   // rose_chart: 'Rose',
 
-  scatter_plot: 'point',
+  scatter_plot: 'scatter_plot',
   // bubble_chart: 'Bubble',
   // radar_chart: 'Radar',
 
