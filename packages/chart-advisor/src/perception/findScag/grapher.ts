@@ -6,11 +6,11 @@ import * as polygon from 'd3-polygon';
 
 // var alphaShape = require('alpha-shape')(alpha, points);
 
-function DisjointSet() {
+function DisjointSet(this: any) {
   this.index_ = {};
 }
 
-function Node(id: string | number) {
+function Node(this: any, id: string | number) {
   this.id_ = id;
   this.parent_ = this;
   this.rank_ = 0;
@@ -18,7 +18,7 @@ function Node(id: string | number) {
 
 DisjointSet.prototype.makeSet = function(id: string | number) {
   if (!this.index_[id]) {
-    let created = new Node(id);
+    const created = Node(id);
     this.index_[id] = created;
   }
 };
@@ -60,7 +60,7 @@ DisjointSet.prototype.union = function(x: any, y: any) {
 
 // Returns the current number of disjoint sets.
 DisjointSet.prototype.size = function() {
-  let uniqueIndices = {};
+  let uniqueIndices: any = {};
   Object.keys(this.index_).forEach((id) => {
     uniqueIndices[id] = true;
   });
@@ -68,30 +68,32 @@ DisjointSet.prototype.size = function() {
 };
 
 export function pairNodeLinks(links: any) {
-  let nestedByNodes = {};
+  let nestedByNodes: any = {};
   links.forEach((l: any) => {
-    let sourceKey = l.source.join(',');
+    const sourceKey = l.source.join(',');
     if (!nestedByNodes[sourceKey]) {
       nestedByNodes[sourceKey] = [];
     }
     nestedByNodes[sourceKey].push(l);
-    let targetKey = l.target.join(',');
+    const targetKey = l.target.join(',');
     if (!nestedByNodes[targetKey]) {
       nestedByNodes[targetKey] = [];
     }
     nestedByNodes[targetKey].push(l);
   });
+
   //Pair the results
-  let pairedResults = _.pairs(nestedByNodes);
+  const pairedResults = _.pairs(nestedByNodes);
   return pairedResults;
 }
 
 export function getAllV2CornersFromTree(tree: any) {
-  let pairedResults = pairNodeLinks(tree.links);
-  //Get all pairs with length = 2 (V2)
-  let allV2 = pairedResults.filter((p) => p[1].length == 2);
+  const pairedResults = pairNodeLinks(tree.links);
 
-  let allCorners = allV2.map((v2) => {
+  //Get all pairs with length = 2 (V2)
+  const allV2 = pairedResults.filter((p) => p[1].length == 2);
+
+  const allCorners = allV2.map((v2) => {
     let corner = [];
 
     corner.push(v2[0].split(',').map((d) => +d));
@@ -111,17 +113,17 @@ export function getAllV2CornersFromTree(tree: any) {
 }
 
 export function getAllV1sFromTree(tree: any) {
-  let pairedResults = pairNodeLinks(tree.links);
+  const pairedResults = pairNodeLinks(tree.links);
 
-  let allV1 = pairedResults.filter((p) => p[1].length == 1);
+  const allV1 = pairedResults.filter((p) => p[1].length == 1);
 
   return allV1.map((v1) => v1[0].split(',').map(Number));
 }
 
 export function getAllV2OrGreaterFromTree(tree: any) {
-  let pairedResults = pairNodeLinks(tree.links);
+  const pairedResults = pairNodeLinks(tree.links);
 
-  let allGTEV2 = pairedResults.filter((p) => p[1].length >= 2);
+  const allGTEV2 = pairedResults.filter((p) => p[1].length >= 2);
 
   return allGTEV2.map((v) => v[0].split(',').map(Number));
 }
@@ -131,12 +133,12 @@ export function createGraph(triangles: any) {
     return { source: sourceId, target: targetId, weight: weight };
   }
 
-  let graph = {};
+  let graph: any = {};
   graph.nodes = [];
   graph.links = [];
 
   //Creating nodes
-  triangles.forEach((t) => {
+  triangles.forEach((t: any) => {
     for (let i = 0; i < 3; i++) {
       let id = t[i];
       if (!idExists(graph.nodes, id)) {
@@ -146,22 +148,22 @@ export function createGraph(triangles: any) {
   });
 
   //Creating links
-  triangles.forEach((t) => {
+  triangles.forEach((t: any) => {
     for (let i = 0; i < 3; i++) {
-      let p1 = t[i];
-      let p2 = t[(i + 1) % 3];
-      let id1 = p1;
-      let id2 = p2;
-      let dist = distance(p1, p2);
-      let link = makeLink(id1, id2, dist);
+      const p1 = t[i];
+      const p2 = t[(i + 1) % 3];
+      const id1 = p1;
+      const id2 = p2;
+      const dist = distance(p1, p2);
+      const link = makeLink(id1, id2, dist);
       if (!linkExists(graph.links, link)) {
         graph.links.push(link);
       }
     }
   });
 
-  function linkExists(links: string | any[], link: { source: any; target: any; weight: any }) {
-    let length = links.length;
+  function linkExists(links: any, link: any) {
+    const length = links.length;
     for (let i = length - 1; i >= 0; --i) {
       if (equalLinks(link, links[i])) {
         return true;
@@ -174,7 +176,7 @@ export function createGraph(triangles: any) {
 }
 
 export function distance(a: any[], b: number[]) {
-  let dx = a[0] - b[0],
+  const dx = a[0] - b[0],
     dy = a[1] - b[1];
 
   return Math.round(Math.sqrt(dx * dx + dy * dy) * Math.pow(10, 10)) / Math.pow(10, 10);
@@ -192,10 +194,10 @@ export function equalLinks(l1: { source: any; target: any }, l2: { source: any; 
 }
 
 export function idExists(nodes: string | any[], id: any) {
-  let length = nodes.length;
+  const length = nodes.length;
 
   for (let i = length - 1; i >= 0; --i) {
-    let node = nodes[i];
+    const node = nodes[i];
     if (equalPoints(node.id, id)) {
       return true;
     }
@@ -212,7 +214,7 @@ export function mst(graph: { nodes?: any; links?: any }) {
   let vertices = graph.nodes,
     edges = graph.links.slice(0),
     selectedEdges = [],
-    forest = new DisjointSet();
+    forest: any = DisjointSet();
 
   vertices.forEach((vertex: { id: any }) => {
     forest.makeSet(vertex.id);
@@ -238,7 +240,7 @@ export function mst(graph: { nodes?: any; links?: any }) {
 }
 
 export function delaunayFromPoints(sites: any | any[]) {
-  let delaunay = {};
+  let delaunay: any = {};
 
   if (isA2DLine(sites)) {
     let copiedSites = sites.slice();
@@ -246,7 +248,7 @@ export function delaunayFromPoints(sites: any | any[]) {
     copiedSites.sort((a: number[], b: number[]) => (a[0] > b[0] ? a[0] - b[0] : a[1] - b[1]));
 
     let tgs = [];
-    let siteLength = copiedSites.length;
+    const siteLength = copiedSites.length;
 
     for (let i = 0; i < siteLength; i = i + 2) {
 
@@ -290,7 +292,7 @@ export function concaveHull(alpha: number, sites: { [x: string]: any }) {
 
   hulls = hulls.map((h: Iterable<unknown> | ArrayLike<unknown>) => {
     //Get vertices
-    let vertices = Array.from(h).map((item) => {
+    let vertices = Array.from(h).map((item: any) => {
       return sites[item];
     });
 
@@ -327,10 +329,10 @@ export function convexHull(sites: { [x: string]: any }) {
   }
 
   const cells = alphaShape(0, sites);
-  let h = Array.from(new Set(cells.flat()));
+  const h = Array.from(new Set(cells.flat()));
 
   //Get vertices
-  let vertices = Array.from(h).map((item) => {
+  const vertices = Array.from(h).map((item: any) => {
     return sites[item];
   });
 
@@ -441,7 +443,7 @@ export function concaveHull1(sites: any, longEdge: number) {
     }
   }
 
-  let edgeCount = {};
+  let edgeCount: any = {};
   cells.forEach((edge) => {
     let theKey = edge.sort().join(',');
 

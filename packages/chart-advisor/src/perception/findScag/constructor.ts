@@ -16,9 +16,9 @@ export class Normalizer {
 
   constructor(points: any[]) {
     this.points = points.slice(0);
-    let [dataX, dataY] = ([this.dataX, this.dataY] = _.unzip(this.points));
+    const [dataX, dataY] = ([this.dataX, this.dataY] = _.unzip(this.points));
 
-    let maxX = (this.maxX = _.max(dataX)),
+    const maxX = (this.maxX = _.max(dataX)),
       minX = (this.minX = _.min(dataX)),
       maxY = (this.maxY = _.max(dataY)),
       minY = (this.minY = _.min(dataY)),
@@ -29,14 +29,14 @@ export class Normalizer {
 
     this.normalizedPoints = _.zip(normalizedX, normalizedY);
 
-    let length = this.points.length;
+    const length = this.points.length;
     for (let i = 0; i < length; i++) {
       this.normalizedPoints[i].data = this.points[i].data;
     }
   }
 
   normToPlot(points: any[]) {
-    let oriplot = points.map((p) => {
+    const oriplot = points.map((p) => {
       return this.normToPoint(p);
     });
 
@@ -44,9 +44,10 @@ export class Normalizer {
   }
 
   normToPoint(point: any) {
-    let midx = point[0],
+    const midx = point[0],
       midy = point[1];
-    let orix = this.minX + this.rangeX * midx,
+
+    const orix = this.minX + this.rangeX * midx,
       oriy = this.minY + this.rangeY * midy;
 
     return [orix, oriy];
@@ -54,14 +55,15 @@ export class Normalizer {
 }
 
 export function isA2DLine(points: any) {
-  let x1 = points[0][0];
-  let y1 = points[0][1];
-  let x2 = points[1][0];
-  let y2 = points[1][1];
+  const x1 = points[0][0];
+  const y1 = points[0][1];
+  const x2 = points[1][0];
+  const y2 = points[1][1];
 
   for (let i = 2; i < points.length; i++) {
-    let x3 = points[i][0];
-    let y3 = points[i][1];
+    const x3 = points[i][0];
+    const y3 = points[i][1];
+
     if ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1) !== 0) {
       return false;
     }
@@ -71,7 +73,7 @@ export function isA2DLine(points: any) {
 }
 
 export function Binner(this: any) {
-  let thirdPi = Math.PI / 3,
+  const thirdPi = Math.PI / 3,
     angles = [0, thirdPi, 2 * thirdPi, 3 * thirdPi, 4 * thirdPi, 5 * thirdPi];
 
   function pointX(d: any) {
@@ -82,7 +84,7 @@ export function Binner(this: any) {
     return d[1];
   }
 
-  var x0 = 0,
+  let x0 = 0,
     y0 = 0,
     x1 = 1,
     y1 = 1,
@@ -93,23 +95,27 @@ export function Binner(this: any) {
     dy: number;
 
   function hexbin(points: any) {
-    var binsById = {},
+    let binsById = {},
       bins = [],
       i,
-      n = points.length;
+      n = points.length,
+      px,
+      py;
 
     for (i = 0; i < n; ++i) {
-      if (isNaN((px = +x.call(null, (point = points[i])))) || isNaN((py = +y.call(null, point)))) continue;
+      let point;
 
-      var point,
-        px,
-        py,
-        pj = Math.round((py = py / dy)),
+      px = +x.call(null, (point = points[i]));
+      py = +y.call(null, point);
+
+      if (isNaN(px) || isNaN(py)) continue;
+
+      let pj = Math.round((py = py / dy)),
         pi = Math.round((px = px / dx - (pj & 1) / 2)),
         py1 = py - pj;
 
       if (Math.abs(py1) * 3 > 1) {
-        var px1 = px - pi,
+        let px1 = px - pi,
           pi2 = pi + (px < pi ? -1 : 1) / 2,
           pj2 = pj + (py < pj ? -1 : 1),
           px2 = px - pi2,
@@ -117,7 +123,7 @@ export function Binner(this: any) {
         if (px1 * px1 + py1 * py1 > px2 * px2 + py2 * py2) (pi = pi2 + (pj & 1 ? 1 : -1) / 2), (pj = pj2);
       }
 
-      var id = pi + '-' + pj,
+      let id = pi + '-' + pj,
         bin: any;
       if (bin) bin.push(point);
       else {
@@ -131,10 +137,10 @@ export function Binner(this: any) {
   }
 
   function hexagon(radius: any) {
-    var x0 = 0,
+    let x0 = 0,
       y0 = 0;
     return angles.map(function(angle) {
-      var x1 = Math.sin(angle) * radius,
+      const x1 = Math.sin(angle) * radius,
         y1 = -Math.cos(angle) * radius,
         dx = x1 - x0,
         dy = y1 - y0;
@@ -151,11 +157,11 @@ export function Binner(this: any) {
   };
 
   this.centers = function() {
-    var centers = [],
+    let centers = [],
       j = Math.round(y0 / dy),
       i = Math.round(x0 / dx);
-    for (var y = j * dy; y < y1 + r; y += dy, ++j) {
-      for (var x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
+    for (let y = j * dy; y < y1 + r; y += dy, ++j) {
+      for (let x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
         centers.push([x, y]);
       }
     }
@@ -163,11 +169,11 @@ export function Binner(this: any) {
   };
 
   this.centers = function() {
-    var centers = [],
+    let centers = [],
       j = Math.round(y0 / dy),
       i = Math.round(x0 / dx);
-    for (var y = j * dy; y < y1 + r; y += dy, ++j) {
-      for (var x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
+    for (let y = j * dy; y < y1 + r; y += dy, ++j) {
+      for (let x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
         centers.push([x, y]);
       }
     }
@@ -175,7 +181,7 @@ export function Binner(this: any) {
   };
 
   this.mesh = function() {
-    var fragment = hexagon(r)
+    const fragment = hexagon(r)
       .slice(0, 4)
       .join('l');
     return this.centers()
@@ -211,87 +217,4 @@ export function Binner(this: any) {
   };
 
   return this.radius(1);
-}
-
-export class RectangularBinner {
-  constructor(points, gridNumber) {
-    this.points = points;
-    this.gridNumber = gridNumber;
-    this.gridSize = 1.0 / gridNumber;
-  }
-
-  get rectangles() {
-    let self = this;
-    let points = this.points;
-    let gridNumber = this.gridNumber;
-    let gridSize = 1.0 / gridNumber;
-    let bins = [];
-    for (let i = 0; i < gridNumber; i++) {
-      let b = [];
-      for (let j = 0; j < gridNumber; j++) {
-        b = []; //bin as an empty array.
-      }
-      bins.push(b);
-    }
-
-    let n = points.length;
-    for (let pi = 0; pi < n; pi++) {
-      let point = points[pi];
-      let x = point[0];
-      let y = point[1];
-      let j = x == 1 ? gridNumber - 1 : Math.floor(x / gridSize);
-      let i = y == 0 ? gridNumber - 1 : Math.floor((1 - y) / gridSize);
-      bins[i][j].push(point);
-    }
-
-    return bins;
-  }
-}
-
-import { distance } from './mst';
-import _ from 'underscore';
-
-export class LeaderBinner {
-  constructor(points, radius) {
-    this.points = points;
-    this.radius = radius;
-  }
-
-  get leaders() {
-    let self = this;
-    let theLeaders = [];
-
-    this.points.forEach((point) => {
-      let leader = closestLeader(theLeaders, point);
-      if (!leader) {
-        let newLeader = [];
-        newLeader.x = point[0];
-        newLeader.y = point[1];
-        theLeaders.push(newLeader);
-      }
-    });
-
-    this.points.forEach((point) => {
-      let leader = closestLeader(theLeaders, point);
-      leader.push(point);
-    });
-    return theLeaders;
-
-    function closestLeader(leaders, point) {
-      let length = leaders.length;
-      let minDistance = 2; //select 2 since normalized distance can't  be greater than 2.
-      let theLeader = null;
-      for (let i = 0; i < length; ++i) {
-        let l = leaders[i];
-        let d = distance([l.x, l.y], point);
-        if (d < self.radius) {
-          if (d < minDistance) {
-            minDistance = d;
-            theLeader = l;
-          }
-        }
-      }
-      return theLeader;
-    }
-  }
 }

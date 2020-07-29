@@ -33,8 +33,8 @@ export class Convex {
   }
 
   score() {
-    let concaveArea = concaveHullArea(this.concaveHull());
-    let convexArea = convexHullArea(this.convexHull());
+    const concaveArea = concaveHullArea(this.concaveHull());
+    const convexArea = convexHullArea(this.convexHull());
     if (convexArea === 0) {
       return 0;
     }
@@ -43,9 +43,9 @@ export class Convex {
 
   concaveHull() {
     if (!this.cch) {
-      let tree = JSON.parse(JSON.stringify(this.tree));
-      let sites = tree.nodes.map((d: { id: any }) => d.id);
-      let cch = concaveHull(this.alpha, sites);
+      const tree = JSON.parse(JSON.stringify(this.tree));
+      const sites = tree.nodes.map((d: any) => d.id);
+      const cch = concaveHull(this.alpha, sites);
 
       this.cch = cch;
     }
@@ -54,9 +54,9 @@ export class Convex {
 
   convexHull() {
     if (!this.cvh) {
-      //Clone the tree to avoid modifying it
-      let tree = JSON.parse(JSON.stringify(this.tree));
-      let sites = tree.nodes.map((d: { id: any }) => d.id);
+      const tree = JSON.parse(JSON.stringify(this.tree));
+      const sites = tree.nodes.map((d: any) => d.id);
+
       this.cvh = convexHull(sites);
     }
     return this.cvh;
@@ -71,7 +71,7 @@ export class Skewed {
   }
 
   score() {
-    let allLengths = this.tree.links.map((l) => l.weight),
+    const allLengths = this.tree.links.map((l: any) => l.weight),
       q90 = quantile(allLengths, 0.9),
       q50 = quantile(allLengths, 0.5),
       q10 = quantile(allLengths, 0.1);
@@ -93,24 +93,32 @@ export class Monotonic {
   score() {
     let xArr: any[] = [];
     let yArr: any[] = [];
-    this.points.forEach((p) => {
+
+    this.points.forEach((p: any) => {
       xArr.push(p[0]);
       yArr.push(p[1]);
     });
-    let r = computeSpearmans(xArr, yArr);
-    return Math.pow(r, 2);
 
-    function computeSpearmans(arrX: string | any, arrY: string | any) {
+    const r = computeSpearmans(xArr, yArr);
+
+    if(r == null) {
+        return;
+    }
+    else {
+        return Math.pow(r, 2);
+    }
+
+    function computeSpearmans(arrX: any, arrY: any) {
       // simple error handling for input arrays of nonequal lengths
       if (arrX.length !== arrY.length) {
         return null;
       }
 
       // number of observations
-      let n = arrX.length;
+      const n = arrX.length;
 
       // rank datasets
-      let xRanked = rankArray(arrX),
+      const xRanked = rankArray(arrX),
         yRanked = rankArray(arrY);
 
       // sum of distances between ranks
@@ -120,26 +128,27 @@ export class Monotonic {
       }
 
       // compute correction for ties
-      let xTies = countTies(arrX),
+      const xTies = countTies(arrX),
         yTies = countTies(arrY);
       let xCorrection = 0,
-        yCorrection = 0;
-      for (let tieLength in xTies) {
+        yCorrection = 0,
+        tieLength: any;
+      for (tieLength in xTies) {
         xCorrection += xTies[tieLength] * tieLength * (Math.pow(tieLength, 2) - 1);
       }
       xCorrection /= 12.0;
-      for (let tieLength in yTies) {
+      for (tieLength in yTies) {
         yCorrection += yTies[tieLength] * tieLength * (Math.pow(tieLength, 2) - 1);
       }
       yCorrection /= 12.0;
 
       // denominator
-      let denominator = (n * (Math.pow(n, 2) - 1)) / 6.0;
+      const denominator = (n * (Math.pow(n, 2) - 1)) / 6.0;
 
       // compute rho
-      let rho = denominator - dsq - xCorrection - yCorrection;
+      let rho: number = denominator - dsq - xCorrection - yCorrection;
 
-      let x = (denominator - 2 * xCorrection) * (denominator - 2 * yCorrection);
+      const x = (denominator - 2 * xCorrection) * (denominator - 2 * yCorrection);
 
       if (x <= 0) {
         return 0;
@@ -159,7 +168,7 @@ export class Monotonic {
       });
 
       // counts of each rank
-      let counts = {};
+      let counts: any = {};
       ranks.forEach(function(x) {
         counts[x] = (counts[x] || 0) + 1;
       });
@@ -173,7 +182,7 @@ export class Monotonic {
     }
 
     function countTies(arr: any[]) {
-      let ties = {},
+      let ties: any = {},
         arrSorted = arr.slice().sort(),
         currValue = arrSorted[0],
         tieLength = 1;
@@ -268,7 +277,7 @@ export class Sparse {
   }
 
   score() {
-    let allLengths = this.tree.links.map((l) => l.weight),
+    let allLengths = this.tree.links.map((l: { weight: any }) => l.weight),
       q90 = quantile(allLengths, 0.9);
     return q90;
   }
