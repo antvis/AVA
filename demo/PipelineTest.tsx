@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DataSamples } from './data-samples';
-import { dataToDataProps, dataPropsToSpecs, specToLibConfig, ChartLibrary, adaptRender } from '../packages/chart-advisor/src/index';
+import {
+  dataToDataProps,
+  dataPropsToSpecs,
+  specToLibConfig,
+  ChartLibrary,
+  adaptRender,
+} from '../packages/chart-advisor/src/index';
 import { prettyJSON, JSONToTable } from './utils';
 import { ChartID } from '../packages/chart-advisor/node_modules/@antv/knowledge/typings/knowledge';
 
@@ -10,7 +16,7 @@ const CHART_LIB: ChartLibrary = 'G2';
 const chartTypes: ChartID[] = ['grouped_bar_chart', 'scatter_plot', 'line_chart'];
 
 export function PipelineTest() {
-  const [chartType, setChartType] = useState<ChartID>(chartTypes[0])
+  const [chartType, setChartType] = useState<ChartID>(chartTypes[0]);
   const datasample = DataSamples.ForChartType(chartType);
 
   const dataProps = dataToDataProps(datasample);
@@ -49,7 +55,11 @@ export function PipelineTest() {
           setChartType(e.target.value as ChartID);
         }}
       >
-        {chartTypes.map(item => <option value={item}>{item}</option>)}
+        {chartTypes.map((item) => (
+          <option value={item} key={item}>
+            {item}
+          </option>
+        ))}
       </select>
       {/* data */}
       <div style={{ display: 'flex', justifyContent: 'space-evenly', minHeight: '200px', maxHeight: '300px' }}>

@@ -4,7 +4,7 @@
     "start": "webpack-dev-server --port 8881",
     "build": "lerna run build",
     "test": "jest --coverage",
-    "lint": "lerna run lint",
+    "lint": "eslint --ext .tsx demo && lerna run lint",
     "api": "rm -rf temp && lerna run api",
     "doc": "rm -rf apis && api-documenter markdown -i ./temp -o ./docs/api",
     "boot": "lerna bootstrap",
