@@ -1,4 +1,4 @@
-import _, { AnyFalsy } from 'underscore';
+import { first, without, difference, uniq } from 'underscore';
 import { max, quantile } from './util';
 import {
   equalPoints,
@@ -58,9 +58,9 @@ export class Clumpy {
       if (connectedLinks.length > this.tree.links.length + 1) {
         break;
       }
-      let firstNode = _.first(connectedNodes);
+      let firstNode = first(connectedNodes);
 
-      connectedNodes = _.without(connectedNodes, firstNode);
+      connectedNodes = without(connectedNodes, firstNode);
       processedNodes.push(firstNode);
 
       //Find the edges connected to that node.
@@ -130,7 +130,7 @@ export class Outlying {
       let outlyingPointsStr = outlyingPoints.map((p) => p.join(','));
       let v2OrGreaterStr = getAllV2OrGreaterFromTree(tree).map((p) => p.join(','));
 
-      let diff = _.difference(outlyingPointsStr, v2OrGreaterStr);
+      let diff = difference(outlyingPointsStr, v2OrGreaterStr);
       if (diff.length < outlyingPointsStr.length) {
         let delaunay = delaunayFromPoints(noOutlyingTree.nodes.map((n: any) => n.id));
         let graph = createGraph(delaunay.triangleCoordinates());
@@ -161,7 +161,7 @@ export class Outlying {
         allNodesWithLinks.push(l.source);
         allNodesWithLinks.push(l.target);
       });
-      allNodesWithLinks = _.uniq(allNodesWithLinks, false, (d) => d.join(','));
+      allNodesWithLinks = uniq(allNodesWithLinks, false, (d) => d.join(','));
       let normalNodes = allNodesWithLinks.map((n) => {
         return { id: n };
       });

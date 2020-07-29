@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { pairs } from 'underscore';
 import { isA2DLine } from './constructor';
 import alphaShape from 'alpha-shape';
 import { Delaunay } from 'd3-delaunay';
@@ -83,7 +83,7 @@ export function pairNodeLinks(links: any) {
   });
 
   //Pair the results
-  const pairedResults = _.pairs(nestedByNodes);
+  const pairedResults = pairs(nestedByNodes);
   return pairedResults;
 }
 
@@ -97,7 +97,7 @@ export function getAllV2CornersFromTree(tree: any) {
     let corner = [];
 
     corner.push(v2[0].split(',').map((d) => +d));
-    
+
     v2[1].forEach((link: { source: any[]; target: any }) => {
       if (link.source.join(',') != v2[0]) {
         corner.push(link.source);
@@ -251,7 +251,6 @@ export function delaunayFromPoints(sites: any | any[]) {
     const siteLength = copiedSites.length;
 
     for (let i = 0; i < siteLength; i = i + 2) {
-
       if (i + 1 < siteLength) {
         tgs.push(i);
         tgs.push(i + 1);
@@ -262,7 +261,6 @@ export function delaunayFromPoints(sites: any | any[]) {
       } else if (siteLength % 2 == 0) {
         tgs.push(i - 1);
       }
-
     }
 
     delaunay.triangles = tgs;
@@ -455,6 +453,6 @@ export function concaveHull1(sites: any, longEdge: number) {
 
     return edgeCount[theKey] === 1;
   });
-  
+
   return cells;
 }

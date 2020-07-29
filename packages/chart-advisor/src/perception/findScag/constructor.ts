@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { max, min, zip, unzip } from 'underscore';
 
 export class Normalizer {
   public normalizedPoints: any[];
@@ -16,18 +16,18 @@ export class Normalizer {
 
   constructor(points: any[]) {
     this.points = points.slice(0);
-    const [dataX, dataY] = ([this.dataX, this.dataY] = _.unzip(this.points));
+    const [dataX, dataY] = ([this.dataX, this.dataY] = unzip(this.points));
 
-    const maxX = (this.maxX = _.max(dataX)),
-      minX = (this.minX = _.min(dataX)),
-      maxY = (this.maxY = _.max(dataY)),
-      minY = (this.minY = _.min(dataY)),
+    const maxX = (this.maxX = max(dataX)),
+      minX = (this.minX = min(dataX)),
+      maxY = (this.maxY = max(dataY)),
+      minY = (this.minY = min(dataY)),
       rangeX = (this.rangeX = maxX != minX ? maxX - minX : 1),
       rangeY = (this.rangeY = maxY != minY ? maxY - minY : 1),
       normalizedX = (this.normalizedX = dataX.map((x) => (x - minX) / rangeX)),
       normalizedY = (this.normalizedY = dataY.map((y) => (y - minY) / rangeY));
 
-    this.normalizedPoints = _.zip(normalizedX, normalizedY);
+    this.normalizedPoints = zip(normalizedX, normalizedY);
 
     const length = this.points.length;
     for (let i = 0; i < length; i++) {
