@@ -31,7 +31,6 @@
     "alpha-shape": "^1.0.0",
     "d3-delaunay": "^4.1.5",
     "d3-polygon": "^1.0.3",
-    "simple-statistics": "^6.1.0",
     "tslib": "^1.10.0",
     "underscore": "^1.9.1",
     "visual-insights": "0.4.7"

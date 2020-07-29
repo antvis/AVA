@@ -1,5 +1,5 @@
 import _, { AnyFalsy } from 'underscore';
-import { max, quantile } from 'simple-statistics';
+import { max, quantile } from './util';
 import {
   equalPoints,
   pairNodeLinks,
@@ -113,7 +113,7 @@ export class Outlying {
       this.upperBound = upperBound;
     }
 
-    markLongLinks(this.tree, upperBound);
+    markLongLinks(this.tree, upperBound!);
     let normalNodes = findNormalNodes(this.tree);
 
     this.outlyingPoints = findOutlyingPoints(this.tree, normalNodes);

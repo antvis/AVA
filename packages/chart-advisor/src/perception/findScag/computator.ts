@@ -1,4 +1,4 @@
-import { quantile } from 'simple-statistics';
+import { quantile } from './util';
 import {
   concaveHull,
   convexHull,
