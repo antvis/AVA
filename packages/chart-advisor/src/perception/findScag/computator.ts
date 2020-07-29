@@ -84,9 +84,9 @@ export class Skewed {
 }
 
 export class Monotonic {
-  points: string | any;
+  points: any;
 
-  constructor(points: string | any) {
+  constructor(points: any) {
     this.points = points.slice(0);
   }
 
@@ -133,10 +133,12 @@ export class Monotonic {
       let xCorrection = 0,
         yCorrection = 0,
         tieLength: any;
+
       for (tieLength in xTies) {
         xCorrection += xTies[tieLength] * tieLength * (Math.pow(tieLength, 2) - 1);
       }
       xCorrection /= 12.0;
+
       for (tieLength in yTies) {
         yCorrection += yTies[tieLength] * tieLength * (Math.pow(tieLength, 2) - 1);
       }
@@ -163,6 +165,7 @@ export class Monotonic {
       let sorted = arr.slice().sort(function(a, b) {
         return b - a;
       });
+
       let ranks = arr.slice().map(function(v) {
         return sorted.indexOf(v) + 1;
       });
@@ -195,14 +198,17 @@ export class Monotonic {
             if (ties[tieLength] === undefined) ties[tieLength] = 0;
             ties[tieLength]++;
           }
+
           currValue = arrSorted[i];
           tieLength = 1;
         }
       }
+
       if (tieLength > 1) {
         if (ties[tieLength] === undefined) ties[tieLength] = 0;
         ties[tieLength]++;
       }
+
       return ties;
     }
   }
@@ -234,7 +240,8 @@ export class Stringy {
 
 export class Striated {
   tree: any;
-  constructor(tree: {}) {
+
+  constructor(tree: any) {
     this.tree = JSON.parse(JSON.stringify(tree));
   }
 
@@ -249,18 +256,21 @@ export class Striated {
   getAllObtuseV2Corners() {
     let allV2Corners = this.getAllV2Corners();
     let allObtuseV2Corners: any = [];
+
     allV2Corners.forEach((corner) => {
       let cs = cosine(corner[0], corner[1], corner[2]);
       if (cs <= -0.75) {
         allObtuseV2Corners.push(corner);
       }
     });
+
     return allObtuseV2Corners;
 
     function cosine(p1: any, p2: any, p3: any) {
       let p12 = distance(p1, p2),
         p13 = distance(p1, p3),
         p23 = distance(p2, p3);
+
       return (Math.pow(p12, 2) + Math.pow(p13, 2) - Math.pow(p23, 2)) / (2 * p12 * p13);
     }
   }
@@ -272,6 +282,7 @@ export class Striated {
 
 export class Sparse {
   tree: any;
+
   constructor(tree: any) {
     this.tree = JSON.parse(JSON.stringify(tree));
   }
@@ -279,6 +290,7 @@ export class Sparse {
   score() {
     let allLengths = this.tree.links.map((l: { weight: any }) => l.weight),
       q90 = quantile(allLengths, 0.9);
+      
     return q90;
   }
 }

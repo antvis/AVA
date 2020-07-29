@@ -54,10 +54,12 @@ export class Clumpy {
   getConnectedLinks(connectedNodes: any, pairedResults: any) {
     let processedNodes: string | any[] = [];
     let connectedLinks: any[] = [];
+
     while (connectedNodes.length > 0) {
       if (connectedLinks.length > this.tree.links.length + 1) {
         break;
       }
+
       let firstNode = first(connectedNodes);
 
       connectedNodes = without(connectedNodes, firstNode);
@@ -73,6 +75,7 @@ export class Clumpy {
         if (!pointExists(processedNodes, l.source)) {
           connectedNodes.push(l.source);
         }
+
         if (!pointExists(processedNodes, l.target)) {
           connectedNodes.push(l.target);
         }
@@ -85,12 +88,14 @@ export class Clumpy {
     if (runtGraph.length === 0) {
       return 0;
     }
+
     return max(runtGraph.map((l) => l.weight));
   }
 }
 export function pointExists(points: string | any[], point: any) {
   for (let i = 0; i < points.length; i++) {
     let point1 = points[i];
+
     if (equalPoints(point1, point)) {
       return true;
     }
@@ -104,7 +109,8 @@ export class Outlying {
   outlyingPoints?: any[];
   noOutlyingTree?: {};
   outlyingLinks: any;
-  constructor(tree: any, upperBound: number | undefined) {
+
+  constructor(tree: any, upperBound?: number | undefined) {
     this.tree = JSON.parse(JSON.stringify(tree));
     this.upperBound = upperBound;
 
@@ -124,6 +130,7 @@ export class Outlying {
 
     function buildNoOutlyingTree(tree: any, outlyingPoints: any[]) {
       let noOutlyingTree: any = {};
+
       noOutlyingTree.nodes = normalNodes;
       noOutlyingTree.links = tree.links.filter((l: any) => l.isOutlying !== true);
 
@@ -131,11 +138,13 @@ export class Outlying {
       let v2OrGreaterStr = getAllV2OrGreaterFromTree(tree).map((p) => p.join(','));
 
       let diff = difference(outlyingPointsStr, v2OrGreaterStr);
+
       if (diff.length < outlyingPointsStr.length) {
         let delaunay = delaunayFromPoints(noOutlyingTree.nodes.map((n: any) => n.id));
         let graph = createGraph(delaunay.triangleCoordinates());
         noOutlyingTree = mst(graph);
       }
+
       return noOutlyingTree;
     }
 
@@ -157,14 +166,18 @@ export class Outlying {
       let normalLinks = tree.links.filter((l: any) => !l.isLong);
       //Remove outlying nodes (nodes are not in any none-long links)
       let allNodesWithLinks: any[] = [];
+
       normalLinks.forEach((l: any) => {
         allNodesWithLinks.push(l.source);
         allNodesWithLinks.push(l.target);
       });
+
       allNodesWithLinks = uniq(allNodesWithLinks, false, (d) => d.join(','));
+      
       let normalNodes = allNodesWithLinks.map((n) => {
         return { id: n };
       });
+
       return normalNodes;
     }
 
@@ -183,6 +196,7 @@ export class Outlying {
           ops.push(on.id);
         }
       });
+
       return ops;
     }
 
@@ -200,6 +214,7 @@ export class Outlying {
         q3 = quantile(allLengths, 0.75),
         iqr = q3 - q1,
         upperBound = q3 + coefficient * iqr;
+
       return upperBound;
     }
   }
@@ -226,6 +241,7 @@ export class Outlying {
     if (!this.outlyingLinks) {
       this.outlyingLinks = this.tree.links.filter((l: any) => l.isOutlying);
     }
+    
     return this.outlyingLinks;
   }
 

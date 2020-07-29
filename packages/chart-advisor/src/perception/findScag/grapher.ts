@@ -26,6 +26,7 @@ export class DisjointSet {
     }
 
     let current = this.index_[id].parent_;
+
     while (current !== current.parent_) {
       current = current.parent_;
     }
@@ -58,9 +59,11 @@ export class DisjointSet {
   // Returns the current number of disjoint sets.
   size() {
     let uniqueIndices: any = {};
+
     Object.keys(this.index_).forEach((id) => {
       uniqueIndices[id] = true;
     });
+
     return Object.keys(uniqueIndices).length;
   };
 }
@@ -73,12 +76,14 @@ function Node(this: any, id: string | number) {
 
 export function pairNodeLinks(links: any) {
   let nestedByNodes: any = {};
+
   links.forEach((l: any) => {
     const sourceKey = l.source.join(',');
     if (!nestedByNodes[sourceKey]) {
       nestedByNodes[sourceKey] = [];
     }
     nestedByNodes[sourceKey].push(l);
+
     const targetKey = l.target.join(',');
     if (!nestedByNodes[targetKey]) {
       nestedByNodes[targetKey] = [];
@@ -88,6 +93,7 @@ export function pairNodeLinks(links: any) {
 
   //Pair the results
   const pairedResults = pairs(nestedByNodes);
+
   return pairedResults;
 }
 
@@ -145,6 +151,7 @@ export function createGraph(triangles: any) {
   triangles.forEach((t: any) => {
     for (let i = 0; i < 3; i++) {
       let id = t[i];
+
       if (!idExists(graph.nodes, id)) {
         graph.nodes.push(makeNode(id));
       }
@@ -156,10 +163,13 @@ export function createGraph(triangles: any) {
     for (let i = 0; i < 3; i++) {
       const p1 = t[i];
       const p2 = t[(i + 1) % 3];
+
       const id1 = p1;
       const id2 = p2;
+
       const dist = distance(p1, p2);
       const link = makeLink(id1, id2, dist);
+
       if (!linkExists(graph.links, link)) {
         graph.links.push(link);
       }
@@ -168,11 +178,13 @@ export function createGraph(triangles: any) {
 
   function linkExists(links: any, link: any) {
     const length = links.length;
+
     for (let i = length - 1; i >= 0; --i) {
       if (equalLinks(link, links[i])) {
         return true;
       }
     }
+
     return false;
   }
 
@@ -202,6 +214,7 @@ export function idExists(nodes: string | any[], id: any) {
 
   for (let i = length - 1; i >= 0; --i) {
     const node = nodes[i];
+    
     if (equalPoints(node.id, id)) {
       return true;
     }

@@ -139,6 +139,7 @@ export function Binner(this: any) {
   function hexagon(radius: any) {
     let x0 = 0,
       y0 = 0;
+
     return angles.map(function(angle) {
       const x1 = Math.sin(angle) * radius,
         y1 = -Math.cos(angle) * radius,
@@ -160,11 +161,13 @@ export function Binner(this: any) {
     let centers = [],
       j = Math.round(y0 / dy),
       i = Math.round(x0 / dx);
+
     for (let y = j * dy; y < y1 + r; y += dy, ++j) {
       for (let x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
         centers.push([x, y]);
       }
     }
+
     return centers;
   };
 
@@ -172,11 +175,13 @@ export function Binner(this: any) {
     let centers = [],
       j = Math.round(y0 / dy),
       i = Math.round(x0 / dx);
+      
     for (let y = j * dy; y < y1 + r; y += dy, ++j) {
       for (let x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
         centers.push([x, y]);
       }
     }
+
     return centers;
   };
 
@@ -184,6 +189,7 @@ export function Binner(this: any) {
     const fragment = hexagon(r)
       .slice(0, 4)
       .join('l');
+      
     return this.centers()
       .map(function(p: any) {
         return 'M' + p + 'm' + fragment;
