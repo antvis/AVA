@@ -5,16 +5,19 @@ export function getType(obj: any){
 }
 
 export function JSONto2DArray(arr: RowData[]) {
-  for (var i = 0; i < arr.length; i++) {
-    var tmpArr = []
+  let outArr: number[][] = [];
 
-    for (var attr in arr[i]) {
+  for (let i = 0; i < arr.length; i++) {
+    let tmpArr: number[] = [];
+
+    for (let attr in arr[i]) {
       if (getType(arr[i][attr]) == 'Number') {
         tmpArr.push(arr[i][attr]);
       }
     }
 
-    arr[i] = tmpArr
+    outArr[i] = tmpArr;
   }
-  return arr
+
+  return outArr;
 };

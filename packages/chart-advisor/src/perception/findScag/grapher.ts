@@ -8,14 +8,14 @@ import * as polygon from 'd3-polygon';
 
 export class DisjointSet {
   index_: any = {};
-  
+
   constructor() {
     this.index_ = {};
   }
 
   makeSet(id: string | number) {
     if (!this.index_[id]) {
-      const created = Node(id);
+      const created = new Node(id);
       this.index_[id] = created;
     }
   };
@@ -68,10 +68,16 @@ export class DisjointSet {
   };
 }
 
-function Node(this: any, id: string | number) {
-  this.id_ = id;
-  this.parent_ = this;
-  this.rank_ = 0;
+class Node {
+  id_: string | number;
+  parent_: Node;
+  rank_: number;
+
+  constructor(id: string | number) {
+    this.id_ = id;
+    this.parent_ = this;
+    this.rank_ = 0;
+  }
 }
 
 export function pairNodeLinks(links: any) {
@@ -214,7 +220,7 @@ export function idExists(nodes: string | any[], id: any) {
 
   for (let i = length - 1; i >= 0; --i) {
     const node = nodes[i];
-    
+
     if (equalPoints(node.id, id)) {
       return true;
     }
@@ -233,11 +239,11 @@ export function mst(graph: { nodes?: any; links?: any }) {
     selectedEdges = [],
     forest: any = new DisjointSet();
 
-  vertices.forEach((vertex: { id: any }) => {
+  vertices.forEach((vertex: { id: number[] }) => {
     forest.makeSet(vertex.id);
   });
 
-  edges.sort((a: { weight: number }, b: { weight: number }) => {
+  edges.sort((a: any, b: any) => {
     return -(a.weight - b.weight);
   });
 
@@ -285,6 +291,20 @@ export function delaunayFromPoints(sites: any | any[]) {
   } else {
     delaunay = Delaunay.from(sites);
     delaunay.points = sites;
+  }
+
+  delaunay.triangleCoordinates = function () {
+    const triangles = this.triangles;
+    let coord = [];
+
+    for (let i = 0; i < triangles.length; i += 3) {
+      coord.push([
+        this.points[triangles[i]],
+        this.points[triangles[i + 1]],
+        this.points[triangles[i + 2]]
+      ]);
+    }
+    return coord;
   }
 
   return delaunay;

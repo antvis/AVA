@@ -23,7 +23,8 @@ export const INSIGHT_TYPES = tuple(
   // todo...
   'TimeSeriesOutliers',
   'Seasonality',
-  'ChangePoints'
+  'ChangePoints',
+  'Perception'
 );
 
 /**

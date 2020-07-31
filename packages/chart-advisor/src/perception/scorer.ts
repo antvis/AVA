@@ -3,19 +3,11 @@ import { Normalizer, Binner } from './findScag/constructor';
 import { createGraph, mst, delaunayFromPoints } from './findScag/grapher';
 import { Outlying, Clumpy } from './findScag/coremeasure';
 import { Convex, Skinny, Stringy, Skewed, Sparse, Striated, Monotonic } from './findScag/computator';
+import { scagOptions, scagScanner } from './findScag/interface'
 
-export interface scagOptions {
-  binType?: string;
-  startBinGridSize?: number;
-  isNormalized?: boolean;
-  isBinned?: boolean;
-  outlyingUpperBound?: number;
-  minBins?: number;
-  maxBins?: number;
-}
 
 export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
-  let thisInstance = this;
+  let scanner: scagScanner = {};
 
   let binType = options.binType,
     startBinGridSize = options.startBinGridSize,
@@ -33,7 +25,7 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
     let normalizer = new Normalizer(points);
     normalizedPoints = normalizer.normalizedPoints;
   }
-  // outputValue('normalizedPoints', normalizedPoints);
+  // scanner.normalizedPoints', normalizedPoints);
 
   //Binning
   let sites = null;
@@ -98,15 +90,15 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
     sites = bins.map((d: any) => [d.x, d.y]); //=>sites are the set of centers of all bins
 
     // //Binning output
-    // outputValue('binner', binner);
-    // outputValue('bins', bins);
-    // outputValue('binSize', binSize!);
-    // outputValue('binRadius', binRadius);
+    // scanner.binner', binner);
+    // scanner.bins', bins);
+    // scanner.binSize', binSize!);
+    // scanner.binRadius', binRadius);
   } else {
     sites = normalizedPoints;
   }
 
-  // outputValue('binnedSites', sites);
+  // scanner.binnedSites', sites);
 
   // Delaunay triangulation
   const delaunay = delaunayFromPoints(sites);
@@ -114,98 +106,94 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
   const triangleCoordinates = delaunay.triangleCoordinates();
 
   // //Triangulation graphs
-  // outputValue('delaunay', delaunay);
-  // outputValue('triangles', triangles);
-  // outputValue('triangleCoordinates', triangleCoordinates);
+  // scanner.delaunay', delaunay);
+  // scanner.triangles', triangles);
+  // scanner.triangleCoordinates', triangleCoordinates);
 
   //MST
   const graph = createGraph(triangleCoordinates);
   const mstree = mst(graph);
 
   // //Output graphs
-  // outputValue('graph', graph);
-  // outputValue('mst', mstree);
+  // scanner.graph', graph);
+  // scanner.mst', mstree);
 
   //Outlying
   const outlying = new Outlying(mstree);
   const outlyingScore = outlying.score();
-  outputValue('outlyingScore', outlyingScore);
+  scanner.outlyingScore = outlyingScore;
 
   outlyingUpperBound = outlying.upperBound;
-  // outputValue('outlyingUpperBound', outlyingUpperBound);
+  // scanner.outlyingUpperBound', outlyingUpperBound);
 
   // const outlyingLinks = outlying.links();
-  // outputValue('outlyingLinks', outlyingLinks);
+  // scanner.outlyingLinks', outlyingLinks);
 
   // const outlyingPoints = outlying.points();
-  // outputValue('outlyingPoints', outlyingPoints);
+  // scanner.outlyingPoints', outlyingPoints);
 
   const noOutlyingTree: any = outlying.removeOutlying();
-  // outputValue('noOutlyingTree', noOutlyingTree);
+  // scanner.noOutlyingTree', noOutlyingTree);
 
   // //Skewed
   const skewed = new Skewed(noOutlyingTree);
   const skewedScore = skewed.score();
-  outputValue('skewedScore', skewedScore);
+  scanner.skewedScore = skewedScore;
 
   //Sparse
   const sparse = new Sparse(noOutlyingTree);
   const sparseScore = sparse.score();
-  outputValue('sparseScore', sparseScore);
+  scanner.sparseScore = sparseScore;
 
   //Clumpy
   // let clumpy = new Clumpy(mstree);
   const clumpy = new Clumpy(noOutlyingTree);
-  // outputValue('clumpy', clumpy);
+  // scanner.clumpy', clumpy);
 
   const clumpyScore = clumpy.score();
-  outputValue('clumpyScore', clumpyScore);
+  scanner.clumpyScore = clumpyScore;
 
   //Striated
   const striated = new Striated(noOutlyingTree);
   const striatedScore = striated.score();
-  outputValue('striatedScore', striatedScore);
+  scanner.striatedScore = striatedScore;
 
   // const v2Corners = striated.getAllV2Corners();
-  // outputValue('v2Corners', v2Corners);
+  // scanner.v2Corners', v2Corners);
 
   // const obtuseV2Corners = striated.getAllObtuseV2Corners();
-  // outputValue('obtuseV2Corners', obtuseV2Corners);
+  // scanner.obtuseV2Corners', obtuseV2Corners);
 
   //Convex hull
   const convex = new Convex(noOutlyingTree, outlyingUpperBound!);
   // const convexHull = convex.convexHull();
-  // outputValue('convexHull', convexHull);
+  // scanner.convexHull', convexHull);
 
   //Alpha hull
   const alphaHull = convex.concaveHull();
-  // outputValue('alphaHull', alphaHull);
+  // scanner.alphaHull', alphaHull);
 
   //Convex
   const convexScore = convex.score();
-  outputValue('convexScore', convexScore);
+  scanner.convexScore = convexScore;
 
   //Skinny
   const skinny = new Skinny(alphaHull);
   const skinnyScore = skinny.score();
-  outputValue('skinnyScore', skinnyScore);
+  scanner.skinnyScore = skinnyScore;
 
   //Stringy
   const stringy = new Stringy(noOutlyingTree);
   // const v1s = stringy.getAllV1s();
-  // outputValue('v1s', v1s);
+  // scanner.v1s', v1s);
 
   const stringyScore = stringy.score();
-  outputValue('stringyScore', stringyScore);
+  scanner.stringyScore = stringyScore;
 
   //Monotonic
   const monotonic = new Monotonic(noOutlyingTree!.nodes.map((n: any) => n.id));
   const monotonicScore = monotonic.score();
-  outputValue('monotonicScore', monotonicScore);
+  scanner.monotonicScore = monotonicScore;
 
-  return this;
-
-  function outputValue(name: string, value: number) {
-    thisInstance[name] = value;
-  }
+  return scanner;
 }

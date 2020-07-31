@@ -1,19 +1,14 @@
 import { zip } from 'underscore';
-import { scagScorer, scagOptions } from './scorer';
+import { scagScorer } from './scorer';
+import { scagOptions, scagScanner, scagResult } from './findScag/interface'
 
-export interface scagResult {
-  indX?: number;
-  indY?: number;
-  k?: number;
-  val?: number;
-}
-
-function scagFeeder(scag: any, x: number, y: number, k: number) {
+function scagFeeder(scag: scagScanner, i: number, j: number, k: number) {
   let res: scagResult = {};
 
-  res.indX = x;
-  res.indY = y;
+  res.indX = i;
+  res.indY = j;
   res.k = k;
+
   switch (k) {
     case 0:
       res.val = scag.clumpyScore;
@@ -26,7 +21,7 @@ function scagFeeder(scag: any, x: number, y: number, k: number) {
     case 4:
       res.val = scag.skewedScore;
     case 5:
-      res.val = scag.straitedScore;
+      res.val = scag.striatedScore;
     case 6:
       res.val = scag.convexScore;
     case 7:
@@ -36,6 +31,16 @@ function scagFeeder(scag: any, x: number, y: number, k: number) {
   }
 
   return res;
+}
+
+function scagChecker(input: scagResult, output: scagResult[]) {
+  for (let i = 0; i < output.length; ++i) {
+    if (input.indX === output[i].indX && input.indY === output[i].indY) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 export function scagInsighter(dataSource: any[]) {
@@ -49,13 +54,14 @@ export function scagInsighter(dataSource: any[]) {
     throw new TypeError('data length error');
   }
 
-  let scagRes: scagResult[][] = [];
+  let scagRes = new Array(9);
+  let avgNum = new Array(9);
   for (let k = 0; k < 9; ++k) {
     scagRes[k] = [];
+    avgNum[k] = 0;
   }
 
   let scagInd = 0;
-  let avgNum: number[] = [];
 
   for (let i = 0; i < dataLenAll; ++i) {
 
@@ -70,21 +76,19 @@ export function scagInsighter(dataSource: any[]) {
           const scag = scagScorer(inputPoints, options);
 
           for (let k = 0; k < 9; ++k) {
-            scagRes[k][scagInd] = scagFeeder(scag, i, j, k);
+            let res = scagFeeder(scag, i, j, k);
+            scagRes[k][scagInd] = res;
+            avgNum[k] += res.val!;
 
-            if (scagInd > 0) {
-              for (let tmpind = 0; tmpind < scagInd; ++tmpind) {
-                avgNum[k] += scagRes[k][scagInd].val!;
-
-                if (scagRes[k][scagInd].val! > scagRes[k][tmpind].val!) {
-                  let tmpscag = scagRes[k][scagInd];
-                  scagRes[k][scagInd] = scagRes[k][tmpind];
-                  scagRes[k][tmpind] = tmpscag;
-                }
+            for (let tmpind = 0; tmpind < scagInd; ++tmpind) {
+              if (res.val! > scagRes[k][tmpind].val!) {
+                let tmpscag = res;
+                scagRes[k][scagInd] = scagRes[k][tmpind];
+                scagRes[k][tmpind] = tmpscag;
               }
             }
-            ++scagInd;
           }
+          ++scagInd;
         }
       }
     }
@@ -99,10 +103,11 @@ export function scagInsighter(dataSource: any[]) {
 
   for (let k = 0; k < 9; ++k) {
     avgNum[k] /= scagInd;
-    let tmpiqr = scagRes[q75][scagInd].val! - scagRes[q25][scagInd].val!;
 
-    iqrNumL[k] = scagRes[q75][scagInd].val! + 1.5 * tmpiqr;
-    iqrNumU[k] = scagRes[q75][scagInd].val! - 1.5 * tmpiqr;
+    let tmpiqr = scagRes[k][q75].val! - scagRes[k][q25].val!;
+
+    iqrNumL[k] = scagRes[k][scagInd].val! + 1.5 * tmpiqr;
+    iqrNumU[k] = scagRes[k][scagInd].val! - 1.5 * tmpiqr;
   }
 
   let insightNum = 0;
@@ -110,29 +115,27 @@ export function scagInsighter(dataSource: any[]) {
 
   for (let i = 0; i < 3; ++i) {
     for (let k = 0; k < 9; ++k) {
-      let diffi = Math.abs(scagRes[k][i].val! - avgNum[k]);
-      if (scagRes[k][i].val! > iqrNumU[k]) {
+      // let diffi = Math.abs(scagRes[k][i].val! - avgNum[k]);
+      if (scagRes[k][i].val! > iqrNumU[k] && scagChecker(scagRes[k][i], outRes)) {
         outRes[insightNum] = scagRes[k][i];
         ++insightNum;
       }
 
-      diffi = Math.abs(scagRes[k][scagInd - i].val! - avgNum[k]);
-      if (scagRes[k][scagInd - i].val! < iqrNumL[k]) {
-        outRes[insightNum] = scagRes[k][scagInd - i];
-        ++insightNum;
-      }
+      // diffi = Math.abs(scagRes[k][scagInd - i].val! - avgNum[k]);
+      // if (scagRes[k][scagInd - i].val! < iqrNumL[k]) {
+      //   outRes[insightNum] = scagRes[k][scagInd - i];
+      //   ++insightNum;
+      // }
     }
   }
-  --insightNum;
 
   if (scagInd === 0) {
     throw new TypeError('data variable error');
   }
 
-  let insightCor = true;
   if (insightNum <= 0) {
-    insightCor = false;
+    return false;
   }
 
-  return { outRes, insightCor };
+  return outRes;
 }
