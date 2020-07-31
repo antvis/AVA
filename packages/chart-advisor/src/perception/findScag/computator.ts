@@ -12,6 +12,7 @@ import {
 
 export class Skinny {
   alphaHull: string | any;
+  
   constructor(alphaHull: any) {
     this.alphaHull = alphaHull.slice();
   }
@@ -102,7 +103,7 @@ export class Monotonic {
     const r = computeSpearmans(xArr, yArr);
 
     if(r == null) {
-        return;
+        return 0;
     }
     else {
         return Math.pow(r, 2);
