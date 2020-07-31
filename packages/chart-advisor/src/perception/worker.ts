@@ -1,7 +1,13 @@
 import { RowData } from '@antv/dw-transform';
-import { Insight, SCAG_TYPES, InsightType } from './findScag/interface';
+import {
+    Insight,
+    SCAG_TYPES,
+    InsightType,
+    scagResult,
+    scagFixData
+} from './findScag/interface';
 import { rowDataToColumnFrame, columnsToRowData } from '../insight/insightWorkers/utils';
-import { scagInsighter, scagResult } from './insighter';
+import { scagInsighter } from './insighter';
 import { JSONto2DArray } from './advisor';
 
 
@@ -14,7 +20,13 @@ export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
     const insights: Insight[] = [];
 
     const { columnProps, columns } = rowDataToColumnFrame(data);
-    const data2d = JSONto2DArray(data);
+
+    let scagData: scagFixData;
+    scagData = JSONto2DArray(data);
+
+    const data2d = scagData.outArr;
+    const fixnum = scagData.fixnum;
+    console.log(fixnum);
 
     let scagOut: scagResult[] | boolean = [];
 
@@ -27,22 +39,22 @@ export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
         const dimensionTitle = columnProps[scagOut[i].indX!].title;
         const measureTitle = columnProps[scagOut[i].indY!].title;
 
-        const subData = columnsToRowData([columns[scagOut[i].indX!], columns[scagOut[i].indY!]], [dimensionTitle, measureTitle]);
+        const subData = columnsToRowData([columns[scagOut[i].indX! + fixnum], columns[scagOut[i].indY! + fixnum]], [dimensionTitle, measureTitle]);
 
         insights.push({
             type: 'Perception',
             description: `Perceptual insight with '${
                 SCAG_TYPES[scagOut[i].k!]
                 }'`,
-            fields: [columnProps[scagOut[i].indX!].title as string,
-            columnProps[scagOut[i].indY!].title as string],
+            fields: [columnProps[scagOut[i].indX! + fixnum].title as string,
+            columnProps[scagOut[i].indY! + fixnum].title as string],
             present: {
-                purpose: ['Relation'],
+                purpose: ['Distribution'],
                 type: 'scatter_plot',
                 data: subData,
                 encoding: {
-                    x: columnProps[scagOut[i].indX!].title,
-                    y: columnProps[scagOut[i].indY!].title,
+                    x: columnProps[scagOut[i].indX! + fixnum].title,
+                    y: columnProps[scagOut[i].indY! + fixnum].title,
                 },
                 configs: { xAxis: { title: { visible: true } }, yAxis: { title: { visible: true } } },
             },

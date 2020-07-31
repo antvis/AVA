@@ -23,7 +23,8 @@ export const SCAG_TYPES = tuple(
  * @beta
  */
 export const INSIGHT_TYPES = tuple(
-  'Perception'
+  'Perception',
+  'Correlation'
 );
 
 /**
@@ -95,4 +96,12 @@ export interface scagScanner {
   skinnyScore?: number;
   stringyScore?: number;
   monotonicScore?: number;
+}
+
+/**
+ * @beta
+ */
+export interface scagFixData {
+  outArr: number[][];
+  fixnum: number;
 }

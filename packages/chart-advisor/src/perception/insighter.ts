@@ -1,5 +1,6 @@
 import { zip } from 'underscore';
 import { scagScorer } from './scorer';
+import { getCol } from './findScag/util';
 import { scagOptions, scagScanner, scagResult } from './findScag/interface'
 
 function scagFeeder(scag: scagScanner, i: number, j: number, k: number) {
@@ -48,7 +49,7 @@ export function scagInsighter(dataSource: any[]) {
     throw new TypeError('data type error');
   }
 
-  const dataLenAll = dataSource.length;
+  const dataLenAll = dataSource[0].length;
 
   if (dataLenAll === 0) {
     throw new TypeError('data length error');
@@ -62,13 +63,13 @@ export function scagInsighter(dataSource: any[]) {
   }
 
   let scagInd = 0;
-
   for (let i = 0; i < dataLenAll; ++i) {
+    let dataX = getCol(dataSource, i);
 
-    let dataX = dataSource[i].filter(Number);
     if (dataX.length != 0) {
       for (let j = i + 1; j < dataLenAll; ++j) {
-        let dataY = dataSource[j].filter(Number);
+        let dataY = getCol(dataSource, j);
+
         if (dataY.length != 0 && dataY.length == dataX.length) {
           let inputPoints = zip(dataX, dataY);
 

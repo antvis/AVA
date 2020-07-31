@@ -254,3 +254,13 @@ function quantileIndex(len: number, p: number) {
     return idx;
   }
 }
+
+export function getCol(matrix: any[], col: number) {
+  var column = [];
+
+  for (var i = 0; i < matrix.length; i++) {
+    column.push(matrix[i][col]);
+  }
+
+  return column;
+}
