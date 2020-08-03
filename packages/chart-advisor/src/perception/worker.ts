@@ -36,25 +36,25 @@ export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
     }
 
     for (let i = 0; i < scagOut.length; ++i) {
-        const dimensionTitle = columnProps[scagOut[i].indX! + fixnum].title;
-        const measureTitle = columnProps[scagOut[i].indY! + fixnum].title;
+        const dimensionTitle = columnProps[fixnum[scagOut[i].indX!]].title;
+        const measureTitle = columnProps[fixnum[scagOut[i].indY!]].title;
 
-        const subData = columnsToRowData([columns[scagOut[i].indX! + fixnum], columns[scagOut[i].indY! + fixnum]], [dimensionTitle, measureTitle]);
+        const subData = columnsToRowData([columns[fixnum[scagOut[i].indX!]], columns[fixnum[scagOut[i].indY!]]], [dimensionTitle, measureTitle]);
 
         insights.push({
             type: 'Perception',
             description: `Perceptual insight with '${
                 SCAG_TYPES[scagOut[i].k!]
                 }'`,
-            fields: [columnProps[scagOut[i].indX! + fixnum].title as string,
-            columnProps[scagOut[i].indY! + fixnum].title as string],
+            fields: [columnProps[fixnum[scagOut[i].indX!]].title as string,
+            columnProps[fixnum[scagOut[i].indY!]].title as string],
             present: {
                 purpose: ['Perception'],
                 type: 'scatter_plot',
                 data: subData,
                 encoding: {
-                    x: columnProps[scagOut[i].indX! + fixnum].title,
-                    y: columnProps[scagOut[i].indY! + fixnum].title,
+                    x: columnProps[fixnum[scagOut[i].indX!]].title,
+                    y: columnProps[fixnum[scagOut[i].indY!]].title,
                 },
                 configs: {
                     xAxis: { title: { visible: true } },

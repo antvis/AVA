@@ -103,5 +103,5 @@ export interface scagScanner {
  */
 export interface scagFixData {
   outArr: number[][];
-  fixnum: number;
+  fixnum: number[];
 }

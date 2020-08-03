@@ -1,4 +1,3 @@
-import { ConversionType } from './../../../datawizard/transform/src/parse';
 import { zip } from 'underscore';
 import { scagScorer } from './scorer';
 import { getCol } from './findScag/util';
@@ -124,36 +123,12 @@ export function scagInsighter(dataSource: any[]) {
   let insightNum = 0;
   let outRes: scagResult[] = [];
 
-  let tmpk = 0;
-  let maxr = 0;
-  let record = false;
-
-  for (let i = 0; i < 3; ++i) {
+  for (let i = 0; i < Math.ceil(dataLenAll / 10); ++i) {
     for (let k = 0; k < 9; ++k) {
-      // let diffi = Math.abs(scagRes[k][i].val! - avgNum[k]);
-      if (scagRes[k][i].val! > iqrNumU[k] && Math.abs(scagRes[k][i].val! - avgNum[k]) >= 0.05 * avgNum[k]) {
-        const tmpr = scagRes[k][i].val! / iqrNumU[k];
-
-        if (tmpr > maxr) {
-          maxr = tmpr;
-          tmpk = k;
-          record = true;
-        }
+      if (scagRes[k][i].val! > iqrNumU[k] && scagChecker(scagRes[k][i], outRes)) {
+        outRes[insightNum] = scagRes[k][i];
+        ++insightNum;
       }
-
-      // diffi = Math.abs(scagRes[k][scagInd - i].val! - avgNum[k]);
-      // if (scagRes[k][scagInd - i].val! < iqrNumL[k]) {
-      //   outRes[insightNum] = scagRes[k][scagInd - i];
-      //   ++insightNum;
-      // }
-    }
-
-    if (record == true && scagChecker(scagRes[tmpk][i], outRes)) {
-      outRes[insightNum] = scagRes[tmpk][i];
-      ++insightNum;
-      maxr = 0;
-      tmpk = 0;
-      record = false;
     }
   }
 

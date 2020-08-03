@@ -27,7 +27,7 @@ export function PerceptualTest() {
     return sampleData as RowData[];
   };
 
-  const initSample = 'iris';
+  const initSample = 'Iris';
 
   const [insights, setInsights] = useState<Insight[]>([]);
   const [sampleName, setSampleName] = useState<string>(initSample); //xxx: sampleGetters[0].name
