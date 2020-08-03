@@ -29,10 +29,14 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
 
   //Binning
   let sites = null;
-  let bins = null;
+  let bins: any[] | null = null;
   let binner = null;
   let binSize = null;
   let binRadius = 0;
+
+  if (!binType) {
+    binType = 'hexagon';
+  }
 
   if (!isBinned) {
     if (!startBinGridSize) {
@@ -50,9 +54,15 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
       maxNumOfBins = maxBins;
     }
 
+    // console.log('start')
+
     const uniqueKeys = uniq(normalizedPoints.map((p: any) => p.join(',')));
     const groups = groupBy(normalizedPoints, (p) => p.join(','));
 
+    // let pweg = 0;
+    // if (pweg === 0) {
+    //   throw new TypeError('no perceptual insight');
+    // }
     if (uniqueKeys.length < minNumOfBins) {
       uniqueKeys.forEach((key) => {
         let bin: any = groups[key];
@@ -60,7 +70,6 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
         bin.x = bin[0][0];
         bin.y = bin[0][1];
         bin.binRadius = 0;
-        bins.push(bin);
       });
     } else {
       do {
@@ -76,14 +85,9 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
           const shortDiagonal = 1 / binSize;
           binRadius = shortDiagonal / Math.sqrt(2);
 
-          binner = Binner()
-            .radius(binRadius)
-            .extent([
-              [0, 0],
-              [1, 1],
-            ]);
+          binner = new Binner(normalizedPoints, binRadius);
 
-          bins = binner.hexbin(normalizedPoints);
+          bins = binner.hexbin();
         }
       } while (bins.length > maxNumOfBins || bins.length < minNumOfBins);
     }
@@ -98,12 +102,16 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
     sites = normalizedPoints;
   }
 
+  // console.log("pre")
+
   // scanner.binnedSites', sites);
 
   // Delaunay triangulation
   const delaunay = delaunayFromPoints(sites);
   // const triangles = delaunay.triangles;
   const triangleCoordinates = delaunay.triangleCoordinates();
+
+  // console.log("DT")
 
   // //Triangulation graphs
   // scanner.delaunay', delaunay);
@@ -114,9 +122,13 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
   const graph = createGraph(triangleCoordinates);
   const mstree = mst(graph);
 
+  // console.log("MST")
+
   // //Output graphs
   // scanner.graph', graph);
   // scanner.mst', mstree);
+
+  // console.log("Measures")
 
   //Outlying
   const outlying = new Outlying(mstree);

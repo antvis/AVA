@@ -5,33 +5,32 @@ import { dataInTable, dataInJSON } from '../utils';
 import { getMappingForLib, Channels } from '../../packages/chart-advisor/src';
 import {insightsFromDataset, Insight} from '../../packages/chart-advisor/src/perception'
 import { RowData } from '../../packages/datawizard/transform/src';
-import { perceptualSamples } from '../data-samples';
+import { irisSamples } from '../data-samples';
 
-const sampleGetters: { name: string; getter: Function }[] = [];
+// const sampleGetters: { getter: Function }[] = [];
 
-perceptualSamples.forEach((s: any) => {
-  sampleGetters.push({
-    name: s.name,
-    getter: () => {
-      return s.data;
-    },
-  });
-});
+// perceptualSamples.forEach((s: any) => {
+//   sampleGetters.push({
+//     getter: () => {
+//       return s;
+//     },
+//   });
+// });
 
 export function PerceptualTest() {
-  const dataFromSampleName = (sampleName: string): RowData[] => {
-    const selectedGetter = sampleGetters.find((g) => g.name === sampleName);
+  const dataFromSample = (): RowData[] => {
+    const selectedGetter = irisSamples;
     if (!selectedGetter) return [];
 
-    const sampleData = selectedGetter.getter();
+    const sampleData = selectedGetter;
     return sampleData as RowData[];
   };
 
-  const initSample = 'iris';
+  // const initSample = 'TeamInfo';
 
   const [insights, setInsights] = useState<Insight[]>([]);
-  const [sampleName, setSampleName] = useState<string>(initSample); //xxx: sampleGetters[0].name
-  const [dataSource, setDataSource] = useState<RowData[]>(dataFromSampleName(sampleName));
+  // const [sampleName, setSampleName] = useState<string>(initSample); //xxx: sampleGetters[0].name
+  const [dataSource, setDataSource] = useState<RowData[]>(dataFromSample());
 
   useEffect(() => {
     if (dataSource.length > 0) {
@@ -44,8 +43,8 @@ export function PerceptualTest() {
   }, [dataSource]);
 
   useEffect(() => {
-    setDataSource(dataFromSampleName(sampleName));
-  }, [sampleName]);
+    setDataSource(dataFromSample());
+  }, []);
 
   const genTitle = (insight: Insight): string => {
     const { fields } = insight;
@@ -107,8 +106,8 @@ export function PerceptualTest() {
   return (
     <>
       {/* data */}
-      <label>Sample Data:</label>
-      <select
+      <label>Sample Data: MLB 2008</label>
+      {/* <select
         name="sampledata"
         id="sampledata"
         value={sampleName}
@@ -121,7 +120,7 @@ export function PerceptualTest() {
             {g.name}
           </option>
         ))}
-      </select>
+      </select> */}
       <div style={{ display: 'flex', justifyContent: 'space-evenly', minHeight: '200px', maxHeight: '300px' }}>
         {dataInJSON(dataSource)}
         {dataInTable(dataSource)}

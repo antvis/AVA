@@ -1,3 +1,4 @@
+import { ConversionType } from './../../../datawizard/transform/src/parse';
 import { zip } from 'underscore';
 import { scagScorer } from './scorer';
 import { getCol } from './findScag/util';
@@ -13,22 +14,31 @@ function scagFeeder(scag: scagScanner, i: number, j: number, k: number) {
   switch (k) {
     case 0:
       res.val = scag.clumpyScore;
+      break;
     case 1:
       res.val = scag.outlyingScore;
+      break;
     case 2:
       res.val = scag.skinnyScore;
+      break;
     case 3:
       res.val = scag.stringyScore;
+      break;
     case 4:
       res.val = scag.skewedScore;
+      break;
     case 5:
       res.val = scag.striatedScore;
+      break;
     case 6:
       res.val = scag.convexScore;
+      break;
     case 7:
       res.val = scag.sparseScore;
+      break;
     case 8:
       res.val = scag.monotonicScore;
+      break;
   }
 
   return res;
@@ -77,9 +87,9 @@ export function scagInsighter(dataSource: any[]) {
           const scag = scagScorer(inputPoints, options);
 
           for (let k = 0; k < 9; ++k) {
-            let res = scagFeeder(scag, i, j, k);
-            scagRes[k][scagInd] = res;
-            avgNum[k] += res.val!;
+            scagRes[k][scagInd] = scagFeeder(scag, i, j, k);
+            const res = scagRes[k][scagInd];
+            avgNum[k] += scagRes[k][scagInd].val!;
 
             for (let tmpind = 0; tmpind < scagInd; ++tmpind) {
               if (res.val! > scagRes[k][tmpind].val!) {
@@ -121,10 +131,11 @@ export function scagInsighter(dataSource: any[]) {
   for (let i = 0; i < 3; ++i) {
     for (let k = 0; k < 9; ++k) {
       // let diffi = Math.abs(scagRes[k][i].val! - avgNum[k]);
-      if (scagRes[k][i].val! > iqrNumU[k]) {
+      if (scagRes[k][i].val! > iqrNumU[k] && Math.abs(scagRes[k][i].val! - avgNum[k]) >= 0.05 * avgNum[k]) {
         const tmpr = scagRes[k][i].val! / iqrNumU[k];
 
         if (tmpr > maxr) {
+          maxr = tmpr;
           tmpk = k;
           record = true;
         }
@@ -136,9 +147,13 @@ export function scagInsighter(dataSource: any[]) {
       //   ++insightNum;
       // }
     }
+
     if (record == true && scagChecker(scagRes[tmpk][i], outRes)) {
       outRes[insightNum] = scagRes[tmpk][i];
       ++insightNum;
+      maxr = 0;
+      tmpk = 0;
+      record = false;
     }
   }
 

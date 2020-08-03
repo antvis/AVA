@@ -72,29 +72,55 @@ export function isA2DLine(points: any) {
   return true;
 }
 
-export function Binner(this: any) {
-  const thirdPi = Math.PI / 3,
-    angles = [0, thirdPi, 2 * thirdPi, 3 * thirdPi, 4 * thirdPi, 5 * thirdPi];
+export class Binner {
+  public points: any[];
+  angles: number[];
+  thirdPi: number;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  r: number;
+  dx: number;
+  dy: number;
 
-  function pointX(d: any) {
+
+  constructor(points: any, radius: number) {
+    this.points = points;
+
+    const thirdPi = Math.PI / 3;
+    this.angles = [0, thirdPi, 2 * thirdPi, 3 * thirdPi, 4 * thirdPi, 5 * thirdPi];
+    this.thirdPi = thirdPi;
+
+    this.x0 = 0;
+    this.y0 = 0;
+    this.x1 = 1;
+    this.y1 = 1;
+
+    this.r = 0;
+    this.dx = 0;
+    this.dy = 0;
+
+    this.radius(radius);
+
+    this.extent([
+      [0, 0],
+      [1, 1],
+    ])
+  }
+
+  pointX(d: any) {
     return d[0];
   }
 
-  function pointY(d: any) {
+  pointY(d: any) {
     return d[1];
   }
 
-  let x0 = 0,
-    y0 = 0,
-    x1 = 1,
-    y1 = 1,
-    x = pointX,
-    y = pointY,
-    r: number,
-    dx: number,
-    dy: number;
 
-  function hexbin(points: any) {
+  hexbin() {
+    const points = this.points;
+
     let binsById = {},
       bins = [],
       i,
@@ -105,13 +131,13 @@ export function Binner(this: any) {
     for (i = 0; i < n; ++i) {
       let point;
 
-      px = +x.call(null, (point = points[i]));
-      py = +y.call(null, point);
+      px = +this.pointX.call(null, (point = points[i]));
+      py = +this.pointY.call(null, point);
 
       if (isNaN(px) || isNaN(py)) continue;
 
-      let pj = Math.round((py = py / dy)),
-        pi = Math.round((px = px / dx - (pj & 1) / 2)),
+      let pj = Math.round((py = py / this.dy)),
+        pi = Math.round((px = px / this.dx - (pj & 1) / 2)),
         py1 = py - pj;
 
       if (Math.abs(py1) * 3 > 1) {
@@ -128,19 +154,19 @@ export function Binner(this: any) {
       if (bin) bin.push(point);
       else {
         bins.push((bin = [point]));
-        bin.x = (pi + (pj & 1) / 2) * dx;
-        bin.y = pj * dy;
+        bin.x = (pi + (pj & 1) / 2) * this.dx;
+        bin.y = pj * this.dy;
       }
     }
 
     return bins;
   }
 
-  function hexagon(radius: any) {
+  hexagonal(radius: any) {
     let x0 = 0,
       y0 = 0;
 
-    return angles.map(function(angle) {
+    return this.angles.map(function (angle) {
       const x1 = Math.sin(angle) * radius,
         y1 = -Math.cos(angle) * radius,
         dx = x1 - x0,
@@ -151,19 +177,17 @@ export function Binner(this: any) {
     });
   }
 
-  this.hexbin = hexbin;
-
-  this.hexagon = function(radius: any) {
-    return 'm' + hexagon(radius == null ? r : +radius).join('l') + 'z';
+  hexagon(radius: any) {
+    return 'm' + this.hexagonal(radius == null ? this.r : +radius).join('l') + 'z';
   };
 
-  this.centers = function() {
+  centers() {
     let centers = [],
-      j = Math.round(y0 / dy),
-      i = Math.round(x0 / dx);
+      j = Math.round(this.y0 / this.dy),
+      i = Math.round(this.x0 / this.dx);
 
-    for (let y = j * dy; y < y1 + r; y += dy, ++j) {
-      for (let x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
+    for (let y = j * this.dy; y < this.y1 + this.r; y += this.dy, ++j) {
+      for (let x = i * this.dx + ((j & 1) * this.dx) / 2; x < this.x1 + this.dx / 2; x += this.dx) {
         centers.push([x, y]);
       }
     }
@@ -171,56 +195,53 @@ export function Binner(this: any) {
     return centers;
   };
 
-  this.centers = function() {
-    let centers = [],
-      j = Math.round(y0 / dy),
-      i = Math.round(x0 / dx);
-      
-    for (let y = j * dy; y < y1 + r; y += dy, ++j) {
-      for (let x = i * dx + ((j & 1) * dx) / 2; x < x1 + dx / 2; x += dx) {
-        centers.push([x, y]);
-      }
-    }
-
-    return centers;
-  };
-
-  this.mesh = function() {
-    const fragment = hexagon(r)
+  mesh() {
+    const fragment = this.hexagonal(this.r)
       .slice(0, 4)
       .join('l');
-      
+
     return this.centers()
-      .map(function(p: any) {
+      .map(function (p: any) {
         return 'M' + p + 'm' + fragment;
       })
       .join('');
   };
 
-  this.x = function(_: (d: any) => any) {
-    return arguments.length ? ((x = _), this) : x;
+  x(_: (d: any) => any) {
+    return arguments.length ? ((this.pointX = _), this) : this.pointX;
   };
 
-  this.y = function(_: (d: any) => any) {
-    return arguments.length ? ((y = _), this) : y;
+  y(_: (d: any) => any) {
+    return arguments.length ? ((this.pointY = _), this) : this.pointY;
   };
 
-  this.radius = function(_: string | number) {
-    return arguments.length ? ((r = +_), (dx = r * 2 * Math.sin(thirdPi)), (dy = r * 1.5), this) : r;
+  radius(_: string | number) {
+    let r = this.r;
+
+    return arguments.length ? ((r = +_), (this.dx = r * 2 * Math.sin(this.thirdPi)), (this.dy = r * 1.5), this) : r;
   };
 
-  this.size = function(_: (string | number)[]) {
+  size(_: (string | number)[]) {
+    let x0 = this.x0;
+    let y0 = this.y0;
+    let x1 = this.x1;
+    let y1 = this.y1;
+
     return arguments.length ? ((x0 = y0 = 0), (x1 = +_[0]), (y1 = +_[1]), this) : [x1 - x0, y1 - y0];
   };
 
-  this.extent = function(_: (string | number)[][]) {
+  extent(_: (string | number)[][]) {
+    let x0 = this.x0;
+    let y0 = this.y0;
+    let x1 = this.x1;
+    let y1 = this.y1;
+
     return arguments.length
       ? ((x0 = +_[0][0]), (y0 = +_[0][1]), (x1 = +_[1][0]), (y1 = +_[1][1]), this)
       : [
-          [x0, y0],
-          [x1, y1],
-        ];
+        [x0, y0],
+        [x1, y1],
+      ];
   };
 
-  return this.radius(1);
 }

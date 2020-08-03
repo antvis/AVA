@@ -22,11 +22,11 @@ export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
     const { columnProps, columns } = rowDataToColumnFrame(data);
 
     let scagData: scagFixData;
+
     scagData = JSONto2DArray(data);
 
     const data2d = scagData.outArr;
     const fixnum = scagData.fixnum;
-    console.log(fixnum);
 
     let scagOut: scagResult[] | boolean = [];
 
