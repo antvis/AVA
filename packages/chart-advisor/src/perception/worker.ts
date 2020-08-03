@@ -36,8 +36,8 @@ export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
     }
 
     for (let i = 0; i < scagOut.length; ++i) {
-        const dimensionTitle = columnProps[scagOut[i].indX!].title;
-        const measureTitle = columnProps[scagOut[i].indY!].title;
+        const dimensionTitle = columnProps[scagOut[i].indX! + fixnum].title;
+        const measureTitle = columnProps[scagOut[i].indY! + fixnum].title;
 
         const subData = columnsToRowData([columns[scagOut[i].indX! + fixnum], columns[scagOut[i].indY! + fixnum]], [dimensionTitle, measureTitle]);
 
@@ -49,14 +49,17 @@ export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
             fields: [columnProps[scagOut[i].indX! + fixnum].title as string,
             columnProps[scagOut[i].indY! + fixnum].title as string],
             present: {
-                purpose: ['Distribution'],
+                purpose: ['Perception'],
                 type: 'scatter_plot',
                 data: subData,
                 encoding: {
                     x: columnProps[scagOut[i].indX! + fixnum].title,
                     y: columnProps[scagOut[i].indY! + fixnum].title,
                 },
-                configs: { xAxis: { title: { visible: true } }, yAxis: { title: { visible: true } } },
+                configs: {
+                    xAxis: { title: { visible: true } },
+                    yAxis: { title: { visible: true } }
+                },
             },
         });
     }

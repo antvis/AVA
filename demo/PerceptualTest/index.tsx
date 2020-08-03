@@ -5,11 +5,11 @@ import { dataInTable, dataInJSON } from '../utils';
 import { getMappingForLib, Channels } from '../../packages/chart-advisor/src';
 import {insightsFromDataset, Insight} from '../../packages/chart-advisor/src/perception'
 import { RowData } from '../../packages/datawizard/transform/src';
-import { perceptualSamples } from '../data-samples';
+import { insightSamples } from '../data-samples';
 
 const sampleGetters: { name: string; getter: Function }[] = [];
 
-perceptualSamples.forEach((s: any) => {
+insightSamples.forEach((s: any) => {
   sampleGetters.push({
     name: s.name,
     getter: () => {
