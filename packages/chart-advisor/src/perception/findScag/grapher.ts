@@ -197,14 +197,14 @@ export function createGraph(triangles: any) {
   return graph;
 }
 
-export function distance(a: any[], b: number[]) {
+export function distance(a: number[], b: number[]) {
   const dx = a[0] - b[0],
     dy = a[1] - b[1];
 
   return Math.round(Math.sqrt(dx * dx + dy * dy) * Math.pow(10, 10)) / Math.pow(10, 10);
 }
 
-export function equalPoints(id1: any[], id2: any[]) {
+export function equalPoints(id1: number[], id2: number[]) {
   return id1[0] === id2[0] && id1[1] === id2[1];
 }
 
@@ -215,7 +215,7 @@ export function equalLinks(l1: { source: any; target: any }, l2: { source: any; 
   );
 }
 
-export function idExists(nodes: string | any[], id: any) {
+export function idExists(nodes: any[], id: number[]) {
   const length = nodes.length;
 
   for (let i = length - 1; i >= 0; --i) {

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { AVAChart } from './insights';
 import { dataInTable, dataInJSON } from '../utils';
 import { getMappingForLib, Channels } from '../../packages/chart-advisor/src';
-import {insightsFromDataset, Insight} from '../../packages/chart-advisor/src/perception'
+import { insightsFromDataset, Insight } from '../../packages/chart-advisor/src/perception'
 import { RowData } from '../../packages/datawizard/transform/src';
 import { perceptualSamples } from '../data-samples';
 

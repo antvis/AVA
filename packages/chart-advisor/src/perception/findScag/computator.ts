@@ -11,9 +11,9 @@ import {
 } from './grapher';
 
 export class Skinny {
-  alphaHull: string | any;
+  alphaHull: [number, number][][];
   
-  constructor(alphaHull: any) {
+  constructor(alphaHull: [number, number][][]) {
     this.alphaHull = alphaHull.slice();
   }
 
@@ -36,9 +36,11 @@ export class Convex {
   score() {
     const concaveArea = concaveHullArea(this.concaveHull());
     const convexArea = convexHullArea(this.convexHull());
+
     if (convexArea === 0) {
       return 0;
     }
+
     return concaveArea / convexArea;
   }
 
@@ -50,6 +52,7 @@ export class Convex {
 
       this.cch = cch;
     }
+
     return this.cch;
   }
 
@@ -60,6 +63,7 @@ export class Convex {
 
       this.cvh = convexHull(sites);
     }
+
     return this.cvh;
   }
 }
@@ -76,6 +80,7 @@ export class Skewed {
       q90 = quantile(allLengths, 0.9),
       q50 = quantile(allLengths, 0.5),
       q10 = quantile(allLengths, 0.1);
+
     if (q90 != q10) {
       return (q90 - q50) / (q90 - q10);
     } else {
@@ -85,17 +90,17 @@ export class Skewed {
 }
 
 export class Monotonic {
-  points: any;
+  points: number[][];
 
-  constructor(points: any) {
+  constructor(points: number[][]) {
     this.points = points.slice(0);
   }
 
   score() {
-    let xArr: any[] = [];
-    let yArr: any[] = [];
+    let xArr: number[] = [];
+    let yArr: number[] = [];
 
-    this.points.forEach((p: any) => {
+    this.points.forEach((p: number[]) => {
       xArr.push(p[0]);
       yArr.push(p[1]);
     });
@@ -109,7 +114,7 @@ export class Monotonic {
         return Math.pow(r, 2);
     }
 
-    function computeSpearmans(arrX: any, arrY: any) {
+    function computeSpearmans(arrX: number[], arrY: number[]) {
       // simple error handling for input arrays of nonequal lengths
       if (arrX.length !== arrY.length) {
         return null;
@@ -162,7 +167,7 @@ export class Monotonic {
       return rho;
     }
 
-    function rankArray(arr: any[]) {
+    function rankArray(arr: number[]) {
       let sorted = arr.slice().sort(function(a, b) {
         return b - a;
       });
@@ -172,7 +177,7 @@ export class Monotonic {
       });
 
       // counts of each rank
-      let counts: any = {};
+      let counts: number[] = [];
       ranks.forEach(function(x) {
         counts[x] = (counts[x] || 0) + 1;
       });
@@ -185,8 +190,8 @@ export class Monotonic {
       return ranks;
     }
 
-    function countTies(arr: any[]) {
-      let ties: any = {},
+    function countTies(arr: number[]) {
+      let ties: number[] = [],
         arrSorted = arr.slice().sort(),
         currValue = arrSorted[0],
         tieLength = 1;
@@ -256,7 +261,7 @@ export class Striated {
 
   getAllObtuseV2Corners() {
     let allV2Corners = this.getAllV2Corners();
-    let allObtuseV2Corners: any = [];
+    let allObtuseV2Corners: number[][][] = [];
 
     allV2Corners.forEach((corner) => {
       let cs = cosine(corner[0], corner[1], corner[2]);
@@ -267,7 +272,7 @@ export class Striated {
 
     return allObtuseV2Corners;
 
-    function cosine(p1: any, p2: any, p3: any) {
+    function cosine(p1: number[], p2: number[], p3: number[]) {
       let p12 = distance(p1, p2),
         p13 = distance(p1, p3),
         p23 = distance(p2, p3);
@@ -289,7 +294,7 @@ export class Sparse {
   }
 
   score() {
-    let allLengths = this.tree.links.map((l: { weight: any }) => l.weight),
+    let allLengths = this.tree.links.map((l: { weight: number }) => l.weight),
       q90 = quantile(allLengths, 0.9);
       
     return q90;
