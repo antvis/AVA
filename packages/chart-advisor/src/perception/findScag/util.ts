@@ -256,9 +256,9 @@ function quantileIndex(len: number, p: number) {
 }
 
 export function getCol(matrix: any[], col: number) {
-  var column = [];
+  let column = [];
 
-  for (var i = 0; i < matrix.length; i++) {
+  for (let i = 0; i < matrix.length; i++) {
     column.push(matrix[i][col]);
   }
 
