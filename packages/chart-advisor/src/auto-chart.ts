@@ -128,7 +128,7 @@ export class AutoChart {
     this.isMocked = false;
     this.options = options || {};
     const { fields, development, noDataContent } = this.options;
-    this.noDataLayer = createLayer(container);
+    this.noDataLayer = createLayer(this.container);
     this.noDataContent = noDataContent || DEFAULT_FEEDBACK('暂无数据');
     this.data = fields && fields.length > 0 ? data.map((item) => pick(item, fields)) : data;
     this.development =
