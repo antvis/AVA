@@ -8,7 +8,7 @@ type Couple = {
   valueJ: number;
 };
 
-export const overallTrendsIW: Worker = function(data: RowData[]): Insight[] {
+export const overallTrendsIW: Worker = function (data: RowData[]): Insight[] {
   const THRESHOLD = 0.85;
   const insights: Insight[] = [];
 

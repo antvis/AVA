@@ -5,7 +5,7 @@
 export default function dragable(target: HTMLElement) {
   const handlers: ((event: MouseEvent) => void)[] = [];
 
-  target.onmousedown = function(event: MouseEvent) {
+  target.onmousedown = function (event: MouseEvent) {
     const shiftX = event.clientX - target.getBoundingClientRect().left;
     const shiftY = event.clientY - target.getBoundingClientRect().top;
     const mask = target.querySelector('[data-id="mask"]') as HTMLDivElement;
@@ -27,7 +27,7 @@ export default function dragable(target: HTMLElement) {
     document.addEventListener('mousemove', onMouseMove);
 
     // drop the ball, remove unneeded handlers
-    target.onmouseup = function() {
+    target.onmouseup = function () {
       handlers.forEach((item) => {
         document.removeEventListener('mousemove', item);
       });
@@ -36,7 +36,7 @@ export default function dragable(target: HTMLElement) {
     };
   };
 
-  target.ondragstart = function() {
+  target.ondragstart = function () {
     return false;
   };
 }

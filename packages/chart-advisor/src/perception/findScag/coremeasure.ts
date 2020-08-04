@@ -173,7 +173,7 @@ export class Outlying {
       });
 
       allNodesWithLinks = uniq(allNodesWithLinks, false, (d) => d.join(','));
-      
+
       let normalNodes = allNodesWithLinks.map((n) => {
         return { id: n };
       });
@@ -241,7 +241,7 @@ export class Outlying {
     if (!this.outlyingLinks) {
       this.outlyingLinks = this.tree.links.filter((l: any) => l.isOutlying);
     }
-    
+
     return this.outlyingLinks;
   }
 

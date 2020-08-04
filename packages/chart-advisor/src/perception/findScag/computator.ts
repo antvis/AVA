@@ -12,7 +12,7 @@ import {
 
 export class Skinny {
   alphaHull: [number, number][][];
-  
+
   constructor(alphaHull: [number, number][][]) {
     this.alphaHull = alphaHull.slice();
   }
@@ -107,11 +107,10 @@ export class Monotonic {
 
     const r = computeSpearmans(xArr, yArr);
 
-    if(r == null) {
-        return 0;
-    }
-    else {
-        return Math.pow(r, 2);
+    if (r == null) {
+      return 0;
+    } else {
+      return Math.pow(r, 2);
     }
 
     function computeSpearmans(arrX: number[], arrY: number[]) {
@@ -168,22 +167,22 @@ export class Monotonic {
     }
 
     function rankArray(arr: number[]) {
-      let sorted = arr.slice().sort(function(a, b) {
+      let sorted = arr.slice().sort(function (a, b) {
         return b - a;
       });
 
-      let ranks = arr.slice().map(function(v) {
+      let ranks = arr.slice().map(function (v) {
         return sorted.indexOf(v) + 1;
       });
 
       // counts of each rank
       let counts: number[] = [];
-      ranks.forEach(function(x) {
+      ranks.forEach(function (x) {
         counts[x] = (counts[x] || 0) + 1;
       });
 
       // average duplicates
-      ranks = ranks.map(function(x) {
+      ranks = ranks.map(function (x) {
         return x + 0.5 * ((counts[x] || 0) - 1);
       });
 
@@ -296,7 +295,7 @@ export class Sparse {
   score() {
     let allLengths = this.tree.links.map((l: { weight: number }) => l.weight),
       q90 = quantile(allLengths, 0.9);
-      
+
     return q90;
   }
 }

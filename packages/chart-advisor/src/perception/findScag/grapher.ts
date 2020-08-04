@@ -18,7 +18,7 @@ export class DisjointSet {
       const created = new Node(id);
       this.index_[id] = created;
     }
-  };
+  }
 
   find(id: string | number) {
     if (this.index_[id] === undefined) {
@@ -54,7 +54,7 @@ export class DisjointSet {
       yRoot.parent_ = xRoot;
       xRoot.rank_++;
     }
-  };
+  }
 
   // Returns the current number of disjoint sets.
   size() {
@@ -65,7 +65,7 @@ export class DisjointSet {
     });
 
     return Object.keys(uniqueIndices).length;
-  };
+  }
 }
 
 class Node {
@@ -298,14 +298,10 @@ export function delaunayFromPoints(sites: any | any[]) {
     let coord = [];
 
     for (let i = 0; i < triangles.length; i += 3) {
-      coord.push([
-        this.points[triangles[i]],
-        this.points[triangles[i + 1]],
-        this.points[triangles[i + 2]]
-      ]);
+      coord.push([this.points[triangles[i]], this.points[triangles[i + 1]], this.points[triangles[i + 2]]]);
     }
     return coord;
-  }
+  };
 
   return delaunay;
 }

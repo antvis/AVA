@@ -3,7 +3,7 @@ import { Insight } from '..';
 import { Worker } from '.';
 import { rowDataToColumnFrame, columnsToRowData } from './utils';
 
-export const majorFactorsIW: Worker = function(data: RowData[]): Insight[] {
+export const majorFactorsIW: Worker = function (data: RowData[]): Insight[] {
   const THRESHOLD = 0.6;
   const insights: Insight[] = [];
 

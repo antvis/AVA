@@ -3,8 +3,7 @@ import { Normalizer, Binner } from './findScag/constructor';
 import { createGraph, mst, delaunayFromPoints } from './findScag/grapher';
 import { Outlying, Clumpy } from './findScag/coremeasure';
 import { Convex, Skinny, Stringy, Skewed, Sparse, Striated, Monotonic } from './findScag/computator';
-import { scagOptions, scagScanner } from './findScag/interface'
-
+import { scagOptions, scagScanner } from './findScag/interface';
 
 export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
   let scanner: scagScanner = {};

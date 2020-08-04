@@ -4,7 +4,7 @@ import { rowDataToColumnFrame, outliersFilters } from './utils';
 import { Worker } from '.';
 import { FieldInfo } from '@antv/dw-analyzer';
 
-export const outlierIW: Worker = function(data: RowData[]): Insight[] {
+export const outlierIW: Worker = function (data: RowData[]): Insight[] {
   const insights: Insight[] = [];
 
   const { columnProps, columns } = rowDataToColumnFrame(data);

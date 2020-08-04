@@ -9,10 +9,9 @@ export function JSONto2DArray(arr: RowData[]) {
   let fixnum: number[] = [];
   let fixidx = 0;
   let arridx = 0;
-  
+
   let tmpArr: number[] = [];
   for (let attr in arr[0]) {
-
     if (getType(arr[0][attr]) == 'Number') {
       tmpArr.push(arr[0][attr]);
 
@@ -36,7 +35,7 @@ export function JSONto2DArray(arr: RowData[]) {
     outArr[i] = tmpArr;
   }
 
-  const scagData: scagFixData = {outArr, fixnum};
+  const scagData: scagFixData = { outArr, fixnum };
 
   return scagData;
-};
+}

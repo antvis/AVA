@@ -1,7 +1,7 @@
 import { zip } from 'underscore';
 import { scagScorer } from './scorer';
 import { getCol } from './findScag/util';
-import { scagOptions, scagScanner, scagResult } from './findScag/interface'
+import { scagOptions, scagScanner, scagResult } from './findScag/interface';
 
 function scagFeeder(scag: scagScanner, i: number, j: number, k: number) {
   let res: scagResult = {};
@@ -102,7 +102,6 @@ export function scagInsighter(dataSource: any[]) {
         }
       }
     }
-
   }
 
   let iqrNumL: number[] = [];

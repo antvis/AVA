@@ -19,7 +19,7 @@ interface GetInsightSpacesProps {
   collection?: Insight.IntentionWorkerCollection;
 }
 
-export const getInsightSpaces = async function(props: GetInsightSpacesProps): Promise<ISpace[]> {
+export const getInsightSpaces = async function (props: GetInsightSpacesProps): Promise<ISpace[]> {
   const {
     dataSource,
     fields: _fields,

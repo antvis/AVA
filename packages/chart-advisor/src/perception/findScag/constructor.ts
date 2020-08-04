@@ -84,7 +84,6 @@ export class Binner {
   dx: number;
   dy: number;
 
-
   constructor(points: any, radius: number) {
     this.points = points;
 
@@ -106,7 +105,7 @@ export class Binner {
     this.extent([
       [0, 0],
       [1, 1],
-    ])
+    ]);
   }
 
   pointX(d: any) {
@@ -116,7 +115,6 @@ export class Binner {
   pointY(d: any) {
     return d[1];
   }
-
 
   hexbin() {
     const points = this.points;
@@ -177,7 +175,7 @@ export class Binner {
 
   hexagon(radius: any) {
     return 'm' + this.hexagonal(radius == null ? this.r : +radius).join('l') + 'z';
-  };
+  }
 
   centers() {
     let centers = [],
@@ -191,33 +189,31 @@ export class Binner {
     }
 
     return centers;
-  };
+  }
 
   mesh() {
-    const fragment = this.hexagonal(this.r)
-      .slice(0, 4)
-      .join('l');
+    const fragment = this.hexagonal(this.r).slice(0, 4).join('l');
 
     return this.centers()
       .map(function (p: any) {
         return 'M' + p + 'm' + fragment;
       })
       .join('');
-  };
+  }
 
   x(_: (d: any) => any) {
     return arguments.length ? ((this.pointX = _), this) : this.pointX;
-  };
+  }
 
   y(_: (d: any) => any) {
     return arguments.length ? ((this.pointY = _), this) : this.pointY;
-  };
+  }
 
   radius(_: string | number) {
     let r = this.r;
 
     return arguments.length ? ((r = +_), (this.dx = r * 2 * Math.sin(this.thirdPi)), (this.dy = r * 1.5), this) : r;
-  };
+  }
 
   size(_: (string | number)[]) {
     let x0 = this.x0;
@@ -226,7 +222,7 @@ export class Binner {
     let y1 = this.y1;
 
     return arguments.length ? ((x0 = y0 = 0), (x1 = +_[0]), (y1 = +_[1]), this) : [x1 - x0, y1 - y0];
-  };
+  }
 
   extent(_: (string | number)[][]) {
     let x0 = this.x0;
@@ -237,9 +233,8 @@ export class Binner {
     return arguments.length
       ? ((x0 = +_[0][0]), (y0 = +_[0][1]), (x1 = +_[1][0]), (y1 = +_[1][1]), this)
       : [
-        [x0, y0],
-        [x1, y1],
-      ];
-  };
-
+          [x0, y0],
+          [x1, y1],
+        ];
+  }
 }

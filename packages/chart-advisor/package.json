@@ -43,6 +43,7 @@
     "@babel/preset-typescript": "^7.7.4",
     "@microsoft/api-extractor": "^7.7.0",
     "babel-loader": "^8.0.6",
+    "prettier": "^2.0.5",
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"

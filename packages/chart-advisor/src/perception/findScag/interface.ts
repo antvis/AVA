@@ -1,7 +1,6 @@
 import { RowData } from '@antv/dw-transform';
 import { ChartID, Purpose } from '@antv/knowledge';
 
-
 const tuple = <T extends string[]>(...args: T) => args;
 
 /**
@@ -16,16 +15,13 @@ export const SCAG_TYPES = tuple(
   'Striation',
   'Convexity',
   'Sparsity',
-  'Monotonicity',
+  'Monotonicity'
 );
 
 /**
  * @beta
  */
-export const INSIGHT_TYPES = tuple(
-  'Perception',
-  'Correlation'
-);
+export const INSIGHT_TYPES = tuple('Perception', 'Correlation');
 
 /**
  * @beta
