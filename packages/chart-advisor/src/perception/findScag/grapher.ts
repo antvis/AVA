@@ -1,6 +1,6 @@
 import { pairs } from 'underscore';
 import { isA2DLine } from './constructor';
-import alphaShape from 'alpha-shape';
+import alphaShape from 'alphashape-ts';
 import { Delaunay } from 'd3-delaunay';
 import * as polygon from 'd3-polygon';
 
