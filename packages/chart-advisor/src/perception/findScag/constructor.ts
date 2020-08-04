@@ -121,8 +121,7 @@ export class Binner {
   hexbin() {
     const points = this.points;
 
-    let binsById = {},
-      bins = [],
+    let bins = [],
       i,
       n = points.length,
       px,
@@ -149,8 +148,7 @@ export class Binner {
         if (px1 * px1 + py1 * py1 > px2 * px2 + py2 * py2) (pi = pi2 + (pj & 1 ? 1 : -1) / 2), (pj = pj2);
       }
 
-      let id = pi + '-' + pj,
-        bin: any;
+      let bin: any;
       if (bin) bin.push(point);
       else {
         bins.push((bin = [point]));

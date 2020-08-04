@@ -21,8 +21,7 @@ export function Binner(this: any) {
     dy: number;
 
   function hexbin(points: any) {
-    var binsById = {},
-      bins = [],
+    var bins = [],
       i,
       n = points.length;
 
@@ -45,8 +44,7 @@ export function Binner(this: any) {
         if (px1 * px1 + py1 * py1 > px2 * px2 + py2 * py2) (pi = pi2 + (pj & 1 ? 1 : -1) / 2), (pj = pj2);
       }
 
-      var id = pi + '-' + pj,
-        bin: any;
+      var bin: any;
       if (bin) bin.push(point);
       else {
         bins.push((bin = [point]));

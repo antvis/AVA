@@ -34,7 +34,7 @@ export class DisjointSet {
     return current.id_;
   }
 
-  union(x: any, y: any) {
+  union(x: number, y: number) {
     let xRoot = this.index_[this.find(x)];
     let yRoot = this.index_[this.find(y)];
 
@@ -310,7 +310,7 @@ export function delaunayFromPoints(sites: any | any[]) {
   return delaunay;
 }
 
-export function concaveHull(alpha: number, sites: { [x: string]: any }) {
+export function concaveHull(alpha: number, sites: number[][]) {
   //check if the sites are on the same line
   if (isA2DLine(sites)) {
     return [sites];
@@ -357,7 +357,7 @@ export function concaveHullLength(hulls: [number, number][][]) {
   return total;
 }
 
-export function convexHull(sites: { [x: string]: any }) {
+export function convexHull(sites: number[][]) {
   //check if the sites are on the same line
   if (isA2DLine(sites)) {
     return sites;

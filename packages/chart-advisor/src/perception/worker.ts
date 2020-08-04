@@ -49,7 +49,7 @@ export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
             fields: [columnProps[fixnum[scagOut[i].indX!]].title as string,
             columnProps[fixnum[scagOut[i].indY!]].title as string],
             present: {
-                purpose: ['Perception'],
+                purpose: ['Distribution'],
                 type: 'scatter_plot',
                 data: subData,
                 encoding: {
