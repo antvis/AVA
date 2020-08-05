@@ -1,5 +1,5 @@
 import { RowData } from '@antv/dw-transform';
-import { Insight, SCAG_TYPES, InsightType, scagResult, scagFixData } from './findScag/interface';
+import { Insight, SCAG_TYPES, InsightType, ScagResult } from './findScag/interface';
 import { rowDataToColumnFrame, columnsToRowData } from '../insight/insightWorkers/utils';
 import { scagInsighter } from './insighter';
 import { JSONto2DArray } from './advisor';
@@ -9,19 +9,17 @@ import { JSONto2DArray } from './advisor';
  */
 export type Worker = (data: RowData[]) => Insight[] | Promise<Insight[]>;
 
-export const perceptionIW: Worker = function (data: RowData[]): Insight[] {
+export const perceptionIW: Worker = function(data: RowData[]): Insight[] {
   const insights: Insight[] = [];
 
   const { columnProps, columns } = rowDataToColumnFrame(data);
 
-  let scagData: scagFixData;
-
-  scagData = JSONto2DArray(data);
+  const scagData = JSONto2DArray(data);
 
   const data2d = scagData.outArr;
   const fixnum = scagData.fixnum;
 
-  let scagOut: scagResult[] | boolean = [];
+  let scagOut: ScagResult[] | boolean = [];
 
   scagOut = scagInsighter(data2d);
   if (scagOut === false) {

@@ -59,7 +59,7 @@ export interface Insight {
 /**
  * @beta
  */
-export interface scagResult {
+export interface ScagResult {
   indX?: number;
   indY?: number;
   k?: number;
@@ -69,7 +69,7 @@ export interface scagResult {
 /**
  * @beta
  */
-export interface scagOptions {
+export interface ScagOptions {
   binType?: string;
   startBinGridSize?: number;
   isNormalized?: boolean;
@@ -82,7 +82,7 @@ export interface scagOptions {
 /**
  * @beta
  */
-export interface scagScanner {
+export interface ScagScanner {
   outlyingScore?: number;
   skewedScore?: number;
   sparseScore?: number;
@@ -97,7 +97,7 @@ export interface scagScanner {
 /**
  * @beta
  */
-export interface scagFixData {
+export interface ScagFixData {
   outArr: number[][];
   fixnum: number[];
 }

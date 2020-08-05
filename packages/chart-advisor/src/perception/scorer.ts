@@ -3,16 +3,17 @@ import { Normalizer, Binner } from './findScag/constructor';
 import { createGraph, mst, delaunayFromPoints } from './findScag/grapher';
 import { Outlying, Clumpy } from './findScag/coremeasure';
 import { Convex, Skinny, Stringy, Skewed, Sparse, Striated, Monotonic } from './findScag/computator';
-import { scagOptions, scagScanner } from './findScag/interface';
+import { ScagOptions, ScagScanner } from './findScag/interface';
 
-export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
-  let scanner: scagScanner = {};
+export function scagScorer(this: any, inputPoints: any, options: ScagOptions) {
+  const scanner: ScagScanner = {};
 
   let binType = options.binType,
     startBinGridSize = options.startBinGridSize,
+    outlyingUpperBound = options.outlyingUpperBound;
+
+  const isBinned = options.isBinned,
     isNormalized = options.isNormalized,
-    isBinned = options.isBinned,
-    outlyingUpperBound = options.outlyingUpperBound,
     minBins = options.minBins,
     maxBins = options.maxBins;
 
@@ -21,7 +22,7 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
 
   //Normalization
   if (!isNormalized) {
-    let normalizer = new Normalizer(points);
+    const normalizer = new Normalizer(points);
     normalizedPoints = normalizer.normalizedPoints;
   }
   // scanner.normalizedPoints', normalizedPoints);
@@ -64,7 +65,7 @@ export function scagScorer(this: any, inputPoints: any, options: scagOptions) {
     // }
     if (uniqueKeys.length < minNumOfBins) {
       uniqueKeys.forEach((key) => {
-        let bin: any = groups[key];
+        const bin: any = groups[key];
 
         bin.x = bin[0][0];
         bin.y = bin[0][1];

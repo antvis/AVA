@@ -3,7 +3,7 @@ import { Insight } from '..';
 import { Worker } from '.';
 import { rowDataToColumnFrame, columnsToRowData, isMonotonicDec, isMonotonicInc } from './utils';
 
-export const monotonicityIW: Worker = function (data: RowData[]): Insight[] {
+export const monotonicityIW: Worker = function(data: RowData[]): Insight[] {
   const insights: Insight[] = [];
 
   const { columnProps, columns } = rowDataToColumnFrame(data);

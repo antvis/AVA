@@ -6,6 +6,18 @@ import * as polygon from 'd3-polygon';
 
 // var alphaShape = require('alpha-shape')(alpha, points);
 
+class Node {
+  id_: string | number;
+  parent_: Node;
+  rank_: number;
+
+  constructor(id: string | number) {
+    this.id_ = id;
+    this.parent_ = this;
+    this.rank_ = 0;
+  }
+}
+
 export class DisjointSet {
   index_: any = {};
 
@@ -35,8 +47,8 @@ export class DisjointSet {
   }
 
   union(x: number, y: number) {
-    let xRoot = this.index_[this.find(x)];
-    let yRoot = this.index_[this.find(y)];
+    const xRoot = this.index_[this.find(x)];
+    const yRoot = this.index_[this.find(y)];
 
     if (xRoot === undefined || yRoot === undefined || xRoot === yRoot) {
       // x and y already belong to the same set.
@@ -58,7 +70,7 @@ export class DisjointSet {
 
   // Returns the current number of disjoint sets.
   size() {
-    let uniqueIndices: any = {};
+    const uniqueIndices: any = {};
 
     Object.keys(this.index_).forEach((id) => {
       uniqueIndices[id] = true;
@@ -68,20 +80,8 @@ export class DisjointSet {
   }
 }
 
-class Node {
-  id_: string | number;
-  parent_: Node;
-  rank_: number;
-
-  constructor(id: string | number) {
-    this.id_ = id;
-    this.parent_ = this;
-    this.rank_ = 0;
-  }
-}
-
 export function pairNodeLinks(links: any) {
-  let nestedByNodes: any = {};
+  const nestedByNodes: any = {};
 
   links.forEach((l: any) => {
     const sourceKey = l.source.join(',');
@@ -110,7 +110,7 @@ export function getAllV2CornersFromTree(tree: any) {
   const allV2 = pairedResults.filter((p) => p[1].length == 2);
 
   const allCorners = allV2.map((v2) => {
-    let corner = [];
+    const corner = [];
 
     corner.push(v2[0].split(',').map((d) => +d));
 
@@ -149,14 +149,14 @@ export function createGraph(triangles: any) {
     return { source: sourceId, target: targetId, weight: weight };
   }
 
-  let graph: any = {};
+  const graph: any = {};
   graph.nodes = [];
   graph.links = [];
 
   //Creating nodes
   triangles.forEach((t: any) => {
     for (let i = 0; i < 3; i++) {
-      let id = t[i];
+      const id = t[i];
 
       if (!idExists(graph.nodes, id)) {
         graph.nodes.push(makeNode(id));
@@ -234,7 +234,7 @@ export function makeNode(id: any) {
 }
 
 export function mst(graph: { nodes?: any; links?: any }) {
-  let vertices = graph.nodes,
+  const vertices = graph.nodes,
     edges = graph.links.slice(0),
     selectedEdges = [],
     forest: any = new DisjointSet();
@@ -248,7 +248,7 @@ export function mst(graph: { nodes?: any; links?: any }) {
   });
 
   while (edges.length && forest.size() > 1) {
-    let edge = edges.pop();
+    const edge = edges.pop();
 
     if (forest.find(edge.source) !== forest.find(edge.target)) {
       forest.union(edge.source, edge.target);
@@ -266,11 +266,11 @@ export function delaunayFromPoints(sites: any | any[]) {
   let delaunay: any = {};
 
   if (isA2DLine(sites)) {
-    let copiedSites = sites.slice();
+    const copiedSites = sites.slice();
 
     copiedSites.sort((a: number[], b: number[]) => (a[0] > b[0] ? a[0] - b[0] : a[1] - b[1]));
 
-    let tgs = [];
+    const tgs = [];
     const siteLength = copiedSites.length;
 
     for (let i = 0; i < siteLength; i = i + 2) {
@@ -293,9 +293,9 @@ export function delaunayFromPoints(sites: any | any[]) {
     delaunay.points = sites;
   }
 
-  delaunay.triangleCoordinates = function () {
+  delaunay.triangleCoordinates = function() {
     const triangles = this.triangles;
-    let coord = [];
+    const coord = [];
 
     for (let i = 0; i < triangles.length; i += 3) {
       coord.push([this.points[triangles[i]], this.points[triangles[i + 1]], this.points[triangles[i + 2]]]);
@@ -323,7 +323,7 @@ export function concaveHull(alpha: number, sites: number[][]) {
 
   hulls = hulls.map((h: Iterable<unknown> | ArrayLike<unknown>) => {
     //Get vertices
-    let vertices = Array.from(h).map((item: any) => {
+    const vertices = Array.from(h).map((item: any) => {
       return sites[item];
     });
 
@@ -376,7 +376,7 @@ export function convexHullArea(hull: [number, number][]) {
 
 function putCellToHulls(cell: any[], hulls: string | any[]) {
   for (let i = 0; i < hulls.length; i++) {
-    let hull = hulls[i];
+    const hull = hulls[i];
 
     if (hull.has(cell[0])) {
       hull.add(cell[1]);
@@ -396,7 +396,7 @@ function processCells(cells: any[], hulls: Set<unknown>[]) {
     return;
   }
 
-  let processedIndice: any[] = [];
+  const processedIndice: any[] = [];
 
   cells.forEach((cell: any, i: any) => {
     if (putCellToHulls(cell, hulls)) {
@@ -406,7 +406,7 @@ function processCells(cells: any[], hulls: Set<unknown>[]) {
 
   if (processedIndice.length == 0) {
     //Put first one in the hull
-    let cell = cells.shift();
+    const cell = cells.shift();
 
     const hull = new Set(cell);
     hulls.push(hull);
@@ -419,11 +419,11 @@ function processCells(cells: any[], hulls: Set<unknown>[]) {
 }
 
 function sortVerticies(points: any[]) {
-  let center = findCentroid(points);
+  const center = findCentroid(points);
 
   points.sort((a: number[], b: number[]) => {
-    let a1 = (toDegrees(Math.atan2(a[0] - center[0], a[1] - center[1])) + 360) % 360;
-    let a2 = (toDegrees(Math.atan2(b[0] - center[0], b[1] - center[1])) + 360) % 360;
+    const a1 = (toDegrees(Math.atan2(a[0] - center[0], a[1] - center[1])) + 360) % 360;
+    const a2 = (toDegrees(Math.atan2(b[0] - center[0], b[1] - center[1])) + 360) % 360;
 
     return Math.round(a1 - a2);
   });
@@ -443,7 +443,7 @@ function sortVerticies(points: any[]) {
       y += p[1];
     });
 
-    let center = [];
+    const center = [];
     center.push(x / points.length);
     center.push(y / points.length);
 
@@ -452,20 +452,20 @@ function sortVerticies(points: any[]) {
 }
 
 export function concaveHull1(sites: any, longEdge: number) {
-  let delaunay = Delaunay.from(sites);
+  const delaunay = Delaunay.from(sites);
 
   let cells = [];
   longEdge = longEdge - 10e-3;
 
-  let triangles = delaunay.triangles;
+  const triangles = delaunay.triangles;
 
-  let points = sites;
+  const points = sites;
   while (cells.length <= 0) {
     longEdge = longEdge + 10e-3;
 
     for (let i = 0; i < triangles.length; i += 3) {
       for (let j = 0; j < 3; j++) {
-        let d = distance(points[triangles[i + j]], points[triangles[i + ((j + 1) % 3)]]);
+        const d = distance(points[triangles[i + j]], points[triangles[i + ((j + 1) % 3)]]);
 
         if (d < longEdge) {
           cells.push([triangles[i + j], triangles[i + ((j + 1) % 3)]]);
@@ -474,15 +474,15 @@ export function concaveHull1(sites: any, longEdge: number) {
     }
   }
 
-  let edgeCount: any = {};
+  const edgeCount: any = {};
   cells.forEach((edge) => {
-    let theKey = edge.sort().join(',');
+    const theKey = edge.sort().join(',');
 
     edgeCount[theKey] = edgeCount[theKey] ? edgeCount[theKey] : 0 + 1;
   });
 
   cells = cells.filter((edge) => {
-    let theKey = edge.sort().join(',');
+    const theKey = edge.sort().join(',');
 
     return edgeCount[theKey] === 1;
   });

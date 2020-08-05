@@ -18,10 +18,10 @@ export class Clumpy {
   }
 
   score() {
-    let allRuntRatios: number[] = [];
+    const allRuntRatios: number[] = [];
 
     this.tree.links.forEach((link: any) => {
-      let rg = this.runtGraph(link);
+      const rg = this.runtGraph(link);
       if (rg.length > 0) {
         allRuntRatios.push(this.maxLength(rg) / link.weight);
       }
@@ -39,20 +39,20 @@ export class Clumpy {
 
     //Remove the currently checking link.
     greaterOrEqualLinks = greaterOrEqualLinks.filter((l: any) => !equalLinks(l, link));
-    let pairedResults = pairNodeLinks(greaterOrEqualLinks);
+    const pairedResults = pairNodeLinks(greaterOrEqualLinks);
 
     //Process the source side.
-    let sourceConnectedNodes = [link.source];
-    let sourceConnectedLinks = this.getConnectedLinks(sourceConnectedNodes, pairedResults);
+    const sourceConnectedNodes = [link.source];
+    const sourceConnectedLinks = this.getConnectedLinks(sourceConnectedNodes, pairedResults);
 
-    let targetConnectedNodes = [link.target];
-    let targetConnectedLinks = this.getConnectedLinks(targetConnectedNodes, pairedResults);
+    const targetConnectedNodes = [link.target];
+    const targetConnectedLinks = this.getConnectedLinks(targetConnectedNodes, pairedResults);
 
     return sourceConnectedLinks.length < targetConnectedLinks.length ? sourceConnectedLinks : targetConnectedLinks;
   }
 
   getConnectedLinks(connectedNodes: any, pairedResults: any) {
-    let processedNodes: string | any[] = [];
+    const processedNodes: string | any[] = [];
     let connectedLinks: any[] = [];
 
     while (connectedNodes.length > 0) {
@@ -60,14 +60,14 @@ export class Clumpy {
         break;
       }
 
-      let firstNode = first(connectedNodes);
+      const firstNode = first(connectedNodes);
 
       connectedNodes = without(connectedNodes, firstNode);
       processedNodes.push(firstNode);
 
       //Find the edges connected to that node.
-      let result = pairedResults.find((p: any) => p[0] === firstNode.join(','));
-      let links = result ? result[1] : [];
+      const result = pairedResults.find((p: any) => p[0] === firstNode.join(','));
+      const links = result ? result[1] : [];
       connectedLinks = connectedLinks.concat(links);
 
       //Add new nodes to be processed
@@ -94,7 +94,7 @@ export class Clumpy {
 }
 export function pointExists(points: string | any[], point: any) {
   for (let i = 0; i < points.length; i++) {
-    let point1 = points[i];
+    const point1 = points[i];
 
     if (equalPoints(point1, point)) {
       return true;
@@ -120,7 +120,7 @@ export class Outlying {
     }
 
     markLongLinks(this.tree, upperBound!);
-    let normalNodes = findNormalNodes(this.tree);
+    const normalNodes = findNormalNodes(this.tree);
 
     this.outlyingPoints = findOutlyingPoints(this.tree, normalNodes);
 
@@ -134,14 +134,14 @@ export class Outlying {
       noOutlyingTree.nodes = normalNodes;
       noOutlyingTree.links = tree.links.filter((l: any) => l.isOutlying !== true);
 
-      let outlyingPointsStr = outlyingPoints.map((p) => p.join(','));
-      let v2OrGreaterStr = getAllV2OrGreaterFromTree(tree).map((p) => p.join(','));
+      const outlyingPointsStr = outlyingPoints.map((p) => p.join(','));
+      const v2OrGreaterStr = getAllV2OrGreaterFromTree(tree).map((p) => p.join(','));
 
-      let diff = difference(outlyingPointsStr, v2OrGreaterStr);
+      const diff = difference(outlyingPointsStr, v2OrGreaterStr);
 
       if (diff.length < outlyingPointsStr.length) {
-        let delaunay = delaunayFromPoints(noOutlyingTree.nodes.map((n: any) => n.id));
-        let graph = createGraph(delaunay.triangleCoordinates());
+        const delaunay = delaunayFromPoints(noOutlyingTree.nodes.map((n: any) => n.id));
+        const graph = createGraph(delaunay.triangleCoordinates());
         noOutlyingTree = mst(graph);
       }
 
@@ -163,7 +163,7 @@ export class Outlying {
 
     function findNormalNodes(tree: any) {
       //Remove long links
-      let normalLinks = tree.links.filter((l: any) => !l.isLong);
+      const normalLinks = tree.links.filter((l: any) => !l.isLong);
       //Remove outlying nodes (nodes are not in any none-long links)
       let allNodesWithLinks: any[] = [];
 
@@ -174,7 +174,7 @@ export class Outlying {
 
       allNodesWithLinks = uniq(allNodesWithLinks, false, (d) => d.join(','));
 
-      let normalNodes = allNodesWithLinks.map((n) => {
+      const normalNodes = allNodesWithLinks.map((n) => {
         return { id: n };
       });
 
@@ -182,9 +182,9 @@ export class Outlying {
     }
 
     function findOutlyingPoints(tree: any, normalNodes: any) {
-      let newNodes = normalNodes;
-      let oldNodes = tree.nodes;
-      let ops: any[] = [];
+      const newNodes = normalNodes;
+      const oldNodes = tree.nodes;
+      const ops: any[] = [];
 
       oldNodes.forEach((on: any) => {
         if (
@@ -209,7 +209,7 @@ export class Outlying {
     }
 
     function findUpperBound(tree: any, coefficient: number) {
-      let allLengths = tree.links.map((l: any) => l.weight),
+      const allLengths = tree.links.map((l: any) => l.weight),
         q1 = quantile(allLengths, 0.25),
         q3 = quantile(allLengths, 0.75),
         iqr = q3 - q1,

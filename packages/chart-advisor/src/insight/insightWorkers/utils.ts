@@ -153,7 +153,7 @@ type VisualInsightWorkerID = VisualInsight.DefaultIWorker;
 type InsightSpace = VisualInsight.InsightSpace;
 
 export function visualInsightWorkerToAVAWorker(viWorkerId: VisualInsightWorkerID): Worker {
-  const AVAWorker: Worker = async function (data: RowData[]): Promise<Insight[]> {
+  const AVAWorker: Worker = async function(data: RowData[]): Promise<Insight[]> {
     const workerCollection = VisualInsight.IntentionWorkerCollection.init({ withDefaultIWorkers: false });
     workerCollection.enable(viWorkerId, true);
 

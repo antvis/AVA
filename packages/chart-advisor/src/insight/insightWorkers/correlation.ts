@@ -4,7 +4,7 @@ import { Insight } from '..';
 import { pearsonCorr, rowDataToColumnFrame } from './utils';
 import { Worker } from '.';
 
-export const correlationIW: Worker = function (data: RowData[]): Insight[] {
+export const correlationIW: Worker = function(data: RowData[]): Insight[] {
   const THRESHOLD = 0.9;
   const insights: Insight[] = [];
 

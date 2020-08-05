@@ -1,8 +1,8 @@
 import { max, min, zip, unzip } from 'underscore';
 
 export class Normalizer {
-  public normalizedPoints: any[];
-  public points: any[];
+  normalizedPoints: any[];
+  points: any[];
   dataX: any;
   dataY: any;
   maxX: number;
@@ -73,7 +73,7 @@ export function isA2DLine(points: any) {
 }
 
 export class Binner {
-  public points: any[];
+  points: any[];
   angles: number[];
   thirdPi: number;
   x0: number;
@@ -119,11 +119,10 @@ export class Binner {
   hexbin() {
     const points = this.points;
 
-    let bins = [],
-      i,
-      n = points.length,
-      px,
-      py;
+    const bins = [],
+      n = points.length;
+
+    let i, px, py;
 
     for (i = 0; i < n; ++i) {
       let point;
@@ -134,11 +133,11 @@ export class Binner {
       if (isNaN(px) || isNaN(py)) continue;
 
       let pj = Math.round((py = py / this.dy)),
-        pi = Math.round((px = px / this.dx - (pj & 1) / 2)),
-        py1 = py - pj;
+        pi = Math.round((px = px / this.dx - (pj & 1) / 2));
+      const py1 = py - pj;
 
       if (Math.abs(py1) * 3 > 1) {
-        let px1 = px - pi,
+        const px1 = px - pi,
           pi2 = pi + (px < pi ? -1 : 1) / 2,
           pj2 = pj + (py < pj ? -1 : 1),
           px2 = px - pi2,
@@ -162,7 +161,7 @@ export class Binner {
     let x0 = 0,
       y0 = 0;
 
-    return this.angles.map(function (angle) {
+    return this.angles.map(function(angle) {
       const x1 = Math.sin(angle) * radius,
         y1 = -Math.cos(angle) * radius,
         dx = x1 - x0,
@@ -178,9 +177,9 @@ export class Binner {
   }
 
   centers() {
-    let centers = [],
-      j = Math.round(this.y0 / this.dy),
-      i = Math.round(this.x0 / this.dx);
+    const centers = [];
+    let j = Math.round(this.y0 / this.dy);
+    const i = Math.round(this.x0 / this.dx);
 
     for (let y = j * this.dy; y < this.y1 + this.r; y += this.dy, ++j) {
       for (let x = i * this.dx + ((j & 1) * this.dx) / 2; x < this.x1 + this.dx / 2; x += this.dx) {
@@ -192,10 +191,12 @@ export class Binner {
   }
 
   mesh() {
-    const fragment = this.hexagonal(this.r).slice(0, 4).join('l');
+    const fragment = this.hexagonal(this.r)
+      .slice(0, 4)
+      .join('l');
 
     return this.centers()
-      .map(function (p: any) {
+      .map(function(p: any) {
         return 'M' + p + 'm' + fragment;
       })
       .join('');

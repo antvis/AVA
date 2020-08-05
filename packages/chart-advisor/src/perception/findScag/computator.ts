@@ -97,8 +97,8 @@ export class Monotonic {
   }
 
   score() {
-    let xArr: number[] = [];
-    let yArr: number[] = [];
+    const xArr: number[] = [];
+    const yArr: number[] = [];
 
     this.points.forEach((p: number[]) => {
       xArr.push(p[0]);
@@ -167,22 +167,22 @@ export class Monotonic {
     }
 
     function rankArray(arr: number[]) {
-      let sorted = arr.slice().sort(function (a, b) {
+      const sorted = arr.slice().sort(function(a, b) {
         return b - a;
       });
 
-      let ranks = arr.slice().map(function (v) {
+      let ranks = arr.slice().map(function(v) {
         return sorted.indexOf(v) + 1;
       });
 
       // counts of each rank
-      let counts: number[] = [];
-      ranks.forEach(function (x) {
+      const counts: number[] = [];
+      ranks.forEach(function(x) {
         counts[x] = (counts[x] || 0) + 1;
       });
 
       // average duplicates
-      ranks = ranks.map(function (x) {
+      ranks = ranks.map(function(x) {
         return x + 0.5 * ((counts[x] || 0) - 1);
       });
 
@@ -190,9 +190,9 @@ export class Monotonic {
     }
 
     function countTies(arr: number[]) {
-      let ties: number[] = [],
-        arrSorted = arr.slice().sort(),
-        currValue = arrSorted[0],
+      const ties: number[] = [],
+        arrSorted = arr.slice().sort();
+      let currValue = arrSorted[0],
         tieLength = 1;
 
       for (let i = 1; i < arrSorted.length; i++) {
@@ -221,6 +221,7 @@ export class Monotonic {
 
 export class Stringy {
   tree: any;
+
   constructor(tree: any) {
     //Clone the tree to avoid modifying it
     this.tree = JSON.parse(JSON.stringify(tree));
@@ -228,9 +229,10 @@ export class Stringy {
 
   score() {
     //Loop through the nodes.
-    let verticesCount = this.tree.nodes.length;
-    let v2Count = this.getAllV2Corners().length;
-    let v1Count = this.getAllV1s().length;
+    const verticesCount = this.tree.nodes.length;
+    const v2Count = this.getAllV2Corners().length;
+    const v1Count = this.getAllV1s().length;
+
     return v2Count / (verticesCount - v1Count);
   }
 
@@ -251,19 +253,19 @@ export class Striated {
   }
 
   score() {
-    let allObtuseV2CornersCount = this.getAllObtuseV2Corners().length;
-    let v1Count = getAllV1sFromTree(this.tree).length;
+    const allObtuseV2CornersCount = this.getAllObtuseV2Corners().length;
+    const v1Count = getAllV1sFromTree(this.tree).length;
 
-    let verticesCount = this.tree.nodes.length;
+    const verticesCount = this.tree.nodes.length;
     return allObtuseV2CornersCount / (verticesCount - v1Count);
   }
 
   getAllObtuseV2Corners() {
-    let allV2Corners = this.getAllV2Corners();
-    let allObtuseV2Corners: number[][][] = [];
+    const allV2Corners = this.getAllV2Corners();
+    const allObtuseV2Corners: number[][][] = [];
 
     allV2Corners.forEach((corner) => {
-      let cs = cosine(corner[0], corner[1], corner[2]);
+      const cs = cosine(corner[0], corner[1], corner[2]);
       if (cs <= -0.75) {
         allObtuseV2Corners.push(corner);
       }
@@ -272,7 +274,7 @@ export class Striated {
     return allObtuseV2Corners;
 
     function cosine(p1: number[], p2: number[], p3: number[]) {
-      let p12 = distance(p1, p2),
+      const p12 = distance(p1, p2),
         p13 = distance(p1, p3),
         p23 = distance(p2, p3);
 
@@ -293,7 +295,7 @@ export class Sparse {
   }
 
   score() {
-    let allLengths = this.tree.links.map((l: { weight: number }) => l.weight),
+    const allLengths = this.tree.links.map((l: { weight: number }) => l.weight),
       q90 = quantile(allLengths, 0.9);
 
     return q90;
