@@ -7,7 +7,7 @@ import getLength from './_getLength';
 // is not a one-to-one function, so providing an iteratee will disable
 // the faster algorithm.
 export default function uniq(array: { [x: string]: any }, iteratee?: any) {
-  let isSorted = false;
+  const isSorted = false;
   const result = [];
   let seen = [];
   for (let i = 0, length = getLength(array); i < length; i++) {
