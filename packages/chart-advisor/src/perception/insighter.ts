@@ -1,6 +1,5 @@
-import { zip } from 'underscore';
 import { scagScorer } from './scorer';
-import { getCol } from './findScag/util';
+import { getCol, zip } from './findScag/util';
 import { ScagOptions, ScagScanner, ScagResult } from './findScag/interface';
 
 function scagFeeder(scag: ScagScanner, i: number, j: number, k: number) {

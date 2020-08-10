@@ -1,4 +1,5 @@
-import { groupBy, uniq } from 'underscore';
+import uniq from './findScag/num/uniq';
+import groupBy from './findScag/num/groupBy';
 import { Normalizer, Binner } from './findScag/constructor';
 import { createGraph, mst, delaunayFromPoints } from './findScag/grapher';
 import { Outlying, Clumpy } from './findScag/coremeasure';
@@ -57,7 +58,7 @@ export function scagScorer(this: any, inputPoints: any, options: ScagOptions) {
     // console.log('start')
 
     const uniqueKeys = uniq(normalizedPoints.map((p: any) => p.join(',')));
-    const groups = groupBy(normalizedPoints, (p) => p.join(','));
+    const groups: any = groupBy(normalizedPoints, (p) => p.join(','));
 
     // let pweg = 0;
     // if (pweg === 0) {

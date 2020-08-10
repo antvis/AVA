@@ -1,4 +1,7 @@
-import { first, without, difference, uniq } from 'underscore';
+import uniq from './num/uniq';
+import difference from './num/difference';
+import without from './num/without';
+import { first } from './num/defaultFunc';
 import { max, quantile } from './util';
 import {
   equalPoints,
@@ -172,7 +175,7 @@ export class Outlying {
         allNodesWithLinks.push(l.target);
       });
 
-      allNodesWithLinks = uniq(allNodesWithLinks, false, (d) => d.join(','));
+      allNodesWithLinks = uniq(allNodesWithLinks, false, (d: any[]) => d.join(','));
 
       const normalNodes = allNodesWithLinks.map((n) => {
         return { id: n };

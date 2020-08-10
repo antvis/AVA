@@ -1,4 +1,17 @@
 /**
+ * This computes the zipped array of input arrays.
+ *
+ * This runs on `O(n)`, linear time in respect to the array
+ *
+ * @param {...Array<number>} x samples of one or more data points
+ * @returns {Array<number>} packed array
+ * @example
+ * max([1, 2, 3, 4]);
+ * // => 4
+ */
+export const zip = (...rows: any[]) => rows[0].map((_: any, c: string | number) => rows.map((row) => row[c]));
+
+/**
  * This computes the maximum number in an array.
  *
  * This runs on `O(n)`, linear time in respect to the array
@@ -20,6 +33,31 @@ export function max(x: number[]) {
     // On the first iteration of this loop, max is
     // undefined and is thus made the maximum element in the array
     if (x[i] > value) {
+      value = x[i];
+    }
+  }
+  return value;
+}
+
+/**
+ * The min is the lowest number in the array. This runs on `O(n)`, linear time in respect to the array
+ *
+ * @param {Array<number>} x sample of one or more data points
+ * @throws {Error} if the the length of x is less than one
+ * @returns {number} minimum value
+ * @example
+ * min([1, 5, -10, 100, 2]); // => -10
+ */
+export function min(x: number[]) {
+  if (x.length === 0) {
+    throw new Error('min requires at least one data point');
+  }
+
+  let value = x[0];
+  for (let i = 1; i < x.length; i++) {
+    // On the first iteration of this loop, min is
+    // undefined and is thus made the minimum element in the array
+    if (x[i] < value) {
       value = x[i];
     }
   }

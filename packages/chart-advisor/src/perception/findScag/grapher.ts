@@ -1,10 +1,8 @@
-import { pairs } from 'underscore';
+import { pairs } from './num/pair';
 import { isA2DLine } from './constructor';
 import alphaShape from 'alphashape-ts';
 import { Delaunay } from 'd3-delaunay';
 import * as polygon from 'd3-polygon';
-
-// var alphaShape = require('alpha-shape')(alpha, points);
 
 class Node {
   id_: string | number;

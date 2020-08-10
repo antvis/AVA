@@ -27,12 +27,10 @@
     "@antv/thumbnails": "^0.2.1-alpha.0",
     "@types/d3-delaunay": "^4.1.0",
     "@types/d3-polygon": "^1.0.7",
-    "@types/underscore": "^1.10.14",
     "alphashape-ts": "^1.0.0",
     "d3-delaunay": "^4.1.5",
     "d3-polygon": "^1.0.3",
     "tslib": "^1.10.0",
-    "underscore": "^1.9.1",
     "visual-insights": "0.4.7"
   },
   "devDependencies": {
