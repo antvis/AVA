@@ -74,11 +74,11 @@ export function scagInsighter(dataSource: any[]) {
   for (let i = 0; i < dataLenAll; i++) {
     const dataX = getCol(dataSource, i);
 
-    if (dataX.length != 0) {
+    if (dataX.length !== 0) {
       for (let j = i + 1; j < dataLenAll; j++) {
         const dataY = getCol(dataSource, j);
 
-        if (dataY.length != 0 && dataY.length == dataX.length) {
+        if (dataY.length !== 0 && dataY.length === dataX.length) {
           const inputPoints = zip(dataX, dataY);
 
           const options: ScagOptions = {};
@@ -109,7 +109,7 @@ export function scagInsighter(dataSource: any[]) {
   scagInd -= 1;
   const q75 = Math.round(scagInd * 0.25);
 
-  for (let k = 0; k < 9; ++k) {
+  for (let k = 0; k < 9; k++) {
     avgNum[k] /= scagInd;
 
     const tmpiqr = scagRes[k][q75].val! - scagRes[k][q25].val!;

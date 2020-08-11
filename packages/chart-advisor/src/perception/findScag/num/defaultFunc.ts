@@ -38,14 +38,14 @@ export function restArguments(func: any) {
 // the arguments object. Passing **n** will return all the values in
 // the array, excluding the last N.
 export function initial(array: string | any[], n: any, guard?: any) {
-  return slice.call(array, 0, Math.max(0, array.length - (n == null || guard ? 1 : n)));
+  return slice.call(array, 0, Math.max(0, array.length - (n === null || guard ? 1 : n)));
 }
 
 // Get the first element of an array. Passing **n** will return the first N
 // values in the array. The **guard** check allows it to work with `_.map`.
 export function first(array: string | any[] | null, n?: number | null, guard?: any) {
-  if (array == null || array.length < 1) return n == null || guard ? void 0 : [];
-  if (n == null || guard) return array[0];
+  if (array === null || array.length < 1) return n === null || guard ? void 0 : [];
+  if (n === null || guard) return array[0];
   return initial(array, array.length - n);
 }
 
@@ -63,7 +63,7 @@ export function values(obj: any) {
 // Determine if the array or object contains a given item (using `===`).
 export function contains(obj: any[], item: any, fromIndex?: number, guard?: any) {
   if (!isArrayLike(obj)) obj = values(obj);
-  if (typeof fromIndex != 'number' || guard) fromIndex = 0;
+  if (typeof fromIndex !== 'number' || guard) fromIndex = 0;
   return obj.indexOf(item, fromIndex) >= 0;
 }
 
@@ -74,7 +74,7 @@ export function isBoolean(obj: boolean) {
 
 // Internal function to check whether `key` is an own property name of `obj`.
 export function has(obj: null, key: string | number | symbol) {
-  return obj != null && hasOwnProperty.call(obj, key);
+  return obj !== null && hasOwnProperty.call(obj, key);
 }
 
 // Internal function that returns an efficient (for current engines) version
@@ -82,7 +82,7 @@ export function has(obj: null, key: string | number | symbol) {
 // functions.
 export function optimizeCb(func: any, context: any, argCount?: any) {
   if (context === void 0) return func;
-  switch (argCount == null ? 3 : argCount) {
+  switch (argCount === null ? 3 : argCount) {
     case 1:
       return function(value: any) {
         return func.call(context, value);

@@ -18,7 +18,7 @@ test('PACK', () => {
 
   const ckb3 = CKBJson('zh-CN', true);
   const values3 = Object.values(ckb3);
-  expect(values3.find((e) => e.name === '饼图') != undefined).toBe(true);
+  expect(values3.find((e) => e.name === '饼图') !== undefined).toBe(true);
 
   const ckb4 = CKBJson('zh-CN');
   const values4 = Object.values(ckb4);
@@ -49,5 +49,5 @@ test('PACK', () => {
 
   const ckb5 = CKBJson('zh-CN');
   const values5 = Object.values(ckb5);
-  expect(values5.find((e) => e.name === '步茗图') != undefined).toBe(true);
+  expect(values5.find((e) => e.name === '步茗图') !== undefined).toBe(true);
 });

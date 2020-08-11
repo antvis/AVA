@@ -165,7 +165,7 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
     }
 
     // for Line
-    if (t === 'line_chart' || t == 'step_line_chart') {
+    if (t === 'line_chart' || t === 'step_line_chart') {
       const field4X = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
       const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
       const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));

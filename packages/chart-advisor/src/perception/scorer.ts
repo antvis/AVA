@@ -10,8 +10,7 @@ export function scagScorer(this: any, inputPoints: any, options: ScagOptions) {
   const scanner: ScagScanner = {};
 
   let binType = options.binType,
-    startBinGridSize = options.startBinGridSize,
-    outlyingUpperBound = options.outlyingUpperBound;
+    startBinGridSize = options.startBinGridSize;
 
   const isBinned = options.isBinned,
     isNormalized = options.isNormalized,
@@ -136,7 +135,7 @@ export function scagScorer(this: any, inputPoints: any, options: ScagOptions) {
   const outlyingScore = outlying.score();
   scanner.outlyingScore = outlyingScore;
 
-  outlyingUpperBound = outlying.upperBound;
+  const outlyingUpperBound = outlying.upperBound;
   // scanner.outlyingUpperBound', outlyingUpperBound);
 
   // const outlyingLinks = outlying.links();

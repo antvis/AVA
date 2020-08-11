@@ -5,7 +5,7 @@ import { MAX_ARRAY_INDEX } from './setup';
 export function createSizePropertyCheck(getSizeProperty: (arg0: any) => any) {
   return function(collection: any) {
     const sizeProperty = getSizeProperty(collection);
-    return typeof sizeProperty == 'number' && sizeProperty >= 0 && sizeProperty <= MAX_ARRAY_INDEX;
+    return typeof sizeProperty === 'number' && sizeProperty >= 0 && sizeProperty <= MAX_ARRAY_INDEX;
   };
 }
 

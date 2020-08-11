@@ -15,7 +15,7 @@ import { Language, I18N } from './i18n';
  * @beta
  */
 export function CKBOptions(lang: Language = 'en-US') {
-  if (lang && lang != 'en-US') {
+  if (lang && lang !== 'en-US') {
     const translator = I18N(lang);
 
     if (translator && translator.concepts) {
