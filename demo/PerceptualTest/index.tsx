@@ -6,15 +6,24 @@ import { insightsFromDataset, Insight } from '../../packages/chart-advisor/src/p
 import { RowData } from '../../packages/datawizard/transform/src';
 import { perceptualSamples } from '../data-samples';
 
-const sampleGetters: { name: string; getter: Function }[] = [];
+// const sampleGetters: { name: string; getter: Function }[] = [];
 
-perceptualSamples.forEach((s: any) => {
-  sampleGetters.push({
-    name: s.name,
+// perceptualSamples.forEach((s: any) => {
+//   sampleGetters.push({
+//     name: s.name,
+//     getter: () => {
+//       return s.data;
+//     },
+//   });
+// });
+
+const sampleGetters: { name: string; getter: Function }[] = perceptualSamples.map(function(item) {
+  return {
+    name: item.name,
     getter: () => {
-      return s.data;
-    },
-  });
+      return item.data;
+    }
+  }
 });
 
 export function PerceptualTest() {

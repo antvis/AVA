@@ -6,15 +6,24 @@ import ReactJson from 'react-json-view';
 import { RowData } from '../../packages/datawizard/transform/src';
 import { insightSamples } from '../data-samples';
 
-const sampleGetters: { name: string; getter: Function }[] = [];
+// const sampleGetters: { name: string; getter: Function }[] = [];
 
-insightSamples.forEach((s) => {
-  sampleGetters.push({
-    name: s.name,
+// insightSamples.forEach((s) => {
+//   sampleGetters.push({
+//     name: s.name,
+//     getter: () => {
+//       return s.data;
+//     },
+//   });
+// });
+
+const sampleGetters: { name: string; getter: Function }[] = insightSamples.map(function(item) {
+  return {
+    name: item.name,
     getter: () => {
-      return s.data;
-    },
-  });
+      return item.data;
+    }
+  }
 });
 
 export function FindInsightTest() {
