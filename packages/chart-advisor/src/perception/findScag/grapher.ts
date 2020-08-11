@@ -62,7 +62,7 @@ export class DisjointSet {
     } else {
       // Arbitrarily choose to move y into the set x is a member of.
       yRoot.parent_ = xRoot;
-      xRoot.rank_++;
+      xRoot.rank_ += 1;
     }
   }
 
@@ -105,15 +105,15 @@ export function getAllV2CornersFromTree(tree: any) {
   const pairedResults = pairNodeLinks(tree.links);
 
   //Get all pairs with length = 2 (V2)
-  const allV2 = pairedResults.filter((p) => p[1].length == 2);
+  const allV2 = pairedResults.filter((p) => p[1].length === 2);
 
   const allCorners = allV2.map((v2) => {
     const corner = [];
 
-    corner.push(v2[0].split(',').map((d) => +d));
+    corner.push(v2[0].split(',').map((d: string | number) => +d));
 
     v2[1].forEach((link: { source: any[]; target: any }) => {
-      if (link.source.join(',') != v2[0]) {
+      if (link.source.join(',') !== v2[0]) {
         corner.push(link.source);
       } else {
         corner.push(link.target);
@@ -129,7 +129,7 @@ export function getAllV2CornersFromTree(tree: any) {
 export function getAllV1sFromTree(tree: any) {
   const pairedResults = pairNodeLinks(tree.links);
 
-  const allV1 = pairedResults.filter((p) => p[1].length == 1);
+  const allV1 = pairedResults.filter((p) => p[1].length === 1);
 
   return allV1.map((v1) => v1[0].split(',').map(Number));
 }
@@ -279,7 +279,7 @@ export function delaunayFromPoints(sites: any | any[]) {
 
       if (i + 2 < siteLength) {
         tgs.push(i + 2);
-      } else if (siteLength % 2 == 0) {
+      } else if (siteLength % 2 === 0) {
         tgs.push(i - 1);
       }
     }
@@ -402,7 +402,7 @@ function processCells(cells: any[], hulls: Set<unknown>[]) {
     }
   });
 
-  if (processedIndice.length == 0) {
+  if (processedIndice.length === 0) {
     //Put first one in the hull
     const cell = cells.shift();
 

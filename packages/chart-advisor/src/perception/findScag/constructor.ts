@@ -22,8 +22,8 @@ export class Normalizer {
       minX = (this.minX = min(dataX)),
       maxY = (this.maxY = max(dataY)),
       minY = (this.minY = min(dataY)),
-      rangeX = (this.rangeX = maxX != minX ? maxX - minX : 1),
-      rangeY = (this.rangeY = maxY != minY ? maxY - minY : 1),
+      rangeX = (this.rangeX = maxX !== minX ? maxX - minX : 1),
+      rangeY = (this.rangeY = maxY !== minY ? maxY - minY : 1),
       normalizedX = (this.normalizedX = dataX.map((x: number) => (x - minX) / rangeX)),
       normalizedY = (this.normalizedY = dataY.map((y: number) => (y - minY) / rangeY));
 
@@ -124,7 +124,7 @@ export class Binner {
 
     let i, px, py;
 
-    for (i = 0; i < n; ++i) {
+    for (i = 0; i < n; i++) {
       let point;
 
       px = +this.pointX.call(null, (point = points[i]));
@@ -173,7 +173,7 @@ export class Binner {
   }
 
   hexagon(radius: any) {
-    return 'm' + this.hexagonal(radius == null ? this.r : +radius).join('l') + 'z';
+    return 'm' + this.hexagonal(radius === null ? this.r : +radius).join('l') + 'z';
   }
 
   centers() {
@@ -181,7 +181,7 @@ export class Binner {
     let j = Math.round(this.y0 / this.dy);
     const i = Math.round(this.x0 / this.dx);
 
-    for (let y = j * this.dy; y < this.y1 + this.r; y += this.dy, ++j) {
+    for (let y = j * this.dy; y < this.y1 + this.r; y += this.dy, j++) {
       for (let x = i * this.dx + ((j & 1) * this.dx) / 2; x < this.x1 + this.dx / 2; x += this.dx) {
         centers.push([x, y]);
       }

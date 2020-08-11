@@ -81,7 +81,7 @@ export class Skewed {
       q50 = quantile(allLengths, 0.5),
       q10 = quantile(allLengths, 0.1);
 
-    if (q90 != q10) {
+    if (q90 !== q10) {
       return (q90 - q50) / (q90 - q10);
     } else {
       return 0;
@@ -107,7 +107,7 @@ export class Monotonic {
 
     const r = computeSpearmans(xArr, yArr);
 
-    if (r == null) {
+    if (r === null) {
       return 0;
     } else {
       return Math.pow(r, 2);
@@ -171,9 +171,7 @@ export class Monotonic {
         return b - a;
       });
 
-      let ranks = arr.slice().map(function(v) {
-        return sorted.indexOf(v) + 1;
-      });
+      const ranks = arr.slice().map((v) => sorted.indexOf(v) + 1);
 
       // counts of each rank
       const counts: number[] = [];
@@ -182,11 +180,11 @@ export class Monotonic {
       });
 
       // average duplicates
-      ranks = ranks.map(function(x) {
+      const outranks = ranks.map(function(x) {
         return x + 0.5 * ((counts[x] || 0) - 1);
       });
 
-      return ranks;
+      return outranks;
     }
 
     function countTies(arr: number[]) {
@@ -201,7 +199,7 @@ export class Monotonic {
         } else {
           if (tieLength > 1) {
             if (ties[tieLength] === undefined) ties[tieLength] = 0;
-            ties[tieLength]++;
+            ties[tieLength] += 1;
           }
 
           currValue = arrSorted[i];
@@ -211,7 +209,7 @@ export class Monotonic {
 
       if (tieLength > 1) {
         if (ties[tieLength] === undefined) ties[tieLength] = 0;
-        ties[tieLength]++;
+        ties[tieLength] += 1;
       }
 
       return ties;

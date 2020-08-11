@@ -26,7 +26,7 @@ export const perceptionIW: Worker = function(data: RowData[]): Insight[] {
     throw new TypeError('no perceptual insight');
   }
 
-  for (let i = 0; i < scagOut.length; ++i) {
+  for (let i = 0; i < scagOut.length; i++) {
     const dimensionTitle = columnProps[fixnum[scagOut[i].indX!]].title;
     const measureTitle = columnProps[fixnum[scagOut[i].indY!]].title;
 

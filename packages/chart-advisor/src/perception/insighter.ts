@@ -65,17 +65,17 @@ export function scagInsighter(dataSource: any[]) {
 
   const scagRes = new Array(9);
   const avgNum = new Array(9);
-  for (let k = 0; k < 9; ++k) {
+  for (let k = 0; k < 9; k++) {
     scagRes[k] = [];
     avgNum[k] = 0;
   }
 
   let scagInd = 0;
-  for (let i = 0; i < dataLenAll; ++i) {
+  for (let i = 0; i < dataLenAll; i++) {
     const dataX = getCol(dataSource, i);
 
     if (dataX.length != 0) {
-      for (let j = i + 1; j < dataLenAll; ++j) {
+      for (let j = i + 1; j < dataLenAll; j++) {
         const dataY = getCol(dataSource, j);
 
         if (dataY.length != 0 && dataY.length == dataX.length) {
@@ -84,12 +84,12 @@ export function scagInsighter(dataSource: any[]) {
           const options: ScagOptions = {};
           const scag = scagScorer(inputPoints, options);
 
-          for (let k = 0; k < 9; ++k) {
+          for (let k = 0; k < 9; k++) {
             scagRes[k][scagInd] = scagFeeder(scag, i, j, k);
             const res = scagRes[k][scagInd];
             avgNum[k] += scagRes[k][scagInd].val!;
 
-            for (let tmpind = 0; tmpind < scagInd; ++tmpind) {
+            for (let tmpind = 0; tmpind < scagInd; tmpind++) {
               if (res.val! > scagRes[k][tmpind].val!) {
                 const tmpscag = res;
                 scagRes[k][scagInd] = scagRes[k][tmpind];
@@ -97,7 +97,7 @@ export function scagInsighter(dataSource: any[]) {
               }
             }
           }
-          ++scagInd;
+          scagInd += 1;
         }
       }
     }
@@ -106,7 +106,7 @@ export function scagInsighter(dataSource: any[]) {
   const iqrNumL: number[] = [];
   const iqrNumU: number[] = [];
   const q25 = Math.round(scagInd * 0.75);
-  --scagInd;
+  scagInd -= 1;
   const q75 = Math.round(scagInd * 0.25);
 
   for (let k = 0; k < 9; ++k) {
@@ -121,11 +121,11 @@ export function scagInsighter(dataSource: any[]) {
   let insightNum = 0;
   const outRes: ScagResult[] = [];
 
-  for (let i = 0; i < Math.ceil(dataLenAll / 10); ++i) {
-    for (let k = 0; k < 9; ++k) {
+  for (let i = 0; i < Math.ceil(dataLenAll / 10); i++) {
+    for (let k = 0; k < 9; k++) {
       if (scagRes[k][i].val! > iqrNumU[k] && scagChecker(scagRes[k][i], outRes)) {
         outRes[insightNum] = scagRes[k][i];
-        ++insightNum;
+        insightNum += 1;
       }
     }
   }

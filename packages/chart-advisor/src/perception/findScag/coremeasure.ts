@@ -175,7 +175,9 @@ export class Outlying {
         allNodesWithLinks.push(l.target);
       });
 
-      allNodesWithLinks = uniq(allNodesWithLinks, false, (d: any[]) => d.join(','));
+      //allNodesWithLinks = uniq(allNodesWithLinks, false, (d: any[]) => d.join(','));
+
+      allNodesWithLinks = uniq(allNodesWithLinks, false);
 
       const normalNodes = allNodesWithLinks.map((n) => {
         return { id: n };
