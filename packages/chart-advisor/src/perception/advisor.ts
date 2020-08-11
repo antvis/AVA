@@ -10,7 +10,7 @@ export function JSONto2DArray(arr: RowData[]) {
   let arridx = 0;
 
   for (const attr in arr[0]) {
-    if (getType(arr[0][attr]) == 'Number') {
+    if (getType(arr[0][attr]) === 'Number') {
       fixnum[fixidx] = arridx;
       fixidx += 1;
     }
@@ -21,8 +21,8 @@ export function JSONto2DArray(arr: RowData[]) {
   arr.map(function(item) {
     const tmpArr: number[] = [];
 
-    Object.keys(item).map(function(key){
-      if (getType(item[key]) == 'Number') {
+    Object.keys(item).map(function(key) {
+      if (getType(item[key]) === 'Number') {
         tmpArr.push(item[key]);
       }
     });
