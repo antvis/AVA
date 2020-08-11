@@ -44,6 +44,7 @@ export function initial(array: string | any[], n: any, guard?: any) {
 // Get the first element of an array. Passing **n** will return the first N
 // values in the array. The **guard** check allows it to work with `_.map`.
 export function first(array: string | any[] | null, n?: number | null, guard?: any) {
+  if (typeof n === 'undefined') n = null;
   if (array === null || array.length < 1) return n === null || guard ? void 0 : [];
   if (n === null || guard) return array[0];
   return initial(array, array.length - n);

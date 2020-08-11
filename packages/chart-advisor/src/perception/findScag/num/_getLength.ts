@@ -3,9 +3,8 @@ import { hasOwnProperty } from './setup';
 // Internal helper to generate a function to obtain property `key` from `obj`.
 export function shallowProperty(key: string | number) {
   return function(obj: any) {
-    let mus = obj;
-    if (typeof mus === 'undefined') mus = null;
-    return mus === null ? void 0 : obj[key];
+    if (typeof obj === 'undefined') obj = null;
+    return obj === null ? void 0 : obj[key];
   };
 }
 
