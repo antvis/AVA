@@ -5,35 +5,30 @@ export function getType(obj: any) {
 }
 
 export function JSONto2DArray(arr: RowData[]) {
-  const outArr: number[][] = [];
   const fixnum: number[] = [];
   let fixidx = 0;
   let arridx = 0;
 
-  let tmpArr: number[] = [];
   for (const attr in arr[0]) {
-    if (getType(arr[0][attr]) === 'Number') {
-      tmpArr.push(arr[0][attr]);
-
+    if (getType(arr[0][attr]) == 'Number') {
       fixnum[fixidx] = arridx;
       fixidx += 1;
     }
-
     arridx += 1;
   }
-  outArr[0] = tmpArr;
 
-  for (let i = 1; i < arr.length; ++i) {
-    tmpArr = [];
+  const outArr: number[][] = [];
+  arr.map(function(item) {
+    const tmpArr: number[] = [];
 
-    for (const attr in arr[i]) {
-      if (getType(arr[i][attr]) === 'Number') {
-        tmpArr.push(arr[i][attr]);
+    Object.keys(item).map(function(key){
+      if (getType(item[key]) == 'Number') {
+        tmpArr.push(item[key]);
       }
-    }
+    });
 
-    outArr[i] = tmpArr;
-  }
+    outArr.push(tmpArr);
+  });
 
   const scagData: ScagFixData = { outArr, fixnum };
 
