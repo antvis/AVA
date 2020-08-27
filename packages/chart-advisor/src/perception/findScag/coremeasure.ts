@@ -1,7 +1,5 @@
 import uniq from './num/uniq';
-import difference from './num/difference';
-import without from './num/without';
-import { first } from './num/defaultFunc';
+import { restArguments, first, filter, sameNodes } from './num/defaultFunc';
 import { max, quantile } from './util';
 import {
   equalPoints,
@@ -65,7 +63,27 @@ export class Clumpy {
 
       const firstNode = first(connectedNodes);
 
-      connectedNodes = without(connectedNodes, firstNode);
+      // const connectedNodeu = restArguments(without(connectedNodes, firstNode))();
+      // console.log(connectedNodeu)
+
+      // const tmpdifffunc = restArguments((array = connectedNodes, rest = firstNode) => {
+      //   rest = flatten(rest, true, true);
+      //   return filter(array, function (value: any) {
+      //     return !contains(rest, value);
+      //   });
+      // });
+
+      const tmpdifffunc = restArguments((array = connectedNodes, rest = firstNode) => {
+        return filter(array, function(value: any) {
+          return !sameNodes(rest, value);
+        });
+      });
+      const tmpdiffs = tmpdifffunc();
+
+      const tmpnodes = restArguments(() => {
+        return tmpdiffs;
+      });
+      connectedNodes = tmpnodes();
       processedNodes.push(firstNode);
 
       //Find the edges connected to that node.
@@ -76,6 +94,7 @@ export class Clumpy {
       //Add new nodes to be processed
       links.forEach((l: any) => {
         if (!pointExists(processedNodes, l.source)) {
+          // console.log(connectedNodes)
           connectedNodes.push(l.source);
         }
 
@@ -140,9 +159,21 @@ export class Outlying {
       const outlyingPointsStr = outlyingPoints.map((p) => p.join(','));
       const v2OrGreaterStr = getAllV2OrGreaterFromTree(tree).map((p) => p.join(','));
 
-      const diff = difference(outlyingPointsStr, v2OrGreaterStr);
+      // const difffunc = restArguments((array = outlyingPointsStr, rest = v2OrGreaterStr) => {
+      //   rest = flatten(rest, true, true);
+      //   return filter(array, function (value: any) {
+      //     return !contains(rest, value);
+      //   });
+      // });
 
-      if (diff.length < outlyingPointsStr.length) {
+      const difffunc = restArguments((array = outlyingPointsStr, rest = v2OrGreaterStr) => {
+        return filter(array, function(value: any) {
+          return !sameNodes(rest, value);
+        });
+      });
+      const diff = difffunc();
+
+      if (diff.length <= outlyingPointsStr.length) {
         const delaunay = delaunayFromPoints(noOutlyingTree.nodes.map((n: any) => n.id));
         const graph = createGraph(delaunay.triangleCoordinates());
         noOutlyingTree = mst(graph);

@@ -3,6 +3,13 @@ import isArrayLike from './_isArrayLike';
 import isArray from './_isArray';
 import isArguments from './_isArguments';
 
+/**
+ * Flattens a nested array (the nesting can be to any depth). If you pass shallow, the array will
+ * only be flattened a single level.
+ * @param array The array to flatten.
+ * @param shallow If true then only flatten one level, optional, default = false.
+ * @return `array` flattened.
+ **/
 // Internal implementation of a recursive `flatten` function.
 export default function flatten(input: any, depth: any, strict: any, output?: any[]) {
   output = output || [];

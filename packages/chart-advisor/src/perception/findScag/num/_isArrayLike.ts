@@ -9,6 +9,11 @@ export function createSizePropertyCheck(getSizeProperty: (arg0: any) => any) {
   };
 }
 
+/**
+ * Returns true if object is an Array.
+ * @param object Check if this object is an Array.
+ * @return True if `object` is an Array, otherwise false.
+ **/
 // Internal helper for collection methods to determine whether a collection
 // should be iterated as an array or as an object.
 // Related: https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength

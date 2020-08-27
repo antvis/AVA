@@ -22,8 +22,8 @@ const sampleGetters: { name: string; getter: Function }[] = insightSamples.map(f
     name: item.name,
     getter: () => {
       return item.data;
-    }
-  }
+    },
+  };
 });
 
 export function FindInsightTest() {

@@ -394,9 +394,9 @@ function processCells(cells: any[], hulls: Set<unknown>[]) {
     return;
   }
 
-  const processedIndice: any[] = [];
+  const processedIndice: number[] = [];
 
-  cells.forEach((cell: any, i: any) => {
+  cells.forEach((cell: any, i: number) => {
     if (putCellToHulls(cell, hulls)) {
       processedIndice.push(i);
     }
@@ -410,7 +410,9 @@ function processCells(cells: any[], hulls: Set<unknown>[]) {
     hulls.push(hull);
   } else {
     //Remove the processed items and continue.
-    cells = cells.filter((v: any, i: any) => processedIndice.indexOf(i) < 0);
+    cells = cells.filter((v: any) => processedIndice.indexOf(cells.indexOf(v)) < 0);
+
+    //cells = cells.filter((v: any, i: number) => processedIndice.indexOf(i) < 0);
   }
   //Do this recursively
   processCells(cells, hulls);

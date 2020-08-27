@@ -18,4 +18,9 @@ if (typeof /./ !== 'function' && typeof Int8Array !== 'object' && typeof nodelis
   };
 }
 
+/**
+ * Returns true if object is a Function.
+ * @param object Check if this object is a Function.
+ * @return True if `object` is a Function, otherwise false.
+ **/
 export default isFunction;

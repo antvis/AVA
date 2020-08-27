@@ -13,4 +13,9 @@ let isArguments = tagTester('Arguments');
   }
 })();
 
+/**
+ * Returns true if object is an Arguments object.
+ * @param object Check if this object is an Arguments object.
+ * @return True if `object` is an Arguments object, otherwise false.
+ **/
 export default isArguments;

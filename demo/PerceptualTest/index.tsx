@@ -22,8 +22,8 @@ const sampleGetters: { name: string; getter: Function }[] = perceptualSamples.ma
     name: item.name,
     getter: () => {
       return item.data;
-    }
-  }
+    },
+  };
 });
 
 export function PerceptualTest() {

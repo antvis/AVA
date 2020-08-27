@@ -3,7 +3,7 @@ import React from 'react';
 export function prettyJSON(json: any) {
   return JSON.stringify(
     json,
-    function (_, v) {
+    function(_, v) {
       for (const p in v) {
         if (v[p] instanceof Object) {
           return v;
@@ -78,7 +78,7 @@ export function debounce(func: Function, delay: number) {
     if (timer !== null) {
       clearTimeout(timer);
     }
-    timer = setTimeout(function () {
+    timer = setTimeout(function() {
       func(props);
     }, delay);
   }
