@@ -1,0 +1,68 @@
+{
+  "name": "@antv/vega-g2-adaptor",
+  "version": "0.1.0-beta.0",
+  "description": "Adaptor for vega specification to @antv/g2",
+  "private": false,
+  "browser": "dist/index.js",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "typings": "typings/adaptor.d.ts",
+  "scripts": {
+    "test": "jest",
+    "test-live": "cross-env DEBUG_MODE=1 jest --watch ./__tests__",
+    "coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "tslib": "^1.10.0"
+  },
+  "peerDependencies": {
+    "@antv/g2": "^4.0.15"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "keywords": [],
+  "author": "AFX",
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-typescript": "^7.7.4",
+    "@microsoft/api-extractor": "^7.7.0",
+    "babel-loader": "^8.0.6",
+    "typescript": "^3.2.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "jest": "^26.0.1",
+    "jest-electron": "^0.1.7",
+    "jest-extended": "^0.11.2",
+    "ts-jest": "^25.4.0",
+    "@types/jest": "^25.2.1",
+    "cross-env": "^7.0.2",
+    "vega": "^5.14.0"
+  },
+  "jest": {
+    "runner": "jest-electron/runner",
+    "testEnvironment": "jest-electron/environment",
+    "setupFilesAfterEnv": [
+      "jest-extended"
+    ],
+    "preset": "ts-jest",
+    "collectCoverage": false,
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!**/node_modules/**",
+      "!**/vendor/**"
+    ],
+    "testRegex": "/__tests__/.*.test\\.ts?$"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antvis/AVA.git"
+  },
+  "bugs": {
+    "url": "https://github.com/antvis/AVA/issues"
+  }
+}
