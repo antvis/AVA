@@ -1,11 +1,21 @@
-# `adaptor`
+# `Vega Lite Adaptor`
 
-> TODO: description
+## workflow
 
-## Usage
+AVA -> vega-lite -> g2plot-option-json -> G2Plot / G2
 
+```ts
+/**
+ * @prams container: string; HTMLElement; IGroup;
+ * @prams spec: vega-lite specification;
+ * */
+
+vlg2Adaptor(container, spec);
+vlg2plotAdaptor(container, spec);
 ```
-const adaptor = require('adaptor');
 
-// TODO: DEMONSTRATE API
-```
+## plan
+
+- [ ] data
+- [ ] mark
+- [ ] encoding

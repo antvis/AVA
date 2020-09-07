@@ -4,5 +4,5 @@
     "outDir": "./lib",
     "declarationDir": "./temp"
   },
-  "include": ["./src"]
+  "include": ["./src", "__tests__/utils/initCharts.ts"]
 }

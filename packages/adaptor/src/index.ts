@@ -1,10 +1,3 @@
-// import Vega, { Spec } from 'vega';
-
-export interface Props {
-  name: string;
-}
-
-const props: Props = {
-  name: 'll',
-};
-export default props;
+export { G2PlotConfigs, G2PlotChartType, DataSet, Channels } from './interface';
+export { g2plotRender, g2Render } from './render';
+export { g2Adaptor } from './g2-adaptor';
