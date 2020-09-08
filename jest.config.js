@@ -9,4 +9,7 @@ module.exports = {
   testPathIgnorePatterns: ['/node_modules/'],
   collectCoverage: false,
   collectCoverageFrom: ['packages/**/src/**/*.ts'],
+
+  // adaptor jest config self
+  testPathIgnorePatterns: ['<rootDir>/packages/adaptor'],
 };

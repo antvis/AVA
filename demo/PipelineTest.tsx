@@ -1,32 +1,43 @@
-import React, { useRef, useEffect } from 'react';
-import * as G2Plot from '@antv/g2plot';
+import React, { useState, useRef, useEffect } from 'react';
 import { DataSamples } from './data-samples';
-import { dataToDataProps, dataPropsToSpecs, specToLibConfig } from '../packages/chart-advisor/src/index';
+import {
+  dataToDataProps,
+  dataPropsToSpecs,
+  specToLibConfig,
+  ChartLibrary,
+  adaptRender,
+} from '../packages/chart-advisor/src/index';
 import { prettyJSON, JSONToTable } from './utils';
+import { ChartID } from '../packages/chart-advisor/node_modules/@antv/knowledge/typings/knowledge';
+
+// test for different adaptor
+const CHART_LIB: ChartLibrary = 'G2';
+
+const chartTypes: ChartID[] = ['grouped_bar_chart', 'scatter_plot', 'line_chart'];
 
 export function PipelineTest() {
-  const datasample = DataSamples.ForChartType('percent_stacked_bar_chart');
+  const [chartType, setChartType] = useState<ChartID>(chartTypes[0]);
+  const datasample = DataSamples.ForChartType(chartType);
 
   const dataProps = dataToDataProps(datasample);
+  console.log('dataProps: ', dataProps);
   const specs = dataPropsToSpecs(dataProps);
-  const libConfigs = specs.map((spec) => specToLibConfig(spec, 'G2Plot')).filter((e) => e.type && e.configs);
+  const libConfigs = specs.map((spec) => specToLibConfig(spec, CHART_LIB)).filter((e) => e.type && e.configs);
 
-  const { type, configs } = libConfigs[0];
-  // @ts-ignore
-  const ChartConstructor = G2Plot[type];
   const chartdom = useRef(null);
+  const curChartIns = useRef<any>();
+
   useEffect(() => {
-    const chart = new ChartConstructor(chartdom.current, {
-      data: datasample,
-      ...configs,
-    });
-    chart.render();
-  });
+    // G2 or G2Plot destroy
+    if (curChartIns.current) curChartIns.current.destroy();
+
+    curChartIns.current = adaptRender(chartdom.current!, datasample, CHART_LIB, libConfigs[0]);
+  }, [chartType]);
 
   const dataInJSON = (
     <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
       <h3>Data in JSON</h3>
-      <textarea style={{ height: '100%', overflowY: 'scroll' }} defaultValue={prettyJSON(datasample)} />
+      <textarea style={{ height: '100%', overflowY: 'scroll' }} value={prettyJSON(datasample)} />
     </div>
   );
 
@@ -39,6 +50,16 @@ export function PipelineTest() {
 
   return (
     <>
+      <select
+        value={chartType}
+        onChange={(e) => {
+          setChartType(e.target.value as ChartID);
+        }}
+      >
+        {chartTypes.map((item) => (
+          <option value={item}>{item}</option>
+        ))}
+      </select>
       {/* data */}
       <div style={{ display: 'flex', justifyContent: 'space-evenly', minHeight: '200px', maxHeight: '300px' }}>
         {dataInJSON}
@@ -65,7 +86,7 @@ export function PipelineTest() {
       </div>
       {/* lib config */}
       <div>
-        <h3>lib config (G2Plot)</h3>
+        <h3>lib config ({CHART_LIB})</h3>
         {[libConfigs].map((libConfigs) => {
           console.log('📝 libConfigs');
           console.log(libConfigs);
