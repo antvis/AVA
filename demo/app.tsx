@@ -23,7 +23,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     this.state = {
-      test: 'insights', // init for test
+      test: 'pipeline', // init for test
     };
   }
 
