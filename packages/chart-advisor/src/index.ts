@@ -52,3 +52,5 @@ export { ChartLibrary, getMappingForLib, Mapping, TypeMapping, ConfigMapping } f
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';
+
+export { adaptRender } from './adapt-render';
