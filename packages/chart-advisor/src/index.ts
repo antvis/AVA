@@ -37,15 +37,7 @@ export async function autoChart(
 
 export { AutoChartOptions, Preferences };
 
-export {
-  dataToDataProps,
-  dataPropsToSpecs,
-  specToLibConfig,
-  FieldInfo,
-  Advice,
-  AdvisorOptions,
-  Channels,
-} from './advisor';
+export { dataToDataProps, dataPropsToSpecs, FieldInfo, Advice, AdvisorOptions } from './advice-pipline';
 
 export { ChartLibrary, getMappingForLib, Mapping, TypeMapping, ConfigMapping } from './chartLibMapping';
 

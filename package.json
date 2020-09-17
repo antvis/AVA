@@ -17,6 +17,8 @@
   },
   "author": "XTech",
   "devDependencies": {
+    "@antv/g2": "^4.0.15",
+    "@antv/g2plot": "2.0.0-beta.2",
     "@babel/core": "^7.7.7",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
@@ -54,11 +56,12 @@
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.8.0"
+    "webpack-dev-server": "^3.8.0",
+    "vega": "^5.15.0",
+    "vega-lite": "^4.15.0"
   },
   "dependencies": {
-    "@antv/g2": "^4.0.12",
-    "@antv/g2plot": "^1.1.6",
+    "@antv/thumbnails": "^0.2.1-alpha.0",
     "react-json-view": "^1.19.1"
   },
   "config": {
