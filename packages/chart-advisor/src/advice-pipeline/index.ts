@@ -1,5 +1,5 @@
 // interface
-import { FieldInfo, Advice, AdvisorOptions } from './interface';
+import { FieldInfo, Advice, AdvisorOptions, G2PlotConfig } from './interface';
 
 // step 1: data -> data props
 import { dataToDataProps } from './data-to-dataprops';
@@ -20,6 +20,7 @@ export {
   FieldInfo,
   Advice,
   AdvisorOptions,
+  G2PlotConfig,
   dataToDataProps,
   dataPropsToSpecs,
   specToLibConfig,

@@ -41,6 +41,7 @@ export {
   FieldInfo,
   Advice,
   AdvisorOptions,
+  G2PlotConfig,
   dataToDataProps,
   dataPropsToSpecs,
   specToLibConfig,

@@ -3,7 +3,9 @@
   "scripts": {
     "start": "webpack-dev-server --port 8881",
     "build": "lerna run build",
-    "test": "jest --coverage",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "test-live": "cross-env DEBUG_MODE=1 jest --watch ./packages/chart-advisor/",
     "lint": "lerna run lint",
     "api": "rm -rf temp && lerna run api",
     "doc": "rm -rf apis && api-documenter markdown -i ./temp -o ./docs/api",
@@ -35,6 +37,7 @@
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "babel-loader": "^8.0.6",
+    "cross-env": "^7.0.2",
     "css-loader": "^3.2.0",
     "cz-conventional-changelog": "^3.0.2",
     "eslint": "^6.1.0",
@@ -44,6 +47,8 @@
     "gh-pages": "^2.1.1",
     "husky": "^4.2.5",
     "jest": "^24.9.0",
+    "jest-electron": "^0.1.11",
+    "jest-extended": "^0.11.5",
     "lerna": "^3.15.0",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
@@ -54,11 +59,11 @@
     "ts-jest": "^24.1.0",
     "tslib": "^1.10.0",
     "typescript": "^3.2.2",
+    "vega": "^5.15.0",
+    "vega-lite": "^4.15.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.8.0",
-    "vega": "^5.15.0",
-    "vega-lite": "^4.15.0"
+    "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
     "@antv/thumbnails": "^0.2.1-alpha.0",
