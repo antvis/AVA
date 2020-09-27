@@ -4,7 +4,13 @@ import { View, parse } from 'vega';
 import { compile } from 'vega-lite';
 
 import { CKBJson, ChartID } from '../packages/knowledge';
-import { dataToDataProps, dataPropsToSpecs, Advice } from '../packages/chart-advisor/src';
+import {
+  dataToDataProps,
+  dataPropsToSpecs,
+  Advice,
+  specToLibConfig,
+  g2plotRender,
+} from '../packages/chart-advisor/src';
 import { DataSamples } from './data-samples';
 import { prettyJSON } from './utils';
 
@@ -19,23 +25,33 @@ const allPipelines = allTypes.map((t) => {
   const specs = dataPropsToSpecs(dataProps);
   const typeSpec = specs.find((s) => s.type === t);
 
+  let libConfig = null;
+  if (typeSpec) {
+    libConfig = specToLibConfig(typeSpec);
+  }
+
   return {
     chartType: t,
     data,
     dataProps,
     specs,
     typeSpec: typeSpec ? typeSpec.spec : null,
+    libConfig,
   };
 });
 
 export const NewPipelineTest = () => {
   // render after mount
   useEffect(() => {
-    allPipelines.forEach(({ chartType, typeSpec, data }) => {
+    allPipelines.forEach(({ chartType, typeSpec, data, libConfig }) => {
       if (typeSpec) {
         new View(parse(compile({ ...typeSpec, data: { values: data } } as any).spec))
           .initialize(document.getElementById(`vl-${chartType}`)!)
           .runAsync();
+      }
+
+      if (libConfig) {
+        g2plotRender(`g2-${chartType}`, data, libConfig);
       }
     });
   }, []);
@@ -93,7 +109,9 @@ export const NewPipelineTest = () => {
             <td>
               <div id={`vl-${pipline.chartType}`}></div>
             </td>
-            <td></td>
+            <td>
+              <div id={`g2-${pipline.chartType}`}></div>
+            </td>
           </tr>
         ))}
       </tbody>
@@ -110,4 +128,5 @@ function isFirstAdvise(chartType: ChartID, spec: Advice[]) {
     }
     cacheScore = spec[i].score;
   }
+  return true;
 }

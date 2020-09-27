@@ -1,5 +1,4 @@
 table.pipline-table {
-  width: 100%;
   text-align: center;
 
   &,
@@ -21,17 +20,17 @@ table.pipline-table {
     width: 220px;
   }
 
+  // data json
+  tr>td:nth-child(3),
+  tr>th:nth-child(3) {
+    width: 560px;
+  }
+
   textarea.data-json {
     height: 200px;
     width: 540px;
     overflow-y: auto;
     border: none;
-  }
-
-  // data
-  tr>td:nth-child(3),
-  tr>th:nth-child(3) {
-    width: 560px;
   }
 
   // data props & specs
@@ -50,6 +49,16 @@ table.pipline-table {
   // vega lite
   tr>td:nth-child(6),
   tr>th:nth-child(6) {
-    width: 300px;
+    width: 400px;
+  }
+
+  // g2
+  tr>td:nth-child(7),
+  tr>th:nth-child(7) {
+    width: 400px;
+
+    >div {
+      height: 100%;
+    }
   }
 }

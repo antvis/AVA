@@ -7,14 +7,14 @@ import { NewPipelineTest } from './NewPipelineTest';
 
 const tuple = <T extends string[]>(...args: T) => args;
 
-const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform', 'newPipline');
+const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform', 'newPipeline');
 type TestType = typeof TESTS[number];
 const testComponents: Record<TestType, any> = {
   autoChart: <AutoChartTest />,
   pipeline: <PipelineTest />,
   insights: <FindInsightTest />,
   dataTransform: <DataTransformTest />,
-  newPipline: <NewPipelineTest />,
+  newPipeline: <NewPipelineTest />,
 };
 
 interface TestState {
@@ -25,7 +25,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     this.state = {
-      test: 'newPipline', // init for test
+      test: 'newPipeline', // init for test
     };
   }
 

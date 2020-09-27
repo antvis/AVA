@@ -1,7 +1,7 @@
 import { LevelOfMeasurement as LOM, ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { Preferences } from '../rules';
-import { Mark, EncodingType, EncodingKey, Aggregation } from './vega-lite';
+import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-lite';
 
 /**
  * @public
@@ -36,10 +36,19 @@ export interface FieldInfo extends DWAnalyzer.FieldInfo {
 
 // type Bin = { binned: boolean; step: number };
 
-interface SingleViewSpec {
+export interface SingleViewSpec {
   mark: { type: Mark; [record: string]: any };
   encoding: Partial<
-    Record<EncodingKey, { field?: string; type?: EncodingType; bin?: boolean; aggregate?: Aggregation }>
+    Record<
+      EncodingKey,
+      {
+        field?: string;
+        type?: EncodingType;
+        bin?: boolean;
+        aggregate?: Aggregation;
+        stack?: StackType;
+      }
+    >
   >;
 }
 
@@ -58,3 +67,20 @@ export interface Advice {
   spec: VegaLiteSubsetSpec | null;
   score: number;
 }
+
+/**
+ * @beta
+ */
+export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
+
+export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
+
+/**
+ * @beta
+ */
+export interface G2PlotConfig {
+  chartType: G2PlotChartType;
+  configs: Record<string, any>;
+}
+
+export type EChartsConfig = any;

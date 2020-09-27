@@ -52,3 +52,5 @@ export type EncodingKey =
 
 // part of
 export type Aggregation = 'count';
+
+export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;

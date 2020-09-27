@@ -15,20 +15,26 @@ export function specMapping(chartType: ChartID, dataProps: FieldInfo[]): Advice[
       return step_line_chart(dataProps);
     case 'area_chart':
       return area_chart(dataProps);
+    case 'stacked_area_chart':
+      return stacked_area_chart(dataProps);
+    case 'percent_stacked_area_chart':
+      return percent_stacked_area_chart(dataProps);
     case 'bar_chart':
       return bar_chart(dataProps);
     case 'grouped_bar_chart':
       return grouped_bar_chart(dataProps);
     case 'stacked_bar_chart':
       return stacked_bar_chart(dataProps);
-    // case 'percent_stacked_bar_chart':
-    //   return percent_stacked_bar_chart(dataProps);
+    case 'percent_stacked_bar_chart':
+      return percent_stacked_bar_chart(dataProps);
     case 'column_chart':
       return column_chart(dataProps);
     case 'grouped_column_chart':
       return grouped_column_chart(dataProps);
     case 'stacked_column_chart':
       return stacked_column_chart(dataProps);
+    case 'percent_stacked_column_chart':
+      return percent_stacked_column_chart(dataProps);
     // https://github.com/vega/vega-lite/issues/3805
     // case 'radar_chart':
     //   return radar_chart(dataProps);
@@ -174,13 +180,54 @@ function area_chart(dataProps: FieldInfo[]): Advice['spec'] {
 
   if (!field4X || !field4Y) return null;
 
-  return {
+  const spec: Advice['spec'] = {
     mark: { type: 'area' },
     encoding: {
       x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
       y: { field: field4Y.name, type: 'quantitative' },
     },
   };
+
+  return spec;
+}
+
+function splitAreaXYSeries(dataProps: FieldInfo[]): [ReturnField, ReturnField, ReturnField] {
+  const field4X = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
+  const field4Series = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+  const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+  return [field4X, field4Y, field4Series];
+}
+
+function stacked_area_chart(dataProps: FieldInfo[]): Advice['spec'] {
+  const [field4X, field4Y, field4Series] = splitAreaXYSeries(dataProps);
+  if (!field4X || !field4Y || !field4Series) return null;
+
+  const spec: Advice['spec'] = {
+    mark: { type: 'area' },
+    encoding: {
+      x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
+      y: { field: field4Y.name, type: 'quantitative', stack: 'zero' },
+      color: { field: field4Series.name, type: 'nominal' },
+    },
+  };
+
+  return spec;
+}
+
+function percent_stacked_area_chart(dataProps: FieldInfo[]): Advice['spec'] {
+  const [field4X, field4Y, field4Series] = splitAreaXYSeries(dataProps);
+  if (!field4X || !field4Y || !field4Series) return null;
+
+  const spec: Advice['spec'] = {
+    mark: { type: 'area' },
+    encoding: {
+      x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
+      y: { field: field4Y.name, type: 'quantitative', stack: 'normalize' },
+      color: { field: field4Series.name, type: 'nominal' },
+    },
+  };
+
+  return spec;
 }
 
 function bar_chart(dataProps: FieldInfo[]): Advice['spec'] {
@@ -267,7 +314,23 @@ function stacked_column_chart(dataProps: FieldInfo[]): Advice['spec'] {
     mark: { type: 'bar' },
     encoding: {
       x: { field: field4X.name, type: 'nominal' },
-      y: { field: field4Y.name, type: 'quantitative' },
+      y: { field: field4Y.name, type: 'quantitative', stack: 'zero' },
+      color: { field: Field4Series.name, type: 'nominal' },
+    },
+  };
+
+  return spec;
+}
+
+function percent_stacked_column_chart(dataProps: FieldInfo[]): Advice['spec'] {
+  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
+  if (!field4X || !field4Y || !Field4Series) return null;
+
+  const spec: Advice['spec'] = {
+    mark: { type: 'bar' },
+    encoding: {
+      x: { field: field4X.name, type: 'nominal' },
+      y: { field: field4Y.name, type: 'quantitative', stack: 'normalize' },
       color: { field: Field4Series.name, type: 'nominal' },
     },
   };
@@ -310,7 +373,23 @@ function stacked_bar_chart(dataProps: FieldInfo[]): Advice['spec'] {
   const spec: Advice['spec'] = {
     mark: { type: 'bar' },
     encoding: {
-      x: { field: field4X.name, type: 'quantitative' },
+      x: { field: field4X.name, type: 'quantitative', stack: 'zero' },
+      y: { field: field4Y.name, type: 'nominal' },
+      color: { field: Field4Series.name, type: 'nominal' },
+    },
+  };
+
+  return spec;
+}
+
+function percent_stacked_bar_chart(dataProps: FieldInfo[]): Advice['spec'] {
+  const [field4X, field4Y, Field4Series] = splitBarXYSeries(dataProps);
+  if (!field4X || !field4Y || !Field4Series) return null;
+
+  const spec: Advice['spec'] = {
+    mark: { type: 'bar' },
+    encoding: {
+      x: { field: field4X.name, type: 'quantitative', stack: 'normalize' },
       y: { field: field4Y.name, type: 'nominal' },
       color: { field: Field4Series.name, type: 'nominal' },
     },
