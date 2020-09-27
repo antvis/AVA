@@ -48,7 +48,7 @@ export {
   g2plotRender,
   dataToSpecs,
   specRender,
-} from './advice-pipline';
+} from './advice-pipeline';
 
 export { ChartLibrary, getMappingForLib, Mapping, TypeMapping, ConfigMapping } from './chartLibMapping';
 

@@ -1,20 +1,18 @@
 import * as React from 'react';
 import { AutoChartTest } from './AutoChartTest';
-import { PipelineTest } from './PipelineTest';
 import { FindInsightTest } from './FindInsightTest/index';
 import { DataTransformTest } from './DataTransformTest';
-import { NewPipelineTest } from './NewPipelineTest';
+import { PipelineTest } from './pipelineTest';
 
 const tuple = <T extends string[]>(...args: T) => args;
 
-const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform', 'newPipeline');
+const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform');
 type TestType = typeof TESTS[number];
 const testComponents: Record<TestType, any> = {
   autoChart: <AutoChartTest />,
   pipeline: <PipelineTest />,
   insights: <FindInsightTest />,
   dataTransform: <DataTransformTest />,
-  newPipeline: <NewPipelineTest />,
 };
 
 interface TestState {
@@ -25,7 +23,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     this.state = {
-      test: 'newPipeline', // init for test
+      test: 'pipeline', // init for test
     };
   }
 

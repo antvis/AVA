@@ -1,103 +1,132 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { DataSamples } from './data-samples';
+import React, { useEffect } from 'react';
+import Thumbnails from '@antv/thumbnails';
+import { View, parse } from 'vega';
+import { compile } from 'vega-lite';
+
+import { CKBJson, ChartID } from '../packages/knowledge';
 import {
   dataToDataProps,
   dataPropsToSpecs,
+  Advice,
   specToLibConfig,
-  ChartLibrary,
-  adaptRender,
-} from '../packages/chart-advisor/src/index';
-import { prettyJSON, JSONToTable } from './utils';
-import { ChartID } from '../packages/chart-advisor/node_modules/@antv/knowledge/typings/knowledge';
+  g2plotRender,
+} from '../packages/chart-advisor/src';
+import { DataSamples } from './data-samples';
+import { prettyJSON } from './utils';
 
-// test for different adaptor
-const CHART_LIB: ChartLibrary = 'G2';
+import './table.less';
 
-const chartTypes: ChartID[] = ['grouped_bar_chart', 'scatter_plot', 'line_chart'];
+const Wiki = CKBJson('en-US', true);
+const allTypes = Object.keys(Wiki) as ChartID[];
 
-export function PipelineTest() {
-  const [chartType, setChartType] = useState<ChartID>(chartTypes[0]);
-  const datasample = DataSamples.ForChartType(chartType);
-
-  const dataProps = dataToDataProps(datasample);
-  console.log('dataProps: ', dataProps);
+const allPipelines = allTypes.map((t) => {
+  const data = DataSamples.ForChartType(t);
+  const dataProps = dataToDataProps(data);
   const specs = dataPropsToSpecs(dataProps);
-  const libConfigs = specs.map((spec) => specToLibConfig(spec, CHART_LIB)).filter((e) => e.type && e.configs);
+  const typeSpec = specs.find((s) => s.type === t);
 
-  const chartdom = useRef(null);
-  const curChartIns = useRef<any>();
+  let libConfig = null;
+  if (typeSpec) {
+    libConfig = specToLibConfig(typeSpec);
+  }
 
+  return {
+    chartType: t,
+    data,
+    dataProps,
+    specs,
+    typeSpec: typeSpec ? typeSpec.spec : null,
+    libConfig,
+  };
+});
+
+export const PipelineTest = () => {
+  // render after mount
   useEffect(() => {
-    // G2 or G2Plot destroy
-    if (curChartIns.current) curChartIns.current.destroy();
+    allPipelines.forEach(({ chartType, typeSpec, data, libConfig }) => {
+      if (typeSpec) {
+        new View(parse(compile({ ...typeSpec, data: { values: data } } as any).spec))
+          .initialize(document.getElementById(`vl-${chartType}`)!)
+          .runAsync();
+      }
 
-    curChartIns.current = adaptRender(chartdom.current!, datasample, CHART_LIB, libConfigs[0]);
-  }, [chartType]);
-
-  const dataInJSON = (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
-      <h3>Data in JSON</h3>
-      <textarea style={{ height: '100%', overflowY: 'scroll' }} value={prettyJSON(datasample)} />
-    </div>
-  );
-
-  const dataInTable = (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '45%' }}>
-      <h3>Data in Table</h3>
-      <div style={{ height: '100%', overflowY: 'scroll' }}>{JSONToTable(datasample)}</div>
-    </div>
-  );
+      if (libConfig) {
+        g2plotRender(`g2-${chartType}`, data, libConfig);
+      }
+    });
+  }, []);
 
   return (
-    <>
-      <select
-        value={chartType}
-        onChange={(e) => {
-          setChartType(e.target.value as ChartID);
-        }}
-      >
-        {chartTypes.map((item) => (
-          <option value={item}>{item}</option>
+    <table className="pipeline-table">
+      <thead>
+        <tr>
+          <th>index</th>
+          <th>chart type</th>
+          <th>data(json)</th>
+          <th>data props</th>
+          <th>specs</th>
+          <th>vega-lite</th>
+          <th>g2</th>
+        </tr>
+      </thead>
+      <tbody>
+        {allPipelines.map((pipeline, i) => (
+          <tr key={pipeline.chartType}>
+            <th>{i + 1}</th>
+            <td>
+              {Thumbnails[pipeline.chartType] ? (
+                <>
+                  <img width="200" src={Thumbnails[pipeline.chartType]?.url} />
+                  <br />
+                </>
+              ) : null}
+              {pipeline.chartType}
+            </td>
+            <td>
+              <textarea value={prettyJSON(pipeline.data)} className="data-json" />
+            </td>
+            <td>
+              <ul>
+                {pipeline.dataProps.map((d) => (
+                  <li key={`${pipeline.chartType}-${d.name}`}>{`${d.name} - ${d.levelOfMeasurements}`}</li>
+                ))}
+              </ul>
+            </td>
+            <td>
+              <ul>
+                {pipeline.specs.map((s, sIdx) => (
+                  <li
+                    key={`${pipeline.chartType}-${sIdx}`}
+                    style={
+                      s.type === pipeline.chartType && !isFirstAdvise(pipeline.chartType, pipeline.specs)
+                        ? { color: 'red' }
+                        : {}
+                    }
+                  >{`${s.type} - ${s.score}`}</li>
+                ))}
+              </ul>
+            </td>
+            <td>
+              <div id={`vl-${pipeline.chartType}`}></div>
+            </td>
+            <td>
+              <div id={`g2-${pipeline.chartType}`}></div>
+            </td>
+          </tr>
         ))}
-      </select>
-      {/* data */}
-      <div style={{ display: 'flex', justifyContent: 'space-evenly', minHeight: '200px', maxHeight: '300px' }}>
-        {dataInJSON}
-        {dataInTable}
-      </div>
-      {/* data props */}
-      <div>
-        <h3>data props</h3>
-
-        {[dataProps].map((dataProps) => {
-          console.log('🍎 dataProps');
-          console.log(dataProps);
-          return `check console for '🍎 dataProps'`;
-        })}
-      </div>
-      {/* specs */}
-      <div>
-        <h3>specs</h3>
-        {[specs].map((specs) => {
-          console.log('💬 specs');
-          console.log(specs);
-          return `check console for '💬 specs'`;
-        })}
-      </div>
-      {/* lib config */}
-      <div>
-        <h3>lib config ({CHART_LIB})</h3>
-        {[libConfigs].map((libConfigs) => {
-          console.log('📝 libConfigs');
-          console.log(libConfigs);
-          return `check console for '📝 libConfigs'`;
-        })}
-      </div>
-      {/* chart */}
-      <div>
-        <h3>chart top1</h3>
-        <div ref={chartdom}></div>
-      </div>
-    </>
+      </tbody>
+    </table>
   );
+};
+
+function isFirstAdvise(chartType: ChartID, spec: Advice[]) {
+  let cacheScore: number;
+  for (let i = 0; i < spec.length; i++) {
+    if (i === 0) cacheScore = spec[i].score;
+    if (spec[i].type === chartType) {
+      return spec[i].score >= cacheScore!;
+    }
+    cacheScore = spec[i].score;
+  }
+  return true;
 }
