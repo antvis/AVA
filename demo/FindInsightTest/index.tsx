@@ -59,6 +59,7 @@ export function FindInsightTest() {
   };
 
   const genOptions = (insight: Insight): any => {
+    console.log('insight: ', insight);
     const options: any = { title: genTitle(insight), description: genDesc(insight) };
 
     if (insight.present && insight.present.type) {

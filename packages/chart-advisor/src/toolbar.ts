@@ -1,5 +1,5 @@
 import { CLASS_PREFIX } from './style';
-import { Advice } from './advisor';
+import { Advice } from './advice-pipeline';
 import { getElementDispay } from './util';
 import { AutoPlot } from './auto-plot';
 import Thumbnails from '@antv/thumbnails';

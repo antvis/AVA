@@ -3,7 +3,7 @@ import { Toolbar } from './toolbar';
 import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
 import { isEqual, pick } from '@antv/util';
-import { AdvisorOptions, Advice } from './advisor';
+import { AdvisorOptions, Advice, G2PlotConfig } from './advice-pipeline';
 import { Preferences } from './rules';
 import { MockPanel } from './mock-panel';
 import { createLayer, DEFAULT_FEEDBACK } from './util';
@@ -60,10 +60,7 @@ export interface AutoChartOptions {
   /**
    * g2plot configs
    */
-  config?: {
-    type: string;
-    configs: any;
-  };
+  config?: G2PlotConfig;
   /**
    * render while no data
    */

@@ -1,5 +1,3 @@
-// import { analyze } from '../src/advisor';
-
 test('advisor', () => {
   // const data = [
   //   {
