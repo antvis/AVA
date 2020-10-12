@@ -1,8 +1,20 @@
 import { ChartID } from '@antv/knowledge';
 import { G2PLOT_TYPE_MAPPING, G2PLOT_CONFIG_MAPPING } from './G2Plot';
-import { G2_TYPE_MAPPING, G2_CONFIG_MAPPING } from './G2';
 
-import { Channels } from '../advisor';
+/**
+ * @beta
+ */
+export interface Channels {
+  x?: string;
+  x2?: string;
+  y?: string;
+  y2?: string;
+  color?: string;
+  angle?: string;
+  radius?: string;
+  series?: string;
+  size?: string;
+}
 
 /**
  * @beta
@@ -25,18 +37,16 @@ export interface Mapping {
 /**
  * @beta
  */
-export type ChartLibrary = 'G2Plot' | 'antdCharts' | 'G2';
+export type ChartLibrary = 'G2Plot' | 'antdCharts';
 
 const typeMappings: { [libraryName in ChartLibrary]: TypeMapping } = {
   G2Plot: G2PLOT_TYPE_MAPPING,
   antdCharts: G2PLOT_TYPE_MAPPING,
-  G2: G2_TYPE_MAPPING,
 };
 
 const configMappings: { [libraryName in ChartLibrary]: ConfigMapping } = {
   G2Plot: G2PLOT_CONFIG_MAPPING,
   antdCharts: G2PLOT_CONFIG_MAPPING,
-  G2: G2_CONFIG_MAPPING,
 };
 
 /**
