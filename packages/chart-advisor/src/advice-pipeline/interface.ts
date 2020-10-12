@@ -79,7 +79,7 @@ export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose
  * @beta
  */
 export interface G2PlotConfig {
-  chartType: G2PlotChartType;
+  type: G2PlotChartType;
   configs: Record<string, any>;
 }
 

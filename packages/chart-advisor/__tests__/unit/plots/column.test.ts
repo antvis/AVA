@@ -28,7 +28,7 @@ describe('column', () => {
     });
 
     it('spec - lib config', () => {
-      expect(libConfig.chartType).toBe('Column');
+      expect(libConfig.type).toBe('Column');
       expect(libConfig.configs.xField).toBe('地区');
       expect(libConfig.configs.xField).toBe('地区');
       expect(libConfig.configs.yField).toBe('销售额');

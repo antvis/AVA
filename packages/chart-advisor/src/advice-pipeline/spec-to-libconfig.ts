@@ -133,7 +133,7 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
     configs.shape = 'circle';
   }
 
-  return { chartType, configs };
+  return { type: chartType, configs };
 }
 
 // function echartsAdaptor(advice: Advice): EChartsConfig {}
