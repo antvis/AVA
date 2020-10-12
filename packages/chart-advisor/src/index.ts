@@ -51,10 +51,7 @@ export {
   specRender,
 } from './advice-pipeline';
 
-export { ChartLibrary, getMappingForLib, Mapping, TypeMapping, ConfigMapping } from './chartLibMapping';
-
+export { ChartLibrary, getMappingForLib, Mapping, TypeMapping, ConfigMapping, Channels } from './chartLibMapping';
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';
-
-export { adaptRender } from './adapt-render';

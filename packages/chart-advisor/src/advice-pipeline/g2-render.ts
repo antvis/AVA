@@ -6,14 +6,14 @@ import { G2PlotConfig } from './interface';
  * @beta
  */
 export function g2plotRender(container: string | HTMLElement, data: any, libConfigs: G2PlotConfig) {
-  const { chartType, configs } = libConfigs;
-  console.log('configs: ', chartType, configs);
+  const { type, configs } = libConfigs;
+  console.log('configs: ', type, configs);
 
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
   if (!containerDOM) return null;
 
   // @ts-ignore
-  const plot = new G2Plot[chartType](containerDOM, {
+  const plot = new G2Plot[type](containerDOM, {
     data,
     height: containerDOM.clientHeight ? containerDOM.clientHeight : 300,
     autoFit: true,
