@@ -7,16 +7,17 @@
 import { AllSubspaceDatasetOptions } from '@antv/dw-transform';
 import { ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
+import * as G2Plot from '@antv/g2plot';
 import { LevelOfMeasurement } from '@antv/knowledge';
 import { Purpose } from '@antv/knowledge';
 import { RowData } from '@antv/dw-transform';
 
-// @beta (undocumented)
+// @beta
 export interface Advice {
     // (undocumented)
-    channels: Channels;
-    // (undocumented)
     score: number;
+    // (undocumented)
+    spec: VegaLiteSubsetSpec | null;
     // (undocumented)
     type: ChartID;
 }
@@ -29,15 +30,15 @@ export interface AdvisorOptions {
     title?: string;
 }
 
+// @beta (undocumented)
+export type Aggregation = 'count';
+
 // @public
 export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
 // @public
 export interface AutoChartOptions {
-    config?: {
-        type: string;
-        configs: any;
-    };
+    config?: G2PlotConfig;
     description?: string;
     development?: boolean;
     feedback?: (container: HTMLDivElement) => void;
@@ -73,24 +74,53 @@ export interface Channels {
 }
 
 // @beta (undocumented)
-export type ChartLibrary = 'G2Plot' | 'antdCharts';
+export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
 
 // @beta (undocumented)
 export type ConfigMapping = Partial<Record<ChartID, Channels>>;
 
-// @beta
+// @beta (undocumented)
 export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @beta
 export function dataToDataProps(data: any[]): FieldInfo[];
 
 // @beta (undocumented)
+export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
+
+// @beta (undocumented)
+export type EChartsConfig = any;
+
+// @beta (undocumented)
+export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitude' | 'latitude' | 'longitude2' | 'latitude2' | 'theta' | 'theta2' | 'radius' | 'radius2' | 'color' | 'fill' | 'stroke' | 'opacity' | 'fillOpacity' | 'strokeOpacity' | 'strokeWidth' | 'strokeDash' | 'size' | 'angle' | 'shape' | 'detail' | 'text' | 'order';
+
+// @beta (undocumented)
+export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
+
+// @beta
 export interface FieldInfo extends DWAnalyzer.FieldInfo {
     // (undocumented)
     levelOfMeasurements: LevelOfMeasurement[];
     // (undocumented)
     name: string;
 }
+
+// @public (undocumented)
+export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
+
+// @public (undocumented)
+export interface G2PlotConfig {
+    // (undocumented)
+    configs: Record<string, any>;
+    // (undocumented)
+    type: G2PlotChartType;
+}
+
+// @beta
+export function g2plotRender(container: string | HTMLElement, data: any, libConfigs: G2PlotConfig): G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null;
+
+// @beta
+export function g2Render(container: string | HTMLElement, data: any, configs: G2PlotConfig): G2Plot.G2.Chart | undefined;
 
 // @beta (undocumented)
 export function getMappingForLib(libraryName: ChartLibrary): Mapping;
@@ -151,17 +181,48 @@ export interface Mapping {
     typeMapping: TypeMapping;
 }
 
+// @beta (undocumented)
+export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
+
 // @public
 export interface Preferences {
     // (undocumented)
     canvasLayout: 'landscape' | 'portrait';
 }
 
-// @beta
-export function specToLibConfig(advice: Advice, libraryName: ChartLibrary): any;
+// @beta (undocumented)
+export interface SingleViewSpec {
+    // (undocumented)
+    encoding: Partial<Record<EncodingKey, {
+        field?: string;
+        type?: EncodingType;
+        bin?: boolean;
+        aggregate?: Aggregation;
+        stack?: StackType;
+    }>>;
+    // (undocumented)
+    mark: {
+        type: Mark;
+        [record: string]: any;
+    };
+}
+
+// @beta (undocumented)
+export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
+
+// @beta (undocumented)
+export function specToLibConfig(advice: Advice, libraryName?: ChartLibrary): G2PlotConfig | EChartsConfig | null;
+
+// @beta (undocumented)
+export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
 
 // @beta (undocumented)
 export type TypeMapping = Partial<Record<ChartID, string>>;
+
+// @beta (undocumented)
+export type VegaLiteSubsetSpec = SingleViewSpec | {
+    layer: SingleViewSpec[];
+};
 
 // @beta (undocumented)
 type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;

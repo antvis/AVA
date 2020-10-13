@@ -2,7 +2,9 @@
  * part of vega lite typings
  * temporary copy here
  */
-
+/**
+ * @beta
+ */
 export type Mark =
   | 'area'
   | 'arc'
@@ -18,8 +20,14 @@ export type Mark =
   | 'rect'
   | 'geoshape';
 
+/**
+ * @beta
+ */
 export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
 
+/**
+ * @beta
+ */
 export type EncodingKey =
   | 'x'
   | 'y'
@@ -50,7 +58,13 @@ export type EncodingKey =
   | 'text'
   | 'order';
 
+/**
+ * @beta
+ */
 // part of
 export type Aggregation = 'count';
 
+/**
+ * @beta
+ */
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
