@@ -29,10 +29,10 @@ export interface AdvisorOptions {
  * return type of data to data props, describe data column
  * @beta
  */
-export interface FieldInfo extends DWAnalyzer.FieldInfo {
-  name: string;
-  levelOfMeasurements: LOM[];
-}
+export type DataProperty =
+  | (DWAnalyzer.NumberFieldInfo & { name: string; levelOfMeasurements: LOM[] })
+  | (DWAnalyzer.DateFieldInfo & { name: string; levelOfMeasurements: LOM[] })
+  | (DWAnalyzer.StringFieldInfo & { name: string; levelOfMeasurements: LOM[] });
 
 // type Bin = { binned: boolean; step: number };
 /**
