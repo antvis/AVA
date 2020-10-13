@@ -2,6 +2,9 @@ import { ChartID } from '@antv/knowledge';
 import { Advice, ChartLibrary, G2PlotConfig, EChartsConfig, G2PlotChartType, SingleViewSpec } from './interface';
 import { EncodingKey } from './vega-lite';
 
+/**
+ * @beta
+ */
 export function specToLibConfig(
   advice: Advice,
   libraryName: ChartLibrary = 'G2Plot'
