@@ -5,7 +5,7 @@
 import * as G2Plot from '@antv/g2plot';
 
 // interface
-import { FieldInfo, Advice, AdvisorOptions, G2PlotConfig } from './interface';
+import { FieldInfo, Advice, AdvisorOptions, G2PlotConfig, ChartLibrary } from './interface';
 
 // step 1: data -> data props
 import { dataToDataProps } from './data-to-dataprops';
@@ -27,6 +27,7 @@ export {
   Advice,
   AdvisorOptions,
   G2PlotConfig,
+  ChartLibrary,
   dataToDataProps,
   dataPropsToSpecs,
   specToLibConfig,

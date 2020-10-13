@@ -33,6 +33,9 @@ function scoreRules(chartType: ChartID, dataProps: FieldInfo[], options?: Adviso
   return score;
 }
 
+/**
+ * @beta
+ */
 export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog = false) {
   // type with fully completed knowledge
   const Wiki = CKBJson('en-US', true);
