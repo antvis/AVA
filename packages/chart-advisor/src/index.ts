@@ -37,21 +37,9 @@ export async function autoChart(
 
 export { AutoChartOptions, Preferences };
 
-export {
-  FieldInfo,
-  Advice,
-  AdvisorOptions,
-  G2PlotConfig,
-  dataToDataProps,
-  dataPropsToSpecs,
-  specToLibConfig,
-  g2Render,
-  g2plotRender,
-  dataToSpecs,
-  specRender,
-} from './advice-pipeline';
+export * from './advice-pipeline';
 
-export { ChartLibrary, getMappingForLib, Mapping, TypeMapping, ConfigMapping, Channels } from './chartLibMapping';
+export { getMappingForLib, Mapping, TypeMapping, ConfigMapping, Channels } from './chartLibMapping';
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';

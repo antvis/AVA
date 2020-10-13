@@ -5,7 +5,7 @@
 import * as G2Plot from '@antv/g2plot';
 
 // interface
-import { FieldInfo, Advice, AdvisorOptions, G2PlotConfig, ChartLibrary } from './interface';
+import { Advice, AdvisorOptions } from './interface';
 
 // step 1: data -> data props
 import { dataToDataProps } from './data-to-dataprops';
@@ -22,18 +22,9 @@ import { specToLibConfig } from './spec-to-libconfig';
 // you can also use vegalite spec or echarts config to render 🌟
 import { g2Render, g2plotRender } from './g2-render';
 
-export {
-  FieldInfo,
-  Advice,
-  AdvisorOptions,
-  G2PlotConfig,
-  ChartLibrary,
-  dataToDataProps,
-  dataPropsToSpecs,
-  specToLibConfig,
-  g2Render,
-  g2plotRender,
-};
+export { dataToDataProps, dataPropsToSpecs, specToLibConfig, g2Render, g2plotRender };
+export * from './interface';
+export * from './vega-lite';
 
 // step 1 + step 2
 /**
