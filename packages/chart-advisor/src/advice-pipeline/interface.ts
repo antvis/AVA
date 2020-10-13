@@ -52,11 +52,8 @@ export interface SingleViewSpec {
   >;
 }
 
-/**
- * subset of vega-lte spec
- * @beta
- */
-export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
+// subset of vega-lte spec
+type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 
 /**
  * return type of data props to spec
@@ -76,7 +73,7 @@ export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
 export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
 
 /**
- * @beta
+ * @public
  */
 export interface G2PlotConfig {
   type: G2PlotChartType;
