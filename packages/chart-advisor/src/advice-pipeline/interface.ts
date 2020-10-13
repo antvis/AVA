@@ -35,7 +35,9 @@ export interface FieldInfo extends DWAnalyzer.FieldInfo {
 }
 
 // type Bin = { binned: boolean; step: number };
-
+/**
+ * @beta
+ */
 export interface SingleViewSpec {
   mark: { type: Mark; [record: string]: any };
   encoding: Partial<
@@ -53,7 +55,10 @@ export interface SingleViewSpec {
 }
 
 // subset of vega-lte spec
-type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
+/**
+ * @beta
+ */
+export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 
 /**
  * return type of data props to spec
@@ -70,6 +75,9 @@ export interface Advice {
  */
 export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
 
+/**
+ * @public
+ */
 export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
 
 /**
@@ -80,4 +88,7 @@ export interface G2PlotConfig {
   configs: Record<string, any>;
 }
 
+/**
+ * @beta
+ */
 export type EChartsConfig = any;

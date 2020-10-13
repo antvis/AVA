@@ -1,5 +1,6 @@
 import { ChartID } from '@antv/knowledge';
 import { G2PLOT_TYPE_MAPPING, G2PLOT_CONFIG_MAPPING } from './G2Plot';
+import { ChartLibrary } from '../advice-pipeline';
 
 /**
  * @beta
@@ -34,19 +35,18 @@ export interface Mapping {
   configMapping: ConfigMapping;
 }
 
-/**
- * @beta
- */
-export type ChartLibrary = 'G2Plot' | 'antdCharts';
-
 const typeMappings: { [libraryName in ChartLibrary]: TypeMapping } = {
   G2Plot: G2PLOT_TYPE_MAPPING,
-  antdCharts: G2PLOT_TYPE_MAPPING,
+  // temp to avoid error
+  G2: G2PLOT_TYPE_MAPPING,
+  echarts: G2PLOT_TYPE_MAPPING,
 };
 
 const configMappings: { [libraryName in ChartLibrary]: ConfigMapping } = {
   G2Plot: G2PLOT_CONFIG_MAPPING,
-  antdCharts: G2PLOT_CONFIG_MAPPING,
+  // temp to avoid error
+  G2: G2PLOT_CONFIG_MAPPING,
+  echarts: G2PLOT_CONFIG_MAPPING,
 };
 
 /**
