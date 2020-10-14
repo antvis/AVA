@@ -57,8 +57,6 @@ describe('API - dataPropsToSpecs', () => {
 
       const specs = dataPropsToSpecs(dataProps);
 
-      console.log(specs);
-
       expect(specs).toEqual([
         {
           type: 'pie_chart',

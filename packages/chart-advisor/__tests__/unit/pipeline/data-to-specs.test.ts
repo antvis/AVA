@@ -11,8 +11,6 @@ describe('API - dataToSpecs', () => {
 
       const specs = dataToSpecs(data);
 
-      console.log(specs);
-
       expect(specs).toEqual([
         {
           type: 'pie_chart',

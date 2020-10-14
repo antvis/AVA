@@ -2,7 +2,7 @@ import { Advice, specToLibConfig } from '../../../src';
 
 describe('API - specToLibConfig', () => {
   describe('Results', () => {
-    test('should work for basic dataset', () => {
+    test('should work for basic spec', () => {
       const spec: Advice = {
         type: 'pie_chart',
         spec: {
@@ -25,7 +25,13 @@ describe('API - specToLibConfig', () => {
 
       const libConfig = specToLibConfig(spec);
 
-      console.log(libConfig);
+      expect(libConfig).toEqual({
+        type: 'Pie',
+        configs: {
+          angleField: 'value',
+          colorField: 'city',
+        },
+      });
     });
   });
 });
