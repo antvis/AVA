@@ -60,13 +60,15 @@ export interface SingleViewSpec {
  */
 export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 
+export type Specification = VegaLiteSubsetSpec;
+
 /**
  * return type of data props to spec
  * @beta
  */
 export interface Advice {
   type: ChartID;
-  spec: VegaLiteSubsetSpec | null;
+  spec: Specification | null;
   score: number;
 }
 

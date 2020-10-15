@@ -35,7 +35,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
 /**
  * @beta
  */
-export function dataPropsToSpecs(dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
+export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   // score every
   const list: Advice[] = CHART_ID_OPTIONS.map((t) => {
     // step 1: analyze score by rule

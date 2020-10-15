@@ -1,6 +1,6 @@
-import { dataPropsToSpecs, DataProperty } from '../../../src';
+import { dataPropsToAdvices, DataProperty } from '../../../src';
 
-describe('API - dataPropsToSpecs', () => {
+describe('API - dataPropsToAdvices', () => {
   describe('Results', () => {
     test('should work for valid dataProps', () => {
       const dataProps: DataProperty[] = [
@@ -55,7 +55,7 @@ describe('API - dataPropsToSpecs', () => {
         },
       ];
 
-      const specs = dataPropsToSpecs(dataProps);
+      const specs = dataPropsToAdvices(dataProps);
 
       expect(specs).toEqual([
         {
