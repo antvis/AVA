@@ -29,10 +29,10 @@ export interface AdvisorOptions {
  * return type of data to data props, describe data column
  * @beta
  */
-export interface FieldInfo extends DWAnalyzer.FieldInfo {
-  name: string;
-  levelOfMeasurements: LOM[];
-}
+export type DataProperty =
+  | (DWAnalyzer.NumberFieldInfo & { name: string; levelOfMeasurements: LOM[] })
+  | (DWAnalyzer.DateFieldInfo & { name: string; levelOfMeasurements: LOM[] })
+  | (DWAnalyzer.StringFieldInfo & { name: string; levelOfMeasurements: LOM[] });
 
 // type Bin = { binned: boolean; step: number };
 /**
@@ -60,13 +60,15 @@ export interface SingleViewSpec {
  */
 export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 
+export type Specification = VegaLiteSubsetSpec;
+
 /**
  * return type of data props to spec
  * @beta
  */
 export interface Advice {
   type: ChartID;
-  spec: VegaLiteSubsetSpec | null;
+  spec: Specification | null;
   score: number;
 }
 

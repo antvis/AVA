@@ -3,7 +3,7 @@ import Thumbnails from '@antv/thumbnails';
 import { View, parse } from 'vega';
 import { compile } from 'vega-lite';
 
-import { CKBJson, ChartID } from '../packages/knowledge';
+import { ChartID, CHART_ID_OPTIONS } from '../packages/knowledge';
 import {
   dataToDataProps,
   dataPropsToSpecs,
@@ -16,10 +16,7 @@ import { prettyJSON } from './utils';
 
 import './table.less';
 
-const Wiki = CKBJson('en-US', true);
-const allTypes = Object.keys(Wiki) as ChartID[];
-
-const allPipelines = allTypes.map((t) => {
+const allPipelines = CHART_ID_OPTIONS.map((t) => {
   const data = DataSamples.ForChartType(t);
   const dataProps = dataToDataProps(data);
   const specs = dataPropsToSpecs(dataProps);
@@ -76,7 +73,7 @@ export const PipelineTest = () => {
             <td>
               {Thumbnails[pipeline.chartType] ? (
                 <>
-                  <img width="200" src={Thumbnails[pipeline.chartType]?.url} />
+                  <img width="100" src={Thumbnails[pipeline.chartType]?.url} />
                   <br />
                 </>
               ) : null}

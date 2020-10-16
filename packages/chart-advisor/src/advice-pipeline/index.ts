@@ -11,7 +11,7 @@ import { Advice, AdvisorOptions } from './interface';
 import { dataToDataProps } from './data-to-dataprops';
 
 // step 2: data props -> vega lite specs
-import { dataPropsToSpecs } from './dataprops-to-specs';
+import { dataPropsToAdvices } from './dataprops-to-advices';
 
 // step 3: vega lite spec -> lib config
 // libconfig contain g2 g2plot echarts, default g2plot
@@ -22,7 +22,7 @@ import { specToLibConfig } from './spec-to-libconfig';
 // you can also use vegalite spec or echarts config to render 🌟
 import { g2Render, g2plotRender } from './g2-render';
 
-export { dataToDataProps, dataPropsToSpecs, specToLibConfig, g2Render, g2plotRender };
+export { dataToDataProps, dataPropsToAdvices, specToLibConfig, g2Render, g2plotRender };
 export * from './interface';
 export * from './vega-lite';
 
@@ -41,7 +41,7 @@ export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog = fal
   if (showLog) console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
   if (showLog) console.log(dataProps);
 
-  const adviceList: Advice[] = dataPropsToSpecs(dataProps, options);
+  const adviceList: Advice[] = dataPropsToAdvices(dataProps, options);
 
   return adviceList;
 }
