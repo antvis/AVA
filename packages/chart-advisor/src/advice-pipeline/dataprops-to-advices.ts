@@ -1,10 +1,9 @@
-import { CKBJson, ChartID } from '@antv/knowledge';
+import { CHART_ID_OPTIONS, ChartID } from '@antv/knowledge';
 import Rules, { Rule } from '../rules';
 import { specMapping } from './spec-mapping';
-import { AdvisorOptions, FieldInfo, Advice } from './interface';
-import { translate } from '../util';
+import { AdvisorOptions, DataProperty, Advice } from './interface';
 
-function scoreRules(chartType: ChartID, dataProps: FieldInfo[], options?: AdvisorOptions, showLog = false) {
+function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
 
@@ -36,13 +35,9 @@ function scoreRules(chartType: ChartID, dataProps: FieldInfo[], options?: Adviso
 /**
  * @beta
  */
-export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog = false) {
-  // type with fully completed knowledge
-  const Wiki = CKBJson('en-US', true);
-  const allTypes = Object.keys(Wiki) as ChartID[];
-
+export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   // score every
-  const list: Advice[] = allTypes.map((t) => {
+  const list: Advice[] = CHART_ID_OPTIONS.map((t) => {
     // step 1: analyze score by rule
     const score = scoreRules(t, dataProps, options, showLog);
     if (score <= 0) return { type: t, spec: null, score };
@@ -65,7 +60,7 @@ export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOption
   }
 
   // filter and sorter
-  const resultList = list.filter((e) => e.score && e.score !== 0 && translate(e.type)).sort(compareAdvices);
+  const resultList = list.filter((e) => e.score > 0).sort(compareAdvices);
 
   if (showLog) console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
   if (showLog) console.log(resultList);

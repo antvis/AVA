@@ -7,7 +7,6 @@ import { G2PlotConfig } from './interface';
  */
 export function g2plotRender(container: string | HTMLElement, data: any, libConfigs: G2PlotConfig) {
   const { type, configs } = libConfigs;
-  console.log('configs: ', type, configs);
 
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
   if (!containerDOM) return null;

@@ -1,3 +1,4 @@
+import { assert } from '../../../chart-advisor/node_modules/@antv/dw-transform/src/util/helper';
 import {
   type,
   typeAll,
@@ -10,6 +11,9 @@ import {
   isDiscrete,
   isNominal,
   pearson,
+  isNumberFieldInfo,
+  isStringFieldInfo,
+  isDateFieldInfo,
 } from '../src';
 import { isDateString } from '../src/is-date';
 import { isDate } from '../src/utils';
@@ -56,6 +60,9 @@ test('analyze intege', () => {
   const info = type(array);
   expect(info.type).toBe('integer');
   expect(info.recommendation).toBe('integer');
+
+  assert(isNumberFieldInfo(info));
+
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
   expect(info.stdev.toFixed(4)).toBe('2.8723');
@@ -73,6 +80,9 @@ test('analyze string integer', () => {
   const info = type(array);
   expect(info.type).toBe('integer');
   expect(info.recommendation).toBe('integer');
+
+  assert(isNumberFieldInfo(info));
+
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
   expect(info.stdev.toFixed(4)).toBe('2.8723');
@@ -90,6 +100,9 @@ test('analyze string float', () => {
   const info = type(array);
   expect(info.type).toBe('float');
   expect(info.recommendation).toBe('float');
+
+  assert(isNumberFieldInfo(info));
+
   expect(info.minimum).toBe(0.1);
   expect(info.maximum).toBe(9.1);
 });
@@ -99,6 +112,9 @@ test('analyze number float', () => {
   const info = type(array);
   expect(info.type).toBe('float');
   expect(info.recommendation).toBe('float');
+
+  assert(isNumberFieldInfo(info));
+
   expect(info.minimum).toBe(0.1);
   expect(info.maximum).toBe(9.1);
 });
@@ -108,6 +124,9 @@ test('analyze mixed float', () => {
   const info = type(array);
   expect(info.type).toBe('mixed');
   expect(info.recommendation).toBe('float');
+
+  assert(isNumberFieldInfo(info));
+
   expect(info.minimum).toBe(1);
   expect(info.maximum).toBe(9.1);
 });
@@ -185,6 +204,9 @@ test('analyze string', () => {
   const info = type(array);
   expect(info.type).toBe('string');
   expect(info.recommendation).toBe('string');
+
+  assert(isStringFieldInfo(info));
+
   expect(info.minLength).toBe(4);
   expect(info.maxLength).toBe(9);
   expect(info.containsChars).toBe(true);
@@ -244,6 +266,9 @@ test('analyze like string number', () => {
   const info = type(array);
   expect(info.type).toBe('mixed');
   expect(info.recommendation).toBe('string');
+
+  assert(isStringFieldInfo(info));
+
   expect(info.maxLength).toBe(5);
   expect(info.minLength).toBe(3);
 });
@@ -303,7 +328,9 @@ test('date cols', () => {
   const d = type(data);
   expect(d.type).toBe('integer');
   expect(d.recommendation).toBe('date');
-  console.log(d);
+
+  assert(isDateFieldInfo(d));
+
   expect(d.minimum).toBe('20190101');
   expect(d.maximum).toBe('20190719');
 });
@@ -313,7 +340,9 @@ test('date cols', () => {
   const d = type(data);
   expect(d.type).toBe('date');
   expect(d.recommendation).toBe('date');
-  console.log(d);
+
+  assert(isDateFieldInfo(d));
+
   expect(d.minimum).toBe('2019/01/01');
   expect(d.maximum).toBe('2019/07/19');
 });
@@ -323,7 +352,9 @@ test('date cols', () => {
   const d = type(data);
   expect(d.type).toBe('date');
   expect(d.recommendation).toBe('date');
-  console.log(d);
+
+  assert(isDateFieldInfo(d));
+
   expect(d.minimum).toBe('2019-01-01');
   expect(d.maximum).toBe('2019-07-19');
 });
@@ -458,7 +489,9 @@ test('date cols', () => {
   const d = type(data);
   expect(d.type).toBe('integer');
   expect(d.recommendation).toBe('date');
-  console.log(d);
+
+  assert(isDateFieldInfo(d));
+
   expect(d.minimum).toBe('20190101');
   expect(d.maximum).toBe('20190102');
 });

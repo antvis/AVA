@@ -7,7 +7,7 @@ interface DataSampleProperties {
 }
 
 export interface DataSample {
-  name: string;
+  name?: string;
   data: RowData[];
   props?: DataSampleProperties;
   insights?: InsightType[];
