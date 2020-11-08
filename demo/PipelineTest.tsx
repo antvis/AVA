@@ -6,7 +6,7 @@ import { compile } from 'vega-lite';
 import { ChartID, CHART_ID_OPTIONS } from '../packages/knowledge';
 import {
   dataToDataProps,
-  dataPropsToSpecs,
+  dataPropsToAdvices,
   Advice,
   specToLibConfig,
   g2plotRender,
@@ -19,7 +19,7 @@ import './table.less';
 const allPipelines = CHART_ID_OPTIONS.map((t) => {
   const data = DataSamples.ForChartType(t);
   const dataProps = dataToDataProps(data);
-  const specs = dataPropsToSpecs(dataProps);
+  const specs = dataPropsToAdvices(dataProps);
   const typeSpec = specs.find((s) => s.type === t);
 
   let libConfig = null;
