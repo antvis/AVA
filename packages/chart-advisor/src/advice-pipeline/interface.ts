@@ -60,6 +60,9 @@ export interface SingleViewSpec {
  */
 export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 
+/**
+ * @beta
+ */
 export type Specification = VegaLiteSubsetSpec;
 
 /**

@@ -45,6 +45,9 @@ export function isConst(info: FieldInfo): boolean;
 // @public
 export function isContinuous(info: FieldInfo): boolean;
 
+// @public (undocumented)
+export function isDateFieldInfo(x: FieldInfo): x is DateFieldInfo;
+
 // @public
 export function isDiscrete(info: FieldInfo): boolean;
 
@@ -54,8 +57,14 @@ export function isInterval(info: FieldInfo): boolean;
 // @public
 export function isNominal(info: FieldInfo): boolean;
 
+// @public (undocumented)
+export function isNumberFieldInfo(x: FieldInfo): x is NumberFieldInfo;
+
 // @public
 export function isOrdinal(info: FieldInfo): boolean;
+
+// @public (undocumented)
+export function isStringFieldInfo(x: FieldInfo): x is StringFieldInfo;
 
 // @public
 export function isTime(info: FieldInfo): boolean;

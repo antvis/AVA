@@ -17,7 +17,7 @@ export interface Advice {
     // (undocumented)
     score: number;
     // (undocumented)
-    spec: VegaLiteSubsetSpec | null;
+    spec: Specification | null;
     // (undocumented)
     type: ChartID;
 }
@@ -79,11 +79,23 @@ export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
 // @beta (undocumented)
 export type ConfigMapping = Partial<Record<ChartID, Channels>>;
 
+// @beta
+export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
+    name: string;
+    levelOfMeasurements: LevelOfMeasurement[];
+}) | (DWAnalyzer.DateFieldInfo & {
+    name: string;
+    levelOfMeasurements: LevelOfMeasurement[];
+}) | (DWAnalyzer.StringFieldInfo & {
+    name: string;
+    levelOfMeasurements: LevelOfMeasurement[];
+});
+
 // @beta (undocumented)
-export function dataPropsToSpecs(dataProps: FieldInfo[], options?: AdvisorOptions, showLog?: boolean): Advice[];
+export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @beta
-export function dataToDataProps(data: any[]): FieldInfo[];
+export function dataToDataProps(data: any[]): DataProperty[];
 
 // @beta (undocumented)
 export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
@@ -96,14 +108,6 @@ export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitud
 
 // @beta (undocumented)
 export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
-
-// @beta
-export interface FieldInfo extends DWAnalyzer.FieldInfo {
-    // (undocumented)
-    levelOfMeasurements: LevelOfMeasurement[];
-    // (undocumented)
-    name: string;
-}
 
 // @public (undocumented)
 export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
@@ -206,6 +210,9 @@ export interface SingleViewSpec {
         [record: string]: any;
     };
 }
+
+// @beta (undocumented)
+export type Specification = VegaLiteSubsetSpec;
 
 // @beta (undocumented)
 export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
