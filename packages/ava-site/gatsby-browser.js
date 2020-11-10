@@ -5,4 +5,4 @@
 
 window.react = require('react');
 window.reactDom = require('react-dom');
-window.chartAdvisor = require('@antv/chart-advisor');
+window.chartAdvisor = require('../chart-advisor/src/');
