@@ -1,4 +1,5 @@
 import { ChartID } from '@antv/knowledge';
+import { get as _get, has as _has, set as _set } from 'lodash';
 import { Advice, ChartLibrary, G2PlotConfig, EChartsConfig, G2PlotChartType, SingleViewSpec } from './interface';
 import { EncodingKey } from './vega-lite';
 
@@ -47,7 +48,14 @@ const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>> = {
   heatmap: 'Heatmap',
 };
 
+const G2PLOT_ENCODING_MAPPING: Record<string, string> = {
+  'x.ticks': 'xAxis.tickLine',
+  'x.domain': 'xAxis.line',
+  'y.scale.domainMin': 'yAxis.min',
+};
+
 function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
+  console.log(':::', advice);
   const { type, spec } = advice;
 
   const chartType = G2PLOT_TYPE_MAPPING[type];
@@ -75,8 +83,15 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
     }
   });
 
+  Object.keys(G2PLOT_ENCODING_MAPPING).forEach((key) => {
+    if (_has(encoding, key)) {
+      _set(configs, G2PLOT_ENCODING_MAPPING[key], _get(encoding, key));
+    }
+  });
+
   // step2: map color to series
   const seriesCharts: ChartID[] = [
+    'line_chart',
     'grouped_column_chart',
     'stacked_column_chart',
     'grouped_bar_chart',
@@ -136,6 +151,7 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
     configs.shape = 'circle';
   }
 
+  console.log({ type: chartType, configs });
   return { type: chartType, configs };
 }
 

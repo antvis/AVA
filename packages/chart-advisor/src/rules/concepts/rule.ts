@@ -8,6 +8,9 @@ export interface DataProps {
   sum?: number;
   samples?: any[];
   levelOfMeasurements: LOM[];
+  maximum?: number;
+  minimum?: number;
+  name: string;
 }
 
 /**
@@ -27,7 +30,7 @@ interface Info {
 
 type Validator = (args: Info) => number;
 
-class Rule {
+export class Rule {
   private _id: string;
   private _hardOrSoft: HardOrSoft;
   private _specChartTypes: ChartType[];
@@ -66,5 +69,3 @@ class Rule {
     return this.validator(args) * this._weight;
   }
 }
-
-export default Rule;

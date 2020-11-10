@@ -3,7 +3,7 @@ import * as DWAnalyzer from '@antv/dw-analyzer';
 import { DataProperty, Advice } from './interface';
 import { EncodingType } from './vega-lite';
 
-export function specMapping(chartType: ChartID, dataProps: DataProperty[]): Advice['spec'] {
+export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[]): Advice['spec'] {
   switch (chartType) {
     case 'pie_chart':
       return pie_chart(dataProps);

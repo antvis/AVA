@@ -6,6 +6,7 @@ interface Props {
   data: any[] | Promise<any[]>;
   purpose?: string;
   preferences?: any;
+  refine?: boolean;
   title?: string;
   description?: string;
   toolbar?: boolean;
@@ -20,6 +21,7 @@ export default React.memo(function Chart(props: Props) {
     data,
     purpose,
     preferences,
+    refine,
     theme,
     title,
     fields,
@@ -35,6 +37,7 @@ export default React.memo(function Chart(props: Props) {
       autoChart(container.current, data, {
         purpose,
         preferences,
+        refine,
         theme,
         title,
         description,

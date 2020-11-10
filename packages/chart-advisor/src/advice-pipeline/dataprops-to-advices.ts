@@ -1,7 +1,8 @@
 import { CHART_ID_OPTIONS, ChartID } from '@antv/knowledge';
-import Rules, { Rule } from '../rules';
-import { specMapping } from './spec-mapping';
-import { AdvisorOptions, DataProperty, Advice } from './interface';
+import { deepMix } from '@antv/util';
+import { ChartRules, DesignRules, Rule } from '../rules';
+import { getChartTypeSpec } from './spec-mapping';
+import { AdvisorOptions, DataProperty, Advice, SingleViewSpec } from './interface';
 
 function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   const purpose = options ? options.purpose : '';
@@ -11,18 +12,22 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
   const record: Record<string, number> = {};
 
   let hardScore = 1;
-  Rules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(chartType)).forEach((hr: Rule) => {
-    const score = hr.check({ dataProps, chartType, purpose, preferences });
-    hardScore *= score;
-    record[hr.id] = score;
-  });
+  ChartRules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(chartType)).forEach(
+    (hr: Rule) => {
+      const score = hr.check({ dataProps, chartType, purpose, preferences });
+      hardScore *= score;
+      record[hr.id] = score;
+    }
+  );
 
   let softScore = 0;
-  Rules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(chartType)).forEach((sr: Rule) => {
-    const score = sr.check({ dataProps, chartType, purpose, preferences });
-    softScore += score;
-    record[sr.id] = score;
-  });
+  ChartRules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(chartType)).forEach(
+    (sr: Rule) => {
+      const score = sr.check({ dataProps, chartType, purpose, preferences });
+      softScore += score;
+      record[sr.id] = score;
+    }
+  );
 
   const score = hardScore * (1 + softScore);
 
@@ -32,21 +37,40 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
   return score;
 }
 
+function applyDesignRules(chartType: ChartID, dataProps: DataProperty[], chartTypeSpec: SingleViewSpec) {
+  const toCheckRules = DesignRules.filter((rule) => rule.domain.indexOf(chartType) !== -1);
+  const encodingSpec = toCheckRules.reduce((lastSpec, rule) => {
+    const relatedSpec = rule.optimizer(dataProps, chartTypeSpec);
+    return deepMix(lastSpec, relatedSpec);
+  }, {});
+
+  return encodingSpec;
+}
+
 /**
  * @beta
  */
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
+  const enableRefine = options?.refine === undefined ? true : options.refine;
+
   // score every
-  const list: Advice[] = CHART_ID_OPTIONS.map((t) => {
+  const list: Advice[] = CHART_ID_OPTIONS.map((t: ChartID) => {
     // step 1: analyze score by rule
     const score = scoreRules(t, dataProps, options, showLog);
     if (score <= 0) return { type: t, spec: null, score };
 
     // step 2: field mapping to spec encoding
-    const spec = specMapping(t, dataProps);
-    if (!spec) return { type: t, spec: null, score: 0 };
+    const chartTypeSpec = getChartTypeSpec(t, dataProps);
+    if (!chartTypeSpec) return { type: t, spec: null, score: 0 };
 
-    return { type: t, spec, score };
+    // step 3: apply design rules
+    if (enableRefine) {
+      const encodingSpecs = applyDesignRules(t, dataProps, chartTypeSpec);
+      deepMix(chartTypeSpec.encoding, encodingSpecs);
+      // return { type: t, spec: chartTypeSpec, score }
+    }
+
+    return { type: t, spec: chartTypeSpec, score };
   });
 
   function compareAdvices(chart1: Advice, chart2: Advice) {

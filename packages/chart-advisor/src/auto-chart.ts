@@ -40,6 +40,10 @@ export interface AutoChartOptions {
    */
   title?: string;
   /**
+   * design rules on/off
+   */
+  refine?: boolean;
+  /**
    * description
    */
   description?: string;
@@ -137,7 +141,7 @@ export class AutoChart {
 
   async render() {
     const { options, container, development, noDataContent } = this;
-    const { title, theme, toolbar, description, purpose, preferences } = options;
+    const { title, theme, toolbar, description, purpose, preferences, refine } = options;
     let { config } = options;
     if (this.data && this.data.length === 0) {
       if (development) {
@@ -168,7 +172,7 @@ export class AutoChart {
       this.plot = new AutoPlot(
         container,
         this.data,
-        { title, theme, description, purpose, preferences },
+        { title, theme, description, purpose, preferences, refine },
         oldAdvices,
         oldIndex
       );

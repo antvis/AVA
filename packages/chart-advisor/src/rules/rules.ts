@@ -1,4 +1,4 @@
-import Rule, { DataProps } from './concepts/rule';
+import { Rule, DataProps } from './concepts/rule';
 import {
   CKBJson,
   LevelOfMeasurement as LOM,
@@ -47,7 +47,7 @@ function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: DataProps[]) 
   return false;
 }
 
-const ChartRules: Rule[] = [
+export const ChartRules: Rule[] = [
   // Data must satisfy the data prerequisites
   new Rule('data-check', 'HARD', allChartTypes, 1.0, (args): number => {
     let result = 0;
@@ -338,5 +338,3 @@ const ChartRules: Rule[] = [
   }),
   // end
 ];
-
-export default ChartRules;
