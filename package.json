@@ -2,6 +2,7 @@
   "name": "root",
   "scripts": {
     "start": "webpack-dev-server --port 8881",
+    "site:start": "cd ./packages/ava-site && npm run start",
     "build": "lerna run build",
     "test": "jest",
     "coverage": "jest --coverage",
