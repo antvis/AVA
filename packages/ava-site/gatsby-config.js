@@ -4,8 +4,8 @@ module.exports = {
       resolve: '@antv/gatsby-theme-antv',
       options: {
         GATrackingId: `UA-148148901-12`,
-      }
-    }
+      },
+    },
   ],
   siteMetadata: {
     title: 'AVA',
@@ -39,18 +39,16 @@ module.exports = {
       },
     ],
     docs: [],
-    showSearch: false, // 是否展示搜索框
-    showChinaMirror: false, // 是否展示国内镜像链接
-    showAntVProductsCard: false, // 是否展示 AntV 系列产品的卡片链接
+    showSearch: true, // 是否展示搜索框
+    showChinaMirror: true, // 是否展示国内镜像链接
+    showAntVProductsCard: true, // 是否展示 AntV 系列产品的卡片链接
     showLanguageSwitcher: true, // 用于定义是否展示语言切换
     showGithubCorner: true, // 是否展示角落的 GitHub 图标
-    playground: {
-      container: '<div id="container" />',
-    },
-    docsearchOptions: {
-      apiKey: '', // TODO algolia doc search key
-      indexName: 'antv_ava',
-    },
-    redirects: []
-  }
+    showAPIDoc: true, // 是否在demo页展示API文档
+    // docsearchOptions: {
+    //   apiKey: '', // TODO algolia doc search key
+    //   indexName: 'antv_ava',
+    // },
+    redirects: [],
+  },
 };
