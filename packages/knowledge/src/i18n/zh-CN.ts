@@ -279,9 +279,9 @@ export const zhCN: TranslateList = {
       def: 'TBD',
     },
     treemap: {
-      name: '',
+      name: '树图',
       alias: [],
-      def: 'TBD',
+      def: '树图是一个由不同大小的嵌套式矩形来显示树状结构数据的统计图表',
     },
     sankey_diagram: {
       name: '桑基图',
