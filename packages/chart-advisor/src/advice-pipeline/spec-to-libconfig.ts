@@ -1,5 +1,6 @@
 import { ChartID } from '@antv/knowledge';
 import { Advice, ChartLibrary, G2PlotConfig, G2PlotChartType, SingleViewSpec } from './interface';
+import { get as _get, has as _has, set as _set } from 'lodash';
 import { EncodingKey } from './vega-lite';
 
 /**
@@ -46,7 +47,14 @@ export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>> = {
   heatmap: 'Heatmap',
 };
 
+const G2PLOT_ENCODING_MAPPING: Record<string, string> = {
+  'x.ticks': 'xAxis.tickLine',
+  'x.domain': 'xAxis.line',
+  'y.scale.domainMin': 'yAxis.min',
+};
+
 function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
+  console.log(':::', advice);
   const { type, spec } = advice;
 
   const chartType = G2PLOT_TYPE_MAPPING[type];
@@ -71,6 +79,12 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
     const channel = encoding[e as EncodingKey];
     if (key && channel && channel.field) {
       configs[key] = channel.field;
+    }
+  });
+
+  Object.keys(G2PLOT_ENCODING_MAPPING).forEach((key) => {
+    if (_has(encoding, key)) {
+      _set(configs, G2PLOT_ENCODING_MAPPING[key], _get(encoding, key));
     }
   });
 
@@ -143,6 +157,7 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
     configs.shape = 'circle';
   }
 
+  console.log({ type: chartType, configs });
   return { type: chartType, configs };
 }
 
