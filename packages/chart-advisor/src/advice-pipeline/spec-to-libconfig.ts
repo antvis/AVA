@@ -77,11 +77,17 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
 
   // step2: map color to series
   const seriesCharts: ChartID[] = [
+    'line_chart', // multiple line chart
+
+    'stacked_area_chart',
+    'percent_stacked_area_chart',
+
     'grouped_column_chart',
     'stacked_column_chart',
+    'percent_stacked_column_chart',
+
     'grouped_bar_chart',
     'stacked_bar_chart',
-    'percent_stacked_column_chart',
     'percent_stacked_bar_chart',
   ];
   if (seriesCharts.includes(type)) {
@@ -91,8 +97,9 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   // step3: add isStack, isGroup, isPercent
   const stackCharts: ChartID[] = [
     'stacked_column_chart',
-    'stacked_bar_chart',
     'percent_stacked_column_chart',
+
+    'stacked_bar_chart',
     'percent_stacked_bar_chart',
   ];
   if (stackCharts.includes(type)) {
@@ -107,6 +114,7 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   const percentCharts: ChartID[] = [
     'percent_stacked_column_chart',
     'percent_stacked_bar_chart',
+    // TODO 目前 g2plot 没有直接支持百分比堆叠面积图，之后直接升级即可
     'percent_stacked_area_chart',
   ];
   if (percentCharts.includes(type)) {
@@ -131,7 +139,7 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   }
 
   if (type === 'bubble_chart') {
-    // FIXME g2plot 必须指定散点图的 size
+    // FIXME g2plot 目前必须指定散点图的 size 已反馈给 g2 之后会做统一处理
     configs.size = [2, 10];
     configs.shape = 'circle';
   }
