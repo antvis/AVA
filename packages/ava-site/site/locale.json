@@ -1,7 +1,7 @@
 {
   "蚂蚁数据可视化": "AntV",
-  "让数据栩栩如生": "Make the Data Vivid",
-  "AntV 是蚂蚁金服全新一代数据可视化解决方案，致力于提供一套简单方便、专业可靠、无限可能的数据可视化最佳实践。": "AntV is a new generation of data visualization solution of Ant Financial. We provide a best practice of data visualization with simplicity and convenience, profession and reliability, and infinite possibilities.",
+  "AVA": "AVA",
+  "AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。": "AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.",
   "继续了解": "More",
   "更新": "Update",
   "推荐": "Recommand",

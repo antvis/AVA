@@ -26,9 +26,9 @@ const IndexPage = () => {
       <Banner
         // coverImage={coverImage}
         coverImage={<BannerSVG />}
-        title={t('让数据栩栩如生')}
+        title={t('AVA')}
         description={t(
-          'AntV 是蚂蚁金服全新一代数据可视化解决方案，致力于提供一套简单方便、专业可靠、无限可能的数据可视化最佳实践。'
+          'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。'
         )}
         className="banner"
         buttons={bannerButtons}
