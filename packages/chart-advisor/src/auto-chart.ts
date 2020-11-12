@@ -1,4 +1,4 @@
-import { ConfigPanel } from './config-panel';
+// import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
 import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
@@ -113,16 +113,16 @@ export class AutoChart {
   private data!: any[];
   private options: AutoChartOptions = {};
   private toolbar?: Toolbar;
-  private configPanel?: ConfigPanel;
+  // private configPanel?: ConfigPanel;
   private plot?: AutoPlot | DummyPlot;
   private noDataContent!: (container: HTMLDivElement) => void;
   private mockPanel?: MockPanel;
-  private isMocked = false;
+  // private isMocked = false;
 
   async setup(data: any[], options?: AutoChartOptions) {
     if (this.rendered) this.destroy();
     this.rendered = true;
-    this.isMocked = false;
+    // this.isMocked = false;
     this.options = options || {};
     const { fields, development, noDataContent } = this.options;
     this.noDataLayer = createLayer(this.container);
@@ -144,7 +144,7 @@ export class AutoChart {
         // 如果是在开发模式下 等待用户mock的数据和配置
         const mockPanel = new MockPanel(container);
         this.mockPanel = mockPanel;
-        this.isMocked = true;
+        // this.isMocked = true;
         const result = await mockPanel.ps;
         this.data = result.data;
         config = result.config;
@@ -177,9 +177,9 @@ export class AutoChart {
         this.toolbar = new Toolbar(this.plot);
       }
     }
-    if (development && this.plot.plot) {
-      this.configPanel = new ConfigPanel(this.plot, this.isMocked);
-    }
+    // if (development && this.plot.plot) {
+    //   this.configPanel = new ConfigPanel(this.plot, this.isMocked);
+    // }
   }
 
   /**
@@ -187,7 +187,7 @@ export class AutoChart {
    */
   destroy() {
     this.container.removeChild(this.noDataLayer);
-    if (this.configPanel) this.configPanel.destroy();
+    // if (this.configPanel) this.configPanel.destroy();
     if (this.toolbar) this.toolbar.destroy();
     if (this.plot) this.plot.destroy();
     if (this.mockPanel) this.mockPanel.destroy();
