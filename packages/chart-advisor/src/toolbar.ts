@@ -1,6 +1,6 @@
 import { CLASS_PREFIX } from './style';
 import { Advice } from './advice-pipeline';
-import { getElementDispay } from './util';
+import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
 import Thumbnails from '@antv/thumbnails';
 
@@ -84,7 +84,7 @@ export class Toolbar {
       if (e && e.target) {
         const target = e.target as HTMLElement;
         if (target.getAttribute('data-id') === 'chart-type-btn') {
-          advicesContainer.style.display = getElementDispay(advicesContainer) === 'none' ? 'block' : 'none';
+          advicesContainer.style.display = getElementDisplay(advicesContainer) === 'none' ? 'block' : 'none';
         } else {
           const dataIndex = target.getAttribute('data-index');
           if (dataIndex) {

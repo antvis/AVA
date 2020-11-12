@@ -39,7 +39,6 @@ export { AutoChartOptions, Preferences };
 
 export * from './advice-pipeline';
 
-export { getMappingForLib, Mapping, TypeMapping, ConfigMapping, Channels } from './chartLibMapping';
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';

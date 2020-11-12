@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { AVAChart } from './Charts';
 import { dataInTable, dataInJSON } from '../utils';
-import { insightsFromDataset, Insight, getMappingForLib, Channels } from '../../packages/chart-advisor/src';
+import { insightsFromDataset, Insight } from '../../packages/chart-advisor/src';
+import { getMappingForLib, Channels } from './g2plot-config';
 import ReactJson from 'react-json-view';
 import { RowData } from '../../packages/datawizard/transform/src';
 import { insightSamples } from '../data-samples';
@@ -10,7 +11,7 @@ const sampleGetters: { name: string; getter: Function }[] = [];
 
 insightSamples.forEach((s) => {
   sampleGetters.push({
-    name: s.name,
+    name: s.name ? s.name : '',
     getter: () => {
       return s.data;
     },

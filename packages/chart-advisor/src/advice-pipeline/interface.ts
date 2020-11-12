@@ -78,7 +78,7 @@ export interface Advice {
 /**
  * @beta
  */
-export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
+export type ChartLibrary = 'G2Plot' | 'G2';
 
 /**
  * @public
@@ -92,8 +92,3 @@ export interface G2PlotConfig {
   type: G2PlotChartType;
   configs: Record<string, any>;
 }
-
-/**
- * @beta
- */
-export type EChartsConfig = any;

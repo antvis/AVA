@@ -1,14 +1,13 @@
 import { ChartID } from '@antv/knowledge';
-import { Advice, ChartLibrary, G2PlotConfig, EChartsConfig, G2PlotChartType, SingleViewSpec } from './interface';
+import { Advice, ChartLibrary, G2PlotConfig, G2PlotChartType, SingleViewSpec } from './interface';
 import { EncodingKey } from './vega-lite';
 
 /**
  * @beta
  */
-export function specToLibConfig(
-  advice: Advice,
-  libraryName: ChartLibrary = 'G2Plot'
-): G2PlotConfig | EChartsConfig | null {
+export function specToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
+// export function specToLibConfig(advice: Advice, libraryName: 'ECharts'): EChartsConfig | null;
+export function specToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G2Plot'): any {
   switch (libraryName) {
     case 'G2':
     case 'G2Plot':
@@ -20,7 +19,7 @@ export function specToLibConfig(
   }
 }
 
-const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>> = {
+export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>> = {
   line_chart: 'Line',
   area_chart: 'Area',
   stacked_area_chart: 'Area',
