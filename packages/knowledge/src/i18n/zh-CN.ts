@@ -280,8 +280,8 @@ export const zhCN: TranslateList = {
     },
     treemap: {
       name: '树图',
-      alias: [],
-      def: '树图是一个由不同大小的嵌套式矩形来显示树状结构数据的统计图表',
+      alias: ['矩形树图'],
+      def: '树图是一个由不同大小的嵌套式矩形来显示树状结构数据的统计图表。',
     },
     sankey_diagram: {
       name: '桑基图',
