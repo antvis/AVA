@@ -28,7 +28,7 @@ import { AutoChart, AutoChartOptions, Preferences } from './auto-chart';
  * @public
  */
 export async function autoChart(
-  container: HTMLElement,
+  container: HTMLElement | string,
   data: any[] | Promise<any[]>,
   options?: AutoChartOptions
 ): Promise<void> {

@@ -73,10 +73,12 @@ export { AdvisorOptions };
 
 export class AutoChart {
   static async create(
-    container: HTMLElement,
+    container: HTMLElement | string,
     data: any[] | Promise<any[]>,
     options?: AutoChartOptions
   ): Promise<AutoChart> {
+    const containerDom = typeof container === 'string' ? document.getElementById(container) : container;
+    if (!containerDom) throw new Error('please make sure canvas container is not null');
     let dataP: any[];
     if (Array.isArray(data)) {
       dataP = data;
@@ -89,13 +91,13 @@ export class AutoChart {
       throw new TypeError('data type is error');
     }
     let inst: AutoChart;
-    if (CACHES.get(container)) {
-      inst = CACHES.get(container) as AutoChart;
+    if (CACHES.get(containerDom)) {
+      inst = CACHES.get(containerDom) as AutoChart;
       // 如果配置和数据一样 不渲染直接返回
       if (isEqual(inst.options, options) && isEqual(inst.data, data)) return inst;
     } else {
-      inst = new AutoChart(container);
-      CACHES.set(container, inst);
+      inst = new AutoChart(containerDom);
+      CACHES.set(containerDom, inst);
     }
     return await inst.setup(dataP, options);
   }
