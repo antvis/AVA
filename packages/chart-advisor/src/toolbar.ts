@@ -1,5 +1,5 @@
 import { CLASS_PREFIX } from './style';
-import { Advice } from './advice-pipeline';
+import { Advice, specToLibConfig } from './advice-pipeline';
 import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
 import Thumbnails from '@antv/thumbnails';
@@ -15,7 +15,8 @@ function getThumbnailURL(chartId: string) {
 }
 
 function getAdvicesHtml(advices: Advice[]) {
-  const top3 = advices.slice(0, 3);
+  // 保证 pipeline 下一个环节能用 g2plot 画出来
+  const top3 = advices.filter((advice) => specToLibConfig(advice)).slice(0, 3);
   return top3
     .map((item, i) => {
       return `<div class="${CLASS_PREFIX}advice" data-index="${i}">

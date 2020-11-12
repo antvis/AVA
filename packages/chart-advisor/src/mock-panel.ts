@@ -38,6 +38,7 @@ export class MockPanel {
    */
   chartContainer: HTMLElement;
 
+  // TODO modified g2plot chart type
   ps: Promise<{ config?: any; data: any[] }>;
 
   panel?: DevPanel;
