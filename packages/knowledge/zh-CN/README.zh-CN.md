@@ -40,6 +40,8 @@ Chart Knowledge Base (CKB) 是一个提供图表经验的知识库，它的形�
 }
 ```
 
+关于为什么要做 CKB，这篇文章进行了解释：[《AVA/CKB：一次性解决图表命名问题》](https://zhuanlan.zhihu.com/p/110864643)
+
 ## 特性
 
 ### 图表分类信息的一致性
