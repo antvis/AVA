@@ -588,16 +588,19 @@ export const base: ChartKnowledgeBase = {
 
   treemap: {
     id: 'treemap',
-    name: '',
+    name: 'Treemap',
     alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
+    family: ['TreeGraph'],
+    def: 'A visual representation of a data tree with nodes. Each node is displayed as a rectangle, sized and colored according to values that you assign.',
+    purpose: ['Composition', 'Comparison', 'Hierarchy'],
+    coord: ['Cartesian2D'],
+    category: ['Statistic'],
+    shape: ['Square'],
+    dataPres: [
+      { minQty: 1, maxQty: '*', fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
+    ],
+    channel: ['Color', 'Area'],
     recRate: 'Recommended',
   },
 
