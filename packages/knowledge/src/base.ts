@@ -591,7 +591,8 @@ export const base: ChartKnowledgeBase = {
     name: 'Treemap',
     alias: [],
     family: ['TreeGraph'],
-    def: 'A visual representation of a data tree with nodes. Each node is displayed as a rectangle, sized and colored according to values that you assign.',
+    def:
+      'A visual representation of a data tree with nodes. Each node is displayed as a rectangle, sized and colored according to values that you assign.',
     purpose: ['Composition', 'Comparison', 'Hierarchy'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
