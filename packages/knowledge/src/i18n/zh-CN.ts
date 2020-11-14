@@ -37,6 +37,7 @@ export const zhCN: TranslateList = {
       Hierarchy: '层级',
       Flow: '流向',
       Spatial: '空间',
+      Outlier: '异常'
     },
     coord: {
       NumberLine: '数轴',
