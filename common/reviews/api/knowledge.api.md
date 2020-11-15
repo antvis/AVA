@@ -141,7 +141,7 @@ export const LOM_OPTIONS: readonly ["Nominal", "Ordinal", "Interval", "Discrete"
 export type Purpose = typeof PURPOSE_OPTIONS[number];
 
 // @beta (undocumented)
-export const PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Outlier"];
+export const PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly"];
 
 // @beta (undocumented)
 export const RECOMMEND_RATING_OPTIONS: readonly ["Recommended", "Use with Caution", "Not Recommended"];
