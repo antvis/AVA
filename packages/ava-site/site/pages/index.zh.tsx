@@ -2,6 +2,7 @@ import React from 'react';
 import SEO from '@antv/gatsby-theme-antv/site/components/Seo';
 import { useTranslation } from 'react-i18next';
 import Banner from '@antv/gatsby-theme-antv/site/components/Banner';
+import '../css/home.css';
 
 const IndexPage = () => {
   const { t, i18n } = useTranslation();
@@ -21,6 +22,7 @@ const IndexPage = () => {
   const coverImage = (
     <img
       width="100%"
+      className="Notification-module--number--31-3Z"
       src="https://gw.alipayobjects.com/zos/bmw-prod/e11f026f-325b-4e71-8613-8297febcfdd0.svg"
       alt="cover"
     />
