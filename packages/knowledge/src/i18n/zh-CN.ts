@@ -309,9 +309,9 @@ export const zhCN: TranslateList = {
     },
 
     boxplot: {
-      name: '',
-      alias: [],
-      def: 'TBD',
+      name: '箱形图',
+      alias: ['箱线图', '盒须图', '盒式图', '盒状图'],
+      def: '箱形图是一种用作显示一组数据分散情况的统计图表。',
     },
 
     heatmap: {
