@@ -1,0 +1,12 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.ts",
+      "title": "基础 autoChart 用法"
+    }
+  ]
+}

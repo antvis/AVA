@@ -132,11 +132,12 @@ export class AutoPlot extends EventEmitter {
     this.currentConfigs = configs;
     this.type = type;
     if (plot && type === currentType) {
-      plot.updateConfig(configs);
+      plot.update(configs);
     } else {
       if (plot) plot.destroy();
       console.log(' 🐛🐛🐛 type');
       console.log(type);
+      console.log('CCCCCC configs:', configs);
       // @ts-ignore
       this.plot = new G2Plot[translate(type)](container, configs);
     }

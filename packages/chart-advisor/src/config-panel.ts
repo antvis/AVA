@@ -48,7 +48,11 @@ export class ConfigPanel {
     const { uuid, plot } = this.plotInst;
     if (e.data && e.data.type === CONFIGS_CHANGE && e.data.uuid === uuid) {
       if (plot) {
-        plot.updateConfig(e.data.configs);
+        // TODO: temporarily fix for G2Plot v2
+        if (e.data.configs.label.type) {
+          delete e.data.configs.label.type;
+        }
+        plot.update(e.data.configs);
         plot.render();
       }
     }
