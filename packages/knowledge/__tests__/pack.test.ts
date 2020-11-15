@@ -13,7 +13,7 @@ test('PACK', () => {
 
   const ckb2 = CKBJson(undefined, true);
   const keys2 = Object.keys(ckb2);
-  expect(keys2.length).toBe(44);
+  expect(keys2.length).toBe(45);
   expect(keys2.includes('nested_pie_chart')).toBe(false);
 
   const ckb3 = CKBJson('zh-CN', true);
