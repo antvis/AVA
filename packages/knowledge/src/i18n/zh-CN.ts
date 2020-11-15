@@ -210,9 +210,9 @@ export const zhCN: TranslateList = {
     },
 
     radial_bar_chart: {
-      name: '',
-      alias: [],
-      def: 'TBD',
+      name: '径向条形图',
+      alias: ['环形条形图', '环形柱状图', '玉珏图'],
+      def: '径向条形图是一种在极坐标系下绘制的条形图。径向条形图沿半径方向展示分类维度，使用角度来反应数值。',
     },
 
     mirror_bar_chart: {
