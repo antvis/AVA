@@ -387,7 +387,8 @@ export const base: ChartKnowledgeBase = {
     name: 'Radial Bar Chart',
     alias: ['Radial Column Chart'],
     family: ['BarCharts'],
-    def: 'A bar chart that is plotted in the polar coordinate system. The axis along radius shows the classification dimension and the angle shows the corresponding value.',
+    def:
+      'A bar chart that is plotted in the polar coordinate system. The axis along radius shows the classification dimension and the angle shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Polar'],
     category: ['Statistic'],
