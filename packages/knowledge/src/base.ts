@@ -677,12 +677,13 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  boxplot: {
+  box_plot: {
     id: 'box_plot',
     name: 'Box Plot',
-    alias: ['Box and Whisker Plot'],
+    alias: ['Box and Whisker Plot', 'boxplot'],
     family: ['BarCharts'],
-    def: 'A box plot is often used to graphically depict groups of numerical data through their quartiles.',
+    def:
+      'A box plot is often used to graphically depict groups of numerical data through their quartiles. Box plots may also have lines extending from the boxes indicating variability outside the upper and lower quartiles. Outliers may be plotted as individual points.',
     purpose: ['Distribution', 'Anomaly'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
