@@ -40,7 +40,7 @@ export const CHART_ID_OPTIONS = [
   'funnel_chart',
   'overlapping_funnel_chart',
   'mirror_funnel_chart',
-  'boxplot',
+  'box_plot',
   'heatmap',
   'density_heatmap',
   'gauge_chart',
