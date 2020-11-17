@@ -142,7 +142,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Color'],
@@ -161,7 +161,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
@@ -180,7 +180,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
@@ -199,7 +199,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length'],
@@ -232,7 +232,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Interval', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Length'],
@@ -285,7 +285,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Color'],
@@ -304,7 +304,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
@@ -323,7 +323,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
@@ -342,7 +342,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length'],
@@ -376,7 +376,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Bars'],
     dataPres: [
       { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
     ],
     channel: ['Length'],
     recRate: 'Recommended',
@@ -394,7 +394,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Angle', 'Color'],
@@ -429,7 +429,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Bars'],
     dataPres: [
       { minQty: 3, maxQty: 3, fieldConditions: ['Interval'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
     ],
     channel: ['Position', 'Color'],
     recRate: 'Recommended',
@@ -447,7 +447,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Angle', 'Area', 'Color'],
@@ -466,7 +466,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['ArcLength'],
@@ -500,7 +500,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Angle', 'Color', 'Length'],
@@ -689,7 +689,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position'],
