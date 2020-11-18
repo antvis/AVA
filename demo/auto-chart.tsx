@@ -39,8 +39,6 @@ export default React.memo(function Chart(props: Props) {
         preferences,
         refine,
         theme,
-        title,
-        description,
         toolbar,
         development,
         config,
@@ -49,5 +47,11 @@ export default React.memo(function Chart(props: Props) {
       });
     }
   }, [props]);
-  return <div className="canvas-container" ref={container}></div>;
+  return (
+    <div className="chart-container">
+      <div className="chart-container-title">{title}</div>
+      <div className="chart-container-description">{description}</div>
+      <div className="canvas-container" ref={container}></div>
+    </div>
+  );
 });
