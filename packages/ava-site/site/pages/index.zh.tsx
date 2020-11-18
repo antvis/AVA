@@ -2,6 +2,7 @@ import React from 'react';
 import SEO from '@antv/gatsby-theme-antv/site/components/Seo';
 import { useTranslation } from 'react-i18next';
 import Banner from '@antv/gatsby-theme-antv/site/components/Banner';
+import '../css/index.less';
 import '../css/home.css';
 
 const IndexPage = () => {

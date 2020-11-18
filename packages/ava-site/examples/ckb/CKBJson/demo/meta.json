@@ -1,0 +1,29 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.jsx",
+      "title": {
+        "zh": "基础 CKB 用法",
+        "en": "Basic CKB"
+      }
+    },
+    {
+      "filename": "chinese.jsx",
+      "title": {
+        "zh": "中文 CKB",
+        "en": "CKB in Chinese"
+      }
+    },
+    {
+      "filename": "completed.jsx",
+      "title": {
+        "zh": "只包含完备图表的 CKB",
+        "en": "CKB of Completed Charts"
+      }
+    }
+  ]
+}

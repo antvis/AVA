@@ -38,7 +38,26 @@ module.exports = {
         order: 2,
       },
     ],
-    docs: [],
+    docs: [
+      {
+        slug: 'api/ckb',
+        title: {
+          zh: '图表知识库（CKB)',
+          en: 'Chart Knowledge Base (CKB)',
+        },
+        order: 0,
+      },
+    ],
+    examples: [
+      {
+        slug: 'ckb',
+        icon: 'gallery',
+        title: {
+          zh: '图表知识库（CKB)',
+          en: 'Chart Knowledge Base (CKB)',
+        },
+      },
+    ],
     showSearch: true, // 是否展示搜索框
     showChinaMirror: true, // 是否展示国内镜像链接
     showAntVProductsCard: true, // 是否展示 AntV 系列产品的卡片链接
