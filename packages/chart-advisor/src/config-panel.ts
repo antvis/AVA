@@ -48,7 +48,7 @@ export class ConfigPanel {
     const { uuid, plot } = this.plotInst;
     if (e.data && e.data.type === CONFIGS_CHANGE && e.data.uuid === uuid) {
       if (plot) {
-        plot.updateConfig(e.data.configs);
+        plot.update(e.data.configs);
         plot.render();
       }
     }

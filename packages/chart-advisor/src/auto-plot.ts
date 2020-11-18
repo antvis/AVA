@@ -4,9 +4,7 @@ import * as G2Plot from '@antv/g2plot';
 import { uuid, translate, createLayer, DEFAULT_FEEDBACK } from './util';
 
 export interface Configs {
-  title?: string;
   theme?: string;
-  description?: string;
   data: any[];
 }
 
@@ -16,10 +14,9 @@ export interface Configs {
  * @param data - 数据
  * @param configs - 配置
  */
-function getConfig(advice: Advice, { title, theme, description, data }: Configs): any {
+function getConfig(advice: Advice, { theme, data }: Configs): any {
   const configs: any = { ...specToLibConfig(advice, 'G2Plot').configs };
-  if (title) configs.title = { visible: true, text: title };
-  if (description) configs.description = { visible: true, text: description };
+  configs.autoFit = true;
   return { ...configs, theme, data };
 }
 
@@ -127,12 +124,12 @@ export class AutoPlot extends EventEmitter {
     this.current = index;
     const { type } = advices[index];
     const currentType = advices[current].type;
-    const { title, description, theme } = options;
-    const configs = getConfig(advices[index], { title, description, theme, data });
+    const { theme } = options;
+    const configs = getConfig(advices[index], { theme, data });
     this.currentConfigs = configs;
     this.type = type;
     if (plot && type === currentType) {
-      plot.updateConfig(configs);
+      plot.update(configs);
     } else {
       if (plot) plot.destroy();
       console.log(' 🐛🐛🐛 type');

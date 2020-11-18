@@ -249,6 +249,11 @@ export function AutoChartTest() {
   return (
     <>
       <AutoChart
+        data={[]}
+        refine={false}
+        title="custom"
+      />
+      <AutoChart
         data={data}
         refine={false}
         title="Line"
