@@ -1,4 +1,3 @@
-## why autoChart?
-lorem
+## CKBJson
 
-## purpose
+`markdown:docs/api/ckb/CKBJson.en.md`

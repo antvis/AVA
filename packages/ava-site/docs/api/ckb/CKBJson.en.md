@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-## CKBJson
+<div class="doc-md">
 
 Creates a **Chart Knowledge Base** in `JSON` format.
 
@@ -74,3 +74,5 @@ const completedKB = CKBJson(undefined, true);
 // Knowledage base for completed charts in Chinese.
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
+
+</div>

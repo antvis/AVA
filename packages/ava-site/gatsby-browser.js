@@ -5,8 +5,10 @@
 
 window.react = require('react');
 window.reactDom = require('react-dom');
+window.antd = require('antd');
 window.reactJsonView = require('react-json-view');
 window.chartAdvisor = require('../chart-advisor/src/');
 window.knowledge = require('../knowledge/src/');
+window.thumbnails = require('@antv/thumbnails');
 
 window.demoUtils = require('./utils/');

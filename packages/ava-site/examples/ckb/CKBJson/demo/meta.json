@@ -5,24 +5,10 @@
   },
   "demos": [
     {
-      "filename": "basic.jsx",
+      "filename": "chartdic.jsx",
       "title": {
-        "zh": "基础 CKB 用法",
-        "en": "Basic CKB"
-      }
-    },
-    {
-      "filename": "chinese.jsx",
-      "title": {
-        "zh": "中文 CKB",
-        "en": "CKB in Chinese"
-      }
-    },
-    {
-      "filename": "completed.jsx",
-      "title": {
-        "zh": "只包含完备图表的 CKB",
-        "en": "CKB of Completed Charts"
+        "zh": "使用 CKB 制作图表词典",
+        "en": "Chart Dictionary by CKB"
       }
     }
   ]
