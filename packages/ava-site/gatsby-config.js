@@ -99,10 +99,18 @@ module.exports = {
     examples: [
       {
         slug: 'ckb',
-        icon: 'gallery',
+        // icon: 'gallery',
         title: {
           zh: '图表知识库（CKB)',
           en: 'Chart Knowledge Base (CKB)',
+        },
+      },
+      {
+        slug: 'chart-advisor',
+        // icon: 'gallery',
+        title: {
+          zh: '图表推荐库（CKB)',
+          en: 'Chart Advisor',
         },
       },
     ],
