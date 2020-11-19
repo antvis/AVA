@@ -1,5 +1,5 @@
 ---
-title: Introduction to Chart Advisor
+title: Chart Advisor 简介
 order: 0
 ---
 
@@ -7,11 +7,11 @@ order: 0
 
 <div class="doc-md">
 
-Chart recommendation and based on dataset and analysis needs.
+基于数据和分析需求来推荐和自动生成图表
 
 </div>
 
-## Demo - autoChart
+## 演示案例
 
 ```html
 <div id="mountNode"></div>
@@ -31,23 +31,23 @@ const data = [
 autoChart(container, data, {toolbar: true, development: true});
 ```
 
-## Features
+## 特性
 
-### Chart Recommendation
+### 图表推荐
 
-Recommend a list of specifications of charts by analyzing given dataset and user options.
+通过分析给定的数据集和分析需求，推荐出一个图表配置列表。位于列表首位的是推荐值最高的图表配置。
 
-### Generating Chart
+### 图表生成
 
-Automatically render recommended charts in your containers.
+根据图表配置，自动生成和渲染图表到指定的容器中。
 
-## Installation
+## 安装
 
 ```bash
 $ npm install @antv/chart-advisor
 ```
 
-## Usage
+## 使用
 
 ```js
 import { autoChart } from '@antv/chart-advisor';

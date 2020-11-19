@@ -1,4 +1,3 @@
-## why autoChart?
-lorem
+## autoChart
 
-## purpose
+`markdown:docs/api/chart-advisor/autoChart.en.md`

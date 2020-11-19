@@ -1,4 +1,3 @@
-## 何为 autoChart?
-lorem
+## autoChart
 
-## 分析意图
+`markdown:docs/api/chart-advisor/autoChart.zh.md`
