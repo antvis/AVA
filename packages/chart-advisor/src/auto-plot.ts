@@ -15,7 +15,7 @@ export interface Configs {
  * @param configs - 配置
  */
 function getConfig(advice: Advice, { theme, data }: Configs): any {
-  const configs: any = { ...specToLibConfig(advice, 'G2Plot').configs };
+  const configs: any = { ...specToLibConfig(advice, 'G2Plot')?.configs };
   configs.autoFit = true;
   return { ...configs, theme, data };
 }
@@ -125,17 +125,26 @@ export class AutoPlot extends EventEmitter {
     const { type } = advices[index];
     const currentType = advices[current].type;
     const { theme } = options;
+    const libConfig = specToLibConfig(advices[index], 'G2Plot');
     const configs = getConfig(advices[index], { theme, data });
     this.currentConfigs = configs;
     this.type = type;
-    if (plot && type === currentType) {
-      plot.update(configs);
-    } else {
-      if (plot) plot.destroy();
-      console.log(' 🐛🐛🐛 type');
-      console.log(type);
-      // @ts-ignore
-      this.plot = new G2Plot[translate(type)](container, configs);
+
+    if (libConfig) {
+      const configs: any = { ...libConfig?.configs, data, theme };
+      this.currentConfigs = configs;
+      this.type = type;
+      if (plot && type === currentType) {
+        plot.update(configs);
+      } else {
+        if (plot) plot.destroy();
+        console.log(' 🐛🐛🐛 type');
+        console.log(type);
+        this.plot = new G2Plot[libConfig.type](container, configs);
+      }
+      this.plot!.render();
+      // 出发事件
+      this.emit('change', [index]);
     }
   }
 
