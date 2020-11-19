@@ -5,20 +5,21 @@ order: 1
 
 `markdown:docs/common/style.md`
 
+<div class="doc-md">
 
-## `CKBOptions([lang='en-US'])`
+Returns all possible options for each property of Chart Knowledge.
 
-> Returns all possible options for each property of Chart Knowledge.
+```sign
+CKBOptions(lang)
+```
 
 ### Arguments
 
 * **lang** * Language of property options.
-  * `optional`
+  * _optional_
   * `type`: *Language* extends string
   * `default`: 'en-US'
-  * `options`:
-    * 'en-US'
-    * 'zh-CN'
+  * `options`: 'en-US', 'zh-CN'
 
 ### Returns
 
@@ -27,6 +28,8 @@ order: 1
 #### `CKBOptions().family`
 
 > Types of chart similarity or so called *Chart Family*.
+
+Examples:
 
 * LineCharts
 * ColumnCharts
@@ -43,6 +46,8 @@ order: 1
 
 > Types of higher level of chart taxonomy or so called *Graphic Category*.
 
+Examples:
+
 * Statistic
 * Diagram
 * Graph
@@ -51,6 +56,8 @@ order: 1
 #### `CKBOptions().purpose`
 
 > Types of purpose for which the visualization is used.
+
+Examples:
 
 * Comparison
 * Trend
@@ -62,6 +69,8 @@ order: 1
 #### `CKBOptions().coord`
 
 > Types of *Coordinate Systems*.
+
+Examples:
 
 * NumberLine
 * Cartesian2D
@@ -75,6 +84,8 @@ order: 1
 
 > Shapes of the skeleton of visualization.
 
+Examples:
+
 * Lines
 * Bars
 * Round
@@ -86,6 +97,8 @@ order: 1
 #### `CKBOptions().channel`
 
 > *Visual Channels*.
+
+Examples:
 
 * Position
 * Length
@@ -99,6 +112,8 @@ order: 1
 #### `CKBOptions().lom`
 
 > *Level of Measurement*.
+
+Examples:
 
 * Nominal
 * Ordinal
@@ -118,3 +133,5 @@ const options2 = CKBOptions('zh-CN');
 const allCategories = options1.category;
 // ['Statistic', 'Diagram', 'Graph', 'Map']
 ```
+
+</div>

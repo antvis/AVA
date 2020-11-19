@@ -7,27 +7,27 @@ order: 2
 
 <div class="doc-md">
 
-Adds a custom chart to the base.
+为知识库结构添加一种新的自定义图表类型。
 
 ```sign
 addChart(chartKnowledge, trans)
 ```
 
-### Arguments
+### 参数
 
-* **chartKnowledge** * Chart Knowledge object for the custom chart.
-  * _required_
-  * `type`: *ChartKnowledge* extends object
+* **chartKnowledge** * 自定义图表类型的图表知识对象。
+  * _必要参数_
+  * `参数类型`: *ChartKnowledge* extends object
 
-* **trans** * Object for i18n translation.
-  * _required_
-  * `type`: *Record<Language, TransKnowledgeProps>*
+* **trans** * 自定义图表的特定语言国际化信息。
+  * _必要参数_
+  * `参数类型`: *Record<Language, TransKnowledgeProps>*
 
-### Returns
+### 返回值
 
 *void*
 
-### Examples
+### 示例
 
 ```ts
 const liquid_diagram = {

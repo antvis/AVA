@@ -7,7 +7,7 @@ order: 3
 
 <div class="doc-md">
 
-Some types and interfaces:
+一些相关类型和接口的描述：
 
 ```js
 import { ChartKnowledge, DataPrerequisite } from '@antv/knowledge';
