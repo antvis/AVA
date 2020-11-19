@@ -84,7 +84,6 @@ console.log(fieldInfo);
 // }
 ```
 
-
 #### Boolean 布尔值字段
 
 如果只有字段里面只有两种值，则认为这个字段为 Boolean 而不管值的实际类型

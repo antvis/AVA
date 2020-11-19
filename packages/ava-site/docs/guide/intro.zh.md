@@ -2,7 +2,7 @@
 title: 简介
 order: 0
 redirect_from:
-  - /en/docs/guide
+  - /zh/docs/guide
 ---
 
 General Introduction about AVA.
