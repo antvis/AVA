@@ -30,24 +30,25 @@ CKBJson(lang, completed)
 
 *ChartKnowledgeBaseJSON* extends object
 
-```json
+```js
 {
-  single_line_chart: {
-    id: 'single_line_chart',
-    name: 'Single Line Chart',
-    alias: ['Line', 'Line Chart', 'Basic Line Chart'],
+  line_chart: {
+    id: 'line_chart',
+    name: 'Line Chart',
+    alias: ['Lines'],
     family: ['LineCharts'],
-    def:
-      'A single line chart is a chart that uses one line with segments to show changes in data in a ordinal dimension.',
-    purpose: ['Trend'],
+    def: 'A line chart uses lines with segments to show changes in data in a ordinal dimension.',
+    purpose: ['Comparison', 'Trend', 'Anomaly'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Lines'],
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
+      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
+    recRate: 'Recommended',
   },
 
   ...
