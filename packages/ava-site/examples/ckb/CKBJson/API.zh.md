@@ -1,4 +1,3 @@
-## 何为 autoChart?
-lorem
+## CKBJson
 
-## 分析意图
+`markdown:docs/api/ckb/CKBJson.zh.md`
