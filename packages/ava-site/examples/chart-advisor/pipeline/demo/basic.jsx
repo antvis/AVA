@@ -55,6 +55,7 @@ const App = () => {
           onChange={(v) => {
             setData(v);
           }}
+          style={{ width: 200 }}
         >
           <Option value="yearmonth_gdp_city">yearmonth_gdp_city</Option>
           <Option value="region_sales">region_sales</Option>

@@ -85,7 +85,7 @@ module.exports = {
         slug: 'chart-advisor',
         // icon: 'gallery',
         title: {
-          zh: '图表推荐库（CKB)',
+          zh: '图表推荐库',
           en: 'Chart Advisor',
         },
       },
