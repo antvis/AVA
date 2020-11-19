@@ -6,7 +6,10 @@
   "demos": [
     {
       "filename": "basic.ts",
-      "title": "基础 autoChart 用法"
+      "title": {
+        "en": "Basic autoChart usage",
+        "zh": "基础 autoChart 用法"
+      }
     }
   ]
 }
