@@ -34,7 +34,7 @@ export function CKBJson(lang: Language = 'en-US', completed = false) {
       for (let i = 0; i < keys.length; i++) {
         const key = keys[i];
         const value = chartKnowledge[key as keyof ChartKnowledge];
-        if (key !== 'alias' && typeof value != 'boolean') {
+        if (key !== 'alias' && typeof value !== 'boolean') {
           if ((Array.isArray(value) && value.length === 0) || !value) {
             valid = false;
             break;
@@ -51,7 +51,7 @@ export function CKBJson(lang: Language = 'en-US', completed = false) {
   // Translate.
   let CKBJ: ChartKnowledgeBaseJSON = {} as ChartKnowledgeBaseJSON;
 
-  if (lang && lang != 'en-US') {
+  if (lang && lang !== 'en-US') {
     const translator = I18N(lang);
     const chartIDs = Object.keys(CKB) as ChartID[];
 

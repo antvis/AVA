@@ -3,16 +3,18 @@ import { AutoChartTest } from './AutoChartTest';
 import { PipelineTest } from './PipelineTest';
 import { FindInsightTest } from './FindInsightTest/index';
 import { DataTransformTest } from './DataTransformTest';
+import { PerceptualTest } from './PerceptualTest/index';
 
 const tuple = <T extends string[]>(...args: T) => args;
 
-const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform');
+const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform', 'perception');
 type TestType = typeof TESTS[number];
 const testComponents: Record<TestType, any> = {
   autoChart: <AutoChartTest />,
   pipeline: <PipelineTest />,
   insights: <FindInsightTest />,
   dataTransform: <DataTransformTest />,
+  perception: <PerceptualTest />,
 };
 
 interface TestState {

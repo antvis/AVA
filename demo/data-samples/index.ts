@@ -14,6 +14,9 @@ import { sample11 } from './sample11';
 import { sample12 } from './sample12';
 
 import { insightSamples } from './insightSamples';
+import { perceptualSamples } from './perceptualSamples';
+import { penguinsSamples } from './penguinsSamples';
+import { irisSamples } from './irisSamples';
 
 const sampleList: DataSample[] = [
   sample1,
@@ -59,3 +62,6 @@ export const DataSamples = {
 };
 
 export { insightSamples };
+export { perceptualSamples };
+export { irisSamples };
+export { penguinsSamples };

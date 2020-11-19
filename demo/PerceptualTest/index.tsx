@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { AVAChart } from './Charts';
+import { AVAChart } from './insights';
 import { dataInTable, dataInJSON } from '../utils';
-import { insightsFromDataset, Insight, getMappingForLib, Channels } from '../../packages/chart-advisor/src';
-import ReactJson from 'react-json-view';
+import { getMappingForLib, Channels } from '../../packages/chart-advisor/src';
+import { insightsFromDataset, Insight } from '../../packages/chart-advisor/src/perception';
 import { RowData } from '../../packages/datawizard/transform/src';
-import { insightSamples } from '../data-samples';
+import { perceptualSamples } from '../data-samples';
 
 // const sampleGetters: { name: string; getter: Function }[] = [];
 
-// insightSamples.forEach((s) => {
+// perceptualSamples.forEach((s: any) => {
 //   sampleGetters.push({
 //     name: s.name,
 //     getter: () => {
@@ -17,7 +17,7 @@ import { insightSamples } from '../data-samples';
 //   });
 // });
 
-const sampleGetters: { name: string; getter: Function }[] = insightSamples.map(function(item) {
+const sampleGetters: { name: string; getter: Function }[] = perceptualSamples.map(function(item) {
   return {
     name: item.name,
     getter: () => {
@@ -26,7 +26,7 @@ const sampleGetters: { name: string; getter: Function }[] = insightSamples.map(f
   };
 });
 
-export function FindInsightTest() {
+export function PerceptualTest() {
   const dataFromSampleName = (sampleName: string): RowData[] => {
     const selectedGetter = sampleGetters.find((g) => g.name === sampleName);
     if (!selectedGetter) return [];
@@ -35,7 +35,7 @@ export function FindInsightTest() {
     return sampleData as RowData[];
   };
 
-  const initSample = 'TeamInfo';
+  const initSample = 'Iris';
 
   const [insights, setInsights] = useState<Insight[]>([]);
   const [sampleName, setSampleName] = useState<string>(initSample); //xxx: sampleGetters[0].name
@@ -43,10 +43,8 @@ export function FindInsightTest() {
 
   useEffect(() => {
     if (dataSource.length > 0) {
-      insightsFromDataset(dataSource, {
-        aggregations: ['sum', 'avg', 'count', 'distinct', 'max', 'min'],
-      }).then((insights) => {
-        console.log('🉑🉑🉑🉑 insights');
+      insightsFromDataset(dataSource).then((insights) => {
+        console.log('🉑 perceptual insights');
         console.log(insights);
         setInsights(insights);
       });
@@ -137,7 +135,7 @@ export function FindInsightTest() {
         {dataInTable(dataSource)}
       </div>
       {/* insights */}
-      <div
+      {/* <div
         style={{
           display: 'flex',
           justifyContent: 'space-evenly',
@@ -147,7 +145,7 @@ export function FindInsightTest() {
         }}
       >
         <ReactJson src={insights} displayDataTypes={false} />
-      </div>
+      </div> */}
       {/* insights charts */}
       <h3>Insights Dashboard</h3>
       <div
@@ -159,6 +157,10 @@ export function FindInsightTest() {
       >
         {insights.slice(0, 40).map((insight, index) => (
           <div style={{ width: '480px', height: '420px' }} key={`${insight.type}-${insight.fields.join('-')}-${index}`}>
+            {/* <AutoChart
+              data={insight.present && insight.present.data ? insight.present.data : dataSource}
+              fields={insight.present && insight.present.fields ? insight.present.fields : insight.fields}
+            /> */}
             <AVAChart
               insight={insight}
               dataSource={insight.present && insight.present.data ? insight.present.data : dataSource}
