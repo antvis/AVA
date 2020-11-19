@@ -1,4 +1,4 @@
 ---
-title: Basic Demo CKB
+title: CKB Application
 order: 0
 ---
