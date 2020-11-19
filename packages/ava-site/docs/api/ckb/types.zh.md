@@ -1,6 +1,6 @@
 ---
 title: Types & Interfaces
-order: 3
+order: 4
 ---
 
 `markdown:docs/common/style.md`

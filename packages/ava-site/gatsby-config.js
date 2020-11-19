@@ -50,8 +50,8 @@ module.exports = {
       {
         slug: 'guide/datawizard',
         title: {
-          zh: 'Datawizard',
-          en: 'Datawizard',
+          zh: 'DataWizard',
+          en: 'DataWizard',
         },
         order: 3,
       },
@@ -70,6 +70,30 @@ module.exports = {
           en: 'Chart Knowledge Base (CKB)',
         },
         order: 1,
+      },
+      {
+        slug: 'api/datawizard',
+        title: {
+          zh: 'DataWizard',
+          en: 'DataWizard',
+        },
+        order: 2,
+      },
+      {
+        slug: 'api/datawizard/dw-analyzer',
+        title: {
+          zh: '包：dw-analyzer',
+          en: 'Package: dw-analyzer',
+        },
+        order: 1,
+      },
+      {
+        slug: 'api/chart-advisor',
+        title: {
+          zh: 'Chart Advisor',
+          en: 'Chart Advisor',
+        },
+        order: 3,
       },
     ],
     examples: [

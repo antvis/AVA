@@ -1,6 +1,6 @@
 ---
 title: addChart
-order: 2
+order: 3
 ---
 
 `markdown:docs/common/style.md`

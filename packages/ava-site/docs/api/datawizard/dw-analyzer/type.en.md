@@ -1,25 +1,60 @@
-# QuickStart - Analyzer
+---
+title: type
+order: 0
+---
 
-## Install
+`markdown:docs/common/style.md`
 
-```shell
-npm install @antv/dw-analyzer -S
-```
+<div class="doc-md">
 
-or
-
-```shell
-yarn add @antv/dw-analyzer -S
-```
-
-## Usage
-
-### Analyzer one Field
+Analyze one field(data column).
 
 Field Type is one of `string`, `float`, `integer`, `boolean`, `date`, `null`.
 
-```typescript
+```sign
+type(array)
+```
+
+### Arguments
+
+* **array** * An array contains values in a data field(column).
+  * _required_
+  * `type`: any[]
+
+### Returns
+
+*FieldInfo*
+
+```ts
+interface FieldInfo {
+  /** field type */
+  type: TypeSpecifics | 'mixed'; // float integer bool date null string mixed
+  /** recommendation type */
+  recommendation: TypeSpecifics;
+  /** number of empty inclues null undefined or empty string */
+  missing: number;
+  /** distinct count */
+  distinct: number;
+  /** Number of each distinct item */
+  valueMap: Record<string, number>;
+  /** count of samples */
+  count: number;
+  /** samples */
+  samples: any[];
+  /** more info */
+  meta?: FieldMeta;
+}
+```
+
+The structure of `FieldInfo` depends on its *recommendation* data type of the column. Different types lead to different `FieldMeta` for *meta*.
+
+### Examples
+
+#### Number Field
+
+```ts
 import { type } from '@antv/dw-analyzer';
+
 const data = [1, 2, 3, 4, 5];
 
 const fieldInfo = type(data);
@@ -49,65 +84,12 @@ console.log(fieldInfo);
 // }
 ```
 
-### Analyzer Multiple Fields
 
-```typescript
-import { typeAll, isUnique } from '@antv/dw-analyzer';
-const data = [
-  { x: 1, y: 1, z: 1 },
-  { x: 2, y: 4, z: 4 },
-  { x: 3, y: 6, z: 9 },
-  { x: 4, y: 8, z: 16 },
-  { x: 5, y: 10, z: 25 },
-];
-
-const fieldInfo = typeAll(data);
-
-console.log(isUnique(info.fields.x));
-// true
-
-console.log(fieldInfo);
-
-// {
-//   "fields": [
-//     {
-//       "count": 5,
-//       "distinct": 5,
-//       "type": "integer",
-//       "recommendation": "integer",
-//       "missing": 0,
-//       "samples": [ 1, 2, ... ],
-//       "valueMap": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1 },
-//       "minimum": 1,
-//       "maximum": 5,
-//       "mean": 3,
-//       "percentile5": 1,
-//       "percentile25": 2,
-//       "percentile50": 3,
-//       "percentile75": 4,
-//       "percentile95": 5,
-//       "sum": 15,
-//       "stdev": 1.4142135623730951,
-//       "variance": 2,
-//       "zeros": 0,
-//       "name": "x"
-//     },
-//     ....
-//   ],
-//   "pearson": [ // Pearson correlation coefficient
-//     [ "x", "y", 0.9958932064677043 ],
-//     [ "x", "z", 0.9811049102515929 ],
-//     [ "y", "z", 0.9622715374524 ]
-//   ]
-// }
-```
-
-### Boolean
+#### Boolean Field
 
 if just two distinct value in a field, it would be a `boolean` field
 
-```typescript
-import { type } from '@antv/dw-analyzer';
+```ts
 const data = ['Y', 'N', 'Y', 'N'];
 
 const fieldInfo = type(data);
@@ -126,10 +108,11 @@ const fieldInfo = type(data);
 // }
 ```
 
-### String
+#### String Field
 
-```typescript
+```ts
 import { type, isUnique } from '@antv/dw-analyzer';
+
 const data = ['A', 'B', '', 'D', 'EAT'];
 
 const fieldInfo = type(data);
@@ -163,15 +146,15 @@ console.log(fieldInfo);
 // }
 ```
 
-### Date
+#### Date Field
 
 Support ISO date format
 
-```typescript
-import { type } from '@antv/dw-analyzer';
+```ts
 const data = ['2019-01-01', '2018-01-01', '2017-01-01', '2016-01-01', '2015-01-01'];
 
 const fieldInfo = type(data);
+
 console.log(fieldInfo);
 // {
 //   "count": 5,
@@ -191,3 +174,5 @@ console.log(fieldInfo);
 //   "maximum": 1546300800000
 // }
 ```
+
+</div>

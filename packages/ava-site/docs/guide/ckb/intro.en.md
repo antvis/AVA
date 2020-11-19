@@ -1,5 +1,5 @@
 ---
-title: Introductio to CKB
+title: Introduction to CKB
 order: 0
 ---
 

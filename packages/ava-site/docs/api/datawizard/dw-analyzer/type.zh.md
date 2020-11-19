@@ -1,25 +1,60 @@
-# QuickStart - Analyzer
+---
+title: type
+order: 0
+---
 
-## Install
+`markdown:docs/common/style.md`
 
-```shell
-npm install @antv/dw-analyzer -S
+<div class="doc-md">
+
+对单字段数据进行分析。
+
+字段类型只有 `string`、 `float`、 `integer`、 `boolean`、 `date`、 `null` 几种。
+
+```sign
+type(array)
 ```
 
-or
+### 参数
 
-```shell
-yarn add @antv/dw-analyzer -S
+* **array** * 一个包含字段所有的值的数组。
+  * _必要参数_
+  * `参数类型`: any[]
+
+### 返回值
+
+*FieldInfo*
+
+```ts
+interface FieldInfo {
+  /** 字段类型 */
+  type: TypeSpecifics | 'mixed'; // float integer bool date null string mixed
+  /** 推荐使用的字段类型 */
+  recommendation: TypeSpecifics;
+  /** 空值数 */
+  missing: number;
+  /** 多少种值 */
+  distinct: number;
+  /** 值与其数量的映射 */
+  valueMap: Record<string, number>;
+  /** 行数 */
+  count: number;
+  /** 数据存样 */
+  samples: any[];
+  /** 额外信息 */
+  meta?: FieldMeta;
+}
 ```
 
-## Usage
+根据推荐使用的字段类型 *recommendation* 的不同， `FieldInfo` 的结构也会不同，因为其额外信息 *meta* 的结构 `FieldMeta` 不同。详见下面的例子。
 
-### Analyzer one Field
+### 示例
 
-Field Type is one of `string`, `float`, `integer`, `boolean`, `date`, `null`.
+#### Number 数值字段
 
-```typescript
+```ts
 import { type } from '@antv/dw-analyzer';
+
 const data = [1, 2, 3, 4, 5];
 
 const fieldInfo = type(data);
@@ -27,10 +62,10 @@ const fieldInfo = type(data);
 console.log(fieldInfo);
 
 // {
-//   "count": 5, // rows
-//   "distinct": 5,
+//   "count": 5, // 行数
+//   "distinct": 5, //
 //   "type": "integer",
-//   "recommendation": "integer",
+//   "recommendation": "integer", // 推荐类型
 //   "missing": 0,
 //   "samples": [ 1, 2, ... ],
 //   "valueMap": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1 },
@@ -43,74 +78,23 @@ console.log(fieldInfo);
 //   "percentile75": 4,
 //   "percentile95": 5,
 //   "sum": 15,
-//   "stdev": 1.4142135623730951,
-//   "variance": 2,
+//   "stdev": 1.4142135623730951, //标准差
+//   "variance": 2, // 方差
 //   "zeros": 0
 // }
 ```
 
-### Analyzer Multiple Fields
 
-```typescript
-import { typeAll, isUnique } from '@antv/dw-analyzer';
-const data = [
-  { x: 1, y: 1, z: 1 },
-  { x: 2, y: 4, z: 4 },
-  { x: 3, y: 6, z: 9 },
-  { x: 4, y: 8, z: 16 },
-  { x: 5, y: 10, z: 25 },
-];
+#### Boolean 布尔值字段
 
-const fieldInfo = typeAll(data);
+如果只有字段里面只有两种值，则认为这个字段为 Boolean 而不管值的实际类型
 
-console.log(isUnique(info.fields.x));
-// true
-
-console.log(fieldInfo);
-
-// {
-//   "fields": [
-//     {
-//       "count": 5,
-//       "distinct": 5,
-//       "type": "integer",
-//       "recommendation": "integer",
-//       "missing": 0,
-//       "samples": [ 1, 2, ... ],
-//       "valueMap": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1 },
-//       "minimum": 1,
-//       "maximum": 5,
-//       "mean": 3,
-//       "percentile5": 1,
-//       "percentile25": 2,
-//       "percentile50": 3,
-//       "percentile75": 4,
-//       "percentile95": 5,
-//       "sum": 15,
-//       "stdev": 1.4142135623730951,
-//       "variance": 2,
-//       "zeros": 0,
-//       "name": "x"
-//     },
-//     ....
-//   ],
-//   "pearson": [ // Pearson correlation coefficient
-//     [ "x", "y", 0.9958932064677043 ],
-//     [ "x", "z", 0.9811049102515929 ],
-//     [ "y", "z", 0.9622715374524 ]
-//   ]
-// }
-```
-
-### Boolean
-
-if just two distinct value in a field, it would be a `boolean` field
-
-```typescript
-import { type } from '@antv/dw-analyzer';
+```ts
 const data = ['Y', 'N', 'Y', 'N'];
 
 const fieldInfo = type(data);
+
+console.log(fieldInfo);
 
 // {
 //   "count": 4,
@@ -126,16 +110,17 @@ const fieldInfo = type(data);
 // }
 ```
 
-### String
+#### String 字符串字段
 
-```typescript
+```ts
 import { type, isUnique } from '@antv/dw-analyzer';
+
 const data = ['A', 'B', '', 'D', 'EAT'];
 
 const fieldInfo = type(data);
 
 console.log(isUnique(fieldInfo));
-// false because of the empty value
+// false 有空值
 
 console.log(fieldInfo);
 
@@ -163,12 +148,11 @@ console.log(fieldInfo);
 // }
 ```
 
-### Date
+#### Date 日期时间字段
 
-Support ISO date format
+支持 ISO 日期格式
 
-```typescript
-import { type } from '@antv/dw-analyzer';
+```ts
 const data = ['2019-01-01', '2018-01-01', '2017-01-01', '2016-01-01', '2015-01-01'];
 
 const fieldInfo = type(data);
@@ -191,3 +175,5 @@ console.log(fieldInfo);
 //   "maximum": 1546300800000
 // }
 ```
+
+</div>
