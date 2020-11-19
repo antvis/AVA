@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { autoChart } from '../packages/chart-advisor/src';
+import { autoChart, G2PlotConfig } from '../packages/chart-advisor/src';
 
 interface Props {
   theme?: string;
@@ -11,7 +11,7 @@ interface Props {
   description?: string;
   toolbar?: boolean;
   development?: boolean;
-  config?: { type: string; configs: any };
+  config?: G2PlotConfig;
   fields?: string[];
   noDataContent?: any;
 }
@@ -38,6 +38,8 @@ export default React.memo(function Chart(props: Props) {
         purpose,
         preferences,
         refine,
+        title,
+        description,
         theme,
         toolbar,
         development,
@@ -48,10 +50,7 @@ export default React.memo(function Chart(props: Props) {
     }
   }, [props]);
   return (
-    <div className="chart-container">
-      <div className="chart-container-title">{title}</div>
-      <div className="chart-container-description">{description}</div>
-      <div className="canvas-container" ref={container}></div>
+    <div className="chart-container" ref={container}>
     </div>
   );
 });

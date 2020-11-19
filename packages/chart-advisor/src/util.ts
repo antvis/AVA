@@ -12,11 +12,12 @@ export function getElementDispay(item: HTMLElement) {
   return getComputedStyle(item, null).display;
 }
 
-export function getPosition(target: HTMLElement): { top: number; left: number } {
-  const { top, left } = target.getBoundingClientRect();
+export function getPosition(target: HTMLElement): { top: number; left: number; right: number } {
+  const { top, left, right } = target.getBoundingClientRect();
   return {
     top: top + window.scrollY,
     left: left + window.scrollX,
+    right: right + window.scrollX,
   };
 }
 
@@ -61,7 +62,7 @@ export function translate(term: ChartID | string): string {
   return CHART_ID_TO_G2PLOT_TYPE_MAPPING[term as ChartID] || term;
 }
 
-export function createLayer(container: HTMLElement): HTMLDivElement {
+export function createLayer(container: HTMLElement, classname?: string): HTMLDivElement {
   if (!['relative', 'absolute', 'fixed'].includes(getComputedStyle(container).position)) {
     container.style.position = 'relative';
   }
@@ -72,6 +73,7 @@ export function createLayer(container: HTMLElement): HTMLDivElement {
   layer.style.top = '0px';
   layer.style.left = '0px';
   layer.style.pointerEvents = 'none';
+  if (classname) layer.className = classname;
   container.appendChild(layer);
   return layer;
 }

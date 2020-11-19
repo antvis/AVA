@@ -1,12 +1,12 @@
 export const CLASS_PREFIX = '__AUTO_CHART__';
 
-const HEADER_HEIGHT = 32;
+const HEADER_HEIGHT = 48;
 
 const ADVISOR_STYLE = `
   .${CLASS_PREFIX}toolbar {
     position: absolute;
-    bottom: 0px;
-    left: 0px;
+    top: 20px;
+    right: 120px;
     z-index: 10;
     display: none;
     box-sizing: border-box;
@@ -17,39 +17,80 @@ const ADVISOR_STYLE = `
   .${CLASS_PREFIX}advice_container {
     width: 290px;
     display: none;
-    padding: 0 16px;
-    background: #454857;
+    background: #fff;
     position: absolute;
-    bottom: 100%;
-    left: 0;
-    max-height: 195px;
-    overflow: auto;
+    top: 44px;
+    left: -132px;
+    border-radius: 8px;
+  }
+  .${CLASS_PREFIX}advice_content {
+    width: 100%;
+    height: 100%;
+    padding: 0 16px;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08), 0 9px 28px 8px rgba(0,0,0,.05)
+  }
+  .${CLASS_PREFIX}advice_content_arrow {
+    position: absolute;
+    display: block;
+    width: 12px;
+    height: 12px;
+    background: 0 0;
+    border-style: solid;
+    border-width: 4.24264069px;
+    top: -5px;
+    border-color: #fff transparent transparent #fff;
+    box-shadow: -2px -2px 5px rgba(0,0,0,.06);
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
   }
   .${CLASS_PREFIX}advice {
-    height: 65px;
+    height: 130px;
     font-size: 12px;
     color: #FFFFFF;
     display: flex;
-    padding: 9px 0;
+    padding: 20px 0;
     cursor: pointer;
     border-bottom: 1px solid #D8D8D8;
   }
-  .${CLASS_PREFIX}advice img {
-    height: 46px;
-    width: 46px;
+  .${CLASS_PREFIX}advice-thumbnail img {
+    height: 84px;
+    width: 112px;
     background: #fff;
   }
-  .${CLASS_PREFIX}advice * {
-    pointer-events: none;
-    line-height: 46px;
+
+  .${CLASS_PREFIX}advice-desc {
+    flex: 1;
+    flex-direction: column;
+    margin-left: 16px;
+  }
+
+  .${CLASS_PREFIX}advice-desc img {
+    height: 24px;
+    width: 24px;
+  }
+
+  .${CLASS_PREFIX}advice-desc .advice-chart-name {
+    color: black;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 40px;
+  }
+
+  .${CLASS_PREFIX}advice-desc .advice-score-text {
+    color: #585858;
     font-size: 14px;
   }
-  .${CLASS_PREFIX}advice>div:nth-child(1) {
-    width: 46px;
+
+  .${CLASS_PREFIX}advice-desc .advice-score {
+    color: #1878FB;
   }
-  .${CLASS_PREFIX}advice>div:nth-child(2) {
-    width: 46px;
+
+  .${CLASS_PREFIX}advice-thumbnail {
+    flex: none;
   }
+
   .${CLASS_PREFIX}advice>div:nth-child(3) {
     margin-left: 8px;
     flex-grow: 1;
@@ -61,32 +102,24 @@ const ADVISOR_STYLE = `
   .${CLASS_PREFIX}advice:last-child{
     border: none;
   }
-  .${CLASS_PREFIX}chart_type_btn {
-    height: 24px;
-    width: 24px;
+  .${CLASS_PREFIX}config_btn {
+    height: 32px;
+    width: 32px;
     text-align: center;
     display: inline-block;
-    padding: 6px;
-    background: #454857;
-    color: #fff;
     cursor: pointer;
   }
-  .${CLASS_PREFIX}chart_type_btn img {
+  .${CLASS_PREFIX}config_btn img {
     pointer-events: none;
-    height: 12px;
-    width: 12px;
+    height: 32px;
+    width: 32px;
     vertical-align: top;
   }
   .${CLASS_PREFIX}dev_btn {
-    height: 27px;
-    line-height: 27px;
-    background: #454857;
-    padding: 0 7px;
-    color: #fff;
     display: none;
     position: absolute;
-    bottom: 0;
-    right: 0;
+    top: 20px;
+    right: 64px;
     user-select: none;
     cursor: pointer;
   }
@@ -105,13 +138,15 @@ const ADVISOR_STYLE = `
     height: ${HEADER_HEIGHT}px;
     width: 100%;
     padding-left: 16px;
-    line-height: ${HEADER_HEIGHT}px;
+    font-size: 20px;
+    font-weight: 500;
     cursor: move; 
-    color: #fff;
     position: relative;
     z-index: 1;
-    background-color: #454857;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.45);
+    border-bottom: 1px solid #d8d8d8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   .${CLASS_PREFIX}dev_panel_close {
     margin: 8px;
@@ -121,8 +156,8 @@ const ADVISOR_STYLE = `
     background: #fff;
     text-align: center;
     color: #454857;
-    font-size: 14px;
-    line-height: 14px;
+    font-size: 16px;
+    line-height: 16px;
     cursor: pointer;
     float: right;
   }

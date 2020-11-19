@@ -34,4 +34,17 @@ export const DesignRules: DesignRule[] = [
       return {};
     }
   ),
+  // new DesignRule(
+  //   'null-data-point',
+  //   ['line_chart'],
+  //   (dataProps: DataProps[], chartTypeSpec: SingleViewSpec): VegaLiteEncodeingSpecification => {
+  //     console.log(dataProps);
+  //     if (dataProps.some((item) => item.missing > 0)) {
+  //       return {
+  //         connectNulls: true
+  //       };
+  //     }
+  //     return {};
+  //   }
+  // ),
 ];
