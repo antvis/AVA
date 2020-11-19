@@ -54,7 +54,6 @@ const G2PLOT_ENCODING_MAPPING: Record<string, string> = {
 };
 
 function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
-  console.log(':::', advice);
   const { type, spec } = advice;
 
   const chartType = G2PLOT_TYPE_MAPPING[type];

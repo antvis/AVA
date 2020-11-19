@@ -10,6 +10,7 @@ export interface DataProps {
   levelOfMeasurements: LOM[];
   maximum?: number;
   minimum?: number;
+  missing: number;
   name: string;
 }
 

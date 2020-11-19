@@ -21,7 +21,7 @@ const data = [
   {
     "series": "London",
     "month": "2019-04",
-    "value": 878
+    "value": null
   },
   {
     "series": "London",
