@@ -10,21 +10,19 @@ order: 0
 Creates a **Chart Knowledge Base** in `JSON` format.
 
 ```sign
-CKBJson(lang: Language, completed: boolean)
+CKBJson(lang, completed)
 ```
 
 ### Arguments
 
 * **lang** * Language of the CKB content.
-  * `optional`
+  * _optional_
   * `type`: *Language* extends string
   * `default`: 'en-US'
-  * `options`:
-    * 'en-US'
-    * 'zh-CN'
+  * `options`: 'en-US', 'zh-CN'
 
 * **completed** * To include incompleted charts or not.
-  * `optional`
+  * _optional_
   * `type`: *boolean*
   * `default`: false
 
