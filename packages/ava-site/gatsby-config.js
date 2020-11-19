@@ -14,10 +14,10 @@ module.exports = {
     githubUrl: 'https://github.com/antvis/ava',
     navs: [
       {
-        slug: 'docs/tutorial',
+        slug: 'docs/guide',
         title: {
           zh: '教程',
-          en: 'Tutorial',
+          en: 'Guide',
         },
         order: 0,
       },
@@ -40,12 +40,36 @@ module.exports = {
     ],
     docs: [
       {
+        slug: 'guide/ckb',
+        title: {
+          zh: '图表知识库（CKB)',
+          en: 'Chart Knowledge Base (CKB)',
+        },
+        order: 2,
+      },
+      {
+        slug: 'guide/datawizard',
+        title: {
+          zh: 'Datawizard',
+          en: 'Datawizard',
+        },
+        order: 3,
+      },
+      {
+        slug: 'guide/chart-advisor',
+        title: {
+          zh: 'Chart Advisor',
+          en: 'Chart Advisor',
+        },
+        order: 4,
+      },
+      {
         slug: 'api/ckb',
         title: {
           zh: '图表知识库（CKB)',
           en: 'Chart Knowledge Base (CKB)',
         },
-        order: 0,
+        order: 1,
       },
     ],
     examples: [
