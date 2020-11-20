@@ -9,10 +9,18 @@ import {
 
 const Wiki = CKBJson('en-US', true);
 
-export type ChartRuleID = 'data-check' | 'data-field-qty' | 'no-redundant-field'
-  | 'purpose-check' | 'series-qty-limit' | 'bar-series-qty'
-  | 'line-field-time-ordinal' | 'landscape-or-portrait' | 'diff-pie-sector'
-  | 'nominal-enum-combinatorial' | 'limit-series'
+export type ChartRuleID =
+  | 'data-check'
+  | 'data-field-qty'
+  | 'no-redundant-field'
+  | 'purpose-check'
+  | 'series-qty-limit'
+  | 'bar-series-qty'
+  | 'line-field-time-ordinal'
+  | 'landscape-or-portrait'
+  | 'diff-pie-sector'
+  | 'nominal-enum-combinatorial'
+  | 'limit-series';
 
 export interface ChartRuleConfig {
   weight?: number;
@@ -20,9 +28,9 @@ export interface ChartRuleConfig {
   limit?: number;
 }
 
-export type ChartRuleConfigMap =  {
-  [ K in ChartRuleID]?: ChartRuleConfig
-}
+export type ChartRuleConfigMap = {
+  [K in ChartRuleID]?: ChartRuleConfig;
+};
 
 const allChartTypes: ChartType[] = Object.keys(Wiki) as ChartType[];
 

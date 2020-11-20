@@ -14,14 +14,15 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
   const record: Record<string, number> = {};
 
   let hardScore = 1;
-  ChartRules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(chartType) && !_get(chartRuleConfigs, `${r.id}.off`)).forEach(
-    (hr: Rule) => {
-      const customConfigs = _get(chartRuleConfigs, `${hr.id}`) || {};
-      const score = hr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
-      hardScore *= score;
-      record[hr.id] = score;
-    }
-  );
+  ChartRules.filter(
+    (r: Rule) =>
+      r.hardOrSoft === 'HARD' && r.specChartTypes.includes(chartType) && !_get(chartRuleConfigs, `${r.id}.off`)
+  ).forEach((hr: Rule) => {
+    const customConfigs = _get(chartRuleConfigs, `${hr.id}`) || {};
+    const score = hr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
+    hardScore *= score;
+    record[hr.id] = score;
+  });
 
   /**
    * TODO
@@ -29,17 +30,18 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
    */
   let softScore = 0;
   // let softFullScore = 0;
-  ChartRules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(chartType) && !_get(chartRuleConfigs, `${r.id}.off`)).forEach(
-    (sr: Rule) => {
-      const customConfigs = _get(chartRuleConfigs, `${sr.id}`) || {};
-      // const weight = _get(chartRuleConfigs, `${sr.id}.weight`) || sr.weight;
-      // softFullScore += weight * 1;
-      
-      const score = sr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
-      softScore += score;
-      record[sr.id] = score;
-    }
-  );
+  ChartRules.filter(
+    (r: Rule) =>
+      r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(chartType) && !_get(chartRuleConfigs, `${r.id}.off`)
+  ).forEach((sr: Rule) => {
+    const customConfigs = _get(chartRuleConfigs, `${sr.id}`) || {};
+    // const weight = _get(chartRuleConfigs, `${sr.id}.weight`) || sr.weight;
+    // softFullScore += weight * 1;
+
+    const score = sr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
+    softScore += score;
+    record[sr.id] = score;
+  });
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);
 

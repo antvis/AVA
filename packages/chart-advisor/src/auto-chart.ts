@@ -204,7 +204,13 @@ export class AutoChart {
         oldAdvices = this.plot.advices;
         oldIndex = this.plot.current;
       }
-      this.plot = new AutoPlot(chartCanvas, this.data, { theme, purpose, preferences, chartRuleConfigs, refine }, oldAdvices, oldIndex);
+      this.plot = new AutoPlot(
+        chartCanvas,
+        this.data,
+        { theme, purpose, preferences, chartRuleConfigs, refine },
+        oldAdvices,
+        oldIndex
+      );
 
       if (toolbar && this.plot.advices.length > 0) {
         this.toolbar = new Toolbar(this.plot, this.container);

@@ -69,7 +69,7 @@ export class Rule {
   }
 
   check(args: Info) {
-    const weight = this._hardOrSoft === 'SOFT' ? (args?.weight || this._weight) : this._weight
+    const weight = this._hardOrSoft === 'SOFT' ? args?.weight || this._weight : this._weight;
     return this.validator(args) * weight;
   }
 }
