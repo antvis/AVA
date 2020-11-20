@@ -1,8 +1,11 @@
 import { CLASS_PREFIX } from './style';
-import { Advice } from './advisor';
-import { getElementDispay } from './util';
+import { Advice, specToLibConfig } from './advice-pipeline';
+import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
 import Thumbnails from '@antv/thumbnails';
+import { CKBJson } from '@antv/knowledge';
+
+const ChartWiki = CKBJson('zh-CN', true);
 
 function getThumbnailURL(chartId: string) {
   // @ts-ignore
@@ -13,28 +16,42 @@ function getThumbnailURL(chartId: string) {
 
   return 'https://gw.alipayobjects.com/zos/antfincdn/lP6YFnCEjy/nochartimg.svg';
 }
+const rankIcons = [
+  'https://gw.alipayobjects.com/zos/antfincdn/61FtDvdTVl/no1.png',
+  'https://gw.alipayobjects.com/zos/antfincdn/Y7AsvjRWNF/no2.png',
+  'https://gw.alipayobjects.com/zos/antfincdn/2%24ruKwktmY/no3.png',
+];
 
 function getAdvicesHtml(advices: Advice[]) {
-  const top3 = advices.slice(0, 3);
-  return top3
+  const top3 = advices.filter((advice) => specToLibConfig(advice)).slice(0, 3);
+  const rankContent = top3
     .map((item, i) => {
       return `<div class="${CLASS_PREFIX}advice" data-index="${i}">
-        <div>Top ${i + 1}</div>
-        <div>
-          <img src="${getThumbnailURL(item.type)}" />
+        <div class="${CLASS_PREFIX}advice-thumbnail" data-index="${i}">
+          <img src="${getThumbnailURL(item.type)}" data-index="${i}" />
         </div>
-        <div>
-          <div>${item.type}</div>
-          <div>Score: ${`${item.score}`.slice(0, 4)}</div>
+        <div class="${CLASS_PREFIX}advice-desc" data-index="${i}">
+          <img src="${rankIcons[i]}" data-index="${i}"/>
+          <div class="advice-chart-name" data-index="${i}" >${ChartWiki[item.type].name}</div>
+          <div class="advice-score-text" data-index="${i}" >推荐分 <span class="advice-score">${item.score.toFixed(
+        2
+      )}</span></div>
         </div>
       </div>`;
     })
     .join('');
+  return `
+    <div class="${CLASS_PREFIX}advice_content">
+    ${rankContent}
+      </div>
+    </div>
+    <div class="${CLASS_PREFIX}advice_content_arrow">
+  `;
 }
 
 const TOOLBAR_HTML = `
-<div data-id="chart-type-btn" class="${CLASS_PREFIX}chart_type_btn">
-  <img src="https://gw.alipayobjects.com/zos/basement_prod/4530bc52-9f00-46f8-afac-3c438ed1337a.svg" />
+<div data-id="chart-type-btn" class="${CLASS_PREFIX}config_btn">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/krFnwF2VZi/retweet.png" />
 </div>
 <div data-id="advices" class="${CLASS_PREFIX}advice_container"></div>
 `;
@@ -60,6 +77,7 @@ export class Toolbar {
   };
 
   private mouseLeaveHandler = () => {
+    this.advicesContainer.style.display = 'none';
     this.toolbar.style.display = 'none';
   };
 
@@ -67,8 +85,7 @@ export class Toolbar {
 
   plotInst: AutoPlot;
 
-  constructor(plotInst: AutoPlot) {
-    const { container } = plotInst;
+  constructor(plotInst: AutoPlot, container: HTMLElement) {
     this.plotInst = plotInst;
     this.chartContainer = container;
     container.addEventListener('mouseenter', this.mouseEnterHandler);
@@ -84,9 +101,11 @@ export class Toolbar {
       if (e && e.target) {
         const target = e.target as HTMLElement;
         if (target.getAttribute('data-id') === 'chart-type-btn') {
-          advicesContainer.style.display = getElementDispay(advicesContainer) === 'none' ? 'block' : 'none';
+          advicesContainer.style.display = getElementDisplay(advicesContainer) === 'none' ? 'block' : 'none';
         } else {
+          console.log(111);
           const dataIndex = target.getAttribute('data-index');
+          console.log(dataIndex);
           if (dataIndex) {
             this.plotInst.render(Number.parseInt(dataIndex, 10));
           }

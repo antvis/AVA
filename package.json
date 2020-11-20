@@ -2,13 +2,17 @@
   "name": "root",
   "scripts": {
     "start": "webpack-dev-server --port 8881",
+    "site:start": "cd ./packages/ava-site && npm run start",
     "build": "lerna run build",
-    "test": "jest --coverage",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "test-live": "cross-env DEBUG_MODE=1 jest --watch ./packages/chart-advisor/",
     "lint": "lerna run lint",
     "api": "rm -rf temp && lerna run api",
     "doc": "rm -rf apis && api-documenter markdown -i ./temp -o ./docs/api",
     "boot": "lerna bootstrap",
-    "deploy-doc": "gh-pages -d docs/api"
+    "deploy-doc": "gh-pages -d docs/api",
+    "postinstall": "npm run boot"
   },
   "husky": {
     "hooks": {
@@ -17,6 +21,8 @@
   },
   "author": "XTech",
   "devDependencies": {
+    "@antv/g2": "^4.0.15",
+    "@antv/g2plot": "^2.0.9",
     "@babel/core": "^7.7.7",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
@@ -28,13 +34,18 @@
     "@microsoft/api-documenter": "^7.7.2",
     "@microsoft/api-extractor": "^7.7.0",
     "@types/jest": "^23.3.12",
+    "@types/lodash": "^4.14.165",
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.2",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
+    "antd": "^4.8.0",
     "babel-loader": "^8.0.6",
+    "babel-plugin-import": "^1.13.1",
+    "cross-env": "^7.0.2",
     "css-loader": "^3.2.0",
     "cz-conventional-changelog": "^3.0.2",
+    "electron": "^11.0.2",
     "eslint": "^6.1.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
@@ -42,6 +53,8 @@
     "gh-pages": "^2.1.1",
     "husky": "^4.2.5",
     "jest": "^24.9.0",
+    "jest-electron": "^0.1.11",
+    "jest-extended": "^0.11.5",
     "lerna": "^3.15.0",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
@@ -52,12 +65,15 @@
     "ts-jest": "^24.1.0",
     "tslib": "^1.10.0",
     "typescript": "^3.2.2",
+    "vega": "^5.15.0",
+    "vega-lite": "^4.15.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9",
     "webpack-dev-server": "^3.8.0"
   },
   "dependencies": {
-    "@antv/g2plot": "^1.1.6",
+    "@antv/thumbnails": "^0.2.1-alpha.0",
+    "lodash": "^4.17.20",
     "react-json-view": "^1.19.1"
   },
   "config": {

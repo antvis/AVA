@@ -1,8 +1,19 @@
 import * as React from 'react';
+import { Layout, Menu } from 'antd';
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  RobotOutlined,
+  ApartmentOutlined,
+  EyeOutlined,
+  ApiOutlined,
+} from '@ant-design/icons';
 import { AutoChartTest } from './AutoChartTest';
-import { PipelineTest } from './PipelineTest';
 import { FindInsightTest } from './FindInsightTest/index';
 import { DataTransformTest } from './DataTransformTest';
+import { PipelineTest } from './pipelineTest';
+
+const { Header, Sider, Content } = Layout;
 
 const tuple = <T extends string[]>(...args: T) => args;
 
@@ -15,15 +26,24 @@ const testComponents: Record<TestType, any> = {
   dataTransform: <DataTransformTest />,
 };
 
+const icons = {
+  autoChart: <RobotOutlined />,
+  pipeline: <ApartmentOutlined />,
+  insights: <EyeOutlined />,
+  dataTransform: <ApiOutlined />,
+};
+
 interface TestState {
   test: TestType;
+  collapsed: boolean;
 }
 class App extends React.Component<{}, TestState> {
   constructor(props: {}) {
     super(props);
 
     this.state = {
-      test: 'insights', // init for test
+      test: 'autoChart', // init for test
+      collapsed: false,
     };
   }
 
@@ -32,32 +52,44 @@ class App extends React.Component<{}, TestState> {
       test: t,
     });
   };
-  render() {
-    const { test } = this.state;
 
-    const nav = (
-      <nav>
-        <ul>
-          {TESTS.map((t, index) => (
-            <li
-              key={index}
-              onClick={() => {
-                this.setTest(t);
-              }}
-              style={{ color: `${test === t ? 'blue' : 'black'}` }}
-            >
-              {`${t}`}
-            </li>
-          ))}
-        </ul>
-      </nav>
-    );
+  toggle = () => {
+    this.setState({
+      collapsed: !this.state.collapsed,
+    });
+  };
+
+  render() {
+    const { test, collapsed } = this.state;
 
     return (
-      <>
-        {nav}
-        {testComponents[test]}
-      </>
+      <Layout style={{ height: '100vh' }} id="custom-trigger">
+        <Header>
+          {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
+            className: 'trigger',
+            onClick: this.toggle,
+          })}
+          AntV AVA
+        </Header>
+        <Layout>
+          <Sider collapsible collapsed={collapsed} trigger={null}>
+            <Menu mode="inline" selectedKeys={[test]} style={{ height: '100%', borderRight: 0 }}>
+              {TESTS.map((t) => (
+                <Menu.Item
+                  key={t}
+                  onClick={() => {
+                    this.setTest(t);
+                  }}
+                  icon={icons[t]}
+                >
+                  {`${t}`}
+                </Menu.Item>
+              ))}
+            </Menu>
+          </Sider>
+          <Content style={{ padding: 24 }}>{testComponents[test]}</Content>
+        </Layout>
+      </Layout>
     );
   }
 }
