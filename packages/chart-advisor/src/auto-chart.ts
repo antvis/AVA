@@ -108,10 +108,12 @@ export function addCanvas(layer: HTMLElement, { title, description }: AutoChartO
 
 export class AutoChart {
   static async create(
-    container: HTMLElement,
+    container: HTMLElement | string,
     data: any[] | Promise<any[]>,
     options?: AutoChartOptions
   ): Promise<AutoChart> {
+    const containerDom = typeof container === 'string' ? document.getElementById(container) : container;
+    if (!containerDom) throw new Error('please make sure canvas container is not null');
     let dataP: any[];
     if (Array.isArray(data)) {
       dataP = data;
@@ -124,13 +126,13 @@ export class AutoChart {
       throw new TypeError('data type is error');
     }
     let inst: AutoChart;
-    if (CACHES.get(container)) {
-      inst = CACHES.get(container) as AutoChart;
+    if (CACHES.get(containerDom)) {
+      inst = CACHES.get(containerDom) as AutoChart;
       // 如果配置和数据一样 不渲染直接返回
       if (isEqual(inst.options, options) && isEqual(inst.data, data)) return inst;
     } else {
-      inst = new AutoChart(container);
-      CACHES.set(container, inst);
+      inst = new AutoChart(containerDom);
+      CACHES.set(containerDom, inst);
     }
     return await inst.setup(dataP, options);
   }
@@ -158,7 +160,7 @@ export class AutoChart {
   async setup(data: any[], options?: AutoChartOptions) {
     if (this.rendered) this.destroy();
     this.rendered = true;
-    this.isMocked = false;
+    // this.isMocked = false;
     this.options = options || {};
     const { fields, development, noDataContent } = this.options;
     if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
@@ -180,7 +182,7 @@ export class AutoChart {
         // 如果是在开发模式下 等待用户mock的数据和配置
         const mockPanel = new MockPanel(container);
         this.mockPanel = mockPanel;
-        this.isMocked = true;
+        // this.isMocked = true;
         const result = await mockPanel.ps;
         this.data = result.data;
         config = result.config;
@@ -226,7 +228,7 @@ export class AutoChart {
    */
   destroy() {
     this.container.removeChild(this.noDataLayer);
-    if (this.configPanel) this.configPanel.destroy();
+    // if (this.configPanel) this.configPanel.destroy();
     if (this.toolbar) this.toolbar.destroy();
     if (this.plot) this.plot.destroy();
     if (this.canvasLayer) {

@@ -28,7 +28,7 @@ import { AutoChart, AutoChartOptions, Preferences, ChartRuleConfigMap } from './
  * @public
  */
 export async function autoChart(
-  container: HTMLElement,
+  container: HTMLElement | string,
   data: any[] | Promise<any[]>,
   options?: AutoChartOptions
 ): Promise<void> {
@@ -39,7 +39,6 @@ export { AutoChartOptions, Preferences, ChartRuleConfigMap };
 
 export * from './advice-pipeline';
 
-export { getMappingForLib, Mapping, TypeMapping, ConfigMapping, Channels } from './chartLibMapping';
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';

@@ -314,7 +314,7 @@ export function AutoChartTest() {
         title="expect: Column"
       /> */}
 
-      {/* <AutoChart
+      <AutoChart
         data={[
           { f1: 'a', f2: 70 },
           { f1: 'b', f2: 120 },
@@ -322,7 +322,7 @@ export function AutoChartTest() {
           { f1: 'd', f2: 630 },
         ]}
         title="expect: Pie"
-      /> */}
+      />
 
       {/* <AutoChart data={[]} title="测试" description="测试" /> */}
 

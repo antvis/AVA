@@ -1,6 +1,6 @@
 import { CLASS_PREFIX } from './style';
-import { Advice } from './advice-pipeline';
-import { getElementDispay } from './util';
+import { Advice, specToLibConfig } from './advice-pipeline';
+import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
 import Thumbnails from '@antv/thumbnails';
 import { CKBJson } from '@antv/knowledge';
@@ -23,7 +23,7 @@ const rankIcons = [
 ];
 
 function getAdvicesHtml(advices: Advice[]) {
-  const top3 = advices.slice(0, 3);
+  const top3 = advices.filter((advice) => specToLibConfig(advice)).slice(0, 3);
   const rankContent = top3
     .map((item, i) => {
       return `<div class="${CLASS_PREFIX}advice" data-index="${i}">
@@ -101,9 +101,11 @@ export class Toolbar {
       if (e && e.target) {
         const target = e.target as HTMLElement;
         if (target.getAttribute('data-id') === 'chart-type-btn') {
-          advicesContainer.style.display = getElementDispay(advicesContainer) === 'none' ? 'block' : 'none';
+          advicesContainer.style.display = getElementDisplay(advicesContainer) === 'none' ? 'block' : 'none';
         } else {
+          console.log(111);
           const dataIndex = target.getAttribute('data-index');
+          console.log(dataIndex);
           if (dataIndex) {
             this.plotInst.render(Number.parseInt(dataIndex, 10));
           }
