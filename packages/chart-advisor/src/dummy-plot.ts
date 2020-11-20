@@ -1,8 +1,8 @@
 import * as G2Plot from '@antv/g2plot';
-import { uuid, translate } from './util';
+import { uuid } from './util';
 
 export interface DummyPlotConfig {
-  type: string;
+  type: string; // g2plot chart class type name
   configs: any;
 }
 
@@ -27,9 +27,13 @@ export class DummyPlot {
     const { type, configs } = config;
     this.currentConfigs = { ...configs, data };
     this.type = type;
-    // @ts-ignore
-    this.plot = new G2Plot[translate(type)](container, { ...configs, data });
-    this.plot.render();
+    try {
+      // @ts-ignore
+      this.plot = new G2Plot[type](container, { ...configs, data });
+      this.plot.render();
+    } catch (e) {
+      throw new Error('current config is not supported by g2plot');
+    }
   }
 
   destroy() {

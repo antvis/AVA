@@ -1,5 +1,23 @@
-.canvas-container {
-  height: 500px;
+.chart-container {
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+  &-title {
+    flex: none;
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+  &-description {
+    flex: none;
+    color: #999;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .canvas-container {
+    flex: 1
+  }
+
 }
 
 nav {

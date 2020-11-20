@@ -18,7 +18,7 @@
  * @packageDocumentation
  */
 
-import { AutoChart, AutoChartOptions, Preferences } from './auto-chart';
+import { AutoChart, AutoChartOptions, Preferences, ChartRuleConfigMap } from './auto-chart';
 
 /**
  * 自动图表
@@ -28,18 +28,17 @@ import { AutoChart, AutoChartOptions, Preferences } from './auto-chart';
  * @public
  */
 export async function autoChart(
-  container: HTMLElement,
+  container: HTMLElement | string,
   data: any[] | Promise<any[]>,
   options?: AutoChartOptions
 ): Promise<void> {
   await AutoChart.create(container, data, options);
 }
 
-export { AutoChartOptions, Preferences };
+export { AutoChartOptions, Preferences, ChartRuleConfigMap };
 
 export * from './advice-pipeline';
 
-export { getMappingForLib, Mapping, TypeMapping, ConfigMapping, Channels } from './chartLibMapping';
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';

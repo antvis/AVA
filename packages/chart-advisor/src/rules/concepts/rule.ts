@@ -8,6 +8,10 @@ export interface DataProps {
   sum?: number;
   samples?: any[];
   levelOfMeasurements: LOM[];
+  maximum?: number;
+  minimum?: number;
+  missing: number;
+  name: string;
 }
 
 /**
@@ -23,11 +27,13 @@ interface Info {
   dataProps: DataProps[];
   purpose?: string;
   preferences?: Preferences;
+  customWeight?: number;
+  [key: string]: any;
 }
 
 type Validator = (args: Info) => number;
 
-class Rule {
+export class Rule {
   private _id: string;
   private _hardOrSoft: HardOrSoft;
   private _specChartTypes: ChartType[];
@@ -63,8 +69,7 @@ class Rule {
   }
 
   check(args: Info) {
-    return this.validator(args) * this._weight;
+    const weight = this._hardOrSoft === 'SOFT' ? args?.weight || this._weight : this._weight;
+    return this.validator(args) * weight;
   }
 }
-
-export default Rule;

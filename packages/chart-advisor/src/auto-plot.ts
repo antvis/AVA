@@ -1,12 +1,10 @@
 import { AdvisorOptions, Advice, dataToSpecs, specToLibConfig } from './advice-pipeline';
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
-import { uuid, translate, createLayer, DEFAULT_FEEDBACK } from './util';
+import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
 
 export interface Configs {
-  title?: string;
   theme?: string;
-  description?: string;
   data: any[];
 }
 
@@ -16,10 +14,9 @@ export interface Configs {
  * @param data - 数据
  * @param configs - 配置
  */
-function getConfig(advice: Advice, { title, theme, description, data }: Configs): any {
-  const configs: any = { ...specToLibConfig(advice, 'G2Plot').configs };
-  if (title) configs.title = { visible: true, text: title };
-  if (description) configs.description = { visible: true, text: description };
+function getConfig(advice: Advice, { theme, data }: Configs): any {
+  const configs: any = { ...specToLibConfig(advice, 'G2Plot')?.configs };
+  configs.autoFit = true;
   return { ...configs, theme, data };
 }
 
@@ -90,7 +87,7 @@ export class AutoPlot extends EventEmitter {
       };
     }
     this.container = container;
-    this.feedbackLayer = createLayer(container);
+    this.feedbackLayer = createLayer(container, 'feedback-layer');
     const advices = dataToSpecs(data, options);
     this.advices = advices;
     this.options = options;
@@ -127,23 +124,28 @@ export class AutoPlot extends EventEmitter {
     this.current = index;
     const { type } = advices[index];
     const currentType = advices[current].type;
-    const { title, description, theme } = options;
-    const configs = getConfig(advices[index], { title, description, theme, data });
+    const { theme } = options;
+    const libConfig = specToLibConfig(advices[index], 'G2Plot');
+    const configs = getConfig(advices[index], { theme, data });
     this.currentConfigs = configs;
     this.type = type;
-    if (plot && type === currentType) {
-      plot.update(configs);
-    } else {
-      if (plot) plot.destroy();
-      console.log(' 🐛🐛🐛 type');
-      console.log(type);
-      console.log('CCCCCC configs:', configs);
-      // @ts-ignore
-      this.plot = new G2Plot[translate(type)](container, configs);
+
+    if (libConfig) {
+      const configs: any = { ...libConfig?.configs, data, theme };
+      this.currentConfigs = configs;
+      this.type = type;
+      if (plot && type === currentType) {
+        plot.update(configs);
+      } else {
+        if (plot) plot.destroy();
+        console.log(' 🐛🐛🐛 type');
+        console.log(type);
+        this.plot = new G2Plot[libConfig.type](container, configs);
+      }
+      this.plot!.render();
+      // 出发事件
+      this.emit('change', [index]);
     }
-    this.plot!.render();
-    // 出发事件
-    this.emit('change', [index]);
   }
 
   destroy() {

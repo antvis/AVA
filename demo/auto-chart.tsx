@@ -1,16 +1,18 @@
 import * as React from 'react';
-import { autoChart } from '../packages/chart-advisor/src';
+import { autoChart, G2PlotConfig, ChartRuleConfigMap } from '../packages/chart-advisor/src';
 
 interface Props {
   theme?: string;
   data: any[] | Promise<any[]>;
   purpose?: string;
   preferences?: any;
+  refine?: boolean;
   title?: string;
   description?: string;
   toolbar?: boolean;
   development?: boolean;
-  config?: { type: string; configs: any };
+  config?: G2PlotConfig;
+  chartRuleConfigs?: ChartRuleConfigMap;
   fields?: string[];
   noDataContent?: any;
 }
@@ -20,6 +22,7 @@ export default React.memo(function Chart(props: Props) {
     data,
     purpose,
     preferences,
+    refine,
     theme,
     title,
     fields,
@@ -28,6 +31,7 @@ export default React.memo(function Chart(props: Props) {
     development,
     toolbar = true,
     config,
+    chartRuleConfigs
   } = props;
   const container = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -35,16 +39,21 @@ export default React.memo(function Chart(props: Props) {
       autoChart(container.current, data, {
         purpose,
         preferences,
-        theme,
+        refine,
         title,
         description,
+        theme,
         toolbar,
         development,
         config,
+        chartRuleConfigs,
         noDataContent,
         fields,
       });
     }
   }, [props]);
-  return <div className="canvas-container" ref={container}></div>;
+  return (
+    <div className="chart-container" ref={container}>
+    </div>
+  );
 });
