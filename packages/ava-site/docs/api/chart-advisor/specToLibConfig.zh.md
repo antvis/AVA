@@ -1,6 +1,6 @@
 ---
-title: Step3 - specToLibConfig
-order: 2
+title: specToLibConfig
+order: 3
 ---
 
 `markdown:docs/common/style.md`
@@ -36,6 +36,6 @@ interface G2PlotConfig {
 ```
 
 * type `G2PlotChartType` G2Plot 对应图表类型 class 名
-* configs `Record<string, any>` G2Pot 配置项
+* configs `Record<string, any>` G2Plot 配置项
 
 </div>

@@ -1,6 +1,6 @@
 ---
-title: Step2 - dataPropsToAdvices
-order: 1
+title: dataPropsToAdvices
+order: 2
 ---
 
 `markdown:docs/common/style.md`
@@ -13,7 +13,7 @@ dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions | undefin
 
 ### 参数
 
-* **dataProps** * Step1 返回的数据类型
+* **dataProps** * 数据列的特征和性质
   * _必要参数_
   * `参数类型`: DataProperty[]
 

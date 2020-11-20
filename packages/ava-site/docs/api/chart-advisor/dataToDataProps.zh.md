@@ -1,6 +1,6 @@
 ---
-title: Step1 - dataToDataProps
-order: 0
+title: dataToDataProps
+order: 1
 ---
 
 `markdown:docs/common/style.md`
@@ -80,7 +80,7 @@ const data = [
   { "yearmonth": "2019-07", "gdp": 618, "city": "London" }
 ]
 
-dataToDataProps();
+dataToDataProps(data);
 
 // [
 //   { 
