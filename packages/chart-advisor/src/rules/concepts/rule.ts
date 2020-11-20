@@ -8,8 +8,8 @@ export interface DataProps {
   sum?: number;
   samples?: any[];
   levelOfMeasurements: LOM[];
-  maximum?: number;
-  minimum?: number;
+  maximum?: any;
+  minimum?: any;
   missing: number;
   name: string;
 }

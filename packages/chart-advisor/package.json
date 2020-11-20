@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "browser": "dist/index.js",
   "module": "es/index.js",
-  "typings": "./typings/chart-advisor.d.ts",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "rm -rf lib && tsc --pretty",
     "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",

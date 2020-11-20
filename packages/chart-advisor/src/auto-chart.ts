@@ -229,7 +229,7 @@ export class AutoChart {
    */
   destroy() {
     this.container.removeChild(this.noDataLayer);
-    // if (this.configPanel) this.configPanel.destroy();
+    if (this.configPanel) this.configPanel.destroy();
     if (this.toolbar) this.toolbar.destroy();
     if (this.plot) this.plot.destroy();
     if (this.canvasLayer) {
