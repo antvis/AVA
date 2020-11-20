@@ -14,10 +14,10 @@ module.exports = {
     githubUrl: 'https://github.com/antvis/ava',
     navs: [
       {
-        slug: 'docs/tutorial',
+        slug: 'docs/guide',
         title: {
           zh: '教程',
-          en: 'Tutorial',
+          en: 'Guide',
         },
         order: 0,
       },
@@ -38,7 +38,90 @@ module.exports = {
         order: 2,
       },
     ],
-    docs: [],
+    docs: [
+      {
+        slug: 'guide/ckb',
+        title: {
+          zh: '图表知识库（CKB)',
+          en: 'Chart Knowledge Base (CKB)',
+        },
+        order: 2,
+      },
+      {
+        slug: 'guide/datawizard',
+        title: {
+          zh: 'DataWizard',
+          en: 'DataWizard',
+        },
+        order: 3,
+      },
+      {
+        slug: 'guide/chart-advisor',
+        title: {
+          zh: 'Chart Advisor',
+          en: 'Chart Advisor',
+        },
+        order: 4,
+      },
+      {
+        slug: 'api/ckb',
+        title: {
+          zh: '图表知识库（CKB)',
+          en: 'Chart Knowledge Base (CKB)',
+        },
+        order: 1,
+      },
+      {
+        slug: 'api/datawizard',
+        title: {
+          zh: 'DataWizard',
+          en: 'DataWizard',
+        },
+        order: 2,
+      },
+      {
+        slug: 'api/datawizard/dw-analyzer',
+        title: {
+          zh: '包：dw-analyzer',
+          en: 'Package: dw-analyzer',
+        },
+        order: 1,
+      },
+      {
+        slug: 'api/chart-advisor',
+        title: {
+          zh: 'Chart Advisor',
+          en: 'Chart Advisor',
+        },
+        order: 3,
+      },
+      {
+        slug: 'api/chart-advisor/pipeline',
+        title: {
+          zh: 'pipeline',
+          en: 'pipeline',
+        },
+        order: 1,
+      },
+    ],
+    examples: [
+      {
+        slug: 'ckb',
+        // icon: 'gallery',
+        title: {
+          zh: '图表知识库（CKB)',
+          en: 'Chart Knowledge Base (CKB)',
+        },
+      },
+      {
+        slug: 'chart-advisor',
+        // icon: 'gallery',
+        title: {
+          zh: '图表推荐库',
+          en: 'Chart Advisor',
+        },
+      },
+    ],
     showSearch: true, // 是否展示搜索框
     showChinaMirror: true, // 是否展示国内镜像链接
     showAntVProductsCard: true, // 是否展示 AntV 系列产品的卡片链接

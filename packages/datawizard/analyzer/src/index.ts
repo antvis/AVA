@@ -138,7 +138,7 @@ export interface FieldInfo {
   recommendation: TypeSpecifics;
   /** number of empty inclues null undefined or empty string */
   missing: number;
-  /** Distinct count */
+  /** distinct count */
   distinct: number;
   /** Number of each distinct item */
   valueMap: Record<string, number>;
