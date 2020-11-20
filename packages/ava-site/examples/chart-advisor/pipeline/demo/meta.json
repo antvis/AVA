@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.jsx",
+      "title": {
+        "en": "pipeline demo",
+        "zh": "pipeline demo"
+      }
+    }
+  ]
+}

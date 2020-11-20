@@ -1,4 +1,0 @@
-## why autoChart?
-lorem
-
-## purpose
