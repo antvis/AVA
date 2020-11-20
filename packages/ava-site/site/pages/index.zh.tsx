@@ -2,6 +2,9 @@ import React from 'react';
 import SEO from '@antv/gatsby-theme-antv/site/components/Seo';
 import { useTranslation } from 'react-i18next';
 import Banner from '@antv/gatsby-theme-antv/site/components/Banner';
+import Cases from '@antv/gatsby-theme-antv/site/components/Cases';
+import Companies from '@antv/gatsby-theme-antv/site/components/Companies';
+import '../css/index.less';
 import '../css/home.css';
 
 const IndexPage = () => {
@@ -18,7 +21,24 @@ const IndexPage = () => {
       link: `/${i18n.language}/docs/tutorial`,
     },
   ];
-
+  const cases = [
+    {
+      logo: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*-dLnTIexOxwAAAAAAAAAAABkARQnAQ',
+      title: t('智能可视化'),
+      description: t(`链接人和数据，联通数据分析链条上的“最后一公里”`),
+      image: 'https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*gM2JRbkGETIAAAAAAAAAAAAAARQnAQ',
+    },
+  ];
+  const companies = [
+    { name: '阿里云', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*V_xMRIvw2iwAAAAAAAAAAABkARQnAQ' },
+    { name: '支付宝', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*lYDrRZvcvD4AAAAAAAAAAABkARQnAQ' },
+    { name: '天猫', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*BQrxRK6oemMAAAAAAAAAAABkARQnAQ' },
+    { name: '淘宝网', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*1l8-TqUr7UcAAAAAAAAAAABkARQnAQ' },
+    { name: '网上银行', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*ZAKFQJ5Bz4MAAAAAAAAAAABkARQnAQ' },
+    { name: '京东', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*yh-HRr3hCpgAAAAAAAAAAABkARQnAQ' },
+    { name: 'yunos', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*_js7SaNosUwAAAAAAAAAAABkARQnAQ' },
+    { name: '菜鸟', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*TgV-RZDODJIAAAAAAAAAAABkARQnAQ' },
+  ];
   const coverImage = (
     <img
       width="100%"
@@ -41,6 +61,8 @@ const IndexPage = () => {
         showGithubStars={false}
         video="https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/file/A*PDpiR4U2oFEAAAAAAAAAAABkARQnAQ"
       />
+      <Cases cases={cases} />
+      <Companies title={t('感谢信赖')} companies={companies} />
     </>
   );
 };

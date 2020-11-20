@@ -1,0 +1,15 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "chartdic.jsx",
+      "title": {
+        "zh": "使用 CKB 制作图表词典",
+        "en": "Chart Dictionary by CKB"
+      }
+    }
+  ]
+}

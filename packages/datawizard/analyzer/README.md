@@ -135,7 +135,7 @@ const data = ['A', 'B', '', 'D', 'EAT'];
 const fieldInfo = type(data);
 
 console.log(isUnique(fieldInfo));
-// false beacuase of the empty value
+// false because of the empty value
 
 console.log(fieldInfo);
 
