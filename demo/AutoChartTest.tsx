@@ -21,7 +21,7 @@ const data = [
   {
     "series": "London",
     "month": "2019-04",
-    "value": null
+    "value": 888
   },
   {
     "series": "London",
@@ -245,6 +245,31 @@ const data = [
   }
 ];
 
+const pieData = [
+  { type: '分类一', value: 27 },
+  { type: '分类二', value: 25 },
+  { type: '分类三', value: 18 },
+  { type: '分类四', value: 15 },
+  { type: '分类五', value: 10 },
+  { type: '其他', value: 5 },
+  { type: '分类六', value: 15 },
+  { type: '分类七', value: 10 },
+  { type: '分类八', value: 5 },
+];
+
+const chartRuleConfigs = {
+  'purpose-check': {
+    weight: 0.5,
+  },
+  'nominal-enum-combinatorial': {
+    off: true
+  },
+  'series-qty-limit': {
+    off: false,
+    weight: 1,
+    limit: 12
+  }
+};
 export function AutoChartTest() {
   return (
     <>
@@ -254,9 +279,10 @@ export function AutoChartTest() {
         title="custom"
       />
       <AutoChart
-        data={data}
+        data={pieData}
+        chartRuleConfigs={chartRuleConfigs}
         refine={false}
-        title="Line"
+        title="custom rule configs"
       />
       <AutoChart
         data={data}
