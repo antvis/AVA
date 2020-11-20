@@ -48,7 +48,7 @@ export class ConfigPanel {
     const { uuid, plot } = this.plotInst;
     if (e.data && e.data.type === CONFIGS_CHANGE && e.data.uuid === uuid) {
       if (plot) {
-        plot.updateConfig(e.data.configs);
+        plot.update(e.data.configs);
         plot.render();
       }
     }
@@ -62,10 +62,9 @@ export class ConfigPanel {
     this.trigger.style.display = 'none';
   };
 
-  constructor(plotInst: AutoPlot | DummyPlot, needCopyData: boolean) {
+  constructor(plotInst: AutoPlot | DummyPlot, needCopyData: boolean, container: HTMLElement) {
     this.plotInst = plotInst;
     this.needCopyData = needCopyData;
-    const { container } = plotInst;
     this.chartContainer = container;
     container.addEventListener('mouseenter', this.mouseEnterHandler);
     container.addEventListener('mouseleave', this.mouseLeaveHandler);
@@ -77,13 +76,13 @@ export class ConfigPanel {
 
   initTrigger() {
     const { trigger, iframe } = this;
-    trigger.innerHTML = 'Config';
+    trigger.innerHTML = '<img src="https://gw.alipayobjects.com/zos/antfincdn/zKMUjshkQt/config.png" />';
     trigger.className = `${CLASS_PREFIX}dev_btn ${CLASS_PREFIX}config_btn`;
     trigger.addEventListener('click', () => {
       if (!this.panel) {
         this.panel = new DevPanel({
-          title: 'Config',
-          height: 520,
+          title: '图表配置',
+          height: 534,
           width: 340,
           ...getPosition(this.chartContainer),
           visible: true,

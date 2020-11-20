@@ -1,6 +1,6 @@
 import { LevelOfMeasurement as LOM, ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
-import { Preferences } from '../rules';
+import { Preferences, ChartRuleConfigMap } from '../rules';
 import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-lite';
 
 /**
@@ -23,6 +23,14 @@ export interface AdvisorOptions {
    * 描述
    */
   description?: string;
+  /**
+   * 是否应用设计规则
+   */
+  refine?: boolean;
+  /**
+   * 自定义调整规则
+   */
+  chartRuleConfigs?: ChartRuleConfigMap;
 }
 
 /**
@@ -35,23 +43,31 @@ export type DataProperty =
   | (DWAnalyzer.StringFieldInfo & { name: string; levelOfMeasurements: LOM[] });
 
 // type Bin = { binned: boolean; step: number };
+
+/**
+ * @beta
+ */
+export type VegaLiteEncodeingSpecification = Partial<
+  Record<
+    EncodingKey,
+    {
+      field?: string;
+      type?: EncodingType;
+      bin?: boolean;
+      aggregate?: Aggregation;
+      stack?: StackType;
+      scale?: any;
+      domain?: any;
+    }
+  >
+>;
+
 /**
  * @beta
  */
 export interface SingleViewSpec {
   mark: { type: Mark; [record: string]: any };
-  encoding: Partial<
-    Record<
-      EncodingKey,
-      {
-        field?: string;
-        type?: EncodingType;
-        bin?: boolean;
-        aggregate?: Aggregation;
-        stack?: StackType;
-      }
-    >
-  >;
+  encoding: VegaLiteEncodeingSpecification;
 }
 
 // subset of vega-lte spec
@@ -63,7 +79,7 @@ export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 /**
  * @beta
  */
-export type Specification = VegaLiteSubsetSpec;
+export type Specification = SingleViewSpec;
 
 /**
  * return type of data props to spec
@@ -78,7 +94,7 @@ export interface Advice {
 /**
  * @beta
  */
-export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
+export type ChartLibrary = 'G2Plot' | 'G2';
 
 /**
  * @public
@@ -92,8 +108,3 @@ export interface G2PlotConfig {
   type: G2PlotChartType;
   configs: Record<string, any>;
 }
-
-/**
- * @beta
- */
-export type EChartsConfig = any;

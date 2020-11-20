@@ -38,6 +38,7 @@ export class MockPanel {
    */
   chartContainer: HTMLElement;
 
+  // TODO modified g2plot chart type
   ps: Promise<{ config?: any; data: any[] }>;
 
   panel?: DevPanel;
@@ -64,7 +65,7 @@ export class MockPanel {
       if (!this.panel) {
         this.panel = new DevPanel({
           title: '初始化',
-          height: 600,
+          height: 616,
           width: 600,
           ...getPosition(container),
           visible: true,

@@ -63,7 +63,7 @@ export const PipelineTest = () => {
           <th>data props</th>
           <th>specs</th>
           <th>vega-lite</th>
-          <th>g2</th>
+          <th>g2plot(g2)</th>
         </tr>
       </thead>
       <tbody>
