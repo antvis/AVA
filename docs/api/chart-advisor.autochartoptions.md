@@ -24,6 +24,8 @@ export interface AutoChartOptions
 |  [noDataContent](./chart-advisor.autochartoptions.nodatacontent.md) | <code>(container: HTMLDivElement) =&gt; void</code> | 无数据的渲染逻辑 |
 |  [preferences](./chart-advisor.autochartoptions.preferences.md) | <code>Preferences</code> | 偏好选项 |
 |  [purpose](./chart-advisor.autochartoptions.purpose.md) | <code>string</code> | 分析目的 |
+|  [refine](./chart-advisor.autochartoptions.refine.md) | <code>boolean</code> | 是否开启图表配置优化 |
+|  [chartRuleConfigs](./chart-advisor.autochartoptions.chartRuleConfigs.md) | <code>ChartRuleConfigMap</code> | 图表规则自定义配置 |
 |  [theme](./chart-advisor.autochartoptions.theme.md) | <code>string</code> | 主题 |
 |  [title](./chart-advisor.autochartoptions.title.md) | <code>string</code> | 标题 |
 |  [toolbar](./chart-advisor.autochartoptions.toolbar.md) | <code>boolean</code> | 是否显示图表切换界面 |
