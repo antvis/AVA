@@ -4,7 +4,7 @@ import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
 import { isEqual, pick } from '@antv/util';
 import { AdvisorOptions, Advice, G2PlotConfig } from './advice-pipeline';
-import { Preferences } from './rules';
+import { Preferences, ChartRuleConfigMap } from './rules';
 import { MockPanel } from './mock-panel';
 import { createLayer, DEFAULT_FEEDBACK } from './util';
 export { Preferences };
@@ -36,6 +36,10 @@ export interface AutoChartOptions {
    */
   purpose?: string;
   /**
+   * design rules on/off
+   */
+  refine?: boolean;
+  /**
    * title
    */
   title?: string;
@@ -62,6 +66,10 @@ export interface AutoChartOptions {
    */
   config?: G2PlotConfig;
   /**
+   * g2plot configs
+   */
+  chartRuleConfigs?: ChartRuleConfigMap;
+  /**
    * render while no data
    */
   noDataContent?: (container: HTMLDivElement) => void;
@@ -69,14 +77,43 @@ export interface AutoChartOptions {
   feedback?: (container: HTMLDivElement) => void;
 }
 
-export { AdvisorOptions };
+export { AdvisorOptions, ChartRuleConfigMap };
+
+export function addCanvas(layer: HTMLElement, { title, description }: AutoChartOptions): HTMLDivElement {
+  layer.style.display = 'flex';
+  layer.style.flexDirection = 'column';
+  layer.style.padding = '24px';
+  if (title) {
+    const titleDiv = document.createElement('div');
+    titleDiv.style.flex = 'none';
+    titleDiv.style.fontSize = '28px';
+    titleDiv.style.paddingBottom = '16px';
+    titleDiv.innerHTML = title;
+    layer.appendChild(titleDiv);
+  }
+  if (description) {
+    const descriptionDiv = document.createElement('div');
+    descriptionDiv.style.flex = 'none';
+    descriptionDiv.style.fontSize = '13px';
+    descriptionDiv.style.color = '#8e8e8e';
+    descriptionDiv.innerHTML = description;
+    descriptionDiv.style.paddingBottom = '16px';
+    layer.appendChild(descriptionDiv);
+  }
+  const canvas = document.createElement('div');
+  canvas.style.flex = '1';
+  layer.appendChild(canvas);
+  return canvas;
+}
 
 export class AutoChart {
   static async create(
-    container: HTMLElement,
+    container: HTMLElement | string,
     data: any[] | Promise<any[]>,
     options?: AutoChartOptions
   ): Promise<AutoChart> {
+    const containerDom = typeof container === 'string' ? document.getElementById(container) : container;
+    if (!containerDom) throw new Error('please make sure canvas container is not null');
     let dataP: any[];
     if (Array.isArray(data)) {
       dataP = data;
@@ -89,13 +126,13 @@ export class AutoChart {
       throw new TypeError('data type is error');
     }
     let inst: AutoChart;
-    if (CACHES.get(container)) {
-      inst = CACHES.get(container) as AutoChart;
+    if (CACHES.get(containerDom)) {
+      inst = CACHES.get(containerDom) as AutoChart;
       // 如果配置和数据一样 不渲染直接返回
       if (isEqual(inst.options, options) && isEqual(inst.data, data)) return inst;
     } else {
-      inst = new AutoChart(container);
-      CACHES.set(container, inst);
+      inst = new AutoChart(containerDom);
+      CACHES.set(containerDom, inst);
     }
     return await inst.setup(dataP, options);
   }
@@ -103,10 +140,11 @@ export class AutoChart {
   private container!: HTMLElement;
   private rendered = false;
   private noDataLayer: HTMLDivElement;
+  private canvasLayer: HTMLDivElement | undefined;
 
   constructor(container: HTMLElement) {
     this.container = container;
-    this.noDataLayer = createLayer(container);
+    this.noDataLayer = createLayer(container, 'no-data-layer');
   }
 
   private development!: boolean;
@@ -122,10 +160,10 @@ export class AutoChart {
   async setup(data: any[], options?: AutoChartOptions) {
     if (this.rendered) this.destroy();
     this.rendered = true;
-    this.isMocked = false;
+    // this.isMocked = false;
     this.options = options || {};
     const { fields, development, noDataContent } = this.options;
-    this.noDataLayer = createLayer(this.container);
+    if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
     this.noDataContent = noDataContent || DEFAULT_FEEDBACK('暂无数据');
     this.data = fields && fields.length > 0 ? data.map((item) => pick(item, fields)) : data;
     this.development =
@@ -137,14 +175,14 @@ export class AutoChart {
 
   async render() {
     const { options, container, development, noDataContent } = this;
-    const { title, theme, toolbar, description, purpose, preferences } = options;
+    const { theme, toolbar, purpose, preferences, chartRuleConfigs, refine } = options;
     let { config } = options;
     if (this.data && this.data.length === 0) {
       if (development) {
         // 如果是在开发模式下 等待用户mock的数据和配置
         const mockPanel = new MockPanel(container);
         this.mockPanel = mockPanel;
-        this.isMocked = true;
+        // this.isMocked = true;
         const result = await mockPanel.ps;
         this.data = result.data;
         config = result.config;
@@ -154,9 +192,13 @@ export class AutoChart {
         return;
       }
     }
+
+    this.canvasLayer = createLayer(this.container, 'canvas-layer');
+    this.canvasLayer.style.pointerEvents = 'auto';
+    const chartCanvas = addCanvas(this.canvasLayer, options);
     if (config) {
       if (typeof config.type !== 'string') throw new Error('please set the plotType');
-      this.plot = new DummyPlot(container, this.data, config);
+      this.plot = new DummyPlot(chartCanvas, this.data, config);
     } else {
       // 获取上次渲染的advise 和 index
       let oldAdvices: Advice[] = [];
@@ -166,19 +208,19 @@ export class AutoChart {
         oldIndex = this.plot.current;
       }
       this.plot = new AutoPlot(
-        container,
+        chartCanvas,
         this.data,
-        { title, theme, description, purpose, preferences },
+        { theme, purpose, preferences, chartRuleConfigs, refine },
         oldAdvices,
         oldIndex
       );
 
       if (toolbar && this.plot.advices.length > 0) {
-        this.toolbar = new Toolbar(this.plot);
+        this.toolbar = new Toolbar(this.plot, this.container);
       }
     }
     if (development && this.plot.plot) {
-      this.configPanel = new ConfigPanel(this.plot, this.isMocked);
+      this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
     }
   }
 
@@ -187,9 +229,13 @@ export class AutoChart {
    */
   destroy() {
     this.container.removeChild(this.noDataLayer);
-    if (this.configPanel) this.configPanel.destroy();
+    // if (this.configPanel) this.configPanel.destroy();
     if (this.toolbar) this.toolbar.destroy();
     if (this.plot) this.plot.destroy();
+    if (this.canvasLayer) {
+      this.container.removeChild(this.canvasLayer);
+      this.canvasLayer = undefined;
+    }
     if (this.mockPanel) this.mockPanel.destroy();
   }
 }

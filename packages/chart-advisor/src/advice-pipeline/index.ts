@@ -14,15 +14,15 @@ import { dataToDataProps } from './data-to-dataprops';
 import { dataPropsToAdvices } from './dataprops-to-advices';
 
 // step 3: vega lite spec -> lib config
-// libconfig contain g2 g2plot echarts, default g2plot
-import { specToLibConfig } from './spec-to-libconfig';
+// libconfig contain g2 g2plot, default g2plot
+import { specToLibConfig, G2PLOT_TYPE_MAPPING } from './spec-to-libconfig';
 
 // step 4: lib config -> chart render & return instance
 // `chart-advisor` support g2 and g2plot render
-// you can also use vegalite spec or echarts config to render 🌟
+// you can also use vegalite spec config to render 🌟
 import { g2Render, g2plotRender } from './g2-render';
 
-export { dataToDataProps, dataPropsToAdvices, specToLibConfig, g2Render, g2plotRender };
+export { dataToDataProps, dataPropsToAdvices, specToLibConfig, g2Render, g2plotRender, G2PLOT_TYPE_MAPPING };
 export * from './interface';
 export * from './vega-lite';
 

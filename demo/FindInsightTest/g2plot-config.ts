@@ -1,6 +1,21 @@
-import { TypeMapping, ConfigMapping } from './index';
+import { ChartLibrary } from '../../packages/chart-advisor/src';
+import { ChartID } from '../../packages/knowledge/src';
+export type ConfigMapping = Partial<Record<ChartID, Channels>>;
+export type TypeMapping = Partial<Record<ChartID, string>>;
 
-export const G2PLOT_CONFIG_MAPPING: ConfigMapping = {
+export interface Channels {
+  x?: string;
+  x2?: string;
+  y?: string;
+  y2?: string;
+  color?: string;
+  angle?: string;
+  radius?: string;
+  series?: string;
+  size?: string;
+}
+
+const G2PLOT_CONFIG_MAPPING: ConfigMapping = {
   line_chart: {
     x: 'xField',
     y: 'yField',
@@ -132,7 +147,7 @@ export const G2PLOT_CONFIG_MAPPING: ConfigMapping = {
   // wordcloud
 };
 
-export const G2PLOT_TYPE_MAPPING: TypeMapping = {
+const G2PLOT_TYPE_MAPPING: TypeMapping = {
   line_chart: 'Line',
   step_line_chart: 'StepLine',
   area_chart: 'Area',
@@ -167,3 +182,27 @@ export const G2PLOT_TYPE_MAPPING: TypeMapping = {
 
   // treemap: 'TreeMap',
 };
+
+const typeMappings: { [libraryName in ChartLibrary]: TypeMapping } = {
+  G2Plot: G2PLOT_TYPE_MAPPING,
+  // temp to avoid error
+  G2: G2PLOT_TYPE_MAPPING,
+};
+
+const configMappings: { [libraryName in ChartLibrary]: ConfigMapping } = {
+  G2Plot: G2PLOT_CONFIG_MAPPING,
+  // temp to avoid error
+  G2: G2PLOT_CONFIG_MAPPING,
+};
+
+interface Mapping {
+  typeMapping: TypeMapping;
+  configMapping: ConfigMapping;
+}
+
+export function getMappingForLib(libraryName: ChartLibrary): Mapping {
+  return {
+    typeMapping: typeMappings[libraryName],
+    configMapping: configMappings[libraryName],
+  };
+}
