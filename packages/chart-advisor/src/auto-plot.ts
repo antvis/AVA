@@ -87,7 +87,7 @@ export class AutoPlot extends EventEmitter {
       };
     }
     this.container = container;
-    this.feedbackLayer = createLayer(container);
+    this.feedbackLayer = createLayer(container, 'feedback-layer');
     const advices = dataToSpecs(data, options);
     this.advices = advices;
     this.options = options;

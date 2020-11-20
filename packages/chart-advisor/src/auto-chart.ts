@@ -194,6 +194,7 @@ export class AutoChart {
     }
 
     this.canvasLayer = createLayer(this.container, 'canvas-layer');
+    this.canvasLayer.style.pointerEvents = 'auto';
     const chartCanvas = addCanvas(this.canvasLayer, options);
     if (config) {
       if (typeof config.type !== 'string') throw new Error('please set the plotType');
