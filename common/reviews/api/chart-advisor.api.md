@@ -24,9 +24,11 @@ export interface Advice {
 
 // @public (undocumented)
 export interface AdvisorOptions {
+    chartRuleConfigs?: ChartRuleConfigMap;
     description?: string;
     preferences?: Preferences;
     purpose?: string;
+    refine?: boolean;
     title?: string;
 }
 
@@ -34,10 +36,11 @@ export interface AdvisorOptions {
 export type Aggregation = 'count';
 
 // @public
-export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
+export function autoChart(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
 // @public
 export interface AutoChartOptions {
+    chartRuleConfigs?: ChartRuleConfigMap;
     config?: G2PlotConfig;
     description?: string;
     development?: boolean;
@@ -46,38 +49,19 @@ export interface AutoChartOptions {
     noDataContent?: (container: HTMLDivElement) => void;
     preferences?: Preferences;
     purpose?: string;
+    refine?: boolean;
     theme?: string;
     title?: string;
     toolbar?: boolean;
 }
 
 // @beta (undocumented)
-export interface Channels {
-    // (undocumented)
-    angle?: string;
-    // (undocumented)
-    color?: string;
-    // (undocumented)
-    radius?: string;
-    // (undocumented)
-    series?: string;
-    // (undocumented)
-    size?: string;
-    // (undocumented)
-    x?: string;
-    // (undocumented)
-    x2?: string;
-    // (undocumented)
-    y?: string;
-    // (undocumented)
-    y2?: string;
-}
+export type ChartLibrary = 'G2Plot' | 'G2';
 
-// @beta (undocumented)
-export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
-
-// @beta (undocumented)
-export type ConfigMapping = Partial<Record<ChartID, Channels>>;
+// @public (undocumented)
+export type ChartRuleConfigMap = {
+    [K in ChartRuleID]?: ChartRuleConfig;
+};
 
 // @beta
 export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
@@ -101,13 +85,13 @@ export function dataToDataProps(data: any[]): DataProperty[];
 export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @beta (undocumented)
-export type EChartsConfig = any;
-
-// @beta (undocumented)
 export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitude' | 'latitude' | 'longitude2' | 'latitude2' | 'theta' | 'theta2' | 'radius' | 'radius2' | 'color' | 'fill' | 'stroke' | 'opacity' | 'fillOpacity' | 'strokeOpacity' | 'strokeWidth' | 'strokeDash' | 'size' | 'angle' | 'shape' | 'detail' | 'text' | 'order';
 
 // @beta (undocumented)
 export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
+
+// @public (undocumented)
+export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>>;
 
 // @public (undocumented)
 export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
@@ -125,9 +109,6 @@ export function g2plotRender(container: string | HTMLElement, data: any, libConf
 
 // @beta
 export function g2Render(container: string | HTMLElement, data: any, configs: G2PlotConfig): G2Plot.G2.Chart | undefined;
-
-// @beta (undocumented)
-export function getMappingForLib(libraryName: ChartLibrary): Mapping;
 
 // @beta (undocumented)
 export interface Insight {
@@ -178,14 +159,6 @@ export type InsightType = typeof INSIGHT_TYPES[number];
 export const insightWorkers: Partial<Record<InsightType, Worker_2>>;
 
 // @beta (undocumented)
-export interface Mapping {
-    // (undocumented)
-    configMapping: ConfigMapping;
-    // (undocumented)
-    typeMapping: TypeMapping;
-}
-
-// @beta (undocumented)
 export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
 
 // @public
@@ -197,13 +170,7 @@ export interface Preferences {
 // @beta (undocumented)
 export interface SingleViewSpec {
     // (undocumented)
-    encoding: Partial<Record<EncodingKey, {
-        field?: string;
-        type?: EncodingType;
-        bin?: boolean;
-        aggregate?: Aggregation;
-        stack?: StackType;
-    }>>;
+    encoding: VegaLiteEncodeingSpecification;
     // (undocumented)
     mark: {
         type: Mark;
@@ -212,19 +179,27 @@ export interface SingleViewSpec {
 }
 
 // @beta (undocumented)
-export type Specification = VegaLiteSubsetSpec;
+export type Specification = SingleViewSpec;
 
 // @beta (undocumented)
 export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
 
 // @beta (undocumented)
-export function specToLibConfig(advice: Advice, libraryName?: ChartLibrary): G2PlotConfig | EChartsConfig | null;
+export function specToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
 
 // @beta (undocumented)
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
 
 // @beta (undocumented)
-export type TypeMapping = Partial<Record<ChartID, string>>;
+export type VegaLiteEncodeingSpecification = Partial<Record<EncodingKey, {
+    field?: string;
+    type?: EncodingType;
+    bin?: boolean;
+    aggregate?: Aggregation;
+    stack?: StackType;
+    scale?: any;
+    domain?: any;
+}>>;
 
 // @beta (undocumented)
 export type VegaLiteSubsetSpec = SingleViewSpec | {

@@ -9,6 +9,9 @@ import {
 
 const Wiki = CKBJson('en-US', true);
 
+/**
+ * @beta
+ */
 export type ChartRuleID =
   | 'data-check'
   | 'data-field-qty'
@@ -22,12 +25,18 @@ export type ChartRuleID =
   | 'nominal-enum-combinatorial'
   | 'limit-series';
 
+/**
+ * @beta
+ */
 export interface ChartRuleConfig {
   weight?: number;
   off?: boolean;
   limit?: number;
 }
 
+/**
+ * @beta
+ */
 export type ChartRuleConfigMap = {
   [K in ChartRuleID]?: ChartRuleConfig;
 };
