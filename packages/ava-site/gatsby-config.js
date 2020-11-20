@@ -95,6 +95,14 @@ module.exports = {
         },
         order: 3,
       },
+      {
+        slug: 'api/chart-advisor/pipeline',
+        title: {
+          zh: 'pipeline',
+          en: 'pipeline',
+        },
+        order: 1,
+      },
     ],
     examples: [
       {

@@ -13,23 +13,7 @@ Chart recommendation and based on dataset and analysis needs.
 
 ## Demo - autoChart
 
-```html
-<div id="mountNode"></div>
-```
-
-```js
-import { autoChart } from '@antv/chart-advisor';
-
-const container = document.getElementById('mountNode');
-
-const data = [
-  {field1: 'a', field2: '100'},
-  {field1: 'b', field2: '300'},
-  {field1: 'c', field2: '800'},
-];
-
-autoChart(container, data, {toolbar: true, development: true});
-```
+<playground path="chart-advisor/auto-chart/demo/basic.ts"></playground>
 
 ## Features
 

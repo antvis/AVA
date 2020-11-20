@@ -7,4 +7,4 @@ const data = [
   { f1: '2019-04', f2: 330 },
 ];
 
-autoChart(document.getElementById('container'), data);
+autoChart(document.getElementById('container'), data, { toolbar: true, development: true });
