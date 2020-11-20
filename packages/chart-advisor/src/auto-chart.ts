@@ -4,7 +4,7 @@ import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
 import { isEqual, pick } from '@antv/util';
 import { AdvisorOptions, Advice, G2PlotConfig } from './advice-pipeline';
-import { Preferences } from './rules';
+import { Preferences, ChartRuleConfigMap } from './rules';
 import { MockPanel } from './mock-panel';
 import { createLayer, DEFAULT_FEEDBACK } from './util';
 export { Preferences };
@@ -66,6 +66,10 @@ export interface AutoChartOptions {
    */
   config?: G2PlotConfig;
   /**
+   * g2plot configs
+   */
+  chartRuleConfigs?: ChartRuleConfigMap;
+  /**
    * render while no data
    */
   noDataContent?: (container: HTMLDivElement) => void;
@@ -73,7 +77,7 @@ export interface AutoChartOptions {
   feedback?: (container: HTMLDivElement) => void;
 }
 
-export { AdvisorOptions };
+export { AdvisorOptions, ChartRuleConfigMap };
 
 export function addCanvas(layer: HTMLElement, { title, description }: AutoChartOptions): HTMLDivElement {
   layer.style.display = 'flex';
@@ -169,7 +173,7 @@ export class AutoChart {
 
   async render() {
     const { options, container, development, noDataContent } = this;
-    const { theme, toolbar, purpose, preferences, refine } = options;
+    const { theme, toolbar, purpose, preferences, chartRuleConfigs, refine } = options;
     let { config } = options;
     if (this.data && this.data.length === 0) {
       if (development) {
@@ -200,7 +204,7 @@ export class AutoChart {
         oldAdvices = this.plot.advices;
         oldIndex = this.plot.current;
       }
-      this.plot = new AutoPlot(chartCanvas, this.data, { theme, purpose, preferences, refine }, oldAdvices, oldIndex);
+      this.plot = new AutoPlot(chartCanvas, this.data, { theme, purpose, preferences, chartRuleConfigs, refine }, oldAdvices, oldIndex);
 
       if (toolbar && this.plot.advices.length > 0) {
         this.toolbar = new Toolbar(this.plot, this.container);

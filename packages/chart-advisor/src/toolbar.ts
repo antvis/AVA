@@ -77,6 +77,7 @@ export class Toolbar {
   };
 
   private mouseLeaveHandler = () => {
+    this.advicesContainer.style.display = 'none';
     this.toolbar.style.display = 'none';
   };
 
@@ -102,9 +103,7 @@ export class Toolbar {
         if (target.getAttribute('data-id') === 'chart-type-btn') {
           advicesContainer.style.display = getElementDispay(advicesContainer) === 'none' ? 'block' : 'none';
         } else {
-          console.log(111);
           const dataIndex = target.getAttribute('data-index');
-          console.log(dataIndex);
           if (dataIndex) {
             this.plotInst.render(Number.parseInt(dataIndex, 10));
           }

@@ -38,7 +38,7 @@ export class DevPanel {
     <div data-id="panel" class="${CLASS_PREFIX}dev_panel" style="height: ${height}px; width: ${width}px; display: ${display}; top: ${top +
       10}px; left: ${right - width - 20}px;">
       <div data-id="mask" class="${CLASS_PREFIX}dev_panel_mask"></div>
-      <header>${title}<span data-id="close" class="${CLASS_PREFIX}dev_panel_close">x</span></header>
+      <header>${title}<span data-id="close" class="${CLASS_PREFIX}dev_panel_close"><img style="width: 16px; height: 16px;" src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png"/></span></header>
       <div data-id="content" class="${CLASS_PREFIX}dev_panel_content"></div>
     </div>
     `;

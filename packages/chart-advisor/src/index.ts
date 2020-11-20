@@ -18,7 +18,7 @@
  * @packageDocumentation
  */
 
-import { AutoChart, AutoChartOptions, Preferences } from './auto-chart';
+import { AutoChart, AutoChartOptions, Preferences, ChartRuleConfigMap } from './auto-chart';
 
 /**
  * 自动图表
@@ -35,7 +35,7 @@ export async function autoChart(
   await AutoChart.create(container, data, options);
 }
 
-export { AutoChartOptions, Preferences };
+export { AutoChartOptions, Preferences, ChartRuleConfigMap };
 
 export * from './advice-pipeline';
 

@@ -55,9 +55,9 @@ const ADVISOR_STYLE = `
     border-bottom: 1px solid #D8D8D8;
   }
   .${CLASS_PREFIX}advice-thumbnail img {
-    height: 84px;
-    width: 112px;
-    background: #fff;
+    height: 100%;
+    width: auto;
+    margin: auto;
   }
 
   .${CLASS_PREFIX}advice-desc {
@@ -89,6 +89,10 @@ const ADVISOR_STYLE = `
 
   .${CLASS_PREFIX}advice-thumbnail {
     flex: none;
+    display: flex;
+    height: 84px;
+    width: 112px;
+    border: 1px solid #e2e2e2;
   }
 
   .${CLASS_PREFIX}advice>div:nth-child(3) {
@@ -150,16 +154,7 @@ const ADVISOR_STYLE = `
   }
   .${CLASS_PREFIX}dev_panel_close {
     margin: 8px;
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
-    background: #fff;
-    text-align: center;
-    color: #454857;
-    font-size: 16px;
-    line-height: 16px;
     cursor: pointer;
-    float: right;
   }
   .${CLASS_PREFIX}dev_panel_content {
     width: 100%;

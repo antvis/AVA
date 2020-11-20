@@ -27,6 +27,8 @@ interface Info {
   dataProps: DataProps[];
   purpose?: string;
   preferences?: Preferences;
+  customWeight?: number;
+  [key: string]: any;
 }
 
 type Validator = (args: Info) => number;
@@ -67,6 +69,7 @@ export class Rule {
   }
 
   check(args: Info) {
-    return this.validator(args) * this._weight;
+    const weight = this._hardOrSoft === 'SOFT' ? (args?.weight || this._weight) : this._weight
+    return this.validator(args) * weight;
   }
 }

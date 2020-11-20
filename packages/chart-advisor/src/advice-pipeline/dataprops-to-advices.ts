@@ -1,34 +1,46 @@
 import { CHART_ID_OPTIONS, ChartID } from '@antv/knowledge';
 import { deepMix } from '@antv/util';
-import { ChartRules, DesignRules, Rule } from '../rules';
+import { ChartRules, DesignRules, Rule, ChartRuleConfigMap } from '../rules';
+import _get from 'lodash/get';
 import { getChartTypeSpec } from './spec-mapping';
 import { AdvisorOptions, DataProperty, Advice, SingleViewSpec } from './interface';
 
 function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
+  const chartRuleConfigs: ChartRuleConfigMap = options?.chartRuleConfigs || {};
 
   // for log
   const record: Record<string, number> = {};
 
   let hardScore = 1;
-  ChartRules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(chartType)).forEach(
+  ChartRules.filter((r: Rule) => r.hardOrSoft === 'HARD' && r.specChartTypes.includes(chartType) && !_get(chartRuleConfigs, `${r.id}.off`)).forEach(
     (hr: Rule) => {
-      const score = hr.check({ dataProps, chartType, purpose, preferences });
+      const customConfigs = _get(chartRuleConfigs, `${hr.id}`) || {};
+      const score = hr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
       hardScore *= score;
       record[hr.id] = score;
     }
   );
 
+  /**
+   * TODO
+   * new soft rules score method
+   */
   let softScore = 0;
-  ChartRules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(chartType)).forEach(
+  // let softFullScore = 0;
+  ChartRules.filter((r: Rule) => r.hardOrSoft === 'SOFT' && r.specChartTypes.includes(chartType) && !_get(chartRuleConfigs, `${r.id}.off`)).forEach(
     (sr: Rule) => {
-      const score = sr.check({ dataProps, chartType, purpose, preferences });
+      const customConfigs = _get(chartRuleConfigs, `${sr.id}`) || {};
+      // const weight = _get(chartRuleConfigs, `${sr.id}.weight`) || sr.weight;
+      // softFullScore += weight * 1;
+      
+      const score = sr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
       softScore += score;
       record[sr.id] = score;
     }
   );
-
+  // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);
 
   if (showLog) console.log('💯score: ', score, '=', hardScore, '* (1 +', softScore, ') ;charttype: ', chartType);

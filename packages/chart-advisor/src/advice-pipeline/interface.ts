@@ -1,6 +1,6 @@
 import { LevelOfMeasurement as LOM, ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
-import { Preferences } from '../rules';
+import { Preferences, ChartRuleConfigMap } from '../rules';
 import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-lite';
 
 /**
@@ -27,6 +27,10 @@ export interface AdvisorOptions {
    * 是否应用设计规则
    */
   refine?: boolean;
+  /**
+   * 自定义调整规则
+   */
+  chartRuleConfigs?: ChartRuleConfigMap;
 }
 
 /**
