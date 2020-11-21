@@ -128,10 +128,10 @@ module.exports = {
     showLanguageSwitcher: true, // 用于定义是否展示语言切换
     showGithubCorner: true, // 是否展示角落的 GitHub 图标
     showAPIDoc: true, // 是否在demo页展示API文档
-    // docsearchOptions: {
-    //   apiKey: '', // TODO algolia doc search key
-    //   indexName: 'antv_ava',
-    // },
+    docsearchOptions: {
+      apiKey: '2af93b002b40c8e1ef51fd6577c888d1',
+      indexName: 'antv_ava',
+    },
     redirects: [],
   },
 };
