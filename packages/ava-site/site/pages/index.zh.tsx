@@ -26,7 +26,7 @@ const IndexPage = () => {
       logo: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*-dLnTIexOxwAAAAAAAAAAABkARQnAQ',
       title: t('智能可视化'),
       description: t(`链接人和数据，联通数据分析链条上的“最后一公里”`),
-      image: 'https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*gM2JRbkGETIAAAAAAAAAAAAAARQnAQ',
+      image: t('https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*gM2JRbkGETIAAAAAAAAAAAAAARQnAQ'),
     },
   ];
   const companies = [
@@ -47,6 +47,21 @@ const IndexPage = () => {
       alt="cover"
     />
   );
+  const notifications = [
+    {
+      type: t('News'),
+      title: t('利业·立业 - AntV 与业务的故事'),
+      date: '2020.11.22',
+      link: 'https://www.yuque.com/antv/blog/2020story',
+    },
+    {
+      type: t('News'),
+      title: t('AVA 1.0 你的图表参谋'),
+      date: '2020.11.22',
+      link: 'https://www.yuque.com/antv/blog/2020ava',
+    },
+  ];
+
   return (
     <>
       <SEO title={t('蚂蚁数据可视化')} lang={i18n.language} />
@@ -60,6 +75,7 @@ const IndexPage = () => {
         buttons={bannerButtons}
         showGithubStars={false}
         video="https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/file/A*PDpiR4U2oFEAAAAAAAAAAABkARQnAQ"
+        notifications={notifications}
       />
       <Cases cases={cases} />
       <Companies title={t('感谢信赖')} companies={companies} />
