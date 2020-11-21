@@ -10,6 +10,13 @@
         "en": "Basic autoChart usage",
         "zh": "基础 autoChart 用法"
       }
+    },
+    {
+      "filename": "refine.ts",
+      "title": {
+        "en": "Refine Chart",
+        "zh": "开启图表细节优化"
+      }
     }
   ]
 }
