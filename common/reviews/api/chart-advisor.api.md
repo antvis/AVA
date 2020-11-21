@@ -36,14 +36,11 @@ export interface AdvisorOptions {
 export type Aggregation = 'count';
 
 // @public
-export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
+export function autoChart(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
 // @public
 export interface AutoChartOptions {
-<<<<<<< HEAD
     chartRuleConfigs?: ChartRuleConfigMap;
-=======
->>>>>>> master
     config?: G2PlotConfig;
     description?: string;
     development?: boolean;
@@ -117,19 +114,14 @@ export interface DataProps {
 }
 
 // @beta (undocumented)
-<<<<<<< HEAD
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @beta
 export function dataToDataProps(data: any[]): DataProperty[];
-=======
-export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
->>>>>>> master
 
 // @beta (undocumented)
 export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
-<<<<<<< HEAD
 // @beta (undocumented)
 export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitude' | 'latitude' | 'longitude2' | 'latitude2' | 'theta' | 'theta2' | 'radius' | 'radius2' | 'color' | 'fill' | 'stroke' | 'opacity' | 'fillOpacity' | 'strokeOpacity' | 'strokeWidth' | 'strokeDash' | 'size' | 'angle' | 'shape' | 'detail' | 'text' | 'order';
 
@@ -138,37 +130,6 @@ export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' |
 
 // @beta (undocumented)
 export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>>;
-=======
-// @beta
-export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
-    name: string;
-    levelOfMeasurements: LevelOfMeasurement[];
-}) | (DWAnalyzer.DateFieldInfo & {
-    name: string;
-    levelOfMeasurements: LevelOfMeasurement[];
-}) | (DWAnalyzer.StringFieldInfo & {
-    name: string;
-    levelOfMeasurements: LevelOfMeasurement[];
-});
-
-// @beta (undocumented)
-export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
-
-// @beta
-export function dataToDataProps(data: any[]): DataProperty[];
-
-// @beta (undocumented)
-export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
-
-// @beta (undocumented)
-export type EChartsConfig = any;
-
-// @beta (undocumented)
-export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitude' | 'latitude' | 'longitude2' | 'latitude2' | 'theta' | 'theta2' | 'radius' | 'radius2' | 'color' | 'fill' | 'stroke' | 'opacity' | 'fillOpacity' | 'strokeOpacity' | 'strokeWidth' | 'strokeDash' | 'size' | 'angle' | 'shape' | 'detail' | 'text' | 'order';
-
-// @beta (undocumented)
-export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
->>>>>>> master
 
 // @public (undocumented)
 export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
@@ -187,7 +148,6 @@ export function g2plotRender(container: string | HTMLElement, data: any, libConf
 // @beta
 export function g2Render(container: string | HTMLElement, data: any, configs: G2PlotConfig): G2Plot.G2.Chart | undefined;
 
-<<<<<<< HEAD
 // @public (undocumented)
 export type HardOrSoft = 'HARD' | 'SOFT';
 
@@ -206,10 +166,6 @@ export interface Info {
     // (undocumented)
     purpose?: string;
 }
-=======
-// @beta (undocumented)
-export function getMappingForLib(libraryName: ChartLibrary): Mapping;
->>>>>>> master
 
 // @beta (undocumented)
 export interface Insight {
@@ -262,16 +218,12 @@ export const insightWorkers: Partial<Record<InsightType, Worker>>;
 // @beta (undocumented)
 export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
 
-// @beta (undocumented)
-export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
-
 // @public
 export interface Preferences {
     // (undocumented)
     canvasLayout: 'landscape' | 'portrait';
 }
 
-<<<<<<< HEAD
 // @public (undocumented)
 export class Rule {
     constructor(id: string, hardOrSoft: HardOrSoft, specChartTypes: ChartID[], weight: number, validator: Validator);
@@ -293,54 +245,18 @@ export class Rule {
 export interface SingleViewSpec {
     // (undocumented)
     encoding: VegaLiteEncodeingSpecification;
-=======
-// @beta (undocumented)
-export interface SingleViewSpec {
-    // (undocumented)
-    encoding: Partial<Record<EncodingKey, {
-        field?: string;
-        type?: EncodingType;
-        bin?: boolean;
-        aggregate?: Aggregation;
-        stack?: StackType;
-    }>>;
->>>>>>> master
     // (undocumented)
     mark: {
         type: Mark;
         [record: string]: any;
     };
 }
-<<<<<<< HEAD
-=======
-
-// @beta (undocumented)
-export type Specification = VegaLiteSubsetSpec;
-
-// @beta (undocumented)
-export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
-
-// @beta (undocumented)
-export function specToLibConfig(advice: Advice, libraryName?: ChartLibrary): G2PlotConfig | EChartsConfig | null;
-
-// @beta (undocumented)
-export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
->>>>>>> master
 
 // @beta (undocumented)
 export type Specification = SingleViewSpec;
 
 // @beta (undocumented)
-<<<<<<< HEAD
 export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
-=======
-export type VegaLiteSubsetSpec = SingleViewSpec | {
-    layer: SingleViewSpec[];
-};
-
-// @beta (undocumented)
-type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;
->>>>>>> master
 
 // @beta (undocumented)
 export function specToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
