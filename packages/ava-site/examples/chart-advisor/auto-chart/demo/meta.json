@@ -9,14 +9,16 @@
       "title": {
         "en": "Basic autoChart usage",
         "zh": "基础 autoChart 用法"
-      }
+      },
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*hbeeS6gtKVQAAAAAAAAAAAAAARQnAQ"
     },
     {
       "filename": "refine.ts",
       "title": {
         "en": "Refine Chart",
         "zh": "开启图表细节优化"
-      }
+      },
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*ybCXT4O_DXwAAAAAAAAAAAAAARQnAQ"
     }
   ]
 }
