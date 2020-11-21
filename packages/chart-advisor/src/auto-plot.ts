@@ -1,4 +1,4 @@
-import { AdvisorOptions, Advice, dataToSpecs, specToLibConfig } from './advice-pipeline';
+import { AdvisorOptions, Advice, dataToSpecs, adviceToLibConfig } from './advice-pipeline';
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
 import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
@@ -15,7 +15,7 @@ export interface Configs {
  * @param configs - 配置
  */
 function getConfig(advice: Advice, { theme, data }: Configs): any {
-  const configs: any = { ...specToLibConfig(advice, 'G2Plot')?.configs };
+  const configs: any = { ...adviceToLibConfig(advice, 'G2Plot')?.configs };
   configs.autoFit = true;
   return { ...configs, theme, data };
 }
@@ -125,7 +125,7 @@ export class AutoPlot extends EventEmitter {
     const { type } = advices[index];
     const currentType = advices[current].type;
     const { theme } = options;
-    const libConfig = specToLibConfig(advices[index], 'G2Plot');
+    const libConfig = adviceToLibConfig(advices[index], 'G2Plot');
     const configs = getConfig(advices[index], { theme, data });
     this.currentConfigs = configs;
     this.type = type;

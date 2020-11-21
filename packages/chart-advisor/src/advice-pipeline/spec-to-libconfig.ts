@@ -6,9 +6,9 @@ import { EncodingKey } from './vega-lite';
 /**
  * @beta
  */
-export function specToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
-// export function specToLibConfig(advice: Advice, libraryName: 'ECharts'): EChartsConfig | null;
-export function specToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G2Plot'): any {
+export function adviceToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
+// export function adviceToLibConfig(advice: Advice, libraryName: 'ECharts'): EChartsConfig | null;
+export function adviceToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G2Plot'): any {
   switch (libraryName) {
     case 'G2':
     case 'G2Plot':

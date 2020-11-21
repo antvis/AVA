@@ -1,6 +1,6 @@
-import { Advice, specToLibConfig } from '../../../src';
+import { Advice, adviceToLibConfig } from '../../../src';
 
-describe('API - specToLibConfig', () => {
+describe('API - adviceToLibConfig', () => {
   describe('Results', () => {
     test('should work for basic spec', () => {
       const spec: Advice = {
@@ -23,7 +23,7 @@ describe('API - specToLibConfig', () => {
         score: 1.8111111111111111,
       };
 
-      const libConfig = specToLibConfig(spec);
+      const libConfig = adviceToLibConfig(spec);
 
       expect(libConfig).toEqual({
         type: 'Pie',

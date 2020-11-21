@@ -8,7 +8,7 @@ import {
   dataToDataProps,
   dataPropsToAdvices,
   Advice,
-  specToLibConfig,
+  adviceToLibConfig,
   g2plotRender,
 } from '../packages/chart-advisor/src';
 import { DataSamples } from './data-samples';
@@ -25,7 +25,7 @@ const allPipelines = CHART_ID_OPTIONS.map((t) => {
 
   let libConfig = null;
   if (typeSpec) {
-    libConfig = specToLibConfig(typeSpec);
+    libConfig = adviceToLibConfig(typeSpec);
   }
 
   return {

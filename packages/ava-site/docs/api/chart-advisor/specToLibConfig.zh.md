@@ -1,5 +1,5 @@
 ---
-title: specToLibConfig
+title: adviceToLibConfig
 order: 3
 ---
 
@@ -8,7 +8,7 @@ order: 3
 <div class='doc-md'>
 
 ```sign
-specToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G2Plot')
+adviceToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G2Plot')
 ```
 
 ### 参数

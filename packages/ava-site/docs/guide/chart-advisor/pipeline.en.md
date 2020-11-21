@@ -22,7 +22,7 @@ Analyze and get the data properties of each column of the dataset.
 
 According to the data properties, recommend charts. The recommended charts are as *Advice* contains specification([vegaLite Spec](https://vega.github.io/vega-lite/docs/spec.html)), currently only supports single layer graphics.
 
-### Step 3 specToLibConfig 
+### Step 3 adviceToLibConfig 
 
 From chart specification to configs of some appointed charting library. AVA uses G2Plot as default charting library. In order to provide more flexible configuration capabilities, the libConfig and render steps are separated so that users can make custom configurations based on result config.
 

@@ -21,7 +21,7 @@ order: 1
 
 根据数据的特征分析结果，推荐图表类型和绘图描述 specification，specification 为 [vegaLite Spec](https://vega.github.io/vega-lite/docs/spec.html)，目前只支持单图层绘图语言。
 
-### 步骤 3： specToLibConfig 
+### 步骤 3： adviceToLibConfig 
 
 specification 到绘图库配置项，AVA 默认输入 G2Plot v2 配置项，为了提供更灵活到配置能力，将 libConfig 和 render 步骤开分开，方便使用者可以在 config 基础上做自定义配置。
 
