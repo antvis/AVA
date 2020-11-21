@@ -16,10 +16,10 @@ export interface HSLBaseOPtions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [maxH](./dw-random.hslbaseoptions.maxh.md) | <code>number</code> |  |
-|  [maxL](./dw-random.hslbaseoptions.maxl.md) | <code>number</code> |  |
-|  [maxS](./dw-random.hslbaseoptions.maxs.md) | <code>number</code> |  |
-|  [minH](./dw-random.hslbaseoptions.minh.md) | <code>number</code> |  |
-|  [minL](./dw-random.hslbaseoptions.minl.md) | <code>number</code> |  |
-|  [minS](./dw-random.hslbaseoptions.mins.md) | <code>number</code> |  |
+|  [maxH](./dw-random.hslbaseoptions.maxh.md) | number |  |
+|  [maxL](./dw-random.hslbaseoptions.maxl.md) | number |  |
+|  [maxS](./dw-random.hslbaseoptions.maxs.md) | number |  |
+|  [minH](./dw-random.hslbaseoptions.minh.md) | number |  |
+|  [minL](./dw-random.hslbaseoptions.minl.md) | number |  |
+|  [minS](./dw-random.hslbaseoptions.mins.md) | number |  |
 

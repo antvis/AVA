@@ -11,17 +11,18 @@
 <b>Signature:</b>
 
 ```typescript
-export declare function autoTransform(data: RowData[], renameOption?: RenameOption): AutoTransformResult;
+export declare function autoTransform(data: RowData[], renameOption?: RenameOption, defaultAgg?: AggregationType): AutoTransformResult;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  data | <code>RowData[]</code> |  |
-|  renameOption | <code>RenameOption</code> |  |
+|  data | [RowData](./dw-transform.rowdata.md)<!-- -->\[\] |  |
+|  renameOption | [RenameOption](./dw-transform.renameoption.md) |  |
+|  defaultAgg | [AggregationType](./dw-transform.aggregationtype.md) |  |
 
 <b>Returns:</b>
 
-`AutoTransformResult`
+[AutoTransformResult](./dw-transform.autotransformresult.md)
 

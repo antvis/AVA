@@ -18,10 +18,10 @@ export declare function parse(data: RowData[], schemas: TransformSchema | Transf
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  data | <code>RowData[]</code> |  |
-|  schemas | <code>TransformSchema &#124; TransformSchema[]</code> |  |
+|  data | [RowData](./dw-transform.rowdata.md)<!-- -->\[\] |  |
+|  schemas | [TransformSchema](./dw-transform.transformschema.md) \| [TransformSchema](./dw-transform.transformschema.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 
-`RowData[]`
+[RowData](./dw-transform.rowdata.md)<!-- -->\[\]
 

@@ -10,10 +10,11 @@
 ```typescript
 export interface HSLOptions extends HSLBaseOPtions 
 ```
+<b>Extends:</b> [HSLBaseOPtions](./dw-random.hslbaseoptions.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [casing](./dw-random.hsloptions.casing.md) | <code>'lower' &#124; 'upper'</code> |  |
+|  [casing](./dw-random.hsloptions.casing.md) | 'lower' \| 'upper' |  |
 

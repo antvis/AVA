@@ -18,16 +18,16 @@ export interface ChartKnowledgeJSON
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [alias](./knowledge.chartknowledgejson.alias.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [category](./knowledge.chartknowledgejson.category.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [channel](./knowledge.chartknowledgejson.channel.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [coord](./knowledge.chartknowledgejson.coord.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [dataPres](./knowledge.chartknowledgejson.datapres.md) | <code>DataPrerequisiteJSON[]</code> | <b><i>(BETA)</i></b> |
-|  [def](./knowledge.chartknowledgejson.def.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [family](./knowledge.chartknowledgejson.family.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [id](./knowledge.chartknowledgejson.id.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [name](./knowledge.chartknowledgejson.name.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [purpose](./knowledge.chartknowledgejson.purpose.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [recRate](./knowledge.chartknowledgejson.recrate.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [shape](./knowledge.chartknowledgejson.shape.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
+|  [alias](./knowledge.chartknowledgejson.alias.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [category](./knowledge.chartknowledgejson.category.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [channel](./knowledge.chartknowledgejson.channel.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [coord](./knowledge.chartknowledgejson.coord.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [dataPres](./knowledge.chartknowledgejson.datapres.md) | [DataPrerequisiteJSON](./knowledge.dataprerequisitejson.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [def](./knowledge.chartknowledgejson.def.md) | string | <b><i>(BETA)</i></b> |
+|  [family](./knowledge.chartknowledgejson.family.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [id](./knowledge.chartknowledgejson.id.md) | string | <b><i>(BETA)</i></b> |
+|  [name](./knowledge.chartknowledgejson.name.md) | string | <b><i>(BETA)</i></b> |
+|  [purpose](./knowledge.chartknowledgejson.purpose.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [recRate](./knowledge.chartknowledgejson.recrate.md) | string | <b><i>(BETA)</i></b> |
+|  [shape](./knowledge.chartknowledgejson.shape.md) | string\[\] | <b><i>(BETA)</i></b> |
 

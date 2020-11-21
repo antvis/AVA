@@ -10,5 +10,5 @@
 <b>Signature:</b>
 
 ```typescript
-result: RowData;
+result: RowData[];
 ```

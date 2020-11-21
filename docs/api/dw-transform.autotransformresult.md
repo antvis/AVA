@@ -18,6 +18,6 @@ export interface AutoTransformResult
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [result](./dw-transform.autotransformresult.result.md) | <code>RowData</code> | <b><i>(BETA)</i></b> |
-|  [schemas](./dw-transform.autotransformresult.schemas.md) | <code>TransformSchema[]</code> | <b><i>(BETA)</i></b> |
+|  [result](./dw-transform.autotransformresult.result.md) | [RowData](./dw-transform.rowdata.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [schemas](./dw-transform.autotransformresult.schemas.md) | [TransformSchema](./dw-transform.transformschema.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
 

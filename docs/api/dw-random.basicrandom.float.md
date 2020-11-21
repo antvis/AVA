@@ -16,9 +16,9 @@ float(options?: FloatOptions): number;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>FloatOptions</code> |  |
+|  options | [FloatOptions](./dw-random.floatoptions.md) |  |
 
 <b>Returns:</b>
 
-`number`
+number
 

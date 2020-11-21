@@ -16,11 +16,11 @@ cZodiac(options?: CZodiacOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>CZodiacOptions</code> | the params |
+|  options | [CZodiacOptions](./dw-random.czodiacoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 
 ## Example
 

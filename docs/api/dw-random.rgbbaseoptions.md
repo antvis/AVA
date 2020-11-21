@@ -15,13 +15,13 @@ export interface RGBBaseOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [grayscale](./dw-random.rgbbaseoptions.grayscale.md) | <code>boolean</code> |  |
-|  [max](./dw-random.rgbbaseoptions.max.md) | <code>number</code> |  |
-|  [maxB](./dw-random.rgbbaseoptions.maxb.md) | <code>number</code> |  |
-|  [maxG](./dw-random.rgbbaseoptions.maxg.md) | <code>number</code> |  |
-|  [maxR](./dw-random.rgbbaseoptions.maxr.md) | <code>number</code> |  |
-|  [min](./dw-random.rgbbaseoptions.min.md) | <code>number</code> |  |
-|  [minB](./dw-random.rgbbaseoptions.minb.md) | <code>number</code> |  |
-|  [minG](./dw-random.rgbbaseoptions.ming.md) | <code>number</code> |  |
-|  [minR](./dw-random.rgbbaseoptions.minr.md) | <code>number</code> |  |
+|  [grayscale](./dw-random.rgbbaseoptions.grayscale.md) | boolean |  |
+|  [max](./dw-random.rgbbaseoptions.max.md) | number |  |
+|  [maxB](./dw-random.rgbbaseoptions.maxb.md) | number |  |
+|  [maxG](./dw-random.rgbbaseoptions.maxg.md) | number |  |
+|  [maxR](./dw-random.rgbbaseoptions.maxr.md) | number |  |
+|  [min](./dw-random.rgbbaseoptions.min.md) | number |  |
+|  [minB](./dw-random.rgbbaseoptions.minb.md) | number |  |
+|  [minG](./dw-random.rgbbaseoptions.ming.md) | number |  |
+|  [minR](./dw-random.rgbbaseoptions.minr.md) | number |  |
 

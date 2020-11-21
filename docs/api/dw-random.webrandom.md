@@ -11,12 +11,13 @@ Generator for web
 ```typescript
 export declare class WebRandom extends TextRandom 
 ```
+<b>Extends:</b> [TextRandom](./dw-random.textrandom.md)
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [database](./dw-random.webrandom.database.md) |  | <code>WebDB &amp; TextDB</code> |  |
+|  [database](./dw-random.webrandom.database.md) |  | [WebDB](./dw-random.webdb.md) &amp; [TextDB](./dw-random.textdb.md) |  |
 
 ## Methods
 

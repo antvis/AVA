@@ -11,12 +11,13 @@ Generator for color
 ```typescript
 export declare class ColorRandom extends BasicRandom 
 ```
+<b>Extends:</b> [BasicRandom](./dw-random.basicrandom.md)
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [database](./dw-random.colorrandom.database.md) |  | <code>ColorDB</code> |  |
+|  [database](./dw-random.colorrandom.database.md) |  | [ColorDB](./dw-random.colordb.md) |  |
 
 ## Methods
 

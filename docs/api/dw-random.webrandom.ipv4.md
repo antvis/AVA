@@ -13,5 +13,5 @@ ipv4(): string;
 ```
 <b>Returns:</b>
 
-`string`
+string
 

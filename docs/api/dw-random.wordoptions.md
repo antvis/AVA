@@ -15,7 +15,7 @@ export interface WordOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [capitalize](./dw-random.wordoptions.capitalize.md) | <code>boolean</code> | 是否大写第一个字母 |
-|  [length](./dw-random.wordoptions.length.md) | <code>number</code> | the length of word |
-|  [syllables](./dw-random.wordoptions.syllables.md) | <code>number</code> |  |
+|  [capitalize](./dw-random.wordoptions.capitalize.md) | boolean | 是否大写第一个字母 |
+|  [length](./dw-random.wordoptions.length.md) | number | the length of word |
+|  [syllables](./dw-random.wordoptions.syllables.md) | number |  |
 

@@ -10,7 +10,7 @@ import {
 const Wiki = CKBJson('en-US', true);
 
 /**
- * @beta
+ * @public
  */
 export type ChartRuleID =
   | 'data-check'
@@ -26,7 +26,7 @@ export type ChartRuleID =
   | 'limit-series';
 
 /**
- * @beta
+ * @public
  */
 export interface ChartRuleConfig {
   weight?: number;
@@ -35,7 +35,7 @@ export interface ChartRuleConfig {
 }
 
 /**
- * @beta
+ * @public
  */
 export type ChartRuleConfigMap = {
   [K in ChartRuleID]?: ChartRuleConfig;
@@ -79,6 +79,9 @@ function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: DataProps[]) 
   return false;
 }
 
+/**
+ * @public
+ */
 export const ChartRules: Rule[] = [
   // Data must satisfy the data prerequisites
   new Rule('data-check', 'HARD', allChartTypes, 1.0, (args): number => {

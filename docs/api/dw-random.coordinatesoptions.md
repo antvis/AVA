@@ -15,9 +15,9 @@ export interface CoordinatesOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [fixed](./dw-random.coordinatesoptions.fixed.md) | <code>number</code> |  |
-|  [maxLat](./dw-random.coordinatesoptions.maxlat.md) | <code>number</code> |  |
-|  [maxLong](./dw-random.coordinatesoptions.maxlong.md) | <code>number</code> |  |
-|  [minLat](./dw-random.coordinatesoptions.minlat.md) | <code>number</code> |  |
-|  [minLong](./dw-random.coordinatesoptions.minlong.md) | <code>number</code> |  |
+|  [fixed](./dw-random.coordinatesoptions.fixed.md) | number |  |
+|  [maxLat](./dw-random.coordinatesoptions.maxlat.md) | number |  |
+|  [maxLong](./dw-random.coordinatesoptions.maxlong.md) | number |  |
+|  [minLat](./dw-random.coordinatesoptions.minlat.md) | number |  |
+|  [minLong](./dw-random.coordinatesoptions.minlong.md) | number |  |
 

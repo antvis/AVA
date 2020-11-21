@@ -16,9 +16,9 @@ export declare function type(array: any[]): FieldInfo;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  array | <code>any[]</code> | data |
+|  array | any\[\] | data |
 
 <b>Returns:</b>
 
-`FieldInfo`
+[FieldInfo](./dw-analyzer.fieldinfo.md)
 

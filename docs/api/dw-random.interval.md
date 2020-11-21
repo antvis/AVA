@@ -15,6 +15,6 @@ export interface Interval
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [max](./dw-random.interval.max.md) | <code>number</code> | max |
-|  [min](./dw-random.interval.min.md) | <code>number</code> | min |
+|  [max](./dw-random.interval.max.md) | number | max |
+|  [min](./dw-random.interval.min.md) | number | min |
 

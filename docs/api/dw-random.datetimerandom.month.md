@@ -19,9 +19,9 @@ month(options?: MonthOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>MonthOptions</code> | the params |
+|  options | [MonthOptions](./dw-random.monthoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

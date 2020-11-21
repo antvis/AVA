@@ -16,9 +16,9 @@ hexcolor(options?: HexColorOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>HexColorOptions</code> | the parmas |
+|  options | [HexColorOptions](./dw-random.hexcoloroptions.md) | the parmas |
 
 <b>Returns:</b>
 
-`string`
+string
 

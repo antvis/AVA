@@ -16,8 +16,8 @@ export interface FieldMeta
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [date](./dw-analyzer.fieldmeta.date.md) | <code>DateFieldInfo</code> |  |
-|  [float](./dw-analyzer.fieldmeta.float.md) | <code>NumberFieldInfo</code> |  |
-|  [integer](./dw-analyzer.fieldmeta.integer.md) | <code>NumberFieldInfo</code> |  |
-|  [string](./dw-analyzer.fieldmeta.string.md) | <code>StringFieldInfo</code> |  |
+|  [date](./dw-analyzer.fieldmeta.date.md) | [DateFieldInfo](./dw-analyzer.datefieldinfo.md) |  |
+|  [float](./dw-analyzer.fieldmeta.float.md) | [NumberFieldInfo](./dw-analyzer.numberfieldinfo.md) |  |
+|  [integer](./dw-analyzer.fieldmeta.integer.md) | [NumberFieldInfo](./dw-analyzer.numberfieldinfo.md) |  |
+|  [string](./dw-analyzer.fieldmeta.string.md) | [StringFieldInfo](./dw-analyzer.stringfieldinfo.md) |  |
 

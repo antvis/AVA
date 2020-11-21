@@ -1,7 +1,13 @@
 import { LevelOfMeasurement as LOM, ChartID as ChartType } from '@antv/knowledge';
 
-type HardOrSoft = 'HARD' | 'SOFT';
+/**
+ * @public
+ */
+export type HardOrSoft = 'HARD' | 'SOFT';
 
+/**
+ * @public
+ */
 export interface DataProps {
   distinct?: number;
   count?: number;
@@ -22,7 +28,10 @@ export interface Preferences {
   canvasLayout: 'landscape' | 'portrait';
 }
 
-interface Info {
+/**
+ * @public
+ */
+export interface Info {
   chartType: ChartType;
   dataProps: DataProps[];
   purpose?: string;
@@ -31,8 +40,14 @@ interface Info {
   [key: string]: any;
 }
 
-type Validator = (args: Info) => number;
+/**
+ * @public
+ */
+export type Validator = (args: Info) => number;
 
+/**
+ * @public
+ */
 export class Rule {
   private _id: string;
   private _hardOrSoft: HardOrSoft;

@@ -11,10 +11,11 @@ The params to generate a float
 ```typescript
 export interface FloatOptions extends Interval 
 ```
+<b>Extends:</b> [Interval](./dw-random.interval.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [fixed](./dw-random.floatoptions.fixed.md) | <code>number</code> | precision |
+|  [fixed](./dw-random.floatoptions.fixed.md) | number | precision |
 

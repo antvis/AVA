@@ -15,6 +15,6 @@ export interface MonthOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [abbr](./dw-random.monthoptions.abbr.md) | <code>boolean</code> |  |
-|  [locale](./dw-random.monthoptions.locale.md) | <code>string</code> |  |
+|  [abbr](./dw-random.monthoptions.abbr.md) | boolean |  |
+|  [locale](./dw-random.monthoptions.locale.md) | string |  |
 

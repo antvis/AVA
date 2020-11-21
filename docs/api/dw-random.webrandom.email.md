@@ -16,9 +16,9 @@ email(options?: EmailOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>EmailOptions</code> | the params |
+|  options | [EmailOptions](./dw-random.emailoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

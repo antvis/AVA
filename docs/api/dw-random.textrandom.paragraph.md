@@ -16,9 +16,9 @@ paragraph(options?: ParagraphOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>ParagraphOptions</code> | the params |
+|  options | [ParagraphOptions](./dw-random.paragraphoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

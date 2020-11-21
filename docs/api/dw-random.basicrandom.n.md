@@ -16,13 +16,13 @@ n<T extends AnyFunc>(generator: T, length?: number, ...params: Parameters<T>): R
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  generator | <code>T</code> | the generator |
-|  length | <code>number</code> | the length |
-|  params | <code>Parameters&lt;T&gt;</code> | the generator's params |
+|  generator | T | the generator |
+|  length | number | the length |
+|  params | Parameters&lt;T&gt; | the generator's params |
 
 <b>Returns:</b>
 
-`ReturnType<T>[]`
+ReturnType&lt;T&gt;\[\]
 
 ## Example
 

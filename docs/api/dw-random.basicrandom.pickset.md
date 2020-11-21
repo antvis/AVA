@@ -16,10 +16,10 @@ pickset<T>(array: T[], count?: number): T[];
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  array | <code>T[]</code> | the array to process |
-|  count | <code>number</code> | the counts to pick |
+|  array | T\[\] | the array to process |
+|  count | number | the counts to pick |
 
 <b>Returns:</b>
 
-`T[]`
+T\[\]
 

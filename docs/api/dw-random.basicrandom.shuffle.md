@@ -19,9 +19,9 @@ shuffle<T>(array: T[]): T[];
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  array | <code>T[]</code> | the array to process |
+|  array | T\[\] | the array to process |
 
 <b>Returns:</b>
 
-`T[]`
+T\[\]
 

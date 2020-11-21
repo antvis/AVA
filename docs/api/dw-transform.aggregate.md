@@ -14,10 +14,10 @@ export declare function aggregate(rows: RowData[], options: AggregateParams): Ro
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  rows | <code>RowData[]</code> | 数据 |
-|  options | <code>AggregateParams</code> | 参数 |
+|  rows | [RowData](./dw-transform.rowdata.md)<!-- -->\[\] | 数据 |
+|  options | [AggregateParams](./dw-transform.aggregateparams.md) | 参数 |
 
 <b>Returns:</b>
 
-`RowData[]`
+[RowData](./dw-transform.rowdata.md)<!-- -->\[\]
 

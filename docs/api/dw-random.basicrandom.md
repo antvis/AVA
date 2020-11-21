@@ -23,7 +23,7 @@ export declare class BasicRandom
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [random](./dw-random.basicrandom.random.md) |  | <code>RandomFunc</code> | random的逻辑 生成 0-1之内的数字 可以使用 <code>Math.random</code> |
+|  [random](./dw-random.basicrandom.random.md) |  | [RandomFunc](./dw-random.randomfunc.md) | random的逻辑 生成 0-1之内的数字 可以使用 <code>Math.random</code> |
 
 ## Methods
 

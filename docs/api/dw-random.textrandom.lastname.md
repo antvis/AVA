@@ -13,5 +13,5 @@ lastname(): string;
 ```
 <b>Returns:</b>
 
-`string`
+string
 

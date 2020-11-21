@@ -16,5 +16,5 @@ constructor(seed?: number);
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  seed | <code>number</code> |  |
+|  seed | number |  |
 

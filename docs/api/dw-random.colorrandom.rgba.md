@@ -16,9 +16,9 @@ rgba(optios?: RGBAOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  optios | <code>RGBAOptions</code> |  |
+|  optios | [RGBAOptions](./dw-random.rgbaoptions.md) |  |
 
 <b>Returns:</b>
 
-`string`
+string
 

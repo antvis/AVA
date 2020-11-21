@@ -16,5 +16,5 @@ export interface ColorDB
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [colorKeywords](./dw-random.colordb.colorkeywords.md) | <code>string[]</code> |  |
+|  [colorKeywords](./dw-random.colordb.colorkeywords.md) | string\[\] |  |
 

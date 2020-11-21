@@ -18,7 +18,7 @@ export interface TransKnowledgeProps
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [alias](./knowledge.transknowledgeprops.alias.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [def](./knowledge.transknowledgeprops.def.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [name](./knowledge.transknowledgeprops.name.md) | <code>string</code> | <b><i>(BETA)</i></b> |
+|  [alias](./knowledge.transknowledgeprops.alias.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [def](./knowledge.transknowledgeprops.def.md) | string | <b><i>(BETA)</i></b> |
+|  [name](./knowledge.transknowledgeprops.name.md) | string | <b><i>(BETA)</i></b> |
 

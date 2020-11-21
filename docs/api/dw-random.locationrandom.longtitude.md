@@ -16,9 +16,9 @@ longtitude(options?: FloatOptions): number;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>FloatOptions</code> | the params |
+|  options | [FloatOptions](./dw-random.floatoptions.md) | the params |
 
 <b>Returns:</b>
 
-`number`
+number
 

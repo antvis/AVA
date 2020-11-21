@@ -11,12 +11,13 @@ Generator for string
 ```typescript
 export declare class TextRandom extends BasicRandom 
 ```
+<b>Extends:</b> [BasicRandom](./dw-random.basicrandom.md)
 
 ## Properties
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [database](./dw-random.textrandom.database.md) |  | <code>TextDB</code> |  |
+|  [database](./dw-random.textrandom.database.md) |  | [TextDB](./dw-random.textdb.md) |  |
 
 ## Methods
 

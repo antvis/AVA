@@ -36,7 +36,7 @@ export interface AdvisorOptions {
 export type Aggregation = 'count';
 
 // @public
-export function autoChart(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
+export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
 // @public
 export interface AutoChartOptions {
@@ -59,9 +59,25 @@ export interface AutoChartOptions {
 export type ChartLibrary = 'G2Plot' | 'G2';
 
 // @public (undocumented)
+export interface ChartRuleConfig {
+    // (undocumented)
+    limit?: number;
+    // (undocumented)
+    off?: boolean;
+    // (undocumented)
+    weight?: number;
+}
+
+// @public (undocumented)
 export type ChartRuleConfigMap = {
     [K in ChartRuleID]?: ChartRuleConfig;
 };
+
+// @public (undocumented)
+export type ChartRuleID = 'data-check' | 'data-field-qty' | 'no-redundant-field' | 'purpose-check' | 'series-qty-limit' | 'bar-series-qty' | 'line-field-time-ordinal' | 'landscape-or-portrait' | 'diff-pie-sector' | 'nominal-enum-combinatorial' | 'limit-series';
+
+// @public (undocumented)
+export const ChartRules: Rule[];
 
 // @beta
 export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
@@ -74,6 +90,28 @@ export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
     name: string;
     levelOfMeasurements: LevelOfMeasurement[];
 });
+
+// @public (undocumented)
+export interface DataProps {
+    // (undocumented)
+    count?: number;
+    // (undocumented)
+    distinct?: number;
+    // (undocumented)
+    levelOfMeasurements: LevelOfMeasurement[];
+    // (undocumented)
+    maximum?: any;
+    // (undocumented)
+    minimum?: any;
+    // (undocumented)
+    missing: number;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    samples?: any[];
+    // (undocumented)
+    sum?: number;
+}
 
 // @beta (undocumented)
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
@@ -90,7 +128,7 @@ export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitud
 // @beta (undocumented)
 export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
 
-// @public (undocumented)
+// @beta (undocumented)
 export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>>;
 
 // @public (undocumented)
@@ -109,6 +147,25 @@ export function g2plotRender(container: string | HTMLElement, data: any, libConf
 
 // @beta
 export function g2Render(container: string | HTMLElement, data: any, configs: G2PlotConfig): G2Plot.G2.Chart | undefined;
+
+// @public (undocumented)
+export type HardOrSoft = 'HARD' | 'SOFT';
+
+// @public (undocumented)
+export interface Info {
+    // (undocumented)
+    [key: string]: any;
+    // (undocumented)
+    chartType: ChartID;
+    // (undocumented)
+    customWeight?: number;
+    // (undocumented)
+    dataProps: DataProps[];
+    // (undocumented)
+    preferences?: Preferences;
+    // (undocumented)
+    purpose?: string;
+}
 
 // @beta (undocumented)
 export interface Insight {
@@ -156,7 +213,7 @@ export function insightsFromDataset(data: RowData[], options?: AllSubspaceDatase
 export type InsightType = typeof INSIGHT_TYPES[number];
 
 // @beta (undocumented)
-export const insightWorkers: Partial<Record<InsightType, Worker_2>>;
+export const insightWorkers: Partial<Record<InsightType, Worker>>;
 
 // @beta (undocumented)
 export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
@@ -166,6 +223,23 @@ export interface Preferences {
     // (undocumented)
     canvasLayout: 'landscape' | 'portrait';
 }
+
+// @public (undocumented)
+export class Rule {
+    constructor(id: string, hardOrSoft: HardOrSoft, specChartTypes: ChartID[], weight: number, validator: Validator);
+    // (undocumented)
+    check(args: Info): number;
+    // (undocumented)
+    get hardOrSoft(): HardOrSoft;
+    // (undocumented)
+    get id(): string;
+    // (undocumented)
+    get specChartTypes(): ChartID[];
+    // (undocumented)
+    toString(): string;
+    // (undocumented)
+    get weight(): number;
+    }
 
 // @beta (undocumented)
 export interface SingleViewSpec {
@@ -190,6 +264,9 @@ export function specToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): 
 // @beta (undocumented)
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
 
+// @public (undocumented)
+export type Validator = (args: Info) => number;
+
 // @beta (undocumented)
 export type VegaLiteEncodeingSpecification = Partial<Record<EncodingKey, {
     field?: string;
@@ -199,6 +276,7 @@ export type VegaLiteEncodeingSpecification = Partial<Record<EncodingKey, {
     stack?: StackType;
     scale?: any;
     domain?: any;
+    ticks?: any;
 }>>;
 
 // @beta (undocumented)
@@ -207,9 +285,7 @@ export type VegaLiteSubsetSpec = SingleViewSpec | {
 };
 
 // @beta (undocumented)
-type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;
-
-export { Worker_2 as Worker }
+export type Worker = (data: RowData[]) => Insight[] | Promise<Insight[]>;
 
 
 ```

@@ -11,6 +11,7 @@ The Generator for location
 ```typescript
 export declare class LocationRandom extends BasicRandom 
 ```
+<b>Extends:</b> [BasicRandom](./dw-random.basicrandom.md)
 
 ## Methods
 

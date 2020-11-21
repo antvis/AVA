@@ -11,6 +11,7 @@ Generator for address
 ```typescript
 export declare class ChAddressRandom extends BasicRandom 
 ```
+<b>Extends:</b> [BasicRandom](./dw-random.basicrandom.md)
 
 ## Methods
 

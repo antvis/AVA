@@ -16,12 +16,12 @@ export interface FieldInfo
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [count](./dw-analyzer.fieldinfo.count.md) | <code>number</code> | count of samples |
-|  [distinct](./dw-analyzer.fieldinfo.distinct.md) | <code>number</code> | Distinct count |
-|  [meta](./dw-analyzer.fieldinfo.meta.md) | <code>FieldMeta</code> | more info |
-|  [missing](./dw-analyzer.fieldinfo.missing.md) | <code>number</code> | number of empty inclues null undefined or empty string |
-|  [recommendation](./dw-analyzer.fieldinfo.recommendation.md) | <code>TypeSpecifics</code> | recommendation type |
-|  [samples](./dw-analyzer.fieldinfo.samples.md) | <code>any[]</code> | samples |
-|  [type](./dw-analyzer.fieldinfo.type.md) | <code>TypeSpecifics &#124; 'mixed'</code> | field type |
-|  [valueMap](./dw-analyzer.fieldinfo.valuemap.md) | <code>Record&lt;string, number&gt;</code> | Number of each distinct item |
+|  [count](./dw-analyzer.fieldinfo.count.md) | number | count of samples |
+|  [distinct](./dw-analyzer.fieldinfo.distinct.md) | number | distinct count |
+|  [meta](./dw-analyzer.fieldinfo.meta.md) | [FieldMeta](./dw-analyzer.fieldmeta.md) | more info |
+|  [missing](./dw-analyzer.fieldinfo.missing.md) | number | number of empty inclues null undefined or empty string |
+|  [recommendation](./dw-analyzer.fieldinfo.recommendation.md) | [TypeSpecifics](./dw-analyzer.typespecifics.md) | recommendation type |
+|  [samples](./dw-analyzer.fieldinfo.samples.md) | any\[\] | samples |
+|  [type](./dw-analyzer.fieldinfo.type.md) | [TypeSpecifics](./dw-analyzer.typespecifics.md) \| 'mixed' | field type |
+|  [valueMap](./dw-analyzer.fieldinfo.valuemap.md) | Record&lt;string, number&gt; | Number of each distinct item |
 

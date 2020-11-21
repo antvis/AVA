@@ -16,11 +16,11 @@ static mixin(options: MixinOptions): void;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>MixinOptions</code> | methods |
+|  options | [MixinOptions](./dw-random.mixinoptions.md) | methods |
 
 <b>Returns:</b>
 
-`void`
+void
 
 ## Example
 

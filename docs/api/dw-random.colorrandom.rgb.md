@@ -16,9 +16,9 @@ rgb(options?: RGBOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>RGBOptions</code> |  |
+|  options | [RGBOptions](./dw-random.rgboptions.md) |  |
 
 <b>Returns:</b>
 
-`string`
+string
 

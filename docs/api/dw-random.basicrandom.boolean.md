@@ -16,9 +16,9 @@ boolean(options?: BooleanOptions): boolean;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>BooleanOptions</code> | options |
+|  options | [BooleanOptions](./dw-random.booleanoptions.md) | options |
 
 <b>Returns:</b>
 
-`boolean`
+boolean
 

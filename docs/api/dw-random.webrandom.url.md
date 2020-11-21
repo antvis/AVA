@@ -16,9 +16,9 @@ url(options?: UrlOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>UrlOptions</code> | the params |
+|  options | [UrlOptions](./dw-random.urloptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

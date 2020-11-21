@@ -16,5 +16,5 @@ export interface WebDB
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [tld](./dw-random.webdb.tld.md) | <code>string[]</code> |  |
+|  [tld](./dw-random.webdb.tld.md) | string\[\] |  |
 

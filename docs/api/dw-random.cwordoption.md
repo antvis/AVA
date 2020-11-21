@@ -10,10 +10,11 @@
 ```typescript
 export interface CWordOption extends CCharacterOptions 
 ```
+<b>Extends:</b> [CCharacterOptions](./dw-random.ccharacteroptions.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [length](./dw-random.cwordoption.length.md) | <code>number</code> |  |
+|  [length](./dw-random.cwordoption.length.md) | number |  |
 

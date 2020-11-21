@@ -11,8 +11,7 @@
     "api": "rm -rf temp && lerna run api",
     "doc": "rm -rf apis && api-documenter markdown -i ./temp -o ./docs/api",
     "boot": "lerna bootstrap",
-    "deploy-doc": "gh-pages -d docs/api",
-    "postinstall": "npm run boot"
+    "deploy-doc": "gh-pages -d docs/api"
   },
   "husky": {
     "hooks": {
@@ -31,8 +30,8 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.7.4",
     "@babel/runtime": "^7.8.7",
-    "@microsoft/api-documenter": "^7.7.2",
-    "@microsoft/api-extractor": "^7.7.0",
+    "@microsoft/api-documenter": "7.7.2",
+    "@microsoft/api-extractor": "7.7.0",
     "@types/jest": "^23.3.12",
     "@types/lodash": "^4.14.165",
     "@types/react": "^16.9.9",

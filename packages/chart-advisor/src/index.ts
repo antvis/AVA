@@ -39,7 +39,17 @@ export { AutoChartOptions, Preferences };
 
 export * from './advice-pipeline';
 
-export { ChartRules, ChartRuleConfig, ChartRuleConfigMap } from './rules';
+export {
+  ChartRules,
+  ChartRuleConfig,
+  ChartRuleConfigMap,
+  ChartRuleID,
+  Rule,
+  HardOrSoft,
+  Validator,
+  Info,
+  DataProps,
+} from './rules';
 
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 

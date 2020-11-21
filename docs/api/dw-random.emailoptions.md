@@ -15,6 +15,6 @@ export interface EmailOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [domain](./dw-random.emailoptions.domain.md) | <code>string</code> |  |
-|  [length](./dw-random.emailoptions.length.md) | <code>number</code> |  |
+|  [domain](./dw-random.emailoptions.domain.md) | string |  |
+|  [length](./dw-random.emailoptions.length.md) | number |  |
 

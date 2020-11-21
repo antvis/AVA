@@ -16,9 +16,9 @@ phone(options?: PhoneOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>PhoneOptions</code> | the params |
+|  options | [PhoneOptions](./dw-random.phoneoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

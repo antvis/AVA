@@ -16,9 +16,9 @@ string(options?: StringOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>StringOptions</code> |  |
+|  options | [StringOptions](./dw-random.stringoptions.md) |  |
 
 <b>Returns:</b>
 
-`string`
+string
 

@@ -10,10 +10,11 @@
 ```typescript
 export interface RGBOptions extends RGBBaseOptions 
 ```
+<b>Extends:</b> [RGBBaseOptions](./dw-random.rgbbaseoptions.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [casing](./dw-random.rgboptions.casing.md) | <code>'lower' &#124; 'upper'</code> | the case |
+|  [casing](./dw-random.rgboptions.casing.md) | 'lower' \| 'upper' | the case |
 

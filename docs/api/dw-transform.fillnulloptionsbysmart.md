@@ -18,5 +18,5 @@ export interface FillNullOptionsBySmart
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [type](./dw-transform.fillnulloptionsbysmart.type.md) | <code>Extract&lt;FillNullType, 'bySmart'&gt;</code> | <b><i>(BETA)</i></b> |
+|  [type](./dw-transform.fillnulloptionsbysmart.type.md) | Extract&lt;[FillNullType](./dw-transform.fillnulltype.md)<!-- -->, 'bySmart'&gt; | <b><i>(BETA)</i></b> |
 

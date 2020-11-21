@@ -10,10 +10,11 @@
 ```typescript
 export interface TimeOptions extends Interval 
 ```
+<b>Extends:</b> [Interval](./dw-random.interval.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [short](./dw-random.timeoptions.short.md) | <code>boolean</code> | has the time offset |
+|  [short](./dw-random.timeoptions.short.md) | boolean | has the time offset |
 

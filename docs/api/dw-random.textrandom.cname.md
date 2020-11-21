@@ -16,9 +16,9 @@ cname(options?: Person): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>Person</code> | the params |
+|  options | [Person](./dw-random.person.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

@@ -18,8 +18,8 @@ export interface Action
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [as](./dw-transform.action.as.md) | <code>string &#124; null</code> | <b><i>(BETA)</i></b> |
-|  [field](./dw-transform.action.field.md) | <code>string &#124; null</code> | <b><i>(BETA)</i></b> |
-|  [options](./dw-transform.action.options.md) | <code>FillNullOptions</code> | <b><i>(BETA)</i></b> |
-|  [type](./dw-transform.action.type.md) | <code>ActionType</code> | <b><i>(BETA)</i></b> |
+|  [as](./dw-transform.action.as.md) | string \| null | <b><i>(BETA)</i></b> |
+|  [field](./dw-transform.action.field.md) | string \| null | <b><i>(BETA)</i></b> |
+|  [options](./dw-transform.action.options.md) | [FillNullOptions](./dw-transform.fillnulloptions.md) | <b><i>(BETA)</i></b> |
+|  [type](./dw-transform.action.type.md) | [ActionType](./dw-transform.actiontype.md) | <b><i>(BETA)</i></b> |
 

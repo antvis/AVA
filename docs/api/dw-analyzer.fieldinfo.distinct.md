@@ -4,7 +4,7 @@
 
 ## FieldInfo.distinct property
 
-Distinct count
+distinct count
 
 <b>Signature:</b>
 
