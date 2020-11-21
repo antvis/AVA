@@ -62,6 +62,14 @@ autoChart(container, data, options);
 
 图表配置，你可以手动指定图表类型，和图表配置，可以直接从配置面板中拷贝出来作为 config 配置
 
+#### options.refine
+
+设计规则开关
+
+#### options.chartRuleConfigs
+
+自定义推荐规则配置
+
 #### options.noDataContent
 
 在没有数据的情况下渲染的内容，你需要提供一个 render 和 destroy 方法来用户渲染和销毁。 默认展示'暂无数据', 示例
