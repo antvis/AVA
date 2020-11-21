@@ -70,6 +70,14 @@ Theme of the chart styles.
 
 Detailed configs of the chart.
 
+#### options.refine
+
+on/off design rules
+
+#### options.chartRuleConfigs
+
+Custom configs for chart rules.
+
 #### options.noDataContent
 
 To render content without data, you need to provide a `render` and `destroy` method for user rendering and destruction. 
