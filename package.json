@@ -11,7 +11,8 @@
     "api": "rm -rf temp && lerna run api",
     "doc": "rm -rf apis && api-documenter markdown -i ./temp -o ./docs/api",
     "boot": "lerna bootstrap",
-    "deploy-doc": "gh-pages -d docs/api"
+    "deploy-doc": "gh-pages -d docs/api",
+    "postinstall": "npm run boot"
   },
   "husky": {
     "hooks": {
