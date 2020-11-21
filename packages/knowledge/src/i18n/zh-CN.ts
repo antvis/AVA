@@ -37,7 +37,6 @@ export const zhCN: TranslateList = {
       Hierarchy: '层级',
       Flow: '流向',
       Spatial: '空间',
-      Anomaly: '异常',
     },
     coord: {
       NumberLine: '数轴',
@@ -211,9 +210,9 @@ export const zhCN: TranslateList = {
     },
 
     radial_bar_chart: {
-      name: '径向条形图',
-      alias: ['环形条形图', '环形柱状图', '玉珏图'],
-      def: '径向条形图是一种在极坐标系下绘制的条形图。径向条形图沿半径方向展示分类维度，使用角度来反应数值。',
+      name: '',
+      alias: [],
+      def: 'TBD',
     },
 
     mirror_bar_chart: {
@@ -308,11 +307,10 @@ export const zhCN: TranslateList = {
       def: '对比漏斗图是两个独立的漏斗图以一根中轴线对称展开的图表形式。',
     },
 
-    box_plot: {
-      name: '箱形图',
-      alias: ['箱线图', '盒须图', '盒式图', '盒状图'],
-      def:
-        '箱形图是一种用作显示一组数据分散情况的统计图表，因形状如箱子而得名。箱子的顶端和底端分别代表上下四分位数，箱子中间的线代表中位数。从箱子延伸出去的线条展现出了上下四分位数以外的数据。有时，箱形图上也会出现个别的点，这代表离群值，也可称之为异常值。',
+    boxplot: {
+      name: '',
+      alias: [],
+      def: 'TBD',
     },
 
     heatmap: {

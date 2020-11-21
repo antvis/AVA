@@ -7,7 +7,7 @@ export const base: ChartKnowledgeBase = {
     alias: ['Lines'],
     family: ['LineCharts'],
     def: 'A line chart uses lines with segments to show changes in data in a ordinal dimension.',
-    purpose: ['Comparison', 'Trend', 'Anomaly'],
+    purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Lines'],
@@ -47,7 +47,7 @@ export const base: ChartKnowledgeBase = {
     family: ['AreaCharts'],
     def:
       'An area chart uses series of line segments with overlapped areas to show the change in data in a ordinal dimension.',
-    purpose: ['Comparison', 'Trend', 'Anomaly'],
+    purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Area'],
@@ -142,7 +142,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Color'],
@@ -161,7 +161,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
@@ -180,7 +180,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
@@ -199,7 +199,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length'],
@@ -232,7 +232,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Interval', 'Ordinal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Length'],
@@ -285,7 +285,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Color'],
@@ -304,7 +304,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Position'],
@@ -323,7 +323,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length', 'Position'],
@@ -342,7 +342,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 2, maxQty: 2, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Color', 'Length'],
@@ -376,7 +376,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Bars'],
     dataPres: [
       { minQty: 2, maxQty: 2, fieldConditions: ['Interval'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Length'],
     recRate: 'Recommended',
@@ -384,20 +384,16 @@ export const base: ChartKnowledgeBase = {
 
   radial_bar_chart: {
     id: 'radial_bar_chart',
-    name: 'Radial Bar Chart',
-    alias: ['Radial Column Chart'],
-    family: ['BarCharts'],
-    def:
-      'A bar chart that is plotted in the polar coordinate system. The axis along radius shows the classification dimension and the angle shows the corresponding value.',
-    purpose: ['Comparison', 'Distribution', 'Rank'],
-    coord: ['Polar'],
-    category: ['Statistic'],
-    shape: ['Round'],
-    dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Angle', 'Color'],
+    name: '',
+    alias: [],
+    family: [],
+    def: '',
+    purpose: [],
+    coord: [],
+    category: [],
+    shape: [],
+    dataPres: [],
+    channel: [],
     recRate: 'Recommended',
   },
 
@@ -429,7 +425,7 @@ export const base: ChartKnowledgeBase = {
     shape: ['Bars'],
     dataPres: [
       { minQty: 3, maxQty: 3, fieldConditions: ['Interval'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
     ],
     channel: ['Position', 'Color'],
     recRate: 'Recommended',
@@ -447,7 +443,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Angle', 'Area', 'Color'],
@@ -466,7 +462,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['ArcLength'],
@@ -500,7 +496,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Round'],
     dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Angle', 'Color', 'Length'],
@@ -514,7 +510,7 @@ export const base: ChartKnowledgeBase = {
     family: ['ScatterCharts'],
     def:
       'A scatter plot is a type of plot or mathematical diagram using Cartesian coordinates to display values for typically two variables for series of data.',
-    purpose: ['Comparison', 'Distribution', 'Anomaly'],
+    purpose: ['Comparison', 'Distribution'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Scatter'],
@@ -595,8 +591,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Treemap',
     alias: [],
     family: ['TreeGraph'],
-    def:
-      'A visual representation of a data tree with nodes. Each node is displayed as a rectangle, sized and colored according to values that you assign.',
+    def: 'A visual representation of a data tree with nodes. Each node is displayed as a rectangle, sized and colored according to values that you assign.',
     purpose: ['Composition', 'Comparison', 'Hierarchy'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -677,22 +672,18 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  box_plot: {
-    id: 'box_plot',
-    name: 'Box Plot',
-    alias: ['Box and Whisker Plot', 'boxplot'],
-    family: ['BarCharts'],
-    def:
-      'A box plot is often used to graphically depict groups of numerical data through their quartiles. Box plots may also have lines extending from the boxes indicating variability outside the upper and lower quartiles. Outliers may be plotted as individual points.',
-    purpose: ['Distribution', 'Anomaly'],
-    coord: ['Cartesian2D'],
-    category: ['Statistic'],
-    shape: ['Bars'],
-    dataPres: [
-      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
-      { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
-    ],
-    channel: ['Position'],
+  boxplot: {
+    id: 'boxplot',
+    name: '',
+    alias: [],
+    family: [],
+    def: '',
+    purpose: [],
+    coord: [],
+    category: [],
+    shape: [],
+    dataPres: [],
+    channel: [],
     recRate: 'Recommended',
   },
 

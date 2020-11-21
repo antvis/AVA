@@ -2,8 +2,7 @@
   "packages": [
     "packages/chart-advisor",
     "packages/datawizard/*",
-    "packages/knowledge",
-    "packages/ava-site"
+    "packages/knowledge"
   ],
   "npmClient": "yarn",
   "command": {

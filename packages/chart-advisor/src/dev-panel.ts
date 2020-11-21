@@ -7,7 +7,6 @@ export interface PanelOptions {
   width: number;
   top: number;
   left: number;
-  right: number;
   visible: boolean;
   content: string | HTMLIFrameElement;
 }
@@ -30,15 +29,14 @@ export class DevPanel {
 
   constructor(options: PanelOptions) {
     this.options = options;
-    const { title, width, height, content, visible, top, right } = options;
+    const { title, width, height, content, visible, top, left } = options;
     const { containerEl } = this;
     this.visible = visible;
     const display = visible ? 'block' : 'none';
     containerEl.innerHTML = `
-    <div data-id="panel" class="${CLASS_PREFIX}dev_panel" style="height: ${height}px; width: ${width}px; display: ${display}; top: ${top +
-      10}px; left: ${right - width - 20}px;">
+    <div data-id="panel" class="${CLASS_PREFIX}dev_panel" style="height: ${height}px; width: ${width}px; display: ${display}; top: ${top}px; left: ${left}px;">
       <div data-id="mask" class="${CLASS_PREFIX}dev_panel_mask"></div>
-      <header>${title}<span data-id="close" class="${CLASS_PREFIX}dev_panel_close"><img style="width: 16px; height: 16px;" src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png"/></span></header>
+      <header>${title}<span data-id="close" class="${CLASS_PREFIX}dev_panel_close">x</span></header>
       <div data-id="content" class="${CLASS_PREFIX}dev_panel_content"></div>
     </div>
     `;

@@ -5,8 +5,8 @@
   "private": false,
   "browser": "dist/index.js",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "module": "es/index.js",
+  "typings": "typings/dw-random.d.ts",
   "scripts": {
     "build": "rm -rf lib && tsc --pretty",
     "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",

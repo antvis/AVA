@@ -41,7 +41,6 @@ export const PURPOSE_OPTIONS = [
   'Hierarchy',
   'Flow',
   'Spatial',
-  'Anomaly',
 ] as const;
 
 /**

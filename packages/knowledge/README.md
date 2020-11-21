@@ -18,23 +18,22 @@ Chart Knowledge Base (CKB) is a library offers knowledge base for chart wikis in
 
 ```js
 {
-  line_chart: {
-    id: 'line_chart',
-    name: 'Line Chart',
-    alias: ['Lines'],
+  single_line_chart: {
+    id: 'single_line_chart',
+    name: 'Single Line Chart',
+    alias: ['Line', 'Line Chart', 'Basic Line Chart'],
     family: ['LineCharts'],
-    def: 'A line chart uses lines with segments to show changes in data in a ordinal dimension.',
-    purpose: ['Comparison', 'Trend', 'Anomaly'],
+    def:
+      'A single line chart is a chart that uses one line with segments to show changes in data in a ordinal dimension.',
+    purpose: ['Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Lines'],
     dataPres: [
       { minQty: 1, maxQty: 1, fieldConditions: ['Time', 'Ordinal'] },
-      { minQty: 0, maxQty: 1, fieldConditions: ['Nominal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Direction'],
-    recRate: 'Recommended',
   },
 
   ...

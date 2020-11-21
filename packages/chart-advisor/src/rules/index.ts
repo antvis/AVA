@@ -1,4 +1,7 @@
-export { Rule, Preferences } from './concepts/rule';
+export { default as Rule, Preferences } from './concepts/rule';
 
-export * from './rules';
-export * from './designRules';
+import ChartRules from './rules';
+
+const Rules = ChartRules;
+
+export default Rules;

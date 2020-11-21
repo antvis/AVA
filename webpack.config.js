@@ -55,7 +55,6 @@ module.exports = {
     disableHostCheck: true,
     host: '0.0.0.0',
     hot: true,
-    contentBase: path.join(__dirname, "demo"),
   },
   plugins: [
     new webpack.EnvironmentPlugin({

@@ -1,4 +1,4 @@
-import { Rule, DataProps } from './concepts/rule';
+import Rule, { DataProps } from './concepts/rule';
 import {
   CKBJson,
   LevelOfMeasurement as LOM,
@@ -8,29 +8,6 @@ import {
 } from '@antv/knowledge';
 
 const Wiki = CKBJson('en-US', true);
-
-export type ChartRuleID =
-  | 'data-check'
-  | 'data-field-qty'
-  | 'no-redundant-field'
-  | 'purpose-check'
-  | 'series-qty-limit'
-  | 'bar-series-qty'
-  | 'line-field-time-ordinal'
-  | 'landscape-or-portrait'
-  | 'diff-pie-sector'
-  | 'nominal-enum-combinatorial'
-  | 'limit-series';
-
-export interface ChartRuleConfig {
-  weight?: number;
-  off?: boolean;
-  limit?: number;
-}
-
-export type ChartRuleConfigMap = {
-  [K in ChartRuleID]?: ChartRuleConfig;
-};
 
 const allChartTypes: ChartType[] = Object.keys(Wiki) as ChartType[];
 
@@ -70,7 +47,7 @@ function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: DataProps[]) 
   return false;
 }
 
-export const ChartRules: Rule[] = [
+const ChartRules: Rule[] = [
   // Data must satisfy the data prerequisites
   new Rule('data-check', 'HARD', allChartTypes, 1.0, (args): number => {
     let result = 0;
@@ -163,17 +140,15 @@ export const ChartRules: Rule[] = [
     (args): number => {
       let result = 0;
       const { dataProps, chartType } = args;
-      let { limit } = args;
 
-      if (!Number.isInteger(limit) || limit <= 0) {
-        limit = 6;
-        if (chartType === 'pie_chart' || chartType === 'donut_chart' || chartType === 'rose_chart') limit = 6;
-        if (chartType === 'radar_chart') limit = 8;
-      }
+      let limit = 6;
+      if (chartType === 'pie_chart' || chartType === 'donut_chart' || chartType === 'rose_chart') limit = 6;
+      if (chartType === 'radar_chart') limit = 8;
 
       if (dataProps) {
         const field4Series = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
         const seriesQty = field4Series && field4Series.count ? field4Series.count : 0;
+
         if (seriesQty >= 2 && seriesQty <= limit) {
           result = 2 / seriesQty;
         }
@@ -340,6 +315,7 @@ export const ChartRules: Rule[] = [
       const nominalOrOrdinalFields = dataProps.filter((field) =>
         intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal'])
       );
+
       if (nominalOrOrdinalFields.length >= 2) {
         const sortedFields = nominalOrOrdinalFields.sort(compare);
 
@@ -362,3 +338,5 @@ export const ChartRules: Rule[] = [
   }),
   // end
 ];
+
+export default ChartRules;

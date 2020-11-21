@@ -11,5 +11,5 @@
 <b>Signature:</b>
 
 ```typescript
-PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly"]
+PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition", "Relation", "Hierarchy", "Flow", "Spatial"]
 ```

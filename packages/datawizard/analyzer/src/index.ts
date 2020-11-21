@@ -59,13 +59,6 @@ export interface StringFieldInfo extends FieldInfo {
 }
 
 /**
- * @public
- */
-export function isStringFieldInfo(x: FieldInfo): x is StringFieldInfo {
-  return x.recommendation === 'string';
-}
-
-/**
  * Number Field
  * @public
  */
@@ -97,13 +90,6 @@ export interface NumberFieldInfo extends FieldInfo {
 }
 
 /**
- * @public
- */
-export function isNumberFieldInfo(x: FieldInfo): x is NumberFieldInfo {
-  return x.recommendation === 'integer' || x.recommendation === 'float';
-}
-
-/**
  * Date Field
  * @public
  */
@@ -112,13 +98,6 @@ export interface DateFieldInfo extends FieldInfo {
   minimum: string | number | Date;
   /** maximum date */
   maximum: string | number | Date;
-}
-
-/**
- * @public
- */
-export function isDateFieldInfo(x: FieldInfo): x is DateFieldInfo {
-  return x.recommendation === 'date';
 }
 
 /**
@@ -138,7 +117,7 @@ export interface FieldInfo {
   recommendation: TypeSpecifics;
   /** number of empty inclues null undefined or empty string */
   missing: number;
-  /** distinct count */
+  /** Distinct count */
   distinct: number;
   /** Number of each distinct item */
   valueMap: Record<string, number>;

@@ -6,7 +6,7 @@
   "browser": "dist/index.js",
   "main": "lib/index.js",
   "module": "es/index.js",
-  "types": "lib/index.d.ts",
+  "typings": "typings/dw-analyzer.d.ts",
   "scripts": {
     "build": "rm -rf lib && tsc --pretty",
     "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
