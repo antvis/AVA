@@ -46,7 +46,7 @@ Specify a analysis purpose for getting better recommendation.
 * Proportion
 * Composition
 
-#### options.toobar
+#### options.toolbar
 
 Turn on/off chart type switching.
 

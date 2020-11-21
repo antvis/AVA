@@ -11,12 +11,9 @@ export const DesignRules: DesignRule[] = [
       if (chartTypeSpec.encoding.y?.type === 'quantitative') {
         const fieldInfo = dataProps.find((item) => item.name === chartTypeSpec.encoding.y?.field);
         if (fieldInfo) {
-          if (
-            fieldInfo.minimum &&
-            fieldInfo.maximum &&
-            fieldInfo.maximum - fieldInfo.minimum < (fieldInfo.maximum * 2) / 3
-          ) {
-            const yScaleMin = Math.floor((fieldInfo.minimum * 4) / 5);
+          const range = fieldInfo.maximum - fieldInfo.minimum;
+          if (fieldInfo.minimum && fieldInfo.maximum && range < (fieldInfo.maximum * 2) / 3) {
+            const yScaleMin = Math.floor(fieldInfo.minimum - range / 5);
             return {
               x: {
                 ticks: false,
@@ -24,7 +21,7 @@ export const DesignRules: DesignRule[] = [
               },
               y: {
                 scale: {
-                  domainMin: yScaleMin,
+                  domainMin: yScaleMin > 0 ? yScaleMin : 0,
                 },
               },
             };

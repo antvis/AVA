@@ -46,7 +46,7 @@ autoChart(container, data, options);
 * Proportion -- 比例
 * Composition -- 组成
 
-#### options.toobar
+#### options.toolbar
 
 `ture` or `false` 是否显示切换图表的功能
 
