@@ -17,10 +17,10 @@ export declare function CKBJson(lang?: Language, completed?: boolean): Record<st
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  lang | <code>Language</code> | Language of the CKB. |
-|  completed | <code>boolean</code> | True if only charts with fully completed knowledge should be included. Default is false. |
+|  lang | [Language](./knowledge.language.md) | Language of the CKB. |
+|  completed | boolean | True if only charts with fully completed knowledge should be included. Default is false. |
 
 <b>Returns:</b>
 
-`Record<string, ChartKnowledgeJSON>`
+Record&lt;string, [ChartKnowledgeJSON](./knowledge.chartknowledgejson.md)<!-- -->&gt;
 

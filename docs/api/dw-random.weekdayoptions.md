@@ -15,6 +15,6 @@ export interface WeekDayOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [abbr](./dw-random.weekdayoptions.abbr.md) | <code>boolean</code> |  |
-|  [locale](./dw-random.weekdayoptions.locale.md) | <code>string</code> |  |
+|  [abbr](./dw-random.weekdayoptions.abbr.md) | boolean |  |
+|  [locale](./dw-random.weekdayoptions.locale.md) | string |  |
 

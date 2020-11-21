@@ -15,5 +15,5 @@ export interface ParagraphOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [sentence](./dw-random.paragraphoptions.sentence.md) | <code>number</code> | the counts of sentence in the paragraph |
+|  [sentence](./dw-random.paragraphoptions.sentence.md) | number | the counts of sentence in the paragraph |
 

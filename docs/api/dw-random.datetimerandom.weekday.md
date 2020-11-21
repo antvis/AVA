@@ -19,11 +19,11 @@ weekday(options?: WeekDayOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>WeekDayOptions</code> | the params |
+|  options | [WeekDayOptions](./dw-random.weekdayoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 
 ## Example
 

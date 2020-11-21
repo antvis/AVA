@@ -16,5 +16,5 @@ export interface BooleanOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [likelihood](./dw-random.booleanoptions.likelihood.md) | <code>number</code> | likelihood 0-100 |
+|  [likelihood](./dw-random.booleanoptions.likelihood.md) | number | likelihood 0-100 |
 

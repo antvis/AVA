@@ -16,9 +16,9 @@ clastname(options?: CLastNameOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>CLastNameOptions</code> | the params |
+|  options | [CLastNameOptions](./dw-random.clastnameoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

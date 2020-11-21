@@ -16,9 +16,9 @@ coordinates(options?: CoordinatesOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>CoordinatesOptions</code> | the params |
+|  options | [CoordinatesOptions](./dw-random.coordinatesoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

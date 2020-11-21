@@ -13,5 +13,5 @@ country(): string;
 ```
 <b>Returns:</b>
 
-`string`
+string
 

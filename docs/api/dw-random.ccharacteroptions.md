@@ -15,5 +15,5 @@ export interface CCharacterOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [pool](./dw-random.ccharacteroptions.pool.md) | <code>string</code> |  |
+|  [pool](./dw-random.ccharacteroptions.pool.md) | string |  |
 

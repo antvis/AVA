@@ -16,9 +16,9 @@ export declare function isUnique(info: FieldInfo): boolean;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  info | <code>FieldInfo</code> | The [FieldInfo](./dw-analyzer.fieldinfo.md) to processs |
+|  info | [FieldInfo](./dw-analyzer.fieldinfo.md) | The [FieldInfo](./dw-analyzer.fieldinfo.md) to processs |
 
 <b>Returns:</b>
 
-`boolean`
+boolean
 

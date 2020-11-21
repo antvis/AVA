@@ -16,9 +16,9 @@ character(options?: CharacterOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>CharacterOptions</code> |  |
+|  options | [CharacterOptions](./dw-random.characteroptions.md) |  |
 
 <b>Returns:</b>
 
-`string`
+string
 

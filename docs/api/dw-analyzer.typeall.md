@@ -16,10 +16,10 @@ export declare function typeAll(array: Record<string, any>[], fields?: string[])
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  array | <code>Record&lt;string, any&gt;[]</code> | data |
-|  fields | <code>string[]</code> | the fields which you need to analyze |
+|  array | Record&lt;string, any&gt;\[\] | data |
+|  fields | string\[\] | the fields which you need to analyze |
 
 <b>Returns:</b>
 
-`FieldsInfo`
+[FieldsInfo](./dw-analyzer.fieldsinfo.md)
 

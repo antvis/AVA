@@ -15,6 +15,6 @@ export interface PhoneOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [formatted](./dw-random.phoneoptions.formatted.md) | <code>boolean</code> | 是否格式化 |
-|  [mobile](./dw-random.phoneoptions.mobile.md) | <code>boolean</code> | 是否是手机号码 |
+|  [formatted](./dw-random.phoneoptions.formatted.md) | boolean | 是否格式化 |
+|  [mobile](./dw-random.phoneoptions.mobile.md) | boolean | 是否是手机号码 |
 

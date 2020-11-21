@@ -18,7 +18,7 @@ export interface DataPrerequisiteJSON
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [fieldConditions](./knowledge.dataprerequisitejson.fieldconditions.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [maxQty](./knowledge.dataprerequisitejson.maxqty.md) | <code>number &#124; '*'</code> | <b><i>(BETA)</i></b> |
-|  [minQty](./knowledge.dataprerequisitejson.minqty.md) | <code>number</code> | <b><i>(BETA)</i></b> |
+|  [fieldConditions](./knowledge.dataprerequisitejson.fieldconditions.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [maxQty](./knowledge.dataprerequisitejson.maxqty.md) | number \| '\*' | <b><i>(BETA)</i></b> |
+|  [minQty](./knowledge.dataprerequisitejson.minqty.md) | number | <b><i>(BETA)</i></b> |
 

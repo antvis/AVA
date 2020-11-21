@@ -15,6 +15,6 @@ export interface SentenceOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [punctuation](./dw-random.sentenceoptions.punctuation.md) | <code>boolean &#124; string</code> |  |
-|  [words](./dw-random.sentenceoptions.words.md) | <code>number</code> | the counts of word |
+|  [punctuation](./dw-random.sentenceoptions.punctuation.md) | boolean \| string |  |
+|  [words](./dw-random.sentenceoptions.words.md) | number | the counts of word |
 

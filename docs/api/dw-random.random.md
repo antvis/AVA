@@ -11,6 +11,7 @@ Random Interface
 ```typescript
 export interface Random extends TextRandom, WebRandom, ColorRandom, LocationRandom, DateTimeRandom, ChAddressRandom 
 ```
+<b>Extends:</b> [TextRandom](./dw-random.textrandom.md)<!-- -->, [WebRandom](./dw-random.webrandom.md)<!-- -->, [ColorRandom](./dw-random.colorrandom.md)<!-- -->, [LocationRandom](./dw-random.locationrandom.md)<!-- -->, [DateTimeRandom](./dw-random.datetimerandom.md)<!-- -->, [ChAddressRandom](./dw-random.chaddressrandom.md)
 
 ## Remarks
 
@@ -20,5 +21,5 @@ export interface Random extends TextRandom, WebRandom, ColorRandom, LocationRand
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [database](./dw-random.random.database.md) | <code>Database</code> | 所有database的合并 |
+|  [database](./dw-random.random.database.md) | [Database](./dw-random.database.md) | 所有database的合并 |
 

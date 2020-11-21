@@ -6,13 +6,20 @@
 
 data transforms
 
+## Classes
+
+|  Class | Description |
+|  --- | --- |
+|  [Dataset](./dw-transform.dataset.md) | <b><i>(BETA)</i></b> |
+
 ## Functions
 
 |  Function | Description |
 |  --- | --- |
 |  [aggregate(rows, options)](./dw-transform.aggregate.md) |  |
-|  [autoSchema(data, renameOption)](./dw-transform.autoschema.md) | <b><i>(BETA)</i></b> |
-|  [autoTransform(data, renameOption)](./dw-transform.autotransform.md) | <b><i>(BETA)</i></b> |
+|  [autoSchema(data, renameOption, defaultAgg)](./dw-transform.autoschema.md) | <b><i>(BETA)</i></b> |
+|  [autoTransform(data, renameOption, defaultAgg)](./dw-transform.autotransform.md) | <b><i>(BETA)</i></b> |
+|  [compositeExtractor(siblingGroup, aggPair, extractorPairs, depth)](./dw-transform.compositeextractor.md) | <b><i>(BETA)</i></b> |
 |  [parse(data, schemas)](./dw-transform.parse.md) | <b><i>(BETA)</i></b> |
 
 ## Interfaces
@@ -33,6 +40,8 @@ data transforms
 |  --- | --- |
 |  [AGGREGATION](./dw-transform.aggregation.md) | <b><i>(BETA)</i></b> |
 |  [CONVERSION](./dw-transform.conversion.md) | <b><i>(BETA)</i></b> |
+|  [extractors](./dw-transform.extractors.md) | <b><i>(BETA)</i></b> |
+|  [EXTRACTORS](./dw-transform.extractors.md) | <b><i>(BETA)</i></b> |
 |  [FILL](./dw-transform.fill.md) | <b><i>(BETA)</i></b> |
 
 ## Type Aliases
@@ -40,12 +49,21 @@ data transforms
 |  Type Alias | Description |
 |  --- | --- |
 |  [ActionType](./dw-transform.actiontype.md) | <b><i>(BETA)</i></b> |
+|  [AggExtractorPair](./dw-transform.aggextractorpair.md) | <b><i>(BETA)</i></b> |
 |  [AggregationType](./dw-transform.aggregationtype.md) | <b><i>(BETA)</i></b> |
+|  [AllSubspaceDatasetOptions](./dw-transform.allsubspacedatasetoptions.md) | <b><i>(BETA)</i></b> |
+|  [ColumnInfo](./dw-transform.columninfo.md) | <b><i>(BETA)</i></b> |
 |  [ConversionType](./dw-transform.conversiontype.md) | <b><i>(BETA)</i></b> |
+|  [Extractor](./dw-transform.extractor.md) | <b><i>(BETA)</i></b> |
+|  [ExtractorType](./dw-transform.extractortype.md) | <b><i>(BETA)</i></b> |
 |  [FillNullOptions](./dw-transform.fillnulloptions.md) | <b><i>(BETA)</i></b> |
 |  [FillNullType](./dw-transform.fillnulltype.md) | <b><i>(BETA)</i></b> |
 |  [FillType](./dw-transform.filltype.md) | <b><i>(BETA)</i></b> |
+|  [Measure](./dw-transform.measure.md) | <b><i>(BETA)</i></b> |
 |  [Operations](./dw-transform.operations.md) | aggregate operation |
 |  [RenameOption](./dw-transform.renameoption.md) | <b><i>(BETA)</i></b> |
 |  [RowData](./dw-transform.rowdata.md) | 数据行 |
+|  [SiblingGroup](./dw-transform.siblinggroup.md) | <b><i>(BETA)</i></b> |
+|  [SubExtractorPair](./dw-transform.subextractorpair.md) | <b><i>(BETA)</i></b> |
+|  [Subspace](./dw-transform.subspace.md) | <b><i>(BETA)</i></b> |
 

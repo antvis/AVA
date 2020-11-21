@@ -10,12 +10,13 @@
 ```typescript
 export interface HSLAOptions extends HSLBaseOPtions 
 ```
+<b>Extends:</b> [HSLBaseOPtions](./dw-random.hslbaseoptions.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [casing](./dw-random.hslaoptions.casing.md) | <code>'lower' &#124; 'upper'</code> |  |
-|  [maxA](./dw-random.hslaoptions.maxa.md) | <code>number</code> |  |
-|  [minA](./dw-random.hslaoptions.mina.md) | <code>number</code> |  |
+|  [casing](./dw-random.hslaoptions.casing.md) | 'lower' \| 'upper' |  |
+|  [maxA](./dw-random.hslaoptions.maxa.md) | number |  |
+|  [minA](./dw-random.hslaoptions.mina.md) | number |  |
 

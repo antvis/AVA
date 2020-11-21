@@ -25,10 +25,13 @@ Analysis field type
 |  --- | --- |
 |  [isConst(info)](./dw-analyzer.isconst.md) | Checks if field is constant |
 |  [isContinuous(info)](./dw-analyzer.iscontinuous.md) | Checks if field is a continuous. |
+|  [isDateFieldInfo(x)](./dw-analyzer.isdatefieldinfo.md) |  |
 |  [isDiscrete(info)](./dw-analyzer.isdiscrete.md) | Checks if field is discrete |
 |  [isInterval(info)](./dw-analyzer.isinterval.md) | Checks if field is an interval |
 |  [isNominal(info)](./dw-analyzer.isnominal.md) | Checks if field is a nominal |
+|  [isNumberFieldInfo(x)](./dw-analyzer.isnumberfieldinfo.md) |  |
 |  [isOrdinal(info)](./dw-analyzer.isordinal.md) | Checks if field is an ordinal |
+|  [isStringFieldInfo(x)](./dw-analyzer.isstringfieldinfo.md) |  |
 |  [isTime(info)](./dw-analyzer.istime.md) | Checks if field is a time |
 |  [isUnique(info)](./dw-analyzer.isunique.md) | Checks if field is an unique |
 |  [pearson(info1, info2)](./dw-analyzer.pearson.md) | Return the Pearson CorrelationCoefficient of two Field |

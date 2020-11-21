@@ -15,5 +15,5 @@ export interface CZodiacOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [locale](./dw-random.czodiacoptions.locale.md) | <code>string</code> |  |
+|  [locale](./dw-random.czodiacoptions.locale.md) | string |  |
 

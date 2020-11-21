@@ -16,9 +16,9 @@ ccharacter(options?: CCharacterOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>CCharacterOptions</code> |  |
+|  options | [CCharacterOptions](./dw-random.ccharacteroptions.md) |  |
 
 <b>Returns:</b>
 
-`string`
+string
 

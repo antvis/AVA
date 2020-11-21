@@ -11,16 +11,17 @@ String Field
 ```typescript
 export interface StringFieldInfo extends FieldInfo 
 ```
+<b>Extends:</b> [FieldInfo](./dw-analyzer.fieldinfo.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [containsChars](./dw-analyzer.stringfieldinfo.containschars.md) | <code>boolean</code> | is contain charts |
-|  [containsDigits](./dw-analyzer.stringfieldinfo.containsdigits.md) | <code>boolean</code> | is contain digits |
-|  [containsNonWorlds](./dw-analyzer.stringfieldinfo.containsnonworlds.md) | <code>boolean</code> | is contain nonworlds |
-|  [containsSpace](./dw-analyzer.stringfieldinfo.containsspace.md) | <code>boolean</code> | is contain white space |
-|  [maxLength](./dw-analyzer.stringfieldinfo.maxlength.md) | <code>number</code> | max length |
-|  [meanLength](./dw-analyzer.stringfieldinfo.meanlength.md) | <code>number</code> | mean of length |
-|  [minLength](./dw-analyzer.stringfieldinfo.minlength.md) | <code>number</code> | min length |
+|  [containsChars](./dw-analyzer.stringfieldinfo.containschars.md) | boolean | is contain charts |
+|  [containsDigits](./dw-analyzer.stringfieldinfo.containsdigits.md) | boolean | is contain digits |
+|  [containsNonWorlds](./dw-analyzer.stringfieldinfo.containsnonworlds.md) | boolean | is contain nonworlds |
+|  [containsSpace](./dw-analyzer.stringfieldinfo.containsspace.md) | boolean | is contain white space |
+|  [maxLength](./dw-analyzer.stringfieldinfo.maxlength.md) | number | max length |
+|  [meanLength](./dw-analyzer.stringfieldinfo.meanlength.md) | number | mean of length |
+|  [minLength](./dw-analyzer.stringfieldinfo.minlength.md) | number | min length |
 

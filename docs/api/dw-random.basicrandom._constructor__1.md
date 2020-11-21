@@ -16,5 +16,5 @@ constructor(seed?: RandomFunc);
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  seed | <code>RandomFunc</code> |  |
+|  seed | [RandomFunc](./dw-random.randomfunc.md) |  |
 

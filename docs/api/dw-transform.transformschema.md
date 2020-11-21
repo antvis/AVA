@@ -18,6 +18,6 @@ export interface TransformSchema
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [actions](./dw-transform.transformschema.actions.md) | <code>Action[]</code> | <b><i>(BETA)</i></b> |
-|  [groupBy](./dw-transform.transformschema.groupby.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
+|  [actions](./dw-transform.transformschema.actions.md) | [Action](./dw-transform.action.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [groupBy](./dw-transform.transformschema.groupby.md) | string\[\] | <b><i>(BETA)</i></b> |
 

@@ -13,5 +13,5 @@ address(): string;
 ```
 <b>Returns:</b>
 
-`string`
+string
 

@@ -15,5 +15,5 @@ export interface Person
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [gender](./dw-random.person.gender.md) | <code>'male' &#124; 'female'</code> | 性别 |
+|  [gender](./dw-random.person.gender.md) | 'male' \| 'female' | 性别 |
 

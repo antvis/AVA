@@ -16,9 +16,9 @@ time(options?: TimeOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>TimeOptions</code> | the params |
+|  options | [TimeOptions](./dw-random.timeoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

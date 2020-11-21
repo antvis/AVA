@@ -18,6 +18,6 @@ export interface FillNullOptionsByValue
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [cfg](./dw-transform.fillnulloptionsbyvalue.cfg.md) | <code>{</code><br/><code>        value: string &#124; number;</code><br/><code>    }</code> | <b><i>(BETA)</i></b> |
-|  [type](./dw-transform.fillnulloptionsbyvalue.type.md) | <code>Extract&lt;FillNullType, 'byValue'&gt;</code> | <b><i>(BETA)</i></b> |
+|  [cfg](./dw-transform.fillnulloptionsbyvalue.cfg.md) | { value: string \| number; } | <b><i>(BETA)</i></b> |
+|  [type](./dw-transform.fillnulloptionsbyvalue.type.md) | Extract&lt;[FillNullType](./dw-transform.fillnulltype.md)<!-- -->, 'byValue'&gt; | <b><i>(BETA)</i></b> |
 

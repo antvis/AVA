@@ -20,6 +20,9 @@ export function specToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G2P
   }
 }
 
+/**
+ * @beta
+ */
 export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>> = {
   line_chart: 'Line',
   area_chart: 'Area',

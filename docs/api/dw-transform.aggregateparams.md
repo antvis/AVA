@@ -15,8 +15,8 @@ export interface AggregateParams
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [as](./dw-transform.aggregateparams.as.md) | <code>string[]</code> |  |
-|  [fields](./dw-transform.aggregateparams.fields.md) | <code>string[]</code> |  |
-|  [groupBy](./dw-transform.aggregateparams.groupby.md) | <code>string &#124; string[]</code> |  |
-|  [op](./dw-transform.aggregateparams.op.md) | <code>Operations[]</code> |  |
+|  [as](./dw-transform.aggregateparams.as.md) | string\[\] |  |
+|  [fields](./dw-transform.aggregateparams.fields.md) | string\[\] |  |
+|  [groupBy](./dw-transform.aggregateparams.groupby.md) | string \| string\[\] |  |
+|  [op](./dw-transform.aggregateparams.op.md) | [Operations](./dw-transform.operations.md)<!-- -->\[\] |  |
 

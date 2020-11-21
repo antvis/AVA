@@ -16,11 +16,11 @@ datetime(options?: DateTimeOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>DateTimeOptions</code> | the params |
+|  options | [DateTimeOptions](./dw-random.datetimeoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 
 ## Remarks
 

@@ -24,9 +24,11 @@ export interface Advice {
 
 // @public (undocumented)
 export interface AdvisorOptions {
+    chartRuleConfigs?: ChartRuleConfigMap;
     description?: string;
     preferences?: Preferences;
     purpose?: string;
+    refine?: boolean;
     title?: string;
 }
 
@@ -34,10 +36,11 @@ export interface AdvisorOptions {
 export type Aggregation = 'count';
 
 // @public
-export function autoChart(container: HTMLElement, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
+export function autoChart(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
 // @public
 export interface AutoChartOptions {
+    chartRuleConfigs?: ChartRuleConfigMap;
     config?: G2PlotConfig;
     description?: string;
     development?: boolean;
@@ -46,38 +49,35 @@ export interface AutoChartOptions {
     noDataContent?: (container: HTMLDivElement) => void;
     preferences?: Preferences;
     purpose?: string;
+    refine?: boolean;
     theme?: string;
     title?: string;
     toolbar?: boolean;
 }
 
 // @beta (undocumented)
-export interface Channels {
+export type ChartLibrary = 'G2Plot' | 'G2';
+
+// @public (undocumented)
+export interface ChartRuleConfig {
     // (undocumented)
-    angle?: string;
+    limit?: number;
     // (undocumented)
-    color?: string;
+    off?: boolean;
     // (undocumented)
-    radius?: string;
-    // (undocumented)
-    series?: string;
-    // (undocumented)
-    size?: string;
-    // (undocumented)
-    x?: string;
-    // (undocumented)
-    x2?: string;
-    // (undocumented)
-    y?: string;
-    // (undocumented)
-    y2?: string;
+    weight?: number;
 }
 
-// @beta (undocumented)
-export type ChartLibrary = 'G2Plot' | 'G2' | 'echarts';
+// @public (undocumented)
+export type ChartRuleConfigMap = {
+    [K in ChartRuleID]?: ChartRuleConfig;
+};
 
-// @beta (undocumented)
-export type ConfigMapping = Partial<Record<ChartID, Channels>>;
+// @public (undocumented)
+export type ChartRuleID = 'data-check' | 'data-field-qty' | 'no-redundant-field' | 'purpose-check' | 'series-qty-limit' | 'bar-series-qty' | 'line-field-time-ordinal' | 'landscape-or-portrait' | 'diff-pie-sector' | 'nominal-enum-combinatorial' | 'limit-series';
+
+// @public (undocumented)
+export const ChartRules: Rule[];
 
 // @beta
 export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
@@ -91,6 +91,28 @@ export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
     levelOfMeasurements: LevelOfMeasurement[];
 });
 
+// @public (undocumented)
+export interface DataProps {
+    // (undocumented)
+    count?: number;
+    // (undocumented)
+    distinct?: number;
+    // (undocumented)
+    levelOfMeasurements: LevelOfMeasurement[];
+    // (undocumented)
+    maximum?: any;
+    // (undocumented)
+    minimum?: any;
+    // (undocumented)
+    missing: number;
+    // (undocumented)
+    name: string;
+    // (undocumented)
+    samples?: any[];
+    // (undocumented)
+    sum?: number;
+}
+
 // @beta (undocumented)
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
@@ -101,13 +123,13 @@ export function dataToDataProps(data: any[]): DataProperty[];
 export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @beta (undocumented)
-export type EChartsConfig = any;
-
-// @beta (undocumented)
 export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitude' | 'latitude' | 'longitude2' | 'latitude2' | 'theta' | 'theta2' | 'radius' | 'radius2' | 'color' | 'fill' | 'stroke' | 'opacity' | 'fillOpacity' | 'strokeOpacity' | 'strokeWidth' | 'strokeDash' | 'size' | 'angle' | 'shape' | 'detail' | 'text' | 'order';
 
 // @beta (undocumented)
 export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
+
+// @beta (undocumented)
+export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>>;
 
 // @public (undocumented)
 export type G2PlotChartType = 'Line' | 'Area' | 'Column' | 'Bar' | 'Pie' | 'Rose' | 'Scatter' | 'Histogram' | 'Heatmap';
@@ -126,8 +148,24 @@ export function g2plotRender(container: string | HTMLElement, data: any, libConf
 // @beta
 export function g2Render(container: string | HTMLElement, data: any, configs: G2PlotConfig): G2Plot.G2.Chart | undefined;
 
-// @beta (undocumented)
-export function getMappingForLib(libraryName: ChartLibrary): Mapping;
+// @public (undocumented)
+export type HardOrSoft = 'HARD' | 'SOFT';
+
+// @public (undocumented)
+export interface Info {
+    // (undocumented)
+    [key: string]: any;
+    // (undocumented)
+    chartType: ChartID;
+    // (undocumented)
+    customWeight?: number;
+    // (undocumented)
+    dataProps: DataProps[];
+    // (undocumented)
+    preferences?: Preferences;
+    // (undocumented)
+    purpose?: string;
+}
 
 // @beta (undocumented)
 export interface Insight {
@@ -175,15 +213,7 @@ export function insightsFromDataset(data: RowData[], options?: AllSubspaceDatase
 export type InsightType = typeof INSIGHT_TYPES[number];
 
 // @beta (undocumented)
-export const insightWorkers: Partial<Record<InsightType, Worker_2>>;
-
-// @beta (undocumented)
-export interface Mapping {
-    // (undocumented)
-    configMapping: ConfigMapping;
-    // (undocumented)
-    typeMapping: TypeMapping;
-}
+export const insightWorkers: Partial<Record<InsightType, Worker>>;
 
 // @beta (undocumented)
 export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
@@ -194,16 +224,27 @@ export interface Preferences {
     canvasLayout: 'landscape' | 'portrait';
 }
 
+// @public (undocumented)
+export class Rule {
+    constructor(id: string, hardOrSoft: HardOrSoft, specChartTypes: ChartID[], weight: number, validator: Validator);
+    // (undocumented)
+    check(args: Info): number;
+    // (undocumented)
+    get hardOrSoft(): HardOrSoft;
+    // (undocumented)
+    get id(): string;
+    // (undocumented)
+    get specChartTypes(): ChartID[];
+    // (undocumented)
+    toString(): string;
+    // (undocumented)
+    get weight(): number;
+    }
+
 // @beta (undocumented)
 export interface SingleViewSpec {
     // (undocumented)
-    encoding: Partial<Record<EncodingKey, {
-        field?: string;
-        type?: EncodingType;
-        bin?: boolean;
-        aggregate?: Aggregation;
-        stack?: StackType;
-    }>>;
+    encoding: VegaLiteEncodeingSpecification;
     // (undocumented)
     mark: {
         type: Mark;
@@ -212,19 +253,31 @@ export interface SingleViewSpec {
 }
 
 // @beta (undocumented)
-export type Specification = VegaLiteSubsetSpec;
+export type Specification = SingleViewSpec;
 
 // @beta (undocumented)
 export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
 
 // @beta (undocumented)
-export function specToLibConfig(advice: Advice, libraryName?: ChartLibrary): G2PlotConfig | EChartsConfig | null;
+export function specToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
 
 // @beta (undocumented)
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
 
+// @public (undocumented)
+export type Validator = (args: Info) => number;
+
 // @beta (undocumented)
-export type TypeMapping = Partial<Record<ChartID, string>>;
+export type VegaLiteEncodeingSpecification = Partial<Record<EncodingKey, {
+    field?: string;
+    type?: EncodingType;
+    bin?: boolean;
+    aggregate?: Aggregation;
+    stack?: StackType;
+    scale?: any;
+    domain?: any;
+    ticks?: any;
+}>>;
 
 // @beta (undocumented)
 export type VegaLiteSubsetSpec = SingleViewSpec | {
@@ -232,9 +285,7 @@ export type VegaLiteSubsetSpec = SingleViewSpec | {
 };
 
 // @beta (undocumented)
-type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;
-
-export { Worker_2 as Worker }
+export type Worker = (data: RowData[]) => Insight[] | Promise<Insight[]>;
 
 
 ```

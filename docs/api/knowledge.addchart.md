@@ -17,10 +17,10 @@ export declare function addChart(chartKnowledge: ChartKnowledge, trans: Record<L
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  chartKnowledge | <code>ChartKnowledge</code> | Knowledge of the added chart. |
-|  trans | <code>Record&lt;Language, TransKnowledgeProps&gt;</code> | Versions of translation for the name, alias and definition of the added chart. |
+|  chartKnowledge | [ChartKnowledge](./knowledge.chartknowledge.md) | Knowledge of the added chart. |
+|  trans | Record&lt;[Language](./knowledge.language.md)<!-- -->, [TransKnowledgeProps](./knowledge.transknowledgeprops.md)<!-- -->&gt; | Versions of translation for the name, alias and definition of the added chart. |
 
 <b>Returns:</b>
 
-`void`
+void
 

@@ -16,9 +16,9 @@ decimalcolor(options?: RGBBaseOptions): number;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>RGBBaseOptions</code> | the parmas |
+|  options | [RGBBaseOptions](./dw-random.rgbbaseoptions.md) | the parmas |
 
 <b>Returns:</b>
 
-`number`
+number
 

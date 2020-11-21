@@ -10,10 +10,11 @@
 ```typescript
 export interface StringOptions extends CharacterOptions 
 ```
+<b>Extends:</b> [CharacterOptions](./dw-random.characteroptions.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [length](./dw-random.stringoptions.length.md) | <code>number</code> |  |
+|  [length](./dw-random.stringoptions.length.md) | number |  |
 

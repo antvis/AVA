@@ -15,9 +15,9 @@ export interface CharacterOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [lower](./dw-random.characteroptions.lower.md) | <code>boolean</code> |  |
-|  [numeric](./dw-random.characteroptions.numeric.md) | <code>boolean</code> |  |
-|  [pool](./dw-random.characteroptions.pool.md) | <code>string</code> |  |
-|  [symbols](./dw-random.characteroptions.symbols.md) | <code>boolean</code> |  |
-|  [upper](./dw-random.characteroptions.upper.md) | <code>boolean</code> |  |
+|  [lower](./dw-random.characteroptions.lower.md) | boolean |  |
+|  [numeric](./dw-random.characteroptions.numeric.md) | boolean |  |
+|  [pool](./dw-random.characteroptions.pool.md) | string |  |
+|  [symbols](./dw-random.characteroptions.symbols.md) | boolean |  |
+|  [upper](./dw-random.characteroptions.upper.md) | boolean |  |
 

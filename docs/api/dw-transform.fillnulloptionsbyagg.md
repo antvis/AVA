@@ -18,6 +18,6 @@ export interface FillNullOptionsByAgg
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [cfg](./dw-transform.fillnulloptionsbyagg.cfg.md) | <code>{</code><br/><code>        agg: AggregationType;</code><br/><code>    }</code> | <b><i>(BETA)</i></b> |
-|  [type](./dw-transform.fillnulloptionsbyagg.type.md) | <code>Extract&lt;FillNullType, 'byAgg'&gt;</code> | <b><i>(BETA)</i></b> |
+|  [cfg](./dw-transform.fillnulloptionsbyagg.cfg.md) | { agg: [AggregationType](./dw-transform.aggregationtype.md)<!-- -->; } | <b><i>(BETA)</i></b> |
+|  [type](./dw-transform.fillnulloptionsbyagg.type.md) | Extract&lt;[FillNullType](./dw-transform.fillnulltype.md)<!-- -->, 'byAgg'&gt; | <b><i>(BETA)</i></b> |
 

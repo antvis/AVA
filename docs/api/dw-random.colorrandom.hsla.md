@@ -16,9 +16,9 @@ hsla(options?: HSLAOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>HSLAOptions</code> |  |
+|  options | [HSLAOptions](./dw-random.hslaoptions.md) |  |
 
 <b>Returns:</b>
 
-`string`
+string
 

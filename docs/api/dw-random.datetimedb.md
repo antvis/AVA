@@ -16,6 +16,6 @@ export interface DateTimeDB
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [month](./dw-random.datetimedb.month.md) | <code>{</code><br/><code>        [index: string]: any[][];</code><br/><code>    }</code> |  |
-|  [weekday](./dw-random.datetimedb.weekday.md) | <code>{</code><br/><code>        [index: string]: any[][];</code><br/><code>    }</code> |  |
+|  [month](./dw-random.datetimedb.month.md) | { \[index: string\]: any\[\]\[\]; } |  |
+|  [weekday](./dw-random.datetimedb.weekday.md) | { \[index: string\]: any\[\]\[\]; } |  |
 

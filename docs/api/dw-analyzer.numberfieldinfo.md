@@ -11,21 +11,22 @@ Number Field
 ```typescript
 export interface NumberFieldInfo extends FieldInfo 
 ```
+<b>Extends:</b> [FieldInfo](./dw-analyzer.fieldinfo.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [maximum](./dw-analyzer.numberfieldinfo.maximum.md) | <code>number</code> | maximum |
-|  [mean](./dw-analyzer.numberfieldinfo.mean.md) | <code>number</code> | mean |
-|  [minimum](./dw-analyzer.numberfieldinfo.minimum.md) | <code>number</code> | minimum |
-|  [percentile25](./dw-analyzer.numberfieldinfo.percentile25.md) | <code>number</code> | 25% percentile |
-|  [percentile5](./dw-analyzer.numberfieldinfo.percentile5.md) | <code>number</code> | 5% percentile |
-|  [percentile50](./dw-analyzer.numberfieldinfo.percentile50.md) | <code>number</code> | 50% percentile |
-|  [percentile75](./dw-analyzer.numberfieldinfo.percentile75.md) | <code>number</code> | 75% percentile |
-|  [percentile95](./dw-analyzer.numberfieldinfo.percentile95.md) | <code>number</code> | 95% percentile |
-|  [stdev](./dw-analyzer.numberfieldinfo.stdev.md) | <code>number</code> | stdev |
-|  [sum](./dw-analyzer.numberfieldinfo.sum.md) | <code>number</code> | sum |
-|  [variance](./dw-analyzer.numberfieldinfo.variance.md) | <code>number</code> | variance |
-|  [zeros](./dw-analyzer.numberfieldinfo.zeros.md) | <code>number</code> | the counts of zero value |
+|  [maximum](./dw-analyzer.numberfieldinfo.maximum.md) | number | maximum |
+|  [mean](./dw-analyzer.numberfieldinfo.mean.md) | number | mean |
+|  [minimum](./dw-analyzer.numberfieldinfo.minimum.md) | number | minimum |
+|  [percentile25](./dw-analyzer.numberfieldinfo.percentile25.md) | number | 25% percentile |
+|  [percentile5](./dw-analyzer.numberfieldinfo.percentile5.md) | number | 5% percentile |
+|  [percentile50](./dw-analyzer.numberfieldinfo.percentile50.md) | number | 50% percentile |
+|  [percentile75](./dw-analyzer.numberfieldinfo.percentile75.md) | number | 75% percentile |
+|  [percentile95](./dw-analyzer.numberfieldinfo.percentile95.md) | number | 95% percentile |
+|  [stdev](./dw-analyzer.numberfieldinfo.stdev.md) | number | stdev |
+|  [sum](./dw-analyzer.numberfieldinfo.sum.md) | number | sum |
+|  [variance](./dw-analyzer.numberfieldinfo.variance.md) | number | variance |
+|  [zeros](./dw-analyzer.numberfieldinfo.zeros.md) | number | the counts of zero value |
 

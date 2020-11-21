@@ -16,9 +16,9 @@ domain(options?: DomainOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>DomainOptions</code> | the params |
+|  options | [DomainOptions](./dw-random.domainoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

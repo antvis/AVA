@@ -9,6 +9,9 @@ import {
 
 const Wiki = CKBJson('en-US', true);
 
+/**
+ * @public
+ */
 export type ChartRuleID =
   | 'data-check'
   | 'data-field-qty'
@@ -22,12 +25,18 @@ export type ChartRuleID =
   | 'nominal-enum-combinatorial'
   | 'limit-series';
 
+/**
+ * @public
+ */
 export interface ChartRuleConfig {
   weight?: number;
   off?: boolean;
   limit?: number;
 }
 
+/**
+ * @public
+ */
 export type ChartRuleConfigMap = {
   [K in ChartRuleID]?: ChartRuleConfig;
 };
@@ -70,6 +79,9 @@ function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: DataProps[]) 
   return false;
 }
 
+/**
+ * @public
+ */
 export const ChartRules: Rule[] = [
   // Data must satisfy the data prerequisites
   new Rule('data-check', 'HARD', allChartTypes, 1.0, (args): number => {

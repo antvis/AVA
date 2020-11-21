@@ -16,9 +16,9 @@ cword(options?: CWordOption): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>CWordOption</code> | the params |
+|  options | [CWordOption](./dw-random.cwordoption.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

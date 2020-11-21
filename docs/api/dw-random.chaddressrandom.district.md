@@ -13,5 +13,5 @@ district(): string;
 ```
 <b>Returns:</b>
 
-`string`
+string
 

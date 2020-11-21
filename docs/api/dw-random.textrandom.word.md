@@ -16,9 +16,9 @@ word(options?: WordOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>WordOptions</code> | the params |
+|  options | [WordOptions](./dw-random.wordoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

@@ -16,9 +16,9 @@ pickone<T>(array: T[]): T;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  array | <code>T[]</code> | The array to process |
+|  array | T\[\] | The array to process |
 
 <b>Returns:</b>
 
-`T`
+T
 

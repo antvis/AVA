@@ -18,16 +18,16 @@ export interface ChartKnowledge
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [alias](./knowledge.chartknowledge.alias.md) | <code>string[]</code> | <b><i>(BETA)</i></b> |
-|  [category](./knowledge.chartknowledge.category.md) | <code>GraphicCategory[]</code> | <b><i>(BETA)</i></b> |
-|  [channel](./knowledge.chartknowledge.channel.md) | <code>Channel[]</code> | <b><i>(BETA)</i></b> |
-|  [coord](./knowledge.chartknowledge.coord.md) | <code>CoordinateSystem[]</code> | <b><i>(BETA)</i></b> |
-|  [dataPres](./knowledge.chartknowledge.datapres.md) | <code>DataPrerequisite[]</code> | <b><i>(BETA)</i></b> |
-|  [def](./knowledge.chartknowledge.def.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [family](./knowledge.chartknowledge.family.md) | <code>Family[]</code> | <b><i>(BETA)</i></b> |
-|  [id](./knowledge.chartknowledge.id.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [name](./knowledge.chartknowledge.name.md) | <code>string</code> | <b><i>(BETA)</i></b> |
-|  [purpose](./knowledge.chartknowledge.purpose.md) | <code>Purpose[]</code> | <b><i>(BETA)</i></b> |
-|  [recRate](./knowledge.chartknowledge.recrate.md) | <code>RecommendRating</code> | <b><i>(BETA)</i></b> |
-|  [shape](./knowledge.chartknowledge.shape.md) | <code>Shape[]</code> | <b><i>(BETA)</i></b> |
+|  [alias](./knowledge.chartknowledge.alias.md) | string\[\] | <b><i>(BETA)</i></b> |
+|  [category](./knowledge.chartknowledge.category.md) | [GraphicCategory](./knowledge.graphiccategory.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [channel](./knowledge.chartknowledge.channel.md) | [Channel](./knowledge.channel.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [coord](./knowledge.chartknowledge.coord.md) | [CoordinateSystem](./knowledge.coordinatesystem.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [dataPres](./knowledge.chartknowledge.datapres.md) | [DataPrerequisite](./knowledge.dataprerequisite.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [def](./knowledge.chartknowledge.def.md) | string | <b><i>(BETA)</i></b> |
+|  [family](./knowledge.chartknowledge.family.md) | [Family](./knowledge.family.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [id](./knowledge.chartknowledge.id.md) | string | <b><i>(BETA)</i></b> |
+|  [name](./knowledge.chartknowledge.name.md) | string | <b><i>(BETA)</i></b> |
+|  [purpose](./knowledge.chartknowledge.purpose.md) | [Purpose](./knowledge.purpose.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [recRate](./knowledge.chartknowledge.recrate.md) | [RecommendRating](./knowledge.recommendrating.md) | <b><i>(BETA)</i></b> |
+|  [shape](./knowledge.chartknowledge.shape.md) | [Shape](./knowledge.shape.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
 

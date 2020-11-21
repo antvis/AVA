@@ -16,9 +16,9 @@ hsl(options?: HSLOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>HSLOptions</code> |  |
+|  options | [HSLOptions](./dw-random.hsloptions.md) |  |
 
 <b>Returns:</b>
 
-`string`
+string
 

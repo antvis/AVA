@@ -18,7 +18,7 @@ export interface DataPrerequisite
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [fieldConditions](./knowledge.dataprerequisite.fieldconditions.md) | <code>LevelOfMeasurement[]</code> | <b><i>(BETA)</i></b> |
-|  [maxQty](./knowledge.dataprerequisite.maxqty.md) | <code>number &#124; '*'</code> | <b><i>(BETA)</i></b> |
-|  [minQty](./knowledge.dataprerequisite.minqty.md) | <code>number</code> | <b><i>(BETA)</i></b> |
+|  [fieldConditions](./knowledge.dataprerequisite.fieldconditions.md) | [LevelOfMeasurement](./knowledge.levelofmeasurement.md)<!-- -->\[\] | <b><i>(BETA)</i></b> |
+|  [maxQty](./knowledge.dataprerequisite.maxqty.md) | number \| '\*' | <b><i>(BETA)</i></b> |
+|  [minQty](./knowledge.dataprerequisite.minqty.md) | number | <b><i>(BETA)</i></b> |
 

@@ -16,12 +16,12 @@ randexp(source: string | RegExp, flag?: string): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  source | <code>string &#124; RegExp</code> | regexp or source of regexp |
-|  flag | <code>string</code> | flag(only support <code>i</code>) |
+|  source | string \| RegExp | regexp or source of regexp |
+|  flag | string | flag(only support <code>i</code>) |
 
 <b>Returns:</b>
 
-`string`
+string
 
 ## Example
 

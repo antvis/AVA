@@ -15,6 +15,6 @@ export interface SyllableOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [capitalize](./dw-random.syllableoptions.capitalize.md) | <code>boolean</code> |  |
-|  [length](./dw-random.syllableoptions.length.md) | <code>number</code> |  |
+|  [capitalize](./dw-random.syllableoptions.capitalize.md) | boolean |  |
+|  [length](./dw-random.syllableoptions.length.md) | number |  |
 

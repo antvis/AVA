@@ -16,9 +16,9 @@ sentence(options?: SentenceOptions): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>SentenceOptions</code> | the params |
+|  options | [SentenceOptions](./dw-random.sentenceoptions.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

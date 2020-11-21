@@ -58,6 +58,7 @@ export type VegaLiteEncodeingSpecification = Partial<
       stack?: StackType;
       scale?: any;
       domain?: any;
+      ticks?: any;
     }
   >
 >;

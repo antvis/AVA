@@ -13,5 +13,5 @@ ipv6(): string;
 ```
 <b>Returns:</b>
 
-`string`
+string
 

@@ -26,18 +26,9 @@ export declare function CKBOptions(lang?: Language): {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  lang | <code>Language</code> | Language of the options. |
+|  lang | [Language](./knowledge.language.md) | Language of the options. |
 
 <b>Returns:</b>
 
-`{
-    family: string[];
-    category: string[];
-    purpose: string[];
-    coord: string[];
-    shape: string[];
-    channel: string[];
-    lom: string[];
-    recRate: string[];
-}`
+{ family: string\[\]; category: string\[\]; purpose: string\[\]; coord: string\[\]; shape: string\[\]; channel: string\[\]; lom: string\[\]; recRate: string\[\]; }
 

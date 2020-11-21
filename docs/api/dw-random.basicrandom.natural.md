@@ -16,9 +16,9 @@ natural(options?: Interval): number;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>Interval</code> |  |
+|  options | [Interval](./dw-random.interval.md) |  |
 
 <b>Returns:</b>
 
-`number`
+number
 

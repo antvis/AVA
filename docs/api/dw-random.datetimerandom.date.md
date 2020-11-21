@@ -16,9 +16,9 @@ date(options?: Interval): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | <code>Interval</code> | the params |
+|  options | [Interval](./dw-random.interval.md) | the params |
 
 <b>Returns:</b>
 
-`string`
+string
 

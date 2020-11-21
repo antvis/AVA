@@ -10,10 +10,11 @@
 ```typescript
 export interface DateTimeOptions extends Interval 
 ```
+<b>Extends:</b> [Interval](./dw-random.interval.md)
 
 ## Properties
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [format](./dw-random.datetimeoptions.format.md) | <code>string</code> | the format [keyword](https://date-fns.org/v2.0.1/docs/format) |
+|  [format](./dw-random.datetimeoptions.format.md) | string | the format [keyword](https://date-fns.org/v2.0.1/docs/format) |
 

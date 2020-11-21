@@ -16,9 +16,9 @@ export declare function isOrdinal(info: FieldInfo): boolean;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  info | <code>FieldInfo</code> | Field Info |
+|  info | [FieldInfo](./dw-analyzer.fieldinfo.md) | Field Info |
 
 <b>Returns:</b>
 
-`boolean`
+boolean
 

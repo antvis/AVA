@@ -15,5 +15,5 @@ export interface DomainOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [tld](./dw-random.domainoptions.tld.md) | <code>string</code> |  |
+|  [tld](./dw-random.domainoptions.tld.md) | string |  |
 

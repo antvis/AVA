@@ -16,10 +16,10 @@ export declare function pearson(info1: FieldInfo, info2: FieldInfo): number;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  info1 | <code>FieldInfo</code> | The [FieldInfo](./dw-analyzer.fieldinfo.md) to processs |
-|  info2 | <code>FieldInfo</code> | Another [FieldInfo](./dw-analyzer.fieldinfo.md) to processs |
+|  info1 | [FieldInfo](./dw-analyzer.fieldinfo.md) | The [FieldInfo](./dw-analyzer.fieldinfo.md) to processs |
+|  info2 | [FieldInfo](./dw-analyzer.fieldinfo.md) | Another [FieldInfo](./dw-analyzer.fieldinfo.md) to processs |
 
 <b>Returns:</b>
 
-`number`
+number
 
