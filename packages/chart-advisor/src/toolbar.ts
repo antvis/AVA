@@ -1,5 +1,5 @@
 import { CLASS_PREFIX } from './style';
-import { Advice, specToLibConfig } from './advice-pipeline';
+import { Advice, adviceToLibConfig } from './advice-pipeline';
 import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
 import Thumbnails from '@antv/thumbnails';
@@ -23,7 +23,7 @@ const rankIcons = [
 ];
 
 function getAdvicesHtml(advices: Advice[]) {
-  const top3 = advices.filter((advice) => specToLibConfig(advice)).slice(0, 3);
+  const top3 = advices.filter((advice) => adviceToLibConfig(advice)).slice(0, 3);
   const rankContent = top3
     .map((item, i) => {
       return `<div class="${CLASS_PREFIX}advice" data-index="${i}">

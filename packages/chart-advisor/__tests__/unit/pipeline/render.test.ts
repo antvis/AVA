@@ -1,4 +1,4 @@
-import { g2Render, dataToSpecs, specToLibConfig } from '../../../src';
+import { g2Render, dataToSpecs, adviceToLibConfig } from '../../../src';
 import { createDiv } from '../../utils/dom';
 
 describe('API - g2Render', () => {
@@ -13,7 +13,7 @@ describe('API - g2Render', () => {
       const specs = dataToSpecs(data);
       const spec = specs[0];
 
-      const libConfig = specToLibConfig(spec, 'G2');
+      const libConfig = adviceToLibConfig(spec, 'G2');
 
       const chart = g2Render(createDiv(), data, libConfig);
 

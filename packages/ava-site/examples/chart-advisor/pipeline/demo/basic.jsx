@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Select, Space, Row, Col } from 'antd';
 import Thumbnails from '@antv/thumbnails';
-import { dataToDataProps, dataPropsToAdvices, specToLibConfig, g2plotRender } from '@antv/chart-advisor';
+import { dataToDataProps, dataPropsToAdvices, adviceToLibConfig, g2plotRender } from '@antv/chart-advisor';
 
 const charts = Object.keys(Thumbnails);
 const { Option } = Select;
@@ -36,7 +36,7 @@ const App = () => {
       console.log('typeSpec: ', typeSpec);
 
       // step 4: lib config -> chart render & return instance
-      const libConfig = specToLibConfig(typeSpec);
+      const libConfig = adviceToLibConfig(typeSpec);
       console.log('libConfig: ', libConfig);
 
       canvas.current.innerHTML = null;

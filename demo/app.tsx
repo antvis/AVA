@@ -9,7 +9,7 @@ import {
   ApiOutlined,
 } from '@ant-design/icons';
 import { AutoChartTest } from './AutoChartTest';
-import { FindInsightTest } from './FindInsightTest/index';
+// import { FindInsightTest } from './FindInsightTest/index';
 import { DataTransformTest } from './DataTransformTest';
 import { PipelineTest } from './pipelineTest';
 
@@ -17,12 +17,12 @@ const { Header, Sider, Content } = Layout;
 
 const tuple = <T extends string[]>(...args: T) => args;
 
-const TESTS = tuple('autoChart', 'pipeline', 'insights', 'dataTransform');
+const TESTS = tuple('autoChart', 'pipeline', 'dataTransform'); //insights
 type TestType = typeof TESTS[number];
 const testComponents: Record<TestType, any> = {
   autoChart: <AutoChartTest />,
   pipeline: <PipelineTest />,
-  insights: <FindInsightTest />,
+  // insights: <FindInsightTest />,
   dataTransform: <DataTransformTest />,
 };
 
