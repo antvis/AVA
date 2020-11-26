@@ -18,7 +18,7 @@ const IndexPage = () => {
     },
     {
       text: t('开始使用'),
-      link: `/${i18n.language}/docs/tutorial`,
+      link: `/${i18n.language}/docs/guide`,
     },
   ];
   const cases = [
