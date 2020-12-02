@@ -53,7 +53,7 @@ CKB stands for Chart Knowledge Base. This package is the KB where empirical know
 At the same time, this package also facilitates us to develop products of chart type selection.
 
 
-```js
+```sign
 @antv/knowledge // to get the chart knowledge base
 ```
 
@@ -61,7 +61,7 @@ At the same time, this package also facilitates us to develop products of chart 
 
 DataWizard is a js/ts library for data processing. In the AVA framework, it is used to 'understand' the input dataset. However, it can also be used independently to develop some statistical or data mocking functions.
 
-```js
+```sign
 @antv/dw-analyzer // to understand a dataset
 @antv/dw-random // to generate random mock data
 ```
@@ -70,7 +70,7 @@ DataWizard is a js/ts library for data processing. In the AVA framework, it is u
 
 ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
 
-```js
+```sign
 @antv/chart-advisor // to make charts automatically
 ```
 
