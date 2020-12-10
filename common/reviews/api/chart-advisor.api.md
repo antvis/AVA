@@ -28,11 +28,9 @@ export function adviceToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot')
 // @public (undocumented)
 export interface AdvisorOptions {
     chartRuleConfigs?: ChartRuleConfigMap;
-    description?: string;
     preferences?: Preferences;
     purpose?: string;
     refine?: boolean;
-    title?: string;
 }
 
 // @beta (undocumented)
@@ -42,17 +40,13 @@ export type Aggregation = 'count';
 export function autoChart(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
 
 // @public
-export interface AutoChartOptions {
-    chartRuleConfigs?: ChartRuleConfigMap;
+export interface AutoChartOptions extends AdvisorOptions {
     config?: G2PlotConfig;
     description?: string;
     development?: boolean;
     feedback?: (container: HTMLDivElement) => void;
     fields?: string[];
     noDataContent?: (container: HTMLDivElement) => void;
-    preferences?: Preferences;
-    purpose?: string;
-    refine?: boolean;
     theme?: string;
     title?: string;
     toolbar?: boolean;
