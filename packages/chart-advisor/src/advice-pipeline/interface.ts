@@ -8,21 +8,19 @@ import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-
  */
 export interface AdvisorOptions {
   /**
-   * 分析目的
+   * 分析目的 对应 ckb purpose
+   * Comparison -- 比较
+   * Trend -- 趋势
+   * Distribution -- 分布
+   * Rank -- 排行
+   * Proportion -- 比例
+   * Composition -- 组成
    */
   purpose?: string;
   /**
    * 偏好设置
    */
   preferences?: Preferences;
-  /**
-   * 标题
-   */
-  title?: string;
-  /**
-   * 描述
-   */
-  description?: string;
   /**
    * 是否应用设计规则
    */

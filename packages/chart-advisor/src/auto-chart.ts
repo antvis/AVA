@@ -30,15 +30,7 @@ window.requestAnimationFrame(CheckAndClean);
  * autochart configs
  * @public
  */
-export interface AutoChartOptions {
-  /**
-   * purpose for analysis
-   */
-  purpose?: string;
-  /**
-   * design rules on/off
-   */
-  refine?: boolean;
+export interface AutoChartOptions extends AdvisorOptions {
   /**
    * title
    */
@@ -51,11 +43,13 @@ export interface AutoChartOptions {
    * data columns(fields)
    */
   fields?: string[];
-  /** preferences */
-  preferences?: Preferences;
-  /** chart type swith tool */
+  /**
+   * chart type switch tool
+   * */
   toolbar?: boolean;
-  /** dev mode */
+  /**
+   * dev mode
+   * */
   development?: boolean;
   /**
    * theme
@@ -65,10 +59,6 @@ export interface AutoChartOptions {
    * g2plot configs
    */
   config?: G2PlotConfig;
-  /**
-   * g2plot configs
-   */
-  chartRuleConfigs?: ChartRuleConfigMap;
   /**
    * render while no data
    */

@@ -214,7 +214,7 @@ export const ChartRules: Rule[] = [
       if (dataProps && chartType) {
         const field4Series = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
         const seriesQty = field4Series && field4Series.count ? field4Series.count : 0;
-
+        // TODO limit for this rule
         if (seriesQty >= 2 && seriesQty <= 20) {
           result = 1;
         } else if (seriesQty > 20) {

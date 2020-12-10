@@ -21,6 +21,7 @@ dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions | undefin
   * _可选参数_
   * `参数类型`: AdvisorOptions ｜ undefined
 
+`markdown:docs/common/advisor-options.zh.md`
 
 ### 返回值
 
