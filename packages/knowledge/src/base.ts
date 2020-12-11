@@ -142,7 +142,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Color'],
@@ -285,7 +285,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Statistic'],
     shape: ['Bars'],
     dataPres: [
-      { minQty: 1, maxQty: 2, fieldConditions: ['Nominal', 'Ordinal'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
       { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
     ],
     channel: ['Position', 'Color'],
