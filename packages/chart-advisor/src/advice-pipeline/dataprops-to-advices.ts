@@ -11,7 +11,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
   const chartRuleConfigs: ChartRuleConfigMap = options?.chartRuleConfigs || {};
 
   // for log
-  const record: Record<string, number> = {};
+  const record: Record<string, any>[] = [];
 
   let hardScore = 1;
   ChartRules.filter(
@@ -21,7 +21,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
     const customConfigs = _get(chartRuleConfigs, `${hr.id}`) || {};
     const score = hr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
     hardScore *= score;
-    record[hr.id] = score;
+    record.push({ name: hr.id, score, hard: true });
   });
 
   /**
@@ -40,7 +40,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
 
     const score = sr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
     softScore += score;
-    record[sr.id] = score;
+    record.push({ name: sr.id, score, hard: false });
   });
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);

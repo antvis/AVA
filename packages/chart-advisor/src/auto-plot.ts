@@ -138,8 +138,6 @@ export class AutoPlot extends EventEmitter {
         plot.update(configs);
       } else {
         if (plot) plot.destroy();
-        console.log(' 🐛🐛🐛 type');
-        console.log(type);
         this.plot = new G2Plot[libConfig.type](container, configs);
       }
       this.plot!.render();
