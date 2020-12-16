@@ -1,4 +1,4 @@
-import { assert } from '../../../chart-advisor/node_modules/@antv/dw-transform/src/util/helper';
+import { assert } from '../../transform/src/util/helper';
 import {
   type,
   typeAll,

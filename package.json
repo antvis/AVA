@@ -1,12 +1,16 @@
 {
   "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "start": "webpack-dev-server --port 8881",
     "site:start": "cd ./packages/ava-site && npm run start",
     "build": "lerna run build",
     "test": "jest",
     "coverage": "jest --coverage",
-    "test-live": "cross-env DEBUG_MODE=1 jest --watch ./packages/chart-advisor/",
+    "test-live": "sh ./scripts/test-live",
     "lint": "lerna run lint",
     "api": "rm -rf temp && lerna run api",
     "doc": "rm -rf apis && api-documenter markdown -i ./temp -o ./docs/api",

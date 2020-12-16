@@ -41,6 +41,7 @@ export function createLayer(container: HTMLElement, classname?: string): HTMLDiv
   layer.style.top = '0px';
   layer.style.left = '0px';
   layer.style.pointerEvents = 'none';
+  layer.style.boxSizing = 'border-box';
   if (classname) layer.className = classname;
   container.appendChild(layer);
   return layer;
