@@ -6,6 +6,7 @@
     "packages/ava-site"
   ],
   "npmClient": "yarn",
+  "useWorkspaces": true,
   "command": {
     "publish": {
       "registry": "https://registry.npmjs.org/"
