@@ -228,4 +228,11 @@ export class AutoChart {
     }
     if (this.mockPanel) this.mockPanel.destroy();
   }
+
+  /**
+   * 获得 Plot 对象信息
+   */
+  getPlot() {
+    return this.plot;
+  }
 }
