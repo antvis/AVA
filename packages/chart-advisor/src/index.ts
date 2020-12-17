@@ -31,8 +31,8 @@ export async function autoChart(
   container: HTMLElement | string,
   data: any[] | Promise<any[]>,
   options?: AutoChartOptions
-): Promise<void> {
-  await AutoChart.create(container, data, options);
+): Promise<AutoChart> {
+  return await AutoChart.create(container, data, options);
 }
 
 export { AutoChartOptions, Preferences };
