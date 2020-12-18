@@ -20,7 +20,6 @@ const allPipelines = CHART_ID_OPTIONS.map((t) => {
   const data = DataSamples.ForChartType(t);
   const dataProps = dataToDataProps(data);
   const specs = dataPropsToAdvices(dataProps);
-  console.log('specs: ', specs);
   const typeSpec = specs.find((s) => s.type === t);
 
   let libConfig = null;

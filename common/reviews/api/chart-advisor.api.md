@@ -253,7 +253,7 @@ export interface SingleViewSpec {
 export type Specification = SingleViewSpec;
 
 // @beta (undocumented)
-export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
+export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | G2Plot.G2.Chart | null | undefined;
 
 // @beta (undocumented)
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;

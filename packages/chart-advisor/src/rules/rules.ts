@@ -327,7 +327,7 @@ export const ChartRules: Rule[] = [
           }
         }
 
-        if (f1.count && f1.distinct && f2.distinct && f1.count >= f1.distinct * f2.distinct) {
+        if (f1.count && f1.distinct && f2.distinct && f1.count > f1.distinct) {
           const typeOptions: ChartID[] = [
             'grouped_bar_chart',
             'grouped_column_chart',

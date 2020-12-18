@@ -103,9 +103,7 @@ export class Toolbar {
         if (target.getAttribute('data-id') === 'chart-type-btn') {
           advicesContainer.style.display = getElementDisplay(advicesContainer) === 'none' ? 'block' : 'none';
         } else {
-          console.log(111);
           const dataIndex = target.getAttribute('data-index');
-          console.log(dataIndex);
           if (dataIndex) {
             this.plotInst.render(Number.parseInt(dataIndex, 10));
           }

@@ -113,7 +113,6 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   const stackCharts: ChartID[] = [
     'stacked_column_chart',
     'percent_stacked_column_chart',
-
     'stacked_bar_chart',
     'percent_stacked_bar_chart',
   ];
@@ -159,7 +158,6 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
     configs.shape = 'circle';
   }
 
-  console.log({ type: chartType, configs });
   return { type: chartType, configs };
 }
 

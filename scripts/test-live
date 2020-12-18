@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo 'test live specific folder: ./packages/chart-advisor/'$1;
+cross-env DEBUG_MODE=1 jest --watch ./packages/chart-advisor/$1
