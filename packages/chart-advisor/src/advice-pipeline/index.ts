@@ -30,7 +30,7 @@ export * from './vega-lite';
 /**
  * @beta
  */
-export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog = false): Advice[] {
+export function dataToAdvices(data: any[], options?: AdvisorOptions, showLog = false): Advice[] {
   if (showLog) console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
   if (showLog) console.log(data);
   if (showLog) console.log('🍯🍯🍯🍯🍯🍯 options 🍯🍯🍯🍯🍯🍯');
