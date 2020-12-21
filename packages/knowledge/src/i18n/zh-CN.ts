@@ -515,5 +515,10 @@ export const zhCN: TranslateList = {
       alias: ['进度球'],
       def: '一种用来表示进度的拟物化示意图',
     },
+    kpi_chart: {
+      name: '指标卡',
+      alias: ['指标卡'],
+      def: '一种用来展示聚合数据的卡片区域',
+    },
   },
 };

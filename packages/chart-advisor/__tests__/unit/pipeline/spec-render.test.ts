@@ -1,4 +1,4 @@
-import { specRender, dataToSpecs } from '../../../src';
+import { specRender, dataToAdvices } from '../../../src';
 import { createDiv } from '../../utils/dom';
 
 describe('API - specRender', () => {
@@ -10,7 +10,7 @@ describe('API - specRender', () => {
         { city: 'Shanghai', value: 600 },
       ];
 
-      const specs = dataToSpecs(data);
+      const specs = dataToAdvices(data);
       const spec = specs[0];
 
       const plot = specRender(createDiv(), data, spec);

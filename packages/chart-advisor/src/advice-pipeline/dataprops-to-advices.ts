@@ -75,10 +75,11 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
 
     // step 2: field mapping to spec encoding
     const chartTypeSpec = getChartTypeSpec(t, dataProps);
-    if (!chartTypeSpec) return { type: t, spec: null, score: 0 };
+    // kpi_chart spec 为 null
+    if (t !== 'kpi_chart' && !chartTypeSpec) return { type: t, spec: null, score: 0 };
 
     // step 3: apply design rules
-    if (enableRefine) {
+    if (chartTypeSpec && enableRefine) {
       const encodingSpecs = applyDesignRules(t, dataProps, chartTypeSpec);
       deepMix(chartTypeSpec.encoding, encodingSpecs);
       // return { type: t, spec: chartTypeSpec, score }
@@ -99,6 +100,7 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
 
   // filter and sorter
   const resultList = list.filter((e) => e.score > 0).sort(compareAdvices);
+  // console.log('resultList: ', resultList);
 
   if (showLog) console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
   if (showLog) console.log(resultList);

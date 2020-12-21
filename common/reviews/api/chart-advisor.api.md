@@ -117,7 +117,7 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
 export function dataToDataProps(data: any[]): DataProperty[];
 
 // @beta (undocumented)
-export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
+export function dataToAdvices(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @beta (undocumented)
 export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitude' | 'latitude' | 'longitude2' | 'latitude2' | 'theta' | 'theta2' | 'radius' | 'radius2' | 'color' | 'fill' | 'stroke' | 'opacity' | 'fillOpacity' | 'strokeOpacity' | 'strokeWidth' | 'strokeDash' | 'size' | 'angle' | 'shape' | 'detail' | 'text' | 'order';

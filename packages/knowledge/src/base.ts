@@ -1260,4 +1260,20 @@ export const base: ChartKnowledgeBase = {
     channel: ['Position'],
     recRate: 'Not Recommended',
   },
+
+  kpi_chart: {
+    id: 'kpi_chart',
+    name: 'Kpi Chart',
+    alias: ['Kpi Panel'],
+    family: ['Others'],
+    def: 'Kpi Chart is a card to show aggregate numbers',
+    purpose: [],
+    coord: ['Other'],
+    category: ['Statistic'],
+    shape: [],
+    // 1 - 3 个指标卡区块
+    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Interval'] }],
+    channel: [],
+    recRate: 'Recommended',
+  },
 };

@@ -8,7 +8,7 @@ import {
 
 describe('Chart Type - Stacked Column Chart', () => {
   it('2series - complete', async () => {
-    const div = createDiv('分组柱图');
+    const div = createDiv('2种分类 - 完整数据 - 堆叠柱图类');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, city_gender_amount_complete, { toolbar: true, purpose: 'Composition' });
@@ -18,7 +18,7 @@ describe('Chart Type - Stacked Column Chart', () => {
   });
 
   it('2series - incomplete', async () => {
-    const div = createDiv('分组柱图');
+    const div = createDiv('2种分类 - 不完整数据 - 堆叠柱图类');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, city_gender_amount_incomplete, { toolbar: true, purpose: 'Composition' });
@@ -28,7 +28,7 @@ describe('Chart Type - Stacked Column Chart', () => {
   });
 
   it('3series - complete', async () => {
-    const div = createDiv('分组柱图');
+    const div = createDiv('2种分类 - 不完整数据 - 堆叠柱图类');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, area_series_sales_complete, { toolbar: true, purpose: 'Composition' });

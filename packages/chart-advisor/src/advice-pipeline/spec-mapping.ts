@@ -46,6 +46,8 @@ export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[]):
       return histogram(dataProps);
     case 'heatmap':
       return heatmap(dataProps);
+    case 'kpi_chart':
+      return kpi_chart();
     default:
       return null;
   }
@@ -499,4 +501,9 @@ function heatmap(dataProps: DataProperty[]): Advice['spec'] {
   };
 
   return spec;
+}
+
+function kpi_chart(): Advice['spec'] {
+  // 指标卡暂不做更细致的配置，只支持基本的数值显示
+  return null;
 }

@@ -23,7 +23,8 @@ export type ChartRuleID =
   | 'landscape-or-portrait'
   | 'diff-pie-sector'
   | 'nominal-enum-combinatorial'
-  | 'limit-series';
+  | 'limit-series'
+  | 'aggregation-single-row';
 
 /**
  * @public
@@ -42,6 +43,7 @@ export type ChartRuleConfigMap = {
 };
 
 const allChartTypes: ChartType[] = Object.keys(Wiki) as ChartType[];
+// console.log('allChartTypes: ', allChartTypes.includes('kpi_chart'));
 
 function compare(f1: any, f2: any) {
   if (f1.distinct < f2.distinct) {
@@ -370,6 +372,15 @@ export const ChartRules: Rule[] = [
       }
     }
 
+    return result;
+  }),
+  // 只有一列汇总信息
+  new Rule('aggregation-single-row', 'SOFT', ['kpi_chart'], 1.0, (args): number => {
+    let result = 0;
+    const { dataProps } = args;
+    if (dataProps.every((i) => i.count === 1 && i.levelOfMeasurements.includes('Interval'))) {
+      result = 1;
+    }
     return result;
   }),
   // end

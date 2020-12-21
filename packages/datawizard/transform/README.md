@@ -11,7 +11,7 @@ npm install @antv/dw-transform
 ### yarn
 
 ```shell
-yarn add @antv/dw-analyzer
+yarn add @antv/dw-transform
 ```
 
 ## Schema

@@ -1,4 +1,4 @@
-import { AdvisorOptions, Advice, dataToSpecs, adviceToLibConfig } from './advice-pipeline';
+import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from './advice-pipeline';
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
 import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
@@ -88,7 +88,11 @@ export class AutoPlot extends EventEmitter {
     }
     this.container = container;
     this.feedbackLayer = createLayer(container, 'feedback-layer');
-    const advices = dataToSpecs(data, options);
+    let advices = dataToAdvices(data, options);
+
+    // autoChart 暂时不支持渲染指标卡和交叉表
+    advices = advices.filter((i) => !['kpi_chart'].includes(i.type));
+
     this.advices = advices;
     this.options = options;
     this.feedback = this.options.feedback || DEFAULT_FEEDBACK('暂无推荐');

@@ -4,7 +4,7 @@ import { area_sales } from '../data/nominal*1+interval*1';
 
 describe('Chart Type - Column Chart', () => {
   it('basic', async () => {
-    const div = createDiv('分组柱图');
+    const div = createDiv('柱图类');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, area_sales, { toolbar: true });
