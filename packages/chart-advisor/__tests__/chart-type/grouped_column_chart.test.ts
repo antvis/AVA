@@ -8,7 +8,7 @@ import {
 
 describe('Chart Type - Grouped Column Chart', () => {
   it('2series - complete', async () => {
-    const div = createDiv('2种分类 - 完整数据 - 分组柱图类');
+    const div = createDiv('2 series - complete data - Grouped ColumnCharts');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, city_gender_amount_complete, { toolbar: true });
@@ -18,7 +18,7 @@ describe('Chart Type - Grouped Column Chart', () => {
   });
 
   it('2series - incomplete', async () => {
-    const div = createDiv('2种分类 - 不完整数据 - 分组柱图类');
+    const div = createDiv('2 series - incomplete data - Grouped ColumnCharts');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, city_gender_amount_incomplete, { toolbar: true });
@@ -28,7 +28,7 @@ describe('Chart Type - Grouped Column Chart', () => {
   });
 
   it('3series - complete', async () => {
-    const div = createDiv('3种分类 - 不完整数据 - 分组柱图类');
+    const div = createDiv('3 series - incomplete data - Grouped ColumnCharts');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, area_series_sales_complete, { toolbar: true });

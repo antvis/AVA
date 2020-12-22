@@ -9,8 +9,8 @@ describe('Chart Type - Kpi Chart', () => {
     const advices = dataPropsToAdvices(dataProps);
     expect(advices.length > 0 && advices[0].type === 'kpi_chart').toEqual(true);
 
-    // 测试 pipeline 修改对 autoChart 没有影响
-    const div = createDiv('1列数据 - 指标卡');
+    // Test the effect on autoChart
+    const div = createDiv('1 col - kpi_chart');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, totalPrice, { toolbar: true });
@@ -24,8 +24,8 @@ describe('Chart Type - Kpi Chart', () => {
     const advices = dataPropsToAdvices(dataProps);
     expect(advices.length > 0 && advices[0].type === 'kpi_chart').toEqual(true);
 
-    // 测试 pipeline 修改对 autoChart 没有影响
-    const div = createDiv('2列数据 - 指标卡');
+    // Test the effect on autoChart
+    const div = createDiv('2 cols - kpi_chart');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, price_cost, { toolbar: true });

@@ -1263,13 +1263,13 @@ export const base: ChartKnowledgeBase = {
 
   kpi_chart: {
     id: 'kpi_chart',
-    name: 'Kpi Chart',
-    alias: ['Kpi Panel'],
+    name: 'KPI Chart',
+    alias: ['KPI Panel'],
     family: ['Others'],
-    def: 'Kpi Chart is a card to show aggregate numbers',
+    def: 'KPI Chart is a card to show aggregated numbers',
     purpose: [],
     coord: ['Other'],
-    category: ['Statistic'],
+    category: ['Other'],
     shape: [],
     // 1 - 3 个指标卡区块
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Interval'] }],

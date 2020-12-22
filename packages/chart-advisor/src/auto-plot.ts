@@ -90,7 +90,7 @@ export class AutoPlot extends EventEmitter {
     this.feedbackLayer = createLayer(container, 'feedback-layer');
     let advices = dataToAdvices(data, options);
 
-    // autoChart 暂时不支持渲染指标卡和交叉表
+    // TODO autoChart 暂时不支持渲染指标卡和交叉表
     advices = advices.filter((i) => !['kpi_chart'].includes(i.type));
 
     this.advices = advices;
