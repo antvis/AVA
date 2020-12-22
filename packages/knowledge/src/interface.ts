@@ -72,7 +72,7 @@ export type CoordinateSystem = typeof COORD_TYPE_OPTIONS[number];
 /**
  * @beta
  */
-export const GRAPHIC_CATEGORY_OPTIONS = ['Statistic', 'Diagram', 'Graph', 'Map'] as const;
+export const GRAPHIC_CATEGORY_OPTIONS = ['Statistic', 'Diagram', 'Graph', 'Map', 'Other'] as const;
 
 /**
  * @beta

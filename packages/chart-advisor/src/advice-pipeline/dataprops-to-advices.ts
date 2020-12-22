@@ -100,7 +100,6 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
 
   // filter and sorter
   const resultList = list.filter((e) => e.score > 0).sort(compareAdvices);
-  // console.log('resultList: ', resultList);
 
   if (showLog) console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
   if (showLog) console.log(resultList);

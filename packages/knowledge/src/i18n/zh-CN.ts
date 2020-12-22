@@ -25,6 +25,7 @@ export const zhCN: TranslateList = {
       Diagram: '示意图',
       Graph: '关系图',
       Map: '地图',
+      Other: '其他',
     },
     purpose: {
       Comparison: '比较',

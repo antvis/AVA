@@ -43,7 +43,6 @@ export type ChartRuleConfigMap = {
 };
 
 const allChartTypes: ChartType[] = Object.keys(Wiki) as ChartType[];
-// console.log('allChartTypes: ', allChartTypes.includes('kpi_chart'));
 
 function compare(f1: any, f2: any) {
   if (f1.distinct < f2.distinct) {
