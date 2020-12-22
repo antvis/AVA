@@ -218,7 +218,9 @@ export class AutoChart {
    * 清除上次渲染遗留的元素
    */
   destroy() {
-    this.container.removeChild(this.noDataLayer);
+    if (this.container.contains(this.noDataLayer)) {
+      this.container.removeChild(this.noDataLayer);
+    }
     if (this.configPanel) this.configPanel.destroy();
     if (this.toolbar) this.toolbar.destroy();
     if (this.plot) this.plot.destroy();
