@@ -1,3 +1,6 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Switch } from 'antd';
+import ReactDOM from 'react-dom';
 import { autoChart } from '@antv/chart-advisor';
 
 const data = [
@@ -243,5 +246,25 @@ const data = [
   },
 ];
 
-// Try change refine to true
-autoChart(document.getElementById('container'), data, { refine: false });
+const App = () => {
+  const canvas = useRef();
+  const [refine, setRefine] = useState(false);
+  const onChange = (checked) => {
+    setRefine(checked);
+  };
+  useEffect(() => {
+    if (canvas.current) {
+      autoChart(canvas.current, data, { refine });
+    }
+  }, [refine]);
+  return (
+    <div>
+      <div>
+        refine: <Switch checked={refine} onChange={onChange} />
+      </div>
+      <div ref={canvas} style={{ minHeight: 300 }} />
+    </div>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById('container'));
