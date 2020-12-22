@@ -13,7 +13,8 @@
     "prepublish": "npm run module && npm run build && npm run api && npm run pack",
     "api": "rm -rf typings && api-extractor run -v",
     "pack": "webpack --config=webpack.config.js",
-    "lint": "eslint --ext .ts src __tests__"
+    "lint": "eslint --ext .ts src __tests__",
+    "watch": "yarn module && yarn build --w"
   },
   "dependencies": {
     "tslib": "^1.9.3"

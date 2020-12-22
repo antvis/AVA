@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/**/*"
   ],
   "scripts": {
     "start": "webpack-dev-server --port 8881",
