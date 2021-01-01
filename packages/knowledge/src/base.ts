@@ -1,4 +1,4 @@
-import { ChartKnowledgeBase } from './interface';
+import { ChartKnowledgeBase, LOM_OPTIONS } from './interface';
 
 export const base: ChartKnowledgeBase = {
   line_chart: {
@@ -1267,13 +1267,27 @@ export const base: ChartKnowledgeBase = {
     alias: ['KPI Panel'],
     family: ['Others'],
     def: 'KPI Chart is a card to show aggregated numbers',
-    purpose: [],
+    purpose: ['Value'],
     coord: ['Other'],
     category: ['Other'],
-    shape: [],
-    // 1 - 3 个指标卡区块
+    shape: ['Other'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Interval'] }],
-    channel: [],
+    channel: ['Other'],
+    recRate: 'Recommended',
+  },
+
+  spreadsheet: {
+    id: 'table',
+    name: 'Table',
+    alias: ['Information Table'],
+    family: ['Table'],
+    def: 'A table consists of an ordered arrangement of rows and columns.',
+    purpose: ['Value'],
+    coord: ['Other'],
+    category: ['Other'],
+    shape: ['Other'],
+    dataPres: [{ minQty: 0, maxQty: '*', fieldConditions: [...LOM_OPTIONS] }],
+    channel: ['Other'],
     recRate: 'Recommended',
   },
 };

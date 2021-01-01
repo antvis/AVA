@@ -48,14 +48,44 @@ export type Validator = (args: Info) => number;
 /**
  * @public
  */
+const CHART_RULE_ID = [
+  'data-check',
+  'data-field-qty',
+  'no-redundant-field',
+  'purpose-check',
+  'series-qty-limit',
+  'bar-series-qty',
+  'line-field-time-ordinal',
+  'landscape-or-portrait',
+  'diff-pie-sector',
+  'nominal-enum-combinatorial',
+  'limit-series',
+  'aggregation-single-row',
+  'all-can-be-spreadsheet',
+] as const;
+
+/**
+ * @public
+ */
+export type ChartRuleID = typeof CHART_RULE_ID[number];
+
+/**
+ * @public
+ */
 export class Rule {
-  private _id: string;
+  private _id: ChartRuleID;
   private _hardOrSoft: HardOrSoft;
   private _specChartTypes: ChartType[];
   private _weight: number;
   private validator: Validator;
 
-  constructor(id: string, hardOrSoft: HardOrSoft, specChartTypes: ChartType[], weight: number, validator: Validator) {
+  constructor(
+    id: ChartRuleID,
+    hardOrSoft: HardOrSoft,
+    specChartTypes: ChartType[],
+    weight: number,
+    validator: Validator
+  ) {
     this._id = id;
     this._hardOrSoft = hardOrSoft;
     this._specChartTypes = specChartTypes;

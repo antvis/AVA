@@ -61,7 +61,6 @@ export type EncodingKey =
 /**
  * @public
  */
-// part of
 export type Aggregation = 'count';
 
 /**
