@@ -1,4 +1,4 @@
-import { Rule, DataProps } from './concepts/rule';
+import { Rule, DataProps, ChartRuleID } from './concepts/rule';
 import {
   CKBJson,
   LevelOfMeasurement as LOM,
@@ -8,23 +8,6 @@ import {
 } from '@antv/knowledge';
 
 const Wiki = CKBJson('en-US', true);
-
-/**
- * @public
- */
-export type ChartRuleID =
-  | 'data-check'
-  | 'data-field-qty'
-  | 'no-redundant-field'
-  | 'purpose-check'
-  | 'series-qty-limit'
-  | 'bar-series-qty'
-  | 'line-field-time-ordinal'
-  | 'landscape-or-portrait'
-  | 'diff-pie-sector'
-  | 'nominal-enum-combinatorial'
-  | 'limit-series'
-  | 'aggregation-single-row';
 
 /**
  * @public
@@ -164,8 +147,28 @@ export const ChartRules: Rule[] = [
         return result;
       }
     }
-
     return result;
+  }),
+  // Only single row for all columns
+  new Rule(
+    'aggregation-single-row',
+    'HARD',
+    allChartTypes.filter((i) => i !== 'spreadsheet'),
+    1.0,
+    (args): number => {
+      let result = 0;
+      const { chartType, dataProps, customWeight } = args;
+      if (dataProps.every((i) => i.count === 1 && i.levelOfMeasurements.includes('Interval'))) {
+        result = chartType === 'kpi_chart' ? 1 : customWeight || 0.2;
+      } else {
+        result = chartType === 'kpi_chart' ? 0 : customWeight || 1;
+      }
+      return result;
+    }
+  ),
+  // all dataset can be spreadsheet
+  new Rule('all-can-be-spreadsheet', 'HARD', ['spreadsheet'], 1.0, (): number => {
+    return 1;
   }),
   // Some charts should has at most N series.
   new Rule(
@@ -371,15 +374,6 @@ export const ChartRules: Rule[] = [
       }
     }
 
-    return result;
-  }),
-  // 只有一列汇总信息
-  new Rule('aggregation-single-row', 'SOFT', ['kpi_chart'], 1.0, (args): number => {
-    let result = 0;
-    const { dataProps } = args;
-    if (dataProps.every((i) => i.count === 1 && i.levelOfMeasurements.includes('Interval'))) {
-      result = 1;
-    }
     return result;
   }),
   // end

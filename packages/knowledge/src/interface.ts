@@ -19,6 +19,7 @@ export const FAMILY_OPTIONS = [
   'LineLayer',
   'PointLayer',
   'HeatmapLayer',
+  'Table',
   'Others',
 ] as const;
 
@@ -42,6 +43,7 @@ export const PURPOSE_OPTIONS = [
   'Flow',
   'Spatial',
   'Anomaly',
+  'Value',
 ] as const;
 
 /**
@@ -92,6 +94,7 @@ export const SHAPE_OPTIONS = [
   'Symmetric',
   'Network',
   'Map',
+  'Other',
 ] as const;
 
 /**
@@ -143,6 +146,7 @@ export const CHANNEL_OPTIONS = [
   'Stroke',
   'LineWidth',
   'Lightness',
+  'Other',
 ] as const;
 
 /**

@@ -62,14 +62,14 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   const chartType = G2PLOT_TYPE_MAPPING[type];
   if (!chartType || !spec) return null;
 
-  // 指标卡和交叉表为自定义 spec 且无法用 g2plot render
-  if (['kpi_chart'].includes(chartType)) return null;
+  // kpi chart and spreadsheet can not be render by g2plot, it will have custom config
+  if (['kpi_chart', 'spreadsheet'].includes(chartType)) return null;
 
   // TODO 暂时没有多layer的输出，先粗暴处理
   if ((spec as any).layer) return null;
 
   const configs: any = {};
-  // 剩余场景为单 view 场景，开始转换为 g2plot config
+  // the rest scene is single view, transfer to  g2plot config
   const { encoding } = spec as SingleViewSpec;
 
   // step1: common config decode

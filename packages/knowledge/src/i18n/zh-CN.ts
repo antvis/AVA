@@ -19,6 +19,7 @@ export const zhCN: TranslateList = {
       PolygonLayer: '面图层类',
       HeatmapLayer: '地图热力图类',
       Others: '其他类',
+      Table: '表格类',
     },
     category: {
       Statistic: '统计图表',
@@ -39,6 +40,7 @@ export const zhCN: TranslateList = {
       Flow: '流向',
       Spatial: '空间',
       Anomaly: '异常',
+      Value: '数值',
     },
     coord: {
       NumberLine: '数轴',
@@ -61,6 +63,7 @@ export const zhCN: TranslateList = {
       Symmetric: '对称形',
       Network: '网络形',
       Map: '地图',
+      Other: '其他',
     },
     channel: {
       Position: '位置',
@@ -75,6 +78,7 @@ export const zhCN: TranslateList = {
       Stroke: '线色',
       LineWidth: '线粗',
       Lightness: '亮度',
+      Other: '其他',
     },
     lom: {
       Continuous: '连续',
@@ -520,6 +524,11 @@ export const zhCN: TranslateList = {
       name: '指标卡',
       alias: ['指标卡'],
       def: '一种用来展示聚合数据的卡片区域',
+    },
+    spreadsheet: {
+      name: '交叉表',
+      alias: ['信息表', '分析表'],
+      def: '表格就是由若干的行与列所构成的一种有序的组织形式',
     },
   },
 };
