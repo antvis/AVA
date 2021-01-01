@@ -79,6 +79,7 @@ export const CHART_ID_OPTIONS = [
   'sunburst_diagram',
   'liquid_chart',
   'kpi_chart',
+  'spreadsheet',
 ] as const;
 
 /**

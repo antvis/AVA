@@ -94,7 +94,7 @@ export class AutoPlot extends EventEmitter {
     let advices = dataToAdvices(data, options);
 
     // TODO autoChart 暂时不支持渲染指标卡和交叉表
-    advices = advices.filter((i) => !['kpi_chart'].includes(i.type));
+    advices = advices.filter((i) => !['kpi_chart', 'spreadsheet'].includes(i.type));
 
     this.advices = advices;
     this.options = options;
@@ -148,7 +148,6 @@ export class AutoPlot extends EventEmitter {
         this.plot = new G2Plot[libConfig.type](container, configs);
       }
       this.plot!.render();
-      // 出发事件
       this.emit('change', [index]);
     }
   }

@@ -48,6 +48,8 @@ export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[]):
       return heatmap(dataProps);
     case 'kpi_chart':
       return kpi_chart();
+    case 'spreadsheet':
+      return spreadsheet();
     default:
       return null;
   }
@@ -504,6 +506,11 @@ function heatmap(dataProps: DataProperty[]): Advice['spec'] {
 }
 
 function kpi_chart(): Advice['spec'] {
-  // 指标卡暂不做更细致的配置，只支持基本的数值显示
+  // TODO 指标卡暂不做更细致的配置，只支持基本的数值显示
+  return null;
+}
+
+function spreadsheet(): Advice['spec'] {
+  // TODO 交叉表暂不做更细致的配置，只支持基本的数值显示
   return null;
 }

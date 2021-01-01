@@ -138,7 +138,7 @@ describe('API - dataPropsToAdvices', () => {
         {
           score: 1,
           spec: null,
-          type: 'kpi_chart',
+          type: 'spreadsheet',
         },
       ]);
     });
