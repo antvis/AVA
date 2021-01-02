@@ -4,6 +4,7 @@ import { ChartRules, DesignRules, Rule, ChartRuleConfigMap } from '../rules';
 import _get from 'lodash/get';
 import { getChartTypeSpec } from './spec-mapping';
 import { AdvisorOptions, DataProperty, Advice, SingleViewSpec } from './interface';
+import { customChartType } from '../custom-plot';
 
 function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   const purpose = options ? options.purpose : '';
@@ -77,7 +78,7 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
     const chartTypeSpec = getChartTypeSpec(t, dataProps);
 
     // FIXME kpi_chart and spreadsheet spec 暂时可以为 null 之后随需求增加 cfg
-    if (!['kpi_chart', 'spreadsheet'].includes(t) && !chartTypeSpec) return { type: t, spec: null, score: 0 };
+    if (!customChartType.includes(t) && !chartTypeSpec) return { type: t, spec: null, score: 0 };
 
     // step 3: apply design rules
     if (chartTypeSpec && enableRefine) {

@@ -2,6 +2,7 @@ import { ChartID } from '@antv/knowledge';
 import { Advice, ChartLibrary, G2PlotConfig, G2PlotChartType, SingleViewSpec } from './interface';
 import { get as _get, has as _has, set as _set } from 'lodash';
 import { EncodingKey } from './vega-lite';
+import { customChartType } from '../custom-plot';
 
 /**
  * @public
@@ -59,11 +60,11 @@ const G2PLOT_ENCODING_MAPPING: Record<string, string> = {
 function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   const { type, spec } = advice;
 
+  // kpi chart and spreadsheet can not be render by g2plot, it will have custom config
+  if (customChartType.includes(type)) return null;
+
   const chartType = G2PLOT_TYPE_MAPPING[type];
   if (!chartType || !spec) return null;
-
-  // kpi chart and spreadsheet can not be render by g2plot, it will have custom config
-  if (['kpi_chart', 'spreadsheet'].includes(chartType)) return null;
 
   // TODO 暂时没有多layer的输出，先粗暴处理
   if ((spec as any).layer) return null;

@@ -192,7 +192,22 @@ const ADVISOR_STYLE = `
     color: #fff;
     cursor: pointer;
   }
-  
+  .${CLASS_PREFIX}kpi-chart {
+    display: flex;
+  }
+  .${CLASS_PREFIX}kpi-chart .${CLASS_PREFIX}kpi-chart-card {
+    border-left: 3px solid #94b2ca;
+    padding-left: 8px;
+    margin-right: 36px;
+  }
+  .${CLASS_PREFIX}kpi-chart .${CLASS_PREFIX}kpi-chart-card-name {
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: rgba(0,0,0,.65);
+  }
+  .${CLASS_PREFIX}kpi-chart .${CLASS_PREFIX}kpi-chart-card-value {
+    font-size: 24px;
+  }
 `;
 
 const style = document.createElement('style');

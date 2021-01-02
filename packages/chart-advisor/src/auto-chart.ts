@@ -121,7 +121,7 @@ export class AutoChart {
     let inst: AutoChart;
     if (CACHES.get(containerDom)) {
       inst = CACHES.get(containerDom) as AutoChart;
-      // 如果配置和数据一样 不渲染直接返回
+      //  return directly while data and config is not change
       if (isEqual(inst.options, options) && isEqual(inst.data, data)) return inst;
     } else {
       inst = new AutoChart(containerDom);
@@ -193,7 +193,7 @@ export class AutoChart {
       if (typeof config.type !== 'string') throw new Error('please set the plotType');
       this.plot = new DummyPlot(chartCanvas, this.data, config);
     } else {
-      // 获取上次渲染的advise 和 index
+      // get prev advice and index
       let oldAdvices: Advice[] = [];
       let oldIndex = 0;
       if (this.plot instanceof AutoPlot) {
@@ -212,6 +212,7 @@ export class AutoChart {
         this.toolbar = new Toolbar(this.plot, this.container);
       }
     }
+    // TODO kpi chart 和 spreadsheet 不显示 config
     if (development && this.plot.plot) {
       this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
     }
@@ -235,7 +236,7 @@ export class AutoChart {
   }
 
   /**
-   * 获得 Plot 对象信息
+   * get plot detail
    */
   getPlot() {
     return this.plot;
