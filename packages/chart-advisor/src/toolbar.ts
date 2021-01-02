@@ -1,9 +1,10 @@
+import Thumbnails from '@antv/thumbnails';
+import { CKBJson } from '@antv/knowledge';
 import { CLASS_PREFIX } from './style';
 import { Advice, adviceToLibConfig } from './advice-pipeline';
 import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
-import Thumbnails from '@antv/thumbnails';
-import { CKBJson } from '@antv/knowledge';
+import { customChartType } from './custom-plot';
 
 const ChartWiki = CKBJson('zh-CN', true);
 
@@ -23,7 +24,10 @@ const rankIcons = [
 ];
 
 function getAdvicesHtml(advices: Advice[]) {
-  const top3 = advices.filter((advice) => adviceToLibConfig(advice)).slice(0, 3);
+  const top3 = advices
+    // TODO 暂时通过 filter 处理没有输出 g2plot lib config 的图表类型
+    .filter((advice) => customChartType.includes(advice.type) || adviceToLibConfig(advice))
+    .slice(0, 3);
   const rankContent = top3
     .map((item, i) => {
       return `<div class="${CLASS_PREFIX}advice" data-index="${i}">

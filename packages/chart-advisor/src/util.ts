@@ -60,3 +60,13 @@ export function DEFAULT_FEEDBACK(feedback: string): (container: HTMLDivElement) 
     container.appendChild(content);
   };
 }
+
+/**
+ * remove all children node in specific dom
+ * @param dom HTMLElement
+ */
+export function removeAllChild(dom: HTMLElement) {
+  while (dom.firstChild) {
+    dom.removeChild(dom.firstChild);
+  }
+}
