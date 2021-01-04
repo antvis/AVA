@@ -18,7 +18,7 @@ function newBase() {
  * @param lang - Language of the CKB.
  * @param completed - True if only charts with fully completed knowledge should be included. Default is false.
  *
- * @beta
+ * @public
  */
 export function CKBJson(lang: Language = 'en-US', completed = false) {
   const base = newBase();
@@ -87,7 +87,7 @@ export function CKBJson(lang: Language = 'en-US', completed = false) {
 /**
  * @param chartKnowledge - Knowledge of the added chart.
  * @param trans - Versions of translation for the name, alias and definition of the added chart.
- * @beta
+ * @public
  */
 export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language, TransKnowledgeProps>) {
   const id = chartKnowledge.id;

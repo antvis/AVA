@@ -28,7 +28,7 @@ export * from './vega-lite';
 
 // step 1 + step 2
 /**
- * @beta
+ * @public
  */
 export function dataToAdvices(data: any[], options?: AdvisorOptions, showLog = false): Advice[] {
   if (showLog) console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
@@ -49,7 +49,7 @@ export function dataToAdvices(data: any[], options?: AdvisorOptions, showLog = f
 // step 3 + step 4
 // default render as g2plot
 /**
- * @beta
+ * @public
  */
 export function specRender(
   container: string | HTMLElement,

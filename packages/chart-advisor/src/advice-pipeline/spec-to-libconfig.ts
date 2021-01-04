@@ -4,7 +4,7 @@ import { get as _get, has as _has, set as _set } from 'lodash';
 import { EncodingKey } from './vega-lite';
 
 /**
- * @beta
+ * @public
  */
 export function adviceToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
 // export function adviceToLibConfig(advice: Advice, libraryName: 'ECharts'): EChartsConfig | null;
@@ -21,7 +21,7 @@ export function adviceToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G
 }
 
 /**
- * @beta
+ * @public
  */
 export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>> = {
   line_chart: 'Line',

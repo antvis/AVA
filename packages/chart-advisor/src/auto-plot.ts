@@ -20,13 +20,16 @@ function getConfig(advice: Advice, { theme, data }: Configs): any {
   return { ...configs, theme, data };
 }
 
+/**
+ * @public
+ */
 export interface AutoPlotOptions extends AdvisorOptions {
   theme?: string;
   feedback?: (container: HTMLDivElement) => void;
 }
 
 /**
- * 智能图表
+ * @public
  */
 export class AutoPlot extends EventEmitter {
   /**

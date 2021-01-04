@@ -3,7 +3,7 @@ import { G2PlotConfig } from './interface';
 
 /**
  * g2plot render function
- * @beta
+ * @public
  */
 export function g2plotRender(container: string | HTMLElement, data: any, libConfigs: G2PlotConfig) {
   const { type, configs } = libConfigs;
@@ -24,7 +24,7 @@ export function g2plotRender(container: string | HTMLElement, data: any, libConf
 
 /**
  * g2 render function
- * @beta
+ * @public
  */
 export function g2Render(container: string | HTMLElement, data: any, configs: G2PlotConfig) {
   return g2plotRender(container, data, configs)?.chart;

@@ -3,7 +3,7 @@ import { RowData } from './util/helper';
 import { parse, TransformSchema, AggregationType } from './parse';
 
 /**
- * @beta
+ * @public
  */
 export interface AutoTransformResult {
   result: RowData[];
@@ -11,12 +11,12 @@ export interface AutoTransformResult {
 }
 
 /**
- * @beta
+ * @public
  */
 export type RenameOption = boolean | 'origin' | 'brackets' | 'underline' | Function;
 
 /**
- * @beta
+ * @public
  */
 export function rename(originStr: string, aggType: AggregationType, option: RenameOption = 'brackets'): string {
   if (option === false || option === 'origin') {
@@ -39,7 +39,7 @@ export function rename(originStr: string, aggType: AggregationType, option: Rena
 }
 
 /**
- * @beta
+ * @public
  */
 export function autoSchema(
   data: RowData[],
@@ -81,7 +81,7 @@ export function autoSchema(
 }
 
 /**
- * @beta
+ * @public
  */
 export function autoTransform(
   data: RowData[],

@@ -12,7 +12,7 @@ import { trendIW as viTrendIW } from './vi-trend';
 const tuple = <T extends string[]>(...args: T) => args;
 
 /**
- * @beta
+ * @public
  */
 export const INSIGHT_TYPES = tuple(
   'Correlation',
@@ -27,17 +27,17 @@ export const INSIGHT_TYPES = tuple(
 );
 
 /**
- * @beta
+ * @public
  */
 export type InsightType = typeof INSIGHT_TYPES[number];
 
 /**
- * @beta
+ * @public
  */
 export type Worker = (data: RowData[]) => Insight[] | Promise<Insight[]>;
 
 /**
- * @beta
+ * @public
  */
 export const insightWorkers: Partial<Record<InsightType, Worker>> = {
   Correlation: correlationIW,

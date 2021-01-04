@@ -96,6 +96,9 @@ export function addCanvas(layer: HTMLElement, { title, description }: AutoChartO
   return canvas;
 }
 
+/**
+ * @public
+ */
 export class AutoChart {
   static async create(
     container: HTMLElement | string,

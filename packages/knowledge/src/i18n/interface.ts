@@ -22,7 +22,7 @@ interface Concepts {
 }
 
 /**
- * @beta
+ * @public
  */
 export interface TransKnowledgeProps {
   name: string;

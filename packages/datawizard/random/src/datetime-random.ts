@@ -61,7 +61,7 @@ export class DateTimeRandom extends BasicRandom {
    * new DateTimeRandom().weekday({ abbr: true }) // Mon.
    * ```
    * @param options - the params
-   * @beta
+   * @public
    */
   weekday(options?: WeekDayOptions): string {
     const { locale, abbr } = initOptions(options, { abbr: false, locale: 'en-US' });
@@ -75,7 +75,7 @@ export class DateTimeRandom extends BasicRandom {
    * return a random month
    *
    * @param options - the params
-   * @beta
+   * @public
    */
   month(options?: MonthOptions): string {
     const { locale, abbr } = initOptions(options, { abbr: false, locale: 'en-US' });

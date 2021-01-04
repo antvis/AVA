@@ -5,7 +5,7 @@ import { DataProperty } from './interface';
 /**
  * Return Data Properties of dataset.
  *
- * @beta
+ * @public
  */
 export function dataToDataProps(data: any[]): DataProperty[] {
   if (!data) {

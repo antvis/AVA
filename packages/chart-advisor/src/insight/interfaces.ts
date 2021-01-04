@@ -3,7 +3,7 @@ import { InsightType } from './insightWorkers';
 import { ChartID, Purpose } from '@antv/knowledge';
 
 /**
- * @beta
+ * @public
  */
 export interface InsightProps {
   dimensions?: string[];
@@ -13,7 +13,7 @@ export interface InsightProps {
 }
 
 /**
- * @beta
+ * @public
  */
 export interface Insight {
   type: InsightType | 'SomeInsight';

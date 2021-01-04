@@ -62,7 +62,7 @@ function applyDesignRules(chartType: ChartID, dataProps: DataProperty[], chartTy
 }
 
 /**
- * @beta
+ * @public
  */
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   const enableRefine = options?.refine === undefined ? true : options.refine;

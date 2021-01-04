@@ -33,7 +33,7 @@ export interface AdvisorOptions {
 
 /**
  * return type of data to data props, describe data column
- * @beta
+ * @public
  */
 export type DataProperty =
   | (DWAnalyzer.NumberFieldInfo & { name: string; levelOfMeasurements: LOM[] })
@@ -43,7 +43,7 @@ export type DataProperty =
 // type Bin = { binned: boolean; step: number };
 
 /**
- * @beta
+ * @public
  */
 export type VegaLiteEncodingSpecification = Partial<
   Record<
@@ -62,7 +62,7 @@ export type VegaLiteEncodingSpecification = Partial<
 >;
 
 /**
- * @beta
+ * @public
  */
 export interface SingleViewSpec {
   mark: { type: Mark; [record: string]: any };
@@ -71,18 +71,18 @@ export interface SingleViewSpec {
 
 // subset of vega-lte spec
 /**
- * @beta
+ * @public
  */
 export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 
 /**
- * @beta
+ * @public
  */
 export type Specification = SingleViewSpec;
 
 /**
  * return type of data props to spec
- * @beta
+ * @public
  */
 export interface Advice {
   type: ChartID;
@@ -92,7 +92,7 @@ export interface Advice {
 }
 
 /**
- * @beta
+ * @public
  */
 export type ChartLibrary = 'G2Plot' | 'G2';
 
