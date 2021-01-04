@@ -102,7 +102,7 @@ export const base: ChartKnowledgeBase = {
 
   interval_area_chart: {
     id: 'interval_area_chart',
-    name: '',
+    name: 'Interval Area Chart',
     alias: [],
     family: [],
     def: '',
@@ -117,7 +117,7 @@ export const base: ChartKnowledgeBase = {
 
   stream_chart: {
     id: 'stream_chart',
-    name: '',
+    name: 'Stream Chart',
     alias: [],
     family: [],
     def: '',
@@ -208,7 +208,7 @@ export const base: ChartKnowledgeBase = {
 
   interval_column_chart: {
     id: 'interval_column_chart',
-    name: '',
+    name: 'Interval Column Chart',
     alias: [],
     family: [],
     def: '',
@@ -351,7 +351,7 @@ export const base: ChartKnowledgeBase = {
 
   interval_bar_chart: {
     id: 'interval_bar_chart',
-    name: '',
+    name: 'Interval Bar Chart',
     alias: [],
     family: [],
     def: '',
@@ -403,7 +403,7 @@ export const base: ChartKnowledgeBase = {
 
   mirror_bar_chart: {
     id: 'mirror_bar_chart',
-    name: '',
+    name: 'Mirror Bar Chart',
     alias: [],
     family: [],
     def: '',
@@ -475,7 +475,7 @@ export const base: ChartKnowledgeBase = {
 
   nested_pie_chart: {
     id: 'nested_pie_chart',
-    name: '',
+    name: 'Nested Pie Chart',
     alias: [],
     family: [],
     def: '',
@@ -547,7 +547,7 @@ export const base: ChartKnowledgeBase = {
 
   non_ribbon_chord_diagram: {
     id: 'non_ribbon_chord_diagram',
-    name: '',
+    name: 'Non-Ribbon Chord Diagram',
     alias: [],
     family: [],
     def: '',
@@ -577,7 +577,7 @@ export const base: ChartKnowledgeBase = {
 
   chord_diagram: {
     id: 'chord_diagram',
-    name: '',
+    name: 'Chord Diagram',
     alias: [],
     family: [],
     def: '',
@@ -645,7 +645,7 @@ export const base: ChartKnowledgeBase = {
 
   overlapping_funnel_chart: {
     id: 'overlapping_funnel_chart',
-    name: '',
+    name: 'Overlapping Funnel Chart',
     alias: [],
     family: [],
     def: '',
@@ -732,7 +732,7 @@ export const base: ChartKnowledgeBase = {
 
   gauge_chart: {
     id: 'gauge_chart',
-    name: '',
+    name: 'Gauge Chart',
     alias: [],
     family: [],
     def: '',
@@ -766,7 +766,7 @@ export const base: ChartKnowledgeBase = {
 
   wordcloud: {
     id: 'wordcloud',
-    name: '',
+    name: 'Word Cloud',
     alias: [],
     family: [],
     def: '',
@@ -781,7 +781,7 @@ export const base: ChartKnowledgeBase = {
 
   candlestick_chart: {
     id: 'candlestick_chart',
-    name: '',
+    name: 'Candlestick Chart',
     alias: [],
     family: [],
     def: '',
@@ -1203,7 +1203,7 @@ export const base: ChartKnowledgeBase = {
 
   packed_circles: {
     id: 'packed_circles',
-    name: '',
+    name: 'Packed Circles',
     alias: [],
     family: [],
     def: '',
@@ -1218,7 +1218,7 @@ export const base: ChartKnowledgeBase = {
 
   polar_treemap: {
     id: 'polar_treemap',
-    name: '',
+    name: 'Polar Treemap',
     alias: [],
     family: [],
     def: '',
@@ -1233,7 +1233,7 @@ export const base: ChartKnowledgeBase = {
 
   sunburst_diagram: {
     id: 'sunburst_diagram',
-    name: '',
+    name: 'Sunburst',
     alias: [],
     family: [],
     def: '',

@@ -4,22 +4,22 @@
 
 ```ts
 
-// @beta (undocumented)
+// @public (undocumented)
 export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language, TransKnowledgeProps>): void;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Channel = typeof CHANNEL_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const CHANNEL_OPTIONS: readonly ["Position", "Length", "Color", "Area", "Angle", "ArcLength", "Direction", "Size", "Opacity", "Stroke", "LineWidth", "Lightness"];
 
-// @beta (undocumented)
-export const CHART_ID_OPTIONS: readonly ["line_chart", "step_line_chart", "area_chart", "stacked_area_chart", "percent_stacked_area_chart", "interval_area_chart", "stream_chart", "column_chart", "grouped_column_chart", "stacked_column_chart", "percent_stacked_column_chart", "interval_column_chart", "range_column_chart", "waterfall_chart", "histogram", "bar_chart", "stacked_bar_chart", "percent_stacked_bar_chart", "grouped_bar_chart", "interval_bar_chart", "range_bar_chart", "radial_bar_chart", "mirror_bar_chart", "bullet_chart", "pie_chart", "donut_chart", "nested_pie_chart", "rose_chart", "scatter_plot", "bubble_chart", "non_ribbon_chord_diagram", "arc_diagram", "chord_diagram", "treemap", "sankey_diagram", "funnel_chart", "overlapping_funnel_chart", "mirror_funnel_chart", "box_plot", "heatmap", "density_heatmap", "gauge_chart", "radar_chart", "wordcloud", "candlestick_chart", "compact_box_tree", "dendrogram", "indented_tree", "radial_tree", "flow_diagram", "fruchterman_layout_graph", "force_directed_layout_graph", "circular_layout_graph", "spiral_layout_graph", "radial_layout_graph", "concentric_layout_graph", "grid_layout_graph", "symbol_map", "chart_map", "column_map_3d", "scatter_map", "path_map", "isoline_map", "arc_map_3d", "choropleth_map", "choropleth_map_3d", "hexagonal_heat_map", "hexagonal_heat_map_3d", "classical_heat_map", "grid_heat_map", "bubble_map", "bubble_light_map", "packed_circles", "polar_treemap", "sunburst_diagram", "liquid_chart"];
+// @public (undocumented)
+export const CHART_ID_OPTIONS: readonly ["line_chart", "step_line_chart", "area_chart", "stacked_area_chart", "percent_stacked_area_chart", "interval_area_chart", "stream_chart", "column_chart", "grouped_column_chart", "stacked_column_chart", "percent_stacked_column_chart", "interval_column_chart", "range_column_chart", "waterfall_chart", "histogram", "bar_chart", "stacked_bar_chart", "percent_stacked_bar_chart", "grouped_bar_chart", "interval_bar_chart", "range_bar_chart", "radial_bar_chart", "mirror_bar_chart", "bullet_chart", "pie_chart", "donut_chart", "nested_pie_chart", "rose_chart", "scatter_plot", "bubble_chart", "non_ribbon_chord_diagram", "arc_diagram", "chord_diagram", "treemap", "sankey_diagram", "funnel_chart", "overlapping_funnel_chart", "mirror_funnel_chart", "box_plot", "heatmap", "density_heatmap", "gauge_chart", "radar_chart", "wordcloud", "candlestick_chart", "compact_box_tree", "dendrogram", "indented_tree", "radial_tree", "flow_diagram", "fruchterman_layout_graph", "force_directed_layout_graph", "circular_layout_graph", "spiral_layout_graph", "radial_layout_graph", "concentric_layout_graph", "grid_layout_graph", "symbol_map", "chart_map", "column_map_3d", "scatter_map", "path_map", "isoline_map", "arc_map_3d", "choropleth_map", "choropleth_map_3d", "hexagonal_heat_map", "hexagonal_heat_map_3d", "classical_heat_map", "grid_heat_map", "bubble_map", "bubble_light_map", "packed_circles", "polar_treemap", "sunburst_diagram", "liquid_chart", "kpi_chart"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type ChartID = typeof CHART_ID_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface ChartKnowledge {
     // (undocumented)
     alias: string[];
@@ -47,7 +47,7 @@ export interface ChartKnowledge {
     shape: Shape[];
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface ChartKnowledgeJSON {
     // (undocumented)
     alias: string[];
@@ -75,10 +75,10 @@ export interface ChartKnowledgeJSON {
     shape: string[];
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export function CKBJson(lang?: Language, completed?: boolean): Record<string, ChartKnowledgeJSON>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export function CKBOptions(lang?: Language): {
     family: string[];
     category: string[];
@@ -90,13 +90,13 @@ export function CKBOptions(lang?: Language): {
     recRate: string[];
 };
 
-// @beta (undocumented)
+// @public (undocumented)
 export const COORD_TYPE_OPTIONS: readonly ["NumberLine", "Cartesian2D", "SymmetricCartesian", "Cartesian3D", "Polar", "NodeLink", "Radar", "Geo", "Other"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type CoordinateSystem = typeof COORD_TYPE_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface DataPrerequisite {
     // (undocumented)
     fieldConditions: LevelOfMeasurement[];
@@ -106,7 +106,7 @@ export interface DataPrerequisite {
     minQty: number;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface DataPrerequisiteJSON {
     // (undocumented)
     fieldConditions: string[];
@@ -116,46 +116,46 @@ export interface DataPrerequisiteJSON {
     minQty: number;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Family = typeof FAMILY_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const FAMILY_OPTIONS: readonly ["LineCharts", "ColumnCharts", "BarCharts", "PieCharts", "AreaCharts", "ScatterCharts", "FunnelCharts", "HeatmapCharts", "RadarCharts", "TreeGraph", "GeneralGraph", "PolygonLayer", "LineLayer", "PointLayer", "HeatmapLayer", "Others"];
 
-// @beta (undocumented)
-export const GRAPHIC_CATEGORY_OPTIONS: readonly ["Statistic", "Diagram", "Graph", "Map"];
+// @public (undocumented)
+export const GRAPHIC_CATEGORY_OPTIONS: readonly ["Statistic", "Diagram", "Graph", "Map", "Other"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Language = 'en-US' | 'zh-CN';
 
-// @beta (undocumented)
+// @public (undocumented)
 export type LevelOfMeasurement = typeof LOM_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const LOM_OPTIONS: readonly ["Nominal", "Ordinal", "Interval", "Discrete", "Continuous", "Time"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Purpose = typeof PURPOSE_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const PURPOSE_OPTIONS: readonly ["Comparison", "Trend", "Distribution", "Rank", "Proportion", "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const RECOMMEND_RATING_OPTIONS: readonly ["Recommended", "Use with Caution", "Not Recommended"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type RecommendRating = typeof RECOMMEND_RATING_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Shape = typeof SHAPE_OPTIONS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const SHAPE_OPTIONS: readonly ["Lines", "Bars", "Round", "Square", "Area", "Scatter", "Symmetric", "Network", "Map"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface TransKnowledgeProps {
     // (undocumented)
     alias: string[];

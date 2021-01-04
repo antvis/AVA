@@ -1,9 +1,6 @@
 {
   "name": "root",
   "private": true,
-  "workspaces": [
-    "packages/**/*"
-  ],
   "scripts": {
     "start": "webpack-dev-server --port 8881",
     "site:start": "cd ./packages/ava-site && npm run start",
@@ -35,7 +32,7 @@
     "@babel/preset-typescript": "^7.7.4",
     "@babel/runtime": "^7.8.7",
     "@microsoft/api-documenter": "7.7.2",
-    "@microsoft/api-extractor": "7.7.0",
+    "@microsoft/api-extractor": "7.12.1",
     "@types/jest": "^23.3.12",
     "@types/lodash": "^4.14.165",
     "@types/react": "^16.9.9",
