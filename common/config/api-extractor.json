@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
-  "mainEntryPointFilePath": "<projectFolder>/temp/index.d.ts",
+  "mainEntryPointFilePath": "<projectFolder>/lib/index.d.ts",
   "dtsRollup": {
     "enabled": true,
     "untrimmedFilePath": "<projectFolder>/typings/<unscopedPackageName>.d.ts"
