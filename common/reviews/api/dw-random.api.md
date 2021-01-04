@@ -21,7 +21,6 @@ export class BasicRandom {
     pickset<T>(array: T[], count?: number): T[];
     randexp(source: string | RegExp, flag?: string): string;
     random: RandomFunc;
-    // @beta
     shuffle<T>(array: T[]): T[];
 }
 
@@ -137,11 +136,9 @@ export class DateTimeRandom extends BasicRandom {
     database: DateTimeDB;
     date(options?: Interval): string;
     datetime(options?: DateTimeOptions): string;
-    // @beta
     month(options?: MonthOptions): string;
     time(options?: TimeOptions): string;
     timestamp(options: Interval): number;
-    // @beta
     weekday(options?: WeekDayOptions): string;
 }
 

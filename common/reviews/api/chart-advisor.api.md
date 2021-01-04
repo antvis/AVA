@@ -274,7 +274,7 @@ export function insightsFromDataset(data: RowData[], options?: AllSubspaceDatase
 export type InsightType = typeof INSIGHT_TYPES[number];
 
 // @public (undocumented)
-export const insightWorkers: Partial<Record<InsightType, Worker>>;
+export const insightWorkers: Partial<Record<InsightType, Worker_2>>;
 
 // @public (undocumented)
 export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
@@ -343,7 +343,9 @@ export type VegaLiteSubsetSpec = SingleViewSpec | {
 };
 
 // @public (undocumented)
-export type Worker = (data: RowData[]) => Insight[] | Promise<Insight[]>;
+type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;
+
+export { Worker_2 as Worker }
 
 
 ```
