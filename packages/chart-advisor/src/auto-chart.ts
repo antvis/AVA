@@ -1,9 +1,10 @@
 import { merge } from 'lodash';
+import { isEqual, pick } from '@antv/util';
 import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
 import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
-import { isEqual, pick } from '@antv/util';
+import { customChartType } from './custom-plot';
 import { AdvisorOptions, Advice, G2PlotConfig } from './advice-pipeline';
 import { Preferences, ChartRuleConfigMap } from './rules';
 import { MockPanel } from './mock-panel';
@@ -222,9 +223,11 @@ export class AutoChart {
         this.toolbar = new Toolbar(this.plot, this.container);
       }
     }
-    // TODO kpi chart 和 spreadsheet 不显示 config
     if (development && this.plot.plot) {
-      this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
+      // configPanel not supported kpi_chart and spreadsheet temporary
+      if (!customChartType.includes(this.plot?.type || '')) {
+        this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
+      }
     }
   }
 
