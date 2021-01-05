@@ -208,6 +208,17 @@ const ADVISOR_STYLE = `
   .${CLASS_PREFIX}kpi-chart .${CLASS_PREFIX}kpi-chart-card-value {
     font-size: 24px;
   }
+  .${CLASS_PREFIX}-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .${CLASS_PREFIX}-table td, .${CLASS_PREFIX}-table th {
+    border-bottom: 1px solid #d8d8d8;
+    padding: 4px;
+  }
+  .${CLASS_PREFIX}-table thead tr th{
+    text-align: left;
+  }
 `;
 
 const style = document.createElement('style');

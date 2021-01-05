@@ -9,7 +9,7 @@ describe('Chart Type - Spreadsheet', () => {
     const advices = dataPropsToAdvices(dataProps, {}, false);
     expect(advices.length > 0 && advices[0].type === 'spreadsheet').toEqual(true);
 
-    const div = createDiv('1 col - kpi_chart');
+    const div = createDiv('spreadsheet in autoChart');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, city_sex_active_trade, { toolbar: true });
