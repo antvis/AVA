@@ -46,6 +46,7 @@ export {
   ChartRules,
   ChartRuleConfig,
   ChartRuleConfigMap,
+  CHART_RULE_ID,
   ChartRuleID,
   Rule,
   HardOrSoft,

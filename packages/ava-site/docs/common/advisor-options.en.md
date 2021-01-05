@@ -41,6 +41,8 @@ interface ChartRuleConfig {
 | data-field-qty             | HARD         | 1.0           | Data must has the min qty of the prerequisite                                                  |
 | no-redundant-field         | HARD         | 1.0           | No redundant field                                                                             |
 | purpose-check              | HARD         | 1.0           | Choose types that satisfy the purpose, if purpose is defined                                   |
+| aggregation-single-row     | HARD         | 1.0           | Recommend KPI chart while data only has one single aggregation row                             |
+| all-can-be-spreadsheet     | HARD         | 1.0           | All Dataset can present as table ( default close when using autoChart )                        |
 | series-qty-limit           | SOFT         | 0.8           | Some charts should has at most N series                                                        |
 | bar-series-qty             | SOFT         | 0.5           | Bar chart should has proper number of bars or bar groups                                       |
 | line-field-time-ordinal    | SOFT         | 1.0           | Data has Time or Ordinal field are good for Line, Area charts                                  |

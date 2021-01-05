@@ -48,7 +48,7 @@ export type Validator = (args: Info) => number;
 /**
  * @public
  */
-const CHART_RULE_ID = [
+export const CHART_RULE_ID = [
   'data-check',
   'data-field-qty',
   'no-redundant-field',

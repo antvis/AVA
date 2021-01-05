@@ -12,7 +12,7 @@ describe('Chart Type - Kpi Chart', () => {
     const div = createDiv('1 col - kpi_chart');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
-    const autoChartIns = await autoChart(div, totalPrice, { toolbar: true });
+    const autoChartIns = await autoChart(div, totalPrice, { toolbar: true, development: true });
     const plot = autoChartIns.getPlot();
     const types = get(plot, 'advices', []).map((i) => i.type);
     expect(types.includes('kpi_chart')).toEqual(true);

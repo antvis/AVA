@@ -90,6 +90,9 @@ export interface AutoPlotOptions extends AdvisorOptions {
 }
 
 // @public (undocumented)
+export const CHART_RULE_ID: readonly ["data-check", "data-field-qty", "no-redundant-field", "purpose-check", "series-qty-limit", "bar-series-qty", "line-field-time-ordinal", "landscape-or-portrait", "diff-pie-sector", "nominal-enum-combinatorial", "limit-series", "aggregation-single-row", "all-can-be-spreadsheet"];
+
+// @public (undocumented)
 export type ChartLibrary = 'G2Plot' | 'G2';
 
 // @public (undocumented)
@@ -108,7 +111,7 @@ export type ChartRuleConfigMap = {
 };
 
 // @public (undocumented)
-export type ChartRuleID = 'data-check' | 'data-field-qty' | 'no-redundant-field' | 'purpose-check' | 'series-qty-limit' | 'bar-series-qty' | 'line-field-time-ordinal' | 'landscape-or-portrait' | 'diff-pie-sector' | 'nominal-enum-combinatorial' | 'limit-series' | 'aggregation-single-row';
+export type ChartRuleID = typeof CHART_RULE_ID[number];
 
 // @public (undocumented)
 export const ChartRules: Rule[];
@@ -287,7 +290,7 @@ export interface Preferences {
 
 // @public (undocumented)
 export class Rule {
-    constructor(id: string, hardOrSoft: HardOrSoft, specChartTypes: ChartID[], weight: number, validator: Validator);
+    constructor(id: ChartRuleID, hardOrSoft: HardOrSoft, specChartTypes: ChartID[], weight: number, validator: Validator);
     // (undocumented)
     check(args: Info): number;
     // (undocumented)
