@@ -1,3 +1,4 @@
+import { merge } from 'lodash';
 import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
 import { AutoPlot } from './auto-plot';
@@ -96,6 +97,15 @@ export function addCanvas(layer: HTMLElement, { title, description }: AutoChartO
   return canvas;
 }
 
+// default don't advice spreadsheet in autoChart
+const defaultOptions: AutoChartOptions = {
+  chartRuleConfigs: {
+    'all-can-be-spreadsheet': {
+      weight: 0,
+    },
+  },
+};
+
 /**
  * @public
  */
@@ -154,7 +164,7 @@ export class AutoChart {
     if (this.rendered) this.destroy();
     this.rendered = true;
     // this.isMocked = false;
-    this.options = options || {};
+    this.options = merge(defaultOptions, options) || {};
     const { fields, development, noDataContent } = this.options;
     if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
     this.noDataContent = noDataContent || DEFAULT_FEEDBACK('暂无数据');

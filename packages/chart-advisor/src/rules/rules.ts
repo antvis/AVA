@@ -1,4 +1,5 @@
 import { Rule, DataProps, ChartRuleID } from './concepts/rule';
+import { isUndefined } from 'lodash';
 import {
   CKBJson,
   LevelOfMeasurement as LOM,
@@ -157,18 +158,18 @@ export const ChartRules: Rule[] = [
     1.0,
     (args): number => {
       let result = 0;
-      const { chartType, dataProps, customWeight } = args;
+      const { chartType, dataProps } = args;
       if (dataProps.every((i) => i.count === 1 && i.levelOfMeasurements.includes('Interval'))) {
-        result = chartType === 'kpi_chart' ? 1 : customWeight || 0.2;
+        result = chartType === 'kpi_chart' ? 1 : 0.2;
       } else {
-        result = chartType === 'kpi_chart' ? 0 : customWeight || 1;
+        result = chartType === 'kpi_chart' ? 0 : 1;
       }
       return result;
     }
   ),
   // all dataset can be spreadsheet
-  new Rule('all-can-be-spreadsheet', 'HARD', ['spreadsheet'], 1.0, (): number => {
-    return 1;
+  new Rule('all-can-be-spreadsheet', 'HARD', ['spreadsheet'], 1.0, ({ weight }): number => {
+    return isUndefined(weight) ? 1 : weight;
   }),
   // Some charts should has at most N series.
   new Rule(
