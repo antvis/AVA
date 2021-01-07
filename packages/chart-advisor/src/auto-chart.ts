@@ -98,10 +98,10 @@ export function addCanvas(layer: HTMLElement, { title, description }: AutoChartO
   return canvas;
 }
 
-// default don't advice spreadsheet in autoChart
+// default don't advice table in autoChart
 const defaultOptions: AutoChartOptions = {
   chartRuleConfigs: {
-    'all-can-be-spreadsheet': {
+    'all-can-be-table': {
       weight: 0,
     },
   },
@@ -224,7 +224,7 @@ export class AutoChart {
       }
     }
     if (development && this.plot.plot) {
-      // configPanel not supported kpi_chart and spreadsheet temporary
+      // configPanel not supported kpi_chart and table temporary
       if (!customChartType.includes(this.plot?.type || '')) {
         this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
       }

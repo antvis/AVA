@@ -1272,11 +1272,11 @@ export const base: ChartKnowledgeBase = {
     category: ['Other'],
     shape: ['Other'],
     dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Interval'] }],
-    channel: ['Other'],
+    channel: [],
     recRate: 'Recommended',
   },
 
-  spreadsheet: {
+  table: {
     id: 'table',
     name: 'Table',
     alias: ['Information Table'],
@@ -1287,7 +1287,7 @@ export const base: ChartKnowledgeBase = {
     category: ['Other'],
     shape: ['Other'],
     dataPres: [{ minQty: 0, maxQty: '*', fieldConditions: [...LOM_OPTIONS] }],
-    channel: ['Other'],
+    channel: [],
     recRate: 'Recommended',
   },
 };

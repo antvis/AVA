@@ -92,7 +92,7 @@ describe('API - dataToAdvices', () => {
         {
           score: 1,
           spec: null,
-          type: 'spreadsheet',
+          type: 'table',
         },
       ]);
     });

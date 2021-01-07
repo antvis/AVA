@@ -78,7 +78,6 @@ export const zhCN: TranslateList = {
       Stroke: '线色',
       LineWidth: '线粗',
       Lightness: '亮度',
-      Other: '其他',
     },
     lom: {
       Continuous: '连续',
@@ -525,7 +524,7 @@ export const zhCN: TranslateList = {
       alias: ['指标卡'],
       def: '一种用来展示聚合数据的卡片区域',
     },
-    spreadsheet: {
+    table: {
       name: '交叉表',
       alias: ['信息表', '分析表'],
       def: '表格就是由若干的行与列所构成的一种有序的组织形式',

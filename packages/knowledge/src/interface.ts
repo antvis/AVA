@@ -146,7 +146,6 @@ export const CHANNEL_OPTIONS = [
   'Stroke',
   'LineWidth',
   'Lightness',
-  'Other',
 ] as const;
 
 /**

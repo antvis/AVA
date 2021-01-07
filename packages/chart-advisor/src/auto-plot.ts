@@ -2,7 +2,7 @@ import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from './advi
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
 import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
-import { KPIPlot, Spreadsheet } from './custom-plot';
+import { KPIPlot, Table } from './custom-plot';
 
 export interface Configs {
   theme?: string;
@@ -125,9 +125,9 @@ export class AutoPlot extends EventEmitter {
       if (plot) plot.destroy();
       if (data.length > 0) this.plot = new KPIPlot(container, data[0]);
       this.currentConfigs = {};
-    } else if (type === 'spreadsheet') {
+    } else if (type === 'table') {
       if (plot) plot.destroy();
-      this.plot = new Spreadsheet(container, data);
+      this.plot = new Table(container, data);
       this.currentConfigs = {};
     } else {
       if (libConfig) {

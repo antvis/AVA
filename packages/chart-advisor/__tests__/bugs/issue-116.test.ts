@@ -41,12 +41,12 @@ describe('multiple execution errors', () => {
 
     autoChart(div, data1, { toolbar: false, development: true });
 
-    const click1 = await clickBtn(div, data2, 1000);
+    const click1 = await clickBtn(div, data2, 500);
     // @ts-ignore
     const plot = click1.getPlot();
     expect((plot as any).data[2].sales).toBe(data2[2].sales);
 
-    const click2 = await clickBtn(div, data1, 2000);
+    const click2 = await clickBtn(div, data1, 1000);
     // @ts-ignore
     const plot = click2.getPlot();
     expect((plot as any).data[2].sales).toBe(data1[2].sales);

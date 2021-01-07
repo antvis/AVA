@@ -154,7 +154,7 @@ export const ChartRules: Rule[] = [
   new Rule(
     'aggregation-single-row',
     'HARD',
-    allChartTypes.filter((i) => i !== 'spreadsheet'),
+    allChartTypes.filter((i) => i !== 'table'),
     1.0,
     (args): number => {
       let result = 0;
@@ -167,8 +167,8 @@ export const ChartRules: Rule[] = [
       return result;
     }
   ),
-  // all dataset can be spreadsheet
-  new Rule('all-can-be-spreadsheet', 'HARD', ['spreadsheet'], 1.0, ({ weight }): number => {
+  // all dataset can be table
+  new Rule('all-can-be-table', 'HARD', ['table'], 1.0, ({ weight }): number => {
     return isUndefined(weight) ? 1 : weight;
   }),
   // Some charts should has at most N series.
