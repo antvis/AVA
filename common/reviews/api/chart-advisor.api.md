@@ -90,7 +90,7 @@ export interface AutoPlotOptions extends AdvisorOptions {
 }
 
 // @public (undocumented)
-export const CHART_RULE_ID: readonly ["data-check", "data-field-qty", "no-redundant-field", "purpose-check", "series-qty-limit", "bar-series-qty", "line-field-time-ordinal", "landscape-or-portrait", "diff-pie-sector", "nominal-enum-combinatorial", "limit-series", "aggregation-single-row", "all-can-be-spreadsheet"];
+export const CHART_RULE_ID: readonly ["data-check", "data-field-qty", "no-redundant-field", "purpose-check", "series-qty-limit", "bar-series-qty", "line-field-time-ordinal", "landscape-or-portrait", "diff-pie-sector", "nominal-enum-combinatorial", "limit-series", "aggregation-single-row", "all-can-be-table"];
 
 // @public (undocumented)
 export type ChartLibrary = 'G2Plot' | 'G2';

@@ -61,7 +61,7 @@ export const CHART_RULE_ID = [
   'nominal-enum-combinatorial',
   'limit-series',
   'aggregation-single-row',
-  'all-can-be-spreadsheet',
+  'all-can-be-table',
 ] as const;
 
 /**

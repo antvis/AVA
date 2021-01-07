@@ -1,7 +1,7 @@
 import { removeAllChild } from '../util';
 import { CLASS_PREFIX } from '../style';
 
-export class Spreadsheet {
+export class Table {
   readonly container: HTMLElement;
   readonly data: Record<string, any>[];
   constructor(container: HTMLElement, data: Record<string, any>[]) {

@@ -48,7 +48,7 @@ interface ChartRuleConfig {
 | no-redundant-field         | HARD         | 1.0           | 没有多余的字段                                                                              |
 | purpose-check              | HARD         | 1.0           | 必须符合 ckb 中对应图表分析目的                                                             |
 | aggregation-single-row     | HARD         | 1.0           | 只有一行聚合数据时推荐使用指标卡                     |
-| all-can-be-spreadsheet     | HARD         | 1.0           | 所有数据皆可使用表格来展现（此规则目前在 autoChart 中默认关闭）                             |
+| all-can-be-table     | HARD         | 1.0           | 所有数据皆可使用表格来展现（此规则目前在 autoChart 中默认关闭）                             |
 | series-qty-limit           | SOFT         | 0.8           | 饼图、环图、雷达图数据个数推荐不超过 6 个，玫瑰图推荐不超过 8 个，数量可以通过 `limit` 配置 |
 | bar-series-qty             | SOFT         | 0.5           | 柱形图、条形图数据个数推荐在 2 - 20 个之间，数量可以通过 `limit` 配置                       |
 | line-field-time-ordinal    | SOFT         | 1.0           | 折线图、面积图数据中推荐含有时间或序数字段                                                  |
