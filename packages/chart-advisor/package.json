@@ -1,6 +1,6 @@
 {
   "name": "@antv/chart-advisor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Chart advisor",
   "main": "lib/index.js",
   "browser": "dist/index.js",
@@ -20,10 +20,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@antv/dw-analyzer": "^1.0.0",
-    "@antv/dw-transform": "^1.0.0",
+    "@antv/dw-analyzer": "^1.1.0",
+    "@antv/dw-transform": "^1.1.0",
     "@antv/g2plot": "^2.0.9",
-    "@antv/knowledge": "^1.0.0",
+    "@antv/knowledge": "^1.1.0",
     "@antv/thumbnails": "^0.2.1-alpha.0",
     "lodash": "^4.17.20",
     "tslib": "^1.10.0",

@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-transform",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "browser": "dist/index.js",
   "main": "lib/index.js",
@@ -15,8 +15,8 @@
     "lint": "eslint --ext .ts src __tests__"
   },
   "dependencies": {
-    "@antv/dw-analyzer": "^1.0.0",
-    "@antv/dw-random": "^1.0.0",
+    "@antv/dw-analyzer": "^1.1.0",
+    "@antv/dw-random": "^1.1.0",
     "@antv/util": "^2.0.0",
     "regression": "^2.0.0",
     "simple-statistics": "^7.0.0",
