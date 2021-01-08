@@ -60,7 +60,7 @@ const G2PLOT_ENCODING_MAPPING: Record<string, string> = {
 function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   const { type, spec } = advice;
 
-  // kpi chart and table can not be render by g2plot, it will have custom config
+  // kpi panel and table can not be render by g2plot, it will have custom config
   if (customChartType.includes(type)) return null;
 
   const chartType = G2PLOT_TYPE_MAPPING[type];

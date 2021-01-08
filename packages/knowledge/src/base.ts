@@ -1261,12 +1261,12 @@ export const base: ChartKnowledgeBase = {
     recRate: 'Not Recommended',
   },
 
-  kpi_chart: {
-    id: 'kpi_chart',
-    name: 'KPI Chart',
+  kpi_panel: {
+    id: 'kpi_panel',
+    name: 'KPI Panel',
     alias: ['KPI Panel'],
     family: ['Others'],
-    def: 'KPI Chart is a card to show aggregated numbers',
+    def: 'KPI Panel is a card to show aggregated numbers',
     purpose: ['Value'],
     coord: ['Other'],
     category: ['Other'],

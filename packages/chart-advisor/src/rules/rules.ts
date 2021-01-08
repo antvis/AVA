@@ -160,9 +160,9 @@ export const ChartRules: Rule[] = [
       let result = 0;
       const { chartType, dataProps } = args;
       if (dataProps.every((i) => i.count === 1 && i.levelOfMeasurements.includes('Interval'))) {
-        result = chartType === 'kpi_chart' ? 1 : 0.2;
+        result = chartType === 'kpi_panel' ? 1 : 0.2;
       } else {
-        result = chartType === 'kpi_chart' ? 0 : 1;
+        result = chartType === 'kpi_panel' ? 0 : 1;
       }
       return result;
     }

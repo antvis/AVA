@@ -77,7 +77,7 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
     // step 2: field mapping to spec encoding
     const chartTypeSpec = getChartTypeSpec(t, dataProps);
 
-    // FIXME kpi_chart and table spec 暂时可以为 null, 之后随需求增加 cfg
+    // FIXME kpi_panel and table spec 暂时可以为 null, 之后随需求增加 cfg
     if (!customChartType.includes(t) && !chartTypeSpec) return { type: t, spec: null, score: 0 };
 
     // step 3: apply design rules
