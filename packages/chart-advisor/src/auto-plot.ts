@@ -121,7 +121,7 @@ export class AutoPlot extends EventEmitter {
     const libConfig = adviceToLibConfig(advices[index], 'G2Plot');
     this.type = type;
 
-    if (type === 'kpi_chart') {
+    if (type === 'kpi_panel') {
       if (plot) plot.destroy();
       if (data.length > 0) this.plot = new KPIPlot(container, data[0]);
       this.currentConfigs = {};

@@ -1,4 +1,4 @@
-export const customChartType = ['kpi_chart', 'table'];
+export const customChartType = ['kpi_panel', 'table'];
 
-export { KPIPlot } from './kpi-chart';
+export { KPIPlot } from './kpi-panel';
 export { Table } from './table';

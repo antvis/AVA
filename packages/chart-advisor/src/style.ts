@@ -192,20 +192,20 @@ const ADVISOR_STYLE = `
     color: #fff;
     cursor: pointer;
   }
-  .${CLASS_PREFIX}kpi-chart {
+  .${CLASS_PREFIX}kpi-panel {
     display: flex;
   }
-  .${CLASS_PREFIX}kpi-chart .${CLASS_PREFIX}kpi-chart-card {
+  .${CLASS_PREFIX}kpi-panel .${CLASS_PREFIX}kpi-panel-card {
     border-left: 3px solid #94b2ca;
     padding-left: 8px;
     margin-right: 36px;
   }
-  .${CLASS_PREFIX}kpi-chart .${CLASS_PREFIX}kpi-chart-card-name {
+  .${CLASS_PREFIX}kpi-panel .${CLASS_PREFIX}kpi-panel-card-name {
     font-size: 12px;
     margin-bottom: 8px;
     color: rgba(0,0,0,.65);
   }
-  .${CLASS_PREFIX}kpi-chart .${CLASS_PREFIX}kpi-chart-card-value {
+  .${CLASS_PREFIX}kpi-panel .${CLASS_PREFIX}kpi-panel-card-value {
     font-size: 24px;
   }
   .${CLASS_PREFIX}-table {

@@ -78,7 +78,7 @@ export const CHART_ID_OPTIONS = [
   'polar_treemap',
   'sunburst_diagram',
   'liquid_chart',
-  'kpi_chart',
+  'kpi_panel',
   'table',
 ] as const;
 

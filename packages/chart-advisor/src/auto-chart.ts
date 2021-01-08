@@ -224,7 +224,7 @@ export class AutoChart {
       }
     }
     if (development && this.plot.plot) {
-      // configPanel not supported kpi_chart and table temporary
+      // configPanel not supported kpi_panel and table temporary
       if (!customChartType.includes(this.plot?.type || '')) {
         this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
       }
