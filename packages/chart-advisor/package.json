@@ -24,7 +24,7 @@
     "@antv/dw-transform": "^1.1.0",
     "@antv/g2plot": "^2.0.9",
     "@antv/knowledge": "^1.1.0",
-    "@antv/thumbnails": "^0.2.1-alpha.0",
+    "@antv/thumbnails": "^1.0.2",
     "lodash": "^4.17.20",
     "tslib": "^1.10.0",
     "visual-insights": "0.4.7"

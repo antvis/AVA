@@ -1,5 +1,5 @@
 import Thumbnails from '@antv/thumbnails';
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson, ChartID } from '@antv/knowledge';
 import { CLASS_PREFIX } from './style';
 import { Advice, adviceToLibConfig } from './advice-pipeline';
 import { getElementDisplay } from './util';
@@ -8,11 +8,9 @@ import { customChartType } from './custom-plot';
 
 const ChartWiki = CKBJson('zh-CN', true);
 
-function getThumbnailURL(chartId: string) {
-  // @ts-ignore
-  if (Thumbnails[chartId] && Thumbnails[chartId].url) {
-    // @ts-ignore
-    return Thumbnails[chartId].url;
+function getThumbnailURL(chartId: ChartID) {
+  if (Thumbnails[chartId]?.svgCode) {
+    return `data:image/svg+xml;utf8,${encodeURIComponent(Thumbnails[chartId]?.svgCode as string)}`;
   }
 
   return 'https://gw.alipayobjects.com/zos/antfincdn/lP6YFnCEjy/nochartimg.svg';
