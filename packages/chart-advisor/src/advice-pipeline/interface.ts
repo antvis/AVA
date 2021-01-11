@@ -81,13 +81,22 @@ export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 export type Specification = SingleViewSpec;
 
 /**
+ * @public
+ */
+export interface TableDataCfg {
+  rows: string[];
+  values: string[];
+  columns: string[];
+}
+
+/**
  * return type of data props to spec
  * @public
  */
 export interface Advice {
   type: ChartID;
   // 如果有推荐有效图表，必须提规范信息，可能是 vegalite spec 也可能是 custom spec（用于 指标卡和交叉表）
-  spec: Specification | null;
+  spec: Specification | TableDataCfg | null;
   score: number;
 }
 
