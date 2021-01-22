@@ -6,6 +6,7 @@
 window.react = require('react');
 window.reactDom = require('react-dom');
 window.antd = require('antd');
+window.icons = require('@ant-design/icons');
 window.reactJsonView = require('react-json-view');
 window.chartAdvisor = require('../chart-advisor/src/');
 window.knowledge = require('../knowledge/src/');
