@@ -49,7 +49,7 @@ export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[]):
     case 'kpi_panel':
       return kpi_panel();
     case 'table':
-      return table();
+      return table(dataProps);
     default:
       return null;
   }
@@ -510,7 +510,22 @@ function kpi_panel(): Advice['spec'] {
   return null;
 }
 
-function table(): Advice['spec'] {
-  // TODO 交叉表暂不做更细致的配置，只支持基本的数值显示
-  return null;
+function table(dataProps: DataProperty[]): Advice['spec'] {
+  const values = [];
+  const rows = [];
+
+  for (let i = 0; i < dataProps.length; i++) {
+    const field = dataProps[i];
+    if (intersects(field.levelOfMeasurements, ['Interval', 'Continuous', 'Discrete'])) {
+      values.push(field.name);
+    } else {
+      rows.push(field.name);
+    }
+  }
+
+  return {
+    rows,
+    values,
+    columns: [],
+  };
 }

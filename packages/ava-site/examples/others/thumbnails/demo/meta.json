@@ -1,0 +1,32 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "usage.jsx",
+      "title": {
+        "en": "Thumbnails Usage",
+        "zh": "Thumbnails 缩略图用法"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/ObPIQYzZJU/thumbnails-usage.png"
+    },
+    {
+      "filename": "all.jsx",
+      "title": {
+        "en": "View All Thumbnails",
+        "zh": "Thumbnails 缩略图一览"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/YQGTC0Zq%26t/thumbnails-viewall.gif"
+    },
+    {
+      "filename": "select.jsx",
+      "title": {
+        "en": "Select Chart by Thumbnails",
+        "zh": "通过缩略图选择图表"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/zwo0GDlia6/thumbnails-select.gif"
+    }
+  ]
+}

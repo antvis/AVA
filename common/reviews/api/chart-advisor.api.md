@@ -18,7 +18,7 @@ export interface Advice {
     // (undocumented)
     score: number;
     // (undocumented)
-    spec: Specification | null;
+    spec: Specification | TableDataCfg | null;
     // (undocumented)
     type: ChartID;
 }
@@ -324,6 +324,16 @@ export function specRender(container: string | HTMLElement, data: any[], spec: A
 
 // @public (undocumented)
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
+
+// @public (undocumented)
+export interface TableDataCfg {
+    // (undocumented)
+    columns: string[];
+    // (undocumented)
+    rows: string[];
+    // (undocumented)
+    values: string[];
+}
 
 // @public (undocumented)
 export type Validator = (args: Info) => number;

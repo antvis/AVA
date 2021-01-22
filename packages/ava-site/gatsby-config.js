@@ -121,6 +121,14 @@ module.exports = {
           en: 'Chart Advisor',
         },
       },
+      {
+        slug: 'others',
+        // icon: 'gallery',
+        title: {
+          zh: '其他',
+          en: 'Others',
+        },
+      },
     ],
     showSearch: true, // 是否展示搜索框
     showChinaMirror: true, // 是否展示国内镜像链接

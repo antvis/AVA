@@ -82,8 +82,8 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
 
     // step 3: apply design rules
     if (chartTypeSpec && enableRefine) {
-      const encodingSpecs = applyDesignRules(t, dataProps, chartTypeSpec);
-      deepMix(chartTypeSpec.encoding, encodingSpecs);
+      const encodingSpecs = applyDesignRules(t, dataProps, chartTypeSpec as SingleViewSpec);
+      deepMix((chartTypeSpec as SingleViewSpec).encoding, encodingSpecs);
       // return { type: t, spec: chartTypeSpec, score }
     }
 
