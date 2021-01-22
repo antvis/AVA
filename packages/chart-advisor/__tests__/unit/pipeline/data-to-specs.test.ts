@@ -91,7 +91,11 @@ describe('API - dataToAdvices', () => {
         },
         {
           score: 1,
-          spec: null,
+          spec: {
+            columns: [],
+            rows: ['city'],
+            values: ['value'],
+          },
           type: 'table',
         },
       ]);

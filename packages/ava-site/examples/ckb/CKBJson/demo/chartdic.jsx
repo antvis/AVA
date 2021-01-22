@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { CKBJson } from '@antv/knowledge';
-import Thumbnails from '@antv/thumbnails';
+import Thumbnails, { Thumbnail } from '@antv/thumbnails';
 import { Popover } from 'antd';
 
 const chartTypeList = Object.keys(Thumbnails).slice(0, 12);
@@ -60,7 +60,7 @@ const ViewAll = () =>
           arrowPointAtCenter
         >
           <div className="thumbnail" style={{ textAlign: 'center' }}>
-            <img src={Thumbnails[item].url} style={{ margin: '4px', width: '140px', height: '140px' }} />
+            <Thumbnail chart={item} style={{ margin: '4px', width: '140px', height: '140px' }} />
           </div>
         </Popover>
       </div>
