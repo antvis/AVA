@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Thumbnails from '@antv/thumbnails';
+import Thumbnails, { Thumbnail } from '@antv/thumbnails';
 import { View, parse } from 'vega';
 import { compile } from 'vega-lite';
 
@@ -10,13 +10,25 @@ import {
   Advice,
   adviceToLibConfig,
   g2plotRender,
+  DataProperty,
+  SingleViewSpec,
+  G2PlotConfig,
 } from '../packages/chart-advisor/src';
 import { DataSamples } from './data-samples';
 import { prettyJSON } from './utils';
 
 import './table.less';
 
-const allPipelines = CHART_ID_OPTIONS.map((t) => {
+interface Pipeline {
+  chartType: ChartID;
+  data: Record<string, any>[];
+  dataProps: DataProperty[];
+  specs: Advice[];
+  typeSpec: SingleViewSpec | null;
+  libConfig: G2PlotConfig | null;
+}
+
+const allPipelines: Pipeline[] = CHART_ID_OPTIONS.map((t) => {
   const data = DataSamples.ForChartType(t);
   const dataProps = dataToDataProps(data);
   const specs = dataPropsToAdvices(dataProps);
@@ -73,7 +85,8 @@ export const PipelineTest = () => {
             <td>
               {Thumbnails[pipeline.chartType] ? (
                 <>
-                  <img width="100" src={Thumbnails[pipeline.chartType]?.url} />
+                  <Thumbnail svg={Thumbnails[pipeline.chartType]?.svgCode} width={100} />
+
                   <br />
                 </>
               ) : null}
