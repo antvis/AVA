@@ -3,7 +3,7 @@
   "version": "1.1.1",
   "description": "Chart advisor",
   "main": "lib/index.js",
-  "browser": "dist/index.js",
+  "browser": "es/index.js",
   "module": "es/index.js",
   "typings": "./typings/chart-advisor.d.ts",
   "scripts": {
