@@ -1,4 +1,4 @@
-import { LevelOfMeasurement as LOM, ChartID } from '@antv/knowledge';
+import { LevelOfMeasurement as LOM, ChartID, Purpose } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { Preferences, ChartRuleConfigMap } from '../rules';
 import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-lite';
@@ -16,7 +16,7 @@ export interface AdvisorOptions {
    * Proportion -- 比例
    * Composition -- 组成
    */
-  purpose?: string;
+  purpose?: Purpose;
   /**
    * 偏好设置
    */
