@@ -30,7 +30,7 @@ export function adviceToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot')
 export interface AdvisorOptions {
     chartRuleConfigs?: ChartRuleConfigMap;
     preferences?: Preferences;
-    purpose?: string;
+    purpose?: Purpose;
     refine?: boolean;
 }
 
@@ -154,10 +154,10 @@ export interface DataProps {
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
 // @public (undocumented)
-export function dataToAdvices(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
+export function dataToAdvices(data: any[], options?: AdvisorOptions, fields?: string[], showLog?: boolean): Advice[];
 
 // @public
-export function dataToDataProps(data: any[]): DataProperty[];
+export function dataToDataProps(data: any[], fields?: string[]): DataProperty[];
 
 // @public (undocumented)
 export class DummyPlot {
