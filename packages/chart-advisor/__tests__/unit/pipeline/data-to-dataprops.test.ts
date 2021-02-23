@@ -205,5 +205,17 @@ describe('API - dataToDataProps', () => {
       }
       expect(callWithoutArgument).toThrowError('missing');
     });
+
+    test('select specific fields', () => {
+      const data = [
+        { city: 'London', value: 100 },
+        { city: 'Beijing', value: 200 },
+        { city: 'Shanghai', value: 600 },
+      ];
+
+      const dataProps = dataToDataProps(data, ['city']);
+      expect(dataProps.length).toBe(1);
+      expect(dataProps[0].name).toBe('city');
+    });
   });
 });

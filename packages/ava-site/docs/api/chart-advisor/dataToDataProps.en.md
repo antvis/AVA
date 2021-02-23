@@ -16,6 +16,9 @@ dataToDataProps(data: any[]): DataProperty[]
 * **data** * Dataset.
   * _required_
   * `type`: any[]
+* **fields** * Selected fields.
+  * _optional_
+  * `type`: string[]
 
 ### Returns
 
