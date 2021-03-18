@@ -20,7 +20,7 @@
     "@antv/util": "^2.0.0",
     "regression": "^2.0.0",
     "simple-statistics": "^7.0.0",
-    "tslib": "^1.9.3"
+    "tslib": "^2.1.0"
   },
   "publishConfig": {
     "access": "public"
