@@ -17,7 +17,7 @@
     "watch": "yarn module && yarn build --w"
   },
   "dependencies": {
-    "tslib": "^1.9.3"
+    "tslib": "^2.1.0"
   },
   "publishConfig": {
     "access": "public"

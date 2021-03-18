@@ -26,7 +26,7 @@
     "@antv/knowledge": "^1.1.0",
     "@antv/thumbnails": "^1.3.0",
     "lodash": "^4.17.20",
-    "tslib": "^1.10.0",
+    "tslib": "^2.1.0",
     "visual-insights": "0.4.7"
   },
   "devDependencies": {

@@ -19,7 +19,7 @@
     "date-fns": "^2.0.1",
     "mersenne-twister": "^1.1.0",
     "randexp": "^0.5.3",
-    "tslib": "^1.9.3"
+    "tslib": "^2.1.0"
   },
   "publishConfig": {
     "access": "public"
