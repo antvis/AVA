@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-random",
-  "version": "1.1.0",
+  "version": "1.1.3",
   "description": "",
   "private": false,
   "browser": "dist/index.js",
