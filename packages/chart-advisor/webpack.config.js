@@ -16,8 +16,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.ts/,
-        exclude: /node_modules/,
+        test: /\.(ts|js)$/,
+        exclude: /node_modules\/(?!visual-insights)/,
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: 'commonjs' }]],
