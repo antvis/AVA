@@ -13,4 +13,6 @@ module.exports = {
   collectCoverage: false,
   collectCoverageFrom: ['packages/**/src/**/*.ts'],
   testRegex: '/__tests__/.*.test.ts?$',
+  // allow jest console output
+  verbose: false,
 };
