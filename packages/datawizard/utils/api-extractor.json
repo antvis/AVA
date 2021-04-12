@@ -1,0 +1,11 @@
+{
+  "extends": "../../../common/config/api-extractor.json",
+  "apiReport": {
+    "enabled": true,
+    "reportFolder": "../../../common/reviews/api/"
+  },
+  "docModel": {
+    "enabled": true,
+    "apiJsonFilePath": "../../../temp/<unscopedPackageName>.api.json"
+  }
+}
