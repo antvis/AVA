@@ -102,8 +102,10 @@ export class Dataset {
         break;
       }
       case 'rows':
+        // TODO
         break;
       case 'columns':
+        // TODO
         break;
       default:
         this.dataMatrix = [];
