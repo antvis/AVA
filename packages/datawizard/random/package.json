@@ -18,8 +18,7 @@
   "dependencies": {
     "date-fns": "^2.0.1",
     "mersenne-twister": "^1.1.0",
-    "randexp": "^0.5.3",
-    "tslib": "2.2.0"
+    "randexp": "^0.5.3"
   },
   "publishConfig": {
     "access": "public"
@@ -36,6 +35,7 @@
     "@microsoft/api-extractor": "7.12.1",
     "@types/mersenne-twister": "^1.1.2",
     "babel-loader": "^8.0.6",
+    "tslib": "^2.2.0",
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"

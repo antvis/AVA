@@ -1,5 +1,8 @@
 import { JSONData } from '../data_structure';
 
+/**
+ * @public
+ */
 export function isFullCombination(data: JSONData): boolean {
   // Empty dataset is not full-combination by definition.
   if (!data || data.length === 0) return false;

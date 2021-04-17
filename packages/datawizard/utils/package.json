@@ -16,9 +16,7 @@
     "lint": "eslint --ext .ts src __tests__",
     "watch": "yarn module && yarn build --w"
   },
-  "dependencies": {
-    "tslib": "^2.2.0"
-  },
+  "dependencies": {},
   "publishConfig": {
     "access": "public"
   },
@@ -33,6 +31,7 @@
     "@babel/preset-typescript": "^7.7.4",
     "@microsoft/api-extractor": "7.12.1",
     "babel-loader": "^8.0.6",
+    "tslib": "^2.2.0",
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"
