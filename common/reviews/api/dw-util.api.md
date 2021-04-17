@@ -66,6 +66,9 @@ export function isDataRowArray(row: DataRow): row is DataRowArray;
 export function isDataRowObject(row: DataRow): row is DataRowObject;
 
 // @public (undocumented)
+export function isFullCombination(data: JSONData): boolean;
+
+// @public (undocumented)
 export type JSONData = DataRowObject[];
 
 // @public (undocumented)

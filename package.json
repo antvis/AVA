@@ -5,7 +5,7 @@
     "start": "webpack-dev-server --port 8881",
     "site:start": "cd ./packages/ava-site && npm run start",
     "build": "lerna run build",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "coverage": "jest --coverage",
     "test-live": "sh ./scripts/test-live",
     "lint": "lerna run lint",
