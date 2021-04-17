@@ -1,7 +1,8 @@
 {
-  "name": "@antv/dw-transform",
+  "name": "@antv/dw-util",
   "version": "1.1.4-alpha.0",
-  "description": "",
+  "description": "Util library for DataWizard",
+  "private": false,
   "browser": "dist/index.js",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -12,14 +13,8 @@
     "prepublish": "npm run module && npm run build && npm run api && npm run pack",
     "api": "rm -rf typings && api-extractor run -v",
     "pack": "webpack --config=webpack.config.js",
-    "lint": "eslint --ext .ts src __tests__"
-  },
-  "dependencies": {
-    "@antv/dw-analyzer": "^1.1.4-alpha.0",
-    "@antv/dw-random": "^1.1.4-alpha.0",
-    "@antv/util": "^2.0.0",
-    "regression": "^2.0.0",
-    "simple-statistics": "^7.0.0"
+    "lint": "eslint --ext .ts src __tests__",
+    "watch": "yarn module && yarn build --w"
   },
   "publishConfig": {
     "access": "public"
@@ -34,7 +29,6 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-typescript": "^7.7.4",
     "@microsoft/api-extractor": "7.12.1",
-    "@types/regression": "^2.0.0",
     "babel-loader": "^8.0.6",
     "tslib": "^2.2.0",
     "typescript": "^3.2.2",
