@@ -16,7 +16,9 @@ dataToDataProps(data: any[]): DataProperty[]
 * **data** * 数据
   * _必要参数_
   * `参数类型`: key-value 对象数组
-
+* **fields** * 选择部分字段
+  * _可选参数_
+  * `type`: string[]
 ### 返回值
 
 *`DataProperty[]`* 
