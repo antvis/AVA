@@ -2,7 +2,11 @@ import { RowData } from '../util/helper';
 import { xor, keys, compact, pick } from 'lodash';
 
 /**
+ * Pivot specific field of each values.
  * @public
+ * @param {string} field field
+ * @param {string} values unstack  values
+ * @returns row datas
  */
 export function unstack(data: RowData[], field: string, values: string[]): RowData[] {
   if (!values.length) return data;
