@@ -206,7 +206,7 @@ export interface TransformSchema {
     groupBy?: string[];
 }
 
-// @public (undocumented)
+// @public
 export function unstack(data: RowData[], field: string, values: string[]): RowData[];
 
 
