@@ -1,4 +1,5 @@
 import { isFullCombination } from '../../../src/p_and_c/combinations';
+import { Dataset } from '../../../src/data_structure/Dataset';
 
 describe('isFullCombination', () => {
   describe('should accept valid data', () => {
@@ -17,8 +18,10 @@ describe('isFullCombination', () => {
       { field1: 'Y', field2: 'b', field3: 3 },
     ];
 
+    const dataset = new Dataset('json', { source: validData });
+
     it('basic objects', () => {
-      expect(isFullCombination(validData)).toBe(true);
+      expect(isFullCombination(dataset)).toBe(true);
     });
   });
 
@@ -29,7 +32,10 @@ describe('isFullCombination', () => {
         { f1: 'a', f2: 2 },
         { f1: 'b', f2: 1 },
       ];
-      expect(isFullCombination(invalidData)).toBe(false);
+
+      const dataset = new Dataset('json', { source: invalidData });
+
+      expect(isFullCombination(dataset)).toBe(false);
     });
   });
 });
