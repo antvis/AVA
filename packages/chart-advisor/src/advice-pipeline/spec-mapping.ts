@@ -1,5 +1,5 @@
 import { ChartID, LevelOfMeasurement as LOM } from '@antv/knowledge';
-import { isFullCombination, Dataset } from '@antv/dw-util';
+import { Dataset } from '@antv/dw-util';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { DataProperty, Advice } from './interface';
 import { EncodingType } from './vega-lite';
@@ -289,9 +289,10 @@ function splitColumnXYSeries(dataProps: DataProperty[], dataset?: Dataset): [Ret
   const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
   const sortedNominalFields = nominalFields.sort(compare);
 
-  if (dataset && isFullCombination(dataset.toJson())) {
-    console.log('hie');
-  }
+  console.log({ dataset });
+  // if (dataset && isFullCombination(dataset.toJson())) {
+  //   console.log('hie');
+  // }
 
   const field4X = sortedNominalFields[0];
   const Field4Series = sortedNominalFields[1];

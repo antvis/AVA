@@ -233,6 +233,8 @@ const THRESHOLD = 100;
  * @public
  */
 export function type(array: any[]): FieldInfo {
+  // debugger;
+
   const list = array.map((item) => (isNull(item) ? null : item));
   const valueMap = Stat.valueMap(list);
   let recommendation: TypeSpecifics;
@@ -280,15 +282,20 @@ export function type(array: any[]): FieldInfo {
 
   if (types.length > 1) {
     const meta: FieldMeta = {};
+    let restNotNullArray = nonNullArray;
     types.forEach((item: string) => {
       if (item === 'date') {
-        meta.date = type(nonNullArray.filter(isDate)) as DateFieldInfo;
+        meta.date = type(restNotNullArray.filter(isDate)) as DateFieldInfo;
+        restNotNullArray = restNotNullArray.filter((item) => !isDate(item));
       } else if (item === 'integer') {
-        meta.integer = type(nonNullArray.filter(isInteger)) as NumberFieldInfo;
+        meta.integer = type(restNotNullArray.filter(isInteger)) as NumberFieldInfo;
+        restNotNullArray = restNotNullArray.filter((item) => !isInteger(item));
       } else if (item === 'float') {
-        meta.float = type(nonNullArray.filter(isFloat)) as NumberFieldInfo;
+        meta.float = type(restNotNullArray.filter(isFloat)) as NumberFieldInfo;
+        restNotNullArray = restNotNullArray.filter((item) => !isFloat(item));
       } else if (item === 'string') {
-        meta.string = type(nonNullArray.filter((item) => WhatType(item) === 'string')) as StringFieldInfo;
+        meta.string = type(restNotNullArray.filter((item) => WhatType(item) === 'string')) as StringFieldInfo;
+        restNotNullArray = restNotNullArray.filter((item) => WhatType(item) !== 'string');
       }
     });
     fieldInfo.meta = meta;

@@ -67,7 +67,7 @@ export const base: ChartKnowledgeBase = {
     family: ['AreaCharts'],
     def:
       'A stacked area chart uses layered line segments with different styles of padding regions to display how multiple sets of data change in the same ordinal dimension, and the endpoint heights of the segments on the same dimension tick are accumulated by value.',
-    purpose: ['Comparison', 'Composition', 'Trend'],
+    purpose: ['Composition', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
     shape: ['Area'],

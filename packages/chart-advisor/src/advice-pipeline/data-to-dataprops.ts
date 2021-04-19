@@ -6,13 +6,15 @@ import { DataProperty } from './interface';
  * Return Data Properties of dataset.
  *
  * @public
+ * @param data - dataset
+ * @param fields - selected fields
  */
-export function dataToDataProps(data: any[]): DataProperty[] {
+export function dataToDataProps(data: any[], fields?: string[]): DataProperty[] {
   if (!data) {
     throw new Error('Argument `data` is missing.');
   }
 
-  const dataTypeInfos = DWAnalyzer.typeAll(data);
+  const dataTypeInfos = DWAnalyzer.typeAll(data, fields);
 
   const dataProps: DataProperty[] = [];
 

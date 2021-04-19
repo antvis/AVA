@@ -20,13 +20,59 @@ export type DataRowArray = any[];
 export type DataRowObject = Record<string, any>;
 
 // @public (undocumented)
+export class Dataset {
+    constructor(type: 'json', params: DatasetParamsByJson);
+    constructor(type: 'rows', params: DatasetParamsByRows);
+    constructor(type: 'columns', params: DatasetParamsByColumns);
+    // (undocumented)
+    dataColumns: string[];
+    // (undocumented)
+    dataIndex: number[];
+    // (undocumented)
+    dataMatrix: any[][];
+    // (undocumented)
+    toJson(): Record<string, any>[];
+}
+
+// @public (undocumented)
+export type DatasetParams = DatasetParamsByJson | DatasetParamsByRows | DatasetParamsByColumns;
+
+// @public (undocumented)
+export interface DatasetParamsByColumns {
+    // (undocumented)
+    columns: string[];
+    // (undocumented)
+    source: DataColumnArray[];
+}
+
+// @public (undocumented)
+export interface DatasetParamsByJson {
+    // (undocumented)
+    source: JSONData;
+}
+
+// @public (undocumented)
+export interface DatasetParamsByRows {
+    // (undocumented)
+    index?: number[];
+    // (undocumented)
+    source: DataRowArray[];
+}
+
+// @public (undocumented)
 export function isDataRowArray(row: DataRow): row is DataRowArray;
 
 // @public (undocumented)
 export function isDataRowObject(row: DataRow): row is DataRowObject;
 
 // @public (undocumented)
+export function isFullCombination(dataset: Dataset): boolean;
+
+// @public (undocumented)
 export type JSONData = DataRowObject[];
+
+// @public (undocumented)
+export type SourceType = 'json' | 'rows' | 'columns';
 
 
 // (No @packageDocumentation comment for this package)

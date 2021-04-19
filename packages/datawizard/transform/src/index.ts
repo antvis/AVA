@@ -46,3 +46,5 @@ export {
   Measure,
   EXTRACTORS,
 } from './dataset';
+
+export { unstack } from './reshape';

@@ -1,5 +1,8 @@
 import { Dataset } from '../data_structure';
 
+/**
+ * @public
+ */
 export function isFullCombination(dataset: Dataset): boolean {
   const data = dataset.toJson();
 

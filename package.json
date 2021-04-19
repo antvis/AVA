@@ -5,7 +5,7 @@
     "start": "webpack-dev-server --port 8881",
     "site:start": "cd ./packages/ava-site && npm run start",
     "build": "lerna run build",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "coverage": "jest --coverage",
     "test-live": "sh ./scripts/test-live",
     "lint": "lerna run lint",
@@ -63,6 +63,7 @@
     "react-dom": "^16.11.0",
     "style-loader": "^1.0.1",
     "ts-jest": "^24.1.0",
+    "tslib": "^2.2.0",
     "typescript": "^3.2.2",
     "vega": "^5.15.0",
     "vega-lite": "^4.15.0",
@@ -75,8 +76,7 @@
     "@antv/thumbnails": "^1.3.0",
     "csstype": "^3.0.5",
     "lodash": "^4.17.20",
-    "react-json-view": "^1.19.1",
-    "tslib": "^2.2.0"
+    "react-json-view": "^1.19.1"
   },
   "config": {
     "commitizen": {

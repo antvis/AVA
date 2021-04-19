@@ -1,25 +1,40 @@
 import { DataColumnArray, DataRowObject, DataRowArray, JSONData } from './unit';
 
+/**
+ * @public
+ */
 export type SourceType = 'json' | 'rows' | 'columns';
 
 // export type dataRows
+/**
+ * @public
+ */
 export interface DatasetParamsByJson {
   // type: 'json';
   source: JSONData;
 }
 
+/**
+ * @public
+ */
 export interface DatasetParamsByRows {
   // type: 'rows';
   source: DataRowArray[];
   index?: number[];
 }
 
+/**
+ * @public
+ */
 export interface DatasetParamsByColumns {
   // type: 'columns';
   source: DataColumnArray[];
   columns: string[];
 }
 
+/**
+ * @public
+ */
 export type DatasetParams = DatasetParamsByJson | DatasetParamsByRows | DatasetParamsByColumns;
 
 function jsonToDataMatrix(json: DataRowObject[]) {
@@ -82,6 +97,9 @@ function adjustJSONData(json: JSONData, mode: 'max' | 'min' = 'max'): JSONData {
   return resultJSONData;
 }
 
+/**
+ * @public
+ */
 export class Dataset {
   dataMatrix: any[][] = [];
   dataIndex: number[] = [];

@@ -80,6 +80,7 @@ export class AutoPlot extends EventEmitter {
     }
     this.container = container;
     this.feedbackLayer = createLayer(container, 'feedback-layer');
+    // TODO 给 autoChart 增加 fields 参数
     const advices = dataToAdvices(data, options);
 
     this.advices = advices;
