@@ -39,4 +39,78 @@ describe('Dataset class', () => {
       expect(dataset.toJson()).toStrictEqual(expectJson);
     });
   });
+
+  describe('column data', () => {
+    const data = [
+      [1, 2, 3, 4, 5],
+      ['a', 'b', 'c', 'd', 'e'],
+    ];
+    const fields = ['num', 'cha'];
+
+    it('normal columns', () => {
+      const expectJson = [
+        { num: 1, cha: 'a' },
+        { num: 2, cha: 'b' },
+        { num: 3, cha: 'c' },
+        { num: 4, cha: 'd' },
+        { num: 5, cha: 'e' },
+      ];
+
+      const dataset = new Dataset('columns', { source: data, columns: fields });
+      expect(dataset.toJson()).toStrictEqual(expectJson);
+    });
+
+    it('without columns name', () => {
+      const expectJson = [
+        { col_0: 1, col_1: 'a' },
+        { col_0: 2, col_1: 'b' },
+        { col_0: 3, col_1: 'c' },
+        { col_0: 4, col_1: 'd' },
+        { col_0: 5, col_1: 'e' },
+      ];
+
+      const dataset = new Dataset('columns', { source: data });
+      expect(dataset.toJson()).toStrictEqual(expectJson);
+    });
+
+    it('without data', () => {
+      const dataset1 = new Dataset('columns', { source: undefined });
+      expect(dataset1.toJson()).toStrictEqual([]);
+
+      const dataset2 = new Dataset('columns', { source: undefined, columns: fields });
+      expect(dataset2.toJson()).toStrictEqual([]);
+    });
+
+    it('unbalanced fields', () => {
+      const data1 = [
+        [1, 2, 3],
+        ['a', 'b', 'c', 'd', 'e'],
+      ];
+      const expectJson1 = [
+        { num: 1, cha: 'a' },
+        { num: 2, cha: 'b' },
+        { num: 3, cha: 'c' },
+        { num: undefined, cha: 'd' },
+        { num: undefined, cha: 'e' },
+      ];
+
+      const dataset1 = new Dataset('columns', { source: data1, columns: fields });
+      expect(dataset1.toJson()).toStrictEqual(expectJson1);
+
+      const data2 = [
+        [1, 2, 3, 4, 5],
+        ['a', 'b', 'c', 'd'],
+      ];
+      const expectJson2 = [
+        { num: 1, cha: 'a' },
+        { num: 2, cha: 'b' },
+        { num: 3, cha: 'c' },
+        { num: 4, cha: 'd' },
+        { num: 5, cha: undefined },
+      ];
+
+      const dataset2 = new Dataset('columns', { source: data2, columns: fields });
+      expect(dataset2.toJson()).toStrictEqual(expectJson2);
+    });
+  });
 });
