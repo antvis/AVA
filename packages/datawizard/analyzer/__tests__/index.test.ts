@@ -310,19 +310,6 @@ test('pearson', () => {
   }).toThrow();
 });
 
-test('int date', () => {
-  expect(type([1991, 1992, 1995, 1998, 1990, 2000, 2012, 2049]).type).toBe('integer');
-  expect(type([1991, 1992, 1995, 1998, 1990, 2000, 2012, 2049]).recommendation).toBe('date');
-  expect(type([1991, 1992, 1995, 1998, 1990, 2000, 2012, '']).type).toBe('integer');
-  expect(type([1991, 1992, 1995, 1998, 1990, 2000, 2012, '2049']).recommendation).toBe('date');
-  expect(type([199101, 199202, 199505, 199801, 199004, 200007, 201209, 204912]).type).toBe('integer');
-  expect(type([199101, 199202, 199505, 199801, 199004, 200007, 201209, 204912]).recommendation).toBe('date');
-  expect(type([199101, 199202, 199519, 199801, 199004, 200007, 201209, 204912]).recommendation).toBe('integer');
-  expect(type([19910110, 19920220, 19951230, 19980131, 19900411, 20000725, 20120918, 20491220]).recommendation).toBe(
-    'date'
-  );
-});
-
 test('date cols', () => {
   const data = ['20190101', '20190102', '20190103', '20190716', '20190717', '20190718', '20190719'];
   const d = type(data);

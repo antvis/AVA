@@ -249,11 +249,13 @@ export function type(array: any[]): FieldInfo {
       // an integer field may be a date field
       if (recommendation === 'integer') {
         const data = list.filter((item) => item !== null);
-        for (let i = 0; i < intDatePartners.length; i++) {
-          const p = intDatePartners[i];
-          if (!data.some((item) => !p.test(item))) {
-            recommendation = 'date';
-            break;
+        if (typeof data[0] === 'string') {
+          for (let i = 0; i < intDatePartners.length; i++) {
+            const p = intDatePartners[i];
+            if (!data.some((item) => !p.test(item))) {
+              recommendation = 'date';
+              break;
+            }
           }
         }
       }
