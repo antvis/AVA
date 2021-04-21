@@ -31,11 +31,14 @@ export async function autoChart(
   container: HTMLElement | string,
   data: any[] | Promise<any[]>,
   options?: AutoChartOptions
-): Promise<void> {
-  await AutoChart.create(container, data, options);
+): Promise<AutoChart> {
+  return await AutoChart.create(container, data, options);
 }
 
-export { AutoChartOptions, Preferences };
+export { AutoChart, AutoChartOptions, Preferences };
+
+export { AutoPlot, AutoPlotOptions } from './auto-plot';
+export { DummyPlot, DummyPlotConfig } from './dummy-plot';
 
 export * from './advice-pipeline';
 
@@ -43,6 +46,7 @@ export {
   ChartRules,
   ChartRuleConfig,
   ChartRuleConfigMap,
+  CHART_RULE_ID,
   ChartRuleID,
   Rule,
   HardOrSoft,

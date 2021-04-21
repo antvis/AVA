@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-analyzer",
-  "version": "1.0.0",
+  "version": "1.1.4-alpha.0",
   "description": "数据类型分析",
   "private": false,
   "browser": "dist/index.js",
@@ -13,10 +13,8 @@
     "prepublish": "npm run module && npm run build && npm run api && npm run pack",
     "api": "rm -rf typings && api-extractor run -v",
     "pack": "webpack --config=webpack.config.js",
-    "lint": "eslint --ext .ts src __tests__"
-  },
-  "dependencies": {
-    "tslib": "^1.9.3"
+    "lint": "eslint --ext .ts src __tests__",
+    "watch": "yarn module && yarn build --w"
   },
   "publishConfig": {
     "access": "public"
@@ -30,8 +28,9 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-typescript": "^7.7.4",
-    "@microsoft/api-extractor": "^7.7.0",
+    "@microsoft/api-extractor": "7.12.1",
     "babel-loader": "^8.0.6",
+    "tslib": "^2.2.0",
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"

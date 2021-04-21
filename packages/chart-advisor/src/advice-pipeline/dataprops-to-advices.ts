@@ -4,6 +4,7 @@ import { ChartRules, DesignRules, Rule, ChartRuleConfigMap } from '../rules';
 import _get from 'lodash/get';
 import { getChartTypeSpec } from './spec-mapping';
 import { AdvisorOptions, DataProperty, Advice, SingleViewSpec } from './interface';
+import { customChartType } from '../custom-plot';
 
 function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   const purpose = options ? options.purpose : '';
@@ -11,7 +12,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
   const chartRuleConfigs: ChartRuleConfigMap = options?.chartRuleConfigs || {};
 
   // for log
-  const record: Record<string, number> = {};
+  const record: Record<string, any>[] = [];
 
   let hardScore = 1;
   ChartRules.filter(
@@ -21,7 +22,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
     const customConfigs = _get(chartRuleConfigs, `${hr.id}`) || {};
     const score = hr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
     hardScore *= score;
-    record[hr.id] = score;
+    record.push({ name: hr.id, score, hard: true });
   });
 
   /**
@@ -40,7 +41,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
 
     const score = sr.check({ dataProps, chartType, purpose, preferences, ...customConfigs });
     softScore += score;
-    record[sr.id] = score;
+    record.push({ name: sr.id, score, hard: false });
   });
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);
@@ -62,7 +63,7 @@ function applyDesignRules(chartType: ChartID, dataProps: DataProperty[], chartTy
 }
 
 /**
- * @beta
+ * @public
  */
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
   const enableRefine = options?.refine === undefined ? true : options.refine;
@@ -75,12 +76,14 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
 
     // step 2: field mapping to spec encoding
     const chartTypeSpec = getChartTypeSpec(t, dataProps);
-    if (!chartTypeSpec) return { type: t, spec: null, score: 0 };
+
+    // FIXME kpi_panel and table spec 暂时可以为 null, 之后随需求增加 cfg
+    if (!customChartType.includes(t) && !chartTypeSpec) return { type: t, spec: null, score: 0 };
 
     // step 3: apply design rules
-    if (enableRefine) {
-      const encodingSpecs = applyDesignRules(t, dataProps, chartTypeSpec);
-      deepMix(chartTypeSpec.encoding, encodingSpecs);
+    if (chartTypeSpec && enableRefine) {
+      const encodingSpecs = applyDesignRules(t, dataProps, chartTypeSpec as SingleViewSpec);
+      deepMix((chartTypeSpec as SingleViewSpec).encoding, encodingSpecs);
       // return { type: t, spec: chartTypeSpec, score }
     }
 

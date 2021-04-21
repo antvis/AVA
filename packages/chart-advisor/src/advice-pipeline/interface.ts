@@ -1,4 +1,4 @@
-import { LevelOfMeasurement as LOM, ChartID } from '@antv/knowledge';
+import { LevelOfMeasurement as LOM, ChartID, Purpose } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { Preferences, ChartRuleConfigMap } from '../rules';
 import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-lite';
@@ -8,21 +8,19 @@ import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-
  */
 export interface AdvisorOptions {
   /**
-   * 分析目的
+   * 分析目的 对应 ckb purpose
+   * Comparison -- 比较
+   * Trend -- 趋势
+   * Distribution -- 分布
+   * Rank -- 排行
+   * Proportion -- 比例
+   * Composition -- 组成
    */
-  purpose?: string;
+  purpose?: Purpose;
   /**
    * 偏好设置
    */
   preferences?: Preferences;
-  /**
-   * 标题
-   */
-  title?: string;
-  /**
-   * 描述
-   */
-  description?: string;
   /**
    * 是否应用设计规则
    */
@@ -35,7 +33,7 @@ export interface AdvisorOptions {
 
 /**
  * return type of data to data props, describe data column
- * @beta
+ * @public
  */
 export type DataProperty =
   | (DWAnalyzer.NumberFieldInfo & { name: string; levelOfMeasurements: LOM[] })
@@ -45,9 +43,9 @@ export type DataProperty =
 // type Bin = { binned: boolean; step: number };
 
 /**
- * @beta
+ * @public
  */
-export type VegaLiteEncodeingSpecification = Partial<
+export type VegaLiteEncodingSpecification = Partial<
   Record<
     EncodingKey,
     {
@@ -64,36 +62,46 @@ export type VegaLiteEncodeingSpecification = Partial<
 >;
 
 /**
- * @beta
+ * @public
  */
 export interface SingleViewSpec {
   mark: { type: Mark; [record: string]: any };
-  encoding: VegaLiteEncodeingSpecification;
+  encoding: VegaLiteEncodingSpecification;
 }
 
 // subset of vega-lte spec
 /**
- * @beta
+ * @public
  */
 export type VegaLiteSubsetSpec = SingleViewSpec | { layer: SingleViewSpec[] };
 
 /**
- * @beta
+ * @public
  */
 export type Specification = SingleViewSpec;
 
 /**
+ * @public
+ */
+export interface TableDataCfg {
+  rows: string[];
+  values: string[];
+  columns: string[];
+}
+
+/**
  * return type of data props to spec
- * @beta
+ * @public
  */
 export interface Advice {
   type: ChartID;
-  spec: Specification | null;
+  // 如果有推荐有效图表，必须提规范信息，可能是 vegalite spec 也可能是 custom spec（用于 指标卡和交叉表）
+  spec: Specification | TableDataCfg | null;
   score: number;
 }
 
 /**
- * @beta
+ * @public
  */
 export type ChartLibrary = 'G2Plot' | 'G2';
 

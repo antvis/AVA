@@ -18,7 +18,7 @@ const IndexPage = () => {
     },
     {
       text: t('开始使用'),
-      link: `/${i18n.language}/docs/tutorial`,
+      link: `/${i18n.language}/docs/guide`,
     },
   ];
   const cases = [
@@ -73,7 +73,7 @@ const IndexPage = () => {
         )}
         className="banner"
         buttons={bannerButtons}
-        showGithubStars={false}
+        showGithubStars={true}
         video="https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/file/A*PDpiR4U2oFEAAAAAAAAAAABkARQnAQ"
         notifications={notifications}
       />

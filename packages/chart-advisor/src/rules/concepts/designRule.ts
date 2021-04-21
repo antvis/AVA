@@ -1,8 +1,8 @@
 import { DataProps } from './rule';
 import { ChartID as ChartType } from '@antv/knowledge';
-import { VegaLiteEncodeingSpecification, SingleViewSpec } from '../../advice-pipeline/interface';
+import { VegaLiteEncodingSpecification, SingleViewSpec } from '../../advice-pipeline/interface';
 
-type Optimizer = (dataProps: DataProps[], chartTypeSpec: SingleViewSpec) => VegaLiteEncodeingSpecification;
+type Optimizer = (dataProps: DataProps[], chartTypeSpec: SingleViewSpec) => VegaLiteEncodingSpecification;
 
 export class DesignRule {
   private _id: string;

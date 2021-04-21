@@ -3,7 +3,7 @@ import { insightWorkers, Worker } from './insightWorkers';
 import { Insight, InsightProps } from './interfaces';
 
 /**
- * @beta
+ * @public
  */
 export async function insightsFromData(data: RowData[]): Promise<Insight[]> {
   const workers = Object.values(insightWorkers) as Worker[];
@@ -19,7 +19,7 @@ export async function insightsFromData(data: RowData[]): Promise<Insight[]> {
 }
 
 /**
- * @beta
+ * @public
  */
 export async function insightsFromDataset(data: RowData[], options?: AllSubspaceDatasetOptions): Promise<Insight[]> {
   const dataset = new Dataset(data);

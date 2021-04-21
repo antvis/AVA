@@ -35,16 +35,7 @@ autoChart(container, data, options);
 
 图表副标题
 
-#### options.purpose
-
-指定图表的分析目的，增加图表推荐的准确度，可以为以下这些值
-
-* Comparison -- 比较
-* Trend -- 趋势
-* Distribution -- 分布
-* Rank -- 排行
-* Proportion -- 比例
-* Composition -- 组成
+`markdown:docs/common/advisor-options.zh.md`
 
 #### options.toolbar
 
@@ -61,14 +52,6 @@ autoChart(container, data, options);
 #### options.config
 
 图表配置，你可以手动指定图表类型，和图表配置，可以直接从配置面板中拷贝出来作为 config 配置
-
-#### options.refine
-
-设计规则开关
-
-#### options.chartRuleConfigs
-
-自定义推荐规则配置
 
 #### options.noDataContent
 

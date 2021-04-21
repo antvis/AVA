@@ -7,58 +7,92 @@
 import { AllSubspaceDatasetOptions } from '@antv/dw-transform';
 import { ChartID } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
+import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
 import { LevelOfMeasurement } from '@antv/knowledge';
 import { Purpose } from '@antv/knowledge';
 import { RowData } from '@antv/dw-transform';
 
-// @beta
+// @public
 export interface Advice {
     // (undocumented)
     score: number;
     // (undocumented)
-    spec: Specification | null;
+    spec: Specification | TableDataCfg | null;
     // (undocumented)
     type: ChartID;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export function adviceToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
 
 // @public (undocumented)
 export interface AdvisorOptions {
     chartRuleConfigs?: ChartRuleConfigMap;
-    description?: string;
     preferences?: Preferences;
-    purpose?: string;
+    purpose?: Purpose;
     refine?: boolean;
-    title?: string;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Aggregation = 'count';
 
-// @public
-export function autoChart(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<void>;
+// @public (undocumented)
+export class AutoChart {
+    constructor(container: HTMLElement);
+    // (undocumented)
+    static create(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<AutoChart>;
+    destroy(): void;
+    getPlot(): AutoPlot | DummyPlot | undefined;
+    // (undocumented)
+    render(): Promise<void>;
+    // (undocumented)
+    setup(data: any[], options?: AutoChartOptions): Promise<this>;
+    }
 
 // @public
-export interface AutoChartOptions {
-    chartRuleConfigs?: ChartRuleConfigMap;
+export function autoChart(container: HTMLElement | string, data: any[] | Promise<any[]>, options?: AutoChartOptions): Promise<AutoChart>;
+
+// @public
+export interface AutoChartOptions extends AdvisorOptions {
     config?: G2PlotConfig;
     description?: string;
     development?: boolean;
     feedback?: (container: HTMLDivElement) => void;
     fields?: string[];
     noDataContent?: (container: HTMLDivElement) => void;
-    preferences?: Preferences;
-    purpose?: string;
-    refine?: boolean;
     theme?: string;
     title?: string;
     toolbar?: boolean;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
+export class AutoPlot extends EventEmitter {
+    constructor(container: HTMLElement, data: any[], options?: AutoPlotOptions, oldAdvices?: Advice[], oldIndex?: number, type?: string);
+    advices: Advice[];
+    container: HTMLElement;
+    current: number;
+    currentConfigs?: any;
+    // (undocumented)
+    destroy(): void;
+    plot?: any;
+    render(index: number): void;
+    type?: string;
+    uuid: string;
+}
+
+// @public (undocumented)
+export interface AutoPlotOptions extends AdvisorOptions {
+    // (undocumented)
+    feedback?: (container: HTMLDivElement) => void;
+    // (undocumented)
+    theme?: string;
+}
+
+// @public (undocumented)
+export const CHART_RULE_ID: readonly ["data-check", "data-field-qty", "no-redundant-field", "purpose-check", "series-qty-limit", "bar-series-qty", "line-field-time-ordinal", "landscape-or-portrait", "diff-pie-sector", "nominal-enum-combinatorial", "limit-series", "aggregation-single-row", "all-can-be-table"];
+
+// @public (undocumented)
 export type ChartLibrary = 'G2Plot' | 'G2';
 
 // @public (undocumented)
@@ -77,12 +111,12 @@ export type ChartRuleConfigMap = {
 };
 
 // @public (undocumented)
-export type ChartRuleID = 'data-check' | 'data-field-qty' | 'no-redundant-field' | 'purpose-check' | 'series-qty-limit' | 'bar-series-qty' | 'line-field-time-ordinal' | 'landscape-or-portrait' | 'diff-pie-sector' | 'nominal-enum-combinatorial' | 'limit-series';
+export type ChartRuleID = typeof CHART_RULE_ID[number];
 
 // @public (undocumented)
 export const ChartRules: Rule[];
 
-// @beta
+// @public
 export type DataProperty = (DWAnalyzer.NumberFieldInfo & {
     name: string;
     levelOfMeasurements: LevelOfMeasurement[];
@@ -116,22 +150,49 @@ export interface DataProps {
     sum?: number;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
 
-// @beta
-export function dataToDataProps(data: any[]): DataProperty[];
+// @public (undocumented)
+export function dataToAdvices(data: any[], options?: AdvisorOptions, fields?: string[], showLog?: boolean): Advice[];
 
-// @beta (undocumented)
-export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog?: boolean): Advice[];
+// @public
+export function dataToDataProps(data: any[], fields?: string[]): DataProperty[];
 
-// @beta (undocumented)
+// @public (undocumented)
+export class DummyPlot {
+    constructor(container: HTMLElement, data: any[], config: DummyPlotConfig);
+    // (undocumented)
+    container: HTMLElement;
+    // (undocumented)
+    currentConfigs?: any;
+    // (undocumented)
+    destroy(): void;
+    // (undocumented)
+    plot: any;
+    // (undocumented)
+    render(): void;
+    // (undocumented)
+    type?: string;
+    // (undocumented)
+    uuid: string;
+}
+
+// @public (undocumented)
+export interface DummyPlotConfig {
+    // (undocumented)
+    configs: any;
+    // (undocumented)
+    type: string;
+}
+
+// @public (undocumented)
 export type EncodingKey = 'x' | 'y' | 'x2' | 'y2' | 'column' | 'row' | 'longitude' | 'latitude' | 'longitude2' | 'latitude2' | 'theta' | 'theta2' | 'radius' | 'radius2' | 'color' | 'fill' | 'stroke' | 'opacity' | 'fillOpacity' | 'strokeOpacity' | 'strokeWidth' | 'strokeDash' | 'size' | 'angle' | 'shape' | 'detail' | 'text' | 'order';
 
-// @beta (undocumented)
+// @public (undocumented)
 export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
 
-// @beta (undocumented)
+// @public (undocumented)
 export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>>;
 
 // @public (undocumented)
@@ -145,10 +206,10 @@ export interface G2PlotConfig {
     type: G2PlotChartType;
 }
 
-// @beta
+// @public
 export function g2plotRender(container: string | HTMLElement, data: any, libConfigs: G2PlotConfig): G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null;
 
-// @beta
+// @public
 export function g2Render(container: string | HTMLElement, data: any, configs: G2PlotConfig): G2Plot.G2.Chart | undefined;
 
 // @public (undocumented)
@@ -170,7 +231,7 @@ export interface Info {
     purpose?: string;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface Insight {
     // (undocumented)
     description?: string;
@@ -191,10 +252,10 @@ export interface Insight {
     type: InsightType | 'SomeInsight';
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export const INSIGHT_TYPES: ["Correlation", "Monotonicity", "MajorFactors", "OverallTrends", "CategoryOutliers", "TimeSeriesOutliers", "Seasonality", "ChangePoints"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface InsightProps {
     // (undocumented)
     detail?: any;
@@ -206,19 +267,19 @@ export interface InsightProps {
     score?: number;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export function insightsFromData(data: RowData[]): Promise<Insight[]>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export function insightsFromDataset(data: RowData[], options?: AllSubspaceDatasetOptions): Promise<Insight[]>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type InsightType = typeof INSIGHT_TYPES[number];
 
-// @beta (undocumented)
-export const insightWorkers: Partial<Record<InsightType, Worker>>;
+// @public (undocumented)
+export const insightWorkers: Partial<Record<InsightType, Worker_2>>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Mark = 'area' | 'arc' | 'bar' | 'circle' | 'line' | 'point' | 'rect' | 'rule' | 'square' | 'text' | 'tick' | 'rect' | 'geoshape';
 
 // @public
@@ -229,7 +290,7 @@ export interface Preferences {
 
 // @public (undocumented)
 export class Rule {
-    constructor(id: string, hardOrSoft: HardOrSoft, specChartTypes: ChartID[], weight: number, validator: Validator);
+    constructor(id: ChartRuleID, hardOrSoft: HardOrSoft, specChartTypes: ChartID[], weight: number, validator: Validator);
     // (undocumented)
     check(args: Info): number;
     // (undocumented)
@@ -244,10 +305,10 @@ export class Rule {
     get weight(): number;
     }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface SingleViewSpec {
     // (undocumented)
-    encoding: VegaLiteEncodeingSpecification;
+    encoding: VegaLiteEncodingSpecification;
     // (undocumented)
     mark: {
         type: Mark;
@@ -255,20 +316,30 @@ export interface SingleViewSpec {
     };
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Specification = SingleViewSpec;
 
-// @beta (undocumented)
-export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.G2.Chart | G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | null | undefined;
+// @public (undocumented)
+export function specRender(container: string | HTMLElement, data: any[], spec: Advice, libraryName?: 'G2' | 'G2Plot'): G2Plot.Line | G2Plot.Area | G2Plot.Column | G2Plot.Bar | G2Plot.Pie | G2Plot.Rose | G2Plot.Scatter | G2Plot.Histogram | G2Plot.Heatmap | G2Plot.G2.Chart | null | undefined;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;
+
+// @public (undocumented)
+export interface TableDataCfg {
+    // (undocumented)
+    columns: string[];
+    // (undocumented)
+    rows: string[];
+    // (undocumented)
+    values: string[];
+}
 
 // @public (undocumented)
 export type Validator = (args: Info) => number;
 
-// @beta (undocumented)
-export type VegaLiteEncodeingSpecification = Partial<Record<EncodingKey, {
+// @public (undocumented)
+export type VegaLiteEncodingSpecification = Partial<Record<EncodingKey, {
     field?: string;
     type?: EncodingType;
     bin?: boolean;
@@ -279,13 +350,15 @@ export type VegaLiteEncodeingSpecification = Partial<Record<EncodingKey, {
     ticks?: any;
 }>>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type VegaLiteSubsetSpec = SingleViewSpec | {
     layer: SingleViewSpec[];
 };
 
-// @beta (undocumented)
-export type Worker = (data: RowData[]) => Insight[] | Promise<Insight[]>;
+// @public (undocumented)
+type Worker_2 = (data: RowData[]) => Insight[] | Promise<Insight[]>;
+
+export { Worker_2 as Worker }
 
 
 ```

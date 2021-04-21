@@ -1,6 +1,6 @@
-import { dataToSpecs } from '../../../src';
+import { dataToAdvices } from '../../../src';
 
-describe('API - dataToSpecs', () => {
+describe('API - dataToAdvices', () => {
   describe('Results', () => {
     test('should work for valid data', () => {
       const data = [
@@ -9,7 +9,7 @@ describe('API - dataToSpecs', () => {
         { city: 'Shanghai', value: 600 },
       ];
 
-      const specs = dataToSpecs(data);
+      const specs = dataToAdvices(data);
 
       expect(specs).toEqual([
         {
@@ -88,6 +88,15 @@ describe('API - dataToSpecs', () => {
             },
           },
           score: 1.5,
+        },
+        {
+          score: 1,
+          spec: {
+            columns: [],
+            rows: ['city'],
+            values: ['value'],
+          },
+          type: 'table',
         },
       ]);
     });

@@ -35,16 +35,7 @@ Title of the chart.
 
 Subtitle of the chart.
 
-#### options.purpose
-
-Specify a analysis purpose for getting better recommendation.
-
-* Comparison 
-* Trend
-* Distribution
-* Rank
-* Proportion
-* Composition
+`markdown:docs/common/advisor-options.en.md`
 
 #### options.toolbar
 
@@ -69,14 +60,6 @@ Theme of the chart styles.
 #### options.config
 
 Detailed configs of the chart.
-
-#### options.refine
-
-on/off design rules
-
-#### options.chartRuleConfigs
-
-Custom configs for chart rules.
 
 #### options.noDataContent
 

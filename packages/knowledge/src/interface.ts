@@ -1,7 +1,7 @@
 import { ChartID } from './chartID';
 
 /**
- * @beta
+ * @public
  */
 export const FAMILY_OPTIONS = [
   'LineCharts',
@@ -19,16 +19,17 @@ export const FAMILY_OPTIONS = [
   'LineLayer',
   'PointLayer',
   'HeatmapLayer',
+  'Table',
   'Others',
 ] as const;
 
 /**
- * @beta
+ * @public
  */
 export type Family = typeof FAMILY_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
 export const PURPOSE_OPTIONS = [
   'Comparison',
@@ -42,15 +43,16 @@ export const PURPOSE_OPTIONS = [
   'Flow',
   'Spatial',
   'Anomaly',
+  'Value',
 ] as const;
 
 /**
- * @beta
+ * @public
  */
 export type Purpose = typeof PURPOSE_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
 export const COORD_TYPE_OPTIONS = [
   'NumberLine',
@@ -65,22 +67,22 @@ export const COORD_TYPE_OPTIONS = [
 ] as const;
 
 /**
- * @beta
+ * @public
  */
 export type CoordinateSystem = typeof COORD_TYPE_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
-export const GRAPHIC_CATEGORY_OPTIONS = ['Statistic', 'Diagram', 'Graph', 'Map'] as const;
+export const GRAPHIC_CATEGORY_OPTIONS = ['Statistic', 'Diagram', 'Graph', 'Map', 'Other'] as const;
 
 /**
- * @beta
+ * @public
  */
 export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
 export const SHAPE_OPTIONS = [
   'Lines',
@@ -92,25 +94,26 @@ export const SHAPE_OPTIONS = [
   'Symmetric',
   'Network',
   'Map',
+  'Other',
 ] as const;
 
 /**
- * @beta
+ * @public
  */
 export type Shape = typeof SHAPE_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
 export const LOM_OPTIONS = ['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Continuous', 'Time'] as const;
 
 /**
- * @beta
+ * @public
  */
 export type LevelOfMeasurement = typeof LOM_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
 export interface DataPrerequisite {
   minQty: number;
@@ -119,7 +122,7 @@ export interface DataPrerequisite {
 }
 
 /**
- * @beta
+ * @public
  */
 export interface DataPrerequisiteJSON {
   minQty: number;
@@ -128,7 +131,7 @@ export interface DataPrerequisiteJSON {
 }
 
 /**
- * @beta
+ * @public
  */
 export const CHANNEL_OPTIONS = [
   'Position',
@@ -146,22 +149,22 @@ export const CHANNEL_OPTIONS = [
 ] as const;
 
 /**
- * @beta
+ * @public
  */
 export type Channel = typeof CHANNEL_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
 export const RECOMMEND_RATING_OPTIONS = ['Recommended', 'Use with Caution', 'Not Recommended'] as const;
 
 /**
- * @beta
+ * @public
  */
 export type RecommendRating = typeof RECOMMEND_RATING_OPTIONS[number];
 
 /**
- * @beta
+ * @public
  */
 export interface ChartKnowledge {
   id: string;
@@ -181,7 +184,7 @@ export interface ChartKnowledge {
 export type ChartKnowledgeBase = Record<ChartID, ChartKnowledge>;
 
 /**
- * @beta
+ * @public
  */
 export interface ChartKnowledgeJSON {
   id: string;

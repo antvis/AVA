@@ -7,49 +7,49 @@ import { oneMoreValue } from './smartMock';
 const tuple = <T extends string[]>(...args: T) => args;
 
 /**
- * @beta
+ * @public
  */
 export const AGGREGATION = tuple('sum', 'max', 'min', 'average', 'avg', 'median', 'count', 'distinct', 'countd');
 
 /**
- * @beta
+ * @public
  */
 export type AggregationType = typeof AGGREGATION[number];
 
 /**
- * @beta
+ * @public
  */
 export const CONVERSION = tuple('toString', 'toFloat', 'toInt');
 
 /**
- * @beta
+ * @public
  */
 export type ConversionType = typeof CONVERSION[number];
 
 /**
- * @beta
+ * @public
  */
 export const FILL = tuple('fillNull', 'removeNull');
 
 /**
- * @beta
+ * @public
  */
 export type FillType = typeof FILL[number];
 
 /**
- * @beta
+ * @public
  */
 export type FillNullType = 'bySmart' | 'byAgg' | 'byValue';
 
 /**
- * @beta
+ * @public
  */
 export interface FillNullOptionsBySmart {
   type: Extract<FillNullType, 'bySmart'>;
 }
 
 /**
- * @beta
+ * @public
  */
 export interface FillNullOptionsByAgg {
   type: Extract<FillNullType, 'byAgg'>;
@@ -59,7 +59,7 @@ export interface FillNullOptionsByAgg {
 }
 
 /**
- * @beta
+ * @public
  */
 export interface FillNullOptionsByValue {
   type: Extract<FillNullType, 'byValue'>;
@@ -69,7 +69,7 @@ export interface FillNullOptionsByValue {
 }
 
 /**
- * @beta
+ * @public
  */
 export type FillNullOptions = FillNullOptionsBySmart | FillNullOptionsByAgg | FillNullOptionsByValue;
 
@@ -84,12 +84,12 @@ export function isFillNullOptionsByValue(options: any): options is FillNullOptio
 }
 
 /**
- * @beta
+ * @public
  */
 export type ActionType = AggregationType | ConversionType | FillType;
 
 /**
- * @beta
+ * @public
  */
 export interface Action {
   type: ActionType;
@@ -99,7 +99,7 @@ export interface Action {
 }
 
 /**
- * @beta
+ * @public
  */
 export interface TransformSchema {
   groupBy?: string[];
@@ -247,7 +247,7 @@ function parseSingleSchema(data: RowData[], schema: TransformSchema): RowData[] 
 }
 
 /**
- * @beta
+ * @public
  */
 export function parse(data: RowData[], schemas: TransformSchema | TransformSchema[]): RowData[] {
   let result = data;

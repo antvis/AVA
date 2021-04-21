@@ -1,5 +1,5 @@
 /**
- * @beta
+ * @public
  */
 export const CHART_ID_OPTIONS = [
   'line_chart',
@@ -78,9 +78,11 @@ export const CHART_ID_OPTIONS = [
   'polar_treemap',
   'sunburst_diagram',
   'liquid_chart',
+  'kpi_panel',
+  'table',
 ] as const;
 
 /**
- * @beta
+ * @public
  */
 export type ChartID = typeof CHART_ID_OPTIONS[number];

@@ -1,7 +1,8 @@
-import { AdvisorOptions, Advice, dataToSpecs, adviceToLibConfig } from './advice-pipeline';
+import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from './advice-pipeline';
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
 import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
+import { KPIPlot, Table } from './custom-plot';
 
 export interface Configs {
   theme?: string;
@@ -9,24 +10,15 @@ export interface Configs {
 }
 
 /**
- *
- * @param advice - 图表类型以及通道配置
- * @param data - 数据
- * @param configs - 配置
+ * @public
  */
-function getConfig(advice: Advice, { theme, data }: Configs): any {
-  const configs: any = { ...adviceToLibConfig(advice, 'G2Plot')?.configs };
-  configs.autoFit = true;
-  return { ...configs, theme, data };
-}
-
 export interface AutoPlotOptions extends AdvisorOptions {
   theme?: string;
   feedback?: (container: HTMLDivElement) => void;
 }
 
 /**
- * 智能图表
+ * @public
  */
 export class AutoPlot extends EventEmitter {
   /**
@@ -88,7 +80,9 @@ export class AutoPlot extends EventEmitter {
     }
     this.container = container;
     this.feedbackLayer = createLayer(container, 'feedback-layer');
-    const advices = dataToSpecs(data, options);
+    // TODO 给 autoChart 增加 fields 参数
+    const advices = dataToAdvices(data, options);
+
     this.advices = advices;
     this.options = options;
     this.feedback = this.options.feedback || DEFAULT_FEEDBACK('暂无推荐');
@@ -126,26 +120,30 @@ export class AutoPlot extends EventEmitter {
     const currentType = advices[current].type;
     const { theme } = options;
     const libConfig = adviceToLibConfig(advices[index], 'G2Plot');
-    const configs = getConfig(advices[index], { theme, data });
-    this.currentConfigs = configs;
     this.type = type;
 
-    if (libConfig) {
-      const configs: any = { ...libConfig?.configs, data, theme };
-      this.currentConfigs = configs;
-      this.type = type;
-      if (plot && type === currentType) {
-        plot.update(configs);
-      } else {
-        if (plot) plot.destroy();
-        console.log(' 🐛🐛🐛 type');
-        console.log(type);
-        this.plot = new G2Plot[libConfig.type](container, configs);
+    if (type === 'kpi_panel') {
+      if (plot) plot.destroy();
+      if (data.length > 0) this.plot = new KPIPlot(container, data[0]);
+      this.currentConfigs = {};
+    } else if (type === 'table') {
+      if (plot) plot.destroy();
+      this.plot = new Table(container, data);
+      this.currentConfigs = {};
+    } else {
+      if (libConfig) {
+        const configs: any = { ...libConfig?.configs, data, theme, autoFit: true };
+        this.currentConfigs = configs;
+        if (plot && type === currentType) {
+          plot.update(configs);
+        } else {
+          if (plot) plot.destroy();
+          this.plot = new G2Plot[libConfig.type](container, configs);
+        }
       }
-      this.plot!.render();
-      // 出发事件
-      this.emit('change', [index]);
     }
+    this.plot!.render();
+    this.emit('change', [index]);
   }
 
   destroy() {

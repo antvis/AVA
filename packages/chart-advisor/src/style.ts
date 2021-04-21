@@ -192,7 +192,33 @@ const ADVISOR_STYLE = `
     color: #fff;
     cursor: pointer;
   }
-  
+  .${CLASS_PREFIX}kpi-panel {
+    display: flex;
+  }
+  .${CLASS_PREFIX}kpi-panel .${CLASS_PREFIX}kpi-panel-card {
+    border-left: 3px solid #94b2ca;
+    padding-left: 8px;
+    margin-right: 36px;
+  }
+  .${CLASS_PREFIX}kpi-panel .${CLASS_PREFIX}kpi-panel-card-name {
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: rgba(0,0,0,.65);
+  }
+  .${CLASS_PREFIX}kpi-panel .${CLASS_PREFIX}kpi-panel-card-value {
+    font-size: 24px;
+  }
+  .${CLASS_PREFIX}-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .${CLASS_PREFIX}-table td, .${CLASS_PREFIX}-table th {
+    border-bottom: 1px solid #d8d8d8;
+    padding: 4px;
+  }
+  .${CLASS_PREFIX}-table thead tr th{
+    text-align: left;
+  }
 `;
 
 const style = document.createElement('style');

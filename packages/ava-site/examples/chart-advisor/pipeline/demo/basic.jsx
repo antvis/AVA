@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Select, Space, Row, Col } from 'antd';
-import Thumbnails from '@antv/thumbnails';
+import Thumbnails, { Thumbnail } from '@antv/thumbnails';
 import { dataToDataProps, dataPropsToAdvices, adviceToLibConfig, g2plotRender } from '@antv/chart-advisor';
 
 const charts = Object.keys(Thumbnails);
@@ -65,8 +65,8 @@ const App = () => {
       <Row>
         <Col span={6}>
           {charts.map((chart) => (
-            <img
-              src={Thumbnails[chart].url}
+            <Thumbnail
+              chart={chart}
               key={chart}
               style={{
                 margin: 4,

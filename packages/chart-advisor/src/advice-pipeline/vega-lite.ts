@@ -3,7 +3,7 @@
  * temporary copy here
  */
 /**
- * @beta
+ * @public
  */
 export type Mark =
   | 'area'
@@ -21,12 +21,12 @@ export type Mark =
   | 'geoshape';
 
 /**
- * @beta
+ * @public
  */
 export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' | 'geojson';
 
 /**
- * @beta
+ * @public
  */
 export type EncodingKey =
   | 'x'
@@ -59,12 +59,11 @@ export type EncodingKey =
   | 'order';
 
 /**
- * @beta
+ * @public
  */
-// part of
 export type Aggregation = 'count';
 
 /**
- * @beta
+ * @public
  */
 export type StackType = 'zero' | 'center' | 'normalize' | null | boolean;

@@ -2,7 +2,7 @@ import { zhCN } from './zh-CN';
 import { TranslateList } from './interface';
 
 /**
- * @beta
+ * @public
  */
 export type Language = 'en-US' | 'zh-CN';
 

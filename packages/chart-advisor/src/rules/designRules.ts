@@ -1,13 +1,13 @@
 import { DesignRule } from './concepts/designRule';
 import { DataProps } from './concepts/rule';
 
-import { VegaLiteEncodeingSpecification, SingleViewSpec } from '../advice-pipeline/interface';
+import { VegaLiteEncodingSpecification, SingleViewSpec } from '../advice-pipeline/interface';
 
 export const DesignRules: DesignRule[] = [
   new DesignRule(
     'x-axis-line-fading',
     ['line_chart'],
-    (dataProps: DataProps[], chartTypeSpec: SingleViewSpec): VegaLiteEncodeingSpecification => {
+    (dataProps: DataProps[], chartTypeSpec: SingleViewSpec): VegaLiteEncodingSpecification => {
       if (chartTypeSpec.encoding.y?.type === 'quantitative') {
         const fieldInfo = dataProps.find((item) => item.name === chartTypeSpec.encoding.y?.field);
         if (fieldInfo) {

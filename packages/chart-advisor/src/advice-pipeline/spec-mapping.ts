@@ -46,6 +46,10 @@ export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[]):
       return histogram(dataProps);
     case 'heatmap':
       return heatmap(dataProps);
+    case 'kpi_panel':
+      return kpi_panel();
+    case 'table':
+      return table(dataProps);
     default:
       return null;
   }
@@ -499,4 +503,29 @@ function heatmap(dataProps: DataProperty[]): Advice['spec'] {
   };
 
   return spec;
+}
+
+function kpi_panel(): Advice['spec'] {
+  // TODO 指标卡暂不做更细致的配置，只支持基本的数值显示
+  return null;
+}
+
+function table(dataProps: DataProperty[]): Advice['spec'] {
+  const values = [];
+  const rows = [];
+
+  for (let i = 0; i < dataProps.length; i++) {
+    const field = dataProps[i];
+    if (intersects(field.levelOfMeasurements, ['Interval', 'Continuous', 'Discrete'])) {
+      values.push(field.name);
+    } else {
+      rows.push(field.name);
+    }
+  }
+
+  return {
+    rows,
+    values,
+    columns: [],
+  };
 }

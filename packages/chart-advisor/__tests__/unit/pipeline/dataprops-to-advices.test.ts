@@ -135,6 +135,15 @@ describe('API - dataPropsToAdvices', () => {
           },
           score: 1.5,
         },
+        {
+          score: 1,
+          spec: {
+            columns: [],
+            rows: ['city'],
+            values: ['value'],
+          },
+          type: 'table',
+        },
       ]);
     });
   });

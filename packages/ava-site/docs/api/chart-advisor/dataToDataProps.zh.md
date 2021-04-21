@@ -16,7 +16,9 @@ dataToDataProps(data: any[]): DataProperty[]
 * **data** * 数据
   * _必要参数_
   * `参数类型`: key-value 对象数组
-
+* **fields** * 选择部分字段
+  * _可选参数_
+  * `type`: string[]
 ### 返回值
 
 *`DataProperty[]`* 
@@ -28,11 +30,30 @@ type DataProperty =
   | (DWAnalyzer.StringFieldInfo & { name: string; levelOfMeasurements: LOM[] });
 ```
 
-入参数组中每一项中 key 对应的数据属性分析结果构成的数组，结果数组长度与入参数组项中 key 个数相等，可能得到的数据类型有三种 Number、Date 和 String，`name` 和 `levelOfMeasurements` 是共有属性。
+入参数组中每一项中 key 对应的数据属性分析结果构成的数组，结果数组长度与入参数组项中 key 个数相等，可能得到的数据类型有三种 Number、Date 和 String，
 
-* `name` 为字段名
+#### 共有属性
 
-* `levelOfMeasurements` 可能的字段类型构成的数组，字段类型包括：Nominal Ordinal Interval Discrete Continuous Time
+* name `string` 为字段名
+* levelOfMeasurements `string[]` 可能的字段类型构成的数组，字段类型包括：Nominal Ordinal Interval Discrete Continuous Time
+
+<!-- extends FieldInfo -->
+* recommendation `TypeSpecifics` 推荐类型，包括 `'null' | 'boolean' | 'integer' | 'float' | 'date' | 'string'`
+* type `TypeSpecifics | 'mixed'` 类型
+* missing `number` 缺失值个数，包括 `null` `undefined` 和 `''`
+* distinct `number` 唯一值个数
+* valueMap `Record<string, number>` 每一个唯一值的个数映射
+* count `number` 总数
+* samples `any[]` 示例数值
+* meta `FieldMeta` 只有当 type 为 `'mixed'` 时才会存在
+```ts
+interface FieldMeta {
+    integer?: NumberFieldInfo;  
+    float?: NumberFieldInfo;
+    date?: DateFieldInfo;
+    string?: StringFieldInfo;
+}
+```
 
 #### DWAnalyzer.NumberFieldInfo
 

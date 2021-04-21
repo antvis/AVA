@@ -1,8 +1,10 @@
+import { merge } from 'lodash';
+import { isEqual, pick } from '@antv/util';
 import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
 import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
-import { isEqual, pick } from '@antv/util';
+import { customChartType } from './custom-plot';
 import { AdvisorOptions, Advice, G2PlotConfig } from './advice-pipeline';
 import { Preferences, ChartRuleConfigMap } from './rules';
 import { MockPanel } from './mock-panel';
@@ -30,15 +32,7 @@ window.requestAnimationFrame(CheckAndClean);
  * autochart configs
  * @public
  */
-export interface AutoChartOptions {
-  /**
-   * purpose for analysis
-   */
-  purpose?: string;
-  /**
-   * design rules on/off
-   */
-  refine?: boolean;
+export interface AutoChartOptions extends AdvisorOptions {
   /**
    * title
    */
@@ -51,11 +45,13 @@ export interface AutoChartOptions {
    * data columns(fields)
    */
   fields?: string[];
-  /** preferences */
-  preferences?: Preferences;
-  /** chart type swith tool */
+  /**
+   * chart type switch tool
+   * */
   toolbar?: boolean;
-  /** dev mode */
+  /**
+   * dev mode
+   * */
   development?: boolean;
   /**
    * theme
@@ -65,10 +61,6 @@ export interface AutoChartOptions {
    * g2plot configs
    */
   config?: G2PlotConfig;
-  /**
-   * g2plot configs
-   */
-  chartRuleConfigs?: ChartRuleConfigMap;
   /**
    * render while no data
    */
@@ -106,6 +98,18 @@ export function addCanvas(layer: HTMLElement, { title, description }: AutoChartO
   return canvas;
 }
 
+// default don't advice table in autoChart
+const defaultOptions: AutoChartOptions = {
+  chartRuleConfigs: {
+    'all-can-be-table': {
+      weight: 0,
+    },
+  },
+};
+
+/**
+ * @public
+ */
 export class AutoChart {
   static async create(
     container: HTMLElement | string,
@@ -128,7 +132,7 @@ export class AutoChart {
     let inst: AutoChart;
     if (CACHES.get(containerDom)) {
       inst = CACHES.get(containerDom) as AutoChart;
-      // 如果配置和数据一样 不渲染直接返回
+      //  return directly while data and config is not change
       if (isEqual(inst.options, options) && isEqual(inst.data, data)) return inst;
     } else {
       inst = new AutoChart(containerDom);
@@ -161,7 +165,7 @@ export class AutoChart {
     if (this.rendered) this.destroy();
     this.rendered = true;
     // this.isMocked = false;
-    this.options = options || {};
+    this.options = merge(defaultOptions, options) || {};
     const { fields, development, noDataContent } = this.options;
     if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
     this.noDataContent = noDataContent || DEFAULT_FEEDBACK('暂无数据');
@@ -200,7 +204,7 @@ export class AutoChart {
       if (typeof config.type !== 'string') throw new Error('please set the plotType');
       this.plot = new DummyPlot(chartCanvas, this.data, config);
     } else {
-      // 获取上次渲染的advise 和 index
+      // get prev advice and index
       let oldAdvices: Advice[] = [];
       let oldIndex = 0;
       if (this.plot instanceof AutoPlot) {
@@ -220,7 +224,10 @@ export class AutoChart {
       }
     }
     if (development && this.plot.plot) {
-      this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
+      // configPanel not supported kpi_panel and table temporary
+      if (!customChartType.includes(this.plot?.type || '')) {
+        this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
+      }
     }
   }
 
@@ -228,7 +235,9 @@ export class AutoChart {
    * 清除上次渲染遗留的元素
    */
   destroy() {
-    this.container.removeChild(this.noDataLayer);
+    if (this.container.contains(this.noDataLayer)) {
+      this.container.removeChild(this.noDataLayer);
+    }
     if (this.configPanel) this.configPanel.destroy();
     if (this.toolbar) this.toolbar.destroy();
     if (this.plot) this.plot.destroy();
@@ -237,5 +246,12 @@ export class AutoChart {
       this.canvasLayer = undefined;
     }
     if (this.mockPanel) this.mockPanel.destroy();
+  }
+
+  /**
+   * get plot detail
+   */
+  getPlot() {
+    return this.plot;
   }
 }

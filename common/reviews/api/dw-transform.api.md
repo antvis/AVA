@@ -4,7 +4,7 @@
 
 ```ts
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface Action {
     // (undocumented)
     as: string | null;
@@ -16,10 +16,10 @@ export interface Action {
     type: ActionType;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type ActionType = AggregationType | ConversionType | FillType;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type AggExtractorPair = {
     agg: AggregationType;
     measure: string;
@@ -40,13 +40,13 @@ export interface AggregateParams {
     op: Operations[];
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export const AGGREGATION: ["sum", "max", "min", "average", "avg", "median", "count", "distinct", "countd"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type AggregationType = typeof AGGREGATION[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type AllSubspaceDatasetOptions = {
     dimensions?: string[];
     measures?: string[];
@@ -55,13 +55,13 @@ export type AllSubspaceDatasetOptions = {
     depth?: number;
 };
 
-// @beta (undocumented)
+// @public (undocumented)
 export function autoSchema(data: RowData[], renameOption?: RenameOption, defaultAgg?: AggregationType): TransformSchema[];
 
-// @beta (undocumented)
+// @public (undocumented)
 export function autoTransform(data: RowData[], renameOption?: RenameOption, defaultAgg?: AggregationType): AutoTransformResult;
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface AutoTransformResult {
     // (undocumented)
     result: RowData[];
@@ -69,23 +69,23 @@ export interface AutoTransformResult {
     schemas: TransformSchema[];
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type ColumnInfo = {
     name: string;
     data: any[];
     domain: any[];
 };
 
-// @beta (undocumented)
+// @public (undocumented)
 export function compositeExtractor(siblingGroup: SiblingGroup, aggPair: AggExtractorPair, extractorPairs?: SubExtractorPair[], depth?: number): RowData[];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const CONVERSION: ["toString", "toFloat", "toInt"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type ConversionType = typeof CONVERSION[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export class Dataset {
     constructor(dataset: RowData[]);
     // (undocumented)
@@ -107,25 +107,25 @@ export class Dataset {
     subspace(defineArray?: string[]): Subspace;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Extractor = (siblingGroup: SiblingGroup) => Measure[];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const EXTRACTORS: ["rank", "percent"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const extractors: Record<ExtractorType, Extractor>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type ExtractorType = typeof EXTRACTORS[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export const FILL: ["fillNull", "removeNull"];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type FillNullOptions = FillNullOptionsBySmart | FillNullOptionsByAgg | FillNullOptionsByValue;
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface FillNullOptionsByAgg {
     // (undocumented)
     cfg: {
@@ -135,13 +135,13 @@ export interface FillNullOptionsByAgg {
     type: Extract<FillNullType, 'byAgg'>;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface FillNullOptionsBySmart {
     // (undocumented)
     type: Extract<FillNullType, 'bySmart'>;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface FillNullOptionsByValue {
     // (undocumented)
     cfg: {
@@ -151,28 +151,28 @@ export interface FillNullOptionsByValue {
     type: Extract<FillNullType, 'byValue'>;
 }
 
-// @beta (undocumented)
+// @public (undocumented)
 export type FillNullType = 'bySmart' | 'byAgg' | 'byValue';
 
-// @beta (undocumented)
+// @public (undocumented)
 export type FillType = typeof FILL[number];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Measure = number[];
 
 // @public
 export type Operations = 'sum' | 'average' | 'avg' | 'mean' | 'min' | 'max' | 'median' | 'variance' | 'stdevp' | 'stdev' | 'mode' | 'product' | 'count' | 'distinct' | 'countd' | 'valid';
 
-// @beta (undocumented)
+// @public (undocumented)
 export function parse(data: RowData[], schemas: TransformSchema | TransformSchema[]): RowData[];
 
-// @beta (undocumented)
+// @public (undocumented)
 export type RenameOption = boolean | 'origin' | 'brackets' | 'underline' | Function;
 
 // @public
 export type RowData = Record<string, any>;
 
-// @beta (undocumented)
+// @public (undocumented)
 export type SiblingGroup = {
     datasetInfo: {
         dimensionTitles: string[];
@@ -186,25 +186,28 @@ export type SiblingGroup = {
     dataset: RowData[];
 };
 
-// @beta (undocumented)
+// @public (undocumented)
 export type SubExtractorPair = {
     extractor: ExtractorType;
     dimension: string;
 };
 
-// @beta (undocumented)
+// @public (undocumented)
 export type Subspace = {
     define: Record<string, string>;
     dataset: RowData[];
 };
 
-// @beta (undocumented)
+// @public (undocumented)
 export interface TransformSchema {
     // (undocumented)
     actions: Action[];
     // (undocumented)
     groupBy?: string[];
 }
+
+// @public
+export function unstack(data: RowData[], field: string, values: string[]): RowData[];
 
 
 ```

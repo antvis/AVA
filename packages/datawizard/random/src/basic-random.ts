@@ -157,7 +157,7 @@ export class BasicRandom {
   /**
    * Given an array, scramble the order and return it.
    * @param array - the array to process
-   * @beta
+   * @public
    */
   shuffle<T>(array: T[]): T[] {
     const newArray: T[] = [];

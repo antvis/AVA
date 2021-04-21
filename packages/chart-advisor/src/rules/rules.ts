@@ -1,4 +1,5 @@
-import { Rule, DataProps } from './concepts/rule';
+import { Rule, DataProps, ChartRuleID } from './concepts/rule';
+import { isUndefined } from 'lodash';
 import {
   CKBJson,
   LevelOfMeasurement as LOM,
@@ -8,22 +9,6 @@ import {
 } from '@antv/knowledge';
 
 const Wiki = CKBJson('en-US', true);
-
-/**
- * @public
- */
-export type ChartRuleID =
-  | 'data-check'
-  | 'data-field-qty'
-  | 'no-redundant-field'
-  | 'purpose-check'
-  | 'series-qty-limit'
-  | 'bar-series-qty'
-  | 'line-field-time-ordinal'
-  | 'landscape-or-portrait'
-  | 'diff-pie-sector'
-  | 'nominal-enum-combinatorial'
-  | 'limit-series';
 
 /**
  * @public
@@ -163,8 +148,28 @@ export const ChartRules: Rule[] = [
         return result;
       }
     }
-
     return result;
+  }),
+  // Only single row for all columns
+  new Rule(
+    'aggregation-single-row',
+    'HARD',
+    allChartTypes.filter((i) => i !== 'table'),
+    1.0,
+    (args): number => {
+      let result = 0;
+      const { chartType, dataProps } = args;
+      if (dataProps.every((i) => i.count === 1 && i.levelOfMeasurements.includes('Interval'))) {
+        result = chartType === 'kpi_panel' ? 1 : 0.2;
+      } else {
+        result = chartType === 'kpi_panel' ? 0 : 1;
+      }
+      return result;
+    }
+  ),
+  // all dataset can be table
+  new Rule('all-can-be-table', 'HARD', ['table'], 1.0, ({ weight }): number => {
+    return isUndefined(weight) ? 1 : weight;
   }),
   // Some charts should has at most N series.
   new Rule(
@@ -214,7 +219,7 @@ export const ChartRules: Rule[] = [
       if (dataProps && chartType) {
         const field4Series = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
         const seriesQty = field4Series && field4Series.count ? field4Series.count : 0;
-
+        // TODO limit for this rule
         if (seriesQty >= 2 && seriesQty <= 20) {
           result = 1;
         } else if (seriesQty > 20) {
@@ -327,7 +332,7 @@ export const ChartRules: Rule[] = [
           }
         }
 
-        if (f1.count && f1.distinct && f2.distinct && f1.count >= f1.distinct * f2.distinct) {
+        if (f1.count && f1.distinct && f2.distinct && f1.count > f1.distinct) {
           const typeOptions: ChartID[] = [
             'grouped_bar_chart',
             'grouped_column_chart',

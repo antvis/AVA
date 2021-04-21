@@ -21,6 +21,8 @@ dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions | undefin
   * _optional_
   * `type`: AdvisorOptions ｜ undefined
 
+`markdown:docs/common/advisor-options.en.md`
+
 ### Returns
 
 *`Advice[]`*

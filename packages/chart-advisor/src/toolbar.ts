@@ -1,17 +1,16 @@
+import Thumbnails from '@antv/thumbnails';
+import { CKBJson, ChartID } from '@antv/knowledge';
 import { CLASS_PREFIX } from './style';
 import { Advice, adviceToLibConfig } from './advice-pipeline';
 import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
-import Thumbnails from '@antv/thumbnails';
-import { CKBJson } from '@antv/knowledge';
+import { customChartType } from './custom-plot';
 
 const ChartWiki = CKBJson('zh-CN', true);
 
-function getThumbnailURL(chartId: string) {
-  // @ts-ignore
-  if (Thumbnails[chartId] && Thumbnails[chartId].url) {
-    // @ts-ignore
-    return Thumbnails[chartId].url;
+function getThumbnailURL(chartId: ChartID) {
+  if (Thumbnails[chartId]?.svgCode) {
+    return `data:image/svg+xml;utf8,${encodeURIComponent(Thumbnails[chartId]?.svgCode as string)}`;
   }
 
   return 'https://gw.alipayobjects.com/zos/antfincdn/lP6YFnCEjy/nochartimg.svg';
@@ -23,7 +22,10 @@ const rankIcons = [
 ];
 
 function getAdvicesHtml(advices: Advice[]) {
-  const top3 = advices.filter((advice) => adviceToLibConfig(advice)).slice(0, 3);
+  const top3 = advices
+    // TODO 暂时通过 filter 处理没有输出 g2plot lib config 的图表类型
+    .filter((advice) => customChartType.includes(advice.type) || adviceToLibConfig(advice))
+    .slice(0, 3);
   const rankContent = top3
     .map((item, i) => {
       return `<div class="${CLASS_PREFIX}advice" data-index="${i}">
@@ -103,9 +105,7 @@ export class Toolbar {
         if (target.getAttribute('data-id') === 'chart-type-btn') {
           advicesContainer.style.display = getElementDisplay(advicesContainer) === 'none' ? 'block' : 'none';
         } else {
-          console.log(111);
           const dataIndex = target.getAttribute('data-index');
-          console.log(dataIndex);
           if (dataIndex) {
             this.plotInst.render(Number.parseInt(dataIndex, 10));
           }

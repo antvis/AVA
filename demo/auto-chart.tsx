@@ -31,7 +31,7 @@ export default React.memo(function Chart(props: Props) {
     development,
     toolbar = true,
     config,
-    chartRuleConfigs
+    chartRuleConfigs,
   } = props;
   const container = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -52,8 +52,5 @@ export default React.memo(function Chart(props: Props) {
       });
     }
   }, [props]);
-  return (
-    <div className="chart-container" ref={container}>
-    </div>
-  );
+  return <div className="chart-container" ref={container}></div>;
 });

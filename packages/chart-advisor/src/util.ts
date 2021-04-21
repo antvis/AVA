@@ -41,6 +41,7 @@ export function createLayer(container: HTMLElement, classname?: string): HTMLDiv
   layer.style.top = '0px';
   layer.style.left = '0px';
   layer.style.pointerEvents = 'none';
+  layer.style.boxSizing = 'border-box';
   if (classname) layer.className = classname;
   container.appendChild(layer);
   return layer;
@@ -58,4 +59,14 @@ export function DEFAULT_FEEDBACK(feedback: string): (container: HTMLDivElement) 
   `;
     container.appendChild(content);
   };
+}
+
+/**
+ * remove all children node in specific dom
+ * @param dom HTMLElement
+ */
+export function removeAllChild(dom: HTMLElement) {
+  while (dom.firstChild) {
+    dom.removeChild(dom.firstChild);
+  }
 }

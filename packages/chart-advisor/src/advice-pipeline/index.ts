@@ -28,15 +28,15 @@ export * from './vega-lite';
 
 // step 1 + step 2
 /**
- * @beta
+ * @public
  */
-export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog = false): Advice[] {
+export function dataToAdvices(data: any[], options?: AdvisorOptions, fields?: string[], showLog = false): Advice[] {
   if (showLog) console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
   if (showLog) console.log(data);
   if (showLog) console.log('🍯🍯🍯🍯🍯🍯 options 🍯🍯🍯🍯🍯🍯');
   if (showLog) console.log(options);
 
-  const dataProps = dataToDataProps(data);
+  const dataProps = dataToDataProps(data, fields);
 
   if (showLog) console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
   if (showLog) console.log(dataProps);
@@ -49,7 +49,7 @@ export function dataToSpecs(data: any[], options?: AdvisorOptions, showLog = fal
 // step 3 + step 4
 // default render as g2plot
 /**
- * @beta
+ * @public
  */
 export function specRender(
   container: string | HTMLElement,

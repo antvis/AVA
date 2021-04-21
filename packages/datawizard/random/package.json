@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-random",
-  "version": "1.0.0",
+  "version": "1.1.4-alpha.0",
   "description": "",
   "private": false,
   "browser": "dist/index.js",
@@ -18,8 +18,7 @@
   "dependencies": {
     "date-fns": "^2.0.1",
     "mersenne-twister": "^1.1.0",
-    "randexp": "^0.5.3",
-    "tslib": "^1.9.3"
+    "randexp": "^0.5.3"
   },
   "publishConfig": {
     "access": "public"
@@ -33,9 +32,10 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-typescript": "^7.7.4",
-    "@microsoft/api-extractor": "^7.7.0",
+    "@microsoft/api-extractor": "7.12.1",
     "@types/mersenne-twister": "^1.1.2",
     "babel-loader": "^8.0.6",
+    "tslib": "^2.2.0",
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"

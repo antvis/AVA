@@ -4,7 +4,7 @@ import { AggregationType, AGGREGATION } from './parse';
 import { aggregate } from './aggregate';
 
 /**
- * @beta
+ * @public
  */
 export type ColumnInfo = {
   name: string;
@@ -13,7 +13,7 @@ export type ColumnInfo = {
 };
 
 /**
- * @beta
+ * @public
  */
 export type Subspace = {
   define: Record<string, string>;
@@ -21,7 +21,7 @@ export type Subspace = {
 };
 
 /**
- * @beta
+ * @public
  */
 export type SiblingGroup = {
   datasetInfo: {
@@ -37,17 +37,17 @@ export type SiblingGroup = {
 };
 
 /**
- * @beta
+ * @public
  */
 export type Measure = number[];
 
 /**
- * @beta
+ * @public
  */
 export type Extractor = (siblingGroup: SiblingGroup) => Measure[];
 
 /**
- * @beta
+ * @public
  */
 export const rankExtractor: Extractor = (siblingGroup) => {
   const measures = siblingGroup.datasetInfo.measureTitles;
@@ -67,7 +67,7 @@ export const rankExtractor: Extractor = (siblingGroup) => {
 };
 
 /**
- * @beta
+ * @public
  */
 export const percentExtractor: Extractor = (siblingGroup) => {
   const measures = siblingGroup.datasetInfo.measureTitles;
@@ -91,17 +91,17 @@ export const percentExtractor: Extractor = (siblingGroup) => {
 const tuple = <T extends string[]>(...args: T) => args;
 
 /**
- * @beta
+ * @public
  */
 export const EXTRACTORS = tuple('rank', 'percent');
 
 /**
- * @beta
+ * @public
  */
 export type ExtractorType = typeof EXTRACTORS[number];
 
 /**
- * @beta
+ * @public
  */
 export const extractors: Record<ExtractorType, Extractor> = {
   rank: rankExtractor,
@@ -109,7 +109,7 @@ export const extractors: Record<ExtractorType, Extractor> = {
 };
 
 /**
- * @beta
+ * @public
  */
 export type AggExtractorPair = {
   agg: AggregationType;
@@ -117,7 +117,7 @@ export type AggExtractorPair = {
 };
 
 /**
- * @beta
+ * @public
  */
 export type SubExtractorPair = {
   extractor: ExtractorType;
@@ -125,7 +125,7 @@ export type SubExtractorPair = {
 };
 
 /**
- * @beta
+ * @public
  */
 export type AllSubspaceDatasetOptions = {
   dimensions?: string[];
@@ -136,7 +136,7 @@ export type AllSubspaceDatasetOptions = {
 };
 
 /**
- * @beta
+ * @public
  */
 export class Dataset {
   private _dataset: RowData[];
@@ -350,7 +350,7 @@ export class Dataset {
 }
 
 /**
- * @beta
+ * @public
  */
 export function compositeExtractor(
   siblingGroup: SiblingGroup,

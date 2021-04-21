@@ -2,9 +2,10 @@ import { ChartID } from '@antv/knowledge';
 import { Advice, ChartLibrary, G2PlotConfig, G2PlotChartType, SingleViewSpec } from './interface';
 import { get as _get, has as _has, set as _set } from 'lodash';
 import { EncodingKey } from './vega-lite';
+import { customChartType } from '../custom-plot';
 
 /**
- * @beta
+ * @public
  */
 export function adviceToLibConfig(advice: Advice, libraryName?: 'G2' | 'G2Plot'): G2PlotConfig | null;
 // export function adviceToLibConfig(advice: Advice, libraryName: 'ECharts'): EChartsConfig | null;
@@ -21,7 +22,7 @@ export function adviceToLibConfig(advice: Advice, libraryName: ChartLibrary = 'G
 }
 
 /**
- * @beta
+ * @public
  */
 export const G2PLOT_TYPE_MAPPING: Partial<Record<ChartID, G2PlotChartType>> = {
   line_chart: 'Line',
@@ -59,6 +60,9 @@ const G2PLOT_ENCODING_MAPPING: Record<string, string> = {
 function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   const { type, spec } = advice;
 
+  // kpi panel and table can not be render by g2plot, it will have custom config
+  if (customChartType.includes(type)) return null;
+
   const chartType = G2PLOT_TYPE_MAPPING[type];
   if (!chartType || !spec) return null;
 
@@ -66,6 +70,7 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   if ((spec as any).layer) return null;
 
   const configs: any = {};
+  // the rest scene is single view, transfer to  g2plot config
   const { encoding } = spec as SingleViewSpec;
 
   // step1: common config decode
@@ -113,7 +118,6 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
   const stackCharts: ChartID[] = [
     'stacked_column_chart',
     'percent_stacked_column_chart',
-
     'stacked_bar_chart',
     'percent_stacked_bar_chart',
   ];
@@ -159,7 +163,6 @@ function g2plotAdaptor(advice: Advice): G2PlotConfig | null {
     configs.shape = 'circle';
   }
 
-  console.log({ type: chartType, configs });
   return { type: chartType, configs };
 }
 

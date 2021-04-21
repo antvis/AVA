@@ -19,12 +19,14 @@ export const zhCN: TranslateList = {
       PolygonLayer: '面图层类',
       HeatmapLayer: '地图热力图类',
       Others: '其他类',
+      Table: '表格类',
     },
     category: {
       Statistic: '统计图表',
       Diagram: '示意图',
       Graph: '关系图',
       Map: '地图',
+      Other: '其他',
     },
     purpose: {
       Comparison: '比较',
@@ -38,6 +40,7 @@ export const zhCN: TranslateList = {
       Flow: '流向',
       Spatial: '空间',
       Anomaly: '异常',
+      Value: '数值',
     },
     coord: {
       NumberLine: '数轴',
@@ -60,6 +63,7 @@ export const zhCN: TranslateList = {
       Symmetric: '对称形',
       Network: '网络形',
       Map: '地图',
+      Other: '其他',
     },
     channel: {
       Position: '位置',
@@ -119,12 +123,12 @@ export const zhCN: TranslateList = {
     },
 
     interval_area_chart: {
-      name: '',
+      name: '区间面积图',
       alias: [],
       def: 'TBD',
     },
     stream_chart: {
-      name: '',
+      name: '流图',
       alias: [],
       def: 'TBD',
     },
@@ -153,15 +157,15 @@ export const zhCN: TranslateList = {
     },
 
     interval_column_chart: {
-      name: '',
+      name: '区间柱状图',
       alias: [],
       def: 'TBD',
     },
 
     range_column_chart: {
-      name: '区间柱状图',
+      name: '值域柱状图',
       alias: [],
-      def: '区间柱状图是一种特殊的柱状图，柱子不一定要从 0 开始，而是用柱子长度表示一个从起始值到终止值的区间。',
+      def: '值域柱状图是一种特殊的柱状图，柱子不一定要从 0 开始，而是用柱子长度表示一个从起始值到终止值的区间。',
     },
 
     waterfall_chart: {
@@ -199,15 +203,15 @@ export const zhCN: TranslateList = {
     },
 
     interval_bar_chart: {
-      name: '',
+      name: '区间条形图',
       alias: [],
       def: 'TBD',
     },
 
     range_bar_chart: {
-      name: '区间条形图',
+      name: '值域条形图',
       alias: [],
-      def: '区间条形图是一种特殊的条形图，条不一定要从 0 开始，而是用长度表示一个从起始值到终止值的区间。',
+      def: '值域条形图是一种特殊的条形图，条不一定要从 0 开始，而是用长度表示一个从起始值到终止值的区间。',
     },
 
     radial_bar_chart: {
@@ -217,7 +221,7 @@ export const zhCN: TranslateList = {
     },
 
     mirror_bar_chart: {
-      name: '',
+      name: '对称条形图',
       alias: [],
       def: 'TBD',
     },
@@ -241,7 +245,7 @@ export const zhCN: TranslateList = {
     },
 
     nested_pie_chart: {
-      name: '',
+      name: '嵌套饼图',
       alias: [],
       def: 'TBD',
     },
@@ -265,7 +269,7 @@ export const zhCN: TranslateList = {
     },
 
     non_ribbon_chord_diagram: {
-      name: '',
+      name: '无带弦图',
       alias: [],
       def: 'TBD',
     },
@@ -275,7 +279,7 @@ export const zhCN: TranslateList = {
       def: '弧形图是一种关系图的特殊布局，节点被排列在同一水平线上，关系由节点间的圆弧线表示。',
     },
     chord_diagram: {
-      name: '',
+      name: '弦图',
       alias: [],
       def: 'TBD',
     },
@@ -297,7 +301,7 @@ export const zhCN: TranslateList = {
     },
 
     overlapping_funnel_chart: {
-      name: '',
+      name: '重叠漏斗图',
       alias: [],
       def: 'TBD',
     },
@@ -328,8 +332,8 @@ export const zhCN: TranslateList = {
     },
 
     gauge_chart: {
-      name: '',
-      alias: [],
+      name: '量规图',
+      alias: ['仪表盘'],
       def: 'TBD',
     },
 
@@ -341,13 +345,13 @@ export const zhCN: TranslateList = {
     },
 
     wordcloud: {
-      name: '',
+      name: '词云',
       alias: [],
       def: 'TBD',
     },
     candlestick_chart: {
-      name: '',
-      alias: [],
+      name: '蜡烛图',
+      alias: ['烛台图'],
       def: 'TBD',
     },
     compact_box_tree: {
@@ -496,24 +500,34 @@ export const zhCN: TranslateList = {
         '散点图的变形，指用一个点代表一个值，连续渐进颜色代表数值大小，并通过色彩的叠加的达到效果增强，专为海量散点数据运用而生，解决远视角下，点颜色无法区分问题',
     },
     packed_circles: {
-      name: '',
+      name: '打包图',
       alias: [],
       def: 'TBD',
     },
     polar_treemap: {
-      name: '',
+      name: '极坐标树图',
       alias: [],
       def: 'TBD',
     },
     sunburst_diagram: {
-      name: '',
-      alias: [],
+      name: '旭日图',
+      alias: ['太阳辐射图'],
       def: 'TBD',
     },
     liquid_chart: {
       name: '水波图',
       alias: ['进度球'],
       def: '一种用来表示进度的拟物化示意图',
+    },
+    kpi_panel: {
+      name: '指标卡',
+      alias: ['指标卡'],
+      def: '一种用来展示聚合数据的卡片区域',
+    },
+    table: {
+      name: '表格',
+      alias: ['交叉表'],
+      def: '表格就是由若干的行与列所构成的一种有序的组织形式',
     },
   },
 };

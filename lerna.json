@@ -5,16 +5,16 @@
     "packages/knowledge",
     "packages/ava-site"
   ],
-  "npmClient": "yarn",
   "command": {
     "publish": {
       "registry": "https://registry.npmjs.org/"
     },
     "bootstrap": {
       "npmClientArgs": [
-        "--no-lockfile"
+        "--no-lockfile",
+        "--no-package-lock"
       ]
     }
   },
-  "version": "1.0.0"
+  "version": "1.1.4-alpha.0"
 }

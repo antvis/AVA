@@ -1,11 +1,17 @@
 import * as G2Plot from '@antv/g2plot';
 import { uuid } from './util';
 
+/**
+ * @public
+ */
 export interface DummyPlotConfig {
   type: string; // g2plot chart class type name
   configs: any;
 }
 
+/**
+ * @public
+ */
 export class DummyPlot {
   plot!: any;
   uuid: string = uuid();

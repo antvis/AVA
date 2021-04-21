@@ -16,6 +16,9 @@ dataToDataProps(data: any[]): DataProperty[]
 * **data** * Dataset.
   * _required_
   * `type`: any[]
+* **fields** * Selected fields.
+  * _optional_
+  * `type`: string[]
 
 ### Returns
 
@@ -28,9 +31,28 @@ type DataProperty =
   | (DWAnalyzer.StringFieldInfo & { name: string; levelOfMeasurements: LOM[] });
 ```
 
-* `name`: name of field
+#### Common Properties
 
-* `levelOfMeasurements`: Nominal Ordinal Interval Discrete Continuous Time
+* name `string` name of field
+* levelOfMeasurements `string[]` Nominal Ordinal Interval Discrete Continuous Time
+
+<!-- extends FieldInfo -->
+* recommendation `TypeSpecifics` recommendation type
+* type `TypeSpecifics | 'mixed'` field type
+* missing `number` number of empty includes null undefined or empty string
+* distinct `number` distinct count
+* valueMap `Record<string, number>` number of each distinct item
+* count `number` count of samples
+* samples `any[]` samples
+* meta `FieldMeta` more info which be exist only the Field type is mixed
+```ts
+interface FieldMeta {
+    integer?: NumberFieldInfo;  
+    float?: NumberFieldInfo;
+    date?: DateFieldInfo;
+    string?: StringFieldInfo;
+}
+```
 
 #### DWAnalyzer.NumberFieldInfo
 
