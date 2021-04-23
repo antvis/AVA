@@ -2,8 +2,9 @@
 // https://github.com/microsoft/rushstack/issues/2140
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import * as G2Plot from '@antv/g2plot';
+// import * as G2Plot from '@antv/g2plot';
 import { Dataset } from '@antv/dw-util';
+
 // interface
 import { Advice, AdvisorOptions } from './interface';
 
