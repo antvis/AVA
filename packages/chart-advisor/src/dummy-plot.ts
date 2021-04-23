@@ -1,4 +1,3 @@
-import * as G2Plot from '@antv/g2plot';
 import { uuid } from './util';
 
 /**
@@ -35,8 +34,11 @@ export class DummyPlot {
     this.type = type;
     try {
       // @ts-ignore
-      this.plot = new G2Plot[type](container, { ...configs, data });
-      this.plot.render();
+      import(/* webpackChunkName: "g2plot" */ '@antv/g2plot').then((G2Plot) => {
+        // @ts-ignore
+        this.plot = new G2Plot[type](container, { ...configs, data });
+        this.plot.render();
+      });
     } catch (e) {
       throw new Error('current config is not supported by g2plot');
     }

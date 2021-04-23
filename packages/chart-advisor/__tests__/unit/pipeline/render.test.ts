@@ -3,7 +3,7 @@ import { createDiv } from '../../utils/dom';
 
 describe('API - g2Render', () => {
   describe('Results', () => {
-    test('should work for basic args', () => {
+    test('should work for basic args', async () => {
       const data = [
         { city: 'London', value: 100 },
         { city: 'Beijing', value: 200 },
@@ -15,7 +15,7 @@ describe('API - g2Render', () => {
 
       const libConfig = adviceToLibConfig(spec, 'G2');
 
-      const chart = g2Render(createDiv(), data, libConfig);
+      const chart = await g2Render(createDiv(), data, libConfig!);
 
       // @ts-ignore
       expect(chart?.geometries[0].coordinate.type).toBe('theta');

@@ -1,6 +1,5 @@
 import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from './advice-pipeline';
 import EventEmitter from '@antv/event-emitter';
-import * as G2Plot from '@antv/g2plot';
 import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
 import { KPIPlot, Table } from './custom-plot';
 
@@ -138,11 +137,15 @@ export class AutoPlot extends EventEmitter {
           plot.update(configs);
         } else {
           if (plot) plot.destroy();
-          this.plot = new G2Plot[libConfig.type](container, configs);
+          import(/* webpackChunkName: "g2plot" */ '@antv/g2plot').then((G2Plot) => {
+            // @ts-ignore
+            this.plot = new G2Plot[libConfig.type](container, configs);
+            this.plot.render();
+          });
         }
       }
     }
-    this.plot!.render();
+    // this.plot!.render();
     this.emit('change', [index]);
   }
 

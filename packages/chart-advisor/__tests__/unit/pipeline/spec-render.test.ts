@@ -3,7 +3,7 @@ import { createDiv } from '../../utils/dom';
 
 describe('API - specRender', () => {
   describe('Results', () => {
-    test('should work for basic lib config', () => {
+    test('should work for basic lib config', async () => {
       const data = [
         { city: 'London', value: 100 },
         { city: 'Beijing', value: 200 },
@@ -13,7 +13,7 @@ describe('API - specRender', () => {
       const specs = dataToAdvices(data);
       const spec = specs[0];
 
-      const plot = specRender(createDiv(), data, spec);
+      const plot = await specRender(createDiv(), data, spec);
 
       // @ts-ignore
       expect(plot.type).toBe('pie');
