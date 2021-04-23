@@ -10,7 +10,6 @@ export type SourceType = 'json' | 'rows' | 'columns';
  * @public
  */
 export interface DatasetParamsByJson {
-  // type: 'json';
   source: JSONData;
 }
 
@@ -18,18 +17,22 @@ export interface DatasetParamsByJson {
  * @public
  */
 export interface DatasetParamsByRows {
-  // type: 'rows';
   source: DataRowArray[];
-  index?: number[];
+  columns?: string[];
 }
 
 /**
  * @public
  */
 export interface DatasetParamsByColumns {
-  // type: 'columns';
   source: DataColumnArray[];
   columns?: string[];
+}
+
+interface DatasetProps {
+  matrix: any[][];
+  index: number[];
+  columns: string[];
 }
 
 /**
@@ -37,7 +40,7 @@ export interface DatasetParamsByColumns {
  */
 export type DatasetParams = DatasetParamsByJson | DatasetParamsByRows | DatasetParamsByColumns;
 
-function jsonToDataMatrix(json: DataRowObject[]) {
+function jsonToDataMatrix(json: DataRowObject[]): DatasetProps {
   const matrix: any[][] = [];
   const index: number[] = [];
   const columns: string[] = Object.keys(json[0]);
@@ -50,7 +53,7 @@ function jsonToDataMatrix(json: DataRowObject[]) {
   return { matrix, index, columns };
 }
 
-function columnsToDataMatrix({ source, columns: cols }: DatasetParamsByColumns) {
+function columnsToDataMatrix({ source, columns: cols }: DatasetParamsByColumns): DatasetProps {
   const matrix: any[][] = [];
   const index: number[] = [];
 
@@ -73,6 +76,42 @@ function columnsToDataMatrix({ source, columns: cols }: DatasetParamsByColumns) 
   source.forEach((colData) => {
     for (let i = 0; i < rowLength; i++) {
       matrix[i].push(colData[i] || undefined);
+    }
+  });
+
+  return { matrix, index, columns };
+}
+
+function rowsToDataMatrix({ source, columns: cols }: DatasetParamsByRows): DatasetProps {
+  const matrix: any[][] = [];
+  const index: number[] = [];
+
+  if (!source || source.length === 0) return { matrix, index, columns: [] };
+
+  let columnLength = 0;
+  source.forEach((row) => {
+    if (row.length > columnLength) {
+      columnLength = row.length;
+    }
+  });
+
+  const columns = [];
+  for (let i = 0; i < columnLength; i++) {
+    if (cols && cols[i]) {
+      columns.push(cols[i]);
+    } else {
+      columns.push(`col_${i}`);
+    }
+  }
+
+  for (let i = 0; i < source.length; i++) {
+    matrix.push([]);
+    index.push(i);
+  }
+
+  source.forEach((row, i) => {
+    for (let j = 0; j < columnLength; j++) {
+      matrix[i].push(row[j] || undefined);
     }
   });
 
@@ -149,7 +188,10 @@ export class Dataset {
         break;
       }
       case 'rows': {
-        // TODO
+        const { matrix, index, columns } = rowsToDataMatrix(params as DatasetParamsByRows);
+        this.dataMatrix = matrix;
+        this.dataIndex = index;
+        this.dataColumns = columns;
         break;
       }
       case 'columns': {
