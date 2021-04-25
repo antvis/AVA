@@ -1,9 +1,10 @@
 import { ChartID, LevelOfMeasurement as LOM } from '@antv/knowledge';
+import { Dataset, isInHierarchy } from '@antv/dw-util';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { DataProperty, Advice } from './interface';
 import { EncodingType } from './vega-lite';
 
-export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[]): Advice['spec'] {
+export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[], dataset?: Dataset): Advice['spec'] {
   switch (chartType) {
     case 'pie_chart':
       return pie_chart(dataProps);
@@ -30,11 +31,11 @@ export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[]):
     case 'column_chart':
       return column_chart(dataProps);
     case 'grouped_column_chart':
-      return grouped_column_chart(dataProps);
+      return grouped_column_chart(dataProps, dataset);
     case 'stacked_column_chart':
-      return stacked_column_chart(dataProps);
+      return stacked_column_chart(dataProps, dataset);
     case 'percent_stacked_column_chart':
-      return percent_stacked_column_chart(dataProps);
+      return percent_stacked_column_chart(dataProps, dataset);
     // https://github.com/vega/vega-lite/issues/3805
     // case 'radar_chart':
     //   return radar_chart(dataProps);
@@ -284,17 +285,26 @@ function column_chart(dataProps: DataProperty[]): Advice['spec'] {
 
 /** grouped_column_chart stacked_column_chart percent_stacked_column_chart */
 
-function splitColumnXYSeries(dataProps: DataProperty[]): [ReturnField, ReturnField, ReturnField] {
+function splitColumnXYSeries(dataProps: DataProperty[], dataset?: Dataset): [ReturnField, ReturnField, ReturnField] {
   const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
   const sortedNominalFields = nominalFields.sort(compare);
-  const field4X = sortedNominalFields[0];
-  const Field4Series = sortedNominalFields[1];
+
+  let field4X;
+  let Field4Series;
+  if (dataset && isInHierarchy(sortedNominalFields[1].samples, sortedNominalFields[0].samples)) {
+    field4X = sortedNominalFields[1];
+    Field4Series = sortedNominalFields[0];
+  } else {
+    field4X = sortedNominalFields[0];
+    Field4Series = sortedNominalFields[1];
+  }
+
   const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
   return [field4X, field4Y, Field4Series];
 }
 
-function grouped_column_chart(dataProps: DataProperty[]): Advice['spec'] {
-  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
+function grouped_column_chart(dataProps: DataProperty[], dataset?: Dataset): Advice['spec'] {
+  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps, dataset);
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {
@@ -310,8 +320,8 @@ function grouped_column_chart(dataProps: DataProperty[]): Advice['spec'] {
   return spec;
 }
 
-function stacked_column_chart(dataProps: DataProperty[]): Advice['spec'] {
-  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
+function stacked_column_chart(dataProps: DataProperty[], dataset?: Dataset): Advice['spec'] {
+  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps, dataset);
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {
@@ -326,8 +336,8 @@ function stacked_column_chart(dataProps: DataProperty[]): Advice['spec'] {
   return spec;
 }
 
-function percent_stacked_column_chart(dataProps: DataProperty[]): Advice['spec'] {
-  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
+function percent_stacked_column_chart(dataProps: DataProperty[], dataset?: Dataset): Advice['spec'] {
+  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps, dataset);
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {

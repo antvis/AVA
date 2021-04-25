@@ -40,7 +40,7 @@ export type DatasetParams = DatasetParamsByJson | DatasetParamsByRows | DatasetP
 // @public (undocumented)
 export interface DatasetParamsByColumns {
     // (undocumented)
-    columns: string[];
+    columns?: string[];
     // (undocumented)
     source: DataColumnArray[];
 }
@@ -54,7 +54,7 @@ export interface DatasetParamsByJson {
 // @public (undocumented)
 export interface DatasetParamsByRows {
     // (undocumented)
-    index?: number[];
+    columns?: string[];
     // (undocumented)
     source: DataRowArray[];
 }
@@ -66,7 +66,10 @@ export function isDataRowArray(row: DataRow): row is DataRowArray;
 export function isDataRowObject(row: DataRow): row is DataRowObject;
 
 // @public (undocumented)
-export function isFullCombination(data: JSONData): boolean;
+export function isFullCombination(dataset: Dataset): boolean;
+
+// @public (undocumented)
+export function isInHierarchy(parent: DataColumnArray, child: DataColumnArray): boolean;
 
 // @public (undocumented)
 export type JSONData = DataRowObject[];

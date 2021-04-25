@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Thumbnails, { Thumbnail } from '@antv/thumbnails';
+import { Dataset } from '@antv/dw-util';
 import { View, parse } from 'vega';
 import { compile } from 'vega-lite';
 
@@ -31,7 +32,8 @@ interface Pipeline {
 const allPipelines: Pipeline[] = CHART_ID_OPTIONS.map((t) => {
   const data = DataSamples.ForChartType(t);
   const dataProps = dataToDataProps(data);
-  const specs = dataPropsToAdvices(dataProps);
+  const dataset = new Dataset('json', data);
+  const specs = dataPropsToAdvices(dataProps, {}, dataset);
   const typeSpec = specs.find((s) => s.type === t);
 
   let libConfig = null;
@@ -46,7 +48,7 @@ const allPipelines: Pipeline[] = CHART_ID_OPTIONS.map((t) => {
     specs,
     typeSpec: typeSpec ? typeSpec.spec : null,
     libConfig,
-  };
+  } as Pipeline;
 });
 
 export const PipelineTest = () => {

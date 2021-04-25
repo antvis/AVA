@@ -15,6 +15,7 @@
     "api": "rm -rf typings && api-extractor run -v",
     "watch": "yarn module && yarn build --w"
   },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",

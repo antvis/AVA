@@ -3,7 +3,7 @@
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as G2Plot from '@antv/g2plot';
-
+import { Dataset } from '@antv/dw-util';
 // interface
 import { Advice, AdvisorOptions } from './interface';
 
@@ -41,7 +41,8 @@ export function dataToAdvices(data: any[], options?: AdvisorOptions, fields?: st
   if (showLog) console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
   if (showLog) console.log(dataProps);
 
-  const adviceList: Advice[] = dataPropsToAdvices(dataProps, options);
+  const dataset = new Dataset('json', { source: data });
+  const adviceList: Advice[] = dataPropsToAdvices(dataProps, options, dataset);
 
   return adviceList;
 }

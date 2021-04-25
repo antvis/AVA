@@ -16,6 +16,7 @@
     "lint": "eslint --ext .ts src __tests__",
     "watch": "yarn module && yarn build --w"
   },
+  "dependencies": {},
   "publishConfig": {
     "access": "public"
   },

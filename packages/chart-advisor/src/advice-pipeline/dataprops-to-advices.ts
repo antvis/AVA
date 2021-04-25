@@ -1,5 +1,6 @@
 import { CHART_ID_OPTIONS, ChartID } from '@antv/knowledge';
 import { deepMix } from '@antv/util';
+import { Dataset } from '@antv/dw-util';
 import { ChartRules, DesignRules, Rule, ChartRuleConfigMap } from '../rules';
 import _get from 'lodash/get';
 import { getChartTypeSpec } from './spec-mapping';
@@ -65,7 +66,12 @@ function applyDesignRules(chartType: ChartID, dataProps: DataProperty[], chartTy
 /**
  * @public
  */
-export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
+export function dataPropsToAdvices(
+  dataProps: DataProperty[],
+  options?: AdvisorOptions,
+  dataset?: Dataset,
+  showLog = false
+) {
   const enableRefine = options?.refine === undefined ? true : options.refine;
 
   // score every
@@ -75,7 +81,7 @@ export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorO
     if (score <= 0) return { type: t, spec: null, score };
 
     // step 2: field mapping to spec encoding
-    const chartTypeSpec = getChartTypeSpec(t, dataProps);
+    const chartTypeSpec = getChartTypeSpec(t, dataProps, dataset);
 
     // FIXME kpi_panel and table spec 暂时可以为 null, 之后随需求增加 cfg
     if (!customChartType.includes(t) && !chartTypeSpec) return { type: t, spec: null, score: 0 };

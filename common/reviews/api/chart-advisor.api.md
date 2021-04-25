@@ -6,6 +6,7 @@
 
 import { AllSubspaceDatasetOptions } from '@antv/dw-transform';
 import { ChartID } from '@antv/knowledge';
+import { Dataset } from '@antv/dw-util';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import EventEmitter from '@antv/event-emitter';
 import * as G2Plot from '@antv/g2plot';
@@ -151,7 +152,7 @@ export interface DataProps {
 }
 
 // @public (undocumented)
-export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, showLog?: boolean): Advice[];
+export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, dataset?: Dataset, showLog?: boolean): Advice[];
 
 // @public (undocumented)
 export function dataToAdvices(data: any[], options?: AdvisorOptions, fields?: string[], showLog?: boolean): Advice[];
