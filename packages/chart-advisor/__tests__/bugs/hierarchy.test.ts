@@ -2,23 +2,23 @@ import { autoChart } from '../../src';
 import { createDiv } from '../utils/dom';
 
 const data = [
-  { subcat: '投影仪', sales: 8611876.83, cat: '设备' },
-  { subcat: '电话', sales: 3748330.01, cat: '设备' },
-  { subcat: '复印机', sales: 3601334.1, cat: '设备' },
-  { subcat: '配件', sales: 1926153.38, cat: '设备' },
-  { subcat: '椅子', sales: 271451.62, cat: '家具' },
-  { subcat: '书架', sales: 89510.6, cat: '家具' },
-  { subcat: '桌子', sales: 74242.53, cat: '家具' },
-  { subcat: '柜子', sales: 73628.46, cat: '家具' },
-  { subcat: '信封', sales: 4499.55, cat: '办公用品' },
-  { subcat: '橡皮', sales: 4065.6, cat: '办公用品' },
-  { subcat: '本子', sales: 3893.76, cat: '办公用品' },
-  { subcat: '收纳具', sales: 3834.6, cat: '办公用品' },
-  { subcat: '纸张', sales: 3168.54, cat: '办公用品' },
-  { subcat: '胶带', sales: 1350.54, cat: '办公用品' },
-  { subcat: '便签纸', sales: 1110.41, cat: '办公用品' },
-  { subcat: '装订机', sales: 905.58, cat: '办公用品' },
-  { subcat: '笔', sales: 810.54, cat: '办公用品' },
+  { subcat: 'projector', sales: 8611876.83, cat: 'equipment' },
+  { subcat: 'phone', sales: 3748330.01, cat: 'equipment' },
+  { subcat: 'copier', sales: 3601334.1, cat: 'equipment' },
+  { subcat: 'accessories', sales: 1926153.38, cat: 'equipment' },
+  { subcat: 'chair', sales: 271451.62, cat: 'furniture' },
+  { subcat: 'book shelf', sales: 89510.6, cat: 'furniture' },
+  { subcat: 'table', sales: 74242.53, cat: 'furniture' },
+  { subcat: 'cabinet', sales: 73628.46, cat: 'furniture' },
+  { subcat: 'envelope', sales: 4499.55, cat: 'office supplies' },
+  { subcat: 'rubber', sales: 4065.6, cat: 'office supplies' },
+  { subcat: 'book', sales: 3893.76, cat: 'office supplies' },
+  { subcat: 'storage equipment', sales: 3834.6, cat: 'office supplies' },
+  { subcat: 'paper', sales: 3168.54, cat: 'office supplies' },
+  { subcat: 'tape', sales: 1350.54, cat: 'office supplies' },
+  { subcat: 'sticky notes', sales: 1110.41, cat: 'office supplies' },
+  { subcat: 'binding machine', sales: 905.58, cat: 'office supplies' },
+  { subcat: 'pen', sales: 810.54, cat: 'office supplies' },
 ];
 
 describe('hierarchy cat and subcat', () => {
@@ -28,9 +28,6 @@ describe('hierarchy cat and subcat', () => {
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, data, { purpose: 'Proportion' });
     const plot = autoChartIns.getPlot();
-    // @ts-ignore
-    console.log(plot.advices[0].spec);
-    // expect(plot?.type).toBeTruthy;
-    // expect(['column_chart', 'bar_chart'].includes(plot?.type!)).toBe(true);
+    expect(plot?.type === 'percent_stacked_column_chart').toBe(true);
   });
 });
