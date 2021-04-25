@@ -3,6 +3,7 @@
 // @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 // import G2Plot from import(/* webpackChunkName: "g2plot" */ '@antv/g2plot');
+// 20210425 lazy load g2plot
 
 // interface
 import { Advice, AdvisorOptions } from './interface';
