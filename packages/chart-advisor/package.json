@@ -1,6 +1,6 @@
 {
   "name": "@antv/chart-advisor",
-  "version": "1.1.4-alhpa.2",
+  "version": "1.1.4-beta.2",
   "description": "Chart advisor",
   "main": "lib/index.js",
   "browser": "dist/index.js",
