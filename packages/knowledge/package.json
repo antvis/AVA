@@ -1,6 +1,6 @@
 {
   "name": "@antv/knowledge",
-  "version": "1.1.4-alpha.0",
+  "version": "1.1.4-alpha.1",
   "description": "Chart Knowledge Base",
   "main": "lib/index.js",
   "browser": "dist/index.js",
@@ -15,7 +15,6 @@
     "api": "rm -rf typings && api-extractor run -v",
     "watch": "yarn module && yarn build --w"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/plugin-proposal-class-properties": "^7.4.4",
