@@ -291,7 +291,7 @@ function splitColumnXYSeries(dataProps: DataProperty[], dataset?: Dataset): [Ret
 
   let field4X;
   let Field4Series;
-  if (dataset && isInHierarchy(sortedNominalFields[1].samples, sortedNominalFields[0].samples)) {
+  if (dataset && isInHierarchy(sortedNominalFields[1]?.samples, sortedNominalFields[0]?.samples)) {
     field4X = sortedNominalFields[1];
     Field4Series = sortedNominalFields[0];
   } else {
