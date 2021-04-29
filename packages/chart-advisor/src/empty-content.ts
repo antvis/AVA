@@ -1,4 +1,5 @@
 import { CLASS_PREFIX } from './style';
+import { intl } from './i18n';
 
 export class EmptyContent {
   chartContainer: HTMLElement;
@@ -16,7 +17,7 @@ export class EmptyContent {
       <div style="margin-bottom: 16px;">
         <img src="https://gw.alipayobjects.com/zos/basement_prod/9a59280d-8f23-4234-b5cf-02956a91b6ff.svg" />
       </div>
-      <div>暂无数据</div>
+      <div>${intl.get('No Data')}</div>
     `;
     this.chartContainer.appendChild(this.content);
   }
