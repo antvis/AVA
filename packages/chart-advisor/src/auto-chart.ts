@@ -10,6 +10,7 @@ import { Preferences, ChartRuleConfigMap } from './rules';
 import { MockPanel } from './mock-panel';
 import { createLayer, DEFAULT_FEEDBACK } from './util';
 export { Preferences };
+import { intl } from './i18n';
 
 const CACHES: Map<HTMLElement, AutoChart> = new Map();
 
@@ -168,7 +169,7 @@ export class AutoChart {
     this.options = merge(defaultOptions, options) || {};
     const { fields, development, noDataContent } = this.options;
     if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
-    this.noDataContent = noDataContent || DEFAULT_FEEDBACK('暂无数据');
+    this.noDataContent = noDataContent || DEFAULT_FEEDBACK(intl.get('No Recommendation'));
     this.data = fields && fields.length > 0 ? data.map((item) => pick(item, fields)) : data;
     this.development =
       (development === undefined && process.env.NODE_ENV === 'development') ||
