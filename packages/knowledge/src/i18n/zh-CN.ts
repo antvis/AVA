@@ -268,30 +268,10 @@ export const zhCN: TranslateList = {
         '气泡图是一种多变量的统计图表，由笛卡尔坐标系（直角坐标系）和大小不一、颜色不同的圆组成，可以看作是散点图的变形。',
     },
 
-    non_ribbon_chord_diagram: {
-      name: '无带弦图',
-      alias: [],
-      def: 'TBD',
-    },
-    arc_diagram: {
-      name: '弧形图',
-      alias: [],
-      def: '弧形图是一种关系图的特殊布局，节点被排列在同一水平线上，关系由节点间的圆弧线表示。',
-    },
-    chord_diagram: {
-      name: '弦图',
-      alias: [],
-      def: 'TBD',
-    },
     treemap: {
       name: '树图',
       alias: ['矩形树图'],
       def: '树图是一个由不同大小的嵌套式矩形来显示树状结构数据的统计图表。',
-    },
-    sankey_diagram: {
-      name: '桑基图',
-      alias: ['桑吉图'],
-      def: '桑基图，是一种表现流程的示意图，用于描述一组值到另一组值的流向。分支的宽度对应了数据流量的大小。',
     },
 
     funnel_chart: {
@@ -354,29 +334,31 @@ export const zhCN: TranslateList = {
       alias: ['烛台图'],
       def: 'TBD',
     },
+
     compact_box_tree: {
       name: '紧凑树',
       alias: [],
-      def: '紧凑树是一种树图布局，从根节点开始，同一深度的节点在同一层，并且布局时会将节点大小考虑进去。',
+      def: '紧凑树是一种树图布局，从根节点开始，同一深度的节点在同一层。适合于脑图等应用场景。',
     },
     dendrogram: {
       name: '生态树',
       alias: [],
-      def: '生态树是一种树图布局，不管数据的深度多少，总是叶节点对齐。不考虑节点大小，布局时将节点视为 1 个像素点。',
+      def: '生态树是一种树图布局，不管数据的深度多少，总是叶节点对齐。常用于表示层次聚类。',
     },
     indented_tree: {
       name: '缩进树',
       alias: [],
-      def: '缩进树是一种树图布局，缩进树布局。每个元素会占一行/一列。',
+      def:
+        '缩进树是一种树图布局，树节点的层级通过水平方向的缩进量来表示，每个元素会占一行或一列。常用于表示文件目录结构。',
     },
     radial_tree: {
       name: '辐射树',
       alias: [],
-      def: '辐射树是一种树图布局，跟节点位于辐射树中心，其他分支辐射式展开。',
+      def: '辐射树是一种树图布局，根节点位于辐射树中心，其他分支辐射式展开。',
     },
     flow_diagram: {
       name: '流程图',
-      alias: [],
+      alias: ['有向图', '层次布局图'],
       def: '流程图是一种图解，可视表示在过程或功能内部诸如事件、步骤等之间的顺序关系。',
     },
     fruchterman_layout_graph: {
@@ -389,6 +371,16 @@ export const zhCN: TranslateList = {
       alias: [],
       def:
         '力导向图布局作为较早被发明的一种实际应用布局算法，经过研究者多年改进、扩展，已发展成为一类算法的集合。该类算法的特点是模拟物理世界中的作用力，施加在节点上，并迭代计算以达到合理放置节点、美观布局的一类算法。',
+    },
+    fa2_layout_graph: {
+      name: 'Force Atlas 2 力导向布局',
+      alias: ['FA2力导向布局'],
+      def: '一种使用 Force Atlas 2 布局算法的力导向图，相比于传统的力导算法，该算法在计算力时更关注于节点的度数。',
+    },
+    mds_layout_graph: {
+      name: 'MDS 布局图',
+      alias: ['多维尺度分析布局'],
+      def: '一种使用 MDS (Multi-Dimensional Scaling) 降维算法计算节点位置的图布局方法。',
     },
     circular_layout_graph: {
       name: '环形布局关系图',
@@ -416,6 +408,29 @@ export const zhCN: TranslateList = {
       alias: [],
       def: '网格布局根据参数指定的排序方式对节点进行排序后，将节点排列在网格上。',
     },
+    arc_diagram: {
+      name: '弧形图',
+      alias: [],
+      def: '弧形图是一种关系图的特殊布局，节点被排列在同一水平线上，关系由节点间的圆弧线表示。',
+    },
+    chord_diagram: {
+      name: '弦图',
+      alias: [],
+      def:
+        '弦图是一种展示实体之间的相互关系的方法，常用来比较不同数据组之间的相似性。节点围绕一个圆圈径向排列，点与点之间以弧线彼此连接以显示其中关系。',
+    },
+    non_ribbon_chord_diagram: {
+      name: '无带弦图',
+      alias: [],
+      def: '无带弦图是弦图的简化版本，只显示连接线，相比弦图更加突出了数据之间的联系。',
+    },
+
+    sankey_diagram: {
+      name: '桑基图',
+      alias: ['桑吉图'],
+      def: '桑基图，是一种表现流程的示意图，用于描述一组值到另一组值的流向。分支的宽度对应了数据流量的大小。',
+    },
+
     symbol_map: {
       name: '符号地图',
       alias: [],

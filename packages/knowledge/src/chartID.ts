@@ -54,6 +54,8 @@ export const CHART_ID_OPTIONS = [
   'flow_diagram',
   'fruchterman_layout_graph',
   'force_directed_layout_graph',
+  'fa2_layout_graph',
+  'mds_layout_graph',
   'circular_layout_graph',
   'spiral_layout_graph',
   'radial_layout_graph',
