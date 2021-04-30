@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Thumbnails, { Thumbnail } from '@antv/thumbnails';
-import { Dataset } from '@antv/dw-util';
+import { Dataset } from '../packages/datawizard/utils/src';
 import { View, parse } from 'vega';
 import { compile } from 'vega-lite';
 
@@ -95,7 +95,7 @@ export const PipelineTest = () => {
               {pipeline.chartType}
             </td>
             <td>
-              <textarea value={prettyJSON(pipeline.data)} className="data-json" />
+              <textarea defaultValue={prettyJSON(pipeline.data)} className="data-json" />
             </td>
             <td>
               <ul>

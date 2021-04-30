@@ -43,6 +43,9 @@ export type DatasetParams = DatasetParamsByJson | DatasetParamsByRows | DatasetP
 function jsonToDataMatrix(json: DataRowObject[]): DatasetProps {
   const matrix: any[][] = [];
   const index: number[] = [];
+
+  if (!json || json.length === 0) return { matrix, index, columns: [] };
+
   const columns: string[] = Object.keys(json[0]);
 
   json.forEach((row, i) => {
