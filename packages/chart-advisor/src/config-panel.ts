@@ -4,6 +4,7 @@ import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
 import { translate, getPosition } from './util';
 import { DevPanel } from './dev-panel';
+import { intl } from './i18n';
 
 const SEND_CONFIGS = '__advisor__.send_configs';
 const CONFIGS_CHANGE = '__advisor__.configs_change';
@@ -81,7 +82,7 @@ export class ConfigPanel {
     trigger.addEventListener('click', () => {
       if (!this.panel) {
         this.panel = new DevPanel({
-          title: '图表配置',
+          title: intl.get('Chart Config'),
           height: 534,
           width: 340,
           ...getPosition(this.chartContainer),

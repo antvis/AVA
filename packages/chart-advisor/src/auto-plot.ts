@@ -2,6 +2,7 @@ import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from './advi
 import EventEmitter from '@antv/event-emitter';
 import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
 import { KPIPlot, Table } from './custom-plot';
+import { intl } from './i18n';
 
 export interface Configs {
   theme?: string;
@@ -84,7 +85,7 @@ export class AutoPlot extends EventEmitter {
 
     this.advices = advices;
     this.options = options;
-    this.feedback = this.options.feedback || DEFAULT_FEEDBACK('暂无推荐');
+    this.feedback = this.options.feedback || DEFAULT_FEEDBACK(intl.get('No Recommendation'));
     this.data = data;
     if (this.advices.length === 0) {
       // throw new Error('推荐不了图表');

@@ -1,5 +1,6 @@
 import { removeAllChild } from '../util';
 import { CLASS_PREFIX } from '../style';
+import { intl } from '../i18n';
 
 export class Table {
   readonly container: HTMLElement;
@@ -43,7 +44,7 @@ export class Table {
 
         this.container.appendChild(tableDom);
       } else {
-        this.container.innerText = '数据量过大暂不支持绘制';
+        this.container.innerText = intl.get('The data is too big to support temporarily');
       }
     }
   }
