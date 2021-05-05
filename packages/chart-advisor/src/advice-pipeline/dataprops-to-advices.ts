@@ -1,16 +1,19 @@
-import { CHART_ID_OPTIONS, ChartID } from '@antv/knowledge';
+import { ChartID, CKBJson } from '@antv/knowledge';
 import { deepMix } from '@antv/util';
 import { Dataset } from '@antv/dw-util';
-import { ChartRules, DesignRules, Rule, ChartRuleConfigMap } from '../rules';
+import { initChartRules, DesignRules, Rule, ChartRuleConfigMap } from '../rules';
 import _get from 'lodash/get';
 import { getChartTypeSpec } from './spec-mapping';
 import { AdvisorOptions, DataProperty, Advice, SingleViewSpec } from './interface';
 import { customChartType } from '../custom-plot';
 
-function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions, showLog = false) {
+function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions) {
+  const showLog = options?.showLog;
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
   const chartRuleConfigs: ChartRuleConfigMap = options?.chartRuleConfigs || {};
+
+  const ChartRules = initChartRules(options?.chartKnowledge);
 
   // for log
   const record: Record<string, any>[] = [];
@@ -66,18 +69,19 @@ function applyDesignRules(chartType: ChartID, dataProps: DataProperty[], chartTy
 /**
  * @public
  */
-export function dataPropsToAdvices(
-  dataProps: DataProperty[],
-  options?: AdvisorOptions,
-  dataset?: Dataset,
-  showLog = false
-) {
+export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, dataset?: Dataset) {
   const enableRefine = options?.refine === undefined ? true : options.refine;
+
+  const showLog = options?.showLog;
+
+  const ChartWIKI = options?.chartKnowledge ? options.chartKnowledge : CKBJson('en-US', true);
+
+  const CHART_ID_OPTIONS = Object.keys(ChartWIKI) as ChartID[];
 
   // score every
   const list: Advice[] = CHART_ID_OPTIONS.map((t: ChartID) => {
     // step 1: analyze score by rule
-    const score = scoreRules(t, dataProps, options, showLog);
+    const score = scoreRules(t, dataProps, options);
     if (score <= 0) return { type: t, spec: null, score };
 
     // step 2: field mapping to spec encoding
