@@ -43,7 +43,7 @@ export { DummyPlot, DummyPlotConfig } from './dummy-plot';
 export * from './advice-pipeline';
 
 export {
-  ChartRules,
+  initChartRules,
   ChartRuleConfig,
   ChartRuleConfigMap,
   CHART_RULE_ID,

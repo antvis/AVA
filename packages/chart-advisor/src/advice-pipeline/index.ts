@@ -31,13 +31,14 @@ export * from './vega-lite';
 /**
  * @public
  */
-export function dataToAdvices(data: any[], options?: AdvisorOptions, fields?: string[], showLog = false): Advice[] {
+export function dataToAdvices(data: any[], options?: AdvisorOptions): Advice[] {
+  const showLog = options?.showLog;
   if (showLog) console.log('💠💠💠💠💠💠 data 💠💠💠💠💠💠');
   if (showLog) console.log(data);
   if (showLog) console.log('🍯🍯🍯🍯🍯🍯 options 🍯🍯🍯🍯🍯🍯');
   if (showLog) console.log(options);
 
-  const dataProps = dataToDataProps(data, fields);
+  const dataProps = dataToDataProps(data, options?.fields);
 
   if (showLog) console.log('🔶🔶🔶🔶🔶🔶 dataset analysis 🔶🔶🔶🔶🔶🔶');
   if (showLog) console.log(dataProps);
