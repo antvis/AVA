@@ -1,5 +1,10 @@
+// TODO: better date validator, not regex solution. Whole column valid.
+// examples:
+// 1999-366 false, 2004-366 true;
+// 199501,199502,199503,199519 -> 199519 19 as month -> false;
+
 const delimiter = '([-_./\\s])';
-const year = '\\d{2,4}';
+const year = '(18|19|20)\\d{2}';
 const month = '(0?[1-9]|1[012])';
 const day = '(0?[1-9]|[12]\\d|3[01])';
 const week = '([0-4]\\d|5[0-2])';
@@ -12,27 +17,31 @@ const yearday = '((([0-2]\\d|3[0-5])\\d)|36[0-6])';
 const offset = `(Z|[+-]${hour}(:${minute})?)`;
 
 // https://www.cl.cam.ac.uk/~mgk25/iso-time.html
-const iso_dates = [
+const isoDates = (isStrict = true) => [
+  // 1991
+  `${year}`,
   // 1999-W12-7
   // TODO: Date.parse do not parse this format
-  `${year}${delimiter}?W${week}(${delimiter}?${weekday})?`,
+  `${year}${delimiter}${isStrict ? '' : '?'}W${week}(${delimiter}${isStrict ? '' : '?'}${weekday})?`,
   // 12-22-1999
-  `${month}${delimiter}?${day}${delimiter}?${year}`,
+  `${month}${delimiter}${isStrict ? '' : '?'}${day}${delimiter}${isStrict ? '' : '?'}${year}`,
   // 1999-12-22 19991222
-  `${year}${delimiter}?${month}${delimiter}?${day}`,
+  `${year}${delimiter}${isStrict ? '' : '?'}${month}${delimiter}${isStrict ? '' : '?'}${day}`,
   // 1999-12
-  `${year}${delimiter}${month}`,
+  `${year}${delimiter}${isStrict ? '' : '?'}${month}`,
   // 1999-200
-  `${year}${delimiter}?${yearday}`,
+  `${year}${delimiter}${isStrict ? '' : '?'}${yearday}`,
 ];
 
-const iso_times = [
+const isoTimes = (isStrict = true) => [
   // 23:20:20Z 23:20:20+08:00 23:20:20-08:00
-  `${hour}:?${minute}:?${second}([.,]${millisecond})?${offset}?`,
+  `${hour}:${isStrict ? '' : '?'}${minute}:${isStrict ? '' : '?'}${second}([.,]${millisecond})?${offset}?`,
   // 23:20+08
-  `${hour}:?${minute}?${offset}`,
+  `${hour}:${isStrict ? '' : '?'}${minute}?${offset}`,
 ];
 
+const iso_dates = isoDates();
+const iso_times = isoTimes();
 const formatstr = [...iso_dates, ...iso_times];
 
 iso_dates.forEach((d) => {
@@ -55,9 +64,3 @@ export function isDateString(source: string): boolean {
   }
   return false;
 }
-
-export const intDatePartners = [
-  /^(19|20)\d{2}$/,
-  /^\d{4}(0?[1-9]|1[012])$/,
-  /^\d{4}(0?[1-9]|1[012])(0?[1-9]|[12]\d|3[01])$/,
-];

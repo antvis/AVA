@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-util",
-  "version": "1.1.4-alpha.0",
+  "version": "1.1.4-alpha.1",
   "description": "Util library for DataWizard",
   "private": false,
   "browser": "dist/index.js",
@@ -15,7 +15,6 @@
     "lint": "eslint --ext .ts src __tests__",
     "watch": "yarn module && yarn build --w"
   },
-  "dependencies": {},
   "publishConfig": {
     "access": "public"
   },
