@@ -13,8 +13,15 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm test"
+      "pre-commit": "lint-staged && npm run boot && npm test"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --write",
+      "eslint --fix",
+      "git add"
+    ]
   },
   "author": "XTech",
   "devDependencies": {
@@ -53,6 +60,7 @@
     "lerna": "^3.15.0",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
+    "lint-staged": "^11.0.0",
     "prettier": "^1.17.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
