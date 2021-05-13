@@ -1,6 +1,4 @@
-import { isDateString, intDatePartners } from './is-date';
-
-export { intDatePartners };
+import { isDateString } from './is-date';
 
 export function assert(test: any, errorMessage: string): void {
   if (test) throw new Error(errorMessage);

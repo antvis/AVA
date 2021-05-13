@@ -15,8 +15,9 @@
  * @packageDocumentation
  */
 
+import { isDateString } from './is-date';
 import * as Stat from './statistic';
-import { unique, assert, isDate, isNull, isFloat, isInteger, removeEmptyRow, intDatePartners, isDigit } from './utils';
+import { unique, assert, isDate, isNull, isFloat, isInteger, removeEmptyRow, isDigit } from './utils';
 
 /**
  * Determine what type a value is, may be one of [integer float date string null]
@@ -251,12 +252,8 @@ export function type(array: any[]): FieldInfo {
       // an integer field may be a date field
       if (recommendation === 'integer') {
         const data = list.filter((item) => item !== null);
-        for (let i = 0; i < intDatePartners.length; i++) {
-          const p = intDatePartners[i];
-          if (!data.some((item) => !p.test(item))) {
-            recommendation = 'date';
-            break;
-          }
+        if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
+          recommendation = 'date';
         }
       }
       break;
