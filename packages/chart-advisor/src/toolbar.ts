@@ -5,8 +5,9 @@ import { Advice, adviceToLibConfig } from './advice-pipeline';
 import { getElementDisplay } from './util';
 import { AutoPlot } from './auto-plot';
 import { customChartType } from './custom-plot';
+import { intl, getLanguage } from './i18n';
 
-const ChartWiki = CKBJson('zh-CN', true);
+const ChartWiki = CKBJson(getLanguage(), true);
 
 function getThumbnailURL(chartId: ChartID) {
   if (Thumbnails[chartId]?.svgCode) {
@@ -35,9 +36,9 @@ function getAdvicesHtml(advices: Advice[]) {
         <div class="${CLASS_PREFIX}advice-desc" data-index="${i}">
           <img src="${rankIcons[i]}" data-index="${i}"/>
           <div class="advice-chart-name" data-index="${i}" >${ChartWiki[item.type].name}</div>
-          <div class="advice-score-text" data-index="${i}" >推荐分 <span class="advice-score">${item.score.toFixed(
-        2
-      )}</span></div>
+          <div class="advice-score-text" data-index="${i}" >${intl.get(
+        'score'
+      )} <span class="advice-score">${item.score.toFixed(2)}</span></div>
         </div>
       </div>`;
     })

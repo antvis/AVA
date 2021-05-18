@@ -4,6 +4,7 @@ const localeValues = {
   'No Data': 'No Data',
   'The data is too big to support temporarily': 'The data is too big to support temporarily',
   Initialization: 'Initialization',
+  Score: 'Score',
 };
 
 export default localeValues;

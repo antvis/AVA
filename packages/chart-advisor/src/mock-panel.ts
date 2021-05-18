@@ -59,7 +59,7 @@ export class MockPanel {
       <div style="margin-bottom: 16px;">
         <img src="https://gw.alipayobjects.com/zos/basement_prod/9a59280d-8f23-4234-b5cf-02956a91b6ff.svg" />
       </div>
-      <div>暂无数据</div>
+      <div>${intl.get('No Data')}</div>
       <div class="${CLASS_PREFIX}mock_guide_button">${intl.get('Initialization')}</div>
     `;
     trigger.addEventListener('click', () => {
