@@ -1,8 +1,8 @@
-import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from './advice-pipeline';
+import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from '../advice-pipeline';
 import EventEmitter from '@antv/event-emitter';
-import { uuid, createLayer, DEFAULT_FEEDBACK } from './util';
-import { KPIPlot, Table } from './custom-plot';
-import { intl } from './i18n';
+import { uuid, createLayer, DEFAULT_FEEDBACK } from '../util';
+import { KPIPlot, Table } from '../custom-plot';
+import { intl } from '../i18n';
 
 export interface Configs {
   theme?: string;

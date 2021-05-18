@@ -1,8 +1,8 @@
-import { CLASS_PREFIX } from './style';
+import { CLASS_PREFIX } from '../style';
 import { PATH_PREFIX } from './constants';
 import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
-import { translate, getPosition } from './util';
+import { translate, getPosition } from '../util';
 import { DevPanel } from './dev-panel';
 import { intl, getLanguage } from './i18n';
 

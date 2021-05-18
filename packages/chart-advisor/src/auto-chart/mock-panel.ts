@@ -1,6 +1,6 @@
 import { PATH_PREFIX } from './constants';
-import { CLASS_PREFIX } from './style';
-import { uuid, getPosition } from './util';
+import { CLASS_PREFIX } from '../style';
+import { uuid, getPosition } from '../util';
 import { DevPanel } from './dev-panel';
 import { intl, getLanguage } from './i18n';
 
