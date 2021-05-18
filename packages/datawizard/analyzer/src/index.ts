@@ -138,13 +138,13 @@ export interface FieldInfo {
   /** recommendation type */
   recommendation: TypeSpecifics;
   /** number of empty inclues null undefined or empty string */
-  missing: number;
+  missing?: number;
   /** distinct count */
-  distinct: number;
+  distinct?: number;
   /** Number of each distinct item */
-  valueMap: Record<string, number>;
+  valueMap?: Record<string, number>;
   /** count of samples */
-  count: number;
+  count?: number;
   /** samples */
   samples: any[];
   /** more info */

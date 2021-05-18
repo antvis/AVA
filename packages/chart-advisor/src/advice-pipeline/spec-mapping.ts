@@ -1,7 +1,10 @@
 import { ChartID, LevelOfMeasurement as LOM } from '@antv/knowledge';
 import { Dataset, isInHierarchy } from '@antv/dw-util';
 import * as DWAnalyzer from '@antv/dw-analyzer';
-import { DataProperty, Advice } from './interface';
+import { isNil } from 'lodash';
+import { Advice } from './interface';
+// use subset of DataProperty
+import { BasicDataPropertyForAdvice as DataProperty } from '../rules';
 import { EncodingType } from './vega-lite';
 
 export function getChartTypeSpec(chartType: ChartID, dataProps: DataProperty[], dataset?: Dataset): Advice['spec'] {
@@ -65,10 +68,14 @@ function intersects(array1: any[], array2: any[]): boolean {
 }
 
 function compare(f1: DataProperty, f2: DataProperty): number {
-  if (f1.distinct < f2.distinct) {
-    return 1;
-  } else if (f1.distinct > f2.distinct) {
-    return -1;
+  if (isNil(f1.distinct) || isNil(f2.distinct)) {
+    if (f1.distinct! < f2!.distinct!) {
+      return 1;
+    } else if (f1.distinct! > f2.distinct!) {
+      return -1;
+    } else {
+      return 0;
+    }
   } else {
     return 0;
   }

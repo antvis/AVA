@@ -1,4 +1,5 @@
 import { LevelOfMeasurement as LOM, ChartID as ChartType } from '@antv/knowledge';
+import { FieldInfo } from '@antv/dw-analyzer';
 
 /**
  * @public
@@ -6,18 +7,25 @@ import { LevelOfMeasurement as LOM, ChartID as ChartType } from '@antv/knowledge
 export type HardOrSoft = 'HARD' | 'SOFT';
 
 /**
+ * this minimum subset of pipeline/DataProperty, make pipeline can start with step2(dataPropsToAdvice)
  * @public
  */
-export interface DataProps {
-  distinct?: number;
-  count?: number;
-  sum?: number;
-  samples?: any[];
-  levelOfMeasurements: LOM[];
-  maximum?: any;
-  minimum?: any;
-  missing: number;
-  name: string;
+export interface BasicDataPropertyForAdvice {
+  /** field name */
+  readonly name: string;
+  /** LOM */
+  readonly levelOfMeasurements: LOM[];
+  /** used for split column xy series */
+  readonly samples: any[];
+  /** required types in analyzer FieldInfo */
+  readonly recommendation: FieldInfo['recommendation'];
+  readonly type: FieldInfo['type'];
+  readonly distinct?: number;
+  readonly count?: number;
+  readonly sum?: number;
+  readonly maximum?: any;
+  readonly minimum?: any;
+  readonly missing?: number;
 }
 
 /**
@@ -33,7 +41,7 @@ export interface Preferences {
  */
 export interface Info {
   chartType: ChartType;
-  dataProps: DataProps[];
+  dataProps: BasicDataPropertyForAdvice[];
   purpose?: string;
   preferences?: Preferences;
   customWeight?: number;

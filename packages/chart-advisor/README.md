@@ -70,9 +70,19 @@ This project is still an alpha version. We eagerly welcome any contribution.
 
 If you are going to use it in your official online project, please lock the version and follow our updates.
 
-
 * For more usages, please check the [Quick API](./API.md)
 * Detailed [API Reference](../../docs/api/chart-advisor.md)
+
+## Folder Structure
+- advice-pipeline/  -- *depends on `rules` and `custom-plot`*
+- auto-chart/ -- *depends on `advice-pipeline`*
+- custom-plot/ -- *custom plot which is not include in g2plot*
+- i18n/ -- *international*
+- insight/  -- *insights*
+- rules/  -- *advice*
+- index.ts  -- *main entry*
+- style.ts  -- *sharing styles*
+- util.ts  -- *sharing utils*
 
 ## Contribution
 

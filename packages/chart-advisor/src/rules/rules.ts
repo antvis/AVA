@@ -1,4 +1,4 @@
-import { Rule, DataProps, ChartRuleID } from './concepts/rule';
+import { Rule, BasicDataPropertyForAdvice, ChartRuleID } from './concepts/rule';
 import { isUndefined } from 'lodash';
 import {
   LevelOfMeasurement as LOM,
@@ -43,7 +43,7 @@ function intersects(array1: any[], array2: any[]): boolean {
   return array2.some((e) => array1.includes(e));
 }
 
-function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: DataProps[]) {
+function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: BasicDataPropertyForAdvice[]) {
   const fieldsLOMs: LOM[][] = dataProps.map((info: any) => {
     return info.levelOfMeasurements as LOM[];
   });
