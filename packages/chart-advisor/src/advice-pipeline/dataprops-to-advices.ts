@@ -1,13 +1,13 @@
 import { ChartID, CKBJson } from '@antv/knowledge';
 import { deepMix } from '@antv/util';
 import { Dataset } from '@antv/dw-util';
-import { initChartRules, DesignRules, Rule, ChartRuleConfigMap } from '../rules';
+import { ChartRules, DesignRules, Rule, ChartRuleConfigMap, BasicDataPropertyForAdvice } from '../rules';
 import _get from 'lodash/get';
 import { getChartTypeSpec } from './spec-mapping';
-import { AdvisorOptions, DataProperty, Advice, SingleViewSpec } from './interface';
+import { AdvisorOptions, Advice, SingleViewSpec } from './interface';
 import { customChartType } from '../custom-plot';
 
-function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: AdvisorOptions) {
+function scoreRules(chartType: ChartID, dataProps: BasicDataPropertyForAdvice[], options?: AdvisorOptions) {
   const showLog = options?.showLog;
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
@@ -56,7 +56,7 @@ function scoreRules(chartType: ChartID, dataProps: DataProperty[], options?: Adv
   return score;
 }
 
-function applyDesignRules(chartType: ChartID, dataProps: DataProperty[], chartTypeSpec: SingleViewSpec) {
+function applyDesignRules(chartType: ChartID, dataProps: BasicDataPropertyForAdvice[], chartTypeSpec: SingleViewSpec) {
   const toCheckRules = DesignRules.filter((rule) => rule.domain.indexOf(chartType) !== -1);
   const encodingSpec = toCheckRules.reduce((lastSpec, rule) => {
     const relatedSpec = rule.optimizer(dataProps, chartTypeSpec);
@@ -69,7 +69,11 @@ function applyDesignRules(chartType: ChartID, dataProps: DataProperty[], chartTy
 /**
  * @public
  */
-export function dataPropsToAdvices(dataProps: DataProperty[], options?: AdvisorOptions, dataset?: Dataset) {
+export function dataPropsToAdvices(
+  dataProps: BasicDataPropertyForAdvice[],
+  options?: AdvisorOptions,
+  dataset?: Dataset
+) {
   const enableRefine = options?.refine === undefined ? true : options.refine;
 
   const showLog = options?.showLog;

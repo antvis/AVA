@@ -52,7 +52,7 @@ export {
   HardOrSoft,
   Validator,
   Info,
-  DataProps,
+  BasicDataPropertyForAdvice,
 } from './rules';
 
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
