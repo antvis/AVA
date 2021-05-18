@@ -1,4 +1,4 @@
-import zh_CN from './zh_CN';
 import en_US from './en_US';
+import zh_CN from './zh_CN';
 
-export { zh_CN, en_US };
+export { en_US, zh_CN };

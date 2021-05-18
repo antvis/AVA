@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { autoChart, G2PlotConfig, ChartRuleConfigMap } from '../packages/chart-advisor/src';
+import { autoChart, G2PlotConfig, ChartRuleConfigMap, Language } from '../packages/chart-advisor/src';
 
 interface Props {
   theme?: string;
@@ -15,6 +15,7 @@ interface Props {
   chartRuleConfigs?: ChartRuleConfigMap;
   fields?: string[];
   noDataContent?: any;
+  language: Language;
 }
 
 export default React.memo(function Chart(props: Props) {
@@ -32,6 +33,7 @@ export default React.memo(function Chart(props: Props) {
     toolbar = true,
     config,
     chartRuleConfigs,
+    language,
   } = props;
   const container = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
@@ -49,6 +51,7 @@ export default React.memo(function Chart(props: Props) {
         chartRuleConfigs,
         noDataContent,
         fields,
+        language,
       });
     }
   }, [props]);
