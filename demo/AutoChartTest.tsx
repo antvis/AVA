@@ -362,7 +362,7 @@ export function AutoChartTest() {
       /> */}
       {/* <AutoChart data={DataSamples.ForChartType('heatmap')} title="expect: Heatmap" />
       <AutoChart data={DataSamples.ForChartType('grouped_column_chart')} title="expect: Area" /> */}
-      <AutoChart data={[]} title="i18n test" language="en-US" />
+      {/* <AutoChart data={[]} title="i18n test" language="en-US" /> */}
     </>
   );
 }

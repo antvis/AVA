@@ -2,7 +2,7 @@ import { PATH_PREFIX } from './constants';
 import { CLASS_PREFIX } from './style';
 import { uuid, getPosition } from './util';
 import { DevPanel } from './dev-panel';
-import { intl } from './i18n';
+import { intl, getLanguage } from './i18n';
 
 const MOCK_CHART = '__advisor__.mock_chart';
 
@@ -70,7 +70,7 @@ export class MockPanel {
           width: 600,
           ...getPosition(container),
           visible: true,
-          content: `<iframe src="${PATH_PREFIX}/mock-panel.html?id=${id}"></iframe>`,
+          content: `<iframe src="${PATH_PREFIX}/mock-panel.html?id=${id}&lang=${getLanguage()}"></iframe>`,
         });
       } else {
         this.panel.toggle();
