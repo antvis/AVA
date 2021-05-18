@@ -4,7 +4,7 @@ import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
 import { translate, getPosition } from './util';
 import { DevPanel } from './dev-panel';
-import { intl } from './i18n';
+import { intl, getLanguage } from './i18n';
 
 const SEND_CONFIGS = '__advisor__.send_configs';
 const CONFIGS_CHANGE = '__advisor__.configs_change';
@@ -134,6 +134,8 @@ export class ConfigPanel {
   changeType() {
     const { type } = this.plotInst;
     if (type)
-      this.iframe.src = `${PATH_PREFIX}/config-panel.html?type=${translate(type)}&cancopydata=${this.needCopyData}`;
+      this.iframe.src = `${PATH_PREFIX}/config-panel.html?type=${translate(type)}&cancopydata=${
+        this.needCopyData
+      }&lang=${getLanguage()}`;
   }
 }

@@ -15,7 +15,7 @@ interface Props {
   chartRuleConfigs?: ChartRuleConfigMap;
   fields?: string[];
   noDataContent?: any;
-  language: Language;
+  language?: Language;
 }
 
 export default React.memo(function Chart(props: Props) {
