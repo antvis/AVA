@@ -1,3 +1,5 @@
+import { getLanguage } from './i18n';
+
 export const CLASS_PREFIX = '__AUTO_CHART__';
 
 const HEADER_HEIGHT = 48;
@@ -15,7 +17,7 @@ const ADVISOR_STYLE = `
     box-sizing: border-box;
   }
   .${CLASS_PREFIX}advice_container {
-    width: 290px;
+    width: 300px;
     display: none;
     background: #fff;
     position: absolute;
@@ -73,7 +75,7 @@ const ADVISOR_STYLE = `
 
   .${CLASS_PREFIX}advice-desc .advice-chart-name {
     color: black;
-    font-size: 16px;
+    font-size: ${getLanguage() === 'zh-CN' ? '16px' : '12px'};
     font-weight: 500;
     line-height: 40px;
   }
