@@ -1,5 +1,5 @@
-import { CLASS_PREFIX } from './style';
-import dragable from './dragable';
+import { CLASS_PREFIX } from '../style';
+import draggable from './draggable';
 
 export interface PanelOptions {
   title: string;
@@ -50,7 +50,7 @@ export class DevPanel {
     closeEl.addEventListener('click', () => {
       this.hide();
     });
-    dragable(panelEl);
+    draggable(panelEl);
     document.body.appendChild(this.containerEl);
   }
 

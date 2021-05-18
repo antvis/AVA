@@ -2,7 +2,7 @@
  * 让元素可以拖动改变位置
  * @param target - 需要拖动的元素
  */
-export default function dragable(target: HTMLElement) {
+export default function draggable(target: HTMLElement) {
   const handlers: ((event: MouseEvent) => void)[] = [];
 
   target.onmousedown = function(event: MouseEvent) {

@@ -1,5 +1,5 @@
-import { CLASS_PREFIX } from './style';
-import { intl } from './i18n';
+import { CLASS_PREFIX } from '../style';
+import { intl } from '../i18n';
 
 export class EmptyContent {
   chartContainer: HTMLElement;

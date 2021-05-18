@@ -4,11 +4,11 @@ import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
 import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
-import { customChartType } from './custom-plot';
-import { AdvisorOptions, Advice, G2PlotConfig } from './advice-pipeline';
-import { Preferences, ChartRuleConfigMap } from './rules';
+import { customChartType } from '../custom-plot';
+import { AdvisorOptions, Advice, G2PlotConfig } from '../advice-pipeline';
+import { Preferences, ChartRuleConfigMap } from '../rules';
 import { MockPanel } from './mock-panel';
-import { createLayer, DEFAULT_FEEDBACK } from './util';
+import { createLayer, DEFAULT_FEEDBACK } from '../util';
 export { Preferences };
 import { intl, setLanguage, Language } from './i18n';
 

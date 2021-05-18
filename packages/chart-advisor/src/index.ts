@@ -18,7 +18,7 @@
  * @packageDocumentation
  */
 
-import { AutoChart, AutoChartOptions, Preferences } from './auto-chart';
+import { AutoChart, AutoChartOptions, Preferences } from './auto-chart/auto-chart';
 
 /**
  * 自动图表
@@ -37,8 +37,8 @@ export async function autoChart(
 
 export { AutoChart, AutoChartOptions, Preferences };
 
-export { AutoPlot, AutoPlotOptions } from './auto-plot';
-export { DummyPlot, DummyPlotConfig } from './dummy-plot';
+export { AutoPlot, AutoPlotOptions } from './auto-chart/auto-plot';
+export { DummyPlot, DummyPlotConfig } from './auto-chart/dummy-plot';
 
 export * from './advice-pipeline';
 
