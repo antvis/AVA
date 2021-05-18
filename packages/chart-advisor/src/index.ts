@@ -58,3 +58,5 @@ export {
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';
+
+export { Language } from './i18n';
