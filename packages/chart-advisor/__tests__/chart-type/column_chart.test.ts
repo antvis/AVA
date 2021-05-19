@@ -9,7 +9,7 @@ describe('Chart Type - Column Chart', () => {
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, area_sales, { toolbar: true });
     const plot = autoChartIns.getPlot();
-    expect(plot?.type).toBeTruthy;
+    expect(plot?.type).toBeTruthy();
     expect(['column_chart', 'bar_chart'].includes(plot?.type!)).toBe(true);
   });
 });

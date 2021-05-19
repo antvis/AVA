@@ -247,5 +247,19 @@ describe('API - dataPropsToAdvices', () => {
         }
       ]);
     });
+
+    test('should work for basic data props', () => {
+      const specs = dataPropsToAdvices([
+        {
+          name: 'number',
+          levelOfMeasurements: ['Interval'],
+          samples: [1.1],
+          type: 'integer',
+          recommendation: 'integer',
+        },
+      ]);
+      expect(specs.length > 0).toBe(true);
+      expect(specs[0].type).toBe('histogram');
+    });
   });
 });
