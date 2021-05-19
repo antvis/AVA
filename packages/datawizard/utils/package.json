@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-util",
-  "version": "1.1.4-alpha.1",
+  "version": "1.1.4",
   "description": "Util library for DataWizard",
   "private": false,
   "browser": "dist/index.js",
