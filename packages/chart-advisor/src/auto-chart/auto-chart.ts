@@ -10,7 +10,7 @@ import { Preferences, ChartRuleConfigMap } from '../rules';
 import { MockPanel } from './mock-panel';
 import { createLayer, DEFAULT_FEEDBACK } from '../util';
 export { Preferences };
-import { intl, setLanguage, Language } from './i18n';
+import { intl, setLanguage, Language } from '../i18n';
 
 const CACHES: Map<HTMLElement, AutoChart> = new Map();
 

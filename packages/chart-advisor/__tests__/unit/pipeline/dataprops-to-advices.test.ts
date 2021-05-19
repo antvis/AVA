@@ -244,7 +244,7 @@ describe('API - dataPropsToAdvices', () => {
             },
           },
           score: 1.5,
-        }
+        },
       ]);
     });
 
