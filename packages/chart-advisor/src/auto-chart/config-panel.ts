@@ -4,7 +4,7 @@ import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
 import { translate, getPosition } from '../util';
 import { DevPanel } from './dev-panel';
-import { intl, getLanguage } from './i18n';
+import { intl, getLanguage } from '../i18n';
 
 const SEND_CONFIGS = '__advisor__.send_configs';
 const CONFIGS_CHANGE = '__advisor__.configs_change';

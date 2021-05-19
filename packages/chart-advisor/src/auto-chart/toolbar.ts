@@ -4,8 +4,8 @@ import { CLASS_PREFIX } from '../style';
 import { Advice, adviceToLibConfig } from '../advice-pipeline';
 import { getElementDisplay } from '../util';
 import { AutoPlot } from './auto-plot';
-import { customChartType } from './custom-plot';
-import { intl, getLanguage } from './i18n';
+import { customChartType } from '../custom-plot';
+import { intl, getLanguage } from '../i18n';
 
 const ChartWiki = CKBJson(getLanguage(), true);
 

@@ -2,7 +2,7 @@ import { PATH_PREFIX } from './constants';
 import { CLASS_PREFIX } from '../style';
 import { uuid, getPosition } from '../util';
 import { DevPanel } from './dev-panel';
-import { intl, getLanguage } from './i18n';
+import { intl, getLanguage } from '../i18n';
 
 const MOCK_CHART = '__advisor__.mock_chart';
 

@@ -1,7 +1,7 @@
 import { ChartID, CKBJson } from '@antv/knowledge';
 import { deepMix } from '@antv/util';
 import { Dataset } from '@antv/dw-util';
-import { ChartRules, DesignRules, Rule, ChartRuleConfigMap, BasicDataPropertyForAdvice } from '../rules';
+import { initChartRules, DesignRules, Rule, ChartRuleConfigMap, BasicDataPropertyForAdvice } from '../rules';
 import _get from 'lodash/get';
 import { getChartTypeSpec } from './spec-mapping';
 import { AdvisorOptions, Advice, SingleViewSpec } from './interface';
