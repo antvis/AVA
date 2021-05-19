@@ -15,7 +15,7 @@ export const getLanguage = () => {
 };
 
 export const setLanguage = (language: Language | undefined) => {
-  defaultLanguage = language;
+  defaultLanguage = language === 'zh-CN' ? language : 'en-US';
 };
 
 export const intl = {
