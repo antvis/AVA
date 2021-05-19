@@ -9,7 +9,7 @@ describe('Chart Type - Pie Chart', () => {
     div.style.boxSizing = 'border-box';
     const autoChartIns = await autoChart(div, area_sales, { toolbar: true, purpose: 'Composition' });
     const plot = autoChartIns.getPlot();
-    expect(plot?.type).toBeTruthy;
+    expect(plot?.type).toBeTruthy();
     expect(['pie_chart', 'ring_chart'].includes(plot?.type!)).toEqual(true);
   });
 });
