@@ -82,6 +82,10 @@ Show *no data UI* by default, example:
 }
 ```
 
+#### options.language
+
+User interface language, support `en-US` and `zh-CN`. If this option is undefined, the navigator language is used by default.
+
 ### Returns
 
 *Promise\<AutoChart\>*

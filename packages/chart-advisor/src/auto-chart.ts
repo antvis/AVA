@@ -10,7 +10,7 @@ import { Preferences, ChartRuleConfigMap } from './rules';
 import { MockPanel } from './mock-panel';
 import { createLayer, DEFAULT_FEEDBACK } from './util';
 export { Preferences };
-import { intl } from './i18n';
+import { intl, setLanguage, Language } from './i18n';
 
 const CACHES: Map<HTMLElement, AutoChart> = new Map();
 
@@ -62,6 +62,10 @@ export interface AutoChartOptions extends AdvisorOptions {
    * g2plot configs
    */
   config?: G2PlotConfig;
+  /**
+   *
+   */
+  language?: Language;
   /**
    * render while no data
    */
@@ -174,6 +178,7 @@ export class AutoChart {
     this.development =
       (development === undefined && process.env.NODE_ENV === 'development') ||
       (development !== undefined && development === true);
+    setLanguage(options?.language);
     await this.render();
     return this;
   }

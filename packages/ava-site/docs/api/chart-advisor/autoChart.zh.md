@@ -71,6 +71,10 @@ autoChart(container, data, options);
 }
 ```
 
+#### options.language
+
+语言配置，支持 `zh-CN` 和 `en-US`。如果该配置项不存在，则默认使用浏览器语言。
+
 ### 返回值
 
 *Promise\<AutoChart\>*

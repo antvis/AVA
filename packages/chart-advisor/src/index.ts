@@ -43,7 +43,7 @@ export { DummyPlot, DummyPlotConfig } from './dummy-plot';
 export * from './advice-pipeline';
 
 export {
-  ChartRules,
+  initChartRules,
   ChartRuleConfig,
   ChartRuleConfigMap,
   CHART_RULE_ID,
@@ -58,3 +58,5 @@ export {
 export { insightsFromData, insightsFromDataset, Insight, InsightProps } from './insight';
 
 export { InsightType, INSIGHT_TYPES, insightWorkers, Worker } from './insight/insightWorkers';
+
+export { Language } from './i18n';

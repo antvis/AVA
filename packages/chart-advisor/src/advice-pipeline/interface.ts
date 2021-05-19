@@ -1,4 +1,4 @@
-import { LevelOfMeasurement as LOM, ChartID, Purpose } from '@antv/knowledge';
+import { LevelOfMeasurement as LOM, ChartID, Purpose, ChartKnowledgeJSON } from '@antv/knowledge';
 import * as DWAnalyzer from '@antv/dw-analyzer';
 import { Preferences, ChartRuleConfigMap } from '../rules';
 import { Mark, EncodingType, EncodingKey, Aggregation, StackType } from './vega-lite';
@@ -29,6 +29,18 @@ export interface AdvisorOptions {
    * 自定义调整规则
    */
   chartRuleConfigs?: ChartRuleConfigMap;
+  /**
+   * custom charts knowledge
+   */
+  chartKnowledge?: Record<string, ChartKnowledgeJSON>;
+  /**
+   * specify fields in the dataset
+   */
+  fields?: string[];
+  /**
+   * log on/off
+   */
+  showLog?: boolean;
 }
 
 /**
