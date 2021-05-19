@@ -60,12 +60,12 @@ export class MockPanel {
         <img src="https://gw.alipayobjects.com/zos/basement_prod/9a59280d-8f23-4234-b5cf-02956a91b6ff.svg" />
       </div>
       <div>${intl.get('No Data')}</div>
-      <div class="${CLASS_PREFIX}mock_guide_button">${intl.get('Initialization')}</div>
+      <div class="${CLASS_PREFIX}mock_guide_button">${intl.get('Initialize')}</div>
     `;
     trigger.addEventListener('click', () => {
       if (!this.panel) {
         this.panel = new DevPanel({
-          title: intl.get('Initialization'),
+          title: intl.get('Initialize'),
           height: 616,
           width: 600,
           ...getPosition(container),
