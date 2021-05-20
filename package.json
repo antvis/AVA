@@ -45,7 +45,7 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-import": "^1.13.1",
     "cross-env": "^7.0.2",
-    "css-loader": "^3.2.0",
+    "css-loader": "^5.2.5",
     "cz-conventional-changelog": "^3.0.2",
     "electron": "^11.0.2",
     "eslint": "^6.1.0",
