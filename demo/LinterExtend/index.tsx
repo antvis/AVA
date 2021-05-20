@@ -1,12 +1,11 @@
 import * as React from 'react';
-import { getFieldsFromData, vl2asp, Linter, fixer, VegaLite, Rule, Field } from '../../packages/chart-linter/src';
+import { getFieldsFromData, vl2asp, Linter, VegaLite, Rule, Field } from '../../packages/chart-linter/src';
 import { wrongColumn } from './demos';
 import { G2PlotWrapper } from './G2PlotWrapper';
 import { SpecWrapper } from './SpecWrapper';
 import { LinterWrapper } from './LinterWrapper';
 import { libConfigToSpec } from '../../packages/chart-linter/src/adaptor';
-
-import './index.less';
+import styles from './index.module.less';
 
 interface State {
   exampleIndex: number;
@@ -76,26 +75,14 @@ export class LinterExtendDemo extends React.Component<{}, State> {
     });
   }
 
-  async toFix(vl: VegaLite, rules: Rule[]) {
-    this.setState({
-      fixing: true,
-    });
-    const { optimizedVL } = await fixer(vl, rules, this.state.fieldInfos);
-    this.setState({
-      optVL: optimizedVL,
-      fixing: false,
-    });
-  }
-
   render() {
     const { violatedRules } = this.state;
     const demo = wrongColumn;
     const adaptedSpec = libConfigToSpec(demo);
-
     return (
-      <div className="chart-linter-extend-container">
-        <div className="column">
-          <div className="column">
+      <div className={styles.chartLinterExtendContainer}>
+        <div className={styles.column}>
+          <div className={styles.column}>
             <h1>Chart Linter Extend</h1>
             <p>We can apply Chart Linter to more chart libraries and more scenarios.</p>
             <p>
@@ -104,22 +91,22 @@ export class LinterExtendDemo extends React.Component<{}, State> {
             </p>
           </div>
 
-          <div className="row">
-            <div className="column">
+          <div className={styles.row}>
+            <div className={styles.column}>
               <h2>G2Plot:</h2>
               <G2PlotWrapper config={demo} />
             </div>
           </div>
 
-          <div className="row">
-            <div className="column">
+          <div className={styles.row}>
+            <div className={styles.column}>
               <h2>Vega-Lite:</h2>
               <SpecWrapper spec={adaptedSpec} />
             </div>
           </div>
 
-          <div className="row">
-            <div className="column">
+          <div className={styles.row}>
+            <div className={styles.column}>
               <h2>Linter:</h2>
               <LinterWrapper violatedRules={violatedRules} />
             </div>
