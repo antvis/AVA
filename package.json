@@ -64,6 +64,7 @@
     "prettier": "^1.17.0",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
+    "react-vega": "^7.4.3",
     "style-loader": "^1.0.1",
     "ts-jest": "^24.1.0",
     "tslib": "^2.2.0",
