@@ -115,7 +115,7 @@ export class LinterDemo extends React.Component<{}, State> {
     return (
       <div className="column">
         <div>
-          <h1>linter</h1>
+          <h1>Linter</h1>
           <p>Demo for linter usage in react.</p>
         </div>
 
