@@ -1,6 +1,7 @@
 {
   "packages": [
     "packages/chart-advisor",
+    "packages/chart-linter",
     "packages/datawizard/*",
     "packages/knowledge",
     "packages/ava-site"

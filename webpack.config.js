@@ -55,9 +55,10 @@ module.exports = {
     disableHostCheck: true,
     host: '0.0.0.0',
     hot: true,
-    contentBase: path.join(__dirname, "demo"),
+    contentBase: path.join(__dirname, 'demo'),
   },
   plugins: [
+    new webpack.IgnorePlugin({ resourceRegExp: /^(fs|child_process)$/ }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
     }),

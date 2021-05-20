@@ -7,23 +7,27 @@ import {
   ApartmentOutlined,
   EyeOutlined,
   ApiOutlined,
+  CarryOutOutlined,
 } from '@ant-design/icons';
 import { AutoChartTest } from './AutoChartTest';
 // import { FindInsightTest } from './FindInsightTest/index';
 import { DataTransformTest } from './DataTransformTest';
 import { PipelineTest } from './pipelineTest';
+import { LinterDemo } from './Linter';
 
 const { Header, Sider, Content } = Layout;
 
 const tuple = <T extends string[]>(...args: T) => args;
 
-const TESTS = tuple('autoChart', 'pipeline', 'dataTransform'); //insights
+const TESTS = tuple('autoChart', 'pipeline', 'dataTransform', 'linter'); //insights
 type TestType = typeof TESTS[number];
+
 const testComponents: Record<TestType, any> = {
   autoChart: <AutoChartTest />,
   pipeline: <PipelineTest />,
   // insights: <FindInsightTest />,
   dataTransform: <DataTransformTest />,
+  linter: <LinterDemo />,
 };
 
 const icons = {
@@ -31,6 +35,7 @@ const icons = {
   pipeline: <ApartmentOutlined />,
   insights: <EyeOutlined />,
   dataTransform: <ApiOutlined />,
+  linter: <CarryOutOutlined />,
 };
 
 interface TestState {
@@ -42,7 +47,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     this.state = {
-      test: 'autoChart', // init for test
+      test: 'linter', // init for test
       collapsed: false,
     };
   }
