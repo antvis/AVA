@@ -4,5 +4,5 @@
     "outDir": "./lib",
     "declarationDir": "./lib"
   },
-  "include": ["./src"]
+  "include": ["./src", "__tests__/unit/adaptor/spec-to-lib.test.ts", "__tests__/unit/adaptor/lib-to-spec.test.ts"]
 }
