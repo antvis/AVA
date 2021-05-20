@@ -40,9 +40,27 @@ module.exports = {
       },
       {
         test: /\.(css|less)$/,
+        exclude: /\.module\.less$/,
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader', options: { sourceMap: true } },
+          {
+            loader: 'less-loader',
+            options: { sourceMap: true, javascriptEnabled: true },
+          },
+        ],
+      },
+      {
+        test: /\.module\.less$/,
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              modules: { localIdentName: '[local]___[hash:base64:5]', exportLocalsConvention: 'camelCaseOnly' },
+            },
+          },
           {
             loader: 'less-loader',
             options: { sourceMap: true, javascriptEnabled: true },

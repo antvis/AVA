@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { prettyJSON } from '../utils';
 import { View, parse } from 'vega';
 import { compile } from 'vega-lite';
-
+import styles from './index.module.less';
 interface Props {
   spec: any;
 }
@@ -19,10 +19,10 @@ export const SpecWrapper = (props: Props) => {
   }, [spec]);
 
   return (
-    <div className="chart-code-wrapper">
-      <div id="vl-demo-contanier" className="chart" />
-      <div className="code">
-        <textarea className="vl-code-textarea code-textarea" defaultValue={prettyJSON(spec)} readOnly />
+    <div className={styles.chartCodeWrapper}>
+      <div id="vl-demo-contanier" className={styles.chart} />
+      <div className={styles.code}>
+        <textarea className={styles.codeTextarea} defaultValue={prettyJSON(spec)} readOnly />
       </div>
     </div>
   );
