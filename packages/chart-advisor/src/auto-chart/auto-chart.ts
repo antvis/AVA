@@ -178,7 +178,7 @@ export class AutoChart {
     this.development =
       (development === undefined && process.env.NODE_ENV === 'development') ||
       (development !== undefined && development === true);
-    if (language) setLanguage(language);
+    setLanguage(language);
     await this.render();
     return this;
   }
