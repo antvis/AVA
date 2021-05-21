@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import { merge, cloneDeep } from 'lodash';
 import { isEqual, pick } from '@antv/util';
 import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
@@ -170,7 +170,7 @@ export class AutoChart {
     if (this.rendered) this.destroy();
     this.rendered = true;
     // this.isMocked = false;
-    this.options = merge(defaultOptions, options) || {};
+    this.options = merge(cloneDeep(defaultOptions), options) || {};
     const { fields, development, noDataContent, language } = this.options;
     if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
     this.noDataContent = noDataContent || DEFAULT_FEEDBACK(intl.get('No Recommendation'));
