@@ -21,7 +21,7 @@ const data2 = [
   { region: 'NorthWest', sales: 1303.5 },
 ];
 
-function clickBtn(div, data, ms) {
+function clickBtn(div: HTMLDivElement, data: any, ms: number) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       try {
@@ -35,18 +35,18 @@ function clickBtn(div, data, ms) {
 
 describe('multiple execution errors', () => {
   it('', async () => {
-    const div = createDiv('ColumnCharts');
+    const div = createDiv('multiple exec');
     div.style.height = '400px';
     div.style.boxSizing = 'border-box';
 
     autoChart(div, data1, { toolbar: false, development: true });
 
-    const click1 = await clickBtn(div, data2, 100);
+    const click1 = await clickBtn(div, data2, 10);
     // @ts-ignore
     const plot = click1.getPlot();
     expect((plot as any).data[2].sales).toBe(data2[2].sales);
 
-    const click2 = await clickBtn(div, data1, 200);
+    const click2 = await clickBtn(div, data1, 20);
     // @ts-ignore
     const plot = click2.getPlot();
     expect((plot as any).data[2].sales).toBe(data1[2].sales);

@@ -4,7 +4,7 @@ import { AutoPlot } from './auto-plot';
 import { DummyPlot } from './dummy-plot';
 import { translate, getPosition } from '../util';
 import { DevPanel } from './dev-panel';
-import { intl, getLanguage } from '../i18n';
+import { intl, getLanguage, Language } from '../i18n';
 
 const SEND_CONFIGS = '__advisor__.send_configs';
 const CONFIGS_CHANGE = '__advisor__.configs_change';
@@ -45,6 +45,11 @@ export class ConfigPanel {
    */
   panel?: DevPanel;
 
+  /**
+   * i18n
+   */
+  language: Language;
+
   private messageHandler = (e: MessageEvent) => {
     const { uuid, plot } = this.plotInst;
     if (e.data && e.data.type === CONFIGS_CHANGE && e.data.uuid === uuid) {
@@ -63,10 +68,11 @@ export class ConfigPanel {
     this.trigger.style.display = 'none';
   };
 
-  constructor(plotInst: AutoPlot | DummyPlot, needCopyData: boolean, container: HTMLElement) {
+  constructor(plotInst: AutoPlot | DummyPlot, needCopyData: boolean, container: HTMLElement, language?: Language) {
     this.plotInst = plotInst;
     this.needCopyData = needCopyData;
     this.chartContainer = container;
+    this.language = language || getLanguage();
     container.addEventListener('mouseenter', this.mouseEnterHandler);
     container.addEventListener('mouseleave', this.mouseLeaveHandler);
     this.initIframe();
@@ -136,6 +142,6 @@ export class ConfigPanel {
     if (type)
       this.iframe.src = `${PATH_PREFIX}/config-panel.html?type=${translate(type)}&cancopydata=${
         this.needCopyData
-      }&lang=${getLanguage()}`;
+      }&lang=${this.language}`;
   }
 }

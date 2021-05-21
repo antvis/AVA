@@ -1,4 +1,4 @@
-import { merge, cloneDeep } from 'lodash';
+import { merge } from 'lodash';
 import { isEqual, pick } from '@antv/util';
 import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
@@ -170,7 +170,7 @@ export class AutoChart {
     if (this.rendered) this.destroy();
     this.rendered = true;
     // this.isMocked = false;
-    this.options = merge(cloneDeep(defaultOptions), options) || {};
+    this.options = merge({}, defaultOptions, options);
     const { fields, development, noDataContent, language } = this.options;
     if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
     this.noDataContent = noDataContent || DEFAULT_FEEDBACK(intl.get('No Recommendation'));
@@ -229,12 +229,16 @@ export class AutoChart {
         this.toolbar = new Toolbar(this.plot, this.container);
       }
     }
-    if (development && this.plot.plot) {
-      // configPanel not supported kpi_panel and table temporary
-      if (!customChartType.includes(this.plot?.type || '')) {
-        this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container);
+    // plot instance is async render due to import g2plot using webpackChunkName
+    // make this judge(this.plot.plot) in next event loop
+    setTimeout(() => {
+      if (development && this.plot?.plot) {
+        // configPanel not supported kpi_panel and table temporary
+        if (!customChartType.includes(this.plot?.type || '')) {
+          this.configPanel = new ConfigPanel(this.plot, this.isMocked, this.container, this.options.language);
+        }
       }
-    }
+    });
   }
 
   /**

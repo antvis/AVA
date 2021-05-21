@@ -280,9 +280,15 @@ const chartRuleConfigs = {
 export function AutoChartTest() {
   return (
     <>
-      <AutoChart data={data2} refine={false} title="custom" />
-      <AutoChart data={pieData} chartRuleConfigs={chartRuleConfigs} refine={false} title="custom rule configs" />
-      <AutoChart data={data} title="Design rule: 'x-axis-line-fading'" />
+      <AutoChart data={data2} refine={false} title="custom" development={false} language="zh-CN" />
+      <AutoChart
+        data={pieData}
+        chartRuleConfigs={chartRuleConfigs}
+        refine={false}
+        title="custom rule configs"
+        language="en-US"
+      />
+      <AutoChart data={data} title="Design rule: 'x-axis-line-fading'" development={false} />
       {/* <AutoChart
         data={[
           {
@@ -317,6 +323,7 @@ export function AutoChartTest() {
           { f1: 'd', f2: 630 },
         ]}
         title="expect: Pie"
+        language="zh-CN"
       />
 
       {/* <AutoChart data={[]} title="测试" description="测试" /> */}
