@@ -38,7 +38,7 @@ function getAdvicesHtml(advices: Advice[]) {
         getLanguage() === 'zh-CN' ? '16px' : '12px'
       }" >${ChartWiki[item.type].name}</div>
           <div class="advice-score-text" data-index="${i}" >${intl.get(
-        'score'
+        'Score'
       )} <span class="advice-score">${item.score.toFixed(2)}</span></div>
         </div>
       </div>`;

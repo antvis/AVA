@@ -4,7 +4,7 @@ const localeValues = {
   'No Data': '暂无数据',
   'The data is too big to support temporarily': '数据量过大暂不支持绘制',
   Initialize: '初始化',
-  score: '推荐分',
+  Score: '推荐分',
 };
 
 export default localeValues;
