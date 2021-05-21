@@ -171,14 +171,14 @@ export class AutoChart {
     this.rendered = true;
     // this.isMocked = false;
     this.options = merge(defaultOptions, options) || {};
-    const { fields, development, noDataContent } = this.options;
+    const { fields, development, noDataContent, language } = this.options;
     if (!this.noDataLayer) this.noDataLayer = createLayer(this.container, 'no-data-layer');
     this.noDataContent = noDataContent || DEFAULT_FEEDBACK(intl.get('No Recommendation'));
     this.data = fields && fields.length > 0 ? data.map((item) => pick(item, fields)) : data;
     this.development =
       (development === undefined && process.env.NODE_ENV === 'development') ||
       (development !== undefined && development === true);
-    setLanguage(options?.language);
+    if (language) setLanguage(language);
     await this.render();
     return this;
   }
