@@ -3,7 +3,7 @@
  * @param title
  * @param container
  */
-export function createDiv(title?: string, container: HTMLElement = document.body): HTMLElement {
+export function createDiv(title?: string, container: HTMLElement = document.body): HTMLDivElement {
   const div = document.createElement('div');
 
   if (title) {
