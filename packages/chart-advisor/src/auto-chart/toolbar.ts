@@ -7,8 +7,6 @@ import { AutoPlot } from './auto-plot';
 import { customChartType } from '../custom-plot';
 import { intl, getLanguage } from '../i18n';
 
-const ChartWiki = CKBJson(getLanguage(), true);
-
 function getThumbnailURL(chartId: ChartID) {
   if (Thumbnails[chartId]?.svgCode) {
     return `data:image/svg+xml;utf8,${encodeURIComponent(Thumbnails[chartId]?.svgCode as string)}`;
@@ -23,6 +21,7 @@ const rankIcons = [
 ];
 
 function getAdvicesHtml(advices: Advice[]) {
+  const ChartWiki = CKBJson(getLanguage(), true);
   const top3 = advices
     // TODO 暂时通过 filter 处理没有输出 g2plot lib config 的图表类型
     .filter((advice) => customChartType.includes(advice.type) || adviceToLibConfig(advice))
@@ -35,7 +34,9 @@ function getAdvicesHtml(advices: Advice[]) {
         </div>
         <div class="${CLASS_PREFIX}advice-desc" data-index="${i}">
           <img src="${rankIcons[i]}" data-index="${i}"/>
-          <div class="advice-chart-name" data-index="${i}" >${ChartWiki[item.type].name}</div>
+          <div class="advice-chart-name" data-index="${i}" style="font-size: ${
+        getLanguage() === 'zh-CN' ? '16px' : '12px'
+      }" >${ChartWiki[item.type].name}</div>
           <div class="advice-score-text" data-index="${i}" >${intl.get(
         'score'
       )} <span class="advice-score">${item.score.toFixed(2)}</span></div>
