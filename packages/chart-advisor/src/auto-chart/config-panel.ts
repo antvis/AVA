@@ -88,7 +88,7 @@ export class ConfigPanel {
     trigger.addEventListener('click', () => {
       if (!this.panel) {
         this.panel = new DevPanel({
-          title: intl.get('Chart Config'),
+          title: intl.get('Chart Config', this.language),
           height: 534,
           width: 340,
           ...getPosition(this.chartContainer),
