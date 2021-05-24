@@ -5,9 +5,9 @@ export type Language = 'en-US' | 'zh-CN';
 
 let defaultLanguage: Language | undefined = undefined;
 
-const transformLanguage = (lang: string) => {
+const transformLanguage = (language: string) => {
   // If the language starts with "zh", it is "zh-CN" by default,
-  if (lang && lang === 'zh-CN') return lang;
+  if (language && language === 'zh-CN') return language;
   // otherwise, it will be "en_US".
   return 'en-US';
 };
@@ -23,7 +23,11 @@ export const setLanguage = (language: Language | undefined) => {
 };
 
 export const intl = {
-  get: (key: string) => {
-    return _get({ en_US, zh_CN }, [getLanguage().replace('-', '_'), key], key);
+  get: (key: string, language?: string) => {
+    return _get(
+      { en_US, zh_CN },
+      [language ? transformLanguage(language).replace('-', '_') : getLanguage().replace('-', '_'), key],
+      key
+    );
   },
 };
