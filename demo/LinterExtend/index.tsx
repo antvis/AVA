@@ -4,7 +4,7 @@ import { wrongColumn } from './demos';
 import { G2PlotWrapper } from './G2PlotWrapper';
 import { SpecWrapper } from './SpecWrapper';
 import { LinterWrapper } from './LinterWrapper';
-import { libConfigToSpec } from '../../packages/chart-linter/src/adaptor';
+import { libConfigToSpec } from '../../packages/chart-linter/src';
 import styles from './index.module.less';
 
 interface State {

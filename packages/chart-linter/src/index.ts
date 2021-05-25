@@ -5,4 +5,14 @@ import { getFieldsFromData } from './data-parse';
 import { rulesDoc } from './rules-doc';
 import { VegaLite, Rule, Field } from './interfaces';
 
-export { getFieldsFromData, vl2asp, Linter, fixer, VegaLite, Rule, Field, rulesDoc };
+export {
+  getFieldsFromData,
+  vl2asp,
+  Linter,
+  fixer,
+  VegaLite,
+  Rule,
+  Field,
+  rulesDoc,
+};
+export * from './adaptor';

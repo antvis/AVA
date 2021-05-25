@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { prettyJSON } from '../utils';
-import { G2PlotConfig } from '../../packages/chart-linter/src/adaptor';
+import { G2PlotConfig } from '../../packages/chart-linter/src';
 import { g2plotRender } from './g2-render';
 import styles from './index.module.less';
 
