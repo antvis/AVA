@@ -1,0 +1,24 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.ts",
+      "title": {
+        "en": "Linter and Fixer",
+        "zh": "全流程演示"
+      },
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*hbeeS6gtKVQAAAAAAAAAAAAAARQnAQ"
+    },
+    {
+      "filename": "custom-rules.tsx",
+      "title": {
+        "en": "Customized Rules",
+        "zh": "自定义优化规则"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/QNOIESEqnK/customrules.png"
+    }
+  ]
+}

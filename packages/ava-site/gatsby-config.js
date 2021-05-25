@@ -122,6 +122,14 @@ module.exports = {
         },
       },
       {
+        slug: 'chart-linter',
+        // icon: 'gallery',
+        title: {
+          zh: '图表优化',
+          en: 'Chart Linter',
+        },
+      },
+      {
         slug: 'others',
         // icon: 'gallery',
         title: {
