@@ -9,6 +9,7 @@ window.antd = require('antd');
 window.icons = require('@ant-design/icons');
 window.reactJsonView = require('react-json-view');
 window.chartAdvisor = require('../chart-advisor/src/');
+window.chartLinter = require('../chart-linter/src/');
 window.knowledge = require('../knowledge/src/');
 window.thumbnails = require('@antv/thumbnails');
 
