@@ -5,12 +5,12 @@
   },
   "demos": [
     {
-      "filename": "pipeline.ts",
+      "filename": "pipeline.jsx",
       "title": {
         "en": "Linter and Fixer",
-        "zh": "完整流程"
+        "zh": "Linter和Fixer全流程"
       },
-      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*hbeeS6gtKVQAAAAAAAAAAAAAARQnAQ"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/dX5PjVdJ%26X/Kapture%2525202021-05-26%252520at%25252023.24.11.gif"
     },
     {
       "filename": "g2plot.jsx",
@@ -18,7 +18,7 @@
         "en": "Using in G2Plot",
         "zh": "在G2Plot中使用"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/QNOIESEqnK/customrules.png"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/dNEGhttBFB/Kapture%2525202021-05-26%252520at%25252023.29.22.gif"
     }
   ]
 }

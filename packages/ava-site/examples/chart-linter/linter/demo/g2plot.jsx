@@ -114,12 +114,12 @@ const App = () => {
   
         const adaptedSpec = libConfigToSpec(libConfig);
   
-        const toVL2ASP = async spec => {
+        const transformVltoAsp = async spec => {
           const fieldInfos = await getFieldsFromData(spec);
           return vl2asp(spec, fieldInfos).join('\n');
         }
   
-        const aspStr = adaptedSpec && await toVL2ASP(adaptedSpec);
+        const aspStr = adaptedSpec && await transformVltoAsp(adaptedSpec);
   
         linter.init().then(() => {
           if (aspStr) {

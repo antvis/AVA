@@ -19,6 +19,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-i18next": "^11.7.3",
+    "react-vega": "^7.4.3",
     "tslib": "2.2.0"
   },
   "devDependencies": {
