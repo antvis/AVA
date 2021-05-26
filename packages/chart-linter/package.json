@@ -1,0 +1,37 @@
+{
+  "name": "chart-linter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "concat": "bash ./src/linter/rules/concat_lp.sh ./src/linter/rules/files ./src/linter/rules",
+    "build": "npm run concat && rm -rf lib && tsc --pretty",
+    "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
+    "pack": "webpack --config=webpack.config.js",
+    "prepublish": "npm run module && npm run build && npm run pack"
+  },
+  "author": "AFX",
+  "license": "ISC",
+  "dependencies": {
+    "@antv/dw-analyzer": "^1.1.0",
+    "draco-core": "^0.0.6",
+    "javascript-lp-solver": "^0.4.24",
+    "lodash": "^4.17.21",
+    "string-similarity": "^4.0.4",
+    "vega-lite": "^5.0.0",
+    "wasm-clingo": "^0.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/preset-typescript": "^7.13.0",
+    "@types/lodash": "^4.14.168",
+    "babel-loader": "^8.0.6",
+    "tslib": "^2.1.0",
+    "typescript": "^4.2.3",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9"
+  }
+}

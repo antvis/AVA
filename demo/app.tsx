@@ -7,23 +7,30 @@ import {
   ApartmentOutlined,
   EyeOutlined,
   ApiOutlined,
+  CarryOutOutlined,
+  SisternodeOutlined,
 } from '@ant-design/icons';
 import { AutoChartTest } from './AutoChartTest';
 // import { FindInsightTest } from './FindInsightTest/index';
 import { DataTransformTest } from './DataTransformTest';
 import { PipelineTest } from './pipelineTest';
+import { LinterDemo } from './Linter';
+import { LinterExtendDemo } from './LinterExtend';
 
 const { Header, Sider, Content } = Layout;
 
 const tuple = <T extends string[]>(...args: T) => args;
 
-const TESTS = tuple('autoChart', 'pipeline', 'dataTransform'); //insights
+const TESTS = tuple('autoChart', 'pipeline', 'dataTransform', 'linter', 'linterExtend'); //insights
 type TestType = typeof TESTS[number];
+
 const testComponents: Record<TestType, any> = {
   autoChart: <AutoChartTest />,
   pipeline: <PipelineTest />,
   // insights: <FindInsightTest />,
   dataTransform: <DataTransformTest />,
+  linter: <LinterDemo />,
+  linterExtend: <LinterExtendDemo />,
 };
 
 const icons = {
@@ -31,6 +38,8 @@ const icons = {
   pipeline: <ApartmentOutlined />,
   insights: <EyeOutlined />,
   dataTransform: <ApiOutlined />,
+  linter: <CarryOutOutlined />,
+  linterExtend: <SisternodeOutlined />,
 };
 
 interface TestState {
