@@ -56,7 +56,7 @@ export function getFields(data: Dataset): Field[] {
           field: name,
           fieldType: 'boolean',
           type: 'nominal',
-          cardinality: distinct,
+          cardinality: distinct as number,
         });
         break;
 
@@ -65,7 +65,7 @@ export function getFields(data: Dataset): Field[] {
           field: name,
           fieldType: 'datetime',
           type: 'temporal',
-          cardinality: distinct,
+          cardinality: distinct as number,
         });
         break;
 
@@ -75,7 +75,7 @@ export function getFields(data: Dataset): Field[] {
           field: name,
           fieldType: 'number',
           type: 'quantitative',
-          cardinality: distinct,
+          cardinality: distinct as number,
         };
         if (isNumberFieldInfo(columnInfo)) {
           _field.min = columnInfo.minimum;
@@ -92,7 +92,7 @@ export function getFields(data: Dataset): Field[] {
           field: name,
           fieldType: 'string',
           type: 'nominal',
-          cardinality: distinct,
+          cardinality: distinct as number,
         });
         break;
     }
