@@ -15,4 +15,5 @@ module.exports = {
   testRegex: '/__tests__/.*.test.ts?$',
   // allow jest console output
   verbose: false,
+  testTimeout: 30000,
 };
