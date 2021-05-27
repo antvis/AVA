@@ -17,4 +17,8 @@
     content: '> ';
     opacity: 0.5;
   }
+
+  .doc-md .ant-badge p {
+    line-height: 20px;
+  }
 </style>
