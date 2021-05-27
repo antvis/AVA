@@ -5,6 +5,7 @@ const localeValues = {
   'The data is too big to support temporarily': '数据量过大暂不支持绘制',
   Initialize: '初始化',
   Score: '推荐分',
+  Total: '总计',
 };
 
 export default localeValues;

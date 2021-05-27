@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import { merge, set, get } from 'lodash';
 import { isEqual, pick } from '@antv/util';
 import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
@@ -35,11 +35,11 @@ window.requestAnimationFrame(CheckAndClean);
  */
 export interface AutoChartOptions extends AdvisorOptions {
   /**
-   * title
+   * The chart title defines text to draw at the top of the chart.
    */
   title?: string;
   /**
-   * description
+   * The chart's caption, which will render above the chart.
    */
   description?: string;
   /**
@@ -55,7 +55,7 @@ export interface AutoChartOptions extends AdvisorOptions {
    * */
   development?: boolean;
   /**
-   * theme
+   * chart theme, including 'dark' and 'light'
    */
   theme?: string;
   /**
@@ -63,7 +63,7 @@ export interface AutoChartOptions extends AdvisorOptions {
    */
   config?: G2PlotConfig;
   /**
-   *
+   * i18n settings, support English(en-US) and Chinese(zh-CN).
    */
   language?: Language;
   /**
@@ -208,6 +208,17 @@ export class AutoChart {
     const chartCanvas = addCanvas(this.canvasLayer, options);
     if (config) {
       if (typeof config.type !== 'string') throw new Error('please set the plotType');
+      if (config.type === 'Pie') {
+        const colorField = get(config, 'colorField');
+        if (colorField && !get(config, 'statistic.title.formatter')) {
+          set(config, 'statistic.title.formatter', (datum: any) => {
+            if (datum) {
+              return datum[colorField];
+            }
+            return intl.get('Total');
+          });
+        }
+      }
       this.plot = new DummyPlot(chartCanvas, this.data, config);
     } else {
       // get prev advice and index
