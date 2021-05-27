@@ -128,6 +128,7 @@ module.exports = {
           zh: '图表知识库（CKB)',
           en: 'Chart Knowledge Base (CKB)',
         },
+        order: 0,
       },
       {
         slug: 'chart-advisor',
@@ -136,6 +137,7 @@ module.exports = {
           zh: '图表推荐库',
           en: 'ChartAdvisor',
         },
+        order: 1,
       },
       {
         slug: 'chart-linter',
@@ -144,6 +146,7 @@ module.exports = {
           zh: '图表优化',
           en: 'ChartLinter',
         },
+        order: 2,
       },
       {
         slug: 'others',
@@ -152,6 +155,7 @@ module.exports = {
           zh: '其他',
           en: 'Others',
         },
+        order: 3,
       },
     ],
     showSearch: true, // 是否展示搜索框
