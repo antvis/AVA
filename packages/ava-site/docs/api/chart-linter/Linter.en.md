@@ -7,7 +7,7 @@ order: 0
 
 <div class="doc-md">
 
-The Linter class in Chart Linter, which is responsible for identifying chart problems, can be used to generate a Linter instance. It provides the function needed for chart optimization.
+The Linter class in ChartLinter, which is responsible for identifying chart problems, can be used to generate a Linter instance. It provides the function needed for chart optimization.
 
 ```ts
 import { Linter } from '@antv/chart-linter';

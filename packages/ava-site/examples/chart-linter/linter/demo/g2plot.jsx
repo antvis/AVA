@@ -203,7 +203,7 @@ const App = () => {
         <Popover content={renderLinter} trigger="click">
           {
             rules.length > 0 ? <Badge count={rules.length} style={{ backgroundColor: '#faad14', cursor: 'pointer' }} />
-            : <span>Chart Linter Loading...</span>
+            : <span>ChartLinter Loading...</span>
           }
         </Popover>
       </div>

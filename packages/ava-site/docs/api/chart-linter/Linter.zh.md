@@ -7,7 +7,7 @@ order: 0
 
 <div class="doc-md">
 
-Chart Linter 中负责识别图表问题的 Linter class，可用于生成一个 Linter 实例。通过 Linter 实例，可以使用到各种图表优化方法。
+ChartLinter 中负责识别图表问题的 Linter class，可用于生成一个 Linter 实例。通过 Linter 实例，可以使用到各种图表优化方法。
 
 ```ts
 import { Linter } from '@antv/chart-linter';

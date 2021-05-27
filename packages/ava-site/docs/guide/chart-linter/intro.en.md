@@ -1,5 +1,5 @@
 ---
-title: Introduction to Chart Linter
+title: Introduction to ChartLinter
 order: 0
 ---
 
@@ -13,7 +13,7 @@ According to chart type, chart configuration and rules, identify the problems in
 
 <playground path="chart-linter/linter/demo/g2plot.jsx"></playground>
 
-## Chart Linter Pipeline
+## ChartLinter Pipeline
 
 <img src="https://gw.alipayobjects.com/zos/antfincdn/WqlI5blp6I/20210527172309.jpg" alt="pipeline" width="100%"/>
 

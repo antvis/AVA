@@ -1,5 +1,5 @@
 ---
-title: Chart Linter
+title: ChartLinter
 order: 0
 ---
 

@@ -1,3 +1,3 @@
-# Chart Linter
+# ChartLinter
 
 Linter + Fixer

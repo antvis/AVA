@@ -4,9 +4,9 @@
 
 For detailed API documentation, please check [`/docs/api`](./docs/api/index.md) .
 
-## Chart Advisor
+## ChartAdvisor
 
-Currently, AVA only exposes the `autoChart()` method under the **Chart Advisor** module.
+Currently, AVA only exposes the `autoChart()` method under the **ChartAdvisor** module.
 
 ### Installation
 

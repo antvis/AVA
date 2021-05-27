@@ -1,7 +1,7 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./zh-CN/README.zh-CN.md)
 
 <h1 align="center">
-  <p>Chart Advisor</p>
+  <p>ChartAdvisor</p>
   <span style="font-size: 24px;">AVA/chart-advisor</span>
 </h1>
 

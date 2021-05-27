@@ -1,4 +1,4 @@
 ---
-title: Chart Linter 示例
+title: ChartLinter 示例
 order: 0
 ---

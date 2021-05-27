@@ -1,5 +1,5 @@
 ---
-title: Chart Advisor 简介
+title: ChartAdvisor 简介
 order: 0
 ---
 

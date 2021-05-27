@@ -4,9 +4,9 @@
 
 如果想查看完整的接口文档，请点击这里 [`/docs/api`](./../docs/api/index.md).
 
-## Chart Advisor
+## ChartAdvisor
 
-AVA 目前暂时只透出 **Chart Advisor** 模块下的 `autoChart()` 方法。
+AVA 目前暂时只透出 **ChartAdvisor** 模块下的 `autoChart()` 方法。
 
 ### 安装
 
