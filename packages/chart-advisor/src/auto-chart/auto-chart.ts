@@ -35,11 +35,11 @@ window.requestAnimationFrame(CheckAndClean);
  */
 export interface AutoChartOptions extends AdvisorOptions {
   /**
-   * title
+   * The chart title defines text to draw at the top of the chart.
    */
   title?: string;
   /**
-   * description
+   * The chart's caption, which will render above the chart.
    */
   description?: string;
   /**
@@ -55,7 +55,7 @@ export interface AutoChartOptions extends AdvisorOptions {
    * */
   development?: boolean;
   /**
-   * theme
+   * chart theme, including 'dark' and 'light'
    */
   theme?: string;
   /**
@@ -63,14 +63,11 @@ export interface AutoChartOptions extends AdvisorOptions {
    */
   config?: G2PlotConfig;
   /**
-   * language
+   * i18n settings, support english(en-US) and chinese(zh-CN).
    */
   language?: Language;
   /**
    * render while no data
-   */
-  /**
-   *
    */
   noDataContent?: (container: HTMLDivElement) => void;
   /** render while no recommend result */
