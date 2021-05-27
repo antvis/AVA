@@ -75,6 +75,14 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
 @antv/chart-advisor // to make charts automatically
 ```
 
+### 📦 [AVA/ChartLinter](https://github.com/antvis/AVA/tree/master/packages/chart-linter)
+
+ChartLinter is the chart optimization component. It can find out the problems in chart design according to chart type, chart configuration and rules.
+
+```js
+@antv/chart-linter // to make charts automatically
+```
+
 ## Resources
 
 * [API Reference](docs/api/index.md)
