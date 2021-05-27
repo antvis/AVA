@@ -64,6 +64,14 @@ module.exports = {
         order: 4,
       },
       {
+        slug: 'guide/chart-linter',
+        title: {
+          zh: 'Chart Linter',
+          en: 'Chart Linter',
+        },
+        order: 5,
+      },
+      {
         slug: 'api/ckb',
         title: {
           zh: '图表知识库（CKB)',
