@@ -63,7 +63,7 @@ export interface AutoChartOptions extends AdvisorOptions {
    */
   config?: G2PlotConfig;
   /**
-   * i18n settings, support english(en-US) and chinese(zh-CN).
+   * i18n settings, support English(en-US) and Chinese(zh-CN).
    */
   language?: Language;
   /**
