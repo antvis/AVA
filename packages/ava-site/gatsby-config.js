@@ -58,16 +58,16 @@ module.exports = {
       {
         slug: 'guide/chart-advisor',
         title: {
-          zh: 'Chart Advisor',
-          en: 'Chart Advisor',
+          zh: 'ChartAdvisor',
+          en: 'ChartAdvisor',
         },
         order: 4,
       },
       {
         slug: 'guide/chart-linter',
         title: {
-          zh: 'Chart Linter',
-          en: 'Chart Linter',
+          zh: 'ChartLinter',
+          en: 'ChartLinter',
         },
         order: 5,
       },
@@ -98,8 +98,8 @@ module.exports = {
       {
         slug: 'api/chart-advisor',
         title: {
-          zh: 'Chart Advisor',
-          en: 'Chart Advisor',
+          zh: 'ChartAdvisor',
+          en: 'ChartAdvisor',
         },
         order: 3,
       },
@@ -114,8 +114,8 @@ module.exports = {
       {
         slug: 'api/chart-linter',
         title: {
-          zh: 'Chart Linter',
-          en: 'Chart Linter',
+          zh: 'ChartLinter',
+          en: 'ChartLinter',
         },
         order: 4,
       },
@@ -134,7 +134,7 @@ module.exports = {
         // icon: 'gallery',
         title: {
           zh: '图表推荐库',
-          en: 'Chart Advisor',
+          en: 'ChartAdvisor',
         },
       },
       {
@@ -142,7 +142,7 @@ module.exports = {
         // icon: 'gallery',
         title: {
           zh: '图表优化',
-          en: 'Chart Linter',
+          en: 'ChartLinter',
         },
       },
       {

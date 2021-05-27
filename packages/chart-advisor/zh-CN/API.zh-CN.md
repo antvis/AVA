@@ -1,4 +1,4 @@
-# Chart Advisor 简易 API 接口文档
+# ChartAdvisor 简易 API 接口文档
 
 ## 安装
 

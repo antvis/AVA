@@ -195,8 +195,8 @@ const App = () => {
 
     const toFix = async (spec, rules) => {
         setFixing(true);
-        const { optimizedVl } = await fixer(spec, rules, fieldInfos);
-        setOptVl(optimizedVl);
+        const { optimizedVL } = await fixer(spec, rules, fieldInfos);
+        setOptVl(optimizedVL);
         setFixing(false);
     }
 

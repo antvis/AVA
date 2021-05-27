@@ -1,4 +1,4 @@
-# Chart Advisor Quick API
+# ChartAdvisor Quick API
 
 ## Installation
 

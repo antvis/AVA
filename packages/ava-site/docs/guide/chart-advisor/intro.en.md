@@ -1,5 +1,5 @@
 ---
-title: Introduction to Chart Advisor
+title: Introduction to ChartAdvisor
 order: 0
 ---
 

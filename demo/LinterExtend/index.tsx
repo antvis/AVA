@@ -83,8 +83,8 @@ export class LinterExtendDemo extends React.Component<{}, State> {
       <div className={styles.chartLinterExtendContainer}>
         <div className={styles.column}>
           <div className={styles.column}>
-            <h1>Chart Linter Extend</h1>
-            <p>We can apply Chart Linter to more chart libraries and more scenarios.</p>
+            <h1>ChartLinter Extend</h1>
+            <p>We can apply ChartLinter to more chart libraries and more scenarios.</p>
             <p>
               Try it now! Transform your chart to Vega-Lite by the adaptor, get the lint rules, and then fix them on
               your application.
