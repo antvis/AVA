@@ -248,10 +248,17 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   phone(options?: PhoneOptions): string {
-    const { mobile, formatted } = initOptions(options, { mobile: true, formatted: false });
+    const { mobile, formatted, asterisk } = initOptions(options, { mobile: true, formatted: false, asterisk: false });
     let exp: RegExp;
-    if (mobile) exp = formatted ? /1[345789]\d-\d{4}-\d{4}/ : /1[345789]\d{9}/;
-    else exp = formatted ? /\d{3,4}-\d{7,8}/ : /\d{10, 12}/;
+    if (mobile) {
+      // add '****' in mobile numbers
+      if (asterisk) exp = formatted ? /1[345789]\d-\*{4}-\d{4}/ : /1[345789]\d{2}\*{4}\d{4}/;
+      else exp = formatted ? /1[345789]\d-\d{4}-\d{4}/ : /1[345789]\d{9}/;
+    } else {
+      // add '**' or '***' in landline numbers
+      if (asterisk) exp = formatted ? /\d{3,4}-\d{3}\*{2,3}\d{2}/ : /\d{3,4}\d{3}\*{2,3}\d{2}/;
+      else exp = formatted ? /\d{3,4}-\d{7,8}/ : /\d{10,12}/;
+    }
     return this.randexp(exp);
   }
 
@@ -344,10 +351,12 @@ export interface CWordOption extends CCharacterOptions {
 
 /** @public */
 export interface PhoneOptions {
-  /** 是否是手机号码 */
+  /** true: mobile numbers; false: landline numbers */
   mobile?: boolean;
-  /** 是否格式化 */
+  /** true: add '-' to format phone numbers */
   formatted?: boolean;
+  /** true: add '*' to avoid generating real phone numbers */
+  asterisk?: boolean;
 }
 
 /** @public */

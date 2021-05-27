@@ -17,7 +17,11 @@ test('character111', () => {
   expect(R.phone({ formatted: true })).toMatch(/\d{3}-\d{4}-\d{4}/);
   expect(R.phone()).toMatch(/\d{11}/);
   expect(R.phone({ mobile: false, formatted: true })).toMatch(/\d{3,4}-\d{7,8}/);
-  expect(R.phone({ mobile: false })).toMatch(/\d{10, 12}/);
+  expect(R.phone({ mobile: false })).toMatch(/\d{10,12}/);
+  expect(R.phone({ formatted: true, asterisk: true })).toMatch(/1[345789]\d-\*{4}-\d{4}/);
+  expect(R.phone({ asterisk: true })).toMatch(/1[345789]\d{2}\*{4}\d{4}/);
+  expect(R.phone({ mobile: false, formatted: true, asterisk: true })).toMatch(/\d{3,4}-\d{3}\*{2,3}\d{2}/);
+  expect(R.phone({ mobile: false, asterisk: true })).toMatch(/\d{3,4}\d{3}\*{2,3}\d{2}/);
   expect(R.name()).toContain(' ');
   expect(R.cname()).not.toContain(' ');
   expect(R.clastname({ length: 3 })).toHaveLength(3);
