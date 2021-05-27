@@ -73,7 +73,7 @@ const EXAMPLES = [
     },
 ];
 
-const ChartVL = (props) => {
+const ChartVl = (props) => {
     const { spec, data } = props;
     return (
         <div>
@@ -108,7 +108,7 @@ const ChartCodeWrapper = (props) => {
 
     return (
         <div style={{ display: 'flex' }}>
-            <div>{spec.mark ? <ChartVL spec={spec} /> : <Empty description="empty spec" />}</div>
+            <div>{spec.mark ? <ChartVl spec={spec} /> : <Empty description="empty spec" />}</div>
             <div>
                 <textarea
                     style={{ width: 360, height: 240, marginLeft: 16, resize: 'none', wordWrap: 'break-word', overflowY: 'scroll' }}
@@ -154,7 +154,7 @@ const App = () => {
     const [exampleIndex, setExampleIndex] = useState(0);
     const [aspStr, setAspStr] = useState('');
     const [violatedRules, setViolatedRules] = useState([]);
-    const [optVL, setOptVL] = useState({});
+    const [optVl, setOptVl] = useState({});
     const [fixing, setFixing] = useState(false);
     const [fieldInfos, setFieldInfos] = useState([]);
 
@@ -183,7 +183,7 @@ const App = () => {
     const reset = () => {
         setAspStr('');
         setViolatedRules([]);
-        setOptVL({});
+        setOptVl({});
         setFixing(false);
         setFieldInfos([]);
     }
@@ -195,8 +195,8 @@ const App = () => {
 
     const toFix = async (spec, rules) => {
         setFixing(true);
-        const { optimizedVL } = await fixer(spec, rules, fieldInfos);
-        setOptVL(optimizedVL);
+        const { optimizedVl } = await fixer(spec, rules, fieldInfos);
+        setOptVl(optimizedVl);
         setFixing(false);
     }
 
@@ -225,7 +225,6 @@ const App = () => {
             <LinterWrapper
                 solverInit={solverInit}
                 aspStr={aspStr}
-                vl={example.spec}
                 toSolve={() => {
                     toSolve(aspStr);
                 }}
@@ -243,11 +242,11 @@ const App = () => {
                     Fix
                 </Button>
                 <span style={{ marginLeft: 16 }}>
-                    {violatedRules && violatedRules.length && optVL.mark ? 'Done.' : fixing ? 'Fixing...' : ''}
+                    {violatedRules && violatedRules.length && optVl.mark ? 'Done.' : fixing ? 'Fixing...' : ''}
                 </span>
             </div>
 
-            <ChartCodeWrapper spec={optVL} />
+            <ChartCodeWrapper spec={optVl} />
         </div>
     );
 }
