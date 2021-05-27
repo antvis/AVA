@@ -1,5 +1,5 @@
 # ChartLinter
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./zh-CN/README.zh-CN.md)
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](../README.md) | 简体中文
 
 <h1 align="center">
   <p>ChartLinter</p>
@@ -8,14 +8,14 @@
 
 <div align="center">
 
-ChartLinter is the chart optimization component. It can find out the problems in chart design according to chart type, chart configuration and rules.
+ChartLinter 是一个面向图表优化而生的技术，它能够通过图表类型、图表配置和优化规则来找到并改进图表设计上的问题。
 
 [![Version](https://badgen.net/npm/v/@antv/chart-linter)](https://www.npmjs.com/@antv/chart-linter)
 [![NPM downloads](http://img.shields.io/npm/dm/@antv/chart-linter.svg)](http://npmjs.com/@antv/chart-linter)
 
 </div>
 
-## Demo
+## 演示案例
 
 ```html
 <div align="center">
@@ -23,27 +23,27 @@ ChartLinter is the chart optimization component. It can find out the problems in
 </div>
 ```
 
-## Installation
+## 安装
 
 ```bash
 $ npm install @antv/chart-linter
 ```
 
-## Documentation
+## 文档
 
-This project is still an alpha version. We eagerly welcome any contribution.
+本项目目前还处于测试阶段，我们热切欢迎任何贡献和共建。
 
-If you are going to use it in your official online project, please lock the version and follow our updates.
+但如果你想要在线上正式产品中使用本项目，请务必锁定版本，并保持关注本项目的更新进展。
 
-* Guide [Guide Reference](https://ava.antv.vision/en/docs/guide/chart-linter/intro)
-* API [API Reference](https://ava.antv.vision/en/docs/api/chart-linter/Linter)
+* [教程](https://ava.antv.vision/zh/docs/guide/chart-linter/intro)
+* [接口文档](https://ava.antv.vision/zh/docs/api/chart-linter/Linter)
 
-## Contribution
+## 贡献
 
 We welcome all contributions. Please read [General Contribution Guide](../../CONTRIBUTING.md) first.
 
 You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
 
-## License
+## 证书
 
 MIT
