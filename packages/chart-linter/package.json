@@ -1,8 +1,10 @@
 {
-  "name": "chart-linter",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@antv/chart-linter",
+  "version": "1.1.4",
+  "description": "ChartLinter",
+  "main": "lib/index.js",
+  "browser": "dist/index.js",
+  "module": "es/index.js",
   "scripts": {
     "concat": "bash ./src/linter/rules/concat_lp.sh ./src/linter/rules/files ./src/linter/rules",
     "build": "npm run concat && rm -rf lib && tsc --pretty",
@@ -11,7 +13,10 @@
     "prepublish": "npm run module && npm run build && npm run pack"
   },
   "author": "AFX",
-  "license": "ISC",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@antv/dw-analyzer": "^1.1.4",
     "draco-core": "^0.0.6",
