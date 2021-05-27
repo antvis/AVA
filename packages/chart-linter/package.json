@@ -1,6 +1,6 @@
 {
   "name": "@antv/chart-linter",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "ChartLinter",
   "main": "lib/index.js",
   "browser": "dist/index.js",
@@ -18,7 +18,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@antv/dw-analyzer": "^1.1.4",
+    "@antv/dw-analyzer": "^1.1.5",
     "draco-core": "^0.0.6",
     "javascript-lp-solver": "^0.4.24",
     "lodash": "^4.17.21",
