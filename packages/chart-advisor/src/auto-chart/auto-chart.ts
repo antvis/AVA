@@ -1,4 +1,4 @@
-import { merge } from 'lodash';
+import { merge, set, get } from 'lodash';
 import { isEqual, pick } from '@antv/util';
 import { ConfigPanel } from './config-panel';
 import { Toolbar } from './toolbar';
@@ -63,11 +63,14 @@ export interface AutoChartOptions extends AdvisorOptions {
    */
   config?: G2PlotConfig;
   /**
-   *
+   * language
    */
   language?: Language;
   /**
    * render while no data
+   */
+  /**
+   *
    */
   noDataContent?: (container: HTMLDivElement) => void;
   /** render while no recommend result */
@@ -208,6 +211,17 @@ export class AutoChart {
     const chartCanvas = addCanvas(this.canvasLayer, options);
     if (config) {
       if (typeof config.type !== 'string') throw new Error('please set the plotType');
+      if (config.type === 'Pie') {
+        const colorField = get(config, 'colorField');
+        if (colorField && !get(config, 'statistic.title.formatter')) {
+          set(config, 'statistic.title.formatter', (datum: any) => {
+            if (datum) {
+              return datum[colorField];
+            }
+            return intl.get('Total');
+          });
+        }
+      }
       this.plot = new DummyPlot(chartCanvas, this.data, config);
     } else {
       // get prev advice and index

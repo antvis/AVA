@@ -13,7 +13,7 @@
   "author": "AFX",
   "license": "ISC",
   "dependencies": {
-    "@antv/dw-analyzer": "^1.1.0",
+    "@antv/dw-analyzer": "^1.1.4",
     "draco-core": "^0.0.6",
     "javascript-lp-solver": "^0.4.24",
     "lodash": "^4.17.21",

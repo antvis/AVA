@@ -1,3 +1,4 @@
+import { set, get } from 'lodash';
 import { AdvisorOptions, Advice, dataToAdvices, adviceToLibConfig } from '../advice-pipeline';
 import EventEmitter from '@antv/event-emitter';
 import { uuid, createLayer, DEFAULT_FEEDBACK } from '../util';
@@ -133,6 +134,17 @@ export class AutoPlot extends EventEmitter {
     } else {
       if (libConfig) {
         const configs: any = { ...libConfig?.configs, data, theme, autoFit: true };
+        if (libConfig.type === 'Pie') {
+          const colorField = get(configs, 'colorField');
+          if (colorField && !get(configs, 'statistic.title.formatter')) {
+            set(configs, 'statistic.title.formatter', (datum: any) => {
+              if (datum) {
+                return datum[colorField];
+              }
+              return intl.get('Total');
+            });
+          }
+        }
         this.currentConfigs = configs;
         if (plot && type === currentType) {
           plot.update(configs);
