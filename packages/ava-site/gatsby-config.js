@@ -103,6 +103,14 @@ module.exports = {
         },
         order: 1,
       },
+      {
+        slug: 'api/chart-linter',
+        title: {
+          zh: 'Chart Linter',
+          en: 'Chart Linter',
+        },
+        order: 4,
+      },
     ],
     examples: [
       {
