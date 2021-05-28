@@ -17,11 +17,9 @@ ChartLinter 是一个面向图表优化而生的技术，它能够通过图表�
 
 ## 演示案例
 
-```html
 <div align="center">
   <img src="https://gw.alipayobjects.com/zos/antfincdn/dNEGhttBFB/Kapture%2525202021-05-26%252520at%25252023.29.22.gif" alt="ChartLinter demo">
 </div>
-```
 
 ## 安装
 
