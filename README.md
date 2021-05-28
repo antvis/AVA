@@ -106,6 +106,12 @@ We welcome all contributions. Please read our [Contributing Guide](./CONTRIBUTIN
 
 More at [Wiki: Development](https://github.com/antvis/AVA/wiki/Development).
 
+## Collaboration
+
+<div align="center">
+  <a href="https://idvxlab.com/"><img src="https://gw.alipayobjects.com/zos/antfincdn/rxgntN5msN/idvx.png" alt="iDVx" width="140" align="middle" hspace="20"></a>
+</div>
+
 ## Links
 
 <img src="https://gw.alipayobjects.com/zos/antfincdn/1yMwFkBvyV/chartcube-logo-cube.svg" width="18"> [ChartCube](https://chartcube.alipay.com/) - Online chart making tool based on [G2Plot](https://github.com/antvis/G2Plot).
