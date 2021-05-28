@@ -80,7 +80,7 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
 ChartLinter is the chart optimization component. It can find out the problems in chart design according to chart type, chart configuration and rules.
 
 ```js
-@antv/chart-linter // to make charts automatically
+@antv/chart-linter // to lint and fix charts
 ```
 
 ## Resources

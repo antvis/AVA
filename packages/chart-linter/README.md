@@ -17,11 +17,9 @@ ChartLinter is the chart optimization component. It can find out the problems in
 
 ## Demo
 
-```html
 <div align="center">
   <img src="https://gw.alipayobjects.com/zos/antfincdn/dNEGhttBFB/Kapture%2525202021-05-26%252520at%25252023.29.22.gif" alt="ChartLinter demo">
 </div>
-```
 
 ## Installation
 
