@@ -14,6 +14,7 @@ order: 0
 <playground path="chart-linter/linter/demo/g2plot.jsx"></playground>
 
 ## ChartLinter 流程
+
 ChartLinter 有两个重要模块，一个是 Linter，另一个是 Fixer。从图表上识别问题所在，是 Linter 的职责，而修复这些问题，则是 Fixer 的工作。无论你用的是何种前端图表库，只要将图表类型和配置项交给 ChartLinter 就好，接下来它会通过 Adaptor（目前已支持 G2Plot） 将图表配置转义为我们特殊定制的图表通用编码 Specification。Specification 在整个流程中的作用，就像是普通话，是一种通用的“语言”。Linter 能够识别 Specification 结构，并通过既定 Rules 验证当前结构是否符合规则。如果存在不符合规则的部分，则会将规则 ID 暴露出来。每个规则 ID 都对应一条优化建议。接下来，你可以根据自己上层应用的需求，定制 Fixer，以决定如何处理这条规则。
 
 <img src="https://gw.alipayobjects.com/zos/antfincdn/WqlI5blp6I/20210527172309.jpg" alt="pipeline" width="100%"/>
@@ -27,5 +28,9 @@ ChartLinter 有两个重要模块，一个是 Linter，另一个是 Fixer。从�
 ```bash
 $ npm install @antv/chart-linter
 ```
+
+## 合作机构
+
+[ChartLinter](https://ava.antv.vision/zh/docs/guide/chart-linter/intro) 基于 [vega-lite-linter](http://vegalite-linter.idvxlab.com/) 进行了拓展，由 [AntV/AVA](https://ava.antv.vision/zh) 和 [iDVx](https://idvxlab.com/) 共同研发。
 
 </div>
