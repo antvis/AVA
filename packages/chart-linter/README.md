@@ -42,6 +42,10 @@ We welcome all contributions. Please read [General Contribution Guide](../../CON
 
 You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
 
+## Collaboration
+
+[ChartLinter](https://ava.antv.vision/en/docs/guide/chart-linter/intro) adapted from [vega-lite-linter](http://vegalite-linter.idvxlab.com/). It was invented by [AntV/AVA](https://ava.antv.vision/en) and [iDVx](https://idvxlab.com/).
+
 ## License
 
 MIT
