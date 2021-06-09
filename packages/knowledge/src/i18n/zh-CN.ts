@@ -314,7 +314,7 @@ export const zhCN: TranslateList = {
     gauge_chart: {
       name: '量规图',
       alias: ['仪表盘'],
-      def: 'TBD',
+      def: '量规图由仪表轴、指针组成，将数据信息显示为表盘读数。',
     },
 
     radar_chart: {
@@ -519,15 +519,10 @@ export const zhCN: TranslateList = {
       alias: [],
       def: 'TBD',
     },
-    polar_treemap: {
-      name: '极坐标树图',
-      alias: [],
-      def: 'TBD',
-    },
     sunburst_diagram: {
       name: '旭日图',
-      alias: ['太阳辐射图'],
-      def: 'TBD',
+      alias: ['太阳辐射图', '极坐标树图', '径向树图', '环形图'],
+      def: '旭日图是一种现代饼图，它超越传统的饼图和环图，能表达清晰的层级和归属关系，以父子层次结构来显示数据构成情况。',
     },
     liquid_chart: {
       name: '水波图',
