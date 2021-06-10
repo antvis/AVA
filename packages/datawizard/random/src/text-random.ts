@@ -248,16 +248,38 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   phone(options?: PhoneOptions): string {
-    const { mobile, formatted, asterisk } = initOptions(options, { mobile: true, formatted: false, asterisk: false });
+    const { mobile, formatted, asterisk, startNum } = initOptions(options, {
+      mobile: true,
+      formatted: false,
+      asterisk: false,
+      startNum: '',
+    });
     let exp: RegExp;
     if (mobile) {
-      // add '****' in mobile numbers
-      if (asterisk) exp = formatted ? /1[345789]\d-\*{4}-\d{4}/ : /1[345789]\d{2}\*{4}\d{4}/;
-      else exp = formatted ? /1[345789]\d-\d{4}-\d{4}/ : /1[345789]\d{9}/;
+      // add **** in mobile numbers
+      if (asterisk) {
+        // specify the first three digits
+        if (startNum.length == 3)
+          exp = formatted ? new RegExp(startNum + '-\\*{4}-\\d{4}') : new RegExp(startNum + '\\*{4}\\d{4}');
+        else exp = formatted ? /1[345789]\d-\*{4}-\d{4}/ : /1[345789]\d\*{4}\d{4}/;
+      } else {
+        if (startNum.length == 3)
+          exp = formatted ? new RegExp(startNum + '-\\d{4}-\\d{4}') : new RegExp(startNum + '\\d{8}');
+        else exp = formatted ? /1[345789]\d-\d{4}-\d{4}/ : /1[345789]\d{9}/;
+      }
     } else {
-      // add '**' or '***' in landline numbers
-      if (asterisk) exp = formatted ? /\d{3,4}-\d{3}\*{2,3}\d{2}/ : /\d{3,4}\d{3}\*{2,3}\d{2}/;
-      else exp = formatted ? /\d{3,4}-\d{7,8}/ : /\d{10,12}/;
+      // add ** or *** in landline numbers
+      if (asterisk) {
+        if (startNum.length == 3)
+          exp = formatted
+            ? new RegExp(startNum + '-\\d{3}\\*{2,3}\\d{2}')
+            : new RegExp(startNum + '\\d{3}\\*{2,3}\\d{2}');
+        else exp = formatted ? /\d{3,4}-\d{3}\*{2,3}\d{2}/ : /\d{3,4}\d{3}\*{2,3}\d{2}/;
+      } else {
+        if (startNum.length == 3)
+          exp = formatted ? new RegExp(startNum + '-\\d{7,8}') : new RegExp(startNum + '\\d{7,8}');
+        else exp = formatted ? /\d{3,4}-\d{7,8}/ : /\d{10,12}/;
+      }
     }
     return this.randexp(exp);
   }
@@ -357,6 +379,8 @@ export interface PhoneOptions {
   formatted?: boolean;
   /** true: add '*' to avoid generating real phone numbers */
   asterisk?: boolean;
+  /** only the first three digits can be specified, otherwise it is invalid */
+  startNum?: string;
 }
 
 /** @public */
