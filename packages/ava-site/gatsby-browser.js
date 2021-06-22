@@ -10,6 +10,7 @@ window.icons = require('@ant-design/icons');
 window.reactJsonView = require('react-json-view');
 window.chartAdvisor = require('../chart-advisor/src/');
 window.chartLinter = require('../chart-linter/src/');
+window.dwAnalyzer = require('../datawizard/analyzer/src/');
 window.reactVega = require('react-vega');
 window.vega = require('@antv/thumbnails');
 window.knowledge = require('../knowledge/src/');
