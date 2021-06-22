@@ -77,4 +77,8 @@ const knowledgeBase = CKBJson();
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
 
+## 演示案例
+
+<playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
+
 </div>
