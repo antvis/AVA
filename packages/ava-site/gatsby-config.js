@@ -131,13 +131,22 @@ module.exports = {
         order: 0,
       },
       {
+        slug: 'datawizard',
+        // icon: 'gallery',
+        title: {
+          zh: '数据处理库',
+          en: 'DataWizard',
+        },
+        order: 1,
+      },
+      {
         slug: 'chart-advisor',
         // icon: 'gallery',
         title: {
           zh: '图表推荐库',
           en: 'ChartAdvisor',
         },
-        order: 1,
+        order: 2,
       },
       {
         slug: 'chart-linter',
@@ -146,7 +155,7 @@ module.exports = {
           zh: '图表优化',
           en: 'ChartLinter',
         },
-        order: 2,
+        order: 3,
       },
       {
         slug: 'others',
@@ -155,7 +164,7 @@ module.exports = {
           zh: '其他',
           en: 'Others',
         },
-        order: 3,
+        order: 4,
       },
     ],
     showSearch: true, // 是否展示搜索框
