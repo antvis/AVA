@@ -1,6 +1,6 @@
 {
   "name": "@antv/dw-transform",
-  "version": "1.1.5",
+  "version": "1.1.7",
   "description": "",
   "browser": "dist/index.js",
   "main": "lib/index.js",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@antv/dw-analyzer": "^1.1.5",
-    "@antv/dw-random": "^1.1.5",
+    "@antv/dw-random": "^1.1.7",
     "@antv/util": "^2.0.0",
     "regression": "^2.0.0",
     "simple-statistics": "^7.0.0"

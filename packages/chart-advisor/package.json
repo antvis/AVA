@@ -1,6 +1,6 @@
 {
   "name": "@antv/chart-advisor",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Chart advisor",
   "main": "lib/index.js",
   "browser": "dist/index.js",
@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@antv/dw-analyzer": "^1.1.5",
-    "@antv/dw-transform": "^1.1.5",
+    "@antv/dw-transform": "^1.1.7",
     "@antv/dw-util": "^1.1.4",
     "@antv/g2plot": "^2.0.9",
     "@antv/knowledge": "^1.1.4",
