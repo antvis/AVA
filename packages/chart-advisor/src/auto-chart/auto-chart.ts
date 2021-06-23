@@ -209,9 +209,9 @@ export class AutoChart {
     if (config) {
       if (typeof config.type !== 'string') throw new Error('please set the plotType');
       if (config.type === 'Pie') {
-        const colorField = get(config, 'colorField');
-        if (colorField && !get(config, 'statistic.title.formatter')) {
-          set(config, 'statistic.title.formatter', (datum: any) => {
+        const colorField = get(config, 'configs.colorField');
+        if (colorField && !get(config, 'configs.statistic.title.formatter')) {
+          set(config, 'configs.statistic.title.formatter', (datum: any) => {
             if (datum) {
               return datum[colorField];
             }
