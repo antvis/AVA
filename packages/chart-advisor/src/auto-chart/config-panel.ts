@@ -107,7 +107,7 @@ export class ConfigPanel {
       const { currentConfigs, uuid } = plotInst;
       const message = {
         uuid,
-        configs: currentConfigs,
+        configs: JSON.parse(JSON.stringify(currentConfigs)),
         type: SEND_CONFIGS,
       };
       iframe!.contentWindow!.postMessage(message, '*');
