@@ -77,7 +77,6 @@ export const CHART_ID_OPTIONS = [
   'bubble_map',
   'bubble_light_map',
   'packed_circles',
-  'polar_treemap',
   'sunburst_diagram',
   'liquid_chart',
   'kpi_panel',
