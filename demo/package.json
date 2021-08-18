@@ -1,0 +1,39 @@
+{
+  "name": "ava-demo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack serve --port 8881"
+  },
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-proposal-object-rest-spread": "^7.14.7",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-react": "^7.14.5",
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/react": "^17.0.15",
+    "@types/react-dom": "^17.0.9",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-import": "^1.13.3",
+    "css-loader": "^6.2.0",
+    "file-loader": "^6.2.0",
+    "less": "^4.1.1",
+    "less-loader": "^10.0.1",
+    "style-loader": "^3.2.1",
+    "webpack": "^5.48.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}

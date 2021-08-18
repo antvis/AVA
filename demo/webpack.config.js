@@ -1,14 +1,14 @@
 const path = require('path');
 const webpack = require('webpack');
 
-module.exports = {
+const devConfig = {
   mode: 'development',
   devtool: 'cheap-module-source-map',
   entry: {
-    app: './demo/index',
+    app: './src/index',
   },
   output: {
-    path: path.join(__dirname, './dist'),
+    path: path.join(__dirname, 'public'),
     filename: 'bundle.js',
     chunkFilename: '[chunkhash].js',
     publicPath: '/',
@@ -16,7 +16,6 @@ module.exports = {
   externals: {
     react: 'React',
     'react-dom': 'ReactDOM',
-    antd: 'antd',
   },
   target: 'web',
   resolve: {
@@ -40,30 +39,29 @@ module.exports = {
       },
       {
         test: /\.(css|less)$/,
-        exclude: /\.module\.less$/,
         use: [
           { loader: 'style-loader' },
           { loader: 'css-loader', options: { sourceMap: true } },
           {
             loader: 'less-loader',
-            options: { sourceMap: true, javascriptEnabled: true },
+            options: {
+              sourceMap: true,
+              lessOptions: {
+                javascriptEnabled: true,
+              },
+            },
           },
         ],
       },
       {
-        test: /\.module\.less$/,
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
         use: [
-          { loader: 'style-loader' },
           {
-            loader: 'css-loader',
+            loader: 'file-loader',
             options: {
-              sourceMap: true,
-              modules: { localIdentName: '[local]___[hash:base64:5]', exportLocalsConvention: 'camelCaseOnly' },
+              name: '[name].[ext]',
+              outputPath: 'fonts/',
             },
-          },
-          {
-            loader: 'less-loader',
-            options: { sourceMap: true, javascriptEnabled: true },
           },
         ],
       },
@@ -73,7 +71,8 @@ module.exports = {
     disableHostCheck: true,
     host: '0.0.0.0',
     hot: true,
-    contentBase: path.join(__dirname, 'demo'),
+    contentBase: path.join(__dirname, 'src'),
+    publicPath: '/',
   },
   plugins: [
     new webpack.IgnorePlugin({ resourceRegExp: /^(fs|child_process)$/ }),
@@ -82,3 +81,5 @@ module.exports = {
     }),
   ],
 };
+
+module.exports = devConfig;

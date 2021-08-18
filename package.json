@@ -1,19 +1,24 @@
 {
-  "name": "root",
+  "name": "AVA",
   "private": true,
   "scripts": {
-    "start": "webpack-dev-server --port 8881",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
+    "lint-fix": "npm run lint -- --fix",
+    "prettier": " prettier -c \"**/*\"",
+    "prettier-fix": "npm run prettier -- --write",
+    "format": "npm run prettier-fix && npm run lint-fix",
+    "lint-staged": "lint-staged",
+    "setup:demo": "cd demo && npm install --package-lock=false",
+    "start:demo": "npm run setup:demo && cd demo && npm start",
     "site:start": "cd ./packages/ava-site && npm run start",
     "build": "lerna run build",
     "test": "jest --detectOpenHandles",
     "coverage": "jest --coverage",
     "test-live": "sh ./scripts/test-live",
-    "lint": "lerna run lint",
     "boot": "lerna bootstrap"
   },
   "husky": {
-    "hooks": {
-    }
+    "hooks": {}
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
