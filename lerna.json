@@ -1,9 +1,6 @@
 {
   "packages": [
-    "packages/chart-advisor",
-    "packages/chart-linter",
-    "packages/datawizard/*",
-    "packages/knowledge",
+    "packages/ckb",
     "packages/ava-site"
   ],
   "command": {
