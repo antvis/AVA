@@ -1,6 +1,10 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import App from './app';
+// TODO: tmp break
+// import App from './app';
+import Tmp from './tmp/break';
 import './index.less';
 
-ReactDOM.render(<App />, document.querySelector('#root'));
+// TODO: tmp break
+// ReactDOM.render(<App />, document.querySelector('#root'));
+ReactDOM.render(<Tmp />, document.querySelector('#root'));
