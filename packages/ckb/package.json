@@ -1,17 +1,38 @@
 {
-  "name": "@antv/knowledge",
-  "version": "1.1.4",
+  "name": "@antv/ckb",
+  "version": "2.0.0-alpha.1",
   "description": "Chart Knowledge Base",
-  "main": "lib/index.js",
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
   "browser": "dist/index.js",
-  "module": "es/index.js",
-  "types": "lib/index.d.ts",
+  "module": "esm/src/index.js",
+  "files": [
+    "esm",
+    "dist",
+    "lib"
+  ],
   "scripts": {
-    "build": "rm -rf lib && tsc --pretty",
-    "module": "rm -rf es && tsc -t ES5 -m ESNext --outDir es",
-    "prepublish": "npm run module && npm run build && npm run pack",
-    "pack": "webpack --config=webpack.config.js",
-    "lint": "eslint --ext .ts src __tests__",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
+    "lint-fix": "npm run lint -- --fix",
+    "prettier": " prettier --check '**/*' --ignore-path=../../.prettierignore",
+    "prettier-fix": "npm run prettier -- --write",
+    "format": "npm run prettier-fix && npm run lint-fix",
+    "lint-staged": "lint-staged",
+    "size": "limit-size",
+    "clean": "rimraf lib esm dist",
+    "build:umd": "rimraf ./dist && rollup -c && npm run size",
+    "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
+    "build:esm": "rimraf ./esm && tsc --module ESNext --outDir esm",
+    "build": "run-p build:*",
+    "test": "jest",
     "watch": "yarn module && yarn build --w"
   },
   "devDependencies": {
@@ -21,15 +42,31 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-typescript": "7.7.4",
     "babel-loader": "^8.0.6",
+    "limit-size": "^0.1.4",
+    "lint-staged": "^11.1.2",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
     "tslib": "^2.2.0",
     "typescript": "^3.2.2",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.9"
   },
-  "author": "AFX",
-  "publishConfig": {
-    "access": "public"
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
   },
-  "license": "MIT",
-  "gitHead": "9454d7380763ac65dce5b643fb24d285d8c2ed66"
+  "limit-size": [
+    {
+      "path": "dist/index.min.js",
+      "limit": "8 Kb",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.min.js",
+      "limit": "24 Kb"
+    }
+  ]
 }

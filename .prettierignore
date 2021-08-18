@@ -1,0 +1,14 @@
+.cache
+package.json
+package-lock.json
+public
+build
+dist
+es
+esm
+lib
+.*
+*.png
+*.svg
+**/assets/**
+LICENSE
