@@ -1,3 +1,7 @@
+import pkg from '../package.json';
+export const version = pkg.version;
+export const name = pkg.name;
+
 export { CKBJson, addChart } from './pack';
 export { CKBOptions } from './options';
 export {
