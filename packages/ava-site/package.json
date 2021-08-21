@@ -6,7 +6,8 @@
   "scripts": {
     "start": "npm run develop",
     "develop": "cross-env PORT=8880 gatsby develop --open",
-    "build": "npm run clean && gatsby build --prefix-paths",
+    "TODO-build-bak": "npm run clean && gatsby build --prefix-paths",
+    "build": "npm run clean",
     "deploy": "npm run build && npm run copy-mirror-action && gh-pages -d public",
     "copy-mirror-action": "mkdir -p public/.github/workflows && cp ../../.github/workflows/mirror.yml public/.github/workflows",
     "serve": "gatsby serve",

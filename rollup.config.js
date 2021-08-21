@@ -3,7 +3,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import { terser } from 'rollup-plugin-terser';
 
-export default (type, options) => {
+export default (type, options, explugins = []) => {
   const configs = {
     input: options.input,
     output: {
@@ -12,7 +12,7 @@ export default (type, options) => {
       sourcemap: false,
       ...options.output,
     },
-    plugins: [resolve(), commonjs(), typescript(), terser()],
+    plugins: [resolve(), commonjs(), typescript(), terser(), ...explugins],
   };
 
   if (type === 'react') {
