@@ -48,17 +48,23 @@
       "git add"
     ]
   },
-  "author": "XTech",
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
   "devDependencies": {
     "@types/jest": "^23.3.12",
-    "@typescript-eslint/eslint-plugin": "^2.0.0",
-    "@typescript-eslint/parser": "^2.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
     "cross-env": "^7.0.2",
     "electron": "^11.0.2",
-    "eslint": "^6.1.0",
-    "eslint-config-prettier": "^6.0.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-react": "^7.17.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-import": "^2.24.1",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-plugin-react": "^7.24.0",
     "gh-pages": "^2.1.1",
     "husky": "^7.0.1",
     "jest": "^24.9.0",

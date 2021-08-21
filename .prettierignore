@@ -8,6 +8,7 @@ es
 esm
 lib
 .*
+*.md
 *.png
 *.svg
 **/assets/**
