@@ -1,64 +1,37 @@
 import * as React from 'react';
 import { Layout, Menu } from 'antd';
-import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  RobotOutlined,
-  ApartmentOutlined,
-  EyeOutlined,
-  ApiOutlined,
-  CarryOutOutlined,
-  SisternodeOutlined,
-} from '@ant-design/icons';
-import { AutoChartTest } from './AutoChartTest';
-// import { FindInsightTest } from './FindInsightTest/index';
-import { DataTransformTest } from './DataTransformTest';
-import { PipelineTest } from './pipelineTest';
-import { LinterDemo } from './Linter';
-import { LinterExtendDemo } from './LinterExtend';
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import manifest, { Demo } from './manifest';
 
 const { Header, Sider, Content } = Layout;
 
-const tuple = <T extends string[]>(...args: T) => args;
-
-const TESTS = tuple('autoChart', 'pipeline', 'dataTransform', 'linter', 'linterExtend'); //insights
-type TestType = typeof TESTS[number];
-
-const testComponents: Record<TestType, any> = {
-  autoChart: <AutoChartTest />,
-  pipeline: <PipelineTest />,
-  // insights: <FindInsightTest />,
-  dataTransform: <DataTransformTest />,
-  linter: <LinterDemo />,
-  linterExtend: <LinterExtendDemo />,
-};
-
-const icons = {
-  autoChart: <RobotOutlined />,
-  pipeline: <ApartmentOutlined />,
-  insights: <EyeOutlined />,
-  dataTransform: <ApiOutlined />,
-  linter: <CarryOutOutlined />,
-  linterExtend: <SisternodeOutlined />,
-};
+// TODO: link these icons in manifest
+// const testComponents: Record<TestType, any> = {
+//   autoChart: <AutoChartTest />,
+//   pipeline: <PipelineTest />,
+//   // insights: <FindInsightTest />,
+//   dataTransform: <DataTransformTest />,
+//   linter: <LinterDemo />,
+//   linterExtend: <LinterExtendDemo />,
+// };
 
 interface TestState {
-  test: TestType;
   collapsed: boolean;
+  demo: Demo;
 }
 class App extends React.Component<{}, TestState> {
   constructor(props: {}) {
     super(props);
 
     this.state = {
-      test: 'autoChart', // init for test
+      demo: manifest.demos[0], // init for test
       collapsed: false,
     };
   }
 
-  setTest = (t: TestType) => {
+  setDemo = (demo: Demo) => {
     this.setState({
-      test: t,
+      demo,
     });
   };
 
@@ -69,7 +42,7 @@ class App extends React.Component<{}, TestState> {
   };
 
   render() {
-    const { test, collapsed } = this.state;
+    const { demo, collapsed } = this.state;
 
     return (
       <Layout style={{ height: '100vh' }} id="custom-trigger">
@@ -82,21 +55,21 @@ class App extends React.Component<{}, TestState> {
         </Header>
         <Layout>
           <Sider collapsible collapsed={collapsed} trigger={null}>
-            <Menu mode="inline" selectedKeys={[test]} style={{ height: '100%', borderRight: 0 }}>
-              {TESTS.map((t) => (
+            <Menu mode="inline" selectedKeys={[demo.name]} style={{ height: '100%', borderRight: 0 }}>
+              {manifest.demos.map((demo) => (
                 <Menu.Item
-                  key={t}
+                  key={demo.name}
                   onClick={() => {
-                    this.setTest(t);
+                    this.setDemo(demo);
                   }}
-                  icon={icons[t]}
+                  icon={demo.icon}
                 >
-                  {`${t}`}
+                  {`${demo.name}`}
                 </Menu.Item>
               ))}
             </Menu>
           </Sider>
-          <Content style={{ padding: 24 }}>{testComponents[test]}</Content>
+          <Content style={{ padding: 24 }}>{demo.contentComp}</Content>
         </Layout>
       </Layout>
     );
