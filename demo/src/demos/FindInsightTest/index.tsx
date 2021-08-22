@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { AVAChart } from './Charts';
-import { dataInTable, dataInJSON } from '../utils';
+import { dataInTable, dataInJSON } from '../../utils';
 import { insightsFromDataset, Insight } from '../../packages/chart-advisor/src';
 import { getMappingForLib, Channels } from './g2plot-config';
 import ReactJson from 'react-json-view';
 import { RowData } from '../../packages/datawizard/transform/src';
-import { insightSamples } from '../data-samples';
+import { insightSamples } from '../../consts/data-samples';
 
 const sampleGetters: { name: string; getter: Function }[] = [];
 

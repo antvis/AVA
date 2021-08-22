@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { dataInJSON, dataInTable } from './utils';
+import { dataInJSON, dataInTable } from '../../utils';
 import { autoChart } from '../packages/chart-advisor/src';
 import { autoTransform } from '../packages/datawizard/transform/src';
 

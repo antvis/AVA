@@ -15,8 +15,8 @@ import {
   SingleViewSpec,
   G2PlotConfig,
 } from '../packages/chart-advisor/src';
-import { DataSamples } from './data-samples';
-import { prettyJSON } from './utils';
+import { DataSamples } from '../../consts/data-samples';
+import { prettyJSON } from '../../utils';
 
 import './table.less';
 
