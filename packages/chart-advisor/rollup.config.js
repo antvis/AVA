@@ -6,7 +6,7 @@ export default rollupConfig(
   {
     input: './src/index.ts',
     output: {
-      name: 'CKB',
+      name: 'ChartAdvisor',
     },
   },
   [json()]
