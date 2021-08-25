@@ -2,6 +2,7 @@
   "packages": [
     "packages/ckb",
     "packages/ava-site",
+    "packages/chart-advisor",
     "packages/insight"
   ],
   "command": {
