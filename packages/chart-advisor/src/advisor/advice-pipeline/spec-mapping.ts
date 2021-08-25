@@ -614,8 +614,6 @@ function heatmap(dataFrame: DataFrame): Advice['spec'] {
 }
 /* !!!END heatmap ------------------- */
 
-// TODO other chartSpec generator
-
 /**
  * Convert chartType + data to antv-spec
  * recommend chart with specific data mapping
@@ -627,7 +625,6 @@ function heatmap(dataFrame: DataFrame): Advice['spec'] {
  */
 export function getChartTypeSpec(chartType: string, dataFrame: DataFrame, chartKnowledge?: CustomizedCKBJSON) {
   // step 0: check whether the chartType is default in `ChartID`
-  // TODO what to do if user input ckb
   if (!CHART_ID_OPTIONS.includes(chartType as ChartID) && chartKnowledge) {
     if (chartKnowledge.toSpec) {
       const spec = chartKnowledge.toSpec(dataFrame);

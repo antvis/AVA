@@ -10,8 +10,7 @@ export class Advisor {
 
   private ruleBase: Record<string, RuleModule>;
 
-  // TODO: Fix any
-  private dataFrame: any;
+  private dataFrame!: DataFrame;
 
   constructor(ckbCfg?: CKBConfig, ruleCfg?: RuleConfig) {
     let ckb: Record<string, ChartKnowledgeJSON> = {};

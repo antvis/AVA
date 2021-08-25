@@ -71,7 +71,6 @@ const scoreRules = (
   return score;
 };
 
-// TODO DesignRules
 function applyDesignRules(
   chartType: string,
   dataProps: BasicDataPropertyForAdvice[],
@@ -129,7 +128,6 @@ export function dataFrameToAdvices(
     if (!customChartType.includes(t) && !chartTypeSpec) return { type: t, spec: null, score: 0 };
 
     // step 3: apply design rules
-    // TODO type declare and adapt to AntVSpec
     if (chartTypeSpec && enableRefine) {
       const partEncSpec = applyDesignRules(t, dataProps, ruleBase, chartTypeSpec);
       deepMix(chartTypeSpec.layer[0], partEncSpec);

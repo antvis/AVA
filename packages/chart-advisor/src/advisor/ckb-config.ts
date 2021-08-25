@@ -21,7 +21,7 @@ export type CKBConfig = {
   custom?: Record<string, CustomizedCKBJSON>;
 };
 
-type SpecMapping = (dataFrame: DataFrame) => AntVSpec;
+type SpecMapping = (dataFrame: DataFrame) => AntVSpec | null;
 
 export interface CustomizedCKBJSON extends ChartKnowledgeJSON {
   toSpec?: SpecMapping;
