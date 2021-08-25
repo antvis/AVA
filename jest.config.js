@@ -12,8 +12,6 @@ module.exports = {
   testPathIgnorePatterns: ['/node_modules/'],
   collectCoverage: false,
   collectCoverageFrom: ['packages/**/src/**/*.ts'],
-  testRegex: '/__tests__/.*.test.ts?$',
-  // allow jest console output
-  verbose: false,
+  verbose: false, // allow jest console output
   testTimeout: 30000,
 };

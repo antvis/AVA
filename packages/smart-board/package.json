@@ -1,16 +1,15 @@
 {
   "name": "@antv/smart-board",
-  "version": "0.1.0",
+  "version": "2.0.0-alpha.1",
   "description": "A js library that solves chart dashboarding through calculations.",
-  "main": "lib/src/index.js",
-  "types": "lib/src/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "browser": "dist/index.js",
-  "module": "esm/src/index.js",
+  "module": "esm/index.js",
   "files": [
-    "src",
+    "dist",
     "esm",
-    "lib",
-    "build"
+    "lib"
   ],
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\" \"demo/**/*.{ts,tsx}\"",
@@ -52,16 +51,18 @@
   },
   "homepage": "https://github.com/antvis/SmartBoard#readme",
   "devDependencies": {
-    "@types/jest": "^26.0.24",
     "@types/uuid": "^8.3.1",
-    "jest": "^27.0.6",
     "limit-size": "^0.1.4",
     "lint-staged": "^11.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
-    "ts-jest": "^27.0.4",
     "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "louvain-algorithm": "^1.0.4",
+    "tslib": "^2.2.0",
+    "uuid": "^3.4.0"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -80,10 +81,5 @@
       "path": "dist/index.min.js",
       "limit": "24 Kb"
     }
-  ],
-  "dependencies": {
-    "louvain-algorithm": "^1.0.4",
-    "tslib": "^2.2.0",
-    "uuid": "^3.4.0"
-  }
+  ]
 }
