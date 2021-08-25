@@ -48,6 +48,7 @@
     "react-json-view": "^1.19.1",
     "react-vega": "^7.4.3",
     "vega": "^5.15.0",
+    "vega-datasets": "^2.2.0",
     "vega-lite": "^4.15.0"
   }
 }

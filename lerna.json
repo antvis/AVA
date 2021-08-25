@@ -1,7 +1,8 @@
 {
   "packages": [
     "packages/ckb",
-    "packages/ava-site"
+    "packages/ava-site",
+    "packages/insight"
   ],
   "command": {
     "publish": {
