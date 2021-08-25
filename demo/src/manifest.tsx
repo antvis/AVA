@@ -1,6 +1,7 @@
 import React from 'react';
-import { EyeOutlined } from '@ant-design/icons';
+import { EyeOutlined, GiftOutlined } from '@ant-design/icons';
 import CKBList from './demos/CKBList';
+import LiteInsight from './demos/LiteInsight';
 
 export interface Demo {
   id: string;
@@ -21,6 +22,12 @@ const manifest: Manifest = {
       name: 'CKBList',
       contentComp: CKBList,
       icon: <EyeOutlined />,
+    },
+    {
+      id: 'LiteInsight',
+      name: 'LiteInsight',
+      contentComp: LiteInsight,
+      icon: <GiftOutlined />,
     },
   ],
 };
