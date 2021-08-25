@@ -1,6 +1,6 @@
 {
   "name": "@antv/lite-insight",
-  "version": "0.1.0",
+  "version": "2.0.0-alpha.1",
   "description": "",
   "keywords": [
     "insight",
@@ -8,12 +8,12 @@
     "AVA"
   ],
   "files": [
-    "es",
+    "esm",
     "lib",
     "dist"
   ],
   "main": "lib/index.js",
-  "module": "es/index.js",
+  "module": "esm/index.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
   "scripts": {
@@ -33,7 +33,10 @@
     "watch": "yarn module && yarn build --w"
   },
   "license": "MIT",
-  "author": "https://github.com/orgs/antvis/people",
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
@@ -43,51 +46,35 @@
   },
   "limit-size": [
     {
-      "path": "dist/lite-insight.min.js",
-      "limit": "24 Kb"
+      "path": "dist/index.min.js",
+      "limit": "200 Kb",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.min.js",
+      "limit": "800 Kb"
     }
   ],
   "devDependencies": {
-    "@commitlint/cli": "^13.1.0",
-    "@commitlint/config-conventional": "^13.1.0",
-    "@rollup/plugin-commonjs": "^19.0.2",
-    "@rollup/plugin-node-resolve": "^13.0.4",
-    "@rollup/plugin-typescript": "^8.2.3",
     "@stdlib/types": "^0.0.12",
     "@types/d3-array": "^3.0.1",
-    "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.171",
-    "@typescript-eslint/eslint-plugin": "^4.28.5",
-    "@typescript-eslint/parser": "^4.28.5",
-    "eslint": "^7.31.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-import-resolver-typescript": "^2.4.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-prettier": "^3.4.0",
-    "eslint-plugin-react": "^7.24.0",
-    "husky": "^7.0.1",
-    "jest": "^27.0.6",
     "limit-size": "^0.1.4",
     "lint-staged": "^11.1.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
-    "rollup": "^2.55.0",
-    "rollup-plugin-terser": "^7.0.2",
-    "ts-jest": "^27.0.4",
-    "tslib": "^2.3.0",
     "typescript": "^4.3.5"
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.3",
     "@antv/dw-analyzer": "^1.1.5",
-    "@babel/runtime": "^7.14.8",
     "@stdlib/stats": "^0.0.12",
     "d3-array": "^3.0.1",
     "heap-js": "^2.1.6",
     "lodash": "^4.17.21",
     "loess": "^1.3.5",
-    "regression": "^2.0.1"
+    "regression": "^2.0.1",
+    "tslib": "^2.3.1"
   }
 }
