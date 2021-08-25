@@ -2,12 +2,11 @@
   "name": "@antv/chart-advisor",
   "version": "2.0.0-alpha.1",
   "description": "An empiric-driven chart recommendation js library.",
-  "main": "lib/src/index.js",
-  "types": "lib/src/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "browser": "dist/index.js",
-  "module": "esm/src/index.js",
+  "module": "esm/index.js",
   "files": [
-    "src",
     "esm",
     "lib",
     "dist"
