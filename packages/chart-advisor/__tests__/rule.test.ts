@@ -35,9 +35,13 @@ describe('init Ruler', () => {
     ];
     const advices = myAdvisor.advise(data, ['price', 'year'], { refine: true });
     const chartSpec = advices.filter((e) => e.type === 'line_chart')[0].spec;
-    const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
-    expect(layerEnc.x).toHaveProperty('axis');
-    expect(layerEnc.y).toHaveProperty('scale');
+    if (chartSpec) {
+      const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
+      if (layerEnc) {
+        expect(layerEnc.x).toHaveProperty('axis');
+        expect(layerEnc.y).toHaveProperty('scale');
+      }
+    }
   });
 });
 
@@ -92,7 +96,7 @@ describe('customized Rule', () => {
     const myRuleCfg: RuleConfig = {
       custom: {
         'data-check': {
-          ...getChartRule('data-check'),
+          ...(getChartRule('data-check') as RuleModule),
           docs: {
             lintText: 'Now is my rule!',
           },
@@ -101,7 +105,7 @@ describe('customized Rule', () => {
     };
     const myAdvisor = new Advisor(undefined, myRuleCfg);
     const ruleBase = myAdvisor.getRuleBase();
-    expect(ruleBase['data-check'].docs.lintText).toBe('Now is my rule!');
+    expect(ruleBase?.['data-check']?.docs.lintText).toBe('Now is my rule!');
   });
 
   test('custom rule with option', () => {
@@ -116,6 +120,6 @@ describe('customized Rule', () => {
     };
     const myAdvisor = new Advisor(undefined, myRuleCfg);
     const ruleBase = myAdvisor.getRuleBase();
-    expect(ruleBase['data-check'].option.off).toBe(true);
+    expect(ruleBase?.['data-check']?.option?.off).toBe(true);
   });
 });

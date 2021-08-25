@@ -54,7 +54,6 @@ export interface Info {
  */
 export type Validator = (args: Info) => number;
 
-// TODO
 export type Optimizer = (dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec) => object;
 
 /**

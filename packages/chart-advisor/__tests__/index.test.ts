@@ -2,7 +2,7 @@ import { AntVSpec } from '@antv/antv-spec';
 import { CustomizedCKBJSON, CKBConfig } from '../src/advisor/ckb-config';
 import { Advisor } from '../src/advisor';
 import { Linter } from '../src/linter';
-import { RuleConfig, RuleModule } from '../src/ruler';
+import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../src/ruler';
 import { ChartAdvisor } from '../src/chart-advisor';
 import { DataFrame } from '../src/advisor/utils/dataframe';
 import { hasSubset } from '../src/utils';
@@ -69,13 +69,13 @@ describe('init Advisor', () => {
   });
 
   test('data to advices with ckb config custom chart', () => {
-    const splitAngleColor = (dataProps) => {
+    const splitAngleColor = (dataProps: BasicDataPropertyForAdvice[]) => {
       const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
       const field4Angle = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
       return [field4Color, field4Angle];
     };
 
-    const toFuChart = (dataFrame: DataFrame): AntVSpec => {
+    const toFuChart = (dataFrame: DataFrame): AntVSpec | null => {
       const { dataProps } = dataFrame;
       const [field4Color, field4Angle] = splitAngleColor(dataProps);
       if (!field4Angle || !field4Color) return null;
