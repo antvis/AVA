@@ -1,0 +1,92 @@
+{
+  "name": "@antv/data-wizard",
+  "version": "2.0.0-alpha.1",
+  "description": "A js/ts library for data processing",
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
+  "homepage": "https://ava.antv.vision",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/ava"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
+  "unpkg": "dist/index.min.js",
+  "module": "esm/src/index.js",
+  "files": [
+    "esm",
+    "dist",
+    "lib"
+  ],
+  "scripts": {
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
+    "lint-fix": "npm run lint -- --fix",
+    "prettier": " prettier --check '**/*' --ignore-path=../../.prettierignore",
+    "prettier-fix": "npm run prettier -- --write",
+    "format": "npm run prettier-fix && npm run lint-fix",
+    "lint-staged": "lint-staged",
+    "size": "limit-size",
+    "clean": "rimraf lib esm dist",
+    "build:umd": "rimraf ./dist && rollup -c && npm run size",
+    "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
+    "build:esm": "rimraf ./esm && tsc --module ESNext --outDir esm",
+    "build": "run-p build:*",
+    "test": "jest",
+    "watch": "yarn module && yarn build --w"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "limit-size": [
+    {
+      "path": "dist/index.min.js",
+      "limit": "10 Kb",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.min.js",
+      "limit": "30 Kb"
+    }
+  ],
+  "dependencies": {
+    "@antv/ckb": "^2.0.0-alpha.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
+    "@rollup/plugin-commonjs": "^19.0.1",
+    "@rollup/plugin-node-resolve": "^13.0.2",
+    "@rollup/plugin-typescript": "^8.2.3",
+    "@types/jest": "^26.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
+    "eslint": "^7.31.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-prettier": "^3.4.0",
+    "husky": "^7.0.1",
+    "jest": "^27.0.6",
+    "limit-size": "^0.1.4",
+    "lint-staged": "^11.0.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.53.3",
+    "rollup-plugin-terser": "^7.0.2",
+    "ts-jest": "^27.0.4",
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.5"
+  }
+}
