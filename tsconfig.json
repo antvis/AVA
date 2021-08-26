@@ -17,6 +17,6 @@
     "noImplicitReturns": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   }
 }
