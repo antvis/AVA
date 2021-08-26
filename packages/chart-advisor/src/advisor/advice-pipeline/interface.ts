@@ -2,6 +2,9 @@ import { Purpose } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
 import { Preferences } from '../../ruler';
 
+export type DataRow = Record<string, any>;
+export type DataRows = DataRow[];
+
 /**
  * @public
  */

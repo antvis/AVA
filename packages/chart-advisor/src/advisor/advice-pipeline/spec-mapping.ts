@@ -1,13 +1,12 @@
 import { ChartID, CHART_ID_OPTIONS, LevelOfMeasurement as LOM } from '@antv/ckb';
+import { stat } from '@antv/data-wizard';
+// FIXME: replace by @antv/data-wizard once ready
 import { isInHierarchy } from '@antv/dw-util';
-import * as DWAnalyzer from '@antv/dw-analyzer';
 import { BasicDataPropertyForAdvice } from '../../ruler';
-// FIXME MOCK before DW publish
-import { DataFrame } from '../utils/dataframe';
 import { hasSubset, intersects } from '../../utils';
 import { compare } from '../utils';
 import { CustomizedCKBJSON } from '../ckb-config';
-import { Advice } from './interface';
+import { Advice, DataRows } from './interface';
 
 type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal'; // TODO support in AntVSpec | 'geojson';
 
@@ -37,8 +36,7 @@ function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField,
   return [field4Color, field4Angle];
 }
 
-function pieChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function pieChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4Color, field4Angle] = splitAngleColor(dataProps);
   if (!field4Angle || !field4Color) return null;
 
@@ -48,7 +46,7 @@ function pieChart(dataFrame: DataFrame): Advice['spec'] {
     },
     data: {
       type: 'json-array',
-      values: dataFrame.toJson(),
+      values: data,
     },
     layer: [
       {
@@ -65,8 +63,7 @@ function pieChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function donutChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function donutChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4Color, field4Angle] = splitAngleColor(dataProps);
   if (!field4Angle || !field4Color) return null;
 
@@ -76,7 +73,7 @@ function donutChart(dataFrame: DataFrame): Advice['spec'] {
     },
     data: {
       type: 'json-array',
-      values: dataFrame.toJson(),
+      values: data,
     },
     layer: [
       {
@@ -105,14 +102,13 @@ function splitLineXY(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, Ret
   return [field4X, field4Y, field4Color];
 }
 
-function lineChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function lineChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Color] = splitLineXY(dataProps);
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'line' },
@@ -131,14 +127,13 @@ function lineChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function stepLineChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function stepLineChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Color] = splitLineXY(dataProps);
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'line', interpolate: 'step' },
@@ -167,8 +162,7 @@ function splitAreaXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnFiel
   return [field4X, field4Y, field4Series];
 }
 
-function areaChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function areaChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const field4X = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
   const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
@@ -176,7 +170,7 @@ function areaChart(dataFrame: DataFrame): Advice['spec'] {
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'area' },
@@ -191,14 +185,13 @@ function areaChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function stackedAreaChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function stackedAreaChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitAreaXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'area' },
@@ -214,14 +207,13 @@ function stackedAreaChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function percentStackedAreaChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function percentStackedAreaChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitAreaXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'area' },
@@ -250,8 +242,7 @@ function splitBarXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnField
 }
 
 // barchart in AVA means: horizontal bar chart
-function barChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function barChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
   const sortedNominalFields = nominalFields.sort(compare);
   const field4Y = sortedNominalFields[0];
@@ -262,7 +253,7 @@ function barChart(dataFrame: DataFrame): Advice['spec'] {
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -281,14 +272,13 @@ function barChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function groupedBarChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function groupedBarChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -305,14 +295,13 @@ function groupedBarChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function stackedBarChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function stackedBarChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -328,14 +317,13 @@ function stackedBarChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function percentStackedBarChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function percentStackedBarChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -370,8 +358,7 @@ function splitColumnXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnFi
   return [field4X, field4Y, Field4Series];
 }
 
-function columnChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function columnChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
   const sortedNominalFields = nominalFields.sort(compare);
   const field4X = sortedNominalFields[0];
@@ -382,7 +369,7 @@ function columnChart(dataFrame: DataFrame): Advice['spec'] {
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -401,14 +388,13 @@ function columnChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function groupedColumnChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function groupedColumnChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -425,14 +411,13 @@ function groupedColumnChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function stackedColumnChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function stackedColumnChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -448,14 +433,13 @@ function stackedColumnChart(dataFrame: DataFrame): Advice['spec'] {
   return spec;
 }
 
-function percentStackedColumnChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function percentStackedColumnChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'bar' },
@@ -474,8 +458,7 @@ function percentStackedColumnChart(dataFrame: DataFrame): Advice['spec'] {
 /* !!!END column_chart & grouped_column_chart & stacked_column_chart & percent_stacked_column_chart ------------------- */
 
 /* !!!START scatter_plot ------------------- */
-function scatterPlot(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function scatterPlot(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
   const sortedIntervalFields = intervalFields.sort(compare);
   const field4X = sortedIntervalFields[0];
@@ -488,7 +471,7 @@ function scatterPlot(dataFrame: DataFrame): Advice['spec'] {
     basis: {
       type: 'chart',
     },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: 'point',
@@ -509,8 +492,7 @@ function scatterPlot(dataFrame: DataFrame): Advice['spec'] {
 /* !!!END scatter_plot ------------------- */
 
 /* !!!START bubble_chart ------------------- */
-function bubbleChart(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function bubbleChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
   const triple = {
@@ -521,7 +503,7 @@ function bubbleChart(dataFrame: DataFrame): Advice['spec'] {
   };
   for (let i = 0; i < intervalFields.length; i += 1) {
     for (let j = i + 1; j < intervalFields.length; j += 1) {
-      const p = DWAnalyzer.pearson(intervalFields[i], intervalFields[j]);
+      const p = stat.pearson(intervalFields[i].samples, intervalFields[j].samples);
       if (Math.abs(p) > triple.corr) {
         triple.x = intervalFields[i];
         triple.y = intervalFields[j];
@@ -542,7 +524,7 @@ function bubbleChart(dataFrame: DataFrame): Advice['spec'] {
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'point' },
@@ -561,14 +543,13 @@ function bubbleChart(dataFrame: DataFrame): Advice['spec'] {
 /* !!!END bubble_chart ------------------- */
 
 /* !!!START histogram ------------------- */
-function histogram(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function histogram(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const field = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
   if (!field) return null;
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: 'bar',
@@ -585,8 +566,7 @@ function histogram(dataFrame: DataFrame): Advice['spec'] {
 /* !!!END histogram ------------------- */
 
 /* !!!END heatmap ------------------- */
-function heatmap(dataFrame: DataFrame): Advice['spec'] {
-  const { dataProps } = dataFrame;
+function heatmap(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const axisFields = dataProps.filter((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal']));
   const sortedFields = axisFields.sort(compare);
   const field4X = sortedFields[0];
@@ -597,7 +577,7 @@ function heatmap(dataFrame: DataFrame): Advice['spec'] {
 
   const spec: Advice['spec'] = {
     basis: { type: 'chart' },
-    data: { type: 'json-array', values: dataFrame.toJson() },
+    data: { type: 'json-array', values: data },
     layer: [
       {
         mark: { type: 'rect' },
@@ -619,15 +599,17 @@ function heatmap(dataFrame: DataFrame): Advice['spec'] {
  * recommend chart with specific data mapping
  *
  * @param chartType chart type
- * @param dataProps data property for advisor
- * @param dataset dataset
+ * @param data input data [ { col1: ..., col2: ... } ]
+ * @param dataProps data property for advisor derived by data-wizard
+ * @param chartKnowledge chart knowledge of a singble chart
  * @returns spec or null
  */
-export function getChartTypeSpec(chartType: string, dataFrame: DataFrame, chartKnowledge?: CustomizedCKBJSON) {
+export function getChartTypeSpec(chartType: string, data: DataRows, dataProps: BasicDataPropertyForAdvice[], chartKnowledge?: CustomizedCKBJSON) {
   // step 0: check whether the chartType is default in `ChartID`
+  // if not, use customized `toSpec` function
   if (!CHART_ID_OPTIONS.includes(chartType as ChartID) && chartKnowledge) {
     if (chartKnowledge.toSpec) {
-      const spec = chartKnowledge.toSpec(dataFrame);
+      const spec = chartKnowledge.toSpec(data, dataProps);
       return spec;
     }
     return null;
@@ -635,50 +617,50 @@ export function getChartTypeSpec(chartType: string, dataFrame: DataFrame, chartK
   switch (chartType) {
     // pie
     case 'pie_chart':
-      return pieChart(dataFrame);
+      return pieChart(data, dataProps);
     case 'donut_chart':
-      return donutChart(dataFrame);
+      return donutChart(data, dataProps);
     // line
     case 'line_chart':
-      return lineChart(dataFrame);
+      return lineChart(data, dataProps);
     case 'step_line_chart':
-      return stepLineChart(dataFrame);
+      return stepLineChart(data, dataProps);
     // area
     case 'area_chart':
-      return areaChart(dataFrame);
+      return areaChart(data, dataProps);
     case 'stacked_area_chart':
-      return stackedAreaChart(dataFrame);
+      return stackedAreaChart(data, dataProps);
     case 'percent_stacked_area_chart':
-      return percentStackedAreaChart(dataFrame);
+      return percentStackedAreaChart(data, dataProps);
     // bar
     case 'bar_chart':
-      return barChart(dataFrame);
+      return barChart(data, dataProps);
     case 'grouped_bar_chart':
-      return groupedBarChart(dataFrame);
+      return groupedBarChart(data, dataProps);
     case 'stacked_bar_chart':
-      return stackedBarChart(dataFrame);
+      return stackedBarChart(data, dataProps);
     case 'percent_stacked_bar_chart':
-      return percentStackedBarChart(dataFrame);
+      return percentStackedBarChart(data, dataProps);
     // column
     case 'column_chart':
-      return columnChart(dataFrame);
+      return columnChart(data, dataProps);
     case 'grouped_column_chart':
-      return groupedColumnChart(dataFrame);
+      return groupedColumnChart(data, dataProps);
     case 'stacked_column_chart':
-      return stackedColumnChart(dataFrame);
+      return stackedColumnChart(data, dataProps);
     case 'percent_stacked_column_chart':
-      return percentStackedColumnChart(dataFrame);
+      return percentStackedColumnChart(data, dataProps);
     // scatter
     case 'scatter_plot':
-      return scatterPlot(dataFrame);
+      return scatterPlot(data, dataProps);
     // bubble
     case 'bubble_chart':
-      return bubbleChart(dataFrame);
+      return bubbleChart(data, dataProps);
     // histogram
     case 'histogram':
-      return histogram(dataFrame);
+      return histogram(data, dataProps);
     case 'heatmap':
-      return heatmap(dataFrame);
+      return heatmap(data, dataProps);
     // TODO other case 'kpi_panel' & 'table'
     default:
       return null;
