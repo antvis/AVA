@@ -1,7 +1,7 @@
 import React from 'react';
 import { List } from 'antd';
 import { RiseOutlined, FallOutlined, BoxPlotOutlined, StockOutlined, DotChartOutlined } from '@ant-design/icons';
-import { InsightInfo } from '../../../../packages/insight/src';
+import { InsightInfo } from '../../../../packages/lite-insight/src';
 import { PlotRender } from './Plot';
 
 interface InsightCardProps {

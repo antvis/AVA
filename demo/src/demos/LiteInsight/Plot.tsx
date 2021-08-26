@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import * as G2Plot from '@antv/g2plot';
 import { Plot } from '@antv/g2plot';
-import { ChartType } from '../../../../packages/insight/src';
+import { ChartType } from '../../../../packages/lite-insight/src';
 
 interface PlotProps {
   data: any[];
