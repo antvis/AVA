@@ -1,8 +1,7 @@
-// Jest configuration for api
-const base = require("../../jest.config.base.js");
+const base = require('../../jest.config.base.js');
 
 module.exports = {
-    ...base,
-    name: 'chart-advisor',
-    displayName: 'chart-advisor'
+  ...base,
+  name: 'chart-advisor',
+  displayName: 'chart-advisor',
 };
