@@ -3,7 +3,7 @@ import { Select, Button, Table } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
-import { getDataInsights, InsightInfo, Datum } from '../../../../packages/insight/src';
+import { getDataInsights, InsightInfo, Datum } from '../../../../packages/lite-insight/src';
 import InsightCard from './InsightCard';
 
 const { Option } = Select;

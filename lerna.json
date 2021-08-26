@@ -3,7 +3,7 @@
     "packages/ckb",
     "packages/ava-site",
     "packages/chart-advisor",
-    "packages/insight",
+    "packages/lite-insight",
     "packages/smart-board",
     "packages/data-wizard"
   ],
