@@ -1,8 +1,7 @@
-// Jest configuration for api
-const base = require("../../jest.config.base.js");
+const base = require('../../jest.config.base.js');
 
 module.exports = {
-    ...base,
-    name: 'ckb',
-    displayName: 'ckb'
+  ...base,
+  name: 'ckb',
+  displayName: 'ckb',
 };
