@@ -60,6 +60,7 @@
     "@types/d3-array": "^3.0.1",
     "@types/jest": "^23.3.12",
     "@types/lodash": "^4.14.171",
+    "eslint": "^7.32.0",
     "jest": "^24.9.0",
     "limit-size": "^0.1.4",
     "lint-staged": "^11.1.1",

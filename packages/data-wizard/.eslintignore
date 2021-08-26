@@ -1,0 +1,14 @@
+**/bundle.js
+**/*.min.js
+
+.DS_Store
+node_modules/
+lib/
+coverage/
+es/
+esm/
+dist/
+temp/
+typings/
+docs/
+webpack.config.js
