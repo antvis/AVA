@@ -473,7 +473,7 @@ export default class DataFrame extends BaseFrame {
     const fields: analyzer.FieldsInfo = [];
     for (let i = 0; i < this.columns.length; i += 1) {
       const column = this.columns[i];
-      fields.push({ ...analyzer.analyzeField(this.data[i]), name: String(column) });
+      fields.push({ ...analyzer.analyzeField(this.colData[i]), name: String(column) });
     }
     return fields;
   }
