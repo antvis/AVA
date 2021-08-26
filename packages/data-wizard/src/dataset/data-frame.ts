@@ -7,8 +7,12 @@ import { isLegalBasicType, genArrIdx, isAxis } from './utils';
 
 /** 2D data structure */
 export default class DataFrame extends BaseFrame {
+  axes: [Axis[], Axis[]];
+
   constructor(data: FrameData, extra?: Extra) {
     super(data, extra);
+
+    this.axes = [[], []];
 
     if (utils.isObject(extra) && !extra.index && !extra.columns && Object.keys(extra).length > 0) {
       throw new Error(`The extra of DataFrame only owns 'index' and 'columns' properties`);

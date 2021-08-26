@@ -9,8 +9,12 @@ export interface SeriesExtra {
 
 /** 1D data structure */
 export default class Series extends BaseFrame {
+  axes: [Axis[]];
+
   constructor(data: SeriesData, extra?: SeriesExtra) {
     super(data, extra);
+
+    this.axes = [[]];
 
     if (utils.isObject(extra) && !extra.index && Object.keys(extra).length > 0) {
       throw new Error(`The extra of Series only owns 'index' property`);
@@ -29,32 +33,34 @@ export default class Series extends BaseFrame {
       } else {
         this.setAxis(0, [0]);
       }
-    } else if (isLegalBasicType(data?.[0])) {
+    } else if (utils.isObject(data)) {
       // 1D: object
-      if (utils.isObject(data)) {
-        this.data = Object.values(data);
-        // In Series, this.colData is same as this.data
-        // Do we need it?
-        this.colData = this.data;
+      this.data = Object.values(data);
+      // In Series, this.colData is same as this.data
+      // Do we need it?
+      this.colData = this.data;
 
-        // generate index
-        const dataKeys = Object.keys(data);
-        if (extra?.index) {
-          if (extra.index?.length === dataKeys.length) {
-            this.setAxis(0, extra.index);
-          } else {
-            throw new Error(`Index length is ${extra.index?.length}, but data size is ${dataKeys.length}`);
-          }
+      // generate index
+      const dataKeys = Object.keys(data);
+      if (extra?.index) {
+        if (extra.index?.length === dataKeys.length) {
+          this.setAxis(0, extra.index);
         } else {
-          this.setAxis(0, dataKeys);
+          throw new Error(`Index length is ${extra.index?.length}, but data size is ${dataKeys.length}`);
         }
-      } else if (utils.isArray(data)) {
-        // 1D: array
-        this.colData = this.data;
+      } else {
+        this.setAxis(0, dataKeys);
       }
+    } else if (utils.isArray(data)) {
+      // 1D: array
+      this.colData = this.data;
     } else {
       throw new Error('Data type is illegal');
     }
+  }
+
+  get shape(): [number] {
+    return [this.axes[0].length];
   }
 
   /**
@@ -79,12 +85,13 @@ export default class Series extends BaseFrame {
       const newData: any[] = [];
       const newIndex: Axis[] = [];
       for (let i = 0; i < rowLoc.length; i += 1) {
-        const idx = rowLoc[i];
-        if (!this.index.includes(idx)) {
+        const loc = rowLoc[i];
+        if (!this.index.includes(loc)) {
           throw new Error('The rowLoc is not found in the index.');
         }
-        newData.push(this.data[idx]);
-        newIndex.push(this.index[idx]);
+        const idxInIndex = this.index.indexOf(loc);
+        newData.push(this.data[idxInIndex]);
+        newIndex.push(this.index[idxInIndex]);
       }
       return new Series(newData, { index: newIndex });
     } else if (utils.isString(rowLoc) && rowLoc.includes(':')) {
