@@ -6,7 +6,7 @@ type NDArray = any[] | any[][];
 
 /** Base data structure */
 export default abstract class BaseFrame {
-  axes: [Axis[]] | [Axis[], Axis[]];
+  abstract axes: [Axis[]] | [Axis[], Axis[]];
 
   data: NDArray;
 
@@ -15,7 +15,6 @@ export default abstract class BaseFrame {
   constructor(data: SeriesData | FrameData, extra?: Extra) {
     this.data = [];
     this.colData = [];
-    this.axes = [[]];
 
     // 1D: object
     if (utils.isArray(data) && isLegalBasicType(data?.[0])) {
@@ -45,9 +44,7 @@ export default abstract class BaseFrame {
    */
   abstract getByIntIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
 
-  get shape(): [number] | [number, number] {
-    return [this.axes[0].length, this.axes[1].length];
-  }
+  abstract get shape(): [number] | [number, number];
 
   get index(): Axis[] {
     return this.getAxis(0);
