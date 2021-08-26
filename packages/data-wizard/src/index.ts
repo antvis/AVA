@@ -1,2 +1,3 @@
-const DataWizard = 'A js/ts library for data processing';
-export default DataWizard;
+export * as analyzer from './analyzer';
+export * as stat from './statistics';
+export { Series, DataFrame } from './dataset';
