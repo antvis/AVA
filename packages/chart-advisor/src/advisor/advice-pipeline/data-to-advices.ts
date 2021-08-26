@@ -1,19 +1,10 @@
 import { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
 import { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/concepts/rule';
-import { get, deepMix } from '../utils';
-import { DataFrame } from '../utils/dataframe';
-import { Advice, AdvisorOptions } from './interface';
+import { deepMix } from '../utils';
+import { Advice, AdvisorOptions, DataRows } from './interface';
 import { getChartTypeSpec } from './spec-mapping';
 import { defaultWeight } from './default-weight';
-
-/**
- *
- * @param chartType
- * @param dataProps
- * @param options options such as purpose, preferences for 'landscape' or 'portrait'
- * @returns total score after rating by rules
- */
 
 /**
  *
@@ -38,27 +29,19 @@ const scoreRules = (
 
   let hardScore = 1;
   Object.values(ruleBase)
-    .filter(
-      (r: RuleModule) => r.type === 'HARD' && r.chartTypes.includes(chartType) && !get(ruleBase, `${r.id}.option.off`)
-    )
+    .filter((r: RuleModule) => r.type === 'HARD' && r.chartTypes.includes(chartType) && !ruleBase[r.id].option?.off)
     .forEach((hr: RuleModule) => {
-      const weight = get(ruleBase, `${hr.id}.option.weight`) || defaultWeight[hr.id];
+      const weight = ruleBase[hr.id].option?.weight || defaultWeight[hr.id];
       const score = weight * (hr as ChartRuleModule).validator({ dataProps, chartType, purpose, preferences });
       hardScore *= score;
       record.push({ name: hr.id, score, hard: true });
     });
 
-  /**
-   * TODO
-   * new soft rules score method
-   */
   let softScore = 0;
   Object.values(ruleBase)
-    .filter(
-      (r: RuleModule) => r.type === 'SOFT' && r.chartTypes.includes(chartType) && !get(ruleBase, `${r.id}.option.off`)
-    )
+    .filter((r: RuleModule) => r.type === 'SOFT' && r.chartTypes.includes(chartType) && !ruleBase[r.id].option?.off)
     .forEach((sr: RuleModule) => {
-      const weight = get(ruleBase, `${sr.id}.option.weight`) || defaultWeight[sr.id];
+      const weight = ruleBase[sr.id].option?.weight || defaultWeight[sr.id];
       const score = weight * (sr as ChartRuleModule).validator({ dataProps, chartType, purpose, preferences });
       softScore += score;
       record.push({ name: sr.id, score, hard: false });
@@ -79,7 +62,7 @@ function applyDesignRules(
 ) {
   const toCheckRules = Object.values(ruleBase).filter(
     (rule: RuleModule) =>
-      rule.type === 'DESIGN' && rule.chartTypes.indexOf(chartType) !== -1 && !get(ruleBase, `${rule.id}.option.off`)
+      rule.type === 'DESIGN' && rule.chartTypes.indexOf(chartType) !== -1 && !ruleBase[rule.id].option?.off
   );
   const encodingSpec = toCheckRules.reduce((lastSpec, rule: RuleModule) => {
     const relatedSpec = (rule as DesignRuleModule).optimizer(dataProps, chartSpec);
@@ -88,10 +71,20 @@ function applyDesignRules(
   return encodingSpec;
 }
 
-export function dataFrameToAdvices(
+/**
+ * recommending charts given data and dataProps, based on CKB and RuleBase
+ * @param data input data [ {a: xxx, b: xxx}, ... ]
+ * @param dataProps data props derived from data-wizard
+ * @param chartWIKI ckb
+ * @param ruleBase rule base
+ * @param options options for advising such as log, preferences
+ * @returns chart list [ { type: chartTypes, spec: antv-spec, score: >0 }]
+ */
+export function dataToAdvices(
+  data: DataRows,
+  dataProps: BasicDataPropertyForAdvice[],
   chartWIKI: Record<string, ChartKnowledgeJSON>,
   ruleBase: Record<string, RuleModule>,
-  dataFrame: DataFrame,
   options?: AdvisorOptions
 ) {
   /**
@@ -111,7 +104,6 @@ export function dataFrameToAdvices(
    * */
   const CHART_ID_OPTIONS = Object.keys(ChartWIKI);
 
-  const { dataProps } = dataFrame;
   // score every possible chart
   const list: Advice[] = CHART_ID_OPTIONS.map((t: string) => {
     // step 1: analyze score by rule
@@ -121,7 +113,7 @@ export function dataFrameToAdvices(
     }
 
     // step 2: field mapping to spec encoding
-    const chartTypeSpec = getChartTypeSpec(t, dataFrame, chartWIKI[t]);
+    const chartTypeSpec = getChartTypeSpec(t, data, dataProps, chartWIKI[t]);
 
     // FIXME kpi_panel and table spec to be null temporarily
     const customChartType = ['kpi_panel', 'table'];
@@ -136,6 +128,12 @@ export function dataFrameToAdvices(
     return { type: t, spec: chartTypeSpec, score };
   });
 
+  /**
+   * compare two advice charts by their score
+   * @param chart1
+   * @param chart2
+   * @returns
+   */
   function compareAdvices(chart1: Advice, chart2: Advice) {
     if (chart1.score < chart2.score) {
       return 1;

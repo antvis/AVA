@@ -4,8 +4,8 @@ import { Advisor } from '../src/advisor';
 import { Linter } from '../src/linter';
 import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../src/ruler';
 import { ChartAdvisor } from '../src/chart-advisor';
-import { DataFrame } from '../src/advisor/utils/dataframe';
 import { hasSubset } from '../src/utils';
+import { DataRows } from '../src/advisor/advice-pipeline/interface';
 
 const myRule: RuleModule = {
   id: 'fufu-rule',
@@ -24,26 +24,22 @@ const myRule: RuleModule = {
   },
 };
 
+const data = [
+  { price: 100, type: 'A' },
+  { price: 120, type: 'B' },
+  { price: 150, type: 'C' },
+];
+
 describe('init Advisor', () => {
   //   // TODO more tests about data that DW cannot handle, return empty advice list.
   test('data to advices 111', () => {
     const myAdvisor = new Advisor();
-    const data = [
-      { price: 100, cost: 100, revenue: 500, amount: 150, type: 'A' },
-      { price: 120, cost: 200, revenue: 550, amount: 250, type: 'B' },
-      { price: 150, cost: 410, revenue: 600, amount: 60, type: 'C' },
-    ];
     const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
     // 4 -> pie / donut / bar / column
     expect(advices.length).toBe(4);
   });
 
   test('data to advices with customized chart', () => {
-    const data = [
-      { price: 100, cost: 100, revenue: 500, amount: 150, type: 'A' },
-      { price: 120, cost: 200, revenue: 550, amount: 250, type: 'B' },
-      { price: 150, cost: 410, revenue: 600, amount: 60, type: 'C' },
-    ];
     const myCKBCfg: CKBConfig = {
       include: ['line_chart', 'pie_chart'],
     };
@@ -54,11 +50,6 @@ describe('init Advisor', () => {
   });
 
   test('data to advices with ckb config', () => {
-    const data = [
-      { price: 100, cost: 100, revenue: 500, amount: 150, type: 'A' },
-      { price: 120, cost: 200, revenue: 550, amount: 250, type: 'B' },
-      { price: 150, cost: 410, revenue: 600, amount: 60, type: 'C' },
-    ];
     const myCKBCfg: CKBConfig = {
       exclude: ['line_chart', 'pie_chart'],
     };
@@ -75,8 +66,7 @@ describe('init Advisor', () => {
       return [field4Color, field4Angle];
     };
 
-    const toFuChart = (dataFrame: DataFrame): AntVSpec | null => {
-      const { dataProps } = dataFrame;
+    const toFuChart = (data: DataRows, dataProps: BasicDataPropertyForAdvice[]): AntVSpec | null => {
       const [field4Color, field4Angle] = splitAngleColor(dataProps);
       if (!field4Angle || !field4Color) return null;
 
@@ -86,7 +76,7 @@ describe('init Advisor', () => {
         },
         data: {
           type: 'json-array',
-          values: dataFrame.toJson(),
+          values: data,
         },
         layer: [
           {
@@ -123,11 +113,6 @@ describe('init Advisor', () => {
       recRate: 'Use with Caution',
       toSpec: toFuChart,
     };
-    const data = [
-      { price: 100, cost: 100, revenue: 500, amount: 150, type: 'A' },
-      { price: 120, cost: 200, revenue: 550, amount: 250, type: 'B' },
-      { price: 150, cost: 410, revenue: 600, amount: 60, type: 'C' },
-    ];
     const myCKBCfg: CKBConfig = {
       custom: {
         fufu_chart: myChart,
@@ -148,11 +133,6 @@ describe('init Advisor', () => {
       },
     };
     const myAdvisor = new Advisor(undefined, myRuleCfg);
-    const data = [
-      { price: 100, cost: 100, revenue: 500, amount: 150, type: 'A' },
-      { price: 120, cost: 200, revenue: 550, amount: 250, type: 'B' },
-      { price: 150, cost: 410, revenue: 600, amount: 60, type: 'C' },
-    ];
     const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
     // 4 -> donut / bar / column / histogram, custom rule avoid pie_chart
     expect(advices.length).toBe(4);
@@ -174,11 +154,6 @@ describe('init Advisor', () => {
       },
     };
     const myAdvisor = new Advisor(undefined, myRuleCfg);
-    const data = [
-      { price: 100, cost: 100, revenue: 500, amount: 150, type: 'A' },
-      { price: 120, cost: 200, revenue: 550, amount: 250, type: 'B' },
-      { price: 150, cost: 410, revenue: 600, amount: 60, type: 'C' },
-    ];
     const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
     // 5 -> donut / bar / column / histogram / pie,
     // the rule to avoid pie_chart is turn off in options

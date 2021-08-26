@@ -1,2 +1,2 @@
-export * from './dataframe-to-advices';
+export * from './data-to-advices';
 export * from './spec-mapping';
