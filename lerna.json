@@ -4,7 +4,8 @@
     "packages/ava-site",
     "packages/chart-advisor",
     "packages/insight",
-    "packages/smart-board"
+    "packages/smart-board",
+    "packages/data-wizard"
   ],
   "command": {
     "publish": {
