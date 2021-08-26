@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@types/jest": "^23.3.12",
+    "eslint": "^7.32.0",
     "jest": "^24.9.0",
     "limit-size": "^0.1.4",
     "lint-staged": "^11.1.2",
