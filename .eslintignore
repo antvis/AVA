@@ -11,5 +11,4 @@ dist/
 temp/
 typings/
 docs/
-jest.config.js
 webpack.config.js
