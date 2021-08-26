@@ -15,10 +15,10 @@
     "access": "public"
   },
   "license": "MIT",
-  "main": "lib/src/index.js",
-  "types": "lib/src/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
-  "module": "esm/src/index.js",
+  "module": "esm/index.js",
   "files": [
     "esm",
     "dist",
