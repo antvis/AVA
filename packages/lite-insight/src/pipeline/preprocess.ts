@@ -1,4 +1,4 @@
-import * as DWAnalyzer from '@antv/dw-analyzer';
+import { DataFrame, analyzer as DWAnalyzer } from '@antv/data-wizard';
 import _intersection from 'lodash/intersection';
 import { DataType, FieldType, Datum, ImpactMeasure } from '../interface';
 import { AggregatorMap } from '../utils/aggregate';
@@ -8,13 +8,12 @@ export type DataProperty =
   | (DWAnalyzer.DateFieldInfo & { name: string; dataTypes: DataType[]; fieldType: FieldType })
   | (DWAnalyzer.StringFieldInfo & { name: string; dataTypes: DataType[]; fieldType: FieldType });
 
-export const dataToDataProps = (data: Datum[], fields?: string[]): DataProperty[] => {
+export const dataToDataProps = (data: Datum[]): DataProperty[] => {
   if (!data) {
     throw new Error('Argument `data` is missing.');
   }
-
-  const dataTypeInfos = DWAnalyzer.typeAll(data, fields);
-
+  const df = new DataFrame(data);
+  const dataTypeInfos = df.info();
   const dataProps: DataProperty[] = [];
 
   dataTypeInfos.forEach((info) => {
