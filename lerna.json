@@ -1,7 +1,6 @@
 {
   "packages": [
     "packages/ckb",
-    "packages/ava-site",
     "packages/chart-advisor",
     "packages/lite-insight",
     "packages/smart-board",
@@ -12,10 +11,7 @@
       "registry": "https://registry.npmjs.org/"
     },
     "bootstrap": {
-      "npmClientArgs": [
-        "--no-lockfile",
-        "--no-package-lock"
-      ]
+      "npmClientArgs": ["--no-lockfile", "--no-package-lock"]
     }
   },
   "version": "1.1.7"
