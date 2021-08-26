@@ -51,7 +51,9 @@
   },
   "homepage": "https://github.com/antvis/SmartBoard#readme",
   "devDependencies": {
+    "@types/jest": "^23.3.12",
     "@types/uuid": "^8.3.1",
+    "jest": "^24.9.0",
     "limit-size": "^0.1.4",
     "lint-staged": "^11.0.1",
     "npm-run-all": "^4.1.5",
