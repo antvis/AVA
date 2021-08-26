@@ -21,6 +21,8 @@
     "format:packages": "lerna run format",
     "test": "jest",
     "test:ca": "cd ./packages/chart-advisor && npm run test",
+    "test:ckb": "cd ./packages/ckb && npm run test",
+    "test:li": "cd ./packages/insight && npm run test",
     "test:sb": "cd ./packages/smart-board && npm run test",
     "coverage": "jest --coverage",
     "test-live": "sh ./scripts/test-live",
