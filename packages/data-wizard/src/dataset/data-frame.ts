@@ -1,21 +1,17 @@
 import * as analyzer from '../analyzer';
 import * as utils from '../utils';
-import type { FrameData, Axis, Extra } from './types';
 import BaseFrame from './base-frame';
 import Series from './series';
 import { isLegalBasicType, genArrIdx, isAxis } from './utils';
+import type { FrameData, Axis, Extra } from './types';
 
 /** 2D data structure */
 export default class DataFrame extends BaseFrame {
-  axes: [Axis[], Axis[]];
-
   constructor(data: FrameData, extra?: Extra) {
     super(data, extra);
 
-    this.axes = [[], []];
-
     if (utils.isObject(extra) && !extra.index && !extra.columns && Object.keys(extra).length > 0) {
-      throw new Error(`The extra of DataFrame only owns 'index' and 'columns' properties`);
+      throw new Error('The extra of DataFrame only owns \'index\' and \'columns\' properties');
     }
 
     if (utils.isArray(data)) {
@@ -127,7 +123,7 @@ export default class DataFrame extends BaseFrame {
   };
 
   get shape(): [number, number] {
-    return [this.axes[0].length, this.axes[1].length];
+    return [this.axes[0].length, (this.axes[1] as Axis[]).length];
   }
 
   get(rowLoc: Axis | Axis[] | string, colLoc?: Axis | Axis[] | string): DataFrame | Series | any {

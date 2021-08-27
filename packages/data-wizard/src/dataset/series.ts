@@ -1,7 +1,7 @@
 import * as utils from '../utils';
-import type { SeriesData, Extra, Axis } from './types';
 import BaseFrame from './base-frame';
 import { isLegalBasicType } from './utils';
+import type { SeriesData, Extra, Axis } from './types';
 
 export interface SeriesExtra {
   index?: Extra['index'];
@@ -9,15 +9,11 @@ export interface SeriesExtra {
 
 /** 1D data structure */
 export default class Series extends BaseFrame {
-  axes: [Axis[]];
-
   constructor(data: SeriesData, extra?: SeriesExtra) {
     super(data, extra);
 
-    this.axes = [[]];
-
     if (utils.isObject(extra) && !extra.index && Object.keys(extra).length > 0) {
-      throw new Error(`The extra of Series only owns 'index' property`);
+      throw new Error('The extra of Series only owns \'index\' property');
     }
 
     if (isLegalBasicType(data)) {
