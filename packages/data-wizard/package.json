@@ -87,6 +87,6 @@
     "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^27.0.4",
     "tslib": "^2.3.0",
-    "typescript": "^4.3.5"
+    "typescript": "4.3.5"
   }
 }
