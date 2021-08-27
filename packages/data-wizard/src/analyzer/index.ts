@@ -1,7 +1,7 @@
-import type { LevelOfMeasurement } from '@antv/ckb';
 import * as utils from '../utils';
 import * as stat from '../statistics';
 import { isDateString } from './is-date';
+import type { LevelOfMeasurement } from '@antv/ckb';
 
 /**
  * Field Type
@@ -374,10 +374,8 @@ export function analyzeField(array: any[]): FieldInfo {
     // temporarily threshold
     if (list.length >= 100) {
       fieldInfo.recommendation = 'boolean';
-    } else {
-      if (utils.isBoolean(uniqueArray)) {
-        fieldInfo.recommendation = 'boolean';
-      }
+    } else if (utils.isBoolean(uniqueArray)) {
+      fieldInfo.recommendation = 'boolean';
     }
   }
 

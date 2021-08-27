@@ -1,21 +1,18 @@
 import * as utils from '../utils';
-import type { SeriesData, FrameData, Axis, Extra } from './types';
 import { isLegalBasicType, genArrIdx } from './utils';
+import type { SeriesData, FrameData, Axis, Extra } from './types';
 
 type NDArray = any[] | any[][];
 
 /** Base data structure */
 export default abstract class BaseFrame {
-  abstract axes: [Axis[]] | [Axis[], Axis[]];
+  axes: [Axis[]] | [Axis[], Axis[]] = [[]];
 
-  data: NDArray;
+  data: NDArray = [];
 
-  colData: NDArray;
+  colData: NDArray = [];
 
   constructor(data: SeriesData | FrameData, extra?: Extra) {
-    this.data = [];
-    this.colData = [];
-
     // 1D: object
     if (utils.isArray(data) && isLegalBasicType(data?.[0])) {
       // 1D: array
@@ -27,22 +24,6 @@ export default abstract class BaseFrame {
       this.setAxis(0, genArrIdx(data, extra));
     }
   }
-
-  /** get value functions */
-
-  /**
-   * Get data by row location and column location.
-   * @param rowLoc
-   * @param colLoc
-   */
-  abstract get(rowLoc: Axis | Axis[] | string, colLoc?: Axis | Axis[] | string): BaseFrame;
-
-  /**
-   * Get data by row location and column location using integer-index.
-   * @param rowLoc
-   * @param colLoc
-   */
-  abstract getByIntIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
 
   abstract get shape(): [number] | [number, number];
 
@@ -66,4 +47,20 @@ export default abstract class BaseFrame {
   setAxis(axis: number, labels: Axis[]) {
     this.axes[axis] = labels;
   }
+
+  /** get value functions */
+
+  /**
+   * Get data by row location and column location.
+   * @param rowLoc
+   * @param colLoc
+   */
+  abstract get(rowLoc: Axis | Axis[] | string, colLoc?: Axis | Axis[] | string): BaseFrame;
+
+  /**
+   * Get data by row location and column location using integer-index.
+   * @param rowLoc
+   * @param colLoc
+   */
+  abstract getByIntIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
 }
