@@ -29,9 +29,8 @@ const devConfig = {
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {
-          presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: 'commonjs' }], '@babel/preset-react'],
+          presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }], '@babel/preset-react'],
           plugins: [
-            '@babel/plugin-transform-runtime',
             '@babel/plugin-proposal-class-properties',
             '@babel/plugin-proposal-object-rest-spread',
           ],
