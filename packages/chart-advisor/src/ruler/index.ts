@@ -1,3 +1,4 @@
+import { deleteProperty } from '../utils';
 import { RuleModule, RuleConfig } from './concepts/rule';
 import { rules } from './rules';
 
@@ -31,6 +32,7 @@ export const getChartRules = (ids: string[]): Record<string, RuleModule> => {
   return chartRules;
 };
 
+
 /**
  * processing ckb config and setup ckb used for advising
  * @param ruleCfg rule configuration
@@ -43,13 +45,13 @@ export const  processRuleCfg = (ruleCfg?: RuleConfig) => {
   }
 
   // step 1: remove excluded rule
-  const ruleBase = getChartRules(builtInRules);
+  let ruleBase = getChartRules(builtInRules);
   if (ruleCfg.exclude) {
     // have `exclude` definition
     const toExclude = ruleCfg.exclude;
     toExclude.forEach((id: string) => {
       if (Object.keys(ruleBase).includes(id)) {
-        delete ruleBase[id];
+        ruleBase = deleteProperty(ruleBase, id);
       }
     });
   }
@@ -59,7 +61,7 @@ export const  processRuleCfg = (ruleCfg?: RuleConfig) => {
     const toInclude = ruleCfg.include;
     Object.keys(ruleBase).forEach((id: string) => {
       if (!toInclude.includes(id)) {
-        delete ruleBase[id];
+        ruleBase = deleteProperty(ruleBase, id);
       }
     });
   }
