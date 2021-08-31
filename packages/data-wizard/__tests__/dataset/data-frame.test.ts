@@ -134,6 +134,31 @@ describe('New DataFrame', () => {
       [0, 1],
     ]);
   });
+
+  test('2D: object in array slice', () => {
+    const df = new DataFrame([
+      { a: 1, b: 4, c: 7 },
+      { a: 2, b: 5, c: 8 },
+      { a: 3, b: 6, c: 9 },
+    ], { columns: ['a', 'c'] });
+
+    // console.log('2D: object in array slice');
+    // console.log(df);
+
+    expect(df.data).toStrictEqual([
+      [1, 7],
+      [2, 8],
+      [3, 9],
+    ]);
+    expect(df.colData).toStrictEqual([
+      [1, 2, 3],
+      [7, 8, 9],
+    ]);
+    expect(df.axes).toStrictEqual([
+      [0, 1, 2],
+      ['a', 'c'],
+    ]);
+  });
 });
 
 describe('DataFrame Get Value Functions', () => {
@@ -358,19 +383,15 @@ describe('DataFrame Get Value Functions', () => {
   });
 });
 
-// describe('New DataFrame', () => {
+// describe('DataFrame Info', () => {
 //   test('2D: object in array', () => {
-//     // const df = new DataFrame([
-//     //   { a: 1, b: 4, c: 7 },
-//     //   { a: 2, b: 5, c: 8 },
-//     //   { a: 3, b: 6, c: 9 },
-//     // ], { columns: ['a', 'c'] });
 //     const df = new DataFrame([
 //       { a: 1, b: 4, c: 7 },
 //       { a: 2, b: 5, c: 8 },
 //       { a: 3, b: 6, c: 9 },
-//     ]);
+//     ], { columns: ['a', 'c'] });
 
+//     console.log('df', df);
 //     console.log('df.info', df.info());
 //   });
 // });
