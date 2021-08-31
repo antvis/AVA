@@ -23,9 +23,33 @@ export default class DataFrame extends BaseFrame {
 
       // 2D: object in array
       if (utils.isObject(data0)) {
-        const columns = Object.keys(data0);
-        this.genDataAndColDataFromArr(true, data, columns);
-        this.genColumns(columns, extra);
+        const columns: Axis[] = Object.keys(data0);
+        // slice
+        if (extra?.columns && extra?.columns.length < columns.length) {
+          for (let i = 0; i < data.length; i += 1) {
+            const datum = data[i];
+            this.data[i] = [];
+            for (let j = 0; j < extra.columns.length; j += 1) {
+              const column = extra.columns[j];
+              if (columns.includes(column)) {
+                this.data[i].push(datum[column]);
+              } else {
+                throw new Error(`There is no column ${column} in data.`);
+              }
+
+              if (this.colData[j]) {
+                this.colData[j].push(datum[column]);
+              } else {
+                this.colData[j] = [datum[column]];
+              }
+            }
+          }
+
+          this.setAxis(1, extra.columns);
+        } else {
+          this.genDataAndColDataFromArr(true, data, columns);
+          this.genColumns(columns, extra);
+        }
       }
 
       // 2D: array
@@ -93,7 +117,6 @@ export default class DataFrame extends BaseFrame {
         throw new Error(`Columns length is ${extra.columns?.length}, but data size is ${columns.length}`);
       }
     } else {
-      // convert Map Iterator to array
       this.setAxis(1, columns);
     }
   };
