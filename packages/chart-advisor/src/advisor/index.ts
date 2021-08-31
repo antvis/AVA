@@ -2,7 +2,6 @@ import { ChartKnowledgeJSON, CKBJson } from '@antv/ckb';
 import { DataFrame } from '@antv/data-wizard';
 import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
 import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
-import { deleteProperty } from '../utils';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { CKBConfig } from './ckb-config';
 
@@ -82,12 +81,12 @@ export class Advisor {
    */
   private processCKBCfg(ckbCfg: CKBConfig) {
     // step 1: exclude charts from default CKB
-    let ckbBase = CKBJson('en-US', true);
+    const ckbBase = CKBJson('en-US', true);
     const toExclude = ckbCfg.exclude;
     if (toExclude) {
       toExclude.forEach((chartType: string) => {
         if (Object.keys(ckbBase).includes(chartType)) {
-          ckbBase = deleteProperty(ckbBase, chartType);
+          delete ckbBase[chartType];
         }
       });
     }
@@ -97,7 +96,7 @@ export class Advisor {
       const toIncluded = ckbCfg.include;
       Object.keys(ckbBase).forEach((chartType: string) => {
         if (!toIncluded.includes(chartType)) {
-          ckbBase = deleteProperty(ckbBase, chartType);
+          delete ckbBase[chartType];
         }
       });
     }
