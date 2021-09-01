@@ -108,12 +108,6 @@ export type FieldMeta = {
   string?: StringFieldInfo;
 };
 
-/**
- * Fields Type
- * @public
- */
-export type FieldsInfo = Array<FieldInfo & { /** field name */ name: string }>;
-
 export function analyzeString(array: string[]): Omit<StringFieldInfo, keyof FieldInfo> {
   const lenArray = array.map((item) => item.length);
   return {
@@ -304,7 +298,7 @@ export function isTime(info: FieldInfo): boolean {
  * @param array - data
  * @public
  */
-export function analyzeField(array: any[]): FieldInfo {
+export function analyzeField(array: any[]): StringFieldInfo | NumberFieldInfo | DateFieldInfo {
   const list = array.map((item) => (utils.isNull(item) ? null : item));
   const valueMap = stat.valueMap(list);
   let recommendation: TypeSpecifics;
@@ -400,5 +394,5 @@ export function analyzeField(array: any[]): FieldInfo {
 
   fieldInfo.levelOfMeasurements = levelOfMeasurements;
 
-  return fieldInfo;
+  return fieldInfo as StringFieldInfo | NumberFieldInfo | DateFieldInfo;
 }
