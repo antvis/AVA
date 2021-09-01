@@ -4,6 +4,7 @@ import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
 import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { CKBConfig } from './ckb-config';
+import { AdvisorOptions } from './advice-pipeline/interface';
 
 export class Advisor {
   /**
@@ -40,7 +41,7 @@ export class Advisor {
    * @param options advice options such as purpose
    * @returns advice list
    */
-  advise(data: Record<string, any>[], fields?: string[], options?: any) {
+  advise(data: Record<string, any>[], fields?: string[], options?: AdvisorOptions) {
     // transform data into DataFrame
     let dataFrame: DataFrame;
     try {
@@ -112,3 +113,4 @@ export class Advisor {
 }
 
 export * from './advice-pipeline';
+export * from './ckb-config';
