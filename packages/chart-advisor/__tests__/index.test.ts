@@ -162,18 +162,55 @@ describe('init Advisor', () => {
 });
 
 describe('init Linter', () => {
-  test('Linter', () => {
-    // TODO param and output
+  const errorSpec = {
+    'basis': {
+      'type': 'chart'
+    },
+    'data': {
+      'type': 'json-array',
+      'values': [
+        { 'year': '2007', 'sales': 28 },
+        { 'year': '2008', 'sales': 55 },
+        { 'year': '2009', 'sales': 43 },
+        { 'year': '2010', 'sales': 91 },
+        { 'year': '2011', 'sales': 81 },
+        { 'year': '2012', 'sales': 53 },
+        { 'year': '2013', 'sales': 19 },
+        { 'year': '2014', 'sales': 87 },
+        { 'year': '2015', 'sales': 52 }
+      ]
+    },
+    'layer': [
+      {
+        'mark': 'area',
+        'encoding': {
+          'x': {
+            'field': 'year',
+            'type': 'temporal'
+          },
+          'y': {
+            'field': 'sales',
+            'type': 'quantitative'
+          }
+        }
+      }
+    ]
+  };
+
+  test('Linter test 1', () => {
     const myLt = new Linter();
-    const errors = myLt.lint({});
-    expect(errors.length).toBe(0);
+    const errors = myLt.lint(errorSpec as AntVSpec);
+    // FIXME: actual test after rule definition otimization
+    expect(errors.length).toBe(2);
   });
 });
 
 describe('init ChartAdvisor', () => {
   // TODO formal test
-  test('dataToAdvices in CA', () => {
+  test('adviseWithLint in CA', () => {
     const myCA = new ChartAdvisor();
-    expect(myCA.dataToAdvices([])).toBe('dataToAdvices in CA.');
+    const results = myCA.advise(data, ['price', 'type'], { refine: true });
+    // FIXME: actual test after rule definition otimization
+    expect(results.length).toBe(4);
   });
 });

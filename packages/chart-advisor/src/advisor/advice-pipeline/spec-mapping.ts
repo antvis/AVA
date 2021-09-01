@@ -374,8 +374,8 @@ function columnChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): A
       {
         mark: { type: 'bar' },
         encoding: {
-          x: { field: field4Y.name, type: 'nominal' },
-          y: { field: field4X.name, type: 'quantitative' },
+          x: { field: field4X.name, type: 'nominal' },
+          y: { field: field4Y.name, type: 'quantitative' },
         },
       },
     ],
