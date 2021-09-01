@@ -3,7 +3,7 @@ import * as utils from '../utils';
 import BaseFrame from './base-frame';
 import Series from './series';
 import { isLegalBasicType, genArrIdx, isAxis } from './utils';
-import type { FrameData, Axis, Extra } from './types';
+import type { FrameData, Axis, Extra, FieldsInfo } from './types';
 
 /** 2D data structure */
 export default class DataFrame extends BaseFrame {
@@ -109,7 +109,7 @@ export default class DataFrame extends BaseFrame {
    * @param columns
    * @param extra
    */
-  private genColumns = (columns: Axis[], extra?: Extra) => {
+  private genColumns (columns: Axis[], extra?: Extra) {
     if (extra?.columns) {
       if (extra.columns?.length === columns.length) {
         this.setAxis(1, extra.columns);
@@ -127,7 +127,7 @@ export default class DataFrame extends BaseFrame {
    * @param data
    * @param columns
    */
-  private genDataAndColDataFromArr = (isObj: boolean, data: any[], columns: Axis[]) => {
+  private genDataAndColDataFromArr(isObj: boolean, data: any[], columns: Axis[]) {
     for (let i = 0; i < data.length; i += 1) {
       const datum = data[i];
 
@@ -492,8 +492,8 @@ export default class DataFrame extends BaseFrame {
   /**
    * Get statistics.
    */
-  info(): analyzer.FieldsInfo {
-    const fields: analyzer.FieldsInfo = [];
+  info(): FieldsInfo {
+    const fields: FieldsInfo = [];
     for (let i = 0; i < this.columns.length; i += 1) {
       const column = this.columns[i];
       fields.push({ ...analyzer.analyzeField(this.colData[i]), name: String(column) });

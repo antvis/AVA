@@ -1,5 +1,6 @@
 import DataFrame from '../../src/dataset/data-frame';
 import Series from '../../src/dataset/series';
+import * as analyzer from '../../src/analyzer';
 
 describe('New DataFrame', () => {
   test('1D: object', () => {
@@ -383,15 +384,37 @@ describe('DataFrame Get Value Functions', () => {
   });
 });
 
-// describe('DataFrame Info', () => {
-//   test('2D: object in array', () => {
-//     const df = new DataFrame([
-//       { a: 1, b: 4, c: 7 },
-//       { a: 2, b: 5, c: 8 },
-//       { a: 3, b: 6, c: 9 },
-//     ], { columns: ['a', 'c'] });
+describe('DataFrame Info', () => {
+  test('2D: object in array', () => {
+    const df = new DataFrame([
+      { a: 1, b: 4, c: 7 },
+      { a: 2, b: 5, c: 8 },
+      { a: 3, b: 6, c: 9 },
+    ], { columns: ['a', 'c'] });
 
-//     console.log('df', df);
-//     console.log('df.info', df.info());
-//   });
-// });
+    const infos =  df.info();
+    const info= infos[0] as analyzer.NumberFieldInfo & { name: String } ;
+
+    expect(info.count).toBe(3);
+    expect(info.distinct).toBe(3);
+    expect(info.type).toBe('integer');
+    expect(info.recommendation).toBe('integer');
+    expect(info.missing).toBe(0);
+    expect(info.samples).toStrictEqual([1,2,3]);
+    expect(info.valueMap).toStrictEqual({ '1': 1, '2': 1, '3': 1 });
+    expect(info.minimum).toBe(1);
+    expect(info.maximum).toBe(3);
+    expect(info.mean).toBe(2);
+    expect(info.percentile5).toBe(1);
+    expect(info.percentile25).toBe(1);
+    expect(info.percentile50).toBe(2);
+    expect(info.percentile75).toBe(3);
+    expect(info.percentile95).toBe(3);
+    expect(info.sum).toBe(6);
+    expect(info.variance).toBe(0.6666666666666666);
+    expect(info.stdev).toBe(0.816496580927726);
+    expect(info.zeros).toBe(0);
+    expect(info.levelOfMeasurements).toStrictEqual([ 'Interval', 'Discrete' ]);
+    expect(info.name).toBe('a');
+  });
+});

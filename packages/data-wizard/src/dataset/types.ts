@@ -1,3 +1,5 @@
+import * as analyzer from '../analyzer';
+
 export type SeriesData =
   /**
    * 1D: object
@@ -79,3 +81,9 @@ export type Extra = {
   index?: Axis[];
   columns?: Axis[];
 };
+
+/**
+ * Fields Type
+ * @public
+ */
+export type FieldsInfo = Array<(analyzer.StringFieldInfo | analyzer.NumberFieldInfo | analyzer.DateFieldInfo) & { /** field name */ name: string }>;
