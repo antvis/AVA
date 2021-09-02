@@ -137,11 +137,14 @@ describe('New DataFrame', () => {
   });
 
   test('2D: object in array slice', () => {
-    const df = new DataFrame([
-      { a: 1, b: 4, c: 7 },
-      { a: 2, b: 5, c: 8 },
-      { a: 3, b: 6, c: 9 },
-    ], { columns: ['a', 'c'] });
+    const df = new DataFrame(
+      [
+        { a: 1, b: 4, c: 7 },
+        { a: 2, b: 5, c: 8 },
+        { a: 3, b: 6, c: 9 },
+      ],
+      { columns: ['a', 'c'] }
+    );
 
     // console.log('2D: object in array slice');
     // console.log(df);
@@ -386,21 +389,24 @@ describe('DataFrame Get Value Functions', () => {
 
 describe('DataFrame Info', () => {
   test('2D: object in array', () => {
-    const df = new DataFrame([
-      { a: 1, b: 4, c: 7 },
-      { a: 2, b: 5, c: 8 },
-      { a: 3, b: 6, c: 9 },
-    ], { columns: ['a', 'c'] });
+    const df = new DataFrame(
+      [
+        { a: 1, b: 4, c: 7 },
+        { a: 2, b: 5, c: 8 },
+        { a: 3, b: 6, c: 9 },
+      ],
+      { columns: ['a', 'c'] }
+    );
 
-    const infos =  df.info();
-    const info= infos[0] as analyzer.NumberFieldInfo & { name: String } ;
+    const infos = df.info();
+    const info = infos[0] as analyzer.NumberFieldInfo & { name: String };
 
     expect(info.count).toBe(3);
     expect(info.distinct).toBe(3);
     expect(info.type).toBe('integer');
     expect(info.recommendation).toBe('integer');
     expect(info.missing).toBe(0);
-    expect(info.samples).toStrictEqual([1,2,3]);
+    expect(info.samples).toStrictEqual([1, 2, 3]);
     expect(info.valueMap).toStrictEqual({ '1': 1, '2': 1, '3': 1 });
     expect(info.minimum).toBe(1);
     expect(info.maximum).toBe(3);
@@ -414,7 +420,7 @@ describe('DataFrame Info', () => {
     expect(info.variance).toBe(0.6666666666666666);
     expect(info.stdev).toBe(0.816496580927726);
     expect(info.zeros).toBe(0);
-    expect(info.levelOfMeasurements).toStrictEqual([ 'Interval', 'Discrete' ]);
+    expect(info.levelOfMeasurements).toStrictEqual(['Interval', 'Discrete']);
     expect(info.name).toBe('a');
   });
 });

@@ -21,6 +21,6 @@ export const genArrIdx = (data: any[], extra?: Extra): Axis[] => {
       return utils.genNumArr(data.length);
     }
   } else {
-    throw new Error(`Data must be an array`);
+    throw new Error('Data must be an array');
   }
 };

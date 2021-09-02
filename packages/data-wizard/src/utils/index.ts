@@ -32,7 +32,7 @@ export function isDigit(value: string): boolean {
         return false;
       }
     }
-    if (!/[0-9]/.test(char)) {
+    if (char !== '.' && !/[0-9]/.test(char)) {
       return false;
     }
   }
@@ -93,7 +93,7 @@ export const genNumArr = (num: Number) => {
   return [...Array(num).keys()];
 };
 
-type Assert = (condition: any, errMsg?: string) => asserts condition;
+export type Assert = (condition: any, errMsg?: string) => asserts condition;
 /**
  * assert
  * @param condition

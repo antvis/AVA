@@ -178,17 +178,17 @@ export function analyzeDate(array: Array<string | Date>, isInteger = false): Omi
  */
 export function analyzeType(value: any): 'null' | 'integer' | 'float' | 'date' | 'string' {
   if (utils.isNull(value)) return 'null';
-  if (typeof value === 'number') {
+  if (utils.isNumber(value)) {
     if (utils.isInteger(value)) return 'integer';
     return 'float';
   }
-  if (typeof value === 'string') {
+  if (utils.isString(value)) {
     if (utils.isDigit(value)) {
       if (value.includes('.')) return 'float';
       return 'integer';
     }
   }
-  if (utils.isDate(value)) return 'date';
+  if (utils.isDate(value, true)) return 'date';
   return 'string';
 }
 
@@ -218,6 +218,7 @@ export function isOrdinal(info: FieldInfo): boolean {
 
   let through = true;
   while (through) {
+    let through = true;
     for (let i = 0; i < list.length; i += 1) {
       const item = list[i];
       const char = item[startIndex + 1];
@@ -232,6 +233,7 @@ export function isOrdinal(info: FieldInfo): boolean {
   }
   through = true;
   while (through) {
+    let through = true;
     for (let i = 0; i < list.length; i += 1) {
       const item = list[i];
       const char = item[item.length - 1 - (endIndex + 1)];
@@ -389,7 +391,7 @@ export function analyzeField(array: any[]): StringFieldInfo | NumberFieldInfo | 
     // temporarily threshold
     if (list.length >= 100) {
       fieldInfo.recommendation = 'boolean';
-    } else if (utils.isBoolean(uniqueArray)) {
+    } else if (utils.isBoolean(uniqueArray, true)) {
       fieldInfo.recommendation = 'boolean';
     }
   }
