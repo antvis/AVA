@@ -1,25 +1,40 @@
 import { CKBJson } from '@antv/ckb';
 import { hasSubset } from '../../utils';
-import { RuleModule } from '../concepts/rule';
+import { RuleModule, BasicDataPropertyForAdvice } from '../concepts/rule';
 import { compare } from '../utils';
 
 const Wiki = CKBJson('en-US', true);
 const allChartTypes = Object.keys(Wiki);
 
+const applyChartTypes = [
+  'bar_chart',
+  'column_chart',
+  'grouped_bar_chart',
+  'grouped_column_chart',
+  'stacked_bar_chart',
+  'stacked_column_chart',
+];
+
+function getNominalFields(dataProps: BasicDataPropertyForAdvice[]) {
+  return dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+}
+
 export const nominalEnumCombinatorial: RuleModule = {
   id: 'nominal-enum-combinatorial',
   type: 'SOFT',
-  chartTypes: allChartTypes,
   docs: {
     lintText:
-      'Single (Basic) and Multi (Stacked, Grouped,...) charts should be optimizedly recommended by nominal enums combinatorial numbers.',
+      'Single (Basic) and Multi (Stacked, Grouped,...) charts should be optimized recommended by nominal enums combinatorial numbers.',
+  },
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1 && getNominalFields.length >= 2;
   },
   validator: (args): number => {
     let result = 0;
     const { dataProps, chartType } = args;
 
     if (dataProps && allChartTypes) {
-      const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+      const nominalFields = getNominalFields(dataProps);
 
       if (nominalFields.length >= 2) {
         const sortedNominals = nominalFields.sort(compare);

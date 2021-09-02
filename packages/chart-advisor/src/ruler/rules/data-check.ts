@@ -8,9 +8,11 @@ const allChartTypes = Object.keys(Wiki) as string[];
 export const dataCheck: RuleModule = {
   id: 'data-check',
   type: 'HARD',
-  chartTypes: allChartTypes,
   docs: {
     lintText: 'Data must satisfy the data prerequisites.',
+  },
+  trigger: ({ chartType }) => {
+    return allChartTypes.indexOf(chartType) !== -1;
   },
   validator: (args): number => {
     let result = 0;
