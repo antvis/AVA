@@ -1,3 +1,4 @@
+import { assert } from '../utils';
 import * as cache from './caches';
 
 /**
@@ -151,7 +152,7 @@ export function median(array: number[], ordered = false): number {
  * @public
  */
 export function quartile(array: number[], ordered = false): [number, number, number] {
-  if (array.length < 3) throw new Error('array.length cannot be less than 3');
+  assert(array.length < 3, 'array.length cannot be less than 3');
 
   const { length } = array;
   const newArray = ordered ? array : sort(array);
@@ -177,7 +178,7 @@ export function quartile(array: number[], ordered = false): [number, number, num
  * @public
  */
 export function quantile(array: number[], percent: number, ordered = false): number {
-  if (percent <= 0 || percent >= 100) throw new Error('percent cannot be between (0, 100)');
+  assert(percent <= 0 || percent >= 100, 'percent cannot be between (0, 100)');
 
   const newArray = ordered ? array : sort(array);
   const index = Math.ceil((array.length * percent) / 100) - 1;
@@ -199,7 +200,7 @@ export function mean(array: number[]): number {
  * @public
  */
 export function geometricMean(array: number[]): number {
-  if (array.some((item) => item <= 0)) throw new Error('ach item in array must greater than 0');
+  assert(array.some((item) => item <= 0), 'each item in array must greater than 0');
 
   const value = cache.get<number>(array, 'geometricMean');
   if (value === undefined) {
@@ -257,7 +258,7 @@ export function stdev(array: number[]): number {
  */
 
 export function covariance(x: number[], y: number[]): number {
-  if (x.length !== y.length) throw new Error('x and y must has same length');
+  assert(x.length !== y.length, 'x and y must has same length');
 
   const exy = mean(x.map((item, i) => item * y[i]));
   return exy - mean(x) * mean(y);

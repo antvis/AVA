@@ -92,3 +92,13 @@ export function unique(array: any[]): any[] {
 export const genNumArr = (num: Number) => {
   return [...Array(num).keys()];
 };
+
+type Assert = (condition: any, errMsg?: string) => asserts condition;
+/**
+ * assert
+ * @param condition
+ * @param errMsg
+ */
+ export const assert: Assert = (condition, errMsg) => {
+  if (condition) throw new Error(errMsg);
+};
