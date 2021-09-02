@@ -6,42 +6,57 @@ import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { CKBConfig } from './ckb-config';
 import { AdvisorOptions } from './advice-pipeline/interface';
 
+export interface AdviseParams {
+  /** input data to advise */
+  data: Record<string, any>[],
+  /** customized dataprops to advise */
+  dataProps?: BasicDataPropertyForAdvice[],
+  /** data fields to focus, apply in `data` and `dataProps` */
+  fields?: string[],
+  /** advising options such as purpose, layout preferences */
+  options?: AdvisorOptions
+};
+
 export class Advisor {
   /**
-   * @private CKB used for advising
+   * CKB used for advising
    */
-  private ckb: Record<string, ChartKnowledgeJSON>;
+  CKB: Record<string, ChartKnowledgeJSON>;
 
   /**
-   * @private rule base used for advising
+   * rule base used for advising
    */
-  private ruleBase: Record<string, RuleModule>;
+  ruleBase: Record<string, RuleModule>;
+
+  ckbCfg: CKBConfig;
+
+  ruleCfg: RuleConfig;
 
   /**
    *
-   * @param ckbCfg ckb configuration: `include`, `exclude`, `custom`.
+   * @param configuration for Advisor, including
+   *
+   * - ckbCfg: ckb configuration: `include`, `exclude`, `custom`.
    *  if not specified, used `@antv/ckb` as default
-   * @param ruleCfg rule base configuration: `include`, `exclude`, `custom`, `options`.
+   * - ruleCfg: rule base configuration: `include`, `exclude`, `custom`, `options`.
    *  if not specified, used `ruler` as default
    */
-  constructor(ckbCfg?: CKBConfig, ruleCfg?: RuleConfig) {
+  constructor(config: Partial<Pick<Advisor, 'ckbCfg' | 'ruleCfg'>> = {}) {
+    Object.assign(this, config);
     let ckb: Record<string, ChartKnowledgeJSON> = {};
-    if (ckbCfg) {
-      ckb = this.processCKBCfg(ckbCfg);
+    if (this.ckbCfg) {
+      ckb = this.processCKBCfg(this.ckbCfg);
     }
-
-    this.ckb = ckbCfg ? ckb : CKBJson('en-US', true);
-    this.ruleBase = processRuleCfg(ruleCfg);
+    this.CKB = this.ckbCfg ? ckb : CKBJson('en-US', true);
+    this.ruleBase = processRuleCfg(this.ruleCfg);
   }
 
   /**
    * chart advising from input data
-   * @param data input data as [ { col1: ..., col2, ...}, ... ]
-   * @param fields fields to focus
-   * @param options advice options such as purpose
-   * @returns advice list
+   * @param params paramters for advising
    */
-  advise(data: Record<string, any>[], fields?: string[], options?: AdvisorOptions) {
+  advise(params: AdviseParams) {
+    const { data, dataProps, fields, options } = params;
     // transform data into DataFrame
     let dataFrame: DataFrame;
     try {
@@ -53,26 +68,16 @@ export class Advisor {
     }
 
     // get dataProps from dataframe
-    const dataProps = dataFrame.info();
-    const advices = dataToAdvices(data, dataProps as BasicDataPropertyForAdvice[], this.ckb, this.ruleBase, options);
+    let dataPropsForAdvice: BasicDataPropertyForAdvice[];
+    if (dataProps) {
+      // filter out fields that are not included for advising
+      dataPropsForAdvice = fields ? dataProps.filter((dataProp: BasicDataPropertyForAdvice) => fields.includes(dataProp.name)) : dataProps;
+    } else {
+      dataPropsForAdvice = dataFrame.info() as BasicDataPropertyForAdvice[];
+    }
+    const advices = dataToAdvices(data, dataPropsForAdvice, this.CKB, this.ruleBase, options);
 
     return advices;
-  }
-
-  /**
-   * used for testing
-   * @returns ckb in Advisor instance
-   */
-  getCKB() {
-    return this.ckb;
-  }
-
-  /**
-   * used for testing
-   * @returns rule base in the Advisor instance
-   */
-  getRuleBase() {
-    return this.ruleBase;
   }
 
   /**

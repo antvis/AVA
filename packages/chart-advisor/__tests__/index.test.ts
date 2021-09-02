@@ -25,16 +25,15 @@ const myRule: RuleModule = {
 };
 
 const data = [
-  { price: 100, type: 'A' },
-  { price: 120, type: 'B' },
-  { price: 150, type: 'C' },
+  { price: 100, type: 'A', series: 'X' },
+  { price: 120, type: 'B', series: 'Y' },
+  { price: 150, type: 'C', series: 'Z' },
 ];
 
 describe('init Advisor', () => {
-  //   // TODO more tests about data that DW cannot handle, return empty advice list.
   test('data to advices 111', () => {
     const myAdvisor = new Advisor();
-    const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
+    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
     // 4 -> pie / donut / bar / column
     expect(advices.length).toBe(4);
   });
@@ -43,8 +42,8 @@ describe('init Advisor', () => {
     const myCKBCfg: CKBConfig = {
       include: ['line_chart', 'pie_chart'],
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
     // 1 -> pie
     expect(advices.length).toBe(1);
   });
@@ -53,8 +52,8 @@ describe('init Advisor', () => {
     const myCKBCfg: CKBConfig = {
       exclude: ['line_chart', 'pie_chart'],
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
     // 3 -> donut / bar / column
     expect(advices.length).toBe(3);
   });
@@ -119,8 +118,8 @@ describe('init Advisor', () => {
       },
       include: ['line_chart'],
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
     // 1 -> fufu_chart
     expect(advices.length).toBe(1);
   });
@@ -132,8 +131,8 @@ describe('init Advisor', () => {
         'fufu-rule': myRule,
       },
     };
-    const myAdvisor = new Advisor(undefined, myRuleCfg);
-    const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
+    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
+    const advices = myAdvisor.advise({data,fields: ['price', 'type'], options: { refine: true }});
     // 4 -> donut / bar / column / histogram, custom rule avoid pie_chart
     expect(advices.length).toBe(4);
   });
@@ -153,8 +152,8 @@ describe('init Advisor', () => {
         },
       },
     };
-    const myAdvisor = new Advisor(undefined, myRuleCfg);
-    const advices = myAdvisor.advise(data, ['price', 'type'], { refine: true });
+    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
+    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
     // 5 -> donut / bar / column / histogram / pie,
     // the rule to avoid pie_chart is turn off in options
     expect(advices.length).toBe(5);
@@ -199,7 +198,7 @@ describe('init Linter', () => {
 
   test('Linter test 1', () => {
     const myLt = new Linter();
-    const errors = myLt.lint(errorSpec as AntVSpec);
+    const errors = myLt.lint({spec: errorSpec as AntVSpec});
     // FIXME: actual test after rule definition otimization
     expect(errors.length).toBe(2);
   });
@@ -209,7 +208,7 @@ describe('init ChartAdvisor', () => {
   // TODO formal test
   test('adviseWithLint in CA', () => {
     const myCA = new ChartAdvisor();
-    const results = myCA.advise(data, ['price', 'type'], { refine: true });
+    const results = myCA.advise({data, fields: ['price', 'type'], options: { refine: true }});
     // FIXME: actual test after rule definition otimization
     expect(results.length).toBe(4);
   });

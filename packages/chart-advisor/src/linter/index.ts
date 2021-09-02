@@ -12,32 +12,47 @@ import { DataRows } from '../interface';
 import { LinterOptions, Lint } from './interface';
 import { getChartType } from './get-charttype';
 
+export interface LintParams {
+  spec: AntVSpec,
+  dataProps?: BasicDataPropertyForAdvice[],
+  options?: LinterOptions
+};
+
 export class Linter {
-  private ruleBase: Record<string, RuleModule>;
+  ruleBase: Record<string, RuleModule>;;
 
   constructor(ruleCfg?: RuleConfig) {
     this.ruleBase = processRuleCfg(ruleCfg);
   }
 
-  getRuleBase() {
-    return this.ruleBase;
-  }
-
   /**
+   * @param params for lint, including
    *
-   * @param spec chart spec written in antv-spec
-   * @param options linting options
+   * - spec: chart spec written in antv-spec
+   * - dataProps?: data props if customized
+   * - ontions?: linting options
    * @returns error[], the issues violated by the chart spec
    */
-  lint(spec: AntVSpec, options?: LinterOptions) {
-    // step 0: check spec validation (TODO)
+  lint(params: LintParams) {
+    const { spec, options } = params;
+    let { dataProps } = params;
     let ruleScore: Lint[] = [];
     if (spec) {
       const chartType = getChartType(spec);
       if (!chartType) return ruleScore;
       // step 1: get data in spec and build DataFrame
-      const dataFrame = new DataFrame(spec.data.values as DataRows);
-      const dataProps = dataFrame.info() as BasicDataPropertyForAdvice[];
+
+      if (!dataProps || !dataProps.length) {
+        let dataFrame: DataFrame;
+        try {
+          dataFrame = new DataFrame(spec.data.values as DataRows);
+          dataProps = dataFrame.info() as BasicDataPropertyForAdvice[];
+        } catch (error) {
+          // if the input data cannot be transformed into DataFrame
+          console.error('error: ', error);
+          return ruleScore;
+        }
+      }
       const purpose = options && options.purpose ? options.purpose : undefined;
       const preferences = options && options.preferences ? options.preferences : undefined;
       const info = { dataProps, chartType, purpose, preferences };

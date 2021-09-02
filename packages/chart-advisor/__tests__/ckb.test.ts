@@ -23,7 +23,7 @@ describe('customized CKB', () => {
 
   test('no ckb config input', () => {
     const myAdvisor = new Advisor();
-    const finalCKB = myAdvisor.getCKB();
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(52);
   });
 
@@ -33,8 +33,8 @@ describe('customized CKB', () => {
         fufu_chart: myChart,
       },
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const finalCKB = myAdvisor.getCKB();
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(53);
   });
 
@@ -42,8 +42,8 @@ describe('customized CKB', () => {
     const myCKBCfg: CKBConfig = {
       include: ['line_chart', 'pie_chart'],
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const finalCKB = myAdvisor.getCKB();
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(2);
   });
 
@@ -51,8 +51,8 @@ describe('customized CKB', () => {
     const myCKBCfg: CKBConfig = {
       exclude: ['pie_chart'],
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const finalCKB = myAdvisor.getCKB();
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(51);
   });
 
@@ -64,8 +64,8 @@ describe('customized CKB', () => {
         fufu_chart: myChart,
       },
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const finalCKB = myAdvisor.getCKB();
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(2);
   });
 
@@ -76,8 +76,8 @@ describe('customized CKB', () => {
         fufu_chart: myChart,
       },
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const finalCKB = myAdvisor.getCKB();
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(3);
   });
 
@@ -88,8 +88,8 @@ describe('customized CKB', () => {
         fufu_chart: myChart,
       },
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const finalCKB = myAdvisor.getCKB();
+    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(51);
     expect(finalCKB).toHaveProperty('fufu_chart');
   });
@@ -99,8 +99,8 @@ describe('customized CKB', () => {
       exclude: ['line_chart', 'pie_chart'],
       include: ['line_chart', 'pie_chart'],
     };
-    const myAdvisor = new Advisor(myCKBCfg);
-    const finalCKB = myAdvisor.getCKB();
+    const myAdvisor = new Advisor({ckbCfg:myCKBCfg});
+    const finalCKB = myAdvisor.CKB;
     expect(Object.keys(finalCKB).length).toBe(0);
   });
 });

@@ -9,7 +9,7 @@ export const CAPanel = () => {
   const [results, setResults] = useState([]);
 
   const getAdvicesFromAdvisor = () => {
-    const myResults = myCA.advise(testData, ['price', 'type']);
+    const myResults = myCA.advise({data: testData, fields: ['price', 'type']});
     setResults(myResults);
   };
 

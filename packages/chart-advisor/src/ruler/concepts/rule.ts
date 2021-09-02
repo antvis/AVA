@@ -27,6 +27,8 @@ export interface BasicDataPropertyForAdvice {
   readonly maximum?: any;
   readonly minimum?: any;
   readonly missing?: number;
+  // for customized props
+  [key: string]: any;
 }
 
 /**

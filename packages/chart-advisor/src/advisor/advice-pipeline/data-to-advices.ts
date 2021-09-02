@@ -74,11 +74,11 @@ function applyDesignRules(
 /**
  * recommending charts given data and dataProps, based on CKB and RuleBase
  * @param data input data [ {a: xxx, b: xxx}, ... ]
- * @param dataProps data props derived from data-wizard
+ * @param dataProps data props derived from data-wizard or customized by users
  * @param chartWIKI ckb
  * @param ruleBase rule base
  * @param options options for advising such as log, preferences
- * @returns chart list [ { type: chartTypes, spec: antv-spec, score: >0 }]
+ * @returns chart list [ { type: chartTypes, spec: antv-spec, score: >0 }, ... ]
  */
 export function dataToAdvices(
   data: DataRows,
