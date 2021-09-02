@@ -53,6 +53,7 @@ export interface Info {
  * @public
  */
 export type Validator = (args: Info) => number;
+export type Trigger = (args: Info) => boolean;
 
 export type Optimizer = (dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec) => object;
 
@@ -140,8 +141,8 @@ export type RuleModule = ChartRuleModule | DesignRuleModule;
 
 type DefaultRuleModule = {
   id: string;
-  chartTypes: string[];
   docs: Docs;
+  trigger: Trigger;
   option?: ChartRuleConfig;
 };
 

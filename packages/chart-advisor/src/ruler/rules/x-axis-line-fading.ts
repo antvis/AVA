@@ -1,12 +1,16 @@
 import { RuleModule } from '../concepts/rule';
 
+const applyChartTypes = ['line_chart'];
+
 export const xAxisLineFading: RuleModule = {
   id: 'x-axis-line-fading',
   type: 'DESIGN',
-  chartTypes: ['line_chart'],
   docs: {
     // FIXME formal description
     lintText: 'Adjust axis to make it prettier',
+  },
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
   },
   optimizer: (dataProps, chartSpec): object => {
     const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;

@@ -1,12 +1,16 @@
 import { hasSubset } from '../../utils';
 import { RuleModule } from '../concepts/rule';
 
+const applyChartTypes = ['pie_chart', 'donut_chart'];
+
 export const diffPieSector: RuleModule = {
   id: 'diff-pie-sector',
   type: 'SOFT',
-  chartTypes: ['pie_chart', 'donut_chart'],
   docs: {
     lintText: 'Difference should be big enough for pie sectors.',
+  },
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
   },
   validator: (args): number => {
     let result = 0;

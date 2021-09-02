@@ -7,9 +7,11 @@ const allChartTypes = Object.keys(Wiki);
 export const purposeCheck: RuleModule = {
   id: 'purpose-check',
   type: 'HARD',
-  chartTypes: allChartTypes,
   docs: {
     lintText: 'Choose types that satisfy the purpose, if purpose is defined.',
+  },
+  trigger: ({ chartType }) => {
+    return allChartTypes.indexOf(chartType) !== -1;
   },
   validator: (args): number => {
     let result = 0;

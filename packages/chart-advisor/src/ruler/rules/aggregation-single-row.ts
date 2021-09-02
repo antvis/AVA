@@ -2,12 +2,15 @@ import { CKBJson } from '@antv/ckb';
 import { RuleModule } from '../concepts/rule';
 
 const Wiki = CKBJson('en-US', true);
+const allChartTypes = Object.keys(Wiki) as string[];
 export const aggregationSingleRow: RuleModule = {
   id: 'aggregation-single-row',
   type: 'HARD',
-  chartTypes: Object.keys(Wiki) as string[],
   docs: {
     lintText: 'Recommend kpi_panel when only one row of aggregated data is available.',
+  },
+  trigger: ({ chartType }) => {
+    return allChartTypes.indexOf(chartType) !== -1;
   },
   validator: (args): number => {
     let result = 0;

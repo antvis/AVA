@@ -1,17 +1,26 @@
 import { CKBJson } from '@antv/ckb';
 import { intersects } from '../../utils';
-import { RuleModule } from '../concepts/rule';
+import { RuleModule, BasicDataPropertyForAdvice } from '../concepts/rule';
 import { compare } from '../utils';
 
 const Wiki = CKBJson('en-US', true);
 const allChartTypes = Object.keys(Wiki) as string[];
 
+function hasSeriesField(dataProps: BasicDataPropertyForAdvice[]): boolean {
+  const nominalOrOrdinalFields = dataProps.filter((field) =>
+    intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal'])
+  );
+  return nominalOrOrdinalFields.length >= 2;
+}
+
 export const limitSeries: RuleModule = {
   id: 'limit-series',
   type: 'SOFT',
-  chartTypes: allChartTypes,
   docs: {
     lintText: 'Avoid too many series',
+  },
+  trigger: ({ chartType, dataProps }) => {
+    return allChartTypes.indexOf(chartType) !== -1 && hasSeriesField(dataProps);
   },
   validator: (args): number => {
     let result = 0;
@@ -31,6 +40,7 @@ export const limitSeries: RuleModule = {
           result = 1 / f2.distinct;
 
           if (f2.distinct > 6 && chartType === 'heatmap') {
+            // TODO 为什么 result 可以是 2？
             result = 2;
           } else if (chartType === 'heatmap') {
             result = 0;

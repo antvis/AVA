@@ -7,9 +7,11 @@ const allChartTypes = Object.keys(Wiki);
 export const noRedundantField: RuleModule = {
   id: 'no-redundant-field',
   type: 'HARD',
-  chartTypes: allChartTypes,
   docs: {
     lintText: 'No redundant field.',
+  },
+  trigger: ({ chartType }) => {
+    return allChartTypes.indexOf(chartType) !== -1;
   },
   validator: (args): number => {
     let result = 0;

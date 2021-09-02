@@ -1,12 +1,16 @@
 import { hasSubset } from '../../utils';
 import { RuleModule } from '../concepts/rule';
 
+const applyChartTypes = ['pie_chart', 'donut_chart', 'radar_chart', 'rose_chart'];
+
 export const seriesQtyLimit: RuleModule = {
   id: 'series-qty-limit',
   type: 'SOFT',
-  chartTypes: ['pie_chart', 'donut_chart', 'radar_chart', 'rose_chart'],
   docs: {
     lintText: 'Some charts should has at most N series.',
+  },
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
   },
   validator: (args): number => {
     let result = 0;

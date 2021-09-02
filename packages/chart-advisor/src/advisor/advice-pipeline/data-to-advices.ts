@@ -26,23 +26,23 @@ const scoreRules = (
 
   // for log
   const record: Record<string, any>[] = [];
-
+  const info = { dataProps, chartType, purpose, preferences };
   let hardScore = 1;
   Object.values(ruleBase)
-    .filter((r: RuleModule) => r.type === 'HARD' && r.chartTypes.includes(chartType) && !ruleBase[r.id].option?.off)
+    .filter((r: RuleModule) => r.type === 'HARD' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((hr: RuleModule) => {
       const weight = ruleBase[hr.id].option?.weight || defaultWeight[hr.id];
-      const score = weight * (hr as ChartRuleModule).validator({ dataProps, chartType, purpose, preferences });
+      const score = weight * (hr as ChartRuleModule).validator(info);
       hardScore *= score;
       record.push({ name: hr.id, score, hard: true });
     });
 
   let softScore = 0;
   Object.values(ruleBase)
-    .filter((r: RuleModule) => r.type === 'SOFT' && r.chartTypes.includes(chartType) && !ruleBase[r.id].option?.off)
+    .filter((r: RuleModule) => r.type === 'SOFT' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((sr: RuleModule) => {
       const weight = ruleBase[sr.id].option?.weight || defaultWeight[sr.id];
-      const score = weight * (sr as ChartRuleModule).validator({ dataProps, chartType, purpose, preferences });
+      const score = weight * (sr as ChartRuleModule).validator(info);
       softScore += score;
       record.push({ name: sr.id, score, hard: false });
     });
@@ -62,7 +62,7 @@ function applyDesignRules(
 ) {
   const toCheckRules = Object.values(ruleBase).filter(
     (rule: RuleModule) =>
-      rule.type === 'DESIGN' && rule.chartTypes.indexOf(chartType) !== -1 && !ruleBase[rule.id].option?.off
+      rule.type === 'DESIGN' && rule.trigger({ dataProps, chartType }) && !ruleBase[rule.id].option?.off
   );
   const encodingSpec = toCheckRules.reduce((lastSpec, rule: RuleModule) => {
     const relatedSpec = (rule as DesignRuleModule).optimizer(dataProps, chartSpec);

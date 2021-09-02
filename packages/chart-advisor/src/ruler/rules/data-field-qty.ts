@@ -7,9 +7,11 @@ const allChartTypes = Object.keys(Wiki) as string[];
 export const dataFieldQty: RuleModule = {
   id: 'data-field-qty',
   type: 'HARD',
-  chartTypes: allChartTypes,
   docs: {
     lintText: 'Data must has the min qty of the prerequisite.',
+  },
+  trigger: ({ chartType }) => {
+    return allChartTypes.indexOf(chartType) !== -1;
   },
   validator: (args): number => {
     let result = 0;
