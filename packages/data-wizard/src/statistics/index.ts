@@ -8,7 +8,10 @@ import * as cache from './caches';
  */
 export function min(array: number[]): number {
   const value = cache.get<number>(array, 'min');
-  if (value !== undefined) return value;
+  if (value !== undefined) {
+    console.log('cache')
+    return value;
+  }
   return cache.set(array, 'min', Math.min(...array));
 }
 
@@ -203,10 +206,10 @@ export function geometricMean(array: number[]): number {
   assert(array.some((item) => item <= 0), 'each item in array must greater than 0');
 
   const value = cache.get<number>(array, 'geometricMean');
-  if (value === undefined) {
-    return cache.set(array, 'geometricMean', array.reduce((prev, curr) => prev * curr, 1) ** (1 / array.length));
-  }
-  return value;
+  if (value !== undefined) return value;
+  return cache.set(array, 'geometricMean', array.reduce((prev, curr) => prev * curr, 1) ** (1 / array.length));
+
+
 }
 
 /**
@@ -217,14 +220,12 @@ export function geometricMean(array: number[]): number {
 export function harmonicMean(array: number[]): number {
   const base = 2 ** 16;
   const value = cache.get<number>(array, 'harmonicMean');
-  if (value === undefined) {
-    return cache.set(
-      array,
-      'harmonicMean',
-      (base * array.length) / array.reduce((prev, curr) => base / curr + prev, 0)
-    );
-  }
-  return value;
+  if (value !== undefined) return value;
+  return cache.set(
+    array,
+    'harmonicMean',
+    (base * array.length) / array.reduce((prev, curr) => base / curr + prev, 0)
+  );
 }
 
 /**
@@ -236,10 +237,8 @@ export function harmonicMean(array: number[]): number {
 export function variance(array: number[]): number {
   const m = mean(array);
   const value = cache.get<number>(array, 'variance');
-  if (value === undefined) {
-    return cache.set(array, 'variance', array.reduce((prev, curr) => prev + (curr - m) ** 2, 0) / array.length);
-  }
-  return value;
+  if (value !== undefined) return value;
+  return cache.set(array, 'variance', array.reduce((prev, curr) => prev + (curr - m) ** 2, 0) / array.length);
 }
 
 /**

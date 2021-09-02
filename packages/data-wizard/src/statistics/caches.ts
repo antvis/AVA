@@ -10,6 +10,7 @@ const CACHES: WeakMap<any[], Map<string, any>> = new WeakMap();
  * @param value - value
  */
 export function set<T>(target: any[], key: string, value: T) {
+  // TODO: If target is object, the equal condition needs special handling
   if (!CACHES.get(target)) {
     CACHES.set(target, new Map());
   }
