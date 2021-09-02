@@ -5,41 +5,6 @@ import { Linter, Lint } from '../../../../../packages/chart-advisor/src/linter';
 import { Chart } from '../Chart';
 import { LintCard } from './LintCard';
 
-// const errorSpec = {
-//   'basis': {
-//     'type': 'chart'
-//   },
-//   'data': {
-//     'type': 'json-array',
-//     'values': [
-//       { 'year': '2007', 'sales': 28 },
-//       { 'year': '2008', 'sales': 55 },
-//       { 'year': '2009', 'sales': 43 },
-//       { 'year': '2010', 'sales': 91 },
-//       { 'year': '2011', 'sales': 81 },
-//       { 'year': '2012', 'sales': 53 },
-//       { 'year': '2013', 'sales': 19 },
-//       { 'year': '2014', 'sales': 87 },
-//       { 'year': '2015', 'sales': 52 }
-//     ]
-//   },
-//   'layer': [
-//     {
-//       'mark': 'area',
-//       'encoding': {
-//         'x': {
-//           'field': 'year',
-//           'type': 'temporal'
-//         },
-//         'y': {
-//           'field': 'sales',
-//           'type': 'quantitative'
-//         }
-//       }
-//     }
-//   ]
-// };
-
 const errorSpec = {
   'basis': {
     'type': 'chart'
@@ -72,7 +37,7 @@ export const LinterPanel = () => {
   const [lints, setLints] = useState<Lint[]>([]);
 
   const getLint = () => {
-    const myLint = myLinter.lint(errorSpec as AntVSpec);
+    const myLint = myLinter.lint({spec: errorSpec as AntVSpec});
     setLints(myLint);
   };
 

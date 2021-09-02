@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Divider, Row, Col } from 'antd';
-import { Advice } from '../../../../../packages/chart-advisor/src/advisor/advice-pipeline';
-import { Advisor } from '../../../../../packages/chart-advisor/lib';
+import { Advice, Advisor } from '../../../../../packages/chart-advisor/src/advisor';
 import testData from '../data.json';
 import { AdviceCard } from './AdviceCard';
 
@@ -10,7 +9,7 @@ export const AdvisorPanel = () => {
   const [advices, setAdvices] = useState<Advice[]>([]);
 
   const getAdvicesFromAdvisor = () => {
-    const myAdvices: Advice[] = myAdvisor.advise(testData, ['price', 'type']);
+    const myAdvices: Advice[] = myAdvisor.advise({data: testData, fields: ['price', 'type']});
     setAdvices(myAdvices);
   };
 
