@@ -10,9 +10,12 @@ import { DataRows } from '../src/advisor/advice-pipeline/interface';
 const myRule: RuleModule = {
   id: 'fufu-rule',
   type: 'HARD',
-  chartTypes: ['pie_chart'],
   docs: {
     lintText: 'listen to fufu',
+  },
+  trigger: (args) => {
+    const { chartType } = args;
+    return ['pie_chart'].includes(chartType);
   },
   validator: (args) => {
     let result = 1;
@@ -161,23 +164,39 @@ describe('init Advisor', () => {
 });
 
 describe('init Linter', () => {
-  const errorSpec = {
+  const dataOfRightSpec = {
+    'type': 'json-array',
+    'values': [
+      { 'year': '2007', 'sales': 28},
+      { 'year': '2008', 'sales': 55},
+      { 'year': '2009', 'sales': 43},
+      { 'year': '2010', 'sales': 91},
+      { 'year': '2011', 'sales': 81},
+      { 'year': '2012', 'sales': 53},
+      { 'year': '2013', 'sales': 19},
+      { 'year': '2014', 'sales': 87},
+      { 'year': '2015', 'sales': 52}
+    ]
+  };
+
+  const dataOfErrorSpec = {
+    'type': 'json-array',
+    'values': [
+      { 'year': '2007', 'sales': 28, 'amount': 141 },
+      { 'year': '2008', 'sales': 55, 'amount': 187 },
+      { 'year': '2009', 'sales': 43, 'amount': 88 },
+      { 'year': '2010', 'sales': 91, 'amount': 108 },
+      { 'year': '2011', 'sales': 81, 'amount': 68 },
+      { 'year': '2012', 'sales': 53, 'amount': 90 },
+      { 'year': '2013', 'sales': 19, 'amount': 44 },
+      { 'year': '2014', 'sales': 87, 'amount': 123 },
+      { 'year': '2015', 'sales': 52, 'amount': 88 }
+    ]
+  };
+
+  const partOfSpec = {
     'basis': {
       'type': 'chart'
-    },
-    'data': {
-      'type': 'json-array',
-      'values': [
-        { 'year': '2007', 'sales': 28 },
-        { 'year': '2008', 'sales': 55 },
-        { 'year': '2009', 'sales': 43 },
-        { 'year': '2010', 'sales': 91 },
-        { 'year': '2011', 'sales': 81 },
-        { 'year': '2012', 'sales': 53 },
-        { 'year': '2013', 'sales': 19 },
-        { 'year': '2014', 'sales': 87 },
-        { 'year': '2015', 'sales': 52 }
-      ]
     },
     'layer': [
       {
@@ -196,11 +215,17 @@ describe('init Linter', () => {
     ]
   };
 
-  test('Linter test 1', () => {
+  test('Linter test with no error spec', () => {
     const myLt = new Linter();
-    const errors = myLt.lint({spec: errorSpec as AntVSpec});
-    // FIXME: actual test after rule definition otimization
-    expect(errors.length).toBe(2);
+    const errors = myLt.lint({spec: {...partOfSpec, data: dataOfRightSpec} as AntVSpec});
+    expect(errors.length).toBe(0);
+  });
+
+  test('Linter test with error spec', () => {
+    const myLt = new Linter();
+    const errors = myLt.lint({spec: {...partOfSpec, data: dataOfErrorSpec} as AntVSpec});
+    expect(errors.length).toBe(1);
+    expect(errors[0].id).toBe('data-check');
   });
 });
 
@@ -209,7 +234,6 @@ describe('init ChartAdvisor', () => {
   test('adviseWithLint in CA', () => {
     const myCA = new ChartAdvisor();
     const results = myCA.advise({data, fields: ['price', 'type'], options: { refine: true }});
-    // FIXME: actual test after rule definition otimization
     expect(results.length).toBe(4);
   });
 });
