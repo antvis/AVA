@@ -1,28 +1,41 @@
-// @ts-ignore
 import regression from 'regression';
 import { Datum, TrendInfo } from '../../interface';
 import { mkTest } from '../../algorithms';
 
-export const findTimeSeriesTrend = (data: Datum[], measureKey: string): TrendInfo[] => {
-  if (!data || data.length === 0) return [];
-  const result: TrendInfo[] = [];
-  const dataArr = data.map((item) => item?.[measureKey] as number);
-  const testResult = mkTest(dataArr, 0.05);
+type TrendResult = {
+  significance: number;
+  trend: TrendInfo['trend'];
+  regression: TrendInfo['regression'];
+};
+
+export const findTimeSeriesTrend = (series: number[]): TrendResult => {
+  const testResult = mkTest(series, 0.05);
   const { pValue, trend } = testResult;
 
-  if (trend !== 'no trend') {
-    const regressionResult = regression.linear(dataArr.map((item, index) => [index, item]));
-    const { r2, points, equation } = regressionResult;
-    result.push({
-      trend,
-      significance: 1 - pValue,
-      regression: {
-        r2,
-        points: points.map((item: [number, number]) => item[1]),
-        equation,
-      },
+  const regressionResult = regression.linear(series.map((item, index) => [index, item]));
+  const { r2, points, equation } = regressionResult;
+  return {
+    trend,
+    significance: 1 - pValue,
+    regression: {
+      r2,
+      points: points.map((item) => item[1]),
+      equation,
+    },
+  };
+};
+
+export const extractor = (data: Datum[], dimension: string, measure: string): TrendInfo[] => {
+  if (!data || data.length === 0) return [];
+  const values = data.map((item) => item?.[measure] as number);
+  const result = findTimeSeriesTrend(values);
+  if (result.trend !== 'no trend') {
+    return [{
+      ...result,
       type: 'trend',
-    });
+      dimension,
+      measure
+    }];
   }
-  return result;
+  return [];
 };

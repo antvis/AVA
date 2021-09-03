@@ -3,15 +3,16 @@ import { Select, Button, Table } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
-import { getDataInsights, InsightInfo, Datum } from '../../../../packages/lite-insight/src';
+import { getDataInsights, InsightInfo, Datum, PatternInfo } from '../../../../packages/lite-insight/src';
 import InsightCard from './InsightCard';
 
 const { Option } = Select;
 
-const datasetOptions = ['gapminder', 'cars'];
+const datasetOptions = ['gapminder', 'burtin', 'crimea', 'unemployment-across-industries', 'population', 'ohlc', 'jobs', 'income'];
+
 export default function App() {
-  const [insights, setInsights] = useState<InsightInfo[]>([]);
-  const [dataset, setDataset] = useState<string>('gapminder');
+  const [insights, setInsights] = useState<InsightInfo<PatternInfo>[]>([]);
+  const [dataset, setDataset] = useState('gapminder');
   const [data, setData] = useState<Datum[]>([]);
   const [tableColumns, setTableColumns] = useState<Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
@@ -36,7 +37,7 @@ export default function App() {
 
   const getInsights = async () => {
     setInsightLoading(true);
-    const insights = getDataInsights(
+    const result = getDataInsights(
       data,
       dataset === 'gapminder'
         ? {
@@ -49,7 +50,7 @@ export default function App() {
           }
         : {}
     );
-    setInsights(insights);
+    setInsights(result.insights);
     setInsightLoading(false);
   };
 
@@ -59,7 +60,7 @@ export default function App() {
   return (
     <>
       <div style={{ padding: 16, display: 'flex', height: 500 }}>
-        <div style={{ flex: 1, borderRight: '2px solid #bfbfbf', paddingRight: 20, height: '100%' }}>
+        <div style={{ flex: 1, borderRight: '2px solid #bfbfbf', paddingRight: 20, height: '100%', overflow: 'hidden' }}>
           <Table style={{ height: '100%' }} dataSource={data} columns={tableColumns} scroll={{ x: true, y: 360 }} />
         </div>
         <div style={{ flex: 'none', width: 200 }}>
@@ -67,11 +68,10 @@ export default function App() {
             <div style={{ marginBottom: 20 }}>
               Dataset:
               <Select
-                disabled={true}
                 loading={insightLoading}
                 value={dataset}
                 style={{ width: 120, marginLeft: 12 }}
-                onChange={setDataset}
+                onChange={(v) => setDataset(v as string)}
               >
                 {datasetOptions.map((item) => (
                   <Option value={item} key={item}>
