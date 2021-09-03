@@ -1,4 +1,4 @@
-import { INSIGHT_TYPES } from './constant';
+import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
 export type Datum = Record<string, string | number>;
 
@@ -37,7 +37,9 @@ export interface SubjectInfo {
   measures: Measure[];
 }
 
-export type InsightType = typeof INSIGHT_TYPES[number];
+export type InsightType = typeof PATTERN_TYPES[number];
+
+export type HomogeneousInsightType = typeof HOMOGENEOUS_PATTERN_TYPES[number];
 
 /** insight chart type recommendation */
 export type ChartType = 'column_chart' | 'line_chart';
@@ -54,13 +56,13 @@ export interface VisualizationSchema {
 }
 
 /** insight information */
-export interface InsightInfo {
+export interface InsightInfo<T> {
   subspaces: Subspace[];
   breakdowns: string[];
   measures: Measure[];
   score: number;
   data: Datum[];
-  patterns: PatternInfo[];
+  patterns: T[];
 
   visualizationSchemas?: VisualizationSchema[];
 }
@@ -72,6 +74,7 @@ export interface InsightOptions {
   impactMeasures?: ImpactMeasure[];
   insightTypes?: InsightType[];
   limit?: number;
+  homogeneous?: boolean; // on/off extra homogeneous insight extraction
 }
 
 export interface BasePatternInfo {
@@ -79,9 +82,21 @@ export interface BasePatternInfo {
   significance: number;
 }
 
+export interface HomogeneousPatternInfo {
+  type: HomogeneousInsightType;
+  significance: number;
+  insightType: InsightType;
+  childPatterns: PatternInfo[];
+  exc?: string[];
+  commSet: string[];
+}
+
 export interface PointPatternInfo extends BasePatternInfo {
   index: number;
-  value: number;
+  dimension: string;
+  measure: string;
+  x: string | number;
+  y: number;
 }
 
 export type OutlierInfo = PointPatternInfo;
@@ -93,10 +108,12 @@ export type TrendType = 'decreasing' | 'increasing' | 'no trend';
 export interface LinearRegressionResult {
   r2: number; // R-squared
   points: number[];
-  equation: [number, number]; // y = mx + c
+  equation: [m: number, c: number]; // y = mx + c
 }
 
 export interface TrendInfo extends BasePatternInfo {
   trend: TrendType;
   regression: LinearRegressionResult;
+  dimension: string;
+  measure: string;
 }

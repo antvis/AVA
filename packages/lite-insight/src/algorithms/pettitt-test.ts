@@ -19,7 +19,6 @@ export const pettittTest = (data: number[]) => {
   const pvalue = 2 * Math.exp((-6 * Umax ** 2) / (n ** 2 + n ** 3));
   return {
     index: UmaxIndex - 1,
-    value: data[UmaxIndex - 1],
     significance: 1 - pvalue,
   };
 };

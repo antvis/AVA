@@ -1,4 +1,3 @@
-// @ts-ignore
 import Loess from 'loess';
 import { SignificanceBenchmark } from '../../constant';
 import { Datum, OutlierInfo } from '../../interface';
@@ -11,8 +10,14 @@ type OutlierCandidate = {
   fitted: number[]; // fitted curves
 };
 
+type OutlierItem = {
+  index: number;
+  significance: number;
+  value: number;
+};
+
 // detect the outliers using LOESS (locally weighted smoothing)
-export const getLoessOutliers = (values: number[]): OutlierCandidate[] => {
+const getLoessOutliers = (values: number[]): OutlierCandidate[] => {
   const indexes = Array(values.length)
     .fill(0)
     .map((_, index) => index);
@@ -44,13 +49,10 @@ export const getLoessOutliers = (values: number[]): OutlierCandidate[] => {
   return candidates.sort((a, b) => a.outerPercent - b.outerPercent);
 };
 
-export const findTimeSeriesOutliers = (data: Datum[], measureKey: string): OutlierInfo[] => {
-  if (!data || data.length === 0) return [];
-  const values = data.map((item) => item?.[measureKey] as number);
+export const findTimeSeriesOutliers = (series: number[]): OutlierItem[] => {
+  const outliers = getLoessOutliers(series);
 
-  const outliers = getLoessOutliers(values);
-
-  const result: OutlierInfo[] = [];
+  const result: OutlierItem[] = [];
 
   for (let i = 0; i < outliers.length; i += 1) {
     const candidate = outliers[i];
@@ -61,10 +63,27 @@ export const findTimeSeriesOutliers = (data: Datum[], measureKey: string): Outli
       result.push({
         index: candidate.index,
         value: candidate.value,
-        type: 'time_series_outlier',
         significance,
       });
     }
   }
   return result;
+};
+
+export const extractor = (data: Datum[], dimension: string, measure: string): OutlierInfo[] => {
+  if (!data || data.length === 0) return [];
+  const values = data.map((item) => item?.[measure] as number);
+  const outliers = findTimeSeriesOutliers(values).map(item => {
+    const { index, significance } = item;
+    return {
+      type: 'time_series_outlier',
+      dimension,
+      measure,
+      significance,
+      index,
+      x: data[index][dimension],
+      y: data[index][measure] as number
+    };
+  });
+  return outliers;
 };

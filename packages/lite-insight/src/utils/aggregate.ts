@@ -3,6 +3,7 @@ import _sumBy from 'lodash/sumBy';
 import _maxBy from 'lodash/maxBy';
 import _minBy from 'lodash/minBy';
 import _meanBy from 'lodash/meanBy';
+import _flatten from 'lodash/flatten';
 import { Aggregator, Datum, Measure, MeasureMethod } from '../interface';
 
 const sum = (data: Datum[], measure: string) => {
@@ -44,4 +45,47 @@ export const aggregate = (data: Datum[], groupByField: string, measures: Measure
     });
     return datum;
   });
+};
+
+export const aggregateWithMeasures = (data: Datum[], groupByField: string, measures: Measure[]) => {
+  const grouped = _groupBy(data, groupByField);
+  const result = [];
+  Object.entries(grouped).forEach(([value, dataGroup]) => {
+    measures.forEach(measure => {
+      const { field: measureField, method } = measure;
+      if (measureField in dataGroup[0]) {
+        const aggregator = AggregatorMap[method];
+        const measureValue = aggregator(dataGroup, measureField);
+        result.push({
+          [groupByField]: value,
+          value: measureValue,
+          measureName: measureField
+        });
+      }
+    });
+  });
+  return result;
+};
+
+export const aggregateWithSeries = (data: Datum[], groupByField: string, measure: Measure, expandingField: string) => {
+  const grouped = _groupBy(data, groupByField);
+  const { field: measureField, method } = measure;
+  const aggregator = AggregatorMap[method];
+  return _flatten(
+    Object.entries(grouped).map(([value, dataGroup]) => {
+      const childGrouped = _groupBy(dataGroup, expandingField);
+      const part = Object.entries(childGrouped).map(([childValue, childDataGroup]) => {
+        return {
+          [expandingField]: childValue,
+          [measureField]: aggregator(childDataGroup, measureField),
+        };
+      });
+      return part.map((item) => {
+        return {
+          ...item,
+          [groupByField]: value,
+        };
+      });
+    })
+  );
 };

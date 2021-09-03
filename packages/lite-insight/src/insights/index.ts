@@ -1,16 +1,13 @@
-import { Datum, InsightType, PatternInfo } from '../interface';
-import { findCategoryOutliers } from './extractors/categoryOutlier';
-import { findTimeSeriesTrend } from './extractors/trend';
-import { findChangePoints } from './extractors/changePoint';
-import { findTimeSeriesOutliers } from './extractors/timeSeriesOutlier';
+import { extractor as categoryOutlierExtractor } from './extractors/categoryOutlier';
+import { extractor as trendExtractor } from './extractors/trend';
+import { extractor as ChangePointExtractor } from './extractors/changePoint';
+import { extractor as timeSeriesOutlierExtractor } from './extractors/timeSeriesOutlier';
 
-type insightExtractor = (data: Datum[], measureKey: string) => PatternInfo[];
-
-export const insightExtractors: Record<InsightType, insightExtractor> = {
-  category_outlier: findCategoryOutliers,
-  trend: findTimeSeriesTrend,
-  change_point: findChangePoints,
-  time_series_outlier: findTimeSeriesOutliers,
+export const insightExtractors = {
+  category_outlier: categoryOutlierExtractor,
+  trend: trendExtractor,
+  change_point: ChangePointExtractor,
+  time_series_outlier: timeSeriesOutlierExtractor,
 };
 
 export * from './checkers';

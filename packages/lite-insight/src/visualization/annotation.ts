@@ -1,4 +1,4 @@
-import { PatternInfo, PointPatternInfo, InsightInfo, TrendInfo } from '../interface';
+import { PatternInfo, PointPatternInfo, TrendInfo } from '../interface';
 import { dataFormat } from './util';
 
 const COLOR: Record<string, string> = {
@@ -36,19 +36,16 @@ const annotationText = (
   }));
 };
 
-const generateAnnotationConfigItem = (pattern: PatternInfo, insightInfo: InsightInfo) => {
-  const { breakdowns, measures, data } = insightInfo;
+const generateAnnotationConfigItem = (pattern: PatternInfo) => {
   if (['change_point', 'time_series_outlier'].includes(pattern.type)) {
     const patternInfo = pattern as PointPatternInfo;
-    const { index } = patternInfo;
+    const { x, y } = patternInfo;
     const color = pattern.type === 'time_series_outlier' ? COLOR.outlier : COLOR.highlight;
-    const xValue = data[index][breakdowns[0]];
-    const yValue = data[index][measures[0].field];
 
     return [
       {
         type: 'dataMarker',
-        position: [xValue, yValue],
+        position: [x, y],
         point: {
           style: {
             fill: '#fff',
@@ -61,43 +58,41 @@ const generateAnnotationConfigItem = (pattern: PatternInfo, insightInfo: Insight
         autoAdjust: false,
       },
       ...annotationText([{
-        content: xValue
+        content: x
       }, {
-        content: yValue,
+        content: y,
         style: {
           fontWeight: BOLD,
         }
-      }], [xValue, yValue], -42),
+      }], [x, y], -42),
     ];
   }
   if (pattern.type === 'category_outlier') {
     const patternInfo = pattern as PointPatternInfo;
-    const { index } = patternInfo;
-    const xValue = data[index][breakdowns[0]];
-    const yValue = data[index][measures[0].field];
+    const { x, y } = patternInfo;
     return [
       {
         type: 'regionFilter',
         start: (xScale: any) => {
           const ratio = xScale.ticks ? 1 / xScale.ticks.length : 1;
-          const x = xScale.scale(xValue) - ratio / 2;
-          return [`${x * 100}%`, '0%'];
+          const xValue = xScale.scale(x) - ratio / 2;
+          return [`${xValue * 100}%`, '0%'];
         },
         end: (xScale: any) => {
           const ratio = xScale.ticks ? 1 / xScale.ticks.length : 1;
-          const x = xScale.scale(xValue) + ratio / 2;
-          return [`${x * 100}%`, '100%'];
+          const xValue = xScale.scale(x) + ratio / 2;
+          return [`${xValue * 100}%`, '100%'];
         },
         color: COLOR.outlier,
       },
       ...annotationText([{
-        content: xValue
+        content: x
       }, {
-        content: yValue,
+        content: y,
         style: {
           fontWeight: BOLD,
         }
-      }], [xValue, yValue], -22),
+      }], [x, y], -22),
     ];
   }
   if (pattern.type === 'trend') {
@@ -120,10 +115,19 @@ const generateAnnotationConfigItem = (pattern: PatternInfo, insightInfo: Insight
   return [];
 };
 
-export const generateInsightAnnotationConfig = (patterns: PatternInfo[], insight: InsightInfo) => {
-  const annotations: any[] = [];
+export const generateInsightAnnotationConfig = (patterns: PatternInfo[]) => {
+  const annotations = [];
   patterns.forEach((pattern) => {
-    const configItems = generateAnnotationConfigItem(pattern, insight);
+    const configItems = generateAnnotationConfigItem(pattern);
+    annotations.push(...configItems);
+  });
+  return annotations;
+};
+
+export const generateHomogeneousInsightAnnotationConfig = (patterns: PatternInfo[]) => {
+  const annotations = [];
+  patterns.forEach((pattern) => {
+    const configItems = generateAnnotationConfigItem(pattern);
     annotations.push(...configItems);
   });
   return annotations;

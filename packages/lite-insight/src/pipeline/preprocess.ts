@@ -1,12 +1,12 @@
 import { DataFrame, analyzer as DWAnalyzer } from '@antv/data-wizard';
 import _intersection from 'lodash/intersection';
-import { DataType, FieldType, Datum, ImpactMeasure } from '../interface';
+import { FieldType, Datum, ImpactMeasure } from '../interface';
 import { AggregatorMap } from '../utils/aggregate';
 
 export type DataProperty =
-  | (DWAnalyzer.NumberFieldInfo & { name: string; dataTypes: DataType[]; fieldType: FieldType })
-  | (DWAnalyzer.DateFieldInfo & { name: string; dataTypes: DataType[]; fieldType: FieldType })
-  | (DWAnalyzer.StringFieldInfo & { name: string; dataTypes: DataType[]; fieldType: FieldType });
+  | (DWAnalyzer.NumberFieldInfo & { name: string; fieldType: FieldType })
+  | (DWAnalyzer.DateFieldInfo & { name: string; fieldType: FieldType })
+  | (DWAnalyzer.StringFieldInfo & { name: string; fieldType: FieldType });
 
 export const dataToDataProps = (data: Datum[]): DataProperty[] => {
   if (!data) {
@@ -17,18 +17,9 @@ export const dataToDataProps = (data: Datum[]): DataProperty[] => {
   const dataProps: DataProperty[] = [];
 
   dataTypeInfos.forEach((info) => {
-    const dataTypes = [];
-    if (DWAnalyzer.isNominal(info)) dataTypes.push('Nominal');
-    if (DWAnalyzer.isOrdinal(info)) dataTypes.push('Ordinal');
-    if (DWAnalyzer.isInterval(info)) dataTypes.push('Interval');
-    if (DWAnalyzer.isDiscrete(info)) dataTypes.push('Discrete');
-    if (DWAnalyzer.isContinuous(info)) dataTypes.push('Continuous');
-    if (DWAnalyzer.isTime(info)) dataTypes.push('Time');
-
     const newInfo = {
       ...info,
-      dataTypes: dataTypes as DataType[],
-      fieldType: _intersection(['Interval', 'Continuous'], dataTypes)?.length ? 'measure' : 'dimension',
+      fieldType: _intersection(['Interval', 'Continuous'], info. levelOfMeasurements)?.length ? 'measure' : 'dimension',
     };
 
     dataProps.push(newInfo as DataProperty);

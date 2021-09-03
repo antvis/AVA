@@ -1,5 +1,5 @@
 import _groupBy from 'lodash/groupBy';
-import { PatternInfo, ChangePointInfo, InsightInfo, TrendInfo, InsightType, OutlierInfo } from '../interface';
+import { PatternInfo, ChangePointInfo, InsightInfo, TrendInfo, InsightType, OutlierInfo, HomogeneousPatternInfo, PointPatternInfo } from '../interface';
 import { join, getDatumPositionString } from './util';
 
 export const insightNameMap: Record<InsightType, string> = {
@@ -14,7 +14,7 @@ type PatternTypeGroup = {
   patternGroup: PatternInfo[];
 };
 
-const generateInsightCaption = (patternTypeGroups: PatternTypeGroup[], insight: InsightInfo): string => {
+const generateInsightCaption = (patternTypeGroups: PatternTypeGroup[], insight: InsightInfo<PatternInfo>): string => {
   const { subspaces, measures, breakdowns } = insight;
   const insightSubjects = join(patternTypeGroups.map((item) => insightNameMap[item.type]));
   const dataSubject = `${measures[0]?.field}(${measures[0]?.method}) by ${breakdowns[0]}`;
@@ -23,10 +23,10 @@ const generateInsightCaption = (patternTypeGroups: PatternTypeGroup[], insight: 
       return `${item.value}(${item.dimension})`;
     })
     ?.join(',');
-  return `${insightSubjects} appearing in ${dataSubject}${subspace ? ` in ${subspace}` : ''}`;
+  return `${subspace ? `For (${subspace}), ` : ''}${insightSubjects} appearing in ${dataSubject}`;
 };
 
-const generateInsightTypeSummary = (patternTypeGroup: PatternTypeGroup, insight: InsightInfo): string => {
+const generateInsightTypeSummary = (patternTypeGroup: PatternTypeGroup, insight: InsightInfo<PatternInfo>): string => {
   const { patternGroup, type } = patternTypeGroup;
   const { measures, breakdowns, data } = insight;
   if (type === 'category_outlier' || type === 'time_series_outlier') {
@@ -50,7 +50,7 @@ const generateInsightTypeSummary = (patternTypeGroup: PatternTypeGroup, insight:
   return '';
 };
 
-export const generateInsightDescription = (patterns: PatternInfo[], insight: InsightInfo) => {
+export const generateInsightDescription = (patterns: PatternInfo[], insight: InsightInfo<PatternInfo>) => {
   const patternGroups = _groupBy(patterns, 'type');
   const patternTypeGroups: PatternTypeGroup[] = Object.entries(patternGroups).map(([type, patternGroup]) => ({
     type,
@@ -62,4 +62,57 @@ export const generateInsightDescription = (patterns: PatternInfo[], insight: Ins
   const insightTypeSummarys = patternTypeGroups.map((typeGroup) => generateInsightTypeSummary(typeGroup, insight));
 
   return { caption, insightSummary: insightTypeSummarys };
+};
+
+export const generateHomogeneousInsightDescription = (insight: InsightInfo<HomogeneousPatternInfo>) => {
+  const { subspaces, measures, breakdowns, patterns } = insight;
+  const subspace = subspaces[0]
+    ?.map((item) => {
+      return `${item.value}(${item.dimension})`;
+    })
+    ?.join(',');
+
+  const { type, insightType, childPatterns, commSet, exc } = patterns[0];
+
+  const prefix = subspace ? `for ${subspace}, ` : '';
+
+  const caption ='';
+
+  let content = '';
+  if (measures.length > 1) {
+    const subject = type === 'commonness' ? join(commSet) : 'most measures';
+    content = `${subject} have a common ${insightNameMap[insightType]}`;
+    if (['change_point', 'outlier', 'time_series_outlier'].includes(insightType)) {
+      const point = childPatterns[0] as PointPatternInfo;
+      const positionString = ` in (${point.x}, ${point.y})`;
+      content = `${prefix}${content}${positionString}`;
+    }
+    if (['trend'].includes(insightType)) {
+      const trend = childPatterns[0] as TrendInfo;
+      content = `${prefix}${content} of ${trend.trend}`;
+    }
+    if (type === 'exception' && exc) {
+      content += `, except ${join(exc)}`;
+    }
+  } else {
+    const subject = type === 'commonness' ? join(commSet) : `most ${breakdowns[0]}`;
+    content = `${subject} have a common ${insightNameMap[insightType]}`;
+    if (['change_point', 'outlier', 'time_series_outlier'].includes(insightType)) {
+      const point = childPatterns[0] as PointPatternInfo;
+      const positionString = ` in (${point.x}, ${point.y})`;
+      content = `${prefix}${content}${positionString}`;
+    }
+    if (['trend'].includes(insightType)) {
+      const trend = childPatterns[0] as TrendInfo;
+      content = `${prefix}${content} of ${trend.trend}`;
+    }
+    if (type === 'exception' && exc) {
+      content += `, except ${join(exc)}`;
+    }
+  }
+
+  const insightTypeSummarys = [`${content}.`];
+
+  return { caption, insightSummary: insightTypeSummarys };
+
 };

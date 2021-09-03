@@ -4,18 +4,18 @@ import { SignificanceBenchmark } from '../../constant';
 import { Datum, OutlierInfo } from '../../interface';
 import { calculatePValue } from '../util';
 
-type OutlierCandidate = {
+type OutlierItem = {
   index: number;
-  type: 'upper' | 'lower';
+  significance: number;
   value: number;
 };
 
-export const findOutliers = (values: number[]): OutlierInfo[] => {
+export const findOutliers = (values: number[]): OutlierItem[] => {
   const IQRResult = IQR(values);
 
   const lowerOutlierIndexes = IQRResult.lower.indexes;
   const upperOutlierIndexes = IQRResult.upper.indexes;
-  const candidates: OutlierCandidate[] = [];
+  const candidates = [];
   lowerOutlierIndexes.forEach((item) => {
     const value = values[item];
     candidates.push({
@@ -34,8 +34,7 @@ export const findOutliers = (values: number[]): OutlierInfo[] => {
   });
   const sortedCandidates = _sortBy(candidates, (item) => Math.abs(IQRResult[item.type].threshold - item.value));
 
-  const result: OutlierInfo[] = [];
-
+  const result: OutlierItem[] = [];
   for (let i = 0; i < sortedCandidates.length; i += 1) {
     const candidate = sortedCandidates[i];
     const pValue = calculatePValue(values, candidate.value);
@@ -48,15 +47,25 @@ export const findOutliers = (values: number[]): OutlierInfo[] => {
       index: candidate.index,
       value: candidate.value,
       significance,
-      type: 'category_outlier',
     });
   }
   return result;
 };
 
-export const findCategoryOutliers = (data: Datum[], measureKey: string): OutlierInfo[] => {
+export const extractor = (data: Datum[], dimension: string, measure: string): OutlierInfo[] => {
   if (!data || data.length === 0) return [];
-  const values = data.map((item) => item?.[measureKey] as number);
-  const outliers = findOutliers(values);
+  const values = data.map((item) => item?.[measure] as number);
+  const outliers = findOutliers(values).map(item => {
+    const { index, significance } = item;
+    return {
+      type: 'category_outlier',
+      dimension,
+      measure,
+      significance,
+      index,
+      x: data[index][dimension],
+      y: data[index][measure] as number
+    };
+  });
   return outliers;
 };

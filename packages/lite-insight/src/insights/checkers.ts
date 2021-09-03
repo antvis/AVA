@@ -11,7 +11,7 @@ export type ExtractorChecker = (
 export const trendChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
   const { breakdown, measures } = subjectInfo;
   if (data?.length < 3) return false;
-  if (!fieldPropsMap[breakdown]?.dataTypes.includes('Time')) return false;
+  if (!fieldPropsMap[breakdown]?.levelOfMeasurements?.includes('Time')) return false;
   if (measures.length !== 1) return false;
   return true;
 };
@@ -19,7 +19,7 @@ export const trendChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap)
 export const categoryOutlierChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
   const { breakdown, measures } = subjectInfo;
   if (data?.length < 3) return false;
-  if (!_intersection(fieldPropsMap[breakdown]?.dataTypes, ['Nominal', 'Discrete', 'Ordinal'])?.length) return false;
+  if (!_intersection(fieldPropsMap[breakdown]?.levelOfMeasurements, ['Nominal', 'Discrete', 'Ordinal'])?.length) return false;
   if (measures.length !== 1) return false;
   return true;
 };
@@ -27,7 +27,7 @@ export const categoryOutlierChecker: ExtractorChecker = (data, subjectInfo, fiel
 export const changePointChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
   const { breakdown, measures } = subjectInfo;
   if (data?.length < 3) return false;
-  if (!fieldPropsMap[breakdown]?.dataTypes.includes('Time')) return false;
+  if (!fieldPropsMap[breakdown]?.levelOfMeasurements?.includes('Time')) return false;
   if (measures.length !== 1) return false;
   return true;
 };
@@ -35,7 +35,7 @@ export const changePointChecker: ExtractorChecker = (data, subjectInfo, fieldPro
 export const timeSeriesChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
   const { breakdown, measures } = subjectInfo;
   if (data?.length < 3) return false;
-  if (!fieldPropsMap[breakdown]?.dataTypes.includes('Time')) return false;
+  if (!fieldPropsMap[breakdown]?.levelOfMeasurements?.includes('Time')) return false;
   if (measures.length !== 1) return false;
   return true;
 };
