@@ -75,7 +75,23 @@ export class Advisor {
     } else {
       dataPropsForAdvice = dataFrame.info() as BasicDataPropertyForAdvice[];
     }
-    const advices = dataToAdvices(data, dataPropsForAdvice, this.CKB, this.ruleBase, options);
+
+    // filter out fields that are not included for advising
+    let filteredData: Record<string, any>[] = [];
+    if (fields) {
+      filteredData = data.map((row: Record<string, any>)=>{
+        const filteredRow = row;
+        Object.keys(filteredRow).forEach(col => {
+          if (!fields.includes(col)) {
+            delete filteredRow[col];
+          }
+        });
+        return row;
+      });
+    } else {
+      filteredData = data;
+    }
+    const advices = dataToAdvices(filteredData, dataPropsForAdvice, this.CKB, this.ruleBase, options);
 
     return advices;
   }

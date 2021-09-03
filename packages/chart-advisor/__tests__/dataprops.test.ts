@@ -13,9 +13,12 @@ const data = [
 const myRule: RuleModule = {
   id: 'fufu-rule',
   type: 'HARD',
-  chartTypes: ['pie_chart'],
   docs: {
     lintText: 'listen to fufu',
+  },
+  trigger: (args) => {
+    const { chartType } = args;
+    return ['pie_chart'].includes(chartType);
   },
   validator: (args) => {
     let result = 1;
