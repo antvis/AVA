@@ -2,7 +2,7 @@ import * as analyzer from '../analyzer';
 import * as utils from '../utils';
 import BaseFrame from './base-frame';
 import Series from './series';
-import { isLegalBasicType, genArrIdx, isAxis } from './utils';
+import { isLegalBasicType, generateArrayIndex, isAxis } from './utils';
 import type { FrameData, Axis, Extra, FieldsInfo } from './types';
 
 /** 2D data structure */
@@ -18,7 +18,7 @@ export default class DataFrame extends BaseFrame {
       const [data0] = data;
       // 1D: array
       if (isLegalBasicType(data0)) {
-        this.genColumns([0]);
+        this.generateColumns([0]);
       }
 
       // 2D: object in array
@@ -47,16 +47,16 @@ export default class DataFrame extends BaseFrame {
 
           this.setAxis(1, extra.columns);
         } else {
-          this.genDataAndColDataFromArr(true, data, columns);
-          this.genColumns(columns, extra);
+          this.generateDataAndColDataFromArray(true, data, columns);
+          this.generateColumns(columns, extra);
         }
       }
 
       // 2D: array
       if (utils.isArray(data0)) {
-        const columns = utils.genNumArr(data0.length);
-        this.genDataAndColDataFromArr(false, data, columns);
-        this.genColumns(columns, extra);
+        const columns = utils.generateNumberArray(data0.length);
+        this.generateDataAndColDataFromArray(false, data, columns);
+        this.generateColumns(columns, extra);
       }
     } else if (utils.isObject(data)) {
       const [data0] = Object.values(data);
@@ -66,7 +66,7 @@ export default class DataFrame extends BaseFrame {
         this.setAxis(0, [0]);
 
         const columns = Object.keys(data);
-        this.genColumns(columns, extra);
+        this.generateColumns(columns, extra);
 
         for (let i = 0; i < columns.length; i += 1) {
           const datum = data[columns[i]];
@@ -80,9 +80,9 @@ export default class DataFrame extends BaseFrame {
 
       // 2D: array in object
       if (utils.isArray(data0)) {
-        this.setAxis(0, genArrIdx(data0, extra));
+        this.setAxis(0, generateArrayIndex(data0, extra));
         const columns = Object.keys(data);
-        this.genColumns(columns, extra);
+        this.generateColumns(columns, extra);
 
         for (let i = 0; i < columns.length; i += 1) {
           const datum = data[columns[i]];
@@ -109,7 +109,7 @@ export default class DataFrame extends BaseFrame {
    * @param columns
    * @param extra
    */
-  private genColumns (columns: Axis[], extra?: Extra) {
+  private generateColumns (columns: Axis[], extra?: Extra) {
     if (extra?.columns) {
       if (extra.columns?.length === columns.length) {
         this.setAxis(1, extra.columns);
@@ -127,7 +127,7 @@ export default class DataFrame extends BaseFrame {
    * @param data
    * @param columns
    */
-  private genDataAndColDataFromArr(isObj: boolean, data: any[], columns: Axis[]) {
+  private generateDataAndColDataFromArray(isObj: boolean, data: any[], columns: Axis[]) {
     for (let i = 0; i < data.length; i += 1) {
       const datum = data[i];
 
@@ -310,13 +310,13 @@ export default class DataFrame extends BaseFrame {
     throw new Error('The rowLoc is illegal');
   }
 
-  getByIntIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): DataFrame | Series | any {
+  getByIntegerIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): DataFrame | Series | any {
     if (utils.isInteger(rowLoc) || utils.isArray(rowLoc) || utils.isString(rowLoc)) {
       /** colLoc does not exist */
       if (colLoc === undefined) {
         // input is like 1
         if (utils.isInteger(rowLoc)) {
-          if (utils.genNumArr(this.index.length).includes(rowLoc)) {
+          if (utils.generateNumberArray(this.index.length).includes(rowLoc)) {
             const newData = this.data[rowLoc];
             const newIndex = this.columns;
             return new Series(newData, { index: newIndex });
@@ -328,7 +328,7 @@ export default class DataFrame extends BaseFrame {
           const newIndex: Axis[] = [];
           for (let i = 0; i < rowLoc.length; i += 1) {
             const idx = rowLoc[i];
-            if (!utils.genNumArr(this.index.length).includes(idx)) {
+            if (!utils.generateNumberArray(this.index.length).includes(idx)) {
               throw new Error('The rowLoc is not found in the index.');
             }
             newData.push(this.data[idx]);
@@ -361,7 +361,7 @@ export default class DataFrame extends BaseFrame {
 
       // rowLoc is int
       if (utils.isInteger(rowLoc)) {
-        if (utils.genNumArr(this.index.length).includes(rowLoc)) {
+        if (utils.generateNumberArray(this.index.length).includes(rowLoc)) {
           startRowIdx = rowLoc;
           endRowIdx = rowLoc + 1;
         } else {
@@ -373,7 +373,7 @@ export default class DataFrame extends BaseFrame {
       if (utils.isArray(rowLoc)) {
         for (let i = 0; i < rowLoc.length; i += 1) {
           const rowIdx = rowLoc[i];
-          if (!utils.genNumArr(this.index.length).includes(rowIdx)) {
+          if (!utils.generateNumberArray(this.index.length).includes(rowIdx)) {
             throw new Error('The rowLoc is not found in the index.');
           }
           rowIdxes.push(rowIdx);
@@ -397,7 +397,7 @@ export default class DataFrame extends BaseFrame {
 
       if ((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0) {
         // colLoc is int
-        if (utils.isInteger(colLoc) && utils.genNumArr(this.columns.length).includes(colLoc)) {
+        if (utils.isInteger(colLoc) && utils.generateNumberArray(this.columns.length).includes(colLoc)) {
           startColIdx = colLoc;
           endColIdx = colLoc + 1;
         }
@@ -406,7 +406,7 @@ export default class DataFrame extends BaseFrame {
         if (utils.isArray(colLoc)) {
           for (let i = 0; i < colLoc.length; i += 1) {
             const colIdx = colLoc[i];
-            if (!utils.genNumArr(this.columns.length).includes(colIdx)) {
+            if (!utils.generateNumberArray(this.columns.length).includes(colIdx)) {
               throw new Error('The colLoc is not found in the columns index.');
             }
             colIdxes.push(colIdx);

@@ -1,5 +1,5 @@
 import { ChartID, CHART_ID_OPTIONS, LevelOfMeasurement as LOM } from '@antv/ckb';
-import { stat } from '@antv/data-wizard';
+import { statistics } from '@antv/data-wizard';
 // FIXME: replace by @antv/data-wizard once ready
 import { isInHierarchy } from '@antv/dw-util';
 import { BasicDataPropertyForAdvice } from '../../ruler';
@@ -503,7 +503,7 @@ function bubbleChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): A
   };
   for (let i = 0; i < intervalFields.length; i += 1) {
     for (let j = i + 1; j < intervalFields.length; j += 1) {
-      const p = stat.pearson(intervalFields[i].samples, intervalFields[j].samples);
+      const p = statistics.pearson(intervalFields[i].samples, intervalFields[j].samples);
       if (Math.abs(p) > triple.corr) {
         triple.x = intervalFields[i];
         triple.y = intervalFields[j];

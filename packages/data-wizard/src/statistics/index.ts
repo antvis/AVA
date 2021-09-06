@@ -9,7 +9,6 @@ import * as cache from './caches';
 export function min(array: number[]): number {
   const value = cache.get<number>(array, 'min');
   if (value !== undefined) {
-    console.log('cache')
     return value;
   }
   return cache.set(array, 'min', Math.min(...array));

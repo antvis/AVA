@@ -10,7 +10,7 @@ export const isAxis = (value: any): value is Axis => {
 };
 
 // generate index for 1D and 2D array
-export const genArrIdx = (data: any[], extra?: Extra): Axis[] => {
+export const generateArrayIndex = (data: any[], extra?: Extra): Axis[] => {
   if (utils.isArray(data)) {
     if (extra?.index) {
       if (extra.index?.length === data.length) {
@@ -18,7 +18,7 @@ export const genArrIdx = (data: any[], extra?: Extra): Axis[] => {
       }
       throw new Error(`Index length is ${extra.index?.length}, but data size is ${data.length}`);
     } else {
-      return utils.genNumArr(data.length);
+      return utils.generateNumberArray(data.length);
     }
   } else {
     throw new Error('Data must be an array');
