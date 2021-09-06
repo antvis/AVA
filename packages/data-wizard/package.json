@@ -59,7 +59,10 @@
     }
   ],
   "dependencies": {
-    "@antv/ckb": "^2.0.0-alpha.1"
+    "@antv/ckb": "^2.0.0-alpha.1",
+    "date-fns": "^2.23.0",
+    "mersenne-twister": "^1.1.0",
+    "randexp": "^0.5.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
