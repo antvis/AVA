@@ -1,5 +1,5 @@
 import * as utils from '../utils';
-import * as stat from '../statistics';
+import * as statistics from '../statistics';
 import { isDateString } from './is-date';
 import type { LevelOfMeasurement } from '@antv/ckb';
 
@@ -132,9 +132,9 @@ export type FieldMeta = {
 export function analyzeString(array: string[]): Omit<StringFieldInfo, keyof FieldInfo> {
   const lenArray = array.map((item) => item.length);
   return {
-    maxLength: stat.max(lenArray),
-    minLength: stat.min(lenArray),
-    meanLength: stat.mean(lenArray),
+    maxLength: statistics.max(lenArray),
+    minLength: statistics.min(lenArray),
+    meanLength: statistics.mean(lenArray),
     containsChars: array.some((item) => /[A-z]/.test(item)),
     containsDigits: array.some((item) => /[0-9]/.test(item)),
     containsSpace: array.some((item) => /\s/.test(item)),
@@ -144,17 +144,17 @@ export function analyzeString(array: string[]): Omit<StringFieldInfo, keyof Fiel
 
 export function analyzeNumber(array: number[]): Omit<NumberFieldInfo, keyof FieldInfo> {
   return {
-    minimum: stat.min(array),
-    maximum: stat.max(array),
-    mean: stat.mean(array),
-    percentile5: stat.quantile(array, 5),
-    percentile25: stat.quantile(array, 25),
-    percentile50: stat.quantile(array, 50),
-    percentile75: stat.quantile(array, 75),
-    percentile95: stat.quantile(array, 95),
-    sum: stat.sum(array),
-    variance: stat.variance(array),
-    stdev: stat.stdev(array),
+    minimum: statistics.min(array),
+    maximum: statistics.max(array),
+    mean: statistics.mean(array),
+    percentile5: statistics.quantile(array, 5),
+    percentile25: statistics.quantile(array, 25),
+    percentile50: statistics.quantile(array, 50),
+    percentile75: statistics.quantile(array, 75),
+    percentile95: statistics.quantile(array, 95),
+    sum: statistics.sum(array),
+    variance: statistics.variance(array),
+    stdev: statistics.stdev(array),
     zeros: array.filter((item) => item === 0).length,
   };
 }
@@ -168,8 +168,8 @@ export function analyzeDate(array: Array<string | Date>, isInteger = false): Omi
     return new Date(item).getTime();
   });
   return {
-    minimum: array[stat.minIndex(list)],
-    maximum: array[stat.maxIndex(list)],
+    minimum: array[statistics.minIndex(list)],
+    maximum: array[statistics.maxIndex(list)],
   };
 }
 
@@ -323,11 +323,11 @@ export function isTime(info: FieldInfo): boolean {
  */
 export function analyzeField(array: any[]): StringFieldInfo | NumberFieldInfo | DateFieldInfo {
   const list = array.map((item) => (utils.isNull(item) ? null : item));
-  const valueMap = stat.valueMap(list);
+  const valueMap = statistics.valueMap(list);
   let recommendation: TypeSpecifics;
   const nonNullArray = valueMap.null ? list.filter((item) => item !== null) : list;
   const typeArray = list.map((item) => analyzeType(item));
-  const types = Object.keys(stat.valueMap(typeArray)).filter((item) => item !== 'null') as TypeSpecifics[];
+  const types = Object.keys(statistics.valueMap(typeArray)).filter((item) => item !== 'null') as TypeSpecifics[];
 
   // generate recommendation
   switch (types.length) {

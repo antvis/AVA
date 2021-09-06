@@ -1,5 +1,5 @@
 import * as utils from '../utils';
-import { isLegalBasicType, genArrIdx } from './utils';
+import { isLegalBasicType, generateArrayIndex } from './utils';
 import type { SeriesData, FrameData, Axis, Extra } from './types';
 
 type NDArray = any[] | any[][];
@@ -21,7 +21,7 @@ export default abstract class BaseFrame {
     }
 
     if (utils.isArray(data)) {
-      this.setAxis(0, genArrIdx(data, extra));
+      this.setAxis(0, generateArrayIndex(data, extra));
     }
   }
 
@@ -62,5 +62,5 @@ export default abstract class BaseFrame {
    * @param rowLoc
    * @param colLoc
    */
-  abstract getByIntIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
+  abstract getByIntegerIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
 }

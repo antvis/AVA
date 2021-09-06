@@ -120,10 +120,10 @@ export default class Series extends BaseFrame {
    * Get data by row location and column location using integer-index.
    * @param rowLoc
    */
-  getByIntIndex(rowLoc: number | number[] | string): Series | any {
+  getByIntegerIndex(rowLoc: number | number[] | string): Series | any {
     // input is like 1
     if (utils.isInteger(rowLoc)) {
-      if (utils.genNumArr(this.index.length).includes(rowLoc)) {
+      if (utils.generateNumberArray(this.index.length).includes(rowLoc)) {
         return this.data[rowLoc];
       }
       throw new Error('The rowLoc is not found in the index.');
@@ -133,7 +133,7 @@ export default class Series extends BaseFrame {
       const newIndex: Axis[] = [];
       for (let i = 0; i < rowLoc.length; i += 1) {
         const idx = rowLoc[i];
-        if (!utils.genNumArr(this.index.length).includes(idx)) {
+        if (!utils.generateNumberArray(this.index.length).includes(idx)) {
           throw new Error('The rowLoc is not found in the index.');
         }
         newData.push(this.data[idx]);

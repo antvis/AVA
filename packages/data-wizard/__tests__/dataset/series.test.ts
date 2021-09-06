@@ -61,7 +61,7 @@ describe('Series Get Value Functions', () => {
     // console.log('get: rowLocStr', rowLocStr);
     expect(rowLocStr).toStrictEqual(1);
 
-    const rowLocStrArr = s.getByIntIndex([0, 2]);
+    const rowLocStrArr = s.getByIntegerIndex([0, 2]);
     // console.log('get: rowLocStrArr', rowLocStrArr);
     expect(rowLocStrArr).toStrictEqual(
       new Series([1, 3], {
@@ -78,21 +78,21 @@ describe('Series Get Value Functions', () => {
     );
   });
 
-  test('getByIntIndex', () => {
-    const rowLocInt = s.getByIntIndex(0);
-    // console.log('getByIntIndex: rowLocInt', rowLocInt);
+  test('getByIntegerIndex', () => {
+    const rowLocInt = s.getByIntegerIndex(0);
+    // console.log('getByIntegerIndex: rowLocInt', rowLocInt);
     expect(rowLocInt).toStrictEqual(1);
 
-    const rowLocIntArr = s.getByIntIndex([0, 2]);
-    // console.log('getByIntIndex: rowLocIntArr', rowLocIntArr);
+    const rowLocIntArr = s.getByIntegerIndex([0, 2]);
+    // console.log('getByIntegerIndex: rowLocIntArr', rowLocIntArr);
     expect(rowLocIntArr).toStrictEqual(
       new Series([1, 3], {
         index: ['a', 'c'],
       })
     );
 
-    const rowLocStrSlice = s.getByIntIndex('0:2');
-    // console.log('getByIntIndex: rowLocStrSlice', rowLocStrSlice);
+    const rowLocStrSlice = s.getByIntegerIndex('0:2');
+    // console.log('getByIntegerIndex: rowLocStrSlice', rowLocStrSlice);
     expect(rowLocStrSlice).toStrictEqual(
       new Series([1, 2], {
         index: ['a', 'b'],

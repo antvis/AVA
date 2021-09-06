@@ -271,16 +271,16 @@ describe('DataFrame Get Value Functions', () => {
 
     // rowLoc is slice, colLoc is slice
     const rowLocSliceColLocSlice = df.get('0:2', 'b:c');
-    // console.log('getByIntIndex: rowLocSliceColLocSlice', rowLocSliceColLocSlice);
+    // console.log('getByIntegerIndex: rowLocSliceColLocSlice', rowLocSliceColLocSlice);
     expect(rowLocSliceColLocSlice.data).toStrictEqual([[4], [5]]);
     expect(rowLocSliceColLocSlice.axes).toStrictEqual([[0, 1], ['b']]);
   });
 
-  test('getByIntIndex', () => {
+  test('getByIntegerIndex', () => {
     /** only rowLoc */
     // rowLoc is int
-    const rowLocInt = df.getByIntIndex(0);
-    // console.log('getByIntIndex: rowLocInt', rowLocInt);
+    const rowLocInt = df.getByIntegerIndex(0);
+    // console.log('getByIntegerIndex: rowLocInt', rowLocInt);
     expect(rowLocInt).toStrictEqual(
       new Series([1, 4, 7], {
         index: ['a', 'b', 'c'],
@@ -288,8 +288,8 @@ describe('DataFrame Get Value Functions', () => {
     );
 
     // rowLoc is int[]
-    const rowLocIntArr = df.getByIntIndex([0, 2]);
-    // console.log('getByIntIndex: rowLocIntArr', rowLocIntArr);
+    const rowLocIntArr = df.getByIntegerIndex([0, 2]);
+    // console.log('getByIntegerIndex: rowLocIntArr', rowLocIntArr);
     // DataFrame contains private functions, we can't compare it by serializing to the same string
     expect(rowLocIntArr.data).toStrictEqual([
       [1, 4, 7],
@@ -301,8 +301,8 @@ describe('DataFrame Get Value Functions', () => {
     ]);
 
     // rowLoc is slice
-    const rowLocStrSlice = df.getByIntIndex('0:2');
-    // console.log('getByIntIndex: rowLocStrSlice', rowLocStrSlice);
+    const rowLocStrSlice = df.getByIntegerIndex('0:2');
+    // console.log('getByIntegerIndex: rowLocStrSlice', rowLocStrSlice);
     expect(rowLocStrSlice.data).toStrictEqual([
       [1, 4, 7],
       [2, 5, 8],
@@ -314,32 +314,32 @@ describe('DataFrame Get Value Functions', () => {
 
     /** rowLoc and colLoc */
     // rowLoc is int, colLoc is int
-    const rowLocIntColLocInt = df.getByIntIndex(1, 2);
-    // console.log('getByIntIndex: rowColLocInt', rowColLocInt);
+    const rowLocIntColLocInt = df.getByIntegerIndex(1, 2);
+    // console.log('getByIntegerIndex: rowColLocInt', rowColLocInt);
     expect(rowLocIntColLocInt.data).toStrictEqual([[8]]);
     expect(rowLocIntColLocInt.axes).toStrictEqual([[1], ['c']]);
 
     // rowLoc is int, colLoc is int[]
-    const rowLocIntColLocIntArr = df.getByIntIndex(1, [0, 2]);
-    // console.log('getByIntIndex: rowLocIntColLocIntArr', rowLocIntColLocIntArr);
+    const rowLocIntColLocIntArr = df.getByIntegerIndex(1, [0, 2]);
+    // console.log('getByIntegerIndex: rowLocIntColLocIntArr', rowLocIntColLocIntArr);
     expect(rowLocIntColLocIntArr.data).toStrictEqual([[2, 8]]);
     expect(rowLocIntColLocIntArr.axes).toStrictEqual([[1], ['a', 'c']]);
 
     // rowLoc is int, colLoc is slice
-    const rowLocIntColLocSlice = df.getByIntIndex(1, '0:2');
-    // console.log('getByIntIndex: rowLocIntColLocSlice', rowLocIntColLocSlice);
+    const rowLocIntColLocSlice = df.getByIntegerIndex(1, '0:2');
+    // console.log('getByIntegerIndex: rowLocIntColLocSlice', rowLocIntColLocSlice);
     expect(rowLocIntColLocSlice.data).toStrictEqual([[2, 5]]);
     expect(rowLocIntColLocSlice.axes).toStrictEqual([[1], ['a', 'b']]);
 
     // rowLoc is int[], colLoc is int
-    const rowLocIntArrColLocInt = df.getByIntIndex([1, 2], 0);
-    // console.log('getByIntIndex: rowLocIntArrColLocInt', rowLocIntArrColLocInt);
+    const rowLocIntArrColLocInt = df.getByIntegerIndex([1, 2], 0);
+    // console.log('getByIntegerIndex: rowLocIntArrColLocInt', rowLocIntArrColLocInt);
     expect(rowLocIntArrColLocInt.data).toStrictEqual([[2], [3]]);
     expect(rowLocIntArrColLocInt.axes).toStrictEqual([[1, 2], ['a']]);
 
     // rowLoc is int[], colLoc is int[]
-    const rowLocIntArrColLocIntArr = df.getByIntIndex([1, 2], [0, 1]);
-    // console.log('getByIntIndex: rowLocIntArrColLocIntArr', rowLocIntArrColLocIntArr);
+    const rowLocIntArrColLocIntArr = df.getByIntegerIndex([1, 2], [0, 1]);
+    // console.log('getByIntegerIndex: rowLocIntArrColLocIntArr', rowLocIntArrColLocIntArr);
     expect(rowLocIntArrColLocIntArr.data).toStrictEqual([
       [2, 5],
       [3, 6],
@@ -350,20 +350,20 @@ describe('DataFrame Get Value Functions', () => {
     ]);
 
     // rowLoc is int[], colLoc is slice
-    const rowLocIntArrColLocSlice = df.getByIntIndex([1, 2], '1:2');
-    // console.log('getByIntIndex: rowLocIntArrColLocSlice', rowLocIntArrColLocSlice);
+    const rowLocIntArrColLocSlice = df.getByIntegerIndex([1, 2], '1:2');
+    // console.log('getByIntegerIndex: rowLocIntArrColLocSlice', rowLocIntArrColLocSlice);
     expect(rowLocIntArrColLocSlice.data).toStrictEqual([[5], [6]]);
     expect(rowLocIntArrColLocSlice.axes).toStrictEqual([[1, 2], ['b']]);
 
     // rowLoc is slice, colLoc is int
-    const rowLocSliceColLocInt = df.getByIntIndex('0:2', 1);
-    // console.log('getByIntIndex: rowLocSliceColLocInt', rowLocSliceColLocInt);
+    const rowLocSliceColLocInt = df.getByIntegerIndex('0:2', 1);
+    // console.log('getByIntegerIndex: rowLocSliceColLocInt', rowLocSliceColLocInt);
     expect(rowLocSliceColLocInt.data).toStrictEqual([[4], [5]]);
     expect(rowLocSliceColLocInt.axes).toStrictEqual([[0, 1], ['b']]);
 
     // rowLoc is slice, colLoc is int[]
-    const rowLocSliceColLocIntArr = df.getByIntIndex('0:2', [1, 2]);
-    // console.log('getByIntIndex: rowLocSliceColLocIntArr', rowLocSliceColLocIntArr);
+    const rowLocSliceColLocIntArr = df.getByIntegerIndex('0:2', [1, 2]);
+    // console.log('getByIntegerIndex: rowLocSliceColLocIntArr', rowLocSliceColLocIntArr);
     expect(rowLocSliceColLocIntArr.data).toStrictEqual([
       [4, 7],
       [5, 8],
@@ -374,8 +374,8 @@ describe('DataFrame Get Value Functions', () => {
     ]);
 
     // rowLoc is slice, colLoc is slice
-    const rowLocSliceColLocSlice = df.getByIntIndex('0:2', '1:2');
-    // console.log('getByIntIndex: rowLocSliceColLocSlice', rowLocSliceColLocSlice);
+    const rowLocSliceColLocSlice = df.getByIntegerIndex('0:2', '1:2');
+    // console.log('getByIntegerIndex: rowLocSliceColLocSlice', rowLocSliceColLocSlice);
     expect(rowLocSliceColLocSlice.data).toStrictEqual([[4], [5]]);
     expect(rowLocSliceColLocSlice.axes).toStrictEqual([[0, 1], ['b']]);
   });

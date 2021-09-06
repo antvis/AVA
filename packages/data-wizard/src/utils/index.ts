@@ -89,7 +89,7 @@ export function unique(array: any[]): any[] {
  * generate an array from 0 to num
  * @param num
  */
-export const genNumArr = (num: Number) => {
+export const generateNumberArray = (num: Number) => {
   return [...Array(num).keys()];
 };
 
