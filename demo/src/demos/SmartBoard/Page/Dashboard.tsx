@@ -14,15 +14,11 @@ const Dashboard = (props: DashboardProps) => {
   const { chartGraph } = smartBoard;
   const chartOrder = smartBoard.chartOrder('byCluster');
   const chartCluster = smartBoard.chartCluster();
-  // TODO: when the interactionMode is connection mode and a chart was selected, filter and resort charts
+  // when the interactionMode is connection mode and a chart was selected, filter and resort charts
   const sortedChartList = new Array<Chart>(chartList.length);
   chartGraph.nodes.forEach((d) => {
     sortedChartList[chartOrder[d.id]] = d;
   });
-  const [focusID, changeFocusID] = useState<string>('');
-  useEffect(() => {
-    return () => {};
-  }, [focusID]);
 
   const [connectionID, changeConnectionID] = useState<string>('');
   useEffect(() => {
@@ -30,11 +26,11 @@ const Dashboard = (props: DashboardProps) => {
   }, [connectionID]);
 
   let curChartList = sortedChartList;
-  if (connectionID && interactionMode === 'connectionMode') {
+  const chartID = sortedChartList.map((d) => d.id);
+  if (chartID.includes(connectionID) && interactionMode === 'connectionMode') {
     const connectionLinks = chartGraph.links.filter(
       (d: { source: string; target: string }) => d.source === connectionID || d.target === connectionID
     );
-    const chartID = sortedChartList.map((d) => d.id);
     const connectionNodes = connectionLinks.map((d) => (d.source === connectionID ? d.target : d.source));
     connectionLinks.forEach((d, i) => {
       const id = connectionNodes[i];
@@ -68,7 +64,6 @@ const Dashboard = (props: DashboardProps) => {
             interactionMode={interactionMode}
             clusterID={`cluster_${clusterIndex}`}
             hasLocked={!!connectionID} // if there exist connectionID, it means the dashboard comes into connection view
-            changeFocusID={changeFocusID}
             changeConnectionID={changeConnectionID}
             quitResort={quitResort}
           />

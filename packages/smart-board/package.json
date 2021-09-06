@@ -4,7 +4,7 @@
   "description": "A js library that solves chart dashboarding through calculations.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "browser": "dist/index.js",
+  "unpkg": "dist/index.min.js",
   "module": "esm/index.js",
   "files": [
     "dist",

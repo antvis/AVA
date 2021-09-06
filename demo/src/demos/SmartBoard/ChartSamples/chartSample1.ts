@@ -1,4 +1,4 @@
-import { ChartListInfo } from '../../../src/interfaces';
+import { ChartListInfo } from '../../../../../packages/smart-board/src/interfaces';
 
 const cars = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/cars.json';
 
