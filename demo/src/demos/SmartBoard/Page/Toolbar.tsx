@@ -20,7 +20,7 @@ const Toolbar = (props: Props) => {
   return (
     <div id="toolbar">
       <div id="demo-selection">
-        <Select defaultValue="sample1" style={{ width: 120 }} size='small' onChange={handleSampleChange}>
+        <Select id="sample-select" defaultValue="sample1" style={{ width: 120 }} size="small" onChange={handleSampleChange}>
           <Option value="0">sample1</Option>
           <Option value="1">sample2</Option>
         </Select>
@@ -28,17 +28,17 @@ const Toolbar = (props: Props) => {
       <Radio.Group defaultValue="defaultMode" size="small" onChange={handleModeChange}>
         <Radio.Button value="defaultMode">
           <Tooltip title={'Default Mode'}>
-            <InsertRowBelowOutlined />
+            <InsertRowBelowOutlined className="toolbar_icons" />
           </Tooltip>
         </Radio.Button>
         <Radio.Button value="clusterMode">
           <Tooltip title={'Cluster Mode'}>
-            <ClusterOutlined />
+            <ClusterOutlined className="toolbar_icons" />
           </Tooltip>
         </Radio.Button>
         <Radio.Button value="connectionMode">
           <Tooltip title={'Connection Mode'} placement="bottomRight" arrowPointAtCenter>
-            <InteractionOutlined />
+            <InteractionOutlined className="toolbar_icons" />
           </Tooltip>
         </Radio.Button>
       </Radio.Group>

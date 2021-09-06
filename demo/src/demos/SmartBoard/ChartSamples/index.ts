@@ -1,4 +1,4 @@
-import { ChartListInfo } from '../../../src/interfaces';
+import { ChartListInfo } from '../../../../../packages/smart-board/src/interfaces';
 import chartSample1 from './chartSample1';
 import chartSample2 from './chartSample2';
 

@@ -34,19 +34,8 @@ export interface InputChart {
   description?: string[];
 }
 
-export interface Chart {
-  id: string;
-  data: string;
-  subspaces: Subspace[] | [];
-  breakdowns: string[];
-  measures: string[];
-  fieldInfo?: any;
-  insightType?: InsightType;
-  score?: number; // The insight score
-  chartType?: ChartType;
-  chartSchema?: any; // antv-spec
-  nodeValue?: number;
-  description?: string[];
+export interface Chart extends Omit<InputChart, 'id'> {
+  id?: string;
 }
 
 /** The information of chart list */

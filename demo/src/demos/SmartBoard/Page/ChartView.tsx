@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
-import { FullscreenOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons';
+import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
 import { g2plotRender, aggregate, chartInfo2Config, ConfigObj } from '../utils';
 
 export interface ChartViewProps {
@@ -9,13 +9,12 @@ export interface ChartViewProps {
   clusterID?: string;
   interactionMode: string;
   hasLocked: boolean;
-  changeFocusID: (string: string) => void;
   changeConnectionID: (string: string) => void;
   quitResort: () => void;
 }
 
 const ChartView = (props: ChartViewProps) => {
-  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, changeFocusID, changeConnectionID, quitResort } =
+  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort } =
     props;
   const [curChartConfig, setChartConfig] = useState<ConfigObj>();
   let plot: any;
@@ -46,10 +45,6 @@ const ChartView = (props: ChartViewProps) => {
     setChartClassName(`chart_view ${interactionMode === 'clusterMode' ? clusterID : ''}`);
   }, [interactionMode]);
 
-  const handleFocus = () => {
-    changeFocusID(chartID);
-  };
-
   const [isLocked, toggleLocked] = useState(false);
   const handleResort = () => {
     changeConnectionID(chartID);
@@ -65,7 +60,7 @@ const ChartView = (props: ChartViewProps) => {
     <Tooltip title={'Cancel Connection'}>
       <LockOutlined
         className="resort_icon"
-        style={{ color: 'red', visibility: interactionMode === 'connectionMode' ? 'visible' : 'hidden' }}
+        style={{ color: 'red', display: interactionMode === 'connectionMode' ? 'inline-block' : 'none' }}
         onClick={cancelResort}
       />
     </Tooltip>
@@ -73,7 +68,7 @@ const ChartView = (props: ChartViewProps) => {
     <Tooltip title={'Show Connection'}>
       <UnlockOutlined
         className="resort_icon"
-        style={{ visibility: interactionMode === 'connectionMode' && !hasLocked ? 'visible' : 'hidden' }}
+        style={{ display: interactionMode === 'connectionMode' && !hasLocked ? 'inline-block' : 'none' }}
         onClick={handleResort}
       />
     </Tooltip>
@@ -96,16 +91,16 @@ const ChartView = (props: ChartViewProps) => {
   return (
     <div className={chartClassName} id={`chart_view_${chartID}`}>
       <div className="title_view">
-        {score && <Tag color="error">{`Score: ${score}`}</Tag>}
-        {dimension && <Tag color="success">{`Dimension: ${dimension}`}</Tag>}
-        {measure && <Tag color="processing">{`Measure: ${measure}`}</Tag>}
-        {lockIcon}
-        <Tooltip title={'Go to Focus Mode'}>
-          <FullscreenOutlined onClick={handleFocus} />
-        </Tooltip>
+        <div className="title_info">
+          {score && <Tag color="error">{`Score: ${score}`}</Tag>}
+          {dimension && <Tag color="success">{`Dimension: ${dimension}`}</Tag>}
+          {measure && <Tag color="processing">{`Measure: ${measure}`}</Tag>}
+        </div>
+        <div className="right_icons">
+          {lockIcon}
+        </div>
       </div>
       <div id={`chart_container_${chartID}`}></div>
-      {/* FIXME: */}
       {hasLocked &&
         description &&
         description.map((d: string) => {

@@ -1,4 +1,4 @@
-import { ChartListInfo } from '../../../src/interfaces';
+import { ChartListInfo } from '../../../../../packages/smart-board/src/interfaces';
 
 const gapminder = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/gapminder.json';
 
