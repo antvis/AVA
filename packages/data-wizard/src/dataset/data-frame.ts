@@ -54,7 +54,7 @@ export default class DataFrame extends BaseFrame {
 
       // 2D: array
       if (utils.isArray(data0)) {
-        const columns = utils.generateNumberArray(data0.length);
+        const columns = utils.range(data0.length);
         this.generateDataAndColDataFromArray(false, data, columns);
         this.generateColumns(columns, extra);
       }
@@ -316,7 +316,7 @@ export default class DataFrame extends BaseFrame {
       if (colLoc === undefined) {
         // input is like 1
         if (utils.isInteger(rowLoc)) {
-          if (utils.generateNumberArray(this.index.length).includes(rowLoc)) {
+          if (utils.range(this.index.length).includes(rowLoc)) {
             const newData = this.data[rowLoc];
             const newIndex = this.columns;
             return new Series(newData, { index: newIndex });
@@ -328,7 +328,7 @@ export default class DataFrame extends BaseFrame {
           const newIndex: Axis[] = [];
           for (let i = 0; i < rowLoc.length; i += 1) {
             const idx = rowLoc[i];
-            if (!utils.generateNumberArray(this.index.length).includes(idx)) {
+            if (!utils.range(this.index.length).includes(idx)) {
               throw new Error('The rowLoc is not found in the index.');
             }
             newData.push(this.data[idx]);
@@ -361,7 +361,7 @@ export default class DataFrame extends BaseFrame {
 
       // rowLoc is int
       if (utils.isInteger(rowLoc)) {
-        if (utils.generateNumberArray(this.index.length).includes(rowLoc)) {
+        if (utils.range(this.index.length).includes(rowLoc)) {
           startRowIdx = rowLoc;
           endRowIdx = rowLoc + 1;
         } else {
@@ -373,7 +373,7 @@ export default class DataFrame extends BaseFrame {
       if (utils.isArray(rowLoc)) {
         for (let i = 0; i < rowLoc.length; i += 1) {
           const rowIdx = rowLoc[i];
-          if (!utils.generateNumberArray(this.index.length).includes(rowIdx)) {
+          if (!utils.range(this.index.length).includes(rowIdx)) {
             throw new Error('The rowLoc is not found in the index.');
           }
           rowIdxes.push(rowIdx);
@@ -397,7 +397,7 @@ export default class DataFrame extends BaseFrame {
 
       if ((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0) {
         // colLoc is int
-        if (utils.isInteger(colLoc) && utils.generateNumberArray(this.columns.length).includes(colLoc)) {
+        if (utils.isInteger(colLoc) && utils.range(this.columns.length).includes(colLoc)) {
           startColIdx = colLoc;
           endColIdx = colLoc + 1;
         }
@@ -406,7 +406,7 @@ export default class DataFrame extends BaseFrame {
         if (utils.isArray(colLoc)) {
           for (let i = 0; i < colLoc.length; i += 1) {
             const colIdx = colLoc[i];
-            if (!utils.generateNumberArray(this.columns.length).includes(colIdx)) {
+            if (!utils.range(this.columns.length).includes(colIdx)) {
               throw new Error('The colLoc is not found in the columns index.');
             }
             colIdxes.push(colIdx);

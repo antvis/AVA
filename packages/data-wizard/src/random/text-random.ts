@@ -1,5 +1,6 @@
+import { assert } from '../utils';
 import { TextDB, getTextDB } from './database';
-import { assert, initOptions, capitalize } from './utils';
+import { initOptions, capitalize } from './utils';
 import { BasicRandom, Interval } from './basic-random';
 
 /**
@@ -40,7 +41,7 @@ export class TextRandom extends BasicRandom {
   /**
    * Return a random string
    *
-   * @param options -
+   * @param options - the params
    *
    * @public
    */

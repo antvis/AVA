@@ -18,7 +18,7 @@ export const generateArrayIndex = (data: any[], extra?: Extra): Axis[] => {
       }
       throw new Error(`Index length is ${extra.index?.length}, but data size is ${data.length}`);
     } else {
-      return utils.generateNumberArray(data.length);
+      return utils.range(data.length);
     }
   } else {
     throw new Error('Data must be an array');
