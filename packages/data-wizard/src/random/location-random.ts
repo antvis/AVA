@@ -18,7 +18,7 @@ export class LocationRandom extends BasicRandom {
    */
   latitude(options?: FloatOptions): number {
     const opts = initOptions(options, { max: MAX_LAT, min: MIN_LAT, fixed: 7 });
-    assert(opts.min < -90 || opts.max > 90, 'latitude must between  [-90, 90]');
+    assert(opts.min >= -90 && opts.max <= 90, 'latitude must between  [-90, 90]');
     return this.float(opts);
   }
 
@@ -28,7 +28,9 @@ export class LocationRandom extends BasicRandom {
    */
   longtitude(options?: FloatOptions): number {
     const opts = initOptions(options, { max: MAX_LONG, min: MIN_LONG, fixed: 7 });
-    assert(opts.min < -180 || opts.max > 180, 'longtitude must between  [-180, 180]');
+
+    assert(opts.min >= -180 && opts.max <= 180, 'longtitude must between  [-180, 180]');
+
     return this.float(opts);
   }
 

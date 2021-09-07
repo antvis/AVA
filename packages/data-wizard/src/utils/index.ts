@@ -100,5 +100,5 @@ export type Assert = (condition: any, errorMessage?: string) => asserts conditio
  * @param errorMessage
  */
  export const assert: Assert = (condition, errorMessage) => {
-  if (condition) throw new Error(errorMessage);
+  if (!condition) throw new Error(errorMessage);
 };

@@ -47,7 +47,9 @@ export class TextRandom extends BasicRandom {
    */
   string(options?: StringOptions): string {
     const opts = initOptions(options, { length: this.natural({ min: 5, max: 20 }) });
-    assert(opts.length < 0, 'Length cannot be less than zero.');
+
+    assert(opts.length >= 0, 'Length cannot be less than zero.');
+
     const { length } = opts;
     const text = this.n(this.character, length, opts);
 
@@ -95,7 +97,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   word(options: WordOptions = {}): string {
-    assert(options.syllables && options.length, 'Cannot specify both syllables AND length.');
+    assert(!options.syllables || !options.length, 'Cannot specify both syllables AND length.');
 
     const syllables = options.syllables || this.natural({ min: 1, max: 3 });
     let text = '';
@@ -174,7 +176,9 @@ export class TextRandom extends BasicRandom {
    */
   firstname(options?: Person): string {
     const { gender } = initOptions(options, {});
-    assert(gender && gender !== 'female' && gender !== 'male', 'grend must be one of female or male');
+
+    assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
+
     const { male, female } = this.database.firstNames;
     const pool: string[] = gender ? this.database.firstNames[gender] : ([] as string[]).concat(male).concat(female);
     return this.pickone(pool);
@@ -201,7 +205,9 @@ export class TextRandom extends BasicRandom {
    */
   clastname(options?: CLastNameOptions): string {
     const { length, gender } = initOptions(options, { length: this.natural({ min: 1, max: 2 }) });
-    assert(gender && gender !== 'female' && gender !== 'male', 'grend must be one of female or male');
+
+    assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
+
     const { male, female } = this.database.clast;
     const pool = gender ? this.database.clast[gender] : male + female;
     return this.pickset(pool.split(''), length).join('');
