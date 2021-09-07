@@ -6,8 +6,6 @@ interface Props {
   width?: number;
   height?: number;
   data?: any[];
-  toolbar?:boolean; 
-  development?: boolean;
   title?: string;
   description?: string;
   purpose?: 'Comparison' | 'Trend' | 'Distribution' | 'Rank' | 'Proportion' | 'Composition';
