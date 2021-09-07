@@ -161,8 +161,8 @@ test('analyze string', () => {
 
   expect(info.minLength).toBe(4);
   expect(info.maxLength).toBe(9);
-  expect(info.containsChars).toBe(true);
-  expect(info.containsDigits).toBe(true);
+  expect(info.containsChar).toBe(true);
+  expect(info.containsDigit).toBe(true);
   expect(info.containsSpace).toBe(false);
 });
 

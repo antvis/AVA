@@ -46,13 +46,11 @@ export interface StringFieldInfo extends FieldInfo {
   /** mean of length */
   meanLength: number;
   /** is contain charts */
-  containsChars: boolean;
+  containsChar: boolean;
   /**  is contain digits */
-  containsDigits: boolean;
+  containsDigit: boolean;
   /** is contain white space */
   containsSpace: boolean;
-  /** is contain nonworlds */
-  containsNonWorlds: boolean;
 }
 
 /**
@@ -135,10 +133,9 @@ export function analyzeString(array: string[]): Omit<StringFieldInfo, keyof Fiel
     maxLength: statistics.max(lenArray),
     minLength: statistics.min(lenArray),
     meanLength: statistics.mean(lenArray),
-    containsChars: array.some((item) => /[A-z]/.test(item)),
-    containsDigits: array.some((item) => /[0-9]/.test(item)),
+    containsChar: array.some((item) => /[A-z]/.test(item)),
+    containsDigit: array.some((item) => /[0-9]/.test(item)),
     containsSpace: array.some((item) => /\s/.test(item)),
-    containsNonWorlds: false,
   };
 }
 

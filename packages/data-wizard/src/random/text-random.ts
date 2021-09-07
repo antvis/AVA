@@ -185,7 +185,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese name
+   * return a random Chinese name
    * @param options - the params
    */
   cname(options?: Person): string {
@@ -193,14 +193,14 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese first name
+   * return a random Chinese first name
    */
   cfirstname(): string {
     return this.pickone(this.database.cfirst);
   }
 
   /**
-   * return a random chinese last name
+   * return a random Chinese last name
    * @param options - the params
    */
   clastname(options?: CLastNameOptions): string {
@@ -214,7 +214,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese character
+   * return a random Chinese character
    */
   ccharacter(options?: CCharacterOptions): string {
     const { pool } = initOptions(options, {});
@@ -222,7 +222,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese word
+   * return a random Chinese word
    * @param options - the params
    */
   cword(options?: CWordOption): string {
@@ -231,7 +231,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese sentence
+   * return a random Chinese sentence
    * @param options - the params
    */
   csentence(options?: Interval): string {
@@ -241,7 +241,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese paragraph
+   * return a random Chinese paragraph
    * @param options - the params
    */
   cparagraph(options?: Interval): string {
@@ -296,7 +296,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese zodiac
+   * return a random Chinese zodiac
    * @param options - the params
    *
    * @example

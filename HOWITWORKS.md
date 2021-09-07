@@ -30,10 +30,9 @@ const dataPropSchema =  [
     "maxLength": 1,
     "minLength": 1,
     "meanLength": 1,
-    "containsChars": true,
-    "containsDigits": false,
+    "containsChar": true,
+    "containsDigit": false,
     "containsSpace": false,
-    "containsNonWorlds": false,
     "name": "f1",
     "levelOfMeasurements": [ "Nominal" ]
   },

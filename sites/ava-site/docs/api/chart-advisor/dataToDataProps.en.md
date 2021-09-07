@@ -79,10 +79,9 @@ interface FieldMeta {
 * maxLength `number` 
 * minLength `number` 
 * meanLength `number` 
-* containsChars `boolean` 
-* containsDigits `boolean` 
+* containsChar `boolean` 
+* containsDigit `boolean` 
 * containsSpace `boolean` 
-* containsNonWorlds `boolean` 
 
 ### Examples
 
