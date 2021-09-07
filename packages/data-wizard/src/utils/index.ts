@@ -1,4 +1,4 @@
-import * as analyzer from '../analyzer/is-date';
+import { isDateString } from '../analyzer/is-date';
 
 export function isNull(value: any): boolean {
   return value === null || value === undefined || value === '' || Number.isNaN(value as number) || value === 'null';
@@ -53,7 +53,7 @@ export function isFloat(value: any, convertString?: boolean): boolean {
 
 export function isDate(value: any, convertString?: boolean): value is Date {
   if (value && Object.getPrototypeOf(value) === Date.prototype) return true;
-  if (convertString && isString(value)) return analyzer.isDateString(value);
+  if (convertString && isString(value)) return isDateString(value);
   return false;
 }
 
