@@ -12,16 +12,7 @@ import {
   isStringFieldInfo,
   isDateFieldInfo,
 } from '../../src/analyzer';
-import type { Assert } from '../../src/utils';
-
-/**
- * assert
- * @param condition
- * @param errMsg
- */
-export const assert: Assert = (condition, errMsg) => {
-  if (!condition) throw new Error(errMsg);
-};
+import { assert } from '../../src/utils';
 
 test('analyze integer', () => {
   const array = [0, 1, 2, 3, 4, 5, 6, 7, '+8', 9];

@@ -27,7 +27,9 @@ export function rgb(this: BasicRandom, options: RGBBaseOptions = {}): [number, n
     min: 0,
     max: 255,
   });
-  assert(min < 0 && max > 255, 'min and max must between in [0, 255]');
+
+  assert(min >= 0 && max <= 255, 'min and max must between in [0, 255]');
+
   let minRgb = min;
   let maxRgb = max;
   const minR = options.minR === undefined ? min : options.minR;

@@ -78,7 +78,9 @@ export class BasicRandom {
    */
   boolean(options?: BooleanOptions): boolean {
     const { likelihood } = initOptions(options, { likelihood: 50 });
-    assert(likelihood < 0 || likelihood > 100, 'Likelihood accepts values from 0 to 100.');
+
+    assert(likelihood >= 0 && likelihood <= 100, 'Likelihood accepts values from 0 to 100.');
+
     return this.random() > likelihood / 100;
   }
 
@@ -88,7 +90,9 @@ export class BasicRandom {
    */
   integer(options?: Interval): number {
     const { max, min } = initOptions(options, { min: MIN_INT, max: MAX_INT });
-    assert(min > max, 'Min cannot be greater than Max.');
+
+    assert(min <= max, 'Min cannot be greater than Max.');
+
     return Math.floor(this.random() * (max - min + 1) + min);
   }
 
@@ -102,12 +106,13 @@ export class BasicRandom {
     const base = 10 ** opts.fixed;
     const max = MAX_INT / base;
     const min = -max;
+
     assert(
-      opts.min && opts.fixed && opts.min < min,
+      !opts.min || !opts.fixed || opts.min >= min,
       `Min specified is out of range with fixed. Min should be, at least, ${min}`
     );
     assert(
-      opts.max && opts.fixed && opts.max > max,
+      !opts.max || !opts.fixed || opts.max <= max,
       `Max specified is out of range with fixed. Max should be, at most, ${max}`
     );
 
@@ -124,7 +129,9 @@ export class BasicRandom {
    */
   natural(options: Interval = {}): number {
     const opts = initOptions(options, { min: 0, max: MAX_INT });
-    assert(opts.min < 0, 'Min cannot be less than zero.');
+
+    assert(opts.min >= 0, 'Min cannot be less than zero.');
+
     return this.integer(opts);
   }
 
@@ -134,7 +141,8 @@ export class BasicRandom {
    *
    */
   pickone<T>(array: T[]): T {
-    assert(array.length === 0, 'Cannot pickone() from an empty array');
+    assert(array.length !== 0, 'Cannot pickone() from an empty array');
+
     return array[this.natural({ max: array.length - 1 })];
   }
 
@@ -145,8 +153,10 @@ export class BasicRandom {
    */
   pickset<T>(array: T[], count = 1): T[] {
     if (count === 0) return [];
-    assert(array.length === 0, 'Cannot pickset() from an empty array');
-    assert(count < 0, 'Count must be a positive number');
+
+    assert(array.length !== 0, 'Cannot pickset() from an empty array');
+    assert(count >= 0, 'Count must be a positive number');
+
     if (count === 1) {
       return [this.pickone(array)];
     }
@@ -205,7 +215,7 @@ export class BasicRandom {
    * ```
    */
   n<T extends AnyFunc>(generator: T, length = 1, ...params: Parameters<T>): ReturnType<T>[] {
-    assert(typeof generator !== 'function', 'The first argument must be a function.');
+    assert(typeof generator === 'function', 'The first argument must be a function.');
 
     let i = length;
     const arr: ReturnType<T>[] = [];
@@ -213,7 +223,7 @@ export class BasicRandom {
     // Providing a negative count should result in a noop.
     i = Math.max(0, i);
     for (; i > 0; i -= 1) {
-      arr.push((generator as T).apply(this, params));
+      arr.push(generator.apply(this, params));
     }
 
     return arr;
