@@ -66,7 +66,7 @@ export class WebRandom extends TextRandom {
 
   /**
    * Return a random top-level domain ({@link https://en.wikipedia.org/wiki/Top-level_domain | TLD})
-   * @remarks 返回database.tlds的一个
+   * @remarks return one of database.tlds
    */
   tld(): string {
     return this.pickone(this.database.tld);

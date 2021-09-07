@@ -139,10 +139,9 @@ console.log(fieldInfo);
 //   "maxLength": 3,
 //   "minLength": 1,
 //   "meanLength": 1.5,
-//   "containsChars": true,
-//   "containsDigits": false,
+//   "containsChar": true,
+//   "containsDigit": false,
 //   "containsSpace": false,
-//   "containsNonWorlds": false
 // }
 ```
 

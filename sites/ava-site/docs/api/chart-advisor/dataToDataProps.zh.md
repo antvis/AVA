@@ -80,10 +80,9 @@ interface FieldMeta {
 * maxLength `number` 最大长度
 * minLength `number` 最小长度
 * meanLength `number` 中间长度
-* containsChars `boolean` 是否包含字母
-* containsDigits `boolean` 是否包含数字
+* containsChar `boolean` 是否包含字母
+* containsDigit `boolean` 是否包含数字
 * containsSpace `boolean` 是否包含空格
-* containsNonWorlds `boolean` 
 
 ### 示例
 

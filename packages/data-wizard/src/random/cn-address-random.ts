@@ -26,7 +26,7 @@ export class CnAddressRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese city name
+   * return a random Chinese city name
    */
   city(): string {
     const p = this.pickone(dict);
@@ -35,7 +35,7 @@ export class CnAddressRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese district name
+   * return a random Chinese district name
    */
   district(): string {
     const p = this.pickone(dict);
@@ -52,7 +52,7 @@ export class CnAddressRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese road name
+   * return a random Chinese road name
    */
   road(): string {
     const suffixes = ['大道', '路', '街', '胡同'];
@@ -64,7 +64,7 @@ export class CnAddressRandom extends BasicRandom {
   }
 
   /**
-   * return a random chinese address name
+   * return a random Chinese address name
    */
   address(): string {
     const pcd: string[] = [];

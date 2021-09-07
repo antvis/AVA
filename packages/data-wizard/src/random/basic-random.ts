@@ -42,12 +42,12 @@ export class BasicRandom {
   }
 
   /**
-   * random的逻辑 生成 0-1之内的数字 可以使用 `Math.random`
+   * generate 0 to 1, similar to Math.random
    */
   random: RandomFunc;
 
   /**
-   * MersenneTwister 的 seed
+   * MersenneTwister's seed
    */
   private readonly seed?: number;
 
