@@ -86,19 +86,19 @@ export function unique(array: any[]): any[] {
 }
 
 /**
- * generate an array from 0 to num
- * @param num
+ * generate an array from 0 to number
+ * @param number
  */
-export const generateNumberArray = (num: Number) => {
-  return [...Array(num).keys()];
+export const range = (number: Number) => {
+  return [...Array(number).keys()];
 };
 
-export type Assert = (condition: any, errMsg?: string) => asserts condition;
+export type Assert = (condition: any, errorMessage?: string) => asserts condition;
 /**
  * assert
  * @param condition
- * @param errMsg
+ * @param errorMessage
  */
- export const assert: Assert = (condition, errMsg) => {
-  if (condition) throw new Error(errMsg);
+ export const assert: Assert = (condition, errorMessage) => {
+  if (condition) throw new Error(errorMessage);
 };

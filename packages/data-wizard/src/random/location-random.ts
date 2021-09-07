@@ -1,5 +1,6 @@
+import { assert } from '../utils';
 import { BasicRandom, FloatOptions } from './basic-random';
-import { assert, initOptions } from './utils';
+import { initOptions } from './utils';
 
 const MAX_LAT = 90;
 const MIN_LAT = -90;

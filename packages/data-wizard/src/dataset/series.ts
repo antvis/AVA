@@ -123,7 +123,7 @@ export default class Series extends BaseFrame {
   getByIntegerIndex(rowLoc: number | number[] | string): Series | any {
     // input is like 1
     if (utils.isInteger(rowLoc)) {
-      if (utils.generateNumberArray(this.index.length).includes(rowLoc)) {
+      if (utils.range(this.index.length).includes(rowLoc)) {
         return this.data[rowLoc];
       }
       throw new Error('The rowLoc is not found in the index.');
@@ -133,7 +133,7 @@ export default class Series extends BaseFrame {
       const newIndex: Axis[] = [];
       for (let i = 0; i < rowLoc.length; i += 1) {
         const idx = rowLoc[i];
-        if (!utils.generateNumberArray(this.index.length).includes(idx)) {
+        if (!utils.range(this.index.length).includes(idx)) {
           throw new Error('The rowLoc is not found in the index.');
         }
         newData.push(this.data[idx]);

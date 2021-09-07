@@ -1,6 +1,7 @@
 import MersenneTwister from 'mersenne-twister';
 import RandExp from 'randexp';
-import { assert, initOptions, MAX_INT, MIN_INT, range } from './utils';
+import { assert, range } from '../utils';
+import { initOptions, MAX_INT, MIN_INT } from './utils';
 
 /** @public */
 export type RandomFunc = () => number;
@@ -205,13 +206,14 @@ export class BasicRandom {
    */
   n<T extends AnyFunc>(generator: T, length = 1, ...params: Parameters<T>): ReturnType<T>[] {
     assert(typeof generator !== 'function', 'The first argument must be a function.');
+
     let i = length;
     const arr: ReturnType<T>[] = [];
 
     // Providing a negative count should result in a noop.
     i = Math.max(0, i);
     for (; i > 0; i -= 1) {
-      arr.push(generator.apply(this, params));
+      arr.push((generator as T).apply(this, params));
     }
 
     return arr;

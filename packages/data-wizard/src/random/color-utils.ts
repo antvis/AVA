@@ -1,5 +1,6 @@
+import { assert } from '../utils';
 import { BasicRandom } from './basic-random';
-import { assert, initOptions } from './utils';
+import { initOptions } from './utils';
 /**
  *
  * @public

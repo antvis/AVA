@@ -1,13 +1,4 @@
 /**
- * assert
- * @param test
- * @param errorMessage
- */
-export function assert(test: any, errorMessage: string): void {
-  if (test) throw new Error(errorMessage);
-}
-
-/**
  * merge default values
  * @param options
  * @param defaults
