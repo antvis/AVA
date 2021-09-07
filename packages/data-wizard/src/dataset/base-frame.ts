@@ -1,4 +1,4 @@
-import * as utils from '../utils';
+import { isArray } from '../utils';
 import { isLegalBasicType, generateArrayIndex } from './utils';
 import type { SeriesData, FrameData, Axis, Extra } from './types';
 
@@ -14,13 +14,13 @@ export default abstract class BaseFrame {
 
   constructor(data: SeriesData | FrameData, extra?: Extra) {
     // 1D: object
-    if (utils.isArray(data) && isLegalBasicType(data?.[0])) {
+    if (isArray(data) && isLegalBasicType(data?.[0])) {
       // 1D: array
       this.data = data;
       this.colData = this.data;
     }
 
-    if (utils.isArray(data)) {
+    if (isArray(data)) {
       this.setAxis(0, generateArrayIndex(data, extra));
     }
   }
