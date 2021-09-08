@@ -41,53 +41,78 @@ export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>)
 
   return schemas;
 };
+/** lowlight information that does not require attention */
+const lowlight = (pattern: HomogeneousPatternInfo, colorField: string) => {
+  const { type, insightType, commSet, exc = [] } = pattern;
+  const chartType = ChartTypeMap[insightType];
+  let highlightSet: string[] = [];
+  if (type === 'commonness') {
+    highlightSet = commSet;
+  } else if (type === 'exception') {
+    highlightSet = exc;
+  }
+  const opacity = (value: string) => highlightSet.includes(value) ? 1 : 0.2;
+  if (chartType === 'line_chart') {
+    return {
+      lineStyle: (data) => {
+        return {
+          opacity: opacity(data[colorField]),
+        };
+      },
+    };
+  }
+  if (chartType === 'column_chart') {
+    return {
+      columnStyle: (data) => {
+        return {
+          fillOpacity: opacity(data[colorField]),
+        };
+      },
+    };
+  }
+  return {};
+};
 
 export const getHomogeneousInsightVisualizationSchema = (insight: InsightInfo<HomogeneousPatternInfo>) => {
   const { breakdowns, patterns, measures } = insight;
 
   const schemas = [];
 
-  const { childPatterns } = patterns[0];
-
   const { caption, insightSummary } = generateHomogeneousInsightDescription(insight);
+  patterns.forEach((pattern) => {
+    const { insightType } = pattern;
+    // TODO chart schema generation
+    const chartType = ChartTypeMap[insightType];
+    let plotSchema;
+    if (measures.length > 1) {
+      plotSchema = {
+        xField: breakdowns[0],
+        yField: 'value',
+        seriesField: 'measureName',
+      };
+    } else {
+      plotSchema = {
+        xField: breakdowns[1],
+        yField: measures[0].field,
+        seriesField: breakdowns[0],
+      };
+    }
 
-  // TODO chart schema generation
-  if (measures.length > 1) {
-    const plotSchema = {
-      xField: breakdowns[0],
-      yField: 'value',
-      seriesField: 'measureName',
-    };
-    const annotationConfig = generateHomogeneousInsightAnnotationConfig(childPatterns);
+    const style = lowlight(pattern, plotSchema.seriesField);
+    const annotationConfig = generateHomogeneousInsightAnnotationConfig(pattern);
 
     const chartSchema = {
       ...plotSchema,
+      ...style,
       annotations: annotationConfig,
     };
     schemas.push({
-      chartType: ChartTypeMap[patterns[0].insightType],
+      chartType,
       chartSchema,
       caption,
       insightSummary,
     });
-  } else {
-    const plotSchema = {
-      xField: breakdowns[1],
-      yField: measures[0].field,
-      seriesField: breakdowns[0],
-    };
-    // const annotationConfig = generateHomogeneousInsightAnnotationConfig(childPatterns);
+  });
 
-    const chartSchema = {
-      ...plotSchema,
-      // annotations: annotationConfig,
-    };
-    schemas.push({
-      chartType: ChartTypeMap[patterns[0].insightType],
-      chartSchema,
-      caption,
-      insightSummary,
-    });
-  }
   return schemas;
 };
