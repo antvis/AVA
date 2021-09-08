@@ -1,8 +1,9 @@
 import { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
+import { hexToColor, colorToHex, paletteGeneration } from '@antv/smart-color';
 import { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/concepts/rule';
 import { deepMix } from '../utils';
-import { Advice, AdvisorOptions, DataRows } from './interface';
+import { Advice, AdvisorOptions, DataRows, Theme } from './interface';
 import { getChartTypeSpec } from './spec-mapping';
 import { defaultWeight } from './default-weight';
 
@@ -71,6 +72,50 @@ function applyDesignRules(
   return encodingSpec;
 }
 
+const DISCRETE_PALETTE_TYPES = ['monochromatic', 'analogous'] as const;
+const CATEGORICAL_PALETTE_TYPES = ['polychromatic', 'split-complementary', 'triadic', 'tetradic'] as const;
+
+function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec, theme: Theme) {
+  const { primaryColor } = theme;
+  const layerEnc = 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
+  if (primaryColor && layerEnc) {
+    // convert primary color
+    const color = hexToColor(primaryColor);
+    // if color is specified
+    if (layerEnc.color) {
+      const { type, field } = layerEnc.color;
+      let colorScheme;
+      if (type === 'quantitative') {
+        colorScheme = DISCRETE_PALETTE_TYPES[Math.floor(Math.random() * DISCRETE_PALETTE_TYPES.length)];
+      } else {
+        colorScheme = CATEGORICAL_PALETTE_TYPES[Math.floor(Math.random() * CATEGORICAL_PALETTE_TYPES.length)];
+      }
+      const count = dataProps.find((d) => d.name === field)?.count;
+      const palette = paletteGeneration(colorScheme, {
+        color,
+        count,
+      });
+      return {
+        encoding: {
+          color: {
+            scale: {
+              range: palette.colors.map((color) => colorToHex(color)),
+            },
+          },
+        },
+      };
+    }
+    return {
+      mark: {
+        style: {
+          color: colorToHex(color),
+        },
+      },
+    };
+  }
+  return {};
+}
+
 /**
  * recommending charts given data and dataProps, based on CKB and RuleBase
  * @param data input data [ {a: xxx, b: xxx}, ... ]
@@ -95,6 +140,10 @@ export function dataToAdvices(
    * `showLog`: log on/off
    */
   const showLog = options?.showLog;
+  /**
+   * `theme`: custom theme
+   */
+  const theme = options?.theme;
   /**
    * customized CKB input or default CKB from @antv/ckb
    */
@@ -122,6 +171,12 @@ export function dataToAdvices(
     // step 3: apply design rules
     if (chartTypeSpec && enableRefine) {
       const partEncSpec = applyDesignRules(t, dataProps, ruleBase, chartTypeSpec);
+      deepMix(chartTypeSpec.layer[0], partEncSpec);
+    }
+
+    // step 4: custom theme
+    if (chartTypeSpec && theme) {
+      const partEncSpec = applyTheme(dataProps, chartTypeSpec, theme);
       deepMix(chartTypeSpec.layer[0], partEncSpec);
     }
 
