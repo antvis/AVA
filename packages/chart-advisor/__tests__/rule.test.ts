@@ -4,9 +4,12 @@ import { builtInRules, RuleConfig, RuleModule, getChartRule } from '../src/ruler
 const myRule: RuleModule = {
   id: 'fufu-rule',
   type: 'HARD',
-  chartTypes: ['pie_chart'],
   docs: {
     lintText: 'listen to fufu',
+  },
+  trigger: (args) => {
+    const { chartType } = args;
+    return ['pie_chart'].indexOf(chartType) !== -1;
   },
   validator: (args) => {
     let result = 1;
