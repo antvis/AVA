@@ -5,6 +5,10 @@ import { Preferences } from '../../ruler';
 export type DataRow = Record<string, any>;
 export type DataRows = DataRow[];
 
+export type Theme = {
+  /** hex string */
+  primaryColor?: string
+}
 /**
  * @public
  */
@@ -35,6 +39,10 @@ export interface AdvisorOptions {
    * log on/off
    */
   showLog?: boolean;
+  /**
+   * custom theme
+   */
+  theme?: Theme
 }
 
 /**
