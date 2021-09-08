@@ -1,4 +1,4 @@
-import { PatternInfo, PointPatternInfo, TrendInfo } from '../interface';
+import { PatternInfo, PointPatternInfo, TrendInfo, HomogeneousPatternInfo } from '../interface';
 import { dataFormat } from './util';
 
 const COLOR: Record<string, string> = {
@@ -19,11 +19,7 @@ interface Text {
   style?: Record<string, number | string>;
 }
 
-const annotationText = (
-  texts: Text[],
-  position: [number | string, number | string],
-  offsetY: number = 0
-) => {
+const annotationText = (texts: Text[], position: [number | string, number | string], offsetY: number = 0) => {
   return texts.map((text, i) => ({
     type: 'text',
     content: dataFormat(text.content),
@@ -31,8 +27,8 @@ const annotationText = (
     offsetY: offsetY + i * 15,
     style: {
       ...TEXT_STYLE,
-      ...text.style
-    }
+      ...text.style,
+    },
   }));
 };
 
@@ -57,14 +53,21 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
         },
         autoAdjust: false,
       },
-      ...annotationText([{
-        content: x
-      }, {
-        content: y,
-        style: {
-          fontWeight: BOLD,
-        }
-      }], [x, y], -42),
+      ...annotationText(
+        [
+          {
+            content: x,
+          },
+          {
+            content: y,
+            style: {
+              fontWeight: BOLD,
+            },
+          },
+        ],
+        [x, y],
+        -42
+      ),
     ];
   }
   if (pattern.type === 'category_outlier') {
@@ -85,14 +88,21 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
         },
         color: COLOR.outlier,
       },
-      ...annotationText([{
-        content: x
-      }, {
-        content: y,
-        style: {
-          fontWeight: BOLD,
-        }
-      }], [x, y], -22),
+      ...annotationText(
+        [
+          {
+            content: x,
+          },
+          {
+            content: y,
+            style: {
+              fontWeight: BOLD,
+            },
+          },
+        ],
+        [x, y],
+        -22
+      ),
     ];
   }
   if (pattern.type === 'trend') {
@@ -124,11 +134,52 @@ export const generateInsightAnnotationConfig = (patterns: PatternInfo[]) => {
   return annotations;
 };
 
-export const generateHomogeneousInsightAnnotationConfig = (patterns: PatternInfo[]) => {
+export const generateHomogeneousInsightAnnotationConfig = (pattern: HomogeneousPatternInfo) => {
   const annotations = [];
-  patterns.forEach((pattern) => {
-    const configItems = generateAnnotationConfigItem(pattern);
-    annotations.push(...configItems);
-  });
+  const { insightType, childPatterns } = pattern;
+
+  if (['change_point', 'time_series_outlier'].includes(insightType)) {
+    const { x } = childPatterns[0] as PointPatternInfo;
+    const text = insightType === 'change_point' ? 'Abrupt Change' : 'Outlier';
+    const color = insightType === 'change_point' ? COLOR.highlight : COLOR.outlier;
+    // draw line
+    const line = {
+      type: 'line',
+      start: [x, 'min'],
+      end: [x, 'max'],
+      text: {
+        content: text,
+        position: 'left',
+        offsetY: 15,
+        offsetX: 5,
+        rotate: 0,
+        autoRotate: false,
+        style: {
+          textAlign: 'left',
+        },
+      },
+    };
+    annotations.push(line);
+    // draw circle
+    const circles = childPatterns.map((pattern) => {
+      const { y } = pattern as PointPatternInfo;
+      return {
+        type: 'dataMarker',
+        position: [x, y],
+        point: {
+          style: {
+            fill: '#fff',
+            stroke: color,
+          },
+        },
+        line: {
+          length: 20,
+        },
+        autoAdjust: false,
+      };
+    });
+    annotations.push(...circles);
+  }
+
   return annotations;
 };
