@@ -4,7 +4,8 @@
     "packages/chart-advisor",
     "packages/lite-insight",
     "packages/smart-board",
-    "packages/data-wizard"
+    "packages/data-wizard",
+    "packages/auto-chart"
   ],
   "command": {
     "publish": {
