@@ -26,6 +26,7 @@
     "build:esm": "rimraf ./esm && tsc --module ESNext --outDir esm",
     "build": "run-p build:*",
     "test": "jest",
+    "coverage": "jest --coverage",
     "ci": "run-s lint schema test build",
     "prepare:demo": "cd demo && npm install",
     "start:demo": "npm run prepare:demo && cd demo && npm start",
