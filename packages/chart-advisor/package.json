@@ -25,6 +25,7 @@
     "build:esm": "rimraf ./esm && tsc --module ESNext --outDir esm",
     "build": "run-p build:*",
     "test": "jest",
+    "coverage": "jest --coverage",
     "watch": "yarn module && yarn build --w"
   },
   "repository": {
