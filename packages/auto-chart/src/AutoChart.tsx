@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { get, set } from 'lodash';
-import { Advisor, Advice } from '@antv/chart-advisor';
+import { Advisor } from '@antv/chart-advisor';
 import { Chart } from './ChartRender';
 import { AdviceList } from './AdviceList';
 import { ChartConfigPanel, ChartConfigBtn } from './ChartConfigPanel';
-import { intl } from './i18n';
+import { Language, intl } from './i18n';
 import { prefixCls } from './utils';
-
+import type { Advice } from '@antv/chart-advisor';
 import './index.less';
 
 interface Props {
@@ -14,8 +14,8 @@ interface Props {
   width?: number;
   height?: number;
   data?: any[];
-  fields?: any[];
-  language?: 'zh-CN' | 'en-US';
+  fields?: string[];
+  language?: Language;
   /** TODO switching charts display or not */
   toolbar?:boolean;
   /** TODO mode */
@@ -61,7 +61,7 @@ export const AutoChart = (props: Props) => {
             if (datum) {
               return datum[colorField];
             }
-            return intl.get('Total');
+            return intl.get('Total', language);
           });
         }
       };
@@ -77,7 +77,7 @@ export const AutoChart = (props: Props) => {
   return (
     <div className={`${prefixCls}container`} ref={containerRef} onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       <Chart title={title} description={description} chartRef={chartRef} spec={advices[currentAdviceIndex]?.spec || null} />
-      <AdviceList advices={advices} currentIndex={currentAdviceIndex} isActive={isActive} onChartTypeChange={onChartTypeChange}/>
+      <AdviceList language={language} advices={advices} currentIndex={currentAdviceIndex} isActive={isActive} onChartTypeChange={onChartTypeChange}/>
       {chartRef.current?.chartType && <ChartConfigBtn isActive={isActive} onClick={() => setConfigDisplay(!configDisplay)}/>}
       {chartRef.current?.chartType && <ChartConfigPanel
         configDisplay={configDisplay}

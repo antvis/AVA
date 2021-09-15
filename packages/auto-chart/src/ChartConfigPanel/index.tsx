@@ -4,13 +4,13 @@ import { Button, message } from 'antd';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { withDrag, DragRefProps } from '../DragHoc';
 import { prefixCls } from '../utils';
-import { intl } from '../i18n';
+import { intl, Language } from '../i18n';
 import getSchema from './getSchema';
 import { processConfig, copyConfig, shake, getOption } from './utils';
 import '@antv/g2plot-schemas/lib/editor/index.less';
 
 interface ChartConfigPanelProps {
-  language?: 'zh-CN' | 'en-US';
+  language: Language;
   configDisplay: boolean;
   chartType?: string;
   configs?: any;
@@ -66,7 +66,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
       <div className={`${prefixCls}config_panel`}>
         <div data-id="mask" className={`${prefixCls}dev_mask`}></div>
         <div className={`${prefixCls}config_header`} ref={dragHander}>
-          {intl.get('ChartConfig')}
+          {intl.get('ChartConfig', language)}
           <img src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png" onClick={onConfigClose}></img>
         </div>
         <div className={`${prefixCls}config_content`}>
@@ -77,21 +77,21 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
             <CopyToClipboard
               text={JSON.stringify(data)}
               onCopy={() => {
-                message.success(intl.get('CopySuccess'));
+                message.success(intl.get('CopySuccess', language));
               }}
             >
               <Button style={{ marginRight: 16 }} type="primary">
-                {intl.get('CopyData')}
+                {intl.get('CopyData', language)}
               </Button>
             </CopyToClipboard>
           )}
           <CopyToClipboard
             text={JSON.stringify({ configs: copyConfig(config), type: chartType })}
             onCopy={() => {
-              message.success(intl.get('CopySuccess'));
+              message.success(intl.get('CopySuccess', language));
             }}
           >
-            <Button type="primary">{intl.get('CopyConfig')}</Button>
+            <Button type="primary">{intl.get('CopyConfig', language)}</Button>
           </CopyToClipboard>
         </div>
       </div>

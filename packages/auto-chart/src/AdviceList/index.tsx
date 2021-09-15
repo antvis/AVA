@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { CKBJson } from '@antv/knowledge';
-import { Advice } from '@antv/chart-advisor';
 import { prefixCls, getThumbnailURL, customChartType } from '../utils';
-import { intl, getLanguage } from '../i18n';
+import { intl, Language } from '../i18n';
+import type { Advice } from '@antv/chart-advisor';
+import type { ChartID } from '@antv/knowledge';
 
 interface AdviceListProps {
+  language: Language;
   advices: Advice[];
   currentIndex: number;
   isActive: boolean;
   onChartTypeChange: (valueIndex: number) => void;
 };
 
-export const AdviceList = ({ advices, currentIndex, isActive, onChartTypeChange }: AdviceListProps) => {
+export const AdviceList = ({ advices, currentIndex, language, isActive, onChartTypeChange }: AdviceListProps) => {
   const [adviceDisplay, setAdviceDisplay] = useState(false);
-  const ChartWiki = CKBJson(getLanguage(), true);
+  const ChartWiki = CKBJson(language, true);
   // TODO || adviceToLibConfig(advice)
   const advicesTop3 = advices
   .filter((advice) => !customChartType.includes(advice.type))
@@ -48,12 +50,12 @@ export const AdviceList = ({ advices, currentIndex, isActive, onChartTypeChange 
               return (
                 <div className={`${prefixCls}advice`} key={index} onClick={() => changeChartHandle(index)}>
                   <div className={`${prefixCls}advice-thumbnail`} data-index={index}>
-                    <img src={getThumbnailURL(advice.type)} data-index={index}/>
+                    <img src={getThumbnailURL(advice.type as ChartID)} data-index={index}/>
                   </div>
                   <div className={`${prefixCls}advice-desc`}>
                     <img src={rankIcons[index]} data-index={index} />
                     <div className="advice-chart-name" data-index={index}>{ChartWiki[advice.type].name}</div>
-                    <div className="advice-score-text" data-index={index}>{intl.get('Score')}<span className="advice-score">{advice.score.toFixed(2)}</span>
+                    <div className="advice-score-text" data-index={index}>{intl.get('Score', language)}<span className="advice-score">{advice.score.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
