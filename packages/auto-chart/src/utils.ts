@@ -1,5 +1,6 @@
+// TODO @antv/thumbnails will update
 import Thumbnails from '@antv/thumbnails';
-import { ChartID } from '@antv/knowledge';
+import type { ChartID } from '@antv/knowledge';
 
 export const prefixCls = '__AUTO_CHART__';
 export const customChartType = ['kpi_panel', 'table'];
@@ -14,6 +15,7 @@ export function getThumbnailURL(chartId: ChartID) {
 /**
  * let targetElement can drag itself
  * @param target - targetHtml
+ * @param dragEle - can drag area
  */
  export function draggable(target: HTMLElement, dragEle: HTMLElement) {
   const handlers: ((event: MouseEvent) => void)[] = [];
@@ -22,12 +24,12 @@ export function getThumbnailURL(chartId: ChartID) {
     const shiftX = event.clientX - dragEle.getBoundingClientRect().left;
     const shiftY = event.clientY - dragEle.getBoundingClientRect().top;
     function moveAt(pageX: number, pageY: number) {
-      console.log('move 233444');
       target.style.left = `${(pageX - shiftX)}px`;
       target.style.top = `${(pageY - shiftY)}px`;
     }
 
     moveAt(event.pageX, event.pageY);
+
 
     function onMouseMove(event: MouseEvent) {
       moveAt(event.pageX, event.pageY);

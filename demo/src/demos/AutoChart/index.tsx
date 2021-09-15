@@ -7,6 +7,7 @@ const autoChartExp =  (
     title="hello world"
     description="ceshi test"
     data={testData}
+    language={'en-US'}
     fields={['f1', 'f2']}
   />
 );
