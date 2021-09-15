@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
-import { LockOutlined, UnlockOutlined } from '@ant-design/icons';
+import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
 import { g2plotRender, aggregate, chartInfo2Config, ConfigObj } from '../utils';
 
 export interface ChartViewProps {
@@ -14,8 +14,7 @@ export interface ChartViewProps {
 }
 
 const ChartView = (props: ChartViewProps) => {
-  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort } =
-    props;
+  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort } = props;
   const [curChartConfig, setChartConfig] = useState<ConfigObj>();
   let plot: any;
   useEffect(() => {
@@ -60,7 +59,7 @@ const ChartView = (props: ChartViewProps) => {
     <Tooltip title={'Cancel Connection'}>
       <LockOutlined
         className="resort_icon"
-        style={{ color: 'red', display: interactionMode === 'connectionMode' ? 'inline-block' : 'none' }}
+        style={{ color: 'red', visibility: interactionMode === 'connectionMode' ? 'visible' : 'hidden' }}
         onClick={cancelResort}
       />
     </Tooltip>
@@ -68,14 +67,15 @@ const ChartView = (props: ChartViewProps) => {
     <Tooltip title={'Show Connection'}>
       <UnlockOutlined
         className="resort_icon"
-        style={{ display: interactionMode === 'connectionMode' && !hasLocked ? 'inline-block' : 'none' }}
+        style={{ visibility: interactionMode === 'connectionMode' && !hasLocked ? 'visible' : 'hidden' }}
         onClick={handleResort}
       />
     </Tooltip>
   );
 
   const config = curChartConfig?.config;
-  const dimension = curChartConfig?.type !== 'Pie' ? `${config?.xField} ${config?.seriesField || ''}` : config?.colorField;
+  const dimension =
+    curChartConfig?.type !== 'Pie' ? `${config?.xField} ${config?.seriesField || ''}` : config?.colorField;
   const measure = curChartConfig?.type !== 'Pie' ? config?.yField : config?.angleField;
   const score = curChartConfig?.score;
   const { description } = chartInfo;
@@ -92,13 +92,11 @@ const ChartView = (props: ChartViewProps) => {
     <div className={chartClassName} id={`chart_view_${chartID}`}>
       <div className="title_view">
         <div className="title_info">
-          {score && <Tag color="error">{`Score: ${score}`}</Tag>}
-          {dimension && <Tag color="success">{`Dimension: ${dimension}`}</Tag>}
-          {measure && <Tag color="processing">{`Measure: ${measure}`}</Tag>}
+          {score && <Tooltip title={`Score: ${score}`}><Tag icon={<MonitorOutlined />} color="error">{`${score}`}</Tag></Tooltip>}
+          {dimension && <Tooltip title={`Dimension: ${dimension}`}><Tag color="processing">{`${dimension}`}</Tag></Tooltip>}
+          {measure && <Tooltip title={`Measure: ${measure}`}><Tag color="success">{`${measure}`}</Tag></Tooltip>}
         </div>
-        <div className="right_icons">
-          {lockIcon}
-        </div>
+        <div className="right_icons">{lockIcon}</div>
       </div>
       <div id={`chart_container_${chartID}`}></div>
       {hasLocked &&
