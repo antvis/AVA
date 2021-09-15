@@ -11,7 +11,7 @@ export default class DataFrame extends BaseFrame {
     super(data, extra);
 
     if (isObject(extra) && !extra.index && !extra.columns && Object.keys(extra).length > 0) {
-      throw new Error('The extra of DataFrame only owns \'index\' and \'columns\' properties');
+      throw new Error("The extra of DataFrame only owns 'index' and 'columns' properties");
     }
 
     if (isArray(data)) {
@@ -109,7 +109,7 @@ export default class DataFrame extends BaseFrame {
    * @param columns
    * @param extra
    */
-  private generateColumns (columns: Axis[], extra?: Extra) {
+  private generateColumns(columns: Axis[], extra?: Extra) {
     if (extra?.columns) {
       if (extra.columns?.length === columns.length) {
         this.setAxis(1, extra.columns);
@@ -119,7 +119,7 @@ export default class DataFrame extends BaseFrame {
     } else {
       this.setAxis(1, columns);
     }
-  };
+  }
 
   /**
    * Generate this.data and this.colData.
@@ -143,7 +143,7 @@ export default class DataFrame extends BaseFrame {
         }
       }
     }
-  };
+  }
 
   get shape(): [number, number] {
     return [this.axes[0].length, (this.axes[1] as Axis[]).length];

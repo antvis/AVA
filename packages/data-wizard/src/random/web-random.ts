@@ -7,7 +7,7 @@ import { initOptions } from './utils';
  * @public
  */
 export class WebRandom extends TextRandom {
-  database: WebDB & TextDB = ({ ...getTextDB(), ...getWebDB()});
+  database: WebDB & TextDB = { ...getTextDB(), ...getWebDB() };
 
   /**
    * Return a random url

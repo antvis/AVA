@@ -13,7 +13,7 @@ export default class Series extends BaseFrame {
     super(data, extra);
 
     if (isObject(extra) && !extra.index && Object.keys(extra).length > 0) {
-      throw new Error('The extra of Series only owns \'index\' property');
+      throw new Error("The extra of Series only owns 'index' property");
     }
 
     if (isLegalBasicType(data)) {
