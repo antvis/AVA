@@ -11,6 +11,6 @@ test('color', () => {
   expect(R.hexcolor()).toMatch(/#[0-9a-f]{6}/);
   expect(R.hexcolor({ grayscale: true })).toMatch(/#(..)\1{2}/);
   expect(R.hexcolor({ casing: 'upper' })).toMatch(/#[0-9A-F]{6}/);
-  expect(R.decimalcolor()).toBeLessThanOrEqual(0xFFFFFF);
+  expect(R.decimalcolor()).toBeLessThanOrEqual(0xffffff);
   expect(R.database.colorKeywords.includes(R.colorname())).toBe(true);
 });

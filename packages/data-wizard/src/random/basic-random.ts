@@ -160,16 +160,15 @@ export class BasicRandom {
     if (count === 1) {
       return [this.pickone(array)];
     }
-      const arr = array.slice(0);
-      let end = arr.length;
-      return this.n(function(this: BasicRandom) {
-        end -= 1;
-        const index = this.natural({ max: end });
-        const value = arr[index];
-        arr[index] = arr[end];
-        return value;
-      }, Math.min(end, count));
-
+    const arr = array.slice(0);
+    let end = arr.length;
+    return this.n(function (this: BasicRandom) {
+      end -= 1;
+      const index = this.natural({ max: end });
+      const value = arr[index];
+      arr[index] = arr[end];
+      return value;
+    }, Math.min(end, count));
   }
 
   /**

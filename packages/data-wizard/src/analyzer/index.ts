@@ -56,7 +56,7 @@ export interface StringFieldInfo extends FieldInfo {
 /**
  * @public
  */
- export function isStringFieldInfo(x: FieldInfo): x is StringFieldInfo {
+export function isStringFieldInfo(x: FieldInfo): x is StringFieldInfo {
   return x.recommendation === 'string';
 }
 
@@ -94,7 +94,7 @@ export interface NumberFieldInfo extends FieldInfo {
 /**
  * @public
  */
- export function isNumberFieldInfo(x: FieldInfo): x is NumberFieldInfo {
+export function isNumberFieldInfo(x: FieldInfo): x is NumberFieldInfo {
   return x.recommendation === 'integer' || x.recommendation === 'float';
 }
 
@@ -112,7 +112,7 @@ export interface DateFieldInfo extends FieldInfo {
 /**
  * @public
  */
- export function isDateFieldInfo(x: FieldInfo): x is DateFieldInfo {
+export function isDateFieldInfo(x: FieldInfo): x is DateFieldInfo {
   return x.recommendation === 'date';
 }
 

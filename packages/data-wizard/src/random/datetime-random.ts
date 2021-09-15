@@ -38,7 +38,7 @@ export class DateTimeRandom extends BasicRandom {
    * @param options - the params
    */
   datetime(options?: DateTimeOptions): string {
-    const opts = initOptions(options, { format: 'yyyy-MM-dd\'T\'HH:mm:ssXXX' });
+    const opts = initOptions(options, { format: "yyyy-MM-dd'T'HH:mm:ssXXX" });
     const timestamp = this.timestamp(opts);
     return format(timestamp, opts.format);
   }

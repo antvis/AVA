@@ -21,53 +21,6 @@ describe('New DataFrame', () => {
     expect(df.axes).toStrictEqual([[0, 1, 2], [0]]);
   });
 
-  test('2D: object', () => {
-    const df = new DataFrame([
-      { a: 1, b: 4 },
-      { a: 2, b: 5 },
-      { a: 3, b: 6 },
-    ]);
-    // console.log('2D: object');
-    // console.log(df);
-    expect(df.data).toStrictEqual([
-      [1, 4],
-      [2, 5],
-      [3, 6],
-    ]);
-    expect(df.colData).toStrictEqual([
-      [1, 2, 3],
-      [4, 5, 6],
-    ]);
-    expect(df.axes).toStrictEqual([
-      [0, 1, 2],
-      ['a', 'b'],
-    ]);
-
-    const df2 = new DataFrame(
-      [
-        { a: 1, b: 4 },
-        { a: 2, b: 5 },
-        { a: 3, b: 6 },
-      ],
-      { index: ['a', 'b', 'c'], columns: ['kk', 'bb'] }
-    );
-    // console.log('2D: object with extra');
-    // console.log(df2);
-    expect(df2.data).toStrictEqual([
-      [1, 4],
-      [2, 5],
-      [3, 6],
-    ]);
-    expect(df2.colData).toStrictEqual([
-      [1, 2, 3],
-      [4, 5, 6],
-    ]);
-    expect(df2.axes).toStrictEqual([
-      ['a', 'b', 'c'],
-      ['kk', 'bb'],
-    ]);
-  });
-
   test('2D: object in array', () => {
     const df = new DataFrame([
       { a: 1, b: 4 },
@@ -87,6 +40,32 @@ describe('New DataFrame', () => {
     ]);
     expect(df.axes).toStrictEqual([
       [0, 1, 2],
+      ['a', 'b'],
+    ]);
+  });
+
+  test('2D: object in array with extra', () => {
+    const df2 = new DataFrame(
+      [
+        { a: 1, b: 4 },
+        { a: 2, b: 5 },
+        { a: 3, b: 6 },
+      ],
+      { index: ['k', 'm', 'n'] }
+    );
+    // console.log('2D: object in array with extra');
+    // console.log(df2);
+    expect(df2.data).toStrictEqual([
+      [1, 4],
+      [2, 5],
+      [3, 6],
+    ]);
+    expect(df2.colData).toStrictEqual([
+      [1, 2, 3],
+      [4, 5, 6],
+    ]);
+    expect(df2.axes).toStrictEqual([
+      ['k', 'm', 'n'],
       ['a', 'b'],
     ]);
   });

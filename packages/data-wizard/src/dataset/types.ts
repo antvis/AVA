@@ -1,4 +1,4 @@
-import type { StringFieldInfo, NumberFieldInfo, DateFieldInfo  } from '../analyzer';
+import type { StringFieldInfo, NumberFieldInfo, DateFieldInfo } from '../analyzer';
 
 export type SeriesData =
   /**
@@ -86,4 +86,6 @@ export type Extra = {
  * Fields Type
  * @public
  */
-export type FieldsInfo = Array<(StringFieldInfo | NumberFieldInfo | DateFieldInfo) & { /** field name */ name: string }>;
+export type FieldsInfo = Array<
+  (StringFieldInfo | NumberFieldInfo | DateFieldInfo) & { /** field name */ name: string }
+>;

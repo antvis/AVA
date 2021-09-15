@@ -35,9 +35,7 @@ test('character111', () => {
   expect(R.phone({ mobile: false, formatted: true, asterisk: true, startNum: '010' })).toMatch(
     new RegExp('010-\\d{3}\\*{2,3}\\d{2}')
   );
-  expect(R.phone({ mobile: false, asterisk: true, startNum: '010' })).toMatch(
-    new RegExp('010\\d{3}\\*{2,3}\\d{2}')
-  );
+  expect(R.phone({ mobile: false, asterisk: true, startNum: '010' })).toMatch(new RegExp('010\\d{3}\\*{2,3}\\d{2}'));
   expect(R.name()).toContain(' ');
   expect(R.cname()).not.toContain(' ');
   expect(R.clastname({ length: 3 })).toHaveLength(3);

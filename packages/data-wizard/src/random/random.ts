@@ -36,4 +36,4 @@ type Constructor<T = {}> = new (...args: any[]) => T;
       Object.defineProperty(derivedCtor.prototype, name, Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!);
     });
   });
-}(Random, [TextRandom, WebRandom, ColorRandom, LocationRandom, DateTimeRandom, CnAddressRandom]));
+})(Random, [TextRandom, WebRandom, ColorRandom, LocationRandom, DateTimeRandom, CnAddressRandom]);
