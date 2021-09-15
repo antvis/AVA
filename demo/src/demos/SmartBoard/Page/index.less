@@ -1,13 +1,9 @@
-.page {
-  background-color: #ffffff;
-}
 #dashboard {
   flex: 1;
   display: flex;
   flex-wrap: wrap;
 }
 .chart_view {
-  height: 350px;
   width: 33.3%;
   border-radius: 5px;
   padding: 14px;
@@ -38,18 +34,23 @@
   color: #000;
   font-size: 14px;
   line-height: 24px;
-  overflow: scroll;
+  position: relative;
 
   .title_info {
-    display: flex;
-    overflow-x: scroll;
+    width: calc(100% - 20px);
+    line-height: 30px;
+    cursor: default;
+
+    span{
+      margin-bottom: 5px;
+    }
   }
 
   .right_icons {
-    position: relative;
-    display: flex;
     align-items: center;
     margin-left: 8px;
+    flex: 1;
+    text-align: right;
 
     span {
       margin-left: 8px;
