@@ -136,3 +136,57 @@
     }
   }
 }
+
+.@{autochart-prefix}dev_panel {
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 10px 10px 20px rgb(0 0 0 / 25%);
+  box-sizing: border-box;
+  position: absolute;
+  background: #fff;
+  z-index: 1000;
+  height: 534px;
+  width: 340px;
+  display: block;
+  // top: 0px;
+  // left: 400px;
+  top: 0;
+  left: 0px;
+}
+.@{autochart-prefix}config_panel {
+  .@{autochart-prefix}config_header {
+    box-sizing: border-box;
+    height: 48px;
+    width: 100%;
+    padding: 0 16px;
+    font-size: 20px;
+    font-weight: 500;
+    cursor: move;
+    position: relative;
+    z-index: 1;
+    border-bottom: 1px solid #d8d8d8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    img {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+  }
+  .@{autochart-prefix}config_content {
+    width: 100%;
+    height: calc(100% - 108px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+  }
+  .@{autochart-prefix}config_footer {
+    border: 1px solid #eee;
+    height: 60px;
+    padding: 14px;
+    width: 100%;
+    background: #fff;
+    text-align: center;
+  }
+}

@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { CKBJson } from '@antv/knowledge';
+import { Advice } from '@antv/chart-advisor';
 import { prefixCls, getThumbnailURL, customChartType } from '../utils';
+import { intl, getLanguage } from '../i18n';
 
 interface AdviceListProps {
-  advices: any[];
+  advices: Advice[];
   currentIndex: number;
-  containerHover: boolean;
-  onChartChange: (valueIndex: number) => void;
+  isActive: boolean;
+  onChartTypeChange: (valueIndex: number) => void;
 };
 
-export const AdviceList = ({ advices, currentIndex, containerHover, onChartChange }: AdviceListProps) => {
+export const AdviceList = ({ advices, currentIndex, isActive, onChartTypeChange }: AdviceListProps) => {
   const [adviceDisplay, setAdviceDisplay] = useState(false);
+  const ChartWiki = CKBJson(getLanguage(), true);
   // TODO || adviceToLibConfig(advice)
   const advicesTop3 = advices
   .filter((advice) => !customChartType.includes(advice.type))
@@ -23,18 +27,18 @@ export const AdviceList = ({ advices, currentIndex, containerHover, onChartChang
 
   const changeChartHandle = (index) => {
     if (currentIndex === index) return;
-    onChartChange(index);
+    onChartTypeChange(index);
   };
 
   useEffect(() => {
-    if (containerHover === false && adviceDisplay === true) {
+    if (isActive === false && adviceDisplay === true) {
       setAdviceDisplay(false);
     };
-  }, [containerHover]);
+  }, [isActive]);
 
   return (
     <div className={`${prefixCls}toolbar`}>
-      <div className={`${prefixCls}config_btn`} style={{ display: containerHover ? 'block' : 'none'}} onClick={() => setAdviceDisplay(!adviceDisplay)}>
+      <div className={`${prefixCls}config_btn`} style={{ display: isActive ? 'block' : 'none'}} onClick={() => setAdviceDisplay(!adviceDisplay)}>
         <img src="https://gw.alipayobjects.com/zos/antfincdn/krFnwF2VZi/retweet.png" />
       </div>
       <div className={`${prefixCls}advice_container`} style={{ display: adviceDisplay ? 'block' : 'none'}}>
@@ -48,9 +52,8 @@ export const AdviceList = ({ advices, currentIndex, containerHover, onChartChang
                   </div>
                   <div className={`${prefixCls}advice-desc`}>
                     <img src={rankIcons[index]} data-index={index} />
-                    <div className="advice-chart-name" data-index={index}>折线图</div>
-                    <div className="advice-score-text" data-index={index}>
-                      推荐分 <span className="advice-score">{advice.score.toFixed(2)}</span>
+                    <div className="advice-chart-name" data-index={index}>{ChartWiki[advice.type].name}</div>
+                    <div className="advice-score-text" data-index={index}>{intl.get('Score')}<span className="advice-score">{advice.score.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
