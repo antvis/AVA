@@ -13,15 +13,17 @@ export default abstract class BaseFrame {
   colData: NDArray = [];
 
   constructor(data: SeriesData | FrameData, extra?: Extra) {
-    // 1D: object
-    if (isArray(data) && isLegalBasicType(data?.[0])) {
-      // 1D: array
-      this.data = data;
-      this.colData = this.data;
-    }
-
+    // 1D: array
     if (isArray(data)) {
       this.setAxis(0, generateArrayIndex(data, extra));
+      for (let i = 0; i < data.length; i += 1) {
+        const datum = data[i];
+        // As long as any datum in data is basic type, it's a 1D array
+        if (isLegalBasicType(datum)) {
+          this.data = data;
+          this.colData = this.data;
+        }
+      }
     }
   }
 

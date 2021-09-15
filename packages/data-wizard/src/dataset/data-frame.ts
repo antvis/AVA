@@ -17,7 +17,7 @@ export default class DataFrame extends BaseFrame {
     if (isArray(data)) {
       const [data0] = data;
       // 1D: array
-      if (isLegalBasicType(data0)) {
+      if (this.data.length > 0) {
         this.generateColumns([0]);
       }
 
