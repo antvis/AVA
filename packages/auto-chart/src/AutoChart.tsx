@@ -1,9 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Advisor } from '@antv/chart-advisor';
+import { get, set } from 'lodash';
+import { Advisor, Advice } from '@antv/chart-advisor';
 import { Chart } from './ChartRender';
 import { AdviceList } from './AdviceList';
 import { ChartConfigPanel, ChartConfigBtn } from './ChartConfigPanel';
+import { intl } from './i18n';
 import { prefixCls } from './utils';
+
 import './index.less';
 
 interface Props {
@@ -12,6 +15,7 @@ interface Props {
   height?: number;
   data?: any[];
   fields?: any[];
+  language?: 'zh-CN' | 'en-US';
   /** TODO switching charts display or not */
   toolbar?:boolean;
   /** TODO mode */
@@ -22,14 +26,16 @@ interface Props {
 };
 
 export const AutoChart = (props: Props) => {
-  const { data: propsData = [], width = 400, height = 400, fields, title, description } = props;
-  const containerRef = useRef(null);
+  const { data: propsData = [], width = 400, height = 400, language= 'zh-CN', fields, title, description } = props;
+  const containerRef = useRef<HTMLElement>(null);
+  const chartRef = useRef(null);
   const myAdvisor = new Advisor();
-  const [advices, setAdvices] = useState([]);
-  const [currentAdviseIndex, setCurrentAdviseIndex] = useState<number>(0);
+  const [advices, setAdvices] = useState<Advice>([]);
+  const [currentAdviceIndex, setCurrentAdviceIndex] = useState<number>(0);
   const [currentData, setCurrentData] = useState<any>(propsData || []);
-  const [containerHover, setHover] = useState<boolean>(false);
+  const [isActive, setHover] = useState<boolean>(false);
   const [configDisplay, setConfigDisplay] = useState(false);
+  const [configs, setConfigs] = useState(null);
 
   useEffect(() => {
     if (containerRef) {
@@ -41,15 +47,47 @@ export const AutoChart = (props: Props) => {
   useEffect(() => {
     const myAdvices = myAdvisor.advise({data: currentData, fields });
     setAdvices(myAdvices);
-    setCurrentAdviseIndex(0);
+    setCurrentAdviceIndex(0);
   }, [currentData]);
+
+  const onConfigChange = (configsValue, configsTransValue) => {
+    setConfigs(configsValue);
+    if (configsTransValue) {
+      if (typeof chartRef.current.chartType !== 'string') throw new Error('please set the plotType');
+      if (chartRef.current.chartType === 'Pie') {
+        const colorField = get(configsTransValue, 'colorField');
+        if (colorField && !get(configsTransValue, 'statistic.title.formatter')) {
+          set(configsTransValue, 'statistic.title.formatter', (datum: any) => {
+            if (datum) {
+              return datum[colorField];
+            }
+            return intl.get('Total');
+          });
+        }
+      };
+      chartRef.current.plot.update(configsTransValue);
+    };
+  };
+
+  const onChartTypeChange = (index: number) => {
+    setCurrentAdviceIndex(index);
+    setConfigs(null);
+  };
 
   return (
     <div className={`${prefixCls}container`} ref={containerRef} onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      <Chart title={title} description={description} spec={advices[currentAdviseIndex]?.spec || null} />
-      <AdviceList advices={advices} currentIndex={currentAdviseIndex} containerHover={containerHover} onChartChange={(index) => setCurrentAdviseIndex(index)}/>
-      <ChartConfigBtn containerHover={containerHover} onClick={() => setConfigDisplay(!configDisplay)}/>
-      <ChartConfigPanel configDisplay={configDisplay}/>
+      <Chart title={title} description={description} chartRef={chartRef} spec={advices[currentAdviceIndex]?.spec || null} />
+      <AdviceList advices={advices} currentIndex={currentAdviceIndex} isActive={isActive} onChartTypeChange={onChartTypeChange}/>
+      {chartRef.current?.chartType && <ChartConfigBtn isActive={isActive} onClick={() => setConfigDisplay(!configDisplay)}/>}
+      {chartRef.current?.chartType && <ChartConfigPanel
+        configDisplay={configDisplay}
+        language={language}
+        chartType={chartRef.current.chartType || null}
+        onConfigChange={onConfigChange}
+        configs={configs}
+        containerRef={containerRef}
+        onClose={() => setConfigDisplay(false)}
+      />}
     </div>
   );
 };
