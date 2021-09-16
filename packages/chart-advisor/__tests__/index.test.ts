@@ -230,10 +230,15 @@ describe('init Linter', () => {
 });
 
 describe('init ChartAdvisor', () => {
-  // TODO formal test
-  test('adviseWithLint in CA', () => {
+  test('adviseWithLint in CA with fields', () => {
     const myCA = new ChartAdvisor();
     const results = myCA.advise({data, fields: ['price', 'type'], options: { refine: true }});
     expect(results.length).toBe(4);
+  });
+
+  test('adviseWithLint in CA without fields', () => {
+    const myCA = new ChartAdvisor();
+    const results = myCA.advise({data, options: { refine: true }});
+    expect(results.length).toBe(9);
   });
 });
