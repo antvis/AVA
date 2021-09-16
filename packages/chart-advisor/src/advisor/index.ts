@@ -57,10 +57,16 @@ export class Advisor {
    */
   advise(params: AdviseParams) {
     const { data, dataProps, fields, options } = params;
+    // otherwise the input data will be mutated
+    const copyData = data.map(obj => ({...obj}));
     // transform data into DataFrame
     let dataFrame: DataFrame;
     try {
-      dataFrame = new DataFrame(data, { columns: fields });
+      if (fields) {
+        dataFrame = new DataFrame(copyData, { columns: fields });
+      } else {
+        dataFrame = new DataFrame(copyData);
+      }
     } catch (error) {
       // if the input data cannot be transformed into DataFrame
       console.error('error: ', error);
@@ -79,7 +85,7 @@ export class Advisor {
     // filter out fields that are not included for advising
     let filteredData: Record<string, any>[] = [];
     if (fields) {
-      filteredData = data.map((row: Record<string, any>)=>{
+      filteredData = copyData.map((row: Record<string, any>)=>{
         const filteredRow = row;
         Object.keys(filteredRow).forEach(col => {
           if (!fields.includes(col)) {
@@ -89,8 +95,9 @@ export class Advisor {
         return row;
       });
     } else {
-      filteredData = data;
+      filteredData = copyData;
     }
+
     const advices = dataToAdvices(filteredData, dataPropsForAdvice, this.CKB, this.ruleBase, options);
 
     return advices;
