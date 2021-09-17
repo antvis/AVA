@@ -11,6 +11,22 @@ export function getThumbnailURL(chartId: ChartID) {
   return 'https://gw.alipayobjects.com/zos/antfincdn/lP6YFnCEjy/nochartimg.svg';
 };
 
+export function parseSearch<T = any>(): T {
+  const querys: any = {};
+  window.location.search
+    .slice(1)
+    .split('&')
+    .forEach(item => {
+      const [key, value] = item.split('=');
+      querys[key] = decodeURIComponent(value);
+    });
+  return querys;
+}
+
+export function uuid() {
+  return `uuid${'-xxxx-xxx'.replace(/x/g, () => ((Math.random() * 16)).toString(16))}`;
+};
+
 /* eslint-disable no-param-reassign */
 /**
  * let targetElement can drag itself

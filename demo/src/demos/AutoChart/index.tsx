@@ -6,8 +6,8 @@ const autoChartExp =  (
   <AutoChart
     title="hello world"
     description="ceshi test"
-    data={testData}
-    language={'en-US'}
+    data={[]}
+    language={'zh-CN'}
     fields={['f1', 'f2']}
   />
 );
