@@ -1,7 +1,7 @@
 import { isArray, isObject, isNumber, isString, range } from '../utils';
 import type { Axis, Extra } from './types';
 
-export const isLegalBasicType = (value: any): boolean => {
+export const isBasicType = (value: any): boolean => {
   return !isArray(value) && !isObject(value);
 };
 
