@@ -1,5 +1,5 @@
 import { isArray } from '../utils';
-import { isLegalBasicType, generateArrayIndex } from './utils';
+import { isBasicType, generateArrayIndex } from './utils';
 import type { SeriesData, FrameData, Axis, Extra } from './types';
 
 type NDArray = any[] | any[][];
@@ -10,19 +10,33 @@ export default abstract class BaseFrame {
 
   data: NDArray = [];
 
-  colData: NDArray = [];
+  colData?: NDArray = [];
 
   constructor(data: SeriesData | FrameData, extra?: Extra) {
     // 1D: array
     if (isArray(data)) {
-      this.setAxis(0, generateArrayIndex(data, extra));
+      let legal = true;
+
       for (let i = 0; i < data.length; i += 1) {
         const datum = data[i];
         // As long as any datum in data is basic type, it's a 1D array
-        if (isLegalBasicType(datum)) {
-          this.data = data;
-          this.colData = this.data;
+        if (!isBasicType(datum)) {
+          legal = false;
+          break;
         }
+      }
+
+      this.setAxis(0, generateArrayIndex(data, extra));
+
+      if (legal) {
+        if (extra?.index) {
+          if (extra.index?.length === data.length) {
+            this.setAxis(0, extra.index);
+          } else {
+            throw new Error(`Index length is ${extra?.index.length}, but data size ${data.length}`);
+          }
+        }
+        this.data = data;
       }
     }
   }

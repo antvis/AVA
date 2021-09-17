@@ -1,6 +1,6 @@
 import { isObject, isNumber, isString, isInteger, isArray, range } from '../utils';
 import BaseFrame from './base-frame';
-import { isLegalBasicType } from './utils';
+import { isBasicType } from './utils';
 import type { SeriesData, Extra, Axis } from './types';
 
 export interface SeriesExtra {
@@ -16,41 +16,38 @@ export default class Series extends BaseFrame {
       throw new Error("The extra of Series only owns 'index' property");
     }
 
-    if (isLegalBasicType(data)) {
-      // 1D: basic type
+    if (isBasicType(data)) {
+      /** 1D: basic type */
       this.data = [data];
-      this.colData = this.data;
 
       // generate index
       if (extra?.index) {
         this.setAxis(0, extra.index);
         this.data = Array(extra.index.length).fill(data);
-        this.colData = this.data;
       } else {
         this.setAxis(0, [0]);
       }
     } else if (isObject(data)) {
-      // 1D: object
-      this.data = Object.values(data);
-      // In Series, this.colData is same as this.data
-      // Do we need it?
-      this.colData = this.data;
-
+      /** 1D: object */
       // generate index
       const dataKeys = Object.keys(data);
       if (extra?.index) {
-        if (extra.index?.length === dataKeys.length) {
+        if (extra.index?.length <= dataKeys.length) {
+          for (let i = 0; i < extra.index.length; i += 1) {
+            const idx = extra.index[i] as string;
+            if (dataKeys.includes(idx)) {
+              this.data.push(data[idx]);
+            }
+          }
           this.setAxis(0, extra.index);
         } else {
-          throw new Error(`Index length is ${extra.index?.length}, but data size is ${dataKeys.length}`);
+          throw new Error(`Index length ${extra.index?.length} is greater than data size ${dataKeys.length}`);
         }
       } else {
+        this.data = Object.values(data);
         this.setAxis(0, dataKeys);
       }
-    } else if (isArray(data)) {
-      // 1D: array
-      this.colData = this.data;
-    } else {
+    } else if (!isArray(data)) {
       throw new Error('Data type is illegal');
     }
   }
