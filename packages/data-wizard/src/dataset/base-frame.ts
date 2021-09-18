@@ -1,4 +1,4 @@
-import { isArray } from '../utils';
+import { assert, isArray, isObject } from '../utils';
 import { isBasicType, generateArrayIndex } from './utils';
 import type { SeriesData, FrameData, Axis, Extra } from './types';
 
@@ -13,8 +13,20 @@ export default abstract class BaseFrame {
   colData?: NDArray = [];
 
   constructor(data: SeriesData | FrameData, extra?: Extra) {
-    // 1D: array
-    if (isArray(data)) {
+    assert(!extra || isObject(extra), 'If extra exists, it must be an object.');
+
+    /** 1D: basic type */
+    if (isBasicType(data)) {
+      // generate index
+      if (extra?.index) {
+        this.setAxis(0, extra?.index);
+        this.data = Array(extra?.index.length).fill(data);
+      } else {
+        this.data = [data];
+        this.setAxis(0, [0]);
+      }
+    } else if (isArray(data)) {
+      /** 1D: array */
       let legal = true;
 
       for (let i = 0; i < data.length; i += 1) {
@@ -30,11 +42,9 @@ export default abstract class BaseFrame {
 
       if (legal) {
         if (extra?.index) {
-          if (extra.index?.length === data.length) {
-            this.setAxis(0, extra.index);
-          } else {
-            throw new Error(`Index length is ${extra?.index.length}, but data size ${data.length}`);
-          }
+          assert(extra?.index?.length === data.length, `Index length is ${extra?.index.length}, but data size ${data.length}`);
+
+          this.setAxis(0, extra?.index);
         }
         this.data = data;
       }
@@ -60,8 +70,10 @@ export default abstract class BaseFrame {
    * @param axis
    * @param labels
    */
-  setAxis(axis: number, labels: Axis[]) {
-    this.axes[axis] = labels;
+  setAxis(axis: number, values: Axis[]) {
+    assert(isArray(values), 'Index or columns must be Axis array.');
+
+    this.axes[axis] = values;
   }
 
   /** get value functions */
