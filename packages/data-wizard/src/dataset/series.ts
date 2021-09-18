@@ -17,23 +17,24 @@ export default class Series extends BaseFrame {
     /** 1D: object */
     if (isObject(data)) {
       // generate index
-      const dataKeys = Object.keys(data);
+      const index = Object.keys(data);
+
       if (extra?.index) {
         assert(
-          extra?.index?.length <= dataKeys.length,
-          `Index length ${extra?.index?.length} is greater than data size ${dataKeys.length}`
+          extra?.index?.length <= index.length,
+          `Index length ${extra?.index?.length} is greater than data size ${index.length}`
         );
 
         for (let i = 0; i < extra?.index.length; i += 1) {
           const idx = extra?.index[i] as string;
-          if (dataKeys.includes(idx)) {
+          if (index.includes(idx)) {
             this.data.push(data[idx]);
           }
         }
         this.setAxis(0, extra?.index);
       } else {
         this.data = Object.values(data);
-        this.setAxis(0, dataKeys);
+        this.setAxis(0, index);
       }
     }
   }

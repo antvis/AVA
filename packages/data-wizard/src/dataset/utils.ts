@@ -1,5 +1,5 @@
 import { isArray, isObject, isNumber, isString, range, assert } from '../utils';
-import type { Axis, Extra } from './types';
+import type { Axis } from './types';
 
 export const isBasicType = (value: any): boolean => {
   return !isArray(value) && !isObject(value);
@@ -10,13 +10,13 @@ export const isAxis = (value: any): value is Axis => {
 };
 
 // generate index for 1D and 2D array
-export const generateArrayIndex = (data: any[], extra?: Extra): Axis[] => {
+export const generateArrayIndex = (data: any[], extraIndex?: Axis[]): Axis[] => {
   assert(isArray(data), 'Data must be an array');
 
-  if (extra?.index) {
-    assert(extra.index?.length === data.length, `Index length is ${extra.index?.length}, but data size is ${data.length}`);
+  if (extraIndex) {
+    assert(extraIndex?.length === data.length, `Index length is ${extraIndex?.length}, but data size is ${data.length}`);
 
-    return extra.index;
+    return extraIndex;
   }
 
   return range(data.length);

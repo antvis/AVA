@@ -13,8 +13,6 @@ export default class DataFrame extends BaseFrame {
     assert(isBasicType(data) || isArray(data) || isObject(data), 'Data type is illegal');
 
     if (isBasicType(data)) {
-      this.colData = this.data;
-
       if (extra?.index && extra?.columns) {
         this.setAxis(1, extra?.columns);
         this.data = Array(extra?.columns.length).fill(this.data);
@@ -24,28 +22,37 @@ export default class DataFrame extends BaseFrame {
         assert(isArray(extra?.columns), 'Index or columns must be Axis array.');
         assert(extra?.columns.length === 1, 'When the length of extra?.columns is larger than 1, extra?.index is required.');
       }
+
+      this.colData = this.data;
     }
 
     if (isArray(data)) {
       const [data0] = data;
 
-      // 1D: basic type
-      if (isBasicType(data)) {
-        this.generateColumns([0]);
-      }
-
-      // 1D: array
+      /** 1D: basic type || array */
       if (this.data.length > 0) {
-        this.generateColumns([0]);
+        this.generateColumns([0], extra?.columns);
+        this.colData = this.data;
       }
 
-      // 2D: object in array
+      /**
+       * 2D: array
+       * Baseframe has made the first round of judgment. Now, if data0 is array, all the datum is array.
+       */
+      if (isArray(data0)) {
+        const columns = range(data0.length);
+        this.generateDataAndColDataFromArray(false, data, columns);
+        this.generateColumns(columns, extra?.columns);
+      }
+
+      /** 2D: object array */
       if (isObject(data0)) {
         const columns: Axis[] = Object.keys(data0);
+
         for (let i = 0; i < data.length; i += 1) {
           const datum = data[i];
 
-          assert(isObject(datum), 'The data is not standard object in array.');
+          assert(isObject(datum), 'The data is not standard object array.');
 
           // slice
           if (extra?.columns) {
@@ -66,41 +73,31 @@ export default class DataFrame extends BaseFrame {
             this.setAxis(1, extra?.columns);
           }
         }
+
         if (!extra?.columns) {
           this.generateDataAndColDataFromArray(true, data, columns);
           this.setAxis(1, columns);
         }
-      }
-
-      // 2D: array
-      if (isArray(data0)) {
-        for (let i = 0; i < data.length; i += 1) {
-          const datum = data[i];
-          assert(isArray(datum), 'The data is not standard 2D array.');
-        }
-
-        const columns = range(data0.length);
-        this.generateDataAndColDataFromArray(false, data, columns);
-        this.generateColumns(columns, extra);
       }
     }
 
     if (isObject(data)) {
       const dataValues = Object.values(data);
       const [data0] = dataValues;
-      // 1D: object
-      if (isBasicType(data0)) {
-        // for (let i = 0; i < data.length; i += 1) {
-        //   const datum = data[i];
-        //   // // As long as any datum in data is basic type, it's a 1D array
-        //   // if (!isBasicType(datum)) {
-        //   // }
-        // }
 
-        this.setAxis(0, [0]);
+      /** 1D: object */
+      if (isBasicType(data0)) {
 
         const columns = Object.keys(data);
-        this.generateColumns(columns, extra);
+
+        if (extra?.index) {
+          assert(isArray(extra.index), 'extra.index must be an array.');
+          assert(extra.index.length === 1, 'The length of extra.index must be 1.');
+
+          this.setAxis(0, extra.index);
+        } else {
+          this.setAxis(0, [0]);
+        }
 
         if (extra?.columns) {
           for (let i = 0; i < extra?.columns.length; i += 1) {
@@ -121,17 +118,18 @@ export default class DataFrame extends BaseFrame {
             this.data.push(datum);
           }
           this.colData = Object.values(data);
+          this.generateColumns(columns);
         }
       }
 
-      // 2D: array in object
+      /** 2D: array object */
       if (isArray(data0)) {
-        this.setAxis(0, generateArrayIndex(data0, extra));
+        this.setAxis(0, generateArrayIndex(data0, extra?.index));
         const columns = Object.keys(data);
-        this.generateColumns(columns, extra);
+        this.generateColumns(columns, extra?.columns);
 
-        for (let i = 0; i < columns.length; i += 1) {
-          const datum = data[columns[i]];
+        for (let i = 0; i < this.columns.length; i += 1) {
+          const datum = data[this.columns[i]];
 
           assert(isArray(datum), 'Data type is illegal');
 
@@ -153,11 +151,11 @@ export default class DataFrame extends BaseFrame {
    * @param columns
    * @param extra
    */
-  private generateColumns(columns: Axis[], extra?: Extra) {
-    if (extra?.columns) {
-      assert(extra?.columns?.length === columns.length, `Columns length is ${extra?.columns?.length}, but data size is ${columns.length}`);
+  private generateColumns(columns: Axis[], extraColumns?: Axis[]) {
+    if (extraColumns) {
+      assert(extraColumns?.length === columns.length, `Columns length is ${extraColumns?.length}, but data column is ${columns.length}`);
 
-      this.setAxis(1, extra?.columns);
+      this.setAxis(1, extraColumns);
     } else {
       this.setAxis(1, columns);
     }
