@@ -1,4 +1,4 @@
-import { isObject, isNumber, isString, isInteger, isArray, range } from '../utils';
+import { isObject, isNumber, isString, isInteger, isArray, range, assert } from '../utils';
 import BaseFrame from './base-frame';
 import { isBasicType } from './utils';
 import type { SeriesData, Extra, Axis } from './types';
@@ -12,43 +12,29 @@ export default class Series extends BaseFrame {
   constructor(data: SeriesData, extra?: SeriesExtra) {
     super(data, extra);
 
-    if (isObject(extra) && !extra.index && Object.keys(extra).length > 0) {
-      throw new Error("The extra of Series only owns 'index' property");
-    }
+    assert(isObject(data) || isBasicType(data) || isArray(data), 'Data type is illegal');
 
-    if (isBasicType(data)) {
-      /** 1D: basic type */
-      this.data = [data];
-
-      // generate index
-      if (extra?.index) {
-        this.setAxis(0, extra.index);
-        this.data = Array(extra.index.length).fill(data);
-      } else {
-        this.setAxis(0, [0]);
-      }
-    } else if (isObject(data)) {
-      /** 1D: object */
+    /** 1D: object */
+    if (isObject(data)) {
       // generate index
       const dataKeys = Object.keys(data);
       if (extra?.index) {
-        if (extra.index?.length <= dataKeys.length) {
-          for (let i = 0; i < extra.index.length; i += 1) {
-            const idx = extra.index[i] as string;
-            if (dataKeys.includes(idx)) {
-              this.data.push(data[idx]);
-            }
+        assert(
+          extra?.index?.length <= dataKeys.length,
+          `Index length ${extra?.index?.length} is greater than data size ${dataKeys.length}`
+        );
+
+        for (let i = 0; i < extra?.index.length; i += 1) {
+          const idx = extra?.index[i] as string;
+          if (dataKeys.includes(idx)) {
+            this.data.push(data[idx]);
           }
-          this.setAxis(0, extra.index);
-        } else {
-          throw new Error(`Index length ${extra.index?.length} is greater than data size ${dataKeys.length}`);
         }
+        this.setAxis(0, extra?.index);
       } else {
         this.data = Object.values(data);
         this.setAxis(0, dataKeys);
       }
-    } else if (!isArray(data)) {
-      throw new Error('Data type is illegal');
     }
   }
 
@@ -61,55 +47,70 @@ export default class Series extends BaseFrame {
    * @param rowLoc
    */
   get(rowLoc: Axis | Axis[] | string): Series | any {
+    assert(
+      isNumber(rowLoc) ||
+        (isString(rowLoc) && !rowLoc.includes(':')) ||
+        isArray(rowLoc) ||
+        (isString(rowLoc) && rowLoc.includes(':')),
+      'The rowLoc is illegal'
+    );
+
     // input is like 0 || 'a'
     if (isNumber(rowLoc) || (isString(rowLoc) && !rowLoc.includes(':'))) {
-      if (this.index.includes(rowLoc)) {
-        if (isNumber(rowLoc)) {
-          return this.data[rowLoc];
-        }
-        if (isString(rowLoc)) {
-          const rowIdx = this.index.indexOf(rowLoc);
-          return this.data[rowIdx];
-        }
+      assert(this.index.includes(rowLoc), 'The rowLoc is not found in the index.');
+
+      if (isNumber(rowLoc)) {
+        return this.data[rowLoc];
       }
-      throw new Error('The rowLoc is not found in the index.');
-    } else if (isArray(rowLoc)) {
+
+      if (isString(rowLoc)) {
+        const rowIdx = this.index.indexOf(rowLoc);
+        return this.data[rowIdx];
+      }
+    }
+
+    if (isArray(rowLoc)) {
       // input is like [0, 1, 2] || ['a', 'b', 'c']
       const newData: any[] = [];
       const newIndex: Axis[] = [];
       for (let i = 0; i < rowLoc.length; i += 1) {
         const loc = rowLoc[i];
-        if (!this.index.includes(loc)) {
-          throw new Error('The rowLoc is not found in the index.');
-        }
+
+        assert(this.index.includes(loc), 'The rowLoc is not found in the index.');
+
         const idxInIndex = this.index.indexOf(loc);
         newData.push(this.data[idxInIndex]);
         newIndex.push(this.index[idxInIndex]);
       }
       return new Series(newData, { index: newIndex });
-    } else if (isString(rowLoc) && rowLoc.includes(':')) {
+    }
+
+    if (isString(rowLoc) && rowLoc.includes(':')) {
       // input is like '0:2' || 'a:c'
       const rowLocArr = rowLoc.split(':');
-      if (rowLocArr.length === 2) {
-        const startLoc = rowLocArr[0];
-        const endLoc = rowLocArr[1];
-        if (isInteger(Number(startLoc)) && isInteger(Number(endLoc))) {
-          const startIdx = Number(startLoc);
-          const endIdx = Number(endLoc);
-          const newData = this.data.slice(startIdx, endIdx);
-          const newIndex = this.index.slice(startIdx, endIdx);
-          return new Series(newData, { index: newIndex });
-        }
-        if (isString(startLoc) && isString(endLoc)) {
-          const startIdx = this.index.indexOf(startLoc);
-          const endIdx = this.index.indexOf(endLoc);
-          const newData = this.data.slice(startIdx, endIdx);
-          const newIndex = this.index.slice(startIdx, endIdx);
-          return new Series(newData, { index: newIndex });
-        }
-        throw new Error('The rowLoc is not found in the index.');
+
+      assert(rowLocArr.length === 2, 'The rowLoc is not found in the index.');
+
+      const startLoc = rowLocArr[0];
+      const endLoc = rowLocArr[1];
+
+      if (isInteger(Number(startLoc)) && isInteger(Number(endLoc))) {
+        const startIdx = Number(startLoc);
+        const endIdx = Number(endLoc);
+        const newData = this.data.slice(startIdx, endIdx);
+        const newIndex = this.index.slice(startIdx, endIdx);
+        return new Series(newData, { index: newIndex });
+      }
+
+      if (isString(startLoc) && isString(endLoc)) {
+        const startIdx = this.index.indexOf(startLoc);
+        const endIdx = this.index.indexOf(endLoc);
+        const newData = this.data.slice(startIdx, endIdx);
+        const newIndex = this.index.slice(startIdx, endIdx);
+        return new Series(newData, { index: newIndex });
       }
     }
+
     throw new Error('The rowLoc is illegal');
   }
 
@@ -118,39 +119,47 @@ export default class Series extends BaseFrame {
    * @param rowLoc
    */
   getByIntegerIndex(rowLoc: number | number[] | string): Series | any {
+    assert(isInteger(rowLoc) || isArray(rowLoc) || (isString(rowLoc) && rowLoc.includes(':')), 'The rowLoc is illegal');
+
     // input is like 1
     if (isInteger(rowLoc)) {
+      assert(range(this.index.length).includes(rowLoc), 'The rowLoc is not found in the index.');
+
       if (range(this.index.length).includes(rowLoc)) {
         return this.data[rowLoc];
       }
-      throw new Error('The rowLoc is not found in the index.');
-    } else if (isArray(rowLoc)) {
+    }
+
+    if (isArray(rowLoc)) {
       // input is like [0, 1, 2]
       const newData: any[] = [];
       const newIndex: Axis[] = [];
       for (let i = 0; i < rowLoc.length; i += 1) {
         const idx = rowLoc[i];
-        if (!range(this.index.length).includes(idx)) {
-          throw new Error('The rowLoc is not found in the index.');
-        }
+
+        assert(range(this.index.length).includes(idx), 'The rowLoc is not found in the index.');
+
         newData.push(this.data[idx]);
         newIndex.push(this.index[idx]);
       }
       return new Series(newData, { index: newIndex });
-    } else if (isString(rowLoc) && rowLoc.includes(':')) {
+    }
+
+    if (isString(rowLoc) && rowLoc.includes(':')) {
       // input is like '0:2'
       const rowLocArr = rowLoc.split(':');
       if (rowLocArr.length === 2) {
         const startIdx = Number(rowLocArr[0]);
         const endIdx = Number(rowLocArr[1]);
-        if (isInteger(startIdx) && isInteger(endIdx)) {
-          const newData = this.data.slice(startIdx, endIdx);
-          const newIndex = this.index.slice(startIdx, endIdx);
-          return new Series(newData, { index: newIndex });
-        }
-        throw new Error('The rowLoc is not found in the index.');
+
+        assert(isInteger(startIdx) && isInteger(endIdx), 'The rowLoc is not found in the index.');
+
+        const newData = this.data.slice(startIdx, endIdx);
+        const newIndex = this.index.slice(startIdx, endIdx);
+        return new Series(newData, { index: newIndex });
       }
     }
+
     throw new Error('The rowLoc is illegal');
   }
 }
