@@ -39,12 +39,6 @@ export type FrameData =
   | undefined
   | null
   /**
-   * 1D: basic type
-   * be like
-   * [1, 2, 3]
-   */
-  | any[]
-  /**
    * 1D: array
    * be like
    * [1, 2, 3]
@@ -69,18 +63,7 @@ export type FrameData =
    */
   | any[][]
   /**
-   * 2D: array in object
-   * be like
-   * {
-   *  a: [1, 2, 3],
-   *  b: [4, 5, 6]
-   * }
-   */
-  | {
-      [key: string]: any[];
-    }
-  /**
-   * 2D: object in array
+   * 2D: object array
    * be like
    * [
    *  {a: 1, b: 2},
@@ -90,7 +73,18 @@ export type FrameData =
    */
   | {
       [key: string]: any;
-    }[];
+    }[]
+  /**
+   * 2D: array object
+   * be like
+   * {
+   *  a: [1, 2, 3],
+   *  b: [4, 5, 6]
+   * }
+   */
+  | {
+      [key: string]: any[];
+    };
 
 export type Axis = string | number;
 

@@ -38,7 +38,7 @@ export default abstract class BaseFrame {
         }
       }
 
-      this.setAxis(0, generateArrayIndex(data, extra));
+      this.setAxis(0, generateArrayIndex(data, extra?.index));
 
       if (legal) {
         if (extra?.index) {
