@@ -47,30 +47,30 @@ module.exports = {
         },
         order: 2,
       },
-      {
-        slug: 'guide/datawizard',
-        title: {
-          zh: 'DataWizard',
-          en: 'DataWizard',
-        },
-        order: 3,
-      },
-      {
-        slug: 'guide/chart-advisor',
-        title: {
-          zh: 'ChartAdvisor',
-          en: 'ChartAdvisor',
-        },
-        order: 4,
-      },
-      {
-        slug: 'guide/chart-linter',
-        title: {
-          zh: 'ChartLinter',
-          en: 'ChartLinter',
-        },
-        order: 5,
-      },
+      // {
+      //   slug: 'guide/datawizard',
+      //   title: {
+      //     zh: 'DataWizard',
+      //     en: 'DataWizard',
+      //   },
+      //   order: 3,
+      // },
+      // {
+      //   slug: 'guide/chart-advisor',
+      //   title: {
+      //     zh: 'ChartAdvisor',
+      //     en: 'ChartAdvisor',
+      //   },
+      //   order: 4,
+      // },
+      // {
+      //   slug: 'guide/chart-linter',
+      //   title: {
+      //     zh: 'ChartLinter',
+      //     en: 'ChartLinter',
+      //   },
+      //   order: 5,
+      // },
       {
         slug: 'api/ckb',
         title: {
@@ -79,46 +79,46 @@ module.exports = {
         },
         order: 1,
       },
-      {
-        slug: 'api/datawizard',
-        title: {
-          zh: 'DataWizard',
-          en: 'DataWizard',
-        },
-        order: 2,
-      },
-      {
-        slug: 'api/datawizard/dw-analyzer',
-        title: {
-          zh: '包：dw-analyzer',
-          en: 'Package: dw-analyzer',
-        },
-        order: 1,
-      },
-      {
-        slug: 'api/chart-advisor',
-        title: {
-          zh: 'ChartAdvisor',
-          en: 'ChartAdvisor',
-        },
-        order: 3,
-      },
-      {
-        slug: 'api/chart-advisor/pipeline',
-        title: {
-          zh: 'pipeline',
-          en: 'pipeline',
-        },
-        order: 1,
-      },
-      {
-        slug: 'api/chart-linter',
-        title: {
-          zh: 'ChartLinter',
-          en: 'ChartLinter',
-        },
-        order: 4,
-      },
+      // {
+      //   slug: 'api/datawizard',
+      //   title: {
+      //     zh: 'DataWizard',
+      //     en: 'DataWizard',
+      //   },
+      //   order: 2,
+      // },
+      // {
+      //   slug: 'api/datawizard/dw-analyzer',
+      //   title: {
+      //     zh: '包：dw-analyzer',
+      //     en: 'Package: dw-analyzer',
+      //   },
+      //   order: 1,
+      // },
+      // {
+      //   slug: 'api/chart-advisor',
+      //   title: {
+      //     zh: 'ChartAdvisor',
+      //     en: 'ChartAdvisor',
+      //   },
+      //   order: 3,
+      // },
+      // {
+      //   slug: 'api/chart-advisor/pipeline',
+      //   title: {
+      //     zh: 'pipeline',
+      //     en: 'pipeline',
+      //   },
+      //   order: 1,
+      // },
+      // {
+      //   slug: 'api/chart-linter',
+      //   title: {
+      //     zh: 'ChartLinter',
+      //     en: 'ChartLinter',
+      //   },
+      //   order: 4,
+      // },
     ],
     examples: [
       {
@@ -130,43 +130,50 @@ module.exports = {
         },
         order: 0,
       },
-      {
-        slug: 'datawizard',
-        // icon: 'gallery',
-        title: {
-          zh: '数据处理库',
-          en: 'DataWizard',
-        },
-        order: 1,
-      },
-      {
-        slug: 'chart-advisor',
-        // icon: 'gallery',
-        title: {
-          zh: '图表推荐库',
-          en: 'ChartAdvisor',
-        },
-        order: 2,
-      },
-      {
-        slug: 'chart-linter',
-        // icon: 'gallery',
-        title: {
-          zh: '图表优化',
-          en: 'ChartLinter',
-        },
-        order: 3,
-      },
-      {
-        slug: 'others',
-        // icon: 'gallery',
-        title: {
-          zh: '其他',
-          en: 'Others',
-        },
-        order: 4,
-      },
+      // {
+      //   slug: 'datawizard',
+      //   // icon: 'gallery',
+      //   title: {
+      //     zh: '数据处理库',
+      //     en: 'DataWizard',
+      //   },
+      //   order: 1,
+      // },
+      // {
+      //   slug: 'chart-advisor',
+      //   // icon: 'gallery',
+      //   title: {
+      //     zh: '图表推荐库',
+      //     en: 'ChartAdvisor',
+      //   },
+      //   order: 2,
+      // },
+      // {
+      //   slug: 'chart-linter',
+      //   // icon: 'gallery',
+      //   title: {
+      //     zh: '图表优化',
+      //     en: 'ChartLinter',
+      //   },
+      //   order: 3,
+      // },
+      // {
+      //   slug: 'others',
+      //   // icon: 'gallery',
+      //   title: {
+      //     zh: '其他',
+      //     en: 'Others',
+      //   },
+      //   order: 4,
+      // },
     ],
+    // 编辑器配置
+    playground: {
+      container: '<div id="container" />',
+      devDependencies: {
+        typescript: 'latest',
+      },
+    },
     showSearch: true, // 是否展示搜索框
     showChinaMirror: true, // 是否展示国内镜像链接
     showAntVProductsCard: true, // 是否展示 AntV 系列产品的卡片链接
