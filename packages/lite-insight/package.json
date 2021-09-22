@@ -73,6 +73,7 @@
     "@ant-design/icons": "^4.6.3",
     "@antv/data-wizard": "^2.0.0-alpha.1",
     "@stdlib/stats": "^0.0.12",
+    "bayesian-changepoint": "^1.0.1",
     "d3-array": "^3.0.1",
     "heap-js": "^2.1.6",
     "lodash": "^4.17.21",

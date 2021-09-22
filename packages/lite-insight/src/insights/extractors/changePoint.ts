@@ -1,6 +1,17 @@
-import { pettittTest } from '../../algorithms';
+import { BayesianChangePoint, BreakPoint, pettittPValue } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
 import { Datum, ChangePointInfo } from '../../interface';
+
+const breakpointVerifier = (
+  next: BreakPoint<number>,
+  prev: BreakPoint<number>
+): boolean => {
+  if (Math.abs(next.data - prev.data) >= 1) {
+    return true;
+  }
+
+  return false;
+};
 
 type ChangePointItem = {
   index: number;
@@ -8,13 +19,22 @@ type ChangePointItem = {
 };
 
 export const findChangePoints = (series: number[]): ChangePointItem[] => {
-  const testResult = pettittTest(series);
+  const detection = new BayesianChangePoint<number>({
+    breakpointVerifier
+  });
+
+  detection.exec(series);
+
+  const testResult = detection.breakPoints().map(breakPoint => ( { index: breakPoint.index, significance: pettittPValue(series, breakPoint.index) }));
+
 
   const changePointsResult: ChangePointItem[] = [];
 
-  if (testResult.index >= 0 && testResult.significance >= SignificanceBenchmark) {
-    changePointsResult.push(testResult);
-  }
+  testResult.forEach(item => {
+    if (item?.index >= 0 && item?.significance >= SignificanceBenchmark) {
+      changePointsResult.push(item);
+    }
+  });
   return changePointsResult;
 };
 
