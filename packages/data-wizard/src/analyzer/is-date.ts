@@ -17,7 +17,7 @@ const yearday = '((([0-2]\\d|3[0-5])\\d)|36[0-6])';
 const offset = `(Z|[+-]${hour}(:${minute})?)`;
 
 // https://www.cl.cam.ac.uk/~mgk25/iso-time.html
-const getIsoDates = (isStrict = true) => [
+export const getIsoDates = (isStrict = true) => [
   // 1991
   `${year}`,
   // 1999-W12-7
@@ -33,7 +33,7 @@ const getIsoDates = (isStrict = true) => [
   `${year}${delimiter}${isStrict ? '' : '?'}${yearday}`,
 ];
 
-const getIsoTimes = (isStrict = true) => [
+export const getIsoTimes = (isStrict = true) => [
   // 23:20:20Z 23:20:20+08:00 23:20:20-08:00
   `${hour}:${isStrict ? '' : '?'}${minute}:${isStrict ? '' : '?'}${second}([.,]${millisecond})?${offset}?`,
   // 23:20+08
