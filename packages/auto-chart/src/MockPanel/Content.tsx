@@ -4,6 +4,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import { prefixCls } from '../utils';
 import { intl, Language } from '../i18n';
 import { CONFIG_MAP } from './utils/configs';
+import { mock, Field, mockFields } from './utils/mockdata';
 import { ChartContent } from './ChartContent';
 import { DataContent } from './DataContent';
 
@@ -21,10 +22,10 @@ interface MockContentProps {
 
 export const MockContent = (props: MockContentProps) => {
   const { language } = props;
-  const [tabkey, setTabkey] = useState<string>('data');
+  const [tabkey, setTabkey] = useState<string>('chart');
   const [chartType, setChartType] = useState<string>(null);
   const [count, setCount] = useState<number>(20);
-  const [customizeData, setCustomizeData] = useState<any[]>([]);
+  const [customizeData, setCustomizeData] = useState<Field[]>(mock(mockFields, 20));
   const onMockChartTypeChange = (key: string) => {
     setChartType(key);
   };
@@ -61,6 +62,7 @@ export const MockContent = (props: MockContentProps) => {
           <DataContent
             language={language}
             count={count}
+            customizeData={customizeData}
             onFieldDataChange={setCustomizeData}
           />
         )}

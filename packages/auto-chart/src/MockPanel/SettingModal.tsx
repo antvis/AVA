@@ -107,7 +107,7 @@ export const SettingModal = (props: ModalProps) => {
               help={intlget('s:second m:minute h:hour d:day e.g.5m')}
               rules={[
                 { required: true, message: intlget('Time span is required') },
-                { validator: (rule, value, callback) => {
+                { validator: (_rule, value, callback) => {
                   const reg = /^[0-9]+[smhd]$/;
                   if (parseInt(value, 10) === 0 || !reg.test(value)) {
                     return callback('Time Span Format is wrong');
@@ -125,7 +125,7 @@ export const SettingModal = (props: ModalProps) => {
               help={intlget('y: year M:month d:day H:hour m:minute s:second e.g.yyyy/MM/dd')}
               rules={[
                 { required: true, message: intlget('Time format is required') },
-                { validator: (rule, value, callback) => {
+                { validator: (_rule, value, callback) => {
                   const sameStr = '[^yYMmDdHhMmSs]';
                   const sameOr= `$|${sameStr}$|${sameStr}`;
                   const regStr = `^yyyy(${sameOr}MM(${sameOr}dd(${sameOr} HH(${sameOr}mm(${sameOr}ss)))))`;
@@ -150,7 +150,7 @@ export const SettingModal = (props: ModalProps) => {
               help={intlget('split with ","')}
               rules={[
                 { required: true, message: intlget('Enumeration is required')},
-                { validator: (rule, value, callback) => {
+                { validator: (_rule, value, callback) => {
                   const reg = /,,/;
                   if (value && reg.test(value)) {
                     return callback('Time Span Format is wrong');
@@ -213,7 +213,6 @@ export const SettingModal = (props: ModalProps) => {
             </Form.Item>
           </>
         )}
-        
     </Form>
     </Modal>
   );

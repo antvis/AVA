@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { get, set } from 'lodash';
+import { message, ConfigProvider } from 'antd';
+import zhCN from 'antd/es/locale/zh_CN';
+import enUS from 'antd/es/locale/en_US';
 import { Advisor } from '@antv/chart-advisor';
 import { Chart } from './ChartRender';
 import { AdviceList } from './AdviceList';
 import { EmptyContent } from './EmptyContent';
-import { ChartConfigPanel, ChartConfigBtn } from './ChartConfigPanel';
+import { ChartConfigPanel, ChartConfigBtn } from './ConfigPanel';
 import { MockPanel } from './MockPanel';
 import { Language, intl } from './i18n';
 import { prefixCls } from './utils';
@@ -24,18 +27,18 @@ interface Props {
   development?: boolean;
   title?: string;
   description?: string;
+  noDataContent?: React.ReactNode;
   purpose?: 'Comparison' | 'Trend' | 'Distribution' | 'Rank' | 'Proportion' | 'Composition';
 };
 
 export const AutoChart = (props: Props) => {
-  const { data: propsData = [], width = 400, height = 400, language= 'zh-CN', fields: propsFields = [], title, description } = props;
+  const { data: propsData = [], width = 400, height = 400, language = 'zh-CN', noDataContent = null, className, title, description } = props;
   const containerRef = useRef<HTMLElement>(null);
   const chartRef = useRef(null);
   const myAdvisor = new Advisor();
   const [advices, setAdvices] = useState<Advice>([]);
   const [currentAdviceIndex, setCurrentAdviceIndex] = useState<number>(0);
   const [currentData, setCurrentData] = useState<any>(propsData || []);
-  const [currentFields, setCurrentFields] = useState<string[]>(propsFields);
   const [mockType, setMockType] =useState<string>(null);
   const [mockConfigs, setMockConfigs] = useState<any>(null);
   const [isActive, setHover] = useState<boolean>(false);
@@ -51,8 +54,13 @@ export const AutoChart = (props: Props) => {
   }, [width, height]);
 
   useEffect(() => {
+    setAdvices([]);
+    setCurrentData(propsData);
+  }, [propsData]);
+
+  useEffect(() => {
     if (currentData.length > 0) {
-      const myAdvices = myAdvisor.advise({data: currentData, fields: currentFields });
+      const myAdvices = myAdvisor.advise({ data: currentData });
       setAdvices(myAdvices);
       setCurrentAdviceIndex(0);
     };
@@ -91,39 +99,46 @@ export const AutoChart = (props: Props) => {
       setMockType('Chart');
       return;
     };
-    // will delete 
-    // setCurrentFields(['date', 'city']);
-    setCurrentData([...result.data]);
+    if (result.data) {
+      const myAdvices = myAdvisor.advise({ data: result.data });
+      if (myAdvices.length > 0) {
+        setCurrentData([...result.data]);
+      } else {
+        message.error(intl.get('Please Initialize Data Again', language));
+      }
+    }
   };
 
   return (
-    <div className={`${prefixCls}container`} ref={containerRef} onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
-      {(currentData.length > 0 || mockType) && (
-        <Chart title={title} description={description} chartRef={chartRef} spec={advices[currentAdviceIndex]?.spec || null} mockConfig={mockConfigs}/>
-      )}
-      {currentData.length > 0 && <AdviceList language={language} advices={advices} currentIndex={currentAdviceIndex} isActive={isActive} onChartTypeChange={onChartTypeChange}/>}
-      {chartRef.current?.chartType && (
-        <ChartConfigBtn isActive={isActive} onClick={() => setConfigDisplay(!configDisplay)}/>
-      )}
-      {chartRef.current?.chartType && (
-        <ChartConfigPanel
-          configDisplay={configDisplay}
+    <ConfigProvider locale={ language === 'zh-CN' ? zhCN : enUS }>
+      <div className={`${prefixCls}container ${className || ''}`} ref={containerRef} onMouseOver={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+        {(currentData.length > 0 || mockType) && (
+          <Chart title={title} description={description} chartRef={chartRef} spec={advices[currentAdviceIndex]?.spec || null} mockConfig={mockConfigs}/>
+        )}
+        {currentData.length > 0 && advices.length > 0 && <AdviceList language={language} advices={advices} currentIndex={currentAdviceIndex} isActive={isActive} onChartTypeChange={onChartTypeChange}/>}
+        {chartRef.current?.chartType && (
+          <ChartConfigBtn isActive={isActive} onClick={() => setConfigDisplay(!configDisplay)}/>
+        )}
+        {chartRef.current?.chartType && (
+          <ChartConfigPanel
+            configDisplay={configDisplay}
+            language={language}
+            chartType={chartRef.current.chartType || null}
+            onConfigChange={onConfigChange}
+            configs={configs}
+            containerRef={containerRef}
+            onClose={() => setConfigDisplay(false)}
+          />
+        )}
+        {currentData.length === 0 && !mockType && <EmptyContent language={language} noDataContent={noDataContent} onOpenMock={() => setMockDisplay(true)}/>}
+        <MockPanel
+          mockDisplay={mockDisplay}
           language={language}
-          chartType={chartRef.current.chartType || null}
-          onConfigChange={onConfigChange}
-          configs={configs}
           containerRef={containerRef}
-          onClose={() => setConfigDisplay(false)}
+          onClose={() => setMockDisplay(false)}
+          onMockDataChange={onMockDataChange}
         />
-      )}
-      {currentData.length === 0 && !mockType && <EmptyContent language={language} onOpenMock={() => setMockDisplay(true)}/>}
-      <MockPanel
-        mockDisplay={mockDisplay}
-        language={language}
-        containerRef={containerRef}
-        onClose={() => setMockDisplay(false)}
-        onMockDataChange={onMockDataChange}
-      />
-    </div>
+      </div>
+    </ConfigProvider>
   );
 };

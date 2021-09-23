@@ -1,6 +1,6 @@
 import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { intl, Language } from '../i18n';
-import { prefixCls } from '../utils';
+import { prefixCls, setElePositon } from '../utils';
 import { withDrag, DragRefProps } from '../DragHoc';
 import { MockContent, MockResultType } from './Content';
 
@@ -31,12 +31,7 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
 
   useEffect(() => {
     if (mockDisplay && containerRef) {
-      const left = containerRef.current.offsetLeft;
-      const top = containerRef.current.offsetTop;
-      const boxWidth = containerRef.current.offsetWidth;
-      const dragWidth = dragContainer.current.offsetWidth;
-      dragContainer.current.style.left = `${(left + boxWidth/2 - dragWidth/2)}px`;
-      dragContainer.current.style.top = `${(top + 40)}px`;
+      setElePositon(containerRef, dragContainer);
     }
   }, [mockDisplay, containerRef]);
 

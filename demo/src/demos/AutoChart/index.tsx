@@ -8,7 +8,6 @@ const autoChartExp =  (
     description="ceshi test"
     data={[]}
     language={'zh-CN'}
-    fields={['f1', 'f2']}
   />
 );
 

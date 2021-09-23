@@ -34,6 +34,14 @@ export const Chart = ({ title, description, spec, chartRef, mockConfig }: ChartP
     };
   }, [mockConfig]);
 
+  useEffect(() => {
+    if (spec === null && mockConfig === null) {
+      setChartType(null);
+      if (plot) plot.destroy();
+      setPlot(null);
+    };
+  }, [spec, mockConfig]);
+
 
   useImperativeHandle(chartRef, () => {
     return {

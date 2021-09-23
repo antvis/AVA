@@ -9,6 +9,7 @@ const localeValues = {
   'CopyConfig': 'Copy Config',
   'CopySuccess': 'Copy Success',
   'CopyData': 'CopyData',
+  'Please Initialize Data Again': 'Please Initialize Data Again',
   /** mock panel part */
   'Copy Config': 'Copy Config',
   'Copy Success ': 'Copy Success',

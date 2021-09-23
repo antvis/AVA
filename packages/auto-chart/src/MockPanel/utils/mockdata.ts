@@ -94,6 +94,12 @@ export interface NumberField {
 
 export type Field = ValuesField | DateField | NumberField;
 
+export const mockFields: Field[] = [
+  { type: 'date', start: '2019-01-01', end: '2019-01-10', step: '1d', format: 'yyyy/MM/dd', name: 'date' },
+  { type: 'enum', values: ['Shanghai', 'London'], distribution: 'cartesian', name: 'city' },
+  { type: 'number', name: 'count', min: 0, max: 1000, decimals: 0 },
+];
+
 export function getOptimalCount(fields: Field[]): number {
   if (fields.every(item => item.type === 'number')) return NaN;
 

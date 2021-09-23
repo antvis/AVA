@@ -9,6 +9,7 @@ const localeValues = {
   'CopyConfig': '拷贝配置',
   'CopySuccess': '拷贝成功',
   'CopyData': '拷贝数据',
+  'Please Initialize Data Again': '请重新初始化数据',
   /** mock panel part */
   'Copy Config': '拷贝配置',
   'Copy Success ': '拷贝成功',
