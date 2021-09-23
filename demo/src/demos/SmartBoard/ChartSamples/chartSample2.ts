@@ -32,7 +32,7 @@ const chartSample2: ChartListInfo = [
   {
     data: gapminder,
     subspaces: [],
-    breakdowns: ['country'],
+    breakdowns: ['cluster'],
     measures: ['fertility'],
     insightType: 'proportion',
     score: 0.6,
@@ -41,7 +41,7 @@ const chartSample2: ChartListInfo = [
   {
     data: gapminder,
     subspaces: [],
-    breakdowns: ['Cylinders', 'country'],
+    breakdowns: ['country', 'cluster'],
     measures: ['pop'],
     insightType: 'extreme',
     score: 0.85,
