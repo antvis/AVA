@@ -2,7 +2,7 @@ import DataFrame from '../../src/dataset/data-frame';
 import Series from '../../src/dataset/series';
 import * as analyzer from '../../src/analyzer';
 
-describe('New DataFrame', () => {
+describe('new DataFrame', () => {
   test('1D: basic type', () => {
     const df = new DataFrame(1);
     expect(df.data).toStrictEqual([1]);
@@ -24,6 +24,10 @@ describe('New DataFrame', () => {
       ['kk', 'bb'],
       [5, 6],
     ]);
+  });
+
+  test('1D: basic type with error extra', () => {
+    expect(() => new DataFrame(1, { columns: [5, 6] })).toThrow('When the length of extra?.columns is larger than 1, extra?.index is required.');
   });
 
   test('1D: array', () => {
@@ -195,7 +199,18 @@ describe('New DataFrame', () => {
   });
 });
 
-describe('DataFrame Get Value Functions', () => {
+describe('DataFrame getter', () => {
+  test('shape', () => {
+    const df = new DataFrame({
+      a: [1, 2, 3],
+      b: [4, 5, 6],
+    });
+
+    expect(df.shape).toStrictEqual([3, 2]);
+  });
+});
+
+describe('DataFrame get value functions', () => {
   const df = new DataFrame([
     { a: 1, b: 4, c: 7 },
     { a: 2, b: 5, c: 8 },
@@ -392,7 +407,7 @@ describe('DataFrame Get Value Functions', () => {
   });
 });
 
-describe('DataFrame Info', () => {
+describe('DataFrame info', () => {
   test('2D: object array', () => {
     const df = new DataFrame(
       [

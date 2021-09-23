@@ -1,6 +1,6 @@
 import Series from '../../src/dataset/series';
 
-describe('New Series', () => {
+describe('new Series', () => {
   test('1D: basic type', () => {
     const s = new Series(1);
     expect(s.data).toStrictEqual([1]);
@@ -38,7 +38,15 @@ describe('New Series', () => {
   });
 });
 
-describe('Series Get Value Functions', () => {
+describe('Series getter', () => {
+  test('shape', () => {
+    const df = new Series({ a: 1, b: 2, c: 3 });
+
+    expect(df.shape).toStrictEqual([3]);
+  });
+});
+
+describe('Series get value functions', () => {
   const s = new Series({ a: 1, b: 2, c: 3 });
 
   test('get', () => {
