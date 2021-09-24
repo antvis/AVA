@@ -84,6 +84,7 @@ export interface UrlOptions extends DomainOptions {
   domain?: string;
   domainPrefix?: string;
   path?: string;
+  // extension file name
   extensions?: string[];
 }
 

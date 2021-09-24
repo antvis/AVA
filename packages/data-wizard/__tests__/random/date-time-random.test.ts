@@ -12,9 +12,11 @@ test('location', () => {
   expect(weekday['en-US'].map((item) => item[0]).includes(R.weekday())).toBe(true);
   expect(weekday['en-US'].map((item) => item[1]).includes(R.weekday({ abbr: true }))).toBe(true);
   expect(weekday['zh-CN'].map((item) => item[0]).includes(R.weekday({ locale: 'zh-CN' }))).toBe(true);
+  expect(weekday['zh-CN'].map((item) => item[0]).includes(R.weekday({ locale: 'zh-CN', abbr: true }))).toBe(true);
 
   const { month } = R.database;
   expect(month['en-US'].map((item) => item[0]).includes(R.month())).toBe(true);
   expect(month['en-US'].map((item) => item[1]).includes(R.month({ abbr: true }))).toBe(true);
   expect(month['zh-CN'].map((item) => item[0]).includes(R.month({ locale: 'zh-CN' }))).toBe(true);
+  expect(month['zh-CN'].map((item) => item[0]).includes(R.month({ locale: 'zh-CN', abbr: true }))).toBe(true);
 });

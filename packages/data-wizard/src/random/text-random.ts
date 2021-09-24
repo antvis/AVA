@@ -93,7 +93,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random world
+   * return a random word
    * @param options - the params
    */
   word(options: WordOptions = {}): string {
@@ -308,7 +308,7 @@ export class TextRandom extends BasicRandom {
    */
   cZodiac(options?: CZodiacOptions): string {
     const { locale } = initOptions(options, { locale: 'zh-CN' });
-    const list: any[] = this.database.cZodiac[locale] || this.database.cZodiac['zh-CN'];
+    const list: any[] = this.database.cZodiac[locale];
     return this.pickone(list);
   }
 }

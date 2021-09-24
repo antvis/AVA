@@ -65,7 +65,7 @@ export class DateTimeRandom extends BasicRandom {
    */
   weekday(options?: WeekDayOptions): string {
     const { locale, abbr } = initOptions(options, { abbr: false, locale: 'en-US' });
-    const list: any[][] = this.database.weekday[locale] || this.database.weekday['en-US'];
+    const list: any[][] = this.database.weekday[locale];
     const target = this.pickone(list);
     if (abbr) return target[1] || target[0];
     return target[0];
@@ -79,7 +79,7 @@ export class DateTimeRandom extends BasicRandom {
    */
   month(options?: MonthOptions): string {
     const { locale, abbr } = initOptions(options, { abbr: false, locale: 'en-US' });
-    const list: any[][] = this.database.month[locale] || this.database.month['en-US'];
+    const list: any[][] = this.database.month[locale];
     const target = this.pickone(list);
     if (abbr) return target[1] || target[0];
     return target[0];

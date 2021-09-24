@@ -12,4 +12,5 @@ test('color', () => {
   );
   expect(R.url()).toMatch(/\w+:\/\/\w+\.\w{2,3}/);
   expect(R.url({ domainPrefix: R.word() })).toMatch(/\w+:\/\/\w+.\w+\.\w{2,3}/);
+  expect(R.url({ extensions: [R.word()] })).toMatch(/\w+:\/\/\w+\.\w{2,3}/);
 });
