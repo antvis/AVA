@@ -18,7 +18,7 @@ export class ColorRandom extends BasicRandom {
   rgb(options?: RGBOptions): string {
     const { casing } = initOptions(options, { casing: 'lower' });
     const rgbNums = rgb.call(this, options);
-    const value = `rgb(${rgbNums.join(',')}))`;
+    const value = `rgb(${rgbNums.join(',')})`;
     return casing === 'lower' ? value : value.toUpperCase();
   }
 

@@ -18,7 +18,7 @@ export interface RGBBaseOptions {
 }
 
 /**
- * 生成RGB数字
+ * Generate RGB color.
  * @param options - the params
  */
 export function rgb(this: BasicRandom, options: RGBBaseOptions = {}): [number, number, number] {
