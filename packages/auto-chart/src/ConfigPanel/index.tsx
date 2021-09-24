@@ -3,7 +3,7 @@ import { Editor, defaultConfigs } from '@antv/g2plot-schemas';
 import { Button, message } from 'antd';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { withDrag, DragRefProps } from '../DragHoc';
-import { prefixCls } from '../utils';
+import { prefixCls, setElePositon } from '../utils';
 import { intl, Language } from '../i18n';
 import getSchema from './getSchema';
 import { processConfig, copyConfig, shake, getOption } from './utils';
@@ -52,12 +52,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
 
   useEffect(() => {
     if (configDisplay && containerRef) {
-      const left = containerRef.current.offsetLeft;
-      const top = containerRef.current.offsetTop;
-      const boxWidth = containerRef.current.offsetWidth;
-      const dragWidth = dragContainer.current.offsetWidth;
-      dragContainer.current.style.left = `${(left + boxWidth/2 - dragWidth/2)}px`;
-      dragContainer.current.style.top = `${(top + 40)}px`;
+      setElePositon(containerRef, dragContainer);
     }
   }, [configDisplay, containerRef]);
 

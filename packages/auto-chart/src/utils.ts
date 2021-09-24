@@ -11,6 +11,22 @@ export function getThumbnailURL(chartId: ChartID) {
   return 'https://gw.alipayobjects.com/zos/antfincdn/lP6YFnCEjy/nochartimg.svg';
 };
 
+export function parseSearch<T = any>(): T {
+  const querys: any = {};
+  window.location.search
+    .slice(1)
+    .split('&')
+    .forEach(item => {
+      const [key, value] = item.split('=');
+      querys[key] = decodeURIComponent(value);
+    });
+  return querys;
+}
+
+export function uuid() {
+  return `uuid${'-xxxx-xxx'.replace(/x/g, () => ((Math.random() * 16)).toString(16))}`;
+};
+
 /* eslint-disable no-param-reassign */
 /**
  * let targetElement can drag itself
@@ -53,3 +69,33 @@ export function getThumbnailURL(chartId: ChartID) {
     return false;
   };
 };
+
+export function setElePositon(containerRef, dragContainer) {
+  const left = containerRef.current.offsetLeft;
+  const top = containerRef.current.offsetTop;
+  const boxWidth = containerRef.current.offsetWidth;
+  const boxHeight = containerRef.current.offsetHeight;
+  const dragWidth = dragContainer.current.offsetWidth;
+  const dragHeight = dragContainer.current.offsetHeight;
+  const wWidth = document.body.clientWidth;
+  const wHeight = document.body.clientHeight;
+  const dragLeftMax = left + boxWidth/2;
+  const dragLeftMin = left - dragWidth + boxWidth/2;
+  const dragTopMax = top + boxHeight/2;
+  const dragTopMin = top - dragHeight + boxHeight/2;
+  let dragLeft;
+  let dragTop;
+  if ((dragLeftMax + dragWidth) > wWidth) {
+    dragLeft= dragLeftMin < 0 ? (wWidth - dragWidth) : dragLeftMin;
+  } else {
+    dragLeft = dragLeftMax;
+  };
+  if ((dragTopMax + dragHeight) > wHeight) {
+    dragTop= dragTopMin < 0 ? (wHeight - dragHeight) : dragTopMin;
+  } else {
+    dragTop = dragTopMax;
+  };
+  dragContainer.current.style.left = `${dragLeft}px`;
+  dragContainer.current.style.top = `${dragTop}px`;
+};
+
