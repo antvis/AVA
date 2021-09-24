@@ -77,7 +77,7 @@ export class BasicRandom {
    * @param options - options
    */
   boolean(options?: BooleanOptions): boolean {
-    const { likelihood } = initOptions(options, { likelihood: 50 });
+    const { likelihood } = initOptions({ likelihood: 50 }, options);
 
     assert(likelihood >= 0 && likelihood <= 100, 'Likelihood accepts values from 0 to 100.');
 
@@ -89,7 +89,7 @@ export class BasicRandom {
    * @param options - options
    */
   integer(options?: Interval): number {
-    const { max, min } = initOptions(options, { min: MIN_INT, max: MAX_INT });
+    const { max, min } = initOptions({ min: MIN_INT, max: MAX_INT }, options);
 
     assert(min <= max, 'Min cannot be greater than Max.');
 
@@ -102,7 +102,7 @@ export class BasicRandom {
    * @param options -
    */
   float(options: FloatOptions = {}): number {
-    const opts = initOptions(options, { fixed: 4 });
+    const opts = initOptions({ fixed: 4 }, options);
     const base = 10 ** opts.fixed;
     const max = MAX_INT / base;
     const min = -max;
@@ -116,7 +116,7 @@ export class BasicRandom {
       `Max specified is out of range with fixed. Max should be, at most, ${max}`
     );
 
-    const optss = initOptions(opts, { min, max });
+    const optss = initOptions({ min, max }, opts);
 
     const num = this.integer({ min: optss.min * base, max: optss.max * base });
     const numFixed = (num / base).toFixed(opts.fixed);
@@ -128,7 +128,7 @@ export class BasicRandom {
    * @param options -
    */
   natural(options: Interval = {}): number {
-    const opts = initOptions(options, { min: 0, max: MAX_INT });
+    const opts = initOptions({ min: 0, max: MAX_INT }, options);
 
     assert(opts.min >= 0, 'Min cannot be less than zero.');
 
