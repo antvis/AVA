@@ -10,6 +10,24 @@ const { Option } = Select;
 
 const datasetOptions = ['gapminder', 'burtin', 'crimea', 'unemployment-across-industries', 'population', 'ohlc', 'jobs', 'income'];
 
+const datasetConfigs = {
+  gapminder: {
+    limit: 30,
+    measures: [
+      { field: 'life_expect', method: 'MEAN' },
+      { field: 'pop', method: 'SUM' },
+      { field: 'fertility', method: 'MEAN' },
+    ],
+  },
+  jobs: {
+    limit: 60,
+    dimensions: ['sex', 'year', 'job'],
+    measures: [
+      { field: 'count', method: 'SUM' }
+    ]
+  }
+};
+
 export default function App() {
   const [insights, setInsights] = useState<InsightInfo<PatternInfo>[]>([]);
   const [dataset, setDataset] = useState('gapminder');
@@ -39,16 +57,7 @@ export default function App() {
     setInsightLoading(true);
     const result = getDataInsights(
       data,
-      dataset === 'gapminder'
-        ? {
-            limit: 30,
-            measures: [
-              { field: 'life_expect', method: 'MEAN' },
-              { field: 'pop', method: 'SUM' },
-              { field: 'fertility', method: 'MEAN' },
-            ],
-          }
-        : {}
+      datasetConfigs[dataset] || {}
     );
     setInsights(result.insights);
     setInsightLoading(false);

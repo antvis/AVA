@@ -22,3 +22,14 @@ export const pettittTest = (data: number[]) => {
     significance: 1 - pvalue,
   };
 };
+
+export const pettittPValue = (data: number[], index: number) => {
+  const n = data?.length;
+  const rankArr = rank(data);
+
+  const U = Math.abs(2 * _sumBy(rankArr.slice(0, index)) - index * (n + 1));
+
+  const pvalue = 2 * Math.exp((-6 * U ** 2) / (n ** 2 + n ** 3));
+
+  return 1 - pvalue;
+};
