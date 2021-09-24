@@ -14,13 +14,13 @@ export class WebRandom extends TextRandom {
    * @param options - the params
    */
   url(options?: UrlOptions): string {
-    const opts = initOptions(options, {
+    const opts = initOptions({
       protocol: 'http',
       domain: this.domain(options),
       domainPrefix: '',
       path: this.word(),
       extensions: [],
-    });
+    }, options);
 
     const { protocol, domainPrefix, path } = opts;
 

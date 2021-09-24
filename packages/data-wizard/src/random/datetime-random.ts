@@ -26,7 +26,7 @@ export class DateTimeRandom extends BasicRandom {
    * @param options - the params
    */
   time(options?: TimeOptions): string {
-    const opts = initOptions(options, { short: false });
+    const opts = initOptions({ short: false }, options);
     return this.datetime({ ...options, format: opts.short ? 'HH:mm:ss' : 'HH:mm:ssXXX' });
   }
 
@@ -38,7 +38,7 @@ export class DateTimeRandom extends BasicRandom {
    * @param options - the params
    */
   datetime(options?: DateTimeOptions): string {
-    const opts = initOptions(options, { format: "yyyy-MM-dd'T'HH:mm:ssXXX" });
+    const opts = initOptions({ format: "yyyy-MM-dd'T'HH:mm:ssXXX" }, options);
     const timestamp = this.timestamp(opts);
     return format(timestamp, opts.format);
   }
@@ -48,7 +48,7 @@ export class DateTimeRandom extends BasicRandom {
    * @param options - the params
    */
   timestamp(options: Interval): number {
-    const opts = initOptions(options, { min: 0, max: new Date().getTime() });
+    const opts = initOptions({ min: 0, max: new Date().getTime() }, options);
     return this.natural(opts);
   }
 
@@ -64,7 +64,7 @@ export class DateTimeRandom extends BasicRandom {
    * @public
    */
   weekday(options?: WeekDayOptions): string {
-    const { locale, abbr } = initOptions(options, { abbr: false, locale: 'en-US' });
+    const { locale, abbr } = initOptions({ abbr: false, locale: 'en-US' }, options);
     const list: any[][] = this.database.weekday[locale];
     const target = this.pickone(list);
     if (abbr) return target[1] || target[0];
@@ -78,7 +78,7 @@ export class DateTimeRandom extends BasicRandom {
    * @public
    */
   month(options?: MonthOptions): string {
-    const { locale, abbr } = initOptions(options, { abbr: false, locale: 'en-US' });
+    const { locale, abbr } = initOptions({ abbr: false, locale: 'en-US' }, options);
     const list: any[][] = this.database.month[locale];
     const target = this.pickone(list);
     if (abbr) return target[1] || target[0];

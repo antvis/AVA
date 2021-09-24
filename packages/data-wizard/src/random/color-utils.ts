@@ -22,11 +22,11 @@ export interface RGBBaseOptions {
  * @param options - the params
  */
 export function rgb(this: BasicRandom, options: RGBBaseOptions = {}): [number, number, number] {
-  const { grayscale, max, min } = initOptions(options, {
+  const { grayscale, max, min } = initOptions({
     grayscale: false,
     min: 0,
     max: 255,
-  });
+  }, options);
 
   assert(min >= 0 && max <= 255, 'min and max must between in [0, 255]');
 
@@ -79,14 +79,14 @@ export interface HSLBaseOPtions {
  * @param options
  */
 export function hsl(this: BasicRandom, options?: HSLBaseOPtions): [number, string, string] {
-  const opts = initOptions(options, {
+  const opts = initOptions({
     minH: 0,
     maxH: 360,
     minS: 0,
     maxS: 100,
     minL: 0,
     maxL: 100,
-  });
+  }, options);
   return [
     this.natural({ min: opts.minH, max: opts.maxH }),
     `${this.float({ min: opts.minS, max: opts.maxS })}%`,

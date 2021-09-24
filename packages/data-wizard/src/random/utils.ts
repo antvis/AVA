@@ -1,9 +1,9 @@
 /**
  * merge default values
- * @param options
  * @param defaults
+ * @param options
  */
-export function initOptions<T, U>(options: T, defaults: U): T & U {
+export function initOptions<T, U>(defaults: T, options: U): T & U {
   const def: any = { ...defaults };
   Object.entries(options || {}).forEach(([key, value]) => {
     if (value !== undefined) {
