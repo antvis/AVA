@@ -100,12 +100,7 @@ const radar = mock(
   12
 );
 
-const histogram = mock(
-  [
-    { name: 'value', type: 'number', min: 0, max: 100 },
-  ] as Field[],
-  60
-);
+const histogram = mock([{ name: 'value', type: 'number', min: 0, max: 100 }] as Field[], 60);
 
 const scatter = mock(
   [
@@ -194,7 +189,7 @@ export const CONFIG_MAP = {
           offsetY: -18,
           style: {
             fontSize: 16,
-          }
+          },
         },
         content: {
           offsetY: 8,
@@ -202,7 +197,7 @@ export const CONFIG_MAP = {
             fontSize: 24,
           },
         },
-      }
+      },
     },
     type: 'Pie',
   },
@@ -298,7 +293,7 @@ export const CONFIG_MAP = {
       xField: 'value',
       yField: 'count',
       colorField: 'city',
-      shape: 'circle'
+      shape: 'circle',
     },
     type: 'Scatter',
   },
@@ -310,7 +305,7 @@ export const CONFIG_MAP = {
       sizeField: 'size',
       colorField: 'city',
       size: [2, 16],
-      shape: 'circle'
+      shape: 'circle',
     },
     type: 'Scatter',
   },
@@ -338,6 +333,6 @@ export const CONFIG_MAP = {
       yField: 'city',
       colorField: 'value',
     },
-    type: 'Heatmap'
-  }
+    type: 'Heatmap',
+  },
 };

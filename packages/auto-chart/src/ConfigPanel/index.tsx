@@ -18,12 +18,12 @@ interface ChartConfigPanelProps {
   containerRef?: React.RefObject<HTMLDivElement>;
   onConfigChange?: (config: any, configTrans: any) => void;
   onClose?: () => void;
-};
+}
 
 interface ChartConfigBtnProps {
   isActive: boolean;
   onClick: () => void;
-};
+}
 
 // eslint-disable-next-line react/display-name
 const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefProps) => {
@@ -44,7 +44,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
   };
 
   useImperativeHandle(ref, () => {
-    return { 
+    return {
       dragContainer: dragContainer.current,
       dragHander: dragHander.current,
     };
@@ -65,7 +65,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
           <img src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png" onClick={onConfigClose}></img>
         </div>
         <div className={`${prefixCls}config_content`}>
-          <Editor schema={schema} data={configsMerge} lang={language} onChange={onConfigChange}  />
+          <Editor schema={schema} data={configsMerge} lang={language} onChange={onConfigChange} />
         </div>
         <div className={`${prefixCls}config_footer`}>
           {cancopydata === true && (
@@ -99,7 +99,11 @@ const dragChartConfigPanel = withDrag(ChartConfigPanel);
 export { dragChartConfigPanel as ChartConfigPanel };
 export const ChartConfigBtn = ({ isActive, onClick }: ChartConfigBtnProps) => {
   return (
-    <div className={`${prefixCls}config_btn ${prefixCls}config_develop`} style={{ display: isActive ? 'block' : 'none'}} onClick={onClick}>
+    <div
+      className={`${prefixCls}config_btn ${prefixCls}config_develop`}
+      style={{ display: isActive ? 'block' : 'none' }}
+      onClick={onClick}
+    >
       <img src="https://gw.alipayobjects.com/zos/antfincdn/zKMUjshkQt/config.png" />
     </div>
   );

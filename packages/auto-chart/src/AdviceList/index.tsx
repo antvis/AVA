@@ -11,15 +11,13 @@ interface AdviceListProps {
   currentIndex: number;
   isActive: boolean;
   onChartTypeChange: (valueIndex: number) => void;
-};
+}
 
 export const AdviceList = ({ advices, currentIndex, language, isActive, onChartTypeChange }: AdviceListProps) => {
   const [adviceDisplay, setAdviceDisplay] = useState(false);
   const ChartWiki = CKBJson(language, true);
   // TODO || adviceToLibConfig(advice)
-  const advicesTop3 = advices
-  .filter((advice) => !customChartType.includes(advice.type))
-  .slice(0, 3);
+  const advicesTop3 = advices.filter((advice) => !customChartType.includes(advice.type)).slice(0, 3);
 
   const rankIcons = [
     'https://gw.alipayobjects.com/zos/antfincdn/61FtDvdTVl/no1.png',
@@ -35,36 +33,41 @@ export const AdviceList = ({ advices, currentIndex, language, isActive, onChartT
   useEffect(() => {
     if (isActive === false && adviceDisplay === true) {
       setAdviceDisplay(false);
-    };
+    }
   }, [isActive]);
 
   return (
     <div className={`${prefixCls}toolbar`}>
-      <div className={`${prefixCls}config_btn`} style={{ display: isActive ? 'block' : 'none'}} onClick={() => setAdviceDisplay(!adviceDisplay)}>
+      <div
+        className={`${prefixCls}config_btn`}
+        style={{ display: isActive ? 'block' : 'none' }}
+        onClick={() => setAdviceDisplay(!adviceDisplay)}
+      >
         <img src="https://gw.alipayobjects.com/zos/antfincdn/krFnwF2VZi/retweet.png" />
       </div>
-      <div className={`${prefixCls}advice_container`} style={{ display: adviceDisplay ? 'block' : 'none'}}>
+      <div className={`${prefixCls}advice_container`} style={{ display: adviceDisplay ? 'block' : 'none' }}>
         <div className={`${prefixCls}advice_content`}>
-          {
-            advicesTop3.map((advice, index) => {
-              return (
-                <div className={`${prefixCls}advice`} key={index} onClick={() => changeChartHandle(index)}>
-                  <div className={`${prefixCls}advice-thumbnail`} data-index={index}>
-                    <img src={getThumbnailURL(advice.type as ChartID)} data-index={index}/>
+          {advicesTop3.map((advice, index) => {
+            return (
+              <div className={`${prefixCls}advice`} key={index} onClick={() => changeChartHandle(index)}>
+                <div className={`${prefixCls}advice-thumbnail`} data-index={index}>
+                  <img src={getThumbnailURL(advice.type as ChartID)} data-index={index} />
+                </div>
+                <div className={`${prefixCls}advice-desc`}>
+                  <img src={rankIcons[index]} data-index={index} />
+                  <div className="advice-chart-name" data-index={index}>
+                    {ChartWiki[advice.type].name}
                   </div>
-                  <div className={`${prefixCls}advice-desc`}>
-                    <img src={rankIcons[index]} data-index={index} />
-                    <div className="advice-chart-name" data-index={index}>{ChartWiki[advice.type].name}</div>
-                    <div className="advice-score-text" data-index={index}>{intl.get('Score', language)}<span className="advice-score">{advice.score.toFixed(2)}</span>
-                    </div>
+                  <div className="advice-score-text" data-index={index}>
+                    {intl.get('Score', language)}
+                    <span className="advice-score">{advice.score.toFixed(2)}</span>
                   </div>
                 </div>
-              );
-            })
-          }
+              </div>
+            );
+          })}
         </div>
-        <div className={`${prefixCls}advice_arrow`}>
-        </div>
+        <div className={`${prefixCls}advice_arrow`}></div>
       </div>
     </div>
   );

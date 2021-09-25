@@ -2,15 +2,15 @@ import { isEqual, deepMix } from '@antv/util';
 import { defaultConfigs } from '@antv/g2plot-schemas';
 
 export function processConfig(config: any) {
-  const resetConfig = {...config };
+  const resetConfig = { ...config };
   delete resetConfig.height;
   delete resetConfig.width;
   if (config && config.trendline && config.trendline.visible === false) {
     // set trendline visible === false
     resetConfig.trendline = false;
-  };
+  }
   return resetConfig;
-};
+}
 
 export function copyConfig(config: any) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -22,9 +22,9 @@ export function copyConfig(config: any) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { visible, ...r } = trendline;
     rest.trendline = r;
-  };
+  }
   return rest;
-};
+}
 
 /**
  * remove default config
@@ -32,7 +32,7 @@ export function copyConfig(config: any) {
  * @param defaultCfgs
  */
 
- export function shake(configs: any, defaultCfgs: any) {
+export function shake(configs: any, defaultCfgs: any) {
   const result: any = {};
   if (!defaultCfgs) return configs;
   Object.entries(configs).forEach(([key, value]) => {
@@ -48,7 +48,7 @@ export function copyConfig(config: any) {
     }
   });
   return result;
-};
+}
 
 /**
  * get default config
@@ -59,5 +59,4 @@ export function getOption(chartType: string) {
   delete options.heigth;
   delete options.width;
   return deepMix({}, options);
-};
-
+}

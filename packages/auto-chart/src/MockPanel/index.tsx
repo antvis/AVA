@@ -10,7 +10,7 @@ interface MockPanelProps {
   containerRef?: React.RefObject<HTMLDivElement>;
   onClose: () => void;
   onMockDataChange: (result: MockResultType) => void;
-};
+}
 
 // eslint-disable-next-line react/display-name
 const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
@@ -23,7 +23,7 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
   };
 
   useImperativeHandle(ref, () => {
-    return { 
+    return {
       dragContainer: dragContainer.current,
       dragHander: dragHander.current,
     };
@@ -36,16 +36,17 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
   }, [mockDisplay, containerRef]);
 
   return (
-    <div className={`${prefixCls}dev_panel`} style={{ display: mockDisplay ? 'block' : 'none', width: 600, height: 620 }} ref={dragContainer}>
+    <div
+      className={`${prefixCls}dev_panel`}
+      style={{ display: mockDisplay ? 'block' : 'none', width: 600, height: 620 }}
+      ref={dragContainer}
+    >
       <div className={`${prefixCls}config_panel`}>
         <div className={`${prefixCls}config_header`} ref={dragHander}>
           {intl.get('Initialize', language)}
           <img src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png" onClick={onConfigClose}></img>
         </div>
-        <MockContent 
-          language={language}
-          onMockDataChange={onMockDataChange}
-        />
+        <MockContent language={language} onMockDataChange={onMockDataChange} />
       </div>
     </div>
   );

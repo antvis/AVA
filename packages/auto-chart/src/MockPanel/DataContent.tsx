@@ -11,7 +11,7 @@ interface DataContentProps {
   count: number;
   customizeData: Field[];
   onFieldDataChange: (value: any[]) => void;
-};
+}
 
 export const DataContent = (props: DataContentProps) => {
   const { language, onFieldDataChange, customizeData } = props;
@@ -28,7 +28,7 @@ export const DataContent = (props: DataContentProps) => {
     setFields(newFields);
     onFieldDataChange(mockData);
   };
-  
+
   const onEdit = (index) => {
     setEditingIndex(index);
   };
@@ -44,14 +44,12 @@ export const DataContent = (props: DataContentProps) => {
     newFields.splice(editingIndex, 1, resetField);
     setNewData(newFields);
   };
-  
+
   useEffect(() => {
     const mockData = mock(tableFields, props.count);
     setCount(props.count);
     onFieldDataChange([...mockData]);
   }, [props.count]);
-
- 
 
   const columnsRender = () => {
     return new Array(4).fill(undefined).map((_, index) => {
@@ -61,10 +59,8 @@ export const DataContent = (props: DataContentProps) => {
           title: (
             <span className="table-title">
               {name}
-              <SettingOutlined onClick={() => onEdit(index)}/>
-              <Popconfirm 
-                title={intl.get('Are you sure to delete row?', language)}
-                onConfirm={() => onClear(index)}>
+              <SettingOutlined onClick={() => onEdit(index)} />
+              <Popconfirm title={intl.get('Are you sure to delete row?', language)} onConfirm={() => onClear(index)}>
                 <DeleteOutlined />
               </Popconfirm>
             </span>
@@ -73,12 +69,12 @@ export const DataContent = (props: DataContentProps) => {
           width: '25%',
           dataIndex: name,
         };
-      };
+      }
       return {
         title: (
           <span className="table-title">
             --
-            <SettingOutlined onClick={() => onEdit(index)}/>
+            <SettingOutlined onClick={() => onEdit(index)} />
           </span>
         ),
         key: `col-${index + 1}`,
@@ -95,19 +91,18 @@ export const DataContent = (props: DataContentProps) => {
       <Table
         rowKey="__uuid"
         scroll={{ y: 360 }}
-        dataSource={customizeData.slice(0, 100).map(item => ({ ...item, __uuid: uuid() }))}
+        dataSource={customizeData.slice(0, 100).map((item) => ({ ...item, __uuid: uuid() }))}
         columns={columnsRender()}
         pagination={false}
       />
-    {editingIndex !== null && (
-      <SettingModal
-        value={tableFields[editingIndex] || {}}
-        onOK={onSetChange}
-        language={language}
-        onCancel={() => setEditingIndex(null)}
-      />
-    )}
-  </div>
+      {editingIndex !== null && (
+        <SettingModal
+          value={tableFields[editingIndex] || {}}
+          onOK={onSetChange}
+          language={language}
+          onCancel={() => setEditingIndex(null)}
+        />
+      )}
+    </div>
   );
 };
-

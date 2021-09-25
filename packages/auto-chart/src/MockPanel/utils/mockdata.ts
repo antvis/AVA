@@ -21,8 +21,6 @@ function range(start: number, end: number, step: number): number[] {
   return result;
 }
 
-
-
 function dateRange(start: number | string, end: number | string, step: number | string, format: string) {
   if (!(typeof step === 'string' || typeof step === 'number')) throw new TypeError('xxx');
   if (typeof step === 'string') {
@@ -45,7 +43,7 @@ function dateRange(start: number | string, end: number | string, step: number | 
     end = new Date(end).getTime();
   }
 
-  return range(start, end, step).map(item => formatDate(item, format));
+  return range(start, end, step).map((item) => formatDate(item, format));
 }
 
 function getDivisor(fields: Field[], cindex: number): number {
@@ -101,7 +99,7 @@ export const mockFields: Field[] = [
 ];
 
 export function getOptimalCount(fields: Field[]): number {
-  if (fields.every(item => item.type === 'number')) return NaN;
+  if (fields.every((item) => item.type === 'number')) return NaN;
 
   return getDivisor(fields, -1);
 }
@@ -129,6 +127,7 @@ export function mock(fields: Field[], count: number): any[] {
       const divisor = getDivisor(fields, cindex);
       return (rindex: number) => values[Math.floor(rindex / divisor) % values.length];
     }
+    return null;
   });
   return new Array(count).fill(undefined).map((_, rindex) => {
     const row: Record<string, any> = {};
@@ -137,5 +136,4 @@ export function mock(fields: Field[], count: number): any[] {
     });
     return row;
   });
-};
-
+}

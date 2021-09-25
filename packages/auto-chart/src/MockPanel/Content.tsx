@@ -18,7 +18,7 @@ export type MockResultType = {
 interface MockContentProps {
   language: Language;
   onMockDataChange: (result: MockResultType) => void;
-};
+}
 
 export const MockContent = (props: MockContentProps) => {
   const { language } = props;
@@ -35,28 +35,24 @@ export const MockContent = (props: MockContentProps) => {
       const { data, ...restConfig } = CONFIG_MAP[chartType];
       const config = { ...restConfig, chartType };
       props.onMockDataChange({
-        result: { config, data }
+        result: { config, data },
       });
     } else if (tabkey === 'data') {
       props.onMockDataChange({
-        result: { data: [...customizeData] }
+        result: { data: [...customizeData] },
       });
-    };
+    }
   };
 
   return (
     <>
       <div className={`${prefixCls}config_content`}>
         <Tabs tabBarGutter={25} tabBarStyle={{ paddingLeft: 20 }} activeKey={tabkey} onChange={setTabkey}>
-          <Tabs.TabPane tab={intl.get('Select Chart', language)} key='chart' />
-          <Tabs.TabPane tab={intl.get('Mock Data', language)} key='data' />
+          <Tabs.TabPane tab={intl.get('Select Chart', language)} key="chart" />
+          <Tabs.TabPane tab={intl.get('Mock Data', language)} key="data" />
         </Tabs>
         {tabkey === 'chart' && (
-         <ChartContent
-          language={language}
-          chartType={chartType}
-          onMockChartTypeChange={onMockChartTypeChange}
-         />
+          <ChartContent language={language} chartType={chartType} onMockChartTypeChange={onMockChartTypeChange} />
         )}
         {tabkey === 'data' && (
           <DataContent
@@ -80,12 +76,12 @@ export const MockContent = (props: MockContentProps) => {
             <div>
               <Tooltip title={intl.get('Display up to 100 items', language)}>
                 {intl.get('Rows')}
-                <InfoCircleOutlined className={`${prefixCls}number_tip`}/>
+                <InfoCircleOutlined className={`${prefixCls}number_tip`} />
               </Tooltip>
               <InputNumber onChange={(countValue) => setCount(countValue)} value={count} min={0} step={1} />
             </div>
             <Button type="primary" onClick={onDeploy}>
-             {intl.get('Apply data', language)}
+              {intl.get('Apply data', language)}
             </Button>
           </div>
         )}
@@ -93,4 +89,3 @@ export const MockContent = (props: MockContentProps) => {
     </>
   );
 };
-
