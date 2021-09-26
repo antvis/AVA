@@ -1,7 +1,7 @@
 import _sumBy from 'lodash/sumBy';
 import _sum from 'lodash/sum';
 import _mean from 'lodash/mean';
-import { maxabs } from '@stdlib/stats/base';
+import maxabs from '@stdlib/stats/base/maxabs';
 
 // Buishad U statistics test
 export const buishandUTest = (data: number[]) => {
