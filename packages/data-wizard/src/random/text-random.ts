@@ -16,7 +16,7 @@ export class TextRandom extends BasicRandom {
    * @param options -
    */
   character(options?: CharacterOptions): string {
-    const opts = initOptions(options, { lower: true, upper: true, symbols: true, numeric: true });
+    const opts = initOptions({ lower: true, upper: true, symbols: true, numeric: true }, options);
     let pool = '';
     if (opts.pool) {
       pool = opts.pool;
@@ -46,7 +46,7 @@ export class TextRandom extends BasicRandom {
    * @public
    */
   string(options?: StringOptions): string {
-    const opts = initOptions(options, { length: this.natural({ min: 5, max: 20 }) });
+    const opts = initOptions({ length: this.natural({ min: 5, max: 20 }) }, options);
 
     assert(opts.length >= 0, 'Length cannot be less than zero.');
 
@@ -62,7 +62,7 @@ export class TextRandom extends BasicRandom {
    * @internal
    */
   syllable(options?: SyllableOptions): string {
-    const { length } = initOptions(options, { length: this.natural({ min: 2, max: 3 }) });
+    const { length } = initOptions({ length: this.natural({ min: 2, max: 3 }) }, options);
     const { consonants, vowels } = this.database.syllable; // consonants except hard to speak ones
     const all = consonants + vowels; // all
     let text = '';
@@ -93,7 +93,7 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
-   * return a random world
+   * return a random word
    * @param options - the params
    */
   word(options: WordOptions = {}): string {
@@ -125,7 +125,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   sentence(options?: SentenceOptions): string {
-    const opts = initOptions(options, { words: this.natural({ min: 12, max: 18 }), punctuation: true });
+    const opts = initOptions({ words: this.natural({ min: 12, max: 18 }), punctuation: true }, options);
 
     const { words, punctuation } = opts;
     const wordArray = this.n(this.word, words);
@@ -149,7 +149,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   paragraph(options?: ParagraphOptions): string {
-    const { sentences } = initOptions(options, { sentences: this.natural({ min: 3, max: 7 }) });
+    const { sentences } = initOptions({ sentences: this.natural({ min: 3, max: 7 }) }, options);
     const sentenceArray = this.n(this.sentence, sentences, { punctuation: '.' });
     return sentenceArray.join(' ');
   }
@@ -175,7 +175,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   firstname(options?: Person): string {
-    const { gender } = initOptions(options, {});
+    const { gender } = initOptions({}, options);
 
     assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
 
@@ -204,7 +204,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   clastname(options?: CLastNameOptions): string {
-    const { length, gender } = initOptions(options, { length: this.natural({ min: 1, max: 2 }) });
+    const { length, gender } = initOptions({ length: this.natural({ min: 1, max: 2 }) }, options);
 
     assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
 
@@ -217,7 +217,7 @@ export class TextRandom extends BasicRandom {
    * return a random Chinese character
    */
   ccharacter(options?: CCharacterOptions): string {
-    const { pool } = initOptions(options, {});
+    const { pool } = initOptions({}, options);
     return this.pickone((pool || this.database.cCharacter.chars).split(''));
   }
 
@@ -226,7 +226,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   cword(options?: CWordOption): string {
-    const { length } = initOptions(options, { length: this.natural({ min: 2, max: 6 }) });
+    const { length } = initOptions({ length: this.natural({ min: 2, max: 6 }) }, options);
     return this.n(this.ccharacter, length, options).join('');
   }
 
@@ -235,7 +235,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   csentence(options?: Interval): string {
-    const opts = initOptions(options, { min: 10, max: 18 });
+    const opts = initOptions({ min: 10, max: 18 }, options);
     const length = this.natural(opts);
     return `${this.n(this.cword, length).join('')}。`;
   }
@@ -245,7 +245,7 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   cparagraph(options?: Interval): string {
-    const opts = initOptions(options, { min: 3, max: 18 });
+    const opts = initOptions({ min: 3, max: 18 }, options);
     const length = this.natural(opts);
     return this.n(this.csentence, length).join('');
   }
@@ -255,12 +255,12 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   phone(options?: PhoneOptions): string {
-    const { mobile, formatted, asterisk, startNum } = initOptions(options, {
+    const { mobile, formatted, asterisk, startNum } = initOptions({
       mobile: true,
       formatted: false,
       asterisk: false,
       startNum: '',
-    });
+    }, options);
 
     let exp: RegExp;
     if (mobile) {
@@ -307,8 +307,8 @@ export class TextRandom extends BasicRandom {
    * ```
    */
   cZodiac(options?: CZodiacOptions): string {
-    const { locale } = initOptions(options, { locale: 'zh-CN' });
-    const list: any[] = this.database.cZodiac[locale] || this.database.cZodiac['zh-CN'];
+    const { locale } = initOptions({ locale: 'zh-CN' }, options);
+    const list: any[] = this.database.cZodiac[locale];
     return this.pickone(list);
   }
 }

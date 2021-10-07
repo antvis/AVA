@@ -1,5 +1,5 @@
-import { isArray } from '../utils';
-import { isLegalBasicType, generateArrayIndex } from './utils';
+import { assert, isArray, isObject } from '../utils';
+import { isBasicType, generateArrayIndex } from './utils';
 import type { SeriesData, FrameData, Axis, Extra } from './types';
 
 type NDArray = any[] | any[][];
@@ -10,18 +10,44 @@ export default abstract class BaseFrame {
 
   data: NDArray = [];
 
-  colData: NDArray = [];
+  colData?: NDArray = [];
 
   constructor(data: SeriesData | FrameData, extra?: Extra) {
-    // 1D: object
-    if (isArray(data) && isLegalBasicType(data?.[0])) {
-      // 1D: array
-      this.data = data;
-      this.colData = this.data;
-    }
+    assert(!extra || isObject(extra), 'If extra exists, it must be an object.');
 
-    if (isArray(data)) {
-      this.setAxis(0, generateArrayIndex(data, extra));
+    /** 1D: basic type */
+    if (isBasicType(data)) {
+      // generate index
+      if (extra?.index) {
+        this.setAxis(0, extra?.index);
+        this.data = Array(extra?.index.length).fill(data);
+      } else {
+        this.data = [data];
+        this.setAxis(0, [0]);
+      }
+    } else if (isArray(data)) {
+      /** 1D: array */
+      let legal = true;
+
+      for (let i = 0; i < data.length; i += 1) {
+        const datum = data[i];
+        // As long as any datum in data is basic type, it's a 1D array
+        if (!isBasicType(datum)) {
+          legal = false;
+          break;
+        }
+      }
+
+      this.setAxis(0, generateArrayIndex(data, extra?.index));
+
+      if (legal) {
+        if (extra?.index) {
+          assert(extra?.index?.length === data.length, `Index length is ${extra?.index.length}, but data size ${data.length}`);
+
+          this.setAxis(0, extra?.index);
+        }
+        this.data = data;
+      }
     }
   }
 
@@ -44,8 +70,10 @@ export default abstract class BaseFrame {
    * @param axis
    * @param labels
    */
-  setAxis(axis: number, labels: Axis[]) {
-    this.axes[axis] = labels;
+  setAxis(axis: number, values: Axis[]) {
+    assert(isArray(values), 'Index or columns must be Axis array.');
+
+    this.axes[axis] = values;
   }
 
   /** get value functions */

@@ -1,20 +1,6 @@
-import type { StringFieldInfo, NumberFieldInfo, DateFieldInfo  } from '../analyzer';
+import type { StringFieldInfo, NumberFieldInfo, DateFieldInfo } from '../analyzer';
 
 export type SeriesData =
-  /**
-   * 1D: object
-   * be like
-   * {a: 1, b: 2}
-   */
-  | {
-      [key: string]: any;
-    }
-  /**
-   * 1D: array
-   * be like
-   * [1, 2, 3]
-   */
-  | any[]
   /**
    * 1D: basic type
    * be like
@@ -22,10 +8,42 @@ export type SeriesData =
    */
   | number
   | string
-  | boolean;
+  | boolean
+  | undefined
+  | null
+  /**
+   * 1D: array
+   * be like
+   * [1, 2, 3]
+   */
+  | any[]
+  /**
+   * 1D: object
+   * be like
+   * {a: 1, b: 2}
+   */
+  | {
+      [key: string]: any;
+    };
 
 export type FrameData =
-  // 1D
+  /** 1D */
+  /**
+   * 1D: basic type
+   * be like
+   * 1
+   */
+  | number
+  | string
+  | boolean
+  | undefined
+  | null
+  /**
+   * 1D: array
+   * be like
+   * [1, 2, 3]
+   */
+  | any[]
   /**
    * 1D: object
    * be like
@@ -34,15 +52,18 @@ export type FrameData =
   | {
       [key: string]: any;
     }
+  /** 2D */
   /**
-   * 1D: array
+   * 2D: array
    * be like
-   * [1, 2, 3]
+   * [
+   *  [1, 2, 3],
+   *  [4, 5, 6]
+   * ]
    */
-  | any[]
-  // 2D
+  | any[][]
   /**
-   * 2D: object in array
+   * 2D: object array
    * be like
    * [
    *  {a: 1, b: 2},
@@ -54,7 +75,7 @@ export type FrameData =
       [key: string]: any;
     }[]
   /**
-   * 2D: array in object
+   * 2D: array object
    * be like
    * {
    *  a: [1, 2, 3],
@@ -63,16 +84,7 @@ export type FrameData =
    */
   | {
       [key: string]: any[];
-    }
-  /**
-   * 2D: array
-   * be like
-   * [
-   *  [1, 2, 3],
-   *  [4, 5, 6]
-   * ]
-   */
-  | any[][];
+    };
 
 export type Axis = string | number;
 
@@ -86,4 +98,6 @@ export type Extra = {
  * Fields Type
  * @public
  */
-export type FieldsInfo = Array<(StringFieldInfo | NumberFieldInfo | DateFieldInfo) & { /** field name */ name: string }>;
+export type FieldsInfo = Array<
+  (StringFieldInfo | NumberFieldInfo | DateFieldInfo) & { /** field name */ name: string }
+>;

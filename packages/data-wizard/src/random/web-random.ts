@@ -7,20 +7,20 @@ import { initOptions } from './utils';
  * @public
  */
 export class WebRandom extends TextRandom {
-  database: WebDB & TextDB = ({ ...getTextDB(), ...getWebDB()});
+  database: WebDB & TextDB = { ...getTextDB(), ...getWebDB() };
 
   /**
    * Return a random url
    * @param options - the params
    */
   url(options?: UrlOptions): string {
-    const opts = initOptions(options, {
+    const opts = initOptions({
       protocol: 'http',
       domain: this.domain(options),
       domainPrefix: '',
       path: this.word(),
       extensions: [],
-    });
+    }, options);
 
     const { protocol, domainPrefix, path } = opts;
 
@@ -84,6 +84,7 @@ export interface UrlOptions extends DomainOptions {
   domain?: string;
   domainPrefix?: string;
   path?: string;
+  // extension file name
   extensions?: string[];
 }
 

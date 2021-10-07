@@ -16,9 +16,9 @@ export class ColorRandom extends BasicRandom {
    * return a rag color
    */
   rgb(options?: RGBOptions): string {
-    const { casing } = initOptions(options, { casing: 'lower' });
+    const { casing } = initOptions({ casing: 'lower' }, options);
     const rgbNums = rgb.call(this, options);
-    const value = `rgb(${rgbNums.join(',')}))`;
+    const value = `rgb(${rgbNums.join(',')})`;
     return casing === 'lower' ? value : value.toUpperCase();
   }
 
@@ -26,7 +26,7 @@ export class ColorRandom extends BasicRandom {
    * return a rag color with alpha
    */
   rgba(optios?: RGBAOptions): string {
-    const { casing, maxA, minA } = initOptions(optios, { casing: 'lower', minA: 0, maxA: 1 });
+    const { casing, maxA, minA } = initOptions({ casing: 'lower', minA: 0, maxA: 1 }, optios);
     const alpah = this.float({ min: minA, max: maxA });
     const rgbNums = rgb.call(this, optios);
     const value = `rgba(${rgbNums.concat(alpah).join(',')})`;
@@ -37,7 +37,7 @@ export class ColorRandom extends BasicRandom {
    *  return a hsl color
    */
   hsl(options?: HSLOptions): string {
-    const { casing } = initOptions(options, { casing: 'lower' });
+    const { casing } = initOptions({ casing: 'lower' }, options);
     const value = `hsl(${hsl.call(this, options).join(',')})`;
     return casing === 'lower' ? value : value.toUpperCase();
   }
@@ -46,7 +46,7 @@ export class ColorRandom extends BasicRandom {
    * return a hsl color with alpha
    */
   hsla(options?: HSLAOptions): string {
-    const { casing, maxA, minA } = initOptions(options, { casing: 'lower', minA: 0, maxA: 1 });
+    const { casing, maxA, minA } = initOptions({ casing: 'lower', minA: 0, maxA: 1 }, options);
     const alpah = this.float({ min: minA, max: maxA });
     const value = `hsla(${hsl
       .call(this, options)
@@ -67,7 +67,7 @@ export class ColorRandom extends BasicRandom {
    * @param options - the parmas
    */
   hexcolor(options?: HexColorOptions): string {
-    const { prefix, casing } = initOptions(options, { prefix: true, casing: 'lower' });
+    const { prefix, casing } = initOptions({ prefix: true, casing: 'lower' }, options);
     const rgbNums = rgb.call(this, options);
     const v = rgbNums.map((item) => item.toString(16).padStart(2, '0')).join('');
     const value = casing === 'lower' ? v : v.toUpperCase();

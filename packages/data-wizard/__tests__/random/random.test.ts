@@ -8,7 +8,7 @@ describe.each([
   test('bool', () => {
     expect(typeof R.boolean()).toBe('boolean');
     const ps = JSON.stringify(R.pickset([1, 2], 10));
-    expect(ps === JSON.stringify([1,2]) || ps === JSON.stringify([2, 1])).toBeTruthy();
+    expect(ps === JSON.stringify([1, 2]) || ps === JSON.stringify([2, 1])).toBeTruthy();
     expect(() => R.boolean({ likelihood: 1000 })).toThrow();
   });
 
