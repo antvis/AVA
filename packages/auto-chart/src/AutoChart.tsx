@@ -22,10 +22,8 @@ interface Props {
   data?: any[];
   fields?: string[];
   language?: Language;
-  /** TODO switching charts display or not */
-  toolbar?: boolean;
-  /** TODO mode */
-  development?: boolean;
+  showRanking?: boolean;
+  configurable?: boolean;
   title?: string;
   description?: string;
   noDataContent?: React.ReactNode;
@@ -42,6 +40,8 @@ export const AutoChart = (props: Props) => {
     className,
     title,
     description,
+    showRanking = true,
+    configurable = true
   } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef(null);
@@ -136,7 +136,7 @@ export const AutoChart = (props: Props) => {
             mockConfig={mockConfigs}
           />
         )}
-        {currentData.length > 0 && advices.length > 0 && (
+        {showRanking && currentData.length > 0 && advices.length > 0 && (
           <AdviceList
             language={language}
             advices={advices}
@@ -145,10 +145,10 @@ export const AutoChart = (props: Props) => {
             onChartTypeChange={onChartTypeChange}
           />
         )}
-        {chartRef.current?.chartType && (
+        {configurable && chartRef.current?.chartType && (
           <ChartConfigBtn isActive={isActive} onClick={() => setConfigDisplay(!configDisplay)} />
         )}
-        {chartRef.current?.chartType && (
+        {configurable && chartRef.current?.chartType && (
           <ChartConfigPanel
             configDisplay={configDisplay}
             language={language}

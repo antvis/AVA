@@ -1,6 +1,6 @@
-import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import { intl, Language } from '../i18n';
-import { prefixCls, getElePosition } from '../utils';
+import { prefixCls } from '../utils';
 import { withDrag, DragRefProps } from '../DragHoc';
 import { MockContent, MockResultType } from './Content';
 
@@ -14,7 +14,7 @@ interface MockPanelProps {
 
 // eslint-disable-next-line react/display-name
 const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
-  const { language, mockDisplay, containerRef, onMockDataChange } = props;
+  const { language, mockDisplay = false, containerRef, onMockDataChange } = props;
   const dragContainer = useRef<HTMLDivElement>(null);
   const dragHandler = useRef<HTMLDivElement>(null);
 
@@ -26,16 +26,10 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
     return {
       dragContainer: dragContainer.current,
       dragHandler: dragHandler.current,
+      containerRef: containerRef.current,
+      dragDisplay: mockDisplay,
     };
   });
-
-  useEffect(() => {
-    if (mockDisplay && containerRef) {
-      const elePosition = getElePosition(containerRef, dragContainer);
-      dragContainer.current.style.left = elePosition.left;
-      dragContainer.current.style.top = elePosition.top;
-    }
-  }, [mockDisplay, containerRef]);
 
   return (
     <div

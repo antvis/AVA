@@ -14,8 +14,9 @@ export default rollupConfig(
       globals: {
         'react': 'React',
         'react-dom': 'ReactDOM',
-        '@antv/color-schema ': 'colorSchema',
-        '@antv/antv-spec ': 'antvSpec',
+        '@antv/color-schema': 'colorSchema',
+        '@antv/antv-spec': 'antvSpec',
+        '@antv/g2plot': 'G2Plot',
         'fs': 'fs',
         'path': 'path',
         'crypto': 'crypto',

@@ -1,9 +1,9 @@
-import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import { Editor, defaultConfigs } from '@antv/g2plot-schemas';
 import { Button, message } from 'antd';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { withDrag, DragRefProps } from '../DragHoc';
-import { prefixCls, getElePosition } from '../utils';
+import { prefixCls } from '../utils';
 import { intl, Language } from '../i18n';
 import getSchema from './getSchema';
 import { processConfig, copyConfig, shake, getOption } from './utils';
@@ -27,7 +27,7 @@ interface ChartConfigBtnProps {
 
 // eslint-disable-next-line react/display-name
 const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefProps) => {
-  const { chartType, configs, cancopydata = true, language, configDisplay, containerRef } = props;
+  const { chartType, configs, cancopydata = false, language, configDisplay = false, containerRef } = props;
   const configsMerge = configs || getOption(chartType);
   const schema = getSchema(chartType, language);
   const { data, ...config } = shake(configsMerge, defaultConfigs[chartType]);
@@ -47,16 +47,10 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
     return {
       dragContainer: dragContainer.current,
       dragHandler: dragHandler.current,
+      containerRef: containerRef.current,
+      dragDisplay: configDisplay,
     };
   });
-
-  useEffect(() => {
-    if (configDisplay && containerRef) {
-      const elePosition = getElePosition(containerRef, dragContainer);
-      dragContainer.current.style.left = elePosition.left;
-      dragContainer.current.style.top = elePosition.top;
-    }
-  }, [configDisplay, containerRef]);
 
   return (
     <div className={`${prefixCls}dev_panel`} style={{ display: configDisplay ? 'block' : 'none' }} ref={dragContainer}>
