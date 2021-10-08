@@ -3,7 +3,7 @@ import { Editor, defaultConfigs } from '@antv/g2plot-schemas';
 import { Button, message } from 'antd';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { withDrag, DragRefProps } from '../DragHoc';
-import { prefixCls, setElePositon } from '../utils';
+import { prefixCls, getElePosition } from '../utils';
 import { intl, Language } from '../i18n';
 import getSchema from './getSchema';
 import { processConfig, copyConfig, shake, getOption } from './utils';
@@ -31,8 +31,8 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
   const configsMerge = configs || getOption(chartType);
   const schema = getSchema(chartType, language);
   const { data, ...config } = shake(configsMerge, defaultConfigs[chartType]);
-  const dragContainer = useRef<HTMLElement>(null);
-  const dragHander = useRef<HTMLElement>(null);
+  const dragContainer = useRef<HTMLDivElement>(null);
+  const dragHandler = useRef<HTMLDivElement>(null);
 
   const onConfigChange = (values) => {
     const newData = processConfig(values);
@@ -46,13 +46,15 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
   useImperativeHandle(ref, () => {
     return {
       dragContainer: dragContainer.current,
-      dragHander: dragHander.current,
+      dragHandler: dragHandler.current,
     };
   });
 
   useEffect(() => {
     if (configDisplay && containerRef) {
-      setElePositon(containerRef, dragContainer);
+      const elePosition = getElePosition(containerRef, dragContainer);
+      dragContainer.current.style.left = elePosition.left;
+      dragContainer.current.style.top = elePosition.top;
     }
   }, [configDisplay, containerRef]);
 
@@ -60,7 +62,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
     <div className={`${prefixCls}dev_panel`} style={{ display: configDisplay ? 'block' : 'none' }} ref={dragContainer}>
       <div className={`${prefixCls}config_panel`}>
         <div data-id="mask" className={`${prefixCls}dev_mask`}></div>
-        <div className={`${prefixCls}config_header`} ref={dragHander}>
+        <div className={`${prefixCls}config_header`} ref={dragHandler}>
           {intl.get('ChartConfig', language)}
           <img src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png" onClick={onConfigClose}></img>
         </div>

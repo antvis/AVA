@@ -20,7 +20,7 @@ interface ModalProps {
 
 export const SettingModal = (props: ModalProps) => {
   const { language, value } = props;
-  const [dataType, setDataType] = useState(value.type || '');
+  const [dataType, setDataType] = useState<string>(value?.type || '');
   const [formRef] = Form.useForm();
   const intlget = (key) => {
     return intl.get(key, language);
@@ -71,7 +71,7 @@ export const SettingModal = (props: ModalProps) => {
           rules={[{ required: true, message: intlget('Please select field type') }]}
           initialValue={value.type}
         >
-          <Select allowClear={false} onChange={(selectType) => setDataType(selectType)}>
+          <Select allowClear={false} onChange={(selectType) => setDataType(selectType as string)}>
             <Option value="date">{intlget('date')}</Option>
             <Option value="enum">{intlget('enum')}</Option>
             <Option value="number">{intlget('number')}</Option>

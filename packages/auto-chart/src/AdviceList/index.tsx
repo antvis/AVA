@@ -43,7 +43,7 @@ export const AdviceList = ({ advices, currentIndex, language, isActive, onChartT
         style={{ display: isActive ? 'block' : 'none' }}
         onClick={() => setAdviceDisplay(!adviceDisplay)}
       >
-        <img src="https://gw.alipayobjects.com/zos/antfincdn/krFnwF2VZi/retweet.png" />
+        <img src="https://gw.alipayobjects.com/zos/antfincdn/krFnwF2VZi/retweet.png" alt='' />
       </div>
       <div className={`${prefixCls}advice_container`} style={{ display: adviceDisplay ? 'block' : 'none' }}>
         <div className={`${prefixCls}advice_content`}>
@@ -51,7 +51,7 @@ export const AdviceList = ({ advices, currentIndex, language, isActive, onChartT
             return (
               <div className={`${prefixCls}advice`} key={index} onClick={() => changeChartHandle(index)}>
                 <div className={`${prefixCls}advice-thumbnail`} data-index={index}>
-                  <img src={getThumbnailURL(advice.type as ChartID)} data-index={index} />
+                  <img src={getThumbnailURL(advice.type as ChartID)} data-index={index}  alt=''/>
                 </div>
                 <div className={`${prefixCls}advice-desc`}>
                   <img src={rankIcons[index]} data-index={index} />

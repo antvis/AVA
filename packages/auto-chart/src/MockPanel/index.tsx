@@ -1,6 +1,6 @@
 import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { intl, Language } from '../i18n';
-import { prefixCls, setElePositon } from '../utils';
+import { prefixCls, getElePosition } from '../utils';
 import { withDrag, DragRefProps } from '../DragHoc';
 import { MockContent, MockResultType } from './Content';
 
@@ -15,8 +15,8 @@ interface MockPanelProps {
 // eslint-disable-next-line react/display-name
 const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
   const { language, mockDisplay, containerRef, onMockDataChange } = props;
-  const dragContainer = useRef<HTMLElement>(null);
-  const dragHander = useRef<HTMLElement>(null);
+  const dragContainer = useRef<HTMLDivElement>(null);
+  const dragHandler = useRef<HTMLDivElement>(null);
 
   const onConfigClose = () => {
     props.onClose();
@@ -25,13 +25,15 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
   useImperativeHandle(ref, () => {
     return {
       dragContainer: dragContainer.current,
-      dragHander: dragHander.current,
+      dragHandler: dragHandler.current,
     };
   });
 
   useEffect(() => {
     if (mockDisplay && containerRef) {
-      setElePositon(containerRef, dragContainer);
+      const elePosition = getElePosition(containerRef, dragContainer);
+      dragContainer.current.style.left = elePosition.left;
+      dragContainer.current.style.top = elePosition.top;
     }
   }, [mockDisplay, containerRef]);
 
@@ -42,7 +44,7 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
       ref={dragContainer}
     >
       <div className={`${prefixCls}config_panel`}>
-        <div className={`${prefixCls}config_header`} ref={dragHander}>
+        <div className={`${prefixCls}config_header`} ref={dragHandler}>
           {intl.get('Initialize', language)}
           <img src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png" onClick={onConfigClose}></img>
         </div>

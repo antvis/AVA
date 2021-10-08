@@ -50,13 +50,13 @@ function getDivisor(fields: Field[], cindex: number): number {
   let divisor = 1;
   for (let i = cindex + 1; i < fields.length; i += 1) {
     const field = fields[i];
-    if (field.type === 'enum' && field.distribution === 'cartesian') {
-      if (field.values && field.values.length) {
-        divisor *= field.values.length || 1;
+    if (field as ValuesField && field.type === 'enum' && (field as ValuesField).distribution === 'cartesian') {
+      if ((field as ValuesField).values && (field as ValuesField).values.length) {
+        divisor *= (field as ValuesField).values.length || 1;
       }
     }
     if (field.type === 'date') {
-      const { start, end, step, format } = field;
+      const { start, end, step, format } = field as DateField;
       const dates = dateRange(start, end, step, format);
       if (dates && dates.length) {
         divisor *= dates.length;
@@ -88,9 +88,14 @@ export interface NumberField {
   min: number;
   max: number;
   decimals: number;
-}
+};
 
-export type Field = ValuesField | DateField | NumberField;
+export interface DefaultField {
+  type: string;
+  name: string;
+};
+
+export type Field = ValuesField | DateField | NumberField | DefaultField;
 
 export const mockFields: Field[] = [
   { type: 'date', start: '2019-01-01', end: '2019-01-10', step: '1d', format: 'yyyy/MM/dd', name: 'date' },
@@ -107,11 +112,11 @@ export function getOptimalCount(fields: Field[]): number {
 export function mock(fields: Field[], count: number): any[] {
   const factories = fields.map((item, cindex) => {
     if (item.type === 'number') {
-      const { min = 0, max = 1000, decimals = 0 } = item;
+      const { min = 0, max = 1000, decimals = 0 } = item as NumberField;
       return () => random.float({ min, max, fixed: decimals });
     }
     if (item.type === 'enum') {
-      const { values, distribution } = item;
+      const { values, distribution } = item as ValuesField;
       return (rindex: number) => {
         if (distribution === 'cartesian') {
           const divisor = getDivisor(fields, cindex);
@@ -122,7 +127,7 @@ export function mock(fields: Field[], count: number): any[] {
       };
     }
     if (item.type === 'date') {
-      const { start, end, step, format } = item;
+      const { start, end, step, format } = item as DateField;
       const values = dateRange(start, end, step, format);
       const divisor = getDivisor(fields, cindex);
       return (rindex: number) => values[Math.floor(rindex / divisor) % values.length];

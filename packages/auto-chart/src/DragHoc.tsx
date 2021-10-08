@@ -4,16 +4,16 @@ import { draggable } from './utils';
 
 export type DragRefProps = MutableRefObject<{
   dragContainer: HTMLElement;
-  dragHander: HTMLElement;
+  dragHandler: HTMLElement;
 }>;
 
 export const withDrag = <P extends object>(DragComponent: React.ComponentType<P>): React.FC<P> => {
   const WithDrag: React.FC<P> = (props) => {
-    const dragRef = useRef<DragRefProps>(null);
+    const dragRef = useRef(null);
     useEffect(() => {
       if (dragRef) {
-        const { dragContainer, dragHander } = dragRef.current;
-        draggable(dragContainer, dragHander);
+        const { dragContainer, dragHandler } = dragRef.current;
+        draggable(dragContainer, dragHandler);
       }
     }, [dragRef]);
     return createPortal(<DragComponent {...props} ref={dragRef} />, document.body);

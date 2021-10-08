@@ -97,7 +97,7 @@ export const DataContent = (props: DataContentProps) => {
       />
       {editingIndex !== null && (
         <SettingModal
-          value={tableFields[editingIndex] || {}}
+          value={tableFields[editingIndex] || { name: '', type: null }}
           onOK={onSetChange}
           language={language}
           onCancel={() => setEditingIndex(null)}

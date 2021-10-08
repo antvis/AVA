@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { get } from 'lodash/get';
-import { set } from 'lodash/set';
+import { get, set } from 'lodash';
 import { message, ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import enUS from 'antd/es/locale/en_US';
@@ -44,10 +43,10 @@ export const AutoChart = (props: Props) => {
     title,
     description,
   } = props;
-  const containerRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef(null);
   const myAdvisor = new Advisor();
-  const [advices, setAdvices] = useState<Advice>([]);
+  const [advices, setAdvices] = useState<Advice[]>([]);
   const [currentAdviceIndex, setCurrentAdviceIndex] = useState<number>(0);
   const [currentData, setCurrentData] = useState<any>(propsData || []);
   const [mockType, setMockType] = useState<string>(null);

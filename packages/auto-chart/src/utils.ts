@@ -1,3 +1,4 @@
+import React from 'react';
 // TODO @antv/thumbnails will update
 import Thumbnails from '@antv/thumbnails';
 import type { ChartID } from '@antv/knowledge';
@@ -57,7 +58,7 @@ export function draggable(target: HTMLElement, dragEle: HTMLElement) {
   };
 }
 
-export function setElePositon(containerRef, dragContainer) {
+export function getElePosition(containerRef: React.MutableRefObject<HTMLDivElement>, dragContainer: React.MutableRefObject<HTMLDivElement>): { left: string; top: string } {
   const left = containerRef.current.offsetLeft;
   const top = containerRef.current.offsetTop;
   const boxWidth = containerRef.current.offsetWidth;
@@ -81,7 +82,9 @@ export function setElePositon(containerRef, dragContainer) {
     dragTop = dragTopMin < 0 ? wHeight - dragHeight : dragTopMin;
   } else {
     dragTop = dragTopMax;
-  }
-  dragContainer.current.style.left = `${dragLeft}px`;
-  dragContainer.current.style.top = `${dragTop}px`;
+  };
+  return {
+    left: `${dragLeft}px`,
+    top: `${dragTop}px`
+  };
 }
