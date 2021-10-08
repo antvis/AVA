@@ -18,6 +18,7 @@ import {
   standardDeviation,
   covariance,
   pearson,
+  coefficientOfVariance,
 } from '../../src/statistics';
 
 test('statistics', () => {
@@ -59,6 +60,7 @@ test('statistics', () => {
   expect(covariance([1.1, 1.9, 3], [5.0, 10.4, 14.6]).toFixed(2)).toBe('3.02');
   expect(pearson([1.1, 1.9, 3], [5.0, 10.4, 14.6]).toFixed(4)).toBe('0.9868');
   expect(pearson([5.0, 10.4, 14.6], [1.1, 1.9, 3]).toFixed(4)).toBe('0.9868');
+  expect(coefficientOfVariance([1, 2, 5, 9, 10, 11]).toFixed(4)).toBe('0.6160');
 
   // test cache
   expect(geometricMean(data5).toFixed(4)).toBe('31.6979');
