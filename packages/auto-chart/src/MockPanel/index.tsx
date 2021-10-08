@@ -39,9 +39,7 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
   useImperativeHandle(ref, () => {
     return {
       dragContainer: dragContainer.current,
-      dragHandler: dragHandler.current,
-      containerRef: containerRef.current,
-      dragDisplay: mockDisplay,
+      dragHandler: dragHandler.current
     };
   });
 
