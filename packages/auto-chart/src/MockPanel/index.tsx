@@ -1,6 +1,6 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { intl, Language } from '../i18n';
-import { prefixCls } from '../utils';
+import { prefixCls, getElePosition } from '../utils';
 import { withDrag, DragRefProps } from '../DragHoc';
 import { MockContent, MockResultType } from './Content';
 
@@ -22,6 +22,20 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
     props.onClose();
   };
 
+  useEffect(() => {
+    if (mockDisplay) {
+      if (containerRef) {
+        const elePosition = getElePosition(containerRef.current, dragContainer.current);
+        dragContainer.current.style.left = elePosition.left;
+        dragContainer.current.style.top = elePosition.top;
+      };
+      dragContainer.current.style.display = 'block';
+    };
+    if (!mockDisplay && dragContainer) {
+      dragContainer.current.style.display = 'none';
+    };
+  }, [mockDisplay]);
+
   useImperativeHandle(ref, () => {
     return {
       dragContainer: dragContainer.current,
@@ -34,7 +48,7 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
   return (
     <div
       className={`${prefixCls}dev_panel`}
-      style={{ display: mockDisplay ? 'block' : 'none', width: 600, height: 620 }}
+      style={{ width: 600, height: 620 }}
       ref={dragContainer}
     >
       <div className={`${prefixCls}config_panel`}>

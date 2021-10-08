@@ -1,9 +1,9 @@
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Editor, defaultConfigs } from '@antv/g2plot-schemas';
 import { Button, message } from 'antd';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { withDrag, DragRefProps } from '../DragHoc';
-import { prefixCls } from '../utils';
+import { prefixCls, getElePosition } from '../utils';
 import { intl, Language } from '../i18n';
 import getSchema from './getSchema';
 import { processConfig, copyConfig, shake, getOption } from './utils';
@@ -43,17 +43,29 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
     props.onClose();
   };
 
+  useEffect(() => {
+    if (configDisplay) {
+      if (containerRef) {
+        const elePosition = getElePosition(containerRef.current, dragContainer.current);
+        dragContainer.current.style.left = elePosition.left;
+        dragContainer.current.style.top = elePosition.top;
+      };
+      dragContainer.current.style.display = 'block';
+    };
+    if (!configDisplay && dragContainer) {
+      dragContainer.current.style.display = 'none';
+    };
+  }, [configDisplay]);
+
   useImperativeHandle(ref, () => {
     return {
       dragContainer: dragContainer.current,
       dragHandler: dragHandler.current,
-      containerRef: containerRef.current,
-      dragDisplay: configDisplay,
     };
   });
 
   return (
-    <div className={`${prefixCls}dev_panel`} style={{ display: configDisplay ? 'block' : 'none' }} ref={dragContainer}>
+    <div className={`${prefixCls}dev_panel`} ref={dragContainer}>
       <div className={`${prefixCls}config_panel`}>
         <div data-id="mask" className={`${prefixCls}dev_mask`}></div>
         <div className={`${prefixCls}config_header`} ref={dragHandler}>
