@@ -78,7 +78,7 @@ console.log(fieldInfo);
 //   "percentile75": 4,
 //   "percentile95": 5,
 //   "sum": 15,
-//   "stdev": 1.4142135623730951, //标准差
+//   "standardDeviation": 1.4142135623730951, //标准差
 //   "variance": 2, // 方差
 //   "zeros": 0
 // }

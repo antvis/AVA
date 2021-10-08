@@ -24,7 +24,7 @@ test('analyze integer', () => {
 
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
-  expect(info.stdev.toFixed(4)).toBe('2.8723');
+  expect(info.standardDeviation.toFixed(4)).toBe('2.8723');
   expect(isUnique(info)).toBe(true);
   expect(info.count).toBe(10);
   expect(info.distinct).toBe(10);
@@ -44,7 +44,7 @@ test('analyze string integer', () => {
 
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
-  expect(info.stdev.toFixed(4)).toBe('2.8723');
+  expect(info.standardDeviation.toFixed(4)).toBe('2.8723');
   expect(isUnique(info)).toBe(true);
   expect(info.count).toBe(10);
   expect(info.distinct).toBe(10);

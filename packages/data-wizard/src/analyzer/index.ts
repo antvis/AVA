@@ -81,8 +81,8 @@ export interface NumberFieldInfo extends FieldInfo {
   percentile95: number;
   /** maximum */
   maximum: number;
-  /** stdev */
-  stdev: number;
+  /** standardDeviation */
+  standardDeviation: number;
   /** mean */
   mean: number;
   /** sum */
@@ -151,7 +151,7 @@ export function analyzeNumber(array: number[]): Omit<NumberFieldInfo, keyof Fiel
     percentile95: statistics.quantile(array, 95),
     sum: statistics.sum(array),
     variance: statistics.variance(array),
-    stdev: statistics.stdev(array),
+    standardDeviation: statistics.standardDeviation(array),
     zeros: array.filter((item) => item === 0).length,
   };
 }

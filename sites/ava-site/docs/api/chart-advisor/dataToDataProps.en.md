@@ -64,7 +64,7 @@ interface FieldMeta {
 * percentile75 `number`
 * percentile95 `number` 
 * maximum `number` 
-* stdev `number` 
+* standardDeviation `number` 
 * mean `number` 
 * sum `number` 
 * variance `number` 

@@ -15,7 +15,7 @@ import {
   geometricMean,
   harmonicMean,
   variance,
-  stdev,
+  standardDeviation,
   covariance,
   pearson,
 } from '../../src/statistics';
@@ -47,7 +47,7 @@ test('statistics', () => {
   expect(geometricMean(data5).toFixed(4)).toBe('31.6979');
   expect(harmonicMean(data5).toFixed(4)).toBe('16.8067');
   expect(variance(data5)).toBe(1284);
-  expect(stdev(data5).toFixed(4)).toBe('35.8329');
+  expect(standardDeviation(data5).toFixed(4)).toBe('35.8329');
   const data6 = [1, 2, 3];
   expect(sum(data6)).toBe(6);
   expect(mean(data6)).toBe(2);

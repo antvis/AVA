@@ -62,7 +62,7 @@ const info = analyzer.analyzeField(a);
 //   "percentile95": 3,
 //   "sum": 6,
 //   "variance": 0.6666666666666666,
-//   "stdev": 0.816496580927726,
+//   "standardDeviation": 0.816496580927726,
 //   "zeros": 0
 // }
 ```
