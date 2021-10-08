@@ -2,9 +2,8 @@ import { assert } from '../utils';
 import * as cache from './caches';
 
 /**
- * Return the maximum of the array
+ * Return the maximum of the array.
  * @param array - The array to process
- * @public
  */
 export function min(array: number[]): number {
   const value = cache.get<number>(array, 'min');
@@ -15,9 +14,8 @@ export function min(array: number[]): number {
 }
 
 /**
- * Return the minimum of the array
+ * Return the minimum of the array.
  * @param array - The array to process
- * @public
  */
 export function max(array: number[]): number {
   const value = cache.get<number>(array, 'max');
@@ -38,9 +36,8 @@ function minIdx(array: number[]) {
 }
 
 /**
- * Return the minimum index of the array
+ * Return the minimum index of the array.
  * @param array - The array to process
- * @public
  */
 export function minIndex(array: number[]): number {
   const value = cache.get<number>(array, 'minIndex');
@@ -61,9 +58,8 @@ function maxIdx(array: number[]) {
 }
 
 /**
- * Return the maximum index of the array
+ * Return the maximum index of the array.
  * @param array - The array to process
- * @public
  */
 export function maxIndex(array: number[]): number {
   const value = cache.get<number>(array, 'maxIndex');
@@ -72,9 +68,8 @@ export function maxIndex(array: number[]): number {
 }
 
 /**
- * Return the sum of the array
+ * Return the sum of the array.
  * @param array - The array to process
- * @public
  */
 export function sum(array: number[]): number {
   const value = cache.get<number>(array, 'sum');
@@ -87,9 +82,8 @@ export function sum(array: number[]): number {
 }
 
 /**
- * Return the counts of valid value in the array
+ * Return the counts of valid value in the array.
  * @param array - The array to process
- * @public
  */
 export function valid(array: any[]): number {
   let count = 0;
@@ -100,18 +94,16 @@ export function valid(array: any[]): number {
 }
 
 /**
- * Return the counts of missing value in the array
+ * Return the counts of missing value in the array.
  * @param array - The array to process
- * @public
  */
 export function missing(array: any[]): number {
   return array.length - valid(array);
 }
 
 /**
- * Return the counts of each distinct value in the array
+ * Return the counts of each distinct value in the array.
  * @param array - The array to process
- * @public
  */
 export function valueMap(array: any[]): Record<string, number> {
   const data: Record<string, number> = {};
@@ -123,9 +115,8 @@ export function valueMap(array: any[]): Record<string, number> {
 }
 
 /**
- * Return the counts of distinct value in the array
+ * Return the counts of distinct value in the array.
  * @param array - The array to process
- * @public
  */
 export function distinct(array: any[]): number {
   return Object.keys(valueMap(array)).length;
@@ -136,9 +127,8 @@ function sort(array: number[]): number[] {
 }
 
 /**
- * Return the median of the array
+ * Return the median of the array.
  * @param array - The array to process
- * @public
  */
 export function median(array: number[], ordered = false): number {
   const { length } = array;
@@ -148,10 +138,9 @@ export function median(array: number[], ordered = false): number {
 }
 
 /**
- * Return the quartile of the array
+ * Return the quartile of the array.
  * @param array - The array to process
  * @param ordered - Whether it is ordered
- * @public
  */
 export function quartile(array: number[], ordered = false): [number, number, number] {
   assert(array.length >= 3, 'array.length cannot be less than 3');
@@ -173,11 +162,10 @@ export function quartile(array: number[], ordered = false): [number, number, num
 }
 
 /**
- * Return the quantile of the array
+ * Return the quantile of the array.
  * @param array - The array to process
  * @param percent - percent
  * @param ordered - Whether it is ordered
- * @public
  */
 export function quantile(array: number[], percent: number, ordered = false): number {
   assert(percent > 0 && percent < 100, 'percent cannot be between (0, 100)');
@@ -188,18 +176,17 @@ export function quantile(array: number[], percent: number, ordered = false): num
 }
 
 /**
- * Return the mean of the array
+ * Return the mean of the array.
  * @param array - The array to process
- * @public
+
  */
 export function mean(array: number[]): number {
   return sum(array) / array.length;
 }
 
 /**
- * Return the geometricMean of the array
+ * Return the geometricMean of the array.
  * @param array - The array to process
- * @public
  */
 export function geometricMean(array: number[]): number {
   assert(array.some((item) => item > 0), 'each item in array must greater than 0');
@@ -212,9 +199,8 @@ export function geometricMean(array: number[]): number {
 }
 
 /**
- * Return the harmonicMean of the array
+ * Return the harmonicMean of the array.
  * @param array - The array to process
- * @public
  */
 export function harmonicMean(array: number[]): number {
   const base = 2 ** 16;
@@ -228,10 +214,8 @@ export function harmonicMean(array: number[]): number {
 }
 
 /**
- * Return the variance of the array
+ * Return the variance of the array.
  * @param array - The array to process
- *
- * @public
  */
 export function variance(array: number[]): number {
   const m = mean(array);
@@ -241,18 +225,16 @@ export function variance(array: number[]): number {
 }
 
 /**
- * Return the standard deviation of the array
+ * Return the standard deviation of the array.
  * @param array - The array to process
- * @public
  */
 export function standardDeviation(array: number[]): number {
   return Math.sqrt(variance(array));
 }
 
 /**
- * Return the covariance of the array
+ * Return the covariance of the array.
  * @param array - The array to process
- * @public
  */
 
 export function covariance(x: number[], y: number[]): number {
@@ -263,12 +245,21 @@ export function covariance(x: number[], y: number[]): number {
 }
 
 /**
- * Return the Pearson CorrelationCoefficient of two array
- * @public
+ * Return the Pearson CorrelationCoefficient of two array.
  */
 export function pearson(x: number[], y: number[]): number {
   const cov = covariance(x, y);
   const dx = standardDeviation(x);
   const dy = standardDeviation(y);
   return cov / (dx * dy);
+}
+
+/**
+ * Return the coefficient of variance of the array.
+ * @param array - The array to process
+ */
+export function coefficientOfVariance(array: number[]): number {
+  const stdev = standardDeviation(array);
+  const arrayMean = mean(array);
+  return stdev / arrayMean;
 }
