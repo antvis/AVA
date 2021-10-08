@@ -67,7 +67,7 @@ console.log(fieldInfo);
 //       "percentile75": 4,
 //       "percentile95": 5,
 //       "sum": 15,
-//       "stdev": 1.4142135623730951,
+//       "standardDeviation": 1.4142135623730951,
 //       "variance": 2,
 //       "zeros": 0,
 //       "name": "x"

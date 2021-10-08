@@ -54,7 +54,7 @@ const dataPropSchema =  [
     "percentile95": 630,
     "sum": 1370,
     "variance": 35818.75,
-    "stdev": 189.2584212129014,
+    "standardDeviation": 189.2584212129014,
     "zeros": 0,
     "name": "f2",
     "levelOfMeasurements": [ "Interval", "Discrete" ]

@@ -65,7 +65,7 @@ interface FieldMeta {
 * percentile75 `number` 75% 百分位
 * percentile95 `number` 95% 百分位
 * maximum `number` 最大值
-* stdev `number` 标准偏差
+* standardDeviation `number` 标准差
 * mean `number` 中位数
 * sum `number` 求和
 * variance `number` 方差

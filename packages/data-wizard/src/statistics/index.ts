@@ -245,7 +245,7 @@ export function variance(array: number[]): number {
  * @param array - The array to process
  * @public
  */
-export function stdev(array: number[]): number {
+export function standardDeviation(array: number[]): number {
   return Math.sqrt(variance(array));
 }
 
@@ -268,7 +268,7 @@ export function covariance(x: number[], y: number[]): number {
  */
 export function pearson(x: number[], y: number[]): number {
   const cov = covariance(x, y);
-  const dx = stdev(x);
-  const dy = stdev(y);
+  const dx = standardDeviation(x);
+  const dy = standardDeviation(y);
   return cov / (dx * dy);
 }

@@ -438,7 +438,7 @@ describe('DataFrame info', () => {
     expect(info.percentile95).toBe(3);
     expect(info.sum).toBe(6);
     expect(info.variance).toBe(0.6666666666666666);
-    expect(info.stdev).toBe(0.816496580927726);
+    expect(info.standardDeviation).toBe(0.816496580927726);
     expect(info.zeros).toBe(0);
     expect(info.levelOfMeasurements).toStrictEqual(['Interval', 'Discrete']);
     expect(info.name).toBe('a');
