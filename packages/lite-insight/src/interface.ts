@@ -42,7 +42,7 @@ export type InsightType = typeof PATTERN_TYPES[number];
 export type HomogeneousInsightType = typeof HOMOGENEOUS_PATTERN_TYPES[number];
 
 /** insight chart type recommendation */
-export type ChartType = 'column_chart' | 'line_chart';
+export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart';
 
 /** pattern information */
 export type PatternInfo = OutlierInfo | TrendInfo | ChangePointInfo;
@@ -102,6 +102,9 @@ export interface PointPatternInfo extends BasePatternInfo {
 export type OutlierInfo = PointPatternInfo;
 
 export type ChangePointInfo = PointPatternInfo;
+
+export type MajorityInfo = PointPatternInfo & { proportion: number };
+
 
 export type TrendType = 'decreasing' | 'increasing' | 'no trend';
 
