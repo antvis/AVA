@@ -1,5 +1,5 @@
 import _groupBy from 'lodash/groupBy';
-import { PatternInfo, ChangePointInfo, InsightInfo, TrendInfo, InsightType, OutlierInfo, HomogeneousPatternInfo, PointPatternInfo } from '../interface';
+import { PatternInfo, ChangePointInfo, InsightInfo, TrendInfo, InsightType, OutlierInfo, HomogeneousPatternInfo, PointPatternInfo, MajorityInfo } from '../interface';
 import { join, getDatumPositionString } from './util';
 
 export const insightNameMap: Record<InsightType, string> = {
@@ -7,6 +7,7 @@ export const insightNameMap: Record<InsightType, string> = {
   trend: 'trend',
   change_point: 'change point',
   time_series_outlier: 'outlier',
+  majority: 'majority',
 };
 
 type PatternTypeGroup = {
@@ -44,8 +45,12 @@ const generateInsightTypeSummary = (patternTypeGroup: PatternTypeGroup, insight:
     return `There are ${changePoints.length} abrupt changes in total, which occur in ${changePointsPositionsString}.`;
   }
   if (type === 'trend') {
-    const trend = patternGroup as TrendInfo[];
-    return `The ${measures[0].field} goes ${trend[0].trend}.`;
+    const trend = patternGroup[0] as TrendInfo;
+    return `The ${measures[0].field} goes ${trend.trend}.`;
+  }
+  if (type === 'majority') {
+    const majority = patternGroup[0] as MajorityInfo;
+    return `For ${majority.dimension}, ${majority.x} accounts for the majority of ${measures[0].field}.`;
   }
   return '';
 };

@@ -13,6 +13,7 @@ interface PlotProps {
 const g2plotTypeMap = {
   column_chart: 'Column',
   line_chart: 'Line',
+  pie_chart: 'Pie',
 };
 
 export const PlotRender = React.memo((props: PlotProps) => {

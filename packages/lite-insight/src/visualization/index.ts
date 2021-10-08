@@ -8,6 +8,7 @@ export const ChartTypeMap: Record<InsightType, ChartType> = {
   trend: 'line_chart',
   change_point: 'line_chart',
   time_series_outlier: 'line_chart',
+  majority: 'pie_chart',
 };
 
 export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>) => {
@@ -22,8 +23,8 @@ export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>)
 
     // TODO chart schema generation
     const plotSchema = {
-      xField: breakdowns[0],
-      yField: measures[0].field,
+      [chartType === 'pie_chart' ? 'colorField' : 'xField']: breakdowns[0],
+      [chartType === 'pie_chart' ? 'angleField' : 'yField']: measures[0].field,
     };
     const annotationConfig = generateInsightAnnotationConfig(patternGroup);
 

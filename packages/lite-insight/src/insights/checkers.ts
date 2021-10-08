@@ -40,6 +40,15 @@ export const timeSeriesChecker: ExtractorChecker = (data, subjectInfo, fieldProp
   return true;
 };
 
+export const majorityChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
+  const { breakdown, measures } = subjectInfo;
+  if (data?.length < 3) return false;
+  if (!_intersection(fieldPropsMap[breakdown]?.levelOfMeasurements, ['Nominal', 'Discrete', 'Ordinal'])?.length) return false;
+  if (measures.length !== 1) return false;
+  if (!['count', 'sum'].includes(measures[0].method)) return false;
+  return true;
+};
+
 export const ExtractorCheckers: Record<InsightType, ExtractorChecker> = {
   category_outlier: categoryOutlierChecker,
   trend: trendChecker,
