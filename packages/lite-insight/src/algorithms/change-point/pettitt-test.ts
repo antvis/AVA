@@ -1,8 +1,9 @@
 import _sumBy from 'lodash/sumBy';
-import { rank } from '../utils/common';
+import { rank } from '../../utils/common';
 
-// Pettitt's (1979) method is a rank-based nonparametric test for
-// abrupt changes in a time series.
+/**
+ * Pettitt's (1979) method is a rank-based nonparametric test for abrupt changes in a time series.
+ * */
 export const pettittTest = (data: number[]) => {
   const n = data?.length;
   const rankArr = rank(data);
@@ -18,12 +19,15 @@ export const pettittTest = (data: number[]) => {
   }
   const pvalue = 2 * Math.exp((-6 * Umax ** 2) / (n ** 2 + n ** 3));
   return {
-    index: UmaxIndex - 1,
+    index: UmaxIndex,
     significance: 1 - pvalue,
   };
 };
 
-export const pettittPValue = (data: number[], index: number) => {
+/**
+ * p-value calc in Pettitt
+ */
+export const calcPValue = (data: number[], index: number) => {
   const n = data?.length;
   const rankArr = rank(data);
 
@@ -31,5 +35,5 @@ export const pettittPValue = (data: number[], index: number) => {
 
   const pvalue = 2 * Math.exp((-6 * U ** 2) / (n ** 2 + n ** 3));
 
-  return 1 - pvalue;
+  return pvalue;
 };

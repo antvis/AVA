@@ -2,8 +2,11 @@ import _sumBy from 'lodash/sumBy';
 import _sum from 'lodash/sum';
 import _mean from 'lodash/mean';
 import maxabs from '@stdlib/stats/base/maxabs';
+import { calcPValue } from './window';
 
-// Buishad U statistics test
+/**
+ * Buishad U statistics test
+ */
 export const buishandUTest = (data: number[]) => {
   const n = data?.length;
   const mean = _mean(data);
@@ -16,6 +19,6 @@ export const buishandUTest = (data: number[]) => {
   return {
     U,
     index: maxIndex,
-    significance: 1,
+    significance: 1 - calcPValue(data, maxIndex),
   };
 };

@@ -52,7 +52,7 @@ const getLoessOutliers = (values: number[]): OutlierCandidate[] => {
 export const findTimeSeriesOutliers = (series: number[]): OutlierItem[] => {
   const outliers = getLoessOutliers(series);
 
-  const result: OutlierItem[] = [];
+  const results: OutlierItem[] = [];
 
   for (let i = 0; i < outliers.length; i += 1) {
     const candidate = outliers[i];
@@ -60,14 +60,14 @@ export const findTimeSeriesOutliers = (series: number[]): OutlierItem[] => {
     const significance = 1 - pValue;
 
     if (significance > SignificanceBenchmark) {
-      result.push({
+      results.push({
         index: candidate.index,
         value: candidate.value,
         significance,
       });
     }
   }
-  return result;
+  return results;
 };
 
 export const extractor = (data: Datum[], dimension: string, measure: string): OutlierInfo[] => {

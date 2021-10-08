@@ -1,5 +1,5 @@
 import _groupBy from 'lodash/groupBy';
-import { ChartType, HomogeneousPatternInfo, InsightInfo, InsightType, PatternInfo } from '../interface';
+import { ChartType, HomogeneousPatternInfo, InsightInfo, InsightType, PatternInfo, VisualizationSchema } from '../interface';
 import { generateInsightAnnotationConfig, generateHomogeneousInsightAnnotationConfig } from './annotation';
 import { generateInsightDescription, generateHomogeneousInsightDescription } from './description';
 
@@ -11,14 +11,14 @@ export const ChartTypeMap: Record<InsightType, ChartType> = {
   majority: 'pie_chart',
 };
 
-export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>) => {
+export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>): VisualizationSchema[] => {
   const { breakdowns, patterns, measures } = insight;
 
-  const schemas = [];
+  const schemas: VisualizationSchema[] = [];
 
   const patternGroups = _groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
 
-  Object.entries(patternGroups).forEach(([chartType, patternGroup]: [ChartType, PatternInfo[]]) => {
+  Object.entries(patternGroups).forEach(([chartType, patternGroup]: [string, PatternInfo[]]) => {
     const { caption, insightSummary } = generateInsightDescription(patterns, insight);
 
     // TODO chart schema generation
@@ -33,7 +33,7 @@ export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>)
       annotations: annotationConfig,
     };
     schemas.push({
-      chartType,
+      chartType: chartType as ChartType,
       chartSchema,
       caption,
       insightSummary,
@@ -74,10 +74,10 @@ const lowlight = (pattern: HomogeneousPatternInfo, colorField: string) => {
   return {};
 };
 
-export const getHomogeneousInsightVisualizationSchema = (insight: InsightInfo<HomogeneousPatternInfo>) => {
+export const getHomogeneousInsightVisualizationSchema = (insight: InsightInfo<HomogeneousPatternInfo>): VisualizationSchema[] => {
   const { breakdowns, patterns, measures } = insight;
 
-  const schemas = [];
+  const schemas: VisualizationSchema[] = [];
 
   const { caption, insightSummary } = generateHomogeneousInsightDescription(insight);
   patterns.forEach((pattern) => {

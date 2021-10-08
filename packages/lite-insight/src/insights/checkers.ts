@@ -44,6 +44,7 @@ export const majorityChecker: ExtractorChecker = (data, subjectInfo, fieldPropsM
   const { breakdown, measures } = subjectInfo;
   if (data?.length < 3) return false;
   if (!_intersection(fieldPropsMap[breakdown]?.levelOfMeasurements, ['Nominal', 'Discrete', 'Ordinal'])?.length) return false;
+  if (fieldPropsMap[breakdown]?.levelOfMeasurements?.includes('Time')) return false;
   if (measures.length !== 1) return false;
   if (!['count', 'sum'].includes(measures[0].method)) return false;
   return true;
