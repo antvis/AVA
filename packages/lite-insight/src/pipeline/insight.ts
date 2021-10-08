@@ -149,7 +149,7 @@ const enumerateInsightSubjectsRecursive = (
       .map((item) => item.name)
   ).filter((field) => !searchedDimensions.includes(field));
 
-  const breakdownValues = _uniq(fieldPropsMap[breakdown].samples);
+  const breakdownValues: string[] = _uniq(fieldPropsMap[breakdown].samples);
   if (remainDimensionFields.length === 0 || breakdownValues.length < 2) {
     return insightsForMeasures;
   }

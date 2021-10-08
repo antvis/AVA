@@ -34,7 +34,7 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
   });
   const sortedCandidates = _sortBy(candidates, (item) => Math.abs(IQRResult[item.type].threshold - item.value));
 
-  const result: OutlierItem[] = [];
+  const results: OutlierItem[] = [];
   for (let i = 0; i < sortedCandidates.length; i += 1) {
     const candidate = sortedCandidates[i];
     const pValue = calculatePValue(values, candidate.value);
@@ -43,13 +43,13 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
     if (significance < SignificanceBenchmark) {
       break;
     }
-    result.push({
+    results.push({
       index: candidate.index,
       value: candidate.value,
       significance,
     });
   }
-  return result;
+  return results;
 };
 
 export const extractor = (data: Datum[], dimension: string, measure: string): OutlierInfo[] => {
