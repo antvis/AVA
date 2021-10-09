@@ -1,6 +1,8 @@
 export const SignificanceBenchmark = 0.95;
 
-export const InsightScoreBenchmark = 0.1;
+export const InsightScoreBenchmark = 0.01;
+
+export const ImpactScoreWeight = 0.2;
 
 export const InsightDefaultLimit = 20;
 

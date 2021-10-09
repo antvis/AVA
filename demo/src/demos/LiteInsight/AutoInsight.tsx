@@ -18,12 +18,20 @@ const datasetConfigs = {
       { field: 'pop', method: 'SUM' },
       { field: 'fertility', method: 'MEAN' },
     ],
+    impactMeasures: [
+      { field: 'life_expect', method: 'COUNT' },
+      { field: 'pop', method: 'COUNT' },
+      { field: 'fertility', method: 'COUNT' },
+    ],
   },
   jobs: {
     limit: 60,
     dimensions: ['sex', 'year', 'job'],
     measures: [
       { field: 'count', method: 'SUM' }
+    ],
+    impactMeasures: [
+      { field: 'count', method: 'COUNT' }
     ]
   }
 };

@@ -2,7 +2,7 @@ import _groupBy from 'lodash/groupBy';
 import _uniq from 'lodash/uniq';
 import _flatten from 'lodash/flatten';
 import Heap from 'heap-js';
-import { PATTERN_TYPES, InsightScoreBenchmark } from '../constant';
+import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
 import { insightExtractors, ExtractorCheckers } from '../insights';
 import { Datum, InsightOptions, Measure, InsightInfo, ImpactMeasure, SubjectInfo, InsightType, PatternInfo, HomogeneousPatternInfo } from '../interface';
 import { aggregate } from '../utils/aggregate';
@@ -85,6 +85,8 @@ const enumerateInsightSubjectsRecursive = (
     return [];
   }
 
+  const impactScoreWeight = (options?.impactWeight >= 0 && options?.impactWeight < 1) ? options.impactWeight : ImpactScoreWeight;
+
   /** enumerate insights of the subject itself */
   const { breakdown, subspace, measures } = subjectInfo;
 
@@ -113,7 +115,7 @@ const enumerateInsightSubjectsRecursive = (
         measures: [measure],
         patterns: patternsArray,
         data: aggregatedData,
-        score: patternsArray[0].significance * subjectImportance,
+        score: patternsArray[0].significance * (1 - impactScoreWeight) + subjectImportance * impactScoreWeight,
       };
       insightsForMeasures.push(insight);
       insightsHeap.add(insight);
