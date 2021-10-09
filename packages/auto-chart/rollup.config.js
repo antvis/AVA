@@ -3,6 +3,7 @@ import autoprefixer from 'autoprefixer';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
+import filesize from 'rollup-plugin-filesize';
 import rollupConfig from '../../rollup.config';
 
 export default rollupConfig(
@@ -24,6 +25,7 @@ export default rollupConfig(
     },
   },
   [
+    filesize(),
     nodePolyfills(),
     globals(),
     builtins(),
@@ -38,6 +40,9 @@ export default rollupConfig(
       sourceMap: true,
       // This plugin will process files ending with these extensions and the extensions supported by custom loaders.
       extensions: ['.less', '.css'],
+      use : [
+        ['less', { javascriptEnabled: true }]
+      ],
       plugins: [
         autoprefixer({
           overrideBrowserslist: ['defaults', 'not ie < 11', 'last 2 versions', '> 1%', 'iOS 7', 'last 3 iOS versions'],

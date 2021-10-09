@@ -40,6 +40,7 @@
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
     "rollup-plugin-babel": "^4.4.0",
+    "rollup-plugin-filesize": "^9.1.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "rollup-plugin-polyfill-node": "^0.7.0",
