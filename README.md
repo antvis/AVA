@@ -1,5 +1,7 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./zh-CN/README.zh-CN.md)
 
+> WIP: The v2 version is being upgraded. For users of v1, please check [the backup branch](https://github.com/antvis/AVA/tree/v1).
+
 <div align="center">
   <img width="200" height="120" src="./common/img/logo.svg" alt="AVA logo">
 </div>
@@ -18,77 +20,6 @@
 **AVA** (![AVA logo](./common/img/vectorASymbol.svg) Visual Analytics) is a framework (or a solution) for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is from *Alibaba*, and its goal is to become an *Automated*, *AI driven* solution that supports *Augmented* analytics.
 
 <br />
-
-## Demo
-
-```html
-<div id="mountNode"></div>
-```
-
-```js
-import { autoChart } from '@antv/chart-advisor';
-
-const container = document.getElementById('mountNode');
-
-const data = [
-  {field1: 'a', field2: '100'},
-  {field1: 'b', field2: '300'},
-  {field1: 'c', field2: '800'},
-];
-
-autoChart(container, data, {toolbar: true, development: true});
-```
-
-<br>
-
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/QTJPYXJpjW/avademo.gif" alt="AVA demo">
-</div>
-
-## Packages
-
-### 📦 [AVA/CKB](https://github.com/antvis/AVA/tree/master/packages/knowledge)
-
-CKB stands for Chart Knowledge Base. This package is the KB where empirical knowledge about visualization and charts is stored. The chart recommendation is based on it.
-
-At the same time, this package also facilitates us to develop products of chart type selection.
-
-
-```js
-@antv/knowledge // to get the chart knowledge base
-```
-
-### 📦 [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/datawizard)
-
-DataWizard is a js/ts library for data processing. In the AVA framework, it is used to 'understand' the input dataset. However, it can also be used independently to develop some statistical or data mocking functions.
-
-```js
-@antv/dw-analyzer // to understand a dataset
-@antv/dw-random // to generate random mock data
-```
-
-### 📦 [AVA/ChartAdvisor](https://github.com/antvis/AVA/tree/master/packages/chart-advisor)
-
-ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
-
-```js
-@antv/chart-advisor // to make charts automatically
-```
-
-### 📦 [AVA/ChartLinter](https://github.com/antvis/AVA/tree/master/packages/chart-linter)
-
-ChartLinter is the chart optimization component. It can find out the problems in chart design according to chart type, chart configuration and rules.
-
-```js
-@antv/chart-linter // to lint and fix charts
-```
-
-## Resources
-
-* [API Reference](docs/api/index.md)
-* [`autoChart` API](API.md)
-* [Examples](EXAMPLES.md)
-* [Wiki](https://github.com/antvis/AVA/wiki)
 
 ## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
