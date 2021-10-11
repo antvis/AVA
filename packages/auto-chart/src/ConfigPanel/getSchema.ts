@@ -12,5 +12,4 @@ export default function getSchema(type: string, language: Lang) {
     delete SCHEMAS_CACHE[language][type].properties.height;
   }
   return SCHEMAS_CACHE[language][type];
-};
-
+}
