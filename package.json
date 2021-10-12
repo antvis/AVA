@@ -67,7 +67,8 @@
     "site:start": "cd ./ava-site && npm run start",
     "setup:demo": "cd demo && npm install --package-lock=false",
     "start:demo": "npm run setup:demo && cd demo && npm start",
-    "one-stop-setup": "npm install --package-lock=false && run-s boot build setup:demo"
+    "prepare": "husky install",
+    "one-stop-setup": "npm install --package-lock=false && run-s boot build setup:demo && npm run prepare"
   },
   "husky": {
     "hooks": {
@@ -76,9 +77,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "prettier --write",
       "eslint --fix",
-      "git add"
+      "prettier --write"
     ]
   },
   "author": {
