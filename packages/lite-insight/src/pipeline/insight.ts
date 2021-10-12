@@ -4,13 +4,24 @@ import _flatten from 'lodash/flatten';
 import Heap from 'heap-js';
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
 import { insightExtractors, ExtractorCheckers } from '../insights';
-import { Datum, InsightOptions, Measure, InsightInfo, ImpactMeasure, SubjectInfo, InsightType, PatternInfo, HomogeneousPatternInfo } from '../interface';
-import { aggregate } from '../utils/aggregate';
 import {
-  DataProperty,
-  calculateImpactValue,
-} from './preprocess';
-import { extractHomogeneousPatternsForMeausres, extractHomogeneousPatternsForSiblingGroups, PatternCollection } from './homogeneous';
+  Datum,
+  InsightOptions,
+  Measure,
+  InsightInfo,
+  ImpactMeasure,
+  SubjectInfo,
+  InsightType,
+  PatternInfo,
+  HomogeneousPatternInfo,
+} from '../interface';
+import { aggregate } from '../utils/aggregate';
+import { DataProperty, calculateImpactValue } from './preprocess';
+import {
+  extractHomogeneousPatternsForMeausres,
+  extractHomogeneousPatternsForSiblingGroups,
+  PatternCollection,
+} from './homogeneous';
 
 interface ReferenceInfo {
   fieldPropsMap: Record<string, DataProperty>;
@@ -41,12 +52,11 @@ const extractPatternsFromSubject = (
   fieldPropsMap: Record<string, DataProperty>,
   options?: InsightOptions
 ): PatternCollection => {
-  const { measures, breakdown, } = subjectInfo;
+  const { measures, breakdown } = subjectInfo;
 
   const enumInsightTypes = options?.insightTypes || PATTERN_TYPES;
 
   const patterns: Record<InsightType, PatternInfo[]> = {};
-
 
   enumInsightTypes.forEach((insightType) => {
     const insightExtractorChecker = ExtractorCheckers[insightType];
@@ -105,8 +115,9 @@ const enumerateInsightSubjectsRecursive = (
 
     patternsForMeasures.push(patterns);
 
-    const patternsArray = _flatten(Object.values(patterns).filter(item => item?.length > 0)).sort((a, b) => b.significance - a.significance);
-    ;
+    const patternsArray = _flatten(Object.values(patterns).filter((item) => item?.length > 0)).sort(
+      (a, b) => b.significance - a.significance
+    );
 
     if (patternsArray.length) {
       const insight = {
@@ -128,14 +139,16 @@ const enumerateInsightSubjectsRecursive = (
   if (options?.homogeneous) {
     const homogeneousPatternsForMeasures = extractHomogeneousPatternsForMeausres(measures, patternsForMeasures);
     if (homogeneousPatternsForMeasures.length > 0) {
-      const homogeneousInsights: InsightInfo<HomogeneousPatternInfo>[] = homogeneousPatternsForMeasures.map(pattern => ({
-        subspaces: [subspace],
-        breakdowns: [breakdown],
-        measures,
-        patterns: [pattern],
-        data,
-        score: pattern.significance * subjectImportance,
-      }));
+      const homogeneousInsights: InsightInfo<HomogeneousPatternInfo>[] = homogeneousPatternsForMeasures.map(
+        (pattern) => ({
+          subspaces: [subspace],
+          breakdowns: [breakdown],
+          measures,
+          patterns: [pattern],
+          data,
+          score: pattern.significance * subjectImportance,
+        })
+      );
       metaInsightsHeap.addAll(homogeneousInsights);
     }
   }
@@ -177,7 +190,11 @@ const enumerateInsightSubjectsRecursive = (
 
     /** ⑤ homogeneous patterns in sibling groups */
     if (options?.homogeneous) {
-      const homogeneousPatternsForSiblingGroups = extractHomogeneousPatternsForSiblingGroups(measures, breakdownValues, siblingGroupInsights);
+      const homogeneousPatternsForSiblingGroups = extractHomogeneousPatternsForSiblingGroups(
+        measures,
+        breakdownValues,
+        siblingGroupInsights
+      );
       homogeneousPatternsForSiblingGroups.forEach((patternGroup, measureIndex) => {
         const insightsForMeasure = patternGroup.map((pattern) => ({
           subspaces: [subspace],

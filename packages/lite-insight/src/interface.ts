@@ -106,7 +106,6 @@ export type ChangePointInfo = PointPatternInfo;
 
 export type MajorityInfo = PointPatternInfo & { proportion: number };
 
-
 export type TrendType = 'decreasing' | 'increasing' | 'no trend';
 
 export interface LinearRegressionResult {
@@ -121,3 +120,5 @@ export interface TrendInfo extends BasePatternInfo {
   dimension: string;
   measure: string;
 }
+
+export type LowVarianceInfo = BasePatternInfo & { dimension: string };

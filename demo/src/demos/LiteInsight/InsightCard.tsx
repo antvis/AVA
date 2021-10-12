@@ -1,6 +1,14 @@
 import React from 'react';
 import { List } from 'antd';
-import { RiseOutlined, FallOutlined, BoxPlotOutlined, StockOutlined, DotChartOutlined, PieChartOutlined } from '@ant-design/icons';
+import {
+  RiseOutlined,
+  FallOutlined,
+  BoxPlotOutlined,
+  StockOutlined,
+  DotChartOutlined,
+  PieChartOutlined,
+  BarChartOutlined,
+} from '@ant-design/icons';
 import { InsightInfo } from '../../../../packages/lite-insight/src';
 import { PlotRender } from './Plot';
 
@@ -14,6 +22,7 @@ const getInsightIcon = (insightText: string) => {
   if (insightText.indexOf('outlier') !== -1) return <BoxPlotOutlined style={{ fontSize: 24 }} />;
   if (insightText.indexOf('change') !== -1) return <StockOutlined style={{ fontSize: 24 }} />;
   if (insightText.indexOf('majority') !== -1) return <PieChartOutlined style={{ fontSize: 24 }} />;
+  if (insightText.indexOf('variance') !== -1) return <BarChartOutlined style={{ fontSize: 24 }} />;
   return <DotChartOutlined style={{ fontSize: 24 }} />;
 };
 
