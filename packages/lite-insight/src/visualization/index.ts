@@ -1,5 +1,12 @@
 import _groupBy from 'lodash/groupBy';
-import { ChartType, HomogeneousPatternInfo, InsightInfo, InsightType, PatternInfo, VisualizationSchema } from '../interface';
+import {
+  ChartType,
+  HomogeneousPatternInfo,
+  InsightInfo,
+  InsightType,
+  PatternInfo,
+  VisualizationSchema,
+} from '../interface';
 import { generateInsightAnnotationConfig, generateHomogeneousInsightAnnotationConfig } from './annotation';
 import { generateInsightDescription, generateHomogeneousInsightDescription } from './description';
 
@@ -9,6 +16,7 @@ export const ChartTypeMap: Record<InsightType, ChartType> = {
   change_point: 'line_chart',
   time_series_outlier: 'line_chart',
   majority: 'pie_chart',
+  low_variance: 'column_chart',
 };
 
 export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>): VisualizationSchema[] => {
@@ -42,6 +50,7 @@ export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>)
 
   return schemas;
 };
+
 /** lowlight information that does not require attention */
 const lowlight = (pattern: HomogeneousPatternInfo, colorField: string) => {
   const { type, insightType, commSet, exc = [] } = pattern;
@@ -52,7 +61,7 @@ const lowlight = (pattern: HomogeneousPatternInfo, colorField: string) => {
   } else if (type === 'exception') {
     highlightSet = exc;
   }
-  const opacity = (value: string) => highlightSet.includes(value) ? 1 : 0.2;
+  const opacity = (value: string) => (highlightSet.includes(value) ? 1 : 0.2);
   if (chartType === 'line_chart') {
     return {
       lineStyle: (data) => {
@@ -74,7 +83,9 @@ const lowlight = (pattern: HomogeneousPatternInfo, colorField: string) => {
   return {};
 };
 
-export const getHomogeneousInsightVisualizationSchema = (insight: InsightInfo<HomogeneousPatternInfo>): VisualizationSchema[] => {
+export const getHomogeneousInsightVisualizationSchema = (
+  insight: InsightInfo<HomogeneousPatternInfo>
+): VisualizationSchema[] => {
   const { breakdowns, patterns, measures } = insight;
 
   const schemas: VisualizationSchema[] = [];

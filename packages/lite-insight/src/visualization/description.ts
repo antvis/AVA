@@ -1,5 +1,16 @@
 import _groupBy from 'lodash/groupBy';
-import { PatternInfo, ChangePointInfo, InsightInfo, TrendInfo, InsightType, OutlierInfo, HomogeneousPatternInfo, PointPatternInfo, MajorityInfo } from '../interface';
+import {
+  PatternInfo,
+  ChangePointInfo,
+  InsightInfo,
+  TrendInfo,
+  InsightType,
+  OutlierInfo,
+  HomogeneousPatternInfo,
+  PointPatternInfo,
+  MajorityInfo,
+  LowVarianceInfo,
+} from '../interface';
 import { join, getDatumPositionString } from './util';
 
 export const insightNameMap: Record<InsightType, string> = {
@@ -8,6 +19,7 @@ export const insightNameMap: Record<InsightType, string> = {
   change_point: 'change point',
   time_series_outlier: 'outlier',
   majority: 'majority',
+  low_variance: 'low variance',
 };
 
 type PatternTypeGroup = {
@@ -52,6 +64,10 @@ const generateInsightTypeSummary = (patternTypeGroup: PatternTypeGroup, insight:
     const majority = patternGroup[0] as MajorityInfo;
     return `For ${majority.dimension}, ${majority.x} accounts for the majority of ${measures[0].field}.`;
   }
+  if (type === 'low_variance') {
+    const lowVariance = patternGroup[0] as LowVarianceInfo;
+    return `The ${measures[0].field} data points of ${lowVariance.dimension} are very similar to the mean, that is, the variance is low.`;
+  }
   return '';
 };
 
@@ -81,7 +97,7 @@ export const generateHomogeneousInsightDescription = (insight: InsightInfo<Homog
 
   const prefix = subspace ? `for ${subspace}, ` : '';
 
-  const caption ='';
+  const caption = '';
 
   let content = '';
   if (measures.length > 1) {
@@ -119,5 +135,4 @@ export const generateHomogeneousInsightDescription = (insight: InsightInfo<Homog
   const insightTypeSummarys = [`${content}.`];
 
   return { caption, insightSummary: insightTypeSummarys };
-
 };
