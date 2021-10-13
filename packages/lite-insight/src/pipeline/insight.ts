@@ -84,7 +84,7 @@ const enumerateInsightSubjectsRecursive = (
   subjectInfo: SubjectInfo,
   referenceInfo: ReferenceInfo,
   insightsHeap: Heap<InsightInfo<PatternInfo>>,
-  metaInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
+  homogeneousInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
   options?: InsightOptions
 ): InsightInfo<PatternInfo>[] => {
   const { fieldPropsMap, impactMeasureReferences } = referenceInfo;
@@ -95,7 +95,8 @@ const enumerateInsightSubjectsRecursive = (
     return [];
   }
 
-  const impactScoreWeight = (options?.impactWeight >= 0 && options?.impactWeight < 1) ? options.impactWeight : ImpactScoreWeight;
+  const impactScoreWeight =
+    options?.impactWeight >= 0 && options?.impactWeight < 1 ? options.impactWeight : ImpactScoreWeight;
 
   /** enumerate insights of the subject itself */
   const { breakdown, subspace, measures } = subjectInfo;
@@ -149,7 +150,7 @@ const enumerateInsightSubjectsRecursive = (
           score: pattern.significance * subjectImportance,
         })
       );
-      metaInsightsHeap.addAll(homogeneousInsights);
+      homogeneousInsightsHeap.addAll(homogeneousInsights);
     }
   }
 
@@ -182,7 +183,7 @@ const enumerateInsightSubjectsRecursive = (
         },
         referenceInfo,
         insightsHeap,
-        metaInsightsHeap,
+        homogeneousInsightsHeap,
         options
       );
       siblingGroupInsights.push(childInsights);
@@ -204,7 +205,7 @@ const enumerateInsightSubjectsRecursive = (
           data,
           score: pattern.significance * subjectImportance,
         }));
-        metaInsightsHeap.addAll(insightsForMeasure);
+        homogeneousInsightsHeap.addAll(insightsForMeasure);
       });
     }
   });
@@ -219,7 +220,7 @@ export const enumerateInsights = (
   measures: Measure[],
   referenceInfo: ReferenceInfo,
   insightsHeap: Heap<InsightInfo<PatternInfo>>,
-  metaInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
+  homogeneousInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
   options: InsightOptions
 ) => {
   const initSubspace = [];
@@ -234,7 +235,7 @@ export const enumerateInsights = (
       },
       referenceInfo,
       insightsHeap,
-      metaInsightsHeap,
+      homogeneousInsightsHeap,
       options
     );
   });
