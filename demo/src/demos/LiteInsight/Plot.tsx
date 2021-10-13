@@ -22,6 +22,7 @@ export const PlotRender = React.memo((props: PlotProps) => {
   const plotRef = useRef<Plot<any>>();
 
   useEffect(() => {
+    if (plotRef.current) plotRef.current.destroy();
     const plotType = g2plotTypeMap[chartType];
     const plot = new (G2Plot as any)[plotType](container.current, { data, ...schema });
     plot.render();
