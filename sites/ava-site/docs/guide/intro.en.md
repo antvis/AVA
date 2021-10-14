@@ -62,13 +62,13 @@ At the same time, this package also facilitates us to develop products of chart 
 @antv/knowledge // to get the chart knowledge base
 ```
 
-### [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/datawizard)
+### [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/data-wizard)
 
 DataWizard is a js/ts library for data processing. In the AVA framework, it is used to 'understand' the input dataset. However, it can also be used independently to develop some statistical or data mocking functions.
 
 ```sign
-@antv/dw-analyzer // to understand a dataset
-@antv/dw-random // to generate random mock data
+import { analyzer } from @antv/data-wizard // to understand a dataset
+import { random } from @antv/data-wizard // to generate random mock data
 ```
 
 ### [AVA/ChartAdvisor](https://github.com/antvis/AVA/tree/master/packages/chart-advisor)

@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import random from '@antv/dw-random';
+import { random } from '@antv/data-wizard';
 import { format as formatDate } from 'date-fns';
 
 const MARK = {

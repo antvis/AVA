@@ -64,11 +64,11 @@ type(array)
 
 
 ```ts
-import { type } from '@antv/dw-analyzer';
+import { analyzer } from '@antv/data-wizard';
 
 const data = [1, 2, 3, 4, 5];
 
-const fieldInfo = type(data);
+const fieldInfo = analyzer.analyzeField(data);
 
 console.log(fieldInfo);
 

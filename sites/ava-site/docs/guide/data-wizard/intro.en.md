@@ -13,13 +13,13 @@ DataWizard is a js/ts library for data processing. In the AVA framework, it is u
 
 ### Dataset Analysis
 
-DataWizard can help you extract information of fields from a dataset sample by its `dw-analyzer` module. The information includes the field's **characteristics** (field name, data type, statistics, etc.) and **properties** (continuity, discreteness, etc.), as well as **field-to-field relationships** (correlation, periodicity, etc.).
+DataWizard can help you extract information of fields from a dataset sample by its `analyzer` module. The information includes the field's **characteristics** (field name, data type, statistics, etc.) and **properties** (continuity, discreteness, etc.), as well as **field-to-field relationships** (correlation, periodicity, etc.).
 
 In short, DataWizard can help you understand a dataset. This is the premise of data analysis and Automatic chart recommendation.
 
 ### Data Mocking
 
-The `dw-random` module of DataWizard provides you comprehensive data mocking options. You can use it to quickly develop some data generating or auto-filling functions. For example, the auto-fill function in the desgin engineering plugin <img src="https://gw.alipayobjects.com/zos/rmsportal/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) 
+The `random` module of DataWizard provides you comprehensive data mocking options. You can use it to quickly develop some data generating or auto-filling functions. For example, the auto-fill function in the desgin engineering plugin <img src="https://gw.alipayobjects.com/zos/rmsportal/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) 
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/r4gEasYXD%24/kitchendatamocken.png" width="600" />
@@ -28,20 +28,19 @@ The `dw-random` module of DataWizard provides you comprehensive data mocking opt
 ## Installation
 
 ```bash
-$ npm install @antv/dw-analyzer
-$ npm install @antv/dw-random
+$ npm install @antv/data-wizard
 ```
 
 ## Usage
 
-### dw-analyzer
+### analyzer
 
 ```js
-import { type }  from '@antv/dw-analyzer';
+import { analyzer }  from '@antv/data-wizard';
 
 const a = [1, 2, 3];
 
-const info = type(a);
+const info = analyzer.analyzeField(a);
 
 // the info of the dataset:
 // {
@@ -67,10 +66,10 @@ const info = type(a);
 // }
 ```
 
-### dw-random
+### random
 
 ```js
-import random from '@antv/dw-random';
+import { random } from '@antv/data-wizard';
 
 const name = random.name();
 

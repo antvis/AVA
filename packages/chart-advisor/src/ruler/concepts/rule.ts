@@ -1,6 +1,6 @@
 import { LevelOfMeasurement as LOM } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
-import { FieldInfo } from '@antv/dw-analyzer';
+import { analyzer } from '@antv/data-wizard';
 
 /**
  * @public
@@ -19,8 +19,8 @@ export interface BasicDataPropertyForAdvice {
   /** used for split column xy series */
   readonly samples: any[];
   /** required types in analyzer FieldInfo */
-  readonly recommendation: FieldInfo['recommendation'];
-  readonly type: FieldInfo['type'];
+  readonly recommendation: analyzer.FieldInfo['recommendation'];
+  readonly type: analyzer.FieldInfo['type'];
   readonly distinct?: number;
   readonly count?: number;
   readonly sum?: number;

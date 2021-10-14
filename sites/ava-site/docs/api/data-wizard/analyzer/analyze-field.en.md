@@ -53,11 +53,11 @@ The structure of `FieldInfo` depends on its *recommendation* data type of the co
 #### Number Field
 
 ```ts
-import { type } from '@antv/dw-analyzer';
+import { analyzer } from '@antv/data-wizard';
 
 const data = [1, 2, 3, 4, 5];
 
-const fieldInfo = type(data);
+const fieldInfo = analyzer.analyzeField(data);
 
 console.log(fieldInfo);
 
@@ -111,13 +111,13 @@ const fieldInfo = type(data);
 #### String Field
 
 ```ts
-import { type, isUnique } from '@antv/dw-analyzer';
+import { analyzer } from '@antv/data-wizard';
 
 const data = ['A', 'B', '', 'D', 'EAT'];
 
-const fieldInfo = type(data);
+const fieldInfo = analyzer.analyzeField(data);
 
-console.log(isUnique(fieldInfo));
+console.log(analyzer.isUnique(fieldInfo));
 // false because of the empty value
 
 console.log(fieldInfo);

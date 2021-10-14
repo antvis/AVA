@@ -3,21 +3,21 @@
  *
  * @example
  * ```javascript
- * import random from '@antv/dw-random';
+ * import { random } from '@antv/data-wizard';
  *
  * const name = random.name();
  * ```
  *
  * with your own seed
  * ```javascript
- * import { Random } from '@antv/dw-random';
- * const random = new Random(200);
+ * import { random } from '@antv/data-wizard';
+ * const random = new random.Random(200);
  * console.log(random.phone());
  * ```
  * extend
  * ```javascript
- * import { Random } from '@antv/dw-random';
- * Random.mixin({
+ * import { random } from '@antv/data-wizard';
+ * random.Random.mixin({
  *  user() {
  *    return {
  *      name: this.cname(),

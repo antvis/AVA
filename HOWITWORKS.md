@@ -62,12 +62,13 @@ const dataPropSchema =  [
 ]
 ```
 
-To get the data props schema, we can use _@antv/dw-analyzer_ of DataWizard.
+To get the data props schema, we can use `df.info` of DataWizard.
 
 ```js
-import * as DWAnalyzer from '@antv/dw-analyzer';
+import { DataFrame } from '@antv/data-wizard';
 
-const dataPropSchema = DWAnalyzer.typeAll(dataset);
+const df = new DataFrame(dataset);
+const dataPropSchema = df.info();
 ```
 
 and then add levelOfMeasurements to it.

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Divider, Input } from 'antd';
-import { type } from '@antv/dw-analyzer';
+import { analyzer } from '@antv/data-wizard';
 import ReactJson from 'react-json-view';
 
 const { TextArea } = Input;
 
 const App = () => {
   const [data, setData] = useState([1, 2, 3, 4, 5]);
-  const fieldInfo = type(data);
+  const fieldInfo = analyzer.analyzeField(data);
   return (
     <div>
       <h3>Data</h3>

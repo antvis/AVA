@@ -1,5 +1,5 @@
 import { LevelOfMeasurement as LOM } from '@antv/ckb';
-import * as DWAnalyzer from '@antv/dw-analyzer';
+import { analyzer as DWAnalyzer } from '@antv/data-wizard';
 
 /**
  * return type of data to data props, describe data column
