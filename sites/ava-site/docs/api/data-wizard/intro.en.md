@@ -13,9 +13,7 @@ DataWizard is a js/ts library for data processing. In the AVA framework, it is u
 ## Packages
 
 ```bash
-$ npm install @antv/dw-analyzer   // for analyzing data
-$ npm install @antv/dw-random     // for generating data
-$ npm install @antv/dw-transform  // for transforming data
+$ npm install @antv/data-wizard
 ```
 
 </div>

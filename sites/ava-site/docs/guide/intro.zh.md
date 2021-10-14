@@ -62,13 +62,13 @@ CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中�
 @antv/knowledge // 图表知识库
 ```
 
-### [AVA/DataWizard](https://github.com/antvis/AVA/blob/master/packages/datawizard/zh-CN/README.zh-CN.md)
+### [AVA/DataWizard](https://github.com/antvis/AVA/blob/master/packages/data-wizard/zh-CN/README.zh-CN.md)
 
 DataWizard 是一个 js/ts 的前端数据处理类库。在 AVA 的框架中，它被用来“理解”输入端的数据集。不过，它也可以独立地被用来开发一些数学统计、数据模拟之类的功能。
 
 ```sign
-@antv/dw-analyzer // 数据集分析
-@antv/dw-random // 数据模拟
+import { analyzer } from @antv/data-wizard // 数据集分析
+import { random } from @antv/data-wizard // 数据模拟
 ```
 
 ### [AVA/ChartAdvisor](https://github.com/antvis/AVA/blob/master/packages/chart-advisor/zh-CN/README.zh-CN.md)

@@ -48,7 +48,7 @@ module.exports = {
         order: 2,
       },
       // {
-      //   slug: 'guide/datawizard',
+      //   slug: 'guide/data-wizard',
       //   title: {
       //     zh: 'DataWizard',
       //     en: 'DataWizard',
@@ -80,20 +80,12 @@ module.exports = {
         order: 1,
       },
       // {
-      //   slug: 'api/datawizard',
+      //   slug: 'api/data-wizard',
       //   title: {
       //     zh: 'DataWizard',
       //     en: 'DataWizard',
       //   },
       //   order: 2,
-      // },
-      // {
-      //   slug: 'api/datawizard/dw-analyzer',
-      //   title: {
-      //     zh: '包：dw-analyzer',
-      //     en: 'Package: dw-analyzer',
-      //   },
-      //   order: 1,
       // },
       // {
       //   slug: 'api/chart-advisor',
@@ -131,7 +123,7 @@ module.exports = {
         order: 0,
       },
       // {
-      //   slug: 'datawizard',
+      //   slug: 'data-wizard',
       //   // icon: 'gallery',
       //   title: {
       //     zh: '数据处理库',

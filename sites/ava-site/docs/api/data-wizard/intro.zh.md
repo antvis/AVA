@@ -13,9 +13,7 @@ DataWizard 是一个 js/ts 的前端数据处理类库。在 AVA 的框架中，
 ## 包
 
 ```bash
-$ npm install @antv/dw-analyzer   // 数据分析
-$ npm install @antv/dw-random     // 数据生成
-$ npm install @antv/dw-transform  // 数据变换
+$ npm install @antv/data-wizard
 ```
 
 </div>

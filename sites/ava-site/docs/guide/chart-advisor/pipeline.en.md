@@ -16,7 +16,7 @@ The following pipeline shows the whole process from data to the recommended char
 
 Analyze and get the data properties of each column of the dataset.
 
-> See also: `type` function in *dw-analyzer*
+> See also: `analyzer.analyzeField` function in *@antv/data-wizard*
 
 ### Step 2 dataPropsToAdvices 
 

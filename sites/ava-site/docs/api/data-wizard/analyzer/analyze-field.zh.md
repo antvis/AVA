@@ -53,11 +53,11 @@ interface FieldInfo {
 #### Number 数值字段
 
 ```ts
-import { type } from '@antv/dw-analyzer';
+import { analyzer } from '@antv/data-wizard';
 
 const data = [1, 2, 3, 4, 5];
 
-const fieldInfo = type(data);
+const fieldInfo = analyzer.analyzeField(data);
 
 console.log(fieldInfo);
 
@@ -112,13 +112,13 @@ console.log(fieldInfo);
 #### String 字符串字段
 
 ```ts
-import { type, isUnique } from '@antv/dw-analyzer';
+import { analyzer } from '@antv/data-wizard';
 
 const data = ['A', 'B', '', 'D', 'EAT'];
 
-const fieldInfo = type(data);
+const fieldInfo = analyzer.analyzeField(data);
 
-console.log(isUnique(fieldInfo));
+console.log(analyzer.isUnique(fieldInfo));
 // false 有空值
 
 console.log(fieldInfo);

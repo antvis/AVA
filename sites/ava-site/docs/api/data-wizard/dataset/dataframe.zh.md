@@ -7,30 +7,32 @@ order: 1
 
 <div class="doc-md">
 
-Analyzer Multiple Fields.
+多字段分析。
+
+多字段会计算数字类(integer/float)字段的 Pearson 相关系数.
 
 ```sign
 typeAll(array, fields)
 ```
 
-### Arguments
+### 参数
 
-* **array** * Row data array.
-  * _required_
-  * `type`: Record<string, any>[]
+* **array** * 包含对象型数据行的数组.
+  * _必要参数_
+  * `参数类型`: Record<string, any>[]
 
-* **fields** * Names of fields which you need to analyze.
-  * _optional_
-  * `type`: string[]
+* **fields** * 数据中你需要分析的字段名称组成的数组。
+  * _可选参数_
+  * `参数类型`: string[]
 
-### Returns
+### 返回值
 
 *FieldsInfo* = `Array<FieldInfo & { name: string }>`
 
-### Examples
+### 示例
 
 ```ts
-import { typeAll, isUnique } from '@antv/dw-analyzer';
+import { analyzer, DataFrame } from '@antv/data-wizard';
 
 const data = [
   { x: 1, y: 1, z: 1 },
@@ -40,9 +42,10 @@ const data = [
   { x: 5, y: 10, z: 25 },
 ];
 
-const fieldInfo = typeAll(data);
+const df = new DataFrame(data);
+const fieldInfo = df.info();
 
-console.log(isUnique(info.fields.x));
+console.log(analyzer.isUnique(info.fields.x));
 // true
 
 console.log(fieldInfo);

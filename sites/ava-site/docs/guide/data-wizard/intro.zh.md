@@ -14,13 +14,13 @@ DataWizard 是一个 js/ts 的前端数据处理类库。在 AVA 的框架中，
 
 ### 数据集分析
 
-DataWizard 的 `dw-analyzer` 模块可以从一个数据集样本中提取出各个字段的信息。这些信息包括字段的**特征**（字段名称、数据类型、统计信息，等）和**性质**（连续性、离散性，等），以及多字段间的**字段间关系**（相关性、周期性，等）。
+DataWizard 的 `analyzer` 模块可以从一个数据集样本中提取出各个字段的信息。这些信息包括字段的**特征**（字段名称、数据类型、统计信息，等）和**性质**（连续性、离散性，等），以及多字段间的**字段间关系**（相关性、周期性，等）。
 
 简而言之，DataWizard 可以帮助你了解一个数据集。这也是我们做数据分析、智能可视化等工作的前提。
 
 ### 数据模拟
 
-DataWizard 的 `dw-random` 模块提供了非常丰富的模拟数据生成能力。你可以用它来快速开发一些数据模拟或自动填充类的功能。比如蚂蚁金服的设计工程化插件 <img src="https://gw.alipayobjects.com/zos/rmsportal/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) 中的自动填充功能。
+DataWizard 的 `random` 模块提供了非常丰富的模拟数据生成能力。你可以用它来快速开发一些数据模拟或自动填充类的功能。比如蚂蚁集团的设计工程化插件 <img src="https://gw.alipayobjects.com/zos/rmsportal/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) 中的自动填充功能。
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/6gRaznRUDU/kitchendatamockcn.png" width="600" />
@@ -29,20 +29,19 @@ DataWizard 的 `dw-random` 模块提供了非常丰富的模拟数据生成能�
 ## 安装
 
 ```bash
-$ npm install @antv/dw-analyzer
-$ npm install @antv/dw-random
+$ npm install @antv/data-wizard
 ```
 
 ## 用法
 
-### dw-analyzer
+### analyzer
 
 ```js
-import { type }  from '@antv/dw-analyzer';
+import { analyzer }  from '@antv/data-wizard';
 
 const a = [1, 2, 3];
 
-const info = type(a);
+const info = analyzer.analyzeField(a);
 
 // 数据集的信息：
 // {
@@ -68,10 +67,10 @@ const info = type(a);
 // }
 ```
 
-### dw-random
+### random
 
 ```js
-import random from '@antv/dw-random';
+import { random } from '@antv/data-wizard';
 
 const name = random.name();
 
