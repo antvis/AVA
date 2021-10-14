@@ -10,7 +10,6 @@ test('isString', () => {
   expect(utils.isString(data)).toBe(true);
 });
 
-
 test('isNumber', () => {
   const data = 201;
   expect(utils.isNumber(data)).toBe(true);
@@ -54,7 +53,7 @@ test('isBoolean', () => {
 });
 
 test('isObject', () => {
-  const data = {a: 1};
+  const data = { a: 1 };
   expect(utils.isObject(data)).toBe(true);
 });
 
@@ -75,4 +74,11 @@ test('range', () => {
 
 test('assert', () => {
   expect(() => utils.assert(false, 'It is false!')).toThrow('It is false!');
+});
+
+test('isParentChild', () => {
+  expect(utils.isParentChild(['a', 'b', 'c'], [1, 2, 3])).toBe(true);
+  expect(utils.isParentChild(['a', 'a', 'c'], [1, 1, 3])).toBe(true);
+  expect(utils.isParentChild(['a', 'a', 'c'], [1, 2, 3])).toBe(true);
+  expect(utils.isParentChild(['a', 'b', 'c'], [1, 1, 3])).toBe(false);
 });

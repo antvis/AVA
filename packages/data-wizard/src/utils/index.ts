@@ -1,8 +1,8 @@
 import { isDateString } from '../analyzer/is-date';
 
-export function isNull(value: any): boolean {
+export const isNull = (value: any): boolean => {
   return value === null || value === undefined || value === '' || Number.isNaN(value as number) || value === 'null';
-}
+};
 
 export const isString = (value: any): value is string => {
   return typeof value === 'string';
@@ -17,7 +17,7 @@ export const isNumber = (value: any): value is number => {
  * @param value
  * @returns
  */
-export function isDigit(value: string): boolean {
+export const isDigit = (value: string): boolean => {
   let hasDot = false;
   let tempValue = value;
   if (/^[+-]/.test(tempValue)) {
@@ -37,27 +37,27 @@ export function isDigit(value: string): boolean {
     }
   }
   return tempValue.trim() !== '';
-}
+};
 
-export function isInteger(value: any, convertString?: boolean): value is number {
+export const isInteger = (value: any, convertString?: boolean): value is number => {
   if (typeof value === 'number') return Number.isInteger(value);
   if (convertString && isString(value) && isDigit(value)) return !value.includes('.');
   return false;
-}
+};
 
-export function isFloat(value: any, convertString?: boolean): boolean {
+export const isFloat = (value: any, convertString?: boolean): boolean => {
   if (typeof value === 'number') return !Number.isNaN(value) && !Number.isInteger(value);
   if (convertString && isString(value) && isDigit(value)) return value.includes('.');
   return false;
-}
+};
 
-export function isDate(value: any, convertString?: boolean): value is Date {
+export const isDate = (value: any, convertString?: boolean): value is Date => {
   if (value && Object.getPrototypeOf(value) === Date.prototype) return true;
   if (convertString && isString(value)) return isDateString(value);
   return false;
-}
+};
 
-export function isBoolean(value: any, convertStringAndNumber?: boolean): boolean {
+export const isBoolean = (value: any, convertStringAndNumber?: boolean): boolean => {
   return convertStringAndNumber
     ? [
         [true, false],
@@ -71,7 +71,7 @@ export function isBoolean(value: any, convertStringAndNumber?: boolean): boolean
         return value.every((item: any) => list.includes(item));
       })
     : typeof value === 'boolean';
-}
+};
 
 export const isObject = (value: any): value is object => {
   return value && Object.getPrototypeOf(value) === Object.prototype;
@@ -81,12 +81,12 @@ export const isArray = (value: any): value is any[] => {
   return Array.isArray(value);
 };
 
-export function unique(array: any[]): any[] {
+export const unique = (array: any[]): any[] => {
   return Array.from(new Set(array));
-}
+};
 
 /**
- * generate an array from 0 to number
+ * Generate an array from 0 to number.
  * @param number
  */
 export const range = (number: Number) => {
@@ -101,4 +101,33 @@ export type Assert = (condition: any, errorMessage?: string) => asserts conditio
  */
 export const assert: Assert = (condition, errorMessage) => {
   if (!condition) throw new Error(errorMessage);
+};
+
+/**
+ * Judge parent-child relationship. A child has only one parent, but a parent can have more children.
+ * @param parent
+ * @param child
+ */
+export const isParentChild = (parent: any[], child: any[]): boolean => {
+  if (
+    !isArray(parent) ||
+    parent.length === 0 ||
+    !isArray(child) ||
+    child.length === 0 ||
+    parent.length !== child.length
+  )
+    return false;
+
+  const record: any = {};
+  for (let i = 0; i < child.length; i += 1) {
+    const c = child[i];
+    const p = parent[i];
+    if (!record[c]) {
+      record[c] = p;
+    } else if (record[c] !== p) {
+      return false;
+    }
+  }
+
+  return true;
 };

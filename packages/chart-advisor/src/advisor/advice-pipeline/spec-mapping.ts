@@ -1,7 +1,7 @@
 import { ChartID, CHART_ID_OPTIONS, LevelOfMeasurement as LOM } from '@antv/ckb';
 import { statistics } from '@antv/data-wizard';
 // FIXME: replace by @antv/data-wizard once ready
-import { isInHierarchy } from '@antv/dw-util';
+import { utils as dwUtils } from '@antv/data-wizard';
 import { BasicDataPropertyForAdvice } from '../../ruler';
 import { hasSubset, intersects } from '../../utils';
 import { compare } from '../utils';
@@ -348,7 +348,7 @@ function splitColumnXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnFi
 
   let field4X;
   let Field4Series;
-  if (isInHierarchy(sortedNominalFields[1]?.samples, sortedNominalFields[0]?.samples)) {
+  if (dwUtils.isParentChild(sortedNominalFields[1]?.samples, sortedNominalFields[0]?.samples)) {
     [Field4Series, field4X] = sortedNominalFields;
   } else {
     [field4X, Field4Series] = sortedNominalFields;
@@ -604,7 +604,12 @@ function heatmap(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Advic
  * @param chartKnowledge chart knowledge of a singble chart
  * @returns spec or null
  */
-export function getChartTypeSpec(chartType: string, data: DataRows, dataProps: BasicDataPropertyForAdvice[], chartKnowledge?: CustomizedCKBJSON) {
+export function getChartTypeSpec(
+  chartType: string,
+  data: DataRows,
+  dataProps: BasicDataPropertyForAdvice[],
+  chartKnowledge?: CustomizedCKBJSON
+) {
   // step 0: check whether the chartType is default in `ChartID`
   // if not, use customized `toSpec` function
   if (!CHART_ID_OPTIONS.includes(chartType as ChartID) && chartKnowledge) {
