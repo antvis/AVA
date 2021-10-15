@@ -30,8 +30,6 @@
  * @packageDocumentation
  */
 
-import { Random } from './random';
-
 export * from './basic-random';
 export * from './text-random';
 export * from './web-random';
@@ -40,11 +38,4 @@ export * from './location-random';
 export * from './datetime-random';
 export * from './cn-address-random';
 export * from './random';
-
 export { WebDB, ColorDB, TextDB, DateTimeDB, Database } from './database';
-
-/**
- * eport all random method as default
- * @public
- */
-export default new Random();

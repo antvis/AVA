@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
-import { random } from '@antv/data-wizard';
+import { random as dwRandom } from '@antv/data-wizard';
 import { format as formatDate } from 'date-fns';
+
+const random = new dwRandom.Random();
 
 const MARK = {
   s: 1e3,
@@ -50,7 +52,7 @@ function getDivisor(fields: Field[], cindex: number): number {
   let divisor = 1;
   for (let i = cindex + 1; i < fields.length; i += 1) {
     const field = fields[i];
-    if (field as ValuesField && field.type === 'enum' && (field as ValuesField).distribution === 'cartesian') {
+    if ((field as ValuesField) && field.type === 'enum' && (field as ValuesField).distribution === 'cartesian') {
       if ((field as ValuesField).values && (field as ValuesField).values.length) {
         divisor *= (field as ValuesField).values.length || 1;
       }
@@ -88,12 +90,12 @@ export interface NumberField {
   min: number;
   max: number;
   decimals: number;
-};
+}
 
 export interface DefaultField {
   type: string;
   name: string;
-};
+}
 
 export type Field = ValuesField | DateField | NumberField | DefaultField;
 

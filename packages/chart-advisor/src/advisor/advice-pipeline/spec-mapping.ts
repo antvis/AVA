@@ -1,7 +1,5 @@
 import { ChartID, CHART_ID_OPTIONS, LevelOfMeasurement as LOM } from '@antv/ckb';
-import { statistics } from '@antv/data-wizard';
-// FIXME: replace by @antv/data-wizard once ready
-import { utils as dwUtils } from '@antv/data-wizard';
+import { statistics, utils as dwUtils } from '@antv/data-wizard';
 import { BasicDataPropertyForAdvice } from '../../ruler';
 import { hasSubset, intersects } from '../../utils';
 import { compare } from '../utils';
