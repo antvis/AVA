@@ -21,6 +21,7 @@ const devConfig = {
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.json'],
     mainFields: ['module', 'browser', 'main'],
+    fallback: { path: false },
   },
   module: {
     rules: [
@@ -30,10 +31,7 @@ const devConfig = {
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }], '@babel/preset-react'],
-          plugins: [
-            '@babel/plugin-proposal-class-properties',
-            '@babel/plugin-proposal-object-rest-spread',
-          ],
+          plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-object-rest-spread'],
         },
       },
       {
