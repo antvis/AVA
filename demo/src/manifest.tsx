@@ -1,10 +1,11 @@
 import React from 'react';
-import { EyeOutlined, GiftOutlined, RobotOutlined, AreaChartOutlined } from '@ant-design/icons';
+import { EyeOutlined, GiftOutlined, RobotOutlined, AreaChartOutlined, ShareAltOutlined } from '@ant-design/icons';
 import CKBList from './demos/CKBList';
 import LiteInsight from './demos/LiteInsight';
 import SmartBoard from './demos/SmartBoard';
 import ChartAdvisor from './demos/ChartAdvisor';
-import AutoChart from './demos/AutoChart';
+// import AutoChart from './demos/AutoChart';
+import GraphAdvisor from './demos/GraphAdvisor';
 
 export interface Demo {
   id: string;
@@ -33,6 +34,12 @@ const manifest: Manifest = {
       icon: <RobotOutlined />,
     },
     {
+      id: 'GraphAdvisor',
+      name: 'GraphAdvisor',
+      contentComp: GraphAdvisor,
+      icon: <ShareAltOutlined />,
+    },
+    {
       id: 'LiteInsight',
       name: 'LiteInsight',
       contentComp: LiteInsight,
@@ -44,12 +51,12 @@ const manifest: Manifest = {
       contentComp: SmartBoard,
       icon: <GiftOutlined />,
     },
-    {
-      id: 'AutoChart',
-      name: 'AutoChart',
-      contentComp: AutoChart,
-      icon: <AreaChartOutlined />,
-    }
+    // {
+    //   id: 'AutoChart',
+    //   name: 'AutoChart',
+    //   contentComp: AutoChart,
+    //   icon: <AreaChartOutlined />,
+    // }
   ],
 };
 

@@ -32,7 +32,7 @@ export const AutoChart = (props: Props) => {
   const myAdvisor = new Advisor();
   const [advices, setAdvices] = useState<Advice>([]);
   const [currentAdviceIndex, setCurrentAdviceIndex] = useState<number>(0);
-  const [currentData, setCurrentData] = useState<any>(propsData || []);
+  const [currentData, ] = useState<any>(propsData || []);
   const [isActive, setHover] = useState<boolean>(false);
   const [configDisplay, setConfigDisplay] = useState(false);
   const [configs, setConfigs] = useState(null);

@@ -70,6 +70,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
           <img src="https://gw.alipayobjects.com/zos/antfincdn/5mKWpRQ053/close.png" onClick={onConfigClose}></img>
         </div>
         <div className={`${prefixCls}config_content`}>
+          {/* @ts-ignore */}
           <Editor schema={schema} data={configsMerge} lang={language} onChange={onConfigChange}  />
         </div>
         <div className={`${prefixCls}config_footer`}>
@@ -80,6 +81,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
                 message.success(intl.get('CopySuccess', language));
               }}
             >
+              {/* @ts-ignore */}
               <Button style={{ marginRight: 16 }} type="primary">
                 {intl.get('CopyData', language)}
               </Button>
@@ -91,6 +93,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
               message.success(intl.get('CopySuccess', language));
             }}
           >
+            {/* @ts-ignore */}
             <Button type="primary">{intl.get('CopyConfig', language)}</Button>
           </CopyToClipboard>
         </div>
