@@ -8,19 +8,15 @@ export const layoutConfigPredRule: RuleModule = {
   docs: {
     detailedText: '',
   },
-  /**
-   * 传入optimizer的dataProps中需有layoutType属性
-   */
    optimizer: (dataProps):ILayoutConfig => {
     const type:LayoutTypes= dataProps.layoutType || DEFAULT_LAYOUT_TYPE;
-    // const fieldForCluster 
     let options: ILayoutConfig['options'] = {};
 
     switch (type as LayoutTypes) {
       case 'graphin-force': {
         options = {
-          stiffness: 200, // 边作用力 [1, 500] 
-          repulsion: 1000, // 节点作用力 [-100, 2000] 
+          stiffness: 200, // link force [1, 500] 
+          repulsion: 1000, // node force [-100, 2000] 
           damping: 0.9, // 阻尼系数 [0,1] 
         }
         break;

@@ -27,10 +27,10 @@ export const allBuiltInRules = {
 }
 
 /**
- * 根据 soft rule 和 hard rule 来为候选项过滤和排序
- * @param candidates 候选项
- * @param ruleId 规则 Id
- * @returns 经过规则测试后, 符合规则的候选项，如果规则对候选项进行了评分，则按分数从高到低排序
+ * Check, filter and sort all candidates according to a soft rule or a hard rule
+ * @param candidates 
+ * @param ruleId
+ * @returns Testing the rule, and return the candidates that match the rule. If the rule scores the candidates, they are sorted from highest to lowest score.
  */
 export const testRule = (candidates: any[], ruleId: string): any[] => {
   let validatedCandidates: any[] = [];
@@ -44,14 +44,13 @@ export const testRule = (candidates: any[], ruleId: string): any[] => {
         score: rule.validator(item)
       }
     })
-    // 得分高的排在前
     validatedCandidates.sort((a,b) => b.score - a.score)
   }
   return validatedCandidates
 }
 
 /**
- * 根据配置项优化策略和传入的数据特征及用户配置，推荐配置项值
+ * Recommended configurations based on the optimization policy and user configuration
  * @param dataProps 
  * @param ruleId 
  * @param userCfg

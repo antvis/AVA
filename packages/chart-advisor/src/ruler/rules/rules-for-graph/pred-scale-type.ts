@@ -1,6 +1,5 @@
 import { isNominal, isOrdinal, isContinuous } from '@antv/dw-analyzer'
-import { RuleModule } from './concepts/rule';
-import { IExtendFieldInfo } from '../../../interface';
+import { RuleModule, ExtendFieldInfo } from './concepts/rule';
 
 export const recScaleRule:RuleModule = {
   id: 'pred-scale-type',
@@ -9,7 +8,7 @@ export const recScaleRule:RuleModule = {
   docs: {
     detailedText: '',
   },
-  optimizer: (fieldInfo: IExtendFieldInfo) => {
+  optimizer: (fieldInfo: ExtendFieldInfo) => {
     let fieldEncodeType;
     if(!fieldInfo) {
       return 'linear'

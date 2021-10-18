@@ -1,10 +1,9 @@
-import { RuleModule } from './concepts/rule';
-import { IExtendFieldInfo } from '../../../interface';
+import { RuleModule, ExtendFieldInfo } from './concepts/rule';
 
 /** 
- * TODO 中心点预测规则
- * 1. 度数高且唯一
- * 2. 字段中有特殊值 e.g. 比如唯一的类型
+ * TODO: predict the focus node
+ * 1. the node of high centrality
+ * 2. the node fields with special values e.g. unique node type
 */
 export const focusNodeRule:RuleModule = {
   id: 'focus-node-rule',
@@ -12,7 +11,7 @@ export const focusNodeRule:RuleModule = {
   docs: {
     detailedText: '',
   },
-  optimizer: (field: IExtendFieldInfo) => {
+  optimizer: (field: ExtendFieldInfo) => {
     return field.fieldName === 'degree'
   }
 }

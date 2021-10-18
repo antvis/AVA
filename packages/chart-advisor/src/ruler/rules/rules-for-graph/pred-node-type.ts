@@ -11,10 +11,9 @@ export const nodeTypePredRule: RuleModule = {
   },
   /**
    * @param dataProps
-   * @returns 节点的类型映射函数，节点字段 -> 节点类型
+   * @returns TODO: Mapping function for node field -> node type e.g. if there is a combination of fields suitable for drawing pie charts then donut nodes should be recommended
    */
   optimizer: ():INodeTypeCfg => {
-    // TODO 节点类型推荐规则，1. 如果有适合绘制饼图的字段组合 则应该推荐 donut 节点
     let type:NodeTypes = DEFAULT_NODE_TYPE
     let customCfg;
     return {

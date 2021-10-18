@@ -43,12 +43,6 @@ export const GraphPlayground = () => {
         container: ReactDOM.findDOMNode(ref.current) as HTMLElement,
         width: 800,
         height: 800,
-        // defaultNode: {
-        //   ...cfg.nodeCfg
-        // },
-        // defaultEdge: {
-        //   ...cfg.edgeCfg
-        // },
         layout: layoutCfg
       });
       graph.data(parsedData);

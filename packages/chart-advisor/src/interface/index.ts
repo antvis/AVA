@@ -67,9 +67,9 @@ export interface ILayoutConfig {
 }
 
 export interface NumMappingCfg {
-  key: string; // 用作映射的字段名
+  key: string; // field key for mapping to number
   scale: {
-    type: string;  // TODO 改成 antv/scale 支持的scale类型
+    type: string;
     range: number[];
     domain: number[];
   };
@@ -77,7 +77,7 @@ export interface NumMappingCfg {
 }
 
 export interface CategoryMappingCfg {
-  key: string; // 用作映射的字段名
+  key: string; // field key for mapping to category
   scale: {
     type: string; // ordinal, ..
     range: string[] | number[];
