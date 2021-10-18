@@ -3,8 +3,11 @@ import { DataFrame } from '@antv/data-wizard';
 import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
 import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
+import { graphdataToAdvices } from './advice-pipeline/graph-to-advices';
+import { GraphData } from '../../../../packages/data-wizard/src';
 import { CKBConfig } from './ckb-config';
 import { AdvisorOptions } from './advice-pipeline/interface';
+import { cloneDeep } from 'lodash';
 
 export interface AdviseParams {
   /** input data to advise */
@@ -16,6 +19,18 @@ export interface AdviseParams {
   /** advising options such as purpose, layout preferences */
   options?: AdvisorOptions;
 }
+
+export interface GraphAdviseParams {
+  /** input data to advise */
+  data: any,
+  /** customized dataprops to advise */
+  // dataProps?: BasicDataPropertyForAdvice[],
+  // /** data fields to focus, apply in `data` and `dataProps` */
+  // fields?: string[],
+  // /** advising options such as purpose, layout preferences */
+  // options?: AdvisorOptions
+  [key: string]:any;
+};
 
 export class Advisor {
   /**
@@ -104,6 +119,33 @@ export class Advisor {
 
     return advices;
   }
+
+  /**
+   * chart advising from input data
+   * @param params paramters for advising
+   */
+   adviseForGraph(params: GraphAdviseParams) {
+    // const { data, dataProps, options } = params;
+    //  const advices = graphdataToAdvices(data);
+    // return advices;
+    const { data, dataProps, options } = params;
+    const copyData = cloneDeep(data)
+    // transform data into Graph
+    let graphData: GraphData;
+    try {
+      graphData = new GraphData(copyData, options);
+    } catch (error) {
+      // if the input data cannot be transformed into DataFrame
+      console.error('error: ', error);
+    }
+
+    const graphDataProps = {
+      ...dataProps,
+      ...graphData.info()
+    }
+    const advices = graphdataToAdvices(graphDataProps)
+    return advices
+   }
 
   /**
    * processing ckb config and setup ckb used for advising

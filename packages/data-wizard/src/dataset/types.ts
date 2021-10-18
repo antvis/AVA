@@ -101,3 +101,41 @@ export type Extra = {
 export type FieldsInfo = Array<
   (StringFieldInfo | NumberFieldInfo | DateFieldInfo) & { /** field name */ name: string }
 >;
+
+export type GraphExtra = {
+  nodeKey?: string; // key for node array in data object
+  edgeKey?: string; // key for edge array in data object
+  sourceKey?: string; // key for edge source in edge object
+  targetKey?: string;
+  childrenKey?: string;
+  nodeIndex?: Axis[];
+  nodeColumns?: Axis[];
+  edgeIndex?: Axis[];
+  edgeColumns?: Axis[];
+}
+export type NodeData = {
+  id: string,
+  name?: string;
+  [key: string]: any;
+}
+export type EdgeData = {
+  source: string;
+  target: string;
+  [key: string]: any;
+}
+
+export type GraphInput = 
+  | TreeNode 
+  // object array, such as array of edge object, e.g. [ {source: 1, target: 1}, ...]
+  | {
+    [key: string]: any;
+  }[]
+  // array object, such as { nodes: [], edges: [] }
+  | {
+    [key: string]: any[];
+  }
+export type TreeNode = {
+  id: string;
+  children: TreeNode[];
+  [key: string]: any;
+}
