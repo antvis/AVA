@@ -1,5 +1,8 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](../README.md) | 简体中文
 
+> WIP: 当前 v2 版本正在更新过程中，v1 用户请查看 [备份分支](https://github.com/antvis/AVA/tree/v1).
+
+
 <div align="center">
   <img width="200" height="120" src="../common/img/logo.svg" alt="AVA logo">
 </div>

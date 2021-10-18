@@ -16,7 +16,7 @@ export default (type, options, explugins = []) => {
   };
 
   if (type === 'react') {
-    configs.external = ['react', 'react-dom'];
+    configs.external = ['react', 'react-dom', '@antv/g2plot'];
   }
 
   return configs;

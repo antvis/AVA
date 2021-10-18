@@ -67,7 +67,8 @@
     "site:start": "cd ./ava-site && npm run start",
     "setup:demo": "cd demo && npm install --package-lock=false",
     "start:demo": "npm run setup:demo && cd demo && npm start",
-    "one-stop-setup": "npm install --package-lock=false && run-s boot build setup:demo"
+    "prepare": "husky install",
+    "one-stop-setup": "npm install --package-lock=false && run-s boot build setup:demo && npm run prepare"
   },
   "husky": {
     "hooks": {
@@ -76,9 +77,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "prettier --write",
       "eslint --fix",
-      "git add"
+      "prettier --write"
     ]
   },
   "author": {
@@ -106,15 +106,17 @@
     "lerna": "^3.15.0",
     "lint-staged": "^11.0.0",
     "npm-run-all": "^4.1.5",
-    "prettier": "^1.17.0",
+    "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^24.1.0",
     "typescript": "4.3.5"
   },
   "dependencies": {
+    "@antv/dw-random": "^1.1.7",
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@rollup/plugin-typescript": "^8.2.5",
+    "date-fns": "^2.23.0",
     "rollup": "^2.56.2",
     "rollup-plugin-terser": "^7.0.2"
   }

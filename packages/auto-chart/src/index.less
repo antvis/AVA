@@ -29,7 +29,7 @@
       vertical-align: top;
     }
   }
-  .@{autochart-prefix}advice_container{
+  .@{autochart-prefix}advice_container {
     width: 300px;
     background: #fff;
     position: absolute;
@@ -45,16 +45,16 @@
     border-radius: 8px;
     box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%);
   }
-  .@{autochart-prefix}advice{
+  .@{autochart-prefix}advice {
     height: 130px;
     font-size: 12px;
-    color: #FFFFFF;
+    color: #ffffff;
     display: flex;
     padding: 20px 0;
     cursor: pointer;
   }
-  .@{autochart-prefix}advice:not(:last-child){
-    border-bottom: 1px solid #D8D8D8;
+  .@{autochart-prefix}advice:not(:last-child) {
+    border-bottom: 1px solid #d8d8d8;
   }
   .@{autochart-prefix}advice_arrow {
     position: absolute;
@@ -98,6 +98,10 @@
       color: #585858;
       font-size: 14px;
     }
+    .advice-score {
+      color: #1878fb;
+      margin-left: 4px;
+    }
   }
   .@{autochart-prefix}canvas-layer {
     height: 100%;
@@ -135,6 +139,34 @@
       box-sizing: border-box;
     }
   }
+  .@{autochart-prefix}no-data-layer {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    // pointer-events: none;
+    box-sizing: border-box;
+  }
+  .@{autochart-prefix}mock_guide {
+    color: #aaa;
+    text-align: center;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .@{autochart-prefix}mock_guide_button {
+    margin-top: 22px;
+    border-radius: 3px;
+    height: 30px;
+    width: 116px;
+    font-size: 14px;
+    display: inline-block;
+    line-height: 30px;
+    background: #454859;
+    color: #fff;
+    cursor: pointer;
+  }
 }
 
 .@{autochart-prefix}dev_panel {
@@ -148,8 +180,6 @@
   height: 534px;
   width: 340px;
   display: block;
-  // top: 0px;
-  // left: 400px;
   top: 0;
   left: 0px;
 }
@@ -188,5 +218,71 @@
     width: 100%;
     background: #fff;
     text-align: center;
+    .@{autochart-prefix}config_chart_footer {
+      width: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      button {
+        width: 100px;
+      }
+    }
+    .@{autochart-prefix}config_data_footer {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      button {
+        width: 100px;
+      }
+      .@{autochart-prefix}number_tip {
+        font-size: 16px;
+        margin: 0 10px;
+      }
+    }
+  }
+}
+
+.@{autochart-prefix}mockchart-container {
+  display: grid;
+  grid-template-columns: repeat(5, 80px);
+  margin: 0 auto;
+  padding: 0 28px;
+  height: 430px;
+  overflow: auto;
+  grid-row-gap: 36px;
+  grid-column-gap: 36px;
+  .chart-item {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.65);
+    width: 80px;
+    &.active {
+      .chart {
+        background-color: #eee;
+      }
+    }
+  }
+  .chart {
+    height: 80px;
+    width: 80px;
+    border-radius: 2px;
+    margin-bottom: 4px;
+    border: 1px solid #979797;
+    padding: 5px;
+    cursor: pointer;
+    img {
+      height: 70px;
+      width: 70px;
+    }
+  }
+}
+
+.@{autochart-prefix}mockdata-container {
+  padding: 10px;
+  .table-title {
+    .anticon {
+      margin-left: 8px;
+    }
+  }
+  .ant-tag {
+    margin-left: 8px;
   }
 }
