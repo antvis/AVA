@@ -3,7 +3,6 @@ import * as statistics from '../statistics';
 import { isDateString } from './is-date';
 import type { LevelOfMeasurement } from '@antv/ckb';
 
-export * from './graph'
 /**
  * Field Type
  * @public

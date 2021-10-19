@@ -83,7 +83,6 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
                 message.success(intl.get('CopySuccess', language));
               }}
             >
-              {/* @ts-ignore */}
               <Button style={{ marginRight: 16 }} type="primary">
                 {intl.get('CopyData', language)}
               </Button>

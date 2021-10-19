@@ -1,4 +1,4 @@
-import { FieldInfo } from '@antv/dw-analyzer'
+import { analyzer } from '@antv/data-wizard';
 /**
  * @public
  */
@@ -45,9 +45,9 @@ export type SoftRuleModule = DefaultRuleModule & {
 export type DesignRuleModule = DefaultRuleModule & {
   type: 'DESIGN';
   optimizer: (dataProps: any, extraInfo?: any) => any;
-}
+};
 
-export interface ExtendFieldInfo extends FieldInfo {
+export interface ExtendFieldInfo extends analyzer.FieldInfo {
   fieldName: string;
   [key: string]: any;
 }

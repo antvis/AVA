@@ -1,13 +1,12 @@
 import { ChartKnowledgeJSON, CKBJson } from '@antv/ckb';
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame, GraphData } from '@antv/data-wizard';
+import { cloneDeep } from 'lodash';
 import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
 import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { graphdataToAdvices } from './advice-pipeline/graph-to-advices';
-import { GraphData } from '../../../../packages/data-wizard/src';
 import { CKBConfig } from './ckb-config';
 import { AdvisorOptions } from './advice-pipeline/interface';
-import { cloneDeep } from 'lodash';
 
 export interface AdviseParams {
   /** input data to advise */
@@ -22,15 +21,15 @@ export interface AdviseParams {
 
 export interface GraphAdviseParams {
   /** input data to advise */
-  data: any,
+  data: any;
   /** customized dataprops to advise */
   // dataProps?: BasicDataPropertyForAdvice[],
   // /** data fields to focus, apply in `data` and `dataProps` */
   // fields?: string[],
   // /** advising options such as purpose, layout preferences */
   // options?: AdvisorOptions
-  [key: string]:any;
-};
+  [key: string]: any;
+}
 
 export class Advisor {
   /**
@@ -124,12 +123,9 @@ export class Advisor {
    * chart advising from input data
    * @param params paramters for advising
    */
-   adviseForGraph(params: GraphAdviseParams) {
-    // const { data, dataProps, options } = params;
-    //  const advices = graphdataToAdvices(data);
-    // return advices;
+  adviseForGraph(params: GraphAdviseParams) {
     const { data, dataProps, options } = params;
-    const copyData = cloneDeep(data)
+    const copyData = cloneDeep(data);
     // transform data into Graph
     let graphData: GraphData;
     try {
@@ -141,11 +137,11 @@ export class Advisor {
 
     const graphDataProps = {
       ...dataProps,
-      ...graphData.info()
-    }
-    const advices = graphdataToAdvices(graphDataProps)
-    return advices
-   }
+      ...graphData.info(),
+    };
+    const advices = graphdataToAdvices(graphDataProps);
+    return advices;
+  }
 
   /**
    * processing ckb config and setup ckb used for advising

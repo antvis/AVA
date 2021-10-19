@@ -1,7 +1,7 @@
-import { isNominal, isOrdinal, isContinuous } from '@antv/dw-analyzer'
+import { analyzer } from '@antv/data-wizard';
 import { RuleModule, ExtendFieldInfo } from './concepts/rule';
 
-export const recScaleRule:RuleModule = {
+export const recScaleRule: RuleModule = {
   id: 'pred-scale-type',
   type: 'DESIGN',
   chartTypes: ['graph'],
@@ -10,18 +10,18 @@ export const recScaleRule:RuleModule = {
   },
   optimizer: (fieldInfo: ExtendFieldInfo) => {
     let fieldEncodeType;
-    if(!fieldInfo) {
-      return 'linear'
+    if (!fieldInfo) {
+      return 'linear';
     }
-    if(isOrdinal(fieldInfo) || isNominal(fieldInfo)) {
+    if (analyzer.isOrdinal(fieldInfo) || analyzer.isNominal(fieldInfo)) {
       fieldEncodeType = 'ordinal';
-    } else if (isContinuous(fieldInfo) || fieldInfo.type === 'integer' || fieldInfo.type === 'float') {
+    } else if (analyzer.isContinuous(fieldInfo) || fieldInfo.type === 'integer' || fieldInfo.type === 'float') {
       fieldEncodeType = 'linear';
     }
-    return fieldEncodeType
-  }
-}
+    return fieldEncodeType;
+  },
+};
 
 export const scaleRules = {
-  'pred-scale-type': recScaleRule
-}
+  'pred-scale-type': recScaleRule,
+};

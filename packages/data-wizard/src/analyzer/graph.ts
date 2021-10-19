@@ -1,9 +1,10 @@
 import * as AlgorithmSync from '@antv/algorithm';
+import { NodeData, EdgeData } from '../dataset/types';
 import { FieldInfo, analyzeField } from './index';
-import { NodeData, EdgeData } from '../dataset/types'
+
 const GraphAlgorithms = {
   ...AlgorithmSync,
-}
+};
 
 export interface ExtendFieldInfo extends FieldInfo {
   fieldName: string;
@@ -22,7 +23,7 @@ export type NodeStructFeat = {
   starCount: number;
   cliqueCount: number;
   clusterCoeff: number;
-}
+};
 
 export type EdgeStructFeat = {
   isDirected: Boolean;
@@ -31,8 +32,8 @@ export type EdgeStructFeat = {
   triangleCount: number;
   starCount: number;
   cliqueCount: number;
-}
-// 图统计特征 
+};
+// 图统计特征
 export type GraphFeat = {
   nodeCount: number;
   edgeCount: number;
@@ -64,7 +65,7 @@ export type GraphFeat = {
   localClusterCoeff: number;
   globalClusterCoeff: number;
   maxKCore: number;
-}
+};
 
 export type GraphProps = {
   nodeFeats: ExtendFieldInfo[];
@@ -73,24 +74,12 @@ export type GraphProps = {
   nodeFieldsInfo: ExtendFieldInfo[];
   edgeFieldsInfo: ExtendFieldInfo[];
   [key: string]: any;
-}
+};
 
-export function getNodeFields(nodes: NodeData[]) {
-  const [node0] = nodes
-  const nodeFieldNames = node0? Object.keys(node0) : [] 
-  const nodeFields = genColDataFromArr(nodes, nodeFieldNames)
-  return { nodeFields, nodeFieldNames}
-}
-export function getEdgeFields(edges: EdgeData[]) {
-  const [edge0] = edges
-  const edgeFieldNames = edge0 ? Object.keys(edge0) : []
-  const edgeFields = genColDataFromArr(edges, edgeFieldNames)
-  return { edgeFields, edgeFieldNames }
-}
 function genColDataFromArr(arr: any[], columnNames: string[]) {
-  const fields = []
+  const fields = [];
   for (let i = 0; i < arr.length; i += 1) {
-    const datum = arr[i]; 
+    const datum = arr[i];
     for (let j = 0; j < columnNames.length; j += 1) {
       const column = columnNames[j];
       if (fields[j]) {
@@ -100,101 +89,101 @@ function genColDataFromArr(arr: any[], columnNames: string[]) {
       }
     }
   }
-  return fields
+  return fields;
+}
+export function getNodeFields(nodes: NodeData[]) {
+  const [node0] = nodes;
+  const nodeFieldNames = node0 ? Object.keys(node0) : [];
+  const nodeFields = genColDataFromArr(nodes, nodeFieldNames);
+  return { nodeFields, nodeFieldNames };
+}
+export function getEdgeFields(edges: EdgeData[]) {
+  const [edge0] = edges;
+  const edgeFieldNames = edge0 ? Object.keys(edge0) : [];
+  const edgeFields = genColDataFromArr(edges, edgeFieldNames);
+  return { edgeFields, edgeFieldNames };
 }
 
 // Analyze fields
-function getFieldInfo(dataField: any[], fieldName: string):ExtendFieldInfo {
-  const fieldInfo = analyzeField(dataField)
+function getFieldInfo(dataField: any[], fieldName: string): ExtendFieldInfo {
+  const fieldInfo = analyzeField(dataField);
   return {
     ...fieldInfo,
-    fieldName
-  }
+    fieldName,
+  };
 }
-export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]):ExtendFieldInfo[] {
-  const fields:ExtendFieldInfo[] = []
-  for(let i = 0; i < dataFields.length; i++) {
-    const dataField = dataFields[i]
-    fields.push(getFieldInfo(dataField, fieldNames[i]))
+export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): ExtendFieldInfo[] {
+  const fields: ExtendFieldInfo[] = [];
+  for (let i = 0; i < dataFields.length; i += 1) {
+    const dataField = dataFields[i];
+    fields.push(getFieldInfo(dataField, fieldNames[i]));
   }
-  return fields
+  return fields;
 }
 
+/* eslint-disable no-param-reassign */
 /**
  * Calculate statistical and structural features for graph
- * @param nodes 
- * @param edges 
- * @returns 
+ * @param nodes
+ * @param edges
+ * @returns
  */
 export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
-  const nodeStructFeats:Partial<NodeStructFeat>[] = [];
-  const edgeStructFeats:Partial<EdgeStructFeat>[] = [];
+  const nodeStructFeats: Partial<NodeStructFeat>[] = [];
+  const edgeStructFeats: Partial<EdgeStructFeat>[] = [];
   // TODO: whether the graph is directed need to be passed in
-  const isDirected: boolean = false; 
-  const degrees = GraphAlgorithms.getDegree({nodes, edges})
-  const pageRanks = GraphAlgorithms.pageRank({nodes, edges})
-  const cycles = GraphAlgorithms.detectAllCycles({nodes, edges}, false)
-  const directedCycles = GraphAlgorithms.detectAllDirectedCycle({nodes, edges})
-  const components = GraphAlgorithms.connectedComponent({nodes, edges}, false)
-  const strongConnectedComponents = GraphAlgorithms.connectedComponent({nodes, edges}, true)
-  const cycleCountMap:{[key: string]: number} = {}
-  cycles.forEach(cycle => {
-    for(let nodeId of Object.keys(cycle)) {
-      if(cycleCountMap[nodeId]){
-        cycleCountMap[nodeId] += 1
+  const isDirected: boolean = false;
+  const degrees = GraphAlgorithms.getDegree({ nodes, edges });
+  const pageRanks = GraphAlgorithms.pageRank({ nodes, edges });
+  const cycles = GraphAlgorithms.detectAllCycles({ nodes, edges }, false);
+  const directedCycles = GraphAlgorithms.detectAllDirectedCycle({ nodes, edges });
+  const components = GraphAlgorithms.connectedComponent({ nodes, edges }, false);
+  const strongConnectedComponents = GraphAlgorithms.connectedComponent({ nodes, edges }, true);
+  const cycleCountMap: { [key: string]: number } = {};
+  cycles.forEach((cycle) => {
+    Object.keys(cycle).forEach((nodeId) => {
+      if (cycleCountMap[nodeId]) {
+        cycleCountMap[nodeId] += 1;
       } else {
-        cycleCountMap[nodeId] = 1
+        cycleCountMap[nodeId] = 1;
       }
-    }
-  })
-  const numberOfNodeInCycle = Object.values(cycleCountMap).filter(count => count).length
-  const cycleParticipate = numberOfNodeInCycle / nodes.length
+    });
+  });
+  const numberOfNodeInCycle = Object.values(cycleCountMap).filter((count) => count).length;
+  const cycleParticipate = numberOfNodeInCycle / nodes.length;
 
-  nodes = nodes.map(node => {
+  nodes = nodes.map((node) => {
     const nodeFeat = {
       degree: degrees[node.id].degree,
       inDegree: degrees[node.id].inDegree,
       outDegree: degrees[node.id].outDegree,
       pageRank: pageRanks[node.id],
-      cycleCount: cycleCountMap[node.id] || 0
-    }
-    nodeStructFeats.push(nodeFeat)
+      cycleCount: cycleCountMap[node.id] || 0,
+    };
+    nodeStructFeats.push(nodeFeat);
     return {
       ...node,
-      ...nodeFeat
-    }
-  })
+      ...nodeFeat,
+    };
+  });
   edges.map((edge) => {
-    const edgeFeat = {}
-    edgeStructFeats.push(edgeFeat)
+    const edgeFeat = {};
+    edgeStructFeats.push(edgeFeat);
     return {
       ...edge,
-      ...edgeFeat
-    }
-  })
-  const nodeFeatNames = Object.keys(nodeStructFeats[0])
-  const edgeFeatNames = Object.keys(edgeStructFeats[0])
-  const nodeFeats = getAllFieldsInfo(genColDataFromArr(nodeStructFeats, nodeFeatNames), nodeFeatNames)
-  const edgeFeats = getAllFieldsInfo(genColDataFromArr(edgeStructFeats, edgeFeatNames), edgeFeatNames)
-  // const trianglePattern = {
-  //   nodes: [
-  //     { id: 'pn1', cluster: 'nc1' },
-  //     { id: 'pn2', cluster: 'nc1' },
-  //     { id: 'pn3', cluster: 'nc3' },
-  //   ],
-  //   edges: [
-  //     { source: 'pn1', target: 'pn2', cluster: 'ec1' },
-  //     { source: 'pn1', target: 'pn3', cluster: 'ec2' },
-  //   ]
-  // }
-  // const triangleMatches = GraphAlgorithms.GADDI({nodes, edges}, trianglePattern, true, 0, 0)
+      ...edgeFeat,
+    };
+  });
+  const nodeFeatNames = Object.keys(nodeStructFeats[0]);
+  const edgeFeatNames = Object.keys(edgeStructFeats[0]);
+  const nodeFeats = getAllFieldsInfo(genColDataFromArr(nodeStructFeats, nodeFeatNames), nodeFeatNames);
+  const edgeFeats = getAllFieldsInfo(genColDataFromArr(edgeStructFeats, edgeFeatNames), edgeFeatNames);
 
   // Calculate the structural features and statistics of all nodes and edges
-  
-  const nodeDegrees = nodes.map(node => node.degree)
-  const avgDegree = nodeDegrees.reduce((x,y) => x+y)/nodeDegrees.length;
-  const degreeDev = nodeDegrees.map((x) => (x-avgDegree));
-  const degreeStd = Math.sqrt(degreeDev.map(x => x**2).reduce((x,y) => x+y)/(nodeDegrees.length-1));
+  const nodeDegrees = nodes.map((node) => node.degree);
+  const avgDegree = nodeDegrees.reduce((x, y) => x + y) / nodeDegrees.length;
+  const degreeDev = nodeDegrees.map((x) => x - avgDegree);
+  const degreeStd = Math.sqrt(degreeDev.map((x) => x ** 2).reduce((x, y) => x + y) / (nodeDegrees.length - 1));
   const graphInfo: Partial<GraphFeat> = {
     isDirected,
     nodeCount: nodes.length,
@@ -210,13 +199,13 @@ export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
     // triangleCount: triangleMatches.length,
     componentCount: components.length,
     components,
-    strongConnectedComponents: strongConnectedComponents,
-    strongConnectedComponentCount: strongConnectedComponents.length
-  }
+    strongConnectedComponents,
+    strongConnectedComponentCount: strongConnectedComponents.length,
+  };
 
   return {
     nodeFeats,
     edgeFeats,
-    graphInfo
-  }
+    graphInfo,
+  };
 }
