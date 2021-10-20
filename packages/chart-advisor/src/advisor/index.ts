@@ -1,8 +1,8 @@
 import { ChartKnowledgeJSON, CKBJson } from '@antv/ckb';
 import { DataFrame, GraphData } from '@antv/data-wizard';
-import { cloneDeep } from 'lodash';
 import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
 import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
+import { deepMix, cloneDeep } from './utils';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { graphdataToAdvices } from './advice-pipeline/graph-to-advices';
 import { CKBConfig } from './ckb-config';
@@ -126,6 +126,11 @@ export class Advisor {
   adviseForGraph(params: GraphAdviseParams) {
     const { data, dataProps, options } = params;
     const copyData = cloneDeep(data);
+    const defaultCfg = {
+      layoutCfg: {},
+      nodeCfg: {},
+      edgeCfg: {},
+    };
     // transform data into Graph
     let graphData: GraphData;
     try {
@@ -133,14 +138,15 @@ export class Advisor {
     } catch (error) {
       // if the input data cannot be transformed into DataFrame
       console.error('error: ', error);
+      return defaultCfg;
     }
 
     const graphDataProps = {
       ...dataProps,
-      ...graphData.info(),
+      ...graphData?.info(),
     };
-    const advices = graphdataToAdvices(graphDataProps);
-    return advices;
+    const advices = deepMix(defaultCfg, graphdataToAdvices(graphDataProps));
+    return { advices, data: graphData?.data };
   }
 
   /**

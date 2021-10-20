@@ -33,13 +33,15 @@ function parseTreeNode(data: any, extra?: GraphExtra) {
   const parseTree = (treeNode) => {
     const children = treeNode[childrenKey] || [];
     delete treeNode[childrenKey];
-    children.forEach((item: any) => {
+    nodes?.push(treeNode);
+    for (let i = 0; i < children.length; i += 1) {
+      const item = children[i];
       edges?.push({
         source: treeNode.id,
         target: item.id,
       });
       parseTree(item);
-    });
+    }
   };
   parseTree(data);
   return { nodes, edges };
@@ -60,7 +62,8 @@ function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
   let edges = [];
   const { [sourceKey]: source, [targetKey]: target, [childrenKey]: children } = data0 as any;
   if (isBasicType(source) && isBasicType(target)) {
-    data.forEach((edge) => {
+    for (let i = 0; i < data.length; i += 1) {
+      const edge = data[i];
       const { [sourceKey]: source, [targetKey]: target } = edge;
       if (nodes.findIndex((n) => n.id === source) === -1) {
         nodes.push({ id: source });
@@ -74,12 +77,14 @@ function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
         target,
       };
       edges.push(formatEdge);
-    });
+    }
   } else if (isArray(children)) {
     // try to parse the array as multiple trees
-    data.forEach((tree) => {
+    for (let i = 0; i < data.length; i += 1) {
+      const tree = data[i];
       const { nodes: subNodes, edges: subEdges } = parseTreeNode(tree, extra);
-      subNodes.forEach((node) => {
+      for (let i = 0; i < subNodes.length; i += 1) {
+        const node = subNodes[i];
         let repeatNode = nodes.find((n) => n.id === node.id);
         if (repeatNode) {
           repeatNode = {
@@ -89,9 +94,9 @@ function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
         } else {
           nodes.push(node);
         }
-      });
+      }
       edges = edges.concat(subEdges);
-    });
+    }
   }
   return { nodes, edges };
 }
@@ -163,7 +168,6 @@ export default class GraphData {
   constructor(data: GraphInput, extra?: GraphExtra) {
     this.extra = extra;
     const { nodes, edges } = this.autoParse(data, extra);
-    console.log(nodes, edges);
     assert(isValidNodeEdges(nodes, edges), 'Data is unable transform to graph');
     this.data = {
       nodes: nodes.map((node) => flatObject(node)),
@@ -198,7 +202,6 @@ export default class GraphData {
     const { edgeFields, edgeFieldNames } = getEdgeFields(edges);
     const nodeFieldsInfo = getAllFieldsInfo(nodeFields, nodeFieldNames);
     const edgeFieldsInfo = getAllFieldsInfo(edgeFields, edgeFieldNames);
-
     const graphProps = {
       nodeFieldsInfo,
       edgeFieldsInfo,

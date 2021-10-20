@@ -33,7 +33,7 @@ export type EdgeStructFeat = {
   starCount: number;
   cliqueCount: number;
 };
-// 图统计特征
+// Statistical features of graph
 export type GraphFeat = {
   nodeCount: number;
   edgeCount: number;
@@ -140,19 +140,22 @@ export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
   const components = GraphAlgorithms.connectedComponent({ nodes, edges }, false);
   const strongConnectedComponents = GraphAlgorithms.connectedComponent({ nodes, edges }, true);
   const cycleCountMap: { [key: string]: number } = {};
-  cycles.forEach((cycle) => {
-    Object.keys(cycle).forEach((nodeId) => {
+  for (let i = 0; i < cycles.length; i += 1) {
+    const nodeIds = Object.keys(cycles[i]);
+    for (let j = 0; j < nodeIds.length; j += 1) {
+      const nodeId = nodeIds[j];
       if (cycleCountMap[nodeId]) {
         cycleCountMap[nodeId] += 1;
       } else {
         cycleCountMap[nodeId] = 1;
       }
-    });
-  });
+    }
+  }
   const numberOfNodeInCycle = Object.values(cycleCountMap).filter((count) => count).length;
   const cycleParticipate = numberOfNodeInCycle / nodes.length;
 
-  nodes = nodes.map((node) => {
+  for (let index = 0; index < nodes.length; index += 1) {
+    const node = nodes[index];
     const nodeFeat = {
       degree: degrees[node.id].degree,
       inDegree: degrees[node.id].inDegree,
@@ -161,19 +164,20 @@ export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
       cycleCount: cycleCountMap[node.id] || 0,
     };
     nodeStructFeats.push(nodeFeat);
-    return {
+    nodes[index] = {
       ...node,
       ...nodeFeat,
     };
-  });
-  edges.map((edge) => {
+  }
+  for (let index = 0; index < edges.length; index += 1) {
+    const edge = edges[index];
     const edgeFeat = {};
     edgeStructFeats.push(edgeFeat);
-    return {
+    edges[index] = {
       ...edge,
       ...edgeFeat,
     };
-  });
+  }
   const nodeFeatNames = Object.keys(nodeStructFeats[0]);
   const edgeFeatNames = Object.keys(edgeStructFeats[0]);
   const nodeFeats = getAllFieldsInfo(genColDataFromArr(nodeStructFeats, nodeFeatNames), nodeFeatNames);
