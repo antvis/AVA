@@ -3,12 +3,21 @@ import { Select, Button, Table } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
-import { getDataInsights, InsightInfo, Datum, PatternInfo } from '../../../../packages/lite-insight/src';
+import { getDataInsightsAsync, InsightInfo, Datum, PatternInfo } from '../../../../packages/lite-insight';
 import InsightCard from './InsightCard';
 
 const { Option } = Select;
 
-const datasetOptions = ['gapminder', 'burtin', 'crimea', 'unemployment-across-industries', 'population', 'ohlc', 'jobs', 'income'];
+const datasetOptions = [
+  'gapminder',
+  'burtin',
+  'crimea',
+  'unemployment-across-industries',
+  'population',
+  'ohlc',
+  'jobs',
+  'income',
+];
 
 const datasetConfigs = {
   gapminder: {
@@ -27,13 +36,9 @@ const datasetConfigs = {
   jobs: {
     limit: 60,
     dimensions: ['sex', 'year', 'job'],
-    measures: [
-      { field: 'count', method: 'SUM' }
-    ],
-    impactMeasures: [
-      { field: 'count', method: 'COUNT' }
-    ]
-  }
+    measures: [{ field: 'count', method: 'SUM' }],
+    impactMeasures: [{ field: 'count', method: 'COUNT' }],
+  },
 };
 
 export default function App() {
@@ -63,12 +68,13 @@ export default function App() {
 
   const getInsights = async () => {
     setInsightLoading(true);
-    const result = getDataInsights(
-      data,
-      datasetConfigs[dataset] || {}
-    );
-    setInsights(result.insights);
-    setInsightLoading(false);
+    getDataInsightsAsync(data, datasetConfigs[dataset] || {})
+      .then((res) => {
+        if (res?.insights) setInsights(res.insights);
+      })
+      .finally(() => {
+        setInsightLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -77,7 +83,9 @@ export default function App() {
   return (
     <>
       <div style={{ padding: 16, display: 'flex', height: 500 }}>
-        <div style={{ flex: 1, borderRight: '2px solid #bfbfbf', paddingRight: 20, height: '100%', overflow: 'hidden' }}>
+        <div
+          style={{ flex: 1, borderRight: '2px solid #bfbfbf', paddingRight: 20, height: '100%', overflow: 'hidden' }}
+        >
           <Table style={{ height: '100%' }} dataSource={data} columns={tableColumns} scroll={{ x: true, y: 360 }} />
         </div>
         <div style={{ flex: 'none', width: 200 }}>
