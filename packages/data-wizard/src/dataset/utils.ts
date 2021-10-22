@@ -24,3 +24,23 @@ export const generateArrayIndex = (data: any[], extraIndex?: Axis[]): Axis[] => 
 
   return range(data.length);
 };
+
+export const flatObject = (obj, concatenator = '.') =>
+  Object.keys(obj).reduce((acc, key) => {
+    if (typeof obj[key] !== 'object' || obj[key] === null) {
+      return {
+        ...acc,
+        [key]: obj[key],
+      };
+    }
+
+    const flattenedChild = flatObject(obj[key], concatenator);
+
+    return {
+      ...acc,
+      ...Object.keys(flattenedChild).reduce(
+        (childAcc, childKey) => ({ ...childAcc, [`${key}${concatenator}${childKey}`]: flattenedChild[childKey] }),
+        {}
+      ),
+    };
+  }, {});

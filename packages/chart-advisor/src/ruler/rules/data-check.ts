@@ -1,5 +1,5 @@
 import { CKBJson } from '@antv/ckb';
-import { RuleModule } from '../concepts/rule';
+import { BasicDataPropertyForAdvice, RuleModule } from '../concepts/rule';
 
 import { verifyDataProps } from '../utils';
 
@@ -22,7 +22,7 @@ export const dataCheck: RuleModule = {
       result = 1;
       const dataPres = Wiki[chartType].dataPres || [];
       dataPres.forEach((dataPre) => {
-        if (!verifyDataProps(dataPre, dataProps)) {
+        if (!verifyDataProps(dataPre, dataProps as BasicDataPropertyForAdvice[])) {
           result = 0;
         }
         return true;

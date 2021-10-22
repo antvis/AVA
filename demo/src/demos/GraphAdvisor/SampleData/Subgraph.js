@@ -1,5 +1,5 @@
 export const SubgraphData = { nodes: [], edges: [] };
-for (let i = 0; i < 32; i++) {
+for (let i = 0; i < 32; i += 1) {
   SubgraphData.nodes.push({
     id: `${i}`,
     label: i < 17 ? `employee-${i}` : `company-${i - 17}`,

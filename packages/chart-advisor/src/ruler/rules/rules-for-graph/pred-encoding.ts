@@ -1,14 +1,18 @@
 import { analyzer } from '@antv/data-wizard';
-import { RuleModule, ExtendFieldInfo } from './concepts/rule';
+import { RuleModule } from '../../concepts/rule';
 import { MAX_DISTINCT_COLOR } from './const';
 
+const applyChartTypes = ['graph'];
 export const fieldForColorRule: RuleModule = {
   id: 'field-for-node-color',
   type: 'HARD',
   docs: {
     detailedText: `A field can encode to color if is nominal or ordinal, and the number of its distinct values is less than ${MAX_DISTINCT_COLOR}`,
   },
-  validator: (field: ExtendFieldInfo) => {
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
+  },
+  validator: ({ field }) => {
     return (
       (analyzer.isNominal(field) || analyzer.isOrdinal(field)) &&
       field.missing === 0 &&
@@ -25,18 +29,12 @@ export const fieldForSizeRule: RuleModule = {
   docs: {
     detailedText: '',
   },
-  validator: (field: ExtendFieldInfo) => {
-    return field.fieldName === 'degree';
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
   },
-};
-
-export const fieldForCluster: RuleModule = {
-  id: 'field-for-cluster',
-  type: 'HARD',
-  docs: {
-    detailedText: '',
+  validator: ({ field }) => {
+    return field.name === 'degree';
   },
-  validator: fieldForColorRule.validator,
 };
 
 export const fieldForLabel: RuleModule = {
@@ -45,12 +43,14 @@ export const fieldForLabel: RuleModule = {
   docs: {
     detailedText: '',
   },
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
+  },
   validator: fieldForColorRule.validator,
 };
 
 export const encodingRules = {
   'field-for-color': fieldForColorRule,
   'field-for-size': fieldForSizeRule,
-  'field-for-cluster': fieldForCluster,
   'field-for-label': fieldForLabel,
 };

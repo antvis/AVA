@@ -1,17 +1,21 @@
-import { RuleModule, ExtendFieldInfo } from './concepts/rule';
+import { RuleModule } from '../../concepts/rule';
 
-/** 
+const applyChartTypes = ['graph'];
+/**
  * TODO: predict the focus node
  * 1. the node of high centrality
  * 2. the node fields with special values e.g. unique node type
-*/
-export const focusNodeRule:RuleModule = {
+ */
+export const focusNodeRule: RuleModule = {
   id: 'focus-node-rule',
-  type: 'DESIGN',
+  type: 'HARD',
   docs: {
     detailedText: '',
   },
-  optimizer: (field: ExtendFieldInfo) => {
-    return field.fieldName === 'degree'
-  }
-}
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
+  },
+  validator: ({ field }) => {
+    return field.name === 'degree';
+  },
+};

@@ -1,14 +1,16 @@
 import { ChartKnowledgeJSON, CKBJson } from '@antv/ckb';
-import { DataFrame, GraphData } from '@antv/data-wizard';
+import { DataFrame, analyzer, GraphData } from '@antv/data-wizard';
 import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
 import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
-import { deepMix, cloneDeep } from './utils';
+import { cloneDeep, deepMix } from './utils';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { graphdataToAdvices } from './advice-pipeline/graph-to-advices';
 import { CKBConfig } from './ckb-config';
 import { AdvisorOptions } from './advice-pipeline/interface';
 
-export interface AdviseParams {
+export type AdviseParams = ChartAdviseParams | GraphAdviseParams;
+
+export type ChartAdviseParams = {
   /** input data to advise */
   data: Record<string, any>[];
   /** customized dataprops to advise */
@@ -17,19 +19,53 @@ export interface AdviseParams {
   fields?: string[];
   /** advising options such as purpose, layout preferences */
   options?: AdvisorOptions;
-}
+};
 
-export interface GraphAdviseParams {
+export type GraphAdviseParams = {
   /** input data to advise */
-  data: any;
+  data:
+    | {
+        [key: string]: any;
+      }[]
+    // array object, such as { nodes: [], edges: [] }
+    | {
+        [key: string]: any[];
+      }
+    | {
+        // Tree
+        id: string | number;
+        children: any[];
+        [key: string]: any;
+      };
   /** customized dataprops to advise */
-  // dataProps?: BasicDataPropertyForAdvice[],
-  // /** data fields to focus, apply in `data` and `dataProps` */
-  // fields?: string[],
-  // /** advising options such as purpose, layout preferences */
-  // options?: AdvisorOptions
-  [key: string]: any;
-}
+  dataProps?: analyzer.GraphProps;
+  /** data fields to focus, apply in `data` and `dataProps` */
+  fields?: {
+    nodes: string[];
+    links: string[];
+  };
+  /** advising options such as purpose, layout preferences */
+  options?: {
+    purpose?: AdvisorOptions['purpose'];
+    nodes?: AdvisorOptions;
+    links?: AdvisorOptions;
+    theme?: AdvisorOptions['theme'];
+    nodeColors?: string[];
+    nodeSizeRange?: number[];
+    edgeWidthRange?: number[];
+    extra?: {
+      nodeKey?: string; // key for node array in data object
+      edgeKey?: string; // key for edge array in data object
+      sourceKey?: string; // key for edge source in edge object
+      targetKey?: string;
+      childrenKey?: string;
+      nodeIndex?: string[] | number[];
+      nodeColumns?: string[] | number[];
+      edgeIndex?: string[] | number[];
+      edgeColumns?: string[] | number[];
+    };
+  };
+};
 
 export class Advisor {
   /**
@@ -70,9 +106,33 @@ export class Advisor {
    * @param params paramters for advising
    */
   advise(params: AdviseParams) {
-    const { data, dataProps, fields, options } = params;
+    const { data, options } = params;
+    const purposeForGraphs = ['Relation', 'Hierarchy', 'Flow'];
+    const keyForGraph = ['nodes', 'edges', 'links', 'from', 'to', 'children'];
+    const hasKeyForGraph =
+      Object.prototype.toString.call(data) === '[object Object]' &&
+      Object.keys(data).some((key) => keyForGraph.includes(key));
+    const shouldRecommendGraph = options?.extra || purposeForGraphs.includes(options?.purpose) || hasKeyForGraph;
+    let advices;
+    const graphAdvices = this.advicesForGraph(params as GraphAdviseParams);
+    // const chartAdvices = this.advicesForChart(params as ChartAdviseParams);
+    // If shouldRecommendGraph is true, higher priority for relational graph
+    if (shouldRecommendGraph) {
+      advices = graphAdvices;
+      // advices = graphAdvices.concat(chartAdvices)
+    } else {
+      const chartAdvices = this.advicesForChart(params as ChartAdviseParams);
+      // Otherwise, higher priority for statistical charts
+      advices = chartAdvices.concat(graphAdvices);
+    }
+    return advices;
+  }
+
+  advicesForChart(params: ChartAdviseParams) {
+    const { data, dataProps, options } = params;
     // otherwise the input data will be mutated
-    const copyData = data.map((obj) => ({ ...obj }));
+    const copyData = cloneDeep(data);
+    const { fields } = params as ChartAdviseParams;
     // transform data into DataFrame
     let dataFrame: DataFrame;
     try {
@@ -115,38 +175,24 @@ export class Advisor {
     }
 
     const advices = dataToAdvices(filteredData, dataPropsForAdvice, this.CKB, this.ruleBase, options);
-
     return advices;
   }
 
-  /**
-   * chart advising from input data
-   * @param params paramters for advising
-   */
-  adviseForGraph(params: GraphAdviseParams) {
+  advicesForGraph(params: GraphAdviseParams) {
     const { data, dataProps, options } = params;
     const copyData = cloneDeep(data);
-    const defaultCfg = {
-      layoutCfg: {},
-      nodeCfg: {},
-      edgeCfg: {},
-    };
-    // transform data into Graph
-    let graphData: GraphData;
+    let graphData;
     try {
-      graphData = new GraphData(copyData, options);
+      graphData = new GraphData(copyData, (options as GraphAdviseParams['options'])?.extra);
     } catch (error) {
       // if the input data cannot be transformed into DataFrame
       console.error('error: ', error);
-      return defaultCfg;
+      return [];
     }
-
-    const graphDataProps = {
-      ...dataProps,
-      ...graphData?.info(),
-    };
-    const advices = deepMix(defaultCfg, graphdataToAdvices(graphDataProps));
-    return { advices, data: graphData?.data };
+    const calcedProps = graphData?.info();
+    const graphDataProps = dataProps ? deepMix(calcedProps, dataProps) : calcedProps;
+    const advicesForGraph = graphdataToAdvices(graphData.data, graphDataProps, options);
+    return advicesForGraph;
   }
 
   /**

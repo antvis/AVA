@@ -65,7 +65,7 @@ export class Linter {
           const { type, id, docs } = r;
 
           // no weight for linter's result
-          const score = (r as ChartRuleModule).validator(info);
+          const score = (r as ChartRuleModule).validator(info) as number;
           ruleScore.push({ type, id, score, docs });
         });
 

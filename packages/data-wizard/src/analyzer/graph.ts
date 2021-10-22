@@ -1,79 +1,9 @@
 import * as AlgorithmSync from '@antv/algorithm';
-import { NodeData, EdgeData } from '../dataset/types';
-import { FieldInfo, analyzeField } from './index';
+import { NodeData, LinkData } from '../dataset/types';
+import { FieldInfo, GraphFeat, NodeStructFeat, LinkStructFeat, analyzeField } from './index';
 
 const GraphAlgorithms = {
   ...AlgorithmSync,
-};
-
-export interface ExtendFieldInfo extends FieldInfo {
-  fieldName: string;
-  [key: string]: any;
-}
-
-export type NodeStructFeat = {
-  degree: number;
-  inDegree: number;
-  outDegree: number;
-  pageRank: number;
-  closeness: number;
-  kCore: number;
-  cycleCount: number;
-  triangleCount: number;
-  starCount: number;
-  cliqueCount: number;
-  clusterCoeff: number;
-};
-
-export type EdgeStructFeat = {
-  isDirected: Boolean;
-  centrality: number;
-  cycleCount: number;
-  triangleCount: number;
-  starCount: number;
-  cliqueCount: number;
-};
-// Statistical features of graph
-export type GraphFeat = {
-  nodeCount: number;
-  edgeCount: number;
-  direction: number;
-  isDirected: Boolean;
-  isDAG: Boolean;
-  isCycle: Boolean;
-  isConnected: Boolean;
-  ratio: number; // ratio of breadth to depth
-  breadth: number;
-  depth: number;
-  maxDegree: number;
-  minDegree: number;
-  avgDegree: number;
-  degreeStd: number;
-  maxPageRank: number;
-  minPageRank: number;
-  avgPageRank: number;
-  components: any[];
-  componentCount: number;
-  strongConnectedComponents: any[];
-  strongConnectedComponentCount: number;
-  cycleCount: number;
-  directedCycleCount: number;
-  starCount: number;
-  cliqueCount: number;
-  cycleParticipate: number;
-  triangleCount: number;
-  localClusterCoeff: number;
-  globalClusterCoeff: number;
-  maxKCore: number;
-};
-
-export type GraphProps = {
-  nodeFeats: ExtendFieldInfo[];
-  edgeFeats: ExtendFieldInfo[];
-  graphInfo: Partial<GraphFeat>;
-  nodeFieldsInfo: ExtendFieldInfo[];
-  edgeFieldsInfo: ExtendFieldInfo[];
-  [key: string]: any;
 };
 
 function genColDataFromArr(arr: any[], columnNames: string[]) {
@@ -97,23 +27,23 @@ export function getNodeFields(nodes: NodeData[]) {
   const nodeFields = genColDataFromArr(nodes, nodeFieldNames);
   return { nodeFields, nodeFieldNames };
 }
-export function getEdgeFields(edges: EdgeData[]) {
-  const [edge0] = edges;
-  const edgeFieldNames = edge0 ? Object.keys(edge0) : [];
-  const edgeFields = genColDataFromArr(edges, edgeFieldNames);
-  return { edgeFields, edgeFieldNames };
+export function getLinkFields(links: LinkData[]) {
+  const [link0] = links;
+  const linkFieldNames = link0 ? Object.keys(link0) : [];
+  const linkFields = genColDataFromArr(links, linkFieldNames);
+  return { linkFields, linkFieldNames };
 }
 
 // Analyze fields
-function getFieldInfo(dataField: any[], fieldName: string): ExtendFieldInfo {
+function getFieldInfo(dataField: any[], fieldName: string): FieldInfo {
   const fieldInfo = analyzeField(dataField);
   return {
     ...fieldInfo,
-    fieldName,
+    name: fieldName,
   };
 }
-export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): ExtendFieldInfo[] {
-  const fields: ExtendFieldInfo[] = [];
+export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): FieldInfo[] {
+  const fields: FieldInfo[] = [];
   for (let i = 0; i < dataFields.length; i += 1) {
     const dataField = dataFields[i];
     fields.push(getFieldInfo(dataField, fieldNames[i]));
@@ -123,22 +53,68 @@ export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): Exten
 
 /* eslint-disable no-param-reassign */
 /**
- * Calculate statistical and structural features for graph
+ * find node clusters and assign the cluster field to each node
  * @param nodes
- * @param edges
+ * @param links
  * @returns
  */
-export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
+export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: FieldInfo[], links: LinkData[]): FieldInfo {
+  const MAX_CLUSTER_NUM = 10;
+  let fieldForCluster;
+  for (let i = 0; i < nodeFieldsInfo.length; i += 1) {
+    const field = nodeFieldsInfo[i];
+    if (
+      field.levelOfMeasurements.indexOf('Nominal') > -1 ||
+      (field.levelOfMeasurements.indexOf('Ordinal') > -1 &&
+        field.missing === 0 &&
+        field.distinct > 1 &&
+        field.distinct <= MAX_CLUSTER_NUM)
+    ) {
+      fieldForCluster = field;
+      break;
+    }
+  }
+  if (fieldForCluster) {
+    for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx += 1) {
+      nodes[nodeIdx].cluster = nodes[nodeIdx][fieldForCluster.name];
+    }
+  } else {
+    const { clusters } = GraphAlgorithms.louvain({ nodes, edges: links });
+    const values = [];
+    for (let i = 0; i < clusters.length; i += 1) {
+      const cluster = clusters[i];
+      const { nodes, id } = cluster;
+      for (let nodeIdx = 0; nodeIdx < nodes.length; nodeIdx += 1) {
+        nodes[nodeIdx].cluster = id;
+      }
+      values.push(id);
+    }
+    fieldForCluster = {
+      ...analyzeField(values),
+      name: 'cluster',
+    };
+  }
+  return fieldForCluster;
+}
+
+/* eslint-disable no-param-reassign */
+/**
+ * Calculate statistical and structural features for graph
+ * @param nodes
+ * @param links
+ * @returns
+ */
+export function getAllStructFeats(nodes: NodeData[], links: LinkData[]) {
   const nodeStructFeats: Partial<NodeStructFeat>[] = [];
-  const edgeStructFeats: Partial<EdgeStructFeat>[] = [];
+  const linkStructFeats: Partial<LinkStructFeat>[] = [];
   // TODO: whether the graph is directed need to be passed in
   const isDirected: boolean = false;
-  const degrees = GraphAlgorithms.getDegree({ nodes, edges });
-  const pageRanks = GraphAlgorithms.pageRank({ nodes, edges });
-  const cycles = GraphAlgorithms.detectAllCycles({ nodes, edges }, false);
-  const directedCycles = GraphAlgorithms.detectAllDirectedCycle({ nodes, edges });
-  const components = GraphAlgorithms.connectedComponent({ nodes, edges }, false);
-  const strongConnectedComponents = GraphAlgorithms.connectedComponent({ nodes, edges }, true);
+  const degrees = GraphAlgorithms.getDegree({ nodes, edges: links });
+  const pageRanks = GraphAlgorithms.pageRank({ nodes, edges: links });
+  const cycles = GraphAlgorithms.detectAllCycles({ nodes, edges: links }, false);
+  const directedCycles = GraphAlgorithms.detectAllDirectedCycle({ nodes, edges: links });
+  const components = GraphAlgorithms.connectedComponent({ nodes, edges: links }, false);
+  const strongConnectedComponents = GraphAlgorithms.connectedComponent({ nodes, edges: links }, true);
   const cycleCountMap: { [key: string]: number } = {};
   for (let i = 0; i < cycles.length; i += 1) {
     const nodeIds = Object.keys(cycles[i]);
@@ -169,21 +145,21 @@ export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
       ...nodeFeat,
     };
   }
-  for (let index = 0; index < edges.length; index += 1) {
-    const edge = edges[index];
-    const edgeFeat = {};
-    edgeStructFeats.push(edgeFeat);
-    edges[index] = {
-      ...edge,
-      ...edgeFeat,
+  for (let index = 0; index < links.length; index += 1) {
+    const link = links[index];
+    const linkFeat = {};
+    linkStructFeats.push(linkFeat);
+    links[index] = {
+      ...link,
+      ...linkFeat,
     };
   }
   const nodeFeatNames = Object.keys(nodeStructFeats[0]);
-  const edgeFeatNames = Object.keys(edgeStructFeats[0]);
+  const linkFeatNames = Object.keys(linkStructFeats[0]);
   const nodeFeats = getAllFieldsInfo(genColDataFromArr(nodeStructFeats, nodeFeatNames), nodeFeatNames);
-  const edgeFeats = getAllFieldsInfo(genColDataFromArr(edgeStructFeats, edgeFeatNames), edgeFeatNames);
+  const linkFeats = getAllFieldsInfo(genColDataFromArr(linkStructFeats, linkFeatNames), linkFeatNames);
 
-  // Calculate the structural features and statistics of all nodes and edges
+  // Calculate the structural features and statistics of all nodes and links
   const nodeDegrees = nodes.map((node) => node.degree);
   const avgDegree = nodeDegrees.reduce((x, y) => x + y) / nodeDegrees.length;
   const degreeDev = nodeDegrees.map((x) => x - avgDegree);
@@ -191,7 +167,7 @@ export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
   const graphInfo: Partial<GraphFeat> = {
     isDirected,
     nodeCount: nodes.length,
-    edgeCount: edges.length,
+    linkCount: links.length,
     isConnected: components && components.length === 1,
     isDAG: isDirected && directedCycles.length === 0,
     maxDegree: Math.max(...nodeDegrees),
@@ -209,7 +185,7 @@ export function getAllStructFeats(nodes: NodeData[], edges: EdgeData[]) {
 
   return {
     nodeFeats,
-    edgeFeats,
+    linkFeats,
     graphInfo,
   };
 }

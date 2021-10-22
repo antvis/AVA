@@ -13,9 +13,9 @@ export type RuleType = 'HARD' | 'SOFT' | 'DESIGN';
  */
 export interface BasicDataPropertyForAdvice {
   /** field name */
-  readonly name: string;
+  readonly name?: string;
   /** LOM */
-  readonly levelOfMeasurements: LOM[];
+  readonly levelOfMeasurements?: LOM[];
   /** used for split column xy series */
   readonly samples: any[];
   /** required types in analyzer FieldInfo */
@@ -43,8 +43,8 @@ export interface Preferences {
  * @public
  */
 export interface Info {
-  chartType: string;
-  dataProps: BasicDataPropertyForAdvice[];
+  chartType?: string;
+  dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice | Partial<analyzer.GraphProps>;
   purpose?: string;
   preferences?: Preferences;
   customWeight?: number;
@@ -54,10 +54,13 @@ export interface Info {
 /**
  * @public
  */
-export type Validator = (args: Info) => number;
+export type Validator = (args: Info) => number | boolean;
 export type Trigger = (args: Info) => boolean;
 
-export type Optimizer = (dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec) => object;
+export type Optimizer = (
+  dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice | Partial<analyzer.GraphProps>,
+  chartSpec: AntVSpec
+) => object;
 
 /**
  * @public

@@ -1,65 +1,53 @@
-import { DesignRuleModule, RuleModule } from './concepts/rule';
-import { scaleRules } from './pred-scale-type'
-import { encodingRules } from './pred-encoding'
-import { edgeTypeRules } from './pred-edge-type'
-import { nodeTypeRules } from './pred-node-type'
-import { layoutTypePredRule } from './pred-layout-type'
-import { layoutConfigPredRule } from './pred-layout-cfg'
+import { BasicDataPropertyForAdvice, RuleModule } from '../../concepts/rule';
+import { scaleRules } from './pred-scale-type';
+import { encodingRules } from './pred-encoding';
+import { edgeTypeRules } from './pred-edge-type';
+import { nodeTypeRules } from './pred-node-type';
+import { allLayoutTypeRules } from './pred-layout-type';
+import { layoutConfigPredRule } from './pred-layout-cfg';
 
 const layoutRules = {
-  'pred-layout-type': layoutTypePredRule,
-  'pred-layout-config': layoutConfigPredRule
-}
+  ...allLayoutTypeRules,
+  'pred-layout-config': layoutConfigPredRule,
+};
 export const ruleSet = {
-  scaleRules, 
+  scaleRules,
   encodingRules,
   edgeTypeRules,
   nodeTypeRules,
-  layoutRules
-}
+  layoutRules,
+};
 
 export const allBuiltInRules = {
-  ...scaleRules, 
+  ...scaleRules,
   ...encodingRules,
   ...edgeTypeRules,
   ...nodeTypeRules,
-  ...layoutRules
-}
+  ...layoutRules,
+};
 
 /**
- * Check, filter and sort all candidates according to a soft rule or a hard rule
- * @param candidates 
+ * Check, filter and sort all candidate fields according to a soft rule or a hard rule
+ * @param candidates
  * @param ruleId
  * @returns Testing the rule, and return the candidates that match the rule. If the rule scores the candidates, they are sorted from highest to lowest score.
  */
-export const testRule = (candidates: any[], ruleId: string): any[] => {
+export const testRule = (candidates: BasicDataPropertyForAdvice[], ruleId: string): BasicDataPropertyForAdvice[] => {
   let validatedCandidates: any[] = [];
-  const rule = allBuiltInRules[ruleId]
-  if(rule.type === 'HARD') {
-    validatedCandidates = candidates.filter(item => rule.validator(item))
-  } else if(rule.type === 'SOFT') {
-    validatedCandidates = candidates.map(item => {
+  const rule = allBuiltInRules[ruleId];
+  if (rule.type === 'HARD') {
+    validatedCandidates = candidates.filter((item) => rule.validator({ field: item }));
+  } else if (rule.type === 'SOFT') {
+    validatedCandidates = candidates.map((item) => {
       return {
         item,
-        score: rule.validator(item)
-      }
-    })
-    validatedCandidates.sort((a,b) => b.score - a.score)
+        score: rule.validator({ field: item }),
+      };
+    });
+    validatedCandidates.sort((a, b) => b.score - a.score);
   }
-  return validatedCandidates
-}
-
-/**
- * Recommended configurations based on the optimization policy and user configuration
- * @param dataProps 
- * @param ruleId 
- * @param userCfg
- */
-export const optimizeByRule = (dataProps: any, ruleId: string, userCfg?: any): any | any[] => {
-  const rule:DesignRuleModule = allBuiltInRules[ruleId]
-  let candidates = rule.optimizer(dataProps, userCfg)
-  return candidates
-}
+  return validatedCandidates;
+};
 
 /**
  *
@@ -79,8 +67,8 @@ export const getRuleById = (id: string): RuleModule | null => {
  * @returns rule object record
  */
 export const getRules = (ids?: string[]): Record<string, RuleModule> => {
-  if(!ids || !ids.length) {
-    return allBuiltInRules
+  if (!ids || !ids.length) {
+    return allBuiltInRules;
   }
 
   const chartRules: Record<string, RuleModule> = {};
@@ -92,5 +80,3 @@ export const getRules = (ids?: string[]): Record<string, RuleModule> => {
 
   return chartRules;
 };
-
-export * from './concepts/rule';

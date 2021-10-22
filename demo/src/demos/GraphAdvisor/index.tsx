@@ -1,10 +1,10 @@
 import React from 'react';
 import ContentPage from '../../ContentPage';
-import { GraphPlayground } from './GraphPlayground';
+import { GraphPanel } from './GraphPanel';
 
 const content = (
   <ContentPage>
-    <GraphPlayground />
+    <GraphPanel />
   </ContentPage>
 );
 

@@ -1,34 +1,14 @@
-import { analyzeField, isUnique } from '../analyzer';
-import { GraphProps, getNodeFields, getEdgeFields, getAllFieldsInfo, getAllStructFeats } from '../analyzer/graph';
+import { analyzeField, isUnique, GraphProps } from '../analyzer';
+import { getNodeFields, getLinkFields, getAllFieldsInfo, getAllStructFeats, clusterNodes } from '../analyzer/graph';
 import { assert, isArray, isObject } from '../utils';
-import { NodeData, EdgeData, GraphInput, GraphExtra } from './types';
+import { NodeData, LinkData, GraphInput, GraphExtra } from './types';
 import DataFrame from './data-frame';
-import { isBasicType } from './utils';
-
-const flatObject = (obj, concatenator = '.') =>
-  Object.keys(obj).reduce((acc, key) => {
-    if (typeof obj[key] !== 'object' || obj[key] === null) {
-      return {
-        ...acc,
-        [key]: obj[key],
-      };
-    }
-
-    const flattenedChild = flatObject(obj[key], concatenator);
-
-    return {
-      ...acc,
-      ...Object.keys(flattenedChild).reduce(
-        (childAcc, childKey) => ({ ...childAcc, [`${key}${concatenator}${childKey}`]: flattenedChild[childKey] }),
-        {}
-      ),
-    };
-  }, {});
+import { flatObject, isBasicType } from './utils';
 
 /* eslint-disable no-param-reassign */
 function parseTreeNode(data: any, extra?: GraphExtra) {
   const nodes = [];
-  const edges = [];
+  const links = [];
   const childrenKey = extra?.childrenKey || 'children';
   const parseTree = (treeNode) => {
     const children = treeNode[childrenKey] || [];
@@ -36,7 +16,7 @@ function parseTreeNode(data: any, extra?: GraphExtra) {
     nodes?.push(treeNode);
     for (let i = 0; i < children.length; i += 1) {
       const item = children[i];
-      edges?.push({
+      links?.push({
         source: treeNode.id,
         target: item.id,
       });
@@ -44,12 +24,12 @@ function parseTreeNode(data: any, extra?: GraphExtra) {
     }
   };
   parseTree(data);
-  return { nodes, edges };
+  return { nodes, links };
 }
 
 /**
- * @param data edge array
- * @return null | { nodes: NodeData[], edges: EdgeData[]}
+ * @param data link array
+ * @return null | { nodes: NodeData[], links: LinkData[]}
  */
 function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
   const [data0] = data;
@@ -59,30 +39,30 @@ function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
   const childrenKey = extra?.childrenKey || ('children' in data0 && 'children') || ('to' in data0 && 'to');
   assert(sourceKey || targetKey || childrenKey, 'Data is unable transform to graph');
   const nodes = [];
-  let edges = [];
+  let links = [];
   const { [sourceKey]: source, [targetKey]: target, [childrenKey]: children } = data0 as any;
   if (isBasicType(source) && isBasicType(target)) {
     for (let i = 0; i < data.length; i += 1) {
-      const edge = data[i];
-      const { [sourceKey]: source, [targetKey]: target } = edge;
+      const link = data[i];
+      const { [sourceKey]: source, [targetKey]: target } = link;
       if (nodes.findIndex((n) => n.id === source) === -1) {
         nodes.push({ id: source });
       }
       if (nodes.findIndex((n) => n.id === target) === -1) {
         nodes.push({ id: target });
       }
-      const formatEdge = {
-        ...edge,
+      const formatLink = {
+        ...link,
         source,
         target,
       };
-      edges.push(formatEdge);
+      links.push(formatLink);
     }
   } else if (isArray(children)) {
     // try to parse the array as multiple trees
     for (let i = 0; i < data.length; i += 1) {
       const tree = data[i];
-      const { nodes: subNodes, edges: subEdges } = parseTreeNode(tree, extra);
+      const { nodes: subNodes, links: subLinks } = parseTreeNode(tree, extra);
       for (let i = 0; i < subNodes.length; i += 1) {
         const node = subNodes[i];
         let repeatNode = nodes.find((n) => n.id === node.id);
@@ -95,10 +75,10 @@ function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
           nodes.push(node);
         }
       }
-      edges = edges.concat(subEdges);
+      links = links.concat(subLinks);
     }
   }
-  return { nodes, edges };
+  return { nodes, links };
 }
 
 function isNodeArray(arr: any[]): boolean {
@@ -107,11 +87,11 @@ function isNodeArray(arr: any[]): boolean {
   return isUnique(nodeIdInfo);
 }
 
-function isValidNodeEdges(nodes: any[], edges: any[]): boolean {
-  if (!isArray(edges) || !isNodeArray(nodes) || edges.length <= 1) return false;
-  for (let i = 0; i < edges.length; i += 1) {
-    const edge = edges[i];
-    const { source, target } = edge;
+function isValidNodeLinks(nodes: any[], links: any[]): boolean {
+  if (!isArray(links) || !isNodeArray(nodes) || links.length <= 1) return false;
+  for (let i = 0; i < links.length; i += 1) {
+    const link = links[i];
+    const { source, target } = link;
     const hasSourceNode = nodes.findIndex((item) => item.id === source);
     const hasTargetNode = nodes.findIndex((item) => item.id === target);
     if (!(hasSourceNode > -1 && hasTargetNode > -1)) {
@@ -127,51 +107,51 @@ export default class GraphData {
 
   data: {
     nodes: NodeData[];
-    edges: EdgeData[];
+    links: LinkData[];
   } = {
     nodes: [],
-    edges: [],
+    links: [],
   };
 
   private autoParse(data: GraphInput, extra?: GraphExtra) {
     let nodes;
-    let edges;
+    let links;
     assert(isArray(data) || isObject(data), 'Data is unable transform to graph');
 
-    // try parse data as edge array or multiple trees
+    // try parse data as link array or multiple trees
     if (isArray(data)) {
       const parsedData = parseArray(data, extra);
       nodes = parsedData.nodes;
-      edges = parsedData.edges;
+      links = parsedData.links;
     }
 
     // if passed data tyoe is object
     if (isObject(data)) {
-      if (extra?.nodeKey && extra?.edgeKey) {
+      if (extra?.nodeKey && extra?.linkKey) {
         nodes = data[extra.nodeKey];
-        edges = data[extra.edgeKey];
+        links = data[extra.linkKey];
       } else if (extra?.childrenKey || 'children' in data) {
         const parsedTree = parseTreeNode(data, extra);
         nodes = parsedTree.nodes;
-        edges = parsedTree.edges;
+        links = parsedTree.links;
       } else {
         const nodeKey = 'nodes' in data && 'nodes';
-        const edgeKey = ('edges' in data && 'edges') || ('links' in data && 'links');
+        const linkKey = ('links' in data && 'links') || ('edges' in data && 'edges');
         nodes = data[nodeKey];
-        edges = data[edgeKey];
+        links = data[linkKey];
       }
     }
 
-    return { nodes, edges };
+    return { nodes, links };
   }
 
   constructor(data: GraphInput, extra?: GraphExtra) {
     this.extra = extra;
-    const { nodes, edges } = this.autoParse(data, extra);
-    assert(isValidNodeEdges(nodes, edges), 'Data is unable transform to graph');
+    const { nodes, links } = this.autoParse(data, extra);
+    assert(isValidNodeLinks(nodes, links), 'Data is unable transform to graph');
     this.data = {
       nodes: nodes.map((node) => flatObject(node)),
-      edges: edges.map((edge) => flatObject(edge)),
+      links: links.map((link) => flatObject(link)),
     };
   }
 
@@ -183,28 +163,30 @@ export default class GraphData {
     return new DataFrame(this.data.nodes, extra);
   }
 
-  getEdgeFrame() {
+  getLinkFrame() {
     const extra = {
-      index: this.extra?.edgeIndex,
-      columns: this.extra?.edgeColumns,
+      index: this.extra?.linkIndex,
+      columns: this.extra?.linkColumns,
     };
-    return new DataFrame(this.data.edges, extra);
+    return new DataFrame(this.data.links, extra);
   }
 
   /**
    * Get statistics.
    */
   info(): GraphProps {
-    const { nodes, edges } = this.data;
+    const { nodes, links } = this.data;
     // calc fields statistics and structural statistics
-    const graphStrucFeats = getAllStructFeats(nodes, edges);
+    const graphStrucFeats = getAllStructFeats(nodes, links);
     const { nodeFields, nodeFieldNames } = getNodeFields(nodes);
-    const { edgeFields, edgeFieldNames } = getEdgeFields(edges);
+    const { linkFields, linkFieldNames } = getLinkFields(links);
     const nodeFieldsInfo = getAllFieldsInfo(nodeFields, nodeFieldNames);
-    const edgeFieldsInfo = getAllFieldsInfo(edgeFields, edgeFieldNames);
+    const linkFieldsInfo = getAllFieldsInfo(linkFields, linkFieldNames);
+    const getClusterField = clusterNodes(nodes, nodeFieldsInfo, links);
+    nodeFieldsInfo.push(getClusterField);
     const graphProps = {
       nodeFieldsInfo,
-      edgeFieldsInfo,
+      linkFieldsInfo,
       ...graphStrucFeats,
     };
     return graphProps;

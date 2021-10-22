@@ -34,7 +34,7 @@ export const nominalEnumCombinatorial: RuleModule = {
     const { dataProps, chartType } = args;
 
     if (dataProps && allChartTypes) {
-      const nominalFields = getNominalFields(dataProps);
+      const nominalFields = getNominalFields(dataProps as BasicDataPropertyForAdvice[]);
 
       if (nominalFields.length >= 2) {
         const sortedNominals = nominalFields.sort(compare);

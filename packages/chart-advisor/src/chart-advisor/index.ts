@@ -1,4 +1,4 @@
-import { RuleConfig } from '../ruler/concepts/rule';
+import { BasicDataPropertyForAdvice, RuleConfig } from '../ruler/concepts/rule';
 import { Advisor, CKBConfig, AdviseParams } from '../advisor';
 import { Linter } from '../linter';
 
@@ -23,8 +23,15 @@ export class ChartAdvisor {
     const { data, dataProps, fields, options } = params;
     const advices = this.advisor.advise({ data, dataProps, fields, options });
     const advicesAfterLint = advices.map((advice) => {
-      const lintResult = this.linter.lint({ spec: advice.spec, dataProps, options });
-      return { ...advice, lint: lintResult };
+      if (advice.type !== 'graph') {
+        const lintResult = this.linter.lint({
+          spec: advice.spec,
+          dataProps: dataProps as BasicDataPropertyForAdvice[],
+          options,
+        });
+        return { ...advice, lint: lintResult };
+      } // No lint suggestions for graph visualization for now
+      return { ...advice, lint: {} };
     });
     return advicesAfterLint;
   }

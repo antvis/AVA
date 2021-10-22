@@ -20,7 +20,7 @@ export const limitSeries: RuleModule = {
     lintText: 'Avoid too many series',
   },
   trigger: ({ chartType, dataProps }) => {
-    return allChartTypes.indexOf(chartType) !== -1 && hasSeriesField(dataProps);
+    return allChartTypes.indexOf(chartType) !== -1 && hasSeriesField(dataProps as BasicDataPropertyForAdvice[]);
   },
   validator: (args): number => {
     let result = 0;

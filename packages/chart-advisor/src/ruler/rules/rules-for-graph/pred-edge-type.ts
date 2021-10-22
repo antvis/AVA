@@ -1,32 +1,39 @@
-import { RuleModule } from './concepts/rule';
+import { analyzer } from '@antv/data-wizard';
+import { RuleModule } from '../../concepts/rule';
 
-// TODO rules for deciding type of edge
-export const lineEdgeRule: RuleModule = {
-  id: 'edge-as-line',
-  type: 'HARD',
-  chartTypes: ['graph'],
+const applyChartTypes = ['graph'];
+
+export const predEdgeTypeRule: RuleModule = {
+  id: 'pred-edge-type',
+  type: 'DESIGN',
   docs: {
     detailedText: '',
   },
-  validator: ():Boolean => {
-    return true
-  }
-}
-
-export const polyLineEdgeRule: RuleModule = {
-  id: 'edge-as-polyline',
-  type: 'HARD',
-  chartTypes: ['graph'],
-  docs: {
-    detailedText: '',
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
   },
-  validator: ():Boolean => {
-    return true
-  }
-}
+  optimizer: (dataProps) => {
+    const { graphInfo, layoutType } = dataProps as analyzer.GraphProps;
+    let type = 'line';
+    if (graphInfo?.linkCount < 60) {
+      switch (layoutType) {
+        case 'dagre': {
+          type = 'round';
+          break;
+        }
+        case 'radial': {
+          type = 'smooth';
+          break;
+        }
+        default: {
+          type = 'line';
+        }
+      }
+    }
+    return { edgeType: type };
+  },
+};
 
 export const edgeTypeRules = {
-  'edge-as-line': lineEdgeRule,
-  'edge-as-polyline': polyLineEdgeRule
-}
-
+  'pred-edge-type': predEdgeTypeRule,
+};

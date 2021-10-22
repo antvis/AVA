@@ -14,7 +14,15 @@ export type DataRow = Record<string, any>;
 export type DataRows = DataRow[];
 
 export type FieldTypes = 'null' | 'boolean' | 'integer' | 'float' | 'date' | 'string';
-export type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal' |'continuous' | 'discrete' | 'interval' | 'const'; 
+export type EncodingType =
+  | 'quantitative'
+  | 'temporal'
+  | 'ordinal'
+  | 'nominal'
+  | 'continuous'
+  | 'discrete'
+  | 'interval'
+  | 'const';
 // export type ScaleType = 'ordinal' | ''
 
 export type LayoutTypes = 'graphin-force' | 'force' | 'grid' | 'dagre' | 'circular' | 'concentric' | 'radial';
@@ -30,7 +38,7 @@ export interface ILayoutConfig {
     // 是否防止重叠，必须配合属性 nodeSize
     preventOverlap?: boolean;
     // 节点大小（直径）。用于碰撞检测。
-    nodeSize?: number[] | number | ((d:any) => number);
+    nodeSize?: number[] | number | ((d: any) => number);
     // preventOverlap 为 true 时生效，防止重叠时节点边缘间距的最小值。为不同节点设置不同的最小间距
     nodeSpacing?: number;
     // 指定排序的依据字段
@@ -56,7 +64,7 @@ export interface ILayoutConfig {
     radius?: number;
     divisions?: number; // 分段数
     ordering?: null | 'topology' | 'degree';
-    // radial 
+    // radial
     unitRadius?: number; // 层级距离
     focusNode?: string;
     // graphin-force
@@ -67,46 +75,50 @@ export interface ILayoutConfig {
 }
 
 export interface NumMappingCfg {
-  key: string; // field key for mapping to number
+  field: string; // field key for mapping to number
+  type: string;
   scale: {
-    type: string;
     range: number[];
     domain: number[];
   };
-  [key:string]: any;
+  [key: string]: any;
 }
 
 export interface CategoryMappingCfg {
-  key: string; // field key for mapping to category
+  field: string; // field key for mapping to category
+  type: string; // ordinal, ..
   scale: {
-    type: string; // ordinal, ..
     range: string[] | number[];
-    domain: string[]| number[];
-  };
-  [key:string]: any;
-}
-
-export type NodeTypes = 'circle' | 'rect' | 'donut';
-
-export interface INodeCfg {
-  size: NumMappingCfg;
-  color: CategoryMappingCfg;
-  label: {
-    key: string; 
-    showlabel?: Boolean;
+    domain: string[] | number[];
   };
   [key: string]: any;
-};
+}
 
-export interface INodeTypeCfg {
-  type: NodeTypes;
-  customCfg?: {
+export type NodeTypes = 'point' | 'rect' | 'donut';
+export type EdgeTypes = 'line' | 'orth' | 'round' | 'smooth';
+export interface NodeSpec {
+  mark: NodeTypes;
+  encoding: {
+    size: NumMappingCfg;
+    color: CategoryMappingCfg;
+    label: {
+      field: string;
+      showlabel?: Boolean;
+    };
     [key: string]: any;
-  }
+  };
 }
 
-export interface IEdgeCfg {
-  color: CategoryMappingCfg;
-  lineWidth: NumMappingCfg;
-  [key: string]: any;
+export interface EdgeSpec {
+  mark: string;
+  encoding: {
+    type: EdgeTypes;
+    size: NumMappingCfg;
+    color: CategoryMappingCfg;
+    label: {
+      field: string;
+      showlabel?: Boolean;
+    };
+    [key: string]: any;
+  };
 }

@@ -1,14 +1,17 @@
 import { analyzer } from '@antv/data-wizard';
-import { RuleModule, ExtendFieldInfo } from './concepts/rule';
+import { BasicDataPropertyForAdvice, RuleModule } from '../../concepts/rule';
 
+const applyChartTypes = ['graph'];
 export const recScaleRule: RuleModule = {
   id: 'pred-scale-type',
   type: 'DESIGN',
-  chartTypes: ['graph'],
   docs: {
     detailedText: '',
   },
-  optimizer: (fieldInfo: ExtendFieldInfo) => {
+  trigger: ({ chartType }) => {
+    return applyChartTypes.indexOf(chartType) !== -1;
+  },
+  optimizer: (fieldInfo: BasicDataPropertyForAdvice) => {
     let fieldEncodeType;
     if (!fieldInfo) {
       return 'linear';
