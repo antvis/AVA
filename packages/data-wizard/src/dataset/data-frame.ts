@@ -32,7 +32,7 @@ export default class DataFrame extends BaseFrame {
     if (isArray(data)) {
       const [data0] = data;
 
-      /** 1D: basic type || array */
+      /** 1D: basic type | array */
       if (this.data.length > 0) {
         this.generateColumns([0], extra?.columns);
         this.colData = this.data;
@@ -50,7 +50,14 @@ export default class DataFrame extends BaseFrame {
 
       /** 2D: object array */
       if (isObject(data0)) {
-        const columns: Axis[] = Object.keys(data0);
+        const keys: string[] = [];
+
+        for (let i = 0; i < data.length; i += 1) {
+          const datum = data[i];
+          keys.push(...Object.keys(datum));
+        }
+
+        const columns: Axis[] = [...new Set(keys)];
 
         for (let i = 0; i < data.length; i += 1) {
           const datum = data[i];
@@ -135,7 +142,15 @@ export default class DataFrame extends BaseFrame {
 
           assert(isArray(datum), 'Data type is illegal');
 
-          this.colData.push(datum);
+          // Fill the missing values
+          if (datum.length < this.index.length) {
+            // Allow developer to assign the fill value?
+            const newDatum = datum.concat([...Array(this.index.length - datum.length)]);
+            this.colData.push(newDatum);
+          } else {
+            this.colData.push(datum);
+          }
+
           for (let j = 0; j < this.index.length; j += 1) {
             if (this.data[j]) {
               this.data[j].push(datum[j]);
@@ -178,9 +193,24 @@ export default class DataFrame extends BaseFrame {
 
       assert(isObj ? isObject(datum) : isArray(datum), 'Data type is illegal');
 
-      this.data.push(isObj ? Object.values(datum) : datum);
+      if (isObj && JSON.stringify(Object.keys(datum)) === JSON.stringify(columns)) {
+        this.data.push(Object.values(datum));
+      } else if (!isObj) {
+        this.data.push(datum);
+      }
+
       for (let j = 0; j < columns.length; j += 1) {
         const column = columns[j];
+
+        // Fill the missing values
+        if (isObj && JSON.stringify(Object.keys(datum)) !== JSON.stringify(columns)) {
+          if (!this.data[i]) {
+            this.data[i] = [];
+          } else {
+            this.data[i].push(datum[column]);
+          }
+        }
+
         if (this.colData[j]) {
           this.colData[j].push(datum[column]);
         } else {

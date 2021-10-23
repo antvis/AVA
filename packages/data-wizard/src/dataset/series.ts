@@ -35,6 +35,20 @@ export default class Series extends BaseFrame {
         this.data = Object.values(data);
         this.setAxis(0, index);
       }
+    } else if (isArray(data)) {
+      /** 1D: array */
+      const [data0] = data;
+      if (!isBasicType(data0)) {
+        if (extra?.index) {
+          assert(
+            extra?.index?.length === data.length,
+            `Index length is ${extra?.index.length}, but data size ${data.length}`
+          );
+
+          this.setAxis(0, extra?.index);
+        }
+        this.data = data;
+      }
     }
   }
 

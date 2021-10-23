@@ -31,7 +31,7 @@ module.exports = {
     'object-curly-newline': 0,
     'class-methods-use-this': 0,
     'no-shadow': 0,
-    'no-console': 0,
+    'no-console': 2,
     'arrow-body-style': 0,
     'no-useless-constructor': 0,
     'no-sparse-arrays': 0,

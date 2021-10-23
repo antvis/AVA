@@ -5,13 +5,17 @@ import * as analyzer from '../../src/analyzer';
 describe('new DataFrame', () => {
   test('1D: basic type', () => {
     const df = new DataFrame(1);
+    expect(df.axes).toStrictEqual([[0], [0]]);
     expect(df.data).toStrictEqual([1]);
     expect(df.colData).toStrictEqual([1]);
-    expect(df.axes).toStrictEqual([[0], [0]]);
   });
 
   test('1D: basic type with extra index and columns', () => {
     const df = new DataFrame(1, { index: ['kk', 'bb'], columns: [5, 6] });
+    expect(df.axes).toStrictEqual([
+      ['kk', 'bb'],
+      [5, 6],
+    ]);
     expect(df.data).toStrictEqual([
       [1, 1],
       [1, 1],
@@ -19,10 +23,6 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([
       [1, 1],
       [1, 1],
-    ]);
-    expect(df.axes).toStrictEqual([
-      ['kk', 'bb'],
-      [5, 6],
     ]);
   });
 
@@ -34,30 +34,30 @@ describe('new DataFrame', () => {
 
   test('1D: array', () => {
     const df = new DataFrame([1, 2, 3]);
+    expect(df.axes).toStrictEqual([[0, 1, 2], [0]]);
     expect(df.data).toStrictEqual([1, 2, 3]);
     expect(df.colData).toStrictEqual([1, 2, 3]);
-    expect(df.axes).toStrictEqual([[0, 1, 2], [0]]);
   });
 
   test('1D: array with extra index and columns', () => {
     const df = new DataFrame([1, 2, 3], { index: ['b', 'c', 'a'], columns: ['col'] });
+    expect(df.axes).toStrictEqual([['b', 'c', 'a'], ['col']]);
     expect(df.data).toStrictEqual([1, 2, 3]);
     expect(df.colData).toStrictEqual([1, 2, 3]);
-    expect(df.axes).toStrictEqual([['b', 'c', 'a'], ['col']]);
   });
 
   test('1D: object', () => {
     const df = new DataFrame({ a: 1, b: 2, c: 3 });
+    expect(df.axes).toStrictEqual([[0], ['a', 'b', 'c']]);
     expect(df.data).toStrictEqual([1, 2, 3]);
     expect(df.colData).toStrictEqual([1, 2, 3]);
-    expect(df.axes).toStrictEqual([[0], ['a', 'b', 'c']]);
   });
 
   test('1D: object with extra index and columns', () => {
     const df = new DataFrame({ a: 1, b: 2, c: 3 }, { index: ['idx1'], columns: ['c', 'b'] });
+    expect(df.axes).toStrictEqual([['idx1'], ['c', 'b']]);
     expect(df.data).toStrictEqual([3, 2]);
     expect(df.colData).toStrictEqual([3, 2]);
-    expect(df.axes).toStrictEqual([['idx1'], ['c', 'b']]);
   });
 
   test('2D: array', () => {
@@ -65,6 +65,10 @@ describe('new DataFrame', () => {
       [1, 4],
       [2, 5],
       [3, 6],
+    ]);
+    expect(df.axes).toStrictEqual([
+      [0, 1, 2],
+      [0, 1],
     ]);
     expect(df.data).toStrictEqual([
       [1, 4],
@@ -74,10 +78,6 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([
       [1, 2, 3],
       [4, 5, 6],
-    ]);
-    expect(df.axes).toStrictEqual([
-      [0, 1, 2],
-      [0, 1],
     ]);
   });
 
@@ -93,6 +93,10 @@ describe('new DataFrame', () => {
         columns: ['col1', 'col2'],
       }
     );
+    expect(df.axes).toStrictEqual([
+      ['a', 'b', 'c'],
+      ['col1', 'col2'],
+    ]);
     expect(df.data).toStrictEqual([
       [1, 4],
       [2, 5],
@@ -101,10 +105,6 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([
       [1, 2, 3],
       [4, 5, 6],
-    ]);
-    expect(df.axes).toStrictEqual([
-      ['a', 'b', 'c'],
-      ['col1', 'col2'],
     ]);
   });
 
@@ -114,6 +114,10 @@ describe('new DataFrame', () => {
       { a: 2, b: 5 },
       { a: 3, b: 6 },
     ]);
+    expect(df.axes).toStrictEqual([
+      [0, 1, 2],
+      ['a', 'b'],
+    ]);
     expect(df.data).toStrictEqual([
       [1, 4],
       [2, 5],
@@ -122,10 +126,6 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([
       [1, 2, 3],
       [4, 5, 6],
-    ]);
-    expect(df.axes).toStrictEqual([
-      [0, 1, 2],
-      ['a', 'b'],
     ]);
   });
 
@@ -138,7 +138,10 @@ describe('new DataFrame', () => {
       ],
       { index: ['k', 'm', 'n'], columns: ['c', 'a'] }
     );
-
+    expect(df.axes).toStrictEqual([
+      ['k', 'm', 'n'],
+      ['c', 'a'],
+    ]);
     expect(df.data).toStrictEqual([
       [7, 1],
       [8, 2],
@@ -148,10 +151,6 @@ describe('new DataFrame', () => {
       [7, 8, 9],
       [1, 2, 3],
     ]);
-    expect(df.axes).toStrictEqual([
-      ['k', 'm', 'n'],
-      ['c', 'a'],
-    ]);
   });
 
   test('2D: array object', () => {
@@ -159,6 +158,10 @@ describe('new DataFrame', () => {
       a: [1, 2, 3],
       b: [4, 5, 6],
     });
+    expect(df.axes).toStrictEqual([
+      [0, 1, 2],
+      ['a', 'b'],
+    ]);
     expect(df.data).toStrictEqual([
       [1, 4],
       [2, 5],
@@ -167,10 +170,6 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([
       [1, 2, 3],
       [4, 5, 6],
-    ]);
-    expect(df.axes).toStrictEqual([
-      [0, 1, 2],
-      ['a', 'b'],
     ]);
   });
 
@@ -185,6 +184,10 @@ describe('new DataFrame', () => {
         columns: ['b', 'a'],
       }
     );
+    expect(df.axes).toStrictEqual([
+      ['p', 'q', 'r'],
+      ['b', 'a'],
+    ]);
     expect(df.data).toStrictEqual([
       [4, 1],
       [5, 2],
@@ -193,10 +196,6 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([
       [4, 5, 6],
       [1, 2, 3],
-    ]);
-    expect(df.axes).toStrictEqual([
-      ['p', 'q', 'r'],
-      ['b', 'a'],
     ]);
   });
 });
@@ -444,5 +443,59 @@ describe('DataFrame info', () => {
     expect(info.zeros).toBe(0);
     expect(info.levelOfMeasurements).toStrictEqual(['Interval', 'Discrete']);
     expect(info.name).toBe('a');
+  });
+
+  test('Array object with missing values (graph data)', () => {
+    const df = new DataFrame({
+      nodes: [
+        { id: '1', label: 'Company1' },
+        { id: '2', label: 'Company2' },
+        { id: '3', label: 'Company3' },
+        { id: '4', label: 'Company4' },
+        { id: '5', label: 'Company5' },
+        { id: '6', label: 'Company6' },
+        { id: '7', label: 'Company7' },
+        { id: '8', label: 'Company8' },
+        { id: '9', label: 'Company9' },
+      ],
+      edges: [
+        { source: '1', target: '2', data: { type: 'A', amount: '100,000 Yuan', date: '2019-08-03' } },
+        { source: '1', target: '3', data: { type: 'B', amount: '100,000 Yuan', date: '2019-08-03' } },
+        { source: '2', target: '5', data: { type: 'C', amount: '100,000 Yuan', date: '2019-08-03' } },
+        { source: '5', target: '6', data: { type: 'B', amount: '100,000 Yuan', date: '2019-08-03' } },
+        { source: '3', target: '4', data: { type: 'C', amount: '100,000 Yuan', date: '2019-08-03' } },
+        { source: '4', target: '7', data: { type: 'B', amount: '100,000 Yuan', date: '2019-08-03' } },
+        { source: '1', target: '8', data: { type: 'B', amount: '100,000 Yuan', date: '2019-08-03' } },
+        { source: '1', target: '9', data: { type: 'C', amount: '100,000 Yuan', date: '2019-08-03' } },
+      ],
+    });
+
+    expect(df.getByColumn('edges').data[8]).toBeUndefined();
+  });
+
+  test('Object array with missing values', () => {
+    const df = new DataFrame([
+      { a: '1', b: '2', c: '3' },
+      { a: '1', b: '2', d: '4' },
+      { e: '1', f: '2' },
+    ]);
+
+    expect(df.axes).toStrictEqual([
+      [0, 1, 2],
+      ['a', 'b', 'c', 'd', 'e', 'f'],
+    ]);
+    expect(df.data).toStrictEqual([
+      ['2', '3', undefined, undefined, undefined],
+      ['2', undefined, '4', undefined, undefined],
+      [undefined, undefined, undefined, '1', '2'],
+    ]);
+    expect(df.colData).toStrictEqual([
+      ['1', '1', undefined],
+      ['2', '2', undefined],
+      ['3', undefined, undefined],
+      [undefined, '4', undefined],
+      [undefined, undefined, '1'],
+      [undefined, undefined, '2'],
+    ]);
   });
 });
