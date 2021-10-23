@@ -31,7 +31,7 @@ export default abstract class BaseFrame {
 
       for (let i = 0; i < data.length; i += 1) {
         const datum = data[i];
-        // As long as any datum in data is basic type, it's a 1D array
+        // For DataFrame, as long as any datum in data is basic type, it's a 1D array
         if (!isBasicType(datum)) {
           legal = false;
           break;
