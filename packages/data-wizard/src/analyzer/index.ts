@@ -274,7 +274,8 @@ export function isOrdinal(info: FieldInfo): boolean {
   const { samples, recommendation } = info;
   if (recommendation !== 'string') return false;
   if (isConst(info)) return false;
-  const list = samples.filter((item) => !utils.isNull(item));
+  const list = samples.filter((item) => !utils.isNull(item) && utils.isBasicType(item));
+  if (list.length === 0) return false;
   let start: null | string = null;
   let end: null | string = null;
   let startIndex = -1;

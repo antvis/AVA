@@ -1,6 +1,5 @@
-import { isObject, isNumber, isString, isInteger, isArray, range, assert } from '../utils';
+import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '../utils';
 import BaseFrame from './base-frame';
-import { isBasicType } from './utils';
 import type { SeriesData, Extra, Axis } from './types';
 
 export interface SeriesExtra {

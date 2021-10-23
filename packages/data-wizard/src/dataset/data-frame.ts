@@ -1,8 +1,8 @@
 import { analyzeField } from '../analyzer';
-import { isArray, isObject, isString, isInteger, isNumber, range, assert } from '../utils';
+import { isArray, isObject, isString, isInteger, isNumber, isBasicType, range, assert } from '../utils';
 import BaseFrame from './base-frame';
 import Series from './series';
-import { isBasicType, generateArrayIndex, isAxis } from './utils';
+import { generateArrayIndex, isAxis } from './utils';
 import type { FrameData, Axis, Extra, FieldsInfo } from './types';
 
 /** 2D data structure */
