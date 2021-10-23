@@ -81,6 +81,10 @@ export const isArray = (value: any): value is any[] => {
   return Array.isArray(value);
 };
 
+export const isBasicType = (value: any): boolean => {
+  return !isArray(value) && !isObject(value);
+};
+
 export const unique = (array: any[]): any[] => {
   return Array.from(new Set(array));
 };

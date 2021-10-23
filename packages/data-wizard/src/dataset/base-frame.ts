@@ -1,5 +1,5 @@
-import { assert, isArray, isObject } from '../utils';
-import { isBasicType, generateArrayIndex } from './utils';
+import { assert, isArray, isObject, isBasicType } from '../utils';
+import { generateArrayIndex } from './utils';
 import type { SeriesData, FrameData, Axis, Extra } from './types';
 
 type NDArray = any[] | any[][];

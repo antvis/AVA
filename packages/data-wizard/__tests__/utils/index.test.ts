@@ -62,6 +62,10 @@ test('isArray', () => {
   expect(utils.isArray(data)).toBe(true);
 });
 
+test('isBasicType', () => {
+  expect(utils.isBasicType(5)).toBeTruthy();
+});
+
 test('unique', () => {
   const data = [1, 2, 3, 3, 2, 1];
   expect(utils.unique(data)).toStrictEqual([1, 2, 3]);

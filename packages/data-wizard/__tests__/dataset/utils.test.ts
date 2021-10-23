@@ -1,8 +1,4 @@
-import { isBasicType, isAxis, generateArrayIndex } from '../../src/dataset/utils';
-
-test('isBasicType', () => {
-  expect(isBasicType(5)).toBeTruthy();
-});
+import { isAxis, generateArrayIndex } from '../../src/dataset/utils';
 
 test('isAxis', () => {
   expect(isAxis(1)).toBeTruthy();

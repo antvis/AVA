@@ -1,9 +1,5 @@
-import { isArray, isObject, isNumber, isString, range, assert } from '../utils';
+import { isArray, isNumber, isString, range, assert } from '../utils';
 import type { Axis } from './types';
-
-export const isBasicType = (value: any): boolean => {
-  return !isArray(value) && !isObject(value);
-};
 
 export const isAxis = (value: any): value is Axis => {
   return isNumber(value) || isString(value);
