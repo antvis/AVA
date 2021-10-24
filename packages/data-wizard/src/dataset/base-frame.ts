@@ -1,5 +1,5 @@
 import { assert, isArray, isObject, isBasicType } from '../utils';
-import { generateArrayIndex } from './utils';
+import { generateArrayIndex, fillMissingValue } from './utils';
 import type { SeriesData, FrameData, Axis, Extra } from './types';
 
 type NDArray = any[] | any[][];
@@ -20,9 +20,9 @@ export default abstract class BaseFrame {
       // generate index
       if (extra?.index) {
         this.setAxis(0, extra?.index);
-        this.data = Array(extra?.index.length).fill(data);
+        this.data = Array(extra?.index.length).fill(fillMissingValue(data, extra?.fillValue));
       } else {
-        this.data = [data];
+        this.data = [fillMissingValue(data, extra?.fillValue)];
         this.setAxis(0, [0]);
       }
     } else if (isArray(data)) {
@@ -49,7 +49,7 @@ export default abstract class BaseFrame {
 
           this.setAxis(0, extra?.index);
         }
-        this.data = data;
+        this.data = extra?.fillValue ? data.map((datum) => fillMissingValue(datum, extra?.fillValue)) : data;
       }
     }
   }

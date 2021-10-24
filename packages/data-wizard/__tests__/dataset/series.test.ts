@@ -107,3 +107,36 @@ describe('Series get value functions', () => {
     );
   });
 });
+
+describe('Series data with fillValue', () => {
+  test('1D: basic type', () => {
+    const s = new Series(undefined, { fillValue: 201 });
+    expect(s.data).toStrictEqual([201]);
+  });
+
+  test('1D: basic type with extra index', () => {
+    const s = new Series(null, { index: [0, 1, 2], fillValue: 201 });
+    expect(s.data).toStrictEqual([201, 201, 201]);
+  });
+
+  test('1D: object', () => {
+    const s = new Series({ a: 1, b: null, c: 3 }, { fillValue: 201 });
+    expect(s.data).toStrictEqual([1, 201, 3]);
+  });
+
+  test('1D: object with extra index', () => {
+    const s = new Series({ a: 1, b: 2, c: '' }, { index: ['c', 'a'], fillValue: 201 });
+    expect(s.data).toStrictEqual([201, 1]);
+  });
+
+  test('1D: array', () => {
+    const s = new Series(['', 2, ''], { fillValue: 201 });
+    expect(s.data).toStrictEqual([201, 2, 201]);
+  });
+
+  test('1D: array with extra index', () => {
+    const s = new Series([undefined, 2, 3], { index: ['a', 'b', 'c'], fillValue: 201 });
+    expect(s.axes).toStrictEqual([['a', 'b', 'c']]);
+    expect(s.data).toStrictEqual([201, 2, 3]);
+  });
+});

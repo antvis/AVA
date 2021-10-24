@@ -92,6 +92,7 @@ export type Axis = string | number;
 export type Extra = {
   index?: Axis[];
   columns?: Axis[];
+  fillValue?: any;
 };
 
 /**
