@@ -2,7 +2,7 @@ import { analyzeField } from '../analyzer';
 import { isArray, isObject, isString, isInteger, isNumber, isBasicType, range, assert } from '../utils';
 import BaseFrame from './base-frame';
 import Series from './series';
-import { generateArrayIndex, isAxis } from './utils';
+import { generateArrayIndex, isAxis, fillMissingValue } from './utils';
 import type { FrameData, Axis, Extra, FieldsInfo } from './types';
 
 /** 2D data structure */
@@ -44,7 +44,7 @@ export default class DataFrame extends BaseFrame {
        */
       if (isArray(data0)) {
         const columns = range(data0.length);
-        this.generateDataAndColDataFromArray(false, data, columns);
+        this.generateDataAndColDataFromArray(false, data, columns, extra?.fillValue);
         this.generateColumns(columns, extra?.columns);
       }
 
@@ -69,15 +69,15 @@ export default class DataFrame extends BaseFrame {
             this.data[i] = [];
             for (let j = 0; j < extra?.columns.length; j += 1) {
               const column = extra?.columns[j];
-
               assert(columns.includes(column), `There is no column ${column} in data.`);
 
-              this.data[i].push(datum[column]);
+              const newDatum = fillMissingValue(datum[column], extra.fillValue);
+              this.data[i].push(newDatum);
 
               if (this.colData[j]) {
-                this.colData[j].push(datum[column]);
+                this.colData[j].push(newDatum);
               } else {
-                this.colData[j] = [datum[column]];
+                this.colData[j] = [newDatum];
               }
             }
             this.setAxis(1, extra?.columns);
@@ -85,7 +85,7 @@ export default class DataFrame extends BaseFrame {
         }
 
         if (!extra?.columns) {
-          this.generateDataAndColDataFromArray(true, data, columns);
+          this.generateDataAndColDataFromArray(true, data, columns, extra?.fillValue);
           this.setAxis(1, columns);
         }
       }
@@ -114,7 +114,7 @@ export default class DataFrame extends BaseFrame {
 
             assert(columns.includes(column), `There is no column ${column} in data.`);
 
-            this.data.push(data[column]);
+            this.data.push(fillMissingValue(data[column], extra?.fillValue));
           }
           this.colData = this.data;
           this.setAxis(1, extra?.columns);
@@ -124,9 +124,11 @@ export default class DataFrame extends BaseFrame {
 
             assert(isBasicType(datum), 'Data type is illegal');
 
-            this.data.push(datum);
+            this.data.push(fillMissingValue(datum, extra?.fillValue));
           }
-          this.colData = Object.values(data);
+          this.colData = extra?.fillValue
+            ? dataValues.map((datum) => fillMissingValue(datum, extra?.fillValue))
+            : dataValues;
           this.generateColumns(columns);
         }
       }
@@ -144,18 +146,19 @@ export default class DataFrame extends BaseFrame {
 
           // Fill the missing values
           if (datum.length < this.index.length) {
-            // Allow developer to assign the fill value?
-            const newDatum = datum.concat([...Array(this.index.length - datum.length)]);
+            const newDatum = datum.concat(
+              Array(this.index.length - datum.length).fill(fillMissingValue(undefined, extra?.fillValue))
+            );
             this.colData.push(newDatum);
           } else {
-            this.colData.push(datum);
+            this.colData.push(datum.map((d) => fillMissingValue(d, extra?.fillValue)));
           }
 
           for (let j = 0; j < this.index.length; j += 1) {
             if (this.data[j]) {
-              this.data[j].push(datum[j]);
+              this.data[j].push(fillMissingValue(datum[j], extra?.fillValue));
             } else {
-              this.data[j] = [datum[j]];
+              this.data[j] = [fillMissingValue(datum[j], extra?.fillValue)];
             }
           }
         }
@@ -187,34 +190,40 @@ export default class DataFrame extends BaseFrame {
    * @param data
    * @param columns
    */
-  private generateDataAndColDataFromArray(isObj: boolean, data: any[], columns: Axis[]) {
+  private generateDataAndColDataFromArray(
+    isObj: boolean,
+    data: any[],
+    columns: Axis[],
+    fillValue?: Extra['fillValue']
+  ) {
     for (let i = 0; i < data.length; i += 1) {
       const datum = data[i];
 
       assert(isObj ? isObject(datum) : isArray(datum), 'Data type is illegal');
 
       if (isObj && JSON.stringify(Object.keys(datum)) === JSON.stringify(columns)) {
-        this.data.push(Object.values(datum));
+        this.data.push(Object.values(datum).map((d) => fillMissingValue(d, fillValue)));
       } else if (!isObj) {
-        this.data.push(datum);
+        this.data.push(datum.map((datum) => fillMissingValue(datum, fillValue)));
       }
 
       for (let j = 0; j < columns.length; j += 1) {
         const column = columns[j];
+        const newDatum = fillMissingValue(datum[column], fillValue);
 
         // Fill the missing values
         if (isObj && JSON.stringify(Object.keys(datum)) !== JSON.stringify(columns)) {
-          if (!this.data[i]) {
-            this.data[i] = [];
+          if (this.data[i]) {
+            this.data[i].push(newDatum);
           } else {
-            this.data[i].push(datum[column]);
+            this.data[i] = [newDatum];
           }
         }
 
         if (this.colData[j]) {
-          this.colData[j].push(datum[column]);
+          this.colData[j].push(newDatum);
         } else {
-          this.colData[j] = [datum[column]];
+          this.colData[j] = [newDatum];
         }
       }
     }

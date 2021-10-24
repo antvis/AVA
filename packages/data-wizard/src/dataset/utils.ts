@@ -40,3 +40,6 @@ export const flatObject = (obj, concatenator = '.') =>
       ),
     };
   }, {});
+export const fillMissingValue = (datum: any, fillValue: any): any => {
+  return !datum && JSON.stringify(fillValue) ? fillValue : datum;
+};

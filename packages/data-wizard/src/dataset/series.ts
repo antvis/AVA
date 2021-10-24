@@ -1,9 +1,11 @@
 import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '../utils';
+import { fillMissingValue } from './utils';
 import BaseFrame from './base-frame';
 import type { SeriesData, Extra, Axis } from './types';
 
 export interface SeriesExtra {
   index?: Extra['index'];
+  fillValue?: Extra['fillValue'];
 }
 
 /** 1D data structure */
@@ -27,12 +29,12 @@ export default class Series extends BaseFrame {
         for (let i = 0; i < extra?.index.length; i += 1) {
           const idx = extra?.index[i] as string;
           if (index.includes(idx)) {
-            this.data.push(data[idx]);
+            this.data.push(fillMissingValue(data[idx], extra?.fillValue));
           }
         }
         this.setAxis(0, extra?.index);
       } else {
-        this.data = Object.values(data);
+        this.data = Object.values(data).map((datum) => fillMissingValue(datum, extra?.fillValue));
         this.setAxis(0, index);
       }
     } else if (isArray(data)) {
