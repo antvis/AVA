@@ -9,9 +9,9 @@ const Page = () => {
   const [chartSamplesIndex, changeSampleIndex] = useState(0);
 
   return (
-    <div className='page'>
+    <div className="page">
       <Toolbar changeMode={changeMode} changeSampleIndex={changeSampleIndex} />
-      <Dashboard chartList={CHART_SAMPLE_LIST[chartSamplesIndex]} interactionMode={interactionMode}/>
+      <Dashboard chartList={CHART_SAMPLE_LIST[chartSamplesIndex]} interactionMode={interactionMode} />
     </div>
   );
 };

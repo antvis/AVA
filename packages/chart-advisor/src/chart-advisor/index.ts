@@ -21,10 +21,10 @@ export class ChartAdvisor {
    */
   advise(params: AdviseParams) {
     const { data, dataProps, fields, options } = params;
-    const advices = this.advisor.advise({data, dataProps, fields, options});
-    const advicesAfterLint = advices.map(advice => {
-      const lintResult = this.linter.lint({spec: advice.spec, dataProps, options});
-      return { ...advice, lint: lintResult};
+    const advices = this.advisor.advise({ data, dataProps, fields, options });
+    const advicesAfterLint = advices.map((advice) => {
+      const lintResult = this.linter.lint({ spec: advice.spec, dataProps, options });
+      return { ...advice, lint: lintResult };
     });
     return advicesAfterLint;
   }

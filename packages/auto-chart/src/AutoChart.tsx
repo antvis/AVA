@@ -41,7 +41,7 @@ export const AutoChart = (props: Props) => {
     title,
     description,
     showRanking = true,
-    configurable = true
+    configurable = true,
   } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef(null);

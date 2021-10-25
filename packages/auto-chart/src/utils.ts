@@ -57,7 +57,10 @@ export function draggable(target: HTMLElement, dragEle: HTMLElement) {
   };
 }
 
-export function getElePosition(containerRef: HTMLDivElement, dragContainer: HTMLDivElement): { left: string; top: string } {
+export function getElePosition(
+  containerRef: HTMLDivElement,
+  dragContainer: HTMLDivElement
+): { left: string; top: string } {
   const left = containerRef.offsetLeft;
   const top = containerRef.offsetTop;
   const boxWidth = containerRef.offsetWidth;
@@ -81,9 +84,9 @@ export function getElePosition(containerRef: HTMLDivElement, dragContainer: HTML
     dragTop = dragTopMin < 0 ? wHeight - dragHeight : dragTopMin;
   } else {
     dragTop = dragTopMax;
-  };
+  }
   return {
     left: `${dragLeft}px`,
-    top: `${dragTop}px`
+    top: `${dragTop}px`,
   };
 }

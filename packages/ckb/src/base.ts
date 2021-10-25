@@ -25,8 +25,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Step Line Chart',
     alias: ['Step Lines'],
     family: ['LineCharts'],
-    def:
-      'A step line chart is a line chart in which points of each line are connected by horizontal and vertical line segments, looking like steps of a staircase.',
+    def: 'A step line chart is a line chart in which points of each line are connected by horizontal and vertical line segments, looking like steps of a staircase.',
     purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -45,8 +44,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Area Chart',
     alias: [],
     family: ['AreaCharts'],
-    def:
-      'An area chart uses series of line segments with overlapped areas to show the change in data in a ordinal dimension.',
+    def: 'An area chart uses series of line segments with overlapped areas to show the change in data in a ordinal dimension.',
     purpose: ['Comparison', 'Trend', 'Anomaly'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -65,8 +63,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Stacked Area Chart',
     alias: [],
     family: ['AreaCharts'],
-    def:
-      'A stacked area chart uses layered line segments with different styles of padding regions to display how multiple sets of data change in the same ordinal dimension, and the endpoint heights of the segments on the same dimension tick are accumulated by value.',
+    def: 'A stacked area chart uses layered line segments with different styles of padding regions to display how multiple sets of data change in the same ordinal dimension, and the endpoint heights of the segments on the same dimension tick are accumulated by value.',
     purpose: ['Composition', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -85,8 +82,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Percent Stacked Area Chart',
     alias: ['Percent Stacked Area', '% Stacked Area', '100% Stacked Area'],
     family: ['AreaCharts'],
-    def:
-      'A percent stacked area chart is an extented stacked area chart in which the height of the endpoints of the line segment on the same dimension tick is the accumulated proportion of the ratio, which is 100% of the total.',
+    def: 'A percent stacked area chart is an extented stacked area chart in which the height of the endpoints of the line segment on the same dimension tick is the accumulated proportion of the ratio, which is 100% of the total.',
     purpose: ['Comparison', 'Composition', 'Proportion', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -135,8 +131,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Column Chart',
     alias: ['Columns'],
     family: ['ColumnCharts'],
-    def:
-      'A column chart uses series of columns to display the value of the dimension. The horizontal axis shows the classification dimension and the vertical axis shows the corresponding value.',
+    def: 'A column chart uses series of columns to display the value of the dimension. The horizontal axis shows the classification dimension and the vertical axis shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -154,8 +149,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Grouped Column Chart',
     alias: ['Grouped Column'],
     family: ['ColumnCharts'],
-    def:
-      'A grouped column chart uses columns of different colors to form a group to display the values ​​of dimensions. The horizontal axis indicates the grouping of categories, the color indicates the categories, and the vertical axis shows the corresponding value.',
+    def: 'A grouped column chart uses columns of different colors to form a group to display the values ​​of dimensions. The horizontal axis indicates the grouping of categories, the color indicates the categories, and the vertical axis shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -173,8 +167,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Stacked Column Chart',
     alias: ['Stacked Column'],
     family: ['ColumnCharts'],
-    def:
-      'A stacked column chart uses stacked bars of different colors to display the values ​​for each dimension. The horizontal axis indicates the first classification dimension, the color indicates the second classification dimension, and the vertical axis shows the corresponding value.',
+    def: 'A stacked column chart uses stacked bars of different colors to display the values ​​for each dimension. The horizontal axis indicates the first classification dimension, the color indicates the second classification dimension, and the vertical axis shows the corresponding value.',
     purpose: ['Comparison', 'Composition', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -192,8 +185,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Percent Stacked Column Chart',
     alias: ['Percent Stacked Column', '% Stacked Column', '100% Stacked Column'],
     family: ['ColumnCharts'],
-    def:
-      'A percent stacked column chart uses stacked bars of different colors to display the values ​​for each dimension. The horizontal axis indicates the first classification dimension, the color indicates the second classification dimension, and the vertical axis shows the percentage of the corresponding classification.',
+    def: 'A percent stacked column chart uses stacked bars of different colors to display the values ​​for each dimension. The horizontal axis indicates the first classification dimension, the color indicates the second classification dimension, and the vertical axis shows the percentage of the corresponding classification.',
     purpose: ['Comparison', 'Composition', 'Distribution', 'Proportion'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -244,8 +236,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Waterfall Chart',
     alias: ['Flying Bricks Chart', 'Mario Chart', 'Bridge Chart', 'Cascade Chart'],
     family: ['ColumnCharts'],
-    def:
-      'A waterfall chart is used to portray how an initial value is affected by a series of intermediate positive or negative values',
+    def: 'A waterfall chart is used to portray how an initial value is affected by a series of intermediate positive or negative values',
     purpose: ['Comparison', 'Trend'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -278,8 +269,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Bar Chart',
     alias: ['Bars'],
     family: ['BarCharts'],
-    def:
-      'A bar chart uses series of bars to display the value of the dimension. The vertical axis shows the classification dimension and the horizontal axis shows the corresponding value.',
+    def: 'A bar chart uses series of bars to display the value of the dimension. The vertical axis shows the classification dimension and the horizontal axis shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -297,8 +287,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Grouped Bar Chart',
     alias: ['Grouped Bar'],
     family: ['BarCharts'],
-    def:
-      'A grouped bar chart uses bars of different colors to form a group to display the values of the dimensions. The vertical axis indicates the grouping of categories, the color indicates the categories, and the horizontal axis shows the corresponding value.',
+    def: 'A grouped bar chart uses bars of different colors to form a group to display the values of the dimensions. The vertical axis indicates the grouping of categories, the color indicates the categories, and the horizontal axis shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -316,8 +305,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Stacked Bar Chart',
     alias: ['Stacked Bar'],
     family: ['BarCharts'],
-    def:
-      'A stacked bar chart uses stacked bars of different colors to display the values ​​for each dimension. The vertical axis indicates the first classification dimension, the color indicates the second classification dimension, and the horizontal axis shows the corresponding value.',
+    def: 'A stacked bar chart uses stacked bars of different colors to display the values ​​for each dimension. The vertical axis indicates the first classification dimension, the color indicates the second classification dimension, and the horizontal axis shows the corresponding value.',
     purpose: ['Comparison', 'Composition', 'Distribution', 'Rank'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -335,8 +323,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Percent Stacked Bar Chart',
     alias: ['Percent Stacked Bar', '% Stacked Bar', '100% Stacked Bar'],
     family: ['BarCharts'],
-    def:
-      'A percent stacked column chart uses stacked bars of different colors to display the values ​​for each dimension. The vertical axis indicates the first classification dimension, the color indicates the second classification dimension, and the horizontal axis shows the percentage of the corresponding classification.',
+    def: 'A percent stacked column chart uses stacked bars of different colors to display the values ​​for each dimension. The vertical axis indicates the first classification dimension, the color indicates the second classification dimension, and the horizontal axis shows the percentage of the corresponding classification.',
     purpose: ['Comparison', 'Composition', 'Distribution', 'Proportion'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -387,8 +374,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Radial Bar Chart',
     alias: ['Radial Column Chart'],
     family: ['BarCharts'],
-    def:
-      'A bar chart that is plotted in the polar coordinate system. The axis along radius shows the classification dimension and the angle shows the corresponding value.',
+    def: 'A bar chart that is plotted in the polar coordinate system. The axis along radius shows the classification dimension and the angle shows the corresponding value.',
     purpose: ['Comparison', 'Distribution', 'Rank'],
     coord: ['Polar'],
     category: ['Statistic'],
@@ -421,8 +407,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Bullet Chart',
     alias: [],
     family: ['BarCharts'],
-    def:
-      'A bullet graph is a variation of a bar graph developed by Stephen Few. Seemingly inspired by the traditional thermometer charts and progress bars found in many dashboards, the bullet graph serves as a replacement for dashboard gauges and meters.',
+    def: 'A bullet graph is a variation of a bar graph developed by Stephen Few. Seemingly inspired by the traditional thermometer charts and progress bars found in many dashboards, the bullet graph serves as a replacement for dashboard gauges and meters.',
     purpose: ['Proportion'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -440,8 +425,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Pie Chart',
     alias: ['Circle Chart', 'Pie'],
     family: ['PieCharts'],
-    def:
-      'A pie chart is a chart that the classification and proportion of data are represented by the color and arc length (angle, area) of the sector.',
+    def: 'A pie chart is a chart that the classification and proportion of data are represented by the color and arc length (angle, area) of the sector.',
     purpose: ['Comparison', 'Composition', 'Proportion'],
     coord: ['Polar'],
     category: ['Statistic'],
@@ -459,8 +443,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Donut Chart',
     alias: ['Donut', 'Doughnut', 'Doughnut Chart', 'Ring Chart'],
     family: ['PieCharts'],
-    def:
-      'A donut chart is a variation on a Pie chart except it has a round hole in the center which makes it look like a donut.',
+    def: 'A donut chart is a variation on a Pie chart except it has a round hole in the center which makes it look like a donut.',
     purpose: ['Comparison', 'Composition', 'Proportion'],
     coord: ['Polar'],
     category: ['Statistic'],
@@ -493,8 +476,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Rose Chart',
     alias: ['Nightingale Chart', 'Polar Area Chart', 'Coxcomb Chart'],
     family: ['PieCharts'],
-    def:
-      'Nightingale Rose Chart is a peculiar combination of the Radar Chart and Stacked Column Chart types of data visualization.',
+    def: 'Nightingale Rose Chart is a peculiar combination of the Radar Chart and Stacked Column Chart types of data visualization.',
     purpose: ['Comparison', 'Composition', 'Proportion'],
     coord: ['Polar'],
     category: ['Statistic'],
@@ -512,8 +494,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Scatter Plot',
     alias: ['Scatter Chart', 'Scatterplot'],
     family: ['ScatterCharts'],
-    def:
-      'A scatter plot is a type of plot or mathematical diagram using Cartesian coordinates to display values for typically two variables for series of data.',
+    def: 'A scatter plot is a type of plot or mathematical diagram using Cartesian coordinates to display values for typically two variables for series of data.',
     purpose: ['Comparison', 'Distribution', 'Anomaly'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -531,8 +512,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Bubble Chart',
     alias: ['Bubble Chart'],
     family: ['ScatterCharts'],
-    def:
-      'A bubble chart is a type of chart that displays four dimensions of data with x, y positions, circle size and circle color.',
+    def: 'A bubble chart is a type of chart that displays four dimensions of data with x, y positions, circle size and circle color.',
     purpose: ['Comparison', 'Distribution'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -550,8 +530,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Treemap',
     alias: [],
     family: ['TreeGraph'],
-    def:
-      'A visual representation of a data tree with nodes. Each node is displayed as a rectangle, sized and colored according to values that you assign.',
+    def: 'A visual representation of a data tree with nodes. Each node is displayed as a rectangle, sized and colored according to values that you assign.',
     purpose: ['Composition', 'Comparison', 'Hierarchy'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -569,8 +548,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Funnel Chart',
     alias: [],
     family: ['FunnelCharts'],
-    def:
-      'A funnel chart is often used to represent stages in a sales process and show the amount of potential revenue for each stage.',
+    def: 'A funnel chart is often used to represent stages in a sales process and show the amount of potential revenue for each stage.',
     purpose: ['Trend'],
     coord: ['SymmetricCartesian'],
     category: ['Statistic'],
@@ -622,8 +600,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Box Plot',
     alias: ['Box and Whisker Plot', 'boxplot'],
     family: ['BarCharts'],
-    def:
-      'A box plot is often used to graphically depict groups of numerical data through their quartiles. Box plots may also have lines extending from the boxes indicating variability outside the upper and lower quartiles. Outliers may be plotted as individual points.',
+    def: 'A box plot is often used to graphically depict groups of numerical data through their quartiles. Box plots may also have lines extending from the boxes indicating variability outside the upper and lower quartiles. Outliers may be plotted as individual points.',
     purpose: ['Distribution', 'Anomaly'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -641,8 +618,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Heatmap',
     alias: [],
     family: ['HeatmapCharts'],
-    def:
-      'A heatmap is a graphical representation of data where the individual values contained in a matrix are represented as colors.',
+    def: 'A heatmap is a graphical representation of data where the individual values contained in a matrix are represented as colors.',
     purpose: ['Distribution'],
     coord: ['Cartesian2D'],
     category: ['Statistic'],
@@ -690,8 +666,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Radar Chart',
     alias: ['Web Chart', 'Spider Chart', 'Star Chart', 'Cobweb Chart', 'Irregular Polygon', 'Kiviat diagram'],
     family: ['RadarCharts'],
-    def:
-      'A radar chart maps series of data volume of multiple dimensions onto the axes. Starting at the same center point, usually ending at the edge of the circle, connecting the same set of points using lines.',
+    def: 'A radar chart maps series of data volume of multiple dimensions onto the axes. Starting at the same center point, usually ending at the edge of the circle, connecting the same set of points using lines.',
     purpose: ['Comparison'],
     coord: ['Radar'],
     category: ['Statistic'],
@@ -769,8 +744,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Indented Tree Layout',
     alias: [],
     family: ['TreeGraph'],
-    def:
-      'A type of tree graph layout where the hierarchy of tree is represented by the horizontal indentation, and each element will occupy one row/column. It is commonly used to represent the file directory structure.',
+    def: 'A type of tree graph layout where the hierarchy of tree is represented by the horizontal indentation, and each element will occupy one row/column. It is commonly used to represent the file directory structure.',
     purpose: ['Relation', 'Hierarchy'],
     coord: ['Cartesian2D'],
     category: ['Graph'],
@@ -845,8 +819,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Force Atlas 2 Graph Layout',
     alias: ['FA2 Layout'],
     family: ['GeneralGraph'],
-    def:
-      'A type of force directed graph layout algorithm. It focuses more on the degree of the node when calculating the force than the classical force-directed algorithm .',
+    def: 'A type of force directed graph layout algorithm. It focuses more on the degree of the node when calculating the force than the classical force-directed algorithm .',
     purpose: ['Relation'],
     coord: ['Cartesian2D'],
     category: ['Graph'],
@@ -861,8 +834,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Multi-Dimensional Scaling Layout',
     alias: ['MDS Layout'],
     family: ['GeneralGraph'],
-    def:
-      'A type of dimension reduction algorithm that could be used for calculating graph layout. MDS (Multidimensional scaling) is used for project high dimensional data onto low dimensional space.',
+    def: 'A type of dimension reduction algorithm that could be used for calculating graph layout. MDS (Multidimensional scaling) is used for project high dimensional data onto low dimensional space.',
     purpose: ['Relation'],
     coord: ['Cartesian2D'],
     category: ['Graph'],
@@ -907,8 +879,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Radial Graph Layout',
     alias: [],
     family: ['GeneralGraph'],
-    def:
-      'A type of graph layout which places a focus node on the center and the others on the concentrics centered at the focus node according to the shortest path length to the it.',
+    def: 'A type of graph layout which places a focus node on the center and the others on the concentrics centered at the focus node according to the shortest path length to the it.',
     purpose: ['Relation'],
     coord: ['Cartesian2D'],
     category: ['Graph'],
@@ -968,8 +939,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Chord Diagram',
     alias: [],
     family: ['GeneralGraph'],
-    def:
-      'A graphical method of displaying the inter-relationships between data in a matrix. The data are arranged radially around a circle with the relationships between the data points typically drawn as arcs connecting the data.',
+    def: 'A graphical method of displaying the inter-relationships between data in a matrix. The data are arranged radially around a circle with the relationships between the data points typically drawn as arcs connecting the data.',
     purpose: ['Relation'],
     coord: ['Cartesian2D'],
     category: ['Graph'],
@@ -984,8 +954,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Non-Ribbon Chord Diagram',
     alias: [],
     family: ['GeneralGraph'],
-    def:
-      'A stripped-down version of a Chord Diagram, with only the connection lines showing. This provides more emphasis on the connections within the data.',
+    def: 'A stripped-down version of a Chord Diagram, with only the connection lines showing. This provides more emphasis on the connections within the data.',
     purpose: ['Relation'],
     coord: ['Cartesian2D'],
     category: ['Graph'],
@@ -1120,8 +1089,7 @@ export const base: ChartKnowledgeBase = {
     name: 'Choropleth Map',
     alias: [],
     family: ['PolygonLayer'],
-    def:
-      'A choropleth map is a type of thematic map in which areas are shaded or patterned in proportion to a statistical variable that represents an aggregate summary of a geographic characteristic within each area, such as population density or per-capita income.',
+    def: 'A choropleth map is a type of thematic map in which areas are shaded or patterned in proportion to a statistical variable that represents an aggregate summary of a geographic characteristic within each area, such as population density or per-capita income.',
     purpose: ['Comparison', 'Spatial'],
     coord: ['Geo'],
     category: ['Map'],

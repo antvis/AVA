@@ -7,5 +7,5 @@ export const ChangePoint = {
   Bayesian,
   Window: windowBasedMean,
   PettittTest: pettittTest,
-  BuishandUTest: buishandUTest
+  BuishandUTest: buishandUTest,
 };

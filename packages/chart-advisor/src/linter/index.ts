@@ -13,13 +13,13 @@ import { LinterOptions, Lint } from './interface';
 import { getChartType } from './get-charttype';
 
 export interface LintParams {
-  spec: AntVSpec,
-  dataProps?: BasicDataPropertyForAdvice[],
-  options?: LinterOptions
-};
+  spec: AntVSpec;
+  dataProps?: BasicDataPropertyForAdvice[];
+  options?: LinterOptions;
+}
 
 export class Linter {
-  ruleBase: Record<string, RuleModule>;;
+  ruleBase: Record<string, RuleModule>;
 
   constructor(ruleCfg?: RuleConfig) {
     this.ruleBase = processRuleCfg(ruleCfg);

@@ -255,12 +255,15 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   phone(options?: PhoneOptions): string {
-    const { mobile, formatted, asterisk, startNum } = initOptions({
-      mobile: true,
-      formatted: false,
-      asterisk: false,
-      startNum: '',
-    }, options);
+    const { mobile, formatted, asterisk, startNum } = initOptions(
+      {
+        mobile: true,
+        formatted: false,
+        asterisk: false,
+        startNum: '',
+      },
+      options
+    );
 
     let exp: RegExp;
     if (mobile) {

@@ -9,7 +9,6 @@ const data = [
   { price: 150, type: 'C', volume: 1000 },
 ];
 
-
 const myRule: RuleModule = {
   id: 'fufu-rule',
   type: 'HARD',
@@ -31,38 +30,41 @@ const myRule: RuleModule = {
 };
 
 const spec: AntVSpec = {
-  'basis': {
-    'type': 'chart'
+  basis: {
+    type: 'chart',
   },
-  'data': {
-    'type': 'json-array',
-    'values': [
-      {'category': 'A', 'value': 4},
-      {'category': 'B', 'value': 6},
-      {'category': 'C', 'value': 10},
-      {'category': 'D', 'value': 3},
-      {'category': 'E', 'value': 7},
-      {'category': 'F', 'value': 8}
-    ]
+  data: {
+    type: 'json-array',
+    values: [
+      { category: 'A', value: 4 },
+      { category: 'B', value: 6 },
+      { category: 'C', value: 10 },
+      { category: 'D', value: 3 },
+      { category: 'E', value: 7 },
+      { category: 'F', value: 8 },
+    ],
   },
-  'layer': [
+  layer: [
     {
-      'mark': 'arc',
-      'encoding': {
-        'theta': {'field': 'value', 'type': 'quantitative'},
-        'color': {'field': 'category', 'type': 'nominal', 'scale': { 'range': ['#5b8ff9', '#753d91', '#b03c63', '#d5b471', '#4fb01f', '#608b7d']}}
-      }
-    }
-  ]
+      mark: 'arc',
+      encoding: {
+        theta: { field: 'value', type: 'quantitative' },
+        color: {
+          field: 'category',
+          type: 'nominal',
+          scale: { range: ['#5b8ff9', '#753d91', '#b03c63', '#d5b471', '#4fb01f', '#608b7d'] },
+        },
+      },
+    },
+  ],
 };
-
 
 describe('dataprops test', () => {
   test('customized dataprops and rule to lint', () => {
-    const df = new DataFrame(data, { columns: ['price', 'type']});
+    const df = new DataFrame(data, { columns: ['price', 'type'] });
     const dp = df.info() as BasicDataPropertyForAdvice[];
-    const newDps = dp.map(p => {
-      return { ...p, secMin: 120};
+    const newDps = dp.map((p) => {
+      return { ...p, secMin: 120 };
     });
     const myRuleCfg: RuleConfig = {
       include: ['bar-series-qty'],
@@ -71,7 +73,7 @@ describe('dataprops test', () => {
       },
     };
     const myLinter = new Linter(myRuleCfg);
-    const results = myLinter.lint({spec, dataProps: newDps});
+    const results = myLinter.lint({ spec, dataProps: newDps });
     expect(results.length).toBe(1);
     expect(results[0].id).toBe('fufu-rule');
   });

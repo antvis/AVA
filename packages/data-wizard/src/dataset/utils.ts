@@ -14,7 +14,10 @@ export const generateArrayIndex = (data: any[], extraIndex?: Axis[]): Axis[] => 
   assert(isArray(data), 'Data must be an array');
 
   if (extraIndex) {
-    assert(extraIndex?.length === data.length, `Index length is ${extraIndex?.length}, but data size is ${data.length}`);
+    assert(
+      extraIndex?.length === data.length,
+      `Index length is ${extraIndex?.length}, but data size is ${data.length}`
+    );
 
     return extraIndex;
   }

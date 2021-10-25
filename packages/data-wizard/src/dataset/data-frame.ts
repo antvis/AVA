@@ -20,7 +20,10 @@ export default class DataFrame extends BaseFrame {
         this.setAxis(1, [0]);
       } else if (!extra?.index) {
         assert(isArray(extra?.columns), 'Index or columns must be Axis array.');
-        assert(extra?.columns.length === 1, 'When the length of extra?.columns is larger than 1, extra?.index is required.');
+        assert(
+          extra?.columns.length === 1,
+          'When the length of extra?.columns is larger than 1, extra?.index is required.'
+        );
       }
 
       this.colData = this.data;
@@ -87,7 +90,6 @@ export default class DataFrame extends BaseFrame {
 
       /** 1D: object */
       if (isBasicType(data0)) {
-
         const columns = Object.keys(data);
 
         if (extra?.index) {
@@ -153,7 +155,10 @@ export default class DataFrame extends BaseFrame {
    */
   private generateColumns(columns: Axis[], extraColumns?: Axis[]) {
     if (extraColumns) {
-      assert(extraColumns?.length === columns.length, `Columns length is ${extraColumns?.length}, but data column is ${columns.length}`);
+      assert(
+        extraColumns?.length === columns.length,
+        `Columns length is ${extraColumns?.length}, but data column is ${columns.length}`
+      );
 
       this.setAxis(1, extraColumns);
     } else {
@@ -272,81 +277,81 @@ export default class DataFrame extends BaseFrame {
       }
     }
 
-      // colLoc is Axis
-      if (isAxis(colLoc) && this.columns.includes(colLoc)) {
-        startColIdx = this.columns.indexOf(colLoc);
-        endColIdx = startColIdx + 1;
+    // colLoc is Axis
+    if (isAxis(colLoc) && this.columns.includes(colLoc)) {
+      startColIdx = this.columns.indexOf(colLoc);
+      endColIdx = startColIdx + 1;
+    }
+
+    // colLoc is Axis[]
+    if (isArray(colLoc)) {
+      for (let i = 0; i < colLoc.length; i += 1) {
+        const colIdx = colLoc[i];
+
+        assert(this.columns.includes(colIdx), 'The colLoc is not found in the columns index.');
+
+        colIdxes.push(this.columns.indexOf(colIdx));
       }
+    }
 
-      // colLoc is Axis[]
-      if (isArray(colLoc)) {
-        for (let i = 0; i < colLoc.length; i += 1) {
-          const colIdx = colLoc[i];
+    // colLoc is slice
+    if (isString(colLoc) && colLoc.includes(':')) {
+      const colLocArr = colLoc.split(':');
+      if (colLocArr.length === 2) {
+        const start = this.columns.indexOf(colLocArr[0]);
+        const end = this.columns.indexOf(colLocArr[1]);
 
-          assert(this.columns.includes(colIdx), 'The colLoc is not found in the columns index.');
+        assert(isNumber(start) && isNumber(end), 'The colLoc is not found in the columns index.');
 
-          colIdxes.push(this.columns.indexOf(colIdx));
+        startColIdx = start;
+        endColIdx = end;
+      }
+    }
+
+    // build new data and index
+    let newData: any[][] = [];
+    let newIndex: any[] = [];
+
+    assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the index.');
+
+    if (startRowIdx >= 0 && endRowIdx >= 0) {
+      newData = this.data.slice(startRowIdx, endRowIdx);
+      newIndex = this.index.slice(startRowIdx, endRowIdx);
+    }
+
+    if (rowIdxes.length > 0) {
+      for (let i = 0; i < rowIdxes.length; i += 1) {
+        const rowIdx = rowIdxes[i];
+        newData.push(this.data[rowIdx]);
+        newIndex.push(this.index[rowIdx]);
+      }
+    }
+
+    // build new columns
+    if (startColIdx >= 0 && endColIdx >= 0) {
+      for (let i = 0; i < newData.length; i += 1) {
+        newData[i] = newData[i].slice(startColIdx, endColIdx);
+      }
+      const newColumns = this.columns.slice(startColIdx, endColIdx);
+      return new DataFrame(newData, { index: newIndex, columns: newColumns });
+    }
+
+    if (colIdxes.length > 0) {
+      let newColumns: Axis[] = [];
+      const tempData = newData.slice();
+      for (let i = 0; i < newData.length; i += 1) {
+        newData[i] = [];
+        newColumns = [];
+        for (let j = 0; j < colIdxes.length; j += 1) {
+          const colIdx = colIdxes[j];
+          newData[i].push(tempData[i][colIdx]);
+          newColumns.push(this.columns[colIdx]);
         }
       }
+      return new DataFrame(newData, { index: newIndex, columns: newColumns });
+    }
 
-      // colLoc is slice
-      if (isString(colLoc) && colLoc.includes(':')) {
-        const colLocArr = colLoc.split(':');
-        if (colLocArr.length === 2) {
-          const start = this.columns.indexOf(colLocArr[0]);
-          const end = this.columns.indexOf(colLocArr[1]);
-
-          assert(isNumber(start) && isNumber(end), 'The colLoc is not found in the columns index.');
-
-          startColIdx = start;
-          endColIdx = end;
-        }
-      }
-
-      // build new data and index
-      let newData: any[][] = [];
-      let newIndex: any[] = [];
-
-      assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the index.');
-
-      if (startRowIdx >= 0 && endRowIdx >= 0) {
-        newData = this.data.slice(startRowIdx, endRowIdx);
-        newIndex = this.index.slice(startRowIdx, endRowIdx);
-      }
-
-      if (rowIdxes.length > 0) {
-        for (let i = 0; i < rowIdxes.length; i += 1) {
-          const rowIdx = rowIdxes[i];
-          newData.push(this.data[rowIdx]);
-          newIndex.push(this.index[rowIdx]);
-        }
-      }
-
-      // build new columns
-      if (startColIdx >= 0 && endColIdx >= 0) {
-        for (let i = 0; i < newData.length; i += 1) {
-          newData[i] = newData[i].slice(startColIdx, endColIdx);
-        }
-        const newColumns = this.columns.slice(startColIdx, endColIdx);
-        return new DataFrame(newData, { index: newIndex, columns: newColumns });
-      }
-
-      if (colIdxes.length > 0) {
-        let newColumns: Axis[] = [];
-        const tempData = newData.slice();
-        for (let i = 0; i < newData.length; i += 1) {
-          newData[i] = [];
-          newColumns = [];
-          for (let j = 0; j < colIdxes.length; j += 1) {
-            const colIdx = colIdxes[j];
-            newData[i].push(tempData[i][colIdx]);
-            newColumns.push(this.columns[colIdx]);
-          }
-        }
-        return new DataFrame(newData, { index: newIndex, columns: newColumns });
-      }
-
-      throw new Error('The colLoc is illegal.');
+    throw new Error('The colLoc is illegal.');
   }
 
   getByIntegerIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): DataFrame | Series | any {
@@ -435,7 +440,7 @@ export default class DataFrame extends BaseFrame {
       }
     }
 
-    assert(((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0), 'The colLoc is illegal');
+    assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The colLoc is illegal');
 
     // colLoc is int
     if (isInteger(colLoc) && range(this.columns.length).includes(colLoc)) {
@@ -485,7 +490,10 @@ export default class DataFrame extends BaseFrame {
       }
     }
 
-    assert((startColIdx >= 0 && endColIdx >= 0) || colIdxes.length > 0, 'The colLoc is not found in the columns index.');
+    assert(
+      (startColIdx >= 0 && endColIdx >= 0) || colIdxes.length > 0,
+      'The colLoc is not found in the columns index.'
+    );
 
     // build new columns
     if (startColIdx >= 0 && endColIdx >= 0) {

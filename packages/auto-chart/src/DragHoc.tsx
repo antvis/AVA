@@ -14,7 +14,7 @@ export const withDrag = <P extends object>(DragComponent: React.ComponentType<P>
       if (dragRef) {
         const { dragContainer, dragHandler } = dragRef.current;
         draggable(dragContainer, dragHandler);
-      };
+      }
     }, [dragRef]);
 
     return createPortal(<DragComponent {...props} ref={dragRef} />, document.body);

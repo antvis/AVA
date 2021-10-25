@@ -92,9 +92,21 @@ const ChartView = (props: ChartViewProps) => {
     <div className={chartClassName} id={`chart_view_${chartID}`}>
       <div className="title_view">
         <div className="title_info">
-          {score && <Tooltip title={`Score: ${score}`}><Tag icon={<MonitorOutlined />} color="error">{`${score}`}</Tag></Tooltip>}
-          {dimension && <Tooltip title={`Dimension: ${dimension}`}><Tag color="processing">{`${dimension}`}</Tag></Tooltip>}
-          {measure && <Tooltip title={`Measure: ${measure}`}><Tag color="success">{`${measure}`}</Tag></Tooltip>}
+          {score && (
+            <Tooltip title={`Score: ${score}`}>
+              <Tag icon={<MonitorOutlined />} color="error">{`${score}`}</Tag>
+            </Tooltip>
+          )}
+          {dimension && (
+            <Tooltip title={`Dimension: ${dimension}`}>
+              <Tag color="processing">{`${dimension}`}</Tag>
+            </Tooltip>
+          )}
+          {measure && (
+            <Tooltip title={`Measure: ${measure}`}>
+              <Tag color="success">{`${measure}`}</Tag>
+            </Tooltip>
+          )}
         </div>
         <div className="right_icons">{lockIcon}</div>
       </div>

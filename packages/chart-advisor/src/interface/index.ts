@@ -10,6 +10,5 @@ export type DataProperty =
   | (DWAnalyzer.DateFieldInfo & { name: string; levelOfMeasurements: LOM[] })
   | (DWAnalyzer.StringFieldInfo & { name: string; levelOfMeasurements: LOM[] });
 
-
 export type DataRow = Record<string, any>;
 export type DataRows = DataRow[];

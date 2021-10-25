@@ -20,7 +20,13 @@ const Toolbar = (props: Props) => {
   return (
     <div id="toolbar">
       <div id="demo-selection">
-        <Select id="sample-select" defaultValue="sample1" style={{ width: 120 }} size="small" onChange={handleSampleChange}>
+        <Select
+          id="sample-select"
+          defaultValue="sample1"
+          style={{ width: 120 }}
+          size="small"
+          onChange={handleSampleChange}
+        >
           <Option value="0">sample1</Option>
           <Option value="1">sample2</Option>
         </Select>

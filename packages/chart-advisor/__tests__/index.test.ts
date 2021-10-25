@@ -36,7 +36,7 @@ const data = [
 describe('init Advisor', () => {
   test('data to advices 111', () => {
     const myAdvisor = new Advisor();
-    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     // 4 -> pie / donut / bar / column
     expect(advices.length).toBe(4);
   });
@@ -45,8 +45,8 @@ describe('init Advisor', () => {
     const myCKBCfg: CKBConfig = {
       include: ['line_chart', 'pie_chart'],
     };
-    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
-    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
+    const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     // 1 -> pie
     expect(advices.length).toBe(1);
   });
@@ -55,8 +55,8 @@ describe('init Advisor', () => {
     const myCKBCfg: CKBConfig = {
       exclude: ['line_chart', 'pie_chart'],
     };
-    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
-    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
+    const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     // 3 -> donut / bar / column
     expect(advices.length).toBe(3);
   });
@@ -121,8 +121,8 @@ describe('init Advisor', () => {
       },
       include: ['line_chart'],
     };
-    const myAdvisor = new Advisor({ckbCfg: myCKBCfg});
-    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
+    const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     // 1 -> fufu_chart
     expect(advices.length).toBe(1);
   });
@@ -134,8 +134,8 @@ describe('init Advisor', () => {
         'fufu-rule': myRule,
       },
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const advices = myAdvisor.advise({data,fields: ['price', 'type'], options: { refine: true }});
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     // 4 -> donut / bar / column / histogram, custom rule avoid pie_chart
     expect(advices.length).toBe(4);
   });
@@ -155,8 +155,8 @@ describe('init Advisor', () => {
         },
       },
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     // 5 -> donut / bar / column / histogram / pie,
     // the rule to avoid pie_chart is turn off in options
     expect(advices.length).toBe(5);
@@ -165,65 +165,65 @@ describe('init Advisor', () => {
 
 describe('init Linter', () => {
   const dataOfRightSpec = {
-    'type': 'json-array',
-    'values': [
-      { 'year': '2007', 'sales': 28},
-      { 'year': '2008', 'sales': 55},
-      { 'year': '2009', 'sales': 43},
-      { 'year': '2010', 'sales': 91},
-      { 'year': '2011', 'sales': 81},
-      { 'year': '2012', 'sales': 53},
-      { 'year': '2013', 'sales': 19},
-      { 'year': '2014', 'sales': 87},
-      { 'year': '2015', 'sales': 52}
-    ]
+    type: 'json-array',
+    values: [
+      { year: '2007', sales: 28 },
+      { year: '2008', sales: 55 },
+      { year: '2009', sales: 43 },
+      { year: '2010', sales: 91 },
+      { year: '2011', sales: 81 },
+      { year: '2012', sales: 53 },
+      { year: '2013', sales: 19 },
+      { year: '2014', sales: 87 },
+      { year: '2015', sales: 52 },
+    ],
   };
 
   const dataOfErrorSpec = {
-    'type': 'json-array',
-    'values': [
-      { 'year': '2007', 'sales': 28, 'amount': 141 },
-      { 'year': '2008', 'sales': 55, 'amount': 187 },
-      { 'year': '2009', 'sales': 43, 'amount': 88 },
-      { 'year': '2010', 'sales': 91, 'amount': 108 },
-      { 'year': '2011', 'sales': 81, 'amount': 68 },
-      { 'year': '2012', 'sales': 53, 'amount': 90 },
-      { 'year': '2013', 'sales': 19, 'amount': 44 },
-      { 'year': '2014', 'sales': 87, 'amount': 123 },
-      { 'year': '2015', 'sales': 52, 'amount': 88 }
-    ]
+    type: 'json-array',
+    values: [
+      { year: '2007', sales: 28, amount: 141 },
+      { year: '2008', sales: 55, amount: 187 },
+      { year: '2009', sales: 43, amount: 88 },
+      { year: '2010', sales: 91, amount: 108 },
+      { year: '2011', sales: 81, amount: 68 },
+      { year: '2012', sales: 53, amount: 90 },
+      { year: '2013', sales: 19, amount: 44 },
+      { year: '2014', sales: 87, amount: 123 },
+      { year: '2015', sales: 52, amount: 88 },
+    ],
   };
 
   const partOfSpec = {
-    'basis': {
-      'type': 'chart'
+    basis: {
+      type: 'chart',
     },
-    'layer': [
+    layer: [
       {
-        'mark': 'area',
-        'encoding': {
-          'x': {
-            'field': 'year',
-            'type': 'temporal'
+        mark: 'area',
+        encoding: {
+          x: {
+            field: 'year',
+            type: 'temporal',
           },
-          'y': {
-            'field': 'sales',
-            'type': 'quantitative'
-          }
-        }
-      }
-    ]
+          y: {
+            field: 'sales',
+            type: 'quantitative',
+          },
+        },
+      },
+    ],
   };
 
   test('Linter test with no error spec', () => {
     const myLt = new Linter();
-    const errors = myLt.lint({spec: {...partOfSpec, data: dataOfRightSpec} as AntVSpec});
+    const errors = myLt.lint({ spec: { ...partOfSpec, data: dataOfRightSpec } as AntVSpec });
     expect(errors.length).toBe(0);
   });
 
   test('Linter test with error spec', () => {
     const myLt = new Linter();
-    const errors = myLt.lint({spec: {...partOfSpec, data: dataOfErrorSpec} as AntVSpec});
+    const errors = myLt.lint({ spec: { ...partOfSpec, data: dataOfErrorSpec } as AntVSpec });
     expect(errors.length).toBe(1);
     expect(errors[0].id).toBe('data-check');
   });
@@ -232,13 +232,13 @@ describe('init Linter', () => {
 describe('init ChartAdvisor', () => {
   test('adviseWithLint in CA with fields', () => {
     const myCA = new ChartAdvisor();
-    const results = myCA.advise({data, fields: ['price', 'type'], options: { refine: true }});
+    const results = myCA.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     expect(results.length).toBe(4);
   });
 
   test('adviseWithLint in CA without fields', () => {
     const myCA = new ChartAdvisor();
-    const results = myCA.advise({data, options: { refine: true }});
+    const results = myCA.advise({ data, options: { refine: true } });
     expect(results.length).toBe(9);
   });
 });

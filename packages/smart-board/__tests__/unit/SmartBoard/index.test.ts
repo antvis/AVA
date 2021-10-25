@@ -62,19 +62,19 @@ describe('init SmartBoard instance', () => {
     expect(cg).toStrictEqual(expectGraph);
   });
 
-  const expectOrderByIS = {'chart_1': 2, 'chart_2': 0, 'chart_3': 1};
+  const expectOrderByIS = { chart_1: 2, chart_2: 0, chart_3: 1 };
   test('chartOrder by insight score', () => {
     const co = sb.chartOrder('byInsightScore');
     expect(co).toStrictEqual(expectOrderByIS);
   });
 
-  const expectOrderByCC = {'chart_1': 1, 'chart_2': 2, 'chart_3': 0};
+  const expectOrderByCC = { chart_1: 1, chart_2: 2, chart_3: 0 };
   test('chartOrder by cluster', () => {
     const co = sb.chartOrder('byCluster');
     expect(co).toStrictEqual(expectOrderByCC);
   });
 
-  const expectCluster = {'chart_1': 0, 'chart_2': 1, 'chart_3': 0};
+  const expectCluster = { chart_1: 0, chart_2: 1, chart_3: 0 };
   test('chartCluster', () => {
     const cc = sb.chartCluster();
     expect(cc).toStrictEqual(expectCluster);

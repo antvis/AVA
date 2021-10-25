@@ -31,13 +31,12 @@ export const getChartRules = (ids: string[]): Record<string, RuleModule> => {
   return chartRules;
 };
 
-
 /**
  * processing ckb config and setup ckb used for advising
  * @param ruleCfg rule configuration
  * @returns rule base Record<string, RuleModule>
  */
-export const  processRuleCfg = (ruleCfg?: RuleConfig) => {
+export const processRuleCfg = (ruleCfg?: RuleConfig) => {
   if (!ruleCfg) {
     // no specific rule configuration -> return default rules
     return getChartRules(builtInRules);

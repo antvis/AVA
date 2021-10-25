@@ -1,7 +1,7 @@
 /**
  * use moment not dayjs because use https://ant.design/docs/react/replace-moment
  * file build smaller is not obvious and language switching is unavailable
- * */ 
+ * */
 import React, { useState } from 'react';
 import moment from 'moment';
 import { Input, Modal, Form, Select, InputNumber, DatePicker } from 'antd';

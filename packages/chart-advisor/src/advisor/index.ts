@@ -8,14 +8,14 @@ import { AdvisorOptions } from './advice-pipeline/interface';
 
 export interface AdviseParams {
   /** input data to advise */
-  data: Record<string, any>[],
+  data: Record<string, any>[];
   /** customized dataprops to advise */
-  dataProps?: BasicDataPropertyForAdvice[],
+  dataProps?: BasicDataPropertyForAdvice[];
   /** data fields to focus, apply in `data` and `dataProps` */
-  fields?: string[],
+  fields?: string[];
   /** advising options such as purpose, layout preferences */
-  options?: AdvisorOptions
-};
+  options?: AdvisorOptions;
+}
 
 export class Advisor {
   /**
@@ -58,7 +58,7 @@ export class Advisor {
   advise(params: AdviseParams) {
     const { data, dataProps, fields, options } = params;
     // otherwise the input data will be mutated
-    const copyData = data.map(obj => ({...obj}));
+    const copyData = data.map((obj) => ({ ...obj }));
     // transform data into DataFrame
     let dataFrame: DataFrame;
     try {
@@ -77,7 +77,9 @@ export class Advisor {
     let dataPropsForAdvice: BasicDataPropertyForAdvice[];
     if (dataProps) {
       // filter out fields that are not included for advising
-      dataPropsForAdvice = fields ? dataProps.filter((dataProp: BasicDataPropertyForAdvice) => fields.includes(dataProp.name)) : dataProps;
+      dataPropsForAdvice = fields
+        ? dataProps.filter((dataProp: BasicDataPropertyForAdvice) => fields.includes(dataProp.name))
+        : dataProps;
     } else {
       dataPropsForAdvice = dataFrame.info() as BasicDataPropertyForAdvice[];
     }
@@ -85,9 +87,9 @@ export class Advisor {
     // filter out fields that are not included for advising
     let filteredData: Record<string, any>[] = [];
     if (fields) {
-      filteredData = copyData.map((row: Record<string, any>)=>{
+      filteredData = copyData.map((row: Record<string, any>) => {
         const filteredRow = row;
-        Object.keys(filteredRow).forEach(col => {
+        Object.keys(filteredRow).forEach((col) => {
           if (!fields.includes(col)) {
             delete filteredRow[col];
           }
@@ -133,7 +135,7 @@ export class Advisor {
     // step 3: combine default charts and customized charts
     const finalCkbBase = {
       ...ckbBase,
-      ...ckbCfg.custom
+      ...ckbCfg.custom,
     };
 
     return finalCkbBase;

@@ -36,7 +36,7 @@ describe('init Ruler', () => {
       { price: 600, year: 2006 },
       { price: 1500, year: 2007 },
     ];
-    const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
     const chartSpec = advices.filter((e) => e.type === 'line_chart')[0].spec;
     if (chartSpec) {
       const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
@@ -51,7 +51,7 @@ describe('init Ruler', () => {
 describe('customized Rule', () => {
   test('no rule Config', () => {
     const myAdvisor = new Advisor();
-    const { ruleBase }  = myAdvisor;
+    const { ruleBase } = myAdvisor;
     expect(Object.keys(ruleBase).length).toBe(12);
   });
 
@@ -59,8 +59,8 @@ describe('customized Rule', () => {
     const myRuleCfg: RuleConfig = {
       exclude: ['bar-series-qty', 'diff-pie-sector'],
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const { ruleBase }  = myAdvisor;;
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const { ruleBase } = myAdvisor;
     expect(Object.keys(ruleBase).length).toBe(10);
   });
 
@@ -68,8 +68,8 @@ describe('customized Rule', () => {
     const myRuleCfg: RuleConfig = {
       include: ['bar-series-qty', 'diff-pie-sector'],
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const { ruleBase }  = myAdvisor;;
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const { ruleBase } = myAdvisor;
     expect(Object.keys(ruleBase).length).toBe(2);
   });
 
@@ -78,8 +78,8 @@ describe('customized Rule', () => {
       exclude: ['bar-series-qty'],
       include: ['bar-series-qty', 'diff-pie-sector'],
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const { ruleBase }  = myAdvisor;;
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const { ruleBase } = myAdvisor;
     expect(Object.keys(ruleBase).length).toBe(1);
   });
 
@@ -90,8 +90,8 @@ describe('customized Rule', () => {
         'fufu-rule': myRule,
       },
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const { ruleBase }  = myAdvisor;;
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const { ruleBase } = myAdvisor;
     expect(Object.keys(ruleBase).length).toBe(2);
   });
 
@@ -106,8 +106,8 @@ describe('customized Rule', () => {
         },
       },
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const { ruleBase }  = myAdvisor;;
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const { ruleBase } = myAdvisor;
     expect(ruleBase?.['data-check']?.docs.lintText).toBe('Now is my rule!');
   });
 
@@ -121,8 +121,8 @@ describe('customized Rule', () => {
         },
       },
     };
-    const myAdvisor = new Advisor({ruleCfg: myRuleCfg});
-    const { ruleBase }  = myAdvisor;;
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const { ruleBase } = myAdvisor;
     expect(ruleBase?.['data-check']?.option?.off).toBe(true);
   });
 });

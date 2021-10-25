@@ -48,7 +48,7 @@ function calSimilarityOfCharts(chart1: Chart, chart2: Chart): any {
  * @param result
  * @returns
  */
- function permutation(m: string[], n: number, currentIndex = 0, chosenArr:any = [], result:any = []): string[] {
+function permutation(m: string[], n: number, currentIndex = 0, chosenArr: any = [], result: any = []): string[] {
   const mLen = m.length;
   if (currentIndex + n > mLen) {
     return [];
@@ -102,7 +102,7 @@ export function getDegreeImportance(ChartList: Chart[]): any {
   chartsID.forEach((d) => {
     degreeOfchart.set(d, 0);
   });
-  chartConnection.forEach((d: { similarity: number; chart1: { id: any; }; chart2: { id: any; }; }) => {
+  chartConnection.forEach((d: { similarity: number; chart1: { id: any }; chart2: { id: any } }) => {
     if (d.similarity > 0) {
       degreeOfchart.set(d.chart1.id, degreeOfchart.get(d.chart1.id) + 1);
       degreeOfchart.set(d.chart2.id, degreeOfchart.get(d.chart2.id) + 1);

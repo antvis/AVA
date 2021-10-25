@@ -49,7 +49,7 @@ const manifest: Manifest = {
       name: 'AutoChart',
       contentComp: AutoChart,
       icon: <AreaChartOutlined />,
-    }
+    },
   ],
 };
 

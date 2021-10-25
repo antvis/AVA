@@ -3,7 +3,8 @@ import React from 'react';
 export function prettyJSON(json: any) {
   return JSON.stringify(
     json,
-    function(_, v) {
+    (_, v) => {
+      // eslint-disable-next-line no-restricted-syntax
       for (const p in v) {
         if (v[p] instanceof Object) {
           return v;
@@ -70,17 +71,4 @@ export const dataInTable = (data: any, title = 'Data in Table') => (
 
 export interface Record {
   [key: string]: any;
-}
-
-export function debounce(func: Function, delay: number) {
-  let timer: NodeJS.Timeout | null = null;
-  function debounced(props: any) {
-    if (timer !== null) {
-      clearTimeout(timer);
-    }
-    timer = setTimeout(function() {
-      func(props);
-    }, delay);
-  }
-  return debounced;
 }

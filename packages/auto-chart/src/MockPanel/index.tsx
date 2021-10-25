@@ -28,27 +28,23 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
         const elePosition = getElePosition(containerRef.current, dragContainer.current);
         dragContainer.current.style.left = elePosition.left;
         dragContainer.current.style.top = elePosition.top;
-      };
+      }
       dragContainer.current.style.display = 'block';
-    };
+    }
     if (!mockDisplay && dragContainer) {
       dragContainer.current.style.display = 'none';
-    };
+    }
   }, [mockDisplay]);
 
   useImperativeHandle(ref, () => {
     return {
       dragContainer: dragContainer.current,
-      dragHandler: dragHandler.current
+      dragHandler: dragHandler.current,
     };
   });
 
   return (
-    <div
-      className={`${prefixCls}dev_panel`}
-      style={{ width: 600, height: 620 }}
-      ref={dragContainer}
-    >
+    <div className={`${prefixCls}dev_panel`} style={{ width: 600, height: 620 }} ref={dragContainer}>
       <div className={`${prefixCls}config_panel`}>
         <div className={`${prefixCls}config_header`} ref={dragHandler}>
           {intl.get('Initialize', language)}
