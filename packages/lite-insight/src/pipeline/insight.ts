@@ -4,11 +4,7 @@ import { getInsightVisualizationSchema, getHomogeneousInsightVisualizationSchema
 import { Datum, InsightOptions, Measure, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../interface';
 import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 import { enumerateInsights } from './extract';
-import {
-  DataProperty,
-  dataToDataProps,
-  calculateImpactMeasureReferenceValues,
-} from './preprocess';
+import { DataProperty, dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
 import { insightPriorityComparator, homogeneousInsightPriorityComparator } from './util';
 
 interface ReferenceInfo {
@@ -17,14 +13,16 @@ interface ReferenceInfo {
 }
 
 type InsightsResult = {
-  insights: InsightInfo<PatternInfo>[],
-  homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[],
-}
+  insights: InsightInfo<PatternInfo>[];
+  homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[];
+};
 
 export const extractInsights = (sourceData: Datum[], options?: InsightOptions): InsightsResult => {
   // get data columns infomations (column type, statistics, etc.)
-  const data = sourceData.filter(item => !Object.values(item).some(v => v === null || v === undefined));
-  const dataProps = dataToDataProps(data.filter(item => !Object.values(item).some(v => v === null || v === undefined)));
+  const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
+  const dataProps = dataToDataProps(
+    data.filter((item) => !Object.values(item).some((v) => v === null || v === undefined))
+  );
   const fieldPropsMap: Record<string, DataProperty> = dataProps.reduce((acc, item) => {
     acc[item.name] = item;
     return acc;
@@ -82,24 +80,27 @@ export const extractInsights = (sourceData: Datum[], options?: InsightOptions): 
   return result;
 };
 
-export const generateInsightsWithVisualizationSchemas = (extraction: InsightsResult, options?: InsightOptions): InsightsResult => {
+export const generateInsightsWithVisualizationSchemas = (
+  extraction: InsightsResult,
+  options?: InsightOptions
+): InsightsResult => {
   const { insights, homogeneousInsights } = extraction;
-  const insightsWithVis = insights.map(item => ({
+  const insightsWithVis = insights.map((item) => ({
     ...item,
-    visualizationSchemas: getInsightVisualizationSchema(item)
+    visualizationSchemas: getInsightVisualizationSchema(item),
   }));
   const result: InsightsResult = { insights: insightsWithVis };
   if (homogeneousInsights && options.homogeneous) {
-    const homogenieousInsightsWithVis = homogeneousInsights.map(item => {
+    const homogenieousInsightsWithVis = homogeneousInsights.map((item) => {
       const visualizationSchemas = getHomogeneousInsightVisualizationSchema(item);
-        const { data, measures, breakdowns } = item;
-        const insight = { ...item, visualizationSchemas };
-        if (measures.length > 1) {
-          insight.data = aggregateWithMeasures(data, breakdowns[0], measures);
-        } else {
-          insight.data = aggregateWithSeries(data, breakdowns[0], measures[0], breakdowns[1]);
-        }
-        return insight;
+      const { data, measures, breakdowns } = item;
+      const insight = { ...item, visualizationSchemas };
+      if (measures.length > 1) {
+        insight.data = aggregateWithMeasures(data, breakdowns[0], measures);
+      } else {
+        insight.data = aggregateWithSeries(data, breakdowns[0], measures[0], breakdowns[1]);
+      }
+      return insight;
     });
     result.homogeneousInsights = homogenieousInsightsWithVis;
   }

@@ -7,8 +7,8 @@ export type DataRows = DataRow[];
 
 export type Theme = {
   /** hex string */
-  primaryColor?: string
-}
+  primaryColor?: string;
+};
 /**
  * @public
  */
@@ -42,7 +42,7 @@ export interface AdvisorOptions {
   /**
    * custom theme
    */
-  theme?: Theme
+  theme?: Theme;
 }
 
 /**

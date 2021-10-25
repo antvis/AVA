@@ -49,12 +49,12 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
         const elePosition = getElePosition(containerRef.current, dragContainer.current);
         dragContainer.current.style.left = elePosition.left;
         dragContainer.current.style.top = elePosition.top;
-      };
+      }
       dragContainer.current.style.display = 'block';
-    };
+    }
     if (!configDisplay && dragContainer) {
       dragContainer.current.style.display = 'none';
-    };
+    }
   }, [configDisplay]);
 
   useImperativeHandle(ref, () => {

@@ -1,4 +1,4 @@
-exports.onCreateWebpackConfig = ({ stage, rules, loaders, plugins, actions }) => {
+exports.onCreateWebpackConfig = ({ actions }) => {
   actions.setWebpackConfig({
     resolve: {
       alias: {
@@ -6,6 +6,6 @@ exports.onCreateWebpackConfig = ({ stage, rules, loaders, plugins, actions }) =>
         'react-dom': require.resolve('react-dom'),
       },
     },
-    node: { fs: 'empty' , child_process: 'empty', },
+    node: { fs: 'empty', child_process: 'empty' },
   });
 };

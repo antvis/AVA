@@ -55,7 +55,7 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
 export const extractor = (data: Datum[], dimension: string, measure: string): OutlierInfo[] => {
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
-  const outliers = findOutliers(values).map(item => {
+  const outliers = findOutliers(values).map((item) => {
     const { index, significance } = item;
     return {
       type: 'category_outlier',
@@ -64,7 +64,7 @@ export const extractor = (data: Datum[], dimension: string, measure: string): Ou
       significance,
       index,
       x: data[index][dimension],
-      y: data[index][measure] as number
+      y: data[index][measure] as number,
     };
   });
   return outliers;

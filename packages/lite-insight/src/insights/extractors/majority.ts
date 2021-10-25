@@ -34,7 +34,7 @@ export const findMajority = (values: number[], params?: MajorityParams): Majorit
       index: maxIndex,
       value: max,
       proportion,
-      significance: proportion
+      significance: proportion,
     };
   }
   return null;
@@ -46,16 +46,18 @@ export const extractor = (data: Datum[], dimension: string, measure: string): Ma
   const majority = findMajority(values);
   if (majority) {
     const { significance, index, proportion } = majority;
-    return [{
-      type: 'majority',
-      dimension,
-      measure,
-      significance,
-      index,
-      proportion,
-      x: data[index][dimension],
-      y: data[index][measure] as number
-    }];
+    return [
+      {
+        type: 'majority',
+        dimension,
+        measure,
+        significance,
+        index,
+        proportion,
+        x: data[index][dimension],
+        y: data[index][measure] as number,
+      },
+    ];
   }
   return [];
 };

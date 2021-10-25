@@ -19,7 +19,7 @@ export const dataToDataProps = (data: Datum[]): DataProperty[] => {
   dataTypeInfos.forEach((info) => {
     const newInfo = {
       ...info,
-      fieldType: _intersection(['Interval', 'Continuous'], info. levelOfMeasurements)?.length ? 'measure' : 'dimension',
+      fieldType: _intersection(['Interval', 'Continuous'], info.levelOfMeasurements)?.length ? 'measure' : 'dimension',
     };
 
     dataProps.push(newInfo as DataProperty);

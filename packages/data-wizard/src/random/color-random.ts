@@ -48,10 +48,7 @@ export class ColorRandom extends BasicRandom {
   hsla(options?: HSLAOptions): string {
     const { casing, maxA, minA } = initOptions({ casing: 'lower', minA: 0, maxA: 1 }, options);
     const alpah = this.float({ min: minA, max: maxA });
-    const value = `hsla(${hsl
-      .call(this, options)
-      .concat(alpah)
-      .join(',')})`;
+    const value = `hsla(${hsl.call(this, options).concat(alpah).join(',')})`;
     return casing === 'lower' ? value : value.toUpperCase();
   }
 

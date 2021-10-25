@@ -5,19 +5,19 @@ export interface Preferences {
 }
 
 export interface LinterOptions {
-  purpose?: Purpose,
-  preferences?: Preferences
+  purpose?: Purpose;
+  preferences?: Preferences;
 }
 
 export interface Lint {
   // rule type: hard / soft / design
-  type: string,
+  type: string;
   // ruld id
-  id: string,
+  id: string;
   // rule score
-  score: number,
+  score: number;
   // fix solution
-  fix?: any,
+  fix?: any;
   // docs
-  docs?: any
+  docs?: any;
 }

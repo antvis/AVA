@@ -42,7 +42,10 @@ export default abstract class BaseFrame {
 
       if (legal) {
         if (extra?.index) {
-          assert(extra?.index?.length === data.length, `Index length is ${extra?.index.length}, but data size ${data.length}`);
+          assert(
+            extra?.index?.length === data.length,
+            `Index length is ${extra?.index.length}, but data size ${data.length}`
+          );
 
           this.setAxis(0, extra?.index);
         }

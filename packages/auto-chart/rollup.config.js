@@ -13,14 +13,14 @@ export default rollupConfig(
     output: {
       name: 'AutoChart',
       globals: {
-        'react': 'React',
+        react: 'React',
         'react-dom': 'ReactDOM',
         '@antv/color-schema': 'colorSchema',
         '@antv/antv-spec': 'antvSpec',
         '@antv/g2plot': 'G2Plot',
-        'fs': 'fs',
-        'path': 'path',
-        'crypto': 'crypto',
+        fs: 'fs',
+        path: 'path',
+        crypto: 'crypto',
       },
     },
   },
@@ -40,9 +40,7 @@ export default rollupConfig(
       sourceMap: true,
       // This plugin will process files ending with these extensions and the extensions supported by custom loaders.
       extensions: ['.less', '.css'],
-      use : [
-        ['less', { javascriptEnabled: true }]
-      ],
+      use: [['less', { javascriptEnabled: true }]],
       plugins: [
         autoprefixer({
           overrideBrowserslist: ['defaults', 'not ie < 11', 'last 2 versions', '> 1%', 'iOS 7', 'last 3 iOS versions'],

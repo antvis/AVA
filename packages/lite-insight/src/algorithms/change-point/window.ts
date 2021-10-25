@@ -19,7 +19,7 @@ export const windowBasedMean = (data: number[], params?: { windowSize?: number; 
   const diff = Array(len).fill(0);
   for (let i = K; i <= len - K; i += 1) {
     const meanLeft = _mean(data.slice(i - K, i));
-    const meanRight = _mean(data.slice(i,  i + K));
+    const meanRight = _mean(data.slice(i, i + K));
     diff[i] = Math.abs(meanLeft - meanRight);
   }
 
@@ -28,7 +28,7 @@ export const windowBasedMean = (data: number[], params?: { windowSize?: number; 
   const result = [];
   for (let i = 0; i < sorted.length; i += 1) {
     const difference = sorted[i];
-    const index = diff.findIndex(item => item === difference);
+    const index = diff.findIndex((item) => item === difference);
     const significance = 1 - calculatePValue(differences, difference);
     if (significance >= significanceLimit) {
       result.push({
@@ -53,7 +53,7 @@ export const calcPValue = (data: number[], index: number, window?: number) => {
   const diff = Array(len).fill(0);
   for (let i = K; i <= len - K; i += 1) {
     const meanLeft = _mean(data.slice(i - K, i));
-    const meanRight = _mean(data.slice(i,  i + K));
+    const meanRight = _mean(data.slice(i, i + K));
     diff[i] = Math.abs(meanLeft - meanRight);
   }
 

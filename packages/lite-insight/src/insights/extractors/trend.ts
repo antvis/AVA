@@ -30,12 +30,14 @@ export const extractor = (data: Datum[], dimension: string, measure: string): Tr
   const values = data.map((item) => item?.[measure] as number);
   const result = findTimeSeriesTrend(values);
   if (result.trend !== 'no trend') {
-    return [{
-      ...result,
-      type: 'trend',
-      dimension,
-      measure
-    }];
+    return [
+      {
+        ...result,
+        type: 'trend',
+        dimension,
+        measure,
+      },
+    ];
   }
   return [];
 };

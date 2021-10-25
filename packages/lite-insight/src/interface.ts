@@ -72,7 +72,7 @@ export interface InsightOptions {
   dimensions?: string[];
   measures?: Measure[];
   impactMeasures?: ImpactMeasure[]; // Measures for Impact score
-  impactWeight?: number;  // Insight score = Impact score * impactWeight + Significance * (1 - impactWeight)
+  impactWeight?: number; // Insight score = Impact score * impactWeight + Significance * (1 - impactWeight)
   insightTypes?: InsightType[];
   limit?: number; // Limit on the number of insights
   homogeneous?: boolean; // on/off extra homogeneous insight extraction

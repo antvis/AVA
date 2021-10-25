@@ -51,7 +51,7 @@ export const aggregateWithMeasures = (data: Datum[], groupByField: string, measu
   const grouped = _groupBy(data, groupByField);
   const result = [];
   Object.entries(grouped).forEach(([value, dataGroup]) => {
-    measures.forEach(measure => {
+    measures.forEach((measure) => {
       const { field: measureField, method } = measure;
       if (measureField in dataGroup[0]) {
         const aggregator = AggregatorMap[method];
@@ -59,7 +59,7 @@ export const aggregateWithMeasures = (data: Datum[], groupByField: string, measu
         result.push({
           [groupByField]: value,
           value: measureValue,
-          measureName: measureField
+          measureName: measureField,
         });
       }
     });

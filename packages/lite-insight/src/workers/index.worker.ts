@@ -2,7 +2,7 @@ import * as tasks from './task';
 import { MESSAGE } from './constant';
 
 // eslint-disable-next-line
-const ctx: Worker = (typeof self !== 'undefined') ? self : {} as any;
+const ctx: Worker = typeof self !== 'undefined' ? self : ({} as any);
 
 interface Event {
   type: string;
@@ -11,10 +11,10 @@ interface Event {
 
 ctx.onmessage = (event: Event) => {
   const { taskType, data } = event.data;
-  if(!taskType){
+  if (!taskType) {
     return;
   }
- // eslint-disable-next-line
+  // eslint-disable-next-line
   const task = tasks[taskType];
   if (typeof task === 'function') {
     const result = task(...data);
