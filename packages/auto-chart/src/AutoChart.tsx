@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { get, set } from 'lodash';
+import { get, set } from 'lodash-es';
 import { message, ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import enUS from 'antd/es/locale/en_US';
