@@ -12,7 +12,7 @@
     "build:esm": "rimraf esm && FORMAT=esm rollup -c",
     "build:cjs": "rimraf lib && FORMAT=cjs rollup -c",
     "build:umd": "rimraf dist && FORMAT=umd rollup -c && npm run size",
-    "build": "run-s build:cjs build:umd",
+    "build": "run-p build:*",
     "size": "limit-size",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
