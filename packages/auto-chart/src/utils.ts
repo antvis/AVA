@@ -1,6 +1,6 @@
 // TODO @antv/thumbnails will update
 import Thumbnails from '@antv/thumbnails';
-import type { ChartID } from '@antv/knowledge';
+import type { ChartID } from '@antv/ckb';
 
 export const prefixCls = '__AUTO_CHART__';
 export const customChartType = ['kpi_panel', 'table'];

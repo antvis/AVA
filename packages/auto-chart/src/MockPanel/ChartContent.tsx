@@ -1,8 +1,8 @@
 import React from 'react';
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson } from '@antv/ckb';
 import { prefixCls, getThumbnailURL } from '../utils';
 import { Language } from '../i18n';
-import type { ChartID } from '@antv/knowledge';
+import type { ChartID } from '@antv/ckb';
 
 const CHART_NAMES = [
   'line_chart',

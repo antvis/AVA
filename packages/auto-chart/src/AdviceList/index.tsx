@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson } from '@antv/ckb';
 import { prefixCls, getThumbnailURL, customChartType } from '../utils';
 import { intl, Language } from '../i18n';
 import type { Advice } from '@antv/chart-advisor';
-import type { ChartID } from '@antv/knowledge';
+import type { ChartID } from '@antv/ckb';
 
 interface AdviceListProps {
   language: Language;
