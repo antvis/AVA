@@ -44,7 +44,7 @@ const MockPanel = forwardRef((props: MockPanelProps, ref: DragRefProps) => {
   });
 
   return (
-    <div className={`${prefixCls}dev_panel`} style={{ width: 600, height: 620 }} ref={dragContainer}>
+    <div className={`${prefixCls}dev_panel`} style={{ width: 600, height: 604 }} ref={dragContainer}>
       <div className={`${prefixCls}config_panel`}>
         <div className={`${prefixCls}config_header`} ref={dragHandler}>
           {intl.get('Initialize', language)}

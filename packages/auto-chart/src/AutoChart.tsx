@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, CSSProperties } from 'react';
 import { get, set } from 'lodash-es';
 import { message, ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
@@ -12,29 +12,30 @@ import { MockPanel } from './MockPanel';
 import { Language, intl } from './i18n';
 import { prefixCls } from './utils';
 import type { Advice } from '@antv/chart-advisor';
+import type { Purpose } from '@antv/ckb';
 import type { MockResultType } from './MockPanel/Content';
 import './index.less';
 
 interface Props {
-  className?: string;
-  width?: number;
-  height?: number;
   data?: any[];
   fields?: string[];
-  language?: Language;
-  showRanking?: boolean;
-  configurable?: boolean;
   title?: string;
   description?: string;
+  width?: CSSProperties['width'];
+  height?: CSSProperties['height'];
+  className?: string;
+  language?: Language;
+  purpose?: Purpose;
+  showRanking?: boolean;
+  configurable?: boolean;
   noDataContent?: React.ReactNode;
-  purpose?: 'Comparison' | 'Trend' | 'Distribution' | 'Rank' | 'Proportion' | 'Composition';
 }
 
 export const AutoChart = (props: Props) => {
   const {
     data: propsData = [],
-    width = 400,
-    height = 400,
+    width = '100%',
+    height = '100%',
     language = 'zh-CN',
     noDataContent = null,
     className,

@@ -1,6 +1,6 @@
 ---
-title: autoChart
-order: 0
+title: AutoChart
+order: 1
 ---
 
 `markdown:docs/common/style.md`

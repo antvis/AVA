@@ -1,5 +1,5 @@
 ---
-title: autoChart
+title: AutoChart
 order: 0
 ---
 

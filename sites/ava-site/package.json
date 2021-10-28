@@ -6,7 +6,7 @@
   "keywords": ["antv", "AVA", "site"],
   "license": "MIT",
   "scripts": {
-    "start": "npm run develop",
+    "start": "npm run clean && npm run develop",
     "develop": "cross-env PORT=8880 gatsby develop --open",
     "build": "npm run clean && gatsby build --prefix-paths",
     "deploy": "npm run build && npm run copy-mirror-action && gh-pages -d public",

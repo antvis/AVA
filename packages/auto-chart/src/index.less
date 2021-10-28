@@ -2,12 +2,15 @@
 
 .@{autochart-prefix}container {
   position: relative;
+  min-height: 400px;
+
   .@{autochart-prefix}toolbar {
     position: absolute;
     top: 20px;
     right: 120px;
     z-index: 10;
   }
+
   .@{autochart-prefix}config_develop {
     position: absolute;
     top: 20px;
@@ -16,12 +19,14 @@
     cursor: pointer;
     z-index: 10;
   }
+
   .@{autochart-prefix}config_btn {
     height: 32px;
     width: 32px;
     text-align: center;
     display: inline-block;
     cursor: pointer;
+
     img {
       pointer-events: none;
       height: 32px;
@@ -29,6 +34,7 @@
       vertical-align: top;
     }
   }
+
   .@{autochart-prefix}advice_container {
     width: 300px;
     background: #fff;
@@ -37,14 +43,16 @@
     left: -132px;
     border-radius: 8px;
   }
+
   .@{autochart-prefix}advice_content {
     width: 100%;
     height: 100%;
     padding: 0 16px;
     overflow: hidden;
     border-radius: 8px;
-    box-shadow: 0 3px 6px -4px rgb(0 0 0 / 12%), 0 6px 16px 0 rgb(0 0 0 / 8%), 0 9px 28px 8px rgb(0 0 0 / 5%);
+    border: 1px solid #eee;
   }
+
   .@{autochart-prefix}advice {
     height: 130px;
     font-size: 12px;
@@ -53,9 +61,11 @@
     padding: 20px 0;
     cursor: pointer;
   }
+
   .@{autochart-prefix}advice:not(:last-child) {
     border-bottom: 1px solid #d8d8d8;
   }
+
   .@{autochart-prefix}advice_arrow {
     position: absolute;
     display: block;
@@ -70,39 +80,47 @@
     left: 50%;
     transform: translateX(-50%) rotate(45deg);
   }
+
   .@{autochart-prefix}advice-thumbnail {
     flex: none;
     display: flex;
     height: 84px;
     width: 112px;
     border: 1px solid #e2e2e2;
+
     img {
       margin: 0 auto;
     }
   }
+
   .@{autochart-prefix}advice-desc {
     flex: 1;
     flex-direction: column;
     margin-left: 16px;
+
     img {
       height: 24px;
       width: 24px;
     }
+
     .advice-chart-name {
       color: black;
       font-size: 16px;
       font-weight: 500;
       line-height: 40px;
     }
+
     .advice-score-text {
       color: #585858;
       font-size: 14px;
     }
+
     .advice-score {
       color: #1878fb;
       margin-left: 4px;
     }
   }
+
   .@{autochart-prefix}canvas-layer {
     height: 100%;
     width: 100%;
@@ -114,21 +132,25 @@
     display: flex;
     flex-direction: column;
     padding: 24px;
+
     .canvas-content {
       flex: 1 1 0%;
       position: relative;
     }
+
     .canvas-title {
       flex: 0 0 auto;
       font-size: 28px;
       padding-bottom: 16px;
     }
+
     .canvas-description {
       flex: 0 0 auto;
       font-size: 13px;
       color: rgb(142, 142, 142);
       padding-bottom: 16px;
     }
+
     .feedback-layer {
       height: 100%;
       width: 100%;
@@ -139,6 +161,7 @@
       box-sizing: border-box;
     }
   }
+
   .@{autochart-prefix}no-data-layer {
     height: 100%;
     width: 100%;
@@ -148,6 +171,7 @@
     // pointer-events: none;
     box-sizing: border-box;
   }
+
   .@{autochart-prefix}mock_guide {
     color: #aaa;
     text-align: center;
@@ -155,6 +179,7 @@
     top: 50%;
     transform: translateY(-50%);
   }
+
   .@{autochart-prefix}mock_guide_button {
     margin-top: 22px;
     border-radius: 3px;
@@ -172,17 +197,17 @@
 .@{autochart-prefix}dev_panel {
   border-radius: 5px;
   overflow: hidden;
-  box-shadow: 10px 10px 20px rgb(0 0 0 / 25%);
+  border: 1px solid #eee;
   box-sizing: border-box;
   position: absolute;
   background: #fff;
   z-index: 1000;
-  height: 534px;
   width: 340px;
   display: block;
   top: 0;
   left: 0px;
 }
+
 .@{autochart-prefix}config_panel {
   .@{autochart-prefix}config_header {
     box-sizing: border-box;
@@ -198,41 +223,49 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     img {
       width: 16px;
       height: 16px;
       cursor: pointer;
     }
   }
+
   .@{autochart-prefix}config_content {
     width: 100%;
-    height: calc(100% - 108px);
+    height: 480px;
     overflow-y: auto;
     overflow-x: hidden;
     position: relative;
   }
+
   .@{autochart-prefix}config_footer {
-    border: 1px solid #eee;
+    border-top: 1px solid #eee;
     height: 60px;
     padding: 14px;
     width: 100%;
     background: #fff;
     text-align: center;
+
     .@{autochart-prefix}config_chart_footer {
       width: 100%;
       display: flex;
       flex-direction: row-reverse;
+
       button {
         width: 100px;
       }
     }
+
     .@{autochart-prefix}config_data_footer {
       width: 100%;
       display: flex;
       justify-content: space-between;
+
       button {
         width: 100px;
       }
+
       .@{autochart-prefix}number_tip {
         font-size: 16px;
         margin: 0 10px;
@@ -250,16 +283,19 @@
   overflow: auto;
   grid-row-gap: 36px;
   grid-column-gap: 36px;
+
   .chart-item {
     text-align: center;
     color: rgba(0, 0, 0, 0.65);
     width: 80px;
+
     &.active {
       .chart {
         background-color: #eee;
       }
     }
   }
+
   .chart {
     height: 80px;
     width: 80px;
@@ -268,6 +304,7 @@
     border: 1px solid #979797;
     padding: 5px;
     cursor: pointer;
+
     img {
       height: 70px;
       width: 70px;
@@ -277,11 +314,13 @@
 
 .@{autochart-prefix}mockdata-container {
   padding: 10px;
+
   .table-title {
     .anticon {
       margin-left: 8px;
     }
   }
+
   .ant-tag {
     margin-left: 8px;
   }
