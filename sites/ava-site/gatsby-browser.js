@@ -12,6 +12,7 @@ window.reactJsonView = require('react-json-view');
 // window.chartAdvisor = require('../../packages/chart-advisor/src');
 // window.chartLinter = require('../chart-linter/src/');
 // window.dwAnalyzer = require('../data-wizard/analyzer/src/');
+window.autoChart = require('../../packages/auto-chart/src');
 window.reactVega = require('react-vega');
 // window.vega = require('@antv/thumbnails');
 window.knowledge = require('../../packages/ckb/src');

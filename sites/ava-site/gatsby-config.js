@@ -3,7 +3,7 @@ module.exports = {
     {
       resolve: '@antv/gatsby-theme-antv',
       options: {
-        GATrackingId: `UA-148148901-12`,
+        GATrackingId: 'UA-148148901-12',
       },
     },
   ],
@@ -115,12 +115,23 @@ module.exports = {
     examples: [
       {
         slug: 'ckb',
-        // icon: 'gallery',
         title: {
           zh: '图表知识库（CKB)',
           en: 'Chart Knowledge Base (CKB)',
         },
         order: 0,
+      },
+      {
+        slug: 'auto-chart',
+        // icon 来自 iconfont
+        // https://www.iconfont.cn/manage/index?spm=a313x.7781069.1998910419.13&manage_type=myprojects&projectId=470089
+        // 先放一个占位
+        icon: 'other',
+        title: {
+          zh: 'AutoChart',
+          en: 'AutoChart',
+        },
+        order: 1,
       },
       // {
       //   slug: 'data-wizard',
@@ -151,7 +162,7 @@ module.exports = {
       // },
       // {
       //   slug: 'others',
-      //   // icon: 'gallery',
+      //   icon: 'other',
       //   title: {
       //     zh: '其他',
       //     en: 'Others',

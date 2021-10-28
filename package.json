@@ -57,7 +57,7 @@
     "clean:dw": "cd ./packages/data-wizard && npm run clean",
     "clean:auto-chart": "cd ./packages/auto-chart && npm run clean",
     "clean:packages": "lerna run clean",
-    "clean:site": "cd ./ava-site && npm run clean",
+    "clean:site": "cd ./sites/ava-site && npm run clean",
     "clean": "npm run clean:packages",
     "clear:ca": "cd ./packages/chart-advisor && rm -rf node_modules",
     "clear:ckb": "cd ./packages/ckb && rm -rf node_modules",
@@ -70,11 +70,12 @@
     "clear:root": "rimraf node_modules",
     "clear": "run-s clear:packages clear:demo clear:root",
     "cc": "npm run clean && npm run clear",
-    "site:start": "cd ./ava-site && npm run start",
+    "site:install": "cd ./sites/ava-site && yarn",
+    "site:start": "cd ./sites/ava-site && npm run start",
     "setup:demo": "cd demo && npm install --package-lock=false",
     "start:demo": "npm run setup:demo && cd demo && npm start",
     "prepare": "husky install",
-    "one-stop-setup": "npm install --package-lock=false && run-s boot build setup:demo && npm run prepare"
+    "one-stop-setup": "npm install --package-lock=false && run-s boot build setup:demo && npm run prepare && npm run site:install"
   },
   "husky": {
     "hooks": {
