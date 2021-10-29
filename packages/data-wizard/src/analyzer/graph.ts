@@ -6,7 +6,7 @@ const GraphAlgorithms = {
   ...AlgorithmSync,
 };
 
-function genColDataFromArr(arr: any[], columnNames: string[]) {
+function generateColDataFromArray(arr: any[], columnNames: string[]) {
   const fields = [];
   for (let i = 0; i < arr.length; i += 1) {
     const datum = arr[i];
@@ -24,13 +24,13 @@ function genColDataFromArr(arr: any[], columnNames: string[]) {
 export function getNodeFields(nodes: NodeData[]) {
   const [node0] = nodes;
   const nodeFieldNames = node0 ? Object.keys(node0) : [];
-  const nodeFields = genColDataFromArr(nodes, nodeFieldNames);
+  const nodeFields = generateColDataFromArray(nodes, nodeFieldNames);
   return { nodeFields, nodeFieldNames };
 }
 export function getLinkFields(links: LinkData[]) {
   const [link0] = links;
   const linkFieldNames = link0 ? Object.keys(link0) : [];
-  const linkFields = genColDataFromArr(links, linkFieldNames);
+  const linkFields = generateColDataFromArray(links, linkFieldNames);
   return { linkFields, linkFieldNames };
 }
 
@@ -156,8 +156,8 @@ export function getAllStructFeats(nodes: NodeData[], links: LinkData[]) {
   }
   const nodeFeatNames = Object.keys(nodeStructFeats[0]);
   const linkFeatNames = Object.keys(linkStructFeats[0]);
-  const nodeFeats = getAllFieldsInfo(genColDataFromArr(nodeStructFeats, nodeFeatNames), nodeFeatNames);
-  const linkFeats = getAllFieldsInfo(genColDataFromArr(linkStructFeats, linkFeatNames), linkFeatNames);
+  const nodeFeats = getAllFieldsInfo(generateColDataFromArray(nodeStructFeats, nodeFeatNames), nodeFeatNames);
+  const linkFeats = getAllFieldsInfo(generateColDataFromArray(linkStructFeats, linkFeatNames), linkFeatNames);
 
   // Calculate the structural features and statistics of all nodes and links
   const nodeDegrees = nodes.map((node) => node.degree);

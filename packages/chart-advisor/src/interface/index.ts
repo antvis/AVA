@@ -23,49 +23,44 @@ export type EncodingType =
   | 'discrete'
   | 'interval'
   | 'const';
-// export type ScaleType = 'ordinal' | ''
 
 export type LayoutTypes = 'graphin-force' | 'force' | 'grid' | 'dagre' | 'circular' | 'concentric' | 'radial';
 export interface ILayoutConfig {
-  // 支持的布局类型，默认为 force
+  // Layout algorithm type, 'force' by default
   type?: LayoutTypes;
   options?: {
-    // 根据 type 不同，options 中属性字段也会有所不同
-    // 边长
+    // Depending on the different type, the configuration options may vary
     linkDistance?: number;
     nodeStrength?: number;
     edgeStrength?: number;
-    // 是否防止重叠，必须配合属性 nodeSize
-    preventOverlap?: boolean;
-    // 节点大小（直径）。用于碰撞检测。
+    // Take effects when 'nodeSize' is assigned a value
+    preventOverlap?: boolean; //
+    // nodeSize is used for collision detection
     nodeSize?: number[] | number | ((d: any) => number);
-    // preventOverlap 为 true 时生效，防止重叠时节点边缘间距的最小值。为不同节点设置不同的最小间距
+    // Take effects when 'preventOverlap' is true. Set different minimum spacing for different nodes
     nodeSpacing?: number;
-    // 指定排序的依据字段
+    // Specify the fields to be used for sorting
     sortBy?: string;
-    // 是否按照聚类信息布局
+    // Whether the layout is according to the clustering information
     clustering?: boolean;
-    // dagre 特有
+    // For Dagre layout
     rankdir?: 'TB' | 'BT' | 'LR' | 'RL';
-    // 节点对齐方式。默认值是 undefined，代表对齐到中心
+    // The node alignment. The default value is 'undefined', which means align to center
     align?: 'UL' | 'UR' | 'DL' | 'DR' | undefined;
-    // 水平或垂直间距
     nodesep?: number;
-    // 层间距
     ranksep?: number;
-    // concentric 配置，环与环之间最小间距，用于调整半径
+    // For Concentric layout, minimum spacing between rings
     minNodeSpacing?: number;
-    // gird 布局配置，表示网格行数和列数
+    equidistant?: boolean;
+    // For Grid layout
     rows?: number;
     cols?: number;
-    // concentric
-    equidistant?: boolean; // 是否等距
-    // circular
+    // For Circular layout
     radius?: number;
-    divisions?: number; // 分段数
+    divisions?: number;
     ordering?: null | 'topology' | 'degree';
     // radial
-    unitRadius?: number; // 层级距离
+    unitRadius?: number;
     focusNode?: string;
     // graphin-force
     stiffness?: number;

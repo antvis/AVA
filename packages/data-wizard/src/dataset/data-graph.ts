@@ -39,7 +39,7 @@ function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
   const childrenKey = extra?.childrenKey || ('children' in data0 && 'children') || ('to' in data0 && 'to');
   assert(sourceKey || targetKey || childrenKey, 'Data is unable transform to graph');
   const nodes = [];
-  let links = [];
+  const links = [];
   const { [sourceKey]: source, [targetKey]: target, [childrenKey]: children } = data0 as any;
   if (isBasicType(source) && isBasicType(target)) {
     for (let i = 0; i < data.length; i += 1) {
@@ -75,7 +75,7 @@ function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
           nodes.push(node);
         }
       }
-      links = links.concat(subLinks);
+      links.push(...subLinks);
     }
   }
   return { nodes, links };
