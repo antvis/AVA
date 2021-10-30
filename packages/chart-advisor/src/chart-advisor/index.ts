@@ -1,5 +1,5 @@
 import { BasicDataPropertyForAdvice, RuleConfig } from '../ruler/concepts/rule';
-import { Advisor, CKBConfig, AdviseParams } from '../advisor';
+import { Advisor, CKBConfig, AdviseParams, ChartAdviseParams } from '../advisor';
 import { Linter } from '../linter';
 
 export class ChartAdvisor {
@@ -21,7 +21,7 @@ export class ChartAdvisor {
    */
   advise(params: AdviseParams) {
     const { data, dataProps, fields, options } = params;
-    const advices = this.advisor.advise({ data, dataProps, fields, options });
+    const advices = this.advisor.advise({ data, dataProps, fields, options } as ChartAdviseParams);
     const advicesAfterLint = advices.map((advice) => {
       if (advice.type !== 'graph') {
         const lintResult = this.linter.lint({

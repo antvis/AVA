@@ -112,7 +112,8 @@ export class Advisor {
     const hasKeyForGraph =
       Object.prototype.toString.call(data) === '[object Object]' &&
       Object.keys(data).some((key) => keyForGraph.includes(key));
-    const shouldRecommendGraph = options?.extra || purposeForGraphs.includes(options?.purpose) || hasKeyForGraph;
+    const shouldRecommendGraph =
+      (options as GraphAdviseParams['options'])?.extra || purposeForGraphs.includes(options?.purpose) || hasKeyForGraph;
     let advices;
     const graphAdvices = this.advicesForGraph(params as GraphAdviseParams);
     // const chartAdvices = this.advicesForChart(params as ChartAdviseParams);
