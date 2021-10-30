@@ -94,6 +94,7 @@ const ChartConfigPanel = forwardRef((props: ChartConfigPanelProps, ref: DragRefP
               message.success(intl.get('CopySuccess', language));
             }}
           >
+            {/* @ts-ignore */}
             <Button type="primary">{intl.get('CopyConfig', language)}</Button>
           </CopyToClipboard>
         </div>

@@ -33,7 +33,7 @@ const scoreRules = (
     .filter((r: RuleModule) => r.type === 'HARD' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((hr: RuleModule) => {
       const weight = ruleBase[hr.id].option?.weight || defaultWeight[hr.id];
-      const score = weight * (hr as ChartRuleModule).validator(info);
+      const score = weight * ((hr as ChartRuleModule).validator(info) as number);
       hardScore *= score;
       record.push({ name: hr.id, score, hard: true });
     });
@@ -43,7 +43,7 @@ const scoreRules = (
     .filter((r: RuleModule) => r.type === 'SOFT' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((sr: RuleModule) => {
       const weight = ruleBase[sr.id].option?.weight || defaultWeight[sr.id];
-      const score = weight * (sr as ChartRuleModule).validator(info);
+      const score = weight * ((sr as ChartRuleModule).validator(info) as number);
       softScore += score;
       record.push({ name: sr.id, score, hard: false });
     });
