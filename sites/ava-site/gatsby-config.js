@@ -122,14 +122,14 @@ module.exports = {
         order: 0,
       },
       {
-        slug: 'auto-chart',
+        slug: 'components',
         // icon 来自 iconfont
         // https://www.iconfont.cn/manage/index?spm=a313x.7781069.1998910419.13&manage_type=myprojects&projectId=470089
         // 先放一个占位
         icon: 'other',
         title: {
-          zh: 'AutoChart',
-          en: 'AutoChart',
+          zh: 'React 组件',
+          en: 'React Components',
         },
         order: 1,
       },
