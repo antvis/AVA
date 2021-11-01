@@ -3,111 +3,83 @@ title: AutoChart
 order: 1
 ---
 
-`markdown:docs/common/style.md`
+<playground path="auto-chart/demo/basic.jsx"></playground>
 
-<div class="doc-md">
+## Data
 
-Recommand appropriate charts for your data and generate it for you.
+### data
 
-```sign
-autoChart(container, data, options);
-```
+<description>**optional** _any[]_</description>
 
-### Arguments
+Row data array. If empty, mock panel is available.
 
-* **container** * DOM where your chart will be drawn.
-  * _required_
-  * `type`: HTMLElement
+### fields
 
-* **data** * Row data array.
-  * _required_
-  * `type`: any[] | Promise<any[]>
+<description>**optional** _string[]_</description>
 
-* **options** * Options.
-  * _optional_
-  * `type`: AutoChartOptions
+The fields for chart recommendations.
 
-#### options.title
 
-Title of the chart.
+## Container
 
-#### options.description
+### title
 
-Subtitle of the chart.
+<description>**optional** _string_</description>
 
-`markdown:docs/common/advisor-options.en.md`
+Chart title.
 
-#### options.toolbar
+### description
 
-Turn on/off chart type switching.
+<description>**optional** _string_</description>
 
-`ture` or `false`
+Chart description.
 
-#### options.development
+### width
 
-Turn on/off develop mode. In develop mode, **config** button shows on toolbar.
+<description>**optional** _React.CSSProperties['width']_ _default:_ `"100%"`</description>
 
-Default `true` under `NODE_ENV` environment.
+Container width.
 
-`ture` or `false` 
+### height
 
-#### options.theme
+<description>**optional** _React.CSSProperties['height']_ _default:_ `"100%"`</description>
 
-Theme of the chart styles.
+Container height.
 
-`light` or `dark`
+### className
 
-#### options.config
+<description>**optional** _string_</description>
 
-Detailed configs of the chart.
+Container className.
 
-#### options.noDataContent
+### language
 
-To render content without data, you need to provide a `render` and `destroy` method for user rendering and destruction. 
+<description>**optional** _"zh-CN" | "en-US"_ _default:_ `"zh-CN"`</description>
 
-Show *no data UI* by default, example:
+Internationalization.
 
-```ts
+## Configuration
 
-{
-  render(container) {
-    this.div = document.createElement('div');
-    this.div.innerHTML = 'NO Data';
-    this.div.style.textAlign = 'center';
-    container.appendChild(this.div);
-  },
-  destroy(container) {
-    container.removeChild(this.div);
-  }
-}
-```
+### purpose
 
-#### options.language
+<description>**optional** _Purpose_</description>
 
-User interface language, support `en-US` and `zh-CN`. If this option is undefined, the navigator language is used by default.
+The purpose of visualization.
 
-### Returns
+### showRanking
 
-*Promise\<AutoChart\>*
+<description>**optional** _boolean_ _default:_ `true`</description>
 
-### Examples
+Whether to display the recommended ranking, it can be used to switch chart type.
 
-```html
-<div id="mountNode"></div>
-```
+### configurable
 
-```js
-import { autoChart } from '@antv/chart-advisor';
+<description>**optional** _boolean_ _default:_ `true`</description>
 
-const container = document.getElementById('mountNode');
+Whether show config panel.
 
-const data = [
-  {field1: 'a', field2: '100'},
-  {field1: 'b', field2: '300'},
-  {field1: 'c', field2: '800'},
-];
+### noDataContent
 
-autoChart(container, data, {toolbar: true, development: true});
-```
+<description>**optional** _React.ReactNode_</description>
 
-</div>
+To render content without data. 
