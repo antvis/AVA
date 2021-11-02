@@ -40,7 +40,7 @@ interface FieldInfo {
   /** 行数 */
   count: number;
   /** 数据存样 */
-  samples: any[];
+  rawData: any[];
   /** 额外信息 */
   meta?: FieldMeta;
 }
@@ -67,7 +67,7 @@ console.log(fieldInfo);
 //   "type": "integer",
 //   "recommendation": "integer", // 推荐类型
 //   "missing": 0,
-//   "samples": [ 1, 2, ... ],
+//   "rawData": [ 1, 2, ... ],
 //   "valueMap": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1 },
 //   "minimum": 1,
 //   "maximum": 5,
@@ -101,7 +101,7 @@ console.log(fieldInfo);
 //   "type": "boolean",
 //   "recommendation": "boolean",
 //   "missing": 0,
-//   "samples": [ "Y", "N", "Y", "N" ],
+//   "rawData": [ "Y", "N", "Y", "N" ],
 //   "valueMap": {
 //     "Y": 2,
 //     "N": 2
@@ -129,7 +129,7 @@ console.log(fieldInfo);
 //   "type": "string",
 //   "recommendation": "string",
 //   "missing": 1,
-//   "samples": [ "A", "B", "", "D", "EAT" ],
+//   "rawData": [ "A", "B", "", "D", "EAT" ],
 //   "valueMap": {
 //     "A": 1,
 //     "B": 1,
@@ -161,7 +161,7 @@ console.log(fieldInfo);
 //   "type": "date",
 //   "recommendation": "date",
 //   "missing": 0,
-//   "samples": [ "2019-01-01", "2018-01-01", "2017-01-01", "2016-01-01", "2015-01-01" ],
+//   "rawData": [ "2019-01-01", "2018-01-01", "2017-01-01", "2016-01-01", "2015-01-01" ],
 //   "valueMap": {
 //     "2019-01-01": 1,
 //     "2018-01-01": 1,

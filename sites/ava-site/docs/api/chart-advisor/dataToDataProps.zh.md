@@ -44,7 +44,7 @@ type DataProperty =
 * distinct `number` 唯一值个数
 * valueMap `Record<string, number>` 每一个唯一值的个数映射
 * count `number` 总数
-* samples `any[]` 示例数值
+* rawData `any[]` 示例数值
 * meta `FieldMeta` 只有当 type 为 `'mixed'` 时才会存在
 ```ts
 interface FieldMeta {
@@ -112,7 +112,7 @@ dataToDataProps(data);
 //     missing: 0,
 //     name: "yearmonth",
 //     recommendation: "date",
-//     samples: (10) ["2019-03", "2019-04", ...],
+//     rawData: (10) ["2019-03", "2019-04", ...],
 //     type: "date",
 //     valueMap: {2019-03: 2, 2019-04: 2, 2019-05: 2, 2019-06: 2, 2019-07: 2}
 //   },

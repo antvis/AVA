@@ -19,14 +19,14 @@ export const diffPieSector: RuleModule = {
     if (dataProps) {
       const intervalField = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
-      if (intervalField && intervalField.sum && intervalField.samples) {
+      if (intervalField && intervalField.sum && intervalField.rawData) {
         const { sum } = intervalField;
         const scale = 1 / sum;
-        const scaledSamples = intervalField.samples.map((v: number) => v * scale);
+        const scaledSamples = intervalField.rawData.map((v: number) => v * scale);
 
         const scaledProduct = scaledSamples.reduce((a: number, c: number) => a * c);
 
-        const count = intervalField.samples.length;
+        const count = intervalField.rawData.length;
         const maxProduct = (1 / count) ** count;
 
         result = Math.abs(maxProduct - Math.abs(scaledProduct)) / maxProduct;

@@ -427,7 +427,7 @@ describe('DataFrame info', () => {
     expect(info.type).toBe('integer');
     expect(info.recommendation).toBe('integer');
     expect(info.missing).toBe(0);
-    expect(info.samples).toStrictEqual([1, 2, 3]);
+    expect(info.rawData).toStrictEqual([1, 2, 3]);
     expect(info.valueMap).toStrictEqual({ '1': 1, '2': 1, '3': 1 });
     expect(info.minimum).toBe(1);
     expect(info.maximum).toBe(3);

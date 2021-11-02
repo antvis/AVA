@@ -78,7 +78,7 @@ console.log(fieldInfo);
 //   "type": "integer",
 //   "recommendation": "integer",
 //   "missing": 0,
-//   "samples": [ 1, 2, ... ],
+//   "rawData": [ 1, 2, ... ],
 //   "valueMap": { "1": 1, "2": 1, "3": 1, "4": 1, "5": 1 },
 //   "minimum": 1,
 //   "maximum": 5,

@@ -156,7 +156,7 @@ The customized data properties should be with type `BasicDataPropertyForAdvice`:
 interface BasicDataPropertyForAdvice {
   readonly name: string;
   readonly levelOfMeasurements: LOM[];
-  readonly samples: any[];
+  readonly rawData: any[];
   readonly recommendation: FieldInfo['recommendation'];
   readonly type: FieldInfo['type'];
   readonly distinct?: number;
