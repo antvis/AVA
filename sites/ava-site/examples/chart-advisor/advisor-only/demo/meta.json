@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "data-advisor.jsx",
+      "title": {
+        "en": "data to Advisor",
+        "zh": "从数据到 Advisor"
+      },
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cj1_Sr45sAoAAAAAAAAAAAAAARQnAQ"
+    }
+  ]
+}
