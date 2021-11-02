@@ -17,7 +17,7 @@ export interface BasicDataPropertyForAdvice {
   /** LOM */
   readonly levelOfMeasurements?: LOM[];
   /** used for split column xy series */
-  readonly samples: any[];
+  readonly rawData: any[];
   /** required types in analyzer FieldInfo */
   readonly recommendation: analyzer.FieldInfo['recommendation'];
   readonly type: analyzer.FieldInfo['type'];

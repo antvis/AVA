@@ -42,8 +42,8 @@ type DataProperty =
 * missing `number` number of empty includes null undefined or empty string
 * distinct `number` distinct count
 * valueMap `Record<string, number>` number of each distinct item
-* count `number` count of samples
-* samples `any[]` samples
+* count `number` count of rawData
+* rawData `any[]` rawData
 * meta `FieldMeta` more info which be exist only the Field type is mixed
 ```ts
 interface FieldMeta {
@@ -111,7 +111,7 @@ dataToDataProps(data);
 //     missing: 0,
 //     name: "yearmonth",
 //     recommendation: "date",
-//     samples: (10) ["2019-03", "2019-04", ...],
+//     rawData: (10) ["2019-03", "2019-04", ...],
 //     type: "date",
 //     valueMap: {2019-03: 2, 2019-04: 2, 2019-05: 2, 2019-06: 2, 2019-07: 2}
 //   },

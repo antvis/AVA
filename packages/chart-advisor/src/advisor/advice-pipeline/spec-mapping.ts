@@ -346,7 +346,7 @@ function splitColumnXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnFi
 
   let field4X;
   let Field4Series;
-  if (dwUtils.isParentChild(sortedNominalFields[1]?.samples, sortedNominalFields[0]?.samples)) {
+  if (dwUtils.isParentChild(sortedNominalFields[1]?.rawData, sortedNominalFields[0]?.rawData)) {
     [Field4Series, field4X] = sortedNominalFields;
   } else {
     [field4X, Field4Series] = sortedNominalFields;
@@ -501,7 +501,7 @@ function bubbleChart(data: DataRows, dataProps: BasicDataPropertyForAdvice[]): A
   };
   for (let i = 0; i < intervalFields.length; i += 1) {
     for (let j = i + 1; j < intervalFields.length; j += 1) {
-      const p = statistics.pearson(intervalFields[i].samples, intervalFields[j].samples);
+      const p = statistics.pearson(intervalFields[i].rawData, intervalFields[j].rawData);
       if (Math.abs(p) > triple.corr) {
         triple.x = intervalFields[i];
         triple.y = intervalFields[j];

@@ -26,10 +26,10 @@ export interface FieldInfo {
   distinct?: number;
   /** Number of each distinct item */
   valueMap?: Record<string, number>;
-  /** count of samples */
+  /** count of rawData */
   count?: number;
-  /** samples */
-  samples: any[];
+  /** rawData */
+  rawData: any[];
   /** more info */
   meta?: FieldMeta;
   /** level of measurements */
@@ -271,10 +271,10 @@ export function isConst(info: FieldInfo): boolean {
  * @public
  */
 export function isOrdinal(info: FieldInfo): boolean {
-  const { samples, recommendation } = info;
+  const { rawData, recommendation } = info;
   if (recommendation !== 'string') return false;
   if (isConst(info)) return false;
-  const list = samples.filter((item) => !utils.isNull(item) && utils.isBasicType(item));
+  const list = rawData.filter((item) => !utils.isNull(item) && utils.isBasicType(item));
   if (list.length === 0) return false;
   let start: null | string = null;
   let end: null | string = null;
@@ -425,7 +425,7 @@ export function analyzeField(array: any[]): StringFieldInfo | NumberFieldInfo | 
     type: types.length <= 1 ? types[0] || 'null' : 'mixed',
     recommendation,
     missing: valueMap.null || 0,
-    samples: array,
+    rawData: array,
     valueMap,
   };
 
