@@ -6,8 +6,8 @@ describe('new DataFrame', () => {
   test('1D: basic type', () => {
     const df = new DataFrame(1);
     expect(df.axes).toStrictEqual([[0], [0]]);
-    expect(df.data).toStrictEqual([1]);
-    expect(df.colData).toStrictEqual([1]);
+    expect(df.data).toStrictEqual([[1]]);
+    expect(df.colData).toStrictEqual([[1]]);
   });
 
   test('1D: basic type with extra index and columns', () => {
@@ -35,29 +35,29 @@ describe('new DataFrame', () => {
   test('1D: array', () => {
     const df = new DataFrame([1, 2, 3]);
     expect(df.axes).toStrictEqual([[0, 1, 2], [0]]);
-    expect(df.data).toStrictEqual([1, 2, 3]);
-    expect(df.colData).toStrictEqual([1, 2, 3]);
+    expect(df.data).toStrictEqual([[1, 2, 3]]);
+    expect(df.colData).toStrictEqual([[1, 2, 3]]);
   });
 
   test('1D: array with extra index and columns', () => {
     const df = new DataFrame([1, 2, 3], { index: ['b', 'c', 'a'], columns: ['col'] });
     expect(df.axes).toStrictEqual([['b', 'c', 'a'], ['col']]);
-    expect(df.data).toStrictEqual([1, 2, 3]);
-    expect(df.colData).toStrictEqual([1, 2, 3]);
+    expect(df.data).toStrictEqual([[1, 2, 3]]);
+    expect(df.colData).toStrictEqual([[1, 2, 3]]);
   });
 
   test('1D: object', () => {
     const df = new DataFrame({ a: 1, b: 2, c: 3 });
     expect(df.axes).toStrictEqual([[0], ['a', 'b', 'c']]);
-    expect(df.data).toStrictEqual([1, 2, 3]);
-    expect(df.colData).toStrictEqual([1, 2, 3]);
+    expect(df.data).toStrictEqual([[1, 2, 3]]);
+    expect(df.colData).toStrictEqual([[1], [2], [3]]);
   });
 
   test('1D: object with extra index and columns', () => {
     const df = new DataFrame({ a: 1, b: 2, c: 3 }, { index: ['idx1'], columns: ['c', 'b'] });
     expect(df.axes).toStrictEqual([['idx1'], ['c', 'b']]);
-    expect(df.data).toStrictEqual([3, 2]);
-    expect(df.colData).toStrictEqual([3, 2]);
+    expect(df.data).toStrictEqual([[3, 2]]);
+    expect(df.colData).toStrictEqual([[3], [2]]);
   });
 
   test('2D: array', () => {
@@ -409,6 +409,126 @@ describe('DataFrame get value functions', () => {
 });
 
 describe('DataFrame info', () => {
+  test('1D: basic type', () => {
+    const df = new DataFrame(1);
+    const info = df.info();
+    expect(info).toStrictEqual([
+      {
+        count: 1,
+        distinct: 1,
+        type: 'integer',
+        recommendation: 'integer',
+        missing: 0,
+        rawData: [1],
+        valueMap: { '1': 1 },
+        minimum: 1,
+        maximum: 1,
+        mean: 1,
+        percentile5: 1,
+        percentile25: 1,
+        percentile50: 1,
+        percentile75: 1,
+        percentile95: 1,
+        sum: 1,
+        variance: 0,
+        standardDeviation: 0,
+        zeros: 0,
+        levelOfMeasurements: ['Interval', 'Discrete'],
+        name: '0',
+      },
+    ]);
+  });
+
+  test('1D: array', () => {
+    const df = new DataFrame([1, 2, 3]);
+    const info = df.info();
+    expect(info).toStrictEqual([
+      {
+        count: 3,
+        distinct: 3,
+        type: 'integer',
+        recommendation: 'integer',
+        missing: 0,
+        rawData: [1, 2, 3],
+        valueMap: { '1': 1, '2': 1, '3': 1 },
+        minimum: 1,
+        maximum: 3,
+        mean: 2,
+        percentile5: 1,
+        percentile25: 1,
+        percentile50: 2,
+        percentile75: 3,
+        percentile95: 3,
+        sum: 6,
+        variance: 0.6666666666666666,
+        standardDeviation: 0.816496580927726,
+        zeros: 0,
+        levelOfMeasurements: ['Interval', 'Discrete'],
+        name: '0',
+      },
+    ]);
+  });
+
+  test('1D: object', () => {
+    const df = new DataFrame({ a: 1, b: 2, c: 3 });
+    const infos = df.info();
+    expect(infos[0]).toStrictEqual({
+      count: 1,
+      distinct: 1,
+      type: 'integer',
+      recommendation: 'integer',
+      missing: 0,
+      rawData: [1],
+      valueMap: { '1': 1 },
+      minimum: 1,
+      maximum: 1,
+      mean: 1,
+      percentile5: 1,
+      percentile25: 1,
+      percentile50: 1,
+      percentile75: 1,
+      percentile95: 1,
+      sum: 1,
+      variance: 0,
+      standardDeviation: 0,
+      zeros: 0,
+      levelOfMeasurements: ['Interval', 'Discrete'],
+      name: 'a',
+    });
+  });
+
+  test('2D: array', () => {
+    const df = new DataFrame([
+      [1, 4],
+      [2, 5],
+      [3, 6],
+    ]);
+    const infos = df.info();
+    expect(infos[0]).toStrictEqual({
+      count: 3,
+      distinct: 3,
+      type: 'integer',
+      recommendation: 'integer',
+      missing: 0,
+      rawData: [1, 2, 3],
+      valueMap: { '1': 1, '2': 1, '3': 1 },
+      minimum: 1,
+      maximum: 3,
+      mean: 2,
+      percentile5: 1,
+      percentile25: 1,
+      percentile50: 2,
+      percentile75: 3,
+      percentile95: 3,
+      sum: 6,
+      variance: 0.6666666666666666,
+      standardDeviation: 0.816496580927726,
+      zeros: 0,
+      levelOfMeasurements: ['Interval', 'Discrete'],
+      name: '0',
+    });
+  });
+
   test('2D: object array', () => {
     const df = new DataFrame(
       [
@@ -444,13 +564,44 @@ describe('DataFrame info', () => {
     expect(info.levelOfMeasurements).toStrictEqual(['Interval', 'Discrete']);
     expect(info.name).toBe('a');
   });
+
+  test('2D: array object', () => {
+    const df = new DataFrame({
+      a: [1, 2, 3],
+      b: [4, 5, 6],
+    });
+    const infos = df.info();
+    expect(infos[0]).toStrictEqual({
+      count: 3,
+      distinct: 3,
+      type: 'integer',
+      recommendation: 'integer',
+      missing: 0,
+      rawData: [1, 2, 3],
+      valueMap: { '1': 1, '2': 1, '3': 1 },
+      minimum: 1,
+      maximum: 3,
+      mean: 2,
+      percentile5: 1,
+      percentile25: 1,
+      percentile50: 2,
+      percentile75: 3,
+      percentile95: 3,
+      sum: 6,
+      variance: 0.6666666666666666,
+      standardDeviation: 0.816496580927726,
+      zeros: 0,
+      levelOfMeasurements: ['Interval', 'Discrete'],
+      name: 'a',
+    });
+  });
 });
 
 describe('DataFrame data with fillValue', () => {
   test('1D: basic type', () => {
     const df = new DataFrame(undefined, { fillValue: 201 });
-    expect(df.data).toStrictEqual([201]);
-    expect(df.colData).toStrictEqual([201]);
+    expect(df.data).toStrictEqual([[201]]);
+    expect(df.colData).toStrictEqual([[201]]);
   });
 
   test('1D: basic type with extra index and columns', () => {
@@ -467,26 +618,26 @@ describe('DataFrame data with fillValue', () => {
 
   test('1D: array', () => {
     const df = new DataFrame([null, '', 3], { fillValue: 201 });
-    expect(df.data).toStrictEqual([201, 201, 3]);
-    expect(df.colData).toStrictEqual([201, 201, 3]);
+    expect(df.data).toStrictEqual([[201, 201, 3]]);
+    expect(df.colData).toStrictEqual([[201, 201, 3]]);
   });
 
   test('1D: array with extra index and columns', () => {
     const df = new DataFrame([1, 2, undefined], { index: ['b', 'c', 'a'], columns: ['col'], fillValue: 201 });
-    expect(df.data).toStrictEqual([1, 2, 201]);
-    expect(df.colData).toStrictEqual([1, 2, 201]);
+    expect(df.data).toStrictEqual([[1, 2, 201]]);
+    expect(df.colData).toStrictEqual([[1, 2, 201]]);
   });
 
   test('1D: object', () => {
     const df = new DataFrame({ a: 1, b: undefined, c: 3 }, { fillValue: 201 });
-    expect(df.data).toStrictEqual([1, 201, 3]);
-    expect(df.colData).toStrictEqual([1, 201, 3]);
+    expect(df.data).toStrictEqual([[1, 201, 3]]);
+    expect(df.colData).toStrictEqual([[1], [201], [3]]);
   });
 
   test('1D: object with extra index and columns', () => {
     const df = new DataFrame({ a: 1, b: 2, c: null }, { index: ['idx1'], columns: ['c', 'b'], fillValue: 201 });
-    expect(df.data).toStrictEqual([201, 2]);
-    expect(df.colData).toStrictEqual([201, 2]);
+    expect(df.data).toStrictEqual([[201, 2]]);
+    expect(df.colData).toStrictEqual([[201], [2]]);
   });
 
   test('2D: array', () => {

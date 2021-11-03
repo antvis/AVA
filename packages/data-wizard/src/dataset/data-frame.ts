@@ -18,6 +18,7 @@ export default class DataFrame extends BaseFrame {
         this.data = Array(extra?.columns.length).fill(this.data);
       } else if (!extra?.columns) {
         this.setAxis(1, [0]);
+        this.data = [this.data];
       } else if (!extra?.index) {
         assert(isArray(extra?.columns), 'Index or columns must be Axis array.');
         assert(
@@ -35,6 +36,7 @@ export default class DataFrame extends BaseFrame {
       /** 1D: basic type | array */
       if (this.data.length > 0) {
         this.generateColumns([0], extra?.columns);
+        this.data = [this.data];
         this.colData = this.data;
       }
 
@@ -116,7 +118,8 @@ export default class DataFrame extends BaseFrame {
 
             this.data.push(fillMissingValue(data[column], extra?.fillValue));
           }
-          this.colData = this.data;
+          this.colData = this.data.map((datum) => [datum]);
+          this.data = [this.data];
           this.setAxis(1, extra?.columns);
         } else {
           for (let i = 0; i < columns.length; i += 1) {
@@ -126,9 +129,8 @@ export default class DataFrame extends BaseFrame {
 
             this.data.push(fillMissingValue(datum, extra?.fillValue));
           }
-          this.colData = extra?.fillValue
-            ? dataValues.map((datum) => fillMissingValue(datum, extra?.fillValue))
-            : dataValues;
+          this.data = [this.data];
+          this.colData = dataValues.map((datum) => [fillMissingValue(datum, extra?.fillValue)]);
           this.generateColumns(columns);
         }
       }
