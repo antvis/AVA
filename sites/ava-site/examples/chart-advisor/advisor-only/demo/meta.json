@@ -11,6 +11,22 @@
         "zh": "从数据到 Advisor 推荐图表"
       },
       "screenshot": "https://iph.href.lu/800x400?text=data-advisor"
+    },
+    {
+      "filename": "advisor.jsx",
+      "title": {
+        "en": "Basic Advisor",
+        "zh": "Advisor 基础用法"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=advisor"
+    },
+    {
+      "filename": "custom-advisor.jsx",
+      "title": {
+        "en": "Custom rules of Advisor",
+        "zh": "定制 Advisor 的规则"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=custom-advisor"
     }
   ]
 }
