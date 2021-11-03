@@ -1,16 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Steps, Menu, Dropdown } from 'antd';
+import { Steps, Menu, Dropdown, Radio } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { specToG2Plot } from '@antv/antv-spec';
-import { Advisor } from '@antv/chart-advisor';
 import ReactJson from 'react-json-view';
+import { SheetComponent } from '@antv/s2';
+
+import { Advisor } from '@antv/chart-advisor';
 
 const { Step } = Steps;
 
-const ShowJSON = (json) => {
-  return <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} />;
+const ShowJSON = (json) => (
+  <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} />
+);
+
+const ShowTable = (data, { height, width }) => {
+  const s2DataConfig = { fields: { columns: Object.keys(data[0]) }, data };
+  const s2options = { width, height };
+
+  return <SheetComponent dataCfg={s2DataConfig} options={s2options} sheetType="table" themeCfg={{ name: 'simple' }} />;
 };
+
+const myAdvisor = new Advisor();
 
 // contants
 
@@ -26,7 +37,10 @@ const defaultData = [
   { year: '2015', sales: 52 },
 ];
 
-const myAdvisor = new Advisor();
+const dataRadioOptions = [
+  { label: 'JSON', value: 'JSON' },
+  { label: 'Table', value: 'Table' },
+];
 
 class App extends React.Component {
   constructor(props) {
@@ -37,6 +51,7 @@ class App extends React.Component {
       data: defaultData,
       advices: myAdvisor.advise({ data: defaultData }),
       currentAdvice: 0,
+      dataRadioValue: 'Table',
     };
 
     this.canvas = React.createRef(null);
@@ -44,6 +59,12 @@ class App extends React.Component {
 
   onStepChange = (currentStep) => {
     this.setState({ currentStep });
+  };
+
+  onDataRadioChange = (e) => {
+    this.setState({
+      dataRadioValue: e.target.value,
+    });
   };
 
   onAdviceMenuClick = (e) => {
@@ -60,14 +81,22 @@ class App extends React.Component {
   }
 
   render() {
-    const { currentStep, advices, data } = this.state;
+    const { currentStep, advices, data, dataRadioValue } = this.state;
 
     const dataContent = (
-      <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-        {ShowJSON(data)}
-      </div>
+      <>
+        <Radio.Group
+          options={dataRadioOptions}
+          onChange={this.onDataRadioChange}
+          value={dataRadioValue}
+          optionType="button"
+          buttonStyle="solid"
+        />
+        <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
+          {dataRadioValue === 'Table' ? ShowTable(data, { height: 300, width: 300 }) : ShowJSON(data)}
+        </div>
+      </>
     );
-
     const advicesMenu = (
       <Menu onClick={this.onAdviceMenuClick} selectedKeys={[this.state.currentAdvice]}>
         {(advices || []).map((item, index) => {
@@ -97,7 +126,7 @@ class App extends React.Component {
       </>
     );
 
-    const plotContent = <div id="vis" ref={this.canvas} style={{ flex: 5, height: '600px' }}></div>;
+    const plotContent = <div id="vis" key="plot" ref={this.canvas} style={{ flex: 5, height: '100%' }}></div>;
 
     // manifest
 
@@ -125,13 +154,13 @@ class App extends React.Component {
     ];
 
     return (
-      <div>
+      <>
         <Steps
           type="navigation"
           size="small"
           current={currentStep}
           onChange={this.onStepChange}
-          style={{ boxShadow: '0px -1px 0 0 #e8e8e8 inset' }}
+          style={{ marginBottom: '8px', boxShadow: '0px -1px 0 0 #e8e8e8 inset' }}
         >
           {steps.map((item) => (
             <Step key={item.title} title={item.title} />
@@ -140,8 +169,10 @@ class App extends React.Component {
 
         <p>{steps[currentStep].desc}</p>
 
-        <div className="steps-content">{steps[currentStep].content}</div>
-      </div>
+        <div className="steps-content" style={{ height: 'calc(100% - 80px)' }}>
+          {steps[currentStep].content}
+        </div>
+      </>
     );
   }
 }

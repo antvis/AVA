@@ -26,6 +26,7 @@
     "@ant-design/icons": "^4.4.0",
     "@antv/antv-spec": "^0.1.0-alpha.4",
     "@antv/g2plot": "^2.3.39",
+    "@antv/s2": "^0.2.5",
     "@antv/thumbnails": "^1.3.0",
     "antd": "^4.4.0",
     "insert-css": "^2.0.0",
@@ -39,7 +40,6 @@
     "vega-lite": "^4.15.0"
   },
   "devDependencies": {
-    "@antv/antv-spec": "^0.1.0-alpha.4",
     "@antv/gatsby-theme-antv": "^1.0.1",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
