@@ -75,6 +75,7 @@ export interface InsightOptions {
   impactWeight?: number; // Insight score = Impact score * impactWeight + Significance * (1 - impactWeight)
   insightTypes?: InsightType[];
   limit?: number; // Limit on the number of insights
+  visualization?: boolean; // on / off the output of visualization scheme
   homogeneous?: boolean; // on/off extra homogeneous insight extraction
 }
 
