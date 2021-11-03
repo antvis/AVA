@@ -1,3 +1,5 @@
+/* eslint react/prop-types: 0 */
+
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 // import { groupBy, sumBy, maxBy, minBy, meanBy, flatten } from 'lodash';
@@ -366,7 +368,7 @@ const chartSample2 = [
 
 const CHART_SAMPLE_LIST = [chartSample1, chartSample2];
 
-const ChartView = (chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort) => {
+const ChartView = ({ chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort }) => {
   const [curChartConfig, setChartConfig] = useState();
   let plot;
   useEffect(() => {
@@ -474,7 +476,7 @@ const ChartView = (chartID, chartInfo, clusterID, interactionMode, hasLocked, ch
   );
 };
 
-const Dashboard = (chartList, interactionMode) => {
+const Dashboard = ({ chartList, interactionMode }) => {
   const smartBoard = new SmartBoard(chartList);
   const { chartGraph } = smartBoard;
   const chartOrder = smartBoard.chartOrder('byCluster');
@@ -538,7 +540,7 @@ const Dashboard = (chartList, interactionMode) => {
 
 const { Option } = Select;
 
-const Toolbar = (changeMode, changeSampleIndex) => {
+const Toolbar = ({ changeMode, changeSampleIndex }) => {
   const handleModeChange = (e) => {
     changeMode(e.target.value);
   };
