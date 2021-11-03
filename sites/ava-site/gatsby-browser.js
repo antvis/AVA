@@ -17,6 +17,7 @@ window.reactVega = require('react-vega');
 // window.vega = require('@antv/thumbnails');
 window.knowledge = require('../../packages/ckb/src');
 window.thumbnails = require('@antv/thumbnails');
+window.s2 = require('@antv/s2');
 window.antvSpec = require('@antv/antv-spec');
 window.chartAdvisor = require('../../packages/chart-advisor/src');
 
