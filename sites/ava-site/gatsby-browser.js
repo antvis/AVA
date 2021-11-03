@@ -4,6 +4,8 @@
  * See: https://github.com/antvis/gatsby-theme-antv/issues/80
  */
 
+import 'antd/dist/antd.less';
+
 window.react = require('react');
 window.reactDom = require('react-dom');
 window.antd = require('antd');
