@@ -1,0 +1,65 @@
+#dashboard {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+}
+.chart_view {
+  width: 33.3%;
+  border-radius: 5px;
+  padding: 14px;
+}
+
+.cluster_0 {
+  background-color: rgba(175, 220, 202, 0.3);
+}
+.cluster_1 {
+  background-color: rgba(247, 232, 145, 0.3);
+}
+.cluster_2 {
+  background-color: rgba(242, 205, 197, 0.3);
+}
+
+#toolbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 16px 8px 16px;
+  background-color: #ffffff;
+}
+
+.title_view {
+  display: flex;
+  flex: none;
+  align-items: center;
+  margin-bottom: 12px;
+  color: #000;
+  font-size: 14px;
+  line-height: 24px;
+  position: relative;
+
+  .title_info {
+    width: calc(100% - 20px);
+    line-height: 30px;
+    cursor: default;
+
+    span {
+      margin-bottom: 5px;
+    }
+  }
+
+  .right_icons {
+    align-items: center;
+    margin-left: 8px;
+    flex: 1;
+    text-align: right;
+
+    span {
+      margin-left: 8px;
+    }
+  }
+}
+
+.toolbar_icons {
+  position: relative;
+  top: 50%;
+  transform: translate(0, -50%);
+}
