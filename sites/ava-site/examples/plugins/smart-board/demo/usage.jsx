@@ -122,9 +122,9 @@ const aggregate = (data, dimensionField, measure, seriesField, aggMethod = 'SUM'
 };
 
 /**
- * Adaptor from smart-board-genereted chart to G2Plot config.
+ * Adaptor from to smart-board config.
  */
-function board2Config(Chart, data) {
+function chart2BoardConfig(Chart, data) {
   let chartType = '';
   let chartConfig = {
     id: Chart.id,
@@ -372,7 +372,7 @@ const ChartView = ({ chartID, chartInfo, clusterID, interactionMode, hasLocked, 
         return res.json();
       })
       .then((data) => {
-        const chartConfig = board2Config(chartInfo, data);
+        const chartConfig = chart2BoardConfig(chartInfo, data);
         const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
         let aggregatedData = data;
         if ((xField || colorField) && (yField || angleField)) {
