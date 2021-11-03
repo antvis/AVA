@@ -10,7 +10,7 @@
         "en": "Palette Generation",
         "zh": "色板生成"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/ObPIQYzZJU/thumbnails-usage.png"
+      "screenshot": "https://iph.href.lu/800x400?text=smart-color"
     },
     {
       "filename": "optimization.jsx",
@@ -18,7 +18,7 @@
         "en": "Palette Optimization",
         "zh": "色板优化"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/YQGTC0Zq%26t/thumbnails-viewall.gif"
+      "screenshot": "https://iph.href.lu/800x400?text=smart-color"
     },
     {
       "filename": "simulation.jsx",
@@ -26,7 +26,7 @@
         "en": "Color Simulation",
         "zh": "颜色模拟"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/zwo0GDlia6/thumbnails-select.gif"
+      "screenshot": "https://iph.href.lu/800x400?text=smart-color"
     }
   ]
 }
