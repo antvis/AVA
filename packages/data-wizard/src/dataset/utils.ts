@@ -43,3 +43,20 @@ export const flatObject = (obj, concatenator = '.') =>
 export const fillMissingValue = (datum: any, fillValue: any): any => {
   return !datum && JSON.stringify(fillValue) ? fillValue : datum;
 };
+
+export const generateSplit = (length: number) =>
+  Array(isNumber(length) ? length : 0)
+    .fill(' ')
+    .concat('  ')
+    .join('');
+
+export const stringify = (value: any) =>
+  JSON.stringify(value)
+    ?.replace(/\\n/g, '')
+    ?.replace(/\\/g, '')
+    ?.replace(/"\[/g, '[')
+    ?.replace(/\]"/g, ']')
+    ?.replace(/"\{/g, '{')
+    ?.replace(/\}"/g, ' }') || 'undefined';
+
+export const getStringifyLength = (value: any) => stringify(value)?.length;
