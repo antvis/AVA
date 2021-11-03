@@ -2,7 +2,7 @@ import { analyzeField } from '../analyzer';
 import { isArray, isObject, isString, isInteger, isNumber, isBasicType, range, assert } from '../utils';
 import BaseFrame from './base-frame';
 import Series from './series';
-import { generateArrayIndex, isAxis, fillMissingValue } from './utils';
+import { generateArrayIndex, isAxis, fillMissingValue, generateSplit, stringify, getStringifyLength } from './utils';
 import type { FrameData, Axis, Extra, FieldsInfo } from './types';
 
 /** 2D data structure */
@@ -36,8 +36,8 @@ export default class DataFrame extends BaseFrame {
       /** 1D: basic type | array */
       if (this.data.length > 0) {
         this.generateColumns([0], extra?.columns);
-        this.data = [this.data];
-        this.colData = this.data;
+        this.colData = [this.data];
+        this.data = this.data.map((datum) => [datum]);
       }
 
       /**
@@ -581,10 +581,53 @@ export default class DataFrame extends BaseFrame {
    */
   info(): FieldsInfo {
     const fields: FieldsInfo = [];
-    for (let i = 0; i < this.columns.length; i += 1) {
+    for (let i = 0; i < this.columns?.length; i += 1) {
       const column = this.columns[i];
       fields.push({ ...analyzeField(this.colData[i]), name: String(column) });
     }
     return fields;
+  }
+
+  /**
+   * Get tabular data string.
+   */
+  toString(): string {
+    // Calculate the longest field length for each column, add two spaces to get the split
+    const maxLengths = Array(this.columns.length + 1).fill(0);
+    for (let i = 0; i < this.index.length; i += 1) {
+      const len = getStringifyLength(this.index[i]);
+      if (len > maxLengths[0]) maxLengths[0] = len;
+    }
+    for (let i = 0; i < this.columns.length; i += 1) {
+      // Contain escape characters' length
+      const len = getStringifyLength(this.columns[i]);
+      if (len > maxLengths[i + 1]) maxLengths[i + 1] = len;
+    }
+    for (let i = 0; i < this.colData.length; i += 1) {
+      for (let j = 0; j < this.colData[i].length; j += 1) {
+        const len = getStringifyLength(this.colData[i][j]);
+        if (len > maxLengths[i + 1]) maxLengths[i + 1] = len;
+      }
+    }
+
+    return `${generateSplit(maxLengths[0])}${this.columns
+      .map(
+        (col, i) =>
+          // JSON.stringify will add "" to string, it's two extra characters.
+          `${col}${i !== this.columns.length ? generateSplit(maxLengths[i + 1] - getStringifyLength(col) + 2) : ''}`
+      )
+      .join('')}\n${this.index
+      .map(
+        (idx, idxIndex) =>
+          `${idx}${generateSplit(maxLengths[0] - getStringifyLength(idx))}${this.data[idxIndex]
+            ?.map(
+              (datum, i) =>
+                `${stringify(datum)}${
+                  i !== this.columns.length ? generateSplit(maxLengths[i + 1] - getStringifyLength(datum)) : ''
+                }`
+            )
+            .join('')}${idxIndex !== this.index.length ? '\n' : ''}`
+      )
+      .join('')}`;
   }
 }

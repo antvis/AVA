@@ -35,14 +35,14 @@ describe('new DataFrame', () => {
   test('1D: array', () => {
     const df = new DataFrame([1, 2, 3]);
     expect(df.axes).toStrictEqual([[0, 1, 2], [0]]);
-    expect(df.data).toStrictEqual([[1, 2, 3]]);
+    expect(df.data).toStrictEqual([[1], [2], [3]]);
     expect(df.colData).toStrictEqual([[1, 2, 3]]);
   });
 
   test('1D: array with extra index and columns', () => {
     const df = new DataFrame([1, 2, 3], { index: ['b', 'c', 'a'], columns: ['col'] });
     expect(df.axes).toStrictEqual([['b', 'c', 'a'], ['col']]);
-    expect(df.data).toStrictEqual([[1, 2, 3]]);
+    expect(df.data).toStrictEqual([[1], [2], [3]]);
     expect(df.colData).toStrictEqual([[1, 2, 3]]);
   });
 
@@ -618,13 +618,13 @@ describe('DataFrame data with fillValue', () => {
 
   test('1D: array', () => {
     const df = new DataFrame([null, '', 3], { fillValue: 201 });
-    expect(df.data).toStrictEqual([[201, 201, 3]]);
+    expect(df.data).toStrictEqual([[201], [201], [3]]);
     expect(df.colData).toStrictEqual([[201, 201, 3]]);
   });
 
   test('1D: array with extra index and columns', () => {
     const df = new DataFrame([1, 2, undefined], { index: ['b', 'c', 'a'], columns: ['col'], fillValue: 201 });
-    expect(df.data).toStrictEqual([[1, 2, 201]]);
+    expect(df.data).toStrictEqual([[1], [2], [201]]);
     expect(df.colData).toStrictEqual([[1, 2, 201]]);
   });
 
