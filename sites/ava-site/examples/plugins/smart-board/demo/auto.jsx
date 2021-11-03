@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-// import { groupBy, sumBy, maxBy, minBy, meanBy, flatten } from 'lodash';
 import { Tag, Radio, Tooltip, Select } from 'antd';
 import * as G2Plot from '@antv/g2plot';
 import {
@@ -13,8 +12,6 @@ import {
   UnlockOutlined,
   MonitorOutlined,
 } from '@ant-design/icons';
-// import { specToG2Plot } from '@antv/antv-spec';
-// import { g2plotRender } from '@antv/chart-advisor';
 import { SmartBoard } from '@antv/smart-board';
 
 import './index.less';
@@ -125,11 +122,9 @@ const aggregate = (data, dimensionField, measure, seriesField, aggMethod = 'SUM'
 };
 
 /**
- * Adaptor from chart info to G2Plot config.
- *
- * TODO: deprecated this function once antv-spec to G2Plot adaptor is done.
+ * Adaptor from smart-board-genereted chart to G2Plot config.
  */
-function chartInfo2Config(Chart, data) {
+function board2Config(Chart, data) {
   let chartType = '';
   let chartConfig = {
     id: Chart.id,
@@ -377,7 +372,7 @@ const ChartView = ({ chartID, chartInfo, clusterID, interactionMode, hasLocked, 
         return res.json();
       })
       .then((data) => {
-        const chartConfig = chartInfo2Config(chartInfo, data);
+        const chartConfig = board2Config(chartInfo, data);
         const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
         let aggregatedData = data;
         if ((xField || colorField) && (yField || angleField)) {
