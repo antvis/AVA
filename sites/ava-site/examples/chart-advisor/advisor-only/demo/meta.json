@@ -21,12 +21,12 @@
       "screenshot": "https://iph.href.lu/800x400?text=advisor"
     },
     {
-      "filename": "custom-advisor.jsx",
+      "filename": "custom-ckb-advisor.jsx",
       "title": {
-        "en": "Custom rules of Advisor",
-        "zh": "定制 Advisor 的规则"
+        "en": "Custom CKB for Advisor",
+        "zh": "定制 Advisor 所使用的 CKB"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=custom-advisor"
+      "screenshot": "https://iph.href.lu/800x400?text=custom-ckb-advisor"
     }
   ]
 }
