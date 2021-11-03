@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { SketchPicker } from 'react-color';
 import { FireFilled } from '@ant-design/icons';
-import { paletteGeneration, colorToHex } from '@antv/smart-color';
+import { paletteGeneration, colorToHex, hexToColor } from '@antv/smart-color';
 
 const fontSize = '60px';
 
@@ -10,18 +11,36 @@ const color = {
   value: { r: 91, g: 143, b: 249 },
 };
 
-const outputColor = paletteGeneration('monochromatic', {
-  color,
-  count: 7,
-  tendency: 'shade',
-});
-
 const App = () => {
-  const baseColor = colorToHex(color);
+  const [colorPick, setColorPick] = useState(colorToHex(color));
+  const colorNums = 7;
+
+  const [outputColor, setOutputColor] = useState(
+    paletteGeneration('monochromatic', {
+      color,
+      count: colorNums,
+      tendency: 'shade',
+    })
+  );
+
+  const handleColorChange = (colorChosen) => {
+    setColorPick(colorChosen.hex);
+  };
+
+  useEffect(() => {
+    setOutputColor(
+      paletteGeneration('monochromatic', {
+        color: hexToColor(colorPick),
+        count: colorNums,
+        tendency: 'shade',
+      })
+    );
+  }, [colorPick]);
+
   const baseShape = (
-    <span style={{ flexDirection: 'column', display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}>
-      <FireFilled style={{ fontSize, color: baseColor }} />
-      {baseColor}
+    <span>
+      <SketchPicker color={colorPick} onChange={handleColorChange} />
+      <span>Selected Color: {colorPick}</span>
     </span>
   );
 

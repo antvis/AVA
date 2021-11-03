@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { SketchPicker } from 'react-color';
 import { FireFilled } from '@ant-design/icons';
-import { colorSimulation, colorToHex } from '@antv/smart-color';
+import { colorSimulation, colorToHex, hexToColor } from '@antv/smart-color';
 
 const fontSize = '60px';
 
@@ -10,14 +11,22 @@ const color = {
   value: { r: 91, g: 143, b: 249 },
 };
 
-const colorSim = colorSimulation(color, 'achromatomaly');
-
 const App = () => {
-  const oriColor = colorToHex(color);
+  const [colorPick, setColorPick] = useState(colorToHex(color));
+  const [colorSim, setColorSim] = useState(colorSimulation(color, 'achromatomaly'));
+
+  const handleColorChange = (colorChosen) => {
+    setColorPick(colorChosen.hex);
+  };
+
+  useEffect(() => {
+    setColorSim(colorSimulation(hexToColor(colorPick), 'achromatomaly'));
+  }, [colorPick]);
+
   const oriShape = (
-    <span style={{ flexDirection: 'column', display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}>
-      <FireFilled style={{ fontSize, color: oriColor }} />
-      {oriColor}
+    <span>
+      <SketchPicker color={colorPick} onChange={handleColorChange} />
+      <span>Selected Color: {colorPick}</span>
     </span>
   );
 
