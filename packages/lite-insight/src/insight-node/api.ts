@@ -9,12 +9,17 @@ type InsightsResult = {
 
 export const getDataInsights = (sourceData: Datum[], options?: InsightOptions): InsightsResult => {
   const extractResult = extractInsights(sourceData, options);
-  return generateInsightsWithVisualizationSchemas(extractResult, options);
+  if (options?.visualization) {
+    return generateInsightsWithVisualizationSchemas(extractResult, options);
+  }
+  return extractResult;
 };
 
 export const getDataInsightsAsync = async (sourceData: Datum[], options?: InsightOptions): Promise<InsightsResult> => {
   const insight = await spawn(new Worker('./worker'));
   const extractResult = await insight.extractInsights(sourceData, options);
-
-  return generateInsightsWithVisualizationSchemas(extractResult, options);
+  if (options?.visualization) {
+    return generateInsightsWithVisualizationSchemas(extractResult, options);
+  }
+  return extractResult;
 };

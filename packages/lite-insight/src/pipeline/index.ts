@@ -8,5 +8,8 @@ type InsightsResult = {
 
 export const getDataInsights = (sourceData: Datum[], options?: InsightOptions): InsightsResult => {
   const extractResult = extractInsights(sourceData, options);
-  return generateInsightsWithVisualizationSchemas(extractResult, options);
+  if (options?.visualization) {
+    return generateInsightsWithVisualizationSchemas(extractResult, options);
+  }
+  return extractResult;
 };
