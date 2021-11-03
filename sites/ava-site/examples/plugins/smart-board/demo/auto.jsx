@@ -122,7 +122,7 @@ const aggregate = (data, dimensionField, measure, seriesField, aggMethod = 'SUM'
 };
 
 /**
- * Adaptor from to smart-board config.
+ * Adaptor from smart-board-generated chart to g2plot-like config.
  */
 function chart2BoardConfig(Chart, data) {
   let chartType = '';
