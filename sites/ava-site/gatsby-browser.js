@@ -18,7 +18,11 @@ window.reactVega = require('react-vega');
 window.knowledge = require('../../packages/ckb/src');
 window.thumbnails = require('@antv/thumbnails');
 window.s2 = require('@antv/s2');
+window.g2plot = require('@antv/g2plot');
 window.antvSpec = require('@antv/antv-spec');
+window.smartColor = require('@antv/smart-color');
+window.visSteg = require('@antv/vis-steg');
 window.chartAdvisor = require('../../packages/chart-advisor/src');
+window.smartBoard = require('../../packages/smart-board/src');
 
 window.demoUtils = require('./utils');
