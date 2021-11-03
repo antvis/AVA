@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "index.jsx",
+      "title": {
+        "zh": "可视化数据洞察",
+        "en": "Data insights visualization"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/hKRGHAxJml/IMG_0737.PNG"
+    }
+  ]
+}

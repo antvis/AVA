@@ -19,6 +19,8 @@ window.knowledge = require('../../packages/ckb/src');
 window.thumbnails = require('@antv/thumbnails');
 window.s2 = require('@antv/s2');
 window.antvSpec = require('@antv/antv-spec');
+window.g2plot = require('@antv/g2plot');
 window.chartAdvisor = require('../../packages/chart-advisor/src');
+window.liteInsight = require('../../packages/lite-insight/lib');
 
 window.demoUtils = require('./utils');

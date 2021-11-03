@@ -21,6 +21,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | dimensions | `Dimensions[]` | Specify the dimensions involved in the calculation. | All categorical, time fields |
 | insightTypes |  `InsightType[]` | Specify the types of insight. | `['category_outlier', 'trend', 'change_point', 'time_series_outlier', 'majority','low_variance']`(All supported types) |
 | limit |  `number` | Limit on the number of insights. | 30 |
+| visualization |  `boolean` | on / off the output of visualization scheme. | `false` |
 | impactMeasures |  `ImpactMeasure[]` | Measures for Impact score. | none |
 | impactWeight |  `number ∈(0, 1)` | Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | on/off extra homogeneous insight extraction. | `false` |
