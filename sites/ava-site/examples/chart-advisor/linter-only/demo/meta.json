@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "chart-linter.jsx",
+      "title": {
+        "en": "Existing Chart to Linter",
+        "zh": "给定图表到 Linter 进行优化"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=chart-linter"
+    }
+  ]
+}
