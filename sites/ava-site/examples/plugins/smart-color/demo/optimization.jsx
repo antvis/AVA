@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { paletteOptimization } from '@antv/smart-color';
+import { FireFilled } from '@ant-design/icons';
+import { paletteOptimization, colorToHex } from '@antv/smart-color';
+
+const fontSize = '60px';
 
 const palette = {
   name: 'color4',
@@ -14,11 +17,52 @@ const palette = {
   ],
 };
 
-paletteOptimization(palette, {
+const paletteOpt = paletteOptimization(palette, {
   locked: [true],
   simulationType: 'grayscale',
 });
 
-const App = () => {};
+const App = () => {
+  const paletteColors = palette.colors.map((item, id) => {
+    const currentColor = colorToHex(item);
+
+    return (
+      <span
+        key={id}
+        style={{ flexDirection: 'column', display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}
+      >
+        <FireFilled style={{ fontSize, color: currentColor }} />
+        {currentColor}
+      </span>
+    );
+  });
+
+  const paletteOptColors = paletteOpt.colors.map((item, id) => {
+    const currentColor = colorToHex(item);
+
+    return (
+      <span
+        key={id}
+        style={{ flexDirection: 'column', display: 'inline-flex', justifyContent: 'center', alignItems: 'center' }}
+      >
+        <FireFilled style={{ fontSize, color: currentColor }} />
+        {currentColor}
+      </span>
+    );
+  });
+
+  return (
+    <div>
+      <div>
+        {' '}
+        Seed Colors: <br /> {paletteColors}{' '}
+      </div>
+      <div>
+        {' '}
+        Optimized Colors: <br /> {paletteOptColors}{' '}
+      </div>
+    </div>
+  );
+};
 
 ReactDOM.render(<App />, document.getElementById('container'));
