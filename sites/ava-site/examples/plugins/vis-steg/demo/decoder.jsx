@@ -9,8 +9,6 @@ import { Upload, Layout, Card, Button, Spin, Typography, Popover, Image, Modal, 
 import { SettingOutlined, ShareAltOutlined, PictureFilled } from '@ant-design/icons';
 import { LSBSteg } from '@antv/vis-steg';
 
-import './index.less';
-
 const { Dragger } = Upload;
 const { TabPane } = Tabs;
 const { Paragraph } = Typography;
@@ -36,6 +34,7 @@ const ImagePreview = ({ image }) => {
   return (
     <>
       <Image
+        alt={'Decoded image preview'}
         width={'100%'}
         src={image}
         preview={false}

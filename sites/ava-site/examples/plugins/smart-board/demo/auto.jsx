@@ -1,10 +1,8 @@
-/* eslint react/prop-types: 0 */
-
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-// import { groupBy, sumBy, maxBy, minBy, meanBy, flatten } from 'lodash';
-import { Tag, Radio, Tooltip, Select } from 'antd';
-import * as G2Plot from '@antv/g2plot';
+import { Steps, Radio, Tag, Tooltip } from 'antd';
+import ReactJson from 'react-json-view';
 import {
   InsertRowBelowOutlined,
   ClusterOutlined,
@@ -13,11 +11,12 @@ import {
   UnlockOutlined,
   MonitorOutlined,
 } from '@ant-design/icons';
-// import { specToG2Plot } from '@antv/antv-spec';
-// import { g2plotRender } from '@antv/chart-advisor';
-import { SmartBoard } from '@antv/smart-board';
+import * as G2Plot from '@antv/g2plot';
+import { SheetComponent } from '@antv/s2';
+import { getDataInsights } from '@antv/lite-insight';
+import { SmartBoard, smartBoardConfig } from '@antv/smart-board';
 
-import './index.less';
+const { Step } = Steps;
 
 const maxBy = (arr, fn) => Math.max(...arr.map(typeof fn === 'function' ? fn : (val) => val[fn]));
 
@@ -124,102 +123,6 @@ const aggregate = (data, dimensionField, measure, seriesField, aggMethod = 'SUM'
   );
 };
 
-/**
- * Adaptor from chart info to G2Plot config.
- *
- * TODO: deprecated this function once antv-spec to G2Plot adaptor is done.
- */
-function chartInfo2Config(Chart, data) {
-  let chartType = '';
-  let chartConfig = {
-    id: Chart.id,
-    type: chartType,
-    data: Chart.data,
-    config: {},
-    score: Chart.score,
-  };
-
-  const { breakdowns } = Chart;
-  const { measures } = Chart;
-
-  switch (Chart.chartType) {
-    case 'column_chart': {
-      chartType = 'Column';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-        },
-        score: Chart.score,
-      };
-      break;
-    }
-    case 'grouped_column_chart':
-      chartType = 'Column';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-          seriesField: breakdowns[1],
-          isGroup: true,
-        },
-        score: Chart.score,
-      };
-      break;
-    case 'stack_column_chart':
-      chartType = 'Column';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-          seriesField: breakdowns[1],
-          isStack: true,
-        },
-        score: Chart.score,
-      };
-      break;
-    case 'line_chart':
-      chartType = 'Line';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-          seriesField: breakdowns[1] || '',
-        },
-        score: Chart.score,
-      };
-      break;
-    case 'pie_chart':
-      chartType = 'Pie';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          colorField: breakdowns[0],
-          angleField: measures[0],
-        },
-        score: Chart.score,
-      };
-      break;
-    default:
-      break;
-  }
-  return chartConfig;
-}
-
 function g2plotRender(container, type, data, options) {
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
   if (!containerDOM) return null;
@@ -232,160 +135,22 @@ function g2plotRender(container, type, data, options) {
   return plot;
 }
 
-const cars = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/cars.json';
-
-const chartSample1 = [
-  {
-    data: cars,
-    subspaces: [],
-    breakdowns: ['Origin'],
-    measures: ['Horsepower'],
-    fieldInfo: {
-      Origin: {
-        dataType: 'string',
-      },
-      Horsepower: {
-        dataType: 'number',
-      },
-    },
-    insightType: 'outlier',
-    score: 0.5,
-    chartType: 'column_chart',
-  },
-  {
-    data: cars,
-    subspaces: [],
-    breakdowns: ['Year'],
-    measures: ['Acceleration'],
-    insightType: 'trend',
-    score: 0.8,
-    chartType: 'line_chart',
-  },
-  {
-    data: cars,
-    subspaces: [],
-    breakdowns: ['Origin'],
-    measures: ['Miles_per_Gallon'],
-    insightType: 'proportion',
-    score: 0.6,
-    chartType: 'pie_chart',
-  },
-  {
-    data: cars,
-    subspaces: [],
-    breakdowns: ['Cylinders', 'Origin'],
-    measures: ['Displacement'],
-    insightType: 'extreme',
-    score: 0.85,
-    chartType: 'grouped_column_chart',
-  },
-  {
-    data: cars,
-    subspaces: [],
-    breakdowns: ['Year', 'Origin'],
-    measures: ['Weight_in_lbs'],
-    insightType: 'trend',
-    score: 0.2,
-    chartType: 'line_chart',
-  },
-  {
-    data: cars,
-    subspaces: [],
-    breakdowns: ['Year'],
-    measures: ['Displacement'],
-    insightType: 'trend',
-    score: 0.7,
-    chartType: 'line_chart',
-  },
-];
-
-const gapminder = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/gapminder.json';
-
-const chartSample2 = [
-  {
-    data: gapminder,
-    subspaces: [],
-    breakdowns: ['country'],
-    measures: ['fertility'],
-    fieldInfo: {
-      country: {
-        dataType: 'string',
-      },
-      Horsepower: {
-        dataType: 'number',
-      },
-    },
-    insightType: 'outlier',
-    score: 0.5,
-    chartType: 'column_chart',
-  },
-  {
-    data: gapminder,
-    subspaces: [],
-    breakdowns: ['year'],
-    measures: ['pop'],
-    insightType: 'distribution',
-    score: 0.7,
-    chartType: 'line_chart',
-  },
-  {
-    data: gapminder,
-    subspaces: [],
-    breakdowns: ['cluster'],
-    measures: ['fertility'],
-    insightType: 'proportion',
-    score: 0.6,
-    chartType: 'pie_chart',
-  },
-  {
-    data: gapminder,
-    subspaces: [],
-    breakdowns: ['country', 'cluster'],
-    measures: ['pop'],
-    insightType: 'extreme',
-    score: 0.85,
-    chartType: 'grouped_column_chart',
-  },
-  {
-    data: gapminder,
-    subspaces: [],
-    breakdowns: ['year', 'country'],
-    measures: ['pop'],
-    insightType: 'trend',
-    score: 0.2,
-    chartType: 'line_chart',
-  },
-  {
-    data: gapminder,
-    subspaces: [],
-    breakdowns: ['year'],
-    measures: ['pop'],
-    insightType: 'trend',
-    score: 0.8,
-    chartType: 'line_chart',
-  },
-];
-
-const CHART_SAMPLE_LIST = [chartSample1, chartSample2];
-
 const ChartView = ({ chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort }) => {
   const [curChartConfig, setChartConfig] = useState();
   let plot;
+
   useEffect(() => {
-    fetch(chartInfo.data)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        const chartConfig = chartInfo2Config(chartInfo, data);
-        const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
-        let aggregatedData = data;
-        if ((xField || colorField) && (yField || angleField)) {
-          aggregatedData = aggregate(data, xField || colorField || '', yField || angleField || '', seriesField);
-        }
-        setChartConfig(chartConfig);
-        plot = g2plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
-      });
+    const chartConfig = smartBoardConfig(chartInfo, chartInfo.data);
+    const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
+
+    let aggregatedData = chartInfo.data;
+    if ((xField || colorField) && (yField || angleField)) {
+      aggregatedData = aggregate(chartInfo.data, xField || colorField || '', yField || angleField || '', seriesField);
+    }
+
+    setChartConfig(chartConfig);
+    plot = g2plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
+
     return function cleanup() {
       if (plot) {
         plot.destroy();
@@ -481,7 +246,6 @@ const Dashboard = ({ chartList, interactionMode }) => {
   const { chartGraph } = smartBoard;
   const chartOrder = smartBoard.chartOrder('byCluster');
   const chartCluster = smartBoard.chartCluster();
-  // when the interactionMode is connection mode and a chart was selected, filter and resort charts
   const sortedChartList = new Array(chartList.length);
   chartGraph.nodes.forEach((d) => {
     sortedChartList[chartOrder[d.id]] = d;
@@ -497,11 +261,13 @@ const Dashboard = ({ chartList, interactionMode }) => {
   if (chartID.includes(connectionID) && interactionMode === 'connectionMode') {
     const connectionLinks = chartGraph.links.filter((d) => d.source === connectionID || d.target === connectionID);
     const connectionNodes = connectionLinks.map((d) => (d.source === connectionID ? d.target : d.source));
+
     connectionLinks.forEach((d, i) => {
       const id = connectionNodes[i];
       const chart = sortedChartList[chartID.indexOf(id)];
       chart.description = d.description;
     });
+
     connectionNodes.unshift(connectionID);
     const filteredChartList = [];
 
@@ -538,30 +304,13 @@ const Dashboard = ({ chartList, interactionMode }) => {
   );
 };
 
-const { Option } = Select;
-
-const Toolbar = ({ changeMode, changeSampleIndex }) => {
+const Toolbar = ({ changeMode }) => {
   const handleModeChange = (e) => {
     changeMode(e.target.value);
-  };
-  const handleSampleChange = (value) => {
-    changeSampleIndex(value);
   };
 
   return (
     <div id="toolbar">
-      <div id="demo-selection">
-        <Select
-          id="sample-select"
-          defaultValue="sample1"
-          style={{ width: 120 }}
-          size="small"
-          onChange={handleSampleChange}
-        >
-          <Option value="0">sample1</Option>
-          <Option value="1">sample2</Option>
-        </Select>
-      </div>
       <Radio.Group defaultValue="defaultMode" size="small" onChange={handleModeChange}>
         <Radio.Button value="defaultMode">
           <Tooltip title={'Default Mode'}>
@@ -583,15 +332,170 @@ const Toolbar = ({ changeMode, changeSampleIndex }) => {
   );
 };
 
+const ShowJSON = (json) => (
+  <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} />
+);
+
+const ShowTable = (data, { height, width }) => {
+  const s2DataConfig = { fields: { columns: Object.keys(data[0] || {}) }, data };
+  const s2options = { width, height };
+
+  return <SheetComponent dataCfg={s2DataConfig} options={s2options} sheetType="table" themeCfg={{ name: 'simple' }} />;
+};
+
+const dataRadioOptions = [
+  { label: 'JSON', value: 'JSON' },
+  { label: 'Table', value: 'Table' },
+];
+
+const insightTransfer = [
+  {
+    insight: 'category_outlier',
+    board: 'outlier',
+  },
+  {
+    insight: 'trend',
+    board: 'trend',
+  },
+  {
+    insight: 'change_point',
+    board: 'difference',
+  },
+  {
+    insight: 'time_series_outlier',
+    board: 'outlier',
+  },
+  {
+    insight: 'majority',
+    board: 'extreme',
+  },
+  {
+    insight: 'low_variance',
+    board: 'distribution',
+  },
+];
+
+const insights2Board = (insights) => {
+  return insights?.map((item) => {
+    return {
+      data: item.data,
+      id: item.id,
+      subspaces: item.subspaces,
+      breakdowns: item.breakdowns,
+      measures: item.measures?.map((measure) => {
+        return measure.field;
+      }),
+      score: item.score,
+      chartType: item.visualizationSchemas?.[0]?.chartType,
+      chartSchema: item.visualizationSchemas?.[0]?.chartSchema,
+      description: item.visualizationSchemas?.[0]?.caption,
+      insightType: insightTransfer.filter((type) => {
+        return type.insight === item.patterns?.[0]?.type;
+      })?.[0]?.board,
+    };
+  });
+};
+
 const App = () => {
+  const [insights, setInsights] = useState({});
+  const [data, setData] = useState([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [dataDisplayType, setDataDisplayType] = useState('Table');
   const [interactionMode, changeMode] = useState('defaultMode');
-  const [chartSamplesIndex, changeSampleIndex] = useState(0);
+
+  const fetchDataset = async () => {
+    fetch('https://cdn.jsdelivr.net/npm/vega-datasets@2.2.0/data/gapminder.json')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data) {
+          setData(data);
+          const insightResult = getDataInsights(data, {
+            limit: 10,
+            measures: [
+              { field: 'life_expect', method: 'MEAN' },
+              { field: 'pop', method: 'SUM' },
+              { field: 'fertility', method: 'MEAN' },
+            ],
+            // 洞察结果中会增加对应的可视化展示方案（基于g2plot）
+            visualization: true,
+          });
+          setInsights(insightResult);
+        }
+      });
+  };
+
+  useEffect(() => {
+    fetchDataset();
+  }, []);
+
+  const dataContent = (
+    <>
+      <Radio.Group
+        options={dataRadioOptions}
+        onChange={(e) => setDataDisplayType(e.target.value)}
+        value={dataDisplayType}
+        optionType="button"
+        buttonStyle="solid"
+      />
+      <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
+        {dataDisplayType === 'Table' ? ShowTable(data, { height: 300, width: 700 }) : ShowJSON(data)}
+      </div>
+    </>
+  );
+
+  const insightsContent = (
+    <>
+      <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
+        {ShowJSON(insights)}
+      </div>
+    </>
+  );
+
+  const plotContent = (
+    <div className="page">
+      <Toolbar changeMode={changeMode} />
+      <Dashboard chartList={insights2Board(insights.insights)} interactionMode={interactionMode} />
+    </div>
+  );
+
+  const steps = [
+    {
+      title: 'Data',
+      desc: 'Source data:',
+      content: dataContent,
+    },
+    {
+      title: 'Insights',
+      desc: 'Insights extracted from data:',
+      content: insightsContent,
+    },
+    {
+      title: 'Dashboard',
+      desc: 'Represent insight with smart-board.',
+      content: plotContent,
+    },
+  ];
 
   return (
-    <div className="page">
-      <Toolbar changeMode={changeMode} changeSampleIndex={changeSampleIndex} />
-      <Dashboard chartList={CHART_SAMPLE_LIST[chartSamplesIndex]} interactionMode={interactionMode} />
-    </div>
+    <>
+      <Steps
+        type="navigation"
+        size="small"
+        current={currentStep}
+        onChange={setCurrentStep}
+        style={{ marginBottom: '8px', boxShadow: '0px -1px 0 0 #e8e8e8 inset' }}
+      >
+        {steps.map((item) => (
+          <Step key={item.title} title={item.title} />
+        ))}
+      </Steps>
+
+      <p>{steps[currentStep].desc}</p>
+
+      <div className="steps-content" style={{ height: 'calc(100% - 80px)' }}>
+        {steps[currentStep].content}
+      </div>
+    </>
   );
 };
 

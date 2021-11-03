@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-// import { groupBy, sumBy, maxBy, minBy, meanBy, flatten } from 'lodash';
 import { Tag, Radio, Tooltip, Select } from 'antd';
 import * as G2Plot from '@antv/g2plot';
 import {
@@ -13,11 +12,9 @@ import {
   UnlockOutlined,
   MonitorOutlined,
 } from '@ant-design/icons';
-// import { specToG2Plot } from '@antv/antv-spec';
-// import { g2plotRender } from '@antv/chart-advisor';
-import { SmartBoard } from '@antv/smart-board';
+import { SmartBoard, smartBoardConfig } from '@antv/smart-board';
 
-import './index.less';
+const { Option } = Select;
 
 const maxBy = (arr, fn) => Math.max(...arr.map(typeof fn === 'function' ? fn : (val) => val[fn]));
 
@@ -123,102 +120,6 @@ const aggregate = (data, dimensionField, measure, seriesField, aggMethod = 'SUM'
     })
   );
 };
-
-/**
- * Adaptor from chart info to G2Plot config.
- *
- * TODO: deprecated this function once antv-spec to G2Plot adaptor is done.
- */
-function chartInfo2Config(Chart, data) {
-  let chartType = '';
-  let chartConfig = {
-    id: Chart.id,
-    type: chartType,
-    data: Chart.data,
-    config: {},
-    score: Chart.score,
-  };
-
-  const { breakdowns } = Chart;
-  const { measures } = Chart;
-
-  switch (Chart.chartType) {
-    case 'column_chart': {
-      chartType = 'Column';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-        },
-        score: Chart.score,
-      };
-      break;
-    }
-    case 'grouped_column_chart':
-      chartType = 'Column';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-          seriesField: breakdowns[1],
-          isGroup: true,
-        },
-        score: Chart.score,
-      };
-      break;
-    case 'stack_column_chart':
-      chartType = 'Column';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-          seriesField: breakdowns[1],
-          isStack: true,
-        },
-        score: Chart.score,
-      };
-      break;
-    case 'line_chart':
-      chartType = 'Line';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          xField: breakdowns[0],
-          yField: measures[0],
-          seriesField: breakdowns[1] || '',
-        },
-        score: Chart.score,
-      };
-      break;
-    case 'pie_chart':
-      chartType = 'Pie';
-      chartConfig = {
-        id: Chart.id,
-        type: chartType,
-        data,
-        config: {
-          colorField: breakdowns[0],
-          angleField: measures[0],
-        },
-        score: Chart.score,
-      };
-      break;
-    default:
-      break;
-  }
-  return chartConfig;
-}
 
 function g2plotRender(container, type, data, options) {
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
@@ -371,18 +272,21 @@ const CHART_SAMPLE_LIST = [chartSample1, chartSample2];
 const ChartView = ({ chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort }) => {
   const [curChartConfig, setChartConfig] = useState();
   let plot;
+
   useEffect(() => {
     fetch(chartInfo.data)
       .then((res) => {
         return res.json();
       })
       .then((data) => {
-        const chartConfig = chartInfo2Config(chartInfo, data);
+        const chartConfig = smartBoardConfig(chartInfo, data);
         const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
+
         let aggregatedData = data;
         if ((xField || colorField) && (yField || angleField)) {
           aggregatedData = aggregate(data, xField || colorField || '', yField || angleField || '', seriesField);
         }
+
         setChartConfig(chartConfig);
         plot = g2plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
       });
@@ -497,11 +401,13 @@ const Dashboard = ({ chartList, interactionMode }) => {
   if (chartID.includes(connectionID) && interactionMode === 'connectionMode') {
     const connectionLinks = chartGraph.links.filter((d) => d.source === connectionID || d.target === connectionID);
     const connectionNodes = connectionLinks.map((d) => (d.source === connectionID ? d.target : d.source));
+
     connectionLinks.forEach((d, i) => {
       const id = connectionNodes[i];
       const chart = sortedChartList[chartID.indexOf(id)];
       chart.description = d.description;
     });
+
     connectionNodes.unshift(connectionID);
     const filteredChartList = [];
 
@@ -537,8 +443,6 @@ const Dashboard = ({ chartList, interactionMode }) => {
     </div>
   );
 };
-
-const { Option } = Select;
 
 const Toolbar = ({ changeMode, changeSampleIndex }) => {
   const handleModeChange = (e) => {

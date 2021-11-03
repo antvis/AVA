@@ -1,4 +1,4 @@
-import { Chart } from '../../../src/interfaces';
+import { Chart } from '../interfaces';
 
 export interface ConfigObj {
   id?: string;
@@ -17,11 +17,9 @@ export interface ConfigObj {
 }
 
 /**
- * Adaptor from chart info to G2Plot config.
- *
- * TODO: deprecated this function once antv-spec to G2Plot adaptor is done.
+ * Get smart-board config.
  */
-export function chartInfo2Config(Chart: Chart, data: any): ConfigObj {
+export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
   let chartType = '';
   let chartConfig: ConfigObj = {
     id: Chart.id,

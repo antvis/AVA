@@ -8,7 +8,7 @@
       "filename": "generation.jsx",
       "title": {
         "en": "Palette Generation",
-        "zh": "颜色生成"
+        "zh": "色板生成"
       },
       "screenshot": "https://iph.href.lu/800x400?text=smart-color"
     },
@@ -16,7 +16,7 @@
       "filename": "optimization.jsx",
       "title": {
         "en": "Palette Optimization",
-        "zh": "颜色优化"
+        "zh": "色板优化"
       },
       "screenshot": "https://iph.href.lu/800x400?text=smart-color"
     },
