@@ -1,0 +1,32 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "generation.jsx",
+      "title": {
+        "en": "Palette Generation",
+        "zh": "颜色生成"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=smart-color"
+    },
+    {
+      "filename": "optimization.jsx",
+      "title": {
+        "en": "Palette Optimization",
+        "zh": "颜色优化"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=smart-color"
+    },
+    {
+      "filename": "simulation.jsx",
+      "title": {
+        "en": "Color Simulation",
+        "zh": "颜色模拟"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=smart-color"
+    }
+  ]
+}
