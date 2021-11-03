@@ -49,6 +49,7 @@ export class Linter {
           dataProps = dataFrame.info() as BasicDataPropertyForAdvice[];
         } catch (error) {
           // if the input data cannot be transformed into DataFrame
+          // eslint-disable-next-line no-console
           console.error('error: ', error);
           return ruleScore;
         }
