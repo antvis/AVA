@@ -79,6 +79,14 @@ module.exports = {
         },
         order: 1,
       },
+      {
+        slug: 'api/lite-insight',
+        title: {
+          zh: 'lite-insight',
+          en: 'lite-insight',
+        },
+        order: 3,
+      },
       // {
       //   slug: 'api/data-wizard',
       //   title: {

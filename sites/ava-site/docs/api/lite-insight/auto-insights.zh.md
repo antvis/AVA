@@ -25,6 +25,7 @@ order: 3
 | dimensions | `Dimensions[]` | 指定参与计算的维度。 | 所有分类、时间字段 |
 | insightTypes |  `InsightType[]` | 指定参与计算的洞察类型。 | `['category_outlier', 'trend', 'change_point', 'time_series_outlier', 'majority','low_variance']`(所有支持类型) |
 | limit |  `number` | 返回分数最高的前N个洞察信息 | 30 |
+| visualization |  `boolean` | 是否输出洞察的可视化方案 | `false` |
 | impactMeasures |  `ImpactMeasure[]` | 指定Impact分数的计算指标。 | 无 |
 | impactWeight |  `number ∈(0, 1)` | 指定洞察分数计算的Impact权重： Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | 是否提取数据中的共性洞察 | `false` |
