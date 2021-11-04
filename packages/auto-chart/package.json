@@ -51,16 +51,18 @@
     "@types/react": "^17.0.27",
     "@types/react-dom": "^17.0.9",
     "antd": "^4.16.13",
-    "autoprefixer": "^8.0.0",
+    "autoprefixer": "^10.4.0",
     "eslint": "^7.32.0",
     "less": "^4.1.1",
     "limit-size": "^0.1.4",
     "moment": "^2.29.1",
     "npm-run-all": "^4.1.5",
+    "postcss": "^8.3.11",
     "prettier": "^2.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
+    "rollup": "^2.59.0",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
@@ -100,6 +102,5 @@
     "lodash-es": "^4.17.21",
     "react-copy-to-clipboard": "^5.0.4",
     "schema-util": "^3.4.6"
-
   }
 }
