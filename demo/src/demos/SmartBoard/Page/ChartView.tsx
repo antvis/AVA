@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
 import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
-import { g2plotRender, aggregate, chartInfo2Config, ConfigObj } from '../utils';
+import { g2plotRender, aggregate, ConfigObj } from '../utils';
+import { smartBoardConfig } from '../../../../../packages/smart-board/src/SmartBoard';
 
 export interface ChartViewProps {
   chartID: string;
@@ -23,7 +24,7 @@ const ChartView = (props: ChartViewProps) => {
         return res.json();
       })
       .then((data) => {
-        const chartConfig = chartInfo2Config(chartInfo, data);
+        const chartConfig = smartBoardConfig(chartInfo, data);
         const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
         let aggregatedData = data;
         if ((xField || colorField) && (yField || angleField)) {
