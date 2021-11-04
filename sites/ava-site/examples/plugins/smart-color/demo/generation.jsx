@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { SketchPicker } from 'react-color';
 import { FireFilled } from '@ant-design/icons';
-import { paletteGeneration, colorToHex } from '@antv/smart-color';
+import { paletteGeneration, colorToHex, hexToColor } from '@antv/smart-color';
 
 const fontSize = '60px';
 
@@ -17,7 +17,7 @@ const App = () => {
 
   const [outputColor, setOutputColor] = useState(
     paletteGeneration('monochromatic', {
-      colorPick,
+      color,
       count: colorNums,
       tendency: 'shade',
     })
@@ -30,7 +30,7 @@ const App = () => {
   useEffect(() => {
     setOutputColor(
       paletteGeneration('monochromatic', {
-        colorPick,
+        color: hexToColor(colorPick),
         count: colorNums,
         tendency: 'shade',
       })
