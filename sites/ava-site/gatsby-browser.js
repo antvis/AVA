@@ -27,5 +27,6 @@ window.smartColor = require('@antv/smart-color');
 window.visSteg = require('@antv/vis-steg');
 window.chartAdvisor = require('../../packages/chart-advisor/src');
 window.smartBoard = require('../../packages/smart-board/src');
+window.liteInsight = require('../../packages/lite-insight/lib');
 
 window.demoUtils = require('./utils');

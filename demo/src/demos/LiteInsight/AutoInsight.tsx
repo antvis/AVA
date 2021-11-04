@@ -68,7 +68,7 @@ export default function App() {
 
   const getInsights = async () => {
     setInsightLoading(true);
-    getDataInsightsAsync(data, datasetConfigs[dataset] || {})
+    getDataInsightsAsync(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true })
       .then((res) => {
         if (res?.insights) setInsights(res.insights);
       })
