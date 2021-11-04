@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "index.jsx",
+      "title": {
+        "zh": "随机数生成示例",
+        "en": "Random data generation"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/1b9y7GObrj/Kapture%2525202021-11-04%252520at%25252022.38.19.gif"
+    }
+  ]
+}
