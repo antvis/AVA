@@ -107,6 +107,7 @@ const ImagePreview = ({ image }) => {
   return (
     <>
       <Image
+        alt={'Encoded image preview'}
         width={'100%'}
         src={image}
         preview={false}
