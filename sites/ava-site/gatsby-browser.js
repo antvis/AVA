@@ -26,3 +26,6 @@ window.chartAdvisor = require('../../packages/chart-advisor/src');
 window.liteInsight = require('../../packages/lite-insight/lib');
 
 window.demoUtils = require('./utils');
+window.chartAdvisor = require('../../packages/chart-advisor/src');
+window.g6Utils = require('./utils/g6');
+window.g6 = require('@antv/g6');

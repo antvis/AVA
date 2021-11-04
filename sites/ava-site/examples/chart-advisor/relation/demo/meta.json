@@ -1,0 +1,40 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.jsx",
+      "title": {
+        "en": "Automatic node-links visualization",
+        "zh": "自动可视化点边（关系型）数据"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=graph-data-vis"
+    },
+    {
+      "filename": "tree.jsx",
+      "title": {
+        "en": "Automatic hierarchy visualization",
+        "zh": "自动可视化层次型数据"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=hierarchy-data-vis"
+    },
+    {
+      "filename": "table.jsx",
+      "title": {
+        "en": "Show relations in tabular data",
+        "zh": "从表格数据中发现并展示关系"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=table-to-graph"
+    },
+    {
+      "filename": "sankey.jsx",
+      "title": {
+        "en": "User customized graph visualization",
+        "zh": "用户自定义配置的图可视化"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=Graphvis-usrCfg"
+    }
+  ]
+}
