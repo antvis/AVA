@@ -17,6 +17,7 @@ window.qrcode = require('qrcode');
 // window.dwAnalyzer = require('../data-wizard/analyzer/src/');
 window.autoChart = require('../../packages/auto-chart/src');
 window.reactVega = require('react-vega');
+window.reactColor = require('react-color');
 // window.vega = require('@antv/thumbnails');
 window.knowledge = require('../../packages/ckb/src');
 window.thumbnails = require('@antv/thumbnails');
