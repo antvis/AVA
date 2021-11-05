@@ -27,6 +27,14 @@
         "zh": "定制 Advisor 所使用的 CKB"
       },
       "screenshot": "https://iph.href.lu/800x400?text=custom-ckb-advisor"
+    },
+    {
+      "filename": "custom-rules-advisor.jsx",
+      "title": {
+        "en": "Custom rules for Advisor",
+        "zh": "定制 Advisor 所使用的规则"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=custom-rules-advisor"
     }
   ]
 }
