@@ -32,7 +32,7 @@ const scoreRules = (
   Object.values(ruleBase)
     .filter((r: RuleModule) => r.type === 'HARD' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((hr: RuleModule) => {
-      const weight = ruleBase[hr.id].option?.weight || defaultWeight[hr.id];
+      const weight = ruleBase[hr.id].option?.weight || defaultWeight[hr.id] || 1;
       const score = weight * ((hr as ChartRuleModule).validator(info) as number);
       hardScore *= score;
       record.push({ name: hr.id, score, hard: true });
@@ -42,7 +42,7 @@ const scoreRules = (
   Object.values(ruleBase)
     .filter((r: RuleModule) => r.type === 'SOFT' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((sr: RuleModule) => {
-      const weight = ruleBase[sr.id].option?.weight || defaultWeight[sr.id];
+      const weight = ruleBase[sr.id].option?.weight || defaultWeight[sr.id] || 1;
       const score = weight * ((sr as ChartRuleModule).validator(info) as number);
       softScore += score;
       record.push({ name: sr.id, score, hard: false });
@@ -50,7 +50,9 @@ const scoreRules = (
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);
 
+  // eslint-disable-next-line no-console
   if (showLog) console.log('💯score: ', score, '=', hardScore, '* (1 +', softScore, ') ;charttype: ', chartType);
+  // eslint-disable-next-line no-console
   if (showLog) console.log(record);
   return score;
 };
@@ -202,7 +204,9 @@ export function dataToAdvices(
   // filter and sorter
   const resultList = list.filter((e) => e.score > 0 && e.spec).sort(compareAdvices);
 
+  // eslint-disable-next-line no-console
   if (showLog) console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
+  // eslint-disable-next-line no-console
   if (showLog) console.log(resultList);
 
   return resultList;
