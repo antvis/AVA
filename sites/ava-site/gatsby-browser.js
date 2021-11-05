@@ -4,6 +4,8 @@
  * See: https://github.com/antvis/gatsby-theme-antv/issues/80
  */
 
+import 'antd/dist/antd.less';
+
 window.react = require('react');
 window.reactDom = require('react-dom');
 window.antd = require('antd');
@@ -14,7 +16,7 @@ window.pica = require('pica');
 window.qrcode = require('qrcode');
 // window.chartAdvisor = require('../../packages/chart-advisor/src');
 // window.chartLinter = require('../chart-linter/src/');
-// window.dwAnalyzer = require('../data-wizard/analyzer/src/');
+window.dataWizard = require('../../packages/data-wizard/src');
 window.autoChart = require('../../packages/auto-chart/src');
 window.reactVega = require('react-vega');
 window.reactColor = require('react-color');

@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "data-ca.jsx",
+      "title": {
+        "en": "Data to ChartAdvisor",
+        "zh": "从数据到 ChartAdvisor 推荐/优化图表"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=data-ca"
+    }
+  ]
+}
