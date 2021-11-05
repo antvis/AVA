@@ -14,8 +14,6 @@ import {
 } from '@ant-design/icons';
 import { SmartBoard, smartBoardConfig } from '@antv/smart-board';
 
-import './index.less';
-
 const { Option } = Select;
 
 const maxBy = (arr, fn) => Math.max(...arr.map(typeof fn === 'function' ? fn : (val) => val[fn]));

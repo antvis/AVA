@@ -7,8 +7,6 @@ import { Modal, Radio, InputNumber, Form, Layout, Card, Button, Spin, Tabs, Inpu
 import { SettingOutlined, PictureFilled, DownloadOutlined } from '@ant-design/icons';
 import { LSBSteg } from '@antv/vis-steg';
 
-import './index.less';
-
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 const { Dragger } = Upload;
