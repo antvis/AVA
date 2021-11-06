@@ -4,7 +4,6 @@ import * as louvain from 'louvain-algorithm';
 import { Chart, InputChart, ChartOrder, ChartGraph, ChartCluster, link } from '../interfaces';
 import { getDegreeImportance, getChartConnection } from '../utils/calculator';
 import { addUuid } from '../utils/addUuid';
-import { smartBoardConfig } from '../utils/smartBoardConfig';
 
 /**
  * SmartBoard
@@ -175,5 +174,3 @@ export class SmartBoard {
     return node2com;
   }
 }
-
-export { smartBoardConfig };

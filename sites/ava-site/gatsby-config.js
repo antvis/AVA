@@ -129,54 +129,81 @@ module.exports = {
         },
         order: 0,
       },
-      {
-        slug: 'components',
-        // icon 来自 iconfont
-        // https://www.iconfont.cn/manage/index?spm=a313x.7781069.1998910419.13&manage_type=myprojects&projectId=470089
-        // 先放一个占位
-        icon: 'other',
-        title: {
-          zh: 'React 组件',
-          en: 'React Components',
-        },
-        order: 1,
-      },
       // {
-      //   slug: 'data-wizard',
-      //   // icon: 'gallery',
+      //   slug: 'components',
+      //   // icon 来自 iconfont
+      //   // https://www.iconfont.cn/manage/index?spm=a313x.7781069.1998910419.13&manage_type=myprojects&projectId=470089
+      //   // 先放一个占位
+      //   icon: 'other',
       //   title: {
-      //     zh: '数据处理库',
-      //     en: 'DataWizard',
+      //     zh: 'React 组件',
+      //     en: 'React Components',
       //   },
       //   order: 1,
       // },
-      // {
-      //   slug: 'chart-advisor',
-      //   // icon: 'gallery',
-      //   title: {
-      //     zh: '图表推荐库',
-      //     en: 'ChartAdvisor',
-      //   },
-      //   order: 2,
-      // },
-      // {
-      //   slug: 'chart-linter',
-      //   // icon: 'gallery',
-      //   title: {
-      //     zh: '图表优化',
-      //     en: 'ChartLinter',
-      //   },
-      //   order: 3,
-      // },
-      // {
-      //   slug: 'others',
-      //   icon: 'other',
-      //   title: {
-      //     zh: '其他',
-      //     en: 'Others',
-      //   },
-      //   order: 4,
-      // },
+      {
+        slug: 'data-wizard',
+        // icon: 'gallery',
+        title: {
+          zh: '数据处理库',
+          en: 'DataWizard',
+        },
+        order: 1,
+      },
+      {
+        slug: 'chart-advisor',
+        // icon: 'gallery',
+        title: {
+          zh: '图表推荐库',
+          en: 'ChartAdvisor',
+        },
+        order: 2,
+      },
+      {
+        slug: 'chart-linter',
+        // icon: 'gallery',
+        title: {
+          zh: '图表优化',
+          en: 'ChartLinter',
+        },
+        order: 3,
+      },
+      {
+        slug: 'lite-insight',
+        // icon: 'gallery',
+        title: {
+          zh: '智能洞察',
+          en: 'LiteInsight',
+        },
+        order: 4,
+      },
+      {
+        slug: 'smart-board',
+        // icon: 'gallery',
+        title: {
+          zh: '智能 Dashboard',
+          en: 'SmartBoard',
+        },
+        order: 5,
+      },
+      {
+        slug: 'smart-color',
+        // icon: 'gallery',
+        title: {
+          zh: '智能色板',
+          en: 'SmartColor',
+        },
+        order: 6,
+      },
+      {
+        slug: 'others',
+        icon: 'other',
+        title: {
+          zh: '其他',
+          en: 'Others',
+        },
+        order: 7,
+      },
     ],
     // 编辑器配置
     playground: {

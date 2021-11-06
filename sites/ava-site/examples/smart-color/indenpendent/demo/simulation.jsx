@@ -6,6 +6,8 @@ import { colorSimulation, colorToHex, hexToColor } from '@antv/smart-color';
 
 const fontSize = '60px';
 
+const simMethod = 'achromatomaly';
+
 const color = {
   model: 'rgb',
   value: { r: 91, g: 143, b: 249 },
@@ -13,14 +15,14 @@ const color = {
 
 const App = () => {
   const [colorPick, setColorPick] = useState(colorToHex(color));
-  const [colorSim, setColorSim] = useState(colorSimulation(color, 'achromatomaly'));
+  const [colorSim, setColorSim] = useState(colorSimulation(color, simMethod));
 
   const handleColorChange = (colorChosen) => {
     setColorPick(colorChosen.hex);
   };
 
   useEffect(() => {
-    setColorSim(colorSimulation(hexToColor(colorPick), 'achromatomaly'));
+    setColorSim(colorSimulation(hexToColor(colorPick), simMethod));
   }, [colorPick]);
 
   const oriShape = (
@@ -44,6 +46,7 @@ const App = () => {
         {' '}
         Seed Color: <br /> {oriShape}{' '}
       </div>
+      <div> Simulation Method: {simMethod} </div>
       <div>
         {' '}
         Simulated Color: <br /> {simShape}{' '}
