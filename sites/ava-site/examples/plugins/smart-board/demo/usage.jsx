@@ -12,114 +12,10 @@ import {
   UnlockOutlined,
   MonitorOutlined,
 } from '@ant-design/icons';
+import { statistics } from '@antv/data-wizard';
 import { SmartBoard, smartBoardConfig } from '@antv/smart-board';
 
 const { Option } = Select;
-
-const maxBy = (arr, fn) => Math.max(...arr.map(typeof fn === 'function' ? fn : (val) => val[fn]));
-
-const minBy = (arr, fn) => Math.min(...arr.map(typeof fn === 'function' ? fn : (val) => val[fn]));
-
-const meanBy = (arr, fn) =>
-  arr.map(typeof fn === 'function' ? fn : (val) => val[fn]).reduce((acc, val) => acc + val, 0) / arr.length;
-
-const sumBy = (arr, fn) => arr.map(typeof fn === 'function' ? fn : (val) => val[fn]).reduce((acc, val) => acc + val, 0);
-
-const groupBy = (collection, iteratee = (x) => x) => {
-  const it = typeof iteratee === 'function' ? iteratee : ({ [iteratee]: prop }) => prop;
-
-  const array = Array.isArray(collection) ? collection : Object.values(collection);
-
-  return array.reduce((r, e) => {
-    const k = it(e);
-
-    /* eslint-disable no-param-reassign */
-    r[k] = r[k] || [];
-
-    r[k].push(e);
-
-    return r;
-  }, {});
-};
-
-function flatten(arr) {
-  let res = [];
-  /* eslint-disable no-restricted-syntax */
-  for (const el of arr) {
-    if (Array.isArray(el)) {
-      res = res.concat(flatten(el));
-    } else {
-      res.push(el);
-    }
-  }
-  return res;
-}
-
-const sum = (data, measure) => {
-  return sumBy(data, measure);
-};
-
-const count = (data, measure) => {
-  return data.filter((item) => measure in item).length;
-};
-
-const max = (data, measure) => {
-  return maxBy(data, measure)?.[measure];
-};
-
-const min = (data, measure) => {
-  return minBy(data, measure)?.[measure];
-};
-
-const mean = (data, measure) => {
-  return meanBy(data, measure);
-};
-
-const AggregatorMap = {
-  SUM: sum,
-  COUNT: count,
-  MAX: max,
-  MIN: min,
-  MEAN: mean,
-};
-
-/**
- * Data aggregation function
- * @param data
- * @param dimensionField
- * @param measure
- * @param seriesField
- * @returns
- */
-const aggregate = (data, dimensionField, measure, seriesField, aggMethod = 'SUM') => {
-  const grouped = groupBy(data, dimensionField);
-  const aggregator = AggregatorMap[aggMethod];
-  if (!seriesField) {
-    return Object.entries(grouped).map(([value, dataGroup]) => {
-      return {
-        [dimensionField]: value,
-        [measure]: aggregator(dataGroup, measure),
-      };
-    });
-  }
-  return flatten(
-    Object.entries(grouped).map(([value, dataGroup]) => {
-      const childGrouped = groupBy(dataGroup, seriesField);
-      const part = Object.entries(childGrouped).map(([childValue, childDataGroup]) => {
-        return {
-          [seriesField]: childValue,
-          [measure]: sum(childDataGroup, measure),
-        };
-      });
-      return part.map((item) => {
-        return {
-          ...item,
-          [dimensionField]: value,
-        };
-      });
-    })
-  );
-};
 
 function g2plotRender(container, type, data, options) {
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
@@ -284,7 +180,12 @@ const ChartView = ({ chartID, chartInfo, clusterID, interactionMode, hasLocked, 
 
         let aggregatedData = data;
         if ((xField || colorField) && (yField || angleField)) {
-          aggregatedData = aggregate(data, xField || colorField || '', yField || angleField || '', seriesField);
+          aggregatedData = statistics.aggregate(
+            data,
+            xField || colorField || '',
+            yField || angleField || '',
+            seriesField
+          );
         }
 
         setChartConfig(chartConfig);

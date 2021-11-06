@@ -260,3 +260,142 @@ export function coefficientOfVariance(array: number[]): number {
   const arrayMean = mean(array);
   return stdev / arrayMean;
 }
+
+/**
+ * Return the sum of the array by specific measure.
+ * @param array - The array to process
+ * @param measure - The selected measure
+ */
+export function sumBy(data: any[], measure: string) {
+  return data.map(typeof measure === 'function' ? measure : (val) => val[measure]).reduce((acc, val) => acc + val, 0);
+}
+
+/**
+ * Return the count of the array by specific measure.
+ * @param array - The array to process
+ * @param measure - The selected measure
+ */
+export function countBy(data: any[], measure: string) {
+  return data.filter((item) => measure in item).length;
+}
+
+/**
+ * Return the maximum of the array by specific measure.
+ * @param array - The array to process
+ * @param measure - The selected measure
+ */
+export function maxBy(data: any[], measure: string) {
+  return Math.max(...data.map(typeof measure === 'function' ? measure : (val) => val[measure]));
+}
+
+/**
+ * Return the minimum of the array by specific measure.
+ * @param array - The array to process
+ * @param measure - The selected measure
+ */
+export function minBy(data: any[], measure: string) {
+  return Math.min(...data.map(typeof measure === 'function' ? measure : (val) => val[measure]));
+}
+
+/**
+ * Return the mean of the array by specific measure.
+ * @param array - The array to process
+ * @param measure - The selected measure
+ */
+export function meanBy(data: any[], measure: string) {
+  return (
+    data.map(typeof measure === 'function' ? measure : (val) => val[measure]).reduce((acc, val) => acc + val, 0) /
+    data.length
+  );
+}
+
+/**
+ * Return the groups of the array.
+ * @param array - The array to process
+ * @param measure - The selected measure
+ */
+export function groupBy(data: any[], iteratee: string) {
+  const iter = typeof iteratee === 'function' ? iteratee : ({ [iteratee]: prop }: any) => prop;
+  const array = Array.isArray(data) ? data : Object.values(data);
+  return array.reduce((result, item) => {
+    const id = iter(item);
+    if (!result[id]) {
+      Object.assign(result, { [id]: [] });
+    }
+    result[id].push(item);
+    return result;
+  }, {});
+}
+
+/**
+ * Return the flattened result of the array.
+ * @param array - The array to process
+ */
+export function flatten(data: any[]) {
+  let res = [];
+  data.forEach((item) => {
+    if (Array.isArray(item)) {
+      res = res.concat(flatten(item));
+    } else {
+      res.push(item);
+    }
+  });
+  return res;
+}
+
+export type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
+
+export type Aggregator = (data: any, measure: string) => number;
+
+export const AggregatorMap: Record<AggregateMethod, Aggregator> = {
+  SUM: sumBy,
+  COUNT: countBy,
+  MAX: maxBy,
+  MIN: minBy,
+  MEAN: meanBy,
+};
+
+/**
+ * Aggregate data via different aggregation methods
+ * @param data - The array to process
+ * @param dimensionField - The selected dimensions
+ * @param measure - The selected measure
+ * @param seriesField - The selected series
+ * @param aggMethod - The selected aggregation method
+ * @returns
+ */
+export function aggregate(
+  data: any[],
+  dimensionField: string,
+  measure: string,
+  seriesField?: string,
+  aggMethod: AggregateMethod = 'SUM'
+) {
+  const grouped = groupBy(data, dimensionField);
+  const aggregator = AggregatorMap[aggMethod];
+  if (!seriesField) {
+    return Object.entries(grouped).map(([value, dataGroup]) => {
+      return {
+        [dimensionField]: value,
+        [measure]: aggregator(dataGroup, measure),
+      };
+    });
+  }
+  return flatten(
+    Object.entries(grouped).map(([value, dataGroup]) => {
+      const childGrouped = groupBy(dataGroup as [], seriesField);
+      const part = Object.entries(childGrouped).map(([childValue, childDataGroup]) => {
+        return {
+          [seriesField]: childValue,
+          [measure]: sumBy(childDataGroup as [], measure),
+        };
+      });
+      return part.map((item) => {
+        return {
+          ...item,
+          [dimensionField]: value,
+        };
+      });
+    })
+  );
+}
