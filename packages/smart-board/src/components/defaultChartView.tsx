@@ -1,38 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
-import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
-import { g2plotRender, aggregate } from '../utils';
-import { smartBoardConfig, ConfigObj } from '../../../../../packages/smart-board/src';
+import { LockOutlined, UnlockOutlined, MonitorOutlined, FundViewOutlined } from '@ant-design/icons';
+import { statistics } from '@antv/data-wizard';
+import { smartBoardConfig, ConfigObj } from '../utils/smartBoardConfig';
 
-export interface ChartViewProps {
+export interface SmartBoardChartViewProps {
   chartID: string;
   chartInfo: any;
   clusterID?: string;
   interactionMode: string;
+  hasInsight: boolean;
   hasLocked: boolean;
+  plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
   changeConnectionID: (string: string) => void;
   quitResort: () => void;
 }
 
-const ChartView = (props: ChartViewProps) => {
-  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort } = props;
+export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
+  const {
+    chartID,
+    chartInfo,
+    clusterID,
+    interactionMode,
+    hasLocked,
+    hasInsight,
+    plotRender,
+    changeConnectionID,
+    quitResort,
+  } = props;
   const [curChartConfig, setChartConfig] = useState<ConfigObj>();
   let plot: any;
+
   useEffect(() => {
-    fetch(chartInfo.data)
-      .then((res) => {
-        return res.json();
-      })
-      .then((data) => {
-        const chartConfig = smartBoardConfig(chartInfo, data);
-        const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
-        let aggregatedData = data;
-        if ((xField || colorField) && (yField || angleField)) {
-          aggregatedData = aggregate(data, xField || colorField || '', yField || angleField || '', seriesField);
-        }
-        setChartConfig(chartConfig);
-        plot = g2plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
-      });
+    if (chartInfo.data) {
+      const chartConfig = smartBoardConfig(chartInfo, chartInfo.data);
+      const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
+
+      let aggregatedData = chartInfo.data;
+      if ((xField || colorField) && (yField || angleField)) {
+        aggregatedData = statistics.aggregate(
+          chartInfo.data,
+          xField || colorField || '',
+          yField || angleField || '',
+          seriesField
+        );
+      }
+
+      setChartConfig(chartConfig);
+      plot = plotRender(
+        `chart_container_${chartID}`,
+        chartConfig.type,
+        aggregatedData,
+        chartInfo.chartSchema ?? chartConfig.config
+      );
+    } else if (chartInfo.dataUrl) {
+      fetch(chartInfo.dataUrl)
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          Object.assign(chartInfo, { data });
+          const chartConfig = smartBoardConfig(chartInfo, data);
+          const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
+
+          let aggregatedData = data;
+          if ((xField || colorField) && (yField || angleField)) {
+            aggregatedData = statistics.aggregate(
+              chartInfo.data,
+              xField || colorField || '',
+              yField || angleField || '',
+              seriesField
+            );
+          }
+
+          setChartConfig(chartConfig);
+          plot = plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
+        });
+    }
     return function cleanup() {
       if (plot) {
         plot.destroy();
@@ -79,7 +123,8 @@ const ChartView = (props: ChartViewProps) => {
     curChartConfig?.type !== 'Pie' ? `${config?.xField} ${config?.seriesField || ''}` : config?.colorField;
   const measure = curChartConfig?.type !== 'Pie' ? config?.yField : config?.angleField;
   const score = curChartConfig?.score;
-  const { description } = chartInfo;
+  const chartDescription = curChartConfig?.description;
+  const { description, insightType } = chartInfo;
   type linkDict = {
     [key: string]: string;
   };
@@ -95,7 +140,7 @@ const ChartView = (props: ChartViewProps) => {
         <div className="title_info">
           {score && (
             <Tooltip title={`Score: ${score}`}>
-              <Tag icon={<MonitorOutlined />} color="error">{`${score}`}</Tag>
+              <Tag icon={<MonitorOutlined />} color="error">{`${Math.floor(score * 100) / 100}`}</Tag>
             </Tooltip>
           )}
           {dimension && (
@@ -105,7 +150,12 @@ const ChartView = (props: ChartViewProps) => {
           )}
           {measure && (
             <Tooltip title={`Measure: ${measure}`}>
-              <Tag color="success">{`${measure}`}</Tag>
+              <Tag color="processing">{`${measure}`}</Tag>
+            </Tooltip>
+          )}
+          {hasInsight && (
+            <Tooltip title={`Insight: ${chartDescription}`}>
+              <Tag icon={<FundViewOutlined />} color="success">{`${insightType}`}</Tag>
             </Tooltip>
           )}
         </div>
@@ -124,5 +174,3 @@ const ChartView = (props: ChartViewProps) => {
     </div>
   );
 };
-
-export default ChartView;

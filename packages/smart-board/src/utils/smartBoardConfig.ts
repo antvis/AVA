@@ -1,3 +1,4 @@
+import { InsightInfo, PatternInfo } from '@antv/lite-insight';
 import { Chart } from '../interfaces';
 
 export interface ConfigObj {
@@ -14,6 +15,7 @@ export interface ConfigObj {
     angleField?: string;
   };
   score?: number;
+  description?: string | string[];
 }
 
 /**
@@ -24,9 +26,10 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
   let chartConfig: ConfigObj = {
     id: Chart.id,
     type: chartType,
-    data: Chart.data,
+    data,
     config: {},
     score: Chart.score,
+    description: Chart.description,
   };
 
   const { breakdowns } = Chart;
@@ -44,6 +47,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           yField: measures[0],
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     }
@@ -60,6 +64,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           isGroup: true,
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     case 'stack_column_chart':
@@ -89,6 +94,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           seriesField: breakdowns[1] || '',
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     case 'pie_chart':
@@ -102,10 +108,58 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           angleField: measures[0],
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     default:
       break;
   }
   return chartConfig;
+}
+
+const insightTransfer = [
+  {
+    insight: 'category_outlier',
+    board: 'outlier',
+  },
+  {
+    insight: 'trend',
+    board: 'trend',
+  },
+  {
+    insight: 'change_point',
+    board: 'difference',
+  },
+  {
+    insight: 'time_series_outlier',
+    board: 'outlier',
+  },
+  {
+    insight: 'majority',
+    board: 'extreme',
+  },
+  {
+    insight: 'low_variance',
+    board: 'distribution',
+  },
+];
+
+export function insights2Board(insights: InsightInfo<PatternInfo>[]) {
+  return insights?.map((item) => {
+    return {
+      data: item.data,
+      subspaces: item.subspaces,
+      breakdowns: item.breakdowns,
+      measures: item.measures?.map((measure) => {
+        return measure.field;
+      }),
+      score: item.score,
+      chartType: item.visualizationSchemas?.[0]?.chartType,
+      chartSchema: item.visualizationSchemas?.[0]?.chartSchema,
+      description: item.visualizationSchemas?.[0]?.caption,
+      insightType: insightTransfer.filter((type) => {
+        return type.insight === item.patterns?.[0]?.type;
+      })?.[0]?.board,
+    };
+  });
 }
