@@ -1,4 +1,4 @@
 export * from './interfaces';
 export * from './components';
 export * from './SmartBoard';
-export { smartBoardConfig, ConfigObj } from './utils/smartBoardConfig';
+export { smartBoardConfig, ConfigObj, insights2Board } from './utils/smartBoardConfig';

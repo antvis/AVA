@@ -7,7 +7,7 @@ import * as G2Plot from '@antv/g2plot';
 import { SheetComponent } from '@antv/s2';
 import { getDataInsights } from '@antv/lite-insight';
 import { statistics } from '@antv/data-wizard';
-import { SmartBoard, SmartBoardDashboard, SmartBoardChartView, SmartBoardToolbar } from '@antv/smart-board';
+import { SmartBoard, SmartBoardDashboard, SmartBoardChartView, insights2Board } from '@antv/smart-board';
 
 const { Step } = Steps;
 
@@ -39,60 +39,11 @@ const dataRadioOptions = [
   { label: 'Table', value: 'Table' },
 ];
 
-const insightTransfer = [
-  {
-    insight: 'category_outlier',
-    board: 'outlier',
-  },
-  {
-    insight: 'trend',
-    board: 'trend',
-  },
-  {
-    insight: 'change_point',
-    board: 'difference',
-  },
-  {
-    insight: 'time_series_outlier',
-    board: 'outlier',
-  },
-  {
-    insight: 'majority',
-    board: 'extreme',
-  },
-  {
-    insight: 'low_variance',
-    board: 'distribution',
-  },
-];
-
-const insights2Board = (insights) => {
-  return insights?.map((item) => {
-    return {
-      data: item.data,
-      id: item.id,
-      subspaces: item.subspaces,
-      breakdowns: item.breakdowns,
-      measures: item.measures?.map((measure) => {
-        return measure.field;
-      }),
-      score: item.score,
-      chartType: item.visualizationSchemas?.[0]?.chartType,
-      chartSchema: item.visualizationSchemas?.[0]?.chartSchema,
-      description: item.visualizationSchemas?.[0]?.caption,
-      insightType: insightTransfer.filter((type) => {
-        return type.insight === item.patterns?.[0]?.type;
-      })?.[0]?.board,
-    };
-  });
-};
-
 const App = () => {
   const [insights, setInsights] = useState({});
   const [data, setData] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [dataDisplayType, setDataDisplayType] = useState('Table');
-  const [interactionMode, changeMode] = useState('defaultMode');
   const [chartGraph, setChartGraph] = useState(null);
   const [chartOrder, setChartOrder] = useState(null);
   const [chartCluster, setChartCluster] = useState(null);
@@ -156,10 +107,9 @@ const App = () => {
 
   const plotContent = (
     <div className="page">
-      <SmartBoardToolbar changeMode={changeMode} defaultMode={'connection'} />
       <SmartBoardDashboard
         chartList={insights2Board(insights.insights)}
-        interactionMode={interactionMode}
+        interactionMode={'defaultMode'}
         chartGraph={chartGraph}
         chartOrder={chartOrder}
         chartCluster={chartCluster}

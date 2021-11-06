@@ -1,4 +1,5 @@
 import { Chart } from '../interfaces';
+import { InsightInfo, PatternInfo } from '../../../lite-insight';
 
 export interface ConfigObj {
   id?: string;
@@ -24,7 +25,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
   let chartConfig: ConfigObj = {
     id: Chart.id,
     type: chartType,
-    data: Chart.data,
+    data,
     config: {},
     score: Chart.score,
   };
@@ -108,4 +109,51 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
       break;
   }
   return chartConfig;
+}
+
+const insightTransfer = [
+  {
+    insight: 'category_outlier',
+    board: 'outlier',
+  },
+  {
+    insight: 'trend',
+    board: 'trend',
+  },
+  {
+    insight: 'change_point',
+    board: 'difference',
+  },
+  {
+    insight: 'time_series_outlier',
+    board: 'outlier',
+  },
+  {
+    insight: 'majority',
+    board: 'extreme',
+  },
+  {
+    insight: 'low_variance',
+    board: 'distribution',
+  },
+];
+
+export function insights2Board(insights: InsightInfo<PatternInfo>[]) {
+  return insights?.map((item) => {
+    return {
+      data: item.data,
+      subspaces: item.subspaces,
+      breakdowns: item.breakdowns,
+      measures: item.measures?.map((measure) => {
+        return measure.field;
+      }),
+      score: item.score,
+      chartType: item.visualizationSchemas?.[0]?.chartType,
+      chartSchema: item.visualizationSchemas?.[0]?.chartSchema,
+      description: item.visualizationSchemas?.[0]?.caption,
+      insightType: insightTransfer.filter((type) => {
+        return type.insight === item.patterns?.[0]?.type;
+      })?.[0]?.board,
+    };
+  });
 }
