@@ -315,7 +315,7 @@ export function meanBy(data: any[], measure: string) {
  * @param measure - The selected measure
  */
 export function groupBy(data: any[], iteratee: string) {
-  const iter = typeof iteratee === 'function' ? iteratee : ({ [iteratee]: prop }) => prop;
+  const iter = typeof iteratee === 'function' ? iteratee : ({ [iteratee]: prop }: any) => prop;
   const array = Array.isArray(data) ? data : Object.values(data);
   return array.reduce((result, item) => {
     const id = iter(item);
