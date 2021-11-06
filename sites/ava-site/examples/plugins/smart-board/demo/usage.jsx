@@ -2,20 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Tag, Radio, Tooltip, Select } from 'antd';
+import { Tag, Tooltip } from 'antd';
 import * as G2Plot from '@antv/g2plot';
-import {
-  InsertRowBelowOutlined,
-  ClusterOutlined,
-  InteractionOutlined,
-  LockOutlined,
-  UnlockOutlined,
-  MonitorOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
 import { statistics } from '@antv/data-wizard';
-import { SmartBoard, smartBoardConfig } from '@antv/smart-board';
-
-const { Option } = Select;
+import { SmartBoard, SmartBoardToolbar, SmartBoardSelector, smartBoardConfig } from '@antv/smart-board';
 
 function g2plotRender(container, type, data, options) {
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
@@ -345,56 +336,19 @@ const Dashboard = ({ chartList, interactionMode }) => {
   );
 };
 
-const Toolbar = ({ changeMode, changeSampleIndex }) => {
-  const handleModeChange = (e) => {
-    changeMode(e.target.value);
-  };
-  const handleSampleChange = (value) => {
-    changeSampleIndex(value);
-  };
-
-  return (
-    <div id="toolbar">
-      <div id="demo-selection">
-        <Select
-          id="sample-select"
-          defaultValue="sample1"
-          style={{ width: 120 }}
-          size="small"
-          onChange={handleSampleChange}
-        >
-          <Option value="0">sample1</Option>
-          <Option value="1">sample2</Option>
-        </Select>
-      </div>
-      <Radio.Group defaultValue="defaultMode" size="small" onChange={handleModeChange}>
-        <Radio.Button value="defaultMode">
-          <Tooltip title={'Default Mode'}>
-            <InsertRowBelowOutlined className="toolbar_icons" />
-          </Tooltip>
-        </Radio.Button>
-        <Radio.Button value="clusterMode">
-          <Tooltip title={'Cluster Mode'}>
-            <ClusterOutlined className="toolbar_icons" />
-          </Tooltip>
-        </Radio.Button>
-        <Radio.Button value="connectionMode">
-          <Tooltip title={'Connection Mode'} placement="bottomRight" arrowPointAtCenter>
-            <InteractionOutlined className="toolbar_icons" />
-          </Tooltip>
-        </Radio.Button>
-      </Radio.Group>
-    </div>
-  );
-};
-
 const App = () => {
   const [interactionMode, changeMode] = useState('defaultMode');
   const [chartSamplesIndex, changeSampleIndex] = useState(0);
 
+  const boardSamples = {
+    sampleNames: ['chartSample1', 'chartSample2'],
+    initSampleMode: interactionMode,
+  };
+
   return (
     <div className="page">
-      <Toolbar changeMode={changeMode} changeSampleIndex={changeSampleIndex} />
+      <SmartBoardSelector changeSampleIndex={changeSampleIndex} samples={boardSamples} />
+      <SmartBoardToolbar changeMode={changeMode} />
       <Dashboard chartList={CHART_SAMPLE_LIST[chartSamplesIndex]} interactionMode={interactionMode} />
     </div>
   );

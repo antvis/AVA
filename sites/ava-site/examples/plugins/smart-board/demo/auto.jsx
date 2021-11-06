@@ -3,19 +3,12 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Steps, Radio, Tag, Tooltip } from 'antd';
 import ReactJson from 'react-json-view';
-import {
-  InsertRowBelowOutlined,
-  ClusterOutlined,
-  InteractionOutlined,
-  LockOutlined,
-  UnlockOutlined,
-  MonitorOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
 import * as G2Plot from '@antv/g2plot';
 import { SheetComponent } from '@antv/s2';
 import { getDataInsights } from '@antv/lite-insight';
 import { statistics } from '@antv/data-wizard';
-import { SmartBoard, smartBoardConfig } from '@antv/smart-board';
+import { SmartBoard, SmartBoardToolbar, smartBoardConfig } from '@antv/smart-board';
 
 const { Step } = Steps;
 
@@ -205,34 +198,6 @@ const Dashboard = ({ chartList, interactionMode }) => {
   );
 };
 
-const Toolbar = ({ changeMode }) => {
-  const handleModeChange = (e) => {
-    changeMode(e.target.value);
-  };
-
-  return (
-    <div id="toolbar">
-      <Radio.Group defaultValue="defaultMode" size="small" onChange={handleModeChange}>
-        <Radio.Button value="defaultMode">
-          <Tooltip title={'Default Mode'}>
-            <InsertRowBelowOutlined className="toolbar_icons" />
-          </Tooltip>
-        </Radio.Button>
-        <Radio.Button value="clusterMode">
-          <Tooltip title={'Cluster Mode'}>
-            <ClusterOutlined className="toolbar_icons" />
-          </Tooltip>
-        </Radio.Button>
-        <Radio.Button value="connectionMode">
-          <Tooltip title={'Connection Mode'} placement="bottomRight" arrowPointAtCenter>
-            <InteractionOutlined className="toolbar_icons" />
-          </Tooltip>
-        </Radio.Button>
-      </Radio.Group>
-    </div>
-  );
-};
-
 const ShowJSON = (json) => (
   <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} />
 );
@@ -354,7 +319,7 @@ const App = () => {
 
   const plotContent = (
     <div className="page">
-      <Toolbar changeMode={changeMode} />
+      <SmartBoardToolbar changeMode={changeMode} defaultMode={'connection'} />
       <Dashboard chartList={insights2Board(insights.insights)} interactionMode={interactionMode} />
     </div>
   );
