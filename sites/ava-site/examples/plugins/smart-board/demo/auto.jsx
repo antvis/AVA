@@ -1,14 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Steps, Radio, Tag, Tooltip } from 'antd';
+import { Steps, Radio } from 'antd';
 import ReactJson from 'react-json-view';
-import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
 import * as G2Plot from '@antv/g2plot';
 import { SheetComponent } from '@antv/s2';
 import { getDataInsights } from '@antv/lite-insight';
 import { statistics } from '@antv/data-wizard';
-import { SmartBoard, SmartBoardToolbar, smartBoardConfig } from '@antv/smart-board';
+import { SmartBoard, SmartBoardToolbar, SmartBoardChartView } from '@antv/smart-board';
 
 const { Step } = Steps;
 
@@ -23,117 +22,6 @@ function g2plotRender(container, type, data, options) {
   plot.render();
   return plot;
 }
-
-const ChartView = ({ chartID, chartInfo, clusterID, interactionMode, hasLocked, changeConnectionID, quitResort }) => {
-  const [curChartConfig, setChartConfig] = useState();
-  let plot;
-
-  useEffect(() => {
-    const chartConfig = smartBoardConfig(chartInfo, chartInfo.data);
-    const { xField, yField, colorField, angleField, seriesField } = chartConfig.config;
-
-    let aggregatedData = chartInfo.data;
-    if ((xField || colorField) && (yField || angleField)) {
-      aggregatedData = statistics.aggregate(
-        chartInfo.data,
-        xField || colorField || '',
-        yField || angleField || '',
-        seriesField
-      );
-    }
-
-    setChartConfig(chartConfig);
-    plot = g2plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
-
-    return function cleanup() {
-      if (plot) {
-        plot.destroy();
-      }
-    };
-  }, [chartID, chartInfo, hasLocked]);
-
-  const [chartClassName, setChartClassName] = useState('chart-view');
-  useEffect(() => {
-    setChartClassName(`chart_view ${interactionMode === 'clusterMode' ? clusterID : ''}`);
-  }, [interactionMode]);
-
-  const [isLocked, toggleLocked] = useState(false);
-  const handleResort = () => {
-    changeConnectionID(chartID);
-    toggleLocked(!isLocked);
-  };
-
-  const cancelResort = () => {
-    quitResort();
-    toggleLocked(!isLocked);
-  };
-
-  const lockIcon = isLocked ? (
-    <Tooltip title={'Cancel Connection'}>
-      <LockOutlined
-        className="resort_icon"
-        style={{ color: 'red', visibility: interactionMode === 'connectionMode' ? 'visible' : 'hidden' }}
-        onClick={cancelResort}
-      />
-    </Tooltip>
-  ) : (
-    <Tooltip title={'Show Connection'}>
-      <UnlockOutlined
-        className="resort_icon"
-        style={{ visibility: interactionMode === 'connectionMode' && !hasLocked ? 'visible' : 'hidden' }}
-        onClick={handleResort}
-      />
-    </Tooltip>
-  );
-
-  const config = curChartConfig?.config;
-  const dimension =
-    curChartConfig?.type !== 'Pie' ? `${config?.xField} ${config?.seriesField || ''}` : config?.colorField;
-  const measure = curChartConfig?.type !== 'Pie' ? config?.yField : config?.angleField;
-  const score = curChartConfig?.score;
-  const { description } = chartInfo;
-
-  const linkTag = {
-    SAME_DIMENSION: 'SD',
-    SAME_MEASURE: 'SM',
-    SAME_INSIGHT_TYPE: 'SI',
-  };
-
-  return (
-    <div className={chartClassName} id={`chart_view_${chartID}`}>
-      <div className="title_view">
-        <div className="title_info">
-          {score && (
-            <Tooltip title={`Score: ${score}`}>
-              <Tag icon={<MonitorOutlined />} color="error">{`${score}`}</Tag>
-            </Tooltip>
-          )}
-          {dimension && (
-            <Tooltip title={`Dimension: ${dimension}`}>
-              <Tag color="processing">{`${dimension}`}</Tag>
-            </Tooltip>
-          )}
-          {measure && (
-            <Tooltip title={`Measure: ${measure}`}>
-              <Tag color="success">{`${measure}`}</Tag>
-            </Tooltip>
-          )}
-        </div>
-        <div className="right_icons">{lockIcon}</div>
-      </div>
-      <div id={`chart_container_${chartID}`}></div>
-      {hasLocked &&
-        description &&
-        description.map((d) => {
-          return (
-            <Tooltip key={d} title={d}>
-              <Tag>{linkTag[d]}</Tag>
-            </Tooltip>
-          );
-        })}
-    </div>
-  );
-};
 
 const Dashboard = ({ chartList, interactionMode }) => {
   const smartBoard = new SmartBoard(chartList);
@@ -182,13 +70,15 @@ const Dashboard = ({ chartList, interactionMode }) => {
       {curChartList.map((chart) => {
         const clusterIndex = chartCluster[chart.id];
         return (
-          <ChartView
+          <SmartBoardChartView
             key={chart.id}
             chartID={chart.id}
             chartInfo={chart}
             interactionMode={interactionMode}
             clusterID={`cluster_${clusterIndex}`}
             hasLocked={!!connectionID} // if there exist connectionID, it means the dashboard comes into connection view
+            aggregate={statistics.aggregate}
+            g2plotRender={g2plotRender}
             changeConnectionID={changeConnectionID}
             quitResort={quitResort}
           />
