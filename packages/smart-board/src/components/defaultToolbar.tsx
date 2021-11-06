@@ -38,7 +38,7 @@ export class SmartBoardToolbar extends React.Component<SmartBoardToolbarProps, S
   }
 
   handleModeChange = (e: any) => {
-    this.changeMode(e);
+    this.changeMode(e.target.value);
   };
 
   render() {

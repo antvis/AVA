@@ -4,7 +4,13 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import * as G2Plot from '@antv/g2plot';
 import { statistics } from '@antv/data-wizard';
-import { SmartBoard, SmartBoardToolbar, SmartBoardSelector, SmartBoardChartView } from '@antv/smart-board';
+import {
+  SmartBoard,
+  SmartBoardDashboard,
+  SmartBoardChartView,
+  SmartBoardToolbar,
+  SmartBoardSelector,
+} from '@antv/smart-board';
 
 function g2plotRender(container, type, data, options) {
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
@@ -154,86 +160,42 @@ const chartSample2 = [
 
 const CHART_SAMPLE_LIST = [chartSample1, chartSample2];
 
-const Dashboard = ({ chartList, interactionMode }) => {
-  const smartBoard = new SmartBoard(chartList);
-  const { chartGraph } = smartBoard;
-  const chartOrder = smartBoard.chartOrder('byCluster');
-  const chartCluster = smartBoard.chartCluster();
-  // when the interactionMode is connection mode and a chart was selected, filter and resort charts
-  const sortedChartList = new Array(chartList.length);
-  chartGraph.nodes.forEach((d) => {
-    sortedChartList[chartOrder[d.id]] = d;
-  });
-
-  const [connectionID, changeConnectionID] = useState('');
-  useEffect(() => {
-    return () => {};
-  }, [connectionID]);
-
-  let curChartList = sortedChartList;
-  const chartID = sortedChartList.map((d) => d.id);
-  if (chartID.includes(connectionID) && interactionMode === 'connectionMode') {
-    const connectionLinks = chartGraph.links.filter((d) => d.source === connectionID || d.target === connectionID);
-    const connectionNodes = connectionLinks.map((d) => (d.source === connectionID ? d.target : d.source));
-
-    connectionLinks.forEach((d, i) => {
-      const id = connectionNodes[i];
-      const chart = sortedChartList[chartID.indexOf(id)];
-      chart.description = d.description;
-    });
-
-    connectionNodes.unshift(connectionID);
-    const filteredChartList = [];
-
-    connectionNodes.forEach((d) => {
-      const chart = sortedChartList[chartID.indexOf(d)];
-      filteredChartList.push(chart);
-    });
-    curChartList = filteredChartList;
-  }
-
-  const quitResort = () => {
-    curChartList = sortedChartList;
-    changeConnectionID('');
-  };
-
-  return (
-    <div id="dashboard">
-      {curChartList.map((chart) => {
-        const clusterIndex = chartCluster[chart.id];
-        return (
-          <SmartBoardChartView
-            key={chart.id}
-            chartID={chart.id}
-            chartInfo={chart}
-            interactionMode={interactionMode}
-            clusterID={`cluster_${clusterIndex}`}
-            hasLocked={!!connectionID} // if there exist connectionID, it means the dashboard comes into connection view
-            aggregate={statistics.aggregate}
-            g2plotRender={g2plotRender}
-            changeConnectionID={changeConnectionID}
-            quitResort={quitResort}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
 const App = () => {
   const [interactionMode, changeMode] = useState('defaultMode');
   const [chartSamplesIndex, changeSampleIndex] = useState(0);
 
   const boardSamples = {
     sampleNames: ['chartSample1', 'chartSample2'],
-    initSampleMode: interactionMode,
+    initSampleMode: 'defaultMode',
   };
+
+  const [smartBoard, setSmartBoard] = useState(new SmartBoard(CHART_SAMPLE_LIST[chartSamplesIndex]));
+  const [chartGraph, setChartGraph] = useState(smartBoard.chartGraph);
+  const [chartOrder, setChartOrder] = useState(smartBoard.chartOrder('byCluster'));
+  const [chartCluster, setChartCluster] = useState(smartBoard.chartCluster());
+
+  useEffect(() => {
+    const updateSmartBoard = new SmartBoard(CHART_SAMPLE_LIST[chartSamplesIndex]);
+    setSmartBoard(updateSmartBoard);
+    setChartGraph(updateSmartBoard.chartGraph);
+    setChartOrder(updateSmartBoard.chartOrder('byCluster'));
+    setChartCluster(updateSmartBoard.chartCluster());
+  }, [CHART_SAMPLE_LIST[chartSamplesIndex]]);
 
   return (
     <div className="page">
       <SmartBoardSelector changeSampleIndex={changeSampleIndex} samples={boardSamples} />
       <SmartBoardToolbar changeMode={changeMode} />
-      <Dashboard chartList={CHART_SAMPLE_LIST[chartSamplesIndex]} interactionMode={interactionMode} />
+      <SmartBoardDashboard
+        chartList={CHART_SAMPLE_LIST[chartSamplesIndex]}
+        interactionMode={interactionMode}
+        chartGraph={chartGraph}
+        chartOrder={chartOrder}
+        chartCluster={chartCluster}
+        ChartView={SmartBoardChartView}
+        aggregate={statistics.aggregate}
+        g2plotRender={g2plotRender}
+      />
     </div>
   );
 };
