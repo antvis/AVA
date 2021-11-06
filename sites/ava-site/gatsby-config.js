@@ -187,13 +187,22 @@ module.exports = {
         order: 5,
       },
       {
-        slug: 'plugins',
+        slug: 'smart-color',
         // icon: 'gallery',
         title: {
-          zh: '插件',
-          en: 'Plugins',
+          zh: '智能色板',
+          en: 'SmartColor',
         },
         order: 6,
+      },
+      {
+        slug: 'vis-steg',
+        // icon: 'gallery',
+        title: {
+          zh: '数据隐写',
+          en: 'VisSteg',
+        },
+        order: 7,
       },
       {
         slug: 'others',
@@ -202,7 +211,7 @@ module.exports = {
           zh: '其他',
           en: 'Others',
         },
-        order: 7,
+        order: 8,
       },
     ],
     // 编辑器配置

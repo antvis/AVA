@@ -1,5 +1,5 @@
 ---
-title: SmartBoard with Insights
+title: SmartBoard with LiteInsight
 order: 0
 ---
 
