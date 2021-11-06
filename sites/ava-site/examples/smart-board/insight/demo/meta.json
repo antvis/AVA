@@ -5,14 +5,6 @@
   },
   "demos": [
     {
-      "filename": "usage.jsx",
-      "title": {
-        "en": "smart-board Usage",
-        "zh": "smart-board 使用"
-      },
-      "screenshot": "https://iph.href.lu/800x400?text=smart-board"
-    },
-    {
       "filename": "auto.jsx",
       "title": {
         "en": "smart-board with Insights",
