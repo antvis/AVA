@@ -196,22 +196,13 @@ module.exports = {
         order: 6,
       },
       {
-        slug: 'vis-steg',
-        // icon: 'gallery',
-        title: {
-          zh: '数据隐写',
-          en: 'VisSteg',
-        },
-        order: 7,
-      },
-      {
         slug: 'others',
         icon: 'other',
         title: {
           zh: '其他',
           en: 'Others',
         },
-        order: 8,
+        order: 7,
       },
     ],
     // 编辑器配置
