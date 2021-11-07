@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
 import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
+import { statistics } from '@antv/data-wizard';
 import { smartBoardConfig, ConfigObj } from '../utils/smartBoardConfig';
 
 export interface SmartBoardChartViewProps {
@@ -9,24 +10,14 @@ export interface SmartBoardChartViewProps {
   clusterID?: string;
   interactionMode: string;
   hasLocked: boolean;
-  aggregate: (data: any[], dimensionField: string, measure: string, seriesField?: string, aggMethod?: any) => Object;
-  g2plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
+  plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
   changeConnectionID: (string: string) => void;
   quitResort: () => void;
 }
 
 export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
-  const {
-    chartID,
-    chartInfo,
-    clusterID,
-    interactionMode,
-    hasLocked,
-    g2plotRender,
-    aggregate,
-    changeConnectionID,
-    quitResort,
-  } = props;
+  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, plotRender, changeConnectionID, quitResort } =
+    props;
   const [curChartConfig, setChartConfig] = useState<ConfigObj>();
   let plot: any;
 
@@ -37,11 +28,16 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
 
       let aggregatedData = chartInfo.data;
       if ((xField || colorField) && (yField || angleField)) {
-        aggregatedData = aggregate(chartInfo.data, xField || colorField || '', yField || angleField || '', seriesField);
+        aggregatedData = statistics.aggregate(
+          chartInfo.data,
+          xField || colorField || '',
+          yField || angleField || '',
+          seriesField
+        );
       }
 
       setChartConfig(chartConfig);
-      plot = g2plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
+      plot = plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
     } else if (chartInfo.dataUrl) {
       fetch(chartInfo.dataUrl)
         .then((res) => {
@@ -54,7 +50,7 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
 
           let aggregatedData = data;
           if ((xField || colorField) && (yField || angleField)) {
-            aggregatedData = aggregate(
+            aggregatedData = statistics.aggregate(
               chartInfo.data,
               xField || colorField || '',
               yField || angleField || '',
@@ -63,7 +59,7 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
           }
 
           setChartConfig(chartConfig);
-          plot = g2plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
+          plot = plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
         });
     }
     return function cleanup() {

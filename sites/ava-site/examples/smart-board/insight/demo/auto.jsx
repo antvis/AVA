@@ -6,7 +6,6 @@ import ReactJson from 'react-json-view';
 import * as G2Plot from '@antv/g2plot';
 import { SheetComponent } from '@antv/s2';
 import { getDataInsights } from '@antv/lite-insight';
-import { statistics } from '@antv/data-wizard';
 import { SmartBoard, SmartBoardDashboard, SmartBoardChartView, insights2Board } from '@antv/smart-board';
 
 const { Step } = Steps;
@@ -97,14 +96,6 @@ const App = () => {
     </>
   );
 
-  const insightsContent = (
-    <>
-      <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-        {ShowJSON(insights)}
-      </div>
-    </>
-  );
-
   const plotContent = (
     <div className="page">
       <SmartBoardDashboard
@@ -114,8 +105,7 @@ const App = () => {
         chartOrder={chartOrder}
         chartCluster={chartCluster}
         ChartView={SmartBoardChartView}
-        aggregate={statistics.aggregate}
-        g2plotRender={g2plotRender}
+        plotRender={g2plotRender}
       />
     </div>
   );
@@ -125,11 +115,6 @@ const App = () => {
       title: 'Data',
       desc: 'Source data:',
       content: dataContent,
-    },
-    {
-      title: 'Insights',
-      desc: 'Insights extracted from data:',
-      content: insightsContent,
     },
     {
       title: 'Dashboard',

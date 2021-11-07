@@ -66,6 +66,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
+    "@antv/data-wizard": "^2.0.0-alpha.1",
+    "@antv/lite-insight": "^2.0.0-alpha.1",
     "antd": "^4.16.13",
     "louvain-algorithm": "^1.0.4",
     "react": "^17.0.2",
@@ -82,12 +84,12 @@
   "limit-size": [
     {
       "path": "dist/index.min.js",
-      "limit": "128 Kb",
+      "limit": "256 Kb",
       "gzip": true
     },
     {
       "path": "dist/index.min.js",
-      "limit": "384 Kb"
+      "limit": "512 Kb"
     }
   ]
 }

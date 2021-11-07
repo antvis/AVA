@@ -1,5 +1,5 @@
+import { InsightInfo, PatternInfo } from '@antv/lite-insight';
 import { Chart } from '../interfaces';
-import { InsightInfo, PatternInfo } from '../../../lite-insight';
 
 export interface ConfigObj {
   id?: string;

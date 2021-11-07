@@ -3,18 +3,16 @@ import { ChartListInfo, Chart, ChartOrder, ChartGraph, ChartCluster } from '../i
 
 export interface SmartBoardDashboardProps {
   chartList: ChartListInfo;
-  interactionMode: string;
+  interactionMode?: string;
   chartGraph: ChartGraph;
   chartOrder: ChartOrder;
   chartCluster: ChartCluster;
   ChartView: any;
-  aggregate: (data: any[], dimensionField: string, measure: string, seriesField?: string, aggMethod?: any) => Object;
-  g2plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
+  plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
 }
 
 export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
-  const { chartList, interactionMode, chartGraph, chartOrder, chartCluster, ChartView, g2plotRender, aggregate } =
-    props;
+  const { chartList, interactionMode, chartGraph, chartOrder, chartCluster, ChartView, plotRender } = props;
   // when the interactionMode is connection mode and a chart was selected, filter and resort charts
   const sortedChartList = new Array<Chart>(chartList.length);
   chartGraph.nodes.forEach((d) => {
@@ -65,8 +63,7 @@ export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
             interactionMode={interactionMode}
             clusterID={`cluster_${clusterIndex}`}
             hasLocked={!!connectionID} // if there exist connectionID, it means the dashboard comes into connection view
-            aggregate={aggregate}
-            g2plotRender={g2plotRender}
+            plotRender={plotRender}
             changeConnectionID={changeConnectionID}
             quitResort={quitResort}
           />

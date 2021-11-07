@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import * as G2Plot from '@antv/g2plot';
-import { statistics } from '@antv/data-wizard';
 import {
   SmartBoard,
   SmartBoardDashboard,
@@ -193,8 +192,7 @@ const App = () => {
         chartOrder={chartOrder}
         chartCluster={chartCluster}
         ChartView={SmartBoardChartView}
-        aggregate={statistics.aggregate}
-        g2plotRender={g2plotRender}
+        plotRender={g2plotRender}
       />
     </div>
   );
