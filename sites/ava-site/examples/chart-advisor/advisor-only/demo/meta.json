@@ -5,20 +5,20 @@
   },
   "demos": [
     {
-      "filename": "data-advisor.jsx",
+      "filename": "advisor-steps.jsx",
       "title": {
         "en": "Data to Advisor",
         "zh": "从数据到 Advisor 推荐图表"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=data-advisor"
+      "screenshot": "https://iph.href.lu/800x400?text=advisor-steps"
     },
     {
-      "filename": "advisor.jsx",
+      "filename": "data-advisor.jsx",
       "title": {
         "en": "Basic Advisor",
         "zh": "Advisor 基础用法"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=advisor"
+      "screenshot": "https://iph.href.lu/800x400?text=data-advisor"
     },
     {
       "filename": "custom-ckb-advisor.jsx",
