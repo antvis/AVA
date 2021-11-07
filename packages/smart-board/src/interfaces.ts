@@ -31,7 +31,7 @@ export interface InputChart {
   score?: number; // The insight score
   chartType?: ChartType;
   chartSchema?: any; // antv-spec
-  description?: string[];
+  description?: string | string[];
 }
 
 export interface Chart extends Omit<InputChart, 'id'> {

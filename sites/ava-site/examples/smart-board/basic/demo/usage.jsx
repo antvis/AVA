@@ -3,13 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import * as G2Plot from '@antv/g2plot';
-import {
-  SmartBoard,
-  SmartBoardDashboard,
-  SmartBoardChartView,
-  SmartBoardToolbar,
-  SmartBoardSelector,
-} from '@antv/smart-board';
+import { SmartBoard, SmartBoardDashboard, SmartBoardToolbar, SmartBoardSelector } from '@antv/smart-board';
 
 function g2plotRender(container, type, data, options) {
   const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
@@ -191,7 +185,6 @@ const App = () => {
         chartGraph={chartGraph}
         chartOrder={chartOrder}
         chartCluster={chartCluster}
-        ChartView={SmartBoardChartView}
         plotRender={g2plotRender}
       />
     </div>

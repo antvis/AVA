@@ -15,6 +15,7 @@ export interface ConfigObj {
     angleField?: string;
   };
   score?: number;
+  description?: string | string[];
 }
 
 /**
@@ -28,6 +29,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
     data,
     config: {},
     score: Chart.score,
+    description: Chart.description,
   };
 
   const { breakdowns } = Chart;
@@ -45,6 +47,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           yField: measures[0],
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     }
@@ -61,6 +64,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           isGroup: true,
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     case 'stack_column_chart':
@@ -90,6 +94,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           seriesField: breakdowns[1] || '',
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     case 'pie_chart':
@@ -103,6 +108,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
           angleField: measures[0],
         },
         score: Chart.score,
+        description: Chart.description,
       };
       break;
     default:

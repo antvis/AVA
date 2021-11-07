@@ -89,7 +89,7 @@
     },
     {
       "path": "dist/index.min.js",
-      "limit": "512 Kb"
+      "limit": "600 Kb"
     }
   ]
 }

@@ -6,7 +6,7 @@ import ReactJson from 'react-json-view';
 import * as G2Plot from '@antv/g2plot';
 import { SheetComponent } from '@antv/s2';
 import { getDataInsights } from '@antv/lite-insight';
-import { SmartBoard, SmartBoardDashboard, SmartBoardChartView, insights2Board } from '@antv/smart-board';
+import { SmartBoard, SmartBoardDashboard, insights2Board } from '@antv/smart-board';
 
 const { Step } = Steps;
 
@@ -101,10 +101,10 @@ const App = () => {
       <SmartBoardDashboard
         chartList={insights2Board(insights.insights)}
         interactionMode={'defaultMode'}
+        hasInsight={true}
         chartGraph={chartGraph}
         chartOrder={chartOrder}
         chartCluster={chartCluster}
-        ChartView={SmartBoardChartView}
         plotRender={g2plotRender}
       />
     </div>

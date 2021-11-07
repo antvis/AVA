@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
-import { LockOutlined, UnlockOutlined, MonitorOutlined } from '@ant-design/icons';
+import { LockOutlined, UnlockOutlined, MonitorOutlined, FundViewOutlined } from '@ant-design/icons';
 import { statistics } from '@antv/data-wizard';
 import { smartBoardConfig, ConfigObj } from '../utils/smartBoardConfig';
 
@@ -9,6 +9,7 @@ export interface SmartBoardChartViewProps {
   chartInfo: any;
   clusterID?: string;
   interactionMode: string;
+  hasInsight: boolean;
   hasLocked: boolean;
   plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
   changeConnectionID: (string: string) => void;
@@ -16,8 +17,17 @@ export interface SmartBoardChartViewProps {
 }
 
 export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
-  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, plotRender, changeConnectionID, quitResort } =
-    props;
+  const {
+    chartID,
+    chartInfo,
+    clusterID,
+    interactionMode,
+    hasLocked,
+    hasInsight,
+    plotRender,
+    changeConnectionID,
+    quitResort,
+  } = props;
   const [curChartConfig, setChartConfig] = useState<ConfigObj>();
   let plot: any;
 
@@ -37,7 +47,12 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
       }
 
       setChartConfig(chartConfig);
-      plot = plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
+      plot = plotRender(
+        `chart_container_${chartID}`,
+        chartConfig.type,
+        aggregatedData,
+        chartInfo.chartSchema ?? chartConfig.config
+      );
     } else if (chartInfo.dataUrl) {
       fetch(chartInfo.dataUrl)
         .then((res) => {
@@ -108,7 +123,8 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
     curChartConfig?.type !== 'Pie' ? `${config?.xField} ${config?.seriesField || ''}` : config?.colorField;
   const measure = curChartConfig?.type !== 'Pie' ? config?.yField : config?.angleField;
   const score = curChartConfig?.score;
-  const { description } = chartInfo;
+  const chartDescription = curChartConfig?.description;
+  const { description, insightType } = chartInfo;
   type linkDict = {
     [key: string]: string;
   };
@@ -124,7 +140,7 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
         <div className="title_info">
           {score && (
             <Tooltip title={`Score: ${score}`}>
-              <Tag icon={<MonitorOutlined />} color="error">{`${score}`}</Tag>
+              <Tag icon={<MonitorOutlined />} color="error">{`${Math.floor(score * 100) / 100}`}</Tag>
             </Tooltip>
           )}
           {dimension && (
@@ -134,7 +150,12 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
           )}
           {measure && (
             <Tooltip title={`Measure: ${measure}`}>
-              <Tag color="success">{`${measure}`}</Tag>
+              <Tag color="processing">{`${measure}`}</Tag>
+            </Tooltip>
+          )}
+          {hasInsight && (
+            <Tooltip title={`Insight: ${chartDescription}`}>
+              <Tag icon={<FundViewOutlined />} color="success">{`${insightType}`}</Tag>
             </Tooltip>
           )}
         </div>
