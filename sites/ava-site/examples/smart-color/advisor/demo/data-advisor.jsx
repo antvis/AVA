@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Steps, Menu, Dropdown, Radio } from 'antd';
-import { CaretDownOutlined } from '@ant-design/icons';
+import { Steps, Radio } from 'antd';
 import { specToG2Plot } from '@antv/antv-spec';
 import ReactJson from 'react-json-view';
 import { SheetComponent } from '@antv/s2';
+import { colorSimulation, colorToHex } from '@antv/smart-color';
 
 import { Advisor } from '@antv/chart-advisor';
 
@@ -42,6 +42,21 @@ const dataRadioOptions = [
   { label: 'Table', value: 'Table' },
 ];
 
+const color = {
+  model: 'rgb',
+  value: { r: 126, g: 63, b: 235 },
+};
+
+const simulatedColor = colorSimulation(color, 'achromatomaly');
+
+const colorTheme = {
+  primaryColor: colorToHex(simulatedColor),
+};
+
+const adviseOptions = {
+  theme: colorTheme,
+};
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -49,7 +64,10 @@ class App extends React.Component {
     this.state = {
       currentStep: 0,
       data: defaultData,
-      advices: myAdvisor.advise({ data: defaultData }),
+      advices: myAdvisor.advise({
+        data: defaultData,
+        options: adviseOptions,
+      }),
       currentAdvice: 0,
       dataRadioValue: 'Table',
     };
@@ -67,13 +85,6 @@ class App extends React.Component {
     });
   };
 
-  onAdviceMenuClick = (e) => {
-    const index = parseInt(e.key.split('-')[0], 10);
-    this.setState({
-      currentAdvice: index,
-    });
-  };
-
   componentDidUpdate() {
     if (this.canvas.current) {
       specToG2Plot(this.state.advices[this.state.currentAdvice].spec, document.getElementById('vis'));
@@ -81,7 +92,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { currentStep, advices, data, dataRadioValue } = this.state;
+    const { currentStep, data, dataRadioValue } = this.state;
 
     const dataContent = (
       <>
@@ -97,34 +108,6 @@ class App extends React.Component {
         </div>
       </>
     );
-    const advicesMenu = (
-      <Menu onClick={this.onAdviceMenuClick} selectedKeys={[this.state.currentAdvice]}>
-        {(advices || []).map((item, index) => {
-          return <Menu.Item key={`${index}-${item.type}`}>{`${index}: ${item.type}`}</Menu.Item>;
-        })}
-      </Menu>
-    );
-
-    const advicesContent = (
-      <>
-        <Dropdown overlay={advicesMenu} placement="bottomLeft" trigger={['click']} disabled={!advices}>
-          <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-            {!advices ? 'no advice' : `Advice ${this.state.currentAdvice}`} <CaretDownOutlined />
-          </a>
-        </Dropdown>
-        <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-          {ShowJSON(advices[this.state.currentAdvice])}
-        </div>
-      </>
-    );
-
-    const specContent = (
-      <>
-        <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-          {ShowJSON(advices[this.state.currentAdvice].spec)}
-        </div>
-      </>
-    );
 
     const plotContent = <div id="vis" key="plot" ref={this.canvas} style={{ flex: 5, height: '100%' }}></div>;
 
@@ -137,18 +120,8 @@ class App extends React.Component {
         content: dataContent,
       },
       {
-        title: 'Advices',
-        desc: 'Advices list recommended from data:',
-        content: advicesContent,
-      },
-      {
-        title: 'Spec',
-        desc: 'Pick an advice and get its specification.',
-        content: specContent,
-      },
-      {
         title: 'Chart',
-        desc: 'Render chart with specification.',
+        desc: 'Render chart with specified color theme.',
         content: plotContent,
       },
     ];
