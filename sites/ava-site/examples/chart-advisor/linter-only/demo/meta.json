@@ -5,12 +5,28 @@
   },
   "demos": [
     {
-      "filename": "chart-linter.jsx",
+      "filename": "linter-steps.jsx",
       "title": {
         "en": "Existing Chart to Linter",
         "zh": "给定图表到 Linter 进行优化"
       },
+      "screenshot": "https://iph.href.lu/800x400?text=linter-steps"
+    },
+    {
+      "filename": "chart-linter.jsx",
+      "title": {
+        "en": "Basic Linter",
+        "zh": "Linter 基础用法"
+      },
       "screenshot": "https://iph.href.lu/800x400?text=chart-linter"
+    },
+    {
+      "filename": "custom-rules-linter.jsx",
+      "title": {
+        "en": "Custom rules for Linter",
+        "zh": "定制 Linter 所使用的规则"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=custom-rules-linter"
     }
   ]
 }
