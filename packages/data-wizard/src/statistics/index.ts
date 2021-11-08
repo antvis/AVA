@@ -1,4 +1,4 @@
-import { assert } from '../utils';
+import { assert, isArray } from '../utils';
 import * as cache from './caches';
 
 /**
@@ -266,8 +266,8 @@ export function coefficientOfVariance(array: number[]): number {
  * @param array - The array to process
  * @param measure - The selected measure
  */
-export function sumBy(data: any[], measure: string) {
-  return data.map(typeof measure === 'function' ? measure : (val) => val[measure]).reduce((acc, val) => acc + val, 0);
+export function sumBy(array: any[], measure: string) {
+  return array.map((val) => val[measure]).reduce((acc, val) => acc + val, 0);
 }
 
 /**
@@ -275,8 +275,8 @@ export function sumBy(data: any[], measure: string) {
  * @param array - The array to process
  * @param measure - The selected measure
  */
-export function countBy(data: any[], measure: string) {
-  return data.filter((item) => measure in item).length;
+export function countBy(array: any[], measure: string) {
+  return array.filter((item) => measure in item).length;
 }
 
 /**
@@ -284,8 +284,8 @@ export function countBy(data: any[], measure: string) {
  * @param array - The array to process
  * @param measure - The selected measure
  */
-export function maxBy(data: any[], measure: string) {
-  return Math.max(...data.map(typeof measure === 'function' ? measure : (val) => val[measure]));
+export function maxBy(array: any[], measure: string) {
+  return Math.max(...array.map((val) => val[measure]));
 }
 
 /**
@@ -293,8 +293,8 @@ export function maxBy(data: any[], measure: string) {
  * @param array - The array to process
  * @param measure - The selected measure
  */
-export function minBy(data: any[], measure: string) {
-  return Math.min(...data.map(typeof measure === 'function' ? measure : (val) => val[measure]));
+export function minBy(array: any[], measure: string) {
+  return Math.min(...array.map((val) => val[measure]));
 }
 
 /**
@@ -302,11 +302,8 @@ export function minBy(data: any[], measure: string) {
  * @param array - The array to process
  * @param measure - The selected measure
  */
-export function meanBy(data: any[], measure: string) {
-  return (
-    data.map(typeof measure === 'function' ? measure : (val) => val[measure]).reduce((acc, val) => acc + val, 0) /
-    data.length
-  );
+export function meanBy(array: any[], measure: string) {
+  return array.map((val) => val[measure]).reduce((acc, val) => acc + val, 0) / array.length;
 }
 
 /**
@@ -314,10 +311,10 @@ export function meanBy(data: any[], measure: string) {
  * @param array - The array to process
  * @param measure - The selected measure
  */
-export function groupBy(data: any[], iteratee: string) {
-  const iter = typeof iteratee === 'function' ? iteratee : ({ [iteratee]: prop }: any) => prop;
-  const array = Array.isArray(data) ? data : Object.values(data);
-  return array.reduce((result, item) => {
+export function groupBy(array: any[], measure: string) {
+  const iter = ({ [measure]: prop }: any) => prop;
+  const dataArray = isArray(array) ? array : Object.values(array);
+  return dataArray.reduce((result, item) => {
     const id = iter(item);
     if (!result[id]) {
       Object.assign(result, { [id]: [] });
@@ -331,15 +328,15 @@ export function groupBy(data: any[], iteratee: string) {
  * Return the flattened result of the array.
  * @param array - The array to process
  */
-export function flatten(data: any[]) {
+export function flatten(array: any[]) {
   let res = [];
-  data.forEach((item) => {
-    if (Array.isArray(item)) {
-      res = res.concat(flatten(item));
+  for (let i = 0; i < array.length; i += 1) {
+    if (isArray(array[i])) {
+      res = res.concat(flatten(array[i]));
     } else {
-      res.push(item);
+      res.push(array[i]);
     }
-  });
+  }
   return res;
 }
 
@@ -357,21 +354,21 @@ export const AggregatorMap: Record<AggregateMethod, Aggregator> = {
 
 /**
  * Aggregate data via different aggregation methods
- * @param data - The array to process
+ * @param array - The array to process
  * @param dimensionField - The selected dimensions
  * @param measure - The selected measure
- * @param seriesField - The selected series
  * @param aggMethod - The selected aggregation method
+ * @param seriesField - The selected series
  * @returns
  */
 export function aggregate(
-  data: any[],
+  array: any[],
   dimensionField: string,
   measure: string,
-  seriesField?: string,
-  aggMethod: AggregateMethod = 'SUM'
+  aggMethod: AggregateMethod = 'SUM',
+  seriesField?: string
 ) {
-  const grouped = groupBy(data, dimensionField);
+  const grouped = groupBy(array, dimensionField);
   const aggregator = AggregatorMap[aggMethod];
   if (!seriesField) {
     return Object.entries(grouped).map(([value, dataGroup]) => {
