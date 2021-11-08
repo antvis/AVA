@@ -4,7 +4,7 @@ import { List } from 'antd';
 import ReactJson from 'react-json-view';
 
 // import
-import { Advisor } from '@antv/chart-advisor';
+import { ChartAdvisor } from '@antv/chart-advisor';
 
 // contants
 
@@ -79,15 +79,15 @@ const myCKBCfg = {
 };
 
 // usage
-const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
+const myChartAdvisor = new ChartAdvisor({ ckbCfg: myCKBCfg });
 
-const advices = myAdvisor.advise({ data: trickyData });
+const results = myChartAdvisor.advise({ data: trickyData });
 
 const App = () => (
   <List
     itemLayout="vertical"
     pagination={{ pageSize: 1, position: 'top' }}
-    dataSource={advices}
+    dataSource={results}
     split={false}
     renderItem={(item, index) => {
       return (
