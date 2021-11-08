@@ -5,12 +5,36 @@
   },
   "demos": [
     {
-      "filename": "data-ca.jsx",
+      "filename": "ca-steps.jsx",
       "title": {
         "en": "Data to ChartAdvisor",
         "zh": "从数据到 ChartAdvisor 推荐/优化图表"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=data-ca"
+      "screenshot": "https://iph.href.lu/800x400?text=ca-steps"
+    },
+    {
+      "filename": "ca.jsx",
+      "title": {
+        "en": "Basic ChartAdvisor",
+        "zh": "ChartAdvisor 基础用法"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=ca"
+    },
+    {
+      "filename": "custom-ckb-ca.jsx",
+      "title": {
+        "en": "Custom CKB for ChartAdvisor",
+        "zh": "定制 ChartAdvisor 所使用的 CKB"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=custom-ckb-ca"
+    },
+    {
+      "filename": "custom-rules-ca.jsx",
+      "title": {
+        "en": "Custom rules for ChartAdvisor",
+        "zh": "定制 ChartAdvisor 所使用的规则"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=custom-rules-ca"
     }
   ]
 }
