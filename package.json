@@ -70,7 +70,7 @@
     "clear:root": "rimraf node_modules",
     "clear": "run-s clear:packages clear:demo clear:root",
     "cc": "npm run clean && npm run clear",
-    "setup:site": "cd ./sites/ava-site && yarn",
+    "setup:site": "cd ./sites/ava-site && npm install --by=yarn",
     "start:site": "cd ./sites/ava-site && npm run start",
     "setup:demo": "cd demo && npm install --package-lock=false",
     "start:demo": "npm run setup:demo && cd demo && npm start",

@@ -10,7 +10,7 @@ export default abstract class BaseFrame {
 
   data: NDArray = [];
 
-  colData?: NDArray = [];
+  colData?: NDArray;
 
   constructor(data: SeriesData | FrameData, extra?: Extra) {
     assert(!extra || isObject(extra), 'If extra exists, it must be an object.');
