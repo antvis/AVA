@@ -10,8 +10,8 @@ const data1 = [1, 2, 3, 999, 201, 519, 10];
 const data2 = [500, 120, 299, 2, 19, 1997, 2019];
 const methods = [
   'min',
-  'max',
   'minIndex',
+  'max',
   'maxIndex',
   'sum',
   'valid',
