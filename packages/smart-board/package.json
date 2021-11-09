@@ -1,70 +1,96 @@
 {
-	"name": "@antv/smart-board",
-	"version": "2.0.0-alpha.1",
-	"description": "A js library that solves chart dashboarding through calculations.",
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
-	"unpkg": "dist/index.min.js",
-	"module": "esm/index.js",
-	"files": [
-		"dist",
-		"esm",
-		"lib"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/antvis/SmartBoard.git"
-	},
-	"author": {
-		"name": "AntV",
-		"url": "https://antv.vision/"
-	},
-	"license": "MIT",
-	"publishConfig": {
-		"access": "public"
-	},
-	"bugs": {
-		"url": "https://github.com/antvis/SmartBoard/issues"
-	},
-	"homepage": "https://github.com/antvis/SmartBoard#readme",
-	"devDependencies": {
-		"@types/jest": "^23.3.12",
-		"@types/react": "^17.0.34",
-		"@types/uuid": "^8.3.1",
-		"eslint": "^7.32.0",
-		"jest": "^24.9.0",
-		"limit-size": "^0.1.4",
-		"lint-staged": "^11.0.1",
-		"npm-run-all": "^4.1.5",
-		"prettier": "^2.4.1",
-		"rimraf": "^3.0.2",
+  "name": "@antv/smart-board",
+  "version": "2.0.0-alpha.1",
+  "description": "A js library that solves chart dashboarding through calculations.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "unpkg": "dist/index.min.js",
+  "module": "esm/index.js",
+  "files": [
+    "dist",
+    "esm",
+    "lib"
+  ],
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\" \"demo/**/*.{ts,tsx}\"",
+    "format-check": " prettier ./src/**/*.ts ./__tests__/**/*.ts ./demo/**/*.{ts,tsx} --check",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
+    "lint-fix": "npm run lint -- --fix",
+    "prettier": " prettier --check '**/*' --ignore-path=../../.prettierignore",
+    "prettier-fix": "npm run prettier -- --write",
+    "lint-staged": "lint-staged",
+    "size": "limit-size",
+    "clean": "rimraf lib esm dist",
+    "build:umd": "rimraf ./dist && rollup -c && npm run size",
+    "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
+    "build:esm": "rimraf ./esm && tsc --module ESNext --outDir esm",
+    "build": "run-p build:*",
+    "test": "jest",
+    "coverage": "jest --coverage",
+    "ci": "run-s lint schema test build",
+    "prepare:demo": "cd demo && npm install",
+    "start:demo": "npm run prepare:demo && cd demo && npm start",
+    "prepublishOnly": "npm run ci",
+    "preversion": "npm run lint",
+    "version": "npm run format && git add -A src",
+    "postversion": "git push && git push --tags"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/antvis/SmartBoard.git"
+  },
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": {
+    "url": "https://github.com/antvis/SmartBoard/issues"
+  },
+  "homepage": "https://github.com/antvis/SmartBoard#readme",
+  "devDependencies": {
+    "@types/jest": "^23.3.12",
+    "@types/react": "^17.0.34",
+    "@types/uuid": "^8.3.1",
+    "eslint": "^7.32.0",
+    "jest": "^24.9.0",
+    "limit-size": "^0.1.4",
+    "lint-staged": "^11.0.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
 		"rollup": "^2.59.0",
-		"typescript": "4.3.5"
-	},
-	"dependencies": {
-		"@ant-design/icons": "^4.7.0",
-		"antd": "^4.16.13",
-		"louvain-algorithm": "^1.0.4",
-		"react": "^17.0.2",
-		"tslib": "^2.2.0",
-		"uuid": "^3.4.0"
-	},
-	"lint-staged": {
-		"*.{ts,tsx}": [
-			"eslint --fix",
-			"prettier --write",
-			"git add"
-		]
-	},
-	"limit-size": [
-		{
-			"path": "dist/index.min.js",
-			"limit": "256 Kb",
-			"gzip": true
-		},
-		{
-			"path": "dist/index.min.js",
-			"limit": "600 Kb"
-		}
-	]
+    "typescript": "4.3.5"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@antv/data-wizard": "^2.0.0-alpha.1",
+    "@antv/lite-insight": "^2.0.0-alpha.1",
+    "antd": "^4.16.13",
+    "louvain-algorithm": "^1.0.4",
+    "react": "^17.0.2",
+    "tslib": "^2.2.0",
+    "uuid": "^3.4.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "limit-size": [
+    {
+      "path": "dist/index.min.js",
+      "limit": "256 Kb",
+      "gzip": true
+    },
+    {
+      "path": "dist/index.min.js",
+      "limit": "600 Kb"
+    }
+  ]
 }
