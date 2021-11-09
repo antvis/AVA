@@ -42,6 +42,7 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
           chartInfo.data,
           xField || colorField || '',
           yField || angleField || '',
+          'SUM',
           seriesField
         );
       }
@@ -69,6 +70,7 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
               chartInfo.data,
               xField || colorField || '',
               yField || angleField || '',
+              'SUM',
               seriesField
             );
           }
