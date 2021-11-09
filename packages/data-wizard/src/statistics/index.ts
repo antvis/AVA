@@ -2,7 +2,7 @@ import { assert, isArray } from '../utils';
 import * as cache from './caches';
 
 /**
- * Return the maximum of the array.
+ * Return the minimum of the array.
  * @param array - The array to process
  */
 export function min(array: number[]): number {
@@ -11,16 +11,6 @@ export function min(array: number[]): number {
     return value;
   }
   return cache.set(array, 'min', Math.min(...array));
-}
-
-/**
- * Return the minimum of the array.
- * @param array - The array to process
- */
-export function max(array: number[]): number {
-  const value = cache.get<number>(array, 'max');
-  if (value !== undefined) return value;
-  return cache.set(array, 'max', Math.max(...array));
 }
 
 function minIdx(array: number[]) {
@@ -43,6 +33,16 @@ export function minIndex(array: number[]): number {
   const value = cache.get<number>(array, 'minIndex');
   if (value !== undefined) return value;
   return cache.set(array, 'minIndex', minIdx(array));
+}
+
+/**
+ * Return the maximum of the array.
+ * @param array - The array to process
+ */
+export function max(array: number[]): number {
+  const value = cache.get<number>(array, 'max');
+  if (value !== undefined) return value;
+  return cache.set(array, 'max', Math.max(...array));
 }
 
 function maxIdx(array: number[]) {
@@ -79,6 +79,145 @@ export function sum(array: number[]): number {
     'sum',
     array.reduce((prev, current) => current + prev, 0)
   );
+}
+
+/**
+ * Return the mean of the array.
+ * @param array - The array to process
+
+ */
+export function mean(array: number[]): number {
+  return sum(array) / array.length;
+}
+
+/**
+ * Return the geometricMean of the array.
+ * @param array - The array to process
+ */
+export function geometricMean(array: number[]): number {
+  assert(
+    array.some((item) => item > 0),
+    'each item in array must greater than 0'
+  );
+
+  const value = cache.get<number>(array, 'geometricMean');
+  if (value !== undefined) return value;
+  return cache.set(array, 'geometricMean', array.reduce((prev, curr) => prev * curr, 1) ** (1 / array.length));
+}
+
+/**
+ * Return the harmonicMean of the array.
+ * @param array - The array to process
+ */
+export function harmonicMean(array: number[]): number {
+  const base = 2 ** 16;
+  const value = cache.get<number>(array, 'harmonicMean');
+  if (value !== undefined) return value;
+  return cache.set(array, 'harmonicMean', (base * array.length) / array.reduce((prev, curr) => base / curr + prev, 0));
+}
+
+function sort(array: number[]): number[] {
+  return array.sort((l, r) => (l > r ? 1 : -1));
+}
+
+/**
+ * Return the median of the array.
+ * @param array - The array to process
+ */
+export function median(array: number[], sorted = false): number {
+  const { length } = array;
+  const newArray = sorted ? array : sort(array);
+  if (length % 2 === 1) return newArray[(length - 1) / 2];
+  return (newArray[length / 2 - 1] + newArray[length / 2]) / 2;
+}
+
+/**
+ * Return the quartile of the array.
+ * @param array - The array to process
+ * @param sorted - Whether it is sorted
+ */
+export function quartile(array: number[], sorted = false): [number, number, number] {
+  assert(array.length >= 3, 'array.length cannot be less than 3');
+
+  const { length } = array;
+  const newArray = sorted ? array : sort(array);
+  const Q2 = median(newArray, true);
+  let Q1: number;
+  let Q3: number;
+  if (length % 2 === 1) {
+    Q1 = median(newArray.slice(0, (length - 1) / 2), true);
+    Q3 = median(newArray.slice((length + 1) / 2), true);
+  } else {
+    Q1 = median(newArray.slice(0, length / 2), true);
+    Q3 = median(newArray.slice(length / 2), true);
+  }
+
+  return [Q1, Q2, Q3];
+}
+
+/**
+ * Return the quantile of the array.
+ * @param array - The array to process
+ * @param percent - percent
+ * @param sorted - Whether it is sorted
+ */
+export function quantile(array: number[], percent: number, sorted = false): number {
+  assert(percent > 0 && percent < 100, 'percent cannot be between (0, 100)');
+
+  const newArray = sorted ? array : sort(array);
+  const index = Math.ceil((array.length * percent) / 100) - 1;
+  return newArray[index];
+}
+
+/**
+ * Return the variance of the array.
+ * @param array - The array to process
+ */
+export function variance(array: number[]): number {
+  const m = mean(array);
+  const value = cache.get<number>(array, 'variance');
+  if (value !== undefined) return value;
+  return cache.set(array, 'variance', array.reduce((prev, curr) => prev + (curr - m) ** 2, 0) / array.length);
+}
+
+/**
+ * Return the standard deviation of the array.
+ * @param array - The array to process
+ */
+export function standardDeviation(array: number[]): number {
+  return Math.sqrt(variance(array));
+}
+
+/**
+ * Return the coefficient of variance of the array.
+ * @param array - The array to process
+ */
+export function coefficientOfVariance(array: number[]): number {
+  const stdev = standardDeviation(array);
+  const arrayMean = mean(array);
+  return stdev / arrayMean;
+}
+
+/**
+ * Return the covariance of the array.
+ * @param array - The array to process
+ */
+
+export function covariance(x: number[], y: number[]): number {
+  assert(x.length === y.length, 'x and y must has same length');
+
+  const exy = mean(x.map((item, i) => item * y[i]));
+  return exy - mean(x) * mean(y);
+}
+
+/**
+ * Return the Pearson CorrelationCoefficient of two array.
+ */
+export function pearson(x: number[], y: number[]): number {
+  const cov = covariance(x, y);
+  const dx = standardDeviation(x);
+  const dy = standardDeviation(y);
+  return cov / (dx * dy);
 }
 
 /**
@@ -120,145 +259,6 @@ export function valueMap(array: any[]): Record<string, number> {
  */
 export function distinct(array: any[]): number {
   return Object.keys(valueMap(array)).length;
-}
-
-function sort(array: number[]): number[] {
-  return array.sort((l, r) => (l > r ? 1 : -1));
-}
-
-/**
- * Return the median of the array.
- * @param array - The array to process
- */
-export function median(array: number[], ordered = false): number {
-  const { length } = array;
-  const newArray = ordered ? array : sort(array);
-  if (length % 2 === 1) return newArray[(length - 1) / 2];
-  return (newArray[length / 2 - 1] + newArray[length / 2]) / 2;
-}
-
-/**
- * Return the quartile of the array.
- * @param array - The array to process
- * @param ordered - Whether it is ordered
- */
-export function quartile(array: number[], ordered = false): [number, number, number] {
-  assert(array.length >= 3, 'array.length cannot be less than 3');
-
-  const { length } = array;
-  const newArray = ordered ? array : sort(array);
-  const Q2 = median(newArray, true);
-  let Q1: number;
-  let Q3: number;
-  if (length % 2 === 1) {
-    Q1 = median(newArray.slice(0, (length - 1) / 2), true);
-    Q3 = median(newArray.slice((length + 1) / 2), true);
-  } else {
-    Q1 = median(newArray.slice(0, length / 2), true);
-    Q3 = median(newArray.slice(length / 2), true);
-  }
-
-  return [Q1, Q2, Q3];
-}
-
-/**
- * Return the quantile of the array.
- * @param array - The array to process
- * @param percent - percent
- * @param ordered - Whether it is ordered
- */
-export function quantile(array: number[], percent: number, ordered = false): number {
-  assert(percent > 0 && percent < 100, 'percent cannot be between (0, 100)');
-
-  const newArray = ordered ? array : sort(array);
-  const index = Math.ceil((array.length * percent) / 100) - 1;
-  return newArray[index];
-}
-
-/**
- * Return the mean of the array.
- * @param array - The array to process
-
- */
-export function mean(array: number[]): number {
-  return sum(array) / array.length;
-}
-
-/**
- * Return the geometricMean of the array.
- * @param array - The array to process
- */
-export function geometricMean(array: number[]): number {
-  assert(
-    array.some((item) => item > 0),
-    'each item in array must greater than 0'
-  );
-
-  const value = cache.get<number>(array, 'geometricMean');
-  if (value !== undefined) return value;
-  return cache.set(array, 'geometricMean', array.reduce((prev, curr) => prev * curr, 1) ** (1 / array.length));
-}
-
-/**
- * Return the harmonicMean of the array.
- * @param array - The array to process
- */
-export function harmonicMean(array: number[]): number {
-  const base = 2 ** 16;
-  const value = cache.get<number>(array, 'harmonicMean');
-  if (value !== undefined) return value;
-  return cache.set(array, 'harmonicMean', (base * array.length) / array.reduce((prev, curr) => base / curr + prev, 0));
-}
-
-/**
- * Return the variance of the array.
- * @param array - The array to process
- */
-export function variance(array: number[]): number {
-  const m = mean(array);
-  const value = cache.get<number>(array, 'variance');
-  if (value !== undefined) return value;
-  return cache.set(array, 'variance', array.reduce((prev, curr) => prev + (curr - m) ** 2, 0) / array.length);
-}
-
-/**
- * Return the standard deviation of the array.
- * @param array - The array to process
- */
-export function standardDeviation(array: number[]): number {
-  return Math.sqrt(variance(array));
-}
-
-/**
- * Return the covariance of the array.
- * @param array - The array to process
- */
-
-export function covariance(x: number[], y: number[]): number {
-  assert(x.length === y.length, 'x and y must has same length');
-
-  const exy = mean(x.map((item, i) => item * y[i]));
-  return exy - mean(x) * mean(y);
-}
-
-/**
- * Return the Pearson CorrelationCoefficient of two array.
- */
-export function pearson(x: number[], y: number[]): number {
-  const cov = covariance(x, y);
-  const dx = standardDeviation(x);
-  const dy = standardDeviation(y);
-  return cov / (dx * dy);
-}
-
-/**
- * Return the coefficient of variance of the array.
- * @param array - The array to process
- */
-export function coefficientOfVariance(array: number[]): number {
-  const stdev = standardDeviation(array);
-  const arrayMean = mean(array);
-  return stdev / arrayMean;
 }
 
 /**
