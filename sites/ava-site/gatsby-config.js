@@ -88,29 +88,45 @@ module.exports = {
         order: 1,
       },
       {
-        slug: 'api/lite-insight',
+        slug: 'api/data-wizard',
         title: {
-          zh: 'lite-insight',
-          en: 'lite-insight',
+          zh: 'DataWizard',
+          en: 'DataWizard',
         },
         order: 3,
       },
-      // {
-      //   slug: 'api/data-wizard',
-      //   title: {
-      //     zh: 'DataWizard',
-      //     en: 'DataWizard',
-      //   },
-      //   order: 2,
-      // },
-      // {
-      //   slug: 'api/chart-advisor',
-      //   title: {
-      //     zh: 'ChartAdvisor',
-      //     en: 'ChartAdvisor',
-      //   },
-      //   order: 3,
-      // },
+      {
+        slug: 'api/chart-advisor',
+        title: {
+          zh: 'ChartAdvisor',
+          en: 'ChartAdvisor',
+        },
+        order: 4,
+      },
+      {
+        slug: 'api/chart-linter',
+        title: {
+          zh: 'ChartLinter',
+          en: 'ChartLinter',
+        },
+        order: 5,
+      },
+      {
+        slug: 'api/lite-insight',
+        title: {
+          zh: 'LiteInsight',
+          en: 'LiteInsight',
+        },
+        order: 6,
+      },
+      {
+        slug: 'api/smart-color',
+        title: {
+          zh: 'SmartColor',
+          en: 'SmartColor',
+        },
+        order: 7,
+      },
       // {
       //   slug: 'api/chart-advisor/pipeline',
       //   title: {
@@ -118,14 +134,6 @@ module.exports = {
       //     en: 'pipeline',
       //   },
       //   order: 1,
-      // },
-      // {
-      //   slug: 'api/chart-linter',
-      //   title: {
-      //     zh: 'ChartLinter',
-      //     en: 'ChartLinter',
-      //   },
-      //   order: 4,
       // },
     ],
     examples: [
