@@ -10,6 +10,8 @@ export default class DataFrame extends BaseFrame {
   constructor(data: FrameData, extra?: Extra) {
     super(data, extra);
 
+    this.colData = [];
+
     assert(isBasicType(data) || isArray(data) || isObject(data), 'Data type is illegal');
 
     if (isBasicType(data)) {
