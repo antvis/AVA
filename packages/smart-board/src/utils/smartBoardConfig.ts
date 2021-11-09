@@ -1,22 +1,5 @@
 import { InsightInfo, PatternInfo } from '@antv/lite-insight';
-import { Chart } from '../interfaces';
-
-export interface ConfigObj {
-  id?: string;
-  type: string;
-  data: any;
-  config: {
-    xField?: string;
-    yField?: string;
-    seriesField?: string;
-    isStack?: boolean;
-    isGroup?: boolean;
-    colorField?: string;
-    angleField?: string;
-  };
-  score?: number;
-  description?: string | string[];
-}
+import { Chart, ConfigObj } from '../interfaces';
 
 /**
  * Get smart-board config.

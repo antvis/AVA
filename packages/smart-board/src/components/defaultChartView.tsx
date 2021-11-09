@@ -2,19 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
 import { LockOutlined, UnlockOutlined, MonitorOutlined, FundViewOutlined } from '@ant-design/icons';
 import { statistics } from '@antv/data-wizard';
-import { smartBoardConfig, ConfigObj } from '../utils/smartBoardConfig';
-
-export interface SmartBoardChartViewProps {
-  chartID: string;
-  chartInfo: any;
-  clusterID?: string;
-  interactionMode: string;
-  hasInsight: boolean;
-  hasLocked: boolean;
-  plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
-  changeConnectionID: (string: string) => void;
-  quitResort: () => void;
-}
+import { smartBoardConfig } from '../utils/smartBoardConfig';
+import { SmartBoardChartViewProps, ConfigObj } from '../interfaces';
 
 export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
   const {

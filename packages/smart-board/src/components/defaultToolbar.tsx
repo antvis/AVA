@@ -1,15 +1,11 @@
 import * as React from 'react';
 import { Radio, Tooltip } from 'antd';
 import { InsertRowBelowOutlined, ClusterOutlined, InteractionOutlined } from '@ant-design/icons';
+import { SmartBoardToolbarProps } from '../interfaces';
 
 const smartBoardModes = ['defaultMode', 'clusterMode', 'connectionMode'];
 
 const smartBoardModesAbbr = ['default', 'cluster', 'connection'];
-
-export interface SmartBoardToolbarProps {
-  changeMode: (d: any) => void;
-  defaultMode?: string;
-}
 
 interface SmartBoardToolbarStates {
   defaultMode: string;

@@ -1,17 +1,8 @@
 import * as React from 'react';
 import { Select } from 'antd';
+import { SmartBoardSelectorProps } from '../interfaces';
 
 const { Option } = Select;
-
-export interface SmartBoardSamples {
-  sampleNames: string[];
-  initSampleIndex?: number;
-}
-
-export interface SmartBoardSelectorProps {
-  changeSampleIndex: (d: any) => void;
-  samples: SmartBoardSamples;
-}
 
 interface SmartBoardSelectorStates {
   canSelect: boolean;
