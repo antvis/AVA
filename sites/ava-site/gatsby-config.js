@@ -47,30 +47,38 @@ module.exports = {
         },
         order: 2,
       },
-      // {
-      //   slug: 'guide/data-wizard',
-      //   title: {
-      //     zh: 'DataWizard',
-      //     en: 'DataWizard',
-      //   },
-      //   order: 3,
-      // },
-      // {
-      //   slug: 'guide/chart-advisor',
-      //   title: {
-      //     zh: 'ChartAdvisor',
-      //     en: 'ChartAdvisor',
-      //   },
-      //   order: 4,
-      // },
-      // {
-      //   slug: 'guide/chart-linter',
-      //   title: {
-      //     zh: 'ChartLinter',
-      //     en: 'ChartLinter',
-      //   },
-      //   order: 5,
-      // },
+      {
+        slug: 'guide/data-wizard',
+        title: {
+          zh: 'DataWizard',
+          en: 'DataWizard',
+        },
+        order: 3,
+      },
+      {
+        slug: 'guide/chart-advisor',
+        title: {
+          zh: 'ChartAdvisor',
+          en: 'ChartAdvisor',
+        },
+        order: 4,
+      },
+      {
+        slug: 'guide/chart-linter',
+        title: {
+          zh: 'ChartLinter',
+          en: 'ChartLinter',
+        },
+        order: 5,
+      },
+      {
+        slug: 'guide/smart-color',
+        title: {
+          zh: 'SmartColor',
+          en: 'SmartColor',
+        },
+        order: 6,
+      },
       {
         slug: 'api/ckb',
         title: {
