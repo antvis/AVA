@@ -1,4 +1,4 @@
-export { SmartBoardToolbar, SmartBoardToolbarProps } from './defaultToolbar';
-export { SmartBoardSelector, SmartBoardSelectorProps, SmartBoardSamples } from './defaultSelector';
-export { SmartBoardChartView, SmartBoardChartViewProps } from './defaultChartView';
-export { SmartBoardDashboard, SmartBoardDashboardProps } from './defaultBoard';
+export { SmartBoardToolbar } from './defaultToolbar';
+export { SmartBoardSelector } from './defaultSelector';
+export { SmartBoardChartView } from './defaultChartView';
+export { SmartBoardDashboard } from './defaultBoard';

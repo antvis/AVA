@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ChartListInfo, Chart, ChartOrder, ChartGraph, ChartCluster } from '../interfaces';
+import { Chart, SmartBoardDashboardProps } from '../interfaces';
 import { SmartBoardChartView as ChartView } from './defaultChartView';
-
-export interface SmartBoardDashboardProps {
-  chartList: ChartListInfo;
-  chartGraph: ChartGraph;
-  chartOrder: ChartOrder;
-  chartCluster: ChartCluster;
-  interactionMode?: string;
-  hasInsight?: boolean;
-  plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
-}
 
 export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
   const { chartList, chartGraph, chartOrder, chartCluster, plotRender } = props;
