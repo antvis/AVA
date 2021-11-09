@@ -94,3 +94,5 @@ colorSimulation(color, "achromatomaly");
 <div align="center">
   <img height=100 src="https://gw.alipayobjects.com/zos/antfincdn/fxjnaPrLZ6/jieping2021-07-01%252520xiawu3.11.52.png" alt="color simulation result">
 </div>
+
+</div>
