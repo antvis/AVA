@@ -13,6 +13,7 @@
     "build:cjs": "rimraf lib && FORMAT=cjs rollup -c",
     "build:umd": "rimraf dist && FORMAT=umd rollup -c && npm run size",
     "build": "run-p build:*",
+    "analysis": "rimraf dist stats.html && rollup -c rollup.config.js --environment FORMAT:umd,ANALYSIS",
     "size": "limit-size",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -70,6 +71,7 @@
     "rollup-plugin-polyfill-node": "^0.7.0",
     "rollup-plugin-postcss": "^4.0.1",
     "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-visualizer": "^5.5.2",
     "tslib": "^2.3.1",
     "typescript": "^4.4.2"
   },

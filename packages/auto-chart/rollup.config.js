@@ -8,8 +8,10 @@ import autoprefixer from 'autoprefixer';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 const format = process.env.FORMAT;
+const enableAnalysis = process.env.ANALYSIS;
 
 const OUT_DIR_NAME_MAP = {
   esm: 'esm',
@@ -57,6 +59,10 @@ const plugins = [
     ],
   }),
 ];
+
+if (enableAnalysis) {
+  plugins.push(visualizer({ gzipSize: true }));
+}
 
 if (format === 'umd') {
   output.file = 'dist/index.min.js';
