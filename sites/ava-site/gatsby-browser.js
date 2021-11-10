@@ -35,3 +35,4 @@ window.smartBoard = require('../../packages/smart-board/src');
 window.demoUtils = require('./utils');
 window.chartAdvisor = require('../../packages/chart-advisor/src');
 window.g6 = require('@antv/g6');
+window.antvSiteDemoRc = require('antv-site-demo-rc');

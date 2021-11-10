@@ -1,55 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { Steps, Menu, Dropdown, Radio, List } from 'antd';
+import { Menu, Dropdown, Radio } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { specToG2Plot } from '@antv/antv-spec';
-import ReactJson from 'react-json-view';
-import { SheetComponent } from '@antv/s2';
+import { JSONView, TableView, ChartView, LintCard, StepBar } from 'antv-site-demo-rc';
 
 import { ChartAdvisor } from '@antv/chart-advisor';
-
-const { Step } = Steps;
-
-const ShowJSON = (json) => (
-  <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} collapsed={1} />
-);
-
-const ShowTable = (data, { height, width }) => {
-  const s2DataConfig = { fields: { columns: Object.keys(data[0]) }, data };
-  const s2options = { width, height };
-
-  return <SheetComponent dataCfg={s2DataConfig} options={s2options} sheetType="table" themeCfg={{ name: 'simple' }} />;
-};
-
-const Chart = ({ id, spec }) => {
-  useEffect(() => {
-    specToG2Plot(spec, document.getElementById(id));
-  });
-
-  return <div id={id} style={{ width: '100%', height: 200, margin: 'auto' }}></div>;
-};
-
-const LintCard = ({ lints }) => {
-  return (
-    <List
-      key={`lint-${+new Date()}`}
-      itemLayout="vertical"
-      pagination={{ pageSize: 1 }}
-      dataSource={lints}
-      split={false}
-      renderItem={(item, index) => {
-        return (
-          <List.Item key={index}>
-            <strong style={{ fontSize: 18 }}>Error ID: {item.id}</strong>
-            <div>Error Type: {item.type}</div>
-            <div>Score: {item.score}</div>
-            <div>docs: {item.docs.lintText}</div>
-          </List.Item>
-        );
-      }}
-    ></List>
-  );
-};
 
 const myChartAdvisor = new ChartAdvisor();
 
@@ -77,6 +32,8 @@ class App extends React.Component {
       currentResult: 0,
       dataRadioValue: 'Table',
     };
+
+    this.myRef = React.createRef();
   }
 
   onStepChange = (currentStep) => {
@@ -108,9 +65,7 @@ class App extends React.Component {
           optionType="button"
           buttonStyle="solid"
         />
-        <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-          {dataRadioValue === 'Table' ? ShowTable(data, { height: 300, width: 300 }) : ShowJSON(data)}
-        </div>
+        {dataRadioValue === 'Table' ? <TableView data={data} /> : <JSONView json={data} />}
       </>
     );
     const advicesMenu = (
@@ -128,16 +83,14 @@ class App extends React.Component {
             {!results ? 'no advice' : `Advice ${currentResult}`} <CaretDownOutlined />
           </a>
         </Dropdown>
-        <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-          {ShowJSON(results[currentResult])}
-        </div>
+        <JSONView json={results[currentResult]} />
       </>
     );
 
     const plotContent = (
       <>
-        <LintCard lints={results[currentResult].lint} />
-        <Chart id={'vis'} spec={results[currentResult].spec} />
+        <LintCard lintProblems={results[currentResult].lint} />
+        <ChartView chartRef={this.myRef} spec={results[currentResult].spec} />
       </>
     );
 
@@ -163,17 +116,7 @@ class App extends React.Component {
 
     return (
       <>
-        <Steps
-          type="navigation"
-          size="small"
-          current={currentStep}
-          onChange={this.onStepChange}
-          style={{ marginBottom: '8px', boxShadow: '0px -1px 0 0 #e8e8e8 inset' }}
-        >
-          {steps.map((item) => (
-            <Step key={item.title} title={item.title} />
-          ))}
-        </Steps>
+        <StepBar current={currentStep} onChange={this.onStepChange} steps={steps} />
 
         <p>{steps[currentStep].desc}</p>
 
