@@ -10,7 +10,7 @@
         "zh": "自定义洞察类型",
         "en": "Custom insight types"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/hKRGHAxJml/IMG_0737.PNG"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/vvRy2rN%24cO/li-custom-type.gif"
     },
     {
       "filename": "impact.jsx",
@@ -18,7 +18,7 @@
         "zh": "自定义影响力指标和权重",
         "en": "Custom Impact measures and weight"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/hKRGHAxJml/IMG_0737.PNG"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/WZQxVppHR%26/li-impact-measure.gif"
     },
     {
       "filename": "homogeneous.jsx",
@@ -26,7 +26,7 @@
         "zh": "提取共性/例外模式",
         "en": "Extract homogeneous data patterns"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/hKRGHAxJml/IMG_0737.PNG"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/onsB512jmI/li-homogeneous.gif"
     }
   ]
 }

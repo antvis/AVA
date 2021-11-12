@@ -3,8 +3,8 @@ import { Select, Button, Table } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
+import { InsightCard } from 'antv-site-demo-rc';
 import { getDataInsightsAsync, InsightInfo, Datum, PatternInfo } from '../../../../packages/lite-insight';
-import InsightCard from './InsightCard';
 
 const { Option } = Select;
 
@@ -117,7 +117,7 @@ export default function App() {
         <div style={{ borderTop: '1px solid grey' }}>
           <div style={{ fontSize: 20, fontWeight: 600, margin: 16 }}>Insights</div>
           {insights.map((item, index) => (
-            <InsightCard key={index} insight={item} />
+            <InsightCard key={index} insightInfo={item as any} />
           ))}
         </div>
       )}
