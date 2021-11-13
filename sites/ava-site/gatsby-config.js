@@ -203,11 +203,11 @@ module.exports = {
         order: 5,
       },
       {
-        slug: 'smart-color',
+        slug: 'plugins',
         // icon: 'gallery',
         title: {
-          zh: '智能色板',
-          en: 'SmartColor',
+          zh: '插件',
+          en: 'Plugins',
         },
         order: 6,
       },

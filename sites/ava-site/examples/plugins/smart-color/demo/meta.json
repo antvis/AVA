@@ -1,0 +1,24 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "data-advisor.jsx",
+      "title": {
+        "en": "Charts with specific color",
+        "zh": "指定颜色的图表推荐"
+      },
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*EJqOQr8DoLEAAAAAAAAAAAAAARQnAQ"
+    },
+    {
+      "filename": "auto-color.jsx",
+      "title": {
+        "en": "Charts with auto color",
+        "zh": "自动配色的图表推荐"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=smart-color"
+    }
+  ]
+}
