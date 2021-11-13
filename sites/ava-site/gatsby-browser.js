@@ -28,7 +28,6 @@ window.g2plot = require('@antv/g2plot');
 window.antvSpec = require('@antv/antv-spec');
 window.liteInsight = require('../../packages/lite-insight/lib');
 window.smartColor = require('@antv/smart-color');
-window.visSteg = require('@antv/vis-steg');
 window.chartAdvisor = require('../../packages/chart-advisor/src');
 window.smartBoard = require('../../packages/smart-board/src');
 
