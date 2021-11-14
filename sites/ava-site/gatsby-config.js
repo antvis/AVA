@@ -72,12 +72,20 @@ module.exports = {
         order: 5,
       },
       {
+        slug: 'guide/smart-board',
+        title: {
+          zh: 'SmartBoard',
+          en: 'SmartBoard',
+        },
+        order: 6,
+      },
+      {
         slug: 'guide/smart-color',
         title: {
           zh: 'SmartColor',
           en: 'SmartColor',
         },
-        order: 6,
+        order: 7,
       },
       {
         slug: 'guide/lite-insight',
@@ -128,12 +136,20 @@ module.exports = {
         order: 6,
       },
       {
+        slug: 'api/smart-board',
+        title: {
+          zh: 'SmartBoard',
+          en: 'SmartBoard',
+        },
+        order: 7,
+      },
+      {
         slug: 'api/smart-color',
         title: {
           zh: 'SmartColor',
           en: 'SmartColor',
         },
-        order: 7,
+        order: 8,
       },
       // {
       //   slug: 'api/chart-advisor/pipeline',
