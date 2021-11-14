@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { List } from 'antd';
-import ReactJson from 'react-json-view';
+import { PagList, JSONView } from 'antv-site-demo-rc';
 
 // import
 import { Advisor } from '@antv/chart-advisor';
@@ -25,25 +24,9 @@ const myAdvisor = new Advisor();
 const advices = myAdvisor.advise({ data: defaultData });
 
 const App = () => (
-  <List
-    itemLayout="vertical"
-    pagination={{ pageSize: 1, position: 'top' }}
-    dataSource={advices}
-    split={false}
-    renderItem={(item, index) => {
-      return (
-        <List.Item key={index}>
-          <ReactJson
-            src={item}
-            iconStyle
-            name={false}
-            displayObjectSize={false}
-            displayDataTypes={false}
-            collapsed={1}
-          />
-        </List.Item>
-      );
-    }}
+  <PagList
+    data={advices}
+    renderItem={(item) => <JSONView json={item} style={{ height: '100%' }} rjvConfigs={{ collapsed: 1 }} />}
   />
 );
 

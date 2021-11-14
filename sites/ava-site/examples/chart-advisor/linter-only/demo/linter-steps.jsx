@@ -1,46 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import { Steps, List } from 'antd';
-import { specToG2Plot } from '@antv/antv-spec';
-import ReactJson from 'react-json-view';
+import { JSONView, ChartView, LintCard, StepBar } from 'antv-site-demo-rc';
 
 import { Linter } from '@antv/chart-advisor';
-
-const { Step } = Steps;
-
-const ShowJSON = (json) => (
-  <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} />
-);
-
-const Chart = ({ id, spec }) => {
-  useEffect(() => {
-    specToG2Plot(spec, document.getElementById(id));
-  });
-
-  return <div id={id} style={{ width: '100%', height: 200, margin: 'auto' }}></div>;
-};
-
-const LintCard = ({ lints }) => {
-  return (
-    <List
-      key={`lint-${+new Date()}`}
-      itemLayout="vertical"
-      pagination={{ pageSize: 1 }}
-      dataSource={lints}
-      split={false}
-      renderItem={(item, index) => {
-        return (
-          <List.Item key={index}>
-            <strong style={{ fontSize: 18 }}>Error ID: {item.id}</strong>
-            <div>Error Type: {item.type}</div>
-            <div>Score: {item.score}</div>
-            <div>docs: {item.docs.lintText}</div>
-          </List.Item>
-        );
-      }}
-    ></List>
-  );
-};
 
 const myLinter = new Linter();
 
@@ -85,6 +47,8 @@ class App extends React.Component {
       spec: errorSpec,
       problems: myLinter.lint({ spec: errorSpec }),
     };
+
+    this.myRef = React.createRef();
   }
 
   onStepChange = (currentStep) => {
@@ -94,20 +58,14 @@ class App extends React.Component {
   render() {
     const { currentStep, spec, problems } = this.state;
 
-    const plotContent = <Chart id={'linter-demo'} spec={spec} />;
+    const plotContent = <ChartView chartRef={this.myRef} spec={spec} />;
 
-    const specContent = (
-      <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-        {ShowJSON(spec)}
-      </div>
-    );
+    const specContent = <JSONView json={spec} />;
 
     const problemContent = (
       <>
-        <LintCard lints={problems} />
-        <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-          {ShowJSON(problems)}
-        </div>
+        <LintCard lintProblems={problems} />
+        <JSONView json={problems} />
       </>
     );
 
@@ -133,17 +91,7 @@ class App extends React.Component {
 
     return (
       <>
-        <Steps
-          type="navigation"
-          size="small"
-          current={currentStep}
-          onChange={this.onStepChange}
-          style={{ marginBottom: '8px', boxShadow: '0px -1px 0 0 #e8e8e8 inset' }}
-        >
-          {steps.map((item) => (
-            <Step key={item.title} title={item.title} />
-          ))}
-        </Steps>
+        <StepBar current={currentStep} onChange={this.onStepChange} steps={steps} />
 
         <p>{steps[currentStep].desc}</p>
 

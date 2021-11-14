@@ -1,40 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
-import { List } from 'antd';
-import { specToG2Plot } from '@antv/antv-spec';
+import { ChartView, LintCard } from 'antv-site-demo-rc';
 
 // import
 import { Linter } from '@antv/chart-advisor';
-
-const Chart = ({ id, spec }) => {
-  useEffect(() => {
-    specToG2Plot(spec, document.getElementById(id));
-  });
-
-  return <div id={id} style={{ width: '100%', height: 200, margin: 'auto' }}></div>;
-};
-
-const LintCard = ({ lints }) => {
-  return (
-    <List
-      key={`lint-${+new Date()}`}
-      itemLayout="vertical"
-      pagination={{ pageSize: 1 }}
-      dataSource={lints}
-      split={false}
-      renderItem={(item, index) => {
-        return (
-          <List.Item key={index}>
-            <strong style={{ fontSize: 18 }}>Error ID: {item.id}</strong>
-            <div>Error Type: {item.type}</div>
-            <div>Score: {item.score}</div>
-            <div>docs: {item.docs.lintText}</div>
-          </List.Item>
-        );
-      }}
-    ></List>
-  );
-};
 
 // contants
 
@@ -73,10 +42,11 @@ const myLinter = new Linter();
 const problems = myLinter.lint({ spec: errorSpec });
 
 const App = () => {
+  const myRef = useRef();
   return (
     <>
-      <LintCard lints={problems} />
-      <Chart id={'linter-demo'} spec={errorSpec} />
+      <LintCard lintProblems={problems} />
+      <ChartView chartRef={myRef} spec={errorSpec} />
     </>
   );
 };
