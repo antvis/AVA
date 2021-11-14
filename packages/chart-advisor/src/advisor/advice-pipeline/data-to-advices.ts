@@ -1,9 +1,10 @@
 import { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
-import { hexToColor, colorToHex, paletteGeneration } from '@antv/smart-color';
+import { hexToColor, colorToHex, paletteGeneration, colorSimulation, SimulationType } from '@antv/smart-color';
+import { ColorSchemeType } from '@antv/color-schema';
 import { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/concepts/rule';
 import { deepMix } from '../utils';
-import { Advice, AdvisorOptions, DataRows, Theme } from './interface';
+import { Advice, AdvisorOptions, DataRows, Theme, SmartColorOptions } from './interface';
 import { getChartTypeSpec } from './spec-mapping';
 import { defaultWeight } from './default-weight';
 
@@ -76,6 +77,7 @@ function applyDesignRules(
 
 const DISCRETE_PALETTE_TYPES = ['monochromatic', 'analogous'] as const;
 const CATEGORICAL_PALETTE_TYPES = ['polychromatic', 'split-complementary', 'triadic', 'tetradic'] as const;
+const defaultColor = '#006f94';
 
 function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec, theme: Theme) {
   const { primaryColor } = theme;
@@ -118,6 +120,56 @@ function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec
   return {};
 }
 
+function applySmartColor(
+  dataProps: BasicDataPropertyForAdvice[],
+  chartSpec: AntVSpec,
+  primaryColor: string,
+  colorType: ColorSchemeType,
+  simulationType: SimulationType
+) {
+  const layerEnc = 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
+  if (primaryColor && layerEnc) {
+    // convert primary color
+    const color = hexToColor(primaryColor);
+    // if color is specified
+    if (layerEnc.color) {
+      const { type, field } = layerEnc.color;
+      let colorScheme = colorType;
+      if (!colorScheme) {
+        if (type === 'quantitative') {
+          colorScheme = 'monochromatic';
+        } else {
+          colorScheme = 'polychromatic';
+        }
+      }
+      const count = dataProps.find((d) => d.name === field)?.count;
+      const palette = paletteGeneration(colorScheme, {
+        color,
+        count,
+      });
+      return {
+        encoding: {
+          color: {
+            scale: {
+              range: palette.colors.map((color) => {
+                return colorToHex(simulationType ? colorSimulation(color, simulationType) : color);
+              }),
+            },
+          },
+        },
+      };
+    }
+    return {
+      mark: {
+        style: {
+          color: colorToHex(color),
+        },
+      },
+    };
+  }
+  return {};
+}
+
 /**
  * recommending charts given data and dataProps, based on CKB and RuleBase
  * @param data input data [ {a: xxx, b: xxx}, ... ]
@@ -132,7 +184,10 @@ export function dataToAdvices(
   dataProps: BasicDataPropertyForAdvice[],
   chartWIKI: Record<string, ChartKnowledgeJSON>,
   ruleBase: Record<string, RuleModule>,
-  options?: AdvisorOptions
+  /** SmartColor on/off */
+  smartColor?: boolean,
+  options?: AdvisorOptions,
+  colorOptions?: SmartColorOptions
 ) {
   /**
    * `refine`: whether to apply design rules
@@ -142,6 +197,10 @@ export function dataToAdvices(
    * `showLog`: log on/off
    */
   const showLog = options?.showLog;
+  /**
+   * `smartColorOn`: switch SmartColor on/off
+   */
+  const smartColorOn = smartColor;
   /**
    * `theme`: custom theme
    */
@@ -177,9 +236,28 @@ export function dataToAdvices(
     }
 
     // step 4: custom theme
-    if (chartTypeSpec && theme) {
-      const partEncSpec = applyTheme(dataProps, chartTypeSpec, theme);
-      deepMix(chartTypeSpec.layer[0], partEncSpec);
+    if (chartTypeSpec) {
+      if (theme && !smartColorOn) {
+        const partEncSpec = applyTheme(dataProps, chartTypeSpec, theme);
+        deepMix(chartTypeSpec.layer[0], partEncSpec);
+      } else if (smartColorOn) {
+        /**
+         * `colorTheme`: theme for SmartColor
+         * Default color is blue
+         */
+        const colorTheme = colorOptions?.themeColor ?? defaultColor;
+        /**
+         * `colorType`: customize SmartColor generation type
+         */
+        const colorType = colorOptions?.colorSchemeType;
+        /**
+         * `simulationType`: customize SmartColor for specific simulation mode
+         * Default color mode is normal
+         */
+        const simulationType = colorOptions?.simulationType;
+        const partEncSpec = applySmartColor(dataProps, chartTypeSpec, colorTheme, colorType, simulationType);
+        deepMix(chartTypeSpec.layer[0], partEncSpec);
+      }
     }
 
     return { type: t, spec: chartTypeSpec, score };

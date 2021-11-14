@@ -60,6 +60,7 @@
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.1",
     "@antv/ckb": "^2.0.0-alpha.1",
+    "@antv/color-schema": "^0.2.2",
     "@antv/data-wizard": "^2.0.0-alpha.1",
     "@antv/smart-color": "^0.2.1",
     "tslib": "^2.3.1"

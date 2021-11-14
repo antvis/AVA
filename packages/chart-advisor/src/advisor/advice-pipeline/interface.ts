@@ -1,5 +1,7 @@
 import { Purpose } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
+import { SimulationType } from '@antv/smart-color';
+import { ColorSchemeType } from '@antv/color-schema';
 import { Preferences } from '../../ruler';
 
 export type DataRow = Record<string, any>;
@@ -62,4 +64,23 @@ export interface Advice {
    */
   spec: Specification | null;
   score: number;
+}
+
+/**
+ * return type of color options for smart color
+ * @public
+ */
+export interface SmartColorOptions {
+  /**
+   *  hex string
+   */
+  themeColor?: string;
+  /**
+   * mode employed for color generation
+   */
+  colorSchemeType?: ColorSchemeType;
+  /**
+   * mode employed for color simulation
+   */
+  simulationType?: SimulationType;
 }
