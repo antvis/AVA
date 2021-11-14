@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { List } from 'antd';
-import ReactJson from 'react-json-view';
+import { PagList, JSONView } from 'antv-site-demo-rc';
 
 // import
 import { ChartAdvisor } from '@antv/chart-advisor';
@@ -52,26 +51,7 @@ const myChartAdvisor = new ChartAdvisor({ ruleCfg: myRuleCfg });
 const results = myChartAdvisor.advise({ data: trickyData });
 
 const App = () => (
-  <List
-    itemLayout="vertical"
-    pagination={{ pageSize: 1, position: 'top' }}
-    dataSource={results}
-    split={false}
-    renderItem={(item, index) => {
-      return (
-        <List.Item key={index}>
-          <ReactJson
-            src={item}
-            iconStyle
-            name={false}
-            displayObjectSize={false}
-            displayDataTypes={false}
-            collapsed={1}
-          />
-        </List.Item>
-      );
-    }}
-  />
+  <PagList data={results} renderItem={(item) => <JSONView json={item} rjvConfigs={{ collapsed: 1 }} />} />
 );
 
 ReactDOM.render(<App />, document.getElementById('container'));
