@@ -3,7 +3,7 @@ import { TextRandom } from './text-random';
 import { WebRandom } from './web-random';
 import { LocationRandom } from './location-random';
 import { DateTimeRandom } from './datetime-random';
-import { CnAddressRandom } from './cn-address-random';
+import { AddressRandom } from './address-random';
 import { getAllDB, Database } from './database';
 import { ColorRandom } from './color-random';
 
@@ -18,10 +18,10 @@ export class Random extends BasicRandom {
 /**
  * Random Interface
  * @public
- * @remarks {@link BasicRandom} {@link TextRandom} {@link WebRandom} {@link ColorRandom} {@link CnAddressRandom}
+ * @remarks {@link BasicRandom} {@link TextRandom} {@link WebRandom} {@link ColorRandom} {@link AddressRandom}
  */
 // eslint-disable-next-line no-redeclare
-export interface Random extends TextRandom, WebRandom, ColorRandom, LocationRandom, DateTimeRandom, CnAddressRandom {
+export interface Random extends TextRandom, WebRandom, ColorRandom, LocationRandom, DateTimeRandom, AddressRandom {
   /**
    * merge all database
    */
@@ -36,4 +36,4 @@ type Constructor<T = {}> = new (...args: any[]) => T;
       Object.defineProperty(derivedCtor.prototype, name, Object.getOwnPropertyDescriptor(baseCtor.prototype, name)!);
     });
   });
-})(Random, [TextRandom, WebRandom, ColorRandom, LocationRandom, DateTimeRandom, CnAddressRandom]);
+})(Random, [TextRandom, WebRandom, ColorRandom, LocationRandom, DateTimeRandom, AddressRandom]);

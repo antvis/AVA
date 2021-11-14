@@ -1,4 +1,4 @@
-import { pettittTest } from '../../src/algorithms';
+import { pettittTest } from '../../src/algorithms/change-point/pettitt-test';
 
 const data = [
   2413.291, 2201.967, 2363.555, 2086.259, 2070.092, 2242.442, 3091.346, 1326.768, 1595.619, 1631.493, 1797.879,
@@ -8,6 +8,6 @@ const data = [
 
 describe('Pettitt Test', () => {
   test('check change point result', () => {
-    expect(pettittTest(data).index).toBe(6);
+    expect(pettittTest(data).index).toBe(7);
   });
 });

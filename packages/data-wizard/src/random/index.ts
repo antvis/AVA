@@ -20,7 +20,7 @@
  * random.Random.mixin({
  *  user() {
  *    return {
- *      name: this.cname(),
+ *      name: this.cName(),
  *      aget: this.integer({ max: 50, min: 25 })
  *    }
  *  }
@@ -32,10 +32,10 @@
 
 export * from './basic-random';
 export * from './text-random';
-export * from './web-random';
-export * from './color-random';
-export * from './location-random';
 export * from './datetime-random';
-export * from './cn-address-random';
+export * from './color-random';
+export * from './web-random';
+export * from './location-random';
+export * from './address-random';
 export * from './random';
 export { WebDB, ColorDB, TextDB, DateTimeDB, Database } from './database';

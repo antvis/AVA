@@ -38,12 +38,12 @@ test('character111', () => {
   expect(R.phone({ mobile: false, asterisk: true, startNum: '010' })).toMatch(new RegExp('010\\d{3}\\*{2,3}\\d{2}'));
   expect(R.name()).toContain(' ');
   expect(R.name({ gender: 'female' })).toContain(' ');
-  expect(R.cname()).not.toContain(' ');
-  expect(R.clastname({ length: 3 })).toHaveLength(3);
-  expect(R.cword().length).toBeGreaterThanOrEqual(2);
-  expect(R.n(R.cword, 100, { length: 5 }).every((item) => item.length === 5)).toBe(true);
-  expect(R.csentence().endsWith('。')).toBe(true);
-  expect(R.cparagraph().split('。').length).toBeGreaterThan(3);
+  expect(R.cName()).not.toContain(' ');
+  expect(R.cFirstName({ length: 3 })).toHaveLength(3);
+  expect(R.cWord().length).toBeGreaterThanOrEqual(2);
+  expect(R.n(R.cWord, 100, { length: 5 }).every((item) => item.length === 5)).toBe(true);
+  expect(R.cSentence().endsWith('。')).toBe(true);
+  expect(R.cParagraph().split('。').length).toBeGreaterThan(3);
   const { cZodiac } = R.database;
   expect(cZodiac['zh-CN'].includes(R.cZodiac())).toBe(true);
   expect(cZodiac['en-US'].includes(R.cZodiac({ locale: 'en-US' }))).toBe(true);

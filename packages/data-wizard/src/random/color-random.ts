@@ -55,7 +55,7 @@ export class ColorRandom extends BasicRandom {
   /**
    * return a {@link https://developer.mozilla.org/en-US/docs/Web/CSS/color_value | Color Keyword}
    */
-  colorname(): string {
+  colorName(): string {
     return this.pickone(this.database.colorKeywords);
   }
 
@@ -63,7 +63,7 @@ export class ColorRandom extends BasicRandom {
    * return a hex color
    * @param options - the parmas
    */
-  hexcolor(options?: HexColorOptions): string {
+  hexColor(options?: HexColorOptions): string {
     const { prefix, casing } = initOptions({ prefix: true, casing: 'lower' }, options);
     const rgbNums = rgb.call(this, options);
     const v = rgbNums.map((item) => item.toString(16).padStart(2, '0')).join('');
@@ -75,25 +75,27 @@ export class ColorRandom extends BasicRandom {
    * return a	decimal color
    * @param options - the parmas
    */
-  decimalcolor(options?: RGBBaseOptions): number {
-    const v = this.hexcolor({ ...options, prefix: false });
+  decimalColor(options?: RGBBaseOptions): number {
+    const v = this.hexColor({ ...options, prefix: false });
     return parseInt(v, 16);
   }
 }
+
+type Casing = 'lower' | 'upper';
 
 /**
  * @public
  */
 export interface RGBOptions extends RGBBaseOptions {
   /** the case */
-  casing?: 'lower' | 'upper';
+  casing?: Casing;
 }
 
 /**
  * @public
  */
 export interface RGBAOptions extends RGBBaseOptions {
-  casing?: 'lower' | 'upper';
+  casing?: Casing;
   minA: number;
   maxA: number;
 }
@@ -102,13 +104,13 @@ export interface RGBAOptions extends RGBBaseOptions {
  * @public
  */
 export interface HSLOptions extends HSLBaseOPtions {
-  casing?: 'lower' | 'upper';
+  casing?: Casing;
 }
 /**
  * @public
  */
 export interface HSLAOptions extends HSLBaseOPtions {
-  casing?: 'lower' | 'upper';
+  casing?: Casing;
   minA: number;
   maxA: number;
 }

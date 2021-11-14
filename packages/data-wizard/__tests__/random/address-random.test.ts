@@ -1,8 +1,8 @@
-import { CnAddressRandom } from '../../src/random';
+import { AddressRandom } from '../../src/random';
 
-const R = new CnAddressRandom();
+const R = new AddressRandom();
 
-test('CnAddressRandom', () => {
+test('AddressRandom', () => {
   expect(typeof R.city()).toBe('string');
   expect(typeof R.road()).toBe('string');
   expect(typeof R.province()).toBe('string');

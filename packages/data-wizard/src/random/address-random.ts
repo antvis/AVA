@@ -9,7 +9,7 @@ const countries = ['阿富汗','奥兰群岛(芬兰属)','阿尔巴尼亚','阿�
  *
  * @public
  */
-export class CnAddressRandom extends BasicRandom {
+export class AddressRandom extends BasicRandom {
   /**
    * Generate a country name in chainese
    */
