@@ -1,4 +1,4 @@
-import { PatternInfo, PointPatternInfo, TrendInfo, HomogeneousPatternInfo } from '../interface';
+import { PatternInfo, PointPatternInfo, HomogeneousPatternInfo } from '../interface';
 import { dataFormat } from './util';
 
 const COLOR: Record<string, string> = {
@@ -33,8 +33,8 @@ const annotationText = (texts: Text[], position: [number | string, number | stri
 };
 
 const generateAnnotationConfigItem = (pattern: PatternInfo) => {
-  if (['change_point', 'time_series_outlier'].includes(pattern.type)) {
-    const patternInfo = pattern as PointPatternInfo;
+  if (pattern.type === 'change_point' || pattern.type === 'time_series_outlier') {
+    const patternInfo = pattern;
     const { x, y } = patternInfo;
     const color = pattern.type === 'time_series_outlier' ? COLOR.outlier : COLOR.highlight;
 
@@ -71,7 +71,7 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
     ];
   }
   if (pattern.type === 'category_outlier') {
-    const patternInfo = pattern as PointPatternInfo;
+    const patternInfo = pattern;
     const { x, y } = patternInfo;
     return [
       {
@@ -106,7 +106,7 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
     ];
   }
   if (pattern.type === 'trend') {
-    const patternInfo = pattern as TrendInfo;
+    const patternInfo = pattern;
     const {
       regression: { points },
     } = patternInfo;

@@ -38,6 +38,7 @@ export const extractor = (data: Datum[], dimension: string, measure: string): Lo
       {
         type: 'low_variance',
         dimension,
+        measure,
         significance,
       },
     ];

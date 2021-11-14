@@ -18,7 +18,7 @@ type InsightsResult = {
 };
 
 export const extractInsights = (sourceData: Datum[], options?: InsightOptions): InsightsResult => {
-  // get data columns infomations (column type, statistics, etc.)
+  // get data columns information (column type, statistics, etc.)
   const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
   const dataProps = dataToDataProps(
     data.filter((item) => !Object.values(item).some((v) => v === null || v === undefined))
@@ -91,7 +91,7 @@ export const generateInsightsWithVisualizationSchemas = (
   }));
   const result: InsightsResult = { insights: insightsWithVis };
   if (homogeneousInsights && options.homogeneous) {
-    const homogenieousInsightsWithVis = homogeneousInsights.map((item) => {
+    const homogeneousInsightsWithVis = homogeneousInsights.map((item) => {
       const visualizationSchemas = getHomogeneousInsightVisualizationSchema(item);
       const { data, measures, breakdowns } = item;
       const insight = { ...item, visualizationSchemas };
@@ -102,7 +102,7 @@ export const generateInsightsWithVisualizationSchemas = (
       }
       return insight;
     });
-    result.homogeneousInsights = homogenieousInsightsWithVis;
+    result.homogeneousInsights = homogeneousInsightsWithVis;
   }
   return result;
 };

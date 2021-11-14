@@ -1,7 +1,7 @@
 import _sortBy from 'lodash/sortBy';
 import { IQR } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
-import { Datum, OutlierInfo } from '../../interface';
+import { Datum, CategoryOutlierInfo } from '../../interface';
 import { calculatePValue } from '../util';
 
 type OutlierItem = {
@@ -52,10 +52,10 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
   return results;
 };
 
-export const extractor = (data: Datum[], dimension: string, measure: string): OutlierInfo[] => {
+export const extractor = (data: Datum[], dimension: string, measure: string): CategoryOutlierInfo[] => {
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
-  const outliers = findOutliers(values).map((item) => {
+  const outliers: CategoryOutlierInfo[] = findOutliers(values).map((item) => {
     const { index, significance } = item;
     return {
       type: 'category_outlier',

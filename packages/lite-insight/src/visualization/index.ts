@@ -7,8 +7,8 @@ import {
   PatternInfo,
   VisualizationSchema,
 } from '../interface';
+import { InsightNarrativeGenerator, HomogeneousNarrativeGenerator } from '../narrative';
 import { generateInsightAnnotationConfig, generateHomogeneousInsightAnnotationConfig } from './annotation';
-import { generateInsightDescription, generateHomogeneousInsightDescription } from './description';
 
 export const ChartTypeMap: Record<InsightType, ChartType> = {
   category_outlier: 'column_chart',
@@ -27,7 +27,7 @@ export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>)
   const patternGroups = _groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
 
   Object.entries(patternGroups).forEach(([chartType, patternGroup]: [string, PatternInfo[]]) => {
-    const { caption, insightSummary } = generateInsightDescription(patterns, insight);
+    const narrative = new InsightNarrativeGenerator(patterns, insight);
 
     // TODO chart schema generation
     const plotSchema = {
@@ -43,8 +43,9 @@ export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>)
     schemas.push({
       chartType: chartType as ChartType,
       chartSchema,
-      caption,
-      insightSummary,
+      caption: narrative.caption.getContent(),
+      insightSummaries: narrative.summaries.map((i) => i.getContent()),
+      insightSummarySchemas: narrative.summaries.map((i) => i.getSchema()),
     });
   });
 
@@ -87,10 +88,10 @@ export const getHomogeneousInsightVisualizationSchema = (
   insight: InsightInfo<HomogeneousPatternInfo>
 ): VisualizationSchema[] => {
   const { breakdowns, patterns, measures } = insight;
-
   const schemas: VisualizationSchema[] = [];
 
-  const { caption, insightSummary } = generateHomogeneousInsightDescription(insight);
+  const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
+
   patterns.forEach((pattern) => {
     const { insightType } = pattern;
     // TODO chart schema generation
@@ -121,8 +122,9 @@ export const getHomogeneousInsightVisualizationSchema = (
     schemas.push({
       chartType,
       chartSchema,
-      caption,
-      insightSummary,
+      caption: '',
+      insightSummaries: [summary.getContent()],
+      insightSummarySchemas: [summary.getSchema()],
     });
   });
 

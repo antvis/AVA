@@ -23,7 +23,7 @@ export const findChangePoints = (series: number[]): ChangePointItem[] => {
 export const extractor = (data: Datum[], dimension: string, measure: string): ChangePointInfo[] => {
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
-  const outliers = findChangePoints(values).map((item) => {
+  const outliers: ChangePointInfo[] = findChangePoints(values).map((item) => {
     const { index, significance } = item;
     return {
       type: 'change_point',

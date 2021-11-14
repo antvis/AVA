@@ -75,6 +75,7 @@
     "@ant-design/icons": "^4.6.3",
     "@antv/ckb": "^2.0.0-alpha.1",
     "@antv/data-wizard": "^2.0.0-alpha.1",
+    "@antv/text-schema": "^0.1.5-alpha.5",
     "@stdlib/stats": "^0.0.12",
     "bayesian-changepoint": "^1.0.1",
     "heap-js": "^2.1.6",
