@@ -13,16 +13,6 @@ const MIN_LONG = -180;
  */
 export class LocationRandom extends BasicRandom {
   /**
-   * return a random latitude
-   * @param options - the params
-   */
-  latitude(options?: FloatOptions): number {
-    const opts = initOptions({ max: MAX_LAT, min: MIN_LAT, fixed: 7 }, options);
-    assert(opts.min >= -90 && opts.max <= 90, 'latitude must between  [-90, 90]');
-    return this.float(opts);
-  }
-
-  /**
    * return a random longtitude
    * @param options - the params
    */
@@ -31,6 +21,16 @@ export class LocationRandom extends BasicRandom {
 
     assert(opts.min >= -180 && opts.max <= 180, 'longtitude must between  [-180, 180]');
 
+    return this.float(opts);
+  }
+
+  /**
+   * return a random latitude
+   * @param options - the params
+   */
+  latitude(options?: FloatOptions): number {
+    const opts = initOptions({ max: MAX_LAT, min: MIN_LAT, fixed: 7 }, options);
+    assert(opts.min >= -90 && opts.max <= 90, 'latitude must between  [-90, 90]');
     return this.float(opts);
   }
 

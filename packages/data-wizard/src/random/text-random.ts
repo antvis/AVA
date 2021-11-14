@@ -160,94 +160,28 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   name(options?: Person): string {
-    return `${this.firstname(options)} ${this.lastname()}`;
+    return `${this.firstName(options)} ${this.lastName()}`;
   }
 
   /**
    * return a random english last name
    */
-  lastname(): string {
-    return this.pickone(this.database.lastNames);
+  lastName(): string {
+    return this.pickone(this.database.lastName);
   }
 
   /**
    * return a random english first name
    * @param options - the params
    */
-  firstname(options?: Person): string {
+  firstName(options?: Person): string {
     const { gender } = initOptions({}, options);
 
     assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
 
-    const { male, female } = this.database.firstNames;
-    const pool: string[] = gender ? this.database.firstNames[gender] : ([] as string[]).concat(male).concat(female);
+    const { male, female } = this.database.firstName;
+    const pool: string[] = gender ? this.database.firstName[gender] : ([] as string[]).concat(male).concat(female);
     return this.pickone(pool);
-  }
-
-  /**
-   * return a random Chinese name
-   * @param options - the params
-   */
-  cname(options?: Person): string {
-    return `${this.cfirstname()}${this.clastname(options)}`;
-  }
-
-  /**
-   * return a random Chinese first name
-   */
-  cfirstname(): string {
-    return this.pickone(this.database.cfirst);
-  }
-
-  /**
-   * return a random Chinese last name
-   * @param options - the params
-   */
-  clastname(options?: CLastNameOptions): string {
-    const { length, gender } = initOptions({ length: this.natural({ min: 1, max: 2 }) }, options);
-
-    assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
-
-    const { male, female } = this.database.clast;
-    const pool = gender ? this.database.clast[gender] : male + female;
-    return this.pickset(pool.split(''), length).join('');
-  }
-
-  /**
-   * return a random Chinese character
-   */
-  ccharacter(options?: CCharacterOptions): string {
-    const { pool } = initOptions({}, options);
-    return this.pickone((pool || this.database.cCharacter.chars).split(''));
-  }
-
-  /**
-   * return a random Chinese word
-   * @param options - the params
-   */
-  cword(options?: CWordOption): string {
-    const { length } = initOptions({ length: this.natural({ min: 2, max: 6 }) }, options);
-    return this.n(this.ccharacter, length, options).join('');
-  }
-
-  /**
-   * return a random Chinese sentence
-   * @param options - the params
-   */
-  csentence(options?: Interval): string {
-    const opts = initOptions({ min: 10, max: 18 }, options);
-    const length = this.natural(opts);
-    return `${this.n(this.cword, length).join('')}。`;
-  }
-
-  /**
-   * return a random Chinese paragraph
-   * @param options - the params
-   */
-  cparagraph(options?: Interval): string {
-    const opts = initOptions({ min: 3, max: 18 }, options);
-    const length = this.natural(opts);
-    return this.n(this.csentence, length).join('');
   }
 
   /**
@@ -299,6 +233,72 @@ export class TextRandom extends BasicRandom {
   }
 
   /**
+   * return a random Chinese character
+   */
+  cCharacter(options?: CCharacterOptions): string {
+    const { pool } = initOptions({}, options);
+    return this.pickone((pool || this.database.cCharacter.chars).split(''));
+  }
+
+  /**
+   * return a random Chinese word
+   * @param options - the params
+   */
+  cWord(options?: CWordOption): string {
+    const { length } = initOptions({ length: this.natural({ min: 2, max: 6 }) }, options);
+    return this.n(this.cCharacter, length, options).join('');
+  }
+
+  /**
+   * return a random Chinese sentence
+   * @param options - the params
+   */
+  cSentence(options?: Interval): string {
+    const opts = initOptions({ min: 10, max: 18 }, options);
+    const length = this.natural(opts);
+    return `${this.n(this.cWord, length).join('')}。`;
+  }
+
+  /**
+   * return a random Chinese paragraph
+   * @param options - the params
+   */
+  cParagraph(options?: Interval): string {
+    const opts = initOptions({ min: 3, max: 18 }, options);
+    const length = this.natural(opts);
+    return this.n(this.cSentence, length).join('');
+  }
+
+  /**
+   * return a random Chinese name
+   * @param options - the params
+   */
+  cName(options?: Person): string {
+    return `${this.cLastName()}${this.cFirstName(options)}`;
+  }
+
+  /**
+   * return a random Chinese last name
+   * @param options - the params
+   */
+  cLastName(): string {
+    return this.pickone(this.database.cLastName);
+  }
+
+  /**
+   * return a random Chinese first name
+   */
+  cFirstName(options?: CFirstNameOptions): string {
+    const { length, gender } = initOptions({ length: this.natural({ min: 1, max: 2 }) }, options);
+
+    assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
+
+    const { male, female } = this.database.cFirstName;
+    const pool = gender ? this.database.cFirstName[gender] : male + female;
+    return this.pickset(pool.split(''), length).join('');
+  }
+
+  /**
    * return a random Chinese zodiac
    * @param options - the params
    *
@@ -346,7 +346,7 @@ export interface SyllableOptions {
  */
 export interface WordOptions {
   syllables?: number;
-  /** 是否大写第一个字母 */
+  /** capitalize first letter */
   capitalize?: boolean;
   /** the length of word */
   length?: number;
@@ -372,7 +372,7 @@ export interface Person {
 }
 
 /** @public */
-export interface CLastNameOptions extends Person {
+export interface CFirstNameOptions extends Person {
   length?: number;
 }
 
@@ -399,5 +399,5 @@ export interface PhoneOptions {
 
 /** @public */
 export interface CZodiacOptions {
-  locale?: string;
+  locale?: 'en-US' | 'zh-CN';
 }

@@ -56,7 +56,7 @@ test('extend', () => {
     },
     user() {
       return {
-        name: this.cname(),
+        name: this.cName(),
         age: this.integer({ max: 50, min: 25 }),
       };
     },

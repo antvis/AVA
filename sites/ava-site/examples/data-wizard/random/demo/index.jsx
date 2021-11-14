@@ -6,14 +6,18 @@ import { random } from '@antv/data-wizard';
 const { TextArea } = Input;
 const { Option } = Select;
 
-const randomCategories = ['Basic', 'Address', 'Color', 'Datetime', 'Location', 'Text', 'Web'];
+const randomCategories = [
+  'BasicRandom',
+  'TextRandom',
+  'DateTimeRandom',
+  'ColorRandom',
+  'WebRandom',
+  'LocationRandom',
+  'AddressRandom',
+];
 const randomTypes = {
-  Basic: ['boolean', 'integer', 'float', 'natural'],
-  Address: ['country', 'province', 'city', 'district', 'road', 'address', 'postcode'],
-  Color: ['rgb', 'rgba', 'hsl', 'hsla', 'colorname', 'hexcolor', 'decimalcolor'],
-  Datetime: ['date', 'time', 'datetime', 'timestamp', 'weekday', 'month'],
-  Location: ['latitude', 'longtitude', 'coordinates'],
-  Text: [
+  BasicRandom: ['boolean', 'integer', 'float', 'natural'],
+  TextRandom: [
     'character',
     'string',
     'syllable',
@@ -21,19 +25,23 @@ const randomTypes = {
     'sentence',
     'paragraph',
     'name',
-    'lastname',
-    'firstname',
-    'cname',
-    'cfirstname',
-    'clastname',
-    'ccharacter',
-    'cword',
-    'csentence',
-    'cparagraph',
+    'lastName',
+    'firstName',
     'phone',
+    'cCharacter',
+    'cWord',
+    'cSentence',
+    'cParagraph',
+    'cName',
+    'cFirstName',
+    'cLastName',
     'cZodiac',
   ],
-  Web: ['url', 'domain', 'ipv4', 'ipv6', 'email', 'tld'],
+  DateTimeRandom: ['date', 'time', 'datetime', 'timestamp', 'weekday', 'month'],
+  ColorRandom: ['rgb', 'rgba', 'hsl', 'hsla', 'colorName', 'hexColor', 'decimalColor'],
+  WebRandom: ['tld', 'domain', 'url', 'ipv4', 'ipv6', 'email'],
+  LocationRandom: ['longtitude', 'latitude', 'coordinates'],
+  AddressRandom: ['country', 'province', 'city', 'district', 'road', 'address', 'postcode'],
 };
 
 const R = new random.Random();

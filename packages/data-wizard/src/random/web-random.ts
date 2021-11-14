@@ -10,6 +10,22 @@ export class WebRandom extends TextRandom {
   database: WebDB & TextDB = { ...getTextDB(), ...getWebDB() };
 
   /**
+   * Return a random top-level domain ({@link https://en.wikipedia.org/wiki/Top-level_domain | TLD})
+   * @remarks return one of database.tlds
+   */
+  tld(): string {
+    return this.pickone(this.database.tld);
+  }
+
+  /**
+   * Return a random domain
+   * @param options - the params
+   */
+  domain(options?: DomainOptions): string {
+    return `${this.word()}.${(options && options.tld) || this.tld()}`;
+  }
+
+  /**
    * Return a random url
    * @param options - the params
    */
@@ -31,14 +47,6 @@ export class WebRandom extends TextRandom {
     const domain = domainPrefix ? `${domainPrefix}.opts.domain` : opts.domain;
 
     return `${protocol}://${domain}/${path}${extension}`;
-  }
-
-  /**
-   * Return a random domain
-   * @param options - the params
-   */
-  domain(options?: DomainOptions): string {
-    return `${this.word()}.${(options && options.tld) || this.tld()}`;
   }
 
   /**
@@ -65,14 +73,6 @@ export class WebRandom extends TextRandom {
    */
   email(options: EmailOptions = {}): string {
     return `${this.word({ length: options.length })}@${options.domain || this.domain()}`;
-  }
-
-  /**
-   * Return a random top-level domain ({@link https://en.wikipedia.org/wiki/Top-level_domain | TLD})
-   * @remarks return one of database.tlds
-   */
-  tld(): string {
-    return this.pickone(this.database.tld);
   }
 }
 

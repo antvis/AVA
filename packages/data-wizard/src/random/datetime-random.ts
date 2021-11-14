@@ -94,18 +94,20 @@ export interface DateTimeOptions extends Interval {
 
 /** @public */
 export interface TimeOptions extends Interval {
-  /** has the time offset */
+  /** has the UTC time offset */
   short?: boolean;
 }
 
+type Locale = 'en-US' | 'zh-CN';
+
 /** @public */
 export interface WeekDayOptions {
-  locale?: string;
+  locale?: Locale;
   abbr?: boolean;
 }
 
 /** @public */
 export interface MonthOptions {
-  locale?: string;
+  locale?: Locale;
   abbr?: boolean;
 }
