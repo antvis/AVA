@@ -6,7 +6,7 @@ import { cloneDeep, deepMix } from './utils';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { graphdataToAdvices } from './advice-pipeline/graph-to-advices';
 import { CKBConfig } from './ckb-config';
-import { AdvisorOptions } from './advice-pipeline/interface';
+import { AdvisorOptions, SmartColorOptions } from './advice-pipeline/interface';
 
 export type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
@@ -17,8 +17,12 @@ export type ChartAdviseParams = {
   dataProps?: BasicDataPropertyForAdvice[];
   /** data fields to focus, apply in `data` and `dataProps` */
   fields?: string[];
+  /** SmartColor mode on/off */
+  smartColor?: boolean;
   /** advising options such as purpose, layout preferences */
   options?: AdvisorOptions;
+  /** smart color options */
+  colorOptions?: SmartColorOptions;
 };
 
 export type GraphAdviseParams = {
@@ -130,7 +134,7 @@ export class Advisor {
   }
 
   advicesForChart(params: ChartAdviseParams) {
-    const { data, dataProps, options } = params;
+    const { data, dataProps, smartColor, options, colorOptions } = params;
     // otherwise the input data will be mutated
     const copyData = cloneDeep(data);
     const { fields } = params as ChartAdviseParams;
@@ -176,7 +180,15 @@ export class Advisor {
       filteredData = copyData;
     }
 
-    const advices = dataToAdvices(filteredData, dataPropsForAdvice, this.CKB, this.ruleBase, options);
+    const advices = dataToAdvices(
+      filteredData,
+      dataPropsForAdvice,
+      this.CKB,
+      this.ruleBase,
+      smartColor,
+      options,
+      colorOptions
+    );
     return advices;
   }
 
