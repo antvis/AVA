@@ -23,17 +23,17 @@ Class SmartBoard(inputCharts: InputChart[])
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
 | id | `string` | Chart ID。 | auto generated |
-| data | `[]` | The source data. | none |
-| dataUrl | `string` | The address of the data source. | none |
-| subspaces | `Subspace[]` | The data subspace information. | none |
-| breakdowns | `string[]` | The dimension of the data. | none |
-| measures | `string[]` | The indicator field. | none |
-| fieldInfo | `any` | The data field information. | none |
-| insightTypes | `InsightType[]` | The insight type. | none |
-| score | `number` | The score of the insight. | none |
-| chartType | `ChartType` | The chart type. | none |
-| chartSchema | `any` | The specified visualization scheme, such as chart configuration, title, etc. | none |
-| description | `string | string[]` | The chart description information. | none |
+| data | `[]` | The source data. | None |
+| dataUrl | `string` | The address of the data source. | None |
+| subspaces | `Subspace[]` | The data subspace information. | None |
+| breakdowns | `string[]` | The dimension of the data. | None |
+| measures | `string[]` | The indicator field. | None |
+| fieldInfo | `any` | The data field information. | None |
+| insightTypes | `InsightType[]` | The insight type. | None |
+| score | `number` | The score of the insight. | None |
+| chartType | `ChartType` | The chart type. | None |
+| chartSchema | `any` | The specified visualization scheme, such as chart configuration, title, etc. | None |
+| description | `string | string[]` | The chart description information. | None |
 
 ### Methods
 
