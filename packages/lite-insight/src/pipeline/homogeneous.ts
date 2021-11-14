@@ -7,7 +7,7 @@ import { Measure, InsightInfo, InsightType, PatternInfo, PointPatternInfo, Homog
  * homogeneous data pattern (HDP) represents a set of basic data patterns that share certain relations. HDP are identified by categorizing basic data patterns (within an HDP) into commonness(es) and exceptions considering inter-pattern similarity,
  */
 
-export type PatternCollection = Record<InsightType, PatternInfo[]>;
+export type PatternCollection = Partial<Record<InsightType, PatternInfo[]>>;
 type ScopePatternCollection = { key: string; patterns: PatternInfo[] }[];
 
 const extractHomogeneousPatterns = (
@@ -54,17 +54,17 @@ const extractHomogeneousPatterns = (
     }
     if (['change_point', 'outlier', 'time_series_outlier'].includes(type)) {
       const commSetIndexes = Object.values(
-        _groupBy(_flatten(validScopes.map((item) => item.patterns.map((item: PointPatternInfo) => item.index))))
+        _groupBy(_flatten(validScopes.map((item) => (item.patterns as PointPatternInfo[]).map((item) => item.index))))
       ).sort((a, b) => b.length - a.length);
       commSetIndexes.forEach((indexArr) => {
         const ratio = indexArr.length / scopeLength;
         if (ratio > 0.3 && indexArr.length >= 3) {
           const scopes = validScopes.filter((item) =>
-            item.patterns.some((item: PointPatternInfo) => item.index === indexArr[0])
+            (item.patterns as PointPatternInfo[]).some((item) => item.index === indexArr[0])
           );
           const childPatterns = _flatten(
-            scopes.map((item) => item.patterns.filter((item: PointPatternInfo) => item.index === indexArr[0]))
-          );
+            scopes.map((item) => (item.patterns as PointPatternInfo[]).filter((item) => item.index === indexArr[0]))
+          ) as PatternInfo[];
           homogeneousPatterns.push({
             type: 'commonness',
             insightType: type,

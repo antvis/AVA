@@ -1,3 +1,4 @@
+import { IPhrase } from '@antv/text-schema';
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
 export type Datum = Record<string, string | number>;
@@ -45,18 +46,25 @@ export type HomogeneousInsightType = typeof HOMOGENEOUS_PATTERN_TYPES[number];
 export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart';
 
 /** pattern information */
-export type PatternInfo = OutlierInfo | TrendInfo | ChangePointInfo;
+export type PatternInfo =
+  | CategoryOutlierInfo
+  | TimeSeriesOutlierInfo
+  | ChangePointInfo
+  | LowVarianceInfo
+  | TrendInfo
+  | ChangePointInfo;
 
 /** visualization for insight */
 export interface VisualizationSchema {
   chartType: ChartType;
   caption: string;
-  insightSummary: string[];
   chartSchema: any; // TODO type
+  insightSummaries: string[];
+  insightSummarySchemas: IPhrase[][];
 }
 
 /** insight information */
-export interface InsightInfo<T> {
+export interface InsightInfo<T = PatternInfo> {
   subspaces: Subspace[];
   breakdowns: string[];
   measures: Measure[];
@@ -67,7 +75,7 @@ export interface InsightInfo<T> {
   visualizationSchemas?: VisualizationSchema[];
 }
 
-/** cutsom options */
+/** custom options */
 export interface InsightOptions {
   dimensions?: string[];
   measures?: Measure[];
@@ -79,8 +87,8 @@ export interface InsightOptions {
   homogeneous?: boolean; // on/off extra homogeneous insight extraction
 }
 
-export interface BasePatternInfo {
-  type: InsightType;
+export interface BasePatternInfo<T extends InsightType> {
+  type: T;
   significance: number;
 }
 
@@ -93,19 +101,18 @@ export interface HomogeneousPatternInfo {
   commSet: string[];
 }
 
-export interface PointPatternInfo extends BasePatternInfo {
+export type PointPatternInfo = {
   index: number;
   dimension: string;
   measure: string;
   x: string | number;
   y: number;
-}
+};
 
-export type OutlierInfo = PointPatternInfo;
-
-export type ChangePointInfo = PointPatternInfo;
-
-export type MajorityInfo = PointPatternInfo & { proportion: number };
+export type CategoryOutlierInfo = BasePatternInfo<'category_outlier'> & PointPatternInfo;
+export type TimeSeriesOutlierInfo = BasePatternInfo<'time_series_outlier'> & PointPatternInfo;
+export type ChangePointInfo = BasePatternInfo<'change_point'> & PointPatternInfo;
+export type MajorityInfo = BasePatternInfo<'majority'> & PointPatternInfo & { proportion: number };
 
 export type TrendType = 'decreasing' | 'increasing' | 'no trend';
 
@@ -115,11 +122,11 @@ export interface LinearRegressionResult {
   equation: [m: number, c: number]; // y = mx + c
 }
 
-export interface TrendInfo extends BasePatternInfo {
+export type TrendInfo = BasePatternInfo<'trend'> & {
   trend: TrendType;
   regression: LinearRegressionResult;
   dimension: string;
   measure: string;
-}
+};
 
-export type LowVarianceInfo = BasePatternInfo & { dimension: string };
+export type LowVarianceInfo = BasePatternInfo<'low_variance'> & { dimension: string; measure: string };

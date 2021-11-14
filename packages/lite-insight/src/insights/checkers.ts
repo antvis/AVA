@@ -50,7 +50,7 @@ export const lowVarianceChecker: ExtractorChecker = (data, subjectInfo, fieldPro
   return generalChecker(data, subjectInfo, fieldPropsMap, ['Nominal', 'Discrete', 'Ordinal']);
 };
 
-export const ExtractorCheckers: Record<InsightType, ExtractorChecker> = {
+export const ExtractorCheckers: Partial<Record<InsightType, ExtractorChecker>> = {
   category_outlier: categoryOutlierChecker,
   trend: trendChecker,
   change_point: changePointChecker,

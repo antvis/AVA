@@ -1,6 +1,6 @@
 import Loess from 'loess';
 import { SignificanceBenchmark } from '../../constant';
-import { Datum, OutlierInfo } from '../../interface';
+import { Datum, TimeSeriesOutlierInfo } from '../../interface';
 import { calculatePValue } from '../util';
 
 type OutlierCandidate = {
@@ -70,10 +70,10 @@ export const findTimeSeriesOutliers = (series: number[]): OutlierItem[] => {
   return results;
 };
 
-export const extractor = (data: Datum[], dimension: string, measure: string): OutlierInfo[] => {
+export const extractor = (data: Datum[], dimension: string, measure: string): TimeSeriesOutlierInfo[] => {
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
-  const outliers = findTimeSeriesOutliers(values).map((item) => {
+  const outliers: TimeSeriesOutlierInfo[] = findTimeSeriesOutliers(values).map((item) => {
     const { index, significance } = item;
     return {
       type: 'time_series_outlier',

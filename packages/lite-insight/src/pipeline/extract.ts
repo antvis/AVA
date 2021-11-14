@@ -56,7 +56,7 @@ const extractPatternsFromSubject = (
 
   const enumInsightTypes = options?.insightTypes || PATTERN_TYPES;
 
-  const patterns: Record<InsightType, PatternInfo[]> = {};
+  const patterns: Partial<Record<InsightType, PatternInfo[]>> = {};
 
   enumInsightTypes.forEach((insightType) => {
     const insightExtractorChecker = ExtractorCheckers[insightType];
@@ -69,9 +69,9 @@ const extractPatternsFromSubject = (
     const insightExtractor = insightExtractors[insightType];
     if (isValid && insightExtractor) {
       const extractedPatterns = insightExtractor(data, breakdown, measures[0]?.field);
-      patterns[insightType] = extractedPatterns;
+      patterns[insightType as InsightType] = extractedPatterns as PatternInfo[];
     } else {
-      patterns[insightType] = null;
+      patterns[insightType as InsightType] = null;
     }
   });
 
