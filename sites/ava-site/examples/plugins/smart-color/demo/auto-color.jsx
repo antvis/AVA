@@ -1,16 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { SketchPicker } from 'react-color';
-import { Steps, Radio, Select } from 'antd';
+import { Steps, Radio } from 'antd';
 import { specToG2Plot } from '@antv/antv-spec';
 import ReactJson from 'react-json-view';
 import { SheetComponent } from '@antv/s2';
-import { colorSimulation, colorToHex, hexToColor, COLOR_BLINDNESS_SIMULATION_TYPES } from '@antv/smart-color';
+import { colorToHex } from '@antv/smart-color';
 
 import { Advisor } from '@antv/chart-advisor';
 
 const { Step } = Steps;
-const { Option } = Select;
 
 const ShowJSON = (json) => (
   <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} />
@@ -46,14 +44,14 @@ const dataRadioOptions = [
 
 const initColor = {
   model: 'rgb',
-  value: { r: 126, g: 63, b: 235 },
+  value: { r: 103, g: 142, b: 242 },
 };
 
-const SIMULATION_TYPES = [...COLOR_BLINDNESS_SIMULATION_TYPES, 'grayscale'];
-
-const initSimMethod = SIMULATION_TYPES[0];
-
-const simulatedColor = colorSimulation(initColor, initSimMethod);
+const setColors = {
+  themeColor: colorToHex(initColor),
+  colorSchemeType: 'monochromatic',
+  simulationType: 'protanomaly',
+};
 
 class App extends React.Component {
   constructor(props) {
@@ -64,16 +62,19 @@ class App extends React.Component {
       data: defaultData,
       advices: myAdvisor.advise({
         data: defaultData,
-        options: {
-          theme: {
-            primaryColor: colorToHex(simulatedColor),
-          },
-        },
+        /**
+         * `smartColor`: SmartColor mode on/off
+         * SmartColor mode includes default color options
+         */
+        smartColor: true,
+        /**
+         * `colorOptions`: SmartColor options
+         * This variable is optional for SmartColor mode
+         */
+        colorOptions: setColors,
       }),
       currentAdvice: 0,
       dataRadioValue: 'Table',
-      colorPick: colorToHex(initColor),
-      simMethod: initSimMethod,
     };
 
     this.canvas = React.createRef(null);
@@ -89,37 +90,6 @@ class App extends React.Component {
     });
   };
 
-  handleColorChange = (colorChosen) => {
-    const curColor = colorChosen.hex;
-    const simColor = colorSimulation(hexToColor(curColor), this.state.simMethod);
-    this.setState({
-      colorPick: curColor,
-      advices: myAdvisor.advise({
-        data: defaultData,
-        options: {
-          theme: {
-            primaryColor: colorToHex(simColor),
-          },
-        },
-      }),
-    });
-  };
-
-  handleColorSimulationTypeChange = (value) => {
-    const simColor = colorSimulation(hexToColor(this.state.colorPick), value);
-    this.setState({
-      simMethod: value,
-      advices: myAdvisor.advise({
-        data: defaultData,
-        options: {
-          theme: {
-            primaryColor: colorToHex(simColor),
-          },
-        },
-      }),
-    });
-  };
-
   componentDidUpdate() {
     if (this.canvas.current) {
       specToG2Plot(this.state.advices[this.state.currentAdvice].spec, document.getElementById('vis'));
@@ -127,7 +97,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { currentStep, data, dataRadioValue, colorPick, simMethod } = this.state;
+    const { currentStep, data, dataRadioValue } = this.state;
 
     const dataContent = (
       <>
@@ -144,25 +114,7 @@ class App extends React.Component {
       </>
     );
 
-    const plotContent = (
-      <div>
-        <div>
-          <SketchPicker color={colorPick} onChange={this.handleColorChange} />
-          <div>Selected Color: {colorPick}</div>
-        </div>
-        <div>
-          <div>Simulation Method:</div>
-          <Select value={simMethod} style={{ width: 160 }} onChange={this.handleColorSimulationTypeChange}>
-            {SIMULATION_TYPES.map((type) => (
-              <Option value={type} key={type}>
-                {type}
-              </Option>
-            ))}
-          </Select>
-        </div>
-        <div id="vis" key="plot" ref={this.canvas} style={{ flex: 5, height: '100%' }}></div>
-      </div>
-    );
+    const plotContent = <div id="vis" key="plot" ref={this.canvas} style={{ flex: 5, height: '100%' }}></div>;
 
     // manifest
 
@@ -174,7 +126,7 @@ class App extends React.Component {
       },
       {
         title: 'Chart',
-        desc: 'Render chart with specified color theme.',
+        desc: 'Render chart with SmartColor.',
         content: plotContent,
       },
     ];
