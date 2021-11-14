@@ -1,12 +1,14 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./README.zh-CN.md)
+---
+title: Introduction to LiteInsight
+order: 0
+---
 
+`markdown:docs/common/style.md`
 
-<h1 align="center">
-<b>@antv/lite-insight</b>
-</h1>
+<div class="doc-md">
 
-<div align="center">
 A JavaScript library for automatically discovering interesting patterns from multi-dimensional data.
+
 </div>
 
 ## ✨ Features
@@ -43,9 +45,10 @@ getDataInsights(data, {
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/lite-insight/auto-insights)
+For more usages, please check the [API Reference](./docs/api/readme.md)
 
-## Acknowledgement
+
+## 🧷 Acknowledgement
 Some functionalities of LiteInsight are inspired by the following works.
 
 - [Extracting Top-K Insights from Multi-dimensional Data](https://www.microsoft.com/en-us/research/uploads/prod/2017/02/Insights_SIGMOD17.pdf)
@@ -54,6 +57,4 @@ Some functionalities of LiteInsight are inspired by the following works.
 - [MetaInsight: Automatic Discovery of Structured Knowledge for Exploratory Data Analysis](https://www.microsoft.com/en-us/research/uploads/prod/2021/03/rdm337-maA.pdf)
 
 
-## 📄 License
-
-MIT
+</div>

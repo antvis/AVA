@@ -1,13 +1,16 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](./README.md) | 简体中文
+---
+title: LiteInsight 简介
+order: 0
+---
 
+`markdown:docs/common/style.md`
 
-<h1 align="center">
-<b>@antv/lite-insight</b>
-</h1>
+<div class="doc-md">
 
-<div align="center">
 从多维数据中自动地发现有趣模式.
+
 </div>
+
 
 ## ✨ 功能特性
 
@@ -41,9 +44,10 @@ getDataInsights(data, {
 });
 ```
 
+
 ## 📖 文档
 
-更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/lite-insight/auto-insights)
+更多用法请移步至 [API](./docs/api/readme.md)
 
 ## 🧷 致谢
 LiteInsight 其中的一些功能设计受到以下论文的启发：
@@ -53,6 +57,4 @@ LiteInsight 其中的一些功能设计受到以下论文的启发：
 
 - [MetaInsight: Automatic Discovery of Structured Knowledge for Exploratory Data Analysis](https://www.microsoft.com/en-us/research/uploads/prod/2021/03/rdm337-maA.pdf)
 
-## 📄 许可证
-
-MIT
+</div>

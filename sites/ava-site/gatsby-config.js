@@ -80,6 +80,14 @@ module.exports = {
         order: 6,
       },
       {
+        slug: 'guide/lite-insight',
+        title: {
+          zh: 'LiteInsight',
+          en: 'LiteInsight',
+        },
+        order: 7,
+      },
+      {
         slug: 'api/ckb',
         title: {
           zh: '图表知识库（CKB)',
