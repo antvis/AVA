@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Radio, Tooltip } from 'antd';
 import { InsertRowBelowOutlined, ClusterOutlined, InteractionOutlined } from '@ant-design/icons';
 import { SmartBoardToolbarProps } from '../interfaces';

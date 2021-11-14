@@ -22,10 +22,11 @@ type ChartType = 'line_chart' | 'column_chart' | 'pie_chart' | 'grouped_column_c
 
 export interface InputChart {
   id?: string;
-  data: string;
+  data: [];
   subspaces: Subspace[] | [];
   breakdowns: string[];
   measures: string[];
+  dataUrl?: string;
   fieldInfo?: any;
   insightType?: InsightType;
   score?: number; // The insight score
