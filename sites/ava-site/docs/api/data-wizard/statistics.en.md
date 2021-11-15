@@ -28,6 +28,31 @@ stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1
 ```
 
+## minBy
+计算数组指定字段的最小值。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.minBy(objects, 'n');
+// 1
+```
+
 ## minIndex
 计算数组最小值索引。
 
@@ -66,6 +91,31 @@ stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 // 999
 ```
 
+## maxBy
+计算数组指定字段的最大值。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.maxBy(objects, 'n');
+// 2
+```
+
 ## maxIndex
 计算数组最大值索引。
 
@@ -102,6 +152,31 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1225
+```
+
+## sumBy
+计算数组指定字段值之和。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.sumBy(objects, 'n');
+// 3
 ```
 
 ## median
@@ -229,6 +304,31 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 153.125
+```
+
+## meanBy
+计算数组指定字段平均数。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.meanBy(objects, 'n');
+// 1.5
 ```
 
 ## geometricMean
@@ -447,4 +547,114 @@ import { statistics as stats } from '@antv/data-wizard';
 stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 // 8
 ```
+
+## flatten
+将数组对象展平。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+### 返回值
+`[]`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const array = [1, [2, 3], 4];
+
+stats.flatten(array);
+// [1, 2, 3, 4]
+```
+
+## aggregate
+将数组对象按指定维度和字段聚合。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**dimension** 聚合指定维度 _必选_
+
+类型 `string`
+
+**measure** 聚合指定字段 _必选_
+
+类型 `string`
+
+**aggregateMethod** 聚合方法 _可选_
+
+类型 `AggregateMethod`，默认为 `SUM`
+
+```sign
+type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
+```
+
+**seriesField** 聚合指定序列 _可选_
+
+类型 `string`
+
+### 返回值
+`[]`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+stats.aggregate(array, dimension, measure, aggregateMethod, seriesField);
+```
+
+## countBy
+计算数组指定字段总计数。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.countBy(objects, 'n');
+// 2
+```
+
+## groupBy
+将数组对象按字段分组。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 分组指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`[]`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.groupBy(objects, 'n');
+// { 'n': [1, 2] }
+```
+
 </div>
