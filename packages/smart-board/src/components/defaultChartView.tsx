@@ -2,21 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Tag, Tooltip } from 'antd';
 import { LockOutlined, UnlockOutlined, MonitorOutlined, FundViewOutlined } from '@ant-design/icons';
 import { statistics } from '@antv/data-wizard';
+import { g2plotRender } from '@antv/antv-spec';
 import { smartBoardConfig } from '../utils/smartBoardConfig';
 import { SmartBoardChartViewProps, ConfigObj } from '../interfaces';
 
 export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
-  const {
-    chartID,
-    chartInfo,
-    clusterID,
-    interactionMode,
-    hasLocked,
-    hasInsight,
-    plotRender,
-    changeConnectionID,
-    quitResort,
-  } = props;
+  const { chartID, chartInfo, clusterID, interactionMode, hasLocked, hasInsight, changeConnectionID, quitResort } =
+    props;
   const [curChartConfig, setChartConfig] = useState<ConfigObj>();
   let plot: any;
 
@@ -37,12 +29,14 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
       }
 
       setChartConfig(chartConfig);
-      plot = plotRender(
-        `chart_container_${chartID}`,
-        chartConfig.type,
-        aggregatedData,
-        chartInfo.chartSchema ?? chartConfig.config
-      );
+      const g2plotCfg = {
+        chartType: chartConfig.type,
+        config: {
+          data: aggregatedData,
+          ...(chartInfo.chartSchema ?? chartConfig.config),
+        },
+      };
+      plot = g2plotRender(g2plotCfg, document.getElementById(`chart_container_${chartID}`));
     } else if (chartInfo.dataUrl) {
       fetch(chartInfo.dataUrl)
         .then((res) => {
@@ -65,7 +59,14 @@ export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
           }
 
           setChartConfig(chartConfig);
-          plot = plotRender(`chart_container_${chartID}`, chartConfig.type, aggregatedData, chartConfig.config);
+          const g2plotCfg = {
+            chartType: chartConfig.type,
+            config: {
+              data: aggregatedData,
+              ...(chartInfo.chartSchema ?? chartConfig.config),
+            },
+          };
+          plot = g2plotRender(g2plotCfg, document.getElementById(`chart_container_${chartID}`));
         });
     }
     return function cleanup() {

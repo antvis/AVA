@@ -72,12 +72,12 @@ SmartBoard.addChart(newChart as InputChart);
 
 获取构造 Dashboard 的图表：
 ```ts
-SmartBoard.getCharts();
+SmartBoard.getCharts;
 ```
 
 获得保存图表间关联关系的 ChartGraph，关联关系由 AntV-G6 定义：
 ```ts
-SmartBoard.chartGraph();
+SmartBoard.chartGraph;
 ```
 
 获得保存图表顺序的 ChartOrder，输出顺序由数据洞察分数和图表关联关系共同决定：

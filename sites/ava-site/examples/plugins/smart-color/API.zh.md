@@ -1,3 +1,3 @@
 ## 智能配色
 
-`markdown:docs/api/smart-color/intro.zh.md`
+`markdown:docs/api/chart-advisor/advice.zh.md`

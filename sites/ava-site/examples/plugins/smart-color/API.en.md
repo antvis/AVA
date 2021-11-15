@@ -1,3 +1,3 @@
 ## Smart-Color
 
-`markdown:docs/api/smart-color/intro.en.md`
+`markdown:docs/api/chart-advisor/advice.en.md`
