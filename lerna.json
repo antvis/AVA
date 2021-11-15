@@ -1,5 +1,6 @@
 {
   "packages": [
+    "demo",
     "packages/ckb",
     "packages/chart-advisor",
     "packages/lite-insight",

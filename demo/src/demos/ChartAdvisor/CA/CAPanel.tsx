@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table, Button, Divider, Row, Col } from 'antd';
-import { ChartAdvisor } from '../../../../../packages/chart-advisor/src';
+import { ChartAdvisor } from '@antv/chart-advisor';
 import testData from '../data.json';
 import { CACard } from './CACard';
 

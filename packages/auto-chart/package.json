@@ -1,6 +1,6 @@
 {
   "name": "@antv/auto-chart",
-  "version": "1.0.0",
+  "version": "2.0.0-alpha.1",
   "description": "A React component for chart use",
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
@@ -24,7 +24,7 @@
   "license": "MIT",
   "main": "lib/index.js",
   "module": "esm/index.js",
-  "types": "esm/src/index.d.ts",
+  "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
   "publishConfig": {
     "access": "public"
@@ -85,19 +85,19 @@
   "limit-size": [
     {
       "path": "dist/index.min.js",
-      "limit": "800 Kb",
+      "limit": "1 Mb",
       "gzip": true
     },
     {
       "path": "dist/index.min.js",
-      "limit": "3.4 Mb"
+      "limit": "4 Mb"
     }
   ],
   "dependencies": {
-    "@antv/antv-spec": "^0.1.0-alpha.4",
+    "@antv/antv-spec": "^0.1.0-alpha.6",
     "@antv/chart-advisor": "^2.0.0-alpha.1",
-    "@antv/data-wizard": "^2.0.0-alpha.1",
     "@antv/ckb": "^2.0.0-alpha.1",
+    "@antv/data-wizard": "^2.0.0-alpha.1",
     "@antv/thumbnails": "^1.3.0",
     "@antv/util": "^2.0.14",
     "date-fns": "^2.24.0",

@@ -1,7 +1,6 @@
 import React from 'react';
 import { List } from 'antd';
-import { Lint } from '../../../../../packages/chart-advisor/src/linter';
-import { Advice } from '../../../../../packages/chart-advisor/src/advisor/advice-pipeline';
+import { Lint, Advice } from '@antv/chart-advisor';
 import { Chart } from '../Chart';
 
 type Result = Advice & {
