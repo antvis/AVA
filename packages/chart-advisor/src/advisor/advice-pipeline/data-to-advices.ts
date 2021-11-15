@@ -77,7 +77,7 @@ function applyDesignRules(
 
 const DISCRETE_PALETTE_TYPES = ['monochromatic', 'analogous'] as const;
 const CATEGORICAL_PALETTE_TYPES = ['polychromatic', 'split-complementary', 'triadic', 'tetradic'] as const;
-const defaultColor = '#006f94';
+const defaultColor = '#678ef2';
 
 function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec, theme: Theme) {
   const { primaryColor } = theme;

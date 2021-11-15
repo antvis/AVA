@@ -42,7 +42,7 @@ Class SmartBoard(inputCharts: InputChart[])
 
 获取构造 Dashboard 的图表：
 ```sign
-SmartBoard.getCharts(): InputChart[];
+SmartBoard.getCharts: InputChart[];
 ```
 
 返回值：`InputChart[]`
@@ -51,7 +51,7 @@ SmartBoard.getCharts(): InputChart[];
 
 获得保存图表间关联关系的 ChartGraph，关联关系由 AntV-G6 定义：
 ```sign
-SmartBoard.chartGraph(): ChartGraph;
+SmartBoard.chartGraph;
 ```
 
 返回值：

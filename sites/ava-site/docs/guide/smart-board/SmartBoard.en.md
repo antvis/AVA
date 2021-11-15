@@ -72,12 +72,12 @@ SmartBoard.addChart(newChart as InputChart);
 
 To get the chart that constructs the Dashboard.
 ```ts
-SmartBoard.getCharts();
+SmartBoard.getCharts;
 ```
 
 To get the ChartGraph that holds the association between charts, as defined by AntV-G6.
 ```ts
-SmartBoard.chartGraph();
+SmartBoard.chartGraph;
 ```
 
 To get the ChartOrder that holds the order of the charts, the output order is determined by both the data insight score and the chart association relationship.

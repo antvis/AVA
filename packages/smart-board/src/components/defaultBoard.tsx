@@ -3,7 +3,7 @@ import { Chart, SmartBoardDashboardProps } from '../interfaces';
 import { SmartBoardChartView as ChartView } from './defaultChartView';
 
 export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
-  const { chartList, chartGraph, chartOrder, chartCluster, plotRender } = props;
+  const { chartList, chartGraph, chartOrder, chartCluster } = props;
   const interactionMode = props.interactionMode ?? 'defaultMode';
   const hasInsight = !!props.hasInsight;
 
@@ -60,7 +60,6 @@ export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
             hasInsight={hasInsight}
             clusterID={`cluster_${clusterIndex}`}
             hasLocked={!!connectionID} // if there exist connectionID, it means the dashboard comes into connection view
-            plotRender={plotRender}
             changeConnectionID={changeConnectionID}
             quitResort={quitResort}
           />

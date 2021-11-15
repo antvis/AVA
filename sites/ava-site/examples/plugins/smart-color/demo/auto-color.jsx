@@ -1,45 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Steps, Radio } from 'antd';
 import { specToG2Plot } from '@antv/antv-spec';
-import ReactJson from 'react-json-view';
-import { SheetComponent } from '@antv/s2';
 import { colorToHex } from '@antv/smart-color';
+import { TableView, StepBar } from 'antv-site-demo-rc';
 
 import { Advisor } from '@antv/chart-advisor';
-
-const { Step } = Steps;
-
-const ShowJSON = (json) => (
-  <ReactJson src={json} iconStyle name={false} displayObjectSize={false} displayDataTypes={false} />
-);
-
-const ShowTable = (data, { height, width }) => {
-  const s2DataConfig = { fields: { columns: Object.keys(data[0]) }, data };
-  const s2options = { width, height };
-
-  return <SheetComponent dataCfg={s2DataConfig} options={s2options} sheetType="table" themeCfg={{ name: 'simple' }} />;
-};
 
 const myAdvisor = new Advisor();
 
 // contants
 
 const defaultData = [
-  { year: '2007', sales: 28 },
-  { year: '2008', sales: 55 },
-  { year: '2009', sales: 43 },
-  { year: '2010', sales: 91 },
-  { year: '2011', sales: 81 },
-  { year: '2012', sales: 53 },
-  { year: '2013', sales: 19 },
-  { year: '2014', sales: 87 },
-  { year: '2015', sales: 52 },
-];
-
-const dataRadioOptions = [
-  { label: 'JSON', value: 'JSON' },
-  { label: 'Table', value: 'Table' },
+  { type: '石油', value: 1200 },
+  { type: '电子', value: 250 },
+  { type: '机械', value: 180 },
+  { type: '食物', value: 150 },
+  { type: '服饰', value: 100 },
 ];
 
 const initColor = {
@@ -48,8 +24,29 @@ const initColor = {
 };
 
 const setColors = {
+  /**
+   * `themeColor`: color in Hex string
+   * theme of SmartColor mode
+   * default is lite blue
+   */
   themeColor: colorToHex(initColor),
-  colorSchemeType: 'monochromatic',
+  /**
+   * `colorSchemeType`: color generation type
+   * contains discrete and categorical types
+   * discrete: 'monochromatic', 'analogous'
+   * categorical: 'polychromatic', 'split-complementary', 'triadic', 'tetradic'
+   * default value is 'monochromatic' or 'polychromatic' based on data type
+   */
+  colorSchemeType: 'polychromatic',
+  /**
+   * `simulationType`: color simulation type
+   * employed for color blindness and grayscale]
+   * default value is 'normal'
+   * options are listed as follows:
+   * 'normal', 'protanomaly', 'deuteranomaly', 'tritanomaly',
+   * 'protanopia', 'deuteranopia', 'tritanopia',
+   * 'achromatomaly', 'achromatopsia'
+   */
   simulationType: 'protanomaly',
 };
 
@@ -64,7 +61,7 @@ class App extends React.Component {
         data: defaultData,
         /**
          * `smartColor`: SmartColor mode on/off
-         * SmartColor mode includes default color options
+         * SmartColor mode contains default color options
          */
         smartColor: true,
         /**
@@ -74,7 +71,6 @@ class App extends React.Component {
         colorOptions: setColors,
       }),
       currentAdvice: 0,
-      dataRadioValue: 'Table',
     };
 
     this.canvas = React.createRef(null);
@@ -84,12 +80,6 @@ class App extends React.Component {
     this.setState({ currentStep });
   };
 
-  onDataRadioChange = (e) => {
-    this.setState({
-      dataRadioValue: e.target.value,
-    });
-  };
-
   componentDidUpdate() {
     if (this.canvas.current) {
       specToG2Plot(this.state.advices[this.state.currentAdvice].spec, document.getElementById('vis'));
@@ -97,22 +87,9 @@ class App extends React.Component {
   }
 
   render() {
-    const { currentStep, data, dataRadioValue } = this.state;
+    const { currentStep, data } = this.state;
 
-    const dataContent = (
-      <>
-        <Radio.Group
-          options={dataRadioOptions}
-          onChange={this.onDataRadioChange}
-          value={dataRadioValue}
-          optionType="button"
-          buttonStyle="solid"
-        />
-        <div style={{ height: '300px', overflowY: 'scroll', border: '2px solid #eee', padding: '20px' }}>
-          {dataRadioValue === 'Table' ? ShowTable(data, { height: 300, width: 300 }) : ShowJSON(data)}
-        </div>
-      </>
-    );
+    const dataContent = <TableView data={data} />;
 
     const plotContent = <div id="vis" key="plot" ref={this.canvas} style={{ flex: 5, height: '100%' }}></div>;
 
@@ -133,17 +110,7 @@ class App extends React.Component {
 
     return (
       <>
-        <Steps
-          type="navigation"
-          size="small"
-          current={currentStep}
-          onChange={this.onStepChange}
-          style={{ marginBottom: '8px', boxShadow: '0px -1px 0 0 #e8e8e8 inset' }}
-        >
-          {steps.map((item) => (
-            <Step key={item.title} title={item.title} />
-          ))}
-        </Steps>
+        <StepBar current={currentStep} onChange={this.onStepChange} steps={steps} />
 
         <p>{steps[currentStep].desc}</p>
 

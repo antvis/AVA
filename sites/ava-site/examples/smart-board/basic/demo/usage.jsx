@@ -2,20 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import * as G2Plot from '@antv/g2plot';
 import { SmartBoard, SmartBoardDashboard, SmartBoardToolbar, SmartBoardSelector } from '@antv/smart-board';
-
-function g2plotRender(container, type, data, options) {
-  const containerDOM = typeof container === 'string' ? document.getElementById(container) : container;
-  if (!containerDOM) return null;
-  const plot = new G2Plot[type](containerDOM, {
-    height: 280,
-    data,
-    ...options,
-  });
-  plot.render();
-  return plot;
-}
 
 const cars = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/cars.json';
 
@@ -163,16 +150,10 @@ const App = () => {
   };
 
   const [smartBoard, setSmartBoard] = useState(new SmartBoard(CHART_SAMPLE_LIST[chartSamplesIndex]));
-  const [chartGraph, setChartGraph] = useState(smartBoard.chartGraph);
-  const [chartOrder, setChartOrder] = useState(smartBoard.chartOrder('byCluster'));
-  const [chartCluster, setChartCluster] = useState(smartBoard.chartCluster());
 
   useEffect(() => {
     const updateSmartBoard = new SmartBoard(CHART_SAMPLE_LIST[chartSamplesIndex]);
     setSmartBoard(updateSmartBoard);
-    setChartGraph(updateSmartBoard.chartGraph);
-    setChartOrder(updateSmartBoard.chartOrder('byCluster'));
-    setChartCluster(updateSmartBoard.chartCluster());
   }, [CHART_SAMPLE_LIST[chartSamplesIndex]]);
 
   return (
@@ -182,10 +163,9 @@ const App = () => {
       <SmartBoardDashboard
         chartList={CHART_SAMPLE_LIST[chartSamplesIndex]}
         interactionMode={interactionMode}
-        chartGraph={chartGraph}
-        chartOrder={chartOrder}
-        chartCluster={chartCluster}
-        plotRender={g2plotRender}
+        chartGraph={smartBoard?.chartGraph}
+        chartOrder={smartBoard?.chartOrder('byCluster')}
+        chartCluster={smartBoard?.chartCluster()}
       />
     </div>
   );

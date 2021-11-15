@@ -86,7 +86,6 @@ export interface SmartBoardChartViewProps {
   interactionMode: string;
   hasInsight: boolean;
   hasLocked: boolean;
-  plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
   changeConnectionID: (string: string) => void;
   quitResort: () => void;
 }
@@ -113,5 +112,4 @@ export interface SmartBoardDashboardProps {
   chartCluster: ChartCluster;
   interactionMode?: string;
   hasInsight?: boolean;
-  plotRender: (container: string | HTMLElement, type: any, data: any, options: any) => Object;
 }

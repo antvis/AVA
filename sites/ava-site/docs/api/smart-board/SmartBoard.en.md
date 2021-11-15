@@ -41,7 +41,7 @@ Class SmartBoard(inputCharts: InputChart[])
 
 To get the chart that constructs the Dashboard.
 ```sign
-SmartBoard.getCharts(): InputChart[];
+SmartBoard.getCharts: InputChart[];
 ```
 
 Return value: `InputChart[]`
@@ -51,7 +51,7 @@ Return value: `InputChart[]`
 To get the ChartGraph that holds the correlations between charts defined by [G6](https://g6.antv.vision/): 
 ``sign
 ```sign
-SmartBoard.chartGraph(): ChartGraph;
+SmartBoard.chartGraph;
 ```
 
 Return value:

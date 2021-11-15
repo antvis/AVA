@@ -55,9 +55,9 @@ export class SmartBoard {
   }
 
   /**
-   * Get chart
+   * Get chart graph
    */
-  getCharts(): InputChart[] {
+  get inputCharts() {
     if (!this.charts) {
       return null;
     }
