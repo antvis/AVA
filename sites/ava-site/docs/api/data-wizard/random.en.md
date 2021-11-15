@@ -7,60 +7,60 @@ order: 2
 
 <div class="doc-md">
 
-DW 的随机数据生成方法，可生成随机的数值、文本、域名、颜色、地理位置、时间等数据。可以使用下面两种方式使用随机数方法。
+`Random` contains DW's random data generation methods that can generate random values, text, domain names, colors, geographic locations, time and other data. The random number method can be used in the following two ways.
 
 ```ts
 import { random } from '@antv/data-wizard';
 
-/** 指定工具类 */
+/** Specify the tool class */
 const r = new random.BasicRandom();
 r.boolean();
 
-/** 通用类 */
-const r = new random.Random();
+/* Generic class */
+const r = new random;
 r.boolean();
 ```
 
 ## BasicRandom
-随机生成基础数据的工具类，包括布尔值（boolean）、整数（integer）、浮点数（float）和自然数（natural）。
+Tool class for randomly generating basic data, including boolean (boolean), integer (integer), float (float) and natural (natural) numbers.
 
 ### boolean
-生成布尔值。
+Generates boolean values.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| likelihood | `number` | 出现正负值的似然性 | `50` | - |
+| properties | type | description | default | mandatory | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| likelihood | `number` | likelihood of occurrence of positive and negative values | `50` | - |
 
-#### 返回值
+#### Return Value
 `boolean`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
-const r = new random.BasicRandom();
+const r = new random;
 r.boolean();
 // true
 ```
 
 ### integer
-生成整数。
+Generate an integer.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最小值 | `-(2 ** 53 - 1)` | - |
-| max | `number` | 最大值 | `2 ** 53 - 1` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | min | `-(2 ** 53 - 1)` | - |
+| max | `number` | max | `2 ** 53 - 1` | - |
 
-#### 返回值
+#### Return Value
 `number`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -70,74 +70,74 @@ r.integer({min: 1, max: 10000});
 ```
 
 ### float
-生成浮点数。
+Generate a floating point number.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最小值 | `-(2 ** 53 - 1)` | - |
-| max | `number` | 最大值 | `2 ** 53 - 1` | - |
-| fixed | `number` | 小数位数 | `4` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | min | `-(2 ** 53 - 1)` | - |
+| max | `number` | max | `2 ** 53 - 1` | - |
+| fixed | `number` | number of decimal places | `4` | - |
 
-#### 返回值
+#### Return Value
 `number`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
-const r = new random.BasicRandom();
+const r = new random;
 r.float();
 // 5201.1997
 ```
 
 ### natural
-生成自然数。
+Generate a natural number.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最小值 | `-(2 ** 53 - 1)` | - |
-| max | `number` | 最大值 | `2 ** 53 - 1` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | min | `-(2 ** 53 - 1)` | - |
+| max | `number` | max | `2 ** 53 - 1` | - |
 
-#### 返回值
+#### Return Value
 `number`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
-const r = new random.BasicRandom();
+const r = new random;
 r.natural();
 // 6162812464267264
 ```
 
 ## TextRandom
-随机生成文本数据的工具类，包括字符（character）、字符串（string）、音节（syllable）、单词（word）、 句子（sentence）、段落（paragraph）、姓名（name）、姓（lastName）、名（firstName）、手机号（phone）、
-汉字（cCharacter）、中文词（cWord）、中文句子（cSentence）、中文姓名（cName）、中文姓（cLastName）、中文名（cFirstName）和生肖（cZodiac）。
+A tool class for randomly generating text data, including character, string, syllable, word, sentence, paragraph, name, lastName, firstName, phone phone)
+Chinese character (cCharacter), Chinese word (cWord), Chinese sentence (cSentence), Chinese name (cName), Chinese surname (cLastName), Chinese name (cFirstName) and Chinese zodiac (cZodiac).
 
 ### character
-生成字符。
+Generate characters.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 备选字 | `''` | - |
-| numeric | `string` | 数字 | `'0123456789'` | - |
-| symbols | `string` | 符号 | `'!@#$%^&*()[],.',` | - |
-| lower | `string` | 小写字母 | `'abcdefghijklmnopqrstuvwxyz'` | - |
-| upper | `string` | 大写字母 | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| pool | `string` | optional_word | `''` | - |
+| numeric | `string` | numbers | `'0123456789'` | - |
+| symbols | `string` | symbols | `'! @#$%^&*()[],.' , ` | - | lower
+| lower | `string` | lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
+| upper | `string` | uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -147,24 +147,24 @@ r.character();
 ```
 
 ### string
-生成字符串。
+Generate a string.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 共用词 | `''` | - |
-| numeric | `string` | 数字 | `'0123456789'` | - |
-| symbols | `string` | 符号 | `'!@#$%^&*()[],.',` | - |
-| lower | `string` | 小写字母 | `'abcdefghijklmnopqrstuvwxyz'` | - |
-| upper | `string` | 大写字母 | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
-| length | `number` | 字符串长度 | `5 ~ 20` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| pool | `string` | common_word | `''` | - |
+| numeric | `string` | numbers | `'0123456789'` | - |
+| symbols | `string` | symbols | `'! @#$%^&*()[],.' , ` | - | lower
+| lower | `string` | lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
+| upper | `string` | uppercase | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
+| length | `number` | string length | `5 ~ 20` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -174,20 +174,20 @@ r.string();
 ```
 
 ### syllable
-生成音节。
+Generate syllables.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
+| property | type | description | default | required | 
 | ----| ---- | ---- | ---- | ---- |
-| capitalize | `boolean` | 是否大写 | `false` | - |
-| length | `number` | 字符串长度 | `2 ~ 3` | - |
+| capitalize | `boolean` | whether to capitalize | `false` | - |
+| length | `number` | string length | `2 ~ 3` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -197,21 +197,21 @@ r.syllable();
 ```
 
 ### word
-生成单词。
+Generate the word.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| syllables | `number` | 音节数 | `1 ~ 3` | - |
-| capitalize | `boolean` | 是否大写 | `false` | - |
-| length | `number` | 单词长度 | `syllables.length` | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| syllables | `number` | number of syllables | `1 ~ 3` | - |
+| capitalize | `boolean` | whether to capitalize | `false` | - |
+| length | `number` | word length | `syllables.length` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -221,20 +221,20 @@ r.word();
 ```
 
 ### sentence
-生成句子。
+Generate a sentence.
 
-#### 参数
-**options** 配置项 _可选_
+#### parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| words | `number` | 单词数 | `12 ~ 18` | - |
-| punctuation | `boolean | string` | 符号 | `true` | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| words | `number` | number of words | `12 ~ 18` | - |
+| punctuation | `boolean | string` | symbol | `true` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -244,19 +244,20 @@ r.sentence();
 ```
 
 ### paragraph
-生成段落。
+Generate paragraphs.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
+| properties | type | description | default | required | 
 | ----| ---- | ---- | ---- | ---- |
-| sentence | `number` | 句子数 | `3 ~ 7` | - |
+| sentence | `number` | number of sentences | `3 ~ 7` | - |
 
-#### 返回值
+
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -266,19 +267,19 @@ r.paragraph();
 ```
 
 ### name
-生成姓名。
+Generate a name.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | 性别 | - | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | gender | - | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -288,12 +289,12 @@ r.name();
 ```
 
 ### lastName
-生成姓。
+Generate the last name.
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -303,19 +304,19 @@ r.lastName();
 ```
 
 ### firstName
-生成名。
+Generate the name.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | 性别 | - | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | gender | - | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -325,22 +326,22 @@ r.firstName();
 ```
 
 ### phone
-生成手机号。
+Generate a cell phone number.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| mobile | `boolean` | 是否是收集 | `true` | - |
-| formatted | `boolean` | 用 - 格式化 | `false` | - |
-| asterisk | `boolean` | 添加 * 避免生成真实手机号 | `false` | - |
-| startNum | `string` | 手机号前缀，只能指定前三位 | `''` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| mobile | `boolean` | whether to collect | `true` | - |
+| formatted | `boolean` | use - formatted | `false` | - |
+| asterisk | `boolean` | add * to avoid generating real phone numbers | `false` | - |
+| startNum | `string` | phone number prefix, only the first three digits can be specified | `''` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -350,19 +351,19 @@ r.phone({asterisk: true});
 ```
 
 ### cCharacter
-生成汉字。
+Generate Chinese characters.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 备选字 | `''` | - |
+| attribute | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| pool | `string` | optional_word | `''` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -372,20 +373,20 @@ r.cCharacter();
 ```
 
 ### cWord
-生成中文词。
+Generate Chinese words.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 备选字 | `''` | - |
-| length | `number` | 单词长度 | `2~6` | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| pool | `string` | optional_word | `''` | - |
+| length | `number` | word length | `2~6` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -395,20 +396,20 @@ r.cWord();
 ```
 
 ### cSentence
-生成中文句子。
+Generate a Chinese sentence.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最少汉字个数 | `10` | - |
-| max | `number` | 最多汉字个数 | `18` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | minimum number of characters | `10` | - |
+| max | `number` | maximum number of characters | `18` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -418,20 +419,20 @@ r.cSentence();
 ```
 
 ### cParagraph
-生成中文段落。
+Generate a Chinese paragraph.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最少句子数 | `3` | - |
-| max | `number` | 最多句子数 | `18` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | Minimum number of sentences | `3` | - |
+| max | `number` | max number of sentences | `18` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -441,19 +442,19 @@ r.cParagraph();
 ```
 
 ### cName
-生成中文姓名。
+Generate a Chinese name.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | 性别 | - | - |
+| attribute | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | gender | - | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -463,12 +464,12 @@ r.cName();
 ```
 
 ### cLastName
-生成中文姓。
+Generate a Chinese surname.
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -478,19 +479,19 @@ r.cLastName();
 ```
 
 ### cFirstName
-生成中文名。
+Generate a Chinese name.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | 性别 | - | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | gender | - | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -500,19 +501,19 @@ r.firstName();
 ```
 
 ### cZodiac
-生成生肖。
+Generate the zodiac.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| locale | `'zh-CN' | 'en-US'` | 国际化 | - | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| locale | `'zh-CN' | 'en-US'` | internationalization | - | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -522,23 +523,23 @@ r.cZodiac();
 ```
 
 ## DateTimeRandom
-随机生成时间数据的工具类，包括日期（date）、时间（time）、日期时间（datetime）、时间戳（timestamp）、星期数（weekday）、月份（month）。
+Tool class for generating random time data, including date, time, datetime, timestamp, weekday, month.
 
 ### date
-生成日期。
+Generates a date.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最小时间的时间戳 | `0` | - |
-| max | `number` | 最大时间的时间戳 | `new Date().getTime()` | - |
+|property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | timestamp of minimum time | `0` | - |
+| max | `number` | timestamp of the maximum time | `new Date().getTime()` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -548,19 +549,19 @@ r.date();
 ```
 
 ### time
-生成时间。
+The time to generate.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| short | `boolean` | UTC 偏移量 | `false` | - |
+| properties | type | description | default | mandatory | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| short | `boolean` | UTC offset | `false` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -570,21 +571,21 @@ r.time();
 ```
 
 ### datetime
-生成日期时间。
+Generates a datetime.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最小时间的时间戳 | `0` | - |
-| max | `number` | 最大时间的时间戳 | `new Date().getTime()` | - |
-| format | `string` | 格式化（参考 [date-fns format](https://date-fns.org/v2.0.1/docs/format)） | `yyyy-MM-dd'T'HH:mm:ssXXX` | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | timestamp of minimum time | `0` | - |
+| max | `number` | timestamp of the maximum time | `new Date().getTime()` | - |
+| format | `string` | formatting (refer to [date-fns format](https://date-fns.org/v2.0.1/docs/format)) | `yyyy-MM-dd'T'HH:mm:ssXXX` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -594,20 +595,20 @@ r.datetime();
 ```
 
 ### timestamp
-生成日期时间。
+Generate a datetime.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| min | `number` | 最小时间的时间戳 | `0` | - |
-| max | `number` | 最大时间的时间戳 | `new Date().getTime()` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| min | `number` | timestamp of minimum time | `0` | - |
+| max | `number` | timestamp of the maximum time | `new Date().getTime()` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -617,20 +618,20 @@ r.timestamp();
 ```
 
 ### weekday
-生成日期时间。
+Generates the date and time.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| locale | `'zh-CN' | 'en-US'` | 国际化 | `'en-US'` | - |
-| abbr | `boolean` | 缩写 | `false` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| locale | `'zh-CN' | 'en-US'` | internationalization | `'en-US'` | - |
+| abbr | `boolean` | abbreviation | `false` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -640,20 +641,20 @@ r.weekday();
 ```
 
 ### month
-生成月份。
+Generate the month.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| locale | `'zh-CN' | 'en-US'` | 国际化 | `'en-US'` | - |
-| abbr | `boolean` | 缩写 | `false` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ----
+| locale | `'zh-CN' | 'en-US'` | internationalization | `'en-US'` | - |
+| abbr | `boolean` | abbreviation | `false` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -663,31 +664,31 @@ r.month();
 ```
 
 ## ColorRandom
-随机生成颜色数据的工具类。包括 RGB颜色（rgb）、rgba颜色（rgba）、HSL颜色（hsl）、hsla颜色（hsla）、颜色名（colorname）、颜色名（colorname）、十六进制颜色（hexColor）和十进制颜色（decimalColor）。
+Tool class for randomly generating color data. Includes RGB colors (rgb), rgba colors (rgba), HSL colors (hsl), hsla colors (hsla), color names (colorname), color names (colorname), hex colors (hexColor) and decimal colors (decimalColor).
 
 ### rgb
-生成 RGB 颜色。
+Generates RGB colors.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | 灰度级 | `false` | - |
-| min | `number` | 最小值 | `0` | - |
-| max | `number` | 最大值 | `255` | - |
-| minR | `number` | 红色最小值 | `min` | - |
-| maxR | `number` | 红色最大值 | `max` | - |
-| maxG | `number` | 绿色最小值 | `min` | - |
-| maxG | `number` | 绿色最大值 | `max` | - |
-| maxB | `number` | 蓝色最小值 | `min` | - |
-| maxB | `number` | 蓝色最大值 | `max` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
+| properties | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | grayscale | `false` | - |
+| min | `number` | min | `0` | - |
+| max | `number` | max | `255` | - |
+| minR | `number` | red min | `min` | - |
+| maxR | `number` | red max | `max` | - |
+| maxG | `number` | green min | `min` | - | maxG | `number` | green min
+| maxG | `number` | green max | `max` | - |
+| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
+| maxB | `number` | blue max | `max` | - |
+| casing | `'lower' | 'upper'` | case | `lower` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -697,30 +698,30 @@ r.rgb();
 ```
 
 ### rgba
-生成 rgba 颜色。
+Generate rgba colors.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | 灰度级 | `false` | - |
-| min | `number` | 最小值 | `0` | - |
-| max | `number` | 最大值 | `255` | - |
-| minR | `number` | 红色最小值 | `min` | - |
-| maxR | `number` | 红色最大值 | `max` | - |
-| maxG | `number` | 绿色最小值 | `min` | - |
-| maxG | `number` | 绿色最大值 | `max` | - |
-| maxB | `number` | 蓝色最小值 | `min` | - |
-| maxB | `number` | 蓝色最大值 | `max` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
-| minA | `number` | 大小写 | `lower` | - |
-| maxA | `number` | 大小写 | `lower` | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | grayscale | `false` | - |
+| min | `number` | min | `0` | - |
+| max | `number` | max | `255` | - |
+| minR | `number` | red min | `min` | - |
+| maxR | `number` | red max | `max` | - |
+| maxG | `number` | green min | `min` | - | maxG | `number` | green min
+| maxG | `number` | green max | `max` | - |
+| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
+| maxB | `number` | blue max | `max` | - |
+| casing | `'lower' | 'upper'` | case | `lower` | - |
+| minA | `number` | case | `lower` | - |
+| maxA | `number` | case | `lower` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -730,30 +731,30 @@ r.rgba();
 ```
 
 ### rgba
-生成 rgba 颜色。
+Generate rgba colors.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | 灰度级 | `false` | - |
-| min | `number` | 最小值 | `0` | - |
-| max | `number` | 最大值 | `255` | - |
-| minR | `number` | 红色最小值 | `min` | - |
-| maxR | `number` | 红色最大值 | `max` | - |
-| maxG | `number` | 绿色最小值 | `min` | - |
-| maxG | `number` | 绿色最大值 | `max` | - |
-| maxB | `number` | 蓝色最小值 | `min` | - |
-| maxB | `number` | 蓝色最大值 | `max` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
-| minA | `number` | 透明度最小值 | `0` | - |
-| maxA | `number` | 透明度最大值 | `1` | - |
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | grayscale | `false` | - |
+| min | `number` | min | `0` | - |
+| max | `number` | max | `255` | - |
+| minR | `number` | red min | `min` | - |
+| maxR | `number` | red max | `max` | - |
+| maxG | `number` | green min | `min` | - | maxG | `number` | green min
+| maxG | `number` | green max | `max` | - |
+| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
+| maxB | `number` | blue max | `max` | - |
+| casing | `'lower' | 'upper'` | case | `lower` | - |
+| minA | `number` | transparency min | `0` | - |
+| maxA | `number` | transparency max | `1` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -763,25 +764,25 @@ r.rgba();
 ```
 
 ### hsl
-生成 HSL 颜色。
+Generate HSL colors.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| minH | `number` | 色相最小值 | `0` | - |
-| maxH | `number` | 色相最大值 | `360` | - |
-| maxS | `number` | 饱和度最小值 | `0` | - |
-| maxS | `number` | 饱和度最大值 | `100` | - |
-| maxL | `number` | 亮度最小值 | `0` | - |
-| maxL | `number` | 亮度最大值 | `100` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
+| properties | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| minH | `number` | hue min | `0` | - |
+| maxH | `number` | hue max | `360` | - |
+| maxS | `number` | Saturation Min | `0` | - | maxS | `number` | Saturation Min | `0` | - |
+| maxS | `number` | Saturation Max | `100` | - |
+| maxL | `number` | Brightness min | `0` | - | maxL | `number` | Brightness min | `0` | -
+| maxL | `number` | brightness max | `100` | - |
+| casing | `'lower' | 'upper'` | case | `lower` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -791,27 +792,27 @@ r.hsl();
 ```
 
 ### hsla
-生成 hala 颜色。
+Generate hala colors.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration item _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| minH | `number` | 色相最小值 | `0` | - |
-| maxH | `number` | 色相最大值 | `360` | - |
-| maxS | `number` | 饱和度最小值 | `0` | - |
-| maxS | `number` | 饱和度最大值 | `100` | - |
-| maxL | `number` | 亮度最小值 | `0` | - |
-| maxL | `number` | 亮度最大值 | `100` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
-| minA | `number` | 透明度最小值 | `0` | - |
-| maxA | `number` | 透明度最大值 | `1` | - |
+| properties | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| minH | `number` | hue min | `0` | - |
+| maxH | `number` | hue max | `360` | - |
+| maxS | `number` | Saturation Min | `0` | - | maxS | `number` | Saturation Min | `0` | - |
+| maxS | `number` | Saturation Max | `100` | - |
+| maxL | `number` | Brightness min | `0` | - | maxL | `number` | Brightness min | `0` | -
+| maxL | `number` | brightness max | `100` | - |
+| casing | `'lower' | 'upper'` | case | `lower` | - |
+| minA | `number` | transparency min | `0` | - |
+| maxA | `number` | transparency max | `1` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -821,14 +822,14 @@ r.hsla();
 ```
 
 ### colorName
-生成颜色名。
+Generate a color name.
 
-#### 返回值
+#### Return value
 `string`
 
-参考 [MDN color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
+Reference [MDN color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -838,29 +839,29 @@ r.colorName();
 ```
 
 ### hexColor
-生成十六进制颜色。
+Generate hexadecimal colors.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | 灰度级 | `false` | - |
-| min | `number` | 最小值 | `0` | - |
-| max | `number` | 最大值 | `255` | - |
-| minR | `number` | 红色最小值 | `min` | - |
-| maxR | `number` | 红色最大值 | `max` | - |
-| maxG | `number` | 绿色最小值 | `min` | - |
-| maxG | `number` | 绿色最大值 | `max` | - |
-| maxB | `number` | 蓝色最小值 | `min` | - |
-| maxB | `number` | 蓝色最大值 | `max` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
-| prefix | `boolean` | 是否展示 # 前缀  | `false` | - |
+| properties | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | grayscale | `false` | - |
+| min | `number` | min | `0` | - |
+| max | `number` | max | `255` | - |
+| minR | `number` | red min | `min` | - |
+| maxR | `number` | red max | `max` | - |
+| maxG | `number` | green min | `min` | - | maxG | `number` | green min
+| maxG | `number` | green max | `max` | - |
+| maxB | `number` | blue min | `min` | - |
+| maxB | `number` | blue max | `max` | - |
+| casing | `'lower' | 'upper'` | case | `lower` | - |
+| prefix | `boolean` | whether to show # prefix | `false` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -870,28 +871,28 @@ r.hexColor();
 ```
 
 ### demicalColor
-生成十六进制颜色。
+Generate a hexadecimal color.
 
-#### 参数
-**options** 配置项 _可选_
+#### Parameters
+**options** Configuration items _optional_
 
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | 灰度级 | `false` | - |
-| min | `number` | 最小值 | `0` | - |
-| max | `number` | 最大值 | `255` | - |
-| minR | `number` | 红色最小值 | `min` | - |
-| maxR | `number` | 红色最大值 | `max` | - |
-| maxG | `number` | 绿色最小值 | `min` | - |
-| maxG | `number` | 绿色最大值 | `max` | - |
-| maxB | `number` | 蓝色最小值 | `min` | - |
-| maxB | `number` | 蓝色最大值 | `max` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | grayscale | `false` | - |
+| min | `number` | min | `0` | - |
+| max | `number` | max | `255` | - |
+| minR | `number` | red min | `min` | - |
+| maxR | `number` | red max | `max` | - |
+| maxG | `number` | green min | `min` | - | maxG | `number` | green min
+| maxG | `number` | green max | `max` | - |
+| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
+| maxB | `number` | blue max | `max` | - |
+| casing | `'lower' | 'upper'` | case | `lower` | - |
 
-#### 返回值
+#### Return Value
 `number`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -901,38 +902,38 @@ r.decimalColor();
 ```
 
 ## WebRandom
-随机生成 Web 数据的工具类。包括顶级域名（tld）、域名（domain）、统一资源定位符（url）、IPv4 地址（ipv4）、IPv6 地址（ipv6）和电子邮箱（email）。
+Tool class for randomly generating Web data. Includes top-level domains (tld), domain names (domain), uniform resource locators (url), IPv4 addresses (ipv4), IPv6 addresses (ipv6), and email addresses (email).
 
 ### tld
-生成顶级域名。
+Generates the top-level domain.
 
-#### 返回值
+#### Return Value
 `string`
 
-参考 [TLD](https://en.wikipedia.org/wiki/Top-level_domain)
+Reference [TLD](https://en.wikipedia.org/wiki/Top-level_domain)
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
 const r = new random.WebRandom();
 r.tld();
-// 'uz’
+// 'uz'
 ```
 
 ### domain
-生成域名。
+Generate the domain name.
 
-#### 参数
-**options** 配置项 _可选_
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| tld | `string` | 顶级域名 | - | - |
+#### Parameters
+**options** configuration item _optional_
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| tld | `string` | top-level domain | - | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -942,23 +943,23 @@ r.domain();
 ```
 
 ### url
-生成统一资源定位符。
+Generate a uniform resource locator.
 
-#### 参数
-**options** 配置项 _可选_
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| tld | `string` | 顶级域名 | - | - |
-| protocol | `string` | 协议 | `'http'` | - |
-| domain | `string` | 域名 | - | - |
-| domainPrefix | `string` | `''` | - | - |
-| path | `string` | 路径 | - | - |
-| extensions | `string[]` | 文件扩展名 | `[]` | - |
+#### Parameters
+**options** configuration item _optional_
+| attributes | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| tld | `string` | top-level domain | - | - |
+| protocol | `string` | protocol | `'http'` | - |
+| domain | `string` | domain name | - | - |
+| domainPrefix | `string` | `''` | - - |
+| path | `string` | path | - | - |
+| extensions | `string[]` | file extensions | `[]` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -968,12 +969,12 @@ r.url();
 ```
 
 ### ipv4
-生成 IPv4 地址。
+Generate an IPv4 address.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -983,12 +984,12 @@ r.ipv4();
 ```
 
 ### ipv6
-生成 IPv6 地址。
+Generate an IPv6 address.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -998,18 +999,18 @@ r.ipv6();
 ```
 
 ### email
-生成电子邮箱地址。
+Generate an email address.
 
-#### 参数
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| domain | `string` | 域名 | - | - |
-| length | `number` | 长度 | - | - |
+#### Parameters
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| domain | `string` | domain | - | - |
+| length | `number` | length | - | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1019,21 +1020,21 @@ r.email();
 ```
 
 ## LocationRandom
-随机位置工具类。包括经度（longtitude）、纬度（latitude）和坐标（coordinates）。
+Random location tool class. Includes longitude, latitude and coordinates.
 
 ### longtitude
-生成经度。
+Generates longitude.
 
-#### 参数
-**options** 配置项 _可选_
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| fixed | `number` | 小数位数 | `7` | - |
+#### Parameters
+**options** configuration item _optional_
+|property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| fixed | `number` | decimal digits | `7` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1043,18 +1044,18 @@ r.longtitude();
 ```
 
 ### latitude
-生成纬度。
+Generate latitude.
 
-#### 参数
-**options** 配置项 _可选_
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| fixed | `number` | 小数位数 | `7` | - |
+#### Parameters
+**options** configuration item _optional_
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| fixed | `number` | decimal digits | `7` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1064,18 +1065,18 @@ r.latitude();
 ```
 
 ### coordinates
-生成坐标。
+Generate coordinates.
 
-#### 参数
-**options** 配置项 _可选_
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| fixed | `number` | 小数位数 | `7` | - |
+#### Parameters
+**options** configuration item _optional_
+| properties | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ---- |
+| fixed | `number` | decimal digits | `7` | - |
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1085,105 +1086,105 @@ r.coordinates();
 ```
 
 ## AddressRandom
-随机生成中文地址数据的工具类，包括国家（country）、省份（province）、城市（city）、区（district）、路（road）、地址（address）和邮编（postcode）。
+A tool class to generate random Chinese address data, including country, province, city, district, road, address and postcode.
 
 ### country
-生成国家。
+Generates the country.
 
-#### 返回值
+#### Return Value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
 const r = new random.AddressRandom();
 r.country();
-// '中国'
+// 'China'
 ```
 
 ### province
-生成省份。
+Generate the province.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
 const r = new random.AddressRandom();
 r.province();
-// '浙江省'
+// 'Zhejiang Province'
 ```
 
 ### city
-生成城市。
+Generate the city.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
 const r = new random.AddressRandom();
 r.city();
-// '杭州市'
+// 'hangzhou'
 ```
 
 ### district
-生成区。
+Generate the district.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
 const r = new random.AddressRandom();
 r.district();
-// '西湖区'
+// 'Westlake district'
 ```
 
 ### road
-生成路。
+Generate the road.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
 const r = new random.AddressRandom();
 r.road();
-// '人民大道'
+// 'people's road'
 ```
 
 ### address
-生成地址。
+Generate an address.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 
 const r = new random.AddressRandom();
 r.address();
-// '广东省惠州市龙门县黄河胡同378号'
+// 'No. 378 Huanghe Hutong, Longmen County, Huizhou City, Guangdong Province'
 ```
 
 ### postcode
-生成地址。
+Generate an address.
 
-#### 返回值
+#### Return value
 `string`
 
-#### 用法
+#### Usage
 ```ts
 import { random } from '@antv/data-wizard';
 

@@ -7,20 +7,22 @@ order: 1
 
 <div class="doc-md">
 
-DW 的统计学方法，用于计算一些常见的统计学信息。该方法会将计算过一次的值存储在缓存中，再次计算时可直接从缓存中取值，避免重复计算开销。
+`Statistics` contains the statistical method of DW employed to calculate some common statistical information. The method will store the values calculated once in the cache, and the values can be taken directly from the cache when calculated again to avoid duplicated calculation cost.
 
 ## min
-计算数组最小值。
+Calculate the minimum value of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
 
-类型 `number[]`
+**array** Original data array _required_
 
-### 返回值
+Type `number[]`
+
+### Return value
+
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -29,21 +31,21 @@ stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## minBy
-计算数组指定字段的最小值。
+Calculates the minimum value of the specified field of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+Type `[]`
 
-**measure** 计算指定字段 _必选_
+**measure** Calculates the specified field _required_
 
-类型 `string`
+Type `string`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -54,17 +56,17 @@ stats.minBy(objects, 'n');
 ```
 
 ## minIndex
-计算数组最小值索引。
+Compute the index of the minimum value of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -73,17 +75,17 @@ stats.minIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## max
-计算数组最大值。
+Calculate the maximum value of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -92,21 +94,21 @@ stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## maxBy
-计算数组指定字段的最大值。
+Calculates the maximum value of the specified field of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+Type `[]`
 
-**measure** 计算指定字段 _必选_
+**measure** Calculates the specified field _required_.
 
-类型 `string`
+Type `string`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -117,17 +119,17 @@ stats.maxBy(objects, 'n');
 ```
 
 ## maxIndex
-计算数组最大值索引。
+Compute the index of the maximum value of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -136,17 +138,17 @@ stats.maxIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## sum
-计算数组值之和。
+Compute the sum of the array values.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -155,21 +157,21 @@ stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## sumBy
-计算数组指定字段值之和。
+Computes the sum of the values of the specified fields of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+Type `[]`
 
-**measure** 计算指定字段 _必选_
+**measure** Calculates the sum of the specified fields _required_.
 
-类型 `string`
+Type `string`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -180,23 +182,23 @@ stats.sumBy(objects, 'n');
 ```
 
 ## median
-计算数组中位数。
+Compute the median of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+type `number[]`
 
-**sorted** 原数据是否已排序 _可选_
+**sorted** Whether the original data is sorted or not _optional_
 
-类型 `boolean`
+Type `boolean`
 
-默认值 `false`
+Default value `false`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -205,23 +207,23 @@ stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quartile
-计算数组的四分位数。
+Compute the quartile of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+type `number[]`
 
-**sorted** 原数据是否已排序 _可选_
+**sorted** Whether the original data is sorted _optional_
 
-类型 `boolean`
+Type `boolean`
 
-默认值 `false`
+Default value `false`
 
-### 返回值
+### Return value
 `number[]`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -230,24 +232,24 @@ stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quantile
-计算数组的指定分位数。
+Compute the specified quantile of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+type `number[]`
 
-**percent** 百分比 _必选_
+**percent** percent _required_
 
-类型 `number`
+Type `number`
 
-**sorted** 原数据是否已排序 _可选_
+**sorted** whether the original data is sorted _optional
 
-类型 `boolean`
+Type `boolean`
 
-默认值 `false`
+Default value `false`
 
-### 返回值
+### Return value
 `number`
 
 ### 用法
@@ -259,27 +261,27 @@ stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 ```
 
 ## quantile
-计算数组的指定分位数。
+Compute the specified quantile of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+type `number[]`
 
-**percent** 百分比 _必选_
+**percent** percent _required_
 
-类型 `number`
+Type `number`
 
-**sorted** 原数据是否已排序 _可选_
+**sorted** whether the original data is sorted _optional
 
-类型 `boolean`
+Type `boolean`
 
-默认值 `false`
+Default value `false`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -288,17 +290,17 @@ stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 ```
 
 ## mean
-计算数组的平均数。
+Compute the mean of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -307,18 +309,18 @@ stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## meanBy
-计算数组指定字段平均数。
+Calculate the average number of the specified fields in the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+type `[]`
 
-**measure** 计算指定字段 _必选_
+**measure** Calculates the specified field _required_
 
-类型 `string`
+Type `string`
 
-### 返回值
+### Return value
 `number`
 
 ### 用法
@@ -332,17 +334,17 @@ stats.meanBy(objects, 'n');
 ```
 
 ## geometricMean
-计算数组的几何平均数。
+Computes the geometric mean of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -351,17 +353,17 @@ stats.geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## harmonicMean
-计算数组的调和平均数。
+Computes the harmonic mean of an array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -370,17 +372,17 @@ stats.harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## variance
-计算数组的方差。
+Compute the variance of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -389,17 +391,17 @@ stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## standardDeviation
-计算数组的标准差。
+Calculate the standard deviation of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -408,17 +410,17 @@ stats.standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## coefficientOfVariance
-计算数组的变异系数。
+Compute the coefficient of variance of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -427,21 +429,21 @@ stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## covariance
-计算两个数组的协方差。
+Compute the covariance of two arrays.
 
-### 参数
-**x** 原数据数组1 _必选_
+### Parameters
+**x** original data array1 _required_
 
-类型 `number[]`
+Type `number[]`
 
-**y** 原数据数组2 _必选_
+**y** Original data array 2 _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -450,21 +452,21 @@ stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25,
 ```
 
 ## pearson
-计算两个数组的皮尔逊系数。
+Compute the Pearson coefficients of two arrays.
 
-### 参数
-**x** 原数据数组1 _必选_
+### Parameters
+**x** original data array1 _required_
 
-类型 `number[]`
+Type `number[]`
 
-**y** 原数据数组2 _必选_
+**y** Original data array 2 _required_
 
-类型 `number[]`
+Type `number[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -473,17 +475,17 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 ```
 
 ## valid
-计算数组中的合法值个数，`undefined`、`null`、`NaN` 等可转换为 `false` 的值，均视为非法值。
+Count the number of legal values in the array, `undefined`, `null`, `NaN` and other values which can be converted to `false` are regarded as illegal values.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `any[]`
+Type `any[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -492,17 +494,17 @@ stats.valid([1, 2, NaN, 201, undefined, 4, 5, null]);
 ```
 
 ## missing
-计算数组中缺失值的个数，和 `valid` 方法互补。
+Count the number of missing values in the array, complementary to the `valid` method.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `any[]`
+Type `any[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -511,17 +513,17 @@ stats.missing([1, 2, NaN, 201, undefined, 4, 5, null]);
 ```
 
 ## valueMap
-统计数组中独立值的个数，以独立值本身为 key，个数为 value，生成对象。
+Count the number of independent values in the array, and generate an object with the independent value itself as key and the number as value.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `any[]`
+type `any[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -530,17 +532,17 @@ stats.valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## distinct
-统计数组中独立值的个数。
+Count the number of distinct values in the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `any[]`
+type `any[]`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -549,17 +551,17 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## flatten
-将数组对象展平。
+Flatten the array object.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+Type `[]`
 
-### 返回值
+### Return value
 `[]`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -570,30 +572,37 @@ stats.flatten(array);
 ```
 
 ## aggregate
-将数组对象按指定维度和字段聚合。
+Aggregate the array objects by the specified dimensions and fields.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+type `[]`
 
-**dimension** 聚合指定维度 _必选_
+**dimension** Aggregates the specified dimension _required_
 
-类型 `string`
+Type `string`
 
-**measure** 聚合指定字段 _必选_
+**measure** Aggregates the specified fields _required_
 
-类型 `string`
+Type `string`
 
-**aggregateMethod** 聚合方法 _可选_
+**aggregateMethod** Aggregate method _optional_
 
-类型 `AggregateMethod`，默认为 `SUM`
+Type ``AggregateMethod`, defaults to ``SUM`
 
-```sign
+``sign
 type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
 ```
 
-**seriesField** 聚合指定序列 _可选_
+**seriesField** Aggregate the specified sequence _optional_
+
+Type `string`
+
+### Return value
+`[]`
+
+### Usage
 
 类型 `string`
 
@@ -608,21 +617,21 @@ stats.aggregate(array, dimension, measure, aggregateMethod, seriesField);
 ```
 
 ## countBy
-计算数组指定字段总计数。
+Calculate the total count of the specified field of the array.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+Type `[]`
 
-**measure** 计算指定字段 _必选_
+**measure** Calculates the specified field _required_.
 
-类型 `string`
+Type `string`
 
-### 返回值
+### Return value
 `number`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -633,21 +642,21 @@ stats.countBy(objects, 'n');
 ```
 
 ## groupBy
-将数组对象按字段分组。
+Group the array objects by field.
 
-### 参数
-**array** 原数据数组 _必选_
+### Parameters
+**array** The original data array _required_
 
-类型 `[]`
+type `[]`
 
-**measure** 分组指定字段 _必选_
+**measure** Grouping of specified fields _required_
 
-类型 `string`
+type `string`
 
-### 返回值
+### Return value
 `[]`
 
-### 用法
+### Usage
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
