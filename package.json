@@ -75,7 +75,7 @@
     "setup:demo": "cd demo && npm install --package-lock=false",
     "start:demo": "npm run setup:demo && cd demo && npm start",
     "prepare": "husky install",
-    "one-stop-setup": "npm install --package-lock=false && run-s prepare boot build setup:demo setup:site"
+    "one-stop-setup": "npm install --package-lock=false && run-s prepare boot build setup:site"
   },
   "husky": {
     "hooks": {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { List } from 'antd';
-import { Lint } from '../../../../../packages/chart-advisor/src/linter';
+import { Lint } from '@antv/chart-advisor';
 
 type LintProps = {
   lints: Lint[];

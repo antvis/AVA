@@ -4,7 +4,7 @@ import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
 import { InsightCard } from 'antv-site-demo-rc';
-import { getDataInsightsAsync, InsightInfo, Datum, PatternInfo } from '../../../../packages/lite-insight';
+import { getDataInsightsAsync, InsightInfo, Datum, PatternInfo } from '@antv/lite-insight';
 
 const { Option } = Select;
 
