@@ -5,16 +5,6 @@ import manifest, { Demo } from './manifest';
 
 const { Header, Sider, Content } = Layout;
 
-// TODO: link these icons in manifest
-// const testComponents: Record<TestType, any> = {
-//   autoChart: <AutoChartTest />,
-//   pipeline: <PipelineTest />,
-//   // insights: <FindInsightTest />,
-//   dataTransform: <DataTransformTest />,
-//   linter: <LinterDemo />,
-//   linterExtend: <LinterExtendDemo />,
-// };
-
 interface TestState {
   collapsed: boolean;
   demo: Demo;
