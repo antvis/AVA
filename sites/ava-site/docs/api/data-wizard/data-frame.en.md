@@ -7,44 +7,44 @@ order: 0
 
 <div class="doc-md">
 
-DW 中的二维数据结构，支持不同类型的一维和二维源数据，DW 中的主要数据操作都以 DataFrame 作为基本流转单元。
+`DataFrame` is the specified 2D data structure in DW. It supports different types of 1D and 2D source data and is employed as basic flow unit by most data operations in DW.
 
 ## new DataFrame
-### 参数
-**data** 源数据 _必选_
+### Parameters
+**data** source data _required_
 
-可接受常见的一维数据和二维数据。
+Accepts common one-dimensional and two-dimensional data.
 
-类型
-- 一维数据
-  - 基础数据结构 `number | string | boolean | undefined | null`
-  - 一维数组 `any[]`
-  - 一维对象 `{ [key: string]: any }`
-- 二维数据
-  - 二维数组 `any[][]`
-  - 对象数组 `{ [key: string]: any }[]`
-  - 数组对象 `{ [key: string]: any[] }`
+Type
+- One-dimensional data
+  - Base data structure `number | string | boolean | undefined | null`
+  - One-dimensional arrays `any[]`
+  - One-dimensional object `{ [key: string]: any }`
+- Two-dimensional data
+  - Two-dimensional array `any[][]`
+  - Array of objects `{ [key: string]: any }[]`
+  - Array object `{ [key: string]: any[] }`
 
-**extra** 额外参数 _可选_
+**extra** additional parameters _ optional_
 
-用于配置行索引、列索引和缺失填充值。
+Used to configure row indexes, column indexes, and missing padding values.
   
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| index | `string | number` | 行索引 | - | - |
-| columns | `string | number` | 列索引 | - | - |
-| fillValue |  `any` | 缺失填充值 | - | - |
+| property | type | description | default | required | 
+| ----| ---- | ---- | ---- | ---- | ----
+| index | `string | number` | row index | - - |
+| columns | `string | number` | column index | - - |
+| fillValue | `any` | Missing fill value | - - |
 
-### 返回值
+### Return Value
 `DataFrame`
 
-### 用法
+### Usage
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
 /* Basic usage */
 const data = [
-  { a: 1, b: 4, c: 7 },
+  { a: 1, b: 4, c: 7 }
   { a: 2, b: 5, c: 8 },
   { a: 3, b: 6, c: 9 },
 ];
@@ -126,14 +126,14 @@ DataFrame
 ```
 
 ## shape
-获取 DataFrame 数据维度。
+Gets the DataFrame data dimension.
 
-### 用法
+### Usage
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
 const df = new DataFrame([
-  { a: 1, b: 4, c: 7 },
+  { a: 1, b: 4, c: 7 }
   { a: 2, b: 5, c: 8 },
   { a: 3, b: 6, c: 9 },
 ]);
@@ -143,29 +143,30 @@ df.shape;
 ```
 
 ## get
-通过 index 和 columns 值获取和切割数据。
+Gets and cuts data by index and columns values.
 
-### 参数
-**rowLoc** 行位置 _必选_
+### Parameters
+**rowLoc** Row position _required_
 
-使用 index 值来描述的行位置。
+The position of the row to be described using the index value.
 
-类型 `(string | number) | (string | number)[] | string`
+Type `(string | number) | (string | number)[] | string`
 
-**colLoc** 列位置 _可选_
+**colLoc** Column position _optional_
 
-使用 columns 值来描述的列位置。
+The position of the column described by the columns value.
 
-类型 `(string | number) | (string | number)[] | string`
+Type `(string | number) | (string | number)[] | string`
 
-### 返回值
+### Return value
 `DataFrame | Series | any`
 
-### 用法
+
+### Usage
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
-/* index 获取数据 */
+/* index Fetch data */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -181,7 +182,7 @@ Series
   }
 */
 
-/* index数组 获取数据 */
+/* index array Fetch data */
 df.get([0, 2]);
 /*
 DataFrame
@@ -202,7 +203,7 @@ DataFrame
   }
 */
 
-/* index slice 获取数据 */
+/* index slice Fetch data */
 df.get('0:2');
 /*
 DataFrame
@@ -223,7 +224,7 @@ DataFrame
   }
 */
 
-/* index + column 获取数据 */
+/* index + column Fetch data */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -240,7 +241,7 @@ DataFrame
   }
 */
 
-/* index + column数组 获取数据 */
+/* index + column array Fetch data */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -257,7 +258,7 @@ DataFrame
   }
 */
 
-/* index + column slice 获取数据 */
+/* index + column slice Fetch data */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -276,31 +277,31 @@ DataFrame
 ```
 
 ## getByIntegerIndex
-通过行列数值索引获取和切割数据。和 `get` 方法用法类似，但是只能使用整数索引，例如，`getByIntegerIndex(0, 0)` 是取第一行第一列的数据。
+Get and cut data by row and column numerical index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIntegerIndex(0, 0)` takes the data of the first row and column.
 
-### 参数
-**rowLoc** 行位置 _必选_
+### Parameters
+**rowLoc** Row position _required_
 
-使用行数值索引来描述的行位置。
+The row position to be described using the row value index.
 
-类型 `number | number[] | string`
+Type `number | number[] | string`
 
-**colLoc** 列位置 _可选_
+**colLoc** Column position _optional_
 
-使用列数值索引来描述的列位置。
+The column position to be described using the column numeric index.
 
-类型 `number | number[] | string`
+Type `number | number[] | string`
 
-### 返回值
+### Return value
 `DataFrame | Series | any`
 
-### 用法
+### Usage
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
-/* 行列索引获取数据 */
+/* Get data by row index */
 const df = new DataFrame([
-  { a: 1, b: 4, c: 7 },
+  { a: 1, b: 4, c: 7 }
   { a: 2, b: 5, c: 8 },
   { a: 3, b: 6, c: 9 },
 ]);
@@ -317,24 +318,24 @@ DataFrame
 ```
 
 ## getByColumn
-通过 Columns 值获取数据。
+Gets the data by Columns value.
 
-### 参数
-**col** columns值 _必选_
+### Parameters
+**col** columns value _required_
 
-使用 Columns值 来描述的列位置。
+The column position to describe using the Columns value.
 
-类型 `string | number`
+Type `string | number`
 
-### 返回值
+### Return value
 `Series`
 
-### 用法
+### Usage
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
 const df = new DataFrame([
-  { a: 1, b: 4, c: 7 },
+  { a: 1, b: 4, c: 7 }
   { a: 2, b: 5, c: 8 },
   { a: 3, b: 6, c: 9 },
 ]);
@@ -350,12 +351,12 @@ Series
 ```
 
 ## info
-获取常用的统计学信息。
+Get commonly used statistics information.
 
-### 返回值
+### Return value
 `FieldsInfo`
 
-### 用法
+### Usage
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
