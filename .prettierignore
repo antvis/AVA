@@ -13,3 +13,6 @@ lib
 *.svg
 **/assets/**
 LICENSE
+
+# don't prettier constance js
+packages/data-wizard/src/random/cn-address-dict.ts
