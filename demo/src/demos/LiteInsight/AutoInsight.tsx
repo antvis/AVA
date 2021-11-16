@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Button, Table } from 'antd';
+import { Select, Button, Table, Row, Col, Form, Switch } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
@@ -48,6 +48,7 @@ export default function App() {
   const [tableColumns, setTableColumns] = useState<Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [insightLoading, setInsightLoading] = useState<boolean>(false);
+  const [showTextSchema, setShowTextSchema] = useState<boolean>(false);
 
   const fetchDataset = async () => {
     const datasetName = `${dataset}.json`;
@@ -115,9 +116,16 @@ export default function App() {
       </div>
       {insights.length > 0 && (
         <div style={{ borderTop: '1px solid grey' }}>
-          <div style={{ fontSize: 20, fontWeight: 600, margin: 16 }}>Insights</div>
+          <Row justify="space-between" style={{ fontSize: 20, fontWeight: 600, margin: 16 }}>
+            <Col>Insights</Col>
+            <Col>
+              <Form.Item label="Use Text Plugin">
+                <Switch checked={showTextSchema} onChange={setShowTextSchema} />
+              </Form.Item>
+            </Col>
+          </Row>
           {insights.map((item, index) => (
-            <InsightCard key={index} insightInfo={item as any} />
+            <InsightCard key={index} showTextSchema={showTextSchema} insightInfo={item as any} />
           ))}
         </div>
       )}

@@ -72,7 +72,7 @@
     "cc": "npm run clean && npm run clear",
     "setup:site": "cd ./sites/ava-site && yarn",
     "start:site": "cd ./sites/ava-site && npm run start",
-    "start:demo": "npm run setup:demo && cd demo && npm start",
+    "start:demo": "cd demo && npm start",
     "prepare": "husky install",
     "one-stop-setup": "npm install --package-lock=false && run-s prepare boot build setup:site"
   },
