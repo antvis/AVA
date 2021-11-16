@@ -45,6 +45,7 @@
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.4",
     "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@rollup/plugin-typescript": "^8.2.5",
     "@types/antd": "^1.0.0",

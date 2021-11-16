@@ -9,6 +9,7 @@ import nodePolyfills from 'rollup-plugin-polyfill-node';
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
 import { visualizer } from 'rollup-plugin-visualizer';
+import json from '@rollup/plugin-json';
 
 const format = process.env.FORMAT;
 const enableAnalysis = process.env.ANALYSIS;
@@ -58,6 +59,7 @@ const plugins = [
       }),
     ],
   }),
+  json(),
 ];
 
 if (enableAnalysis) {

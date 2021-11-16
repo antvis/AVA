@@ -20,8 +20,7 @@ const devConfig = {
   target: 'web',
   resolve: {
     extensions: ['.js', '.ts', '.tsx', '.json'],
-    mainFields: ['module', 'browser', 'main'],
-    fallback: { path: false },
+    fallback: { path: false, buffer: false, stream: false, crypto: require.resolve('crypto-browserify'), fs: false },
   },
   module: {
     rules: [
@@ -31,7 +30,11 @@ const devConfig = {
         loader: 'babel-loader',
         options: {
           presets: ['@babel/preset-typescript', ['@babel/preset-env', { modules: false }], '@babel/preset-react'],
-          plugins: ['@babel/plugin-proposal-class-properties', '@babel/plugin-proposal-object-rest-spread'],
+          plugins: [
+            '@babel/plugin-transform-runtime',
+            '@babel/plugin-proposal-class-properties',
+            '@babel/plugin-proposal-object-rest-spread',
+          ],
         },
       },
       {
