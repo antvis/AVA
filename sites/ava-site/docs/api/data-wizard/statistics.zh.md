@@ -548,6 +548,83 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 // 8
 ```
 
+## countBy
+计算数组指定字段总计数。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.countBy(objects, 'n');
+// 2
+```
+
+## groupBy
+将数组对象按字段分组。
+
+### 参数
+**array** 原数据数组 _必选_
+
+类型 `[]`
+
+**measure** 分组指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`[]`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [
+  {
+   'dimension': 'color',
+   'measure': 'height'
+  }, {
+   'dimension': 'map',
+   'measure': 'height'
+  }, {
+   'dimension': 'data',
+   'measure': 'weight'
+  }
+];
+
+stats.groupBy(objects, 'measure');
+// {
+//   'height': [
+//     {
+//       'dimension': 'color',
+//       'measure': 'height'
+//     }, {
+//       'dimension': 'map',
+//       'measure': 'height'
+//     }
+//   ], 
+//   'weight': [
+//     {
+//       'dimension': 'data',
+//       'measure': 'weight'
+//     }
+//   ]
+// }
+```
+
 ## flatten
 将数组对象展平。
 
@@ -604,57 +681,36 @@ type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
-stats.aggregate(array, dimension, measure, aggregateMethod, seriesField);
-```
+const objects = [
+  {
+    'dim': 1,
+    'n': 1
+  }, {
+    'dim': 2,
+    'n': 2,
+    'm': 2
+  }, {
+    'dim': 1,
+    'n': 3,
+    'k': 3
+  }
+];
 
-## countBy
-计算数组指定字段总计数。
+const dimensionName = 'dim';
 
-### 参数
-**array** 原数据数组 _必选_
+const measureName = 'n';
 
-类型 `[]`
-
-**measure** 计算指定字段 _必选_
-
-类型 `string`
-
-### 返回值
-`number`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.countBy(objects, 'n');
-// 2
-```
-
-## groupBy
-将数组对象按字段分组。
-
-### 参数
-**array** 原数据数组 _必选_
-
-类型 `[]`
-
-**measure** 分组指定字段 _必选_
-
-类型 `string`
-
-### 返回值
-`[]`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.groupBy(objects, 'n');
-// { 'n': [1, 2] }
+stats.aggregate(objects, dimensionName, measureName);
+// [
+//   {
+//     'dim': 1,
+//     'n': 1
+//   },
+//   {
+//     'dim': 2,
+//     'n': 5
+//   }
+// ]
 ```
 
 </div>
