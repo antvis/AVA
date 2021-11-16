@@ -550,72 +550,6 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 // 8
 ```
 
-## flatten
-Flatten the array object.
-
-### Parameters
-**array** The original data array _required_
-
-Type `[]`
-
-### Return value
-`[]`
-
-### Usage
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const array = [1, [2, 3], 4];
-
-stats.flatten(array);
-// [1, 2, 3, 4]
-```
-
-## aggregate
-Aggregate the array objects by the specified dimensions and fields.
-
-### Parameters
-**array** The original data array _required_
-
-type `[]`
-
-**dimension** Aggregates the specified dimension _required_
-
-Type `string`
-
-**measure** Aggregates the specified fields _required_
-
-Type `string`
-
-**aggregateMethod** Aggregate method _optional_
-
-Type ``AggregateMethod`, defaults to ``SUM`
-
-``sign
-type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
-```
-
-**seriesField** Aggregate the specified sequence _optional_
-
-Type `string`
-
-### Return value
-`[]`
-
-### Usage
-
-类型 `string`
-
-### 返回值
-`[]`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-stats.aggregate(array, dimension, measure, aggregateMethod, seriesField);
-```
-
 ## countBy
 Calculate the total count of the specified field of the array.
 
@@ -660,10 +594,133 @@ type `string`
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
-const objects = [{ 'n': 1 }, { 'n': 2 }];
 
-stats.groupBy(objects, 'n');
-// { 'n': [1, 2] }
+const objects = [
+  {
+   'dimension': 'color',
+   'measure': 'height'
+  }, {
+   'dimension': 'map',
+   'measure': 'height'
+  }, {
+   'dimension': 'data',
+   'measure': 'weight'
+  }
+];
+
+stats.groupBy(objects, 'measure');
+// {
+//   'height': [
+//     {
+//       'dimension': 'color',
+//       'measure': 'height'
+//     }, {
+//       'dimension': 'map',
+//       'measure': 'height'
+//     }
+//   ], 
+//   'weight': [
+//     {
+//       'dimension': 'data',
+//       'measure': 'weight'
+//     }
+//   ]
+// }
+```
+
+## flatten
+Flatten the array object.
+
+### Parameters
+**array** The original data array _required_
+
+Type `[]`
+
+### Return value
+`[]`
+
+### Usage
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const array = [1, [2, 3], 4];
+
+stats.flatten(array);
+// [1, 2, 3, 4]
+```
+
+## aggregate
+Aggregate the array objects by the specified dimensions and fields.
+
+### Parameters
+**array** The original data array _required_
+
+type `[]`
+
+**dimension** Aggregates the specified dimension _required_
+
+Type `string`
+
+**measure** Aggregates the specified fields _required_
+
+Type `string`
+
+**aggregateMethod** Aggregate method _optional_
+
+Type ``AggregateMethod`, defaults to ``SUM`
+
+```sign
+type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
+```
+
+**seriesField** Aggregate the specified sequence _optional_
+
+Type `string`
+
+### Return value
+`[]`
+
+### Usage
+
+Type `string`
+
+### Return value
+`[]`
+
+### Usage
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [
+  {
+    'dim': 1,
+    'n': 1
+  }, {
+    'dim': 2,
+    'n': 2,
+    'm': 2
+  }, {
+    'dim': 1,
+    'n': 3,
+    'k': 3
+  }
+];
+
+const dimensionName = 'dim';
+
+const measureName = 'n';
+
+stats.aggregate(objects, dimensionName, measureName);
+// [
+//   {
+//     'dim': 1,
+//     'n': 1
+//   },
+//   {
+//     'dim': 2,
+//     'n': 5
+//   }
+// ]
 ```
 
 </div>
