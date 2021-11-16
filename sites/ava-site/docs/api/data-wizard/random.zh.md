@@ -7,7 +7,7 @@ order: 2
 
 <div class="doc-md">
 
-DW 的随机数据生成方法，可生成随机的数值、文本、域名、颜色、地理位置、时间等数据。可以使用下面两种方式使用随机数方法。
+DataWizard 的数据模拟模块 `random`，提供了非常丰富的模拟数据生成能力。可用于随机生成多种类型的数据，包括基础数据、文本数据、日期时间数据、颜色数据、Web 数据、位置数据、中文地址数据等。你可以用它来快速开发一些数据模拟或自动填充类的功能。你可以使用下面两种方式使用 `random`。
 
 ```ts
 import { random } from '@antv/data-wizard';
@@ -128,11 +128,11 @@ r.natural();
 
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 备选字 | `''` | - |
-| numeric | `string` | 数字 | `'0123456789'` | - |
-| symbols | `string` | 符号 | `'!@#$%^&*()[],.',` | - |
-| lower | `string` | 小写字母 | `'abcdefghijklmnopqrstuvwxyz'` | - |
-| upper | `string` | 大写字母 | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
+| pool | `string` | 侯选池 | `''` | - |
+| numeric | `string` | 候选数字 | `'0123456789'` | - |
+| symbols | `string` | 候选符号 | `'!@#$%^&*()[],.',` | - |
+| lower | `string` | 候选小写字母 | `'abcdefghijklmnopqrstuvwxyz'` | - |
+| upper | `string` | 候选大写字母 | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 
 #### 返回值
 `string`
@@ -154,11 +154,11 @@ r.character();
 
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 共用词 | `''` | - |
-| numeric | `string` | 数字 | `'0123456789'` | - |
-| symbols | `string` | 符号 | `'!@#$%^&*()[],.',` | - |
-| lower | `string` | 小写字母 | `'abcdefghijklmnopqrstuvwxyz'` | - |
-| upper | `string` | 大写字母 | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
+| pool | `string` | 侯选池 | `''` | - |
+| numeric | `string` | 候选数字 | `'0123456789'` | - |
+| symbols | `string` | 候选小写字母 | `'!@#$%^&*()[],.',` | - |
+| lower | `string` | 候选小写字母 | `'abcdefghijklmnopqrstuvwxyz'` | - |
+| upper | `string` | 候选大写字母 | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 | length | `number` | 字符串长度 | `5 ~ 20` | - |
 
 #### 返回值
@@ -182,7 +182,7 @@ r.string();
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
 | capitalize | `boolean` | 是否大写 | `false` | - |
-| length | `number` | 字符串长度 | `2 ~ 3` | - |
+| length | `number` | 音节长度 | `2 ~ 3` | - |
 
 #### 返回值
 `string`
@@ -229,7 +229,7 @@ r.word();
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
 | words | `number` | 单词数 | `12 ~ 18` | - |
-| punctuation | `boolean | string` | 符号 | `true` | - |
+| punctuation | `boolean | string` | 标点符号 | `true` | - |
 
 #### 返回值
 `string`
@@ -287,7 +287,7 @@ r.name();
 // 'Gregory Becker'
 ```
 
-### lastName
+### surname
 生成姓。
 
 #### 返回值
@@ -298,11 +298,11 @@ r.name();
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.lastName();
+r.surname();
 // 'Terry'
 ```
 
-### firstName
+### givenName
 生成名。
 
 #### 参数
@@ -320,7 +320,7 @@ r.lastName();
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.firstName();
+r.givenName();
 // 'Hulda'
 ```
 
@@ -332,7 +332,7 @@ r.firstName();
 
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
-| mobile | `boolean` | 是否是收集 | `true` | - |
+| mobile | `boolean` | 是否是手机 | `true` | - |
 | formatted | `boolean` | 用 - 格式化 | `false` | - |
 | asterisk | `boolean` | 添加 * 避免生成真实手机号 | `false` | - |
 | startNum | `string` | 手机号前缀，只能指定前三位 | `''` | - |
@@ -357,7 +357,7 @@ r.phone({asterisk: true});
 
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 备选字 | `''` | - |
+| pool | `string` | 侯选池 | `''` | - |
 
 #### 返回值
 `string`
@@ -379,7 +379,7 @@ r.cCharacter();
 
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
-| pool | `string` | 备选字 | `''` | - |
+| pool | `string` | 侯选池 | `''` | - |
 | length | `number` | 单词长度 | `2~6` | - |
 
 #### 返回值
@@ -462,7 +462,7 @@ r.cName();
 // '奉利学'
 ```
 
-### cLastName
+### cSurname
 生成中文姓。
 
 #### 返回值
@@ -473,11 +473,11 @@ r.cName();
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.cLastName();
+r.cSurname();
 // '林'
 ```
 
-### cFirstName
+### cGivenName
 生成中文名。
 
 #### 参数
@@ -495,7 +495,7 @@ r.cLastName();
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.firstName();
+r.givenName();
 // '君妍'
 ```
 
@@ -522,7 +522,7 @@ r.cZodiac();
 ```
 
 ## DateTimeRandom
-随机生成时间数据的工具类，包括日期（date）、时间（time）、日期时间（datetime）、时间戳（timestamp）、星期数（weekday）、月份（month）。
+随机生成日期时间数据的工具类，包括日期（date）、时间（time）、日期时间（datetime）、时间戳（timestamp）、星期数（weekday）、月份（month）。
 
 ### date
 生成日期。
@@ -729,39 +729,6 @@ r.rgba();
 // 'rgba(197,205,189,0.5376)'
 ```
 
-### rgba
-生成 rgba 颜色。
-
-#### 参数
-**options** 配置项 _可选_
-
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | 灰度级 | `false` | - |
-| min | `number` | 最小值 | `0` | - |
-| max | `number` | 最大值 | `255` | - |
-| minR | `number` | 红色最小值 | `min` | - |
-| maxR | `number` | 红色最大值 | `max` | - |
-| maxG | `number` | 绿色最小值 | `min` | - |
-| maxG | `number` | 绿色最大值 | `max` | - |
-| maxB | `number` | 蓝色最小值 | `min` | - |
-| maxB | `number` | 蓝色最大值 | `max` | - |
-| casing | `'lower' | 'upper'` | 大小写 | `lower` | - |
-| minA | `number` | 透明度最小值 | `0` | - |
-| maxA | `number` | 透明度最大值 | `1` | - |
-
-#### 返回值
-`string`
-
-#### 用法
-```ts
-import { random } from '@antv/data-wizard';
-
-const r = new random.ColorRandom();
-r.rgba();
-// 'rgba(197,205,189,0.5376)'
-```
-
 ### hsl
 生成 HSL 颜色。
 
@@ -925,6 +892,7 @@ r.tld();
 
 #### 参数
 **options** 配置项 _可选_
+
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
 | tld | `string` | 顶级域名 | - | - |
@@ -946,6 +914,7 @@ r.domain();
 
 #### 参数
 **options** 配置项 _可选_
+
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
 | tld | `string` | 顶级域名 | - | - |
@@ -1026,6 +995,7 @@ r.email();
 
 #### 参数
 **options** 配置项 _可选_
+
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | 小数位数 | `7` | - |
@@ -1047,6 +1017,7 @@ r.longtitude();
 
 #### 参数
 **options** 配置项 _可选_
+
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | 小数位数 | `7` | - |
@@ -1068,6 +1039,7 @@ r.latitude();
 
 #### 参数
 **options** 配置项 _可选_
+
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | 小数位数 | `7` | - |
@@ -1163,7 +1135,7 @@ r.road();
 ```
 
 ### address
-生成地址。
+生成中文地址。
 
 #### 返回值
 `string`
@@ -1178,7 +1150,7 @@ r.address();
 ```
 
 ### postcode
-生成地址。
+生成邮编。
 
 #### 返回值
 `string`

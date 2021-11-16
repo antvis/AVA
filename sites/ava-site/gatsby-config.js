@@ -185,7 +185,7 @@ module.exports = {
         slug: 'data-wizard',
         // icon: 'gallery',
         title: {
-          zh: '数据处理库',
+          zh: '数据处理与分析库（DataWizard）',
           en: 'DataWizard',
         },
         order: 1,

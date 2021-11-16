@@ -1,4 +1,4 @@
-import { assert, isArray } from '../utils';
+import { assert, isArray, flatten } from '../utils';
 import * as cache from './caches';
 
 /**
@@ -322,22 +322,6 @@ export function groupBy(array: any[], measure: string) {
     result[id].push(item);
     return result;
   }, {});
-}
-
-/**
- * Return the flattened result of the array.
- * @param array - The array to process
- */
-export function flatten(array: any[]) {
-  let res = [];
-  for (let i = 0; i < array.length; i += 1) {
-    if (isArray(array[i])) {
-      res = res.concat(flatten(array[i]));
-    } else {
-      res.push(array[i]);
-    }
-  }
-  return res;
 }
 
 export type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';

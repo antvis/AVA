@@ -14,20 +14,21 @@ const methods = [
   'max',
   'maxIndex',
   'sum',
-  'valid',
-  'missing',
-  'valueMap',
-  'distinct',
-  'median',
-  'quartile',
   'mean',
   'geometricMean',
   'harmonicMean',
+  'median',
+  'quartile',
+  'quantile, percent75',
   'variance',
   'standardDeviation',
   'coefficientOfVariance',
   'covariance',
   'pearson',
+  'valid',
+  'missing',
+  'valueMap',
+  'distinct',
 ];
 
 const App = () => {
@@ -35,6 +36,23 @@ const App = () => {
 
   const onChange = (value) => {
     setMethod(value);
+  };
+
+  const getData = () => {
+    if (method === 'covariance' || method === 'pearson') {
+      return `${JSON.stringify(data1)}\n${JSON.stringify(data2)}`;
+    }
+    return `${JSON.stringify(data1)}`;
+  };
+
+  const getValue = () => {
+    if (method === 'covariance' || method === 'pearson') {
+      return JSON.stringify(statistics[method](data1, data2));
+    }
+    if (method === 'quantile, percent75') {
+      return `${JSON.stringify(statistics.quantile(data1, 75))}`;
+    }
+    return `${JSON.stringify(statistics[method](data1))}`;
   };
 
   return (
@@ -51,18 +69,14 @@ const App = () => {
           <h3>Data</h3>
           <TextArea
             style={{ resize: 'none', height: '100px', border: '2px solid #eee', padding: '20px' }}
-            value={`${JSON.stringify(data1)}\n${JSON.stringify(data2)}`}
+            value={getData()}
           />
         </div>
         <div style={{ flexBasis: '300px' }}>
           <h3>Result</h3>
           <TextArea
             style={{ resize: 'none', height: '100px', border: '2px solid #eee', padding: '20px' }}
-            value={
-              method !== 'covariance' && method !== 'pearson'
-                ? `${JSON.stringify(statistics[method](data1))}\n${JSON.stringify(statistics[method](data2))}`
-                : JSON.stringify(statistics[method](data1, data2))
-            }
+            value={getValue()}
           />
         </div>
       </div>

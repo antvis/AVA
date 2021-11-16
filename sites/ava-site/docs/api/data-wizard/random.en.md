@@ -7,7 +7,7 @@ order: 2
 
 <div class="doc-md">
 
-`Random` contains DW's random data generation methods that can generate random values, text, domain names, colors, geographic locations, time and other data. The random number method can be used in the following two ways.
+The `random` module of DataWizard provides you comprehensive data mocking options. Data types include basic data, text data, datetime data, color data, Web data, location data, Chinese data address, etc.. You can use it to quickly develop some data generating or auto-filling functions. The `random` method can be used in the following two ways.
 
 ```ts
 import { random } from '@antv/data-wizard';
@@ -22,17 +22,17 @@ r.boolean();
 ```
 
 ## BasicRandom
-Tool class for randomly generating basic data, including boolean (boolean), integer (integer), float (float) and natural (natural) numbers.
+The tool class `BasicRandom` can help you generate random basic data, including boolean, integer, float and natural number.
 
 ### boolean
-Generates boolean values.
+Generate a boolean value.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| properties | type | description | default | mandatory | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| likelihood | `number` | likelihood of occurrence of positive and negative values | `50` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| likelihood | `number` | Likelihood of true and false | `50` | - |
 
 #### Return Value
 `boolean`
@@ -50,12 +50,12 @@ r.boolean();
 Generate an integer.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| min | `number` | min | `-(2 ** 53 - 1)` | - |
-| max | `number` | max | `2 ** 53 - 1` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| min | `number` | Minimum | `-(2 ** 53 - 1)` | - |
+| max | `number` | Maximun | `2 ** 53 - 1` | - |
 
 #### Return Value
 `number`
@@ -73,13 +73,13 @@ r.integer({min: 1, max: 10000});
 Generate a floating point number.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| min | `number` | min | `-(2 ** 53 - 1)` | - |
-| max | `number` | max | `2 ** 53 - 1` | - |
-| fixed | `number` | number of decimal places | `4` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| min | `number` | Minimum | `-(2 ** 53 - 1)` | - |
+| max | `number` | Maximun | `2 ** 53 - 1` | - |
+| fixed | `number` | Decimal places | `4` | - |
 
 #### Return Value
 `number`
@@ -97,12 +97,12 @@ r.float();
 Generate a natural number.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| min | `number` | min | `-(2 ** 53 - 1)` | - |
-| max | `number` | max | `2 ** 53 - 1` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| min | `number` | Minimum | `-(2 ** 53 - 1)` | - |
+| max | `number` | Maximun | `2 ** 53 - 1` | - |
 
 #### Return Value
 `number`
@@ -117,22 +117,21 @@ r.natural();
 ```
 
 ## TextRandom
-A tool class for randomly generating text data, including character, string, syllable, word, sentence, paragraph, name, lastName, firstName, phone phone)
-Chinese character (cCharacter), Chinese word (cWord), Chinese sentence (cSentence), Chinese name (cName), Chinese surname (cLastName), Chinese name (cFirstName) and Chinese zodiac (cZodiac).
+The tool class `TextRandom` can help you generate random text data, including character, string, syllable, word, sentence, paragraph, name, surname, given name (givenName), phone number (phone), Chinese character (cCharacter), Chinese word (cWord), Chinese sentence (cSentence), Chinese name (cName), Chinese surname (cSurname), Chinese given name (cGivenName) and Chinese zodiac (cZodiac).
 
 ### character
-Generate characters.
+Generate a character.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| pool | `string` | optional_word | `''` | - |
-| numeric | `string` | numbers | `'0123456789'` | - |
-| symbols | `string` | symbols | `'! @#$%^&*()[],.' , ` | - | lower
-| lower | `string` | lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
-| upper | `string` | uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| pool | `string` | Candidate pool | `''` | - |
+| numeric | `string` | Candidate numbers | `'0123456789'` | - |
+| symbols | `string` | Candidate symbols | `'! @#$%^&*()[],.' , ` | - | lower
+| lower | `string` | Lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
+| upper | `string` | Uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 
 #### Return Value
 `string`
@@ -150,16 +149,16 @@ r.character();
 Generate a string.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| pool | `string` | common_word | `''` | - |
-| numeric | `string` | numbers | `'0123456789'` | - |
-| symbols | `string` | symbols | `'! @#$%^&*()[],.' , ` | - | lower
-| lower | `string` | lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
-| upper | `string` | uppercase | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
-| length | `number` | string length | `5 ~ 20` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| pool | `string` | Candidate pool | `''` | - |
+| numeric | `string` | Candidate numbers | `'0123456789'` | - |
+| symbols | `string` | Candidate symbols | `'! @#$%^&*()[],.' , ` | - | lower
+| lower | `string` | Lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
+| upper | `string` | Uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
+| length | `number` | String length | `5 ~ 20` | - |
 
 #### Return Value
 `string`
@@ -177,12 +176,12 @@ r.string();
 Generate syllables.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
+| Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
-| capitalize | `boolean` | whether to capitalize | `false` | - |
-| length | `number` | string length | `2 ~ 3` | - |
+| capitalize | `boolean` | Capitalize or not | `false` | - |
+| length | `number` | syllable length | `2 ~ 3` | - |
 
 #### Return Value
 `string`
@@ -197,16 +196,16 @@ r.syllable();
 ```
 
 ### word
-Generate the word.
+Generate a word.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| syllables | `number` | number of syllables | `1 ~ 3` | - |
-| capitalize | `boolean` | whether to capitalize | `false` | - |
-| length | `number` | word length | `syllables.length` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| syllables | `number` | Number of syllables | `1 ~ 3` | - |
+| capitalize | `boolean` | Capitalize or not | `false` | - |
+| length | `number` | Word length | `syllables.length` | - |
 
 #### Return Value
 `string`
@@ -224,12 +223,12 @@ r.word();
 Generate a sentence.
 
 #### parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| words | `number` | number of words | `12 ~ 18` | - |
-| punctuation | `boolean | string` | symbol | `true` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| words | `number` | Number of words | `12 ~ 18` | - |
+| punctuation | `boolean | string` | Punctuation | `true` | - |
 
 #### Return Value
 `string`
@@ -244,14 +243,14 @@ r.sentence();
 ```
 
 ### paragraph
-Generate paragraphs.
+Generate a paragraph.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| properties | type | description | default | required | 
+| Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
-| sentence | `number` | number of sentences | `3 ~ 7` | - |
+| sentence | `number` | Number of sentences | `3 ~ 7` | - |
 
 
 #### Return Value
@@ -270,11 +269,11 @@ r.paragraph();
 Generate a name.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | gender | - | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | Gender | - | - |
 
 #### Return Value
 `string`
@@ -288,8 +287,8 @@ r.name();
 // 'Gregory Becker'
 ```
 
-### lastName
-Generate the last name.
+### surname
+Generate a surname.
 
 #### Return Value
 `string`
@@ -299,19 +298,19 @@ Generate the last name.
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.lastName();
+r.surname();
 // 'Terry'
 ```
 
-### firstName
-Generate the name.
+### givenName
+Generate a given name.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | gender | - | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | Gender | - | - |
 
 #### Return Value
 `string`
@@ -321,22 +320,22 @@ Generate the name.
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.firstName();
+r.givenName();
 // 'Hulda'
 ```
 
 ### phone
-Generate a cell phone number.
+Generate a phone number.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| mobile | `boolean` | whether to collect | `true` | - |
-| formatted | `boolean` | use - formatted | `false` | - |
-| asterisk | `boolean` | add * to avoid generating real phone numbers | `false` | - |
-| startNum | `string` | phone number prefix, only the first three digits can be specified | `''` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| mobile | `boolean` | Mobile phone or landline | `true` | - |
+| formatted | `boolean` | Formatted or not | `false` | - |
+| asterisk | `boolean` | Add * to avoid generating real phone numbers | `false` | - |
+| startNum | `string` | Phone number prefix, only the first three digits can be specified | `''` | - |
 
 #### Return Value
 `string`
@@ -351,14 +350,14 @@ r.phone({asterisk: true});
 ```
 
 ### cCharacter
-Generate Chinese characters.
+Generate a Chinese character.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attribute | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| pool | `string` | optional_word | `''` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| pool | `string` | Candidate pool | `''` | - |
 
 #### Return Value
 `string`
@@ -373,15 +372,15 @@ r.cCharacter();
 ```
 
 ### cWord
-Generate Chinese words.
+Generate a Chinese word.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| pool | `string` | optional_word | `''` | - |
-| length | `number` | word length | `2~6` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| pool | `string` | Candidate pool | `''` | - |
+| length | `number` | Word length | `2~6` | - |
 
 #### Return Value
 `string`
@@ -399,12 +398,12 @@ r.cWord();
 Generate a Chinese sentence.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| min | `number` | minimum number of characters | `10` | - |
-| max | `number` | maximum number of characters | `18` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| min | `number` | Minimum number of characters | `10` | - |
+| max | `number` | Maximum number of characters | `18` | - |
 
 #### Return Value
 `string`
@@ -422,12 +421,12 @@ r.cSentence();
 Generate a Chinese paragraph.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
 | min | `number` | Minimum number of sentences | `3` | - |
-| max | `number` | max number of sentences | `18` | - |
+| max | `number` | Maximun number of sentences | `18` | - |
 
 #### Return Value
 `string`
@@ -445,11 +444,11 @@ r.cParagraph();
 Generate a Chinese name.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attribute | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | gender | - | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | Gender | - | - |
 
 #### Return Value
 `string`
@@ -463,7 +462,7 @@ r.cName();
 // '奉利学'
 ```
 
-### cLastName
+### cSurname
 Generate a Chinese surname.
 
 #### Return Value
@@ -474,19 +473,19 @@ Generate a Chinese surname.
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.cLastName();
+r.cSurname();
 // '林'
 ```
 
-### cFirstName
+### cGivenName
 Generate a Chinese name.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| gender | `'male' | 'female'` | gender | - | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| gender | `'male' | 'female'` | Gender | - | - |
 
 #### Return Value
 `string`
@@ -496,19 +495,19 @@ Generate a Chinese name.
 import { random } from '@antv/data-wizard';
 
 const r = new random.TextRandom();
-r.firstName();
+r.givenName();
 // '君妍'
 ```
 
 ### cZodiac
-Generate the zodiac.
+Generate a zodiac.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| locale | `'zh-CN' | 'en-US'` | internationalization | - | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| locale | `'zh-CN' | 'en-US'` | i18n | - | - |
 
 #### Return Value
 `string`
@@ -523,18 +522,18 @@ r.cZodiac();
 ```
 
 ## DateTimeRandom
-Tool class for generating random time data, including date, time, datetime, timestamp, weekday, month.
+The tool class `DateTimeRandom` can help you generate random datetime data, including date, time, datetime, timestamp, weekday, month.
 
 ### date
-Generates a date.
+Generate a date.
 
 #### Parameters
-**options** Configuration item _optional_
+**options** Configuration options _optional_
 
-|property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| min | `number` | timestamp of minimum time | `0` | - |
-| max | `number` | timestamp of the maximum time | `new Date().getTime()` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| min | `number` | Minimum timestamp | `0` | - |
+| max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 
 #### Return Value
 `string`
@@ -549,13 +548,13 @@ r.date();
 ```
 
 ### time
-The time to generate.
+Generate a time.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| properties | type | description | default | mandatory | 
-| ----| ---- | ---- | ---- | ---- | ---- |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
 | short | `boolean` | UTC offset | `false` | - |
 
 #### Return Value
@@ -571,16 +570,16 @@ r.time();
 ```
 
 ### datetime
-Generates a datetime.
+Generate a datetime.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| min | `number` | timestamp of minimum time | `0` | - |
-| max | `number` | timestamp of the maximum time | `new Date().getTime()` | - |
-| format | `string` | formatting (refer to [date-fns format](https://date-fns.org/v2.0.1/docs/format)) | `yyyy-MM-dd'T'HH:mm:ssXXX` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| min | `number` | Minimum timestamp | `0` | - |
+| max | `number` | Maximum timestamp | `new Date().getTime()` | - |
+| format | `string` | Formatting (refer to [date-fns format](https://date-fns.org/v2.0.1/docs/format)) | `yyyy-MM-dd'T'HH:mm:ssXXX` | - |
 
 #### Return Value
 `string`
@@ -595,15 +594,15 @@ r.datetime();
 ```
 
 ### timestamp
-Generate a datetime.
+Generate a timestamp.
 
 #### Parameters
-**options** configuration item _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| min | `number` | timestamp of minimum time | `0` | - |
-| max | `number` | timestamp of the maximum time | `new Date().getTime()` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| min | `number` | Minimum timestamp  | `0` | - |
+| max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 
 #### Return Value
 `string`
@@ -618,15 +617,15 @@ r.timestamp();
 ```
 
 ### weekday
-Generates the date and time.
+Generate a weekday.
 
 #### Parameters
-**options** Configuration item _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| locale | `'zh-CN' | 'en-US'` | internationalization | `'en-US'` | - |
-| abbr | `boolean` | abbreviation | `false` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| locale | `'zh-CN' | 'en-US'` | i18n | `'en-US'` | - |
+| abbr | `boolean` | Abbreviation | `false` | - |
 
 #### Return Value
 `string`
@@ -641,15 +640,15 @@ r.weekday();
 ```
 
 ### month
-Generate the month.
+Generate a month.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ----
-| locale | `'zh-CN' | 'en-US'` | internationalization | `'en-US'` | - |
-| abbr | `boolean` | abbreviation | `false` | - |
+| Property | Type | Description | Default | Required | 
+| ---- | ---- | ---- | ---- | ---- |
+| locale | `'zh-CN' | 'en-US'` | i18n | `'en-US'` | - |
+| abbr | `boolean` | Abbreviation | `false` | - |
 
 #### Return Value
 `string`
@@ -664,26 +663,26 @@ r.month();
 ```
 
 ## ColorRandom
-Tool class for randomly generating color data. Includes RGB colors (rgb), rgba colors (rgba), HSL colors (hsl), hsla colors (hsla), color names (colorname), color names (colorname), hex colors (hexColor) and decimal colors (decimalColor).
+The tool class `ColorRandom` can help you generate random color data, including RGB color (rgb), rgba color (rgba), HSL color (hsl), hsla color (hsla), color name (colorName), hex color (hexColor) and decimal color (decimalColor).
 
 ### rgb
-Generates RGB colors.
+Generate a RGB color.
 
 #### Parameters
-**options** Configuration item _optional_
+**options** Configuration options _optional_
 
-| properties | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | grayscale | `false` | - |
-| min | `number` | min | `0` | - |
-| max | `number` | max | `255` | - |
-| minR | `number` | red min | `min` | - |
-| maxR | `number` | red max | `max` | - |
-| maxG | `number` | green min | `min` | - | maxG | `number` | green min
-| maxG | `number` | green max | `max` | - |
-| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
-| maxB | `number` | blue max | `max` | - |
-| casing | `'lower' | 'upper'` | case | `lower` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | Grayscale | `false` | - |
+| min | `number` | Minimum | `0` | - |
+| max | `number` | Maximum | `255` | - |
+| minR | `number` | Minimum red value | `min` | - |
+| maxR | `number` | Maximum red value | `max` | - |
+| maxG | `number` | Minimum green value | `min` | - |
+| maxG | `number` | Maximum green value | `max` | - |
+| maxB | `number` | Minimum blue value | `min` | - |
+| maxB | `number` | Maximum blue value | `max` | - |
+| casing | `'lower' | 'upper'` | Case | `lower` | - |
 
 #### Return Value
 `string`
@@ -698,58 +697,25 @@ r.rgb();
 ```
 
 ### rgba
-Generate rgba colors.
+Generate a rgba color.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | grayscale | `false` | - |
-| min | `number` | min | `0` | - |
-| max | `number` | max | `255` | - |
-| minR | `number` | red min | `min` | - |
-| maxR | `number` | red max | `max` | - |
-| maxG | `number` | green min | `min` | - | maxG | `number` | green min
-| maxG | `number` | green max | `max` | - |
-| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
-| maxB | `number` | blue max | `max` | - |
-| casing | `'lower' | 'upper'` | case | `lower` | - |
-| minA | `number` | case | `lower` | - |
-| maxA | `number` | case | `lower` | - |
-
-#### Return Value
-`string`
-
-#### Usage
-```ts
-import { random } from '@antv/data-wizard';
-
-const r = new random.ColorRandom();
-r.rgba();
-// 'rgba(197,205,189,0.5376)'
-```
-
-### rgba
-Generate rgba colors.
-
-#### Parameters
-**options** Configuration item _optional_
-
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | grayscale | `false` | - |
-| min | `number` | min | `0` | - |
-| max | `number` | max | `255` | - |
-| minR | `number` | red min | `min` | - |
-| maxR | `number` | red max | `max` | - |
-| maxG | `number` | green min | `min` | - | maxG | `number` | green min
-| maxG | `number` | green max | `max` | - |
-| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
-| maxB | `number` | blue max | `max` | - |
-| casing | `'lower' | 'upper'` | case | `lower` | - |
-| minA | `number` | transparency min | `0` | - |
-| maxA | `number` | transparency max | `1` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | Grayscale | `false` | - |
+| min | `number` | Minimum | `0` | - |
+| max | `number` | Maximum | `255` | - |
+| minR | `number` | Minimum red value | `min` | - |
+| maxR | `number` | Maximum red value | `max` | - |
+| maxG | `number` | Minimum green value | `min` | - |
+| maxG | `number` | Maximum green value | `max` | - |
+| maxB | `number` | Minimum blue value | `min` | - |
+| maxB | `number` | Maximum blue value | `max` | - |
+| casing | `'lower' | 'upper'` | Case | `lower` | - |
+| minA | `number` | Minimum transparency | `lower` | - |
+| maxA | `number` | Maximum transparency | `lower` | - |
 
 #### Return Value
 `string`
@@ -764,20 +730,20 @@ r.rgba();
 ```
 
 ### hsl
-Generate HSL colors.
+Generate a HSL color.
 
 #### Parameters
-**options** Configuration item _optional_
+**options** Configuration options _optional_
 
-| properties | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| minH | `number` | hue min | `0` | - |
-| maxH | `number` | hue max | `360` | - |
-| maxS | `number` | Saturation Min | `0` | - | maxS | `number` | Saturation Min | `0` | - |
-| maxS | `number` | Saturation Max | `100` | - |
-| maxL | `number` | Brightness min | `0` | - | maxL | `number` | Brightness min | `0` | -
-| maxL | `number` | brightness max | `100` | - |
-| casing | `'lower' | 'upper'` | case | `lower` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| minH | `number` | Minimum hue | `0` | - |
+| maxH | `number` | Maximum hue | `360` | - |
+| maxS | `number` | Minimum saturation | `0` | - |
+| maxS | `number` | Maximum saturation | `100` | - |
+| minL | `number` | Minimum lightness | `0` | - |
+| maxL | `number` | Maximum lightness | `100` | - |
+| casing | `'lower' | 'upper'` | Case | `lower` | - |
 
 #### Return Value
 `string`
@@ -792,22 +758,22 @@ r.hsl();
 ```
 
 ### hsla
-Generate hala colors.
+Generate a hsla color.
 
 #### Parameters
-**options** Configuration item _optional_
+**options** Configuration options _optional_
 
-| properties | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| minH | `number` | hue min | `0` | - |
-| maxH | `number` | hue max | `360` | - |
-| maxS | `number` | Saturation Min | `0` | - | maxS | `number` | Saturation Min | `0` | - |
-| maxS | `number` | Saturation Max | `100` | - |
-| maxL | `number` | Brightness min | `0` | - | maxL | `number` | Brightness min | `0` | -
-| maxL | `number` | brightness max | `100` | - |
-| casing | `'lower' | 'upper'` | case | `lower` | - |
-| minA | `number` | transparency min | `0` | - |
-| maxA | `number` | transparency max | `1` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| minH | `number` | Minimum hue | `0` | - |
+| maxH | `number` | Maximum hue | `360` | - |
+| maxS | `number` | Minimum saturation | `0` | - |
+| maxS | `number` | Maximum saturation | `100` | - |
+| minL | `number` | Minimum lightness | `0` | - |
+| maxL | `number` | Maximum lightness | `100` | - |
+| casing | `'lower' | 'upper'` | Case | `lower` | - |
+| minA | `number` | Minimum transparency | `lower` | - |
+| maxA | `number` | Maximum transparency | `lower` | - |
 
 #### Return Value
 `string`
@@ -839,24 +805,24 @@ r.colorName();
 ```
 
 ### hexColor
-Generate hexadecimal colors.
+Generate a hexadecimal color.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| properties | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | grayscale | `false` | - |
-| min | `number` | min | `0` | - |
-| max | `number` | max | `255` | - |
-| minR | `number` | red min | `min` | - |
-| maxR | `number` | red max | `max` | - |
-| maxG | `number` | green min | `min` | - | maxG | `number` | green min
-| maxG | `number` | green max | `max` | - |
-| maxB | `number` | blue min | `min` | - |
-| maxB | `number` | blue max | `max` | - |
-| casing | `'lower' | 'upper'` | case | `lower` | - |
-| prefix | `boolean` | whether to show # prefix | `false` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | Grayscale | `false` | - |
+| min | `number` | Minimum | `0` | - |
+| max | `number` | Maximum | `255` | - |
+| minR | `number` | Minimum red value | `min` | - |
+| maxR | `number` | Maximum red value | `max` | - |
+| maxG | `number` | Minimum green value | `min` | - |
+| maxG | `number` | Maximum green value | `max` | - |
+| maxB | `number` | Minimum blue value | `min` | - |
+| maxB | `number` | Maximum blue value | `max` | - |
+| casing | `'lower' | 'upper'` | Case | `lower` | - |
+| prefix | `boolean` | Whether to show # prefix | `false` | - |
 
 #### Return Value
 `string`
@@ -871,23 +837,23 @@ r.hexColor();
 ```
 
 ### demicalColor
-Generate a hexadecimal color.
+Generate a decimal color.
 
 #### Parameters
-**options** Configuration items _optional_
+**options** Configuration options _optional_
 
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| grayscale | `boolean` | grayscale | `false` | - |
-| min | `number` | min | `0` | - |
-| max | `number` | max | `255` | - |
-| minR | `number` | red min | `min` | - |
-| maxR | `number` | red max | `max` | - |
-| maxG | `number` | green min | `min` | - | maxG | `number` | green min
-| maxG | `number` | green max | `max` | - |
-| maxB | `number` | blue min | `min` | - | maxB | `number` | blue min
-| maxB | `number` | blue max | `max` | - |
-| casing | `'lower' | 'upper'` | case | `lower` | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| grayscale | `boolean` | Grayscale | `false` | - |
+| min | `number` | Minimum | `0` | - |
+| max | `number` | Maximum | `255` | - |
+| minR | `number` | Minimum red value | `min` | - |
+| maxR | `number` | Maximum red value | `max` | - |
+| maxG | `number` | Minimum green value | `min` | - |
+| maxG | `number` | Maximum green value | `max` | - |
+| maxB | `number` | Minimum blue value | `min` | - |
+| maxB | `number` | Maximum blue value | `max` | - |
+| casing | `'lower' | 'upper'` | Case | `lower` | - |
 
 #### Return Value
 `number`
@@ -902,10 +868,10 @@ r.decimalColor();
 ```
 
 ## WebRandom
-Tool class for randomly generating Web data. Includes top-level domains (tld), domain names (domain), uniform resource locators (url), IPv4 addresses (ipv4), IPv6 addresses (ipv6), and email addresses (email).
+The tool class `WebRandom` can help you generate random Web data, including top-level domain (tld), domain name (domain), Uniform Resource Locator (url), IPv4 address (ipv4), IPv6 address (ipv6), and email address (email).
 
 ### tld
-Generates the top-level domain.
+Generate a top-level domain.
 
 #### Return Value
 `string`
@@ -922,13 +888,14 @@ r.tld();
 ```
 
 ### domain
-Generate the domain name.
+Generate a domain name.
 
 #### Parameters
-**options** configuration item _optional_
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| tld | `string` | top-level domain | - | - |
+**options** Configuration options _optional_
+
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| tld | `string` | Top-level domain | - | - |
 
 #### Return Value
 `string`
@@ -943,18 +910,19 @@ r.domain();
 ```
 
 ### url
-Generate a uniform resource locator.
+Generate a Uniform Resource Locator.
 
 #### Parameters
-**options** configuration item _optional_
-| attributes | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| tld | `string` | top-level domain | - | - |
-| protocol | `string` | protocol | `'http'` | - |
-| domain | `string` | domain name | - | - |
-| domainPrefix | `string` | `''` | - - |
-| path | `string` | path | - | - |
-| extensions | `string[]` | file extensions | `[]` | - |
+**options** Configuration options _optional_
+
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| tld | `string` | Top-level domain | - | - |
+| protocol | `string` | Protocol | `'http'` | - |
+| domain | `string` | Domain name | - | - |
+| domainPrefix | `string` | Domain prefix | `''`  | - |
+| path | `string` | Path | - | - |
+| extensions | `string[]` | File extensions | `[]` | - |
 
 #### Return Value
 `string`
@@ -1002,10 +970,10 @@ r.ipv6();
 Generate an email address.
 
 #### Parameters
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| domain | `string` | domain | - | - |
-| length | `number` | length | - | - |
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| domain | `string` | Domain name | - | - |
+| length | `number` | Length | - | - |
 
 #### Return Value
 `string`
@@ -1020,16 +988,17 @@ r.email();
 ```
 
 ## LocationRandom
-Random location tool class. Includes longitude, latitude and coordinates.
+The tool class `LocationRandom` can help you generate random location data, including longitude, latitude and coordinates.
 
 ### longtitude
-Generates longitude.
+Generate a longitude.
 
 #### Parameters
-**options** configuration item _optional_
-|property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| fixed | `number` | decimal digits | `7` | - |
+**options** Configuration options _optional_
+
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| fixed | `number` | Decimal places | `7` | - |
 
 #### Return Value
 `string`
@@ -1044,13 +1013,14 @@ r.longtitude();
 ```
 
 ### latitude
-Generate latitude.
+Generate a latitude.
 
 #### Parameters
-**options** configuration item _optional_
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| fixed | `number` | decimal digits | `7` | - |
+**options** Configuration options _optional_
+
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| fixed | `number` | Decimal places | `7` | - |
 
 #### Return Value
 `string`
@@ -1065,13 +1035,14 @@ r.latitude();
 ```
 
 ### coordinates
-Generate coordinates.
+Generate the coordinates.
 
 #### Parameters
-**options** configuration item _optional_
-| properties | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ---- |
-| fixed | `number` | decimal digits | `7` | - |
+**options** Configuration options _optional_
+
+| Property | Type | Description | Default | Required | 
+| ----| ---- | ---- | ---- | ---- |
+| fixed | `number` | Decimal places | `7` | - |
 
 #### Return Value
 `string`
@@ -1086,10 +1057,10 @@ r.coordinates();
 ```
 
 ## AddressRandom
-A tool class to generate random Chinese address data, including country, province, city, district, road, address and postcode.
+The tool class `AddressRandom` can help you generate random Chinese address data, including country, province, city, district, road, address and postcode.
 
 ### country
-Generates the country.
+Generate a country.
 
 #### Return Value
 `string`
@@ -1104,7 +1075,7 @@ r.country();
 ```
 
 ### province
-Generate the province.
+Generate a province.
 
 #### Return value
 `string`
@@ -1119,7 +1090,7 @@ r.province();
 ```
 
 ### city
-Generate the city.
+Generate a city.
 
 #### Return value
 `string`
@@ -1134,7 +1105,7 @@ r.city();
 ```
 
 ### district
-Generate the district.
+Generate a district.
 
 #### Return value
 `string`
@@ -1149,7 +1120,7 @@ r.district();
 ```
 
 ### road
-Generate the road.
+Generate a road.
 
 #### Return value
 `string`
@@ -1164,7 +1135,7 @@ r.road();
 ```
 
 ### address
-Generate an address.
+Generate a Chinese address.
 
 #### Return value
 `string`
@@ -1175,11 +1146,11 @@ import { random } from '@antv/data-wizard';
 
 const r = new random.AddressRandom();
 r.address();
-// 'No. 378 Huanghe Hutong, Longmen County, Huizhou City, Guangdong Province'
+// '广东省惠州市龙门县黄河胡同378号'
 ```
 
 ### postcode
-Generate an address.
+Generate a postcode.
 
 #### Return value
 `string`
