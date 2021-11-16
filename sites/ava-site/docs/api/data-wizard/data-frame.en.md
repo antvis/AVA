@@ -7,33 +7,33 @@ order: 0
 
 <div class="doc-md">
 
-`DataFrame` is the specified 2D data structure in DW. It supports different types of 1D and 2D source data and is employed as basic flow unit by most data operations in DW.
+`DataFrame` is the specified 2D data structure in DW. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
 ## new DataFrame
 ### Parameters
-**data** source data _required_
+**data** Raw data _required_
 
-Accepts common one-dimensional and two-dimensional data.
+Accept one-dimensional and two-dimensional data.
 
 Type
 - One-dimensional data
   - Base data structure `number | string | boolean | undefined | null`
-  - One-dimensional arrays `any[]`
+  - One-dimensional array `any[]`
   - One-dimensional object `{ [key: string]: any }`
 - Two-dimensional data
   - Two-dimensional array `any[][]`
-  - Array of objects `{ [key: string]: any }[]`
-  - Array object `{ [key: string]: any[] }`
+  - Object inside array `{ [key: string]: any }[]`
+  - Array inside object `{ [key: string]: any[] }`
 
-**extra** additional parameters _ optional_
+**extra** extra parameters _optional_
 
-Used to configure row indexes, column indexes, and missing padding values.
+Used to configure index, columns, and missing values.
   
-| property | type | description | default | required | 
-| ----| ---- | ---- | ---- | ---- | ----
-| index | `string | number` | row index | - - |
-| columns | `string | number` | column index | - - |
-| fillValue | `any` | Missing fill value | - - |
+| Property | Type | Description | Default | Required | 
+| ---- | ---- | ---- | ---- | ---- |
+| index | `string | number` | Index | - | - |
+| columns | `string | number` | Column | - | - |
+| fillValue | `any` | Filling missing value | - | - |
 
 ### Return Value
 `DataFrame`
@@ -126,7 +126,7 @@ DataFrame
 ```
 
 ## shape
-Gets the DataFrame data dimension.
+Get the DataFrame data row and column dimensions.
 
 ### Usage
 ```ts
@@ -143,18 +143,18 @@ df.shape;
 ```
 
 ## get
-Gets and cuts data by index and columns values.
+Get data by row location and column location.
 
 ### Parameters
-**rowLoc** Row position _required_
+**rowLoc** Row location _required_
 
-The position of the row to be described using the index value.
+The location of the row described by index.
 
 Type `(string | number) | (string | number)[] | string`
 
-**colLoc** Column position _optional_
+**colLoc** Column location _optional_
 
-The position of the column described by the columns value.
+The location of the column described by columns.
 
 Type `(string | number) | (string | number)[] | string`
 
@@ -277,18 +277,18 @@ DataFrame
 ```
 
 ## getByIntegerIndex
-Get and cut data by row and column numerical index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIntegerIndex(0, 0)` takes the data of the first row and column.
+Get data by row location and column location using integer-index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIntegerIndex(0, 0)` gets the data of the first row and column.
 
 ### Parameters
-**rowLoc** Row position _required_
+**rowLoc** Row location _required_
 
-The row position to be described using the row value index.
+The integer-index row location.
 
 Type `number | number[] | string`
 
-**colLoc** Column position _optional_
+**colLoc** Column location _optional_
 
-The column position to be described using the column numeric index.
+The nteger-index column location.
 
 Type `number | number[] | string`
 
@@ -318,12 +318,12 @@ DataFrame
 ```
 
 ## getByColumn
-Gets the data by Columns value.
+Get the data by columns value.
 
 ### Parameters
-**col** columns value _required_
+**col** Columns value _required_
 
-The column position to describe using the Columns value.
+The location of the column described by columns.
 
 Type `string | number`
 
@@ -351,7 +351,7 @@ Series
 ```
 
 ## info
-Get commonly used statistics information.
+Get statistical information.
 
 ### Return value
 `FieldsInfo`
@@ -368,7 +368,6 @@ const df = new DataFrame([
 
 df.info();
 /*
-Series
   [
     {
       count: 3,

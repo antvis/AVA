@@ -6,19 +6,23 @@
 </h1>
 
 <div align="center">
-一个 js/ts 的前端数据处理和分析类库。
+一个 js/ts 的前端数据处理和分析库。
+</div>
+
+<div align="center">
+<img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />
 </div>
 
 ## ✨ 特性
 
 ### 数据处理与分析
 
-DataWizard 的数据处理与分析模块 `DataFrame`，支持读取不同类型的一维和二维源数据，将其转换为 `DataFrame` 数据基本流转单元来处理数据。使用 `DataFrame`，你可以从一个数据集样本中获取和切割数据，也可以提取出各个字段的信息。这些信息包括字段的**特征**（字段名称、数据类型、统计信息等），**性质**（连续性、离散性等），以及多字段间的**字段间关系**（相关性、周期性等）。
+DataWizard 的数据处理与分析模块 `DataFrame`，支持读取不同类型的一维和二维源数据，将其转换为 `DataFrame` 数据基本流转单元来处理数据。使用 `DataFrame`，你可以从一个数据集样本中获取和切割数据，也可以提取出各个字段的信息。这些信息包括字段的特征（字段名称、数据类型、统计信息等），性质（连续性、离散性等），以及多字段间的字段间关系（相关性、周期性等）。
 
 简而言之，`DataFrame` 可以帮助你了解一个数据集。这也是我们做数据分析、智能可视化等工作的前提。
 
 <div align="center">
-<img src="https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif" width="600" />
+<img src="https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif" width="600" alt="DataFrame demo" />
 </div>
 
 ### 数学统计
@@ -26,7 +30,7 @@ DataWizard 的数据处理与分析模块 `DataFrame`，支持读取不同类型
 DataWizard 的数学统计模块 `statistics`，支持最大值、最小值、方差、皮尔逊系数、变异系数等常用统计学方法。`DataFrame` 的统计信息计算能力，也是基于 `statitstics` 实现的。
 
 <div align="center">
-<img src="https://gw.alipayobjects.com/zos/antfincdn/uYfyIDELsf/Kapture%2525202021-11-04%252520at%25252022.34.32.gif" width="600" />
+<img src="https://gw.alipayobjects.com/zos/antfincdn/WLciSdHENb/statistics.gif" width="600" alt="statistics demo" />
 </div>
 
 ### 数据模拟
@@ -34,7 +38,7 @@ DataWizard 的数学统计模块 `statistics`，支持最大值、最小值、�
 DataWizard 的数据模拟模块 `random`，提供了非常丰富的模拟数据生成能力。可用于随机生成多种类型的数据，包括基础数据、文本数据、日期时间数据、颜色数据、Web 数据、位置数据、中文地址数据等。你可以用它来快速开发一些数据模拟或自动填充类的功能。比如蚂蚁集团的设计工程化插件 <img src="https://gw.alipayobjects.com/zos/rmsportal/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) 中的自动填充功能。
 
 <div align="center">
-<img src="https://gw.alipayobjects.com/zos/antfincdn/VopHAgkeMZ/random.gif" width="600" />
+<img src="https://gw.alipayobjects.com/zos/antfincdn/VopHAgkeMZ/random.gif" width="600" alt="random demo" />
 </div>
 
 ## 📦 安装

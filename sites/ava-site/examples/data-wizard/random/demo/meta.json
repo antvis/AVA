@@ -7,8 +7,8 @@
     {
       "filename": "index.jsx",
       "title": {
-        "zh": "随机数生成示例",
-        "en": "Random data generation"
+        "zh": "模拟数据生成示例",
+        "en": "Data mocking"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/VopHAgkeMZ/random.gif"
     }

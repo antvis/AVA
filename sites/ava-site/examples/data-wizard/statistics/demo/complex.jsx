@@ -7,8 +7,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const data1 = [{ n: 1 }, { n: 2 }];
-const data2 = [1, [[2, 3], 4], 5];
-const data3 = [
+const data2 = [
   {
     dim: 1,
     n: 1,
@@ -33,7 +32,7 @@ const data3 = [
 const targetMeasure1 = 'n';
 const targetMeasure2 = 'dim';
 
-const methods = ['minBy', 'maxBy', 'sumBy', 'meanBy', 'countBy', 'groupBy', 'flatten', 'aggregate'];
+const methods = ['minBy', 'maxBy', 'sumBy', 'meanBy', 'countBy', 'groupBy', 'aggregate'];
 
 const App = () => {
   const [method, setMethod] = useState(methods[0]);
@@ -56,14 +55,7 @@ const App = () => {
           <h3>Data</h3>
           <TextArea
             style={{ resize: 'none', height: '100px', border: '2px solid #eee', padding: '20px' }}
-            value={
-              // eslint-disable-next-line no-nested-ternary
-              method !== 'aggregate'
-                ? method !== 'flatten'
-                  ? JSON.stringify(data1)
-                  : JSON.stringify(data2)
-                : JSON.stringify(data3)
-            }
+            value={method !== 'aggregate' ? JSON.stringify(data1) : JSON.stringify(data2)}
           />
         </div>
         <div style={{ flexBasis: '300px' }}>
@@ -71,12 +63,9 @@ const App = () => {
           <TextArea
             style={{ resize: 'none', height: '100px', border: '2px solid #eee', padding: '20px' }}
             value={
-              // eslint-disable-next-line no-nested-ternary
               method !== 'aggregate'
-                ? method !== 'flatten'
-                  ? JSON.stringify(statistics[method](data1, targetMeasure1))
-                  : JSON.stringify(statistics[method](data2))
-                : JSON.stringify(statistics[method](data3, targetMeasure2, targetMeasure1))
+                ? JSON.stringify(statistics[method](data1, targetMeasure1))
+                : JSON.stringify(statistics[method](data2, targetMeasure2, targetMeasure1))
             }
           />
         </div>

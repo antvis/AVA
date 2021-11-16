@@ -7,14 +7,14 @@ order: 1
 
 <div class="doc-md">
 
-`Statistics` contains the statistical method of DW employed to calculate some common statistical information. The method will store the values calculated once in the cache, and the values can be taken directly from the cache when calculated again to avoid duplicated calculation cost.
+The `statistics` module of DataWizard provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` is also based on `statistics`. The method will store the values calculated once in the cache, and the values can be taken directly from the cache when calculated again to avoid duplicated calculation cost.
 
 ## min
 Calculate the minimum value of the array.
 
 ### Parameters
 
-**array** Original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -31,14 +31,14 @@ stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## minBy
-Calculates the minimum value of the specified field of the array.
+Calculate the minimum value of the specified field of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `[]`
 
-**measure** Calculates the specified field _required_
+**measure** Calculate the specified field _required_
 
 Type `string`
 
@@ -56,10 +56,10 @@ stats.minBy(objects, 'n');
 ```
 
 ## minIndex
-Compute the index of the minimum value of the array.
+Calculate the index of the minimum value of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -78,7 +78,7 @@ stats.minIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 Calculate the maximum value of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -94,14 +94,14 @@ stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## maxBy
-Calculates the maximum value of the specified field of the array.
+Calculate the maximum value of the specified field of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `[]`
 
-**measure** Calculates the specified field _required_.
+**measure** Calculate the specified field _required_.
 
 Type `string`
 
@@ -119,10 +119,10 @@ stats.maxBy(objects, 'n');
 ```
 
 ## maxIndex
-Compute the index of the maximum value of the array.
+Calculate the index of the maximum value of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -138,10 +138,10 @@ stats.maxIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## sum
-Compute the sum of the array values.
+Calculate the sum of the array values.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -157,14 +157,14 @@ stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## sumBy
-Computes the sum of the values of the specified fields of the array.
+Calculate the sum of the values of the specified fields of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `[]`
 
-**measure** Calculates the sum of the specified fields _required_.
+**measure** Calculate the sum of the specified fields _required_.
 
 Type `string`
 
@@ -182,18 +182,18 @@ stats.sumBy(objects, 'n');
 ```
 
 ## median
-Compute the median of the array.
+Calculate the median of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `number[]`
 
-**sorted** Whether the original data is sorted or not _optional_
+**sorted** Whether the raw data is sorted _optional_
 
 Type `boolean`
 
-Default value `false`
+Default `false`
 
 ### Return value
 `number`
@@ -207,18 +207,18 @@ stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quartile
-Compute the quartile of the array.
+Calculate the quartile of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `number[]`
 
-**sorted** Whether the original data is sorted _optional_
+**sorted** Whether the raw data is sorted _optional_
 
 Type `boolean`
 
-Default value `false`
+Default `false`
 
 ### Return value
 `number[]`
@@ -232,22 +232,22 @@ stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quantile
-Compute the specified quantile of the array.
+Calculate the specified quantile of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `number[]`
 
-**percent** percent _required_
+**percent** Percent _required_
 
 Type `number`
 
-**sorted** whether the original data is sorted _optional
+**sorted** Whether the raw data is sorted _optional_
 
 Type `boolean`
 
-Default value `false`
+Default `false`
 
 ### Return value
 `number`
@@ -260,40 +260,11 @@ stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 // 10
 ```
 
-## quantile
-Compute the specified quantile of the array.
-
-### Parameters
-**array** The original data array _required_
-
-type `number[]`
-
-**percent** percent _required_
-
-Type `number`
-
-**sorted** whether the original data is sorted _optional
-
-Type `boolean`
-
-Default value `false`
-
-### Return value
-`number`
-
-### Usage
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
-// 10
-```
-
 ## mean
-Compute the mean of the array.
+Calculate the mean of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `number[]`
 
@@ -312,11 +283,11 @@ stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 Calculate the average number of the specified fields in the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `[]`
 
-**measure** Calculates the specified field _required_
+**measure** Calculate the specified field _required_
 
 Type `string`
 
@@ -334,10 +305,10 @@ stats.meanBy(objects, 'n');
 ```
 
 ## geometricMean
-Computes the geometric mean of the array.
+Calculate the geometric mean of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -353,10 +324,10 @@ stats.geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## harmonicMean
-Computes the harmonic mean of an array.
+Calculate the harmonic mean of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -372,10 +343,10 @@ stats.harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## variance
-Compute the variance of the array.
+Calculate the variance of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -394,7 +365,7 @@ stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
 Calculate the standard deviation of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -410,10 +381,10 @@ stats.standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## coefficientOfVariance
-Compute the coefficient of variance of the array.
+Calculate the coefficient of variance of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `number[]`
 
@@ -429,14 +400,14 @@ stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## covariance
-Compute the covariance of two arrays.
+Calculate the covariance of two arrays.
 
 ### Parameters
-**x** original data array1 _required_
+**x** First raw array data _required_
 
 Type `number[]`
 
-**y** Original data array 2 _required_
+**y** Second raw array data _required_
 
 Type `number[]`
 
@@ -452,14 +423,14 @@ stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25,
 ```
 
 ## pearson
-Compute the Pearson coefficients of two arrays.
+Calculate the Pearson correlation coefficient of two arrays.
 
 ### Parameters
-**x** original data array1 _required_
+**x** First raw array data _required_
 
 Type `number[]`
 
-**y** Original data array 2 _required_
+**y** Second raw array data _required_
 
 Type `number[]`
 
@@ -475,10 +446,10 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 ```
 
 ## valid
-Count the number of legal values in the array, `undefined`, `null`, `NaN` and other values which can be converted to `false` are regarded as illegal values.
+Count the number of valid values in the array, `undefined`, `null`, `NaN` and other values which can be converted to `false` are regarded as invalid values.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `any[]`
 
@@ -494,10 +465,10 @@ stats.valid([1, 2, NaN, 201, undefined, 4, 5, null]);
 ```
 
 ## missing
-Count the number of missing values in the array, complementary to the `valid` method.
+Count the number of missing values in the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `any[]`
 
@@ -516,7 +487,7 @@ stats.missing([1, 2, NaN, 201, undefined, 4, 5, null]);
 Count the number of independent values in the array, and generate an object with the independent value itself as key and the number as value.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `any[]`
 
@@ -535,7 +506,7 @@ stats.valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
 Count the number of distinct values in the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `any[]`
 
@@ -554,11 +525,11 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 Calculate the total count of the specified field of the array.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 Type `[]`
 
-**measure** Calculates the specified field _required_.
+**measure** Calculate the specified field _required_.
 
 Type `string`
 
@@ -579,7 +550,7 @@ stats.countBy(objects, 'n');
 Group the array objects by field.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `[]`
 
@@ -628,32 +599,11 @@ stats.groupBy(objects, 'measure');
 // }
 ```
 
-## flatten
-Flatten the array object.
-
-### Parameters
-**array** The original data array _required_
-
-Type `[]`
-
-### Return value
-`[]`
-
-### Usage
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const array = [1, [2, 3], 4];
-
-stats.flatten(array);
-// [1, 2, 3, 4]
-```
-
 ## aggregate
 Aggregate the array objects by the specified dimensions and fields.
 
 ### Parameters
-**array** The original data array _required_
+**array** Raw array data _required_
 
 type `[]`
 

@@ -9,16 +9,20 @@
 A js/ts library for data processing and analysis.
 </div>
 
+<div align="center">
+<img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />
+</div>
+
 ## ✨ Features
 
 ### Data Processing and Analysis
 
-DataWizard can help you extract information of fields from a dataset sample by its `DataFrame` module. You can get or slice data by it. The information includes the field's **characteristics** (field name, data type, statistics, etc.) and **properties** (continuity, discreteness, etc.), as well as **field-to-field relationships** (correlation, periodicity, etc.).
+DataWizard can help you extract information of fields from a dataset sample by its `DataFrame` module. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
 In short, `DataFrame` can help you understand and process a dataset. This is the premise of data analysis and Automatic chart recommendation.
 
 <div align="center">
-<img src="https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif" width="600" />
+<img src="https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif" width="600" alt="DataFrame demo" />
 </div>
 
 ### Statistical Methods
@@ -26,7 +30,7 @@ In short, `DataFrame` can help you understand and process a dataset. This is the
 The `statistics` module of DataWizard provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` is also based on `statistics`.
 
 <div align="center">
-<img src="https://gw.alipayobjects.com/zos/antfincdn/uYfyIDELsf/Kapture%2525202021-11-04%252520at%25252022.34.32.gif" width="600" />
+<img src="https://gw.alipayobjects.com/zos/antfincdn/WLciSdHENb/statistics.gif" width="600" alt="statistics demo" />
 </div>
 
 ### Data Mocking
@@ -34,7 +38,7 @@ The `statistics` module of DataWizard provides common statistical methods, inclu
 The `random` module of DataWizard provides you comprehensive data mocking options. Data types include basic data, text data, datetime data, color data, Web data, location data, Chinese data address, etc.. You can use it to quickly develop some data generating or auto-filling functions. For example, the auto-fill function in the desgin engineering plugin <img src="https://gw.alipayobjects.com/zos/rmsportal/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/).
 
 <div align="center">
-<img src="https://gw.alipayobjects.com/zos/antfincdn/VopHAgkeMZ/random.gif" width="600" />
+<img src="https://gw.alipayobjects.com/zos/antfincdn/VopHAgkeMZ/random.gif" width="600" alt="random demo" />
 </div>
 
 ## 📦 Installation

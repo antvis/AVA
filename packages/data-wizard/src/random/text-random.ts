@@ -160,27 +160,27 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   name(options?: Person): string {
-    return `${this.firstName(options)} ${this.lastName()}`;
+    return `${this.givenName(options)} ${this.surname()}`;
   }
 
   /**
-   * return a random english last name
+   * return a random english surname
    */
-  lastName(): string {
-    return this.pickone(this.database.lastName);
+  surname(): string {
+    return this.pickone(this.database.surname);
   }
 
   /**
-   * return a random english first name
+   * return a random english given name
    * @param options - the params
    */
-  firstName(options?: Person): string {
+  givenName(options?: Person): string {
     const { gender } = initOptions({}, options);
 
     assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
 
-    const { male, female } = this.database.firstName;
-    const pool: string[] = gender ? this.database.firstName[gender] : ([] as string[]).concat(male).concat(female);
+    const { male, female } = this.database.givenName;
+    const pool: string[] = gender ? this.database.givenName[gender] : ([] as string[]).concat(male).concat(female);
     return this.pickone(pool);
   }
 
@@ -274,27 +274,27 @@ export class TextRandom extends BasicRandom {
    * @param options - the params
    */
   cName(options?: Person): string {
-    return `${this.cLastName()}${this.cFirstName(options)}`;
+    return `${this.cSurname()}${this.cGivenName(options)}`;
   }
 
   /**
-   * return a random Chinese last name
+   * return a random Chinese surname
    * @param options - the params
    */
-  cLastName(): string {
-    return this.pickone(this.database.cLastName);
+  cSurname(): string {
+    return this.pickone(this.database.cSurname);
   }
 
   /**
-   * return a random Chinese first name
+   * return a random Chinese given name
    */
-  cFirstName(options?: CFirstNameOptions): string {
+  cGivenName(options?: CFirstNameOptions): string {
     const { length, gender } = initOptions({ length: this.natural({ min: 1, max: 2 }) }, options);
 
     assert(!gender || gender === 'female' || gender === 'male', 'Gender must be one of female or male');
 
-    const { male, female } = this.database.cFirstName;
-    const pool = gender ? this.database.cFirstName[gender] : male + female;
+    const { male, female } = this.database.cGivenName;
+    const pool = gender ? this.database.cGivenName[gender] : male + female;
     return this.pickset(pool.split(''), length).join('');
   }
 

@@ -39,7 +39,7 @@ test('character111', () => {
   expect(R.name()).toContain(' ');
   expect(R.name({ gender: 'female' })).toContain(' ');
   expect(R.cName()).not.toContain(' ');
-  expect(R.cFirstName({ length: 3 })).toHaveLength(3);
+  expect(R.cGivenName({ length: 3 })).toHaveLength(3);
   expect(R.cWord().length).toBeGreaterThanOrEqual(2);
   expect(R.n(R.cWord, 100, { length: 5 }).every((item) => item.length === 5)).toBe(true);
   expect(R.cSentence().endsWith('。')).toBe(true);
