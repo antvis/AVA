@@ -1,5 +1,5 @@
 ---
-title: Statistics
+title: statistics
 order: 1
 ---
 

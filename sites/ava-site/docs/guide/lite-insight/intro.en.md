@@ -45,7 +45,7 @@ getDataInsights(data, {
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](./docs/api/readme.md)
+For more usages, please check the [API Reference](../../api/lite-insight/auto-insights).
 
 
 ## 🧷 Acknowledgement
