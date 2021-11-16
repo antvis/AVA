@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { specToG2Plot } from '@antv/antv-spec';
 import { colorSimulation, colorToHex, COLOR_BLINDNESS_SIMULATION_TYPES } from '@antv/smart-color';
-import { TableView, StepBar } from 'antv-site-demo-rc';
 
 import { Advisor } from '@antv/chart-advisor';
 
@@ -34,78 +33,38 @@ const initSimMethod = SIMULATION_TYPES[0];
 const simulatedColor = colorSimulation(initColor, initSimMethod);
 
 const themeColor = {
+  /**
+   * `primaryColor`: color in Hex string
+   * such as '#ff5733'
+   * specify color for ChartAdvisor
+   */
   primaryColor: colorToHex(simulatedColor),
 };
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+const App = () => {
+  const currentAdvice = 0;
+  const advices = myAdvisor.advise({
+    data: defaultData,
+    options: {
+      theme: themeColor,
+    },
+  });
 
-    this.state = {
-      currentStep: 0,
-      data: defaultData,
-      advices: myAdvisor.advise({
-        data: defaultData,
-        options: {
-          theme: themeColor,
-        },
-      }),
-      currentAdvice: 0,
-      colorPick: colorToHex(initColor),
-      simMethod: initSimMethod,
-    };
-
-    this.canvas = React.createRef(null);
-  }
-
-  onStepChange = (currentStep) => {
-    this.setState({ currentStep });
-  };
-
-  componentDidUpdate() {
-    if (this.canvas.current) {
-      specToG2Plot(this.state.advices[this.state.currentAdvice].spec, document.getElementById('vis'));
+  useEffect(() => {
+    if (advices[currentAdvice]) {
+      specToG2Plot(advices[currentAdvice].spec, document.getElementById('vis'));
     }
-  }
+  }, []);
 
-  render() {
-    const { currentStep, data } = this.state;
+  return (
+    <>
+      <p>Render chart with specified color theme.</p>
 
-    const dataContent = <TableView data={data} />;
-
-    const plotContent = (
-      <div>
-        <div id="vis" key="plot" ref={this.canvas} style={{ flex: 5, height: '100%' }}></div>
+      <div className="vis-content" style={{ height: 'calc(100% - 80px)' }}>
+        <div id="vis" key="plot" style={{ flex: 5, height: '100%' }}></div>
       </div>
-    );
-
-    // manifest
-
-    const steps = [
-      {
-        title: 'Data',
-        desc: 'Source data:',
-        content: dataContent,
-      },
-      {
-        title: 'Chart',
-        desc: 'Render chart with specified color theme.',
-        content: plotContent,
-      },
-    ];
-
-    return (
-      <>
-        <StepBar current={currentStep} onChange={this.onStepChange} steps={steps} />
-
-        <p>{steps[currentStep].desc}</p>
-
-        <div className="steps-content" style={{ height: 'calc(100% - 80px)' }}>
-          {steps[currentStep].content}
-        </div>
-      </>
-    );
-  }
-}
+    </>
+  );
+};
 
 ReactDOM.render(<App />, document.getElementById('container'));
