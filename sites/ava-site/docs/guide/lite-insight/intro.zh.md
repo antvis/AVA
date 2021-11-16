@@ -7,7 +7,7 @@ order: 0
 
 <div class="doc-md">
 
-从多维数据中自动地发现有趣模式.
+从多维数据中自动地发现有趣模式。
 
 </div>
 
@@ -47,7 +47,7 @@ getDataInsights(data, {
 
 ## 📖 文档
 
-更多用法请移步至 [API](./docs/api/readme.md)
+更多用法请移步至 [API](../../api/lite-insight/auto-insights)。
 
 ## 🧷 致谢
 LiteInsight 其中的一些功能设计受到以下论文的启发：

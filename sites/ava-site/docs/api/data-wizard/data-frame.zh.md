@@ -367,7 +367,6 @@ const df = new DataFrame([
 
 df.info();
 /*
-Series
   [
     {
       count: 3,

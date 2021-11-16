@@ -1,5 +1,5 @@
 ---
-title: Random
+title: random
 order: 2
 ---
 
