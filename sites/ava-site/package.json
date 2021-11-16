@@ -27,6 +27,7 @@
     "@antv/antv-spec": "^0.1.0-alpha.6",
     "@antv/g2plot": "^2.3.39",
     "@antv/g6": "^4.3.11",
+    "@antv/narrative-text-vis": "^0.1.6-alpha.5",
     "@antv/s2": "^1.0.0-beta.9",
     "@antv/smart-color": "^0.2.1",
     "@antv/thumbnails": "^1.3.0",
