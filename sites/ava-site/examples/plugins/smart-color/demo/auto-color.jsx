@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { specToG2Plot } from '@antv/antv-spec';
 import { colorToHex } from '@antv/smart-color';
-import { TableView, StepBar } from 'antv-site-demo-rc';
 
 import { Advisor } from '@antv/chart-advisor';
 
@@ -20,12 +19,41 @@ const defaultData = [
 
 const initColor = {
   model: 'rgb',
-  value: { r: 103, g: 142, b: 242 },
+  value: { r: 255, g: 36, b: 12 },
 };
+
+const theme = {
+  primaryColor: colorToHex(initColor),
+};
+
+/**
+ * `genType`: color generation type
+ * options are listed as follows:
+ * discrete types:
+ * 'monochromatic', 'analogous'
+ * '单色配色', '近似配色'
+ * categorical types:
+ * 'polychromatic', 'split-complementary', 'triadic', 'tetradic'
+ * '多色', '补色分割', '三等分配色', '矩形配色'
+ */
+const genType = 'polychromatic';
+
+/**
+ * `simType`: color simulation type
+ * options are listed as follows:
+ * 'normal', 'protanomaly', 'deuteranomaly', 'tritanomaly',
+ * '正常', '红色弱', '绿色弱', '蓝色弱',
+ * 'protanopia', 'deuteranopia', 'tritanopia',
+ * '红色盲', '绿色盲', '蓝色盲',
+ * 'achromatomaly', 'achromatopsia'
+ * '全色弱', '全色盲'
+ */
+const simType = 'protanomaly';
 
 const setColors = {
   /**
    * `themeColor`: color in Hex string
+   * such as '#ff5733'
    * theme of SmartColor mode
    * default is lite blue
    */
@@ -33,93 +61,65 @@ const setColors = {
   /**
    * `colorSchemeType`: color generation type
    * contains discrete and categorical types
-   * discrete: 'monochromatic', 'analogous'
-   * categorical: 'polychromatic', 'split-complementary', 'triadic', 'tetradic'
    * default value is 'monochromatic' or 'polychromatic' based on data type
    */
-  colorSchemeType: 'polychromatic',
+  colorSchemeType: genType,
   /**
    * `simulationType`: color simulation type
-   * employed for color blindness and grayscale]
+   * employed for color blindness and grayscale
    * default value is 'normal'
-   * options are listed as follows:
-   * 'normal', 'protanomaly', 'deuteranomaly', 'tritanomaly',
-   * 'protanopia', 'deuteranopia', 'tritanopia',
-   * 'achromatomaly', 'achromatopsia'
    */
-  simulationType: 'protanomaly',
+  simulationType: simType,
 };
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
+const App = () => {
+  const currentAdvice = 0;
+  const advices = myAdvisor.advise({
+    data: defaultData,
+    options: {
+      theme,
+    },
+  });
+  const advicesWithColor = myAdvisor.advise({
+    data: defaultData,
+    /**
+     * `smartColor`: SmartColor mode on/off
+     * SmartColor mode contains default color options
+     */
+    smartColor: true,
+    /**
+     * `colorOptions`: SmartColor options
+     * This variable is optional for SmartColor mode
+     */
+    colorOptions: setColors,
+  });
 
-    this.state = {
-      currentStep: 0,
-      data: defaultData,
-      advices: myAdvisor.advise({
-        data: defaultData,
-        /**
-         * `smartColor`: SmartColor mode on/off
-         * SmartColor mode contains default color options
-         */
-        smartColor: true,
-        /**
-         * `colorOptions`: SmartColor options
-         * This variable is optional for SmartColor mode
-         */
-        colorOptions: setColors,
-      }),
-      currentAdvice: 0,
-    };
-
-    this.canvas = React.createRef(null);
-  }
-
-  onStepChange = (currentStep) => {
-    this.setState({ currentStep });
-  };
-
-  componentDidUpdate() {
-    if (this.canvas.current) {
-      specToG2Plot(this.state.advices[this.state.currentAdvice].spec, document.getElementById('vis'));
+  useEffect(() => {
+    if (advices[currentAdvice]) {
+      specToG2Plot(advices[currentAdvice].spec, document.getElementById('init'));
     }
-  }
+    if (advicesWithColor[currentAdvice]) {
+      specToG2Plot(advicesWithColor[currentAdvice].spec, document.getElementById('smart'));
+    }
+  }, []);
 
-  render() {
-    const { currentStep, data } = this.state;
+  return (
+    <>
+      <p>Render chart with specified color theme.</p>
 
-    const dataContent = <TableView data={data} />;
+      <div className="init-content" style={{ height: 'calc(55% - 80px)' }}>
+        <div id="init" key="plot" style={{ flex: 5, height: '100%' }}></div>
+      </div>
 
-    const plotContent = <div id="vis" key="plot" ref={this.canvas} style={{ flex: 5, height: '100%' }}></div>;
+      <p>
+        Render chart with SmartColor using <b>{genType}</b> method for <b>{simType}</b> color blindness.
+      </p>
 
-    // manifest
-
-    const steps = [
-      {
-        title: 'Data',
-        desc: 'Source data:',
-        content: dataContent,
-      },
-      {
-        title: 'Chart',
-        desc: 'Render chart with SmartColor.',
-        content: plotContent,
-      },
-    ];
-
-    return (
-      <>
-        <StepBar current={currentStep} onChange={this.onStepChange} steps={steps} />
-
-        <p>{steps[currentStep].desc}</p>
-
-        <div className="steps-content" style={{ height: 'calc(100% - 80px)' }}>
-          {steps[currentStep].content}
-        </div>
-      </>
-    );
-  }
-}
+      <div className="smart-content" style={{ height: 'calc(55% - 80px)' }}>
+        <div id="smart" key="plot" style={{ flex: 5, height: '100%' }}></div>
+      </div>
+    </>
+  );
+};
 
 ReactDOM.render(<App />, document.getElementById('container'));
