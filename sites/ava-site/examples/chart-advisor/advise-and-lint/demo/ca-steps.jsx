@@ -4,6 +4,7 @@ import { Menu, Dropdown, Radio } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { JSONView, TableView, ChartView, LintCard, StepBar } from 'antv-site-demo-rc';
 
+// import
 import { ChartAdvisor } from '@antv/chart-advisor';
 
 const myChartAdvisor = new ChartAdvisor();

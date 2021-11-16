@@ -35,6 +35,14 @@
         "zh": "定制 ChartAdvisor 所使用的规则"
       },
       "screenshot": "https://iph.href.lu/800x400?text=custom-rules-ca"
+    },
+    {
+      "filename": "custom-ckb-rules-ca.jsx",
+      "title": {
+        "en": "Custom CKB and rules for ChartAdvisor",
+        "zh": "定制 ChartAdvisor 所使用的 CKB 和规则"
+      },
+      "screenshot": "https://iph.href.lu/800x400?text=custom-ckb-rules-ca"
     }
   ]
 }
