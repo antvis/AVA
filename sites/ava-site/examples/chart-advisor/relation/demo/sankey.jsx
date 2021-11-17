@@ -16,16 +16,18 @@ fetch('https://gw.alipayobjects.com/os/antfincdn/I6yCahSrA/ava-sankey-demo.json'
     const bestAdvice = advices[0];
     if (bestAdvice) {
       const { spec } = bestAdvice;
+      // customized configurations by modify recommended spec
+      spec.layer[0].nodes.mark = 'rect';
+      spec.layer[0].links.mark = 'cubic-vertical';
       const g6Cfg = specToG6Config(spec); // the recommended configurations
+      // customized configurations by modify render configurations
       const myCfg = {
-        // customized configurations
         layout: {
           type: 'dagre',
-          rankdir: 'TB',
-          nodesep: 50,
-          ranksep: 100,
+          rankdir: 'LR',
+          nodesep: 20,
+          ranksep: 40,
         },
-        height: 800,
       };
       const graph = new G6.Graph({
         container: 'container',

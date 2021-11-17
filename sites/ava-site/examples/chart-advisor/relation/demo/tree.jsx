@@ -14,9 +14,6 @@ fetch('https://gw.alipayobjects.com/os/antfincdn/0cfrQND8L/ava-knowledgetree-dem
     if (bestAdvice) {
       const { spec } = bestAdvice;
       const container = document.getElementById('container');
-      // you can change and customize some configurations
-      spec.basis.width = 600;
-      spec.basis.height = 800;
       specToG6Plot(spec, container);
     }
   });
