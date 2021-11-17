@@ -47,7 +47,7 @@ DataWizard 的数据模拟模块 `random`，提供了非常丰富的模拟数据
 $ npm install @antv/data-wizard
 ```
 
-## 🔨 快速开始
+## 🔨 使用
 
 ### DataFrame
 

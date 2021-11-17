@@ -37,7 +37,7 @@ The JSON is like this:
 }
 ```
 
-## Features
+## ✨ Features
 
 ### Consistency for Chart Taxonomy
 
@@ -55,13 +55,13 @@ With AVA/CKB, you can quickly build your chart dictionary product like this: <im
 
 You can easily build a chart type recommendation system with this knowledge base and your customized rules.
 
-## Installation
+## 📦 Installation
 
 ```bash
 $ npm install @antv/knowledge
 ```
 
-## Usage
+## 🔨 Usage
 
 ```js
 import { CKBJson } from '@antv/knowledge';
@@ -73,8 +73,13 @@ const knowledgeBase = CKBJson();
 // Knowledage base for completed charts in Chinese.
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
-## Demo
+### Demo
 
 <playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
+
+## 📖 Documentation
+
+For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/ckb/intro)
+
 
 </div>

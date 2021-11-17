@@ -11,15 +11,15 @@ order: 0
 
 </div>
 
-## 特性
+## ✨ 功能特性
 
 ChartAdvisor 中透出了多个工具类供用户使用，包括 `ChartAdvisor`、`Advisor` 和 `Linter`。
 
-`ChartAdvisor` 是一个同时包含图表推荐和图表优化功能的工具类。
+* **ChartAdvisor**: 是一个同时包含图表推荐和图表优化功能的工具类。
 
-`Advisor` 是对应图表推荐的工具类。
+* **Advisor**: 是对应图表推荐的工具类。
 
-`Linter` 是对应图表优化的工具类。
+* **Linter**: 是对应图表优化的工具类。
 
 `Advisor` 和 `Linter` 分别提供了 `advise` 和 `lint` 函数用于图表推荐和优化。
 
@@ -31,13 +31,13 @@ ChartAdvisor 中透出了多个工具类供用户使用，包括 `ChartAdvisor`�
 
 给定已有图表配置，根据规则和给定需求发现并优化图表中存在的问题。
 
-## 安装
+## 📦 安装
 
 ```bash
 $ npm install @antv/chart-advisor
 ```
 
-## 使用
+## 🔨 使用
 
 ### ChartAdvisor 使用
 
@@ -141,5 +141,10 @@ const problems = myLinter.lint({ spec })
 ### ChartAdvisor 演示案例
 
 <playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
+
+## 📖 文档
+
+更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/chart-advisor/ChartAdvisor)
+
 
 </div>

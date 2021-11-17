@@ -27,7 +27,7 @@ The pipeline of Auto-Insights:
 $ npm install @antv/lite-insight
 ```
 
-## 🔨 Getting Started
+## 🔨 Usage
 
 
 ```ts

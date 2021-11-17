@@ -9,13 +9,24 @@ order: 0
 
 根据输入图表和洞察自动生成 Dashboard。
 
-## 安装
+## ✨ 功能特性
+
+* **Dashboard 生成**: 基于给定图表自动的计算 Dashboard 所需属性。
+* **Dashboard 绘制**: 提供基于上述属性的 React Dashboard 绘制组件 `SmartBoardDashboard`。
+* **结合洞察**: 可以与 [LiteInsight](https://ava.antv.vision/zh/docs/api/lite-insight/auto-insights) 结合从而展示数据背后的洞察信息。
+
+SmartBoard 的流程如下：
+
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' />
+
+## 📦 安装
 
 ```bash
 $ npm install @antv/smart-board
 ```
 
-## 使用
+## 🔨 使用
+
 
 SmartBoard 是负责构造实例的 class，可用于生成一个 SmartBoard 实例。通过该实例，可以使用到 Dashboard 相关方法。
 
@@ -90,7 +101,7 @@ SmartBoard.chartOrder(type as OrderType): ;
 SmartBoard.chartCluster();
 ```
 
-## Dashboard 组件使用
+### Dashboard 组件使用
 
 为了简化使用成本，SmartBoard 也提供了基于上述实例展示 Dashboard 的 React 组件 `<SmartBoardDashboard>` 进行使用。
 
@@ -112,5 +123,10 @@ ReactDOM.render(
   mountNode,
 );
 ```
+
+## 📖 文档
+
+更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/smart-board/SmartBoard)
+
 
 </div>

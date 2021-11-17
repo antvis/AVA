@@ -86,7 +86,7 @@ interface BasicDataPropertyForAdvice {
 | ----| ---- | ---- | -----|
 | name | `string` | 字段名。 | 无 |
 | levelOfMeasurements | `LOM[]` | 测量尺度。 | 无 |
-| rawData | `[]` | 源数据。 | `false` |
+| rawData | `any[]` | 源数据。 | `false` |
 | recommendation | `analyzer.FieldInfo['recommendation']` | 推荐类型。 | 无 |
 | type | `analyzer.FieldInfo['type']` | 字段类型。 | 无 |
 | distinct | `number` | 去重计数。 | 无 |

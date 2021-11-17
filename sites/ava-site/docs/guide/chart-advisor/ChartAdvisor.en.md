@@ -11,17 +11,17 @@ Recommend and automatically generate charts based on data and analytics requirem
 
 </div>
 
-## Features
+## ✨ Features
 
 ChartAdvisor contains several tool classes exported for users, including `ChartAdvisor`, `Advisor` and `Linter`.
 
-`ChartAdvisor` is a tool class that contains both chart recommendation and chart optimization abilities,
+* **ChartAdvisor**: is a tool class that contains both chart recommendation and chart optimization abilities,
 
-`Advisor` is the tool classes for recommending charts automatically.
+* **Advisor**: is the tool classes for recommending charts automatically.
 
-`Linter` is the tool classes for providing chart optimization suggestions.
+* **Linter**: is the tool classes for providing chart optimization suggestions.
 
-`Advisor` and `Linter` provide `advise` and `lint` functions for chart recommendation and optimization, respectively.
+`Advisor` and `Linter` provide `advise()` and `lint()` functions for chart recommendation and optimization, respectively.
 
 ### Chart Recommendation
 
@@ -33,13 +33,13 @@ The chart configuration with the highest recommendation is at the top of the lis
 Given an existing chart configuration, find and optimize problems in the chart based on rules and given requirements.
 The problem with the highest error score is at the top of the list.
 
-## Installation
+## 📦 Installation
 
 ```bash
 $ npm install @antv/chart-advisor
 ```
 
-## Usage
+## 🔨 Usage
 
 ### ChartAdvisor Usage
 
@@ -152,5 +152,10 @@ const problems = myLinter.lint({ spec })
 ### ChartAdvisor Demo
 
 <playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
+
+## 📖 Documentation
+
+For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/chart-advisor/ChartAdvisor)
+
 
 </div>

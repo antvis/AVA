@@ -27,7 +27,7 @@ order: 2
 | Properties | Type | Description | Default|  
 | ----| ---- | ---- | -----|
 | simulationType | `SimulationType` |The types of simulations, the normal case, the eight different modes of color blindness, and the colors in grayscale mode. | `"normal"` |
-| locked |  `boolean[]` | Each item in the array indicates whether the color of the same index in the color palette should be kept constant during optimization. | `[]` |
+| locked |  `boolean[]` | Each item in the array indicates whether the color of the same index in the color palette should be kept constant during optimization. | `any[]` |
 | colorDifferenceMeasure | `ColorDifferenceMeasure` | Measure used to assess color differences when optimizing. You can find more details in [colorDifference](./evaluators.md#colorDifference).  | `euclidean` |
 | threshold | `number` | The minimum difference expected to be achieved between the colors in the optimized palette. Since different color difference methods have different ranges of values, they have different default thresholds. However, this threshold is not always reached in each optimization, and it depends mainly on the number of colors in this palette and the difference at the beginning. | `30`(euclidean)<br>`20`(CIEDE2000) |
 | backgroundColor | `Color` | The background color of the palette. The background color plays a role when the palette contains transparent or semi-transparent colors, because the semi-transparent colors will behave differently on different background colors. | `{ model: 'rgb', value: { r: 255, g: 255, b: 255 } } `(white) |

@@ -27,7 +27,7 @@ Generate categorical or discrete scale palette based on [color scheme](https://g
 | ----| ---- | ---- | -----|
 | count | `number` | The number of colors expected to be included in the palette. | `8` |
 | color |  `Color` | The primary color, generally be the brand color. | random |
-| colors | `(Color \| undefined)[]` | Each item in the array indicates that the same color is expected to appear at the same index of the generated palette. Not effective for the generation of discrete palettes. | `[]` |
+| colors | `(Color \| undefined)[]` | Each item in the array indicates that the same color is expected to appear at the same index of the generated palette. Not effective for the generation of discrete palettes. | `any[]` |
 | tendency | `tint \| shade` | Color trends of discrete-scale palette. | `tint` |
 
 ```ts

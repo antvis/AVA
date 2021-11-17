@@ -2,7 +2,7 @@
 
 
 <h1 align="center">
-<b>@antv/lite-insight</b>
+<b>@antv/smart-board</b>
 </h1>
 
 <div align="center">

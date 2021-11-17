@@ -425,7 +425,7 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 ### 参数
 **array** 原数组数据 _必选_
 
-类型 `[]`
+类型 `any[]`
 
 **measure** 计算指定字段 _必选_
 
@@ -450,7 +450,7 @@ stats.minBy(objects, 'n');
 ### 参数
 **array** 原数组数据 _必选_
 
-类型 `[]`
+类型 `any[]`
 
 **measure** 计算指定字段 _必选_
 
@@ -475,7 +475,7 @@ stats.maxBy(objects, 'n');
 ### 参数
 **array** 原数组数据 _必选_
 
-类型 `[]`
+类型 `any[]`
 
 **measure** 计算指定字段 _必选_
 
@@ -500,7 +500,7 @@ stats.sumBy(objects, 'n');
 ### 参数
 **array** 原数组数据 _必选_
 
-类型 `[]`
+类型 `any[]`
 
 **measure** 计算指定字段 _必选_
 
@@ -525,7 +525,7 @@ stats.meanBy(objects, 'n');
 ### 参数
 **array** 原数组数据 _必选_
 
-类型 `[]`
+类型 `any[]`
 
 **measure** 计算指定字段 _必选_
 
@@ -550,14 +550,14 @@ stats.countBy(objects, 'n');
 ### 参数
 **array** 原数组数据 _必选_
 
-类型 `[]`
+类型 `any[]`
 
 **measure** 分组指定字段 _必选_
 
 类型 `string`
 
 ### 返回值
-`[]`
+`any[]`
 
 ### 用法
 ```ts
@@ -602,7 +602,7 @@ stats.groupBy(objects, 'measure');
 ### 参数
 **array** 原数组数据 _必选_
 
-类型 `[]`
+类型 `any[]`
 
 **dimension** 聚合指定维度 _必选_
 
@@ -625,7 +625,7 @@ type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
 类型 `string`
 
 ### 返回值
-`[]`
+`any[]`
 
 ### 用法
 ```ts

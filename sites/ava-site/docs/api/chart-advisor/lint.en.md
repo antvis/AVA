@@ -87,7 +87,7 @@ interface BasicDataPropertyForAdvice {
 | ----| ---- | ---- | -----|
 | name | `string` | The name of the field. | None |
 | levelOfMeasurements | `LOM[]` | Level of measurement. | None |
-| rawData | `[]` | The source data. | None |
+| rawData | `any[]` | The source data. | None |
 | recommendation | `analyzer.FieldInfo['recommendation']` | Recommendation type. | None |
 | type | `analyzer.FieldInfo['type']` | Field type. | None
 | distinct | `number` | Value of distinct data. | None | 

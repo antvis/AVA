@@ -28,7 +28,7 @@ order: 0
 $ npm install @antv/lite-insight
 ```
 
-## 🔨 快速开始
+## 🔨 使用
 
 
 ```ts
