@@ -28,31 +28,6 @@ stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1
 ```
 
-## minBy
-计算数组指定字段的最小值。
-
-### 参数
-**array** 原数组数据 _必选_
-
-类型 `[]`
-
-**measure** 计算指定字段 _必选_
-
-类型 `string`
-
-### 返回值
-`number`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.minBy(objects, 'n');
-// 1
-```
-
 ## minIndex
 计算数组最小值索引。
 
@@ -91,31 +66,6 @@ stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 // 999
 ```
 
-## maxBy
-计算数组指定字段的最大值。
-
-### 参数
-**array** 原数组数据 _必选_
-
-类型 `[]`
-
-**measure** 计算指定字段 _必选_
-
-类型 `string`
-
-### 返回值
-`number`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.maxBy(objects, 'n');
-// 2
-```
-
 ## maxIndex
 计算数组最大值索引。
 
@@ -152,31 +102,6 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1225
-```
-
-## sumBy
-计算数组指定字段值之和。
-
-### 参数
-**array** 原数组数据 _必选_
-
-类型 `[]`
-
-**measure** 计算指定字段 _必选_
-
-类型 `string`
-
-### 返回值
-`number`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.sumBy(objects, 'n');
-// 3
 ```
 
 ## median
@@ -275,31 +200,6 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 153.125
-```
-
-## meanBy
-计算数组指定字段平均数。
-
-### 参数
-**array** 原数组数据 _必选_
-
-类型 `[]`
-
-**measure** 计算指定字段 _必选_
-
-类型 `string`
-
-### 返回值
-`number`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.meanBy(objects, 'n');
-// 1.5
 ```
 
 ## geometricMean
@@ -517,6 +417,106 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 // 8
+```
+
+## minBy
+计算数组指定字段的最小值。
+
+### 参数
+**array** 原数组数据 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.minBy(objects, 'n');
+// 1
+```
+
+## maxBy
+计算数组指定字段的最大值。
+
+### 参数
+**array** 原数组数据 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.maxBy(objects, 'n');
+// 2
+```
+
+## sumBy
+计算数组指定字段值之和。
+
+### 参数
+**array** 原数组数据 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.sumBy(objects, 'n');
+// 3
+```
+
+## meanBy
+计算数组指定字段平均数。
+
+### 参数
+**array** 原数组数据 _必选_
+
+类型 `[]`
+
+**measure** 计算指定字段 _必选_
+
+类型 `string`
+
+### 返回值
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.meanBy(objects, 'n');
+// 1.5
 ```
 
 ## countBy

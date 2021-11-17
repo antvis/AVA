@@ -30,31 +30,6 @@ stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1
 ```
 
-## minBy
-Calculate the minimum value of the specified field of the array.
-
-### Parameters
-**array** Raw array data _required_
-
-Type `[]`
-
-**measure** Calculate the specified field _required_
-
-Type `string`
-
-### Return value
-`number`
-
-### Usage
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.minBy(objects, 'n');
-// 1
-```
-
 ## minIndex
 Calculate the index of the minimum value of the array.
 
@@ -93,31 +68,6 @@ stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 // 999
 ```
 
-## maxBy
-Calculate the maximum value of the specified field of the array.
-
-### Parameters
-**array** Raw array data _required_
-
-Type `[]`
-
-**measure** Calculate the specified field _required_.
-
-Type `string`
-
-### Return value
-`number`
-
-### Usage
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.maxBy(objects, 'n');
-// 2
-```
-
 ## maxIndex
 Calculate the index of the maximum value of the array.
 
@@ -154,31 +104,6 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1225
-```
-
-## sumBy
-Calculate the sum of the values of the specified fields of the array.
-
-### Parameters
-**array** Raw array data _required_
-
-Type `[]`
-
-**measure** Calculate the sum of the specified fields _required_.
-
-Type `string`
-
-### Return value
-`number`
-
-### Usage
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.sumBy(objects, 'n');
-// 3
 ```
 
 ## median
@@ -277,31 +202,6 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 153.125
-```
-
-## meanBy
-Calculate the average number of the specified fields in the array.
-
-### Parameters
-**array** Raw array data _required_
-
-type `[]`
-
-**measure** Calculate the specified field _required_
-
-Type `string`
-
-### Return value
-`number`
-
-### 用法
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.meanBy(objects, 'n');
-// 1.5
 ```
 
 ## geometricMean
@@ -519,6 +419,106 @@ import { statistics as stats } from '@antv/data-wizard';
 
 stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 // 8
+```
+
+## minBy
+Calculate the minimum value of the specified field of the array.
+
+### Parameters
+**array** Raw array data _required_
+
+Type `[]`
+
+**measure** Calculate the specified field _required_
+
+Type `string`
+
+### Return value
+`number`
+
+### Usage
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.minBy(objects, 'n');
+// 1
+```
+
+## maxBy
+Calculate the maximum value of the specified field of the array.
+
+### Parameters
+**array** Raw array data _required_
+
+Type `[]`
+
+**measure** Calculate the specified field _required_.
+
+Type `string`
+
+### Return value
+`number`
+
+### Usage
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.maxBy(objects, 'n');
+// 2
+```
+
+## sumBy
+Calculate the sum of the values of the specified fields of the array.
+
+### Parameters
+**array** Raw array data _required_
+
+Type `[]`
+
+**measure** Calculate the sum of the specified fields _required_.
+
+Type `string`
+
+### Return value
+`number`
+
+### Usage
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.sumBy(objects, 'n');
+// 3
+```
+
+## meanBy
+Calculate the average number of the specified fields in the array.
+
+### Parameters
+**array** Raw array data _required_
+
+type `[]`
+
+**measure** Calculate the specified field _required_
+
+Type `string`
+
+### Return value
+`number`
+
+### 用法
+```ts
+import { statistics as stats } from '@antv/data-wizard';
+
+const objects = [{ 'n': 1 }, { 'n': 2 }];
+
+stats.meanBy(objects, 'n');
+// 1.5
 ```
 
 ## countBy

@@ -1,5 +1,5 @@
 ---
-title: ChartAdvisor.advice
+title: ChartAdvisor.advise
 order: 2
 ---
 
