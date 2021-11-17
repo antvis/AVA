@@ -58,7 +58,7 @@ export function nodeFields2Style(dataProps: Partial<analyzer.GraphProps>, userCf
   const colorScaleType = optimizeByRule(fieldForColor, 'pred-scale-type');
   const sizeScaleType = optimizeByRule(fieldForSize, 'pred-scale-type');
   const { nodeType } = optimizeByRule(dataProps, 'pred-node-type');
-  // convert configurations to AntvSpec
+  // convert configurations to AntVSpec
   const color = fieldForColor
     ? {
         field: fieldForColor.name,

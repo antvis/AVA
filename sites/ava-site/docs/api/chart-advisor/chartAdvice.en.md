@@ -1,6 +1,6 @@
 ---
-title: Advisor.advice
-order: 4
+title: ChartAdvisor.advice
+order: 2
 ---
 
 `markdown:docs/common/style.md`
@@ -8,12 +8,12 @@ order: 4
 <div class='doc-md'>
 
 ```sign
-Advisor.advise(params: AdviseParams): ChartList[];
+ChartAdvisor.advise(params: AdviseParams): ChartAdvisorList[];
 ```
 
 ### Parameters
 
-* **params** * Advisor configurations
+* **params** * ChartAdvisor configurations
   * _required_
   * `type`: AdviseParams
 
@@ -46,7 +46,6 @@ type ChartAdviseParams = {
 | colorOptions | `SmartColorOptions` | The smartColor option. | None | 
 
 * ***AdvisorOptions*** Parameter configuration.
-
 ```ts
 type AdvisorOptions = {
   purpose?: Purpose;
@@ -68,7 +67,6 @@ type AdvisorOptions = {
 | theme | `Theme` | Specify color in hexadecimal. | None |
 
 * ***Purpose*** Parameter configuration.
-
 ```ts
 type PURPOSE_OPTIONS = [
   "Comparison", 
@@ -87,7 +85,6 @@ type PURPOSE_OPTIONS = [
 ```
 
 * ***Preferences*** Parameter configuration.
-
 ```ts
 interface Preferences {
   canvasLayout: 'landscape' | 'portrait';
@@ -95,7 +92,6 @@ interface Preferences {
 ```
 
 * ***Theme*** Parameter configuration.
-
 ```ts
 type Theme = {
   primaryColor?: string;
@@ -103,7 +99,6 @@ type Theme = {
 ```
 
 * ***SmartColorOptions*** Parameter configuration.
-
 ```ts
 type SmartColorOptions = {
   themeColor?: string;
@@ -139,7 +134,6 @@ type GraphAdviseParams = {
 | options | `GraphAdvisorOptions` | Graph recommendation configuration items. | None |
 
 * ***GraphAdvisorOptions*** Parameter configuration.
-
 ```ts
 type GraphAdvisorOptions = {
   nodeColors?: string[];
@@ -169,14 +163,15 @@ type GraphAdvisorOptions = {
 
 ### Return value
 
-*`ChartList[]`* 
+*`ChartAdvisorList[]`* 
 
-* ***ChartList*** Parameter configuration.
+* ***ChartAdvisorList*** Parameter configuration.
 
 ```ts
-type ChartList = {
+type ChartAdvisorList = {
   type: ChartType;
   spec: AntVSpec;
+  lint: Lint;
   score: number;
 };
 ```
@@ -216,6 +211,27 @@ type AntVSpec = {
 | basis | The basic information. | `basis: { type: 'chart' }` |
 | data | The data information. | `data: { type: 'json-array', values: [...] }` |
 | layer | The drawing information. | `{ [ encoding: { x: {...} , y:{...} }, mark: { type: 'line' } ] }` |
+
+* ***Lint*** Parameter configuration.
+
+```ts
+interface Lint {
+  type: string;
+  id: string;
+  score: number;
+  fix?: any;
+  docs?: any;
+}
+```
+
+| Properties | Type | Description | Examples |  
+| ----| ---- | ---- | -----|
+| type | `string` | Rule type. | hard / soft / design
+| id | `string` | Rule id. | `10` |
+| score | `number` | The score of the rule. | ` 1` |
+| fix | ` ` | The solution based on this rule. | |
+| docs | ` ` | The documentation for the rule. | | |
+
 
 
 </div>

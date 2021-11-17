@@ -35,12 +35,12 @@ Class SmartBoard(inputCharts: InputChart[])
 | chartSchema | `any` | The specified visualization scheme, such as chart configuration, title, etc. | None |
 | description | `string | string[]` | The chart description information. | None |
 
-### Methods
+### Functions
 
 #### SmartBoard.getCharts
 
 To get the chart that constructs the Dashboard.
-```sign
+```ts
 SmartBoard.getCharts: InputChart[];
 ```
 
@@ -50,7 +50,7 @@ Return value: `InputChart[]`
 
 To get the ChartGraph that holds the correlations between charts defined by [G6](https://g6.antv.vision/): 
 ``sign
-```sign
+```ts
 SmartBoard.chartGraph;
 ```
 
@@ -65,7 +65,7 @@ interface ChartGraph {
 #### SmartBoard.chartOrder
 
 To get the ChartOrder that holds the order of the charts, the output order is determined by both the data insight score and the chart association.
-```sign
+```ts
 SmartBoard.chartOrder(type: OrderType): ChartOrder;
 ```
 
@@ -82,7 +82,7 @@ type ChartOrder = Record<string, number>;
 #### SmartBoard.chartCluster
 
 To obtain ChartCluster, which holds the clustering relationships of the charts via using the Louvain algorithm.
-```sign
+```ts
 SmartBoard.chartCluster(): ChartCluster;
 ```
 
@@ -94,7 +94,7 @@ type ChartCluster = Record<string, number>;
 #### insights2Board
 
 Transfer the output insight of LiteInsight to the `InputChart` array employed when initial SmartBoard.
-```sign
+```ts
 insights2Board(insights: InsightInfo): InputChart[];
 ```
 

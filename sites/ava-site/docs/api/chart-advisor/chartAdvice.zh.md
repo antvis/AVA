@@ -1,6 +1,6 @@
 ---
-title: Advisor.advice
-order: 4
+title: ChartAdvisor.advice
+order: 2
 ---
 
 `markdown:docs/common/style.md`
@@ -8,12 +8,12 @@ order: 4
 <div class='doc-md'>
 
 ```sign
-Advisor.advise(params: AdviseParams): ChartList[];
+ChartAdvisor.advise(params: AdviseParams): ChartAdvisorList[];
 ```
 
 ### 参数
 
-* **params** * Advisor 配置项
+* **params** * ChartAdvisor 配置项
   * _必选参数_
   * `参数类型`: AdviseParams 对象
 
@@ -87,7 +87,6 @@ type PURPOSE_OPTIONS = [
 ```
 
 * ***Preferences*** 参数配置。
-
 ```ts
 interface Preferences {
   canvasLayout: 'landscape' | 'portrait';
@@ -95,7 +94,6 @@ interface Preferences {
 ```
 
 * ***Theme*** 参数配置。
-
 ```ts
 type Theme = {
   primaryColor?: string;
@@ -147,9 +145,9 @@ type GraphAdvisorOptions = {
   nodeSizeRange?: number[];
   edgeWidthRange?: number[];
   extra?: {
-    nodeKey?: string;
-    edgeKey?: string;
-    sourceKey?: string;
+    nodeKey?: string; // key for node array in data object
+    edgeKey?: string; // key for edge array in data object
+    sourceKey?: string; // key for edge source in edge object
     targetKey?: string;
     childrenKey?: string;
   };
@@ -170,14 +168,15 @@ type GraphAdvisorOptions = {
 
 ### 返回值
 
-*`ChartList[]`* 
+*`ChartAdvisorList[]`* 
 
-* ***ChartList*** 参数配置。
+* ***ChartAdvisorList*** 参数配置。
 
 ```ts
-type ChartList = {
+type ChartAdvisorList = {
   type: ChartType;
   spec: AntVSpec;
+  lint: Lint;
   score: number;
 };
 ```
@@ -217,6 +216,27 @@ type AntVSpec = {
 | basis | 基础信息。 | `basis: { type: 'chart' }` |
 | data | 数据信息。 | `data: { type: 'json-array', values: [...] }` |
 | layer | 绘制信息。 | `{ [ encoding: { x: {...}, y:{...} }, mark: { type: 'line' } ] }` |
+
+* ***Lint*** 参数配置。
+
+```ts
+interface Lint {
+  type: string;
+  id: string;
+  score: number;
+  fix?: any;
+  docs?: any;
+}
+```
+
+| 属性 | 类型 | 描述 | 样例 |  
+| ----| ---- | ---- | -----|
+| type | `string` | 规则类型。 | `hard / soft / design` |
+| id | `string` | 规则 id。 | `10` |
+| score | `number` | 该规则的得分。 | `1` |
+| fix | ` ` | 基于该规则的解决方案。 |  |
+| docs | ` ` | 该规则的相关文档。 |  |
+
 
 
 </div>
