@@ -1,4 +1,5 @@
 import _groupBy from 'lodash/groupBy';
+import _get from 'lodash/get';
 import {
   ChartType,
   HomogeneousPatternInfo,
@@ -6,6 +7,7 @@ import {
   InsightType,
   PatternInfo,
   VisualizationSchema,
+  InsightOptions,
 } from '../interface';
 import { InsightNarrativeGenerator, HomogeneousNarrativeGenerator } from '../narrative';
 import { generateInsightAnnotationConfig, generateHomogeneousInsightAnnotationConfig } from './annotation';
@@ -19,10 +21,14 @@ export const ChartTypeMap: Record<InsightType, ChartType> = {
   low_variance: 'column_chart',
 };
 
-export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>): VisualizationSchema[] => {
+export const getInsightVisualizationSchema = (
+  insight: InsightInfo<PatternInfo>,
+  visualizationOptions: InsightOptions['visualization']
+): VisualizationSchema[] => {
   const { breakdowns, patterns, measures } = insight;
 
   const schemas: VisualizationSchema[] = [];
+  const summaryType = _get(visualizationOptions, 'summaryType', 'text');
 
   const patternGroups = _groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
 
@@ -44,8 +50,10 @@ export const getInsightVisualizationSchema = (insight: InsightInfo<PatternInfo>)
       chartType: chartType as ChartType,
       chartSchema,
       caption: narrative.caption.getContent(),
-      insightSummaries: narrative.summaries.map((i) => i.getContent()),
-      insightSummarySchemas: narrative.summaries.map((i) => i.getSchema()),
+      insightSummaries:
+        summaryType === 'schema'
+          ? narrative.summaries.map((i) => i.getSchema())
+          : narrative.summaries.map((i) => i.getContent()),
     });
   });
 
@@ -85,11 +93,12 @@ const lowlight = (pattern: HomogeneousPatternInfo, colorField: string) => {
 };
 
 export const getHomogeneousInsightVisualizationSchema = (
-  insight: InsightInfo<HomogeneousPatternInfo>
+  insight: InsightInfo<HomogeneousPatternInfo>,
+  visualizationOptions: InsightOptions['visualization']
 ): VisualizationSchema[] => {
   const { breakdowns, patterns, measures } = insight;
   const schemas: VisualizationSchema[] = [];
-
+  const summaryType = _get(visualizationOptions, 'summaryType', 'text');
   const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
 
   patterns.forEach((pattern) => {
@@ -123,8 +132,7 @@ export const getHomogeneousInsightVisualizationSchema = (
       chartType,
       chartSchema,
       caption: '',
-      insightSummaries: [summary.getContent()],
-      insightSummarySchemas: [summary.getSchema()],
+      insightSummaries: summaryType === 'schema' ? [summary.getSchema()] : [summary.getContent()],
     });
   });
 
