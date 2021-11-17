@@ -86,12 +86,12 @@
   "limit-size": [
     {
       "path": "dist/index.min.js",
-      "limit": "1 Mb",
+      "limit": "4 Mb",
       "gzip": true
     },
     {
       "path": "dist/index.min.js",
-      "limit": "4 Mb"
+      "limit": "12 Mb"
     }
   ],
   "dependencies": {
