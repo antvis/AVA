@@ -23,7 +23,7 @@ Class SmartBoard(inputCharts: InputChart[])
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
 | id | `string` | Chart ID。 | auto generated |
-| data | `[]` | The source data. | None |
+| data | `any[]` | The source data. | None |
 | dataUrl | `string` | The address of the data source. | None |
 | subspaces | `Subspace[]` | The data subspace information. | None |
 | breakdowns | `string[]` | The dimension of the data. | None |

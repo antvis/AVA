@@ -922,7 +922,7 @@ Generate a Uniform Resource Locator.
 | domain | `string` | Domain name | - | - |
 | domainPrefix | `string` | Domain prefix | `''`  | - |
 | path | `string` | Path | - | - |
-| extensions | `string[]` | File extensions | `[]` | - |
+| extensions | `string[]` | File extensions | `any[]` | - |
 
 #### Return Value
 `string`

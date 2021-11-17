@@ -9,13 +9,23 @@ order: 0
 
 Generating Dashboard based on input charts and insights。
 
-## Installation
+## ✨ Features
+
+* **Auto-Dashboarding**: Automatically compute dashboarding configurations based on input chart schemas.
+* **Dashboard Drawing**: Provides a React component `SmartBoardDashboard` for Dashboard drawing based on the above configurations.
+* **Combine with Insight**: Easily combined with [LiteInsight](https://ava.antv.vision/en/docs/api/lite-insight/auto-insights) for better visualize insights behind data.
+
+The pipeline of SmartBoard:
+
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' />
+
+## 📦 Installation
 
 ```bash
 $ npm install @antv/smart-board
 ```
 
-## Usage
+## 🔨 Usage
 
 SmartBoard is the class employed for constructing a `SmartBoard` instance. Through this instance, some Dashboard related methods can be employed by users.
 
@@ -90,7 +100,7 @@ To get ChartCluster that holds the chart clustering relationships, via using the
 SmartBoard.chartCluster();
 ```
 
-## Dashboard Component
+### Dashboard Component
 
 To simplify the usage cost, SmartBoard also provides a React component `<SmartBoardDashboard>` for rendering dashboard based on the above `SmartBoard` instance.
 
@@ -112,5 +122,10 @@ ReactDOM.render(
   mountNode,
 );
 ```
+
+## 📖 Documentation
+
+For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/SmartBoard)
+
 
 </div>

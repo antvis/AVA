@@ -39,7 +39,7 @@ type ChartAdviseParams = {
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| data | `[]` | 源数据。 | 无 |
+| data | `any[]` | 源数据。 | 无 |
 | fields | `string[]` | 数据字段信息。 | 无 |
 | smartColor | `boolean` | 是否开启智能配色。 | `false` |
 | options | `AdvisorOptions` | 统计图表推荐配置项。 | 无 |
@@ -133,7 +133,7 @@ type GraphAdviseParams = {
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| data | `[]` | 源数据。 | 无 |
+| data | `any[]` | 源数据。 | 无 |
 | fields | `{ nodes, links }` | 数据点边信息。 | 无 |
 | options | `GraphAdvisorOptions` | 图推荐配置项。 | 无 |
 
@@ -234,8 +234,8 @@ interface Lint {
 | type | `string` | 规则类型。 | `hard / soft / design` |
 | id | `string` | 规则 id。 | `10` |
 | score | `number` | 该规则的得分。 | `1` |
-| fix | ` ` | 基于该规则的解决方案。 |  |
-| docs | ` ` | 该规则的相关文档。 |  |
+| fix | `any` | 基于该规则的解决方案。 |  |
+| docs | `any` | 该规则的相关文档。 |  |
 
 
 

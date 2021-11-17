@@ -427,7 +427,7 @@ Calculate the minimum value of the specified field of the array.
 ### Parameters
 **array** Raw array data _required_
 
-Type `[]`
+Type `any[]`
 
 **measure** Calculate the specified field _required_
 
@@ -452,7 +452,7 @@ Calculate the maximum value of the specified field of the array.
 ### Parameters
 **array** Raw array data _required_
 
-Type `[]`
+Type `any[]`
 
 **measure** Calculate the specified field _required_.
 
@@ -477,7 +477,7 @@ Calculate the sum of the values of the specified fields of the array.
 ### Parameters
 **array** Raw array data _required_
 
-Type `[]`
+Type `any[]`
 
 **measure** Calculate the sum of the specified fields _required_.
 
@@ -502,7 +502,7 @@ Calculate the average number of the specified fields in the array.
 ### Parameters
 **array** Raw array data _required_
 
-type `[]`
+type `any[]`
 
 **measure** Calculate the specified field _required_
 
@@ -527,7 +527,7 @@ Calculate the total count of the specified field of the array.
 ### Parameters
 **array** Raw array data _required_
 
-Type `[]`
+Type `any[]`
 
 **measure** Calculate the specified field _required_.
 
@@ -552,14 +552,14 @@ Group the array objects by field.
 ### Parameters
 **array** Raw array data _required_
 
-type `[]`
+type `any[]`
 
 **measure** Grouping of specified fields _required_
 
 type `string`
 
 ### Return value
-`[]`
+`any[]`
 
 ### Usage
 ```ts
@@ -605,7 +605,7 @@ Aggregate the array objects by the specified dimensions and fields.
 ### Parameters
 **array** Raw array data _required_
 
-type `[]`
+type `any[]`
 
 **dimension** Aggregates the specified dimension _required_
 
@@ -628,14 +628,14 @@ type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
 Type `string`
 
 ### Return value
-`[]`
+`any[]`
 
 ### Usage
 
 Type `string`
 
 ### Return value
-`[]`
+`any[]`
 
 ### Usage
 ```ts

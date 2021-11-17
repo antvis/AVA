@@ -39,7 +39,7 @@ type ChartAdviseParams = {
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| data | `[]` | The source data. | None |
+| data | `any[]` | The source data. | None |
 | fields | `string[]` | The data field information. | None |
 | smartColor | `boolean` | Whether to enable smart color matching. | `false` | options
 | options | `AdvisorOptions` | The recommended configuration items for the statistics chart. | options
@@ -129,7 +129,7 @@ type GraphAdviseParams = {
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| data | `[]` | The source data. | None |
+| data | `any[]` | The source data. | None |
 | fields | `{ nodes, links }` | Data point edge information. | None | options
 | options | `GraphAdvisorOptions` | Graph recommendation configuration items. | None |
 
@@ -229,8 +229,8 @@ interface Lint {
 | type | `string` | Rule type. | hard / soft / design
 | id | `string` | Rule id. | `10` |
 | score | `number` | The score of the rule. | ` 1` |
-| fix | ` ` | The solution based on this rule. | |
-| docs | ` ` | The documentation for the rule. | | |
+| fix | `any` | The solution based on this rule. | |
+| docs | `any` | The documentation for the rule. | | |
 
 
 

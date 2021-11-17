@@ -38,7 +38,7 @@ Chart Knowledge Base (CKB) 是一个提供图表经验的知识库，它的形�
 
 关于为什么要做 CKB，这篇文章进行了解释：[《AVA/CKB：一次性解决图表命名问题》](https://zhuanlan.zhihu.com/p/110864643)
 
-## 特性
+## ✨ 功能特性
 
 ### 图表分类信息的一致性
 
@@ -58,13 +58,13 @@ CKB 希望能解决目前可视化研究环境（特别是中文环境）中概�
 
 AVA 的智能图表推荐的能力是以 CKB 为依托的。有了 CKB，你也可以在它的基础上，指定自定义规则，搭建自己的图表推荐系统。
 
-## 安装
+## 📦 安装
 
 ```bash
 $ npm install @antv/knowledge
 ```
 
-## 用法
+## 🔨 使用
 
 ```js
 import { CKBJson } from '@antv/knowledge';
@@ -77,8 +77,13 @@ const knowledgeBase = CKBJson();
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
 
-## 演示案例
+### 演示案例
 
 <playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
+
+## 📖 文档
+
+更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/ckb/intro)
+
 
 </div>

@@ -47,7 +47,7 @@ The `random` module of DataWizard provides you comprehensive data mocking option
 $ npm install @antv/data-wizard
 ```
 
-## 🔨 Quick Start
+## 🔨 Usage
 
 ### DataFrame
 

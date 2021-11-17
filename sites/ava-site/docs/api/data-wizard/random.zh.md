@@ -922,7 +922,7 @@ r.domain();
 | domain | `string` | 域名 | - | - |
 | domainPrefix | `string` | `''` | - | - |
 | path | `string` | 路径 | - | - |
-| extensions | `string[]` | 文件扩展名 | `[]` | - |
+| extensions | `string[]` | 文件扩展名 | `any[]` | - |
 
 #### 返回值
 `string`

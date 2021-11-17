@@ -39,7 +39,7 @@ type ChartAdviseParams = {
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| data | `[]` | The source data. | None |
+| data | `any[]` | The source data. | None |
 | fields | `string[]` | The data field information. | None |
 | smartColor | `boolean` | Whether to enable smart color matching. | `false` | options
 | options | `AdvisorOptions` | The recommended configuration items for the statistics chart. | options
@@ -134,7 +134,7 @@ type GraphAdviseParams = {
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| data | `[]` | The source data. | None |
+| data | `any[]` | The source data. | None |
 | fields | `{ nodes, links }` | Data point edge information. | None | options
 | options | `GraphAdvisorOptions` | Graph recommendation configuration items. | None |
 

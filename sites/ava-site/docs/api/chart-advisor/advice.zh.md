@@ -39,7 +39,7 @@ type ChartAdviseParams = {
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| data | `[]` | 源数据。 | 无 |
+| data | `any[]` | 源数据。 | 无 |
 | fields | `string[]` | 数据字段信息。 | 无 |
 | smartColor | `boolean` | 是否开启智能配色。 | `false` |
 | options | `AdvisorOptions` | 统计图表推荐配置项。 | 无 |
@@ -135,7 +135,7 @@ type GraphAdviseParams = {
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| data | `[]` | 源数据。 | 无 |
+| data | `any[]` | 源数据。 | 无 |
 | fields | `{ nodes, links }` | 数据点边信息。 | 无 |
 | options | `GraphAdvisorOptions` | 图推荐配置项。 | 无 |
 
