@@ -214,9 +214,9 @@ r.address();
 ## 📖 Documentation
 
 For more usages, please check the API reference.
-- [DataFrame](../../api/data-wizard/data-frame)
-- [statistics](../../api/data-wizard/statistics)
-- [random](../../api/data-wizard/random)
+- [DataFrame](https://ava.antv.vision/en/docs/api/data-wizard/data-frame)
+- [statistics](https://ava.antv.vision/en/docs/api/data-wizard/statistics)
+- [random](https://ava.antv.vision/en/docs/api/data-wizard/random)
 
 </div>
 

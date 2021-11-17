@@ -1,5 +1,5 @@
 ---
-title: Advisor.advice
+title: Advisor.advise
 order: 4
 ---
 

@@ -1,31 +1,31 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./README.zh-CN.md)
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](./README.md) | 简体中文
 
 
 <h1 align="center">
-<b>@antv/smart-board</b>
+<b>@antv/lite-insight</b>
 </h1>
 
 <div align="center">
-A js/ts library that solves dashboarding calculation and drawing problems for charts.
+一个 js/ts 的前端图表 Dashboard 计算和绘制库。
 </div>
 
-## ✨ Features
+## ✨ 功能特性
 
-* **Auto-Dashboarding**: Automatically compute dashboarding configurations based on input chart schemas.
-* **Dashboard Drawing**: Provides a React component `SmartBoardDashboard` for Dashboard drawing based on the above configurations.
-* **Combine with Insight**: Easily combined with [LiteInsight](https://ava.antv.vision/en/docs/api/lite-insight/auto-insights) for better visualize insights behind data.
+* **Dashboard 生成**: 基于给定图表自动的计算 Dashboard 所需属性。
+* **Dashboard 绘制**: 提供基于上述属性的 React Dashboard 绘制组件 `SmartBoardDashboard`。
+* **结合洞察**: 可以与 [LiteInsight](https://ava.antv.vision/zh/docs/api/lite-insight/auto-insights) 结合从而展示数据背后的洞察信息。
 
-The pipeline of SmartBoard:
+SmartBoard 的流程如下：
 
 <img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' />
 
-## 📦 Installation
+## 📦 安装
 
 ```bash
 $ npm install @antv/smart-board
 ```
 
-## 🔨 Getting Started
+## 🔨 快速开始
 
 
 ```ts
@@ -74,11 +74,12 @@ const dashboardContent =
   />);
 ```
 
-## 📖 Documentation
+## 📖 文档
 
-For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/SmartBoard)
+更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/smart-board/SmartBoard)
 
 
-## 📄 License
+
+## 📄 许可证
 
 MIT
