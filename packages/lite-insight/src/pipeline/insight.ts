@@ -87,12 +87,12 @@ export const generateInsightsWithVisualizationSchemas = (
   const { insights, homogeneousInsights } = extraction;
   const insightsWithVis = insights.map((item) => ({
     ...item,
-    visualizationSchemas: getInsightVisualizationSchema(item),
+    visualizationSchemas: getInsightVisualizationSchema(item, options.visualization),
   }));
   const result: InsightsResult = { insights: insightsWithVis };
   if (homogeneousInsights && options.homogeneous) {
     const homogeneousInsightsWithVis = homogeneousInsights.map((item) => {
-      const visualizationSchemas = getHomogeneousInsightVisualizationSchema(item);
+      const visualizationSchemas = getHomogeneousInsightVisualizationSchema(item, options.visualization);
       const { data, measures, breakdowns } = item;
       const insight = { ...item, visualizationSchemas };
       if (measures.length > 1) {

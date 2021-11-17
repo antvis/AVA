@@ -59,8 +59,11 @@ export interface VisualizationSchema {
   chartType: ChartType;
   caption: string;
   chartSchema: any; // TODO type
-  insightSummaries: string[];
-  insightSummarySchemas: IPhrase[][];
+  /**
+   * @description insight summaries display type, it dependent
+   * @default string[]
+   */
+  insightSummaries?: string[] | IPhrase[][];
 }
 
 /** insight information */
@@ -71,8 +74,18 @@ export interface InsightInfo<T = PatternInfo> {
   score: number;
   data: Datum[];
   patterns: T[];
-
   visualizationSchemas?: VisualizationSchema[];
+}
+
+/**
+ * config of visualization
+ */
+export interface VisualizationOptions {
+  /**
+   * @description pure text or text schema to description insight summary
+   * @default 'text'
+   * */
+  summaryType: 'text' | 'schema' | false;
 }
 
 /** custom options */
@@ -83,7 +96,8 @@ export interface InsightOptions {
   impactWeight?: number; // Insight score = Impact score * impactWeight + Significance * (1 - impactWeight)
   insightTypes?: InsightType[];
   limit?: number; // Limit on the number of insights
-  visualization?: boolean; // on / off the output of visualization scheme
+  /** on / off the output of visualization scheme */
+  visualization?: boolean | VisualizationOptions;
   homogeneous?: boolean; // on/off extra homogeneous insight extraction
 }
 
