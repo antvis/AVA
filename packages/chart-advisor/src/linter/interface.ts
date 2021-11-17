@@ -12,7 +12,7 @@ export interface LinterOptions {
 export interface Lint {
   // rule type: hard / soft / design
   type: string;
-  // ruld id
+  // rule id
   id: string;
   // rule score
   score: number;
