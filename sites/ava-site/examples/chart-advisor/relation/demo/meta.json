@@ -10,7 +10,7 @@
         "en": "Automatic node-links visualization",
         "zh": "自动可视化点边（关系型）数据"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=graph-data-vis"
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*0D3FRZknLz8AAAAAAAAAAAAAARQnAQ"
     },
     {
       "filename": "tree.jsx",
@@ -18,7 +18,7 @@
         "en": "Automatic hierarchy visualization",
         "zh": "自动可视化层次型数据"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=hierarchy-data-vis"
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*swl0Sq88vagAAAAAAAAAAAAAARQnAQ"
     },
     {
       "filename": "table.jsx",
@@ -26,7 +26,7 @@
         "en": "Show relations in tabular data",
         "zh": "从表格数据中发现并展示关系"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=table-to-graph"
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*y_3aR6iCG0MAAAAAAAAAAAAAARQnAQ"
     },
     {
       "filename": "sankey.jsx",
@@ -34,7 +34,7 @@
         "en": "User customized graph visualization",
         "zh": "用户自定义配置的图可视化"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=Graphvis-usrCfg"
+      "screenshot": "https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*58fVRbZm_xEAAAAAAAAAAAAAARQnAQ"
     }
   ]
 }
