@@ -1,6 +1,6 @@
 import { ascending } from './base/compare';
 
-interface IQRParams {
+export interface IQRParams {
   k: number;
 }
 

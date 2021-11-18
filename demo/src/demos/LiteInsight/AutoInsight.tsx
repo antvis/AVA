@@ -39,6 +39,30 @@ const datasetConfigs = {
     measures: [{ field: 'count', method: 'SUM' }],
     impactMeasures: [{ field: 'count', method: 'COUNT' }],
   },
+  'unemployment-across-industries': {
+    limit: 60,
+    dimensions: ['series', 'year', 'month', 'date'],
+    measures: [
+      { field: 'count', method: 'SUM' },
+      { field: 'rate', method: 'SUM' },
+    ],
+    impactMeasures: [{ field: 'count', method: 'COUNT' }],
+  },
+  income: {
+    limit: 30,
+    dimensions: ['name', 'region', 'group'],
+    measures: [
+      { field: 'pct', method: 'SUM' },
+      { field: 'total', method: 'SUM' },
+      { field: 'id', method: 'SUM' },
+    ],
+    impactMeasures: [{ field: 'pct', method: 'COUNT' }],
+  },
+  // mock url: https://gw.alipayobjects.com/os/antfincdn/iee8e%26sH%26O/games.json
+  games: {
+    dimensions: ['Platform', 'Year', 'Genre', 'Publisher'],
+    impactMeasures: [{ field: 'NA_Sales', method: 'COUNT' }],
+  },
 };
 
 export default function App() {
@@ -71,7 +95,7 @@ export default function App() {
     setInsightLoading(true);
     getDataInsightsAsync(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true })
       .then((res) => {
-        if (res?.insights) setInsights(res.insights);
+        if (res?.homogeneousInsights) setInsights(res.homogeneousInsights);
       })
       .finally(() => {
         setInsightLoading(false);

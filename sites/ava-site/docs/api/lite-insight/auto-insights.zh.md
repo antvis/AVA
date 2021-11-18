@@ -41,8 +41,8 @@ order: 3
 
 | 属性 | 类型 | 描述 | 示例 |  
 | ----| ---- | ---- | -----|
-| subspaces | `Subspace[]` | 该洞察数据主体的子空间信息（Subspace）。 | `[{ dimension: 'Year', value: '2000' }]`(子空间为 Year = 2000) |
-| breakdowns | `string[]` | 该洞察数据主体的维度, 并且作为下一轮子空间划分的分组维度。 | `['country']` |
+| subspace | `Subspace` | 该洞察数据主体的子空间信息（Subspace）。 | `[{ dimension: 'Year', value: '2000' }]`(子空间为 Year = 2000) |
+| dimensions | `string[]` | 该洞察数据主体的维度, 并且作为下一轮子空间划分的分组维度。 | `['country']` |
 | measures |  `Measure[]` | 该洞察数据主体的计算指标。 | `[{ field: 'life_expect', method: 'MEAN' }]` |
 | data |  `Datum[]` | 该洞察数据主体的相关数据。 | `[{ country: 'China', life_expect: 61 }]` |
 | patterns |  `PatternInfo[]` | 该洞察数据主体上的模式集合 | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |

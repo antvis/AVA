@@ -36,8 +36,8 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 
 | Properties | Type | Description | Example|  
 | ----| ---- | ---- | -----|
-| subspaces | `Subspace[]` | The subspaces of the data subject | `[{ dimension: 'Year', value: '2000' }]`(subspace: Year = 2000) |
-| breakdowns | `string[]` | The breakdowns of the data subject | `['country']` |
+| subspace | `Subspace` | The subspace of the data subject | `[{ dimension: 'Year', value: '2000' }]`(subspace: Year = 2000) |
+| dimensions | `string[]` | The dimensions of the data subject | `['country']` |
 | measures |  `Measure[]` | The measures of the data subject | `[{ field: 'life_expect', method: 'MEAN' }]` |
 | data |  `Datum[]` | data | `[{ country: 'China', life_expect: 61 }]` |
 | patterns |  `PatternInfo[]` | The collection of patterns in the data | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |

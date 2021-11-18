@@ -10,8 +10,8 @@ type ConnectionTypes = ConnectionType[];
  * @returns
  */
 function calSimilarityOfCharts(chart1: Chart, chart2: Chart): any {
-  const b1 = chart1.breakdowns;
-  const b2 = chart2.breakdowns;
+  const b1 = chart1.dimensions;
+  const b2 = chart2.dimensions;
   const m1 = chart1.measures;
   const m2 = chart2.measures;
   const dimIntersection = b1.filter((d) => b2.includes(d));

@@ -3,6 +3,7 @@ import _sumBy from 'lodash/sumBy';
 import _maxBy from 'lodash/maxBy';
 import _minBy from 'lodash/minBy';
 import _meanBy from 'lodash/meanBy';
+import _sortBy from 'lodash/sortBy';
 import _flatten from 'lodash/flatten';
 import { Aggregator, Datum, Measure, MeasureMethod } from '../interface';
 
@@ -34,9 +35,10 @@ export const AggregatorMap: Record<MeasureMethod, Aggregator> = {
   MEAN: mean,
 };
 
-export const aggregate = (data: Datum[], groupByField: string, measures: Measure[]) => {
+export const aggregate = (data: Datum[], groupByField: string, measures: Measure[], sort?: boolean) => {
   const grouped = _groupBy(data, groupByField);
-  return Object.entries(grouped).map(([value, dataGroup]) => {
+  const entries = sort ? _sortBy(Object.entries(grouped), '0') : Object.entries(grouped);
+  return entries.map(([value, dataGroup]) => {
     const datum: Datum = { [groupByField]: value };
     measures.forEach((measure) => {
       const { field: measureField, method } = measure;

@@ -36,8 +36,8 @@ const cars = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/cars.json';
 const InputChart = [
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Origin'],
+    subspace: [],
+    dimensions: ['Origin'],
     measures: ['Horsepower'],
     fieldInfo: {
       Origin: {
@@ -53,8 +53,8 @@ const InputChart = [
   },
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Year'],
+    subspace: [],
+    dimensions: ['Year'],
     measures: ['Acceleration'],
     insightType: 'trend',
     score: 0.8,

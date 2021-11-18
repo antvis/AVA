@@ -18,11 +18,10 @@ type InsightsResult = {
 };
 
 export const extractInsights = (sourceData: Datum[], options?: InsightOptions): InsightsResult => {
-  // get data columns information (column type, statistics, etc.)
+  // get data columns infomations (column type, statistics, etc.)
   const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
-  const dataProps = dataToDataProps(
-    data.filter((item) => !Object.values(item).some((v) => v === null || v === undefined))
-  );
+  const dataProps = dataToDataProps(data);
+
   const fieldPropsMap: Record<string, DataProperty> = dataProps.reduce((acc, item) => {
     acc[item.name] = item;
     return acc;
@@ -50,6 +49,7 @@ export const extractInsights = (sourceData: Datum[], options?: InsightOptions): 
   const insightsHeap = new Heap(insightPriorityComparator);
   const homogeneousInsightsHeap = new Heap(homogeneousInsightPriorityComparator);
   const insightsLimit = options?.limit || InsightDefaultLimit;
+  insightsHeap.limit = insightsLimit;
   insightsHeap.init([]);
   homogeneousInsightsHeap.init([]);
 
@@ -64,7 +64,7 @@ export const extractInsights = (sourceData: Datum[], options?: InsightOptions): 
     insights.push(top);
   }
 
-  const result: InsightsResult = { insights };
+  const result: InsightsResult = { insights: insights.reverse() };
 
   if (options?.homogeneous) {
     const homogeneousInsightsResult = [];
@@ -75,8 +75,9 @@ export const extractInsights = (sourceData: Datum[], options?: InsightOptions): 
       const top = homogeneousInsightsHeap.pop();
       homogeneousInsightsResult.push(top);
     }
-    result.homogeneousInsights = homogeneousInsightsResult;
+    result.homogeneousInsights = homogeneousInsightsResult.reverse();
   }
+
   return result;
 };
 
@@ -93,12 +94,12 @@ export const generateInsightsWithVisualizationSchemas = (
   if (homogeneousInsights && options.homogeneous) {
     const homogeneousInsightsWithVis = homogeneousInsights.map((item) => {
       const visualizationSchemas = getHomogeneousInsightVisualizationSchema(item, options.visualization);
-      const { data, measures, breakdowns } = item;
+      const { data, measures, dimensions } = item;
       const insight = { ...item, visualizationSchemas };
       if (measures.length > 1) {
-        insight.data = aggregateWithMeasures(data, breakdowns[0], measures);
+        insight.data = aggregateWithMeasures(data, dimensions[0], measures);
       } else {
-        insight.data = aggregateWithSeries(data, breakdowns[0], measures[0], breakdowns[1]);
+        insight.data = aggregateWithSeries(data, dimensions[0], measures[0], dimensions[1]);
       }
       return insight;
     });

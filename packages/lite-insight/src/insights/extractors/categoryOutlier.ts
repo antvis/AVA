@@ -1,7 +1,8 @@
 import _sortBy from 'lodash/sortBy';
+import { statistics } from '@antv/data-wizard';
 import { IQR } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
-import { Datum, CategoryOutlierInfo } from '../../interface';
+import { Datum, Measure, CategoryOutlierInfo } from '../../interface';
 import { calculatePValue } from '../util';
 
 type OutlierItem = {
@@ -11,7 +12,7 @@ type OutlierItem = {
 };
 
 export const findOutliers = (values: number[]): OutlierItem[] => {
-  const IQRResult = IQR(values);
+  const IQRResult = IQR(values, { k: 1.8 });
 
   const lowerOutlierIndexes = IQRResult.lower.indexes;
   const upperOutlierIndexes = IQRResult.upper.indexes;
@@ -52,9 +53,12 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
   return results;
 };
 
-export const extractor = (data: Datum[], dimension: string, measure: string): CategoryOutlierInfo[] => {
+export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): CategoryOutlierInfo[] => {
+  const dimension = dimensions[0];
+  const measure = measures[0].field;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
+  if (statistics.distinct(values) === 1) return [];
   const outliers: CategoryOutlierInfo[] = findOutliers(values).map((item) => {
     const { index, significance } = item;
     return {

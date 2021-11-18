@@ -81,12 +81,16 @@ const extractHomogeneousPatterns = (
 
 export const extractHomogeneousPatternsForMeausres = (
   measures: Measure[],
-  patternsArr: PatternCollection[]
+  insightsCollection: InsightInfo<PatternInfo>[]
 ): HomogeneousPatternInfo[] => {
   const series = measures.map((item) => item.field);
+  const patternsForAllMeasures = insightsCollection.map((item) => item?.patterns);
   const homogeneousPatterns: HomogeneousPatternInfo[] = [];
   PATTERN_TYPES.forEach((type) => {
-    const patternCollection = patternsArr.map((item, index) => ({ key: series[index], patterns: item[type] }));
+    const patternCollection = patternsForAllMeasures.map((item, index) => ({
+      key: series[index],
+      patterns: item?.filter((item) => item.type === type),
+    }));
 
     const patterns = extractHomogeneousPatterns(patternCollection, type);
 
@@ -96,26 +100,20 @@ export const extractHomogeneousPatternsForMeausres = (
 };
 
 export const extractHomogeneousPatternsForSiblingGroups = (
-  measures: Measure[],
   siblingItems: string[],
-  insightsCollection: InsightInfo<PatternInfo>[][]
-): HomogeneousPatternInfo[][] => {
-  const measuresLength = measures.length;
+  insightsCollection: InsightInfo<PatternInfo>[]
+): HomogeneousPatternInfo[] => {
   const groupLength = insightsCollection.length;
   if (siblingItems.length !== groupLength) return [];
-  const homogeneousPatterns = [];
-  for (let i = 0; i < measuresLength; i += 1) {
-    const patternsForMeasure = [];
-    const patternsArr = insightsCollection.map((group) => group[i]?.patterns);
-    PATTERN_TYPES.forEach((type) => {
-      const patternCollection = patternsArr.map((arr, index) => ({
-        key: siblingItems[index],
-        patterns: arr?.filter((item) => item.type === type),
-      }));
-      const patterns = extractHomogeneousPatterns(patternCollection, type);
-      patternsForMeasure.push(...patterns);
-    });
-    homogeneousPatterns.push(patternsForMeasure);
-  }
+  const patternsForSiblingGroup = insightsCollection.map((item) => item?.patterns);
+  const homogeneousPatterns: HomogeneousPatternInfo[] = [];
+  PATTERN_TYPES.forEach((type) => {
+    const patternCollection = patternsForSiblingGroup.map((arr, index) => ({
+      key: siblingItems[index],
+      patterns: arr?.filter((item) => item.type === type),
+    }));
+    const patterns = extractHomogeneousPatterns(patternCollection, type);
+    homogeneousPatterns.push(...patterns);
+  });
   return homogeneousPatterns;
 };

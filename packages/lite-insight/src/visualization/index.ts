@@ -25,7 +25,7 @@ export const getInsightVisualizationSchema = (
   insight: InsightInfo<PatternInfo>,
   visualizationOptions: InsightOptions['visualization']
 ): VisualizationSchema[] => {
-  const { breakdowns, patterns, measures } = insight;
+  const { dimensions, patterns, measures } = insight;
 
   const schemas: VisualizationSchema[] = [];
   const summaryType = _get(visualizationOptions, 'summaryType', 'text');
@@ -37,7 +37,7 @@ export const getInsightVisualizationSchema = (
 
     // TODO chart schema generation
     const plotSchema = {
-      [chartType === 'pie_chart' ? 'colorField' : 'xField']: breakdowns[0],
+      [chartType === 'pie_chart' ? 'colorField' : 'xField']: dimensions[0],
       [chartType === 'pie_chart' ? 'angleField' : 'yField']: measures[0].field,
     };
     const annotationConfig = generateInsightAnnotationConfig(patternGroup);
@@ -96,7 +96,8 @@ export const getHomogeneousInsightVisualizationSchema = (
   insight: InsightInfo<HomogeneousPatternInfo>,
   visualizationOptions: InsightOptions['visualization']
 ): VisualizationSchema[] => {
-  const { breakdowns, patterns, measures } = insight;
+  const { dimensions, patterns, measures } = insight;
+
   const schemas: VisualizationSchema[] = [];
   const summaryType = _get(visualizationOptions, 'summaryType', 'text');
   const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
@@ -108,15 +109,15 @@ export const getHomogeneousInsightVisualizationSchema = (
     let plotSchema;
     if (measures.length > 1) {
       plotSchema = {
-        xField: breakdowns[0],
+        xField: dimensions[0],
         yField: 'value',
         seriesField: 'measureName',
       };
     } else {
       plotSchema = {
-        xField: breakdowns[1],
+        xField: dimensions[1],
         yField: measures[0].field,
-        seriesField: breakdowns[0],
+        seriesField: dimensions[0],
       };
     }
 

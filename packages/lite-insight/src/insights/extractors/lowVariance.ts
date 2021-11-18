@@ -1,5 +1,5 @@
 import { statistics } from '@antv/data-wizard';
-import { Datum, LowVarianceInfo } from '../../interface';
+import { Datum, LowVarianceInfo, Measure } from '../../interface';
 
 type LowVarianceItem = {
   significance: number;
@@ -26,7 +26,9 @@ export const findLowVariance = (values: number[], params?: LowVarianceParams): L
   };
 };
 
-export const extractor = (data: Datum[], dimension: string, measure: string): LowVarianceInfo[] => {
+export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): LowVarianceInfo[] => {
+  const dimension = dimensions[0];
+  const measure = measures[0].field;
   if (!data || data.length === 0) return [];
 
   const values = data.map((item) => item?.[measure] as number);
