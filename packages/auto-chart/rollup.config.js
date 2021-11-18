@@ -76,8 +76,6 @@ if (format === 'umd') {
     antd: 'antd',
     '@antv/g2plot': 'G2Plot',
     '@ant-design/icons': 'icons',
-    // TODO g2plot schemas 瘦身完成将从 peerDeps 从移除
-    '@antv/g2plot-schemas': 'schemas',
     moment: 'moment',
   };
 } else {
