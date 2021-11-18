@@ -1,4 +1,4 @@
 ---
 title: 完整使用 ChartAdvisor
-order: 8
+order: 0
 ---

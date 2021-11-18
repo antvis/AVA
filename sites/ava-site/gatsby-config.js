@@ -162,73 +162,55 @@ module.exports = {
     ],
     examples: [
       {
-        slug: 'ckb',
+        slug: 'components',
         title: {
-          zh: '图表知识库（CKB)',
-          en: 'Chart Knowledge Base (CKB)',
+          zh: 'React 组件',
+          en: 'React Components',
         },
         order: 0,
       },
-      // {
-      //   slug: 'components',
-      //   // icon 来自 iconfont
-      //   // https://www.iconfont.cn/manage/index?spm=a313x.7781069.1998910419.13&manage_type=myprojects&projectId=470089
-      //   // 先放一个占位
-      //   icon: 'other',
-      //   title: {
-      //     zh: 'React 组件',
-      //     en: 'React Components',
-      //   },
-      //   order: 1,
-      // },
       {
         slug: 'data-wizard',
-        // icon: 'gallery',
         title: {
-          zh: '数据处理与分析库（DataWizard）',
+          zh: '数据处理与分析（DataWizard）',
           en: 'DataWizard',
         },
         order: 1,
       },
       {
-        slug: 'chart-advisor',
-        // icon: 'gallery',
+        slug: 'ckb',
         title: {
-          zh: '图表推荐库',
-          en: 'ChartAdvisor',
+          zh: '图表知识库（CKB)',
+          en: 'Chart Knowledge Base (CKB)',
         },
         order: 2,
       },
       {
-        slug: 'chart-linter',
-        // icon: 'gallery',
+        slug: 'chart-advisor',
         title: {
-          zh: '图表优化',
-          en: 'ChartLinter',
+          zh: '图表推荐（ChartAdvisor）',
+          en: 'ChartAdvisor',
         },
         order: 3,
       },
       {
         slug: 'lite-insight',
-        // icon: 'gallery',
         title: {
-          zh: '智能洞察',
+          zh: '智能洞察（LiteInsight）',
           en: 'LiteInsight',
         },
         order: 4,
       },
       {
         slug: 'smart-board',
-        // icon: 'gallery',
         title: {
-          zh: '智能 Dashboard',
+          zh: '增强展现（SmartBoard）',
           en: 'SmartBoard',
         },
         order: 5,
       },
       {
         slug: 'plugins',
-        // icon: 'gallery',
         title: {
           zh: '插件',
           en: 'Plugins',
@@ -237,7 +219,6 @@ module.exports = {
       },
       {
         slug: 'others',
-        icon: 'other',
         title: {
           zh: '其他',
           en: 'Others',
