@@ -10,7 +10,7 @@
         "en": "Data to ChartAdvisor",
         "zh": "从数据到 ChartAdvisor 推荐/优化图表"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=ca-steps"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
     },
     {
       "filename": "ca.jsx",
@@ -18,7 +18,7 @@
         "en": "Basic ChartAdvisor",
         "zh": "ChartAdvisor 基础用法"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=ca"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/KrLqirDT8/ca.png"
     },
     {
       "filename": "custom-ckb-ca.jsx",
@@ -26,7 +26,7 @@
         "en": "Custom CKB for ChartAdvisor",
         "zh": "定制 ChartAdvisor 所使用的 CKB"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=custom-ckb-ca"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/AZeiW7T8o/custom-ckb-ca.png"
     },
     {
       "filename": "custom-rules-ca.jsx",
@@ -34,7 +34,7 @@
         "en": "Custom rules for ChartAdvisor",
         "zh": "定制 ChartAdvisor 所使用的规则"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=custom-rules-ca"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/lEJg8nD9R/custom-rules-ca.png"
     },
     {
       "filename": "custom-ckb-rules-ca.jsx",
@@ -42,7 +42,7 @@
         "en": "Custom CKB and rules for ChartAdvisor",
         "zh": "定制 ChartAdvisor 所使用的 CKB 和规则"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=custom-ckb-rules-ca"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/Rw0cVZ%26ZW/custom-ckb-rules-ca.gif"
     }
   ]
 }
