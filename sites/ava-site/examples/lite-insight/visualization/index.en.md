@@ -1,5 +1,5 @@
 ---
-title: Visualization
+title: Visualize Insights
 order: 1
 ---
 

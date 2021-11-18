@@ -1,4 +1,4 @@
 ---
-title: Automatically Visualize Relations
-order: 1
+title: Visualize Relations Automatically
+order: 3
 ---
