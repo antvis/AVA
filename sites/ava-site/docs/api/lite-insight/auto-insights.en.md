@@ -1,5 +1,5 @@
 ---
-title: Auto-Insights
+title: getDataInsights
 order: 3
 ---
 

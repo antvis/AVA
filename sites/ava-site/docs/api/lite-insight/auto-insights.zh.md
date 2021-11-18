@@ -1,5 +1,5 @@
 ---
-title: 自动洞察
+title: getDataInsights
 order: 3
 ---
 

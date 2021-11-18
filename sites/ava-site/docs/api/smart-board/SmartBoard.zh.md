@@ -23,18 +23,18 @@ Class SmartBoard(inputCharts: InputChart[])
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| id | `string` | 图表 ID。 | 自动生成 |
+| id | `string` | 图表 ID。 | 自动生成  `可选` |
 | data | `any[]` | 源数据。 | 无 |
-| dataUrl | `string` | 数据源地址。 | 无 |
+| dataUrl | `string` | 数据源地址。 | 无  `可选` |
 | subspaces | `Subspace[]` | 数据子空间信息。 | 无 |
 | breakdowns | `string[]` | 数据维度。 | 无 |
 | measures | `string[]` | 指标字段。 | 无 |
-| fieldInfo | `any` | 数据字段信息。 | 无 |
-| insightTypes |  `InsightType[]` | 洞察类型。 | 无 |
-| score |  `number` | 洞察评分。 | 无 |
-| chartType |  `ChartType` | 图表类型。 | 无 |
-| chartSchema |  `any` | 指定的可视化方案，比如图表配置、标题等。 | 无 |
-| description |  `string | string[]` | 图表描述信息。 | 无 |
+| fieldInfo | `any` | 数据字段信息。 | 无  `可选` |
+| insightTypes |  `InsightType[]` | 洞察类型。 | 无  `可选` |
+| score |  `number` | 洞察评分。 | 无  `可选` |
+| chartType |  `ChartType` | 图表类型。 | 无  `可选` |
+| chartSchema |  `any` | 指定的可视化方案，比如图表配置、标题等。 | 无  `可选` |
+| description |  `string | string[]` | 图表描述信息。 | 无  `可选` |
 
 ### 方法
 

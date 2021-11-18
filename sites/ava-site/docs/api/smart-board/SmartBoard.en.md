@@ -22,18 +22,18 @@ Class SmartBoard(inputCharts: InputChart[])
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| id | `string` | Chart ID。 | auto generated |
+| id | `string` | Chart ID。 | Auto-generated `Optional` |
 | data | `any[]` | The source data. | None |
-| dataUrl | `string` | The address of the data source. | None |
+| dataUrl | `string` | The address of the data source. | None `Optional` |
 | subspaces | `Subspace[]` | The data subspace information. | None |
 | breakdowns | `string[]` | The dimension of the data. | None |
 | measures | `string[]` | The indicator field. | None |
-| fieldInfo | `any` | The data field information. | None |
-| insightTypes | `InsightType[]` | The insight type. | None |
-| score | `number` | The score of the insight. | None |
-| chartType | `ChartType` | The chart type. | None |
-| chartSchema | `any` | The specified visualization scheme, such as chart configuration, title, etc. | None |
-| description | `string | string[]` | The chart description information. | None |
+| fieldInfo | `any` | The data field information. | None `Optional` |
+| insightTypes | `InsightType[]` | The insight type. | None `Optional` |
+| score | `number` | The score of the insight. | None `Optional` |
+| chartType | `ChartType` | The chart type. | None `Optional` |
+| chartSchema | `any` | The specified visualization scheme, such as chart configuration, title, etc. | None `Optional` |
+| description | `string | string[]` | The chart description information. | None `Optional` |
 
 ### Functions
 

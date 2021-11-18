@@ -11,6 +11,10 @@ order: 5
 Class Linter(ruleCfg?: RuleConfig)
 ```
 
+* **Linter**: is the tool classes for providing chart optimization suggestions.
+
+`Linter` provides `lint()` function for providing chart optimization suggestions.
+
 ### Parameters
 
 * **ruleCfg** * Chart rule Config
@@ -19,23 +23,14 @@ Class Linter(ruleCfg?: RuleConfig)
 
 * ***RuleConfig*** Parameter configuration.
 
-```ts
-type RuleConfig = {
-  include?: string[];
-  exclude?: string[];
-  custom?: Record<string, RuleModule>;
-  options?: ChartRuleConfigMap;
-};
-```
-
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| exclude | `string[]` | Specify to exclude rules in `ruler`. | None |
-| include | `string[]` | Specify to include rules, with lower priority than exclude. | None |
-| custom | `Record<string, RuleModule>` | Customized rules. | None |
-| options | `ChartRuleConfigMap` | Rule configuration. | None |
+| exclude | `string[]` | Specify to exclude rules in `ruler`. | None `Optional` |
+| include | `string[]` | Specify to include rules, with lower priority than exclude. | None `Optional` |
+| custom | `Record<string, RuleModule>` | Customized rules. | None `Optional` |
+| options | `ChartRuleConfigMap` | Rule configuration. | None `Optional` |
 
-* ***RuleModule*** `ruler` Custom rules, see [Ruler](../ckb/Ruler) for details.
+* ***RuleModule*** `ruler` Custom rules, see [Ruler](./Ruler) for details.
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -51,7 +46,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* ***ChartRuleConfigMap*** `ruler` Rule configuration
+* ***ChartRuleConfigMap*** `ruler` Rule configuration, see [Ruler](./Ruler) for details.
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;

@@ -25,7 +25,7 @@ SmartColor is a js/ts library for color computation.
 $ npm install @antv/smart-color
 ```
 
-## 🔨 Getting Started
+## 🔨 Usage
 
 * Palette Generation
 
@@ -43,7 +43,7 @@ paletteGeneration("monochromatic", {
 ```
 
 <div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/vmwgZKfSZB/jieping2021-07-01%252520xiawu3.01.26.png" alt="auto generated palette">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/vmwgZKfSZB/jieping2021-07-01%252520xiawu3.01.26.png" alt="auto generated palette" width="100%">
 </div>
 
 * Palette Optimization
@@ -70,12 +70,12 @@ paletteOptimization(palette, {
 
 <div align="center">
   <div>
-    <span>Before:</span>
-    <img src="https://gw.alipayobjects.com/zos/antfincdn/jT0dtYywS8/jieping2021-07-01%252520xiawu3.24.42.png" alt="palette before optimization">
+    <div>Before:</div>
+    <img src="https://gw.alipayobjects.com/zos/antfincdn/jT0dtYywS8/jieping2021-07-01%252520xiawu3.24.42.png" alt="palette before optimization" width="100%">
   </div>
   <div>
-    After:
-    <img src="https://gw.alipayobjects.com/zos/antfincdn/HCdz8Z8kr%26/jieping2021-07-01%252520xiawu3.24.29.png" alt="palette after optimization" >
+    <div>After:</div>
+    <img src="https://gw.alipayobjects.com/zos/antfincdn/HCdz8Z8kr%26/jieping2021-07-01%252520xiawu3.24.29.png" alt="palette after optimization" width="100%">
   </div>
 </div>
 

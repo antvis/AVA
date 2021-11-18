@@ -11,6 +11,10 @@ order: 5
 Class Linter(ruleCfg?: RuleConfig)
 ```
 
+* **Linter**: 是对应图表优化的工具类。
+
+`Linter` 提供了 `lint()` 函数用于提供图表优化建议。
+
 ### 参数
 
 * **ruleCfg** * 规则配置
@@ -19,23 +23,14 @@ Class Linter(ruleCfg?: RuleConfig)
 
 * ***RuleConfig*** 图表规则参数配置。
 
-```ts
-type RuleConfig = {
-  include?: string[];
-  exclude?: string[];
-  custom?: Record<string, RuleModule>;
-  options?: ChartRuleConfigMap;
-};
-```
-
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| exclude | `string[]` | 指定不包含的 `ruler` 规则。 | 无 |
-| include | `string[]]` | 指定包含的规则，优先级低于 exclude。 | 无 |
-| custom | `Record<string, RuleModule>` | 自定义规则。 | 无 |
-| options | `ChartRuleConfigMap` | 规则配置。 | 无 |
+| exclude | `string[]` | 指定不包含的 `ruler` 规则。 | 无  `可选` |
+| include | `string[]` | 指定包含的规则，优先级低于 exclude。 | 无  `可选` |
+| custom | `Record<string, RuleModule>` | 自定义规则。 | 无  `可选` |
+| options | `ChartRuleConfigMap` | 规则配置。 | 无  `可选` |
 
-* ***RuleModule*** `ruler` 自定义规则，详见 [Ruler](../ckb/Ruler)。
+* ***RuleModule*** `ruler` 自定义规则，详见 [Ruler](./Ruler)。
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -51,7 +46,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* ***ChartRuleConfigMap*** `ruler` 规则配置
+* ***ChartRuleConfigMap*** `ruler` 规则配置，详见 [Ruler](./Ruler)。
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
