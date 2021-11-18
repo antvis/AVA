@@ -9,8 +9,8 @@ const cars = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/cars.json';
 const chartSample1 = [
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Origin'],
+    subspace: [],
+    dimensions: ['Origin'],
     measures: ['Horsepower'],
     fieldInfo: {
       Origin: {
@@ -26,8 +26,8 @@ const chartSample1 = [
   },
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Year'],
+    subspace: [],
+    dimensions: ['Year'],
     measures: ['Acceleration'],
     insightType: 'trend',
     score: 0.8,
@@ -35,8 +35,8 @@ const chartSample1 = [
   },
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Origin'],
+    subspace: [],
+    dimensions: ['Origin'],
     measures: ['Miles_per_Gallon'],
     insightType: 'proportion',
     score: 0.6,
@@ -44,8 +44,8 @@ const chartSample1 = [
   },
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Cylinders', 'Origin'],
+    subspace: [],
+    dimensions: ['Cylinders', 'Origin'],
     measures: ['Displacement'],
     insightType: 'extreme',
     score: 0.85,
@@ -53,8 +53,8 @@ const chartSample1 = [
   },
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Year', 'Origin'],
+    subspace: [],
+    dimensions: ['Year', 'Origin'],
     measures: ['Weight_in_lbs'],
     insightType: 'trend',
     score: 0.2,
@@ -62,8 +62,8 @@ const chartSample1 = [
   },
   {
     dataUrl: cars,
-    subspaces: [],
-    breakdowns: ['Year'],
+    subspace: [],
+    dimensions: ['Year'],
     measures: ['Displacement'],
     insightType: 'trend',
     score: 0.7,
@@ -76,8 +76,8 @@ const gapminder = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/gapminder.j
 const chartSample2 = [
   {
     dataUrl: gapminder,
-    subspaces: [],
-    breakdowns: ['country'],
+    subspace: [],
+    dimensions: ['country'],
     measures: ['fertility'],
     fieldInfo: {
       country: {
@@ -93,8 +93,8 @@ const chartSample2 = [
   },
   {
     dataUrl: gapminder,
-    subspaces: [],
-    breakdowns: ['year'],
+    subspace: [],
+    dimensions: ['year'],
     measures: ['pop'],
     insightType: 'distribution',
     score: 0.7,
@@ -102,8 +102,8 @@ const chartSample2 = [
   },
   {
     dataUrl: gapminder,
-    subspaces: [],
-    breakdowns: ['cluster'],
+    subspace: [],
+    dimensions: ['cluster'],
     measures: ['fertility'],
     insightType: 'proportion',
     score: 0.6,
@@ -111,8 +111,8 @@ const chartSample2 = [
   },
   {
     dataUrl: gapminder,
-    subspaces: [],
-    breakdowns: ['country', 'cluster'],
+    subspace: [],
+    dimensions: ['country', 'cluster'],
     measures: ['pop'],
     insightType: 'extreme',
     score: 0.85,
@@ -120,8 +120,8 @@ const chartSample2 = [
   },
   {
     dataUrl: gapminder,
-    subspaces: [],
-    breakdowns: ['year', 'country'],
+    subspace: [],
+    dimensions: ['year', 'country'],
     measures: ['pop'],
     insightType: 'trend',
     score: 0.2,
@@ -129,8 +129,8 @@ const chartSample2 = [
   },
   {
     dataUrl: gapminder,
-    subspaces: [],
-    breakdowns: ['year'],
+    subspace: [],
+    dimensions: ['year'],
     measures: ['pop'],
     insightType: 'trend',
     score: 0.8,

@@ -15,7 +15,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
     description: Chart.description,
   };
 
-  const { breakdowns } = Chart;
+  const { dimensions } = Chart;
   const { measures } = Chart;
 
   switch (Chart.chartType) {
@@ -26,7 +26,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
         type: chartType,
         data,
         config: {
-          xField: breakdowns[0],
+          xField: dimensions[0],
           yField: measures[0],
         },
         score: Chart.score,
@@ -41,9 +41,9 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
         type: chartType,
         data,
         config: {
-          xField: breakdowns[0],
+          xField: dimensions[0],
           yField: measures[0],
-          seriesField: breakdowns[1],
+          seriesField: dimensions[1],
           isGroup: true,
         },
         score: Chart.score,
@@ -57,9 +57,9 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
         type: chartType,
         data,
         config: {
-          xField: breakdowns[0],
+          xField: dimensions[0],
           yField: measures[0],
-          seriesField: breakdowns[1],
+          seriesField: dimensions[1],
           isStack: true,
         },
         score: Chart.score,
@@ -72,9 +72,9 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
         type: chartType,
         data,
         config: {
-          xField: breakdowns[0],
+          xField: dimensions[0],
           yField: measures[0],
-          seriesField: breakdowns[1] || '',
+          seriesField: dimensions[1] || '',
         },
         score: Chart.score,
         description: Chart.description,
@@ -87,7 +87,7 @@ export function smartBoardConfig(Chart: Chart, data: any): ConfigObj {
         type: chartType,
         data,
         config: {
-          colorField: breakdowns[0],
+          colorField: dimensions[0],
           angleField: measures[0],
         },
         score: Chart.score,
@@ -131,8 +131,8 @@ export function insights2Board(insights: InsightInfo<PatternInfo>[]) {
   return insights?.map((item) => {
     return {
       data: item.data,
-      subspaces: item.subspaces,
-      breakdowns: item.breakdowns,
+      subspace: item.subspace,
+      dimensions: item.dimensions,
       measures: item.measures?.map((measure) => {
         return measure.field;
       }),

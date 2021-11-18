@@ -30,10 +30,10 @@ export class InsightNarrativeGenerator extends AbstractNarrativeGenerator<Patter
 
     this.globalVariableMap = {
       insightTypes: Object.keys(this.patternGroups) as InsightType[],
-      subspace: insight.subspaces?.[0],
+      subspace: insight.subspace,
       measure: insight.measures[0].field,
       measureMethod: insight.measures[0].method,
-      breakdown: insight.breakdowns[0],
+      breakdown: insight.dimensions[0],
     };
   }
 

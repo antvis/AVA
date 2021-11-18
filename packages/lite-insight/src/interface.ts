@@ -34,7 +34,7 @@ export type ImpactMeasure = {
  */
 export interface SubjectInfo {
   subspace: Subspace;
-  breakdown: string;
+  dimensions: string[];
   measures: Measure[];
 }
 
@@ -68,8 +68,8 @@ export interface VisualizationSchema {
 
 /** insight information */
 export interface InsightInfo<T = PatternInfo> {
-  subspaces: Subspace[];
-  breakdowns: string[];
+  subspace: Subspace;
+  dimensions: string[];
   measures: Measure[];
   score: number;
   data: Datum[];

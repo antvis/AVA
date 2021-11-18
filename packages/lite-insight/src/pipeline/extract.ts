@@ -8,6 +8,7 @@ import {
   Datum,
   InsightOptions,
   Measure,
+  Subspace,
   InsightInfo,
   ImpactMeasure,
   SubjectInfo,
@@ -22,6 +23,7 @@ import {
   extractHomogeneousPatternsForSiblingGroups,
   PatternCollection,
 } from './homogeneous';
+import { addInsightsToHeap } from './util';
 
 interface ReferenceInfo {
   fieldPropsMap: Record<string, DataProperty>;
@@ -29,13 +31,13 @@ interface ReferenceInfo {
 }
 
 /** calculate the Impact which reflects the importance of the subject of an insight against the entire dataset  */
-const computeSubjectImpact = (
+const computeSubspaceImpact = (
   data: Datum[],
-  subjectInfo: SubjectInfo,
+  subspace: Subspace,
   impactMeasureReferences: ReferenceInfo['impactMeasureReferences'],
   measures?: ImpactMeasure[]
 ) => {
-  if (!measures?.length || !subjectInfo) return 1;
+  if (!measures?.length || !subspace) return 1;
   const impactValues = measures.map((measure) => {
     const measureValue = calculateImpactValue(data, measure);
     const referenceKey = `${measure.field}@${measure.method}`;
@@ -52,7 +54,7 @@ const extractPatternsFromSubject = (
   fieldPropsMap: Record<string, DataProperty>,
   options?: InsightOptions
 ): PatternCollection => {
-  const { measures, breakdown } = subjectInfo;
+  const { measures, dimensions } = subjectInfo;
 
   const enumInsightTypes = options?.insightTypes || PATTERN_TYPES;
 
@@ -68,7 +70,7 @@ const extractPatternsFromSubject = (
     }
     const insightExtractor = insightExtractors[insightType];
     if (isValid && insightExtractor) {
-      const extractedPatterns = insightExtractor(data, breakdown, measures[0]?.field);
+      const extractedPatterns = insightExtractor(data, dimensions, measures);
       patterns[insightType as InsightType] = extractedPatterns as PatternInfo[];
     } else {
       patterns[insightType as InsightType] = null;
@@ -78,85 +80,136 @@ const extractPatternsFromSubject = (
   return patterns;
 };
 
-/** recursive enumeration of insight subjects */
-const enumerateInsightSubjectsRecursive = (
+export const extractInsightsFor1M1DCombination = (
   data: Datum[],
-  subjectInfo: SubjectInfo,
+  dimensions: string[],
+  measures: Measure[],
+  subspace: Subspace,
+  referenceInfo: ReferenceInfo,
+  options: InsightOptions
+): InsightInfo<PatternInfo>[][] => {
+  const { fieldPropsMap } = referenceInfo;
+
+  const insights = [];
+
+  dimensions.forEach((dimension) => {
+    const insightsPerDim = [];
+    const collectionForDimension = [];
+
+    const isTimeField = fieldPropsMap[dimension].levelOfMeasurements.includes('Time');
+    measures.forEach((measure) => {
+      const childSubjectInfo = { dimensions: [dimension], subspace, measures: [measure] };
+      const aggregatedData = aggregate(data, dimension, [measure], isTimeField);
+
+      const patterns = extractPatternsFromSubject(aggregatedData, childSubjectInfo, fieldPropsMap, options);
+
+      collectionForDimension.push(patterns);
+
+      const patternsArray = _flatten(Object.values(patterns).filter((item) => item?.length > 0)).sort(
+        (a, b) => b.significance - a.significance
+      );
+      if (patternsArray.length) {
+        const insight = {
+          subspaces: [subspace],
+          dimensions: [dimension],
+          measures: [measure],
+          patterns: patternsArray,
+          data: aggregatedData,
+          score: patternsArray[0].significance,
+        };
+        insightsPerDim.push(insight);
+      } else {
+        insightsPerDim.push(null);
+      }
+    });
+
+    insights.push(insightsPerDim);
+  });
+
+  return insights;
+};
+
+/** recursive extraction in data subspace */
+export const extractInsightsFromSubspace = (
+  data: Datum[],
+  dimensions: string[],
+  measures: Measure[],
+  subspace: Subspace,
   referenceInfo: ReferenceInfo,
   insightsHeap: Heap<InsightInfo<PatternInfo>>,
-  metaInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
-  options?: InsightOptions
+  homogeneousInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
+  options: InsightOptions
 ): InsightInfo<PatternInfo>[] => {
-  const { fieldPropsMap, impactMeasureReferences } = referenceInfo;
-  const subjectImportance = computeSubjectImpact(data, subjectInfo, impactMeasureReferences, options?.impactMeasures);
-
-  // check the subject importance
-  if (subjectImportance < InsightScoreBenchmark) {
+  /** subspace pruning */
+  if (!data?.length) {
     return [];
   }
 
+  // calculate impact score
+  const { impactMeasureReferences, fieldPropsMap } = referenceInfo;
+  const subspaceImpact = computeSubspaceImpact(data, subspace, impactMeasureReferences, options?.impactMeasures);
+
+  // pruning1: check the subpace impact limit
+  if (subspaceImpact < InsightScoreBenchmark) {
+    return [];
+  }
+
+  // pruning2: check if the impact score is greater than the minimum score in heap
   const impactScoreWeight =
     options?.impactWeight >= 0 && options?.impactWeight < 1 ? options.impactWeight : ImpactScoreWeight;
-
-  /** enumerate insights of the subject itself */
-  const { breakdown, subspace, measures } = subjectInfo;
-
-  const groupedData = _groupBy(data, breakdown);
-
-  const insightsForMeasures = [];
-
-  /** ① 1M1D pattern search  */
-  const patternsForMeasures = [];
-  measures.forEach((measure) => {
-    const childSubjectInfo = { breakdown, subspace, measures: [measure] };
-
-    const aggregatedData = aggregate(data, breakdown, [measure]);
-
-    const patterns = extractPatternsFromSubject(aggregatedData, childSubjectInfo, fieldPropsMap, options);
-
-    patternsForMeasures.push(patterns);
-
-    const patternsArray = _flatten(Object.values(patterns).filter((item) => item?.length > 0)).sort(
-      (a, b) => b.significance - a.significance
-    );
-    if (patternsArray.length) {
-      const insight = {
-        subspaces: [subspace],
-        breakdowns: [breakdown],
-        measures: [measure],
-        patterns: patternsArray,
-        data: aggregatedData,
-        score: patternsArray[0].significance * (1 - impactScoreWeight) + subjectImportance * impactScoreWeight,
-      };
-      insightsForMeasures.push(insight);
-      insightsHeap.add(insight);
-    } else {
-      insightsForMeasures.push(null);
-    }
-  });
-
-  /** ② homogeneous patterns in measures */
-  if (options?.homogeneous) {
-    const homogeneousPatternsForMeasures = extractHomogeneousPatternsForMeausres(measures, patternsForMeasures);
-    if (homogeneousPatternsForMeasures.length > 0) {
-      const homogeneousInsights: InsightInfo<HomogeneousPatternInfo>[] = homogeneousPatternsForMeasures.map(
-        (pattern) => ({
-          subspaces: [subspace],
-          breakdowns: [breakdown],
-          measures,
-          patterns: [pattern],
-          data,
-          score: pattern.significance * subjectImportance,
-        })
-      );
-      metaInsightsHeap.addAll(homogeneousInsights);
+  const optimalScore = subspaceImpact * impactScoreWeight + 1 * (1 - impactScoreWeight);
+  if (insightsHeap.length >= insightsHeap.limit) {
+    const minScoreInHeap = insightsHeap.peek()?.score;
+    if (optimalScore <= minScoreInHeap) {
+      return [];
     }
   }
 
-  /** ③ TODO NM pattern search */
+  /** insight extraction */
+  const insights = [];
+  // TODO Combination 1:  1D(dimension) or 1M(measure)
 
-  /** ④ enumerate insights of the sibling group */
-  const searchedDimensions = subspace.map((item) => item.dimension).concat(breakdown);
+  // Combination 2: 1M * 1D */
+  const insightsFor1M1DCombination = extractInsightsFor1M1DCombination(
+    data,
+    dimensions,
+    measures,
+    subspace,
+    referenceInfo,
+    options
+  );
+  insightsFor1M1DCombination.forEach((insightsPerDim) => {
+    const insightsForMeasures = insightsPerDim
+      .filter((item) => !!item)
+      .map((item) => ({ ...item, score: item.score * (1 - impactScoreWeight) + subspaceImpact * impactScoreWeight }));
+    insights.push(...insightsPerDim);
+    addInsightsToHeap(insightsForMeasures, insightsHeap);
+  });
+
+  // TODO Combination 3: nM * nD
+
+  /**  extract homegenehous insight in measures */
+  if (options?.homogeneous) {
+    insightsFor1M1DCombination.forEach((insightsPerDim, dimIndex) => {
+      const homogeneousPatternsForMeasures = extractHomogeneousPatternsForMeausres(measures, insightsPerDim);
+      if (homogeneousPatternsForMeasures.length > 0) {
+        const homogeneousInsights: InsightInfo<HomogeneousPatternInfo>[] = homogeneousPatternsForMeasures.map(
+          (pattern) => ({
+            subspace,
+            dimensions: [dimensions[dimIndex]],
+            measures,
+            patterns: [pattern],
+            data,
+            score: pattern.significance * (1 - impactScoreWeight) + subspaceImpact * impactScoreWeight,
+          })
+        );
+        homogeneousInsightsHeap.addAll(homogeneousInsights);
+      }
+    });
+  }
+
+  /** drill down */
+  const searchedDimensions = subspace.map((item) => item.dimension);
   const remainDimensionFields = (
     options?.dimensions ||
     Object.values(fieldPropsMap)
@@ -164,52 +217,67 @@ const enumerateInsightSubjectsRecursive = (
       .map((item) => item.name)
   ).filter((field) => !searchedDimensions.includes(field));
 
-  const breakdownValues: string[] = _uniq(fieldPropsMap[breakdown].rawData);
-  if (remainDimensionFields.length === 0 || breakdownValues.length < 2) {
-    return insightsForMeasures;
+  if (remainDimensionFields.length > 0) {
+    remainDimensionFields.forEach((dimension) => {
+      const siblingGroupInsights: InsightInfo<PatternInfo>[][] = [];
+      const groupedData = _groupBy(data, dimension);
+      const breakdownValues: string[] = _uniq(fieldPropsMap[dimension].rawData);
+
+      const dimensionsInSubspace = remainDimensionFields.filter((item) => item !== dimension);
+      if (breakdownValues.length > 1) {
+        breakdownValues.forEach((value) => {
+          const childSubspace = [...subspace, { dimension, value }];
+
+          const subspaceInsights = extractInsightsFromSubspace(
+            groupedData[value],
+            dimensionsInSubspace,
+            measures,
+            childSubspace,
+            referenceInfo,
+            insightsHeap,
+            homogeneousInsightsHeap,
+            options
+          );
+          siblingGroupInsights.push(subspaceInsights);
+        });
+      }
+
+      /** extract homegenehous insight in sibling group */
+      if (options?.homogeneous) {
+        dimensionsInSubspace.forEach((dim) => {
+          measures.forEach((measure) => {
+            const siblingGroupInsightsArr = siblingGroupInsights.map((siblingItem) => {
+              return siblingItem.find((insight) => {
+                return (
+                  !!insight &&
+                  insight.dimensions.length === 1 &&
+                  insight.dimensions[0] === dim &&
+                  insight.measures.length === 1 &&
+                  insight.measures[0].field === measure.field
+                );
+              });
+            });
+
+            const homogeneousPatternsForSiblingGroups = extractHomogeneousPatternsForSiblingGroups(
+              breakdownValues,
+              siblingGroupInsightsArr
+            );
+            const insightsForSiblingGroup = homogeneousPatternsForSiblingGroups.map((pattern) => ({
+              subspace,
+              dimensions: [dimension, dim],
+              measures: [measure],
+              patterns: [pattern],
+              data,
+              score: pattern.significance * (1 - impactScoreWeight) + subspaceImpact * impactScoreWeight,
+            }));
+            homogeneousInsightsHeap.addAll(insightsForSiblingGroup);
+          });
+        });
+      }
+    });
   }
 
-  remainDimensionFields.forEach((dimension) => {
-    const siblingGroupInsights = [];
-    breakdownValues.forEach((value) => {
-      const childSubspace = [...subspace, { dimension: breakdown, value }];
-      const childInsights = enumerateInsightSubjectsRecursive(
-        groupedData[value],
-        {
-          breakdown: dimension,
-          subspace: childSubspace,
-          measures,
-        },
-        referenceInfo,
-        insightsHeap,
-        metaInsightsHeap,
-        options
-      );
-      siblingGroupInsights.push(childInsights);
-    });
-
-    /** ⑤ homogeneous patterns in sibling groups */
-    if (options?.homogeneous) {
-      const homogeneousPatternsForSiblingGroups = extractHomogeneousPatternsForSiblingGroups(
-        measures,
-        breakdownValues,
-        siblingGroupInsights
-      );
-      homogeneousPatternsForSiblingGroups.forEach((patternGroup, measureIndex) => {
-        const insightsForMeasure = patternGroup.map((pattern) => ({
-          subspaces: [subspace],
-          breakdowns: [breakdown, dimension],
-          measures: [measures[measureIndex]],
-          patterns: [pattern],
-          data,
-          score: pattern.significance * subjectImportance,
-        }));
-        metaInsightsHeap.addAll(insightsForMeasure);
-      });
-    }
-  });
-
-  return insightsForMeasures;
+  return insights;
 };
 
 /** insight subject enumeration in the data */
@@ -224,18 +292,14 @@ export const enumerateInsights = (
 ) => {
   const initSubspace = [];
 
-  dimensions.forEach((dimension) => {
-    enumerateInsightSubjectsRecursive(
-      data,
-      {
-        breakdown: dimension,
-        measures,
-        subspace: initSubspace,
-      },
-      referenceInfo,
-      insightsHeap,
-      metaInsightsHeap,
-      options
-    );
-  });
+  extractInsightsFromSubspace(
+    data,
+    dimensions,
+    measures,
+    initSubspace,
+    referenceInfo,
+    insightsHeap,
+    metaInsightsHeap,
+    options
+  );
 };

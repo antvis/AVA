@@ -1,11 +1,12 @@
 import { ChangePoint } from '../../algorithms';
-import { SignificanceBenchmark } from '../../constant';
-import { Datum, ChangePointInfo } from '../../interface';
+import { Datum, ChangePointInfo, Measure } from '../../interface';
 
 type ChangePointItem = {
   index: number;
   significance: number;
 };
+
+const SignificanceBenchmark = 0.85;
 
 export const findChangePoints = (series: number[]): ChangePointItem[] => {
   const results = ChangePoint.Bayesian(series);
@@ -20,7 +21,9 @@ export const findChangePoints = (series: number[]): ChangePointItem[] => {
   return changePointsResult;
 };
 
-export const extractor = (data: Datum[], dimension: string, measure: string): ChangePointInfo[] => {
+export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): ChangePointInfo[] => {
+  const dimension = dimensions[0];
+  const measure = measures[0].field;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   const outliers: ChangePointInfo[] = findChangePoints(values).map((item) => {
