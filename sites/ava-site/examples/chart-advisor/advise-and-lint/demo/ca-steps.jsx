@@ -50,7 +50,7 @@ class App extends React.Component {
   onAdviceMenuClick = (e) => {
     const index = parseInt(e.key.split('-')[0], 10);
     this.setState({
-      currentAdvice: index,
+      currentResult: index,
     });
   };
 
@@ -66,7 +66,7 @@ class App extends React.Component {
           optionType="button"
           buttonStyle="solid"
         />
-        {dataRadioValue === 'Table' ? <TableView data={data} /> : <JSONView json={data} />}
+        {dataRadioValue === 'Table' ? <TableView data={data} tableWidth={200} /> : <JSONView json={data} />}
       </>
     );
     const advicesMenu = (

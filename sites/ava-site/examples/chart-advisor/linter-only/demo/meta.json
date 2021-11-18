@@ -10,7 +10,7 @@
         "en": "Existing Chart to Linter",
         "zh": "给定图表到 Linter 进行优化"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=linter-steps"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/Gu8zDCffu/linter-steps.gif"
     },
     {
       "filename": "chart-linter.jsx",
@@ -18,7 +18,7 @@
         "en": "Basic Linter",
         "zh": "Linter 基础用法"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=chart-linter"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/1bZn%26b5Os/chart-linter.gif"
     },
     {
       "filename": "custom-rules-linter.jsx",
@@ -26,7 +26,7 @@
         "en": "Custom rules for Linter",
         "zh": "定制 Linter 所使用的规则"
       },
-      "screenshot": "https://iph.href.lu/800x400?text=custom-rules-linter"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/2Jjp04b6%26/custom-rules-linter.gif"
     }
   ]
 }
