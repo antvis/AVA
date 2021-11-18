@@ -13,7 +13,7 @@ DataWizard 是一个 js/ts 的前端数据处理和分析库。在 AVA 的框架
 <img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />
 </div>
 
-## ✨ 特性
+## ✨ 功能特性
 
 ### 数据处理与分析
 

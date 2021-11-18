@@ -15,13 +15,17 @@ order: 0
 
 ChartAdvisor 中透出了多个工具类供用户使用，包括 `ChartAdvisor`、`Advisor` 和 `Linter`。
 
-* **ChartAdvisor**: 是一个同时包含图表推荐和图表优化功能的工具类。
 
 * **Advisor**: 是对应图表推荐的工具类。
 
 * **Linter**: 是对应图表优化的工具类。
 
-`Advisor` 和 `Linter` 分别提供了 `advise` 和 `lint` 函数用于图表推荐和优化。
+`Advisor` 和 `Linter` 分别提供了 `advise()` 和 `lint()` 函数用于图表推荐和优化。
+
+* **ChartAdvisor**: 是一个同时包含图表推荐和图表优化功能的工具类。
+
+`ChartAdvisor` 中同时包含了一个 `Advisor` 和一个 `Linter` 对象，并提供了 `advise()` 函数用于图表推荐和优化，
+相对于 `Advisor` 中的同名函数多了一个 `Lint` 类型的输出作为图表优化建议项。
 
 ### 图表推荐
 

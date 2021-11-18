@@ -9,7 +9,7 @@ order: 0
 
 SmartColor 是一个 js/ts 的前端颜色处理类库。
 
-## ✨ 特性
+## ✨ 功能特性
 
 * **色板生成**: 根据 [color scheme](https://github.com/neoddish/color-palette-json-schema#colorschemetype) 生成分类或离散比例的调色板。
 * **色板优化**: 优化色板以提高颜色的可识别性。
@@ -25,7 +25,7 @@ SmartColor 是一个 js/ts 的前端颜色处理类库。
 $ npm install @antv/smart-color
 ```
 
-## 🔨 开始使用
+## 🔨 使用
 
 * 色板生成
 
@@ -43,7 +43,7 @@ paletteGeneration("monochromatic", {
 ```
 
 <div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/vmwgZKfSZB/jieping2021-07-01%252520xiawu3.01.26.png" alt="auto generated palette">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/vmwgZKfSZB/jieping2021-07-01%252520xiawu3.01.26.png" alt="auto generated palette" width="100%">
 </div>
 
 * 色板优化
@@ -70,12 +70,12 @@ paletteOptimization(palette, {
 
 <div align="center">
   <div>
-    <span>Before:</span>
-    <img src="https://gw.alipayobjects.com/zos/antfincdn/jT0dtYywS8/jieping2021-07-01%252520xiawu3.24.42.png" alt="palette before optimization">
+    <div>Before:</div>
+    <img src="https://gw.alipayobjects.com/zos/antfincdn/jT0dtYywS8/jieping2021-07-01%252520xiawu3.24.42.png" alt="palette before optimization" width="100%">
   </div>
   <div>
-    After:
-    <img src="https://gw.alipayobjects.com/zos/antfincdn/HCdz8Z8kr%26/jieping2021-07-01%252520xiawu3.24.29.png" alt="palette after optimization" >
+    <div>After:</div>
+    <img src="https://gw.alipayobjects.com/zos/antfincdn/HCdz8Z8kr%26/jieping2021-07-01%252520xiawu3.24.29.png" alt="palette after optimization" width="100%">
   </div>
 </div>
 

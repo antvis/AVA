@@ -11,6 +11,11 @@ order: 1
 Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = {})
 ```
 
+* **ChartAdvisor**: is a tool class that contains both chart recommendation and chart optimization abilities.
+
+`ChartAdvisor` contains both an `Advisor` and a `Linter` object, and provides `advise()` function,
+compared to `Advisor`, it provides an additional `Lint` object as output for providing chart suggestions.
+
 ### Parameters
 
 * **config** * Chart Knowledge Base (CKB) & Rule Config
@@ -25,42 +30,25 @@ Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = 
 
 * ***CKBConfig*** CKB configuration.
 
-```ts
-type CKBConfig = {
-  exclude?: string[];
-  include?: string[];
-  custom?: Record<string, CustomizedCKBJSON>;
-};
-```
-
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| exclude | `string[]` | Specify to exclude charts in `@antv/ckb`. | None |
-| include | `string[]` | Specify to include charts, with lower priority than exclude. | None |
-| custom | `Record<string, CustomizedCKBJSON>` | Customized charts. | None |
+| exclude | `string[]` | Specify to exclude charts in `@antv/ckb`. | None `Optional` |
+| include | `string[]` | Specify to include charts, with lower priority than exclude. | None `Optional` |
+| custom | `Record<string, CustomizedCKBJSON>` | Customized charts. | None `Optional` |
 
 * ***CustomizedCKBJSON*** `@antv/ckb` Customized charts, see [ChartKnowledgeJSON API](./ckb/CKBJson#parameters) for details.
 
 
 * ***RuleConfig*** Chart rule configuration.
 
-```ts
-type RuleConfig = {
-  include?: string[];
-  exclude?: string[];
-  custom?: Record<string, RuleModule>;
-  options?: ChartRuleConfigMap;
-};
-```
-
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| exclude | `string[]` | Specify to exclude rules in `ruler`. | None |
-| include | `string[]` | Specify to include rules, with lower priority than exclude. | None |
-| custom | `Record<string, RuleModule>` | Customized rules. | None |
-| options | `ChartRuleConfigMap` | Rule configuration. | None |
+| exclude | `string[]` | Specify to exclude rules in `ruler`. | None `Optional` |
+| include | `string[]` | Specify to include rules, with lower priority than exclude. | None `Optional` |
+| custom | `Record<string, RuleModule>` | Customized rules. | None `Optional` |
+| options | `ChartRuleConfigMap` | Rule configuration. | None `Optional` |
 
-* ***RuleModule*** `ruler` Custom rules, see [Ruler](../ckb/Ruler) for details.
+* ***RuleModule*** `ruler` Custom rules, see [Ruler](./Ruler) for details.
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -76,7 +64,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* ***ChartRuleConfigMap*** `ruler` Rule configuration
+* ***ChartRuleConfigMap*** `ruler` Rule configuration, see [Ruler](./Ruler) for details.
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;

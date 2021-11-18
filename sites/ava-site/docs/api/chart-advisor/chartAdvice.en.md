@@ -27,64 +27,34 @@ type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
 * ***ChartAdviseParams*** Parameter configuration.
 
-```ts
-type ChartAdviseParams = {
-  data: [];
-  fields?: string[];
-  smartColor?: boolean;
-  options?: AdvisorOptions;
-  colorOptions?: SmartColorOptions;
-};
-```
-
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
 | data | `any[]` | The source data. | None |
-| fields | `string[]` | The data field information. | None |
-| smartColor | `boolean` | Whether to enable smart color matching. | `false` | options
-| options | `AdvisorOptions` | The recommended configuration items for the statistics chart. | options
-| colorOptions | `SmartColorOptions` | The smartColor option. | None | 
+| fields | `string[]` | The data field information. | None `Optional` |
+| smartColor | `boolean` | Whether to enable smart color matching. | `false` `Optional` | 
+| options | `AdvisorOptions` | The recommended configuration items for the statistics chart. | None `Optional` |
+| colorOptions | `SmartColorOptions` | The smartColor option. | None `Optional` | 
 
 * ***AdvisorOptions*** Parameter configuration.
-```ts
-type AdvisorOptions = {
-  purpose?: Purpose;
-  preferences?: Preferences;
-  refine?: boolean;
-  fields?: string[];
-  showLog?: boolean;
-  theme?: Theme;
-};
-```
 
 | property | type | description | default |  
 | ----| ---- | ---- | -----|
-| purpose | `Purpose` | The purpose of the analysis. | None |
-| preferences | `Preferences` | Chart preferences. | None |
-| refine | `boolean` | Whether to enable rule-based optimization. | None | fields
-| fields | `string[]` | Data field information. | None | showLog
-| showLog | `boolean` | Whether to show Log. | None |
-| theme | `Theme` | Specify color in hexadecimal. | None |
+| purpose | `Purpose` | The purpose of the analysis. | None `Optional` |
+| preferences | `Preferences` | Chart preferences. | None `Optional` |
+| refine | `boolean` | Whether to enable rule-based optimization. | None `Optional` | 
+| fields | `string[]` | Data field information. | None `Optional` | 
+| showLog | `boolean` | Whether to show Log. | None `Optional` |
+| theme | `Theme` | Specify color in hexadecimal. | None `Optional` |
 
 * ***Purpose*** Parameter configuration.
+
 ```ts
-type PURPOSE_OPTIONS = [
-  "Comparison", 
-  "Trend", 
-  "Distribution", 
-  "Rank", 
-  "Proportion", 
-  "Composition", 
-  "Relation", 
-  "Hierarchy", 
-  "Flow", 
-  "Spatial", 
-  "Anomaly", 
-  "Value"
-  ];
+type PURPOSE_OPTIONS = ["Comparison", "Trend", "Distribution", "Rank", "Proportion", 
+  "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly", "Value"];
 ```
 
 * ***Preferences*** Parameter configuration.
+
 ```ts
 interface Preferences {
   canvasLayout: 'landscape' | 'portrait';
@@ -92,6 +62,7 @@ interface Preferences {
 ```
 
 * ***Theme*** Parameter configuration.
+
 ```ts
 type Theme = {
   primaryColor?: string;
@@ -99,6 +70,7 @@ type Theme = {
 ```
 
 * ***SmartColorOptions*** Parameter configuration.
+
 ```ts
 type SmartColorOptions = {
   themeColor?: string;
@@ -108,41 +80,31 @@ type SmartColorOptions = {
 ```
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| themeColor | `string` | The hexadecimal theme color. | `#006f94` |
-| colorSchemeType | `ColorSchemeType` | The color swatch generation mode. | `monochromatic` |
-| simulationType | `SimulationType` | The color simulation mode. | `normal` |
+| themeColor | `string` | The hexadecimal theme color. | `#006f94` `Optional` |
+| colorSchemeType | `ColorSchemeType` | The color swatch generation mode. | `monochromatic` `Optional` |
+| simulationType | `SimulationType` | The color simulation mode. | `normal` `Optional` |
 
 #### Graph recommendation parameters
 
 * ***GraphAdviseParams*** Parameter configuration.
 
-```ts
-type GraphAdviseParams = {
-  data: [];
-  fields?: {
-    nodes: string[];
-    links: string[];
-  };
-  options?: GraphAdvisorOptions;
-};
-```
-
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| data | `any[]` | The source data. | None |
-| fields | `{ nodes, links }` | Data point edge information. | None | options
-| options | `GraphAdvisorOptions` | Graph recommendation configuration items. | None |
+| data | `any[]` | The source data. | None `Optional` |
+| fields | `{ nodes, links }` | Data point edge information. | None `Optional` |
+| options | `GraphAdvisorOptions` | Graph recommendation configuration items. | None `Optional` |
 
 * ***GraphAdvisorOptions*** Parameter configuration.
+
 ```ts
 type GraphAdvisorOptions = {
   nodeColors?: string[];
   nodeSizeRange?: number[];
   edgeWidthRange?: number[];
   extra?: {
-    nodeKey?: string; // key for node array in data object
-    edgeKey?: string; // key for edge array in data object
-    sourceKey?: string; // key for edge source in edge object
+    nodeKey?: string;
+    edgeKey?: string;
+    sourceKey?: string;
     targetKey?: string;
     childrenKey?: string;
   };
@@ -152,12 +114,12 @@ type GraphAdvisorOptions = {
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
-| nodeColors | `string[]` | The color of the node. | None |
-| nodeSizeRange | `number[]` | The node size range. | None | nodeSizeRange
-| edgeWidthRange | `number[]` | The width range of the edge. |None |
-| extra | `{}` | Specifies the graph-related attributes. | None |
-| *Key | `string` | Specifies the location of the point-edge relationship (point, edge, origin, pointing). | None |
-| AdvisorOptions | `AdvisorOptions` | Same as the recommended configuration items for statistical graphs. | None |
+| nodeColors | `string[]` | The color of the node. | None `Optional` |
+| nodeSizeRange | `number[]` | The node size range. | None `Optional` | 
+| edgeWidthRange | `number[]` | The width range of the edge. |None `Optional` |
+| extra | `{ *Key, ...}` | Specifies the graph-related attributes. | None `Optional` |
+| *Key | `string` | Specifies the location of the point-edge relationship (point, edge, origin, pointing). | None `Optional` |
+| AdvisorOptions | `AdvisorOptions` | Same as the recommended configuration items for statistical graphs. | None `Optional` |
 
 
 
@@ -167,44 +129,17 @@ type GraphAdvisorOptions = {
 
 * ***ChartAdvisorList*** Parameter configuration.
 
-```ts
-type ChartAdvisorList = {
-  type: ChartType;
-  spec: AntVSpec;
-  lint: Lint;
-  score: number;
-};
-```
-
 | Properties | Type | Description | Examples |  
 | ----| ---- | ---- | -----|
 | type | `ChartType` | The type of the chart. | `line-chart` |
-| spec | `AntVSpec` | The chart attribute information. | |
-| score | `number` | The chart score. | |
+| spec | `AntVSpec` | The chart attribute information. | See below. |
+| lint | `Lint` | The chart optimization suggestions. | See below. |
+| score | `number` | The chart score. | `1.0` |
 
 * ***AntVSpec*** Parameter configuration.
 
 `AntVSpec` is the declarative grammar that supports various technology stacks of AntV. 
 See [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md) for detail configurations.
-
-```ts
-type AntVSpec = {
-  basis: { 
-    type: string;
-  };
-  data: { 
-    type: string;
-    values: [];
-  };
-  layer: [
-    { 
-      encoding;
-      mark;
-      ...
-    }
-  ];
-};
-```
 
 | Properties | Description | Examples |  
 | ----| ---- | -----|
@@ -212,25 +147,17 @@ type AntVSpec = {
 | data | The data information. | `data: { type: 'json-array', values: [...] }` |
 | layer | The drawing information. | `{ [ encoding: { x: {...} , y:{...} }, mark: { type: 'line' } ] }` |
 
+
 * ***Lint*** Parameter configuration.
 
-```ts
-interface Lint {
-  type: string;
-  id: string;
-  score: number;
-  fix?: any;
-  docs?: any;
-}
-```
 
 | Properties | Type | Description | Examples |  
 | ----| ---- | ---- | -----|
-| type | `string` | Rule type. | hard / soft / design
+| type | `string` | Rule type. | `hard / soft / design` |
 | id | `string` | Rule id. | `10` |
 | score | `number` | The score of the rule. | ` 1` |
 | fix | `any` | The solution based on this rule. | |
-| docs | `any` | The documentation for the rule. | | |
+| docs | `any` | The documentation for the rule. | |
 
 
 

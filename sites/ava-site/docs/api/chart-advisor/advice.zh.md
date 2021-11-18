@@ -27,63 +27,30 @@ type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
 * ***ChartAdviseParams*** 参数配置。
 
-```ts
-type ChartAdviseParams = {
-  data: [];
-  fields?: string[];
-  smartColor?: boolean;
-  options?: AdvisorOptions;
-  colorOptions?: SmartColorOptions;
-};
-```
-
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
 | data | `any[]` | 源数据。 | 无 |
-| fields | `string[]` | 数据字段信息。 | 无 |
-| smartColor | `boolean` | 是否开启智能配色。 | `false` |
-| options | `AdvisorOptions` | 统计图表推荐配置项。 | 无 |
-| colorOptions | `SmartColorOptions` | 智能配色配置项。 | 无 |
+| fields | `string[]` | 数据字段信息。 | 无  `可选` |
+| smartColor | `boolean` | 是否开启智能配色。 | `false`  `可选` |
+| options | `AdvisorOptions` | 统计图表推荐配置项。 | 无  `可选` |
+| colorOptions | `SmartColorOptions` | 智能配色配置项。 | 无  `可选` |
 
 * ***AdvisorOptions*** 参数配置。
 
-```ts
-type AdvisorOptions = {
-  purpose?: Purpose;
-  preferences?: Preferences;
-  refine?: boolean;
-  fields?: string[];
-  showLog?: boolean;
-  theme?: Theme;
-};
-```
-
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| purpose | `Purpose` | 分析目的。 | 无 |
-| preferences | `Preferences` | 图表喜好。 | 无 |
-| refine | `boolean` | 是否开启可视化规则优化。 | 无 |
-| fields | `string[]` | 数据字段信息。 | 无 |
-| showLog | `boolean` | 是否展示 Log。 | 无 |
-| theme | `Theme` | 指定十六进制颜色。 | 无 |
+| purpose | `Purpose` | 分析目的。 | 无  `可选` |
+| preferences | `Preferences` | 图表喜好。 | 无  `可选` |
+| refine | `boolean` | 是否开启可视化规则优化。 | 无  `可选` |
+| fields | `string[]` | 数据字段信息。 | 无  `可选` |
+| showLog | `boolean` | 是否展示 Log。 | 无  `可选` |
+| theme | `Theme` | 指定十六进制颜色。 | 无  `可选` |
 
 * ***Purpose*** 参数配置。
 
 ```ts
-type PURPOSE_OPTIONS = [
-  "Comparison", 
-  "Trend", 
-  "Distribution", 
-  "Rank", 
-  "Proportion", 
-  "Composition", 
-  "Relation", 
-  "Hierarchy", 
-  "Flow", 
-  "Spatial", 
-  "Anomaly", 
-  "Value"
-  ];
+type PURPOSE_OPTIONS = ["Comparison", "Trend", "Distribution", "Rank", "Proportion", 
+  "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly", "Value"];
 ```
 
 * ***Preferences*** 参数配置。
@@ -104,40 +71,21 @@ type Theme = {
 
 * ***SmartColorOptions*** 参数配置。
 
-```ts
-type SmartColorOptions = {
-  themeColor?: string;
-  colorSchemeType?: ColorSchemeType;
-  simulationType?: SimulationType;
-}
-```
-
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| themeColor | `string` | 十六进制主题色。 | `#006f94` |
-| colorSchemeType | `ColorSchemeType` | 色板生成模式。 | `monochromatic` |
-| simulationType | `SimulationType` | 颜色模拟模式。 | `normal` |
+| themeColor | `string` | 十六进制主题色。 | `#006f94`  `可选` |
+| colorSchemeType | `ColorSchemeType` | 色板生成模式。 | `monochromatic`  `可选` |
+| simulationType | `SimulationType` | 颜色模拟模式。 | `normal`  `可选` |
 
 #### 图推荐参数
 
 * ***GraphAdviseParams*** 参数配置。
 
-```ts
-type GraphAdviseParams = {
-  data: [];
-  fields?: {
-    nodes: string[];
-    links: string[];
-  };
-  options?: GraphAdvisorOptions;
-};
-```
-
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
 | data | `any[]` | 源数据。 | 无 |
-| fields | `{ nodes, links }` | 数据点边信息。 | 无 |
-| options | `GraphAdvisorOptions` | 图推荐配置项。 | 无 |
+| fields | `{ nodes: string[];, links: string[]; }` | 数据点边信息。 | 无 `可选` |
+| options | `GraphAdvisorOptions` | 图推荐配置项。 | 无 `可选` |
 
 * ***GraphAdvisorOptions*** 参数配置。
 
@@ -159,12 +107,12 @@ type GraphAdvisorOptions = {
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| nodeColors | `string[]` | 节点颜色。 | 无 |
-| nodeSizeRange | `number[]` | 节点大小范围。 | 无 |
-| edgeWidthRange | `number[]` | 边宽度范围。 | 无 |
-| extra |  | 指定图相关属性。 | 无 |
-| *Key | `string` | 指定点边关系（点、边、源自、指向）的位置。 | 无 |
-| AdvisorOptions | `AdvisorOptions` | 同统计图表推荐配置项。 | 无 |
+| nodeColors | `string[]` | 节点颜色。 | 无 `可选` |
+| nodeSizeRange | `number[]` | 节点大小范围。 | 无 `可选` |
+| edgeWidthRange | `number[]` | 边宽度范围。 | 无 `可选` |
+| extra | `{ *Key, ...}` | 指定图相关属性。 | 无 `可选` |
+| *Key | `string` | 指定点边关系（点、边、源自、指向）的位置。 | 无 `可选` |
+| AdvisorOptions | `AdvisorOptions` | 同统计图表推荐配置项。 | 无 `可选` |
 
 
 
@@ -174,43 +122,16 @@ type GraphAdvisorOptions = {
 
 * ***ChartList*** 参数配置。
 
-```ts
-type ChartList = {
-  type: ChartType;
-  spec: AntVSpec;
-  score: number;
-};
-```
-
 | 属性 | 类型 | 描述 | 样例 |  
 | ----| ---- | ---- | -----|
 | type | `ChartType` | 图表类型。 | `line-chart` |
-| spec | `AntVSpec` | 图标属性信息。 |  |
-| score | `number` | 图表得分。 |  |
+| spec | `AntVSpec` | 图表属性信息。 | 见下文 |
+| score | `number` | 图表得分。 | `1.0` |
 
 * ***AntVSpec*** 参数配置。
 
 `AntVSpec` 是 AntV 技术栈的声明式语法。
 详细配置项见 [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md)。
-
-```ts
-type AntVSpec = {
-  basis: { 
-    type: string;
-  };
-  data: { 
-    type: string;
-    values: [];
-  };
-  layer: [
-    { 
-      encoding;
-      mark;
-      ...
-    }
-  ];
-};
-```
 
 | 属性 | 描述 | 样例 |  
 | ----| ---- | -----|

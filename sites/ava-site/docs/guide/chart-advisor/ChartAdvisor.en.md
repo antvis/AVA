@@ -15,13 +15,16 @@ Recommend and automatically generate charts based on data and analytics requirem
 
 ChartAdvisor contains several tool classes exported for users, including `ChartAdvisor`, `Advisor` and `Linter`.
 
-* **ChartAdvisor**: is a tool class that contains both chart recommendation and chart optimization abilities,
-
 * **Advisor**: is the tool classes for recommending charts automatically.
 
 * **Linter**: is the tool classes for providing chart optimization suggestions.
 
 `Advisor` and `Linter` provide `advise()` and `lint()` functions for chart recommendation and optimization, respectively.
+
+* **ChartAdvisor**: is a tool class that contains both chart recommendation and chart optimization abilities.
+
+`ChartAdvisor` contains both an `Advisor` and a `Linter` object, and provides `advise()` function,
+compared to `Advisor`, it provides an additional `Lint` object as output for providing chart suggestions.
 
 ### Chart Recommendation
 

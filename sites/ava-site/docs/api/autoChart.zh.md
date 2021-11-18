@@ -83,7 +83,7 @@ data 为对象数组时，指定用于自动推荐图表所需的字段，默认
 
 <description>**optional** _boolean_ _default:_ `true`</description>
 
-是否显示图标配置面板。
+是否显示图表配置面板。
 
 ### noDataContent
 
