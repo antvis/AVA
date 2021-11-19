@@ -1,15 +1,5 @@
-// TODO @antv/thumbnails will update
-import Thumbnails from '@antv/thumbnails';
-import type { ChartID } from '@antv/ckb';
-
 export const prefixCls = '__AUTO_CHART__';
 export const customChartType = ['kpi_panel', 'table'];
-export function getThumbnailURL(chartId: ChartID) {
-  if (Thumbnails[chartId]?.svgCode) {
-    return `data:image/svg+xml;utf8,${encodeURIComponent(Thumbnails[chartId]?.svgCode as string)}`;
-  }
-  return 'https://gw.alipayobjects.com/zos/antfincdn/lP6YFnCEjy/nochartimg.svg';
-}
 
 export function uuid() {
   return `uuid${'-xxxx-xxx'.replace(/x/g, () => (Math.random() * 16).toString(16))}`;

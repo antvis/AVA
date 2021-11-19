@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.3",
-    "@antv/antv-spec": "^0.1.0-alpha.6",
+    "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/auto-chart": "^2.0.0-alpha.1",
     "@antv/chart-advisor": "^2.0.0-alpha.1",
     "@antv/ckb": "^2.0.0-alpha.1",

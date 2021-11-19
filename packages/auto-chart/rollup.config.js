@@ -75,6 +75,7 @@ if (format === 'umd') {
     'react-dom': 'ReactDOM',
     antd: 'antd',
     '@antv/g2plot': 'G2Plot',
+    '@antv/g6': 'G6',
     '@ant-design/icons': 'icons',
     moment: 'moment',
   };
