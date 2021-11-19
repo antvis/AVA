@@ -19,6 +19,8 @@ function setPrefix(phrases: PhrasesBuilder, subspace: HomogeneousInfo['subspace'
   phrases.addSymbol('punctuation_right_parentheses'); // )
 }
 
+const QUANTITY_LIMIT = 6;
+
 /**
  * @template
  * @example
@@ -33,11 +35,12 @@ export function homogeneousStrategy(variableMap: HomogeneousInfo) {
   }
 
   if (type === 'commonness') {
-    commSet.forEach((item, index) => {
+    const subjects = commSet.length > QUANTITY_LIMIT ? commSet.slice(0, QUANTITY_LIMIT - 1).concat('...') : commSet;
+    subjects.forEach((item, index) => {
       phrases.add(item, 'dim_value');
-      if (index < commSet.length - 2) {
+      if (index < subjects.length - 2) {
         phrases.addSymbol('punctuation_comma');
-      } else if (index < commSet.length - 1) {
+      } else if (index < subjects.length - 1) {
         phrases.add('and');
       }
     });
