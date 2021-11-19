@@ -25,7 +25,7 @@ describe('init Ruler', () => {
   // TODO other test of ruler
   test('rule amount', () => {
     const rules = builtInRules;
-    expect(rules.length).toBe(12);
+    expect(rules.length).toBe(13);
   });
 
   // design rule test
@@ -36,7 +36,7 @@ describe('init Ruler', () => {
       { price: 600, year: 2006 },
       { price: 1500, year: 2007 },
     ];
-    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], options: { refine: true } });
+    const advices = myAdvisor.advise({ data, fields: ['price', 'year'], options: { refine: true } });
     const chartSpec = advices.filter((e) => e.type === 'line_chart')[0].spec;
     if (chartSpec) {
       const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
@@ -52,7 +52,7 @@ describe('customized Rule', () => {
   test('no rule Config', () => {
     const myAdvisor = new Advisor();
     const { ruleBase } = myAdvisor;
-    expect(Object.keys(ruleBase).length).toBe(12);
+    expect(Object.keys(ruleBase).length).toBe(13);
   });
 
   test('exclude rule', () => {
@@ -61,7 +61,7 @@ describe('customized Rule', () => {
     };
     const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
     const { ruleBase } = myAdvisor;
-    expect(Object.keys(ruleBase).length).toBe(10);
+    expect(Object.keys(ruleBase).length).toBe(11);
   });
 
   test('include rule', () => {

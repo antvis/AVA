@@ -200,8 +200,6 @@ export class Advisor {
       graphData = new GraphData(copyData, (options as GraphAdviseParams['options'])?.extra);
     } catch (error) {
       // if the input data cannot be transformed into DataFrame
-      // eslint-disable-next-line no-console
-      console.error('error: ', error);
       return [];
     }
     const calcedProps = graphData?.info();
