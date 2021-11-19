@@ -6,7 +6,7 @@
 </h1>
 
 <div align="center">
-A JavaScript library for automatically discovering interesting patterns from multi-dimensional data.
+An EDA (Exploratory Data Analysis) tool in javascript that allows you to take insights from the data.
 </div>
 
 ## ✨ Features
