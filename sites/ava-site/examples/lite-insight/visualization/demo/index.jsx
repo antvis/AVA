@@ -39,7 +39,7 @@ const App = () => {
 
   const dataContent = <TableView data={data} />;
 
-  const insightsContent = <JSONView json={result} />;
+  const insightsContent = <JSONView json={result} rjvConfigs={{ collapsed: 2 }} />;
 
   const plotContent = (
     <div key="plot" style={{ flex: 5, height: '100%' }}>
