@@ -29,7 +29,7 @@ const App = () => {
 
   const dataContent = <TableView data={data} />;
 
-  const insightsContent = <JSONView json={result} />;
+  const insightsContent = <JSONView json={result} rjvConfigs={{ collapsed: 2 }} />;
 
   const steps = [
     {
