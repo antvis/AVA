@@ -5,7 +5,7 @@ order: 2
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 CKB 中的所有图表类型 id:
 
@@ -90,4 +90,4 @@ CKB 中的所有图表类型 id:
 
 对以上图表类型有疑问？欢迎 [提交 Github issue](https://github.com/antvis/AVA/issues/new) 帮我们一起完善！
 
-</div>
+

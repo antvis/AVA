@@ -5,7 +5,7 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 # Palette Extraction
 
@@ -72,4 +72,4 @@ getPaletteFromString("#FB9747,#DE5844,#52BFC1,#22A34C");
   <img src="https://gw.alipayobjects.com/zos/antfincdn/Mun96I6Wlc/jieping2021-07-01%252520xiawu5.57.35.png" alt="palette from string" width=600>
 </div>
 
-</div>
+

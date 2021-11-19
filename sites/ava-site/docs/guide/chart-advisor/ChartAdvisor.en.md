@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 Recommend and automatically generate charts based on data and analytics requirements.
 
@@ -161,4 +161,4 @@ const problems = myLinter.lint({ spec })
 For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/chart-advisor/ChartAdvisor)
 
 
-</div>
+

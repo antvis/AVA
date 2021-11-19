@@ -5,7 +5,7 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 Adds a custom chart to the base.
 
@@ -13,7 +13,7 @@ Adds a custom chart to the base.
 addChart(chartKnowledge, trans)
 ```
 
-### Arguments
+## Parameters
 
 * **chartKnowledge** * Chart Knowledge object for the custom chart.
   * _required_
@@ -23,11 +23,11 @@ addChart(chartKnowledge, trans)
   * _required_
   * `type`: *Record<Language, TransKnowledgeProps>*
 
-### Returns
+## Return value
 
 *void*
 
-### Examples
+## Examples
 
 ```ts
 const liquid_diagram = {
@@ -56,4 +56,4 @@ addChart(
 );
 ```
 
-</div>
+

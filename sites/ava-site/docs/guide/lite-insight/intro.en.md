@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 A JavaScript library for automatically discovering interesting patterns from multi-dimensional data.
 
@@ -57,4 +57,4 @@ Some functionalities of LiteInsight are inspired by the following works.
 - [MetaInsight: Automatic Discovery of Structured Knowledge for Exploratory Data Analysis](https://www.microsoft.com/en-us/research/uploads/prod/2021/03/rdm337-maA.pdf)
 
 
-</div>
+

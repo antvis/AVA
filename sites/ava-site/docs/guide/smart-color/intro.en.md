@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 SmartColor is a js/ts library for color computation.
 
@@ -95,4 +95,4 @@ colorSimulation(color, "achromatomaly");
   <img height=100 src="https://gw.alipayobjects.com/zos/antfincdn/fxjnaPrLZ6/jieping2021-07-01%252520xiawu3.11.52.png" alt="color simulation result">
 </div>
 
-</div>
+

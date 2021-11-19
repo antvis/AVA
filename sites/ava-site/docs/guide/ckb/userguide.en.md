@@ -5,7 +5,7 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 ## Chart Classification
 
@@ -212,4 +212,4 @@ Definition of the chart, describing the chart.
 
 Have any question about the above? Feel free to [submit a Github issue](https://github.com/antvis/AVA/issues/new) to help us make CKB more complete.
 
-</div>
+

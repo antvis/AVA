@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 根据输入图表和洞察自动生成 Dashboard。
 
@@ -129,4 +129,4 @@ ReactDOM.render(
 更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/smart-board/SmartBoard)
 
 
-</div>
+

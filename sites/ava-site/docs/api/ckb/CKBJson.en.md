@@ -5,7 +5,7 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 Creates a **Chart Knowledge Base** in `JSON` format.
 
@@ -13,7 +13,7 @@ Creates a **Chart Knowledge Base** in `JSON` format.
 CKBJson(lang, completed)
 ```
 
-### Arguments
+## Parameters
 
 * **lang** * Language of the CKB content.
   * _optional_
@@ -26,7 +26,7 @@ CKBJson(lang, completed)
   * `type`: *boolean*
   * `default`: false
 
-### Returns
+## Return value
 
 *ChartKnowledgeBaseJSON* extends object
 
@@ -55,7 +55,7 @@ CKBJson(lang, completed)
 }
 ```
 
-### Examples
+## Examples
 
 ```js
 import { CKBJson } from '@antv/knowledge';
@@ -74,4 +74,4 @@ const completedKB = CKBJson(undefined, true);
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
 
-</div>
+

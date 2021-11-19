@@ -7,9 +7,9 @@ redirect_from:
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
 
-### autoChart
+
+## autoChart
 
 Recommand appropriate charts for your data and generate it for you.
 
@@ -48,7 +48,7 @@ const data = [
 autoChart(container, data, {toolbar: true, development: true});
 ```
 
-### type
+## type
 
 Analyze one field(data column).
 
@@ -95,4 +95,4 @@ console.log(fieldInfo);
 // }
 ```
 
-</div>
+

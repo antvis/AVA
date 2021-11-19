@@ -5,7 +5,7 @@ order: 6
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 # 颜色转换
 
@@ -115,4 +115,4 @@ nameToColor('aliceblue');
 // });
 ```
 
-</div>
+

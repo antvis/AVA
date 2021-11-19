@@ -5,7 +5,7 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Class Advisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = {})
@@ -15,7 +15,7 @@ Class Advisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = {})
 
 `Advisor` 提供了 `advise()` 函数用于提供图表推荐配置项。
 
-### 参数
+## 参数
 
 * **config** * 图表和规则配置
   * _可选参数_
@@ -74,9 +74,9 @@ interface ChartRuleConfig {
 }
 ```
 
-### 方法
+## 方法
 
-#### Advisor.advise
+### Advisor.advise
 
 获得图表推荐结果的 `AdvisorList[]`，详见 [Advisor.advise](./advice).
 
@@ -101,4 +101,4 @@ type AdvisorList = {
 ```
 
 
-</div>
+

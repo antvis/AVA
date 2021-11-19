@@ -5,7 +5,7 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 # Palette Generation
 
@@ -61,4 +61,4 @@ paletteGeneration("monochromatic", {
   <img src="https://gw.alipayobjects.com/zos/antfincdn/vmwgZKfSZB/jieping2021-07-01%252520xiawu3.01.26.png" alt="auto generated palette">
 </div>
 
-</div>
+

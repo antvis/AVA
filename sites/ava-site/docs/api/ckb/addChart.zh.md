@@ -5,7 +5,7 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 为知识库结构添加一种新的自定义图表类型。
 
@@ -13,7 +13,7 @@ order: 3
 addChart(chartKnowledge, trans)
 ```
 
-### 参数
+## 参数
 
 * **chartKnowledge** * 自定义图表类型的图表知识对象。
   * _必要参数_
@@ -23,11 +23,11 @@ addChart(chartKnowledge, trans)
   * _必要参数_
   * `参数类型`: *Record<Language, TransKnowledgeProps>*
 
-### 返回值
+## 返回值
 
 *void*
 
-### 示例
+## 示例
 
 ```ts
 const liquid_diagram = {
@@ -56,4 +56,4 @@ addChart(
 );
 ```
 
-</div>
+

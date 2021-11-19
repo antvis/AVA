@@ -5,7 +5,7 @@ order: 2
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 The `random` module of DataWizard provides you comprehensive data mocking options. Data types include basic data, text data, datetime data, color data, Web data, location data, Chinese data address, etc.. You can use it to quickly develop some data generating or auto-filling functions. The `random` method can be used in the following two ways.
 
@@ -34,7 +34,7 @@ Generate a boolean value.
 | ----| ---- | ---- | ---- | ---- |
 | likelihood | `number` | Likelihood of true and false | `50` | - |
 
-#### Return Value
+#### Return value
 `boolean`
 
 #### Usage
@@ -57,7 +57,7 @@ Generate an integer.
 | min | `number` | Minimum | `-(2 ** 53 - 1)` | - |
 | max | `number` | Maximun | `2 ** 53 - 1` | - |
 
-#### Return Value
+#### Return value
 `number`
 
 #### Usage
@@ -81,7 +81,7 @@ Generate a floating point number.
 | max | `number` | Maximun | `2 ** 53 - 1` | - |
 | fixed | `number` | Decimal places | `4` | - |
 
-#### Return Value
+#### Return value
 `number`
 
 #### Usage
@@ -104,7 +104,7 @@ Generate a natural number.
 | min | `number` | Minimum | `-(2 ** 53 - 1)` | - |
 | max | `number` | Maximun | `2 ** 53 - 1` | - |
 
-#### Return Value
+#### Return value
 `number`
 
 #### Usage
@@ -133,7 +133,7 @@ Generate a character.
 | lower | `string` | Lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
 | upper | `string` | Uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -160,7 +160,7 @@ Generate a string.
 | upper | `string` | Uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 | length | `number` | String length | `5 ~ 20` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -183,7 +183,7 @@ Generate syllables.
 | capitalize | `boolean` | Capitalize or not | `false` | - |
 | length | `number` | syllable length | `2 ~ 3` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -207,7 +207,7 @@ Generate a word.
 | capitalize | `boolean` | Capitalize or not | `false` | - |
 | length | `number` | Word length | `syllables.length` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -230,7 +230,7 @@ Generate a sentence.
 | words | `number` | Number of words | `12 ~ 18` | - |
 | punctuation | `boolean | string` | Punctuation | `true` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -253,7 +253,7 @@ Generate a paragraph.
 | sentence | `number` | Number of sentences | `3 ~ 7` | - |
 
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -275,7 +275,7 @@ Generate a name.
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -290,7 +290,7 @@ r.name();
 ### surname
 Generate a surname.
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -312,7 +312,7 @@ Generate a given name.
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -337,7 +337,7 @@ Generate a phone number.
 | asterisk | `boolean` | Add * to avoid generating real phone numbers | `false` | - |
 | startNum | `string` | Phone number prefix, only the first three digits can be specified | `''` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -359,7 +359,7 @@ Generate a Chinese character.
 | ----| ---- | ---- | ---- | ---- |
 | pool | `string` | Candidate pool | `''` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -382,7 +382,7 @@ Generate a Chinese word.
 | pool | `string` | Candidate pool | `''` | - |
 | length | `number` | Word length | `2~6` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -405,7 +405,7 @@ Generate a Chinese sentence.
 | min | `number` | Minimum number of characters | `10` | - |
 | max | `number` | Maximum number of characters | `18` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -428,7 +428,7 @@ Generate a Chinese paragraph.
 | min | `number` | Minimum number of sentences | `3` | - |
 | max | `number` | Maximun number of sentences | `18` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -450,7 +450,7 @@ Generate a Chinese name.
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -465,7 +465,7 @@ r.cName();
 ### cSurname
 Generate a Chinese surname.
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -487,7 +487,7 @@ Generate a Chinese name.
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -509,7 +509,7 @@ Generate a zodiac.
 | ----| ---- | ---- | ---- | ---- |
 | locale | `'zh-CN' | 'en-US'` | i18n | - | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -535,7 +535,7 @@ Generate a date.
 | min | `number` | Minimum timestamp | `0` | - |
 | max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -557,7 +557,7 @@ Generate a time.
 | ----| ---- | ---- | ---- | ---- |
 | short | `boolean` | UTC offset | `false` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -581,7 +581,7 @@ Generate a datetime.
 | max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 | format | `string` | Formatting (refer to [date-fns format](https://date-fns.org/v2.0.1/docs/format)) | `yyyy-MM-dd'T'HH:mm:ssXXX` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -604,7 +604,7 @@ Generate a timestamp.
 | min | `number` | Minimum timestamp  | `0` | - |
 | max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -627,7 +627,7 @@ Generate a weekday.
 | locale | `'zh-CN' | 'en-US'` | i18n | `'en-US'` | - |
 | abbr | `boolean` | Abbreviation | `false` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -650,7 +650,7 @@ Generate a month.
 | locale | `'zh-CN' | 'en-US'` | i18n | `'en-US'` | - |
 | abbr | `boolean` | Abbreviation | `false` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -684,7 +684,7 @@ Generate a RGB color.
 | maxB | `number` | Maximum blue value | `max` | - |
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -717,7 +717,7 @@ Generate a rgba color.
 | minA | `number` | Minimum transparency | `lower` | - |
 | maxA | `number` | Maximum transparency | `lower` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -745,7 +745,7 @@ Generate a HSL color.
 | maxL | `number` | Maximum lightness | `100` | - |
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -775,7 +775,7 @@ Generate a hsla color.
 | minA | `number` | Minimum transparency | `lower` | - |
 | maxA | `number` | Maximum transparency | `lower` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -824,7 +824,7 @@ Generate a hexadecimal color.
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 | prefix | `boolean` | Whether to show # prefix | `false` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -855,7 +855,7 @@ Generate a decimal color.
 | maxB | `number` | Maximum blue value | `max` | - |
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 
-#### Return Value
+#### Return value
 `number`
 
 #### Usage
@@ -873,7 +873,7 @@ The tool class `WebRandom` can help you generate random Web data, including top-
 ### tld
 Generate a top-level domain.
 
-#### Return Value
+#### Return value
 `string`
 
 Reference [TLD](https://en.wikipedia.org/wiki/Top-level_domain)
@@ -897,7 +897,7 @@ Generate a domain name.
 | ----| ---- | ---- | ---- | ---- |
 | tld | `string` | Top-level domain | - | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -924,7 +924,7 @@ Generate a Uniform Resource Locator.
 | path | `string` | Path | - | - |
 | extensions | `string[]` | File extensions | `any[]` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -975,7 +975,7 @@ Generate an email address.
 | domain | `string` | Domain name | - | - |
 | length | `number` | Length | - | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -1000,7 +1000,7 @@ Generate a longitude.
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | Decimal places | `7` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -1022,7 +1022,7 @@ Generate a latitude.
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | Decimal places | `7` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -1044,7 +1044,7 @@ Generate the coordinates.
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | Decimal places | `7` | - |
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -1062,7 +1062,7 @@ The tool class `AddressRandom` can help you generate random Chinese address data
 ### country
 Generate a country.
 
-#### Return Value
+#### Return value
 `string`
 
 #### Usage
@@ -1163,4 +1163,4 @@ const r = new random.AddressRandom();
 r.postcode();
 // '330903'
 ```
-</div>
+

@@ -8,7 +8,7 @@
 
 > Creates a **Chart Knowledge Base** in `JSON` format.
 
-### Arguments
+### Parameters
 
 * **lang** * Language of the CKB content.
   * `optional`
@@ -23,7 +23,7 @@
   * `type`: *boolean*
   * `default`: false
 
-### Returns
+### Return value
 
 *ChartKnowledgeBaseJSON* extends object
 
@@ -74,7 +74,7 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 > Adds a custom chart to the base.
 
-### Arguments
+### Parameters
 
 * **chartKnowledge** * Chart Knowledge object for the custom chart.
   * `required`
@@ -84,7 +84,7 @@ const zhCompletedKB = CKBJson('zh-CN', true);
   * `required`
   * `type`: *Record<Language, TransKnowledgeProps>*
 
-### Returns
+### Return value
 
 *void*
 
@@ -121,7 +121,7 @@ addChart(
 
 > Returns all possible options for each property of Chart Knowledge.
 
-### Arguments
+### Parameters
 
 * **lang** * Language of property options.
   * `optional`
@@ -131,7 +131,7 @@ addChart(
     * 'en-US'
     * 'zh-CN'
 
-### Returns
+### Return value
 
 *object* * contains the following keys:
 

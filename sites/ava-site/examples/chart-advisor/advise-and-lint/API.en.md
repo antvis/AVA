@@ -1,8 +1,8 @@
-## ChartAdvisor
+# ChartAdvisor
 `markdown:docs/api/chart-advisor/ChartAdvisor.en.md`
 
-## ChartAdvisor.advise
+# ChartAdvisor.advise
 `markdown:docs/api/chart-advisor/chartAdvice.en.md`
 
-## Ruler
+# Ruler
 `markdown:docs/api/chart-advisor/Ruler.en.md`

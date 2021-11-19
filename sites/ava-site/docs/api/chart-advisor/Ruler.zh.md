@@ -5,7 +5,7 @@ order: 7
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 `Ruler` 是 ChartAdvisor 内部默认的可视化规则定义集合，不包含向外透出函数。
 
@@ -13,7 +13,7 @@ order: 7
 
 ## RuleType
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type RuleType = 'HARD' | 'SOFT' | 'DESIGN';
@@ -21,7 +21,7 @@ type RuleType = 'HARD' | 'SOFT' | 'DESIGN';
 
 ## BasicDataPropertyForAdvice
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 interface BasicDataPropertyForAdvice {
@@ -40,7 +40,7 @@ interface BasicDataPropertyForAdvice {
 }
 ```
 
-### 参数配置
+* **参数配置** *
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
@@ -79,7 +79,7 @@ type TypeSpecifics = RecommendationTypes | 'mixed';
 
 ## Info
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 interface Info {
@@ -92,7 +92,7 @@ interface Info {
 }
 ```
 
-### 参数配置
+* **参数配置** *
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
@@ -120,7 +120,7 @@ interface Preferences {
 
 ## Validator
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type Validator = (args: Info) => number | boolean;
@@ -128,7 +128,7 @@ type Validator = (args: Info) => number | boolean;
 
 ## Trigger
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type Trigger = (args: Info) => boolean;
@@ -136,7 +136,7 @@ type Trigger = (args: Info) => boolean;
 
 ## Optimizer
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type Optimizer = (
@@ -147,7 +147,7 @@ type Optimizer = (
 
 ## ChartRuleID
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 const ChartRuleID = [
@@ -169,7 +169,7 @@ const ChartRuleID = [
 
 ## ChartDesignRuleID
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 const ChartDesignRuleID = ['x-axis-line-fading'];
@@ -177,7 +177,7 @@ const ChartDesignRuleID = ['x-axis-line-fading'];
 
 ## ChartRuleConfig
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 interface ChartRuleConfig {
@@ -186,7 +186,7 @@ interface ChartRuleConfig {
 }
 ```
 
-### 参数配置
+* **参数配置** *
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
@@ -195,7 +195,7 @@ interface ChartRuleConfig {
 
 ## ChartRuleConfigMap
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -203,7 +203,7 @@ type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
 
 ## Docs
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type Docs = {
@@ -214,7 +214,7 @@ type Docs = {
 };
 ```
 
-### 参数配置
+* **参数配置** *
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
@@ -225,7 +225,7 @@ type Docs = {
 
 ## DefaultRuleModule
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type DefaultRuleModule = {
@@ -236,7 +236,7 @@ type DefaultRuleModule = {
 };
 ```
 
-### 参数配置
+* **参数配置** *
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
@@ -247,7 +247,7 @@ type DefaultRuleModule = {
 
 ## ChartRuleModule
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type ChartRuleModule = DefaultRuleModule & {
@@ -258,7 +258,7 @@ type ChartRuleModule = DefaultRuleModule & {
 
 ## DesignRuleModule
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type DesignRuleModule = DefaultRuleModule & {
@@ -269,7 +269,7 @@ type DesignRuleModule = DefaultRuleModule & {
 
 ## RuleModule
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -277,7 +277,7 @@ type RuleModule = ChartRuleModule | DesignRuleModule;
 
 ## RuleConfig
 
-### 接口描述
+* **接口描述** *
 
 ```ts
 type RuleConfig = {
@@ -288,7 +288,7 @@ type RuleConfig = {
 };
 ```
 
-### 参数配置
+* **参数配置** *
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
@@ -299,4 +299,4 @@ type RuleConfig = {
 
 
 
-</div>
+

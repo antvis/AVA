@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 Chart Knowledge Base (CKB) 是一个提供图表经验的知识库，它的形式基于 JSON。
 
@@ -86,4 +86,4 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/ckb/intro)
 
 
-</div>
+

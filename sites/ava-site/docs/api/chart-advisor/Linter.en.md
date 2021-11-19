@@ -5,7 +5,7 @@ order: 5
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Class Linter(ruleCfg?: RuleConfig)
@@ -15,7 +15,7 @@ Class Linter(ruleCfg?: RuleConfig)
 
 `Linter` provides `lint()` function for providing chart optimization suggestions.
 
-### Parameters
+## Parameters
 
 * **ruleCfg** * Chart rule Config
   * _optional_
@@ -57,9 +57,9 @@ interface ChartRuleConfig {
 }
 ```
 
-### Function
+## Function
 
-#### Linter.lint
+### Linter.lint
 
 Get the `Lint[]` of chart optimization suggestions as detailed in [Linter.lint](./lint).
 
@@ -90,4 +90,4 @@ interface Lint {
 ```
 
 
-</div>
+

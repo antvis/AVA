@@ -1,3 +1,3 @@
-## Smart-Board
+# SmartBoard
 
-`markdown:docs/api/data-wizard/data-frame.en.md`
+`markdown:docs/api/smart-board/SmartBoard.en.md`

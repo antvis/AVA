@@ -5,7 +5,7 @@ order: 5
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 # 色彩计算
 
@@ -87,4 +87,4 @@ colorDarken(color, 3);
   <img src="https://gw.alipayobjects.com/zos/antfincdn/jpiAxmGXJZ/brighten-darken.png" alt="color brighten and darken">
 </div>
 
-</div>
+

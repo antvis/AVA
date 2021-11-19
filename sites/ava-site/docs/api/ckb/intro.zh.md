@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 
 Chart Knowledge Base (CKB) 是一个提供图表经验的知识库，它的形式基于 JSON。
@@ -17,4 +17,4 @@ $ npm install @antv/knowledge
 ```
 
 
-</div>
+

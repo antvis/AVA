@@ -7,9 +7,9 @@ redirect_from:
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
 
-### autoChart
+
+## autoChart
 
 根据数据自动推荐合适的图表，并渲染在指定容器中。
 
@@ -47,7 +47,7 @@ const data = [
 autoChart(container, data, {toolbar: true, development: true});
 ```
 
-### type
+## type
 
 
 对单字段数据进行分析。
@@ -94,4 +94,4 @@ console.log(fieldInfo);
 // }
 ```
 
-</div>
+

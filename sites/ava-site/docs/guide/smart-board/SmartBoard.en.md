@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 Generating Dashboard based on input charts and insights。
 
@@ -128,4 +128,4 @@ ReactDOM.render(
 For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/SmartBoard)
 
 
-</div>
+
