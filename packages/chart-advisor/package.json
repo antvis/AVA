@@ -22,7 +22,7 @@
     "clean": "rimraf lib esm dist",
     "build:umd": "rimraf ./dist && rollup -c && npm run size",
     "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
-    "build:esm": "rimraf ./esm && tsc --module ESNext --outDir esm",
+    "build:esm": "rimraf ./esm && tsc --module es6 --outDir esm",
     "build": "run-p build:*",
     "test": "jest",
     "coverage": "jest --coverage",
