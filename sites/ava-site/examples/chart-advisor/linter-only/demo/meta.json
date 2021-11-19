@@ -29,12 +29,12 @@
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/2Jjp04b6%26/custom-rules-linter.gif"
     },
     {
-      "filename": "linter-app.jsx",
+      "filename": "fixer.jsx",
       "title": {
-        "en": "Linter App with G2Plot",
-        "zh": "结合 G2Plot 制作的图表一键优化"
+        "en": "Basic Fixer",
+        "zh": "Fixer 基础用法"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/dNEGhttBFB/Kapture%2525202021-05-26%252520at%25252023.29.22.gif"
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/kOe0rIsAR7/basic-fixer.gif"
     }
   ]
 }
