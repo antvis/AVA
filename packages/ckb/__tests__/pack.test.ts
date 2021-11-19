@@ -18,13 +18,13 @@ test('PACK', () => {
 
   const ckb3 = CKBJson('zh-CN', true);
   const values3 = Object.values(ckb3);
-  expect(values3.find((e) => e.name === '饼图') != undefined).toBe(true);
+  expect(values3.find((e) => e.name === '饼图') !== undefined).toBe(true);
 
   const ckb4 = CKBJson('zh-CN');
   const values4 = Object.values(ckb4);
   expect(values4.find((e) => e.name === '步茗图')).toBe(undefined);
 
-  const neo_diagram = {
+  const neoDiagram = {
     id: 'neo_diagram',
     name: 'Neo Diagram',
     alias: ['Neo Chart'],
@@ -39,15 +39,15 @@ test('PACK', () => {
     recRate: 'Not Recommend',
   };
 
-  const neo_diagram_trans = {
+  const neoDiagramTrans = {
     name: '步茗图',
     alias: ['Neo图'],
     def: '步茗发明的图。',
   };
 
-  addChart(neo_diagram as ChartKnowledge, { 'zh-CN': neo_diagram_trans } as Record<Language, TransKnowledgeProps>);
+  addChart(neoDiagram as ChartKnowledge, { 'zh-CN': neoDiagramTrans } as Record<Language, TransKnowledgeProps>);
 
   const ckb5 = CKBJson('zh-CN');
   const values5 = Object.values(ckb5);
-  expect(values5.find((e) => e.name === '步茗图') != undefined).toBe(true);
+  expect(values5.find((e) => e.name === '步茗图') !== undefined).toBe(true);
 });

@@ -15,11 +15,11 @@ import { Language, I18N } from './i18n';
  * @public
  */
 export function CKBOptions(lang: Language = 'en-US') {
-  if (lang && lang != 'en-US') {
+  if (lang && lang !== 'en-US') {
     const translator = I18N(lang);
 
     if (translator && translator.concepts) {
-      const concepts = translator.concepts;
+      const { concepts } = translator;
 
       return {
         family: Object.values(concepts.family),

@@ -9,6 +9,7 @@ test('i18n', () => {
   Object.keys(CKBOptions0).forEach((c) => {
     CKBOptions0[c].forEach((option) => {
       if (!zhCN.concepts[c][option]) {
+        // eslint-disable-next-line no-console
         console.log(`MISS TRANSLATION FOR **${c}.${option}**`);
         allOptionsTranslated = false;
       }
@@ -21,10 +22,12 @@ test('i18n', () => {
   let allChartInfosTranslated = true;
   Object.keys(ckb0).forEach((cid) => {
     if (ckb0[cid].name && !zhCN.chartTypes[cid].name) {
+      // eslint-disable-next-line no-console
       console.log(`MISS TRANSLATION name FOR **${cid}**`);
       allChartInfosTranslated = false;
     }
     if (ckb0[cid].def && (!zhCN.chartTypes[cid].def || zhCN.chartTypes[cid].def === 'TBD')) {
+      // eslint-disable-next-line no-console
       console.log(`MISS TRANSLATION def FOR **${cid}**`);
       allChartInfosTranslated = false;
     }
