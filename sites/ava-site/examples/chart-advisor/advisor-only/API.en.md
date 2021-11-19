@@ -1,14 +1,8 @@
-## dataToDataProps
-`markdown:docs/api/chart-advisor/dataToDataProps.en.md`
+## Advisor
+`markdown:docs/api/chart-advisor/Advisor.en.md`
 
-## dataPropsToAdvices
-`markdown:docs/api/chart-advisor/dataPropsToAdvices.en.md`
+## Advisor.advise
+`markdown:docs/api/chart-advisor/advice.en.md`
 
-## adviceToLibConfig
-`markdown:docs/api/chart-advisor/adviceToLibConfig.en.md`
-
-## g2plotRender
-`markdown:docs/api/chart-advisor/g2plotRender.en.md`
-
-## g2Render
-`markdown:docs/api/chart-advisor/g2Render.en.md`
+## Ruler
+`markdown:docs/api/chart-advisor/Ruler.en.md`

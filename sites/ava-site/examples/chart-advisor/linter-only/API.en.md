@@ -1,14 +1,5 @@
-## dataToDataProps
-`markdown:docs/api/chart-advisor/dataToDataProps.en.md`
+## Linter
+`markdown:docs/api/chart-advisor/Linter.en.md`
 
-## dataPropsToAdvices
-`markdown:docs/api/chart-advisor/dataPropsToAdvices.en.md`
-
-## adviceToLibConfig
-`markdown:docs/api/chart-advisor/adviceToLibConfig.en.md`
-
-## g2plotRender
-`markdown:docs/api/chart-advisor/g2plotRender.en.md`
-
-## g2Render
-`markdown:docs/api/chart-advisor/g2Render.en.md`
+## Linter.lint
+`markdown:docs/api/chart-advisor/lint.en.md`
