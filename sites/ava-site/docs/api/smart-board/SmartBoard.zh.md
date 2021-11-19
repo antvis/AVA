@@ -26,8 +26,8 @@ Class SmartBoard(inputCharts: InputChart[])
 | id | `string` | 图表 ID。 | 自动生成  `可选` |
 | data | `any[]` | 源数据。 | 无 |
 | dataUrl | `string` | 数据源地址。 | 无  `可选` |
-| subspaces | `Subspace[]` | 数据子空间信息。 | 无 |
-| breakdowns | `string[]` | 数据维度。 | 无 |
+| subspace | `Subspace[]` | 数据子空间信息。 | 无 |
+| dimensions | `string[]` | 数据维度。 | 无 |
 | measures | `string[]` | 指标字段。 | 无 |
 | fieldInfo | `any` | 数据字段信息。 | 无  `可选` |
 | insightTypes |  `InsightType[]` | 洞察类型。 | 无  `可选` |
