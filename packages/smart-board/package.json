@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
-    "@antv/antv-spec": "^0.1.0-alpha.7",
+    "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/data-wizard": "^2.0.0-alpha.1",
     "@antv/g2plot": "^2.3.40",
     "@antv/g6": "^4.3.11",
