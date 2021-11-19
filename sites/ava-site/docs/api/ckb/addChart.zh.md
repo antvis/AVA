@@ -13,6 +13,8 @@ order: 3
 addChart(chartKnowledge, trans)
 ```
 
+> deprecated: 不建议使用
+
 ## 参数
 
 * **chartKnowledge** * 自定义图表类型的图表知识对象。
