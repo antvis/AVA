@@ -78,6 +78,7 @@ type SmartColorOptions = {
   simulationType?: SimulationType;
 }
 ```
+
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
 | themeColor | `string` | The hexadecimal theme color. | `#006f94` `Optional` |

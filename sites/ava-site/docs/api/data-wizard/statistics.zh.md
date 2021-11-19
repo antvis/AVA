@@ -10,17 +10,21 @@ order: 1
 DataWizard 的数学统计模块 `statistics`，支持最大值、最小值、方差、皮尔逊系数、变异系数等常用统计学方法。`DataFrame` 的统计信息计算能力，也是基于 `statitstics` 实现的。该方法会将计算过一次的值存储在缓存中，再次计算时可直接从缓存中取值，避免重复计算开销。
 
 ## min
+
 计算数组最小值。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -29,17 +33,21 @@ stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## minIndex
+
 计算数组最小值索引。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -48,17 +56,21 @@ stats.minIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## max
+
 计算数组最大值。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -67,17 +79,21 @@ stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## maxIndex
+
 计算数组最大值索引。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -86,17 +102,21 @@ stats.maxIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## sum
+
 计算数组值之和。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -105,9 +125,11 @@ stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## median
+
 计算数组中位数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
@@ -118,10 +140,12 @@ stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 
 默认值 `false`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -130,9 +154,11 @@ stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quartile
+
 计算数组的四分位数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
@@ -143,10 +169,12 @@ stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
 
 默认值 `false`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number[]`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -155,9 +183,11 @@ stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quantile
+
 计算数组的指定分位数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
@@ -172,10 +202,12 @@ stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 
 默认值 `false`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -184,17 +216,21 @@ stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 ```
 
 ## mean
+
 计算数组的平均数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -203,17 +239,21 @@ stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## geometricMean
+
 计算数组的几何平均数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -222,17 +262,21 @@ stats.geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## harmonicMean
+
 计算数组的调和平均数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -241,17 +285,21 @@ stats.harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## variance
+
 计算数组的方差。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -260,17 +308,21 @@ stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## standardDeviation
+
 计算数组的标准差。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -279,17 +331,21 @@ stats.standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## coefficientOfVariance
+
 计算数组的变异系数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -298,9 +354,11 @@ stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## covariance
+
 计算两个数组的协方差。
 
-### 参数
+***<font size=4>参数</font>***
+
 **x** 原数据数组1 _必选_
 
 类型 `number[]`
@@ -309,10 +367,12 @@ stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -321,9 +381,11 @@ stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25,
 ```
 
 ## pearson
+
 计算两个数组的皮尔逊系数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **x** 原数据数组1 _必选_
 
 类型 `number[]`
@@ -332,10 +394,12 @@ stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25,
 
 类型 `number[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -344,17 +408,21 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 ```
 
 ## valid
+
 计算数组中的合法值个数，`undefined`、`null`、`NaN` 等可转换为 `false` 的值，均视为非法值。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -363,17 +431,21 @@ stats.valid([1, 2, NaN, 201, undefined, 4, 5, null]);
 ```
 
 ## missing
+
 计算数组中缺失值的个数，和 `valid` 方法互补。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -382,17 +454,21 @@ stats.missing([1, 2, NaN, 201, undefined, 4, 5, null]);
 ```
 
 ## valueMap
+
 统计数组中独立值的个数，以独立值本身为 key，个数为 value，生成对象。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -401,17 +477,21 @@ stats.valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## distinct
+
 统计数组中独立值的个数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -420,9 +500,11 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## minBy
+
 计算数组指定字段的最小值。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
@@ -431,10 +513,12 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 
 类型 `string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -445,9 +529,11 @@ stats.minBy(objects, 'n');
 ```
 
 ## maxBy
+
 计算数组指定字段的最大值。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
@@ -456,10 +542,12 @@ stats.minBy(objects, 'n');
 
 类型 `string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -470,9 +558,11 @@ stats.maxBy(objects, 'n');
 ```
 
 ## sumBy
+
 计算数组指定字段值之和。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
@@ -481,10 +571,12 @@ stats.maxBy(objects, 'n');
 
 类型 `string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -495,9 +587,11 @@ stats.sumBy(objects, 'n');
 ```
 
 ## meanBy
+
 计算数组指定字段平均数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
@@ -506,10 +600,12 @@ stats.sumBy(objects, 'n');
 
 类型 `string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -520,9 +616,11 @@ stats.meanBy(objects, 'n');
 ```
 
 ## countBy
+
 计算数组指定字段总计数。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
@@ -531,10 +629,12 @@ stats.meanBy(objects, 'n');
 
 类型 `string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `number`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -545,9 +645,11 @@ stats.countBy(objects, 'n');
 ```
 
 ## groupBy
+
 将数组对象按字段分组。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
@@ -556,10 +658,12 @@ stats.countBy(objects, 'n');
 
 类型 `string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `any[]`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -597,9 +701,11 @@ stats.groupBy(objects, 'measure');
 ```
 
 ## aggregate
+
 将数组对象按指定维度和字段聚合。
 
-### 参数
+***<font size=4>参数</font>***
+
 **array** 原数组数据 _必选_
 
 类型 `any[]`
@@ -624,10 +730,12 @@ type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
 
 类型 `string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `any[]`
 
-### 用法
+***<font size=4>用法</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 

@@ -10,19 +10,23 @@ order: 1
 The `statistics` module of DataWizard provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` is also based on `statistics`. The method will store the values calculated once in the cache, and the values can be taken directly from the cache when calculated again to avoid duplicated calculation cost.
 
 ## min
+
 Calculate the minimum value of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -31,17 +35,21 @@ stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## minIndex
+
 Calculate the index of the minimum value of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -50,17 +58,21 @@ stats.minIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## max
+
 Calculate the maximum value of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -69,17 +81,21 @@ stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## maxIndex
+
 Calculate the index of the maximum value of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -88,17 +104,21 @@ stats.maxIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## sum
+
 Calculate the sum of the array values.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -107,9 +127,11 @@ stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## median
+
 Calculate the median of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `number[]`
@@ -120,10 +142,12 @@ Type `boolean`
 
 Default `false`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -132,9 +156,11 @@ stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quartile
+
 Calculate the quartile of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `number[]`
@@ -145,10 +171,12 @@ Type `boolean`
 
 Default `false`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number[]`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -157,9 +185,11 @@ stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## quantile
+
 Calculate the specified quantile of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `number[]`
@@ -174,10 +204,12 @@ Type `boolean`
 
 Default `false`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### 用法
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -186,17 +218,21 @@ stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 ```
 
 ## mean
+
 Calculate the mean of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -205,17 +241,21 @@ stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## geometricMean
+
 Calculate the geometric mean of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -224,17 +264,21 @@ stats.geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## harmonicMean
+
 Calculate the harmonic mean of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -243,17 +287,21 @@ stats.harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## variance
+
 Calculate the variance of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -262,17 +310,21 @@ stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## standardDeviation
+
 Calculate the standard deviation of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -281,17 +333,21 @@ stats.standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## coefficientOfVariance
+
 Calculate the coefficient of variance of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -300,9 +356,11 @@ stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## covariance
+
 Calculate the covariance of two arrays.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **x** First raw array data _required_
 
 Type `number[]`
@@ -311,10 +369,12 @@ Type `number[]`
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -323,9 +383,11 @@ stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25,
 ```
 
 ## pearson
+
 Calculate the Pearson correlation coefficient of two arrays.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **x** First raw array data _required_
 
 Type `number[]`
@@ -334,10 +396,12 @@ Type `number[]`
 
 Type `number[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -346,17 +410,21 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 ```
 
 ## valid
+
 Count the number of valid values in the array, `undefined`, `null`, `NaN` and other values which can be converted to `false` are regarded as invalid values.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `any[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -365,17 +433,21 @@ stats.valid([1, 2, NaN, 201, undefined, 4, 5, null]);
 ```
 
 ## missing
+
 Count the number of missing values in the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `any[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -384,17 +456,21 @@ stats.missing([1, 2, NaN, 201, undefined, 4, 5, null]);
 ```
 
 ## valueMap
+
 Count the number of independent values in the array, and generate an object with the independent value itself as key and the number as value.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `any[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -403,17 +479,21 @@ stats.valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## distinct
+
 Count the number of distinct values in the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `any[]`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -422,9 +502,11 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 ```
 
 ## minBy
+
 Calculate the minimum value of the specified field of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `any[]`
@@ -433,10 +515,12 @@ Type `any[]`
 
 Type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -447,9 +531,11 @@ stats.minBy(objects, 'n');
 ```
 
 ## maxBy
+
 Calculate the maximum value of the specified field of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `any[]`
@@ -458,10 +544,12 @@ Type `any[]`
 
 Type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -472,9 +560,11 @@ stats.maxBy(objects, 'n');
 ```
 
 ## sumBy
+
 Calculate the sum of the values of the specified fields of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `any[]`
@@ -483,10 +573,12 @@ Type `any[]`
 
 Type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -497,9 +589,11 @@ stats.sumBy(objects, 'n');
 ```
 
 ## meanBy
+
 Calculate the average number of the specified fields in the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `any[]`
@@ -508,10 +602,13 @@ type `any[]`
 
 Type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### 用法
+
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -522,9 +619,11 @@ stats.meanBy(objects, 'n');
 ```
 
 ## countBy
+
 Calculate the total count of the specified field of the array.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 Type `any[]`
@@ -533,10 +632,12 @@ Type `any[]`
 
 Type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `number`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -547,9 +648,11 @@ stats.countBy(objects, 'n');
 ```
 
 ## groupBy
+
 Group the array objects by field.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `any[]`
@@ -558,10 +661,12 @@ type `any[]`
 
 type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `any[]`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 
@@ -600,9 +705,11 @@ stats.groupBy(objects, 'measure');
 ```
 
 ## aggregate
+
 Aggregate the array objects by the specified dimensions and fields.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 **array** Raw array data _required_
 
 type `any[]`
@@ -627,17 +734,21 @@ type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
 
 Type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `any[]`
 
-### Usage
+***<font size=4>Usage</font>***
+
 
 Type `string`
 
-### Return value
+***<font size=4>Return value</font>***
+
 `any[]`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { statistics as stats } from '@antv/data-wizard';
 

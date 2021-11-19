@@ -25,7 +25,7 @@ addChart(chartKnowledge, trans)
 
 ## 返回值
 
-*void*
+`void`
 
 ## 示例
 

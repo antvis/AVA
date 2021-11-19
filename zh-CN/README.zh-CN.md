@@ -10,7 +10,7 @@
 <div align="center">
 
 <i>智能可视分析框架</i>
-<i><a href="https://antv-ava.gitee.io/zh">https://antv-ava.gitee.io/zh</a></i>
+<i><a href="https://antv-ava.gitee.io/zh"><https://antv-ava.gitee.io/zh></a></i>
 
 </div>
 
