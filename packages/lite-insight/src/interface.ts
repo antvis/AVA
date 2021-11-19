@@ -143,4 +143,4 @@ export type TrendInfo = BasePatternInfo<'trend'> & {
   measure: string;
 };
 
-export type LowVarianceInfo = BasePatternInfo<'low_variance'> & { dimension: string; measure: string };
+export type LowVarianceInfo = BasePatternInfo<'low_variance'> & { dimension: string; measure: string; mean: number };

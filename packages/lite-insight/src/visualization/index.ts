@@ -49,11 +49,11 @@ export const getInsightVisualizationSchema = (
     schemas.push({
       chartType: chartType as ChartType,
       chartSchema,
-      caption: narrative.caption.getContent(),
+      caption: narrative.caption?.getContent(),
       insightSummaries:
         summaryType === 'schema'
-          ? narrative.summaries.map((i) => i.getSchema())
-          : narrative.summaries.map((i) => i.getContent()),
+          ? narrative.summaries?.map((i) => i.getSchema())
+          : narrative.summaries?.map((i) => i.getContent()),
     });
   });
 
