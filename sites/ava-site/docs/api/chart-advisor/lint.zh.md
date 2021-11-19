@@ -5,13 +5,13 @@ order: 6
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Linter.lint(params: LintParams): Lint[];
 ```
 
-### 参数
+## 参数
 
 * **params** * Linter 配置项
   * _必选参数_
@@ -27,7 +27,7 @@ interface LintParams {
 
 其中，`spec`、`dataProps` 和 `options` 分别代表输入图表的语法、图表推荐配置项和 Linter 配置项。
 
-#### 图表优化参数
+### 图表优化参数
 
 * ***AntVSpec*** 参数配置。
 
@@ -86,7 +86,7 @@ interface Preferences {
 }
 ```
 
-### 返回值
+## 返回值
 
 *`Lint[]`* 
 
@@ -101,4 +101,4 @@ interface Preferences {
 | docs | `any` | 该规则的相关文档。 |  |
 
 
-</div>
+

@@ -5,7 +5,7 @@ order: 4
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 一些相关类型和接口的描述：
 
@@ -13,7 +13,7 @@ order: 4
 import { ChartKnowledge, DataPrerequisite } from '@antv/knowledge';
 ```
 
-### ChartKnowledge
+## ChartKnowledge
 
 ```ts
 interface ChartKnowledge {
@@ -31,7 +31,7 @@ interface ChartKnowledge {
 }
 ```
 
-### DataPrerequisite
+## DataPrerequisite
 
 ```ts
 interface DataPrerequisite {
@@ -41,13 +41,13 @@ interface DataPrerequisite {
 }
 ```
 
-### Language
+## Language
 
 ```ts
 type Language = 'en-US' | 'zh-CN';
 ```
 
-### TransKnowledgeProps
+## TransKnowledgeProps
 
 ```ts
 interface TransKnowledgeProps {
@@ -57,4 +57,4 @@ interface TransKnowledgeProps {
 }
 ```
 
-</div>
+

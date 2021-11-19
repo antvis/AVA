@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 `DataFrame` is the specified 2D data structure in DW. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
@@ -35,7 +35,7 @@ Used to configure index, columns, and missing values.
 | columns | `string | number` | Column | - | - |
 | fillValue | `any` | Filling missing value | - | - |
 
-### Return Value
+### Return value
 `DataFrame`
 
 ### Usage
@@ -441,4 +441,4 @@ df.info();
   ]
 */
 ```
-</div>
+

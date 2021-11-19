@@ -1,3 +1,3 @@
-## random
+# random
 
-`markdown:docs/api/data-wizard/randoms.en.md`
+`markdown:docs/api/data-wizard/random.en.md`

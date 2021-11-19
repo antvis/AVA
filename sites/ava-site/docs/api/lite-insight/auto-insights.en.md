@@ -5,12 +5,12 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 Automatically discovering interesting patterns from multi-dimensional data.
 
 ## **getDataInsights**
-<i>(data: Datum[], options?: InsightOptions) => InsightResult</i>
+<i>(data: Datum[], options?: InsightOptions) => { insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] } </i>
 
 Run different algorithms from multi-dimensional data to discover interesting patterns in the data, and perform unified evaluation of different types of patterns, and return high-quality data insights based on scores.
 * ***InsightOptions*** configure the pipeline of Auto-Insights.
@@ -94,8 +94,8 @@ console.log(homogeneousInsights);
 
 
 ## **getDataInsightsAsync**
-<i>(data: Datum[], options?: InsightOptions) => Promise\<InsightResult></i>
+<i>(data: Datum[], options?: InsightOptions) => Promise\<{ insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] }\></i>
 
 Async version of ```getDataInsights```.
 
-</div>
+

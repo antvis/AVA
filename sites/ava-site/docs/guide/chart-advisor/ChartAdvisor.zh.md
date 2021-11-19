@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 基于数据和分析需求来推荐和自动生成图表。
 
@@ -151,4 +151,4 @@ const problems = myLinter.lint({ spec })
 更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/chart-advisor/ChartAdvisor)
 
 
-</div>
+

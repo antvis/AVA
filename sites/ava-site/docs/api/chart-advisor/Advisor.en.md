@@ -5,7 +5,7 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Class Advisor(config?: Partial<Pick<Advisor, 'ckbCfg' | 'ruleCfg'>> = {})
@@ -15,7 +15,7 @@ Class Advisor(config?: Partial<Pick<Advisor, 'ckbCfg' | 'ruleCfg'>> = {})
 
 `Advisor` provides `advise()` function for providing chart recommendation schemas.
 
-### Parameters
+## Parameters
 
 * **config** * Chart Knowledge Base (CKB) & Rule Config
   * _optional_
@@ -74,9 +74,9 @@ interface ChartRuleConfig {
 }
 ```
 
-### Function
+## Function
 
-#### Advisor.advise
+### Advisor.advise
 
 Get the `AdvisorList[]` of chart recommendation results as detailed in [Advisor.advise](./advice).
 
@@ -101,4 +101,4 @@ type AdvisorList = {
 ```
 
 
-</div>
+

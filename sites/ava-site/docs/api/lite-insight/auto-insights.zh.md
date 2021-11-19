@@ -5,7 +5,7 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 提取数据中存在的洞察。
 
@@ -104,4 +104,4 @@ console.log(homogeneousInsights);
 getDataInsights的异步版本，入参和返回相同。
 
 
-</div>
+

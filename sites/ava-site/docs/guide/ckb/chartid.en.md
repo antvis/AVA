@@ -5,7 +5,7 @@ order: 2
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 All chart IDs in CKB:
 
@@ -90,4 +90,4 @@ All chart IDs in CKB:
 
 Have any question about the above chart types? Feel free to [submit a Github issue](https://github.com/antvis/AVA/issues/new) to help us make CKB more complete.
 
-</div>
+

@@ -5,13 +5,13 @@ order: 2
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 ChartAdvisor.advise(params: AdviseParams): ChartAdvisorList[];
 ```
 
-### Parameters
+## Parameters
 
 * **params** * ChartAdvisor configurations
   * _required_
@@ -23,7 +23,7 @@ type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
 `ChartAdviseParams` and `GraphAdviseParams` represent the types of parameters required for chart recommendations and graph recommendations, respectively.
 
-#### Chart recommendation parameters
+### Chart recommendation parameters
 
 * ***ChartAdviseParams*** Parameter configuration.
 
@@ -84,7 +84,7 @@ type SmartColorOptions = {
 | colorSchemeType | `ColorSchemeType` | The color swatch generation mode. | `monochromatic` `Optional` |
 | simulationType | `SimulationType` | The color simulation mode. | `normal` `Optional` |
 
-#### Graph recommendation parameters
+### Graph recommendation parameters
 
 * ***GraphAdviseParams*** Parameter configuration.
 
@@ -123,7 +123,7 @@ type GraphAdvisorOptions = {
 
 
 
-### Return value
+## Return value
 
 *`ChartAdvisorList[]`* 
 
@@ -161,4 +161,4 @@ See [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md) for d
 
 
 
-</div>
+

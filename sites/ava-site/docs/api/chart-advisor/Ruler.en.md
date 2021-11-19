@@ -5,7 +5,7 @@ order: 7
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 `Ruler` is the default set of visual rule definitions within ChartAdvisor.
 It does not provide any outward function or syntax.
@@ -17,7 +17,7 @@ we will introduce the relevant interfaces for rule customization in this API fil
 
 ## RuleType
 
-### Interface
+* **Interface** *
 
 ```ts
 type RuleType = 'HARD' | 'SOFT' | 'DESIGN';
@@ -25,7 +25,7 @@ type RuleType = 'HARD' | 'SOFT' | 'DESIGN';
 
 ## BasicDataPropertyForAdvice
 
-### Interface
+* **Interface** *
 
 ```ts
 interface BasicDataPropertyForAdvice {
@@ -44,7 +44,7 @@ interface BasicDataPropertyForAdvice {
 }
 ```
 
-### Parameters
+* **Parameters** *
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
@@ -83,7 +83,7 @@ type TypeSpecifics = RecommendationTypes | 'mixed';
 
 ## Info
 
-### Interface
+* **Interface** *
 
 ```ts
 interface Info {
@@ -96,7 +96,7 @@ interface Info {
 }
 ```
 
-### Parameters
+* **Parameters** *
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
@@ -124,7 +124,7 @@ interface Preferences {
 
 ## Validator
 
-### Interface
+* **Interface** *
 
 ```ts
 type Validator = (args: Info) => number | boolean;
@@ -132,7 +132,7 @@ type Validator = (args: Info) => number | boolean;
 
 ## Trigger
 
-### Interface
+* **Interface** *
 
 ```ts
 type Trigger = (args: Info) => boolean;
@@ -140,7 +140,7 @@ type Trigger = (args: Info) => boolean;
 
 ## Optimizer
 
-### Interface
+* **Interface** *
 
 ```ts
 type Optimizer = (
@@ -151,7 +151,7 @@ type Optimizer = (
 
 ## ChartRuleID
 
-### Interface
+* **Interface** *
 
 ```ts
 const ChartRuleID = [
@@ -173,7 +173,7 @@ const ChartRuleID = [
 
 ## ChartDesignRuleID
 
-### Interface
+* **Interface** *
 
 ```ts
 const ChartDesignRuleID = ['x-axis-line-fading'];
@@ -181,7 +181,7 @@ const ChartDesignRuleID = ['x-axis-line-fading'];
 
 ## ChartRuleConfig
 
-### Interface
+* **Interface** *
 
 ```ts
 interface ChartRuleConfig {
@@ -190,7 +190,7 @@ interface ChartRuleConfig {
 }
 ```
 
-### Parameters
+* **Parameters** *
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
@@ -199,7 +199,7 @@ interface ChartRuleConfig {
 
 ## ChartRuleConfigMap
 
-### Interface
+* **Interface** *
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -207,7 +207,7 @@ type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
 
 ## Docs
 
-### Interface
+* **Interface** *
 
 ```ts
 type Docs = {
@@ -218,7 +218,7 @@ type Docs = {
 };
 ```
 
-### Parameters
+* **Parameters** *
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
@@ -229,7 +229,7 @@ type Docs = {
 
 ## DefaultRuleModule
 
-### Interface
+* **Interface** *
 
 ```ts
 type DefaultRuleModule = {
@@ -240,7 +240,7 @@ type DefaultRuleModule = {
 };
 ```
 
-### Parameters
+* **Parameters** *
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
@@ -251,7 +251,7 @@ type DefaultRuleModule = {
 
 ## ChartRuleModule
 
-### Interface
+* **Interface** *
 
 ```ts
 type ChartRuleModule = DefaultRuleModule & {
@@ -262,7 +262,7 @@ type ChartRuleModule = DefaultRuleModule & {
 
 ## DesignRuleModule
 
-### Interface
+* **Interface** *
 
 ```ts
 type DesignRuleModule = DefaultRuleModule & {
@@ -273,7 +273,7 @@ type DesignRuleModule = DefaultRuleModule & {
 
 ## RuleModule
 
-### Interface
+* **Interface** *
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -281,7 +281,7 @@ type RuleModule = ChartRuleModule | DesignRuleModule;
 
 ## RuleConfig
 
-### Interface
+* **Interface** *
 
 ```ts
 type RuleConfig = {
@@ -292,7 +292,7 @@ type RuleConfig = {
 };
 ```
 
-### Parameters
+* **Parameters** *
 
 | Properties | Type | Description | Default |  
 | ----| ---- | ---- | -----|
@@ -303,4 +303,4 @@ type RuleConfig = {
 
 
 
-</div>
+

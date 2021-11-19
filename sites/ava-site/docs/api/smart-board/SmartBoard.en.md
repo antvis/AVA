@@ -5,12 +5,13 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Class SmartBoard(inputCharts: InputChart[])
 ```
-### Parameters
+
+## Initial Parameters
 
 * **inputCharts** * Data
   * _required parameter_ 
@@ -35,9 +36,9 @@ Class SmartBoard(inputCharts: InputChart[])
 | chartSchema | `any` | The specified visualization scheme, such as chart configuration, title, etc. | None `Optional` |
 | description | `string | string[]` | The chart description information. | None `Optional` |
 
-### Functions
+## Functions
 
-#### SmartBoard.getCharts
+### SmartBoard.getCharts
 
 To get the chart that constructs the Dashboard.
 ```ts
@@ -46,7 +47,7 @@ SmartBoard.getCharts: InputChart[];
 
 Return value: `InputChart[]`
 
-#### SmartBoard.chartGraph
+### SmartBoard.chartGraph
 
 To get the ChartGraph that holds the correlations between charts defined by [G6](https://g6.antv.vision/): 
 ``sign
@@ -62,7 +63,7 @@ interface ChartGraph {
 }
 ```
 
-#### SmartBoard.chartOrder
+### SmartBoard.chartOrder
 
 To get the ChartOrder that holds the order of the charts, the output order is determined by both the data insight score and the chart association.
 ```ts
@@ -79,7 +80,7 @@ Return value:
 type ChartOrder = Record<string, number>;
 ```
 
-#### SmartBoard.chartCluster
+### SmartBoard.chartCluster
 
 To obtain ChartCluster, which holds the clustering relationships of the charts via using the Louvain algorithm.
 ```ts
@@ -91,7 +92,7 @@ Return value:
 type ChartCluster = Record<string, number>;
 ```
 
-#### insights2Board
+### insights2Board
 
 Transfer the output insight of LiteInsight to the `InputChart` array employed when initial SmartBoard.
 ```ts
@@ -102,4 +103,4 @@ Parameter: [InsightInfo](../lite-insight/auto-insights#getDataInsights)
 
 
 
-</div>
+

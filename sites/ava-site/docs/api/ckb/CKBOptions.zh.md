@@ -5,7 +5,7 @@ order: 2
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 得到图表知识所可能包含的所有属性。
 
@@ -13,7 +13,7 @@ order: 2
 CKBOptions(lang)
 ```
 
-### 参数
+## 参数
 
 * **lang** * 返回内容针对的语言。
   * _可选参数_
@@ -21,11 +21,11 @@ CKBOptions(lang)
   * `默认值`: 'en-US'
   * `选项`: 'en-US', 'zh-CN'
 
-### 返回值
+## 返回值
 
 *object* * 包含以下属性:
 
-#### `CKBOptions().family`
+## `CKBOptions().family`
 
 > *图表大类*一览，相似的图表会被分为一个大类（或家族）。
 
@@ -42,7 +42,7 @@ CKBOptions(lang)
 * RadarCharts
 * Others
 
-#### `CKBOptions().category`
+## `CKBOptions().category`
 
 > *图形类别*，数据可视化中的图形可以按照结构和性质被分为几个大类。
 
@@ -53,7 +53,7 @@ CKBOptions(lang)
 * Graph
 * Map
 
-#### `CKBOptions().purpose`
+## `CKBOptions().purpose`
 
 > *分析目的*，按照图表的分析目的分类，比如**饼图**更适合描述占比、**折线图**更适合描述趋势。
 
@@ -66,7 +66,7 @@ CKBOptions(lang)
 * Proportion
 * Composition
 
-#### `CKBOptions().coord`
+## `CKBOptions().coord`
 
 > *坐标系*。
 
@@ -80,7 +80,7 @@ CKBOptions(lang)
 * NodeLink
 * Radar
 
-#### `CKBOptions().shape`
+## `CKBOptions().shape`
 
 > *形状*，基于对于图形的形状的感性认知，将图形分类。
 
@@ -94,7 +94,7 @@ CKBOptions(lang)
 * Scatter
 * Symmetric
 
-#### `CKBOptions().channel`
+## `CKBOptions().channel`
 
 > *视觉通道*，视觉通道是指可以用来映射数据的一些视觉元素变量，比如长度、形状、颜色等。通过对图表类型中的视觉通道进行整理，也可以将图表分类。
 
@@ -109,7 +109,7 @@ CKBOptions(lang)
 * Direction
 * Size
 
-#### `CKBOptions().lom`
+## `CKBOptions().lom`
 
 > *度量级别（Level of Measurement）*，对字段特性的一种描述。比如无序名词、有序名词、数值、日期时间，等。
 
@@ -122,7 +122,7 @@ CKBOptions(lang)
 * Continuous
 * Time
 
-### 示例
+## 示例
 
 ```js
 import { CKBOptions } from '@antv/knowledge';
@@ -134,4 +134,4 @@ const allCategories = options1.category;
 // ['Statistic', 'Diagram', 'Graph', 'Map']
 ```
 
-</div>
+

@@ -5,7 +5,7 @@ order: 5
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Class Linter(ruleCfg?: RuleConfig)
@@ -15,7 +15,7 @@ Class Linter(ruleCfg?: RuleConfig)
 
 `Linter` 提供了 `lint()` 函数用于提供图表优化建议。
 
-### 参数
+## 参数
 
 * **ruleCfg** * 规则配置
   * _可选参数_
@@ -57,9 +57,9 @@ interface ChartRuleConfig {
 }
 ```
 
-### 方法
+## 方法
 
-#### Linter.lint
+### Linter.lint
 
 获得图表优化建议结果的 `Lint[]`，详见 [Linter.lint](./lint).
 
@@ -90,4 +90,4 @@ interface Lint {
 ```
 
 
-</div>
+

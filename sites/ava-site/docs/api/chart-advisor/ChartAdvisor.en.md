@@ -5,7 +5,7 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = {})
@@ -16,7 +16,7 @@ Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = 
 `ChartAdvisor` contains both an `Advisor` and a `Linter` object, and provides `advise()` function,
 compared to `Advisor`, it provides an additional `Lint` object as output for providing chart suggestions.
 
-### Parameters
+## Parameters
 
 * **config** * Chart Knowledge Base (CKB) & Rule Config
   * _optional_
@@ -75,9 +75,9 @@ interface ChartRuleConfig {
 }
 ```
 
-### Function
+## Function
 
-#### ChartAdvisor.advise
+### ChartAdvisor.advise
 
 Get the `ChartAdvisorList[]` of chart recommendation results as detailed in [ChartAdvisor.advise](./chartAdvice).
 
@@ -103,4 +103,4 @@ type ChartAdvisorList = {
 ```
 
 
-</div>
+

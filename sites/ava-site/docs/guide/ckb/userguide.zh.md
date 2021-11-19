@@ -5,7 +5,7 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 ## 图表类型
 
@@ -216,4 +216,4 @@ order: 1
 
 对以上内容有疑问？欢迎 [提交 Github issue](https://github.com/antvis/AVA/issues/new) 帮我们一起完善！
 
-</div>
+

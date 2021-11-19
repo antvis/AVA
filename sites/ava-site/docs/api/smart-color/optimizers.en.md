@@ -5,7 +5,7 @@ order: 2
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 # Palette Optimization
 
@@ -75,4 +75,4 @@ paletteOptimization(palette, {
   </div>
 </div>
 
-</div>
+

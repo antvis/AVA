@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 Chart Knowledge Base (CKB) is a library offers knowledge base for chart wikis in a JSON format. 
 
@@ -16,4 +16,4 @@ $ npm install @antv/knowledge
 ```
 
 
-</div>
+

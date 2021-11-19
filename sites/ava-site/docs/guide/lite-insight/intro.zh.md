@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 从多维数据中自动地发现有趣模式。
 
@@ -57,4 +57,4 @@ LiteInsight 其中的一些功能设计受到以下论文的启发：
 
 - [MetaInsight: Automatic Discovery of Structured Knowledge for Exploratory Data Analysis](https://www.microsoft.com/en-us/research/uploads/prod/2021/03/rdm337-maA.pdf)
 
-</div>
+

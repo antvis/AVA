@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 DataWizard is a js/ts library for data processing and analysis. In the AVA framework, it is used to 'understand' and 'process' the input dataset. However, it can also be used independently to develop some data processing, analysis, statistics or data mocking functions.
 
@@ -218,4 +218,4 @@ For more usages, please check the API reference.
 - [statistics](../../api/data-wizard/statistics)
 - [random](../../api/data-wizard/random)
 
-</div>
+

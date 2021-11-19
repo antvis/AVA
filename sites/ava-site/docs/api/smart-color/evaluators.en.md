@@ -5,7 +5,7 @@ order: 3
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 # Color Evaluation
 
@@ -132,4 +132,4 @@ const color2 = {
 colorAesthetic(color1, color2, { "measure": "harmony" });  //-0.13
 ```
 
-</div>
+

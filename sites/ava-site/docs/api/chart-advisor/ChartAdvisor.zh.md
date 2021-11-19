@@ -5,7 +5,7 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = {})
@@ -16,7 +16,7 @@ Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = 
 `ChartAdvisor` 中同时包含了一个 `Advisor` 和一个 `Linter` 对象，并提供了 `advise()` 函数用于图表推荐和优化，
 相对于 `Advisor` 中的同名函数多了一个 `Lint` 类型的输出作为图表优化建议项。
 
-### 参数
+## 参数
 
 * **config** * 图表和规则配置
   * _可选参数_
@@ -75,9 +75,9 @@ interface ChartRuleConfig {
 }
 ```
 
-### 方法
+## 方法
 
-#### ChartAdvisor.advise
+### ChartAdvisor.advise
 
 获得图表推荐结果的 `ChartAdvisorList[]`，详见 [ChartAdvisor.advise](./chartAdvice)。
 
@@ -103,4 +103,4 @@ type ChartAdvisorList = {
 ```
 
 
-</div>
+

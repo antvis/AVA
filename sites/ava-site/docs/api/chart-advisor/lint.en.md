@@ -5,13 +5,13 @@ order: 6
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 Linter.lint(params: LintParams): Lint[];
 ```
 
-### Parameters
+## Parameters
 
 * **params** * Linter configuration.
   * _required_
@@ -28,7 +28,7 @@ interface LintParams {
 Among above, `spec`, `dataProps` and `options` represent the input chart syntax, 
 chart recommendation configuration items and Linter configuration items, respectively.
 
-#### Linter parameters
+### Linter parameters
 
 * ***AntVSpec*** Parameter configuration.
 
@@ -88,7 +88,7 @@ interface Preferences {
 ```
 
 
-### Return value
+## Return value
 
 *`Lint[]`* 
 
@@ -103,4 +103,4 @@ interface Preferences {
 | docs | `any` | The documentation for the rule. | |
 
 
-</div>
+

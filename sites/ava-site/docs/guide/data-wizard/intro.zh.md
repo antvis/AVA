@@ -5,7 +5,7 @@ order: 0
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 DataWizard 是一个 js/ts 的前端数据处理和分析库。在 AVA 的框架中，它被用来“理解”和“处理”输入端的数据集。不过，它也可以独立地被用来开发一些数据处理与分析、数学统计、数据模拟之类的功能。
 
@@ -218,4 +218,4 @@ r.address();
 - [statistics](../../api/data-wizard/statistics)
 - [random](../../api/data-wizard/random)
 
-</div>
+

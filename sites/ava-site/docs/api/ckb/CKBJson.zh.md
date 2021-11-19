@@ -5,7 +5,7 @@ order: 1
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 得到一个 `JSON` 格式的 **图表知识库（Chart Knowledge Base）**，以下简称 CKB。
 
@@ -13,7 +13,7 @@ order: 1
 CKBJson(lang, completed)
 ```
 
-### 参数
+## 参数
 
 * **lang** * CKB 内容所使用的语言。
   * _可选参数_
@@ -26,7 +26,7 @@ CKBJson(lang, completed)
   * `参数类型`: *boolean*
   * `默认值`: false
 
-### 返回值
+## 返回值
 
 *ChartKnowledgeBaseJSON* extends object
 
@@ -55,7 +55,7 @@ CKBJson(lang, completed)
 }
 ```
 
-### 示例
+## 示例
 
 ```js
 import { CKBJson } from '@antv/knowledge';
@@ -74,4 +74,4 @@ const completedKB = CKBJson(undefined, true);
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
 
-</div>
+

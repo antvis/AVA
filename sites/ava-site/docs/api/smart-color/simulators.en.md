@@ -5,7 +5,7 @@ order: 4
 
 `markdown:docs/common/style.md`
 
-<div class="doc-md">
+
 
 # Color Simulation
 
@@ -57,4 +57,4 @@ invertGrayscale(0.8, color);
 // }
 ```
 
-</div>
+

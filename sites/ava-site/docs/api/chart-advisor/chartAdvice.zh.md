@@ -5,13 +5,13 @@ order: 2
 
 `markdown:docs/common/style.md`
 
-<div class='doc-md'>
+
 
 ```sign
 ChartAdvisor.advise(params: AdviseParams): ChartAdvisorList[];
 ```
 
-### 参数
+## 参数
 
 * **params** * ChartAdvisor 配置项
   * _必选参数_
@@ -23,7 +23,7 @@ type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
 其中，`ChartAdviseParams` 和 `GraphAdviseParams` 分别代表图表推荐和图推荐所需要的参数类型。
 
-#### 统计图表推荐参数
+### 统计图表推荐参数
 
 * ***ChartAdviseParams*** 参数配置。
 
@@ -84,7 +84,7 @@ type SmartColorOptions = {
 | colorSchemeType | `ColorSchemeType` | 色板生成模式。 | `monochromatic` `可选` |
 | simulationType | `SimulationType` | 颜色模拟模式。 | `normal` `可选` |
 
-#### 图推荐参数
+### 图推荐参数
 
 * ***GraphAdviseParams*** 参数配置。
 
@@ -122,7 +122,7 @@ type GraphAdvisorOptions = {
 | AdvisorOptions | `AdvisorOptions` | 同统计图表推荐配置项。 | 无 `可选` |
 
 
-### 返回值
+## 返回值
 
 *`ChartAdvisorList[]`* 
 
@@ -160,4 +160,4 @@ type GraphAdvisorOptions = {
 
 
 
-</div>
+
