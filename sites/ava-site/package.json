@@ -8,6 +8,7 @@
     "AVA",
     "site"
   ],
+  "homepage": "https://ava.antv.vision",
   "license": "MIT",
   "scripts": {
     "start": "npm run clean && npm run develop",
