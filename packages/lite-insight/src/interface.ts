@@ -99,6 +99,7 @@ export interface InsightOptions {
   /** on / off the output of visualization scheme */
   visualization?: boolean | VisualizationOptions;
   homogeneous?: boolean; // on/off extra homogeneous insight extraction
+  ignoreSubspace?: boolean; // Whether to close the search for subspaces
 }
 
 export interface BasePatternInfo<T extends InsightType> {
