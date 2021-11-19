@@ -27,6 +27,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | impactMeasures |  `ImpactMeasure[]` | Measures for Impact score. | none |
 | impactWeight |  `number ∈(0, 1)` | Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | on/off extra homogeneous insight extraction. | `false` |
+| ignoreSubspace |  `boolean` | Whether to close the search for subspaces. | `false` |
 
 * ***VisualizationOptions*** Insight output visualization options
 

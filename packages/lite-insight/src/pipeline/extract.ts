@@ -208,73 +208,75 @@ export const extractInsightsFromSubspace = (
     });
   }
 
-  /** drill down */
-  const searchedDimensions = subspace.map((item) => item.dimension);
-  const remainDimensionFields = (
-    options?.dimensions ||
-    Object.values(fieldPropsMap)
-      .filter((item) => item.fieldType === 'dimension')
-      .map((item) => item.name)
-  ).filter((field) => !searchedDimensions.includes(field));
+  /** subspace search */
+  if (!options?.ignoreSubspace) {
+    const searchedDimensions = subspace.map((item) => item.dimension);
+    const remainDimensionFields = (
+      options?.dimensions ||
+      Object.values(fieldPropsMap)
+        .filter((item) => item.fieldType === 'dimension')
+        .map((item) => item.name)
+    ).filter((field) => !searchedDimensions.includes(field));
 
-  if (remainDimensionFields.length > 0) {
-    remainDimensionFields.forEach((dimension) => {
-      const siblingGroupInsights: InsightInfo<PatternInfo>[][] = [];
-      const groupedData = _groupBy(data, dimension);
-      const breakdownValues: string[] = _uniq(fieldPropsMap[dimension].rawData);
+    if (remainDimensionFields.length > 0) {
+      remainDimensionFields.forEach((dimension) => {
+        const siblingGroupInsights: InsightInfo<PatternInfo>[][] = [];
+        const groupedData = _groupBy(data, dimension);
+        const breakdownValues: string[] = _uniq(fieldPropsMap[dimension].rawData);
 
-      const dimensionsInSubspace = remainDimensionFields.filter((item) => item !== dimension);
-      if (breakdownValues.length > 1) {
-        breakdownValues.forEach((value) => {
-          const childSubspace = [...subspace, { dimension, value }];
+        const dimensionsInSubspace = remainDimensionFields.filter((item) => item !== dimension);
+        if (breakdownValues.length > 1) {
+          breakdownValues.forEach((value) => {
+            const childSubspace = [...subspace, { dimension, value }];
 
-          const subspaceInsights = extractInsightsFromSubspace(
-            groupedData[value],
-            dimensionsInSubspace,
-            measures,
-            childSubspace,
-            referenceInfo,
-            insightsHeap,
-            homogeneousInsightsHeap,
-            options
-          );
-          siblingGroupInsights.push(subspaceInsights);
-        });
-      }
-
-      /** extract homegenehous insight in sibling group */
-      if (options?.homogeneous) {
-        dimensionsInSubspace.forEach((dim) => {
-          measures.forEach((measure) => {
-            const siblingGroupInsightsArr = siblingGroupInsights.map((siblingItem) => {
-              return siblingItem.find((insight) => {
-                return (
-                  !!insight &&
-                  insight.dimensions.length === 1 &&
-                  insight.dimensions[0] === dim &&
-                  insight.measures.length === 1 &&
-                  insight.measures[0].field === measure.field
-                );
-              });
-            });
-
-            const homogeneousPatternsForSiblingGroups = extractHomogeneousPatternsForSiblingGroups(
-              breakdownValues,
-              siblingGroupInsightsArr
+            const subspaceInsights = extractInsightsFromSubspace(
+              groupedData[value],
+              dimensionsInSubspace,
+              measures,
+              childSubspace,
+              referenceInfo,
+              insightsHeap,
+              homogeneousInsightsHeap,
+              options
             );
-            const insightsForSiblingGroup = homogeneousPatternsForSiblingGroups.map((pattern) => ({
-              subspace,
-              dimensions: [dimension, dim],
-              measures: [measure],
-              patterns: [pattern],
-              data,
-              score: pattern.significance * (1 - impactScoreWeight) + subspaceImpact * impactScoreWeight,
-            }));
-            homogeneousInsightsHeap.addAll(insightsForSiblingGroup);
+            siblingGroupInsights.push(subspaceInsights);
           });
-        });
-      }
-    });
+        }
+
+        /** extract homegenehous insight in sibling group */
+        if (options?.homogeneous) {
+          dimensionsInSubspace.forEach((dim) => {
+            measures.forEach((measure) => {
+              const siblingGroupInsightsArr = siblingGroupInsights.map((siblingItem) => {
+                return siblingItem.find((insight) => {
+                  return (
+                    !!insight &&
+                    insight.dimensions.length === 1 &&
+                    insight.dimensions[0] === dim &&
+                    insight.measures.length === 1 &&
+                    insight.measures[0].field === measure.field
+                  );
+                });
+              });
+
+              const homogeneousPatternsForSiblingGroups = extractHomogeneousPatternsForSiblingGroups(
+                breakdownValues,
+                siblingGroupInsightsArr
+              );
+              const insightsForSiblingGroup = homogeneousPatternsForSiblingGroups.map((pattern) => ({
+                subspace,
+                dimensions: [dimension, dim],
+                measures: [measure],
+                patterns: [pattern],
+                data,
+                score: pattern.significance * (1 - impactScoreWeight) + subspaceImpact * impactScoreWeight,
+              }));
+              homogeneousInsightsHeap.addAll(insightsForSiblingGroup);
+            });
+          });
+        }
+      });
+    }
   }
 
   return insights;

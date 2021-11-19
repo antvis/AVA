@@ -95,7 +95,7 @@ export default function App() {
     setInsightLoading(true);
     getDataInsightsAsync(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true })
       .then((res) => {
-        if (res?.homogeneousInsights) setInsights(res.homogeneousInsights);
+        if (res?.insights) setInsights(res.insights);
       })
       .finally(() => {
         setInsightLoading(false);
