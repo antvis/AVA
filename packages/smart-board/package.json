@@ -12,12 +12,11 @@
     "lib"
   ],
   "scripts": {
-    "format": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\" \"demo/**/*.{ts,tsx}\"",
-    "format-check": " prettier ./src/**/*.ts ./__tests__/**/*.ts ./demo/**/*.{ts,tsx} --check",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
     "lint-fix": "npm run lint -- --fix",
     "prettier": " prettier --check '**/*' --ignore-path=../../.prettierignore",
     "prettier-fix": "npm run prettier -- --write",
+    "format": "npm run prettier-fix && npm run lint-fix",
     "lint-staged": "lint-staged",
     "size": "limit-size",
     "clean": "rimraf lib esm dist",
@@ -27,13 +26,8 @@
     "build": "run-p build:*",
     "test": "jest",
     "coverage": "jest --coverage",
-    "ci": "run-s lint schema test build",
-    "prepare:demo": "cd demo && npm install",
-    "start:demo": "npm run prepare:demo && cd demo && npm start",
-    "prepublishOnly": "npm run ci",
-    "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
-    "postversion": "git push && git push --tags"
+    "watch": "yarn module && yarn build --w"
+
   },
   "repository": {
     "type": "git",
