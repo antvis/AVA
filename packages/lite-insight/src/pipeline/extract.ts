@@ -110,7 +110,7 @@ export const extractInsightsFor1M1DCombination = (
       );
       if (patternsArray.length) {
         const insight = {
-          subspaces: [subspace],
+          subspace,
           dimensions: [dimension],
           measures: [measure],
           patterns: patternsArray,
