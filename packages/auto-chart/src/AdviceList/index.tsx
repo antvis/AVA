@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { CKBJson } from '@antv/ckb';
-import { prefixCls, getThumbnailURL, customChartType } from '../utils';
+import { Thumbnail } from '@antv/thumbnails-component';
+import { prefixCls, customChartType } from '../utils';
 import { intl, Language } from '../i18n';
+import type { ThumbnailID } from '@antv/thumbnails';
 import type { Advice } from '@antv/chart-advisor';
-import type { ChartID } from '@antv/ckb';
 
 interface AdviceListProps {
   language: Language;
@@ -51,7 +52,7 @@ export const AdviceList = ({ advices, currentIndex, language, isActive, onChartT
             return (
               <div className={`${prefixCls}advice`} key={index} onClick={() => changeChartHandle(index)}>
                 <div className={`${prefixCls}advice-thumbnail`} data-index={index}>
-                  <img src={getThumbnailURL(advice.type as ChartID)} data-index={index} alt="" />
+                  <Thumbnail chart={advice.type as ThumbnailID} data-index={index} />
                 </div>
                 <div className={`${prefixCls}advice-desc`}>
                   <img src={rankIcons[index]} data-index={index} />

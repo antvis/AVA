@@ -1,8 +1,9 @@
 import React from 'react';
 import { CKBJson } from '@antv/ckb';
-import { prefixCls, getThumbnailURL } from '../utils';
+import { Thumbnail } from '@antv/thumbnails-component';
+import { prefixCls } from '../utils';
 import { Language } from '../i18n';
-import type { ChartID } from '@antv/ckb';
+import type { ThumbnailID } from '@antv/thumbnails';
 
 const CHART_NAMES = [
   'line_chart',
@@ -40,7 +41,7 @@ export const ChartContent = (props: ChartContentProps) => {
         return (
           <div key={key} className={`chart-item${chartType === key ? ' active' : ''}`}>
             <div className="chart">
-              <img onClick={() => props.onMockChartTypeChange(key)} src={getThumbnailURL(key as ChartID)} alt={key} />
+              <Thumbnail chart={key as ThumbnailID} onClick={() => props.onMockChartTypeChange(key)} />
             </div>
             <div>{ChartWiki[key].name}</div>
           </div>
