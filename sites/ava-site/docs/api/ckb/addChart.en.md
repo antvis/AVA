@@ -13,6 +13,8 @@ Adds a custom chart to the base.
 addChart(chartKnowledge, trans)
 ```
 
+> deprecated
+
 ## Parameters
 
 * **chartKnowledge** * Chart Knowledge object for the custom chart.

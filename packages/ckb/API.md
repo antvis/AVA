@@ -75,6 +75,8 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 ## `addChart(chartKnowledge, trans)`
 
+> deprecated
+
 > Adds a custom chart to the base.
 
 ***<font size=4>Parameters</font>***
