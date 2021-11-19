@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "index.jsx",
+      "title": {
+        "zh": "模拟数据生成示例",
+        "en": "Data mocking"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/VopHAgkeMZ/random.gif"
+    }
+  ]
+}

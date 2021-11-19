@@ -1,0 +1,24 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "df.jsx",
+      "title": {
+        "zh": "读取数据",
+        "en": "Read data"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif"
+    },
+    {
+      "filename": "info.jsx",
+      "title": {
+        "zh": "数据字段分析",
+        "en": "Data field analysis"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/BTQp84MnNH/DF-info.gif"
+    }
+  ]
+}
