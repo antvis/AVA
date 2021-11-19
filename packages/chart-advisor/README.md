@@ -7,7 +7,7 @@
 
 <div align="center">
 
-An empiric-driven chart recommendation js library.
+A js library for empiric-driven chart recommendation based on visualization rules and chart linter of `AVA`.
 
 
 
