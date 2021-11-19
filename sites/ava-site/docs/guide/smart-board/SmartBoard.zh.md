@@ -44,8 +44,8 @@ initChart(chart as InputChart);
 interface InputChart {
   id?: string;
   data: string;
-  subspaces: Subspace[] | [];
-  breakdowns: string[];
+  subspace: Subspace[] | [];
+  dimensions: string[];
   measures: string[];
   dataUrl?: string;
   fieldInfo?: any;

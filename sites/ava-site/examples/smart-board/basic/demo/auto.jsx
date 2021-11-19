@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { Spin } from 'antd';
 import { getDataInsights } from '@antv/lite-insight';
 import { SmartBoard, SmartBoardDashboard, insights2Board } from '@antv/smart-board';
 import { TableView, StepBar } from 'antv-site-demo-rc';
@@ -10,6 +11,7 @@ const App = () => {
   const [data, setData] = useState([]);
   const [currentStep, setCurrentStep] = useState(0);
   const [smartBoard, setSmartBoard] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchDataset = async () => {
     fetch('https://cdn.jsdelivr.net/npm/vega-datasets@2.2.0/data/gapminder.json')
@@ -28,6 +30,7 @@ const App = () => {
             visualization: true,
           });
           setInsights(insightResult);
+          setIsLoading(false);
         }
       });
   };
@@ -78,7 +81,7 @@ const App = () => {
       <p>{steps[currentStep].desc}</p>
 
       <div className="steps-content" style={{ height: 'calc(100% - 80px)' }}>
-        {steps[currentStep].content}
+        <Spin spinning={isLoading}>{steps[currentStep].content}</Spin>
       </div>
     </>
   );

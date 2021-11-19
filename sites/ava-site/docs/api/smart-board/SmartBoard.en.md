@@ -26,8 +26,8 @@ Class SmartBoard(inputCharts: InputChart[])
 | id | `string` | Chart ID。 | Auto-generated `Optional` |
 | data | `any[]` | The source data. | None |
 | dataUrl | `string` | The address of the data source. | None `Optional` |
-| subspaces | `Subspace[]` | The data subspace information. | None |
-| breakdowns | `string[]` | The dimension of the data. | None |
+| subspace | `Subspace[]` | The data subspace information. | None |
+| dimensions | `string[]` | The dimension of the data. | None |
 | measures | `string[]` | The indicator field. | None |
 | fieldInfo | `any` | The data field information. | None `Optional` |
 | insightTypes | `InsightType[]` | The insight type. | None `Optional` |
