@@ -34,8 +34,7 @@ const annotationText = (texts: Text[], position: [number | string, number | stri
 
 const generateAnnotationConfigItem = (pattern: PatternInfo) => {
   if (pattern.type === 'change_point' || pattern.type === 'time_series_outlier') {
-    const patternInfo = pattern;
-    const { x, y } = patternInfo;
+    const { x, y } = pattern;
     const color = pattern.type === 'time_series_outlier' ? COLOR.outlier : COLOR.highlight;
 
     return [
@@ -71,8 +70,7 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
     ];
   }
   if (pattern.type === 'category_outlier') {
-    const patternInfo = pattern;
-    const { x, y } = patternInfo;
+    const { x, y } = pattern;
     return [
       {
         type: 'regionFilter',
@@ -106,10 +104,9 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
     ];
   }
   if (pattern.type === 'trend') {
-    const patternInfo = pattern;
     const {
       regression: { points },
-    } = patternInfo;
+    } = pattern;
     return [
       {
         type: 'line',
@@ -118,6 +115,31 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
         style: {
           lineDash: [2, 2],
           stroke: COLOR.highlight,
+        },
+      },
+    ];
+  }
+  if (pattern.type === 'low_variance') {
+    const { mean } = pattern;
+    return [
+      {
+        type: 'line',
+        start: ['min', mean],
+        end: ['max', mean],
+        style: {
+          lineDash: [2, 2],
+          stroke: COLOR.highlight,
+        },
+      },
+      {
+        type: 'text',
+        position: ['min', mean],
+        content: 'mean',
+        offsetX: -28,
+        offsetY: -4,
+        style: {
+          textBaseline: 'bottom',
+          fill: COLOR.highlight,
         },
       },
     ];

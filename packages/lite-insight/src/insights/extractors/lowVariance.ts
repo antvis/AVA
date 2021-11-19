@@ -3,6 +3,7 @@ import { Datum, LowVarianceInfo, Measure } from '../../interface';
 
 type LowVarianceItem = {
   significance: number;
+  mean: number;
 };
 
 type LowVarianceParams = {
@@ -21,8 +22,11 @@ export const findLowVariance = (values: number[], params?: LowVarianceParams): L
   }
   // The smaller the CV is, the greater the significance is.
   const significance = 1 - cv;
+  const mean = statistics.mean(values);
+
   return {
     significance,
+    mean,
   };
 };
 
@@ -35,13 +39,14 @@ export const extractor = (data: Datum[], dimensions: string[], measures: Measure
   const lowVariance = findLowVariance(values);
 
   if (lowVariance) {
-    const { significance } = lowVariance;
+    const { significance, mean } = lowVariance;
     return [
       {
         type: 'low_variance',
         dimension,
         measure,
         significance,
+        mean,
       },
     ];
   }
