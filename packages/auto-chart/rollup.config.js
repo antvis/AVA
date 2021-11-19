@@ -76,6 +76,7 @@ if (format === 'umd') {
     antd: 'antd',
     '@antv/g2plot': 'G2Plot',
     '@antv/g6': 'G6',
+    '@antv/g2plot-schemas': 'G2PlotSchemas',
     '@ant-design/icons': 'icons',
     moment: 'moment',
   };
