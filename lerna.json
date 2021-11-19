@@ -13,8 +13,11 @@
       "registry": "https://registry.npmjs.org/"
     },
     "bootstrap": {
-      "npmClientArgs": ["--no-lockfile", "--no-package-lock"]
+      "npmClientArgs": [
+        "--no-lockfile",
+        "--no-package-lock"
+      ]
     }
   },
-  "version": "1.1.7"
+  "version": "2.0.0-alpha.0"
 }

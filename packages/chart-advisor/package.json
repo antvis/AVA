@@ -1,6 +1,6 @@
 {
   "name": "@antv/chart-advisor",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.0",
   "description": "An empiric-driven chart recommendation js library.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -59,9 +59,9 @@
   },
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/ckb": "^2.0.0-alpha.1",
+    "@antv/ckb": "^2.0.0-alpha.0",
     "@antv/color-schema": "^0.2.3",
-    "@antv/data-wizard": "^2.0.0-alpha.1",
+    "@antv/data-wizard": "^2.0.0-alpha.0",
     "@antv/smart-color": "^0.2.1",
     "tslib": "^2.3.1"
   },

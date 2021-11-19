@@ -1,6 +1,6 @@
 {
   "name": "@antv/lite-insight",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.0",
   "description": "",
   "keywords": [
     "insight",
@@ -73,8 +73,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.3",
-    "@antv/ckb": "^2.0.0-alpha.1",
-    "@antv/data-wizard": "^2.0.0-alpha.1",
+    "@antv/ckb": "^2.0.0-alpha.0",
+    "@antv/data-wizard": "^2.0.0-alpha.0",
     "@antv/text-schema": "^0.1.5-alpha.5",
     "@stdlib/stats": "^0.0.12",
     "@stdlib/stats-lowess": "^0.0.5",
