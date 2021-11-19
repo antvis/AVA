@@ -1,6 +1,11 @@
 export { CKBJson, addChart } from './pack';
 export { CKBOptions } from './options';
-export {
+export { Language } from './i18n';
+export { CHART_ID_OPTIONS } from './chartID';
+
+export type { TransKnowledgeProps } from './i18n/interface';
+export type { ChartID } from './chartID';
+export type {
   ChartKnowledge,
   DataPrerequisite,
   LevelOfMeasurement,
@@ -22,6 +27,3 @@ export {
   RECOMMEND_RATING_OPTIONS,
   DataPrerequisiteJSON,
 } from './interface';
-export { Language } from './i18n';
-export { TransKnowledgeProps } from './i18n/interface';
-export { ChartID, CHART_ID_OPTIONS } from './chartID';
