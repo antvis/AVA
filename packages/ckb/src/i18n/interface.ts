@@ -1,4 +1,4 @@
-import {
+import type {
   GraphicCategory,
   Family,
   Purpose,
@@ -8,7 +8,7 @@ import {
   LevelOfMeasurement,
   RecommendRating,
 } from '../interface';
-import { ChartID } from '../chartID';
+import type { ChartID } from '../chartID';
 
 interface Concepts {
   family: Record<Family, string>;

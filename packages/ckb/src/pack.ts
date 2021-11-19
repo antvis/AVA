@@ -1,20 +1,25 @@
 import { ChartID } from './chartID';
-import {
+import { Language, I18N, translateMapping } from './i18n';
+import { TransKnowledgeProps } from './i18n/interface';
+import { base } from './base';
+import type {
   ChartKnowledgeBase,
   ChartKnowledge,
   ChartKnowledgeBaseJSON,
   DataPrerequisiteJSON,
   ChartKnowledgeJSON,
 } from './interface';
-import { Language, I18N, translateMapping } from './i18n';
-import { TransKnowledgeProps } from './i18n/interface';
-import { base } from './base';
 
+/**
+ * A cheap way to get a copy of base.
+ */
 function newBase() {
   return JSON.parse(JSON.stringify(base));
 }
 
 /**
+ * Get a CKB object.
+ *
  * @param lang - Language of the CKB.
  * @param completed - True if only charts with fully completed knowledge should be included. Default is false.
  *
@@ -87,6 +92,7 @@ export function CKBJson(lang: Language = 'en-US', completed = false) {
 /**
  * @param chartKnowledge - Knowledge of the added chart.
  * @param trans - Versions of translation for the name, alias and definition of the added chart.
+ * @deprecated
  * @public
  */
 export function addChart(chartKnowledge: ChartKnowledge, trans: Record<Language, TransKnowledgeProps>) {
