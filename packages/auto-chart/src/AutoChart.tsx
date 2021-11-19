@@ -67,7 +67,7 @@ export const AutoChart = (props: Props) => {
   useEffect(() => {
     setAdvices([]);
     setCurrentData(propsData);
-  }, [propsData]);
+  }, [JSON.stringify(propsData)]);
 
   useEffect(() => {
     if (currentData.length > 0) {
