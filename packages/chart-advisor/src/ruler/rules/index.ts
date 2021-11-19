@@ -4,6 +4,7 @@
 // import { allCanBeTable } from './all-can-be-table';
 import { RuleModule } from '../concepts/rule';
 import { barSeriesQty } from './bar-series-qty';
+import { barWithoutAxisMin } from './bar-without-axis-min';
 import { dataCheck } from './data-check';
 import { dataFieldQty } from './data-field-qty';
 import { diffPieSector } from './diff-pie-sector';
@@ -22,6 +23,7 @@ export const rules: Record<string, RuleModule> = {
   // 'aggregation-single-row': aggregationSingleRow,
   // 'all-can-be-table': allCanBeTable,
   'bar-series-qty': barSeriesQty,
+  'bar-without-axis-min': barWithoutAxisMin,
   'data-check': dataCheck,
   'data-field-qty': dataFieldQty,
   'diff-pie-sector': diffPieSector,
