@@ -76,26 +76,31 @@ const smartBoard = new SmartBoard(insightCharts);
 After initialization, the SmartBoard instance is ready to be used by calling the relevant methods.
 
 To add a chart for constructing a Dashboard.
+
 ```ts
 SmartBoard.addChart(newChart as InputChart);
 ```
 
 To get the chart that constructs the Dashboard.
+
 ```ts
 SmartBoard.getCharts;
 ```
 
 To get the ChartGraph that holds the association between charts, as defined by AntV-G6.
+
 ```ts
 SmartBoard.chartGraph;
 ```
 
 To get the ChartOrder that holds the order of the charts, the output order is determined by both the data insight score and the chart association relationship.
+
 ```ts
 SmartBoard.chartOrder(type as OrderType): ;
 ```
 
 To get ChartCluster that holds the chart clustering relationships, via using the Louvain algorithm.
+
 ```ts
 SmartBoard.chartCluster();
 ```

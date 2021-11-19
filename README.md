@@ -9,7 +9,7 @@
 <div align="center">
 
 <i>A framework for automated visual analytics.</i>
-<i><a href="https://ava.antv.vision/en">https://ava.antv.vision/en</a></i>
+<i><a href="https://ava.antv.vision/en"><https://ava.antv.vision/en></a></i>
 
 </div>
 

@@ -1,6 +1,7 @@
 ***IPhrase*** 短语描述
 
 短语描述用 type 区分，分为文本短语和实体短语，实体短语用于标记词汇属性。目前在 lite-insight 模块描述涉及实体类型有：
+
 * `'metric_name'`: 指标名；
 * `'metric_value'`: 指标值；
 * `'trend_desc'`: 趋势描述；

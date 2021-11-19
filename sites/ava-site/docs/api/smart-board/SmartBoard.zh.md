@@ -41,6 +41,7 @@ Class SmartBoard(inputCharts: InputChart[])
 ### SmartBoard.getCharts
 
 获取构造 Dashboard 的图表：
+
 ```ts
 SmartBoard.getCharts: InputChart[];
 ```
@@ -50,11 +51,13 @@ SmartBoard.getCharts: InputChart[];
 ### SmartBoard.chartGraph
 
 获得保存图表间关联关系的 ChartGraph，关联关系由 AntV-G6 定义：
+
 ```ts
 SmartBoard.chartGraph;
 ```
 
 返回值：
+
 ```ts
 interface ChartGraph {
   nodes: Chart[];
@@ -65,16 +68,19 @@ interface ChartGraph {
 ### SmartBoard.chartOrder
 
 获得保存图表顺序的 ChartOrder，输出顺序由数据洞察分数和图表关联关系共同决定：
+
 ```ts
 SmartBoard.chartOrder(type: OrderType): ChartOrder;
 ```
 
 参数：
+
 ```ts
 type OrderType = 'byInsightScore' | 'byCluster';
 ```
 
 返回值：
+
 ```ts
 type ChartOrder = Record<string, number>;
 ```
@@ -82,11 +88,13 @@ type ChartOrder = Record<string, number>;
 ### SmartBoard.chartCluster
 
 获得保存图表聚类关系的 ChartCluster，聚类算法采用 Louvain 算法：
+
 ```ts
 SmartBoard.chartCluster(): ChartCluster;
 ```
 
 返回值：
+
 ```ts
 type ChartCluster = Record<string, number>;
 ```
@@ -96,6 +104,7 @@ type ChartCluster = Record<string, number>;
 ### insights2Board
 
 将 LiteInsight 输出的洞察结果转化为初始化 SmartBoard 所需要的图表数组：
+
 ```ts
 insights2Board(insights: InsightInfo): InputChart[];
 ```

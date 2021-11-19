@@ -58,12 +58,12 @@ autoChart(container, data, options);
 
 指定图表的分析目的，增加图表推荐的准确度，可以为以下这些值：
 
-- Comparison -- 比较
-- Trend -- 趋势
-- Distribution -- 分布
-- Rank -- 排行
-- Proportion -- 比例
-- Composition -- 组成
+* Comparison -- 比较
+* Trend -- 趋势
+* Distribution -- 分布
+* Rank -- 排行
+* Proportion -- 比例
+* Composition -- 组成
 
 #### options.toolbar
 

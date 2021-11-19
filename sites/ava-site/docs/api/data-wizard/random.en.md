@@ -22,22 +22,30 @@ r.boolean();
 ```
 
 ## BasicRandom
+
 The tool class `BasicRandom` can help you generate random basic data, including boolean, integer, float and natural number.
 
 ### boolean
+
 Generate a boolean value.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | likelihood | `number` | Likelihood of true and false | `50` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
+
 `boolean`
 
-#### Usage
+***<font size=3>Usage</font>***
+
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -47,9 +55,12 @@ r.boolean();
 ```
 
 ### integer
+
 Generate an integer.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -57,10 +68,14 @@ Generate an integer.
 | min | `number` | Minimum | `-(2 ** 53 - 1)` | - |
 | max | `number` | Maximun | `2 ** 53 - 1` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
+
 `number`
 
-#### Usage
+***<font size=3>Usage</font>***
+
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -70,9 +85,12 @@ r.integer({min: 1, max: 10000});
 ```
 
 ### float
+
 Generate a floating point number.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -81,10 +99,12 @@ Generate a floating point number.
 | max | `number` | Maximun | `2 ** 53 - 1` | - |
 | fixed | `number` | Decimal places | `4` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `number`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -94,9 +114,12 @@ r.float();
 ```
 
 ### natural
+
 Generate a natural number.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -104,10 +127,14 @@ Generate a natural number.
 | min | `number` | Minimum | `-(2 ** 53 - 1)` | - |
 | max | `number` | Maximun | `2 ** 53 - 1` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
+
 `number`
 
-#### Usage
+***<font size=3>Usage</font>***
+
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -117,12 +144,16 @@ r.natural();
 ```
 
 ## TextRandom
+
 The tool class `TextRandom` can help you generate random text data, including character, string, syllable, word, sentence, paragraph, name, surname, given name (givenName), phone number (phone), Chinese character (cCharacter), Chinese word (cWord), Chinese sentence (cSentence), Chinese name (cName), Chinese surname (cSurname), Chinese given name (cGivenName) and Chinese zodiac (cZodiac).
 
 ### character
+
 Generate a character.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -133,10 +164,14 @@ Generate a character.
 | lower | `string` | Lowercase letters | `'abcdefghijklmnopqrstuvwxyz'` | - |
 | upper | `string` | Uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -146,9 +181,12 @@ r.character();
 ```
 
 ### string
+
 Generate a string.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -160,10 +198,14 @@ Generate a string.
 | upper | `string` | Uppercase letters | `'ABCDEFGHIJKLMNOPQRSTUVWXYZ'` | - |
 | length | `number` | String length | `5 ~ 20` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -173,9 +215,12 @@ r.string();
 ```
 
 ### syllable
+
 Generate syllables.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -183,10 +228,14 @@ Generate syllables.
 | capitalize | `boolean` | Capitalize or not | `false` | - |
 | length | `number` | syllable length | `2 ~ 3` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -196,9 +245,12 @@ r.syllable();
 ```
 
 ### word
+
 Generate a word.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -207,10 +259,13 @@ Generate a word.
 | capitalize | `boolean` | Capitalize or not | `false` | - |
 | length | `number` | Word length | `syllables.length` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -220,9 +275,11 @@ r.word();
 ```
 
 ### sentence
+
 Generate a sentence.
 
-#### parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -230,10 +287,12 @@ Generate a sentence.
 | words | `number` | Number of words | `12 ~ 18` | - |
 | punctuation | `boolean | string` | Punctuation | `true` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -243,9 +302,11 @@ r.sentence();
 ```
 
 ### paragraph
+
 Generate a paragraph.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -253,10 +314,12 @@ Generate a paragraph.
 | sentence | `number` | Number of sentences | `3 ~ 7` | - |
 
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -266,19 +329,23 @@ r.paragraph();
 ```
 
 ### name
+
 Generate a name.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -288,12 +355,15 @@ r.name();
 ```
 
 ### surname
+
 Generate a surname.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -303,19 +373,23 @@ r.surname();
 ```
 
 ### givenName
+
 Generate a given name.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -325,9 +399,11 @@ r.givenName();
 ```
 
 ### phone
+
 Generate a phone number.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -337,10 +413,12 @@ Generate a phone number.
 | asterisk | `boolean` | Add * to avoid generating real phone numbers | `false` | - |
 | startNum | `string` | Phone number prefix, only the first three digits can be specified | `''` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -350,19 +428,23 @@ r.phone({asterisk: true});
 ```
 
 ### cCharacter
+
 Generate a Chinese character.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | pool | `string` | Candidate pool | `''` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -372,9 +454,11 @@ r.cCharacter();
 ```
 
 ### cWord
+
 Generate a Chinese word.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -382,10 +466,12 @@ Generate a Chinese word.
 | pool | `string` | Candidate pool | `''` | - |
 | length | `number` | Word length | `2~6` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -395,9 +481,11 @@ r.cWord();
 ```
 
 ### cSentence
+
 Generate a Chinese sentence.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -405,10 +493,12 @@ Generate a Chinese sentence.
 | min | `number` | Minimum number of characters | `10` | - |
 | max | `number` | Maximum number of characters | `18` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -418,9 +508,11 @@ r.cSentence();
 ```
 
 ### cParagraph
+
 Generate a Chinese paragraph.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -428,10 +520,12 @@ Generate a Chinese paragraph.
 | min | `number` | Minimum number of sentences | `3` | - |
 | max | `number` | Maximun number of sentences | `18` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -441,19 +535,23 @@ r.cParagraph();
 ```
 
 ### cName
+
 Generate a Chinese name.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -463,12 +561,15 @@ r.cName();
 ```
 
 ### cSurname
+
 Generate a Chinese surname.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -478,19 +579,23 @@ r.cSurname();
 ```
 
 ### cGivenName
+
 Generate a Chinese name.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | gender | `'male' | 'female'` | Gender | - | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -500,19 +605,23 @@ r.givenName();
 ```
 
 ### cZodiac
+
 Generate a zodiac.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | locale | `'zh-CN' | 'en-US'` | i18n | - | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -522,12 +631,15 @@ r.cZodiac();
 ```
 
 ## DateTimeRandom
+
 The tool class `DateTimeRandom` can help you generate random datetime data, including date, time, datetime, timestamp, weekday, month.
 
 ### date
+
 Generate a date.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -535,10 +647,12 @@ Generate a date.
 | min | `number` | Minimum timestamp | `0` | - |
 | max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -548,19 +662,23 @@ r.date();
 ```
 
 ### time
+
 Generate a time.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | short | `boolean` | UTC offset | `false` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -570,9 +688,11 @@ r.time();
 ```
 
 ### datetime
+
 Generate a datetime.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -581,10 +701,12 @@ Generate a datetime.
 | max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 | format | `string` | Formatting (refer to [date-fns format](https://date-fns.org/v2.0.1/docs/format)) | `yyyy-MM-dd'T'HH:mm:ssXXX` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -594,9 +716,11 @@ r.datetime();
 ```
 
 ### timestamp
+
 Generate a timestamp.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -604,10 +728,12 @@ Generate a timestamp.
 | min | `number` | Minimum timestamp  | `0` | - |
 | max | `number` | Maximum timestamp | `new Date().getTime()` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -617,9 +743,11 @@ r.timestamp();
 ```
 
 ### weekday
+
 Generate a weekday.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -627,10 +755,12 @@ Generate a weekday.
 | locale | `'zh-CN' | 'en-US'` | i18n | `'en-US'` | - |
 | abbr | `boolean` | Abbreviation | `false` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -640,9 +770,11 @@ r.weekday();
 ```
 
 ### month
+
 Generate a month.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -650,10 +782,12 @@ Generate a month.
 | locale | `'zh-CN' | 'en-US'` | i18n | `'en-US'` | - |
 | abbr | `boolean` | Abbreviation | `false` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -663,12 +797,15 @@ r.month();
 ```
 
 ## ColorRandom
+
 The tool class `ColorRandom` can help you generate random color data, including RGB color (rgb), rgba color (rgba), HSL color (hsl), hsla color (hsla), color name (colorName), hex color (hexColor) and decimal color (decimalColor).
 
 ### rgb
+
 Generate a RGB color.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -684,10 +821,12 @@ Generate a RGB color.
 | maxB | `number` | Maximum blue value | `max` | - |
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -697,9 +836,11 @@ r.rgb();
 ```
 
 ### rgba
+
 Generate a rgba color.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -717,10 +858,12 @@ Generate a rgba color.
 | minA | `number` | Minimum transparency | `lower` | - |
 | maxA | `number` | Maximum transparency | `lower` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -730,9 +873,11 @@ r.rgba();
 ```
 
 ### hsl
+
 Generate a HSL color.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -745,10 +890,12 @@ Generate a HSL color.
 | maxL | `number` | Maximum lightness | `100` | - |
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -758,9 +905,11 @@ r.hsl();
 ```
 
 ### hsla
+
 Generate a hsla color.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -775,10 +924,12 @@ Generate a hsla color.
 | minA | `number` | Minimum transparency | `lower` | - |
 | maxA | `number` | Maximum transparency | `lower` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -788,14 +939,17 @@ r.hsla();
 ```
 
 ### colorName
+
 Generate a color name.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
 Reference [MDN color](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value)
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -805,9 +959,11 @@ r.colorName();
 ```
 
 ### hexColor
+
 Generate a hexadecimal color.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -824,10 +980,12 @@ Generate a hexadecimal color.
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 | prefix | `boolean` | Whether to show # prefix | `false` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -837,9 +995,11 @@ r.hexColor();
 ```
 
 ### demicalColor
+
 Generate a decimal color.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -855,10 +1015,12 @@ Generate a decimal color.
 | maxB | `number` | Maximum blue value | `max` | - |
 | casing | `'lower' | 'upper'` | Case | `lower` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `number`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -868,17 +1030,21 @@ r.decimalColor();
 ```
 
 ## WebRandom
+
 The tool class `WebRandom` can help you generate random Web data, including top-level domain (tld), domain name (domain), Uniform Resource Locator (url), IPv4 address (ipv4), IPv6 address (ipv6), and email address (email).
 
 ### tld
+
 Generate a top-level domain.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
 Reference [TLD](https://en.wikipedia.org/wiki/Top-level_domain)
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -888,19 +1054,23 @@ r.tld();
 ```
 
 ### domain
+
 Generate a domain name.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | tld | `string` | Top-level domain | - | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -910,9 +1080,11 @@ r.domain();
 ```
 
 ### url
+
 Generate a Uniform Resource Locator.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
@@ -924,10 +1096,12 @@ Generate a Uniform Resource Locator.
 | path | `string` | Path | - | - |
 | extensions | `string[]` | File extensions | `any[]` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -937,12 +1111,15 @@ r.url();
 ```
 
 ### ipv4
+
 Generate an IPv4 address.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -952,12 +1129,15 @@ r.ipv4();
 ```
 
 ### ipv6
+
 Generate an IPv6 address.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -967,18 +1147,22 @@ r.ipv6();
 ```
 
 ### email
+
 Generate an email address.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | domain | `string` | Domain name | - | - |
 | length | `number` | Length | - | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -988,22 +1172,27 @@ r.email();
 ```
 
 ## LocationRandom
+
 The tool class `LocationRandom` can help you generate random location data, including longitude, latitude and coordinates.
 
 ### longtitude
+
 Generate a longitude.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | Decimal places | `7` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1013,19 +1202,23 @@ r.longtitude();
 ```
 
 ### latitude
+
 Generate a latitude.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | Decimal places | `7` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1035,19 +1228,23 @@ r.latitude();
 ```
 
 ### coordinates
+
 Generate the coordinates.
 
-#### Parameters
+***<font size=3>Parameters</font>***
+
 **options** Configuration options _optional_
 
 | Property | Type | Description | Default | Required | 
 | ----| ---- | ---- | ---- | ---- |
 | fixed | `number` | Decimal places | `7` | - |
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1057,15 +1254,19 @@ r.coordinates();
 ```
 
 ## AddressRandom
+
 The tool class `AddressRandom` can help you generate random Chinese address data, including country, province, city, district, road, address and postcode.
 
 ### country
+
 Generate a country.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1075,12 +1276,15 @@ r.country();
 ```
 
 ### province
+
 Generate a province.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1090,12 +1294,15 @@ r.province();
 ```
 
 ### city
+
 Generate a city.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1105,12 +1312,15 @@ r.city();
 ```
 
 ### district
+
 Generate a district.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1120,12 +1330,15 @@ r.district();
 ```
 
 ### road
+
 Generate a road.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1135,12 +1348,15 @@ r.road();
 ```
 
 ### address
+
 Generate a Chinese address.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 
@@ -1150,12 +1366,15 @@ r.address();
 ```
 
 ### postcode
+
 Generate a postcode.
 
-#### Return value
+***<font size=3>Return value</font>***
+
 `string`
 
-#### Usage
+***<font size=3>Usage</font>***
+
 ```ts
 import { random } from '@antv/data-wizard';
 

@@ -77,26 +77,31 @@ const smartBoard = new SmartBoard(insightCharts);
 初始化之后，SmartBoard 实例就可以调用相关方法进行使用。
 
 增加构造 Dashboard 的图表：
+
 ```ts
 SmartBoard.addChart(newChart as InputChart);
 ```
 
 获取构造 Dashboard 的图表：
+
 ```ts
 SmartBoard.getCharts;
 ```
 
 获得保存图表间关联关系的 ChartGraph，关联关系由 AntV-G6 定义：
+
 ```ts
 SmartBoard.chartGraph;
 ```
 
 获得保存图表顺序的 ChartOrder，输出顺序由数据洞察分数和图表关联关系共同决定：
+
 ```ts
 SmartBoard.chartOrder(type as OrderType): ;
 ```
 
 获得保存图表聚类关系的 ChartCluster，聚类算法采用 Louvain 算法：
+
 ```ts
 SmartBoard.chartCluster();
 ```

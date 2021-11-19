@@ -53,7 +53,7 @@ where the required input is the source data `data: any[]` and
 detailed input and output parameters are described in the [ChartAdvisor.advise() API](../../api/chart-advisor/chartAdvice)
 
 ```js
-import { ChartAdvisor } from '@antv/chart-advisor';
+import { Advisor, Linter, ChartAdvisor } from '@antv/chart-advisor';
 
 const defaultData = [
   { price: 100, type: 'A' },
@@ -62,7 +62,6 @@ const defaultData = [
 ];
 
 const myChartAdvisor = new ChartAdvisor();
-
 const results = myChartAdvisor.advise({ data }),
 // [{
 //     "type": "pie_chart",
@@ -76,6 +75,14 @@ const results = myChartAdvisor.advise({ data }),
 //     "score": 1.5535986680617797,
 //     "lint": [...]
 // }]
+
+// recommend charts
+const myAdvisor = new Advisor();
+const advices = myAdvisor.advise({data, fields: ['price', 'type'], options: { refine: true }});
+
+// find problems in a chart
+const myLinter = new Linter();
+const errors = myLt.lint(spec);
 ```
 
 ### Advisor Usage

@@ -79,6 +79,7 @@ interface BasicDataPropertyForAdvice {
 type PURPOSE_OPTIONS = ["Comparison", "Trend", "Distribution", "Rank", "Proportion", 
   "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly", "Value"];
 ```
+
 * ***Preferences*** Parameter configuration.
 
 ```ts

@@ -10,20 +10,24 @@ order: 0
 `DataFrame` is the specified 2D data structure in DW. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
 ## new DataFrame
-### Parameters
+
+***<font size=4>Parameters</font>***
+
+
 **data** Raw data _required_
 
 Accept one-dimensional and two-dimensional data.
 
 Type
-- One-dimensional data
-  - Base data structure `number | string | boolean | undefined | null`
-  - One-dimensional array `any[]`
-  - One-dimensional object `{ [key: string]: any }`
-- Two-dimensional data
-  - Two-dimensional array `any[][]`
-  - Object inside array `{ [key: string]: any }[]`
-  - Array inside object `{ [key: string]: any[] }`
+
+* One-dimensional data
+  * Base data structure `number | string | boolean | undefined | null`
+  * One-dimensional array `any[]`
+  * One-dimensional object `{ [key: string]: any }`
+* Two-dimensional data
+  * Two-dimensional array `any[][]`
+  * Object inside array `{ [key: string]: any }[]`
+  * Array inside object `{ [key: string]: any[] }`
 
 **extra** extra parameters _optional_
 
@@ -35,10 +39,14 @@ Used to configure index, columns, and missing values.
 | columns | `string | number` | Column | - | - |
 | fillValue | `any` | Filling missing value | - | - |
 
-### Return value
+***<font size=4>Return value</font>***
+
+
 `DataFrame`
 
-### Usage
+***<font size=4>Usage</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -126,9 +134,12 @@ DataFrame
 ```
 
 ## shape
+
 Get the DataFrame data row and column dimensions.
 
-### Usage
+***<font size=4>Usage</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -143,9 +154,12 @@ df.shape;
 ```
 
 ## get
+
 Get data by row location and column location.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
+
 **rowLoc** Row location _required_
 
 The location of the row described by index.
@@ -158,11 +172,15 @@ The location of the column described by columns.
 
 Type `(string | number) | (string | number)[] | string`
 
-### Return value
+***<font size=4>Return value</font>***
+
+
 `DataFrame | Series | any`
 
 
-### Usage
+***<font size=4>Usage</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -277,9 +295,12 @@ DataFrame
 ```
 
 ## getByIntegerIndex
+
 Get data by row location and column location using integer-index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIntegerIndex(0, 0)` gets the data of the first row and column.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
+
 **rowLoc** Row location _required_
 
 The integer-index row location.
@@ -292,10 +313,13 @@ The nteger-index column location.
 
 Type `number | number[] | string`
 
-### Return value
+***<font size=4>Return value</font>***
+
+
 `DataFrame | Series | any`
 
-### Usage
+***<font size=4>Usage</font>***
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -318,19 +342,26 @@ DataFrame
 ```
 
 ## getByColumn
+
 Get the data by columns value.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
+
 **col** Columns value _required_
 
 The location of the column described by columns.
 
 Type `string | number`
 
-### Return value
+***<font size=4>Return value</font>***
+
+
 `Series`
 
-### Usage
+***<font size=4>Usage</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -351,12 +382,16 @@ Series
 ```
 
 ## info
+
 Get statistical information.
 
-### Return value
+***<font size=4>Return value</font>***
+
 `FieldsInfo`
 
-### Usage
+***<font size=4>Usage</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 

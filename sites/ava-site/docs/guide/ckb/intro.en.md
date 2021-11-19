@@ -73,6 +73,7 @@ const knowledgeBase = CKBJson();
 // Knowledage base for completed charts in Chinese.
 const zhCompletedKB = CKBJson('zh-CN', true);
 ```
+
 ### Demo
 
 <playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>

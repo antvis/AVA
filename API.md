@@ -60,12 +60,12 @@ Specify the analysis purpose of the chart can increase the accuracy of the chart
 
 The values ​​can be:
 
-- Comparison
-- Trend
-- Distribution
-- Rank
-- Proportion
-- Composition
+* Comparison
+* Trend
+* Distribution
+* Rank
+* Proportion
+* Composition
 
 #### options.toolbar
 

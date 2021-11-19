@@ -1,14 +1,18 @@
----
-title: ChartAdvisor 简介
-order: 0
----
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](./README.md) | 简体中文
 
-`markdown:docs/common/style.md`
+<h1 align="center">
+  <p>ChartAdvisor</p>
+  <span style="font-size: 24px;">AVA/chart-advisor</span>
+</h1>
+
+<div align="center">
+
+一个经验驱动的图表推荐 js 库。
 
 
 
-基于数据和分析需求来推荐和自动生成图表。
-
+[![Version](https://badgen.net/npm/v/@antv/chart-advisor)](https://www.npmjs.com/@antv/chart-advisor)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/chart-advisor.svg)](http://npmjs.com/@antv/chart-advisor)
 </div>
 
 ## ✨ 功能特性
@@ -159,4 +163,13 @@ const problems = myLinter.lint({ spec })
 更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/chart-advisor/ChartAdvisor)
 
 
+## 贡献
 
+我们欢迎所有的贡献。请先阅读 [贡献指南](../../zh-CN/CONTRIBUTING.zh-CN.md)。
+
+您可以以向我们的官方 Github 提出 [Pull Requests](https://github.com/antvis/AVA/pulls) 或 [GitHub Issues](https://github.com/antvis/AVA/issues) 的形式提交任何想法。
+让我们一起创造一个更好的开源智能可视化工具！
+
+## 许可证
+
+MIT

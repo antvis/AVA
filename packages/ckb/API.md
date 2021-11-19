@@ -1,6 +1,6 @@
 # API Reference
 
-*Functions*
+*`Functions`*
 
 ----
 
@@ -8,7 +8,8 @@
 
 > Creates a **Chart Knowledge Base** in `JSON` format.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 
 * **lang** * Language of the CKB content.
   * `optional`
@@ -23,11 +24,12 @@
   * `type`: *boolean*
   * `default`: false
 
-### Return value
+***<font size=4>Return value</font>***
+
 
 *ChartKnowledgeBaseJSON* extends object
 
-```json
+```js
 {
   single_line_chart: {
     id: 'single_line_chart',
@@ -51,7 +53,8 @@
 }
 ```
 
-### Examples
+***<font size=4>Examples</font>***
+
 
 ```js
 import { CKBJson } from '@antv/knowledge';
@@ -74,7 +77,8 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 > Adds a custom chart to the base.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 
 * **chartKnowledge** * Chart Knowledge object for the custom chart.
   * `required`
@@ -84,11 +88,13 @@ const zhCompletedKB = CKBJson('zh-CN', true);
   * `required`
   * `type`: *Record<Language, TransKnowledgeProps>*
 
-### Return value
+***<font size=4>Return value</font>***
 
-*void*
 
-### Examples
+*`void`*
+
+***<font size=4>Examples</font>***
+
 
 ```ts
 const liquid_diagram = {
@@ -121,7 +127,8 @@ addChart(
 
 > Returns all possible options for each property of Chart Knowledge.
 
-### Parameters
+***<font size=4>Parameters</font>***
+
 
 * **lang** * Language of property options.
   * `optional`
@@ -131,11 +138,12 @@ addChart(
     * 'en-US'
     * 'zh-CN'
 
-### Return value
+***<font size=4>Return value</font>***
+
 
 *object* * contains the following keys:
 
-#### `CKBOptions().family`
+### `CKBOptions().family`
 
 > Types of chart similarity or so called *Chart Family*.
 
@@ -150,7 +158,7 @@ addChart(
 * RadarCharts
 * Others
 
-#### `CKBOptions().category`
+### `CKBOptions().category`
 
 > Types of higher level of chart taxonomy or so called *Graphic Category*.
 
@@ -159,7 +167,7 @@ addChart(
 * Graph
 * Map
 
-#### `CKBOptions().purpose`
+### `CKBOptions().purpose`
 
 > Types of purpose for which the visualization is used.
 
@@ -170,7 +178,7 @@ addChart(
 * Proportion
 * Composition
 
-#### `CKBOptions().coord`
+### `CKBOptions().coord`
 
 > Types of *Coordinate Systems*.
 
@@ -182,7 +190,7 @@ addChart(
 * NodeLink
 * Radar
 
-#### `CKBOptions().shape`
+### `CKBOptions().shape`
 
 > Shapes of the skeleton of visualization.
 
@@ -194,7 +202,7 @@ addChart(
 * Scatter
 * Symmetric
 
-#### `CKBOptions().channel`
+### `CKBOptions().channel`
 
 > *Visual Channels*.
 
@@ -207,7 +215,7 @@ addChart(
 * Direction
 * Size
 
-#### `CKBOptions().lom`
+### `CKBOptions().lom`
 
 > *Level of Measurement*.
 
@@ -218,7 +226,8 @@ addChart(
 * Continuous
 * Time
 
-### Examples
+***<font size=4>Examples</font>***
+
 
 ```js
 import { CKBOptions } from '@antv/knowledge';
@@ -230,7 +239,7 @@ const allCategories = options1.category;
 // ['Statistic', 'Diagram', 'Graph', 'Map']
 ```
 
-*Types & Interfaces*
+*`Types & Interfaces`*
 
 ----
 

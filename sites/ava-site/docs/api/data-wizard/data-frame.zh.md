@@ -10,20 +10,24 @@ order: 0
 DW 中的二维数据结构，支持读取不同类型的一维和二维源数据，将其转换为 `DataFrame` 数据基本流转单元来处理数据。使用 `DataFrame`，你可以从一个数据集样本中获取和切割数据，也可以提取出各个字段的信息。这些信息包括字段的特征（字段名称、数据类型、统计信息等），性质（连续性、离散性等），以及多字段间的字段间关系（相关性、周期性等）。
 
 ## new DataFrame
-### 参数
+
+***<font size=4>参数</font>***
+
+
 **data** 源数据 _必选_
 
 可接受常见的一维数据和二维数据。
 
 类型
-- 一维数据
-  - 基础数据结构 `number | string | boolean | undefined | null`
-  - 一维数组 `any[]`
-  - 一维对象 `{ [key: string]: any }`
-- 二维数据
-  - 二维数组 `any[][]`
-  - 对象数组 `{ [key: string]: any }[]`
-  - 数组对象 `{ [key: string]: any[] }`
+
+* 一维数据
+  * 基础数据结构 `number | string | boolean | undefined | null`
+  * 一维数组 `any[]`
+  * 一维对象 `{ [key: string]: any }`
+* 二维数据
+  * 二维数组 `any[][]`
+  * 对象数组 `{ [key: string]: any }[]`
+  * 数组对象 `{ [key: string]: any[] }`
 
 **extra** 额外参数 _可选_
 
@@ -35,10 +39,14 @@ DW 中的二维数据结构，支持读取不同类型的一维和二维源数�
 | columns | `string | number` | 列索引 | - | - |
 | fillValue |  `any` | 缺失填充值 | - | - |
 
-### 返回值
+***<font size=4>返回值</font>***
+
+
 `DataFrame`
 
-### 用法
+***<font size=4>用法</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -126,9 +134,12 @@ DataFrame
 ```
 
 ## shape
+
 获取 DataFrame 数据维度。
 
-### 用法
+***<font size=4>用法</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -143,9 +154,12 @@ df.shape;
 ```
 
 ## get
+
 通过 index 和 columns 值获取和切割数据。
 
-### 参数
+***<font size=4>参数</font>***
+
+
 **rowLoc** 行位置 _必选_
 
 使用 index 值来描述的行位置。
@@ -158,10 +172,14 @@ df.shape;
 
 类型 `(string | number) | (string | number)[] | string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
+
 `DataFrame | Series | any`
 
-### 用法
+***<font size=4>用法</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -276,9 +294,12 @@ DataFrame
 ```
 
 ## getByIntegerIndex
+
 通过行列数值索引获取和切割数据。和 `get` 方法用法类似，但是只能使用整数索引，例如，`getByIntegerIndex(0, 0)` 是取第一行第一列的数据。
 
-### 参数
+***<font size=4>参数</font>***
+
+
 **rowLoc** 行位置 _必选_
 
 使用行数值索引来描述的行位置。
@@ -291,10 +312,14 @@ DataFrame
 
 类型 `number | number[] | string`
 
-### 返回值
+***<font size=4>返回值</font>***
+
+
 `DataFrame | Series | any`
 
-### 用法
+***<font size=4>用法</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -317,19 +342,26 @@ DataFrame
 ```
 
 ## getByColumn
+
 通过 Columns 值获取数据。
 
-### 参数
+***<font size=4>参数</font>***
+
+
 **col** columns值 _必选_
 
 使用 Columns值 来描述的列位置。
 
 类型 `string | number`
 
-### 返回值
+***<font size=4>返回值</font>***
+
+
 `Series`
 
-### 用法
+***<font size=4>用法</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
@@ -350,12 +382,17 @@ Series
 ```
 
 ## info
+
 获取常用的统计学信息。
 
-### 返回值
+***<font size=4>返回值</font>***
+
+
 `FieldsInfo`
 
-### 用法
+***<font size=4>用法</font>***
+
+
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 

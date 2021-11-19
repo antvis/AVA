@@ -10,6 +10,7 @@ order: 3
 提取数据中存在的洞察。
 
 ## **getDataInsights**
+
 <i>(data: Datum[], options?: InsightOptions) => { insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] } </i>
 
 
@@ -99,6 +100,7 @@ console.log(homogeneousInsights);
 
 
 ## **getDataInsightsAsync**
+
 <i>(data: Datum[], options?: InsightOptions) => Promise\<{ insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] }\></i>
 
 getDataInsights的异步版本，入参和返回相同。

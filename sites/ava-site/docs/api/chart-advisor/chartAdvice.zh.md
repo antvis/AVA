@@ -55,6 +55,7 @@ type PURPOSE_OPTIONS = ["Comparison", "Trend", "Distribution", "Rank", "Proporti
 ```
 
 * ***Preferences*** 参数配置。
+
 ```ts
 interface Preferences {
   canvasLayout: 'landscape' | 'portrait';
@@ -62,6 +63,7 @@ interface Preferences {
 ```
 
 * ***Theme*** 参数配置。
+
 ```ts
 type Theme = {
   primaryColor?: string;

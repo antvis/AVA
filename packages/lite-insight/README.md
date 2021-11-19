@@ -46,12 +46,13 @@ getDataInsights(data, {
 For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/lite-insight/auto-insights)
 
 ## Acknowledgement
+
 Some functionalities of LiteInsight are inspired by the following works.
 
-- [Extracting Top-K Insights from Multi-dimensional Data](https://www.microsoft.com/en-us/research/uploads/prod/2017/02/Insights_SIGMOD17.pdf)
+* [Extracting Top-K Insights from Multi-dimensional Data](https://www.microsoft.com/en-us/research/uploads/prod/2017/02/Insights_SIGMOD17.pdf)
 
 
-- [MetaInsight: Automatic Discovery of Structured Knowledge for Exploratory Data Analysis](https://www.microsoft.com/en-us/research/uploads/prod/2021/03/rdm337-maA.pdf)
+* [MetaInsight: Automatic Discovery of Structured Knowledge for Exploratory Data Analysis](https://www.microsoft.com/en-us/research/uploads/prod/2021/03/rdm337-maA.pdf)
 
 
 ## 📄 License

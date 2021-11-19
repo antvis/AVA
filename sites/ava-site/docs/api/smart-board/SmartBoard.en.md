@@ -41,6 +41,7 @@ Class SmartBoard(inputCharts: InputChart[])
 ### SmartBoard.getCharts
 
 To get the chart that constructs the Dashboard.
+
 ```ts
 SmartBoard.getCharts: InputChart[];
 ```
@@ -50,12 +51,13 @@ Return value: `InputChart[]`
 ### SmartBoard.chartGraph
 
 To get the ChartGraph that holds the correlations between charts defined by [G6](https://g6.antv.vision/): 
-``sign
+
 ```ts
 SmartBoard.chartGraph;
 ```
 
 Return value:
+
 ```ts
 interface ChartGraph {
   nodes: Chart[];
@@ -66,16 +68,19 @@ interface ChartGraph {
 ### SmartBoard.chartOrder
 
 To get the ChartOrder that holds the order of the charts, the output order is determined by both the data insight score and the chart association.
+
 ```ts
 SmartBoard.chartOrder(type: OrderType): ChartOrder;
 ```
 
 Parameter:
+
 ```ts
 type OrderType = 'byInsightScore' | 'byCluster';
 ```
 
 Return value:
+
 ```ts
 type ChartOrder = Record<string, number>;
 ```
@@ -83,11 +88,13 @@ type ChartOrder = Record<string, number>;
 ### SmartBoard.chartCluster
 
 To obtain ChartCluster, which holds the clustering relationships of the charts via using the Louvain algorithm.
+
 ```ts
 SmartBoard.chartCluster(): ChartCluster;
 ```
 
 Return value:
+
 ```ts
 type ChartCluster = Record<string, number>;
 ```
@@ -95,6 +102,7 @@ type ChartCluster = Record<string, number>;
 ### insights2Board
 
 Transfer the output insight of LiteInsight to the `InputChart` array employed when initial SmartBoard.
+
 ```ts
 insights2Board(insights: InsightInfo): InputChart[];
 ```
