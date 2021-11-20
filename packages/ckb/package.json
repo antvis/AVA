@@ -12,7 +12,7 @@
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "browser": "dist/index.js",
+  "unpkg": "dist/index.min.js",
   "module": "esm/index.js",
   "files": [
     "esm",

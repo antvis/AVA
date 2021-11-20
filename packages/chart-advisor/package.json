@@ -4,7 +4,7 @@
   "description": "An empiric-driven chart recommendation js library.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "unpkg": "dist/index.js",
+  "unpkg": "dist/index.min.js",
   "module": "esm/index.js",
   "files": [
     "esm",
