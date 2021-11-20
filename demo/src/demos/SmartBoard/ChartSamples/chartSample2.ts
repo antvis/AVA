@@ -5,8 +5,8 @@ const gapminder = 'https://cdn.jsdelivr.net/npm/vega-datasets@2/data/gapminder.j
 const chartSample2: ChartListInfo = [
   {
     data: gapminder,
-    subspaces: [],
-    breakdowns: ['country'],
+    subspace: [],
+    dimensions: ['country'],
     measures: ['fertility'],
     fieldInfo: {
       country: {
@@ -22,8 +22,8 @@ const chartSample2: ChartListInfo = [
   },
   {
     data: gapminder,
-    subspaces: [],
-    breakdowns: ['year'],
+    subspace: [],
+    dimensions: ['year'],
     measures: ['pop'],
     insightType: 'distribution',
     score: 0.7,
@@ -31,8 +31,8 @@ const chartSample2: ChartListInfo = [
   },
   {
     data: gapminder,
-    subspaces: [],
-    breakdowns: ['cluster'],
+    subspace: [],
+    dimensions: ['cluster'],
     measures: ['fertility'],
     insightType: 'proportion',
     score: 0.6,
@@ -40,8 +40,8 @@ const chartSample2: ChartListInfo = [
   },
   {
     data: gapminder,
-    subspaces: [],
-    breakdowns: ['country', 'cluster'],
+    subspace: [],
+    dimensions: ['country', 'cluster'],
     measures: ['pop'],
     insightType: 'extreme',
     score: 0.85,
@@ -49,8 +49,8 @@ const chartSample2: ChartListInfo = [
   },
   {
     data: gapminder,
-    subspaces: [],
-    breakdowns: ['year', 'country'],
+    subspace: [],
+    dimensions: ['year', 'country'],
     measures: ['pop'],
     insightType: 'trend',
     score: 0.2,
@@ -58,8 +58,8 @@ const chartSample2: ChartListInfo = [
   },
   {
     data: gapminder,
-    subspaces: [],
-    breakdowns: ['year'],
+    subspace: [],
+    dimensions: ['year'],
     measures: ['pop'],
     insightType: 'trend',
     score: 0.8,
