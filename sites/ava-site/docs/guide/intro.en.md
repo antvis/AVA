@@ -23,6 +23,14 @@ redirect_from:
 
 <br />
 
+The framework of AVA can be illustrated as follows:
+
+<div align="center">
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="100%" alt='AVA framework' />
+</div>
+
+<br />
+
 ## Demo
 
 ```html
@@ -30,9 +38,7 @@ redirect_from:
 ```
 
 ```js
-import { autoChart } from '@antv/chart-advisor';
-
-const container = document.getElementById('mountNode');
+import { AutoChart } from '@antv/auto-chart';
 
 const data = [
   {field1: 'a', field2: '100'},
@@ -40,20 +46,39 @@ const data = [
   {field1: 'c', field2: '800'},
 ];
 
-autoChart(container, data, {toolbar: true, development: true});
+ReactDOM.render(
+  <>
+    <AutoChart 
+      title="CASE 1" 
+      description="auto chart analysis" 
+      data={data} 
+      language={'zh-CN'} 
+    />
+  </>,
+  mountNode,
+);
 ```
 
 <br>
 
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/QTJPYXJpjW/avademo.gif" width="100%" alt="AVA demo">
-</div>
+<playground path="components/auto-chart/demo/basic.jsx"></playground>
+
 
 ## Packages
 
+### [AVA/AutoChart](https://github.com/antvis/AVA/blob/master/packages/auto-chart)
+
+AutoChart is a React component that automatically suggests and renders the right chart based on data.
+It can automatically generate and render the proper chart for visualization based on the input data with one-line of code.
+
+```sign
+@antv/auto-chart // one-click visualization component
+```
+
 ### [AVA/CKB](https://github.com/antvis/AVA/tree/master/packages/knowledge)
 
-CKB stands for Chart Knowledge Base. This package is the KB where empirical knowledge about visualization and charts is stored. The chart recommendation is based on it.
+CKB stands for Chart Knowledge Base.
+This package is the KB where empirical knowledge about visualization and charts is stored. The chart recommendation is based on it.
 
 At the same time, this package also facilitates us to develop products of chart type selection.
 
@@ -64,7 +89,9 @@ At the same time, this package also facilitates us to develop products of chart 
 
 ### [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/data-wizard)
 
-DataWizard is a js/ts library for data processing. In the AVA framework, it is used to understand and process the input dataset. However, it can also be used independently to develop some data processing, statistics or data mocking functions.
+DataWizard is a js/ts library for data processing.
+In the AVA framework, it is used to 'understand' the input dataset.
+Moreover, it can also be used independently to develop some statistical or data mocking functions.
 
 ```sign
 import { DataFrame } from @antv/data-wizard // data processing
@@ -82,7 +109,8 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
 
 ### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight)
 
-LiteInsight is a js/ts library employed for Exploratory Data Analysis (EDA). It can automatically discover data insights from multidimensional data.
+LiteInsight is a js/ts library employed for Exploratory Data Analysis (EDA).
+It can automatically discover data insights from multidimensional data.
 
 ```sign
 @antv/lite-insight // to get data insight
@@ -90,10 +118,20 @@ LiteInsight is a js/ts library employed for Exploratory Data Analysis (EDA). It 
 
 ### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board)
 
-SmartBoard is a js/ts library employed for Dashboard visualization of charts. It automatically generates the corresponding Dashboard configurations based on input charts and insights.
+SmartBoard is a js/ts library employed for Dashboard visualization of charts.
+It can automatically generates the corresponding Dashboard configurations based on input charts and insights.
 
 ```sign
 @antv/smart-board // to get Dashboard parameters
+```
+
+### [AVA/SmartColor](https://github.com/antvis/smart-color)
+
+SmartColor is a js/ts color processing class library.
+It allows deep customization of swatch patterns, color optimization and color correction of existing swatches, and one-click adaptation to color-blind scenes.
+
+```sign
+@antv/smart-color // to generate and customized color and palette.
 ```
 
 ## Links

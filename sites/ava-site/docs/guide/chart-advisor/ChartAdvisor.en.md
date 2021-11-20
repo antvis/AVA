@@ -7,7 +7,7 @@ order: 0
 
 
 
-Recommend and automatically generate charts based on data and analytics requirements.
+Recommend and automatically generate chart configurations based on data and analytics requirements.
 
 </div>
 

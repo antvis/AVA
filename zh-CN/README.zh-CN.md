@@ -1,8 +1,5 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](../README.md) | 简体中文
 
-> WIP: 当前 v2 版本正在更新过程中，v1 用户请查看 [备份分支](https://github.com/antvis/AVA/tree/v1).
-
-
 <div align="center">
   <img width="200" height="120" src="../common/img/logo.svg" alt="AVA logo">
 </div>
@@ -20,6 +17,12 @@
 
 **AVA** (![AVA logo](../common/img/vectorASymbol.svg) Visual Analytics) 是为了更简便的可视分析而生的技术框架。 其名称中的第一个 **A** 具有多重涵义：它说明了这是一个出自阿里巴巴集团（*Alibaba*）技术框架，其目标是成为一个自动化（*Automated*）、智能驱动（*AI driven*）、支持增强分析（*Augmented*）的可视分析解决方案。
 
+AVA 的整体架构如下：
+
+<div align="center">
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="320" alt='AVA framework' />
+</div>
+
 <br />
 
 ## 演示案例
@@ -29,9 +32,7 @@
 ```
 
 ```js
-import { autoChart } from '@antv/chart-advisor';
-
-const container = document.getElementById('mountNode');
+import { AutoChart } from '@antv/auto-chart';
 
 const data = [
   {field1: 'a', field2: '100'},
@@ -39,7 +40,17 @@ const data = [
   {field1: 'c', field2: '800'},
 ];
 
-autoChart(container, data, {toolbar: true, development: true});
+ReactDOM.render(
+  <>
+    <AutoChart 
+      title="CASE 1" 
+      description="auto chart analysis" 
+      data={data} 
+      language={'zh-CN'} 
+    />
+  </>,
+  mountNode,
+);
 ```
 
 <br>
@@ -50,43 +61,74 @@ autoChart(container, data, {toolbar: true, development: true});
 
 ## 包
 
-### 📦 [AVA/CKB](https://github.com/antvis/AVA/blob/master/packages/knowledge/zh-CN/README.zh-CN.md)
+### [AVA/AutoChart](https://github.com/antvis/AVA/blob/master/packages/auto-chart/zh-CN/README.zh-CN.md)
+
+AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 React 组件。它可以为用户提供一行代码实现智能可视化的能力。
+
+```sign
+@antv/auto-chart // 一键可视化组件
+```
+
+### [AVA/CKB](https://github.com/antvis/AVA/blob/master/packages/auto-chart/zh-CN/README.zh-CN.md)
 
 CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中包含了基于经验总结的关于可视化和图表的各种基本知识和观察。图表的推荐必须基于这些基本概念。
 
 同时，这个包也让开发图表类型筛选相关的产品变得非常简单。
 
-```js
+```sign
 @antv/knowledge // 图表知识库
 ```
 
-### 📦 [AVA/DataWizard](https://github.com/antvis/AVA/blob/master/packages/data-wizard/zh-CN/README.zh-CN.md)
+### [AVA/DataWizard](https://github.com/antvis/AVA/blob/master/packages/data-wizard/zh-CN/README.zh-CN.md)
 
 DataWizard 是一个 js/ts 的前端数据处理类库。在 AVA 的框架中，它被用来“理解”输入端的数据集。不过，它也可以独立地被用来开发一些数学统计、数据模拟之类的功能。
 
-```js
-import { analyzer } from '@antv/data-wizard' // 数据集分析
-import { random } from '@antv/data-wizard' // 数据模拟
+```sign
+import { analyzer } from @antv/data-wizard // 数据集分析
+import { random } from @antv/data-wizard // 数据模拟
 ```
 
-### 📦 [AVA/ChartAdvisor](https://github.com/antvis/AVA/blob/master/packages/chart-advisor/zh-CN/README.zh-CN.md)
+### [AVA/ChartAdvisor](https://github.com/antvis/AVA/blob/master/packages/chart-advisor/zh-CN/README.zh-CN.md)
 
 ChartAdvisor 是 AVA 的核心部分。它基于数据和分析需求来推荐图表类型和具体的图表细节设置。
 
-```js
+```sign
 @antv/chart-advisor // 图表推荐和自动生成
+```
+
+### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight/zh-CN/README.zh-CN.md)
+
+LiteInsight 是一个用于探索性数据分析的 js/ts 工具库，它可以从多维数据中自动地发现数据洞察。
+
+```sign
+@antv/lite-insight // 数据洞察库
+```
+
+### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board/zh-CN/README.zh-CN.md)
+
+SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据输入图表和洞察自动生成对应的 Dashboard。
+
+```sign
+@antv/smart-board // 增强展现库
+```
+
+### [AVA/SmartColor](https://github.com/antvis/smart-color)
+
+SmartColor 是一个 js/ts 的前端颜色处理类库。它可以深度定制色板模式，对已有色板进行颜色优化和色彩校正，并且可以一键适配色盲场景。
+
+```sign
+@antv/smart-color // 智能色板库
 ```
 
 ## 资源
 
-* [API 接口文档](../docs/api/index.md)
-* [`autoChart` 临时接口文档](API.zh-CN.md)
-* [教程示例](EXAMPLES.zh-CN.md)
+* [API 接口文档](https://ava.antv.vision/zh/docs/api/intro)
+* [教程示例](https://ava.antv.vision/zh/examples/gallery)
 * [Wiki 百科](https://github.com/antvis/AVA/wiki)
 
 ## 贡献
 
-**AVA** 由蚂蚁金服 **AntV** & **DeepInsight**、新零售技术事业群 **FBI**、盒马 **Kanaries** 等阿里巴巴集团内多个核心数可视化技术和产品团队联合共建。
+**AVA** 由蚂蚁集团 **AntV** & **DeepInsight**、新零售技术事业群 **FBI**、盒马 **Kanaries** 等阿里巴巴集团和蚂蚁集团内多个核心数可视化技术和产品团队联合共建。
 
 <div align="center">
   <img src="https://gw.alipayobjects.com/zos/antfincdn/Qv%24T%24KQJpx/19199542.png" alt="AntV" width="60" align="middle" hspace="20">

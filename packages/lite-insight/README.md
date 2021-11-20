@@ -7,7 +7,12 @@
 
 <div align="center">
 An EDA (Exploratory Data Analysis) tool in javascript that allows you to take insights from the data.
+
+
+[![Version](https://badgen.net/npm/v/@antv/lite-insight)](https://www.npmjs.com/@antv/lite-insight)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/lite-insight.svg)](http://npmjs.com/@antv/lite-insight)
 </div>
+
 
 ## ✨ Features
 

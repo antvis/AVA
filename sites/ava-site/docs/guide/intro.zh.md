@@ -24,6 +24,14 @@ redirect_from:
 
 <br />
 
+AVA 的整体架构如下：
+
+<div align="center">
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="100%" alt='AVA framework' />
+</div>
+
+<br />
+
 ## 演示案例
 
 ```html
@@ -31,9 +39,7 @@ redirect_from:
 ```
 
 ```js
-import { autoChart } from '@antv/chart-advisor';
-
-const container = document.getElementById('mountNode');
+import { AutoChart } from '@antv/auto-chart';
 
 const data = [
   {field1: 'a', field2: '100'},
@@ -41,18 +47,35 @@ const data = [
   {field1: 'c', field2: '800'},
 ];
 
-autoChart(container, data, {toolbar: true, development: true});
+ReactDOM.render(
+  <>
+    <AutoChart 
+      title="CASE 1" 
+      description="auto chart analysis" 
+      data={data} 
+      language={'zh-CN'} 
+    />
+  </>,
+  mountNode,
+);
 ```
 
 <br>
 
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/QTJPYXJpjW/avademo.gif" width="100%" alt="AVA demo">
-</div>
+<playground path="components/auto-chart/demo/basic.jsx"></playground>
+
 
 ## 包
 
-### [AVA/CKB](https://github.com/antvis/AVA/blob/master/packages/knowledge/zh-CN/README.zh-CN.md)
+### [AVA/AutoChart](https://github.com/antvis/AVA/blob/master/packages/auto-chart/zh-CN/README.zh-CN.md)
+
+AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 React 组件。它可以为用户提供一行代码实现智能可视化的能力。
+
+```sign
+@antv/auto-chart // 一键可视化组件
+```
+
+### [AVA/CKB](https://github.com/antvis/AVA/blob/master/packages/auto-chart/zh-CN/README.zh-CN.md)
 
 CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中包含了基于经验总结的关于可视化和图表的各种基本知识和观察。图表的推荐必须基于这些基本概念。
 
@@ -94,6 +117,14 @@ SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据
 
 ```sign
 @antv/smart-board // 增强展现库
+```
+
+### [AVA/SmartColor](https://github.com/antvis/smart-color)
+
+SmartColor 是一个 js/ts 的前端颜色处理类库。它可以深度定制色板模式，对已有色板进行颜色优化和色彩校正，并且可以一键适配色盲场景。
+
+```sign
+@antv/smart-color // 智能色板库
 ```
 
 ## 友情链接
