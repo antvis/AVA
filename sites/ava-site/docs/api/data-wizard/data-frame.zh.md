@@ -293,9 +293,9 @@ DataFrame
 */
 ```
 
-## getByIntegerIndex
+## getByIndex
 
-通过行列数值索引获取和切割数据。和 `get` 方法用法类似，但是只能使用整数索引，例如，`getByIntegerIndex(0, 0)` 是取第一行第一列的数据。
+通过行列数值索引获取和切割数据。和 `get` 方法用法类似，但是只能使用整数索引，例如，`getByIndex(0, 0)` 是取第一行第一列的数据。
 
 ***<font size=4>参数</font>***
 
@@ -330,7 +330,7 @@ const df = new DataFrame([
   { a: 3, b: 6, c: 9 },
 ]);
 
-df.getByIntegerIndex(0, 1);
+df.getByIndex(0, 1);
 /*
 DataFrame
   {

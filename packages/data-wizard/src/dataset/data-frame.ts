@@ -397,7 +397,7 @@ export default class DataFrame extends BaseFrame {
     throw new Error('The colLoc is illegal.');
   }
 
-  getByIntegerIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): DataFrame | Series | any {
+  getByIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): DataFrame | Series | any {
     assert(isInteger(rowLoc) || isArray(rowLoc) || isString(rowLoc), 'The rowLoc is illegal');
 
     /** colLoc does not exist */

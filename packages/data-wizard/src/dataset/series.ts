@@ -134,7 +134,7 @@ export default class Series extends BaseFrame {
    * Get data by row location and column location using integer index.
    * @param rowLoc
    */
-  getByIntegerIndex(rowLoc: number | number[] | string): Series | any {
+  getByIndex(rowLoc: number | number[] | string): Series | any {
     assert(isInteger(rowLoc) || isArray(rowLoc) || (isString(rowLoc) && rowLoc.includes(':')), 'The rowLoc is illegal');
 
     // input is like 1

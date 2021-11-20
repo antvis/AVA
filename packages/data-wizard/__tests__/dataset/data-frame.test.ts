@@ -310,10 +310,10 @@ describe('DataFrame get value functions', () => {
     expect(rowLocSliceColLocSlice.axes).toStrictEqual([[0, 1], ['b']]);
   });
 
-  test('getByIntegerIndex', () => {
+  test('getByIndex', () => {
     /** only rowLoc */
     // rowLoc is int
-    const rowLocInt = df.getByIntegerIndex(0);
+    const rowLocInt = df.getByIndex(0);
     expect(rowLocInt).toStrictEqual(
       new Series([1, 4, 7], {
         indexes: ['a', 'b', 'c'],
@@ -321,7 +321,7 @@ describe('DataFrame get value functions', () => {
     );
 
     // rowLoc is int[]
-    const rowLocIntArr = df.getByIntegerIndex([0, 2]);
+    const rowLocIntArr = df.getByIndex([0, 2]);
     // DataFrame contains private functions, we can't compare it by serializing to the same string
     expect(rowLocIntArr.data).toStrictEqual([
       [1, 4, 7],
@@ -333,7 +333,7 @@ describe('DataFrame get value functions', () => {
     ]);
 
     // rowLoc is slice
-    const rowLocStrSlice = df.getByIntegerIndex('0:2');
+    const rowLocStrSlice = df.getByIndex('0:2');
     expect(rowLocStrSlice.data).toStrictEqual([
       [1, 4, 7],
       [2, 5, 8],
@@ -345,27 +345,27 @@ describe('DataFrame get value functions', () => {
 
     /** rowLoc and colLoc */
     // rowLoc is int, colLoc is int
-    const rowLocIntColLocInt = df.getByIntegerIndex(1, 2);
+    const rowLocIntColLocInt = df.getByIndex(1, 2);
     expect(rowLocIntColLocInt.data).toStrictEqual([[8]]);
     expect(rowLocIntColLocInt.axes).toStrictEqual([[1], ['c']]);
 
     // rowLoc is int, colLoc is int[]
-    const rowLocIntColLocIntArr = df.getByIntegerIndex(1, [0, 2]);
+    const rowLocIntColLocIntArr = df.getByIndex(1, [0, 2]);
     expect(rowLocIntColLocIntArr.data).toStrictEqual([[2, 8]]);
     expect(rowLocIntColLocIntArr.axes).toStrictEqual([[1], ['a', 'c']]);
 
     // rowLoc is int, colLoc is slice
-    const rowLocIntColLocSlice = df.getByIntegerIndex(1, '0:2');
+    const rowLocIntColLocSlice = df.getByIndex(1, '0:2');
     expect(rowLocIntColLocSlice.data).toStrictEqual([[2, 5]]);
     expect(rowLocIntColLocSlice.axes).toStrictEqual([[1], ['a', 'b']]);
 
     // rowLoc is int[], colLoc is int
-    const rowLocIntArrColLocInt = df.getByIntegerIndex([1, 2], 0);
+    const rowLocIntArrColLocInt = df.getByIndex([1, 2], 0);
     expect(rowLocIntArrColLocInt.data).toStrictEqual([[2], [3]]);
     expect(rowLocIntArrColLocInt.axes).toStrictEqual([[1, 2], ['a']]);
 
     // rowLoc is int[], colLoc is int[]
-    const rowLocIntArrColLocIntArr = df.getByIntegerIndex([1, 2], [0, 1]);
+    const rowLocIntArrColLocIntArr = df.getByIndex([1, 2], [0, 1]);
     expect(rowLocIntArrColLocIntArr.data).toStrictEqual([
       [2, 5],
       [3, 6],
@@ -376,17 +376,17 @@ describe('DataFrame get value functions', () => {
     ]);
 
     // rowLoc is int[], colLoc is slice
-    const rowLocIntArrColLocSlice = df.getByIntegerIndex([1, 2], '1:2');
+    const rowLocIntArrColLocSlice = df.getByIndex([1, 2], '1:2');
     expect(rowLocIntArrColLocSlice.data).toStrictEqual([[5], [6]]);
     expect(rowLocIntArrColLocSlice.axes).toStrictEqual([[1, 2], ['b']]);
 
     // rowLoc is slice, colLoc is int
-    const rowLocSliceColLocInt = df.getByIntegerIndex('0:2', 1);
+    const rowLocSliceColLocInt = df.getByIndex('0:2', 1);
     expect(rowLocSliceColLocInt.data).toStrictEqual([[4], [5]]);
     expect(rowLocSliceColLocInt.axes).toStrictEqual([[0, 1], ['b']]);
 
     // rowLoc is slice, colLoc is int[]
-    const rowLocSliceColLocIntArr = df.getByIntegerIndex('0:2', [1, 2]);
+    const rowLocSliceColLocIntArr = df.getByIndex('0:2', [1, 2]);
     expect(rowLocSliceColLocIntArr.data).toStrictEqual([
       [4, 7],
       [5, 8],
@@ -397,7 +397,7 @@ describe('DataFrame get value functions', () => {
     ]);
 
     // rowLoc is slice, colLoc is slice
-    const rowLocSliceColLocSlice = df.getByIntegerIndex('0:2', '1:2');
+    const rowLocSliceColLocSlice = df.getByIndex('0:2', '1:2');
     expect(rowLocSliceColLocSlice.data).toStrictEqual([[4], [5]]);
     expect(rowLocSliceColLocSlice.axes).toStrictEqual([[0, 1], ['b']]);
   });

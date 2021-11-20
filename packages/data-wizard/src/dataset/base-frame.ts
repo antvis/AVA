@@ -93,5 +93,5 @@ export default abstract class BaseFrame {
    * @param rowLoc
    * @param colLoc
    */
-  abstract getByIntegerIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
+  abstract getByIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
 }

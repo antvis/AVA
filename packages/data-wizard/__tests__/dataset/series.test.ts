@@ -73,7 +73,7 @@ describe('Series get value functions', () => {
     const rowLocStr = s.get('a');
     expect(rowLocStr).toStrictEqual(1);
 
-    const rowLocStrArr = s.getByIntegerIndex([0, 2]);
+    const rowLocStrArr = s.getByIndex([0, 2]);
     expect(rowLocStrArr).toStrictEqual(
       new Series([1, 3], {
         indexes: ['a', 'c'],
@@ -88,18 +88,18 @@ describe('Series get value functions', () => {
     );
   });
 
-  test('getByIntegerIndex', () => {
-    const rowLocInt = s.getByIntegerIndex(0);
+  test('getByIndex', () => {
+    const rowLocInt = s.getByIndex(0);
     expect(rowLocInt).toStrictEqual(1);
 
-    const rowLocIntArr = s.getByIntegerIndex([0, 2]);
+    const rowLocIntArr = s.getByIndex([0, 2]);
     expect(rowLocIntArr).toStrictEqual(
       new Series([1, 3], {
         indexes: ['a', 'c'],
       })
     );
 
-    const rowLocStrSlice = s.getByIntegerIndex('0:2');
+    const rowLocStrSlice = s.getByIndex('0:2');
     expect(rowLocStrSlice).toStrictEqual(
       new Series([1, 2], {
         indexes: ['a', 'b'],
