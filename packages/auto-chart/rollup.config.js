@@ -1,9 +1,10 @@
+// import alias from '@rollup/plugin-alias';
 import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import postcss from 'rollup-plugin-postcss';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+// import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import autoprefixer from 'autoprefixer';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import builtins from 'rollup-plugin-node-builtins';
@@ -30,8 +31,26 @@ const output = {
   preserveModulesRoot: 'src',
 };
 
+const external = [
+  'react',
+  'react-dom',
+  '@ant-design/icons',
+  'antd',
+  '@antv/g6',
+  '@antv/g2plot',
+  'moment',
+  // '@antv/g2plot-schemas',
+];
+
 const plugins = [
-  peerDepsExternal(),
+  // alias({
+  //   entries: [
+  //     {
+  //       find: '@antv/g2plot-schemas',
+  //       replacement: '@antv/g2plot-schemas/lib/index.js',
+  //     },
+  //   ],
+  // }),
   typescript({
     outDir,
     declarationDir: outDir,
@@ -76,7 +95,6 @@ if (format === 'umd') {
     antd: 'antd',
     '@antv/g2plot': 'G2Plot',
     '@antv/g6': 'G6',
-    '@antv/g2plot-schemas': 'G2PlotSchemas',
     '@ant-design/icons': 'icons',
     moment: 'moment',
   };
@@ -88,4 +106,5 @@ export default {
   input: 'src/index.ts',
   output,
   plugins,
+  external,
 };

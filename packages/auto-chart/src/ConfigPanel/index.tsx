@@ -7,7 +7,6 @@ import { prefixCls, getElePosition } from '../utils';
 import { intl, Language } from '../i18n';
 import getSchema from './getSchema';
 import { processConfig, copyConfig, shake, getOption } from './utils';
-import '@antv/g2plot-schemas/lib/editor/index.less';
 
 interface ChartConfigPanelProps {
   language: Language;
