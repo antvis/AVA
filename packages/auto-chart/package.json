@@ -32,7 +32,6 @@
   "peerDependencies": {
     "@ant-design/icons": ">=4.6.4",
     "@antv/g2plot": ">=2.3.33",
-    "@antv/g2plot-schemas": "1.2.1-beta.1",
     "@antv/g6": ">=4.3.11",
     "antd": ">=4.16.13",
     "moment": ">=2.29.1",
@@ -42,10 +41,10 @@
   "devDependencies": {
     "@ant-design/icons": "^4.6.4",
     "@antv/g2plot": "^2.3.36",
-    "@antv/g2plot-schemas": "1.2.1-beta.1",
     "@antv/g6": "^4.3.11",
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.4",
+    "@rollup/plugin-alias": "^3.1.8",
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
@@ -101,6 +100,7 @@
     "@antv/chart-advisor": "^2.0.0-alpha.0",
     "@antv/ckb": "^2.0.0-alpha.0",
     "@antv/data-wizard": "^2.0.0-alpha.0",
+    "@antv/g2plot-schemas": "1.2.1-beta.3",
     "@antv/thumbnails-component": "^2.0.0-alpha.2",
     "@antv/util": "^2.0.14",
     "date-fns": "^2.24.0",
