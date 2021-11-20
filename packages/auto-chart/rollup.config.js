@@ -1,13 +1,15 @@
+// import alias from '@rollup/plugin-alias';
 import typescript from '@rollup/plugin-typescript';
-import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import postcss from 'rollup-plugin-postcss';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+// import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import autoprefixer from 'autoprefixer';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
-import builtins from 'rollup-plugin-node-builtins';
-import globals from 'rollup-plugin-node-globals';
+// TODO AutoChart 先不处理 node 包，而交给消费它的项目自己处理
+// import resolve from '@rollup/plugin-node-resolve';
+// import nodePolyfills from 'rollup-plugin-polyfill-node';
+// import builtins from 'rollup-plugin-node-builtins';
+// import globals from 'rollup-plugin-node-globals';
 import { visualizer } from 'rollup-plugin-visualizer';
 import json from '@rollup/plugin-json';
 
@@ -25,22 +27,32 @@ const outDir = OUT_DIR_NAME_MAP[format];
 const output = {
   name: 'AutoChart',
   format,
-  preserveModules: format === 'esm',
+  // preserveModules: format === 'esm',
   sourcemap: 'inline',
   preserveModulesRoot: 'src',
 };
 
+const external = [
+  'react',
+  'react-dom',
+  '@ant-design/icons',
+  'antd',
+  '@antv/g6',
+  '@antv/g2plot',
+  'moment',
+  // '@antv/g2plot-schemas',
+];
+
 const plugins = [
-  peerDepsExternal(),
   typescript({
     outDir,
     declarationDir: outDir,
   }),
   commonjs(),
-  resolve(),
-  nodePolyfills(),
-  globals(),
-  builtins(),
+  // resolve(),
+  // nodePolyfills(),
+  // globals(),
+  // builtins(),
   postcss({
     // Extract CSS to the same location where JS file is generated but with .css extension.
     extract: true,
@@ -76,7 +88,6 @@ if (format === 'umd') {
     antd: 'antd',
     '@antv/g2plot': 'G2Plot',
     '@antv/g6': 'G6',
-    '@antv/g2plot-schemas': 'G2PlotSchemas',
     '@ant-design/icons': 'icons',
     moment: 'moment',
   };
@@ -88,4 +99,5 @@ export default {
   input: 'src/index.ts',
   output,
   plugins,
+  external,
 };

@@ -5,7 +5,7 @@ export const isAxis = (value: any): value is Axis => {
   return isNumber(value) || isString(value);
 };
 
-// generate index for 1D and 2D array
+// generate indexes for 1D and 2D array
 export const generateArrayIndex = (data: any[], extraIndex?: Axis[]): Axis[] => {
   assert(isArray(data), 'Data must be an array');
 

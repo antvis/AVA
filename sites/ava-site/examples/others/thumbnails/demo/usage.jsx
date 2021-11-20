@@ -1,6 +1,8 @@
+/* eslint-disable quotes */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Thumbnails, { Thumbnail, BAR_CHART } from '@antv/thumbnails';
+import { Thumbnail } from '@antv/thumbnails-component';
+import Thumbnails, { BAR_CHART } from '@antv/thumbnails';
 
 const App = () => {
   return (

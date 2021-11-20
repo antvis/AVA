@@ -31,6 +31,8 @@ export function subjectsDescStrategy(variableMap: SubjectsDescInfo) {
     });
 
     phrases.addSymbol('punctuation_right_parentheses'); // )
+
+    phrases.addSymbol('punctuation_comma');
   }
 
   insightTypes.forEach((type, index) => {

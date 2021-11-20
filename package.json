@@ -76,7 +76,7 @@
     "deploy:site": "cd ./sites/ava-site && npm run deploy",
     "start:demo": "cd demo && npm start",
     "prepare": "husky install",
-    "ci":"run-s format:packages lint-staged test build",
+    "ci": "run-s format:packages lint-staged test build",
     "release": "npm run ci && lerna publish",
     "one-stop-setup": "npm install --package-lock=false && run-s prepare boot build setup:site"
   },

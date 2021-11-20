@@ -41,7 +41,9 @@ const App = () => {
       <Spin spinning={loading} style={{ marginTop: 80 }}>
         <div style={{ width: '100%' }}>
           {result.homogeneousInsights &&
-            result.homogeneousInsights.map((item, index) => <InsightCard key={index} insightInfo={item} />)}
+            result.homogeneousInsights.map((item, index) => (
+              <InsightCard key={index} insightInfo={item} height={400} />
+            ))}
         </div>
       </Spin>
     </>

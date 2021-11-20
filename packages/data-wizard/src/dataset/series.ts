@@ -4,7 +4,7 @@ import BaseFrame from './base-frame';
 import type { SeriesData, Extra, Axis } from './types';
 
 export interface SeriesExtra {
-  index?: Extra['index'];
+  indexes?: Extra['indexes'];
   fillValue?: Extra['fillValue'];
 }
 
@@ -17,37 +17,37 @@ export default class Series extends BaseFrame {
 
     /** 1D: object */
     if (isObject(data)) {
-      // generate index
-      const index = Object.keys(data);
+      // generate indexes
+      const indexes = Object.keys(data);
 
-      if (extra?.index) {
+      if (extra?.indexes) {
         assert(
-          extra?.index?.length <= index.length,
-          `Index length ${extra?.index?.length} is greater than data size ${index.length}`
+          extra?.indexes?.length <= indexes.length,
+          `Index length ${extra?.indexes?.length} is greater than data size ${indexes.length}`
         );
 
-        for (let i = 0; i < extra?.index.length; i += 1) {
-          const idx = extra?.index[i] as string;
-          if (index.includes(idx)) {
+        for (let i = 0; i < extra?.indexes.length; i += 1) {
+          const idx = extra?.indexes[i] as string;
+          if (indexes.includes(idx)) {
             this.data.push(fillMissingValue(data[idx], extra?.fillValue));
           }
         }
-        this.setAxis(0, extra?.index);
+        this.setAxis(0, extra?.indexes);
       } else {
         this.data = Object.values(data).map((datum) => fillMissingValue(datum, extra?.fillValue));
-        this.setAxis(0, index);
+        this.setAxis(0, indexes);
       }
     } else if (isArray(data)) {
       /** 1D: array */
       const [data0] = data;
       if (!isBasicType(data0)) {
-        if (extra?.index) {
+        if (extra?.indexes) {
           assert(
-            extra?.index?.length === data.length,
-            `Index length is ${extra?.index.length}, but data size ${data.length}`
+            extra?.indexes?.length === data.length,
+            `Index length is ${extra?.indexes.length}, but data size ${data.length}`
           );
 
-          this.setAxis(0, extra?.index);
+          this.setAxis(0, extra?.indexes);
         }
         this.data = data;
       }
@@ -73,14 +73,14 @@ export default class Series extends BaseFrame {
 
     // input is like 0 || 'a'
     if (isNumber(rowLoc) || (isString(rowLoc) && !rowLoc.includes(':'))) {
-      assert(this.index.includes(rowLoc), 'The rowLoc is not found in the index.');
+      assert(this.indexes.includes(rowLoc), 'The rowLoc is not found in the indexes.');
 
       if (isNumber(rowLoc)) {
         return this.data[rowLoc];
       }
 
       if (isString(rowLoc)) {
-        const rowIdx = this.index.indexOf(rowLoc);
+        const rowIdx = this.indexes.indexOf(rowLoc);
         return this.data[rowIdx];
       }
     }
@@ -92,20 +92,20 @@ export default class Series extends BaseFrame {
       for (let i = 0; i < rowLoc.length; i += 1) {
         const loc = rowLoc[i];
 
-        assert(this.index.includes(loc), 'The rowLoc is not found in the index.');
+        assert(this.indexes.includes(loc), 'The rowLoc is not found in the indexes.');
 
-        const idxInIndex = this.index.indexOf(loc);
+        const idxInIndex = this.indexes.indexOf(loc);
         newData.push(this.data[idxInIndex]);
-        newIndex.push(this.index[idxInIndex]);
+        newIndex.push(this.indexes[idxInIndex]);
       }
-      return new Series(newData, { index: newIndex });
+      return new Series(newData, { indexes: newIndex });
     }
 
     if (isString(rowLoc) && rowLoc.includes(':')) {
       // input is like '0:2' || 'a:c'
       const rowLocArr = rowLoc.split(':');
 
-      assert(rowLocArr.length === 2, 'The rowLoc is not found in the index.');
+      assert(rowLocArr.length === 2, 'The rowLoc is not found in the indexes.');
 
       const startLoc = rowLocArr[0];
       const endLoc = rowLocArr[1];
@@ -114,16 +114,16 @@ export default class Series extends BaseFrame {
         const startIdx = Number(startLoc);
         const endIdx = Number(endLoc);
         const newData = this.data.slice(startIdx, endIdx);
-        const newIndex = this.index.slice(startIdx, endIdx);
-        return new Series(newData, { index: newIndex });
+        const newIndex = this.indexes.slice(startIdx, endIdx);
+        return new Series(newData, { indexes: newIndex });
       }
 
       if (isString(startLoc) && isString(endLoc)) {
-        const startIdx = this.index.indexOf(startLoc);
-        const endIdx = this.index.indexOf(endLoc);
+        const startIdx = this.indexes.indexOf(startLoc);
+        const endIdx = this.indexes.indexOf(endLoc);
         const newData = this.data.slice(startIdx, endIdx);
-        const newIndex = this.index.slice(startIdx, endIdx);
-        return new Series(newData, { index: newIndex });
+        const newIndex = this.indexes.slice(startIdx, endIdx);
+        return new Series(newData, { indexes: newIndex });
       }
     }
 
@@ -131,17 +131,17 @@ export default class Series extends BaseFrame {
   }
 
   /**
-   * Get data by row location and column location using integer-index.
+   * Get data by row location and column location using integer index.
    * @param rowLoc
    */
-  getByIntegerIndex(rowLoc: number | number[] | string): Series | any {
+  getByIndex(rowLoc: number | number[] | string): Series | any {
     assert(isInteger(rowLoc) || isArray(rowLoc) || (isString(rowLoc) && rowLoc.includes(':')), 'The rowLoc is illegal');
 
     // input is like 1
     if (isInteger(rowLoc)) {
-      assert(range(this.index.length).includes(rowLoc), 'The rowLoc is not found in the index.');
+      assert(range(this.indexes.length).includes(rowLoc), 'The rowLoc is not found in the indexes.');
 
-      if (range(this.index.length).includes(rowLoc)) {
+      if (range(this.indexes.length).includes(rowLoc)) {
         return this.data[rowLoc];
       }
     }
@@ -153,12 +153,12 @@ export default class Series extends BaseFrame {
       for (let i = 0; i < rowLoc.length; i += 1) {
         const idx = rowLoc[i];
 
-        assert(range(this.index.length).includes(idx), 'The rowLoc is not found in the index.');
+        assert(range(this.indexes.length).includes(idx), 'The rowLoc is not found in the indexes.');
 
         newData.push(this.data[idx]);
-        newIndex.push(this.index[idx]);
+        newIndex.push(this.indexes[idx]);
       }
-      return new Series(newData, { index: newIndex });
+      return new Series(newData, { indexes: newIndex });
     }
 
     if (isString(rowLoc) && rowLoc.includes(':')) {
@@ -168,11 +168,11 @@ export default class Series extends BaseFrame {
         const startIdx = Number(rowLocArr[0]);
         const endIdx = Number(rowLocArr[1]);
 
-        assert(isInteger(startIdx) && isInteger(endIdx), 'The rowLoc is not found in the index.');
+        assert(isInteger(startIdx) && isInteger(endIdx), 'The rowLoc is not found in the indexes.');
 
         const newData = this.data.slice(startIdx, endIdx);
-        const newIndex = this.index.slice(startIdx, endIdx);
-        return new Series(newData, { index: newIndex });
+        const newIndex = this.indexes.slice(startIdx, endIdx);
+        return new Series(newData, { indexes: newIndex });
       }
     }
 

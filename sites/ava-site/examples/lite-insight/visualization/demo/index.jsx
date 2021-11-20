@@ -43,7 +43,8 @@ const App = () => {
 
   const plotContent = (
     <div key="plot" style={{ flex: 5, height: '100%' }}>
-      {result.insights && result.insights.map((item, index) => <InsightCard key={index} insightInfo={item} />)}
+      {result.insights &&
+        result.insights.map((item, index) => <InsightCard key={index} insightInfo={item} height={400} />)}
     </div>
   );
 

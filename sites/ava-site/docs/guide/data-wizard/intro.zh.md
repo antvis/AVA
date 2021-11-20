@@ -7,7 +7,7 @@ order: 0
 
 
 
-DataWizard 是一个 js/ts 的前端数据处理和分析库。在 AVA 的框架中，它被用来“理解”和“处理”输入端的数据集。不过，它也可以独立地被用来开发一些数据处理与分析、数学统计、数据模拟之类的功能。
+DataWizard 是一个基于 js/ts 的前端数据处理库。在 AVA 的框架中，它被用来理解和处理输入端的数据集。不过，它也可以独立地被用来开发一些数据处理、数学统计、数据模拟之类的功能。
 
 <div align="center">
 <img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />
@@ -15,11 +15,13 @@ DataWizard 是一个 js/ts 的前端数据处理和分析库。在 AVA 的框架
 
 ## ✨ 功能特性
 
-### 数据处理与分析
+### 数据处理
 
-DataWizard 的数据处理与分析模块 `DataFrame`，支持读取不同类型的一维和二维源数据，将其转换为 `DataFrame` 数据基本流转单元来处理数据。使用 `DataFrame`，你可以从一个数据集样本中获取和切割数据，也可以提取出各个字段的信息。这些信息包括字段的特征（字段名称、数据类型、统计信息等），性质（连续性、离散性等），以及多字段间的字段间关系（相关性、周期性等）。
+DataWizard 的数据处理模块 `DataFrame`，支持读取不同类型的一维和二维源数据，将其转换为 `DataFrame` 数据基本流转单元来处理数据。使用 `DataFrame`，你可以从一个数据集样本中获取和切割数据，也可以提取出各个字段的信息。这些信息包括字段的特征（字段名称、数据类型、统计信息等），性质（连续性、离散性等），以及多字段间的字段间关系（相关性、周期性等）。
 
-简而言之，`DataFrame` 可以帮助你了解一个数据集。这也是我们做数据分析、智能可视化等工作的前提。
+对于关系型数据（网络数据），DW 通过 `GraphData` 模块进行处理和分析，支持读取点边数据、边数组、树型结构数据。使用 `GraphData`，你可以解析数组、图数据和层次型数据，并提取图中的常用的结构和统计特征，还可以得到标准化为 `DataFrame` 的点表和边表，使用 `DataFrame` 提供的 API 来分析点、边各个字段的统计特征。
+
+简而言之，`DataFrame` 和 `GraphData` 可以帮助你了解一个数据集。这也是我们做数据分析、智能可视化等工作的前提。
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif" width="600" alt="DataFrame demo" />
@@ -27,7 +29,7 @@ DataWizard 的数据处理与分析模块 `DataFrame`，支持读取不同类型
 
 ### 数学统计
 
-DataWizard 的数学统计模块 `statistics`，支持最大值、最小值、方差、皮尔逊系数、变异系数等常用统计学方法。`DataFrame` 的统计信息计算能力，也是基于 `statitstics` 实现的。
+DataWizard 的数学统计模块 `statistics`，支持最大值、最小值、方差、皮尔逊系数、变异系数等常用统计学方法。`DataFrame` 和 `GraphData` 的统计信息计算能力，也是基于 `statitstics` 实现的。
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/WLciSdHENb/statistics.gif" width="600" alt="statistics demo" />
@@ -215,9 +217,7 @@ r.address();
 ## 📖 文档
 
 更多用法请移步至 API。
-
 * [DataFrame](../../api/data-wizard/data-frame)
+* [GraphData](../../api/data-wizard/graph-data)
 * [statistics](../../api/data-wizard/statistics)
 * [random](../../api/data-wizard/random)
-
-

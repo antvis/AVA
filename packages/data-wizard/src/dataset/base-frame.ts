@@ -17,10 +17,10 @@ export default abstract class BaseFrame {
 
     /** 1D: basic type */
     if (isBasicType(data)) {
-      // generate index
-      if (extra?.index) {
-        this.setAxis(0, extra?.index);
-        this.data = Array(extra?.index.length).fill(fillMissingValue(data, extra?.fillValue));
+      // generate indexes
+      if (extra?.indexes) {
+        this.setAxis(0, extra?.indexes);
+        this.data = Array(extra?.indexes.length).fill(fillMissingValue(data, extra?.fillValue));
       } else {
         this.data = [fillMissingValue(data, extra?.fillValue)];
         this.setAxis(0, [0]);
@@ -38,16 +38,16 @@ export default abstract class BaseFrame {
         }
       }
 
-      this.setAxis(0, generateArrayIndex(data, extra?.index));
+      this.setAxis(0, generateArrayIndex(data, extra?.indexes));
 
       if (legal) {
-        if (extra?.index) {
+        if (extra?.indexes) {
           assert(
-            extra?.index?.length === data.length,
-            `Index length is ${extra?.index.length}, but data size ${data.length}`
+            extra?.indexes?.length === data.length,
+            `Index length is ${extra?.indexes.length}, but data size ${data.length}`
           );
 
-          this.setAxis(0, extra?.index);
+          this.setAxis(0, extra?.indexes);
         }
         this.data = extra?.fillValue ? data.map((datum) => fillMissingValue(datum, extra?.fillValue)) : data;
       }
@@ -56,7 +56,7 @@ export default abstract class BaseFrame {
 
   abstract get shape(): [number] | [number, number];
 
-  get index(): Axis[] {
+  get indexes(): Axis[] {
     return this.getAxis(0);
   }
 
@@ -89,9 +89,9 @@ export default abstract class BaseFrame {
   abstract get(rowLoc: Axis | Axis[] | string, colLoc?: Axis | Axis[] | string): BaseFrame;
 
   /**
-   * Get data by row location and column location using integer-index.
+   * Get data by row location and column location using integer index.
    * @param rowLoc
    * @param colLoc
    */
-  abstract getByIntegerIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
+  abstract getByIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): BaseFrame;
 }

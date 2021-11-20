@@ -46,7 +46,6 @@
     "@antv/data-wizard": "^2.0.0-alpha.0",
     "@antv/g2": "^4.0.15",
     "@antv/g2plot": "^2.0.9",
-    "@antv/g2plot-schemas": "1.2.1-beta.1",
     "@antv/g6": "^4.3.11",
     "@antv/lite-insight": "^2.0.0-alpha.0",
     "@antv/narrative-text-vis": "^0.1.6-alpha.5",

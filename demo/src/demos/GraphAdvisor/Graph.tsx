@@ -7,7 +7,7 @@ export const Graph = ({ spec }: any) => {
   const [g6Cfg, setG6Cfg] = useState(null);
   const [g6Graph, setG6Graph] = useState(null);
   const [nodeColumns, setNodeColumns] = useState([]);
-  const [edgeColumns, setEdgeColumns] = useState([]);
+  const [linkColumns, setLinkColumns] = useState([]);
   const ref = React.useRef(null);
 
   useEffect(() => {
@@ -16,22 +16,22 @@ export const Graph = ({ spec }: any) => {
 
   useEffect(() => {
     if (g6Cfg) {
-      const nodeColumns = Object.keys(g6Cfg.data.nodes[0]).map((key) => {
+      const newNodeColumns = Object.keys(g6Cfg.data.nodes[0]).map((key) => {
         return {
           title: key,
           dataIndex: key,
           key,
         };
       });
-      const edgesColumns = Object.keys(g6Cfg.data.edges[0]).map((key) => {
+      const newLinkColumns = Object.keys(g6Cfg.data.edges[0]).map((key) => {
         return {
           title: key,
           dataIndex: key,
           key,
         };
       });
-      setNodeColumns(nodeColumns);
-      setEdgeColumns(edgesColumns);
+      setNodeColumns(newNodeColumns);
+      setLinkColumns(newLinkColumns);
 
       if (g6Graph) g6Graph.destroy();
       const graph = new G6.Graph({
@@ -68,7 +68,7 @@ export const Graph = ({ spec }: any) => {
                 size="small"
                 style={{ marginLeft: 10, marginRight: 10 }}
                 dataSource={g6Cfg.data.edges}
-                columns={edgeColumns}
+                columns={linkColumns}
               ></Table>
             )}
           </div>

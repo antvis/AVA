@@ -40,7 +40,8 @@ const App = () => {
       <h2 style={{ borderBottom: '1px solid #e9e9e9' }}>Insight list</h2>
       <Spin spinning={loading} style={{ marginTop: 80 }}>
         <div style={{ width: '100%' }}>
-          {result.insights && result.insights.map((item, index) => <InsightCard key={index} insightInfo={item} />)}
+          {result.insights &&
+            result.insights.map((item, index) => <InsightCard key={index} insightInfo={item} height={400} />)}
         </div>
       </Spin>
     </>

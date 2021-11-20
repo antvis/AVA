@@ -6,7 +6,7 @@
 </h1>
 
 <div align="center">
-A js/ts library for data processing and analysis.
+A js/ts library for data processing.
 </div>
 
 <div align="center">
@@ -15,11 +15,13 @@ A js/ts library for data processing and analysis.
 
 ## ✨ Features
 
-### Data Processing and Analysis
+### Data Processing
 
 DataWizard can help you extract information of fields from a dataset sample by its `DataFrame` module. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
-In short, `DataFrame` can help you understand and process a dataset. This is the premise of data analysis and Automatic chart recommendation.
+For relational data (network data), DW processes and analyzes it through the `GraphData` module, which supports reading nodes-links data, links arrays, and hierarchical data. Using `GraphData`, you can parse arrays, graph data and hierarchical data, and extract common-used structural and statistical features. Also, the nodes and edges can be converted to `DataFrame`, and its API to analyze the statistics of each node field and link field.
+
+In short, `DataFrame` and `GraphData` can help you understand and process a dataset. This is the premise of data analysis and Automatic chart recommendation.
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif" width="600" alt="DataFrame demo" />
@@ -27,7 +29,7 @@ In short, `DataFrame` can help you understand and process a dataset. This is the
 
 ### Statistical Methods
 
-The `statistics` module of DataWizard provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` is also based on `statistics`.
+The `statistics` module of DataWizard provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` and `GraphData` is also based on `statistics`.
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/WLciSdHENb/statistics.gif" width="600" alt="statistics demo" />
@@ -217,6 +219,7 @@ r.address();
 For more usages, please check the API reference.
 
 * [DataFrame](https://ava.antv.vision/en/docs/api/data-wizard/data-frame)
+* [GraphData](https://ava.antv.vision/en/docs/api/data-wizard/graph-data)
 * [statistics](https://ava.antv.vision/en/docs/api/data-wizard/statistics)
 * [random](https://ava.antv.vision/en/docs/api/data-wizard/random)
 

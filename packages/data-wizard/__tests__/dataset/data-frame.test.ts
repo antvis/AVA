@@ -10,8 +10,8 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([[1]]);
   });
 
-  test('1D: basic type with extra index and columns', () => {
-    const df = new DataFrame(1, { index: ['kk', 'bb'], columns: [5, 6] });
+  test('1D: basic type with extra indexes and columns', () => {
+    const df = new DataFrame(1, { indexes: ['kk', 'bb'], columns: [5, 6] });
     expect(df.axes).toStrictEqual([
       ['kk', 'bb'],
       [5, 6],
@@ -28,7 +28,7 @@ describe('new DataFrame', () => {
 
   test('1D: basic type with error extra', () => {
     expect(() => new DataFrame(1, { columns: [5, 6] })).toThrow(
-      'When the length of extra?.columns is larger than 1, extra?.index is required.'
+      'When the length of extra?.columns is larger than 1, extra?.indexes is required.'
     );
   });
 
@@ -39,8 +39,8 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([[1, 2, 3]]);
   });
 
-  test('1D: array with extra index and columns', () => {
-    const df = new DataFrame([1, 2, 3], { index: ['b', 'c', 'a'], columns: ['col'] });
+  test('1D: array with extra indexes and columns', () => {
+    const df = new DataFrame([1, 2, 3], { indexes: ['b', 'c', 'a'], columns: ['col'] });
     expect(df.axes).toStrictEqual([['b', 'c', 'a'], ['col']]);
     expect(df.data).toStrictEqual([[1], [2], [3]]);
     expect(df.colData).toStrictEqual([[1, 2, 3]]);
@@ -53,8 +53,8 @@ describe('new DataFrame', () => {
     expect(df.colData).toStrictEqual([[1], [2], [3]]);
   });
 
-  test('1D: object with extra index and columns', () => {
-    const df = new DataFrame({ a: 1, b: 2, c: 3 }, { index: ['idx1'], columns: ['c', 'b'] });
+  test('1D: object with extra indexes and columns', () => {
+    const df = new DataFrame({ a: 1, b: 2, c: 3 }, { indexes: ['idx1'], columns: ['c', 'b'] });
     expect(df.axes).toStrictEqual([['idx1'], ['c', 'b']]);
     expect(df.data).toStrictEqual([[3, 2]]);
     expect(df.colData).toStrictEqual([[3], [2]]);
@@ -81,7 +81,7 @@ describe('new DataFrame', () => {
     ]);
   });
 
-  test('2D: array with extra index and columns', () => {
+  test('2D: array with extra indexes and columns', () => {
     const df = new DataFrame(
       [
         [1, 4],
@@ -89,7 +89,7 @@ describe('new DataFrame', () => {
         [3, 6],
       ],
       {
-        index: ['a', 'b', 'c'],
+        indexes: ['a', 'b', 'c'],
         columns: ['col1', 'col2'],
       }
     );
@@ -129,14 +129,14 @@ describe('new DataFrame', () => {
     ]);
   });
 
-  test('2D: object array with extra index and columns', () => {
+  test('2D: object array with extra indexes and columns', () => {
     const df = new DataFrame(
       [
         { a: 1, b: 4, c: 7 },
         { a: 2, b: 5, c: 8 },
         { a: 3, b: 6, c: 9 },
       ],
-      { index: ['k', 'm', 'n'], columns: ['c', 'a'] }
+      { indexes: ['k', 'm', 'n'], columns: ['c', 'a'] }
     );
     expect(df.axes).toStrictEqual([
       ['k', 'm', 'n'],
@@ -173,14 +173,14 @@ describe('new DataFrame', () => {
     ]);
   });
 
-  test('2D: array object with extra index and columns', () => {
+  test('2D: array object with extra indexes and columns', () => {
     const df = new DataFrame(
       {
         a: [1, 2, 3],
         b: [4, 5, 6],
       },
       {
-        index: ['p', 'q', 'r'],
+        indexes: ['p', 'q', 'r'],
         columns: ['b', 'a'],
       }
     );
@@ -224,7 +224,7 @@ describe('DataFrame get value functions', () => {
     const rowLocNum = df.get(0);
     expect(rowLocNum).toStrictEqual(
       new Series([1, 4, 7], {
-        index: ['a', 'b', 'c'],
+        indexes: ['a', 'b', 'c'],
       })
     );
 
@@ -310,18 +310,18 @@ describe('DataFrame get value functions', () => {
     expect(rowLocSliceColLocSlice.axes).toStrictEqual([[0, 1], ['b']]);
   });
 
-  test('getByIntegerIndex', () => {
+  test('getByIndex', () => {
     /** only rowLoc */
     // rowLoc is int
-    const rowLocInt = df.getByIntegerIndex(0);
+    const rowLocInt = df.getByIndex(0);
     expect(rowLocInt).toStrictEqual(
       new Series([1, 4, 7], {
-        index: ['a', 'b', 'c'],
+        indexes: ['a', 'b', 'c'],
       })
     );
 
     // rowLoc is int[]
-    const rowLocIntArr = df.getByIntegerIndex([0, 2]);
+    const rowLocIntArr = df.getByIndex([0, 2]);
     // DataFrame contains private functions, we can't compare it by serializing to the same string
     expect(rowLocIntArr.data).toStrictEqual([
       [1, 4, 7],
@@ -333,7 +333,7 @@ describe('DataFrame get value functions', () => {
     ]);
 
     // rowLoc is slice
-    const rowLocStrSlice = df.getByIntegerIndex('0:2');
+    const rowLocStrSlice = df.getByIndex('0:2');
     expect(rowLocStrSlice.data).toStrictEqual([
       [1, 4, 7],
       [2, 5, 8],
@@ -345,27 +345,27 @@ describe('DataFrame get value functions', () => {
 
     /** rowLoc and colLoc */
     // rowLoc is int, colLoc is int
-    const rowLocIntColLocInt = df.getByIntegerIndex(1, 2);
+    const rowLocIntColLocInt = df.getByIndex(1, 2);
     expect(rowLocIntColLocInt.data).toStrictEqual([[8]]);
     expect(rowLocIntColLocInt.axes).toStrictEqual([[1], ['c']]);
 
     // rowLoc is int, colLoc is int[]
-    const rowLocIntColLocIntArr = df.getByIntegerIndex(1, [0, 2]);
+    const rowLocIntColLocIntArr = df.getByIndex(1, [0, 2]);
     expect(rowLocIntColLocIntArr.data).toStrictEqual([[2, 8]]);
     expect(rowLocIntColLocIntArr.axes).toStrictEqual([[1], ['a', 'c']]);
 
     // rowLoc is int, colLoc is slice
-    const rowLocIntColLocSlice = df.getByIntegerIndex(1, '0:2');
+    const rowLocIntColLocSlice = df.getByIndex(1, '0:2');
     expect(rowLocIntColLocSlice.data).toStrictEqual([[2, 5]]);
     expect(rowLocIntColLocSlice.axes).toStrictEqual([[1], ['a', 'b']]);
 
     // rowLoc is int[], colLoc is int
-    const rowLocIntArrColLocInt = df.getByIntegerIndex([1, 2], 0);
+    const rowLocIntArrColLocInt = df.getByIndex([1, 2], 0);
     expect(rowLocIntArrColLocInt.data).toStrictEqual([[2], [3]]);
     expect(rowLocIntArrColLocInt.axes).toStrictEqual([[1, 2], ['a']]);
 
     // rowLoc is int[], colLoc is int[]
-    const rowLocIntArrColLocIntArr = df.getByIntegerIndex([1, 2], [0, 1]);
+    const rowLocIntArrColLocIntArr = df.getByIndex([1, 2], [0, 1]);
     expect(rowLocIntArrColLocIntArr.data).toStrictEqual([
       [2, 5],
       [3, 6],
@@ -376,17 +376,17 @@ describe('DataFrame get value functions', () => {
     ]);
 
     // rowLoc is int[], colLoc is slice
-    const rowLocIntArrColLocSlice = df.getByIntegerIndex([1, 2], '1:2');
+    const rowLocIntArrColLocSlice = df.getByIndex([1, 2], '1:2');
     expect(rowLocIntArrColLocSlice.data).toStrictEqual([[5], [6]]);
     expect(rowLocIntArrColLocSlice.axes).toStrictEqual([[1, 2], ['b']]);
 
     // rowLoc is slice, colLoc is int
-    const rowLocSliceColLocInt = df.getByIntegerIndex('0:2', 1);
+    const rowLocSliceColLocInt = df.getByIndex('0:2', 1);
     expect(rowLocSliceColLocInt.data).toStrictEqual([[4], [5]]);
     expect(rowLocSliceColLocInt.axes).toStrictEqual([[0, 1], ['b']]);
 
     // rowLoc is slice, colLoc is int[]
-    const rowLocSliceColLocIntArr = df.getByIntegerIndex('0:2', [1, 2]);
+    const rowLocSliceColLocIntArr = df.getByIndex('0:2', [1, 2]);
     expect(rowLocSliceColLocIntArr.data).toStrictEqual([
       [4, 7],
       [5, 8],
@@ -397,14 +397,14 @@ describe('DataFrame get value functions', () => {
     ]);
 
     // rowLoc is slice, colLoc is slice
-    const rowLocSliceColLocSlice = df.getByIntegerIndex('0:2', '1:2');
+    const rowLocSliceColLocSlice = df.getByIndex('0:2', '1:2');
     expect(rowLocSliceColLocSlice.data).toStrictEqual([[4], [5]]);
     expect(rowLocSliceColLocSlice.axes).toStrictEqual([[0, 1], ['b']]);
   });
 
   test('getByColumn', () => {
     const getA = df.getByColumn('a');
-    expect(getA).toStrictEqual(new Series([1, 2, 3], { index: [0, 1, 2] }));
+    expect(getA).toStrictEqual(new Series([1, 2, 3], { indexes: [0, 1, 2] }));
   });
 });
 
@@ -604,8 +604,8 @@ describe('DataFrame data with fillValue', () => {
     expect(df.colData).toStrictEqual([[201]]);
   });
 
-  test('1D: basic type with extra index and columns', () => {
-    const df = new DataFrame(null, { index: ['kk', 'bb'], columns: [5, 6], fillValue: 201 });
+  test('1D: basic type with extra indexes and columns', () => {
+    const df = new DataFrame(null, { indexes: ['kk', 'bb'], columns: [5, 6], fillValue: 201 });
     expect(df.data).toStrictEqual([
       [201, 201],
       [201, 201],
@@ -622,8 +622,8 @@ describe('DataFrame data with fillValue', () => {
     expect(df.colData).toStrictEqual([[201, 201, 3]]);
   });
 
-  test('1D: array with extra index and columns', () => {
-    const df = new DataFrame([1, 2, undefined], { index: ['b', 'c', 'a'], columns: ['col'], fillValue: 201 });
+  test('1D: array with extra indexes and columns', () => {
+    const df = new DataFrame([1, 2, undefined], { indexes: ['b', 'c', 'a'], columns: ['col'], fillValue: 201 });
     expect(df.data).toStrictEqual([[1], [2], [201]]);
     expect(df.colData).toStrictEqual([[1, 2, 201]]);
   });
@@ -634,8 +634,8 @@ describe('DataFrame data with fillValue', () => {
     expect(df.colData).toStrictEqual([[1], [201], [3]]);
   });
 
-  test('1D: object with extra index and columns', () => {
-    const df = new DataFrame({ a: 1, b: 2, c: null }, { index: ['idx1'], columns: ['c', 'b'], fillValue: 201 });
+  test('1D: object with extra indexes and columns', () => {
+    const df = new DataFrame({ a: 1, b: 2, c: null }, { indexes: ['idx1'], columns: ['c', 'b'], fillValue: 201 });
     expect(df.data).toStrictEqual([[201, 2]]);
     expect(df.colData).toStrictEqual([[201], [2]]);
   });
@@ -660,7 +660,7 @@ describe('DataFrame data with fillValue', () => {
     ]);
   });
 
-  test('2D: array with extra index and columns', () => {
+  test('2D: array with extra indexes and columns', () => {
     const df = new DataFrame(
       [
         [1, 4],
@@ -668,7 +668,7 @@ describe('DataFrame data with fillValue', () => {
         [3, 6],
       ],
       {
-        index: ['a', 'b', 'c'],
+        indexes: ['a', 'b', 'c'],
         columns: ['col1', 'col2'],
       }
     );
@@ -756,14 +756,14 @@ describe('DataFrame data with fillValue', () => {
     ]);
   });
 
-  test('2D: object array with extra index and columns', () => {
+  test('2D: object array with extra indexes and columns', () => {
     const df = new DataFrame(
       [
         { a: 1, b: 4, c: 7 },
         { a: 2, b: 5, c: null },
         { a: 3, b: undefined, c: 9 },
       ],
-      { index: ['k', 'm', 'n'], columns: ['c', 'a'], fillValue: 201 }
+      { indexes: ['k', 'm', 'n'], columns: ['c', 'a'], fillValue: 201 }
     );
     expect(df.data).toStrictEqual([
       [7, 1],
@@ -795,14 +795,14 @@ describe('DataFrame data with fillValue', () => {
     ]);
   });
 
-  test('2D: array object with extra index and columns', () => {
+  test('2D: array object with extra indexes and columns', () => {
     const df = new DataFrame(
       {
         a: [1, 2, ''],
         b: ['', 5, 6],
       },
       {
-        index: ['p', 'q', 'r'],
+        indexes: ['p', 'q', 'r'],
         columns: ['b', 'a'],
         fillValue: 201,
       }

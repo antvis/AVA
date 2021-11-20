@@ -35,7 +35,7 @@ DW 中的二维数据结构，支持读取不同类型的一维和二维源数�
   
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
-| index | `string | number` | 行索引 | - | - |
+| indexes | `string | number` | 行索引 | - | - |
 | columns | `string | number` | 列索引 | - | - |
 | fillValue |  `any` | 缺失填充值 | - | - |
 
@@ -78,9 +78,9 @@ DataFrame
   }
 */
 
-/* Set extra index and column */
+/* Set extra indexes and columns */
 new DataFrame(data, {
-  index: ['i1', 'i2', 'i3'],
+  indexes: ['i1', 'i2', 'i3'],
   columns: ['c', 'b'],
 });
 /*
@@ -155,14 +155,14 @@ df.shape;
 
 ## get
 
-通过 index 和 columns 值获取和切割数据。
+通过 indexes 和 columns 值获取和切割数据。
 
 ***<font size=4>参数</font>***
 
 
 **rowLoc** 行位置 _必选_
 
-使用 index 值来描述的行位置。
+使用 indexes 值来描述的行位置。
 
 类型 `(string | number) | (string | number)[] | string`
 
@@ -183,7 +183,7 @@ df.shape;
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
-/* index 获取数据 */
+/* 使用 indexes值 获取数据 */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -199,7 +199,7 @@ Series
   }
 */
 
-/* index数组 获取数据 */
+/* 使用 indexes值 数组获取数据 */
 df.get([0, 2]);
 /*
 DataFrame
@@ -220,7 +220,7 @@ DataFrame
   }
 */
 
-/* index slice 获取数据 */
+/* 使用 indexes slice值 获取数据 */
 df.get('0:2');
 /*
 DataFrame
@@ -241,7 +241,7 @@ DataFrame
   }
 */
 
-/* index + column 获取数据 */
+/* 使用 indexes + columns值 获取数据 */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -258,7 +258,7 @@ DataFrame
   }
 */
 
-/* index + column数组 获取数据 */
+/* 使用 indexes + columns值数组 获取数据 */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -275,7 +275,7 @@ DataFrame
   }
 */
 
-/* index + column slice 获取数据 */
+/* 使用 indexes + columns slice值 获取数据 */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -293,9 +293,9 @@ DataFrame
 */
 ```
 
-## getByIntegerIndex
+## getByIndex
 
-通过行列数值索引获取和切割数据。和 `get` 方法用法类似，但是只能使用整数索引，例如，`getByIntegerIndex(0, 0)` 是取第一行第一列的数据。
+通过行列数值索引获取和切割数据。和 `get` 方法用法类似，但是只能使用整数索引，例如，`getByIndex(0, 0)` 是取第一行第一列的数据。
 
 ***<font size=4>参数</font>***
 
@@ -330,7 +330,7 @@ const df = new DataFrame([
   { a: 3, b: 6, c: 9 },
 ]);
 
-df.getByIntegerIndex(0, 1);
+df.getByIndex(0, 1);
 /*
 DataFrame
   {

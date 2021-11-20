@@ -110,11 +110,16 @@ type GraphAdvisorOptions = {
 | nodeColors | `string[]` | 节点颜色。 | 无 `可选` |
 | nodeSizeRange | `number[]` | 节点大小范围。 | 无 `可选` |
 | edgeWidthRange | `number[]` | 边宽度范围。 | 无 `可选` |
-| extra | `{ *Key, ...}` | 指定图相关属性。 | 无 `可选` |
-| *Key | `string` | 指定点边关系（点、边、源自、指向）的位置。 | 无 `可选` |
+| extra | `{ *Key, ...}` | 指定输入数据的相关属性。 | 见下文 |
 | AdvisorOptions | `AdvisorOptions` | 同统计图表推荐配置项。 | 无 `可选` |
 
+* ***extra*** 参数配置。
 
+| nodeKey | `string` | 指定节点数组在输入的图数据中对应属性名称（键名）。 | `nodes` |
+| edgeKey | `string` | 指定边数组在输入的图数据中对应属性名称。 | `edges | links` |
+| sourceKey | `string` | 指定边的源节点在边中对应属性名称。 | `source` |
+| targetKey | `string` | 指定边的目标节点在边中对应属性名称。 | `target` |
+| childrenKey | `string` | 指定孩子节点属性在输入的层次数据中对应属性名称。 | `children` |
 
 ## 返回值
 
