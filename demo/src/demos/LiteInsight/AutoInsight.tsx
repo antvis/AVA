@@ -149,7 +149,7 @@ export default function App() {
             </Col>
           </Row>
           {insights.map((item, index) => (
-            <InsightCard key={index} insightInfo={item as any} />
+            <InsightCard key={index} insightInfo={item as any} height={400} />
           ))}
         </div>
       )}
