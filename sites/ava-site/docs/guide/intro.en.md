@@ -79,6 +79,22 @@ ChartAdvisor is the core component of AVA. It recommends charts based on dataset
 @antv/chart-advisor // to make charts automatically
 ```
 
+### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight)
+
+LiteInsight is a js/ts library employed for Exploratory Data Analysis (EDA). It can automatically discover data insights from multidimensional data.
+
+```sign
+@antv/lite-insight // to get data insight
+```
+
+### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board)
+
+SmartBoard is a js/ts library employed for Dashboard visualization of charts. It automatically generates the corresponding Dashboard configurations based on input charts and insights.
+
+```sign
+@antv/smart-board // to get Dashboard parameters
+```
+
 ## Links
 
 <img src="https://gw.alipayobjects.com/zos/antfincdn/1yMwFkBvyV/chartcube-logo-cube.svg" width="18"> [ChartCube](https://chartcube.alipay.com/) - Online chart making tool based on [G2Plot](https://github.com/antvis/G2Plot).
