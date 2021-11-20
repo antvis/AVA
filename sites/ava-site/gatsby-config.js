@@ -172,7 +172,7 @@ module.exports = {
       {
         slug: 'data-wizard',
         title: {
-          zh: '数据处理与分析（DataWizard）',
+          zh: '数据处理（DataWizard）',
           en: 'DataWizard',
         },
         order: 1,

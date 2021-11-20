@@ -6,7 +6,7 @@
 </h1>
 
 <div align="center">
-A js/ts library for data processing and analysis.
+A js/ts library for data processing.
 </div>
 
 <div align="center">
@@ -15,7 +15,7 @@ A js/ts library for data processing and analysis.
 
 ## ✨ Features
 
-### Data Processing and Analysis
+### Data Processing
 
 DataWizard can help you extract information of fields from a dataset sample by its `DataFrame` module. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
