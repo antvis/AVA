@@ -79,6 +79,22 @@ ChartAdvisor 是 AVA 的核心部分。它基于数据和分析需求来推荐�
 @antv/chart-advisor // 图表推荐和自动生成
 ```
 
+### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight/zh-CN/README.zh-CN.md)
+
+LiteInsight 是一个用于探索性数据分析的 js/ts 工具库，它可以从多维数据中自动地发现数据洞察。
+
+```sign
+@antv/lite-insight // 数据洞察库
+```
+
+### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board/zh-CN/README.zh-CN.md)
+
+SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据输入图表和洞察自动生成对应的 Dashboard。
+
+```sign
+@antv/smart-board // 增强展现库
+```
+
 ## 友情链接
 
 <img src="https://gw.alipayobjects.com/zos/antfincdn/1yMwFkBvyV/chartcube-logo-cube.svg" width="18"> [ChartCube](https://chartcube.alipay.com/) - 基于 [G2Plot](https://github.com/antvis/G2Plot) 的在线图表制作工具，交互简单，一键导出图表代码！
