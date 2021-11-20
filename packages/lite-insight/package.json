@@ -1,7 +1,7 @@
 {
   "name": "@antv/lite-insight",
   "version": "2.0.0-alpha.0",
-  "description": "",
+  "description": "A lite js library for insights retrieval.",
   "keywords": [
     "insight",
     "antv",
@@ -34,6 +34,9 @@
     "watch": "yarn module && yarn build --w"
   },
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": {
     "name": "AntV",
     "url": "https://antv.vision/"
