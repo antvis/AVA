@@ -31,11 +31,11 @@ Type
 
 **extra** extra parameters _optional_
 
-Used to configure index, columns, and missing values.
+Used to configure indexes, columns, and missing values.
   
 | Property | Type | Description | Default | Required | 
 | ---- | ---- | ---- | ---- | ---- |
-| index | `string | number` | Index | - | - |
+| indexes | `string | number` | Index | - | - |
 | columns | `string | number` | Column | - | - |
 | fillValue | `any` | Filling missing value | - | - |
 
@@ -78,9 +78,9 @@ DataFrame
   }
 */
 
-/* Set extra index and column */
+/* Set extra indexes and columns */
 new DataFrame(data, {
-  index: ['i1', 'i2', 'i3'],
+  indexes: ['i1', 'i2', 'i3'],
   columns: ['c', 'b'],
 });
 /*
@@ -162,7 +162,7 @@ Get data by row location and column location.
 
 **rowLoc** Row location _required_
 
-The location of the row described by index.
+The location of the row described by indexes.
 
 Type `(string | number) | (string | number)[] | string`
 
@@ -184,7 +184,7 @@ Type `(string | number) | (string | number)[] | string`
 ```ts
 import { DataFrame } from '@antv/data-wizard';
 
-/* index Fetch data */
+/* Get data by indexes value */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -200,7 +200,7 @@ Series
   }
 */
 
-/* index array Fetch data */
+/* Get data by an array of indexes value */
 df.get([0, 2]);
 /*
 DataFrame
@@ -221,7 +221,7 @@ DataFrame
   }
 */
 
-/* index slice Fetch data */
+/* Get data by indexes slice value */
 df.get('0:2');
 /*
 DataFrame
@@ -242,7 +242,7 @@ DataFrame
   }
 */
 
-/* index + column Fetch data */
+/* Get data by indexes and columns values */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -259,7 +259,7 @@ DataFrame
   }
 */
 
-/* index + column array Fetch data */
+/* Get data by indexes value and an array of columns value */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -276,7 +276,7 @@ DataFrame
   }
 */
 
-/* index + column slice Fetch data */
+/* Get data by indexes value and an array of columns slice value */
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
   { a: 2, b: 5, c: 8 },
@@ -296,14 +296,14 @@ DataFrame
 
 ## getByIntegerIndex
 
-Get data by row location and column location using integer-index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIntegerIndex(0, 0)` gets the data of the first row and column.
+Get data by row location and column location using integer index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIntegerIndex(0, 0)` gets the data of the first row and column.
 
 ***<font size=4>Parameters</font>***
 
 
 **rowLoc** Row location _required_
 
-The integer-index row location.
+The integer index row location.
 
 Type `number | number[] | string`
 

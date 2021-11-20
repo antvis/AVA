@@ -15,17 +15,17 @@ export default class DataFrame extends BaseFrame {
     assert(isBasicType(data) || isArray(data) || isObject(data), 'Data type is illegal');
 
     if (isBasicType(data)) {
-      if (extra?.index && extra?.columns) {
+      if (extra?.indexes && extra?.columns) {
         this.setAxis(1, extra?.columns);
         this.data = Array(extra?.columns.length).fill(this.data);
       } else if (!extra?.columns) {
         this.setAxis(1, [0]);
         this.data = [this.data];
-      } else if (!extra?.index) {
+      } else if (!extra?.indexes) {
         assert(isArray(extra?.columns), 'Index or columns must be Axis array.');
         assert(
           extra?.columns.length === 1,
-          'When the length of extra?.columns is larger than 1, extra?.index is required.'
+          'When the length of extra?.columns is larger than 1, extra?.indexes is required.'
         );
       }
 
@@ -103,11 +103,11 @@ export default class DataFrame extends BaseFrame {
       if (isBasicType(data0)) {
         const columns = Object.keys(data);
 
-        if (extra?.index) {
-          assert(isArray(extra.index), 'extra.index must be an array.');
-          assert(extra.index.length === 1, 'The length of extra.index must be 1.');
+        if (extra?.indexes) {
+          assert(isArray(extra.indexes), 'extra.indexes must be an array.');
+          assert(extra.indexes.length === 1, 'The length of extra.indexes must be 1.');
 
-          this.setAxis(0, extra.index);
+          this.setAxis(0, extra.indexes);
         } else {
           this.setAxis(0, [0]);
         }
@@ -139,7 +139,7 @@ export default class DataFrame extends BaseFrame {
 
       /** 2D: array object */
       if (isArray(data0)) {
-        this.setAxis(0, generateArrayIndex(data0, extra?.index));
+        this.setAxis(0, generateArrayIndex(data0, extra?.indexes));
         const columns = Object.keys(data);
         this.generateColumns(columns, extra?.columns);
 
@@ -149,16 +149,16 @@ export default class DataFrame extends BaseFrame {
           assert(isArray(datum), 'Data type is illegal');
 
           // Fill the missing values
-          if (datum.length < this.index.length) {
+          if (datum.length < this.indexes.length) {
             const newDatum = datum.concat(
-              Array(this.index.length - datum.length).fill(fillMissingValue(undefined, extra?.fillValue))
+              Array(this.indexes.length - datum.length).fill(fillMissingValue(undefined, extra?.fillValue))
             );
             this.colData.push(newDatum);
           } else {
             this.colData.push(datum.map((d) => fillMissingValue(d, extra?.fillValue)));
           }
 
-          for (let j = 0; j < this.index.length; j += 1) {
+          for (let j = 0; j < this.indexes.length; j += 1) {
             if (this.data[j]) {
               this.data[j].push(fillMissingValue(datum[j], extra?.fillValue));
             } else {
@@ -244,12 +244,12 @@ export default class DataFrame extends BaseFrame {
     if (colLoc === undefined) {
       // input is like 1
       if (isNumber(rowLoc)) {
-        assert(this.index.includes(rowLoc), 'The rowLoc is not found in the index.');
+        assert(this.indexes.includes(rowLoc), 'The rowLoc is not found in the indexes.');
 
-        if (this.index.includes(rowLoc)) {
+        if (this.indexes.includes(rowLoc)) {
           const newData = this.data[rowLoc];
           const newIndex = this.columns;
-          return new Series(newData, { index: newIndex });
+          return new Series(newData, { indexes: newIndex });
         }
       } else if (isArray(rowLoc)) {
         // input is like [0, 1, 2]
@@ -258,13 +258,13 @@ export default class DataFrame extends BaseFrame {
         for (let i = 0; i < rowLoc.length; i += 1) {
           const loc = rowLoc[i];
 
-          assert(this.index.includes(loc), 'The rowLoc is not found in the index.');
+          assert(this.indexes.includes(loc), 'The rowLoc is not found in the indexes.');
 
-          const idxInIndex = this.index.indexOf(loc);
+          const idxInIndex = this.indexes.indexOf(loc);
           newData.push(this.data[idxInIndex]);
-          newIndex.push(this.index[idxInIndex]);
+          newIndex.push(this.indexes[idxInIndex]);
         }
-        return new DataFrame(newData, { index: newIndex, columns: this.columns });
+        return new DataFrame(newData, { indexes: newIndex, columns: this.columns });
       } else if (isString(rowLoc) && rowLoc.includes(':')) {
         // input is like '0:2'
         const rowLocArr = rowLoc.split(':');
@@ -272,11 +272,11 @@ export default class DataFrame extends BaseFrame {
           const startRowIdx = Number(rowLocArr[0]);
           const endRowIdx = Number(rowLocArr[1]);
 
-          assert(isNumber(startRowIdx) && isNumber(endRowIdx), 'The rowLoc is not found in the index.');
+          assert(isNumber(startRowIdx) && isNumber(endRowIdx), 'The rowLoc is not found in the indexes.');
 
           const newData = this.data.slice(startRowIdx, endRowIdx);
-          const newIndex = this.index.slice(startRowIdx, endRowIdx);
-          return new DataFrame(newData, { index: newIndex, columns: this.columns });
+          const newIndex = this.indexes.slice(startRowIdx, endRowIdx);
+          return new DataFrame(newData, { indexes: newIndex, columns: this.columns });
         }
       }
     }
@@ -290,8 +290,8 @@ export default class DataFrame extends BaseFrame {
     const colIdxes = [];
 
     // rowLoc is Axis
-    if (isAxis(rowLoc) && this.index.includes(rowLoc)) {
-      startRowIdx = this.index.indexOf(rowLoc);
+    if (isAxis(rowLoc) && this.indexes.includes(rowLoc)) {
+      startRowIdx = this.indexes.indexOf(rowLoc);
       endRowIdx = startRowIdx + 1;
     }
 
@@ -300,9 +300,9 @@ export default class DataFrame extends BaseFrame {
       for (let i = 0; i < rowLoc.length; i += 1) {
         const rowIdx = rowLoc[i];
 
-        assert(this.index.includes(rowIdx), 'The rowLoc is not found in the index.');
+        assert(this.indexes.includes(rowIdx), 'The rowLoc is not found in the indexes.');
 
-        rowIdxes.push(this.index.indexOf(rowIdx));
+        rowIdxes.push(this.indexes.indexOf(rowIdx));
       }
     }
 
@@ -313,7 +313,7 @@ export default class DataFrame extends BaseFrame {
         const start = Number(rowLocArr[0]);
         const end = Number(rowLocArr[1]);
 
-        assert(isNumber(start) && isNumber(end), 'The rowLoc is not found in the index.');
+        assert(isNumber(start) && isNumber(end), 'The rowLoc is not found in the indexes.');
 
         startRowIdx = start;
         endRowIdx = end;
@@ -331,7 +331,7 @@ export default class DataFrame extends BaseFrame {
       for (let i = 0; i < colLoc.length; i += 1) {
         const colIdx = colLoc[i];
 
-        assert(this.columns.includes(colIdx), 'The colLoc is not found in the columns index.');
+        assert(this.columns.includes(colIdx), 'The colLoc is not found in the columns.');
 
         colIdxes.push(this.columns.indexOf(colIdx));
       }
@@ -344,29 +344,29 @@ export default class DataFrame extends BaseFrame {
         const start = this.columns.indexOf(colLocArr[0]);
         const end = this.columns.indexOf(colLocArr[1]);
 
-        assert(isNumber(start) && isNumber(end), 'The colLoc is not found in the columns index.');
+        assert(isNumber(start) && isNumber(end), 'The colLoc is not found in the columns.');
 
         startColIdx = start;
         endColIdx = end;
       }
     }
 
-    // build new data and index
+    // build new data and indexes
     let newData: any[][] = [];
     let newIndex: any[] = [];
 
-    assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the index.');
+    assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the indexes.');
 
     if (startRowIdx >= 0 && endRowIdx >= 0) {
       newData = this.data.slice(startRowIdx, endRowIdx);
-      newIndex = this.index.slice(startRowIdx, endRowIdx);
+      newIndex = this.indexes.slice(startRowIdx, endRowIdx);
     }
 
     if (rowIdxes.length > 0) {
       for (let i = 0; i < rowIdxes.length; i += 1) {
         const rowIdx = rowIdxes[i];
         newData.push(this.data[rowIdx]);
-        newIndex.push(this.index[rowIdx]);
+        newIndex.push(this.indexes[rowIdx]);
       }
     }
 
@@ -376,7 +376,7 @@ export default class DataFrame extends BaseFrame {
         newData[i] = newData[i].slice(startColIdx, endColIdx);
       }
       const newColumns = this.columns.slice(startColIdx, endColIdx);
-      return new DataFrame(newData, { index: newIndex, columns: newColumns });
+      return new DataFrame(newData, { indexes: newIndex, columns: newColumns });
     }
 
     if (colIdxes.length > 0) {
@@ -391,7 +391,7 @@ export default class DataFrame extends BaseFrame {
           newColumns.push(this.columns[colIdx]);
         }
       }
-      return new DataFrame(newData, { index: newIndex, columns: newColumns });
+      return new DataFrame(newData, { indexes: newIndex, columns: newColumns });
     }
 
     throw new Error('The colLoc is illegal.');
@@ -404,11 +404,11 @@ export default class DataFrame extends BaseFrame {
     if (colLoc === undefined) {
       // input is like 1
       if (isInteger(rowLoc)) {
-        assert(range(this.index.length).includes(rowLoc), 'The rowLoc is not found in the index.');
+        assert(range(this.indexes.length).includes(rowLoc), 'The rowLoc is not found in the indexes.');
 
         const newData = this.data[rowLoc];
         const newIndex = this.columns;
-        return new Series(newData, { index: newIndex });
+        return new Series(newData, { indexes: newIndex });
       }
 
       if (isArray(rowLoc)) {
@@ -418,12 +418,12 @@ export default class DataFrame extends BaseFrame {
         for (let i = 0; i < rowLoc.length; i += 1) {
           const idx = rowLoc[i];
 
-          assert(range(this.index.length).includes(idx), 'The rowLoc is not found in the index.');
+          assert(range(this.indexes.length).includes(idx), 'The rowLoc is not found in the indexes.');
 
           newData.push(this.data[idx]);
-          newIndex.push(this.index[idx]);
+          newIndex.push(this.indexes[idx]);
         }
-        return new DataFrame(newData, { index: newIndex, columns: this.columns });
+        return new DataFrame(newData, { indexes: newIndex, columns: this.columns });
       }
 
       if (isString(rowLoc) && rowLoc.includes(':')) {
@@ -433,11 +433,11 @@ export default class DataFrame extends BaseFrame {
           const startRowIdx = Number(rowLocArr[0]);
           const endRowIdx = Number(rowLocArr[1]);
 
-          assert(isInteger(startRowIdx) && isInteger(endRowIdx), 'The rowLoc is not found in the index.');
+          assert(isInteger(startRowIdx) && isInteger(endRowIdx), 'The rowLoc is not found in the indexes.');
 
           const newData = this.data.slice(startRowIdx, endRowIdx);
-          const newIndex = this.index.slice(startRowIdx, endRowIdx);
-          return new DataFrame(newData, { index: newIndex, columns: this.columns });
+          const newIndex = this.indexes.slice(startRowIdx, endRowIdx);
+          return new DataFrame(newData, { indexes: newIndex, columns: this.columns });
         }
       }
     }
@@ -452,7 +452,7 @@ export default class DataFrame extends BaseFrame {
 
     // rowLoc is int
     if (isInteger(rowLoc)) {
-      assert(range(this.index.length).includes(rowLoc), 'The rowLoc is not found in the index.');
+      assert(range(this.indexes.length).includes(rowLoc), 'The rowLoc is not found in the indexes.');
 
       startRowIdx = rowLoc;
       endRowIdx = rowLoc + 1;
@@ -463,7 +463,7 @@ export default class DataFrame extends BaseFrame {
       for (let i = 0; i < rowLoc.length; i += 1) {
         const rowIdx = rowLoc[i];
 
-        assert(range(this.index.length).includes(rowIdx), 'The rowLoc is not found in the index.');
+        assert(range(this.indexes.length).includes(rowIdx), 'The rowLoc is not found in the indexes.');
 
         rowIdxes.push(rowIdx);
       }
@@ -476,7 +476,7 @@ export default class DataFrame extends BaseFrame {
         const start = Number(rowLocArr[0]);
         const end = Number(rowLocArr[1]);
 
-        assert(isInteger(start) && isInteger(end), 'The rowLoc is not found in the index.');
+        assert(isInteger(start) && isInteger(end), 'The rowLoc is not found in the indexes.');
 
         startRowIdx = start;
         endRowIdx = end;
@@ -516,20 +516,20 @@ export default class DataFrame extends BaseFrame {
       }
     }
 
-    assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the index.');
+    assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the indexes.');
 
-    // build new data and index
+    // build new data and indexes
     let newData: any[][] = [];
     let newIndex: any[] = [];
 
     if (startRowIdx >= 0 && endRowIdx >= 0) {
       newData = this.data.slice(startRowIdx, endRowIdx);
-      newIndex = this.index.slice(startRowIdx, endRowIdx);
+      newIndex = this.indexes.slice(startRowIdx, endRowIdx);
     } else if (rowIdxes.length > 0) {
       for (let i = 0; i < rowIdxes.length; i += 1) {
         const rowIdx = rowIdxes[i];
         newData.push(this.data[rowIdx]);
-        newIndex.push(this.index[rowIdx]);
+        newIndex.push(this.indexes[rowIdx]);
       }
     }
 
@@ -544,7 +544,7 @@ export default class DataFrame extends BaseFrame {
         newData[i] = newData[i].slice(startColIdx, endColIdx);
       }
       const newColumns = this.columns.slice(startColIdx, endColIdx);
-      return new DataFrame(newData, { index: newIndex, columns: newColumns });
+      return new DataFrame(newData, { indexes: newIndex, columns: newColumns });
     }
 
     if (colIdxes.length > 0) {
@@ -559,7 +559,7 @@ export default class DataFrame extends BaseFrame {
           newColumns.push(this.columns[colIdx]);
         }
       }
-      return new DataFrame(newData, { index: newIndex, columns: newColumns });
+      return new DataFrame(newData, { indexes: newIndex, columns: newColumns });
     }
 
     throw new Error('The colLoc is illegal.');
@@ -574,7 +574,7 @@ export default class DataFrame extends BaseFrame {
 
     const colIdx = this.columns.indexOf(col);
     return new Series(this.colData[colIdx], {
-      index: this.index,
+      indexes: this.indexes,
     });
   }
 
@@ -596,8 +596,8 @@ export default class DataFrame extends BaseFrame {
   toString(): string {
     // Calculate the longest field length for each column, add two spaces to get the split
     const maxLengths = Array(this.columns.length + 1).fill(0);
-    for (let i = 0; i < this.index.length; i += 1) {
-      const len = getStringifyLength(this.index[i]);
+    for (let i = 0; i < this.indexes.length; i += 1) {
+      const len = getStringifyLength(this.indexes[i]);
       if (len > maxLengths[0]) maxLengths[0] = len;
     }
     for (let i = 0; i < this.columns.length; i += 1) {
@@ -618,7 +618,7 @@ export default class DataFrame extends BaseFrame {
           // JSON.stringify will add "" to string, it's two extra characters.
           `${col}${i !== this.columns.length ? generateSplit(maxLengths[i + 1] - getStringifyLength(col) + 2) : ''}`
       )
-      .join('')}\n${this.index
+      .join('')}\n${this.indexes
       .map(
         (idx, idxIndex) =>
           `${idx}${generateSplit(maxLengths[0] - getStringifyLength(idx))}${this.data[idxIndex]
@@ -628,7 +628,7 @@ export default class DataFrame extends BaseFrame {
                   i !== this.columns.length ? generateSplit(maxLengths[i + 1] - getStringifyLength(datum)) : ''
                 }`
             )
-            .join('')}${idxIndex !== this.index.length ? '\n' : ''}`
+            .join('')}${idxIndex !== this.indexes.length ? '\n' : ''}`
       )
       .join('')}`;
   }

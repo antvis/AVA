@@ -63,10 +63,10 @@ export type GraphAdviseParams = {
       sourceKey?: string; // key for edge source in edge object
       targetKey?: string;
       childrenKey?: string;
-      nodeIndex?: string[] | number[];
+      nodeIndexes?: string[] | number[];
       nodeColumns?: string[] | number[];
-      edgeIndex?: string[] | number[];
-      edgeColumns?: string[] | number[];
+      linkIndexes?: string[] | number[];
+      linkColumns?: string[] | number[];
     };
   };
 };
