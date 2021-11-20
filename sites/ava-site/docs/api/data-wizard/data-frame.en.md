@@ -294,9 +294,9 @@ DataFrame
 */
 ```
 
-## getByIntegerIndex
+## getByIndex
 
-Get data by row location and column location using integer index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIntegerIndex(0, 0)` gets the data of the first row and column.
+Get data by row location and column location using integer index. Similar to the `get` method, but only can be used by the integer index. For example, `getByIndex(0, 0)` gets the data of the first row and column.
 
 ***<font size=4>Parameters</font>***
 
@@ -330,7 +330,7 @@ const df = new DataFrame([
   { a: 3, b: 6, c: 9 },
 ]);
 
-df.getByIntegerIndex(0, 1);
+df.getByIndex(0, 1);
 /*
 DataFrame
   {
