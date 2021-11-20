@@ -123,6 +123,8 @@ type GraphAdvisorOptions = {
 
 * ***extra*** Parameter configuration.
 
+| Properties | Type | Description | Default |  
+| ----| ---- | ---- | -----|
 | nodeKey | `string` | Specifies the property name of nodes in the given graph data. | `nodes` |
 | edgeKey | `string` | Specifies the property name of edges in the given graph data. | `edges | links` |
 | sourceKey | `string` | Specifies the property name of source node in edges. | `source` |
