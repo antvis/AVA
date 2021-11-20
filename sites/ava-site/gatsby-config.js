@@ -40,6 +40,14 @@ module.exports = {
     ],
     docs: [
       {
+        slug: 'guide/auto-chart',
+        title: {
+          zh: 'AutoChart 组件',
+          en: 'AutoChart Component',
+        },
+        order: 1,
+      },
+      {
         slug: 'guide/ckb',
         title: {
           zh: '图表知识库（CKB)',
@@ -72,12 +80,20 @@ module.exports = {
         order: 5,
       },
       {
+        slug: 'guide/lite-insight',
+        title: {
+          zh: 'LiteInsight',
+          en: 'LiteInsight',
+        },
+        order: 6,
+      },
+      {
         slug: 'guide/smart-board',
         title: {
           zh: 'SmartBoard',
           en: 'SmartBoard',
         },
-        order: 6,
+        order: 7,
       },
       {
         slug: 'guide/smart-color',
@@ -85,15 +101,15 @@ module.exports = {
           zh: 'SmartColor',
           en: 'SmartColor',
         },
-        order: 7,
+        order: 8,
       },
       {
-        slug: 'guide/lite-insight',
+        slug: 'api/auto-chart',
         title: {
-          zh: 'LiteInsight',
-          en: 'LiteInsight',
+          zh: 'AutoChart',
+          en: 'AutoChart',
         },
-        order: 7,
+        order: 1,
       },
       {
         slug: 'api/ckb',
@@ -101,7 +117,7 @@ module.exports = {
           zh: '图表知识库（CKB)',
           en: 'Chart Knowledge Base (CKB)',
         },
-        order: 1,
+        order: 2,
       },
       {
         slug: 'api/data-wizard',

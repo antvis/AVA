@@ -1,7 +1,5 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./zh-CN/README.zh-CN.md)
 
-> WIP: The v2 version is being upgraded. For users of v1, please check [the backup branch](https://github.com/antvis/AVA/tree/v1).
-
 <div align="center">
   <img width="200" height="120" src="./common/img/logo.svg" alt="AVA logo">
 </div>
@@ -19,11 +17,126 @@
 
 **AVA** (![AVA logo](./common/img/vectorASymbol.svg) Visual Analytics) is a framework (or a solution) for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is from *Alibaba*, and its goal is to become an *Automated*, *AI driven* solution that supports *Augmented* analytics.
 
+The framework of AVA can be illustrated as follows:
+
+<div align="center">
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="320" alt='AVA framework' />
+</div>
+
 <br />
+
+## Demo
+
+```html
+<div id="mountNode"></div>
+```
+
+```js
+import { AutoChart } from '@antv/auto-chart';
+
+const data = [
+  {field1: 'a', field2: '100'},
+  {field1: 'b', field2: '300'},
+  {field1: 'c', field2: '800'},
+];
+
+ReactDOM.render(
+  <>
+    <AutoChart 
+      title="CASE 1" 
+      description="auto chart analysis" 
+      data={data} 
+      language={'zh-CN'} 
+    />
+  </>,
+  mountNode,
+);
+```
+
+<br />
+
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/QTJPYXJpjW/avademo.gif" alt="AVA demo">
+</div>
+
+## Packages
+
+### [AVA/AutoChart](https://github.com/antvis/AVA/blob/master/packages/auto-chart)
+
+AutoChart is a React component that automatically suggests and renders the right chart based on data.
+It can automatically generate and render the proper chart for visualization based on the input data with one-line of code.
+
+```sign
+@antv/auto-chart // one-click visualization component
+```
+
+### [AVA/CKB](https://github.com/antvis/AVA/tree/master/packages/knowledge)
+
+CKB stands for Chart Knowledge Base.
+This package is the KB where empirical knowledge about visualization and charts is stored. The chart recommendation is based on it.
+
+At the same time, this package also facilitates us to develop products of chart type selection.
+
+
+```sign
+@antv/knowledge // to get the chart knowledge base
+```
+
+### [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/data-wizard)
+
+DataWizard is a js/ts library for data processing.
+In the AVA framework, it is used to 'understand' the input dataset.
+Moreover, it can also be used independently to develop some statistical or data mocking functions.
+
+```sign
+import { analyzer } from @antv/data-wizard // to understand a dataset
+import { random } from @antv/data-wizard // to generate random mock data
+```
+
+### [AVA/ChartAdvisor](https://github.com/antvis/AVA/tree/master/packages/chart-advisor)
+
+ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
+
+```sign
+@antv/chart-advisor // to make charts automatically
+```
+
+### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight)
+
+LiteInsight is a js/ts library employed for Exploratory Data Analysis (EDA).
+It can automatically discover data insights from multidimensional data.
+
+```sign
+@antv/lite-insight // to get data insight
+```
+
+### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board)
+
+SmartBoard is a js/ts library employed for Dashboard visualization of charts.
+It can automatically generates the corresponding Dashboard configurations based on input charts and insights.
+
+```sign
+@antv/smart-board // to get Dashboard parameters
+```
+
+### [AVA/SmartColor](https://github.com/antvis/smart-color)
+
+SmartColor is a js/ts color processing class library.
+It allows deep customization of swatch patterns, color optimization and color correction of existing swatches, and one-click adaptation to color-blind scenes.
+
+```sign
+@antv/smart-color // to generate and customized color and palette.
+```
+
+## Sources
+
+* [API docs](https://ava.antv.vision/en/docs/api/intro)
+* [Gallery](https://ava.antv.vision/en/examples/gallery)
+* [Wiki](https://github.com/antvis/AVA/wiki)
 
 ## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-**AVA** is jointly built by multiple core data visualization technology or product teams within Alibaba Group, including **AntV** & **DeepInsight** of Ant Financial, **FBI** of New Retail Technology Business Group and **Kanaries** of Freshhema.
+**AVA** is jointly built by multiple core data visualization technology or product teams within Alibaba Group and Ant Group, including **AntV** & **DeepInsight** of Ant Group, **FBI** of New Retail Technology Business Group and **Kanaries** of Freshhema.
 
 <div align="center">
   <img src="https://gw.alipayobjects.com/zos/antfincdn/Qv%24T%24KQJpx/19199542.png" alt="AntV" width="60" align="middle" hspace="20">

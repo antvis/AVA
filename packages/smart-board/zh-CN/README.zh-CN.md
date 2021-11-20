@@ -7,7 +7,12 @@
 
 <div align="center">
 一个 js/ts 的前端图表 Dashboard 计算和绘制库。
+
+
+[![Version](https://badgen.net/npm/v/@antv/smart-board)](https://www.npmjs.com/@antv/smart-board)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/smart-board.svg)](http://npmjs.com/@antv/smart-board)
 </div>
+
 
 ## ✨ 功能特性
 
@@ -15,7 +20,7 @@
 * **Dashboard 绘制**: 提供基于上述属性的 React Dashboard 绘制组件 `SmartBoardDashboard`。
 * **结合洞察**: 可以与 [LiteInsight](https://ava.antv.vision/zh/docs/api/lite-insight/auto-insights) 结合从而展示数据背后的洞察信息。
 
-SmartBoard 的流程如下：
+SmartBoard 的流程图如下：
 
 <img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' />
 

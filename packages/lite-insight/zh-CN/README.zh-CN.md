@@ -7,7 +7,12 @@
 
 <div align="center">
 从多维数据中发现洞察的探索性数据分析JavaScript工具库
+
+
+[![Version](https://badgen.net/npm/v/@antv/lite-insight)](https://www.npmjs.com/@antv/lite-insight)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/lite-insight.svg)](http://npmjs.com/@antv/lite-insight)
 </div>
+
 
 ## ✨ 功能特性
 

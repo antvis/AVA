@@ -7,7 +7,12 @@
 
 <div align="center">
 A js/ts library that solves dashboarding calculation and drawing problems for charts.
+
+
+[![Version](https://badgen.net/npm/v/@antv/smart-board)](https://www.npmjs.com/@antv/smart-board)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/smart-board.svg)](http://npmjs.com/@antv/smart-board)
 </div>
+
 
 ## ✨ Features
 

@@ -6,8 +6,14 @@
 </h1>
 
 <div align="center">
-A js/ts library for data processing.
+A js/ts library for data processing and analysis.
+
+
+[![Version](https://badgen.net/npm/v/@antv/data-wizard)](https://www.npmjs.com/@antv/data-wizard)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/data-wizard.svg)](http://npmjs.com/@antv/data-wizard)
 </div>
+
+The framework of DataWizard is as follows:
 
 <div align="center">
 <img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />

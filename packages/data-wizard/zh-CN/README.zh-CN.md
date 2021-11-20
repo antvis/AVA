@@ -7,7 +7,13 @@
 
 <div align="center">
 一个基于 js/ts 的前端数据处理库。
+
+
+[![Version](https://badgen.net/npm/v/@antv/data-wizard)](https://www.npmjs.com/@antv/data-wizard)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/data-wizard.svg)](http://npmjs.com/@antv/data-wizard)
 </div>
+
+DataWizard 的架构如下：
 
 <div align="center">
 <img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />
