@@ -7,7 +7,7 @@ import { Popover } from 'antd';
 // import
 import { CKBJson } from '@antv/ckb';
 
-const chartTypeList = Object.keys(Thumbnails).slice(0, 12);
+const chartTypeList = Object.keys(Thumbnails);
 
 const ckb = CKBJson('en-US', true);
 
