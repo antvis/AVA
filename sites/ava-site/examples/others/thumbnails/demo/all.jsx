@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Switch } from 'antd';
 import insertCss from 'insert-css';
-import Thumbnails, { Thumbnail } from '@antv/thumbnails';
+import { Thumbnail } from '@antv/thumbnails-component';
+import Thumbnails from '@antv/thumbnails';
 
 insertCss(`
   .demo-thumbnails-all-grid {

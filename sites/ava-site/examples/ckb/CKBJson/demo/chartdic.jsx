@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { CKBJson } from '@antv/knowledge';
-import Thumbnails, { Thumbnail } from '@antv/thumbnails';
+import { Thumbnail } from '@antv/thumbnails-component';
+import Thumbnails from '@antv/thumbnails';
 import { Popover } from 'antd';
 
 const chartTypeList = Object.keys(Thumbnails).slice(0, 12);
