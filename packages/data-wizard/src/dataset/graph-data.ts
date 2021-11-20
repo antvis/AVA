@@ -157,7 +157,7 @@ export default class GraphData {
 
   getNodeFrame() {
     const extra = {
-      index: this.extra?.nodeIndex,
+      indexes: this.extra?.nodeIndexes,
       columns: this.extra?.nodeColumns,
     };
     return new DataFrame(this.data.nodes, extra);
@@ -165,7 +165,7 @@ export default class GraphData {
 
   getLinkFrame() {
     const extra = {
-      index: this.extra?.linkIndex,
+      indexes: this.extra?.linkIndexes,
       columns: this.extra?.linkColumns,
     };
     return new DataFrame(this.data.links, extra);

@@ -90,7 +90,7 @@ export type Axis = string | number;
 
 // extra data configs
 export type Extra = {
-  index?: Axis[];
+  indexes?: Axis[];
   columns?: Axis[];
   fillValue?: any;
 };
@@ -109,9 +109,9 @@ export type GraphExtra = {
   sourceKey?: string; // key for link source in link object
   targetKey?: string;
   childrenKey?: string;
-  nodeIndex?: Axis[];
+  nodeIndexes?: Axis[];
   nodeColumns?: Axis[];
-  linkIndex?: Axis[];
+  linkIndexes?: Axis[];
   linkColumns?: Axis[];
 };
 export type NodeData = {
