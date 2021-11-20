@@ -10,20 +10,22 @@ order: 3
 DW 中的图数据结构，支持读取点边数据、边数组、树型结构数据，将其转换为标准化 `GraphData` 数据。使用 `GraphData`，你可以解析非标准化的数组、图数据和层次型数据，并提取图中的常用的结构和统计特征，还可以得到标准化为 `DataFrame` 的点表和边表，使用 `DataFrame` 提供的 API 来分析点、边各个字段的统计特征。
 
 ## new GraphData
-### 参数
+
+***<font size=4>参数</font>***
+
 **data** 源数据 _必选_
 
-可接受能转换成点边数据的对象或数组。
+Objects or arrays that can be converted to nodes-links data.
 
 类型
-- 图结构数据
-  - 点边结构数据，`{ [key: string]: any[] }`, 例如 `{ nodes: [], links: [] }`，当节点数组和边数组对应的属性名称不是 `nodes`, `links` 或 `edges` 时，需要通过 `extra` 参数指定属性名称。
-  - 边数组， `{ [key: string]: any }[]`
-- 树型结构数据（层次数据）` { id: string; children: Tree[]; }`
+* 图结构数据
+  * 点边结构数据，`{ [key: string]: any[] }`, 例如 `{ nodes: [], links: [] }`，当节点数组和边数组对应的属性名称不是 `nodes`, `links` 或 `edges` 时，需要通过 `extra` 参数指定属性名称。
+  * 边数组， `{ [key: string]: any }[]`
+* 树型结构数据（层次数据）` { id: string; children: Tree[]; }`
 
 **extra** 额外参数 _可选_
 
-用于配置行索引、列索引和缺失填充值。
+用于配置节点、边、源、目标、孩子节点的键值和索引。
   
 | 属性 | 类型 | 描述 | 默认值 | 必选 | 
 | ----| ---- | ---- | ---- | ---- |
@@ -34,14 +36,14 @@ DW 中的图数据结构，支持读取点边数据、边数组、树型结构�
 | childrenKey | `string` | 指定孩子节点属性在输入的层次数据中对应属性名称。 | `children` |
 | nodeIndexes | `string | number` | 节点数据的行索引 | - | - |
 | nodeColumns | `string | number` | 节点数据的列索引 | - | - |
-| sourceKey | `string | number` | 边数据的行索引 | - | - |
-| linkIndexes | `string | number` | 边数据的列索引 | - | - |
+| linkIndexes | `string | number` | 边数据的行索引 | - | - |
 | linkColumns | `string | number` | 边数据的列索引 | - | - |
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `GraphData`
 
-### 用法
+***<font size=4>用法</font>***
 ```ts
 import { GraphData } from '@antv/data-wizard';
 
@@ -113,31 +115,34 @@ type LinkData = {
 ## getNodeFrame
 获取节点数组的 DataFrame，便于调用 DataFrame 相关方法对点表进行操作和分析。
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `DataFrame`
 
 ## getEdgeFrame
 获取边数组的 DataFrame，便于调用 DataFrame 相关方法对边表进行操作和分析。
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `DataFrame`
 
 ## info
 获取常用的图中的统计学信息。
 
-### 返回值
+***<font size=4>返回值</font>***
+
 `GraphProps`
 GraphProps 中的详细信息如下：
 
 | 属性 | 类型 | 描述 | 
 | ----| ---- | ---- | 
-| nodeFeats | `{ [key: string]: any }[]` | 节点的结构特征，包括 `degree`, `inDegree`, `outDegree`, `pageRank。` |
+| nodeFeats | `{ [key: string]: any }[]` | 节点的结构特征，包括 `degree`, `inDegree`, `outDegree`, `pageRank` |
 | linkFeats | `{ [key: string]: any }[]` | 边的结构特征。 |
 | graphInfo | `GraphFeat` | 全图的结构特征，包括 `nodeCount`、`linkCount`、`direction`、`isDirected`、`isCycle`、`isConnected`、`isDAG`、`maxDegree`、`avgDegree`、`cycleCount`、`directedCycleCount` 、`componentCount`、`strongConnectedComponents`。 |
 | nodeFieldsInfo | `FieldInfo[]` | 节点属性的统计学信息，由 `DataFrame` 计算得到。 |
 | linkFieldsInfo | `FieldInfo[]` | 边属性的统计学信息，由 `DataFrame` 计算得到。  |
 
-### 用法
+***<font size=4>用法</font>***
 ```ts
 import { GraphData } from '@antv/data-wizard';
 
