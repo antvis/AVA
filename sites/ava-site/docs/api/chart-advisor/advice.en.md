@@ -118,10 +118,16 @@ type GraphAdvisorOptions = {
 | nodeColors | `string[]` | The color of the node. | None `Optional` |
 | nodeSizeRange | `number[]` | The node size range. | None `Optional` | 
 | edgeWidthRange | `number[]` | The width range of the edge. |None `Optional` |
-| extra | `{ *Key, ...}` | Specifies the graph-related attributes. | None `Optional` |
-| *Key | `string` | Specifies the location of the point-edge relationship (point, edge, origin, pointing). | None `Optional` |
+| extra | `{ *Key, ...}` | Specifies the graph-related attributes. | See below. |
 | AdvisorOptions | `AdvisorOptions` | Same as the recommended configuration items for statistical graphs. | None `Optional` |
 
+* ***extra*** Parameter configuration.
+
+| nodeKey | `string` | Specifies the property name of nodes in the given graph data. | `nodes` |
+| edgeKey | `string` | Specifies the property name of edges in the given graph data. | `edges | links` |
+| sourceKey | `string` | Specifies the property name of source node in edges. | `source` |
+| targetKey | `string` | Specifies the property name of target node in edges. | `target` |
+| childrenKey | `string` | Specifies the property name of children in the given hirerachy data. | `children | to` |
 
 
 ## Return value
