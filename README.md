@@ -17,47 +17,7 @@
 
 **AVA** (![AVA logo](./common/img/vectorASymbol.svg) Visual Analytics) is a framework (or a solution) for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is from *Alibaba*, and its goal is to become an *Automated*, *AI driven* solution that supports *Augmented* analytics.
 
-The framework of AVA can be illustrated as follows:
-
-<div align="center">
-<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="320" alt='AVA framework' />
-</div>
-
 <br />
-
-## Demo
-
-```html
-<div id="mountNode"></div>
-```
-
-```js
-import { AutoChart } from '@antv/auto-chart';
-
-const data = [
-  {field1: 'a', field2: '100'},
-  {field1: 'b', field2: '300'},
-  {field1: 'c', field2: '800'},
-];
-
-ReactDOM.render(
-  <>
-    <AutoChart 
-      title="CASE 1" 
-      description="auto chart analysis" 
-      data={data} 
-      language={'zh-CN'} 
-    />
-  </>,
-  mountNode,
-);
-```
-
-<br />
-
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/QTJPYXJpjW/avademo.gif" alt="AVA demo">
-</div>
 
 ## Packages
 
@@ -117,15 +77,6 @@ It can automatically generates the corresponding Dashboard configurations based 
 
 ```sign
 @antv/smart-board // to get Dashboard parameters
-```
-
-### [AVA/SmartColor](https://github.com/antvis/smart-color)
-
-SmartColor is a js/ts color processing class library.
-It allows deep customization of swatch patterns, color optimization and color correction of existing swatches, and one-click adaptation to color-blind scenes.
-
-```sign
-@antv/smart-color // to generate and customized color and palette.
 ```
 
 ## Sources

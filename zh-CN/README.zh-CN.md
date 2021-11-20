@@ -17,47 +17,7 @@
 
 **AVA** (![AVA logo](../common/img/vectorASymbol.svg) Visual Analytics) 是为了更简便的可视分析而生的技术框架。 其名称中的第一个 **A** 具有多重涵义：它说明了这是一个出自阿里巴巴集团（*Alibaba*）技术框架，其目标是成为一个自动化（*Automated*）、智能驱动（*AI driven*）、支持增强分析（*Augmented*）的可视分析解决方案。
 
-AVA 的整体架构如下：
-
-<div align="center">
-<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="320" alt='AVA framework' />
-</div>
-
 <br />
-
-## 演示案例
-
-```html
-<div id="mountNode"></div>
-```
-
-```js
-import { AutoChart } from '@antv/auto-chart';
-
-const data = [
-  {field1: 'a', field2: '100'},
-  {field1: 'b', field2: '300'},
-  {field1: 'c', field2: '800'},
-];
-
-ReactDOM.render(
-  <>
-    <AutoChart 
-      title="CASE 1" 
-      description="auto chart analysis" 
-      data={data} 
-      language={'zh-CN'} 
-    />
-  </>,
-  mountNode,
-);
-```
-
-<br>
-
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/QTJPYXJpjW/avademo.gif" alt="AVA demo">
-</div>
 
 ## 包
 
@@ -110,14 +70,6 @@ SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据
 
 ```sign
 @antv/smart-board // 增强展现库
-```
-
-### [AVA/SmartColor](https://github.com/antvis/smart-color)
-
-SmartColor 是一个 js/ts 的前端颜色处理类库。它可以深度定制色板模式，对已有色板进行颜色优化和色彩校正，并且可以一键适配色盲场景。
-
-```sign
-@antv/smart-color // 智能色板库
 ```
 
 ## 资源
