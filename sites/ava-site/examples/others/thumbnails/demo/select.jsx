@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Menu, Dropdown } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
-import Thumbnails, { Thumbnail } from '@antv/thumbnails';
+import { Thumbnail } from '@antv/thumbnails-component';
+import Thumbnails from '@antv/thumbnails';
 
 const chartTypeList = Object.keys(Thumbnails);
 

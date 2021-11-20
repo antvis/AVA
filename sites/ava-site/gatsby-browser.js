@@ -20,6 +20,7 @@ window.reactVega = require('react-vega');
 window.reactColor = require('react-color');
 window.knowledge = require('../../packages/ckb/src');
 window.thumbnails = require('@antv/thumbnails');
+window.thumbnailsComponent = require('@antv/thumbnails-component');
 window.s2 = require('@antv/s2');
 window.g2plot = require('@antv/g2plot');
 window.antvSpec = require('@antv/antv-spec');
