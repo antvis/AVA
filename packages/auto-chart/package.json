@@ -1,6 +1,6 @@
 {
   "name": "@antv/auto-chart",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0",
   "description": "A React component for chart use",
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
@@ -97,9 +97,9 @@
   ],
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/chart-advisor": "^2.0.0-alpha.2",
-    "@antv/ckb": "^2.0.0-alpha.2",
-    "@antv/data-wizard": "^2.0.0-alpha.2",
+    "@antv/chart-advisor": "^2.0.0",
+    "@antv/ckb": "^2.0.0",
+    "@antv/data-wizard": "^2.0.0",
     "@antv/g2plot-schemas": "^1.2.2",
     "@antv/thumbnails": "^2.0.0",
     "@antv/thumbnails-component": "^2.0.0",

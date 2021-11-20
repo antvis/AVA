@@ -1,6 +1,6 @@
 {
   "name": "@antv/data-wizard",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0",
   "description": "A js/ts library for data processing",
   "author": {
     "name": "AntV",
@@ -61,7 +61,7 @@
   ],
   "dependencies": {
     "@antv/algorithm": "^0.1.12",
-    "@antv/ckb": "^2.0.0-alpha.2",
+    "@antv/ckb": "^2.0.0",
     "date-fns": "^2.23.0",
     "mersenne-twister": "^1.1.0",
     "randexp": "^0.5.3"
