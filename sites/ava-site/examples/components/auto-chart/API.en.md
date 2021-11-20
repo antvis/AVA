@@ -1,3 +1,3 @@
-# autoChart
+# AutoChart
 
-`markdown:docs/api/autoChart.en.md`
+`markdown:docs/auto-chart/AutoChart.en.md`
