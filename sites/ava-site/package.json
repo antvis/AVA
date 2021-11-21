@@ -17,7 +17,8 @@
     "deploy": "npm run build && npm run copy-mirror-action && gh-pages -d public",
     "copy-mirror-action": "mkdir -p public/.github/workflows && cp ../../.github/workflows/mirror.yml public/.github/workflows",
     "serve": "gatsby serve",
-    "clean": "gatsby clean"
+    "clean": "gatsby clean",
+    "fix-memory-limit": "cross-env LIMIT=8192 increase-memory-limit"
   },
   "resolutions": {
     "monaco-editor-webpack-plugin": "2.0.0",
@@ -54,6 +55,7 @@
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "cross-env": "^7.0.2",
+    "increase-memory-limit": "^1.0.7",
     "gatsby": "^2.15.34",
     "gh-pages": "^3.1.0",
     "tslib": "^2.2.0",
