@@ -35,7 +35,7 @@ It can automatically generate and render the proper chart for visualization base
 | language | `"zh-CN" | "en-US"` | Language. | `"zh-CN"` `Optional` |
 | purpose | `Purpose` | Specifies the purpose of the chart analysis. | None `Optional` |
 | showRanking | `boolean` | Whether to show the recommended chart ranking. | `true` `Optional` |
-| configurable | `boolean` | Whether or not to show the chart configuration panel. | `true` `Optional` |
+<!-- | configurable | `boolean` | Whether or not to show the chart configuration panel. | `true` `Optional` | -->
 | noDataContent | `React.ReactNode` | Show nodes when custom data is empty. | None `Optional` |
 
 * ***Purpose*** Parameter configuration.
@@ -113,11 +113,11 @@ The purpose of visualization.
 
 Whether to display the recommended ranking, it can be used to switch chart type.
 
-### configurable
+<!-- ### configurable
 
 <description>**optional** _boolean_ _default:_ `true`</description>
 
-Whether show config panel.
+Whether show config panel. -->
 
 ### noDataContent
 
