@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, CSSProperties } from 'react';
-import { get, set } from 'lodash-es';
+// import { get, set } from 'lodash-es';
 import { message, ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import enUS from 'antd/es/locale/en_US';
@@ -7,7 +7,7 @@ import { Advisor } from '@antv/chart-advisor';
 import { Chart } from './ChartRender';
 import { AdviceList } from './AdviceList';
 import { EmptyContent } from './EmptyContent';
-import { ChartConfigPanel, ChartConfigBtn } from './ConfigPanel';
+// import { ChartConfigPanel, ChartConfigBtn } from './ConfigPanel';
 import { MockPanel } from './MockPanel';
 import { Language, intl } from './i18n';
 import { prefixCls } from './utils';
@@ -27,7 +27,7 @@ interface Props {
   language?: Language;
   purpose?: Purpose;
   showRanking?: boolean;
-  configurable?: boolean;
+  // configurable?: boolean;
   noDataContent?: React.ReactNode;
 }
 
@@ -42,7 +42,7 @@ export const AutoChart = (props: Props) => {
     title,
     description,
     showRanking = true,
-    configurable = true,
+    // configurable = true,
   } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef(null);
@@ -53,9 +53,9 @@ export const AutoChart = (props: Props) => {
   const [mockType, setMockType] = useState<string>(null);
   const [mockConfigs, setMockConfigs] = useState<any>(null);
   const [isActive, setHover] = useState<boolean>(false);
-  const [configDisplay, setConfigDisplay] = useState<boolean>(false);
+  // const [configDisplay, setConfigDisplay] = useState<boolean>(false);
   const [mockDisplay, setMockDisplay] = useState<boolean>(false);
-  const [configs, setConfigs] = useState(null);
+  // const [configs, setConfigs] = useState(null);
 
   useEffect(() => {
     if (containerRef) {
@@ -77,33 +77,33 @@ export const AutoChart = (props: Props) => {
     }
   }, [currentData]);
 
-  const onConfigChange = (configsValue, configsTransValue) => {
-    setConfigs(configsValue);
-    if (configsTransValue) {
-      if (typeof chartRef.current.chartType !== 'string') throw new Error('please set the plotType');
-      if (chartRef.current.chartType === 'Pie') {
-        const colorField = get(configsTransValue, 'colorField');
-        if (colorField && !get(configsTransValue, 'statistic.title.formatter')) {
-          set(configsTransValue, 'statistic.title.formatter', (datum: any) => {
-            if (datum) {
-              return datum[colorField];
-            }
-            return intl.get('Total', language);
-          });
-        }
-      }
-      chartRef.current.plot.update(configsTransValue);
-    }
-  };
+  // const onConfigChange = (configsValue, configsTransValue) => {
+  //   setConfigs(configsValue);
+  //   if (configsTransValue) {
+  //     if (typeof chartRef.current.chartType !== 'string') throw new Error('please set the plotType');
+  //     if (chartRef.current.chartType === 'Pie') {
+  //       const colorField = get(configsTransValue, 'colorField');
+  //       if (colorField && !get(configsTransValue, 'statistic.title.formatter')) {
+  //         set(configsTransValue, 'statistic.title.formatter', (datum: any) => {
+  //           if (datum) {
+  //             return datum[colorField];
+  //           }
+  //           return intl.get('Total', language);
+  //         });
+  //       }
+  //     }
+  //     chartRef.current.plot.update(configsTransValue);
+  //   }
+  // };
 
   const onChartTypeChange = (index: number) => {
     setCurrentAdviceIndex(index);
-    setConfigs(null);
+    // setConfigs(null);
   };
 
   const onMockDataChange = (mockResult: MockResultType) => {
     const { result } = mockResult;
-    setConfigs(null);
+    // setConfigs(null);
     setMockDisplay(false);
     if (result.config) {
       setMockConfigs(result);
@@ -146,7 +146,7 @@ export const AutoChart = (props: Props) => {
             onChartTypeChange={onChartTypeChange}
           />
         )}
-        {configurable && chartRef.current?.chartType && (
+        {/* {configurable && chartRef.current?.chartType && (
           <ChartConfigBtn isActive={isActive} onClick={() => setConfigDisplay(!configDisplay)} />
         )}
         {configurable && chartRef.current?.chartType && (
@@ -159,7 +159,7 @@ export const AutoChart = (props: Props) => {
             containerRef={containerRef}
             onClose={() => setConfigDisplay(false)}
           />
-        )}
+        )} */}
         {currentData.length === 0 && !mockType && (
           <EmptyContent language={language} noDataContent={noDataContent} onOpenMock={() => setMockDisplay(true)} />
         )}
