@@ -1,7 +1,7 @@
 {
   "name": "ava-demo",
   "private": true,
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -40,7 +40,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.6.3",
     "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/auto-chart": "^2.0.0",
+    "@antv/auto-chart": "^2.0.1",
     "@antv/chart-advisor": "^2.0.0",
     "@antv/ckb": "^2.0.0",
     "@antv/data-wizard": "^2.0.0",
