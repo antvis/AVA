@@ -35,7 +35,6 @@ AutoChart = (props: Props): <ConfigProvider />
 | language |  `"zh-CN" | "en-US"` | 语言。 | `"zh-CN"`  `可选` |
 | purpose |  `Purpose` | 指定图表的分析目的。 | 无  `可选` |
 | showRanking |  `boolean` | 是否显示推荐图表排名。 | `true`  `可选` |
-<!-- | configurable |  `boolean` | 是否显示图表配置面板。 | `true`  `可选` | -->
 | noDataContent |  `React.ReactNode` | 自定义数据为空时显示节点。 | 无  `可选` |
 
 * ***Purpose*** 参数配置。
