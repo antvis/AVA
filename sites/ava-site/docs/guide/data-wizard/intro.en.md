@@ -7,7 +7,7 @@ order: 0
 
 
 
-DataWizard is a js/ts library for data processing. In the AVA framework, it is used to understand and process the input dataset. However, it can also be used independently to develop some data processing, statistics or data mocking functions.
+DataWizard is a js/ts library for data processing. In the AVA framework, it is used to understand and process the input dataset. Moreover, it can also be used independently to develop some data processing, statistics or data mocking functions.
 
 <div align="center">
 <img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />
