@@ -126,7 +126,6 @@ SmartColor 是一个 js/ts 的前端颜色处理类库。它可以深度定制�
 ```sign
 @antv/smart-color // 智能色板库
 ```
-
 ## 友情链接
 
 <img src="https://gw.alipayobjects.com/zos/antfincdn/1yMwFkBvyV/chartcube-logo-cube.svg" width="18"> [ChartCube](https://chartcube.alipay.com/) - 基于 [G2Plot](https://github.com/antvis/G2Plot) 的在线图表制作工具，交互简单，一键导出图表代码！
@@ -134,3 +133,11 @@ SmartColor 是一个 js/ts 的前端颜色处理类库。它可以深度定制�
 <img src="https://gw.alipayobjects.com/zos/antfincdn/qxCT7b6aLE/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) - 为设计者提升工作效率的工具集。
 
 <img src="https://ch-resources.oss-cn-shanghai.aliyuncs.com/images/kanaries-circular.png" width="18"> [Rath](https://github.com/Kanaries/Rath) - 支持洞察自动发现与交互式可视化(图表、报表)生成推荐的增强分析工具。
+
+## 升级指南（从 v1 到 v2）
+
+* `@antv/knowledge` 更名为 `@antv/ckb`，基本使用不变；
+* `@antv/dw-*` 系列（包括 `@antv/dw-analyzer`、`@antv/dw-transform`、`@antv/dw-random`、`@antv/dw-util`）统一为 `@antv/data-wizard`，并升级数据格式，具体详情见 [DataWizard](https://ava.antv.vision/zh/docs/guide/data-wizard/intro)；
+* `@antv/chart-advisor`，主要变更点有以下两点，具体详情见 [ChartAdvisor](https://ava.antv.vision/zh/docs/guide/chart-advisor/ChartAdvisor)
+  * 结合原 `@antv/chart-linter` 能力，`@antv/chart-linter` 将不再维护；
+  * 不再导出 `autoChart` 方法，`autoChart` 升级为 react 组件，可以过 `@antv/auto-chart` 引用，且不再支持配置面板，具体详情见 [AutoChart API](https://ava.antv.vision/zh/docs/api/auto-chart/AutoChart)。
