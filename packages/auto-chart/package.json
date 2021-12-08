@@ -30,7 +30,6 @@
     "access": "public"
   },
   "peerDependencies": {
-    "@ant-design/icons": ">=4.6.4",
     "@antv/g2plot": ">=2.3.33",
     "@antv/g6": ">=4.3.11",
     "antd": ">=4.16.13",
@@ -39,7 +38,6 @@
     "react-dom": ">=17.0.2"
   },
   "devDependencies": {
-    "@ant-design/icons": "^4.6.4",
     "@antv/g2plot": "^2.3.36",
     "@antv/g6": "^4.3.11",
     "@babel/core": "^7.15.5",
@@ -96,6 +94,7 @@
     }
   ],
   "dependencies": {
+    "@ant-design/icons": "^4.6.4",
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/chart-advisor": "^2.0.0",
     "@antv/ckb": "^2.0.0",
@@ -105,7 +104,6 @@
     "@antv/util": "^2.0.14",
     "date-fns": "^2.24.0",
     "lodash-es": "^4.17.21",
-    "react-copy-to-clipboard": "^5.0.4",
-    "schema-util": "^3.4.6"
+    "react-copy-to-clipboard": "^5.0.4"
   }
 }

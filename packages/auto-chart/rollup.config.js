@@ -32,16 +32,7 @@ const output = {
   preserveModulesRoot: 'src',
 };
 
-const external = [
-  'react',
-  'react-dom',
-  '@ant-design/icons',
-  'antd',
-  '@antv/g6',
-  '@antv/g2plot',
-  'moment',
-  // '@antv/g2plot-schemas',
-];
+const external = ['react', 'react-dom', 'antd', '@antv/g6', '@antv/g2plot', 'moment'];
 
 const plugins = [
   typescript({
@@ -88,7 +79,6 @@ if (format === 'umd') {
     antd: 'antd',
     '@antv/g2plot': 'G2Plot',
     '@antv/g6': 'G6',
-    '@ant-design/icons': 'icons',
     moment: 'moment',
   };
 } else {
