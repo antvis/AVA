@@ -1,6 +1,6 @@
 {
   "name": "@antv/auto-chart",
-  "version": "2.0.1",
+  "version": "2.0.2-alpha.0",
   "description": "A React component for chart use",
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
