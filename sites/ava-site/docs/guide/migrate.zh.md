@@ -26,7 +26,7 @@ AVA 作为一套智能可视化解决方案，在 v1 版本中发布了以下相
 
 #### `@antv/chart-advisor`
 
-`autoChart` 废弃，可以通过 `@antv/auto-chart` 使用原 autoChart 能力的 react 组件；
+`autoChart` 废弃，可以通过 `@antv/auto-chart` 使用原 autoChart 能力的 react 组件，原 `autoChart` 方法不只是对图表推荐流程的组装，还有很多操作 dom 的内容，相关能力更适合作为独立组件或者应用对外暴露，chart-advisor 将专注图表推荐流程及结果结构描述；
 
 引用方式：
 
@@ -55,7 +55,7 @@ options 对应一览：
 
 `dataToDataProps` ...
 
-
+<!-- TODO @龙朱 @pdd -->
 
 ### `@antv/dw-*`
 
