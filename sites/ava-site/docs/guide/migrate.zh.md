@@ -24,11 +24,40 @@ AVA 作为一套智能可视化解决方案，在 v1 版本中发布了以下相
 
 ### api 变更
 
-`@antv/chart-advisor`
-- `autoChart` 废弃，可以通过 `@antv/auto-chart` 使用原 autoChart 能力的 react 组件；
-- `dataToDataProps` ...
+#### `@antv/chart-advisor`
 
-`@antv/data-wizard`
+`autoChart` 废弃，可以通过 `@antv/auto-chart` 使用原 autoChart 能力的 react 组件；
+
+引用方式：
+
+```
+// Before
+import { autoChart } from '@antv/chart-advisor';
+autoChart(container, data, options);
+
+// After
+import { AutoChart } from '@antv/auto-chart';
+ReactDOM.render(<AutoChart data={data} {...options} />, container);
+```
+
+options 对应一览：
+
+|  Before   | After |
+|  ----  | ----  | 
+| autoChart.title  | 对应 AutoChart props.title |
+| autoChart.description  | 对应 AutoChart props.description |
+| autoChart.toolbar  | 对应 AutoChart props.showRanking |
+| autoChart.theme  | 暂不支持 |
+| autoChart.config  | 暂不支持 |
+| autoChart.noDataContent  | 对应 AutoChart props.noDataContent |
+| autoChart.language  | 对应 AutoChart props.language |
+| autoChart.development  | 废弃 |
+
+`dataToDataProps` ...
+
+
+
+### `@antv/dw-*`
 
 <!-- TODO @pdd -->
 
