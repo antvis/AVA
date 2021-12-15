@@ -141,11 +141,3 @@ It allows deep customization of swatch patterns, color optimization and color co
 <img src="https://gw.alipayobjects.com/zos/antfincdn/qxCT7b6aLE/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) - A suite of plugins to enhance designers.
 
 <img src="https://ch-resources.oss-cn-shanghai.aliyuncs.com/images/kanaries-circular.png" width="18"> [Rath](https://github.com/Kanaries/Rath) - Augmented analytics tool with automated insight discovery and interactive visualization design.
-
-## Upgrade Guide (v1 to v2)
-
-* `@antv/knowledge` changed to `@antv/ckb`, basic usage remains the same;
-* The `@antv/dw-*` series (including `@antv/dw-analyzer`, `@antv/dw-transform`, `@antv/dw-random` and `@antv/dw-util`) is unified as  `@antv/data-wizard`, and the data format is upgraded as detailed in [DataWizard](https://ava.antv.vision/zh/docs/guide/data-wizard/intro);
-* `@antv/chart-advisor`, the two main change points are as follows, see  [ChartAdvisor](https://ava.antv.vision/zh/docs/guide/chart-advisor/ChartAdvisor) for details
-  * Combined with the former capability of `@antv/chart-linter`, `@antv/chart-linter` will no longer be maintained;
-  * The `autoChart` method is no longer exported, `autoChart` is upgraded to a react component that can be referenced by `@antv/auto-chart`, and the configuration panel is no longer supported, see [AutoChart API](https://ava.antv.vision/zh/docs/api/auto-chart/AutoChart) for details.
