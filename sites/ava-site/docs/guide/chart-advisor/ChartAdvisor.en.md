@@ -9,8 +9,6 @@ order: 0
 
 Recommend and automatically generate chart configurations based on data and analytics requirements.
 
-</div>
-
 ## ✨ Features
 
 ChartAdvisor contains several tool classes exported for users, including `ChartAdvisor`, `Advisor` and `Linter`.

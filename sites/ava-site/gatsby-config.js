@@ -72,10 +72,10 @@ module.exports = {
         order: 4,
       },
       {
-        slug: 'guide/chart-linter',
+        slug: 'guide/rules',
         title: {
-          zh: 'ChartLinter',
-          en: 'ChartLinter',
+          zh: '推荐规则',
+          en: 'Rules',
         },
         order: 5,
       },
