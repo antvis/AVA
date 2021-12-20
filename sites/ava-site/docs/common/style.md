@@ -21,4 +21,11 @@
   .doc-md .ant-badge p {
     line-height: 20px;
   }
+
+  a.source-code-link {
+    display: inline-block;
+  }
+  a.source-code-link img{
+    margin-top: -3px;
+  }
 </style>
