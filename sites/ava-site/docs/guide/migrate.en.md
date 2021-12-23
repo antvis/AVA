@@ -59,9 +59,36 @@ options list:
 
 <!-- TODO @龙朱 @pdd -->
 
-### `@antv/dw-*`
+#### `@antv/dw-*`
+`DataWizard` related packages were integrated into `@antv/data-wizard`, and the methods could be imported directly from it. The changes are as follows:
+- Use `import { analyzer } from '@antv/data-wizard` instead of `@antv/dw-analyzer`，and add `import { DataFrame } from '@antv/data-wizard` to support data manipulation.
+- Use `import { random } from '@antv/data-wizard` instead of `@antv/dw-random`。
+- Use `import { utils } from '@antv/data-wizard` instead of `@antv/dw-util`。
+- `@antv/dw-transform` was deprecated，using `DataFrame` 和 `utils` instead of it。
+- Add `statistics` by `import { statistics } from '@antv/data-wizard`。
 
-<!-- TODO @pdd -->
+Import method:
+
+```
+// Before
+import { type }  from '@antv/dw-analyzer';
+const a = [1, 2, 3];
+const info = type(a);
+
+// After
+import { DataFrame } from '@antv/data-wizard';
+const df = new DataFrame([1, 2, 3]);
+const info = df.info();
+// or
+import { analyzeField } from '@antv/data-wizard';
+const a = [1, 2, 3];
+const info = analyzeField(a);
+```
+
+More details: 
+- [DataFrame](../api/data-wizard/data-frame)
+- [statistics](../api/data-wizard/statistics)
+- [random](../api/data-wizard/random)
 
 ### New
 
