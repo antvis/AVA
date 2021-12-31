@@ -145,3 +145,6 @@ export type TrendInfo = BasePatternInfo<'trend'> & {
 };
 
 export type LowVarianceInfo = BasePatternInfo<'low_variance'> & { dimension: string; measure: string; mean: number };
+
+export type DistributionType = 'normal' | 'uniform';
+export type DistributionInfo = BasePatternInfo<'distribution'> & { distribution: DistributionType };

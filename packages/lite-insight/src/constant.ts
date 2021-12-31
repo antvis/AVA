@@ -6,7 +6,10 @@ export const ImpactScoreWeight = 0.2;
 
 export const InsightDefaultLimit = 20;
 
+export const SingleNumericFieldPattern = ['distribution'];
+
 export const PATTERN_TYPES = [
+  'distribution',
   'category_outlier',
   'trend',
   'change_point',
