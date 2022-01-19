@@ -8,7 +8,7 @@ export const dataFieldQty: RuleModule = {
   id: 'data-field-qty',
   type: 'HARD',
   docs: {
-    lintText: 'Data must has the min qty of the prerequisite.',
+    lintText: 'Data must have at least the min qty of the prerequisite.',
   },
   trigger: ({ chartType }) => {
     return allChartTypes.indexOf(chartType) !== -1;

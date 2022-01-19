@@ -17,7 +17,13 @@ order: 0
     * [详细解释](#详细解释)
     * [相关链接](#相关链接-1)
   * [data-field-qty](#data-field-qty)
+    * [适用图表类型](#适用图表类型-1)
+    * [详细解释](#详细解释-1)
+    * [相关链接](#相关链接-2)
   * [diff-pie-sector](#diff-pie-sector)
+    * [适用图表类型](#适用图表类型-2)
+    * [详细解释](#详细解释-2)
+    * [相关链接](#相关链接-3)
   * [landscape-or-portrait](#landscape-or-portrait)
   * [limit-series](#limit-series)
   * [line-field-time-ordinal](#line-field-time-ordinal)
@@ -66,6 +72,7 @@ order: 0
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### bar-without-axis-min
@@ -100,6 +107,7 @@ order: 0
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### data-check
@@ -116,7 +124,7 @@ order: 0
 
 #### 详细解释
 
-每种图表类型都有自己必需的最小数据字段集合。比如要绘制一个柱状图，最少要有两个字段：一个名词型字段当做维度，展示在 x 轴；一个数值型字段当做度量，展示在 y 轴。当我们提供的数据集不符合这个标准，比如只有一个字段，显然是无法绘制出一个柱状图的。本规则验证输入的数据集是否满足每一种图表类型的最小数据字段集合要求。
+每种图表类型都有自己必需的最小数据字段集合。比如要绘制一个柱状图，最少要有两个字段：一个名词型字段当做维度，展示在 x 轴；一个数值型字段当做度量，展示在 y 轴。当我们提供的数据集不符合这个标准，比如只有两个名词型字段，显然是无法绘制出一个柱状图的。本规则验证输入的数据集是否满足每一种图表类型的最小数据字段集合要求。
 
 #### 相关链接
 
@@ -124,19 +132,59 @@ order: 0
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### data-field-qty
+
+数据集的字段数量应该足够绘制图表。
+
+| Type | CA Default Weight |
+| ---- | ----------------- |
+| HARD | 1.0               |
+
+#### 适用图表类型
+
+所有图表类型。
+
+#### 详细解释
+
+数据集包含的字段数量应该不小于图表所需的最小字段数量。
+
+#### 相关链接
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/data-field-qty.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
+<!-- ============================================================================== -->
+
 ### diff-pie-sector
+
+饼图各扇区之间应该有足够大的差异。
+
+| Type | CA Default Weight |
+| ---- | ----------------- |
+| SOFT | 0.5               |
+
+#### 适用图表类型
+
+  pie\_chart,
+  donut\_chart
+
+#### 详细解释
+
+饼图各扇区之间应该有足够大的差异。否则读者很难看出细微的数据差异，这样一来饼图的就失去了其比较的功能。
+
+#### 相关链接
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/diff-pie-sector.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
+
+<br><br>
+<!-- ============================================================================== -->
 
 ### landscape-or-portrait
 
@@ -144,11 +192,17 @@ order: 0
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
+<!-- ============================================================================== -->
+
 ### limit-series
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/limit-series.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
+
+<br><br>
+<!-- ============================================================================== -->
 
 ### line-field-time-ordinal
 
@@ -156,11 +210,17 @@ order: 0
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
+<!-- ============================================================================== -->
+
 ### no-redundant-field
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/no-redundant-field.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
+
+<br><br>
+<!-- ============================================================================== -->
 
 ### nominal-enum-combinatorial
 
@@ -168,17 +228,26 @@ order: 0
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
+<!-- ============================================================================== -->
+
 ### purpose-check
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/purpose-check.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
+<!-- ============================================================================== -->
+
 ### series-qty-limit
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/series-qty-limit.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
+
+<br><br>
+<!-- ============================================================================== -->
 
 ### x-axis-line-fading
 

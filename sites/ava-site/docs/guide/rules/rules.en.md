@@ -16,7 +16,9 @@ order: 0
   * [data-check](#data-check)
     * [Resources](#resources-2)
   * [data-field-qty](#data-field-qty)
+    * [Resources](#resources-3)
   * [diff-pie-sector](#diff-pie-sector)
+    * [Resources](#resources-4)
   * [landscape-or-portrait](#landscape-or-portrait)
   * [limit-series](#limit-series)
   * [line-field-time-ordinal](#line-field-time-ordinal)
@@ -51,7 +53,7 @@ A Bar chart should has proper number of bars or bar groups.
 <!-- omit in toc -->
 #### Rule Details
 
-For large types of histograms and bar charts, the number of columns should be controlled within a reasonable range. When there is only one column, there is actually no need to use a histogram, so you get zero points. When the number of bars is between 2 and 20, we think this is reasonable for a histogram and score 1 point. When the number of columns exceeds 20, the larger the number of columns, the more unfavorable the display of specific values. At this time, the score of this rule is the ratio of the number of columns to the constant 20. The more the number, the smaller the score, and the closer it is to zero.
+For bar charts and column charts, the number of bars should be kept within a reasonable range. When there is only one bar, there is really no need to use a bar chart (could use a KPI panel or just show the number), so a score of zero is given. When the number of bars is between 2 and 20, we consider this to be reasonable for a bar chart, and a score of 1 is given. When the number of bars exceeds 20, the more bars are not good for the display of specific values, so the score of this rule is the ratio of the number of bars to the constant 20, and the more the number the smaller the score, the closer to 0.
 
 <!-- omit in toc -->
 #### References
@@ -65,6 +67,7 @@ For large types of histograms and bar charts, the number of columns should be co
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### bar-without-axis-min
@@ -99,6 +102,7 @@ It is not recommended to set the minimum value of axis for the bar or column cha
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### data-check
@@ -117,7 +121,7 @@ To be able to plot a certain type of chart, you must have at least the minimum s
 <!-- omit in toc -->
 #### Rule Details
 
-Each chart type has its own minimum set of necessary data fields. For example, to plot a bar chart, there must be at least two fields: a nominal field as a dimension, displayed on the x-axis, and a quantitative field as a measure, displayed on the y-axis. When we provide a dataset that does not meet this criterion, for example, only one field, it is obviously impossible to draw a bar chart. This rule verifies that the input dataset meets the minimum set of data fields required for each chart type.
+Each chart type has its own minimum set of necessary data fields. For example, to plot a bar chart, there must be at least two fields: a nominal field as a dimension, displayed on the x-axis, and a quantitative field as a measure, displayed on the y-axis. When we provide a dataset that does not meet this criterion, for example, with only two nominal fields, it is obviously impossible to draw a bar chart. This rule verifies that the input dataset meets the minimum set of data fields required for each chart type.
 
  <!-- omit in toc -->
 #### Resources
@@ -126,30 +130,64 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### data-field-qty
 
+Data must have at least the min qty of the prerequisite.
+
 | Type | CA Default Weight |
 | ---- | ----------------- |
-|      | 1.0               |
+| HARD | 1.0               |
+
+<!-- omit in toc -->
+#### Applicable chart types
+
+ All chart types.
+
+<!-- omit in toc -->
+#### Rule Details
+
+The dataset should contain no less than the minimum number of fields required for the chart type.
+
+ <!-- omit in toc -->
+#### Resources
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/data-field-qty.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### diff-pie-sector
 
+The difference between sectors of a pie chart should be large enough.
+
 | Type | CA Default Weight |
 | ---- | ----------------- |
-|      | 0.5               |
+| SOFT | 0.5               |
+
+<!-- omit in toc -->
+#### Applicable chart types
+
+  pie\_chart,
+  donut\_chart
+
+<!-- omit in toc -->
+#### Rule Details
+
+The difference between sectors of a pie chart should be large enough. Otherwise, it is difficult for the reader to see the subtle differences in the data, so the pie chart loses its comparative function.
+
+ <!-- omit in toc -->
+#### Resources
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/diff-pie-sector.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### landscape-or-portrait
@@ -162,6 +200,7 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### limit-series
@@ -174,6 +213,7 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### line-field-time-ordinal
@@ -186,6 +226,7 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### no-redundant-field
@@ -199,6 +240,7 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### nominal-enum-combinatorial
@@ -212,6 +254,7 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### purpose-check
@@ -224,6 +267,7 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### series-qty-limit
@@ -236,6 +280,7 @@ Each chart type has its own minimum set of necessary data fields. For example, t
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
 
+<br><br>
 <!-- ============================================================================== -->
 
 ### x-axis-line-fading
