@@ -24,9 +24,12 @@ export const barWithoutAxisMin: RuleModule = {
   },
   optimizer: (_, chartSpec: ChartAntVSpec): object => {
     const { layer } = chartSpec;
-    if (layer?.[0]?.encoding?.y?.axis?.min) {
+    const xMin = layer?.[0]?.encoding?.x?.axis?.min;
+    const yMin = layer?.[0]?.encoding?.y?.axis?.min;
+    if (xMin || yMin) {
       const fixedLayer = JSON.parse(JSON.stringify(layer));
-      fixedLayer[0].encoding.y.axis.min = 0;
+      if (xMin) fixedLayer[0].encoding.x.axis.min = 0;
+      if (yMin) fixedLayer[0].encoding.y.axis.min = 0;
       return { layer: fixedLayer };
     }
     return {};
