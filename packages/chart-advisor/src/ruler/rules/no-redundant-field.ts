@@ -11,7 +11,7 @@ export const noRedundantField: RuleModule = {
     lintText: 'No redundant field.',
   },
   trigger: ({ chartType }) => {
-    return allChartTypes.indexOf(chartType) !== -1;
+    return allChartTypes.includes(chartType);
   },
   validator: (args): number => {
     let result = 0;

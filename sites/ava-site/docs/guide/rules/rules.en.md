@@ -20,8 +20,11 @@ order: 0
   * [diff-pie-sector](#diff-pie-sector)
     * [Resources](#resources-4)
   * [landscape-or-portrait](#landscape-or-portrait)
+    * [Resources](#resources-5)
   * [limit-series](#limit-series)
+    * [Resources](#resources-6)
   * [line-field-time-ordinal](#line-field-time-ordinal)
+    * [Resources](#resources-7)
   * [no-redundant-field](#no-redundant-field)
   * [nominal-enum-combinatorial](#nominal-enum-combinatorial)
   * [purpose-check](#purpose-check)
@@ -192,9 +195,31 @@ The difference between sectors of a pie chart should be large enough. Otherwise,
 
 ### landscape-or-portrait
 
+Recommend column charts for landscape layout and bar charts for portrait layout.
+
 | Type | CA Default Weight |
 | ---- | ----------------- |
-|      | 0.3               |
+| SOFT | 0.3               |
+
+<!-- omit in toc -->
+#### Applicable chart types
+
+  bar\_chart,
+  grouped\_bar\_chart,
+  stacked\_bar\_chart,
+  percent\_stacked\_bar\_chart,
+  column\_chart,
+  grouped\_column\_chart,
+  stacked\_column\_chart,
+  percent\_stacked\_column\_chart
+
+<!-- omit in toc -->
+#### Rule Details
+
+When there is more vertical space, use the vertical space to put more columns as much as possible. The same goes for horizontal space.
+
+ <!-- omit in toc -->
+#### Resources
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/landscape-or-portrait.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
@@ -205,9 +230,25 @@ The difference between sectors of a pie chart should be large enough. Otherwise,
 
 ### limit-series
 
+Avoid too many values in one series.
+
 | Type | CA Default Weight |
 | ---- | ----------------- |
-|      | 1.0               |
+| SOFT | 1.0               |
+
+
+<!-- omit in toc -->
+#### Applicable chart types
+
+ All chart types.
+
+<!-- omit in toc -->
+#### Rule Details
+
+A series is usually a specific distinguishable dimension of data, such as a product category, and is usually mapped with a visual channel such as color. When a series contains too many values it is not clearly distinguishable to the reader. For example, imagine a bar chart that contains 20 different colors.
+
+ <!-- omit in toc -->
+#### Resources
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/limit-series.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
@@ -218,9 +259,27 @@ The difference between sectors of a pie chart should be large enough. Otherwise,
 
 ### line-field-time-ordinal
 
+Data containing time or ordinal fields are suitable for line or area charts.
+
 | Type | CA Default Weight |
 | ---- | ----------------- |
-|      | 1.0               |
+| SOFT | 1.0               |
+
+<!-- omit in toc -->
+#### Applicable chart types
+
+  line\_chart,
+  area\_chart,
+  stacked\_area\_chart,
+  percent\_stacked\_area\_chart
+
+<!-- omit in toc -->
+#### Rule Details
+
+When a dataset has Time or Ordinal fields, the trend usually needs to be analyzed, and a line or area chart fits well with the expectations of most readers.
+
+ <!-- omit in toc -->
+#### Resources
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/line-field-time-ordinal.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code

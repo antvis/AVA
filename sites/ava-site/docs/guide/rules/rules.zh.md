@@ -25,8 +25,17 @@ order: 0
     * [详细解释](#详细解释-2)
     * [相关链接](#相关链接-3)
   * [landscape-or-portrait](#landscape-or-portrait)
+    * [适用图表类型](#适用图表类型-3)
+    * [详细解释](#详细解释-3)
+    * [相关链接](#相关链接-4)
   * [limit-series](#limit-series)
+    * [适用图表类型](#适用图表类型-4)
+    * [详细解释](#详细解释-4)
+    * [相关链接](#相关链接-5)
   * [line-field-time-ordinal](#line-field-time-ordinal)
+    * [适用图表类型](#适用图表类型-5)
+    * [详细解释](#详细解释-5)
+    * [相关链接](#相关链接-6)
   * [no-redundant-field](#no-redundant-field)
   * [nominal-enum-combinatorial](#nominal-enum-combinatorial)
   * [purpose-check](#purpose-check)
@@ -188,6 +197,29 @@ order: 0
 
 ### landscape-or-portrait
 
+竖向画布更推荐使用条形图，横向画布更推荐使用柱状图。
+
+| Type | CA Default Weight |
+| ---- | ----------------- |
+| SOFT | 0.3               |
+
+#### 适用图表类型
+
+  bar\_chart,
+  grouped\_bar\_chart,
+  stacked\_bar\_chart,
+  percent\_stacked\_bar\_chart,
+  column\_chart,
+  grouped\_column\_chart,
+  stacked\_column\_chart,
+  percent\_stacked\_column\_chart
+
+#### 详细解释
+
+当纵向空间更大时，尽可能利用纵向空间来放更多的柱子。横向空间同理。
+
+#### 相关链接
+
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/landscape-or-portrait.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
@@ -197,6 +229,22 @@ order: 0
 
 ### limit-series
 
+避免一种序列的值过多。
+
+| Type | CA Default Weight |
+| ---- | ----------------- |
+| SOFT | 1.0               |
+
+#### 适用图表类型
+
+所有图表类型。
+
+#### 详细解释
+
+序列通常是指一个特定的易于区分的数据维度，比如商品类别，通常会用颜色等视觉通道来映射。当一个序列中包含太多值的时候会让读者不能清晰分辨。比如，想象一下一个柱状图上同时包含 20 种颜色。
+
+#### 相关链接
+
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/limit-series.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
 </a>
@@ -205,6 +253,25 @@ order: 0
 <!-- ============================================================================== -->
 
 ### line-field-time-ordinal
+
+包含时间或顺序性字段的数据适合用折线图或面积图来展示。
+
+| Type | CA Default Weight |
+| ---- | ----------------- |
+| SOFT | 1.0               |
+
+#### 适用图表类型
+
+  line\_chart,
+  area\_chart,
+  stacked\_area\_chart,
+  percent\_stacked\_area\_chart
+
+#### 详细解释
+
+数据集带有时间或顺序性字段时，通常需要分析其变化趋势，折线图或面积图非常符合大部分读者的心理预期。
+
+#### 相关链接
 
 <a class="source-code-link" href="https://github.com/antvis/AVA/blob/master/packages/chart-advisor/src/ruler/rules/line-field-time-ordinal.ts">
   <img class="icon-in-site" src="https://gw.alipayobjects.com/zos/antfincdn/3HPWNH%24t0/code.svg"> Source Code
