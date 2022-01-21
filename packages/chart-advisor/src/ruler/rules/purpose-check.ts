@@ -8,10 +8,10 @@ export const purposeCheck: RuleModule = {
   id: 'purpose-check',
   type: 'HARD',
   docs: {
-    lintText: 'Choose types that satisfy the purpose, if purpose is defined.',
+    lintText: 'Choose chart types that satisfy the purpose, if purpose is defined.',
   },
   trigger: ({ chartType }) => {
-    return allChartTypes.indexOf(chartType) !== -1;
+    return allChartTypes.includes(chartType);
   },
   validator: (args): number => {
     let result = 0;

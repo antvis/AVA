@@ -7,10 +7,10 @@ export const seriesQtyLimit: RuleModule = {
   id: 'series-qty-limit',
   type: 'SOFT',
   docs: {
-    lintText: 'Some charts should has at most N series.',
+    lintText: 'Some charts should has at most N values for the series.',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1;
+    return applyChartTypes.includes(chartType);
   },
   validator: (args): number => {
     let result = 0;

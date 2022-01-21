@@ -27,7 +27,7 @@ export const nominalEnumCombinatorial: RuleModule = {
       'Single (Basic) and Multi (Stacked, Grouped,...) charts should be optimized recommended by nominal enums combinatorial numbers.',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1 && getNominalFields.length >= 2;
+    return applyChartTypes.includes(chartType) && getNominalFields.length >= 2;
   },
   validator: (args): number => {
     let result = 0;
