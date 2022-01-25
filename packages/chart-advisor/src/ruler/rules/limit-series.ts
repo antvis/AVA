@@ -13,14 +13,24 @@ function hasSeriesField(dataProps: BasicDataPropertyForAdvice[]): boolean {
   return nominalOrOrdinalFields.length >= 2;
 }
 
+// TODO: 重构规则逻辑
+/*
+sort 后取distinct第二大的字段，是因为第一个要留给维度映射，第二个才轮到 series（一般是颜色映射什么的）。
+
+颜色>6 （颜色非常多的时候）只有 heatmap 的颜色是适合做映射的（因为可以把这样的映射粗看成连续色板）
+这里 result=2 是因为如果针对出现这种情况，要给 heatmap 疯狂加分，使得尽可能结果上 heatmap 排到第一名去。
+
+这种规则设置方式整体很不合理，需要在下一轮迭代中重构。
+ */
+
 export const limitSeries: RuleModule = {
   id: 'limit-series',
   type: 'SOFT',
   docs: {
-    lintText: 'Avoid too many series',
+    lintText: 'Avoid too many values in one series.',
   },
   trigger: ({ chartType, dataProps }) => {
-    return allChartTypes.indexOf(chartType) !== -1 && hasSeriesField(dataProps as BasicDataPropertyForAdvice[]);
+    return allChartTypes.includes(chartType) && hasSeriesField(dataProps as BasicDataPropertyForAdvice[]);
   },
   validator: (args): number => {
     let result = 0;
@@ -33,7 +43,7 @@ export const limitSeries: RuleModule = {
       if (nominalOrOrdinalFields.length >= 2) {
         const sortedFields = nominalOrOrdinalFields.sort(compare);
 
-        // const f1 = sortedNominals[0];
+        // const f1 = sortedFields[0];
         const f2 = sortedFields[1];
 
         if (f2.distinct) {

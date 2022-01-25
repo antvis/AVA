@@ -7,10 +7,10 @@ export const lineFieldTimeOrdinal: RuleModule = {
   id: 'line-field-time-ordinal',
   type: 'SOFT',
   docs: {
-    lintText: 'Data has Time or Ordinal field are good for Line, Area charts.',
+    lintText: 'Data containing time or ordinal fields are suitable for line or area charts.',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1;
+    return applyChartTypes.includes(chartType);
   },
   validator: (args): number => {
     let result = 0;

@@ -9,8 +9,6 @@ order: 0
 
 基于数据和分析需求来推荐和自动生成图表配置。
 
-</div>
-
 ## ✨ 功能特性
 
 ChartAdvisor 中透出了多个工具类供用户使用，包括 `ChartAdvisor`、`Advisor` 和 `Linter`。

@@ -19,7 +19,7 @@ export const barSeriesQty: RuleModule = {
     lintText: 'Bar chart should has proper number of bars or bar groups.',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1;
+    return applyChartTypes.includes(chartType);
   },
   validator: (args): number => {
     let result = 0;

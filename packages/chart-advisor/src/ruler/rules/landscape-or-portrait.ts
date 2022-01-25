@@ -22,7 +22,7 @@ export const landscapeOrPortrait: RuleModule = {
     lintText: 'Recommend column charts for landscape layout and bar charts for portrait layout.',
   },
   trigger: (info) => {
-    return applyChartTypes.indexOf(info.chartType) !== -1 && hasCanvasLayout(info);
+    return applyChartTypes.includes(info.chartType) && hasCanvasLayout(info);
   },
   validator: (args): number => {
     let result = 0;

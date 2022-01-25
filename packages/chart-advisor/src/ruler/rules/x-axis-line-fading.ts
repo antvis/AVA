@@ -10,7 +10,7 @@ export const xAxisLineFading: RuleModule = {
     lintText: 'Adjust axis to make it prettier',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1;
+    return applyChartTypes.includes(chartType);
   },
   optimizer: (dataProps, chartSpec): object => {
     const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;

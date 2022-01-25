@@ -12,7 +12,7 @@ export const dataCheck: RuleModule = {
     lintText: 'Data must satisfy the data prerequisites.',
   },
   trigger: ({ chartType }) => {
-    return allChartTypes.indexOf(chartType) !== -1;
+    return allChartTypes.includes(chartType);
   },
   validator: (args): number => {
     let result = 0;

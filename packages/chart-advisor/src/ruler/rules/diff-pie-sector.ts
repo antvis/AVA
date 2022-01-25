@@ -7,10 +7,10 @@ export const diffPieSector: RuleModule = {
   id: 'diff-pie-sector',
   type: 'SOFT',
   docs: {
-    lintText: 'Difference should be big enough for pie sectors.',
+    lintText: 'The difference between sectors of a pie chart should be large enough.',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1;
+    return applyChartTypes.includes(chartType);
   },
   validator: (args): number => {
     let result = 0;

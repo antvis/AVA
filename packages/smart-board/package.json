@@ -64,6 +64,7 @@
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/data-wizard": "^2.0.0",
     "@antv/g2plot": "^2.3.40",
+    "@antv/g6": "^4.5.1",
     "@antv/lite-insight": "^2.0.0",
     "antd": "^4.16.13",
     "louvain-algorithm": "^1.0.4",

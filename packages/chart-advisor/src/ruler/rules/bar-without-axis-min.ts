@@ -20,7 +20,7 @@ export const barWithoutAxisMin: RuleModule = {
     fixText: 'Remove the minimum value config of axis.',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1;
+    return applyChartTypes.includes(chartType);
   },
   optimizer: (_, chartSpec: ChartAntVSpec): object => {
     const { layer } = chartSpec;
