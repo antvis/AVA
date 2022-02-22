@@ -149,7 +149,7 @@ export const extractInsightsFromSubspace = (
   const { impactMeasureReferences, fieldPropsMap } = referenceInfo;
   const subspaceImpact = computeSubspaceImpact(data, subspace, impactMeasureReferences, options?.impactMeasures);
 
-  // pruning1: check the subpace impact limit
+  // pruning1: check the subspace impact limit
   if (subspaceImpact < InsightScoreBenchmark) {
     return [];
   }

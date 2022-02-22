@@ -58,7 +58,7 @@ export const extractInsights = (sourceData: Datum[], options?: InsightOptions): 
   // get top N results
   const insights = [];
   const heapSize = insightsHeap.size();
-  const insightsSize = heapSize > insightsLimit ? insightsLimit : heapSize;
+  const insightsSize = heapSize > insightsLimit ? insightsLimit : heapSize; // this judgement is necessary for that the implementation of heap in heap-js has a problem that it will not control the heap size even if more than k elements are added, where k is the value of .limit property.
   for (let i = 0; i < insightsSize; i += 1) {
     const top = insightsHeap.pop();
     insights.push(top);
