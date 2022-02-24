@@ -72,6 +72,7 @@
     "cc": "npm run clean && npm run clear",
     "gc": "git clean -dfx",
     "setup:site": "cd ./sites/ava-site && yarn",
+    "setup:demo": "cd ./demo && npm install",
     "start:site": "cd ./sites/ava-site && npm run start",
     "deploy:site": "cd ./sites/ava-site && npm run deploy",
     "start:demo": "cd demo && npm start",

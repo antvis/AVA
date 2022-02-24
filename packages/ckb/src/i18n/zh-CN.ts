@@ -240,8 +240,8 @@ export const zhCN: TranslateList = {
 
     nested_pie_chart: {
       name: '嵌套饼图',
-      alias: [],
-      def: 'TBD',
+      alias: ['嵌套环图', '嵌套甜甜圈图'],
+      def: '嵌套饼图由多个甜甜圈图构成，所有的甜甜圈共享同一个圆心。',
     },
     rose_chart: {
       name: '玫瑰图',
@@ -316,13 +316,14 @@ export const zhCN: TranslateList = {
 
     wordcloud: {
       name: '词云',
-      alias: [],
-      def: 'TBD',
+      alias: ['文字云', '标签云'],
+      def: '词云是由一组零散分布的，具有不同大小、颜色、和形状的词语组成的文本可视化形式，通常，一个词云中的词语是从一段有主题的文章中抽取出来的，字体的大小跟词语在原文中出现的频率相匹配。',
     },
+
     candlestick_chart: {
       name: '蜡烛图',
-      alias: ['烛台图'],
-      def: 'TBD',
+      alias: ['烛台图', '日本蜡烛图'],
+      def: '蜡烛图是一种特殊的箱型图，在金融行业中有着广泛的应用：一般用来描述股票、期货等金融产品的价格走势。',
     },
 
     compact_box_tree: {
