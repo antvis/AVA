@@ -125,7 +125,7 @@ CKBOptions(lang)
 ## 示例
 
 ```js
-import { CKBOptions } from '@antv/knowledge';
+import { CKBOptions } from '@antv/ckb';
 
 const options1 = CKBOptions();
 const options2 = CKBOptions('zh-CN');
