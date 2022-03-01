@@ -10,7 +10,7 @@ order: 4
 Some types and interfaces:
 
 ```js
-import { ChartKnowledge, DataPrerequisite } from '@antv/knowledge';
+import { ChartKnowledge, DataPrerequisite } from '@antv/ckb';
 ```
 
 ## ChartKnowledge
