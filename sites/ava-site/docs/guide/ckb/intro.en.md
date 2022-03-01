@@ -58,13 +58,13 @@ You can easily build a chart type recommendation system with this knowledge base
 ## 📦 Installation
 
 ```bash
-$ npm install @antv/knowledge
+$ npm install @antv/ckb
 ```
 
 ## 🔨 Usage
 
 ```js
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson } from '@antv/ckb';
 
 
 // Knowledage base for all charts in English.
