@@ -26,7 +26,7 @@ const data = [
     UnitCost: 3696.42,
   },
   {
-    City: 'huang gang shi',
+    City: 'huanggangshi',
     Province: 'qinghai',
     ClientGender: 'male',
     OrderDate: '2022/2/18',
@@ -71,6 +71,7 @@ describe('MultiDim Test', () => {
     };
     const attributionObject = new SingleMeasureMultiDimensionAttribution(dataConfig, fluctInfo);
     const tempResult = attributionObject.getWholeData();
-    expect(tempResult.City.disassyDetails.huangshishi.currValue).toBe(13722.76);
+    const treeResult = tempResult.resultTree;
+    expect(treeResult.City.huangshishi.info.currValue).toBe(13722.76);
   });
 });

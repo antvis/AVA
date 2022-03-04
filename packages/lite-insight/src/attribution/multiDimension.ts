@@ -1,7 +1,7 @@
 import { Datum } from '../interface';
-import { attributeSingleMeasure2MultiDimension, transferInnerData2Tree, keyJoinMethod } from './util';
+import { attributeSingleMeasure2MultiDimension } from './util';
 
-import type { CompareInterval } from './util';
+import type { CompareInterval, AttributionResult, DimWithValue } from './util';
 
 /** DataConfig specifies the input data with its focused dimensions and target measure to be analysed. */
 type DataConfig = {
@@ -20,12 +20,10 @@ type FluctInfo = {
   currInterval: CompareInterval;
 };
 
-type dimWithValue = Record<string, string>;
-
 export class SingleMeasureMultiDimensionAttribution {
-  private resultMap = {};
+  private result: AttributionResult;
 
-  private dimensions: string[] = [];
+  private dimensions: string[];
 
   private dimsRank = {};
 
@@ -33,7 +31,7 @@ export class SingleMeasureMultiDimensionAttribution {
     const { sourceData, dimensions, measure } = dataConfig;
     const { fluctDim, baseInterval, currInterval } = fluctInfo;
     this.dimensions = dimensions;
-    this.resultMap = attributeSingleMeasure2MultiDimension(
+    this.result = attributeSingleMeasure2MultiDimension(
       sourceData,
       dimensions,
       measure,
@@ -47,7 +45,7 @@ export class SingleMeasureMultiDimensionAttribution {
   }
 
   getWholeData() {
-    return transferInnerData2Tree(this.resultMap, this.dimensions);
+    return this.result;
   }
 
   getByDimension(specificDimensions: string[]) {
@@ -64,11 +62,11 @@ export class SingleMeasureMultiDimensionAttribution {
         specificDims.push(this.dimensions[index]);
       }
     });
-    const dimsKey = specificDims.join(keyJoinMethod);
-    return this.resultMap[dimsKey];
+    const dimsKey = specificDims.join('-');
+    return this.result[dimsKey];
   }
 
-  getBySpecificValue(specificDimensionValues: dimWithValue) {
+  getBySpecificValue(specificDimensionValues: DimWithValue) {
     const dimsBoolean: boolean[] = [];
     this.dimensions.forEach(() => {
       dimsBoolean.push(false);
@@ -84,8 +82,16 @@ export class SingleMeasureMultiDimensionAttribution {
         specificVals.push(specificDimensionValues[this.dimensions[index]]);
       }
     });
-    const dimKey = specificDims.join(keyJoinMethod);
-    const valKey = specificVals.join(keyJoinMethod);
-    return this.resultMap[dimKey].disassyDetails[valKey];
+    const dimKey = specificDims.join('-');
+    const valKey = specificVals.join('-');
+    return this.result.resultTree[dimKey].disassyDetails[valKey];
+  }
+
+  getTreeData() {
+    return this.result.resultTree;
+  }
+
+  getFlattenData() {
+    return this.result.resultFlatten;
   }
 }

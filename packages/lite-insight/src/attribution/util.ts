@@ -1,5 +1,19 @@
+import { cloneDeep as _cloneDeep } from 'lodash';
 import moment from 'moment';
 import { Datum } from '../interface';
+
+/** eslint-disable */
+export interface TreeDim {
+  [dimName: string]: TreeDimVal;
+}
+
+type TreeDimVal = Record<string | number, TreeDrillDown>;
+
+interface TreeDrillDown {
+  info: InfoType;
+  drillDown: TreeDim;
+}
+/** eslint-enable */
 
 export type CompareInterval = {
   /** start time of this interval */
@@ -9,33 +23,30 @@ export type CompareInterval = {
 };
 
 /**  dimension level disassembly information */
-type disassyInfoDimLevel = {
-  /** total difference of this dimension */
-  totalDiff: number;
-  /** disassembly details of concrete dimension value combinations */
-  disassyDetails: Record<string, disassyInfoDimValLevel>;
+export type AttributionResult = {
+  /** total difference  */
+  unitedInfo: InfoType;
+  /** Tree like returned data */
+  resultTree: TreeDim;
+  /** Flatten returned data */
+  resultFlatten: FlattenData[];
 };
 
 /** dimension value level disassemble information */
-type disassyInfoDimValLevel = {
+type InfoType = {
   baseValue: number;
   currValue: number;
   diff: number;
-  contribution: number;
 };
+
+export type DimWithValue = Record<string, string>;
+
+type FlattenData = Partial<DimWithValue & InfoType>;
 
 /** a flag that indicates the belongings of a single line of data, which is useful for aggregation */
-type dataLocation = 'left' | 'right' | 'none';
+type DataLocation = 'left' | 'right' | 'none';
 
-export const keyJoinMethod = '-';
-
-export const transferInnerData2Tree = (originMap, dimensions: string[]) => {
-  // placeHolder
-  let resultTree = dimensions;
-  resultTree = originMap;
-  // this function has not been implemented.
-  return resultTree;
-};
+const joinSign = '-';
 
 const locatedInInterval = (comparedPoint: string | number, startPoint: string | number, endPoint: string | number) => {
   if (typeof comparedPoint === 'number' && typeof startPoint === 'number' && typeof endPoint === 'number') {
@@ -61,111 +72,143 @@ const enumerateAllDimensionCombinationsByDFS = (
   item: Datum,
   index: number,
   dimensions: string[],
-  result: Object,
-  stack: string[],
+  resultTree: TreeDim,
+  dictFlatten: Record<string, FlattenData>,
+  deque: string[],
   measure: string,
   fluctuationDim: string,
-  location: dataLocation
+  location: DataLocation
 ) => {
-  const resultPointer = result;
+  const resultTreePointer = resultTree;
+  const DictFlattenPointer = dictFlatten;
   if (index === dimensions.length) {
-    /** termination condition of the recursion algorithm */
-    const dimName = stack.join(keyJoinMethod);
-    if (!Object.prototype.hasOwnProperty.call(resultPointer, dimName)) {
-      const dimInfo: disassyInfoDimLevel = {
-        totalDiff: 0,
-        disassyDetails: {},
-      };
-      resultPointer[dimName] = dimInfo;
+    if (deque.length === 0) {
+      return;
+    }
+    let currRoot = resultTreePointer;
+    let currDimName;
+    let currDimVal;
+    const dequeClone = _cloneDeep(deque);
+    while (dequeClone.length > 0) {
+      currDimName = dequeClone.shift();
+      currDimVal = item[currDimName];
+      if (!Object.prototype.hasOwnProperty.call(currRoot, currDimName)) {
+        currRoot[currDimName] = {};
+      }
+      if (!Object.prototype.hasOwnProperty.call(currRoot[currDimName], currDimVal)) {
+        const treeDrillDown: TreeDrillDown = {
+          info: {
+            baseValue: 0,
+            currValue: 0,
+            diff: 0,
+          },
+          drillDown: {},
+        };
+        currRoot[currDimName][currDimVal] = treeDrillDown;
+      }
+      if (dequeClone.length > 0) {
+        currRoot = currRoot[currDimName][currDimVal].drillDown;
+      }
+    }
+    const currTreeDimVal = currRoot[currDimName][currDimVal];
+
+    currTreeDimVal.info.baseValue += location === 'left' ? (item[measure] as number) : 0;
+    currTreeDimVal.info.currValue += location === 'right' ? (item[measure] as number) : 0;
+    if (!(currTreeDimVal.info.baseValue === 0 && currTreeDimVal.info.currValue === 0)) {
+      currTreeDimVal.info.diff = currTreeDimVal.info.currValue - currTreeDimVal.info.baseValue;
     }
 
-    const dimValues: string[] = new Array(stack.length);
-    for (let i = 0; i < stack.length; i += 1) {
-      dimValues[i] = item[stack[i]] as string;
-    }
-    const dimValName = dimValues.join(keyJoinMethod);
-    if (!Object.prototype.hasOwnProperty.call(resultPointer[dimName].disassyDetails, dimValName)) {
-      const dimInfoSub: disassyInfoDimValLevel = {
-        baseValue: 0,
-        currValue: 0,
-        diff: 0,
-        contribution: 0,
-      };
-      resultPointer[dimName].disassyDetails[dimValName] = dimInfoSub;
+    if (deque.length === dimensions.length) {
+      const tempKey = deque.join(joinSign);
+      if (!Object.prototype.hasOwnProperty.call(DictFlattenPointer, tempKey)) {
+        DictFlattenPointer[tempKey] = {};
+      }
+      deque.forEach((dimName) => {
+        DictFlattenPointer[tempKey][dimName] = item[dimName] as string;
+      });
+      DictFlattenPointer[tempKey].baseValue = currTreeDimVal.info.baseValue;
+      DictFlattenPointer[tempKey].currValue = currTreeDimVal.info.currValue;
+      DictFlattenPointer[tempKey].diff = currTreeDimVal.info.diff;
     }
 
-    const tempDimInfoSub: disassyInfoDimValLevel = resultPointer[dimName].disassyDetails[dimValName];
-    resultPointer[dimName].total -= tempDimInfoSub.diff;
-    tempDimInfoSub.baseValue += location === 'left' ? (item[measure] as number) : 0;
-    tempDimInfoSub.currValue += location === 'right' ? (item[measure] as number) : 0;
-    if (!(tempDimInfoSub.baseValue === 0 && tempDimInfoSub.currValue === 0)) {
-      tempDimInfoSub.diff = tempDimInfoSub.currValue - tempDimInfoSub.baseValue;
-    }
-    resultPointer[dimName].total += tempDimInfoSub.diff;
     return;
   }
 
   /** Case1: dimensions[index] is included */
-  stack.push(dimensions[index]);
+  deque.push(dimensions[index]);
   enumerateAllDimensionCombinationsByDFS(
     item,
     index + 1,
     dimensions,
-    resultPointer,
-    stack,
+    resultTreePointer,
+    DictFlattenPointer,
+    deque,
     measure,
     fluctuationDim,
     location
   );
-  stack.pop();
+  deque.pop();
 
   /** Case2: dimensions[index] is not included */
   enumerateAllDimensionCombinationsByDFS(
     item,
     index + 1,
     dimensions,
-    resultPointer,
-    stack,
+    resultTreePointer,
+    DictFlattenPointer,
+    deque,
     measure,
     fluctuationDim,
     location
   );
 };
 
-export const attributeSingleMeasure2MultiDimension = (
+export const attributeSingleMeasure2MultiDimension: (
   sourceData: Datum[],
   dimensions: string[],
   measure: string,
   fluctuationDim: string,
   baseInterval: CompareInterval,
   currInterval: CompareInterval
-) => {
+) => AttributionResult = (sourceData, dimensions, measure, fluctuationDim, baseInterval, currInterval) => {
   /** remove invalid data */
   const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
 
-  const result = {};
+  const unitedInfo: InfoType = {
+    baseValue: 0,
+    currValue: 0,
+    diff: 0,
+  };
+
+  const resultTree: TreeDim = {};
+  const DictFlatten = {};
   /** traverse the input data and build the result data structure; */
   data.forEach((item) => {
-    let location: dataLocation = 'none';
+    let location: DataLocation = 'none';
     if (locatedInInterval(item[fluctuationDim], baseInterval.startPoint, baseInterval.endPoint)) {
       location = 'left';
+      unitedInfo.baseValue += item[measure] as number;
     }
     if (locatedInInterval(item[fluctuationDim], currInterval.startPoint, currInterval.endPoint)) {
       location = 'right';
+      unitedInfo.currValue += item[measure] as number;
     }
     if (location !== 'none') {
       const stack: string[] = [];
-      enumerateAllDimensionCombinationsByDFS(item, 0, dimensions, result, stack, measure, fluctuationDim, location);
+      enumerateAllDimensionCombinationsByDFS(
+        item,
+        0,
+        dimensions,
+        resultTree,
+        DictFlatten,
+        stack,
+        measure,
+        fluctuationDim,
+        location
+      );
     }
   });
+  unitedInfo.diff = unitedInfo.currValue - unitedInfo.baseValue;
 
-  /** calculate the contribution of every dimension value combination to the designated measure */
-  Object.values(result).forEach((value: disassyInfoDimLevel) => {
-    Object.values(value.disassyDetails).forEach((valueSub) => {
-      const valueSubPointer = valueSub;
-      valueSubPointer.contribution = valueSub.diff / value.totalDiff;
-    });
-  });
-
-  return result;
+  return { resultTree, unitedInfo, resultFlatten: Object.values(DictFlatten) };
 };
