@@ -1,12 +1,9 @@
 import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '../utils';
-import { fillMissingValue } from './utils';
+import { fillMissingValue, convertDatumType } from './utils';
 import BaseFrame from './base-frame';
 import type { SeriesData, Extra, Axis } from './types';
 
-export interface SeriesExtra {
-  indexes?: Extra['indexes'];
-  fillValue?: Extra['fillValue'];
-}
+export type SeriesExtra = Pick<Extra, 'indexes' | 'fillValue' | 'columnTypes'>;
 
 /** 1D data structure */
 export default class Series extends BaseFrame {
@@ -29,12 +26,14 @@ export default class Series extends BaseFrame {
         for (let i = 0; i < extra?.indexes.length; i += 1) {
           const idx = extra?.indexes[i] as string;
           if (indexes.includes(idx)) {
-            this.data.push(fillMissingValue(data[idx], extra?.fillValue));
+            this.data.push(convertDatumType(fillMissingValue(data[idx], extra?.fillValue), extra?.columnTypes?.[0]));
           }
         }
         this.setAxis(0, extra?.indexes);
       } else {
-        this.data = Object.values(data).map((datum) => fillMissingValue(datum, extra?.fillValue));
+        this.data = Object.values(data).map((datum) =>
+          convertDatumType(fillMissingValue(datum, extra?.fillValue), extra?.columnTypes?.[0])
+        );
         this.setAxis(0, indexes);
       }
     } else if (isArray(data)) {
