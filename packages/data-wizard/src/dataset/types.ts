@@ -1,4 +1,4 @@
-import type { StringFieldInfo, NumberFieldInfo, DateFieldInfo } from '../analyzer';
+import type { StringFieldInfo, NumberFieldInfo, DateFieldInfo, TypeSpecifics } from '../analyzer';
 
 export type SeriesData =
   /**
@@ -93,6 +93,7 @@ export type Extra = {
   indexes?: Axis[];
   columns?: Axis[];
   fillValue?: any;
+  columnTypes?: TypeSpecifics[];
 };
 
 /**

@@ -28,7 +28,7 @@ describe('new DataFrame', () => {
 
   test('1D: basic type with error extra', () => {
     expect(() => new DataFrame(1, { columns: [5, 6] })).toThrow(
-      'When the length of extra?.columns is larger than 1, extra?.indexes is required.'
+      'When the length of extra.columns is larger than 1, extra.indexes is required.'
     );
   });
 
