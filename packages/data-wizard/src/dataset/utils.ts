@@ -1,4 +1,6 @@
-import { isArray, isNumber, isString, range, assert } from '../utils';
+import { isDateString } from '../analyzer/is-date';
+import { isArray, isNumber, isString, range, assert, isBoolean, isNull } from '../utils';
+import type { TypeSpecifics } from '../analyzer';
 import type { Axis } from './types';
 
 export const isAxis = (value: any): value is Axis => {
@@ -61,3 +63,32 @@ export const stringify = (value: any) =>
     ?.replace(/\}"/g, ' }') || 'undefined';
 
 export const getStringifyLength = (value: any) => stringify(value)?.length;
+
+/**
+ * Convert datum to specified data type.
+ * @param datum
+ * @param type
+ * @returns converted datum
+ */
+export const convertDatumType = (datum: any, type: TypeSpecifics) => {
+  try {
+    if (type === 'string' && !isString(datum)) {
+      return `${datum}`;
+    }
+    if (type === 'boolean' && !isBoolean(datum)) {
+      return Boolean(datum);
+    }
+    if (type === 'null' && !isNull(datum)) {
+      return null;
+    }
+    if ((type === 'integer' || type === 'float') && !isNumber(datum)) {
+      return +datum;
+    }
+    if (type === 'date' && !isDateString(`${datum}`)) {
+      return new Date(datum);
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+  return datum;
+};
