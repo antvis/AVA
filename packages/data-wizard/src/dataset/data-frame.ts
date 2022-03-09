@@ -9,7 +9,7 @@ import {
   generateSplit,
   stringify,
   getStringifyLength,
-  convertDatumType,
+  convertDataType,
 } from './utils';
 import type { FrameData, Axis, Extra, FieldsInfo } from './types';
 
@@ -23,6 +23,11 @@ export default class DataFrame extends BaseFrame {
     assert(isBasicType(data) || isArray(data) || isObject(data), 'Data type is illegal');
 
     if (isBasicType(data)) {
+      if (extra?.columnTypes) {
+        for (let i = 0; i < extra?.indexes?.length; i += 1) {
+          this.data[i] = convertDataType(this.data[i], extra?.columnTypes?.[i]);
+        }
+      }
       if (extra?.indexes && extra?.columns) {
         this.setAxis(1, extra?.columns);
         this.data = Array(extra?.columns.length).fill(this.data);
@@ -56,7 +61,7 @@ export default class DataFrame extends BaseFrame {
        */
       if (isArray(data0)) {
         const columns = range(data0.length);
-        this.generateDataAndColDataFromArray(false, data, columns, extra?.fillValue);
+        this.generateDataAndColDataFromArray(false, data, columns, extra?.fillValue, extra?.columnTypes);
         this.generateColumns(columns, extra?.columns);
       }
 
@@ -82,7 +87,7 @@ export default class DataFrame extends BaseFrame {
             for (let j = 0; j < extra?.columns.length; j += 1) {
               const column = extra?.columns[j];
               assert(columns.includes(column), `There is no column ${column} in data.`);
-              const newDatum = convertDatumType(
+              const newDatum = convertDataType(
                 fillMissingValue(datum[column], extra.fillValue),
                 extra?.columnTypes?.[j]
               );
@@ -99,7 +104,7 @@ export default class DataFrame extends BaseFrame {
         }
 
         if (!extra?.columns) {
-          this.generateDataAndColDataFromArray(true, data, columns, extra?.fillValue);
+          this.generateDataAndColDataFromArray(true, data, columns, extra?.fillValue, extra?.columnTypes);
           this.setAxis(1, columns);
         }
       }
@@ -127,7 +132,7 @@ export default class DataFrame extends BaseFrame {
             const column = extra?.columns[i] as string;
 
             assert(columns.includes(column), `There is no column ${column} in data.`);
-            this.data.push(convertDatumType(fillMissingValue(data[column], extra?.fillValue), extra?.columnTypes?.[i]));
+            this.data.push(convertDataType(fillMissingValue(data[column], extra?.fillValue), extra?.columnTypes?.[i]));
           }
           this.colData = this.data.map((datum) => [datum]);
           this.data = [this.data];
@@ -138,11 +143,11 @@ export default class DataFrame extends BaseFrame {
 
             assert(isBasicType(datum), 'Data type is illegal');
 
-            this.data.push(convertDatumType(fillMissingValue(datum, extra?.fillValue), extra?.columnTypes?.[i]));
+            this.data.push(convertDataType(fillMissingValue(datum, extra?.fillValue), extra?.columnTypes?.[i]));
           }
           this.data = [this.data];
           this.colData = dataValues.map((datum) => [
-            convertDatumType(fillMissingValue(datum, extra?.fillValue), extra?.columnTypes?.[0]),
+            convertDataType(fillMissingValue(datum, extra?.fillValue), extra?.columnTypes?.[0]),
           ]);
           this.generateColumns(columns);
         }
@@ -163,23 +168,21 @@ export default class DataFrame extends BaseFrame {
           if (datum.length < this.indexes.length) {
             const newDatum = datum.concat(
               Array(this.indexes.length - datum.length).fill(
-                convertDatumType(fillMissingValue(undefined, extra?.fillValue), extra?.columnTypes?.[i])
+                convertDataType(fillMissingValue(undefined, extra?.fillValue), extra?.columnTypes?.[i])
               )
             );
             this.colData.push(newDatum);
           } else {
             this.colData.push(
-              datum.map((d) => convertDatumType(fillMissingValue(d, extra?.fillValue), extra?.columnTypes?.[i]))
+              datum.map((d) => convertDataType(fillMissingValue(d, extra?.fillValue), extra?.columnTypes?.[i]))
             );
           }
 
           for (let j = 0; j < this.indexes.length; j += 1) {
             if (this.data[j]) {
-              this.data[j].push(
-                convertDatumType(fillMissingValue(datum[j], extra?.fillValue), extra?.columnTypes?.[i])
-              );
+              this.data[j].push(convertDataType(fillMissingValue(datum[j], extra?.fillValue), extra?.columnTypes?.[i]));
             } else {
-              this.data[j] = [convertDatumType(fillMissingValue(datum[j], extra?.fillValue), extra?.columnTypes?.[i])];
+              this.data[j] = [convertDataType(fillMissingValue(datum[j], extra?.fillValue), extra?.columnTypes?.[i])];
             }
           }
         }
@@ -229,15 +232,15 @@ export default class DataFrame extends BaseFrame {
        */
       if (isObj && JSON.stringify(Object.keys(datum)) === JSON.stringify(columns)) {
         this.data.push(
-          Object.values(datum).map((d, j) => convertDatumType(fillMissingValue(d, fillValue), columnTypes?.[j]))
+          Object.values(datum).map((d, j) => convertDataType(fillMissingValue(d, fillValue), columnTypes?.[j]))
         );
       } else if (!isObj) {
-        this.data.push(datum.map((d, j) => convertDatumType(fillMissingValue(d, fillValue), columnTypes?.[j])));
+        this.data.push(datum.map((d, j) => convertDataType(fillMissingValue(d, fillValue), columnTypes?.[j])));
       }
 
       for (let j = 0; j < columns.length; j += 1) {
         const column = columns[j];
-        const newDatum = convertDatumType(fillMissingValue(datum[column], fillValue), columnTypes?.[j]);
+        const newDatum = convertDataType(fillMissingValue(datum[column], fillValue), columnTypes?.[j]);
 
         /**
          * Data is object and extra.columns is set.
