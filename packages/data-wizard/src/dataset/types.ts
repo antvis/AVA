@@ -93,7 +93,8 @@ export type Extra = {
   indexes?: Axis[];
   columns?: Axis[];
   fillValue?: any;
-  columnTypes?: TypeSpecifics[];
+  /** When the columnType is empty, no data type is specified */
+  columnTypes?: (TypeSpecifics | '')[];
 };
 
 /**
