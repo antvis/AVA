@@ -4,4 +4,5 @@ module.exports = {
   ...base,
   name: 'lite-insight',
   displayName: 'lite-insight',
+  transformIgnorePatterns: ['../utils/calexp'],
 };

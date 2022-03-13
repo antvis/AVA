@@ -1,4 +1,4 @@
-import { SingleMeasureMultiDimensionAttribution } from '../../src/attribution/multiDimension';
+import { DimensionDrillDownAttribution } from '../../src/attribution/dimensionDrillDownAttribution';
 
 const data = [
   {
@@ -55,7 +55,7 @@ describe('MultiDim Test', () => {
     const dataConfig = {
       sourceData: data,
       dimensions: ['Province', 'City'],
-      measure: 'Price',
+      measures: ['Price'],
     };
 
     const fluctInfo = {
@@ -69,7 +69,7 @@ describe('MultiDim Test', () => {
         endPoint: '2022/2/20',
       },
     };
-    const attributionObject = new SingleMeasureMultiDimensionAttribution(dataConfig, fluctInfo);
+    const attributionObject = new DimensionDrillDownAttribution(dataConfig, fluctInfo);
     const tempResult = attributionObject.getWholeData();
     const treeResult = tempResult.resultTree;
     expect(treeResult.City.huangshishi.info.currValue).toBe(13722.76);

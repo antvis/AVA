@@ -83,7 +83,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "lint-staged && npm run test"
     }
   },
   "lint-staged": {
@@ -123,10 +123,12 @@
     "typescript": "4.3.5"
   },
   "dependencies": {
+    "@alipay/cal-exp": "^0.0.1",
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@rollup/plugin-typescript": "^8.2.5",
     "date-fns": "^2.23.0",
+    "expr-eval": "^2.0.2",
     "rollup": "^2.56.2",
     "rollup-plugin-terser": "^7.0.2"
   }
