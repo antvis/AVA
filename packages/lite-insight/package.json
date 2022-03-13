@@ -87,6 +87,7 @@
     "regression": "^2.0.1",
     "threads": "^1.7.0",
     "tslib": "^2.3.1",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "expr-eval": "^2.0.2"
   }
 }

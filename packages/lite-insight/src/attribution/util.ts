@@ -2,53 +2,17 @@ import { cloneDeep as _cloneDeep } from 'lodash';
 import moment from 'moment';
 import { Datum } from '../interface';
 
-/** eslint-disable */
-export interface TreeDim {
-  [dimName: string]: TreeDimVal;
-}
+import { TreeDim, FlattenResult, DataLocation, TreeDrillDown } from './types';
 
-type TreeDimVal = Record<string | number, TreeDrillDown>;
-
-interface TreeDrillDown {
-  info: InfoType;
-  drillDown: TreeDim;
-}
-/** eslint-enable */
-
-export type CompareInterval = {
-  /** start time of this interval */
-  startPoint: string | number;
-  /** end time of this interval */
-  endPoint: string | number;
-};
-
-/**  dimension level disassembly information */
-export type AttributionResult = {
-  /** total difference  */
-  unitedInfo: InfoType;
-  /** Tree like returned data */
-  resultTree: TreeDim;
-  /** Flatten returned data */
-  resultFlatten: FlattenData[];
-};
-
-/** dimension value level disassemble information */
-type InfoType = {
-  baseValue: number;
-  currValue: number;
-  diff: number;
-};
-
-export type DimWithValue = Record<string, string>;
-
-type FlattenData = Partial<DimWithValue & InfoType>;
-
-/** a flag that indicates the belongings of a single line of data, which is useful for aggregation */
-type DataLocation = 'left' | 'right' | 'none';
-
+/** Const for string[] join */
 const joinSign = '-';
 
-const locatedInInterval = (comparedPoint: string | number, startPoint: string | number, endPoint: string | number) => {
+/** A helper function that can figure out a time point whether belongs to a time interval */
+export const locatedInInterval = (
+  comparedPoint: string | number,
+  startPoint: string | number,
+  endPoint: string | number
+) => {
   if (typeof comparedPoint === 'number' && typeof startPoint === 'number' && typeof endPoint === 'number') {
     return comparedPoint <= endPoint && comparedPoint >= startPoint;
   }
@@ -68,12 +32,12 @@ const locatedInInterval = (comparedPoint: string | number, startPoint: string | 
   return false;
 };
 
-const enumerateAllDimensionCombinationsByDFS = (
+export const enumerateAllDimensionCombinationsByDFS = (
   item: Datum,
   index: number,
   dimensions: string[],
   resultTree: TreeDim,
-  dictFlatten: Record<string, FlattenData>,
+  dictFlatten: Record<string, FlattenResult>,
   deque: string[],
   measure: string,
   fluctuationDim: string,
@@ -161,54 +125,4 @@ const enumerateAllDimensionCombinationsByDFS = (
     fluctuationDim,
     location
   );
-};
-
-export const attributeSingleMeasure2MultiDimension: (
-  sourceData: Datum[],
-  dimensions: string[],
-  measure: string,
-  fluctuationDim: string,
-  baseInterval: CompareInterval,
-  currInterval: CompareInterval
-) => AttributionResult = (sourceData, dimensions, measure, fluctuationDim, baseInterval, currInterval) => {
-  /** remove invalid data */
-  const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
-
-  const unitedInfo: InfoType = {
-    baseValue: 0,
-    currValue: 0,
-    diff: 0,
-  };
-
-  const resultTree: TreeDim = {};
-  const DictFlatten = {};
-  /** traverse the input data and build the result data structure; */
-  data.forEach((item) => {
-    let location: DataLocation = 'none';
-    if (locatedInInterval(item[fluctuationDim], baseInterval.startPoint, baseInterval.endPoint)) {
-      location = 'left';
-      unitedInfo.baseValue += item[measure] as number;
-    }
-    if (locatedInInterval(item[fluctuationDim], currInterval.startPoint, currInterval.endPoint)) {
-      location = 'right';
-      unitedInfo.currValue += item[measure] as number;
-    }
-    if (location !== 'none') {
-      const stack: string[] = [];
-      enumerateAllDimensionCombinationsByDFS(
-        item,
-        0,
-        dimensions,
-        resultTree,
-        DictFlatten,
-        stack,
-        measure,
-        fluctuationDim,
-        location
-      );
-    }
-  });
-  unitedInfo.diff = unitedInfo.currValue - unitedInfo.baseValue;
-
-  return { resultTree, unitedInfo, resultFlatten: Object.values(DictFlatten) };
 };
