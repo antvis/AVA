@@ -13,7 +13,7 @@
     "dist"
   ],
   "main": "lib/insight-node/index.js",
-  "module": "esm/insight-browser/index.js",
+  "browser": "esm/insight-browser/index.js",
   "types": "lib/insight-node/index.d.ts",
   "unpkg": "dist/index.min.js",
   "scripts": {
