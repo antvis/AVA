@@ -8,6 +8,7 @@ import {
   outliersStrategy,
   changePointStrategy,
   majorityStrategy,
+  correlationStrategy,
 } from '../strategy';
 import { PhrasesBuilder } from '../utils/phrases-builder';
 
@@ -57,6 +58,9 @@ export class InsightNarrativeGenerator extends AbstractNarrativeGenerator<Patter
         }
         if (type === 'change_point') {
           this.summaries.push(changePointStrategy(patterns[0]));
+        }
+        if (type === 'correlation') {
+          this.summaries.push(correlationStrategy(patterns[0]));
         }
       }
     });

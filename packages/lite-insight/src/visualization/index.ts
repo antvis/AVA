@@ -10,7 +10,7 @@ import {
   InsightOptions,
 } from '../interface';
 import { InsightNarrativeGenerator, HomogeneousNarrativeGenerator } from '../narrative';
-import { generateInsightAnnotationConfig, generateHomogeneousInsightAnnotationConfig } from './annotation';
+import { generateInsightAnnotationConfigs, generateHomogeneousInsightAnnotationConfig } from './annotation';
 
 export const ChartTypeMap: Record<InsightType, ChartType> = {
   category_outlier: 'column_chart',
@@ -19,6 +19,7 @@ export const ChartTypeMap: Record<InsightType, ChartType> = {
   time_series_outlier: 'line_chart',
   majority: 'pie_chart',
   low_variance: 'column_chart',
+  correlation: 'scatter_plot',
 };
 
 export const getInsightVisualizationSchema = (
@@ -37,14 +38,15 @@ export const getInsightVisualizationSchema = (
 
     // TODO chart schema generation
     const plotSchema = {
-      [chartType === 'pie_chart' ? 'colorField' : 'xField']: dimensions[0],
+      [chartType === 'pie_chart' ? 'colorField' : 'xField']:
+        chartType === 'scatter_plot' ? measures[1].field : dimensions[0],
       [chartType === 'pie_chart' ? 'angleField' : 'yField']: measures[0].field,
     };
-    const annotationConfig = generateInsightAnnotationConfig(patternGroup);
+    const annotationConfigs = generateInsightAnnotationConfigs(patternGroup);
 
     const chartSchema = {
       ...plotSchema,
-      annotations: annotationConfig,
+      ...annotationConfigs,
     };
     schemas.push({
       chartType: chartType as ChartType,

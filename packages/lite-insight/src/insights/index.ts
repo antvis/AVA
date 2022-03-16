@@ -4,6 +4,7 @@ import { extractor as ChangePointExtractor } from './extractors/changePoint';
 import { extractor as timeSeriesOutlierExtractor } from './extractors/timeSeriesOutlier';
 import { extractor as majorityExtractor } from './extractors/majority';
 import { extractor as lowVarianceExtractor } from './extractors/lowVariance';
+import { extractor as correlationExtractor } from './extractors/correlation';
 
 export const insightExtractors = {
   category_outlier: categoryOutlierExtractor,
@@ -12,6 +13,7 @@ export const insightExtractors = {
   time_series_outlier: timeSeriesOutlierExtractor,
   majority: majorityExtractor,
   low_variance: lowVarianceExtractor,
+  correlation: correlationExtractor,
 };
 
 export * from './checkers';

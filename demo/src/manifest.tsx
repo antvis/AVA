@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  EyeOutlined,
-  // GiftOutlined,
-  RobotOutlined,
-  ShareAltOutlined,
-  AreaChartOutlined,
-} from '@ant-design/icons';
+import { EyeOutlined, GiftOutlined, RobotOutlined, ShareAltOutlined, AreaChartOutlined } from '@ant-design/icons';
 import CKBList from './demos/CKBList';
-// import LiteInsight from './demos/LiteInsight';
-// import SmartBoard from './demos/SmartBoard';
+import LiteInsight from './demos/LiteInsight';
+import SmartBoard from './demos/SmartBoard';
 import ChartAdvisor from './demos/ChartAdvisor';
 import AutoChart from './demos/AutoChart';
 import GraphAdvisor from './demos/GraphAdvisor';
@@ -45,18 +39,18 @@ const manifest: Manifest = {
       contentComp: GraphAdvisor,
       icon: <ShareAltOutlined />,
     },
-    // {
-    //   id: 'LiteInsight',
-    //   name: 'LiteInsight',
-    //   contentComp: LiteInsight,
-    //   icon: <GiftOutlined />,
-    // },
-    // {
-    //   id: 'SmartBoard',
-    //   name: 'SmartBoard',
-    //   contentComp: SmartBoard,
-    //   icon: <GiftOutlined />,
-    // },
+    {
+      id: 'LiteInsight',
+      name: 'LiteInsight',
+      contentComp: LiteInsight,
+      icon: <GiftOutlined />,
+    },
+    {
+      id: 'SmartBoard',
+      name: 'SmartBoard',
+      contentComp: SmartBoard,
+      icon: <GiftOutlined />,
+    },
     {
       id: 'AutoChart',
       name: 'AutoChart',
