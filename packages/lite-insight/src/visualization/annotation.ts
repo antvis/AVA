@@ -147,13 +147,26 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
   return [];
 };
 
-export const generateInsightAnnotationConfig = (patterns: PatternInfo[]) => {
+export const generateInsightAnnotationConfigs = (patterns: PatternInfo[]) => {
   const annotations = [];
+  const others: { [key: string]: any } = {};
   patterns.forEach((pattern) => {
     const configItems = generateAnnotationConfigItem(pattern);
     annotations.push(...configItems);
+    if (pattern.type === 'correlation') {
+      others.pointStyle = {
+        lineWidth: 1,
+        fill: '#5B8FF9',
+      };
+      others.regressionLine = {
+        type: 'linear',
+        style: {
+          stroke: 'red',
+        },
+      };
+    }
   });
-  return annotations;
+  return { ...others, annotations };
 };
 
 export const generateHomogeneousInsightAnnotationConfig = (pattern: HomogeneousPatternInfo) => {

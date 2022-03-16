@@ -12,6 +12,6 @@ export function trendStrategy(variableMap: TrendInfo) {
   phrases.add(measure, 'metric_name');
   phrases.add('goes');
   phrases.add(trend, 'trend_desc');
-  phrases.addSymbol('punctuation_stop'); // .
+  phrases.addSymbol('punctuation_stop');
   return phrases;
 }

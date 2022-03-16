@@ -13,6 +13,7 @@ export const PATTERN_TYPES = [
   'time_series_outlier',
   'majority',
   'low_variance',
+  'correlation',
 ] as const;
 
 export const HOMOGENEOUS_PATTERN_TYPES = ['commonness', 'exception'] as const;

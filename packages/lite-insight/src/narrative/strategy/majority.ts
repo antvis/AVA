@@ -10,10 +10,10 @@ export function majorityStrategy(variableMap: MajorityInfo) {
   const phrases = new PhrasesBuilder();
   phrases.add('For');
   phrases.add(dimension);
-  phrases.addSymbol('punctuation_comma'); // ,
+  phrases.addSymbol('punctuation_comma');
   phrases.add(`${x}`, 'dim_value');
   phrases.add('accounts for the majority of');
   phrases.add(measure);
-  phrases.addSymbol('punctuation_stop'); // .
+  phrases.addSymbol('punctuation_stop');
   return phrases;
 }
