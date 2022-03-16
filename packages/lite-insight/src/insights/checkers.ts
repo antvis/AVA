@@ -62,10 +62,25 @@ export const lowVarianceChecker: ExtractorChecker = (data, subjectInfo, fieldPro
   return fieldPropsMap[measures[0].field].distinct !== 1;
 };
 
+export const correlationChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
+  const { measures } = subjectInfo;
+  // check data length
+  if (data?.length < 3) return false;
+  // check field quantity
+  if (measures.length !== 2) return false;
+  if (
+    !fieldPropsMap[measures[0].field].levelOfMeasurements?.includes('Continuous') ||
+    !fieldPropsMap[measures[1].field].levelOfMeasurements?.includes('Continuous')
+  )
+    return false;
+  return true;
+};
+
 export const ExtractorCheckers: Partial<Record<InsightType, ExtractorChecker>> = {
   category_outlier: categoryOutlierChecker,
   trend: trendChecker,
   change_point: changePointChecker,
   time_series_outlier: timeSeriesChecker,
   low_variance: lowVarianceChecker,
+  correlation: correlationChecker,
 };

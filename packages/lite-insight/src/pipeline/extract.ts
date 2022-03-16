@@ -90,7 +90,7 @@ export const extractInsightsFor1M1DCombination = (
 ): InsightInfo<PatternInfo>[][] => {
   const { fieldPropsMap } = referenceInfo;
 
-  const insights = [];
+  const insights: InsightInfo<PatternInfo>[] = [];
 
   dimensions.forEach((dimension) => {
     const insightsPerDim = [];
@@ -126,6 +126,47 @@ export const extractInsightsFor1M1DCombination = (
     insights.push(insightsPerDim);
   });
 
+  return insights;
+};
+
+export const extractInsightsForCorrelation = (
+  data: Datum[],
+  dimensions: string[],
+  measures: Measure[],
+  subspace: Subspace,
+  referenceInfo: ReferenceInfo,
+  options: InsightOptions
+): InsightInfo<PatternInfo>[] => {
+  const { fieldPropsMap } = referenceInfo;
+
+  const insights: InsightInfo<PatternInfo>[] = [];
+
+  const measureNum = measures.length;
+  if (measureNum >= 2) {
+    for (let i = 0; i < measureNum - 1; i += 1) {
+      for (let j = i + 1; j < measureNum; j += 1) {
+        const childSubjectInfo = { dimensions, subspace, measures: [measures[i], measures[j]] };
+
+        const patterns = extractPatternsFromSubject(data, childSubjectInfo, fieldPropsMap, {
+          ...options,
+          insightTypes: ['correlation'],
+        });
+
+        const patternsArray = patterns?.correlation?.sort((a, b) => b.significance - a.significance);
+        if (patternsArray?.length) {
+          const insight = {
+            subspace,
+            dimensions,
+            measures: [measures[i], measures[j]],
+            patterns: patternsArray,
+            data,
+            score: patternsArray[0].significance,
+          };
+          insights.push(insight);
+        }
+      }
+    }
+  }
   return insights;
 };
 
@@ -186,7 +227,15 @@ export const extractInsightsFromSubspace = (
     addInsightsToHeap(insightsForMeasures, insightsHeap);
   });
 
-  // TODO Combination 3: nM * nD
+  // Combination 3: 1M * 1M */
+  if ((options.insightTypes || PATTERN_TYPES).includes('correlation')) {
+    const extracted = extractInsightsForCorrelation(data, dimensions, measures, subspace, referenceInfo, options);
+    const insightsForCorrelation = extracted?.map((item) => ({
+      ...item,
+      score: item.score * (1 - impactScoreWeight) + subspaceImpact * impactScoreWeight,
+    }));
+    addInsightsToHeap(insightsForCorrelation, insightsHeap);
+  }
 
   /**  extract homegenehous insight in measures */
   if (options?.homogeneous) {
@@ -290,7 +339,7 @@ export const enumerateInsights = (
   referenceInfo: ReferenceInfo,
   insightsHeap: Heap<InsightInfo<PatternInfo>>,
   metaInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
-  options: InsightOptions
+  options: InsightOptions = {}
 ) => {
   const initSubspace = [];
 
