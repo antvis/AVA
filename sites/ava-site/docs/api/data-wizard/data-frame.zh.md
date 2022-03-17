@@ -38,6 +38,7 @@ DW 中的二维数据结构，支持读取不同类型的一维和二维源数�
 | indexes | `string | number` | 行索引 | - | - |
 | columns | `string | number` | 列索引 | - | - |
 | fillValue |  `any` | 缺失填充值 | - | - |
+| columnTypes |  `'null' | 'boolean' | 'integer' | 'float' | 'date' | 'string' | ''` | 列数据类型 | - | - |
 
 ***<font size=4>返回值</font>***
 
@@ -128,6 +129,36 @@ DataFrame
       [1, 2, 201],
       [4, 201, 6],
       [201, 8, 9],
+    ],
+  }
+*/
+
+/* Set extra columnTypes */
+const data3 = [
+  { a: 1, b: 4 },
+  { a: 2, c: 8 },
+  { b: 6, c: 9 },
+];
+
+new DataFrame(data3, {
+  columnTypes: ['', '', 'string']
+});
+/*
+DataFrame
+  {
+    axes: [
+      [0, 1, 2],
+      ['a', 'b', 'c'],
+    ],
+    data: [
+      [ 1, 4, 'undefined' ],
+      [ 2, undefined, '8' ],
+      [ undefined, 6, '9' ]
+    ],
+    colData: [
+      [ 1, 2, undefined ],
+      [ 4, undefined, 6 ],
+      [ 'undefined', '8', '9' ]
     ],
   }
 */
