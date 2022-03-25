@@ -90,11 +90,10 @@ export const extractInsightsFor1M1DCombination = (
 ): InsightInfo<PatternInfo>[][] => {
   const { fieldPropsMap } = referenceInfo;
 
-  const insights: InsightInfo<PatternInfo>[] = [];
+  const insights: InsightInfo<PatternInfo>[][] = [];
 
   dimensions.forEach((dimension) => {
-    const insightsPerDim = [];
-    const collectionForDimension = [];
+    const insightsPerDim: InsightInfo<PatternInfo>[] = [];
 
     const isTimeField = fieldPropsMap[dimension].levelOfMeasurements.includes('Time');
     measures.forEach((measure) => {
@@ -102,8 +101,6 @@ export const extractInsightsFor1M1DCombination = (
       const aggregatedData = aggregate(data, dimension, [measure], isTimeField);
 
       const patterns = extractPatternsFromSubject(aggregatedData, childSubjectInfo, fieldPropsMap, options);
-
-      collectionForDimension.push(patterns);
 
       const patternsArray = _flatten(Object.values(patterns).filter((item) => item?.length > 0)).sort(
         (a, b) => b.significance - a.significance
