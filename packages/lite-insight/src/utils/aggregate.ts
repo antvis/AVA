@@ -1,30 +1,28 @@
-import _groupBy from 'lodash/groupBy';
-import _sumBy from 'lodash/sumBy';
-import _maxBy from 'lodash/maxBy';
-import _minBy from 'lodash/minBy';
-import _meanBy from 'lodash/meanBy';
-import _sortBy from 'lodash/sortBy';
-import _flatten from 'lodash/flatten';
+import { groupBy, sumBy, minBy, maxBy, meanBy, sortBy, flatten, uniq } from 'lodash';
 import { Aggregator, Datum, Measure, MeasureMethod } from '../interface';
 
 const sum = (data: Datum[], measure: string) => {
-  return _sumBy(data, measure);
+  return sumBy(data, measure);
 };
 
 const count = (data: Datum[], measure: string) => {
   return data.filter((item) => measure in item).length;
 };
 
+const countDistinct = (data: Datum[], measure: string) => {
+  return uniq(data.filter((item) => measure in item).map((item) => item[measure])).length;
+};
+
 const max = (data: Datum[], measure: string) => {
-  return _maxBy(data, measure)?.[measure] as number;
+  return maxBy(data, measure)?.[measure] as number;
 };
 
 const min = (data: Datum[], measure: string) => {
-  return _minBy(data, measure)?.[measure] as number;
+  return minBy(data, measure)?.[measure] as number;
 };
 
 const mean = (data: Datum[], measure: string) => {
-  return _meanBy(data, measure);
+  return meanBy(data, measure);
 };
 
 export const AggregatorMap: Record<MeasureMethod, Aggregator> = {
@@ -33,11 +31,12 @@ export const AggregatorMap: Record<MeasureMethod, Aggregator> = {
   MAX: max,
   MIN: min,
   MEAN: mean,
+  COUNT_DISTINCT: countDistinct,
 };
 
 export const aggregate = (data: Datum[], groupByField: string, measures: Measure[], sort?: boolean) => {
-  const grouped = _groupBy(data, groupByField);
-  const entries = sort ? _sortBy(Object.entries(grouped), '0') : Object.entries(grouped);
+  const grouped = groupBy(data, groupByField);
+  const entries = sort ? sortBy(Object.entries(grouped), '0') : Object.entries(grouped);
   return entries.map(([value, dataGroup]) => {
     const datum: Datum = { [groupByField]: value };
     measures.forEach((measure) => {
@@ -50,7 +49,7 @@ export const aggregate = (data: Datum[], groupByField: string, measures: Measure
 };
 
 export const aggregateWithMeasures = (data: Datum[], groupByField: string, measures: Measure[]) => {
-  const grouped = _groupBy(data, groupByField);
+  const grouped = groupBy(data, groupByField);
   const result = [];
   Object.entries(grouped).forEach(([value, dataGroup]) => {
     measures.forEach((measure) => {
@@ -70,12 +69,12 @@ export const aggregateWithMeasures = (data: Datum[], groupByField: string, measu
 };
 
 export const aggregateWithSeries = (data: Datum[], groupByField: string, measure: Measure, expandingField: string) => {
-  const grouped = _groupBy(data, groupByField);
+  const grouped = groupBy(data, groupByField);
   const { field: measureField, method } = measure;
   const aggregator = AggregatorMap[method];
-  return _flatten(
+  return flatten(
     Object.entries(grouped).map(([value, dataGroup]) => {
-      const childGrouped = _groupBy(dataGroup, expandingField);
+      const childGrouped = groupBy(dataGroup, expandingField);
       const part = Object.entries(childGrouped).map(([childValue, childDataGroup]) => {
         return {
           [expandingField]: childValue,

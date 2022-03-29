@@ -7,7 +7,7 @@ export type DataType = 'Nominal' | 'Ordinal' | 'Interval' | 'Discrete' | 'Contin
 
 export type FieldType = 'measure' | 'dimension';
 
-export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
+export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DISTINCT';
 
 // impact measures must satisfies anti-monotonic condition and is bounded between 0 and 1.
 export type ImpactMeasureMethod = 'SUM' | 'COUNT';
