@@ -44,6 +44,10 @@
     "url": "https://github.com/antvis/SmartBoard/issues"
   },
   "homepage": "https://github.com/antvis/SmartBoard#readme",
+  "peerDependencies": {
+    "react": ">=17.0.2",
+    "react-dom": ">=17.0.2"
+  },
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@types/jest": "^23.3.12",
@@ -55,6 +59,8 @@
     "lint-staged": "^11.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.59.0",
     "typescript": "4.3.5"
@@ -68,7 +74,6 @@
     "@antv/lite-insight": "^2.0.0",
     "antd": "^4.16.13",
     "louvain-algorithm": "^1.0.4",
-    "react": "^17.0.2",
     "tslib": "^2.2.0",
     "uuid": "^3.4.0"
   },
