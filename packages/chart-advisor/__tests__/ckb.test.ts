@@ -96,7 +96,7 @@ describe('customized CKB', () => {
     };
     const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(finalCkbCount - 1);
+    expect(Object.keys(finalCKB).length).toBe(finalCkbCount - 2 + 1);
     expect(finalCKB).toHaveProperty('fufu_chart');
   });
 
