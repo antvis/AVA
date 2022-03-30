@@ -209,6 +209,10 @@ export function dataToAdvices(
    */
   const theme = options?.theme;
   /**
+   * `requireSpec`: only consider chart type with spec if true
+   */
+  const requireSpec = options?.requireSpec === undefined ? true : options.requireSpec;
+  /**
    * customized CKB input or default CKB from @antv/ckb
    */
   const ChartWIKI = chartWIKI;
@@ -230,7 +234,7 @@ export function dataToAdvices(
 
     // FIXME kpi_panel and table spec to be null temporarily
     const customChartType = ['kpi_panel', 'table'];
-    if (!customChartType.includes(t) && !chartTypeSpec) return { type: t, spec: null, score: 0 };
+    if (!customChartType.includes(t) && !chartTypeSpec) return { type: t, spec: null, score };
 
     // step 3: apply design rules
     if (chartTypeSpec && enableRefine) {
@@ -283,7 +287,10 @@ export function dataToAdvices(
   }
 
   // filter and sorter
-  const resultList = list.filter((e) => e.score > 0 && e.spec).sort(compareAdvices);
+  const isAvailableAdvice = (advice: Advice) => {
+    return advice.score > 0 && (requireSpec ? advice.spec : true);
+  };
+  const resultList = list.filter(isAvailableAdvice).sort(compareAdvices);
 
   // eslint-disable-next-line no-console
   if (showLog) console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
