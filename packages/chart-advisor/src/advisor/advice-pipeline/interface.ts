@@ -46,6 +46,10 @@ export interface AdvisorOptions {
    * custom theme
    */
   theme?: Theme;
+  /**
+   * only consider chart types with spec
+   */
+  requireSpec?: boolean;
 }
 
 /**
