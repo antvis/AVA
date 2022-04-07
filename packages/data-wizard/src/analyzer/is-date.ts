@@ -40,17 +40,17 @@ export const getIsoTimes = (isStrict = true) => [
   `${hour}:${isStrict ? '' : '?'}${minute}?${offset}`,
 ];
 
-const isoDatats = getIsoDates();
+const isoDates = getIsoDates();
 const isoTimes = getIsoTimes();
-const formatstr = [...isoDatats, ...isoTimes];
+const formatStr = [...isoDates, ...isoTimes];
 
-isoDatats.forEach((d) => {
+isoDates.forEach((d) => {
   isoTimes.forEach((t) => {
-    formatstr.push(`${d}[T\\s]${t}`);
+    formatStr.push(`${d}[T\\s]${t}`);
   });
 });
 
-const formats: RegExp[] = formatstr.map((item) => {
+const formats: RegExp[] = formatStr.map((item) => {
   return new RegExp(`^${item}$`);
 });
 

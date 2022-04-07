@@ -65,8 +65,9 @@ export class BasicRandom {
     if (isFunction(seed)) {
       this.random = seed;
     } else {
-      // If no generator function was provided, use our MT
-      this.seed = seed;
+      // If no generator function was provided, use MT
+      // If seed is undefined, create a random number as seed to avoid the case that timestamps are the same.
+      this.seed = seed || new Date().getTime() + +`${Math.random()}`.slice(2);
       this.mt = new MersenneTwister(this.seed);
       this.random = this.mt.random.bind(this.mt);
     }
