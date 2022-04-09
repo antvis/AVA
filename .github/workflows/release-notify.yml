@@ -1,0 +1,20 @@
+name: 🎉 Release Notify
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release Notify
+        uses: visiky/dingtalk-release-notify@main
+        with:
+          DING_TALK_TOKEN: ${{ secrets.DINGTALK_ROBOT_TOKEN }}
+          notify_title: '🎉 AVA 新版本发布 {release_tag} 🎉'
+          notify_body: '## { title }<hr /> ![preview](https://gw.alipayobjects.com/zos/antfincdn/IUEpmsGeBj/AVA-publish-success.png) <hr /> { body } <hr />'
+          notify_footer: '> 前往 [**AntV/AVA Releases**]({ release_url }) 查看完整信息'
+          at_all: false
+          enable_prerelease: true

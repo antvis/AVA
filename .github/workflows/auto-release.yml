@@ -1,0 +1,53 @@
+name: 🤖 Auto Release
+
+on:
+  push:
+    branches:
+      - stable
+      - alpha # just for test semantic-release
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x' # semantic-release requires Node version 14.17 or higher
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lerna bootstrap
+        run: npm run boot -- --no-ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm run release
+
+      # If failed, give the DingTalk group a notice
+      - name: Release failed giving the DingTalk group a notice
+        if: ${{ failure() }}
+        uses: zcong1993/actions-ding@master
+        with:
+          dingToken: ${{ secrets.DINGTALK_ROBOT_TOKEN }}
+          ignoreError: true
+          body: |
+            {
+              "msgtype": "link",
+              "link": {
+                "title": "❌ 自动发布失败",
+                "text": "🔗 请及时跟进问题，点击链接可查看原因。",
+                "picUrl": "https://gw.alipayobjects.com/zos/antfincdn/pJoMk2vAi7/20220411131119.jpg",
+                "messageUrl": "https://github.com/antvis/AVA/actions/workflows/auto-release.yml"
+              }
+            }
