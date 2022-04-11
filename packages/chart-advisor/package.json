@@ -2,6 +2,15 @@
   "name": "@antv/chart-advisor",
   "version": "2.0.0",
   "description": "An empiric-driven chart recommendation js library.",
+  "homepage": "https://ava.antv.vision/en/docs/guide/chart-advisor/intro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/ava"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
@@ -28,22 +37,6 @@
     "coverage": "jest --coverage",
     "watch": "yarn module && yarn build --w"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/antvis/ChartAdvisor.git"
-  },
-  "author": {
-    "name": "AntV",
-    "url": "https://antv.vision/"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "bugs": {
-    "url": "https://github.com/antvis/ChartAdvisor/issues"
-  },
-  "homepage": "https://github.com/antvis/ChartAdvisor#readme",
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@types/jest": "^23.3.12",
