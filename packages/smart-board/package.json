@@ -2,6 +2,19 @@
   "name": "@antv/smart-board",
   "version": "2.0.0",
   "description": "A js library that solves chart dashboarding through calculations.",
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
+  "homepage": "https://ava.antv.vision/en/docs/guide/smart-board/intro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/ava"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
@@ -28,22 +41,6 @@
     "coverage": "jest --coverage",
     "watch": "yarn module && yarn build --w"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/antvis/SmartBoard.git"
-  },
-  "author": {
-    "name": "AntV",
-    "url": "https://antv.vision/"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "bugs": {
-    "url": "https://github.com/antvis/SmartBoard/issues"
-  },
-  "homepage": "https://github.com/antvis/SmartBoard#readme",
   "peerDependencies": {
     "react": ">=17.0.2",
     "react-dom": ">=17.0.2"

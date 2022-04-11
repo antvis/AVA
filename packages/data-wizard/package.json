@@ -6,15 +6,20 @@
     "name": "AntV",
     "url": "https://antv.vision/"
   },
-  "homepage": "https://ava.antv.vision",
+  "homepage": "https://ava.antv.vision/en/docs/guide/data-wizard/intro",
   "repository": {
     "type": "git",
     "url": "https://github.com/antvis/ava"
   },
+  "keywords": [
+    "data processing",
+    "AntV",
+    "AVA"
+  ],
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",

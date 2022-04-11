@@ -2,20 +2,33 @@
   "name": "@antv/lite-insight",
   "version": "2.0.0",
   "description": "A lite js library for insights retrieval.",
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
+  "homepage": "https://ava.antv.vision/en/docs/guide/lite-insight/intro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/ava"
+  },
   "keywords": [
     "insight",
-    "antv",
+    "AntV",
     "AVA"
   ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "lib/insight-node/index.js",
+  "module": "esm/insight-browser/index.js",
+  "types": "lib/insight-node/index.d.ts",
+  "unpkg": "dist/index.min.js",
   "files": [
     "esm",
     "lib",
     "dist"
   ],
-  "main": "lib/insight-node/index.js",
-  "module": "esm/insight-browser/index.js",
-  "types": "lib/insight-node/index.d.ts",
-  "unpkg": "dist/index.min.js",
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
     "lint-fix": "npm run lint -- --fix",
@@ -32,14 +45,6 @@
     "test": "jest",
     "coverage": "jest --coverage",
     "watch": "yarn module && yarn build --w"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "author": {
-    "name": "AntV",
-    "url": "https://antv.vision/"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
