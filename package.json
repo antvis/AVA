@@ -1,6 +1,9 @@
 {
   "name": "ava",
   "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "boot": "lerna bootstrap",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
