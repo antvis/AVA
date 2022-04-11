@@ -130,7 +130,7 @@ ReactDOM.render(
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/SmartBoard)
+For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/intro)
 
 
 

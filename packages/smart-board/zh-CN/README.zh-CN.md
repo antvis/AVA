@@ -81,7 +81,7 @@ const dashboardContent =
 
 ## 📖 文档
 
-更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/smart-board/SmartBoard)
+更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/smart-board/intro)
 
 
 

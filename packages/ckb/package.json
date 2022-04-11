@@ -6,10 +6,15 @@
     "name": "AntV",
     "url": "https://antv.vision/"
   },
+  "homepage": "https://ava.antv.vision/en/docs/guide/ckb/intro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/ava"
+  },
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
