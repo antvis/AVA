@@ -43,7 +43,7 @@ jobs:
         run: |
           git add .
           git commit -m "chore: update package.json and CHANGELOG" --no-verify
-          git push origin chore-sync-after-auto-release --no-verify
+          git push origin chore-sync-after-auto-release
 
       - name: Create PR
         run: |
