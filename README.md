@@ -43,7 +43,7 @@ At the same time, this package also facilitates us to develop products of chart 
 
 
 ```protobuf
-@antv/knowledge // to get the chart knowledge base
+@antv/ckb // to get the chart knowledge base
 ```
 
 ### [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/data-wizard)

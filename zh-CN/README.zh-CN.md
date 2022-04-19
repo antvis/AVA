@@ -40,7 +40,7 @@ CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中�
 同时，这个包也让开发图表类型筛选相关的产品变得非常简单。
 
 ```protobuf
-@antv/knowledge // 图表知识库
+@antv/ckb // 图表知识库
 ```
 
 ### [AVA/DataWizard](https://github.com/antvis/AVA/blob/master/packages/data-wizard/zh-CN/README.zh-CN.md)

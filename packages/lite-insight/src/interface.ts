@@ -7,7 +7,7 @@ export type DataType = 'Nominal' | 'Ordinal' | 'Interval' | 'Discrete' | 'Contin
 
 export type FieldType = 'measure' | 'dimension';
 
-export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
+export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DISTINCT';
 
 // impact measures must satisfies anti-monotonic condition and is bounded between 0 and 1.
 export type ImpactMeasureMethod = 'SUM' | 'COUNT';
@@ -43,7 +43,7 @@ export type InsightType = typeof PATTERN_TYPES[number];
 export type HomogeneousInsightType = typeof HOMOGENEOUS_PATTERN_TYPES[number];
 
 /** insight chart type recommendation */
-export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart';
+export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart' | 'scatter_plot';
 
 /** pattern information */
 export type PatternInfo =
@@ -52,7 +52,8 @@ export type PatternInfo =
   | ChangePointInfo
   | LowVarianceInfo
   | TrendInfo
-  | ChangePointInfo;
+  | ChangePointInfo
+  | CorrelationInfo;
 
 /** visualization for insight */
 export interface VisualizationSchema {
@@ -145,3 +146,8 @@ export type TrendInfo = BasePatternInfo<'trend'> & {
 };
 
 export type LowVarianceInfo = BasePatternInfo<'low_variance'> & { dimension: string; measure: string; mean: number };
+
+export type CorrelationInfo = BasePatternInfo<'correlation'> & {
+  pcorr: number;
+  measures: [string, string];
+};

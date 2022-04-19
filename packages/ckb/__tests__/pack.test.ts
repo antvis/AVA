@@ -14,7 +14,7 @@ test('PACK', () => {
   const ckb2 = CKBJson(undefined, true);
   const keys2 = Object.keys(ckb2);
   expect(keys2.length).toBe(55);
-  expect(keys2.includes('nested_pie_chart')).toBe(false);
+  expect(keys2.includes('parallel_coordinates')).toBe(false);
 
   const ckb3 = CKBJson('zh-CN', true);
   const values3 = Object.values(ckb3);

@@ -4,4 +4,5 @@ export { lowVarianceStrategy } from './low-variance';
 export { outliersStrategy } from './outliers';
 export { changePointStrategy } from './change-point';
 export { majorityStrategy } from './majority';
+export { correlationStrategy } from './correlation';
 export { homogeneousStrategy } from './homogeneous';

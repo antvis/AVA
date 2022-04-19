@@ -13,7 +13,7 @@ Chart Knowledge Base (CKB) 是一个提供图表经验的知识库，它的形�
 ## 包
 
 ```bash
-$ npm install @antv/knowledge
+$ npm install @antv/ckb
 ```
 
 

@@ -12,7 +12,7 @@ Chart Knowledge Base (CKB) is a library offers knowledge base for chart wikis in
 ## Packages
 
 ```bash
-$ npm install @antv/knowledge
+$ npm install @antv/ckb
 ```
 
 

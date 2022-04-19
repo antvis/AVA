@@ -8,6 +8,7 @@
     "packages/data-wizard",
     "packages/auto-chart"
   ],
+  "useWorkspaces": true,
   "command": {
     "publish": {
       "registry": "https://registry.npmjs.org/"
@@ -19,5 +20,5 @@
       ]
     }
   },
-  "version": "2.0.2"
+  "version": "independent"
 }

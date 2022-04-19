@@ -1,20 +1,25 @@
 {
   "name": "@antv/data-wizard",
-  "version": "2.0.0",
+  "version": "2.0.3",
   "description": "A js/ts library for data processing",
   "author": {
     "name": "AntV",
     "url": "https://antv.vision/"
   },
-  "homepage": "https://ava.antv.vision",
+  "homepage": "https://ava.antv.vision/en/docs/guide/data-wizard/intro",
   "repository": {
     "type": "git",
     "url": "https://github.com/antvis/ava"
   },
+  "keywords": [
+    "data processing",
+    "AntV",
+    "AVA"
+  ],
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
@@ -44,8 +49,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "limit-size": [
@@ -64,7 +68,8 @@
     "@antv/ckb": "^2.0.0",
     "date-fns": "^2.23.0",
     "mersenne-twister": "^1.1.0",
-    "randexp": "^0.5.3"
+    "randexp": "^0.5.3",
+    "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
@@ -76,7 +81,6 @@
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.59.0",
-    "tslib": "^2.3.0",
     "typescript": "4.3.5"
   }
 }

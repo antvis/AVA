@@ -10,7 +10,7 @@ order: 4
 一些相关类型和接口的描述：
 
 ```js
-import { ChartKnowledge, DataPrerequisite } from '@antv/knowledge';
+import { ChartKnowledge, DataPrerequisite } from '@antv/ckb';
 ```
 
 ## ChartKnowledge

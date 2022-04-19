@@ -1,5 +1,6 @@
-import { isArray, isNumber, isString, range, assert } from '../utils';
-import type { Axis } from './types';
+import { isDateString } from '../analyzer/is-date';
+import { isArray, isNumber, isString, range, assert, isBoolean, isNull } from '../utils';
+import type { Axis, Extra } from './types';
 
 export const isAxis = (value: any): value is Axis => {
   return isNumber(value) || isString(value);
@@ -61,3 +62,32 @@ export const stringify = (value: any) =>
     ?.replace(/\}"/g, ' }') || 'undefined';
 
 export const getStringifyLength = (value: any) => stringify(value)?.length;
+
+/**
+ * Convert data to specified data type.
+ * @param datum
+ * @param type
+ * @returns converted data
+ */
+export const convertDataType = (data: any, type: Extra['columnTypes'][number]) => {
+  try {
+    if (type === 'string' && !isString(data)) {
+      return `${data}`;
+    }
+    if (type === 'boolean' && !isBoolean(data)) {
+      return Boolean(data);
+    }
+    if (type === 'null' && !isNull(data)) {
+      return null;
+    }
+    if ((type === 'integer' || type === 'float') && !isNumber(data)) {
+      return +data;
+    }
+    if (type === 'date' && !isDateString(`${data}`)) {
+      return new Date(data);
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+  return data;
+};

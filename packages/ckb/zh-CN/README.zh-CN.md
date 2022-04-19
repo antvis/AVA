@@ -9,8 +9,8 @@
 
 数据可视化图表知识库
 
-[![Version](https://badgen.net/npm/v/@antv/knowledge)](https://www.npmjs.com/@antv/knowledge)
-[![NPM downloads](http://img.shields.io/npm/dm/@antv/knowledge.svg)](http://npmjs.com/@antv/knowledge)
+[![Version](https://badgen.net/npm/v/@antv/ckb)](https://www.npmjs.com/@antv/ckb)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/ckb.svg)](http://npmjs.com/@antv/ckb)
 
 </div>
 
@@ -65,13 +65,13 @@ AVA 的智能图表推荐的能力是以 CKB 为依托的。有了 CKB，你也�
 ## 安装
 
 ```bash
-$ npm install @antv/knowledge
+$ npm install @antv/ckb
 ```
 
 ## 用法
 
 ```js
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson } from '@antv/ckb';
 
 
 // 得到全量的英文图表知识库

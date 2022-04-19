@@ -58,7 +58,7 @@ CKBJson(lang, completed)
 ## 示例
 
 ```js
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson } from '@antv/ckb';
 
 
 // Knowledage base for all charts in English.

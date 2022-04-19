@@ -57,7 +57,7 @@
 
 
 ```js
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson } from '@antv/ckb';
 
 
 // Knowledage base for all charts in English.
@@ -232,7 +232,7 @@ addChart(
 
 
 ```js
-import { CKBOptions } from '@antv/knowledge';
+import { CKBOptions } from '@antv/ckb';
 
 const options1 = CKBOptions();
 const options2 = CKBOptions('zh-CN');
@@ -246,7 +246,7 @@ const allCategories = options1.category;
 ----
 
 ```js
-import { ChartKnowledge, DataPrerequisite } from '@antv/knowledge';
+import { ChartKnowledge, DataPrerequisite } from '@antv/ckb';
 ```
 
 ## `ChartKnowledge`

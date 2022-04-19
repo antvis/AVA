@@ -9,8 +9,8 @@
 
 A knowledge base stores the wiki for every type of visualization.
 
-[![Version](https://badgen.net/npm/v/@antv/knowledge)](https://www.npmjs.com/@antv/knowledge)
-[![NPM downloads](http://img.shields.io/npm/dm/@antv/knowledge.svg)](http://npmjs.com/@antv/knowledge)
+[![Version](https://badgen.net/npm/v/@antv/ckb)](https://www.npmjs.com/@antv/ckb)
+[![NPM downloads](http://img.shields.io/npm/dm/@antv/ckb.svg)](http://npmjs.com/@antv/ckb)
 
 </div>
 
@@ -62,13 +62,13 @@ You can easily build a chart type recommendation system with this knowledge base
 ## Installation
 
 ```bash
-$ npm install @antv/knowledge
+$ npm install @antv/ckb
 ```
 
 ## Usage
 
 ```js
-import { CKBJson } from '@antv/knowledge';
+import { CKBJson } from '@antv/ckb';
 
 
 // Knowledage base for all charts in English.

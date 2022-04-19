@@ -1,7 +1,24 @@
 {
   "name": "@antv/auto-chart",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A React component for chart use",
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.vision/"
+  },
+  "homepage": "https://ava.antv.vision/en/docs/guide/auto-chart/intro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/ava"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
+  "unpkg": "dist/index.min.js",
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
     "lint-fix": "npm run lint -- --fix",
@@ -16,18 +33,6 @@
     "analysis": "rimraf dist stats.html && rollup -c rollup.config.js --environment FORMAT:umd,ANALYSIS",
     "size": "limit-size",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": {
-    "name": "AntV",
-    "url": "https://antv.vision/"
-  },
-  "license": "MIT",
-  "main": "lib/index.js",
-  "module": "esm/index.js",
-  "types": "lib/index.d.ts",
-  "unpkg": "dist/index.min.js",
-  "publishConfig": {
-    "access": "public"
   },
   "peerDependencies": {
     "@ant-design/icons": ">=4.6.4",
@@ -80,8 +85,7 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "limit-size": [
