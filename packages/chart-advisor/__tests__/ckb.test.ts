@@ -24,7 +24,7 @@ describe('customized CKB', () => {
   test('no ckb config input', () => {
     const myAdvisor = new Advisor();
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(52);
+    expect(Object.keys(finalCKB).length).toBe(55);
   });
 
   test('custom only', () => {
@@ -35,7 +35,7 @@ describe('customized CKB', () => {
     };
     const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(53);
+    expect(Object.keys(finalCKB).length).toBe(56);
   });
 
   test('include only', () => {
@@ -53,7 +53,7 @@ describe('customized CKB', () => {
     };
     const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(51);
+    expect(Object.keys(finalCKB).length).toBe(54);
   });
 
   test('custom && exclude && include', () => {
@@ -90,7 +90,7 @@ describe('customized CKB', () => {
     };
     const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(51);
+    expect(Object.keys(finalCKB).length).toBe(54);
     expect(finalCKB).toHaveProperty('fufu_chart');
   });
 
