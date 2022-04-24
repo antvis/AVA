@@ -165,7 +165,7 @@ export class BasicRandom {
     }
     const arr = array.slice(0);
     let end = arr.length;
-    return this.n(function (this: BasicRandom) {
+    return this.n(function gen(this: BasicRandom) {
       end -= 1;
       const index = this.natural({ max: end });
       const value = arr[index];

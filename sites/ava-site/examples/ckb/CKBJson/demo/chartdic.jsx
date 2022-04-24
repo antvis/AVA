@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import Thumbnails from '@antv/thumbnails';
 import { Thumbnail } from '@antv/thumbnails-component';
 import { Popover } from 'antd';
-
 // import
 import { CKBJson } from '@antv/ckb';
 
