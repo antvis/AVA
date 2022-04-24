@@ -2,7 +2,6 @@ import React from 'react';
 
 import ReactDOM from 'react-dom';
 import { PagList, JSONView } from 'antv-site-demo-rc';
-
 // import
 import { ChartAdvisor } from '@antv/chart-advisor';
 
