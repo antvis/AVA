@@ -1,5 +1,7 @@
 import { LevelOfMeasurement as LOM, DataPrerequisiteJSON } from '@antv/ckb';
+
 import { intersects } from '../utils';
+
 import { BasicDataPropertyForAdvice } from './concepts/rule';
 
 export function compare(f1: any, f2: any) {

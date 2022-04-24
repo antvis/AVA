@@ -1,6 +1,7 @@
 import { analyzeField, isUnique, GraphProps } from '../analyzer';
 import { getNodeFields, getLinkFields, getAllFieldsInfo, getAllStructFeats, clusterNodes } from '../analyzer/graph';
 import { assert, isArray, isObject, isBasicType } from '../utils';
+
 import { NodeData, LinkData, GraphInput, GraphExtra } from './types';
 import DataFrame from './data-frame';
 import { flatObject } from './utils';

@@ -1,5 +1,6 @@
 import _sumBy from 'lodash/sumBy';
 import { cdf, quantile } from '@stdlib/stats/base/dists/normal';
+
 import { sign, unique } from '../utils/common';
 import { TrendType } from '../interface';
 

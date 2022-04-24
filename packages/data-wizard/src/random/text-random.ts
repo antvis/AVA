@@ -1,4 +1,5 @@
 import { assert } from '../utils';
+
 import { TextDB, getTextDB } from './database';
 import { initOptions, capitalize } from './utils';
 import { BasicRandom, Interval } from './basic-random';

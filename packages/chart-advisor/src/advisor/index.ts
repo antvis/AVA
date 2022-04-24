@@ -1,7 +1,9 @@
 import { ChartKnowledgeJSON, CKBJson } from '@antv/ckb';
 import { DataFrame, analyzer, GraphData } from '@antv/data-wizard';
+
 import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
 import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
+
 import { cloneDeep, deepMix } from './utils';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { graphdataToAdvices } from './advice-pipeline/graph-to-advices';

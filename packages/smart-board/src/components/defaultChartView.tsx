@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+
 import { Tag, Tooltip } from 'antd';
 import { LockOutlined, UnlockOutlined, MonitorOutlined, FundViewOutlined } from '@ant-design/icons';
 import { statistics } from '@antv/data-wizard';
 import { g2plotRender } from '@antv/antv-spec';
+
 import { smartBoardConfig } from '../utils/smartBoardConfig';
 import { SmartBoardChartViewProps, ConfigObj } from '../interfaces';
 

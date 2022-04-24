@@ -1,4 +1,5 @@
 import Heap from 'heap-js';
+
 import { InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../interface';
 
 export const insightPriorityComparator = (a: InsightInfo<PatternInfo>, b: InsightInfo<PatternInfo>) =>

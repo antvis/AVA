@@ -1,6 +1,8 @@
 import lowess from '@stdlib/stats-lowess';
 import { statistics } from '@antv/data-wizard';
+
 import { Datum, Measure, TimeSeriesOutlierInfo } from '../../interface';
+
 import { findOutliers } from './categoryOutlier';
 
 type OutlierItem = {

@@ -1,7 +1,9 @@
 import React, { useRef, forwardRef, useImperativeHandle, useEffect } from 'react';
+
 import { intl, Language } from '../i18n';
 import { prefixCls, getElePosition } from '../utils';
 import { withDrag, DragRefProps } from '../DragHoc';
+
 import { MockContent, MockResultType } from './Content';
 
 interface MockPanelProps {

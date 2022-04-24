@@ -1,6 +1,7 @@
 /* eslint react/prop-types: 0 */
 
 import React, { useState, useEffect } from 'react';
+
 import ReactDOM from 'react-dom';
 import { SmartBoard, SmartBoardDashboard, SmartBoardToolbar, SmartBoardSelector } from '@antv/smart-board';
 

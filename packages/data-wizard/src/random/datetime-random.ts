@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+
 import { BasicRandom, Interval } from './basic-random';
 import { initOptions } from './utils';
 import { DateTimeDB, getDateTimeDB } from './database';

@@ -1,5 +1,6 @@
 import { isDateString } from '../analyzer/is-date';
 import { isArray, isNumber, isString, range, assert, isBoolean, isNull } from '../utils';
+
 import type { Axis, Extra } from './types';
 
 export const isAxis = (value: any): value is Axis => {

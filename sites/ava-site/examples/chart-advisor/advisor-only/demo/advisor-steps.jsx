@@ -1,9 +1,9 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import { Menu, Dropdown, Radio } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
 import { JSONView, TableView, StepBar, ChartView } from 'antv-site-demo-rc';
-
 import { Advisor } from '@antv/chart-advisor';
 
 const myAdvisor = new Advisor();

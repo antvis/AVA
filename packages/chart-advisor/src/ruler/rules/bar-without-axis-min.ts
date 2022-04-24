@@ -1,4 +1,5 @@
 import { ChartAntVSpec } from '@antv/antv-spec';
+
 import { RuleModule } from '../concepts/rule';
 
 const applyChartTypes = [

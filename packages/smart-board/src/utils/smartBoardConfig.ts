@@ -1,4 +1,5 @@
 import { InsightInfo, PatternInfo } from '@antv/lite-insight';
+
 import { Chart, ConfigObj } from '../interfaces';
 
 /**

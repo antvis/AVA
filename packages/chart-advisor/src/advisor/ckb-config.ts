@@ -1,6 +1,8 @@
 import { ChartKnowledgeJSON } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
+
 import { BasicDataPropertyForAdvice } from '../ruler';
+
 import { DataRows } from './advice-pipeline/interface';
 
 export type CKBConfig = {

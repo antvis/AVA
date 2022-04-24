@@ -1,5 +1,6 @@
 import { analyzer } from '@antv/data-wizard';
 import { GraphAntVSpec } from '@antv/antv-spec';
+
 import { allBuiltInRules, testRule } from '../../ruler/rules/rules-for-graph';
 import {
   DEFAULT_COLORS,

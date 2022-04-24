@@ -1,4 +1,5 @@
 import { AntVSpec } from '@antv/antv-spec';
+
 import { CustomizedCKBJSON, CKBConfig } from '../src/advisor/ckb-config';
 import { Advisor } from '../src/advisor';
 import { Linter } from '../src/linter';

@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
+
 import ReactDOM from 'react-dom';
 import { specToG2Plot } from '@antv/antv-spec';
 import { colorSimulation, colorToHex, COLOR_BLINDNESS_SIMULATION_TYPES } from '@antv/smart-color';
-
 import { Advisor } from '@antv/chart-advisor';
 
 const myAdvisor = new Advisor();

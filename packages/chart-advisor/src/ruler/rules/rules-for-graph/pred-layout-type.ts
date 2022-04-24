@@ -1,4 +1,5 @@
 import { RuleModule } from '../../concepts/rule';
+
 import { MAX_NUM_NODES_A_LEVEL } from './const';
 
 const applyChartTypes = ['graph'];

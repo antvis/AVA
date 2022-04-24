@@ -1,4 +1,5 @@
 import { LOM_OPTIONS } from './interface';
+
 import type { ChartKnowledgeBase } from './interface';
 
 export const base: ChartKnowledgeBase = {

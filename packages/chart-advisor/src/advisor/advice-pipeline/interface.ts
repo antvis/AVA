@@ -2,6 +2,7 @@ import { Purpose } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
 import { SimulationType } from '@antv/smart-color';
 import { ColorSchemeType } from '@antv/color-schema';
+
 import { Preferences } from '../../ruler';
 
 export type DataRow = Record<string, any>;

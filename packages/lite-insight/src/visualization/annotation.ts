@@ -1,4 +1,5 @@
 import { PatternInfo, PointPatternInfo, HomogeneousPatternInfo } from '../interface';
+
 import { dataFormat } from './util';
 
 const COLOR: Record<string, string> = {

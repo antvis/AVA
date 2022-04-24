@@ -1,4 +1,5 @@
 import BayesianChangePoint, { BreakPoint } from 'bayesian-changepoint';
+
 import { calcPValue } from './pettitt-test';
 
 const breakpointVerifier = (next: BreakPoint<number>, prev: BreakPoint<number>): boolean => {

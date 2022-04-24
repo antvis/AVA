@@ -1,6 +1,8 @@
 import MersenneTwister from 'mersenne-twister';
 import RandExp from 'randexp';
+
 import { assert, range } from '../utils';
+
 import { initOptions, MAX_INT, MIN_INT } from './utils';
 
 /** @public */

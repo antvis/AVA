@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+
 import { Button, Divider, Row, Col } from 'antd';
 import { AntVSpec } from '@antv/antv-spec';
 import { Linter, Lint } from '@antv/chart-advisor';
+
 import { Chart } from '../Chart';
+
 import { LintCard } from './LintCard';
 
 const errorSpec = {

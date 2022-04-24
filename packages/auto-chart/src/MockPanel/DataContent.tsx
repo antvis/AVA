@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+
 import { Table, Popconfirm } from 'antd';
 import { SettingOutlined, DeleteOutlined } from '@ant-design/icons';
+
 import { prefixCls, uuid } from '../utils';
 import { intl, Language } from '../i18n';
+
 import { mock, mockFields, Field, getOptimalCount } from './utils/mockdata';
 import { SettingModal } from './SettingModal';
 

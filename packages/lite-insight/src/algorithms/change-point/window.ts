@@ -1,4 +1,5 @@
 import _mean from 'lodash/mean';
+
 import { SignificanceBenchmark } from '../../constant';
 import { calculatePValue } from '../../insights/util';
 
