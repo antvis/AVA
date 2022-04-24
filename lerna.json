@@ -14,10 +14,7 @@
       "registry": "https://registry.npmjs.org/"
     },
     "bootstrap": {
-      "npmClientArgs": [
-        "--no-lockfile",
-        "--no-package-lock"
-      ]
+      "npmClientArgs": ["--no-lockfile", "--no-package-lock"]
     }
   },
   "version": "independent"
