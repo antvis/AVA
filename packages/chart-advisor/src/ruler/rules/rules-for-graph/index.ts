@@ -1,4 +1,5 @@
 import { BasicDataPropertyForAdvice, RuleModule } from '../../concepts/rule';
+
 import { scaleRules } from './pred-scale-type';
 import { encodingRules } from './pred-encoding';
 import { edgeTypeRules } from './pred-edge-type';

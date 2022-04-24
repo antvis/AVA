@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import { Switch } from 'antd';
 import insertCss from 'insert-css';

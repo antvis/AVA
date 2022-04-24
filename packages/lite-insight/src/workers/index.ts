@@ -1,4 +1,5 @@
 import { Datum, InsightOptions, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../interface';
+
 import createWorker from './createWorker';
 import { TASK } from './constant';
 

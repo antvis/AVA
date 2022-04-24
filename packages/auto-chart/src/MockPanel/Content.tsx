@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+
 import { Tabs, InputNumber, Button, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+
 import { prefixCls } from '../utils';
 import { intl, Language } from '../i18n';
+
 import { CONFIG_MAP } from './utils/configs';
 import { mock, Field, mockFields } from './utils/mockdata';
 import { ChartContent } from './ChartContent';

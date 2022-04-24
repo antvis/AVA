@@ -1,4 +1,5 @@
 import { IPhrase } from '@antv/text-schema';
+
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
 export type Datum = Record<string, string | number>;

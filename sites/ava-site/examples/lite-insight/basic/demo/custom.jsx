@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import ReactDOM from 'react-dom';
 import { Spin } from 'antd';
 import { getDataInsights } from '@antv/lite-insight';

@@ -2,6 +2,7 @@ import _groupBy from 'lodash/groupBy';
 import _uniq from 'lodash/uniq';
 import _flatten from 'lodash/flatten';
 import Heap from 'heap-js';
+
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
 import { insightExtractors, ExtractorCheckers } from '../insights';
 import {
@@ -17,6 +18,7 @@ import {
   HomogeneousPatternInfo,
 } from '../interface';
 import { aggregate } from '../utils/aggregate';
+
 import { DataProperty, calculateImpactValue } from './preprocess';
 import {
   extractHomogeneousPatternsForMeausres,

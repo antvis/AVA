@@ -1,7 +1,7 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import { JSONView, ChartView, LintCard, StepBar } from 'antv-site-demo-rc';
-
 import { Linter } from '@antv/chart-advisor';
 
 const myLinter = new Linter();

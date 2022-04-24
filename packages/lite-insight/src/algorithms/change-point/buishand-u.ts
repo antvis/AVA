@@ -2,6 +2,7 @@ import _sumBy from 'lodash/sumBy';
 import _sum from 'lodash/sum';
 import _mean from 'lodash/mean';
 import maxabs from '@stdlib/stats/base/maxabs';
+
 import { calcPValue } from './window';
 
 /**

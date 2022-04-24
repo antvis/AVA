@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { Chart, SmartBoardDashboardProps } from '../interfaces';
+
 import { SmartBoardChartView as ChartView } from './defaultChartView';
 
 export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {

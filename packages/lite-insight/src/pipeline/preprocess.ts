@@ -1,5 +1,6 @@
 import { DataFrame, analyzer as DWAnalyzer } from '@antv/data-wizard';
 import _intersection from 'lodash/intersection';
+
 import { FieldType, Datum, ImpactMeasure } from '../interface';
 import { AggregatorMap } from '../utils/aggregate';
 

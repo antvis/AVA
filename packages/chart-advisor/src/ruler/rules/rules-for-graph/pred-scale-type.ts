@@ -1,4 +1,5 @@
 import { analyzer } from '@antv/data-wizard';
+
 import { BasicDataPropertyForAdvice, RuleModule } from '../../concepts/rule';
 
 const applyChartTypes = ['graph'];

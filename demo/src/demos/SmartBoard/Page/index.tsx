@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+
 import CHART_SAMPLE_LIST from '../ChartSamples';
+
 import Dashboard from './Dashboard';
 import Toolbar from './Toolbar';
+
 import './index.less';
 
 const Page = () => {

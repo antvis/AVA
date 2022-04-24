@@ -1,4 +1,5 @@
 import { BasicDataPropertyForAdvice } from '../../ruler';
+
 import isNil from './isNil';
 
 const compare = (f1: BasicDataPropertyForAdvice, f2: BasicDataPropertyForAdvice): number => {

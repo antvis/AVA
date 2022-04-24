@@ -1,4 +1,5 @@
 import { CKBJson } from '@antv/ckb';
+
 import { RuleModule } from '../concepts/rule';
 
 const Wiki = CKBJson('en-US', true);

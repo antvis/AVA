@@ -1,6 +1,8 @@
 import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '../utils';
+
 import { fillMissingValue, convertDataType } from './utils';
 import BaseFrame from './base-frame';
+
 import type { SeriesData, Extra, Axis } from './types';
 
 export type SeriesExtra = Pick<Extra, 'indexes' | 'fillValue' | 'columnTypes'>;

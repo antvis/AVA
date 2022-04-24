@@ -1,8 +1,11 @@
 import React from 'react';
+
 import { CKBJson } from '@antv/ckb';
 import { Thumbnail } from '@antv/thumbnails-component';
+
 import { prefixCls } from '../utils';
 import { Language } from '../i18n';
+
 import type { ThumbnailID } from '@antv/thumbnails';
 
 const CHART_NAMES = [

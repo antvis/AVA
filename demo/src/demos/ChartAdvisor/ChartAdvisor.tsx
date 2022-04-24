@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { AdvisorPanel } from './Advisor/AdvisorPanel';
 import { LinterPanel } from './Linter/LinterPanel';
 import { CAPanel } from './CA/CAPanel';

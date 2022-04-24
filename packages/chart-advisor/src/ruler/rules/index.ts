@@ -3,6 +3,7 @@
 // import { aggregationSingleRow } from './aggregation-single-row';
 // import { allCanBeTable } from './all-can-be-table';
 import { RuleModule } from '../concepts/rule';
+
 import { barSeriesQty } from './bar-series-qty';
 import { barWithoutAxisMin } from './bar-without-axis-min';
 import { dataCheck } from './data-check';

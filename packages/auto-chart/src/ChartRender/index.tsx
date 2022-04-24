@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
-import type { ReactNode } from 'react';
+
 import { specToG2Plot } from '@antv/antv-spec';
 import * as G2Plot from '@antv/g2plot';
+
 import { prefixCls } from '../utils';
+
+import type { ReactNode } from 'react';
 
 interface ChartProps {
   title?: ReactNode;

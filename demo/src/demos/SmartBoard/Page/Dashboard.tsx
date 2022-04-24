@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+
 import { SmartBoard, ChartListInfo, Chart } from '@antv/smart-board';
+
 import ChartView from './ChartView';
 
 interface DashboardProps {

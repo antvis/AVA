@@ -1,9 +1,11 @@
 import { ChartID, CHART_ID_OPTIONS, LevelOfMeasurement as LOM } from '@antv/ckb';
 import { statistics, utils as dwUtils } from '@antv/data-wizard';
+
 import { BasicDataPropertyForAdvice } from '../../ruler';
 import { hasSubset, intersects } from '../../utils';
 import { compare } from '../utils';
 import { CustomizedCKBJSON } from '../ckb-config';
+
 import { Advice, DataRows } from './interface';
 
 type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal'; // TODO support in AntVSpec | 'geojson';

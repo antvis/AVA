@@ -1,6 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 // @ts-ignore
 import * as louvain from 'louvain-algorithm';
+
 import { Chart, InputChart, ChartOrder, ChartGraph, ChartCluster, link } from '../interfaces';
 import { getDegreeImportance, getChartConnection } from '../utils/calculator';
 import { addUuid } from '../utils/addUuid';

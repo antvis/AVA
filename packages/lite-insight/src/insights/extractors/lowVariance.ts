@@ -1,4 +1,5 @@
 import { statistics } from '@antv/data-wizard';
+
 import { Datum, LowVarianceInfo, Measure } from '../../interface';
 
 type LowVarianceItem = {

@@ -1,4 +1,5 @@
 import { CKBJson } from '@antv/ckb';
+
 import { hasSubset } from '../../utils';
 import { RuleModule, BasicDataPropertyForAdvice } from '../concepts/rule';
 import { compare } from '../utils';

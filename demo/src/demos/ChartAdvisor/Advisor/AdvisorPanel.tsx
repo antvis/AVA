@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+
 import { Table, Button, Divider, Row, Col } from 'antd';
 import { Advice, Advisor } from '@antv/chart-advisor';
+
 import testData from '../data.json';
+
 import { AdviceCard } from './AdviceCard';
 
 export const AdvisorPanel = () => {

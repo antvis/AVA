@@ -1,5 +1,7 @@
 import * as AlgorithmSync from '@antv/algorithm';
+
 import { NodeData, LinkData } from '../dataset/types';
+
 import { FieldInfo, GraphFeat, NodeStructFeat, LinkStructFeat, analyzeField } from './index';
 
 const GraphAlgorithms = {

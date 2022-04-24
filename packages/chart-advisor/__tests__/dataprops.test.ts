@@ -1,5 +1,6 @@
 import { AntVSpec } from '@antv/antv-spec';
 import { DataFrame } from '@antv/data-wizard';
+
 import { Linter } from '../src/linter';
 import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../src/ruler';
 

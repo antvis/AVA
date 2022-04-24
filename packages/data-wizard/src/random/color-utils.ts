@@ -1,4 +1,5 @@
 import { assert } from '../utils';
+
 import { BasicRandom } from './basic-random';
 import { initOptions } from './utils';
 /**

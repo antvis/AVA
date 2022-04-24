@@ -1,5 +1,6 @@
 import _sortBy from 'lodash/sortBy';
 import { statistics } from '@antv/data-wizard';
+
 import { IQR } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
 import { Datum, Measure, CategoryOutlierInfo } from '../../interface';
