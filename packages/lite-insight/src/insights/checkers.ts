@@ -1,6 +1,8 @@
 import _intersection from 'lodash/intersection';
+
 import { Datum, SubjectInfo, InsightType } from '../interface';
 import { DataProperty } from '../pipeline/preprocess';
+
 import type { LevelOfMeasurement } from '@antv/ckb';
 
 export type ExtractorChecker = (

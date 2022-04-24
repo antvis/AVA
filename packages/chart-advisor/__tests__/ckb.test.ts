@@ -1,4 +1,5 @@
 import { ChartKnowledgeJSON } from '@antv/ckb';
+
 import { CKBConfig } from '../src/advisor/ckb-config';
 import { Advisor } from '../src/advisor';
 

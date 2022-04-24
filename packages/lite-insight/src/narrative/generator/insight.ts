@@ -1,4 +1,5 @@
 import _groupBy from 'lodash/groupBy';
+
 import { PatternInfo, InsightInfo, InsightType } from '../../interface';
 import { SubjectsDescInfo, AbstractNarrativeGenerator } from '../interface';
 import {

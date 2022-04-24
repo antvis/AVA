@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { intl, Language } from './i18n';
 import { prefixCls } from './utils';
 

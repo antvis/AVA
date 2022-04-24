@@ -1,4 +1,5 @@
 import { groupBy, sumBy, minBy, maxBy, meanBy, sortBy, flatten, uniq } from 'lodash';
+
 import { Aggregator, Datum, Measure, MeasureMethod } from '../interface';
 
 const sum = (data: Datum[], measure: string) => {

@@ -1,6 +1,8 @@
 import { analyzer } from '@antv/data-wizard';
+
 import { RuleModule } from '../../concepts/rule';
 import { ILayoutConfig, LayoutTypes } from '../../../interface';
+
 import { DEFAULT_LAYOUT_TYPE } from './const';
 
 const applyChartTypes = ['graph'];

@@ -1,4 +1,5 @@
 import { IPhrase, IEntityType } from '@antv/text-schema';
+
 import { Language, SymbolType } from '../interface';
 import { SYMBOL } from '../constance';
 

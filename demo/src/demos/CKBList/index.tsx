@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ContentPage from '../../ContentPage';
 
 const CKBList = () => {

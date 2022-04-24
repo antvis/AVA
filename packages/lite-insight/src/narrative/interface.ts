@@ -7,6 +7,7 @@ import {
   HomogeneousInsightType,
   PatternInfo,
 } from '../interface';
+
 import { SYMBOL } from './constance';
 
 export type VariableType = 'insightTypes';

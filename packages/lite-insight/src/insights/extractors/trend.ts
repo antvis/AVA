@@ -1,4 +1,5 @@
 import regression from 'regression';
+
 import { Datum, Measure, TrendInfo } from '../../interface';
 import { mkTest } from '../../algorithms';
 

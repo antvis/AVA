@@ -1,6 +1,8 @@
 import React from 'react';
+
 import { Radio, Tooltip } from 'antd';
 import { InsertRowBelowOutlined, ClusterOutlined, InteractionOutlined } from '@ant-design/icons';
+
 import { SmartBoardToolbarProps } from '../interfaces';
 
 const smartBoardModes = ['defaultMode', 'clusterMode', 'connectionMode'];

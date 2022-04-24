@@ -1,5 +1,7 @@
 import React from 'react';
+
 import ContentPage from '../../ContentPage';
+
 import { GraphPanel } from './GraphPanel';
 
 const content = (

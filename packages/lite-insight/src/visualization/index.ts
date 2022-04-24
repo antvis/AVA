@@ -1,5 +1,6 @@
 import _groupBy from 'lodash/groupBy';
 import _get from 'lodash/get';
+
 import {
   ChartType,
   HomogeneousPatternInfo,
@@ -10,6 +11,7 @@ import {
   InsightOptions,
 } from '../interface';
 import { InsightNarrativeGenerator, HomogeneousNarrativeGenerator } from '../narrative';
+
 import { generateInsightAnnotationConfigs, generateHomogeneousInsightAnnotationConfig } from './annotation';
 
 export const ChartTypeMap: Record<InsightType, ChartType> = {

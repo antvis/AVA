@@ -3,9 +3,12 @@
  * file build smaller is not obvious and language switching is unavailable
  * */
 import React, { useState } from 'react';
+
 import moment from 'moment';
 import { Input, Modal, Form, Select, InputNumber, DatePicker } from 'antd';
+
 import { intl, Language } from '../i18n';
+
 import { Field, ValuesField, DateField, NumberField } from './utils/mockdata';
 
 const { Option } = Select;

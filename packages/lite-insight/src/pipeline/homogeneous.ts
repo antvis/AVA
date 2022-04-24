@@ -1,5 +1,6 @@
 import _groupBy from 'lodash/groupBy';
 import _flatten from 'lodash/flatten';
+
 import { PATTERN_TYPES } from '../constant';
 import { Measure, InsightInfo, InsightType, PatternInfo, PointPatternInfo, HomogeneousPatternInfo } from '../interface';
 

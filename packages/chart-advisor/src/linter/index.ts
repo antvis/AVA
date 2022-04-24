@@ -1,5 +1,6 @@
 import { AntVSpec } from '@antv/antv-spec';
 import { DataFrame } from '@antv/data-wizard';
+
 import {
   RuleConfig,
   processRuleCfg,
@@ -9,6 +10,7 @@ import {
   BasicDataPropertyForAdvice,
 } from '../ruler';
 import { DataRows } from '../interface';
+
 import { LinterOptions, Lint } from './interface';
 import { getChartType } from './get-charttype';
 

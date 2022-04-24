@@ -2,8 +2,10 @@ import { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
 import { AntVSpec } from '@antv/antv-spec';
 import { hexToColor, colorToHex, paletteGeneration, colorSimulation, SimulationType } from '@antv/smart-color';
 import { ColorSchemeType } from '@antv/color-schema';
+
 import { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/concepts/rule';
 import { deepMix } from '../utils';
+
 import { Advice, AdvisorOptions, DataRows, Theme, SmartColorOptions } from './interface';
 import { getChartTypeSpec } from './spec-mapping';
 import { defaultWeight } from './default-weight';

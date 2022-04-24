@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+
 import { CKBJson } from '@antv/ckb';
 import { Thumbnail } from '@antv/thumbnails-component';
+
 import { prefixCls, customChartType } from '../utils';
 import { intl, Language } from '../i18n';
+
 import type { ThumbnailID } from '@antv/thumbnails';
 import type { Advice } from '@antv/chart-advisor';
 

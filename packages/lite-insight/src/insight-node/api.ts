@@ -1,4 +1,5 @@
 import { spawn, Worker } from 'threads';
+
 import { Datum, InsightOptions, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../interface';
 import { extractInsights, generateInsightsWithVisualizationSchemas } from '../pipeline/insight';
 

@@ -1,17 +1,21 @@
 import React, { useState, useRef, useEffect, CSSProperties } from 'react';
+
 import { message, ConfigProvider } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import enUS from 'antd/es/locale/en_US';
 import { Advisor } from '@antv/chart-advisor';
+
 import { Chart } from './ChartRender';
 import { AdviceList } from './AdviceList';
 import { EmptyContent } from './EmptyContent';
 import { MockPanel } from './MockPanel';
 import { Language, intl } from './i18n';
 import { prefixCls } from './utils';
+
 import type { Advice } from '@antv/chart-advisor';
 import type { Purpose } from '@antv/ckb';
 import type { MockResultType } from './MockPanel/Content';
+
 import './index.less';
 
 interface Props {

@@ -1,7 +1,10 @@
 import * as React from 'react';
+
 import { Layout, Menu } from 'antd';
 import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+
 import manifest, { Demo } from '../manifest';
+
 import './index.less';
 
 const { Header, Sider, Content } = Layout;

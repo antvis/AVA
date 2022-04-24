@@ -2,6 +2,7 @@ import { ChartID } from './chartID';
 import { Language, I18N, translateMapping } from './i18n';
 import { TransKnowledgeProps } from './i18n/interface';
 import { base } from './base';
+
 import type {
   ChartKnowledgeBase,
   ChartKnowledge,

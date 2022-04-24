@@ -1,5 +1,7 @@
 import { analyzer } from '@antv/data-wizard';
+
 import { RuleModule } from '../../concepts/rule';
+
 import { MAX_DISTINCT_COLOR } from './const';
 
 const applyChartTypes = ['graph'];

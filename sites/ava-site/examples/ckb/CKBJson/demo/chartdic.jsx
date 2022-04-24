@@ -1,4 +1,5 @@
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import Thumbnails from '@antv/thumbnails';
 import { Thumbnail } from '@antv/thumbnails-component';

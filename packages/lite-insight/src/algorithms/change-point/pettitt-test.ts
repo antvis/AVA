@@ -1,4 +1,5 @@
 import _sumBy from 'lodash/sumBy';
+
 import { rank } from '../../utils/common';
 
 /**

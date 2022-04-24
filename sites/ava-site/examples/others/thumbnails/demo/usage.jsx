@@ -1,5 +1,6 @@
 /* eslint-disable quotes */
 import React from 'react';
+
 import ReactDOM from 'react-dom';
 import { Thumbnail } from '@antv/thumbnails-component';
 import Thumbnails, { BAR_CHART } from '@antv/thumbnails';

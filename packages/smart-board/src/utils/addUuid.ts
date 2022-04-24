@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+
 import { InputChart } from '../interfaces';
 
 export function addUuid(chart: InputChart): InputChart {

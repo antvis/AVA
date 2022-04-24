@@ -1,4 +1,5 @@
 import _upperFirst from 'lodash/upperFirst';
+
 import { PhrasesBuilder } from '../utils/phrases-builder';
 import { SubjectsDescInfo } from '../interface';
 

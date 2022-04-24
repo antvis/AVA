@@ -1,6 +1,9 @@
 import React from 'react';
+
 import { AutoChart } from '@antv/auto-chart';
+
 import ContentPage from '../../ContentPage';
+
 import testData from './data.json';
 
 const autoChartExp = (

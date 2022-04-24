@@ -1,6 +1,6 @@
 import { CKBJson } from '@antv/ckb';
-import { BasicDataPropertyForAdvice, RuleModule } from '../concepts/rule';
 
+import { BasicDataPropertyForAdvice, RuleModule } from '../concepts/rule';
 import { verifyDataProps } from '../utils';
 
 const Wiki = CKBJson('en-US', true);

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+
 import G6 from '@antv/g6';
 import { Collapse, Table } from 'antd';
+
 import { specToG6 } from './spec-g6';
 
 export const Graph = ({ spec }: any) => {

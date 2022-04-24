@@ -1,8 +1,10 @@
 import Heap from 'heap-js';
+
 import { InsightDefaultLimit } from '../constant';
 import { getInsightVisualizationSchema, getHomogeneousInsightVisualizationSchema } from '../visualization';
 import { Datum, InsightOptions, Measure, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../interface';
 import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
+
 import { enumerateInsights } from './extract';
 import { DataProperty, dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
 import { insightPriorityComparator, homogeneousInsightPriorityComparator } from './util';

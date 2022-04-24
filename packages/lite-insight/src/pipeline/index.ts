@@ -1,4 +1,5 @@
 import { Datum, InsightOptions, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../interface';
+
 import { extractInsights, generateInsightsWithVisualizationSchemas } from './insight';
 
 type InsightsResult = {

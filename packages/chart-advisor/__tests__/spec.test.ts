@@ -1,4 +1,5 @@
 import { DataFrame } from '@antv/data-wizard';
+
 import { getChartTypeSpec } from '../src/advisor';
 import { BasicDataPropertyForAdvice } from '../src/ruler';
 

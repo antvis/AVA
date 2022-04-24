@@ -1,9 +1,11 @@
 import React from 'react';
+
 import SEO from '@antv/gatsby-theme-antv/site/components/Seo';
 import { useTranslation } from 'react-i18next';
 import Banner from '@antv/gatsby-theme-antv/site/components/Banner';
 import Cases from '@antv/gatsby-theme-antv/site/components/Cases';
 import Companies from '@antv/gatsby-theme-antv/site/components/Companies';
+
 import '../css/index.less';
 import '../css/home.css';
 
@@ -25,7 +27,7 @@ const IndexPage = () => {
     {
       logo: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*-dLnTIexOxwAAAAAAAAAAABkARQnAQ',
       title: t('智能可视化'),
-      description: t(`链接人和数据，联通数据分析链条上的“最后一公里”`),
+      description: t('链接人和数据，联通数据分析链条上的“最后一公里”'),
       image: t('https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*gM2JRbkGETIAAAAAAAAAAAAAARQnAQ'),
     },
   ];

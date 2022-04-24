@@ -1,4 +1,5 @@
 import { ChartListInfo } from '@antv/smart-board';
+
 import chartSample1 from './chartSample1';
 import chartSample2 from './chartSample2';
 
