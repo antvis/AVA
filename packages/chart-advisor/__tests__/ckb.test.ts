@@ -20,11 +20,16 @@ describe('customized CKB', () => {
     channel: ['Angle', 'Area', 'Color'],
     recRate: 'Use with Caution',
   };
+  let finalCkbCount = 0;
+
+  beforeEach(() => {
+    finalCkbCount = Object.keys(new Advisor().CKB).length;
+  });
 
   test('no ckb config input', () => {
     const myAdvisor = new Advisor();
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(52);
+    expect(Object.keys(finalCKB).length).toBe(finalCkbCount);
   });
 
   test('custom only', () => {
@@ -35,7 +40,7 @@ describe('customized CKB', () => {
     };
     const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(53);
+    expect(Object.keys(finalCKB).length).toBe(finalCkbCount + 1);
   });
 
   test('include only', () => {
@@ -53,7 +58,7 @@ describe('customized CKB', () => {
     };
     const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(51);
+    expect(Object.keys(finalCKB).length).toBe(finalCkbCount - 1);
   });
 
   test('custom && exclude && include', () => {
@@ -90,7 +95,7 @@ describe('customized CKB', () => {
     };
     const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
     const finalCKB = myAdvisor.CKB;
-    expect(Object.keys(finalCKB).length).toBe(51);
+    expect(Object.keys(finalCKB).length).toBe(finalCkbCount - 1);
     expect(finalCKB).toHaveProperty('fufu_chart');
   });
 
