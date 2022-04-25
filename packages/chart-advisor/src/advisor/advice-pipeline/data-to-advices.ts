@@ -176,7 +176,9 @@ function applySmartColor(
  * @param dataProps data props derived from data-wizard or customized by users
  * @param chartWIKI ckb
  * @param ruleBase rule base
+ * @param smartColor switch smart color on/off, optional props, default is off
  * @param options options for advising such as log, preferences
+ * @param colorOptions color options, optional props, @see {@link SmartColorOptions}
  * @returns chart list [ { type: chartTypes, spec: antv-spec, score: >0 }, ... ]
  */
 export function dataToAdvices(
@@ -184,7 +186,6 @@ export function dataToAdvices(
   dataProps: BasicDataPropertyForAdvice[],
   chartWIKI: Record<string, ChartKnowledgeJSON>,
   ruleBase: Record<string, RuleModule>,
-  /** SmartColor on/off */
   smartColor?: boolean,
   options?: AdvisorOptions,
   colorOptions?: SmartColorOptions
