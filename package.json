@@ -75,12 +75,13 @@
     "setup:site": "cd ./sites/ava-site && yarn",
     "start:site": "cd ./sites/ava-site && npm run start",
     "deploy:site": "cd ./sites/ava-site && npm run deploy",
+    "setup:demo": "cd demo && npm install",
     "start:demo": "cd demo && npm start",
     "prepare": "husky install",
     "ci": "run-s format lint-staged build",
     "release": "lerna exec --no-private --concurrency 1 -- npx --no-install semantic-release",
     "release:manual": "npm run ci && lerna publish",
-    "one-stop-setup": "npm install --package-lock=false && run-s prepare boot build setup:site"
+    "one-stop-setup": "npm install --package-lock=false && run-s prepare boot build setup:site setup:demo"
   },
   "husky": {
     "hooks": {
