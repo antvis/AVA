@@ -25,35 +25,36 @@ type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
 ### 统计图表推荐参数
 
-* ***ChartAdviseParams*** 参数配置。
+* _**ChartAdviseParams**_ 参数配置。
 
-| 属性 | 类型 | 描述 | 默认值 |  
-| ----| ---- | ---- | -----|
-| data | `any[]` | 源数据。 | 无 |
-| fields | `string[]` | 数据字段信息。 | 无  `可选` |
-| smartColor | `boolean` | 是否开启智能配色。 | `false`  `可选` |
-| options | `AdvisorOptions` | 统计图表推荐配置项。 | 无  `可选` |
-| colorOptions | `SmartColorOptions` | 智能配色配置项。 | 无  `可选` |
+| 属性         | 类型                | 描述                 | 默认值          |
+| ------------ | ------------------- | -------------------- | --------------- |
+| data         | `any[]`             | 源数据。             | 无              |
+| fields       | `string[]`          | 数据字段信息。       | 无  `可选`      |
+| smartColor   | `boolean`           | 是否开启智能配色。   | `false`  `可选` |
+| options      | `AdvisorOptions`    | 统计图表推荐配置项。 | 无  `可选`      |
+| colorOptions | `SmartColorOptions` | 智能配色配置项。     | 无  `可选`      |
 
-* ***AdvisorOptions*** 参数配置。
+* _**AdvisorOptions**_ 参数配置。
 
-| 属性 | 类型 | 描述 | 默认值 |  
-| ----| ---- | ---- | -----|
-| purpose | `Purpose` | 分析目的。 | 无  `可选` |
-| preferences | `Preferences` | 图表喜好。 | 无  `可选` |
-| refine | `boolean` | 是否开启可视化规则优化。 | 无  `可选` |
-| fields | `string[]` | 数据字段信息。 | 无  `可选` |
-| showLog | `boolean` | 是否展示 Log。 | 无  `可选` |
-| theme | `Theme` | 指定十六进制颜色。 | 无  `可选` |
+| 属性        | 类型          | 描述                         | 默认值     |
+| ----------- | ------------- | ---------------------------- | ---------- |
+| purpose     | `Purpose`     | 分析目的。                   | 无  `可选` |
+| preferences | `Preferences` | 图表喜好。                   | 无  `可选` |
+| refine      | `boolean`     | 是否开启可视化规则优化。     | 无  `可选` |
+| fields      | `string[]`    | 数据字段信息。               | 无  `可选` |
+| showLog     | `boolean`     | 是否展示 Log。               | 无  `可选` |
+| theme       | `Theme`       | 指定十六进制颜色。           | 无  `可选` |
+| requireSpec | `boolean`     | 是否只推荐有 spec 结果的建议 | true       |
 
-* ***Purpose*** 参数配置。
+* _**Purpose**_ 参数配置。
 
 ```ts
 type PURPOSE_OPTIONS = ["Comparison", "Trend", "Distribution", "Rank", "Proportion", 
   "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly", "Value"];
 ```
 
-* ***Preferences*** 参数配置。
+* _**Preferences**_ 参数配置。
 
 ```ts
 interface Preferences {
@@ -61,7 +62,7 @@ interface Preferences {
 }
 ```
 
-* ***Theme*** 参数配置。
+* _**Theme**_ 参数配置。
 
 ```ts
 type Theme = {
@@ -69,25 +70,25 @@ type Theme = {
 };
 ```
 
-* ***SmartColorOptions*** 参数配置。
+* _**SmartColorOptions**_ 参数配置。
 
-| 属性 | 类型 | 描述 | 默认值 |  
-| ----| ---- | ---- | -----|
-| themeColor | `string` | 十六进制主题色。 | `#006f94`  `可选` |
-| colorSchemeType | `ColorSchemeType` | 色板生成模式。 | `monochromatic`  `可选` |
-| simulationType | `SimulationType` | 颜色模拟模式。 | `normal`  `可选` |
+| 属性            | 类型              | 描述             | 默认值                  |
+| --------------- | ----------------- | ---------------- | ----------------------- |
+| themeColor      | `string`          | 十六进制主题色。 | `#006f94`  `可选`       |
+| colorSchemeType | `ColorSchemeType` | 色板生成模式。   | `monochromatic`  `可选` |
+| simulationType  | `SimulationType`  | 颜色模拟模式。   | `normal`  `可选`        |
 
 ### 图推荐参数
 
-* ***GraphAdviseParams*** 参数配置。
+* _**GraphAdviseParams**_ 参数配置。
 
-| 属性 | 类型 | 描述 | 默认值 |  
-| ----| ---- | ---- | -----|
-| data | `any[]` | 源数据。 | 无 |
-| fields | `{ nodes: string[];, links: string[]; }` | 数据点边信息。 | 无 `可选` |
-| options | `GraphAdvisorOptions` | 图推荐配置项。 | 无 `可选` |
+| 属性    | 类型                                     | 描述           | 默认值    |
+| ------- | ---------------------------------------- | -------------- | --------- |
+| data    | `any[]`                                  | 源数据。       | 无        |
+| fields  | `{ nodes: string[];, links: string[]; }` | 数据点边信息。 | 无 `可选` |
+| options | `GraphAdvisorOptions`                    | 图推荐配置项。 | 无 `可选` |
 
-* ***GraphAdvisorOptions*** 参数配置。
+* _**GraphAdvisorOptions**_ 参数配置。
 
 ```ts
 type GraphAdvisorOptions = {
@@ -105,15 +106,15 @@ type GraphAdvisorOptions = {
 };
 ```
 
-| 属性 | 类型 | 描述 | 默认值 |  
-| ----| ---- | ---- | -----|
-| nodeColors | `string[]` | 节点颜色。 | 无 `可选` |
-| nodeSizeRange | `number[]` | 节点大小范围。 | 无 `可选` |
-| edgeWidthRange | `number[]` | 边宽度范围。 | 无 `可选` |
-| extra | `{ *Key, ...}` | 指定输入数据的相关属性。 | 见下文 |
-| AdvisorOptions | `AdvisorOptions` | 同统计图表推荐配置项。 | 无 `可选` |
+| 属性           | 类型             | 描述                     | 默认值    |
+| -------------- | ---------------- | ------------------------ | --------- |
+| nodeColors     | `string[]`       | 节点颜色。               | 无 `可选` |
+| nodeSizeRange  | `number[]`       | 节点大小范围。           | 无 `可选` |
+| edgeWidthRange | `number[]`       | 边宽度范围。             | 无 `可选` |
+| extra          | `{ *Key, ...}`   | 指定输入数据的相关属性。 | 见下文    |
+| AdvisorOptions | `AdvisorOptions` | 同统计图表推荐配置项。   | 无 `可选` |
 
-* ***extra*** 参数配置。
+* _**extra**_ 参数配置。
 
 | nodeKey | `string` | 指定节点数组在输入的图数据中对应属性名称（键名）。 | `nodes` |
 | edgeKey | `string` | 指定边数组在输入的图数据中对应属性名称。 | `edges | links` |
@@ -123,25 +124,25 @@ type GraphAdvisorOptions = {
 
 ## 返回值
 
-*`ChartList[]`* 
+_`ChartList[]`_ 
 
-* ***ChartList*** 参数配置。
+* _**ChartList**_ 参数配置。
 
-| 属性 | 类型 | 描述 | 样例 |  
-| ----| ---- | ---- | -----|
-| type | `ChartType` | 图表类型。 | `line-chart` |
-| spec | `AntVSpec` | 图表属性信息。 | 见下文 |
-| score | `number` | 图表得分。 | `1.0` |
+| 属性  | 类型        | 描述           | 样例         |
+| ----- | ----------- | -------------- | ------------ |
+| type  | `ChartType` | 图表类型。     | `line-chart` |
+| spec  | `AntVSpec`  | 图表属性信息。 | 见下文       |
+| score | `number`    | 图表得分。     | `1.0`        |
 
-* ***AntVSpec*** 参数配置。
+* _**AntVSpec**_ 参数配置。
 
 `AntVSpec` 是 AntV 技术栈的声明式语法。
 详细配置项见 [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md)。
 
-| 属性 | 描述 | 样例 |  
-| ----| ---- | -----|
-| basis | 基础信息。 | `basis: { type: 'chart' }` |
-| data | 数据信息。 | `data: { type: 'json-array', values: [...] }` |
+| 属性  | 描述       | 样例                                                              |
+| ----- | ---------- | ----------------------------------------------------------------- |
+| basis | 基础信息。 | `basis: { type: 'chart' }`                                        |
+| data  | 数据信息。 | `data: { type: 'json-array', values: [...] }`                     |
 | layer | 绘制信息。 | `{ [ encoding: { x: {...}, y:{...} }, mark: { type: 'line' } ] }` |
 
 
