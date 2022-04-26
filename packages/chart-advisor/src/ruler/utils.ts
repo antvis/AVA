@@ -1,8 +1,7 @@
-import { LevelOfMeasurement as LOM, DataPrerequisiteJSON } from '@antv/ckb';
-
 import { intersects } from '../utils';
 
-import { BasicDataPropertyForAdvice } from './concepts/rule';
+import type { LevelOfMeasurement as LOM, DataPrerequisiteJSON } from '@antv/ckb';
+import type { BasicDataPropertyForAdvice } from './interface';
 
 export function compare(f1: any, f2: any) {
   if (f1.distinct < f2.distinct) {

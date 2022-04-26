@@ -1,6 +1,6 @@
 import { CKBJson } from '@antv/ckb';
 
-import { RuleModule } from '../concepts/rule';
+import type { RuleModule } from '../interface';
 
 const Wiki = CKBJson('en-US', true);
 const allChartTypes = Object.keys(Wiki) as string[];

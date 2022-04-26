@@ -1,14 +1,17 @@
-import { ChartKnowledgeJSON, CKBJson } from '@antv/ckb';
+import { CKBJson } from '@antv/ckb';
 import { DataFrame, analyzer, GraphData } from '@antv/data-wizard';
 
-import { RuleConfig, RuleModule } from '../ruler/concepts/rule';
-import { BasicDataPropertyForAdvice, processRuleCfg } from '../ruler';
+import { processRuleCfg } from '../ruler';
 
 import { cloneDeep, deepMix } from './utils';
 import { dataToAdvices } from './advice-pipeline/data-to-advices';
 import { graphdataToAdvices } from './advice-pipeline/graph-to-advices';
-import { CKBConfig } from './ckb-config';
-import { AdvisorOptions, SmartColorOptions } from './advice-pipeline/interface';
+
+import type { ChartKnowledgeJSON } from '@antv/ckb';
+import type { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../ruler';
+import type { CKBConfig } from './ckb-config';
+import type { AdvisorOptions, SmartColorOptions } from './advice-pipeline/interface';
+import type { Advice } from '../types';
 
 export type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
@@ -111,7 +114,7 @@ export class Advisor {
    * chart advising from input data
    * @param params paramters for advising
    */
-  advise(params: AdviseParams) {
+  advise(params: AdviseParams): Advice[] {
     const { data, options } = params;
     const purposeForGraphs = ['Relation', 'Hierarchy', 'Flow'];
     const keyForGraph = ['nodes', 'edges', 'links', 'from', 'to', 'children'];

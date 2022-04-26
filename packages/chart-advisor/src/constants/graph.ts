@@ -10,6 +10,7 @@ export const DEFAULT_COLORS = [
   '#AAD8D8',
   '#FFD6E7',
 ];
+
 export const ALL_LAYOUT_TYPES = ['force', 'grid', 'dagre', 'circular', 'concentric', 'radial'];
 
 export const MAX_DISTINCT_COLOR = DEFAULT_COLORS.length;

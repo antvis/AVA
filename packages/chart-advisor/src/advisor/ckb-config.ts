@@ -1,9 +1,6 @@
-import { ChartKnowledgeJSON } from '@antv/ckb';
-import { AntVSpec } from '@antv/antv-spec';
-
-import { BasicDataPropertyForAdvice } from '../ruler';
-
-import { DataRows } from './advice-pipeline/interface';
+import type { ChartKnowledgeJSON } from '@antv/ckb';
+import type { BasicDataPropertyForAdvice } from '../ruler';
+import type { DataRows, Specification } from '../types';
 
 export type CKBConfig = {
   /**
@@ -23,7 +20,7 @@ export type CKBConfig = {
   custom?: Record<string, CustomizedCKBJSON>;
 };
 
-type SpecMapping = (data: DataRows, dataProps: BasicDataPropertyForAdvice[]) => AntVSpec | null;
+type SpecMapping = (data: DataRows, dataProps: BasicDataPropertyForAdvice[]) => Specification | null;
 
 export interface CustomizedCKBJSON extends ChartKnowledgeJSON {
   toSpec?: SpecMapping;

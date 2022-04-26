@@ -1,12 +1,11 @@
-import { AntVSpec } from '@antv/antv-spec';
-
-import { CustomizedCKBJSON, CKBConfig } from '../src/advisor/ckb-config';
 import { Advisor } from '../src/advisor';
 import { Linter } from '../src/linter';
 import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../src/ruler';
 import { ChartAdvisor } from '../src/chart-advisor';
 import { hasSubset } from '../src/utils';
-import { DataRows } from '../src/advisor/advice-pipeline/interface';
+
+import type { CustomizedCKBJSON, CKBConfig } from '../src/advisor/ckb-config';
+import type { DataRows, Specification } from '../src/types';
 
 const myRule: RuleModule = {
   id: 'fufu-rule',
@@ -69,11 +68,11 @@ describe('init Advisor', () => {
       return [field4Color, field4Angle];
     };
 
-    const toFuChart = (data: DataRows, dataProps: BasicDataPropertyForAdvice[]): AntVSpec | null => {
+    const toFuChart = (data: DataRows, dataProps: BasicDataPropertyForAdvice[]): Specification | null => {
       const [field4Color, field4Angle] = splitAngleColor(dataProps);
       if (!field4Angle || !field4Color) return null;
 
-      const spec: AntVSpec = {
+      const spec: Specification = {
         basis: {
           type: 'chart',
         },
@@ -218,13 +217,13 @@ describe('init Linter', () => {
 
   test('Linter test with no error spec', () => {
     const myLt = new Linter();
-    const errors = myLt.lint({ spec: { ...partOfSpec, data: dataOfRightSpec } as AntVSpec });
+    const errors = myLt.lint({ spec: { ...partOfSpec, data: dataOfRightSpec } as Specification });
     expect(errors.length).toBe(0);
   });
 
   test('Linter test with error spec', () => {
     const myLt = new Linter();
-    const errors = myLt.lint({ spec: { ...partOfSpec, data: dataOfErrorSpec } as AntVSpec });
+    const errors = myLt.lint({ spec: { ...partOfSpec, data: dataOfErrorSpec } as Specification });
     expect(errors.length).toBe(1);
     expect(errors[0].id).toBe('data-check');
   });

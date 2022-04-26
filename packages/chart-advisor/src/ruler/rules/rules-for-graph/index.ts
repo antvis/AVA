@@ -1,11 +1,11 @@
-import { BasicDataPropertyForAdvice, RuleModule } from '../../concepts/rule';
-
 import { scaleRules } from './pred-scale-type';
 import { encodingRules } from './pred-encoding';
 import { edgeTypeRules } from './pred-edge-type';
 import { nodeTypeRules } from './pred-node-type';
 import { allLayoutTypeRules } from './pred-layout-type';
 import { layoutConfigPredRule } from './pred-layout-cfg';
+
+import type { BasicDataPropertyForAdvice, RuleModule } from '../../interface';
 
 const layoutRules = {
   ...allLayoutTypeRules,

@@ -1,6 +1,6 @@
-import { RuleModule } from '../../concepts/rule';
+import { MAX_NUM_NODES_A_LEVEL } from '../../../constants';
 
-import { MAX_NUM_NODES_A_LEVEL } from './const';
+import type { RuleModule } from '../../interface';
 
 const applyChartTypes = ['graph'];
 const MAX_SCORE = 5;
