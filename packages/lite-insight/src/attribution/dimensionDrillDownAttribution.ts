@@ -1,26 +1,20 @@
 import { locatedInInterval, enumerateAllDimensionCombinationsByDFS } from './util';
 import type { Datum } from '../interface';
-import type {
-  DataConfig,
-  CompareInterval,
-  InfoType,
-  FluctInfo,
-  AttributionResult,
-  TreeDim,
-  DataLocation,
-} from './types';
+import type { DataConfig, InfoType, FluctInfo, AttributionResult, TreeDim, DataLocation } from './types';
 
 // Main function for dimension drill down attribution
 const attribute2MultiDimensions: (
   sourceData: Datum[],
   dimensions: string[],
   measure: string,
-  fluctuationDim: string,
-  baseInterval: CompareInterval,
-  currInterval: CompareInterval
-) => AttributionResult = (sourceData, dimensions, measure, fluctuationDim, baseInterval, currInterval) => {
+  fluctInfo: FluctInfo
+) => AttributionResult = (sourceData, dimensions, measure, fluctInfo) => {
   // remove invalid data
   const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
+
+  const fluctuationDim = fluctInfo.fluctDim;
+  const { baseInterval } = fluctInfo;
+  const { currInterval } = fluctInfo;
 
   const unitedInfo: InfoType = {
     baseValue: 0,
@@ -68,8 +62,7 @@ export class DimensionDrillDownAttribution {
 
   constructor(dataConfig: DataConfig, fluctInfo: FluctInfo) {
     const { sourceData, dimensions, measures } = dataConfig;
-    const { fluctDim, baseInterval, currInterval } = fluctInfo;
-    this.result = attribute2MultiDimensions(sourceData, dimensions, measures[0], fluctDim, baseInterval, currInterval);
+    this.result = attribute2MultiDimensions(sourceData, dimensions, measures[0], fluctInfo);
     dimensions.forEach((item, index) => {
       this.dimsRank[item] = index;
     });
