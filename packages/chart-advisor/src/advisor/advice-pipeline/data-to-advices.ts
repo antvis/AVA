@@ -1,14 +1,16 @@
-import { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
-import { AntVSpec } from '@antv/antv-spec';
-import { hexToColor, colorToHex, paletteGeneration, colorSimulation, SimulationType } from '@antv/smart-color';
-import { ColorSchemeType } from '@antv/color-schema';
+import { hexToColor, colorToHex, paletteGeneration, colorSimulation } from '@antv/smart-color';
 
-import { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/concepts/rule';
+import { DEFAULT_RULE_WEIGHTS } from '../../constants';
 import { deepMix } from '../utils';
 
-import { Advice, AdvisorOptions, DataRows, Theme, SmartColorOptions } from './interface';
 import { getChartTypeSpec } from './spec-mapping';
-import { defaultWeight } from './default-weight';
+
+import type { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
+import type { SimulationType } from '@antv/smart-color';
+import type { ColorSchemeType } from '@antv/color-schema';
+import type { Advice, DataRows, Specification } from '../../types';
+import type { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/interface';
+import type { AdvisorOptions, Theme, SmartColorOptions } from './interface';
 
 /**
  *
@@ -27,6 +29,7 @@ const scoreRules = (
   const showLog = options?.showLog;
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
+  const defaultWeights = DEFAULT_RULE_WEIGHTS;
 
   // for log
   const record: Record<string, any>[] = [];
@@ -35,7 +38,7 @@ const scoreRules = (
   Object.values(ruleBase)
     .filter((r: RuleModule) => r.type === 'HARD' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((hr: RuleModule) => {
-      const weight = ruleBase[hr.id].option?.weight || defaultWeight[hr.id] || 1;
+      const weight = ruleBase[hr.id].option?.weight || defaultWeights[hr.id] || 1;
       const score = weight * ((hr as ChartRuleModule).validator(info) as number);
       hardScore *= score;
       record.push({ name: hr.id, score, hard: true });
@@ -45,7 +48,7 @@ const scoreRules = (
   Object.values(ruleBase)
     .filter((r: RuleModule) => r.type === 'SOFT' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((sr: RuleModule) => {
-      const weight = ruleBase[sr.id].option?.weight || defaultWeight[sr.id] || 1;
+      const weight = ruleBase[sr.id].option?.weight || defaultWeights[sr.id] || 1;
       const score = weight * ((sr as ChartRuleModule).validator(info) as number);
       softScore += score;
       record.push({ name: sr.id, score, hard: false });
@@ -64,7 +67,7 @@ function applyDesignRules(
   chartType: string,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
-  chartSpec: AntVSpec
+  chartSpec: Specification
 ) {
   const toCheckRules = Object.values(ruleBase).filter(
     (rule: RuleModule) =>
@@ -79,9 +82,9 @@ function applyDesignRules(
 
 const DISCRETE_PALETTE_TYPES = ['monochromatic', 'analogous'] as const;
 const CATEGORICAL_PALETTE_TYPES = ['polychromatic', 'split-complementary', 'triadic', 'tetradic'] as const;
-const defaultColor = '#678ef2';
+const DEFAULT_COLOR = '#678ef2';
 
-function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec, theme: Theme) {
+function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: Specification, theme: Theme) {
   const { primaryColor } = theme;
   const layerEnc = 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
   if (primaryColor && layerEnc) {
@@ -124,7 +127,7 @@ function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: AntVSpec
 
 function applySmartColor(
   dataProps: BasicDataPropertyForAdvice[],
-  chartSpec: AntVSpec,
+  chartSpec: Specification,
   primaryColor: string,
   colorType: ColorSchemeType,
   simulationType: SimulationType
@@ -252,7 +255,7 @@ export function dataToAdvices(
          * `colorTheme`: theme for SmartColor
          * Default color is blue
          */
-        const colorTheme = colorOptions?.themeColor ?? defaultColor;
+        const colorTheme = colorOptions?.themeColor ?? DEFAULT_COLOR;
         /**
          * `colorType`: customize SmartColor generation type
          */

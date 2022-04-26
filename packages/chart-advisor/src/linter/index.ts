@@ -1,21 +1,15 @@
-import { AntVSpec } from '@antv/antv-spec';
 import { DataFrame } from '@antv/data-wizard';
 
-import {
-  RuleConfig,
-  processRuleCfg,
-  RuleModule,
-  ChartRuleModule,
-  DesignRuleModule,
-  BasicDataPropertyForAdvice,
-} from '../ruler';
-import { DataRows } from '../interface';
+import { processRuleCfg } from '../ruler';
 
-import { LinterOptions, Lint } from './interface';
 import { getChartType } from './get-charttype';
 
+import type { RuleConfig, RuleModule, ChartRuleModule, DesignRuleModule, BasicDataPropertyForAdvice } from '../ruler';
+import type { Specification, DataRows, Lint } from '../types';
+import type { LinterOptions } from './interface';
+
 export interface LintParams {
-  spec: AntVSpec;
+  spec: Specification;
   dataProps?: BasicDataPropertyForAdvice[];
   options?: LinterOptions;
 }

@@ -1,8 +1,9 @@
 import { CKBJson } from '@antv/ckb';
 
 import { hasSubset } from '../../utils';
-import { RuleModule, BasicDataPropertyForAdvice } from '../concepts/rule';
 import { compare } from '../utils';
+
+import type { RuleModule, BasicDataPropertyForAdvice } from '../interface';
 
 const Wiki = CKBJson('en-US', true);
 const allChartTypes = Object.keys(Wiki);

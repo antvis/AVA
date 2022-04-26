@@ -1,9 +1,9 @@
 import { analyzer } from '@antv/data-wizard';
 
-import { RuleModule } from '../../concepts/rule';
-import { ILayoutConfig, LayoutTypes } from '../../../interface';
+import { DEFAULT_LAYOUT_TYPE } from '../../../constants';
 
-import { DEFAULT_LAYOUT_TYPE } from './const';
+import type { LayoutConfig, LayoutTypes } from '../../../types';
+import type { RuleModule } from '../../interface';
 
 const applyChartTypes = ['graph'];
 export const layoutConfigPredRule: RuleModule = {
@@ -15,9 +15,9 @@ export const layoutConfigPredRule: RuleModule = {
   trigger: ({ chartType }) => {
     return applyChartTypes.indexOf(chartType) !== -1;
   },
-  optimizer: (dataProps: analyzer.GraphProps): ILayoutConfig => {
+  optimizer: (dataProps: analyzer.GraphProps): LayoutConfig => {
     const type: LayoutTypes = dataProps.layoutType || DEFAULT_LAYOUT_TYPE;
-    let options: ILayoutConfig['options'] = {};
+    let options: LayoutConfig['options'] = {};
 
     switch (type as LayoutTypes) {
       case 'graphin-force': {

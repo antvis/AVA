@@ -1,4 +1,5 @@
 export { Advisor } from './advisor';
-export { Linter, Lint } from './linter';
+export { Linter } from './linter';
 export { ChartAdvisor } from './chart-advisor';
-export type { Advice } from './advisor/advice-pipeline';
+
+export type { Advice, Lint } from './types';

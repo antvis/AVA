@@ -1,4 +1,4 @@
-export const defaultWeight: Record<string, number> = {
+export const DEFAULT_RULE_WEIGHTS: Record<string, number> = {
   'bar-series-qty': 0.5,
   'data-check': 1.0,
   'data-field-qty': 1.0,

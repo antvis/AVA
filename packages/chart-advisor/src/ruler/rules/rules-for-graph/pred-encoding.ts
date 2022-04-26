@@ -1,8 +1,8 @@
 import { analyzer } from '@antv/data-wizard';
 
-import { RuleModule } from '../../concepts/rule';
+import { MAX_DISTINCT_COLOR } from '../../../constants';
 
-import { MAX_DISTINCT_COLOR } from './const';
+import type { RuleModule } from '../../interface';
 
 const applyChartTypes = ['graph'];
 export const fieldForColorRule: RuleModule = {

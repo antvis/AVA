@@ -2,8 +2,6 @@
 // table and kpi_panel not include currently
 // import { aggregationSingleRow } from './aggregation-single-row';
 // import { allCanBeTable } from './all-can-be-table';
-import { RuleModule } from '../concepts/rule';
-
 import { barSeriesQty } from './bar-series-qty';
 import { barWithoutAxisMin } from './bar-without-axis-min';
 import { dataCheck } from './data-check';
@@ -19,7 +17,46 @@ import { seriesQtyLimit } from './series-qty-limit';
 // Design rules
 import { xAxisLineFading } from './x-axis-line-fading';
 
-export const rules: Record<string, RuleModule> = {
+import type { RuleModule } from '../interface';
+
+/**
+ * @public
+ */
+export const CHART_RULE_ID = [
+  'data-check',
+  'data-field-qty',
+  'no-redundant-field',
+  'purpose-check',
+  'series-qty-limit',
+  'bar-series-qty',
+  'bar-without-axis-min',
+  'line-field-time-ordinal',
+  'landscape-or-portrait',
+  'diff-pie-sector',
+  'nominal-enum-combinatorial',
+  'limit-series',
+  'aggregation-single-row',
+  'all-can-be-table',
+] as const;
+
+/**
+ * @public
+ */
+export type ChartRuleID = typeof CHART_RULE_ID[number];
+
+/**
+ * @public
+ */
+export const CHART_DESIGN_RULE_ID = ['x-axis-line-fading'] as const;
+
+/**
+ * @public
+ */
+export type ChartDesignRuleID = typeof CHART_DESIGN_RULE_ID[number];
+
+export type RuleId = ChartRuleID | ChartDesignRuleID;
+
+export const rules: Partial<Record<RuleId, RuleModule>> = {
   // table and kpi_panel not include currently
   // 'aggregation-single-row': aggregationSingleRow,
   // 'all-can-be-table': allCanBeTable,

@@ -1,17 +1,13 @@
-import { Purpose } from '@antv/ckb';
-import { AntVSpec } from '@antv/antv-spec';
-import { SimulationType } from '@antv/smart-color';
-import { ColorSchemeType } from '@antv/color-schema';
-
-import { Preferences } from '../../ruler';
-
-export type DataRow = Record<string, any>;
-export type DataRows = DataRow[];
+import type { Purpose } from '@antv/ckb';
+import type { SimulationType } from '@antv/smart-color';
+import type { ColorSchemeType } from '@antv/color-schema';
+import type { Preferences } from '../../ruler';
 
 export type Theme = {
   /** hex string */
   primaryColor?: string;
 };
+
 /**
  * @public
  */
@@ -50,25 +46,6 @@ export interface AdvisorOptions {
    * only consider chart types with spec
    */
   requireSpec?: boolean;
-}
-
-/**
- * @public
- */
-export type Specification = AntVSpec;
-
-/**
- * return type of data props to spec
- * @public
- */
-export interface Advice {
-  type: string;
-  /**
-   * for the recommended chart, the specification information needs to be declared,
-   * which may be antv-spec or custom spec (for indicator cards and cross tabs)
-   */
-  spec: Specification | null;
-  score: number;
 }
 
 /**

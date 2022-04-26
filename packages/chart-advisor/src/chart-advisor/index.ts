@@ -1,6 +1,9 @@
-import { BasicDataPropertyForAdvice, RuleConfig } from '../ruler/concepts/rule';
-import { Advisor, CKBConfig, AdviseParams, ChartAdviseParams } from '../advisor';
+import { Advisor } from '../advisor';
 import { Linter } from '../linter';
+
+import type { CKBConfig, AdviseParams } from '../advisor';
+import type { BasicDataPropertyForAdvice, RuleConfig } from '../ruler/interface';
+import type { Advice } from '../types';
 
 export class ChartAdvisor {
   private advisor: Advisor;
@@ -19,20 +22,23 @@ export class ChartAdvisor {
   /**
    * Advising charts by data and providing linting results for each chart
    */
-  advise(params: AdviseParams) {
-    const { data, dataProps, fields, options } = params;
-    const advices = this.advisor.advise({ data, dataProps, fields, options } as ChartAdviseParams);
-    const advicesAfterLint = advices.map((advice) => {
-      if (advice.type !== 'graph') {
-        const lintResult = this.linter.lint({
-          spec: advice.spec,
-          dataProps: dataProps as BasicDataPropertyForAdvice[],
-          options,
-        });
-        return { ...advice, lint: lintResult };
-      } // No lint suggestions for graph visualization for now
-      return { ...advice, lint: {} };
+  advise(params: AdviseParams): Advice[] {
+    const { dataProps, options } = params;
+    const advices = this.advisor.advise(params);
+    const advicesAfterLint: Advice[] = advices.map((advice) => {
+      // No lint suggestions for graph visualization for now
+      if (advice.type === 'graph') {
+        return { ...advice, lint: [] };
+      }
+
+      const lintResult = this.linter.lint({
+        spec: advice.spec,
+        dataProps: dataProps as BasicDataPropertyForAdvice[],
+        options,
+      });
+      return { ...advice, lint: lintResult };
     });
+
     return advicesAfterLint;
   }
 }
