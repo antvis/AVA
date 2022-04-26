@@ -12,3 +12,7 @@ temp/
 typings/
 docs/
 webpack.config.js
+
+# site
+public/
+**/ava-site/examples/
