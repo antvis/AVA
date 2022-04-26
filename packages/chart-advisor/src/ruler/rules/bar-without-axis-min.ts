@@ -1,6 +1,5 @@
-import { ChartAntVSpec } from '@antv/antv-spec';
-
-import { RuleModule } from '../concepts/rule';
+import type { ChartSpec } from '../../types';
+import type { RuleModule } from '../interface';
 
 const applyChartTypes = [
   'bar_chart',
@@ -23,7 +22,7 @@ export const barWithoutAxisMin: RuleModule = {
   trigger: ({ chartType }) => {
     return applyChartTypes.includes(chartType);
   },
-  optimizer: (_, chartSpec: ChartAntVSpec): object => {
+  optimizer: (_, chartSpec: ChartSpec): object => {
     const { layer } = chartSpec;
     const xMin = layer?.[0]?.encoding?.x?.axis?.min;
     const yMin = layer?.[0]?.encoding?.y?.axis?.min;

@@ -1,5 +1,4 @@
 import { analyzer } from '@antv/data-wizard';
-import { GraphAntVSpec } from '@antv/antv-spec';
 
 import { allBuiltInRules, testRule } from '../../ruler/rules/rules-for-graph';
 import {
@@ -8,10 +7,11 @@ import {
   DEFAULT_EDGE_WIDTH_RANGE,
   DEFAULT_LAYOUT_TYPE,
   ALL_LAYOUT_TYPES,
-} from '../../ruler/rules/rules-for-graph/const';
-import { BasicDataPropertyForAdvice, DesignRuleModule } from '../../ruler/concepts/rule';
-import { ILayoutConfig } from '../../interface';
+} from '../../constants';
 import { deepMix } from '../utils';
+
+import type { LayoutConfig, GraphSpec } from '../../types';
+import type { BasicDataPropertyForAdvice, DesignRuleModule } from '../../ruler/interface';
 
 /**
  * map graph properties to layout configurations
@@ -38,7 +38,7 @@ export function graph2LayoutTypes(dataProps: Partial<analyzer.GraphProps>) {
 const optimizeByRule = (
   dataProps: BasicDataPropertyForAdvice | Partial<analyzer.GraphProps>,
   ruleId: string,
-  graphSpec?: GraphAntVSpec
+  graphSpec?: GraphSpec
 ): any => {
   const rule: DesignRuleModule = allBuiltInRules[ruleId];
   const result = rule.optimizer(dataProps, graphSpec);
@@ -153,7 +153,7 @@ export function graphdataToAdvices(data, dataProps: Partial<analyzer.GraphProps>
   // Then, optimize configurations for each layout
   layoutTypes.forEach((layoutType) => {
     const { type, score } = layoutType;
-    const layoutOptions: Partial<ILayoutConfig> = optimizeByRule(dataProps, 'pred-layout-config');
+    const layoutOptions: Partial<LayoutConfig> = optimizeByRule(dataProps, 'pred-layout-config');
     const layout = {
       type,
       options: layoutOptions?.options,

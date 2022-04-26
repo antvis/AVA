@@ -1,6 +1,6 @@
 import { analyzer } from '@antv/data-wizard';
 
-import { BasicDataPropertyForAdvice, RuleModule } from '../../concepts/rule';
+import type { BasicDataPropertyForAdvice, RuleModule } from '../../interface';
 
 const applyChartTypes = ['graph'];
 export const recScaleRule: RuleModule = {

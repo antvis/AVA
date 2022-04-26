@@ -1,6 +1,6 @@
-import { AntVSpec, ChartAntVSpec } from '@antv/antv-spec';
+import type { Specification, ChartSpec } from '../types';
 
-const getPointChart = (spec: ChartAntVSpec) => {
+const getPointChart = (spec: ChartSpec) => {
   const specLayer = spec.layer[0];
   if (specLayer.encoding.size) {
     return 'bubble_chart';
@@ -8,7 +8,7 @@ const getPointChart = (spec: ChartAntVSpec) => {
   return 'scatter_plot';
 };
 
-const getArcChart = (spec: ChartAntVSpec) => {
+const getArcChart = (spec: ChartSpec) => {
   const specLayer = spec.layer[0];
   if (typeof specLayer.mark !== 'string' && specLayer.mark.style && specLayer.mark.style.innerRadius) {
     return 'donut_chart';
@@ -16,7 +16,7 @@ const getArcChart = (spec: ChartAntVSpec) => {
   return 'pie_chart';
 };
 
-const getBarChart = (spec: ChartAntVSpec) => {
+const getBarChart = (spec: ChartSpec) => {
   const specLayer = spec.layer[0];
   if (specLayer.encoding.x.type === 'quantitative' && specLayer.encoding.x.bin) {
     // histogram
@@ -39,23 +39,23 @@ const getBarChart = (spec: ChartAntVSpec) => {
   return 'bar_chart';
 };
 
-const getAreaChart = (spec: ChartAntVSpec) => {
+const getAreaChart = (spec: ChartSpec) => {
   const specLayer = spec.layer[0];
   if (specLayer.encoding.color && specLayer.encoding.x.stack === 'normalize') return 'percent_stacked_area_chart';
   if (specLayer.encoding.color && specLayer.encoding.x.stack) return 'stacked_area_chart';
   return 'area_chart';
 };
 
-const getLineChart = (spec: ChartAntVSpec) => {
+const getLineChart = (spec: ChartSpec) => {
   const specLayer = spec.layer[0];
   if (typeof specLayer.mark !== 'string' && specLayer.mark.interpolate) return 'step_line_chart';
   return 'line_chart';
 };
 
-export const getChartType = (spec: AntVSpec) => {
+export const getChartType = (spec: Specification) => {
   let chartType: string;
   if (spec.basis.type === 'chart') {
-    const chartSpec = spec as ChartAntVSpec;
+    const chartSpec = spec as ChartSpec;
     const mark = typeof chartSpec.layer[0].mark === 'string' ? chartSpec.layer[0].mark : chartSpec.layer[0].mark.type;
     switch (mark) {
       case 'arc':

@@ -1,5 +1,6 @@
-import { RuleModule } from '../concepts/rule';
 import { isUndefined } from '../utils';
+
+import type { RuleModule } from '../interface';
 
 const applyChartTypes = ['table'];
 

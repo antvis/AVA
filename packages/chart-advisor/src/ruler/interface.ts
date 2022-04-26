@@ -1,6 +1,7 @@
-import { LevelOfMeasurement as LOM } from '@antv/ckb';
-import { AntVSpec } from '@antv/antv-spec';
 import { analyzer } from '@antv/data-wizard';
+
+import type { LevelOfMeasurement as LOM } from '@antv/ckb';
+import type { Specification } from '../types';
 
 /**
  * @public
@@ -59,42 +60,8 @@ export type Trigger = (args: Info) => boolean;
 
 export type Optimizer = (
   dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice | Partial<analyzer.GraphProps>,
-  chartSpec: AntVSpec
+  chartSpec: Specification
 ) => object;
-
-/**
- * @public
- */
-export const CHART_RULE_ID = [
-  'data-check',
-  'data-field-qty',
-  'no-redundant-field',
-  'purpose-check',
-  'series-qty-limit',
-  'bar-series-qty',
-  'line-field-time-ordinal',
-  'landscape-or-portrait',
-  'diff-pie-sector',
-  'nominal-enum-combinatorial',
-  'limit-series',
-  'aggregation-single-row',
-  'all-can-be-table',
-];
-
-/**
- * @public
- */
-export type ChartRuleID = typeof CHART_RULE_ID[number];
-
-/**
- * @public
- */
-export const CHART_DESIGN_RULE_ID = ['x-axis-line-fading'];
-
-/**
- * @public
- */
-export type ChartDesignRuleID = typeof CHART_DESIGN_RULE_ID[number];
 
 /**
  * @public
@@ -117,23 +84,6 @@ export type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
 
 /**
  * @public
- * rule config
- */
-export type RuleConfig = {
-  include?: string[];
-  exclude?: string[];
-  /**
-   * customized rule instance
-   */
-  custom?: Record<string, RuleModule>;
-  /**
-   * config for rules
-   */
-  options?: ChartRuleConfigMap;
-};
-
-/**
- * @public
  */
 export type Docs = {
   lintText?: string;
@@ -141,8 +91,6 @@ export type Docs = {
   moreLink?: string;
   [key: string]: any;
 };
-
-export type RuleModule = ChartRuleModule | DesignRuleModule;
 
 type DefaultRuleModule = {
   id: string;
@@ -159,4 +107,30 @@ export type ChartRuleModule = DefaultRuleModule & {
 export type DesignRuleModule = DefaultRuleModule & {
   type: 'DESIGN';
   optimizer: Optimizer;
+};
+
+export type RuleModule = ChartRuleModule | DesignRuleModule;
+
+/**
+ * rule config
+ *
+ * @public
+ */
+export type RuleConfig = {
+  /**
+   * include: should contain standard ChartRuleID, or any string id for custom rule.
+   */
+  include?: string[];
+  /**
+   * exclude: should contain standard ChartRuleID, or any string id for custom rule.
+   */
+  exclude?: string[];
+  /**
+   * customized rule instance
+   */
+  custom?: Record<string, RuleModule>;
+  /**
+   * config for rules
+   */
+  options?: ChartRuleConfigMap;
 };

@@ -1,4 +1,4 @@
-import { RuleModule, Info } from '../concepts/rule';
+import type { RuleModule, Info } from '../interface';
 
 const applyChartTypes = [
   'bar_chart',
