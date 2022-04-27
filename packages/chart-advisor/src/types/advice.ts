@@ -1,3 +1,4 @@
+import type { ScoringResultForChartType } from '../advisor';
 import type { Specification } from './spec';
 import type { Lint } from './lint';
 
@@ -26,4 +27,12 @@ export interface Advice {
    * lint array: problems that remain after the recommendation, with possible solutions accordingly.
    */
   lint?: Lint[];
+}
+
+/**
+ * Advices results with scoring log
+ */
+export interface AdvicesWithLog {
+  advices: Advice[];
+  log: ScoringResultForChartType[];
 }

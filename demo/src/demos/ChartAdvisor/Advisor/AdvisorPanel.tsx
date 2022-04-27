@@ -43,7 +43,7 @@ export const AdvisorPanel = () => {
       <Row align="middle" justify="space-around">
         <Col span={8}>
           <Table
-            rowKey={(_, index) => index}
+            rowKey={(_, index): any => index}
             size="small"
             style={{ marginLeft: 10, marginRight: 10 }}
             dataSource={testData}

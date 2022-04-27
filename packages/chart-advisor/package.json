@@ -38,6 +38,7 @@
     "watch": "yarn module && yarn build --w"
   },
   "devDependencies": {
+    "@antv/data-samples": "^1.0.1",
     "@rollup/plugin-json": "^4.1.0",
     "@types/jest": "^23.3.12",
     "eslint": "^7.32.0",

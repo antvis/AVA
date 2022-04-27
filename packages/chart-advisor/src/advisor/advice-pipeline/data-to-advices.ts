@@ -8,11 +8,24 @@ import { getChartTypeSpec } from './spec-mapping';
 import type { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
 import type { SimulationType } from '@antv/smart-color';
 import type { ColorSchemeType } from '@antv/color-schema';
-import type { Advice, DataRows, Specification } from '../../types';
+import type { Advice, AdvicesWithLog, DataRows, Specification } from '../../types';
 import type { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/interface';
-import type { AdvisorOptions, Theme, SmartColorOptions } from './interface';
+import type {
+  AdvisorOptions,
+  Theme,
+  SmartColorOptions,
+  ScoringResultForChartType,
+  ScoringResultForRule,
+} from './interface';
 
 /**
+ * options for advising inner pipeline
+ * @todo refactor since 3.0.0
+ */
+type PipeAdvisorOptions = AdvisorOptions & { exportLog?: boolean };
+
+/**
+ * Run all rules for a given chart type, get scoring result.
  *
  * @param chartType chart ID to be score
  * @param dataProps data props of the input data
@@ -24,43 +37,69 @@ const scoreRules = (
   chartType: ChartID | string,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
-  options?: AdvisorOptions
-) => {
+  options?: PipeAdvisorOptions
+): ScoringResultForChartType => {
+  const exportLog = options?.exportLog;
+  /** @deprecated */
   const showLog = options?.showLog;
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
   const defaultWeights = DEFAULT_RULE_WEIGHTS;
 
   // for log
-  const record: Record<string, any>[] = [];
+  const log: ScoringResultForRule[] = [];
+
   const info = { dataProps, chartType, purpose, preferences };
+
   let hardScore = 1;
   Object.values(ruleBase)
     .filter((r: RuleModule) => r.type === 'HARD' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((hr: RuleModule) => {
       const weight = ruleBase[hr.id].option?.weight || defaultWeights[hr.id] || 1;
-      const score = weight * ((hr as ChartRuleModule).validator(info) as number);
+      const base = (hr as ChartRuleModule).validator(info) as number;
+      const score = weight * base;
+
       hardScore *= score;
-      record.push({ name: hr.id, score, hard: true });
+
+      log.push({ phase: 'ADVISE', ruleId: hr.id, score, base, weight, ruleType: 'HARD' });
     });
+
+  // Hard-Rule pruning
+  // holding for showLog @deprecated and testing
+  /** @since 3.0.0 @todo */
+  // if (hardScore === 0) {
+  //   const result: ScoringResult = { chartType, score: 0 };
+  //   if (exportLog) result.log = log;
+  //   return result;
+  // }
 
   let softScore = 0;
   Object.values(ruleBase)
     .filter((r: RuleModule) => r.type === 'SOFT' && r.trigger(info) && !ruleBase[r.id].option?.off)
     .forEach((sr: RuleModule) => {
       const weight = ruleBase[sr.id].option?.weight || defaultWeights[sr.id] || 1;
-      const score = weight * ((sr as ChartRuleModule).validator(info) as number);
+      const base = (sr as ChartRuleModule).validator(info) as number;
+      const score = weight * base;
+
       softScore += score;
-      record.push({ name: sr.id, score, hard: false });
+
+      log.push({ phase: 'ADVISE', ruleId: sr.id, score, base, weight, ruleType: 'SOFT' });
     });
+
+  /** @since 3.0.0 @todo score normalization  */
+  // proposal:
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);
 
   // eslint-disable-next-line no-console
   if (showLog) console.log('💯score: ', score, '=', hardScore, '* (1 +', softScore, ') ;charttype: ', chartType);
   // eslint-disable-next-line no-console
-  if (showLog) console.log(record);
-  return score;
+  if (showLog) console.log(log);
+
+  const result: ScoringResultForChartType = { chartType, score };
+  if (exportLog) result.log = log;
+
+  return result;
 };
 
 function applyDesignRules(
@@ -177,6 +216,7 @@ function applySmartColor(
 
 /**
  * recommending charts given data and dataProps, based on CKB and RuleBase
+ *
  * @param data input data [ {a: xxx, b: xxx}, ... ]
  * @param dataProps data props derived from data-wizard or customized by users
  * @param chartWIKI ckb
@@ -192,17 +232,22 @@ export function dataToAdvices(
   chartWIKI: Record<string, ChartKnowledgeJSON>,
   ruleBase: Record<string, RuleModule>,
   smartColor?: boolean,
-  options?: AdvisorOptions,
+  options?: PipeAdvisorOptions,
   colorOptions?: SmartColorOptions
-) {
+): Advice[] | AdvicesWithLog {
   /**
    * `refine`: whether to apply design rules
    */
   const enableRefine = options?.refine === undefined ? false : options.refine;
   /**
    * `showLog`: log on/off
+   * @deprecated since 3.0.0, use `exportLog` instead
    */
   const showLog = options?.showLog;
+  /**
+   * whether to include scoring log in result advices
+   */
+  const exportLog = options?.exportLog || false;
   /**
    * `smartColorOn`: switch SmartColor on/off
    */
@@ -224,10 +269,16 @@ export function dataToAdvices(
    * */
   const CHART_ID_OPTIONS = Object.keys(ChartWIKI);
 
+  const log: ScoringResultForChartType[] = [];
   // score every possible chart
   const list: Advice[] = CHART_ID_OPTIONS.map((t: string) => {
     // step 1: analyze score by rule
-    const score = scoreRules(t, dataProps, ruleBase, options);
+    const resultForChartType = scoreRules(t, dataProps, ruleBase, options);
+    log.push(resultForChartType);
+
+    const { score } = resultForChartType;
+
+    // Zero-Score pruning
     if (score <= 0) {
       return { type: t, spec: null, score };
     }
@@ -273,12 +324,7 @@ export function dataToAdvices(
     return { type: t, spec: chartTypeSpec, score };
   });
 
-  /**
-   * compare two advice charts by their score
-   * @param chart1
-   * @param chart2
-   * @returns
-   */
+  /** compare two advice charts by their score */
   function compareAdvices(chart1: Advice, chart2: Advice) {
     if (chart1.score < chart2.score) {
       return 1;
@@ -300,5 +346,12 @@ export function dataToAdvices(
   // eslint-disable-next-line no-console
   if (showLog) console.log(resultList);
 
-  return resultList;
+  const result = exportLog
+    ? {
+        advices: resultList,
+        log,
+      }
+    : resultList;
+
+  return result;
 }

@@ -13,6 +13,23 @@ export type DataProperty =
 export type DataRow = Record<string, any>;
 export type DataRows = DataRow[];
 
+export type GraphData =
+  | {
+      [key: string]: any;
+    }[]
+  // array object, such as { nodes: [], edges: [] }
+  | {
+      [key: string]: any[];
+    }
+  | {
+      // Tree
+      id: string | number;
+      children: any[];
+      [key: string]: any;
+    };
+
+export type Data = DataRows | GraphData;
+
 export type FieldTypes = 'null' | 'boolean' | 'integer' | 'float' | 'date' | 'string';
 export type EncodingType =
   | 'quantitative'
