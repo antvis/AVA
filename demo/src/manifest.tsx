@@ -5,7 +5,7 @@ import { EyeOutlined, GiftOutlined, RobotOutlined, ShareAltOutlined, AreaChartOu
 import CKBList from './demos/CKBList';
 import LiteInsight from './demos/LiteInsight';
 import SmartBoard from './demos/SmartBoard';
-import ChartAdvisor from './demos/ChartAdvisor';
+import ChartAdvisor, { LogTest } from './demos/ChartAdvisor';
 import AutoChart from './demos/AutoChart';
 import GraphAdvisor from './demos/GraphAdvisor';
 
@@ -13,7 +13,8 @@ export interface Demo {
   id: string;
   name: string;
   contentComp: React.ReactNode; // TODO: ts type for ContentPage rc
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
+  subTests?: Demo[];
 }
 
 interface Manifest {
@@ -34,6 +35,7 @@ const manifest: Manifest = {
       name: 'ChartAdvisor',
       contentComp: ChartAdvisor,
       icon: <RobotOutlined />,
+      subTests: [{ id: 'ca-log', name: 'Log', contentComp: <LogTest /> }],
     },
     {
       id: 'GraphAdvisor',

@@ -11,3 +11,6 @@ const content = (
 );
 
 export default content;
+
+// sub tests
+export * from './Log';

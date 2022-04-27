@@ -1,3 +1,5 @@
+import type { ScoringResultForRule } from '../advisor';
+
 /**
  * Describe a chart recommandation problem.
  */
@@ -12,4 +14,9 @@ export interface Lint {
   fix?: any;
   /** docs: explaination */
   docs?: any;
+}
+
+export interface LintsWithLog {
+  lints: Lint[];
+  log: ScoringResultForRule[];
 }
