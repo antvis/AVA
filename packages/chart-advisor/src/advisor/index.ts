@@ -11,13 +11,13 @@ import type { ChartKnowledgeJSON } from '@antv/ckb';
 import type { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../ruler';
 import type { CKBConfig } from './ckb-config';
 import type { AdvisorOptions, SmartColorOptions } from './advice-pipeline/interface';
-import type { Advice } from '../types';
+import type { Advice, AdvicesWithLog, DataRows, GraphData as GData, Data } from '../types';
 
 export type AdviseParams = ChartAdviseParams | GraphAdviseParams;
 
 export type ChartAdviseParams = {
   /** input data to advise */
-  data: Record<string, any>[];
+  data: DataRows;
   /** customized dataprops to advise */
   dataProps?: BasicDataPropertyForAdvice[];
   /** data fields to focus, apply in `data` and `dataProps` */
@@ -32,20 +32,7 @@ export type ChartAdviseParams = {
 
 export type GraphAdviseParams = {
   /** input data to advise */
-  data:
-    | {
-        [key: string]: any;
-      }[]
-    // array object, such as { nodes: [], edges: [] }
-    | {
-        [key: string]: any[];
-      }
-    | {
-        // Tree
-        id: string | number;
-        children: any[];
-        [key: string]: any;
-      };
+  data: GData;
   /** customized dataprops to advise */
   dataProps?: analyzer.GraphProps;
   /** data fields to focus, apply in `data` and `dataProps` */
@@ -116,29 +103,47 @@ export class Advisor {
    */
   advise(params: AdviseParams): Advice[] {
     const { data, options } = params;
-    const purposeForGraphs = ['Relation', 'Hierarchy', 'Flow'];
-    const keyForGraph = ['nodes', 'edges', 'links', 'from', 'to', 'children'];
-    const hasKeyForGraph =
-      Object.prototype.toString.call(data) === '[object Object]' &&
-      Object.keys(data).some((key) => keyForGraph.includes(key));
-    const shouldRecommendGraph =
-      (options as GraphAdviseParams['options'])?.extra || purposeForGraphs.includes(options?.purpose) || hasKeyForGraph;
-    let advices;
+    let adviceResult: Advice[];
+
     const graphAdvices = this.advicesForGraph(params as GraphAdviseParams);
-    // const chartAdvices = this.advicesForChart(params as ChartAdviseParams);
-    // If shouldRecommendGraph is true, higher priority for relational graph
-    if (shouldRecommendGraph) {
-      advices = graphAdvices;
+    if (this.shouldRecommendGraph(data, options)) {
+      adviceResult = graphAdvices;
+      // todo
       // advices = graphAdvices.concat(chartAdvices)
     } else {
       const chartAdvices = this.advicesForChart(params as ChartAdviseParams);
       // Otherwise, higher priority for statistical charts
-      advices = chartAdvices.concat(graphAdvices);
+      adviceResult = (chartAdvices as Advice[]).concat(graphAdvices) as Advice[];
     }
-    return advices;
+
+    return adviceResult;
   }
 
-  advicesForChart(params: ChartAdviseParams) {
+  /**
+   * Advise and return with scoring log.
+   *
+   * @param params
+   * @returns
+   */
+  adviseWithLog(params: AdviseParams): AdvicesWithLog {
+    const { data, options } = params;
+    let adviceResult: AdvicesWithLog;
+
+    const graphAdvices = this.advicesForGraph(params as GraphAdviseParams);
+    if (this.shouldRecommendGraph(data, options)) {
+      adviceResult = { advices: graphAdvices, log: [] };
+    } else {
+      const chartAdvices = this.advicesForChart(params as ChartAdviseParams, true);
+      // with log
+      const { advices, log } = chartAdvices as AdvicesWithLog;
+      const advicesWithGraph = advices.concat(graphAdvices);
+      adviceResult = { advices: advicesWithGraph, log } as AdvicesWithLog;
+    }
+
+    return adviceResult;
+  }
+
+  advicesForChart(params: ChartAdviseParams, exportLog = false) {
     const { data, dataProps, smartColor, options, colorOptions } = params;
     // otherwise the input data will be mutated
     const copyData = cloneDeep(data);
@@ -185,18 +190,19 @@ export class Advisor {
       filteredData = copyData;
     }
 
-    const advices = dataToAdvices(
+    const adviceResult = dataToAdvices(
       filteredData,
       dataPropsForAdvice,
       this.CKB,
       this.ruleBase,
       smartColor,
-      options,
+      { ...options, exportLog },
       colorOptions
     );
-    return advices;
+    return adviceResult;
   }
 
+  // TODO: export log for graph
   advicesForGraph(params: GraphAdviseParams) {
     const { data, dataProps, options } = params;
     const copyData = cloneDeep(data);
@@ -211,6 +217,26 @@ export class Advisor {
     const graphDataProps = dataProps ? deepMix(calcedProps, dataProps) : calcedProps;
     const advicesForGraph = graphdataToAdvices(graphData.data, graphDataProps, options);
     return advicesForGraph;
+  }
+
+  /**
+   * If shouldRecommendGraph is true, higher priority for relational graph
+   * @param data
+   * @param options
+   * @returns
+   */
+  private shouldRecommendGraph(data: Data, options: AdvisorOptions): boolean {
+    const purposeForGraphs = ['Relation', 'Hierarchy', 'Flow'];
+    const keyForGraph = ['nodes', 'edges', 'links', 'from', 'to', 'children'];
+    const hasKeyForGraph =
+      Object.prototype.toString.call(data) === '[object Object]' &&
+      Object.keys(data).some((key) => keyForGraph.includes(key));
+
+    return (
+      !!(options as GraphAdviseParams['options'])?.extra ||
+      purposeForGraphs.includes(options?.purpose) ||
+      hasKeyForGraph
+    );
   }
 
   /**

@@ -3,6 +3,8 @@ import { builtInRules, getChartRules } from '../../../../src/ruler';
 import { DataFrame } from '../../../../../data-wizard';
 import { CKBJson } from '../../../../../ckb';
 
+import type { Advice } from '../../../../src';
+
 describe('UNIT TEST: dataToAdvices', () => {
   test('should assign score to chartType without toSpec', () => {
     const testData = [
@@ -38,11 +40,14 @@ describe('UNIT TEST: dataToAdvices', () => {
     const ckb: any = CKBJson('en-US', true);
     ckb.ironball_chart = ironBallChart;
 
-    const resultRequireSpecByDefault = dataToAdvices(testData, dataProps, ckb, ruleBase);
+    const resultRequireSpecByDefault = dataToAdvices(testData, dataProps, ckb, ruleBase) as Advice[];
     const customChartAdvice1 = resultRequireSpecByDefault.find((advice) => advice.type === 'ironball_chart');
     expect(customChartAdvice1).toBe(undefined);
 
-    const resultNotRequireSpec = dataToAdvices(testData, dataProps, ckb, ruleBase, false, { requireSpec: false });
+    const resultNotRequireSpec = dataToAdvices(testData, dataProps, ckb, ruleBase, false, {
+      requireSpec: false,
+    }) as Advice[];
+
     const customChartAdvice2 = resultNotRequireSpec.find((advice) => advice.type === 'ironball_chart');
     expect(!!customChartAdvice2).toBe(true);
   });

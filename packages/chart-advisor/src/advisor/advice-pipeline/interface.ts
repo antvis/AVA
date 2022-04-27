@@ -1,7 +1,7 @@
 import type { Purpose } from '@antv/ckb';
 import type { SimulationType } from '@antv/smart-color';
 import type { ColorSchemeType } from '@antv/color-schema';
-import type { Preferences } from '../../ruler';
+import type { Preferences, RuleType } from '../../ruler';
 
 export type Theme = {
   /** hex string */
@@ -35,7 +35,8 @@ export interface AdvisorOptions {
    */
   fields?: string[];
   /**
-   * log on/off
+   * whether to show scoring process in console
+   * @deprecated since 3.0.0, use `exportLog` instead
    */
   showLog?: boolean;
   /**
@@ -65,4 +66,43 @@ export interface SmartColorOptions {
    * mode employed for color simulation
    */
   simulationType?: SimulationType;
+}
+
+export interface ScoringResultForRule {
+  phase: 'ADVISE' | 'LINT';
+  /**
+   * standard ChartRuleId or any string id for custom rule
+   */
+  ruleId: string;
+  /**
+   * scoring result for this rule, score = base * weight
+   */
+  score: number;
+  /**
+   * scoring from validator
+   */
+  base: number;
+  /**
+   * weight of this rule
+   */
+  weight: number;
+  /**
+   * type of this rule
+   */
+  ruleType: RuleType;
+}
+
+export interface ScoringResultForChartType {
+  /**
+   * scoring for this chart type: standard ChartId or any string for custom chart
+   */
+  chartType: string;
+  /**
+   * final score
+   */
+  score: number;
+  /**
+   * whole records of scoring
+   */
+  log?: ScoringResultForRule[];
 }

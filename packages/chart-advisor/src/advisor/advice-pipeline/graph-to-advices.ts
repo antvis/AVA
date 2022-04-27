@@ -10,7 +10,7 @@ import {
 } from '../../constants';
 import { deepMix } from '../utils';
 
-import type { LayoutConfig, GraphSpec } from '../../types';
+import type { LayoutConfig, GraphSpec, Advice } from '../../types';
 import type { BasicDataPropertyForAdvice, DesignRuleModule } from '../../ruler/interface';
 
 /**
@@ -133,8 +133,8 @@ export function edgeFields2Style(dataProps: Partial<analyzer.GraphProps>, userCf
  * @param dataProps data props derived from data-wizard or customized by users
  */
 /* eslint-disable no-param-reassign */
-export function graphdataToAdvices(data, dataProps: Partial<analyzer.GraphProps>, options?) {
-  const recommendSpecs = [];
+export function graphdataToAdvices(data, dataProps: Partial<analyzer.GraphProps>, options?): Advice[] {
+  const recommendSpecs: Advice[] = [];
   const basics = {
     data: {
       type: 'json',
