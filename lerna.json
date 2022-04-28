@@ -11,7 +11,8 @@
   "useWorkspaces": true,
   "command": {
     "publish": {
-      "registry": "https://registry.npmjs.org/"
+      "registry": "https://registry.npmjs.org/",
+      "message": "chore(release): publish"
     },
     "bootstrap": {
       "npmClientArgs": ["--no-lockfile", "--no-package-lock"]
