@@ -80,7 +80,9 @@
     "prepare": "husky install",
     "ci": "run-s format lint-staged build",
     "release": "lerna exec --no-private --concurrency 1 -- npx --no-install semantic-release",
-    "release:manual": "npm run ci && lerna publish",
+    "release-manual": "npm run ci && lerna publish --no-private",
+    "prerelease-manual": "npm run ci && lerna publish prerelease --no-private",
+    "prerelease-manual-beta": "npm run ci && lerna publish prerelease --preid beta --no-private",
     "one-stop-setup": "npm install --package-lock=false && run-s prepare boot build setup:site setup:demo"
   },
   "husky": {
