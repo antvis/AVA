@@ -44,7 +44,7 @@ $ npm install @antv/chart-advisor
 ### ChartAdvisor 使用
 
 `ChartAdvisor` 类中提供了 `advise()` 方法，用于提供自动图表推荐和优化功能，输入参数为 `AdviseParams`，
-输出结果为推荐图表和优化建议，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [ChartAdvisor.advise() API](../../api/chart-advisor/chartAdvice)。
+输出结果为推荐图表和优化建议，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [ChartAdvisor.advise() API](../../api/chart-advisor/1_ChartAdvisor-advise)。
 
 ```js
 import { Advisor, Linter, ChartAdvisor } from '@antv/chart-advisor';
@@ -83,7 +83,7 @@ const errors = myLt.lint(spec);
 ### Advisor 使用
 
 `Advisor` 类中提供了 `advise()` 方法，用于提供自动图表推荐功能，输入参数为 `AdviseParams`，
-输出结果为推荐图表，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [Advisor.advise() API](../../api/chart-advisor/advice)。
+输出结果为推荐图表，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [Advisor.advise() API](../../api/chart-advisor/11_Advisor-advise)。
 
 ```js
 import { Advisor } from '@antv/chart-advisor';
@@ -119,7 +119,7 @@ const advices = myAdvisor.advise({ data });
 ### Linter 使用
 
 `Linter` 类中提供了 `lint()` 方法，用于提供自动图表修复功能，输入参数为 `LintParams`，
-输出结果为优化建议，其中必选参数为输入图表语法 `spec: AntVSpec`，其他输入输出参数详见 [Linter.lint() API](../../api/chart-advisor/lint)。
+输出结果为优化建议，其中必选参数为输入图表语法 `spec: AntVSpec`，其他输入输出参数详见 [Linter.lint() API](../../api/chart-advisor/21_Linter-lint)。
 
 ```js
 import { Linter } from '@antv/chart-advisor';

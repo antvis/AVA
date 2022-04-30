@@ -50,7 +50,7 @@ $ npm install @antv/chart-advisor
 ### ChartAdvisor 使用
 
 `ChartAdvisor` 类中提供了 `advise()` 方法，用于提供自动图表推荐和优化功能，输入参数为 `AdviseParams`，
-输出结果为推荐图表和优化建议，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [ChartAdvisor.advise() API](../../api/chart-advisor/chartAdvice)。
+输出结果为推荐图表和优化建议，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [ChartAdvisor.advise() API](../../api/chart-advisor/1_ChartAdvisor-advise)。
 
 ```js
 import { Advisor, Linter, ChartAdvisor } from '@antv/chart-advisor';

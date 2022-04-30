@@ -30,7 +30,7 @@ Class Linter(ruleCfg?: RuleConfig)
 | custom  | `Record<string, RuleModule>` | 自定义规则。                         | 无  `可选` |
 | options | `ChartRuleConfigMap`         | 规则配置。                           | 无  `可选` |
 
-* _**RuleModule**_ `ruler` 自定义规则，详见 [Ruler](./Ruler)。
+* _**RuleModule**_ `ruler` 自定义规则，详见 [Ruler](./30_Ruler)。
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -46,7 +46,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* _**ChartRuleConfigMap**_ `ruler` 规则配置，详见 [Ruler](./Ruler)。
+* _**ChartRuleConfigMap**_ `ruler` 规则配置，详见 [Ruler](./30_Ruler)。
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -61,33 +61,20 @@ interface ChartRuleConfig {
 
 ### Linter.lint
 
-获得图表优化建议结果的 `Lint[]`，详见 [Linter.lint](./lint).
+获得图表优化建议结果的 `Lint[]`。
 
 ```ts
 Linter.lint(params: LintParams): Lint[];
 ```
 
-参数：
+详见 [Linter.lint](./21_Linter-lint)。
+
+### Linter.lintWithLog
+
+作用和 [Linter.lint](./21_Linter-lint) 几乎完全相同。只不过会额外地将查错过程中的打分细节一并返回，方便在应用中进行后续的解释。
 
 ```ts
-interface LintParams {
-  spec: AntVSpec;
-  dataProps?: BasicDataPropertyForAdvice[];
-  options?: LinterOptions;
-}
+lintWithLog(params: LintParams): LintsWithLog
 ```
 
-返回值：
-
-```ts
-interface Lint {
-  type: string;
-  id: string;
-  score: number;
-  fix?: any;
-  docs?: any;
-}
-```
-
-
-
+详见 [Linter.lintWithLog](./22_Linter-lintWithLog)。

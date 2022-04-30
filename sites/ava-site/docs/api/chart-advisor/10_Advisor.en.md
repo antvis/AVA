@@ -47,7 +47,7 @@ Class Advisor(config?: Partial<Pick<Advisor, 'ckbCfg' | 'ruleCfg'>> = {})
 | custom     | `Record<string, RuleModule>` | Customized rules.                                           | None `Optional` |
 | options    | `ChartRuleConfigMap`         | Rule configuration.                                         | None `Optional` |
 
-* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./Ruler) for details.
+* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./30_Ruler) for details.
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -63,7 +63,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./Ruler) for details.
+* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./30_Ruler) for details.
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -78,27 +78,20 @@ interface ChartRuleConfig {
 
 ### Advisor.advise
 
-Get the `AdvisorList[]` of chart recommendation results as detailed in [Advisor.advise](./advice).
+Get the `AdvisorList[]` of chart recommendation results.
 
 ```ts
 Advisor.advise(params: AdviseParams): AdvisorList[];
 ```
 
-Parameter:
+See [Advisor.advise](./11_Advisor-advise).
+
+### Advisor.adviseWithLog
+
+This method does almost exactly the same thing as [Advisor.advise](./11_Advisor-advise) except that it additionally returns the scoring details of the recommendation process for subsequent interpretation of the recommendation in any application.
 
 ```ts
-type AdviseParams = ChartAdviseParams | GraphAdviseParams;
+Advisor.adviseWithLog(params: AdviseParams): AdvicesWithLog
 ```
 
-Return value:
-
-```ts
-type AdvisorList = {
-  type: ChartType;
-  spec: AntVSpec;
-  score: number;
-};
-```
-
-
-
+See [Advisor.adviseWithLog](./12_Advisor-adviseWithLog)。

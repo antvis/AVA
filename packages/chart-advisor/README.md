@@ -54,7 +54,7 @@ The `ChartAdvisor` class provides the `advise()` method,
 which can provide automatic chart recommendation and optimization abilities.
 Its input parameter is `AdviseParams` and its output is the recommended charts and corresponding optimization suggestions, 
 where the required input is the source data `data: any[]` and 
-detailed input and output parameters are described in the [ChartAdvisor.advise() API](../../api/chart-advisor/chartAdvice)
+detailed input and output parameters are described in the [ChartAdvisor.advise() API](../../api/chart-advisor/1_ChartAdvisor-advise)
 
 ```js
 import { Advisor, Linter, ChartAdvisor } from '@antv/chart-advisor';

@@ -50,7 +50,7 @@ module.exports = {
       {
         slug: 'guide/ckb',
         title: {
-          zh: '图表知识库（CKB)',
+          zh: '图表知识库(CKB)',
           en: 'Chart Knowledge Base (CKB)',
         },
         order: 2,
@@ -114,7 +114,7 @@ module.exports = {
       {
         slug: 'api/ckb',
         title: {
-          zh: '图表知识库（CKB)',
+          zh: '图表知识库(CKB)',
           en: 'Chart Knowledge Base (CKB)',
         },
         order: 2,
@@ -167,14 +167,14 @@ module.exports = {
         },
         order: 8,
       },
-      // {
-      //   slug: 'api/chart-advisor/pipeline',
-      //   title: {
-      //     zh: 'pipeline',
-      //     en: 'pipeline',
-      //   },
-      //   order: 1,
-      // },
+      {
+        slug: 'api/types',
+        title: {
+          zh: '类型 Types',
+          en: 'Types',
+        },
+        order: 99,
+      },
     ],
     examples: [
       {

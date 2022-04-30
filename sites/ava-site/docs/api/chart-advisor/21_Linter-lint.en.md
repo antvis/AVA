@@ -42,7 +42,7 @@ See [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md) for d
 | layer      | The drawing information. | `{ [ encoding: { x: {...} , y:{...} }, mark: { type: 'line' } ] }` |
 
 
-* _**BasicDataPropertyForAdvice**_ Parameter configuration, see [Ruler](./Ruler) for details..
+* _**BasicDataPropertyForAdvice**_ Parameter configuration, see [Ruler](./30_Ruler) for details..
 
 ```ts
 interface BasicDataPropertyForAdvice {

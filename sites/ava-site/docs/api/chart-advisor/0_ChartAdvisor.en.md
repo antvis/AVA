@@ -48,7 +48,7 @@ compared to `Advisor`, it provides an additional `Lint` object as output for pro
 | custom     | `Record<string, RuleModule>` | Customized rules.                                           | None `Optional` |
 | options    | `ChartRuleConfigMap`         | Rule configuration.                                         | None `Optional` |
 
-* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./Ruler) for details.
+* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./30_Ruler) for details.
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -64,7 +64,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./Ruler) for details.
+* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./30_Ruler) for details.
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -79,28 +79,20 @@ interface ChartRuleConfig {
 
 ### ChartAdvisor.advise
 
-Get the `ChartAdvisorList[]` of chart recommendation results as detailed in [ChartAdvisor.advise](./chartAdvice).
+Get the `Advice[]` of chart recommendation results.
 
 ```ts
-ChartAdvisor.advise(params: AdviseParams): ChartAdvisorList[];
+ChartAdvisor.advise(params: AdviseParams): Advice[];
 ```
 
-Parameter:
+See [ChartAdvisor.advise](./1_ChartAdvisor-advise).
+
+### ChartAdvisor.adviseWithLog
+
+The `ChartAdvisor.adviseWithLog` method does almost exactly the same thing as [ChartAdvisor.advise](./1_ChartAdvisor-advise) except that `ChartAdvisor.advanceWithLog` additionally returns the scoring details of the recommendation process for subsequent interpretation of the recommendation in any application.
 
 ```ts
-type AdviseParams = ChartAdviseParams | GraphAdviseParams;
+ChartAdvisor.adviseWithLog(params: AdviseParams): AdvicesWithLog
 ```
 
-Return value:
-
-```ts
-type ChartAdvisorList = {
-  type: ChartType;
-  spec: AntVSpec;
-  lint: Lint;
-  score: number;
-};
-```
-
-
-
+详见 [ChartAdvisor.adviseWithLog](./2_ChartAdvisor-adviseWithLog)。

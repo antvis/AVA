@@ -40,7 +40,7 @@ interface LintParams {
 | data  | 数据信息。 | `data: { type: 'json-array', values: [...] }`                     |
 | layer | 绘制信息。 | `{ [ encoding: { x: {...}, y:{...} }, mark: { type: 'line' } ] }` |
 
-* _**BasicDataPropertyForAdvice**_ 参数配置，详见 [Ruler](./Ruler)。
+* _**BasicDataPropertyForAdvice**_ 参数配置，详见 [Ruler](./30_Ruler)。
 
 ```ts
 interface BasicDataPropertyForAdvice {
