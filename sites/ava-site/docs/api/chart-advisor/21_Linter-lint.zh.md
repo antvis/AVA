@@ -1,6 +1,6 @@
 ---
 title: Linter.lint
-order: 6
+order: 21
 ---
 
 `markdown:docs/common/style.md`
@@ -29,18 +29,18 @@ interface LintParams {
 
 ### 图表优化参数
 
-* ***AntVSpec*** 参数配置。
+* _**AntVSpec**_ 参数配置。
 
 `AntVSpec` 是 AntV 技术栈的声明式语法。
 详细配置项见 [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md)。
 
-| 属性 | 描述 | 样例 |  
-| ----| ---- | -----|
-| basis | 基础信息。 | `basis: { type: 'chart' }` |
-| data | 数据信息。 | `data: { type: 'json-array', values: [...] }` |
+| 属性  | 描述       | 样例                                                              |
+| ----- | ---------- | ----------------------------------------------------------------- |
+| basis | 基础信息。 | `basis: { type: 'chart' }`                                        |
+| data  | 数据信息。 | `data: { type: 'json-array', values: [...] }`                     |
 | layer | 绘制信息。 | `{ [ encoding: { x: {...}, y:{...} }, mark: { type: 'line' } ] }` |
 
-* ***BasicDataPropertyForAdvice*** 参数配置，详见 [Ruler](./Ruler)。
+* _**BasicDataPropertyForAdvice**_ 参数配置，详见 [Ruler](./Ruler)。
 
 ```ts
 interface BasicDataPropertyForAdvice {
@@ -64,21 +64,21 @@ interface BasicDataPropertyForAdvice {
 }
 ```
 
-* ***LinterOptions*** 参数配置。
+* _**LinterOptions**_ 参数配置。
 
-| 属性 | 类型 | 描述 | 默认值 |  
-| ----| ---- | ---- | -----|
-| purpose | `Purpose` | 分析目的。 | 无 `可选` |
+| 属性        | 类型          | 描述       | 默认值    |
+| ----------- | ------------- | ---------- | --------- |
+| purpose     | `Purpose`     | 分析目的。 | 无 `可选` |
 | preferences | `Preferences` | 图表喜好。 | 无 `可选` |
 
-* ***Purpose*** 参数配置。
+* _**Purpose**_ 参数配置。
 
 ```ts
 type PURPOSE_OPTIONS = ["Comparison", "Trend", "Distribution", "Rank", "Proportion", 
   "Composition", "Relation", "Hierarchy", "Flow", "Spatial", "Anomaly", "Value"];
 ```
 
-* ***Preferences*** 参数配置。
+* _**Preferences**_ 参数配置。
 
 ```ts
 interface Preferences {
@@ -88,17 +88,17 @@ interface Preferences {
 
 ## 返回值
 
-*`Lint[]`* 
+_`Lint[]`_
 
-* ***Lint*** 参数配置。
+* _**Lint**_ 参数配置。
 
-| 属性 | 类型 | 描述 | 样例 |  
-| ----| ---- | ---- | -----|
-| type | `string` | 规则类型。 | `hard / soft / design` |
-| id | `string` | 规则 id。 | `10` |
-| score | `number` | 该规则的得分。 | `1` |
-| fix | `any` | 基于该规则的解决方案。 |  |
-| docs | `any` | 该规则的相关文档。 |  |
+| 属性  | 类型     | 描述                   | 样例                   |
+| ----- | -------- | ---------------------- | ---------------------- |
+| type  | `string` | 规则类型。             | `hard / soft / design` |
+| id    | `string` | 规则 id。              | `10`                   |
+| score | `number` | 该规则的得分。         | `1`                    |
+| fix   | `any`    | 基于该规则的解决方案。 |                        |
+| docs  | `any`    | 该规则的相关文档。     |                        |
 
 
 

@@ -1,6 +1,6 @@
 ---
 title: Linter
-order: 5
+order: 20
 ---
 
 `markdown:docs/common/style.md`
@@ -21,16 +21,16 @@ Class Linter(ruleCfg?: RuleConfig)
   * _可选参数_
   * `参数类型`: RuleConfig 对象
 
-* ***RuleConfig*** 图表规则参数配置。
+* _**RuleConfig**_ 图表规则参数配置。
 
-| 属性 | 类型 | 描述 | 默认值 |  
-| ----| ---- | ---- | -----|
-| exclude | `string[]` | 指定不包含的 `ruler` 规则。 | 无  `可选` |
-| include | `string[]` | 指定包含的规则，优先级低于 exclude。 | 无  `可选` |
-| custom | `Record<string, RuleModule>` | 自定义规则。 | 无  `可选` |
-| options | `ChartRuleConfigMap` | 规则配置。 | 无  `可选` |
+| 属性    | 类型                         | 描述                                 | 默认值     |
+| ------- | ---------------------------- | ------------------------------------ | ---------- |
+| exclude | `string[]`                   | 指定不包含的 `ruler` 规则。          | 无  `可选` |
+| include | `string[]`                   | 指定包含的规则，优先级低于 exclude。 | 无  `可选` |
+| custom  | `Record<string, RuleModule>` | 自定义规则。                         | 无  `可选` |
+| options | `ChartRuleConfigMap`         | 规则配置。                           | 无  `可选` |
 
-* ***RuleModule*** `ruler` 自定义规则，详见 [Ruler](./Ruler)。
+* _**RuleModule**_ `ruler` 自定义规则，详见 [Ruler](./Ruler)。
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -46,7 +46,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* ***ChartRuleConfigMap*** `ruler` 规则配置，详见 [Ruler](./Ruler)。
+* _**ChartRuleConfigMap**_ `ruler` 规则配置，详见 [Ruler](./Ruler)。
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
