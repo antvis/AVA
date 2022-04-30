@@ -8,7 +8,7 @@ order: 1
 
 
 ```sign
-ChartAdvisor.advise(params: AdviseParams): ChartAdvisorList[];
+ChartAdvisor.advise(params: AdviseParams): Advice[];
 ```
 
 ## Parameters
@@ -127,9 +127,9 @@ type GraphAdvisorOptions = {
 
 ## Return value
 
-_`ChartAdvisorList[]`_
+_`Advice[]`_
 
-* _**ChartAdvisorList**_ Parameter configuration.
+* _**Advice**_ Parameter configuration.
 
 | Properties | Type        | Description                         | Examples     |
 | ---------- | ----------- | ----------------------------------- | ------------ |

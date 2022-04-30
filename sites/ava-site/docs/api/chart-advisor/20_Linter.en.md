@@ -30,7 +30,7 @@ Class Linter(ruleCfg?: RuleConfig)
 | custom     | `Record<string, RuleModule>` | Customized rules.                                           | None `Optional` |
 | options    | `ChartRuleConfigMap`         | Rule configuration.                                         | None `Optional` |
 
-* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./Ruler) for details.
+* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./30_Ruler) for details.
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -46,7 +46,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./Ruler) for details.
+* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./30_Ruler) for details.
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -61,33 +61,20 @@ interface ChartRuleConfig {
 
 ### Linter.lint
 
-Get the `Lint[]` of chart optimization suggestions as detailed in [Linter.lint](./lint).
+Get the `Lint[]` of chart optimization suggestions.
 
 ```ts
 Linter.lint(params: LintParams): Lint[];
 ```
 
-Parameter:
+See [Linter.lint](./21_Linter-lint).
+
+### Linter.lintWithLog
+
+The `Linter.lintWithLog` method does almost exactly the same thing as [Linter.lint](./21_Linter-lint) except that it additionally returns the scoring details of the recommendation process for subsequent interpretation of the recommendation in any application.
 
 ```ts
-interface LintParams {
-  spec: AntVSpec;
-  dataProps?: BasicDataPropertyForAdvice[];
-  options?: LinterOptions;
-}
+lintWithLog(params: LintParams): LintsWithLog
 ```
 
-Return value:
-
-```ts
-interface Lint {
-  type: string;
-  id: string;
-  score: number;
-  fix?: any;
-  docs?: any;
-}
-```
-
-
-
+See [Linter.lintWithLog](./22_Linter-lintWithLog).

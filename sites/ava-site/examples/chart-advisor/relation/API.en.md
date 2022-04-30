@@ -8,4 +8,4 @@
 
 # Ruler
 
-`markdown:docs/api/chart-advisor/Ruler.en.md`
+`markdown:docs/api/chart-advisor/30_Ruler.en.md`

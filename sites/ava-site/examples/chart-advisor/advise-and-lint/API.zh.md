@@ -4,8 +4,8 @@
 
 # ChartAdvisor.advise
 
-`markdown:docs/api/chart-advisor/chartAdvice.zh.md`
+`markdown:docs/api/chart-advisor/1_ChartAdvisor-advise.zh.md`
 
 # Ruler
 
-`markdown:docs/api/chart-advisor/Ruler.zh.md`
+`markdown:docs/api/chart-advisor/30_Ruler.zh.md`
