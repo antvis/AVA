@@ -4,6 +4,8 @@ import type { LevelOfMeasurement as LOM } from '@antv/ckb';
 import type { Specification } from '../types';
 
 /**
+ * Type of different rules.
+ *
  * @public
  */
 export type RuleType = 'HARD' | 'SOFT' | 'DESIGN';

@@ -68,6 +68,9 @@ export interface SmartColorOptions {
   simulationType?: SimulationType;
 }
 
+/**
+ * Log for scoring a single rule.
+ */
 export interface ScoringResultForRule {
   phase: 'ADVISE' | 'LINT';
   /**
@@ -92,6 +95,9 @@ export interface ScoringResultForRule {
   ruleType: RuleType;
 }
 
+/**
+ * Summary log of checking all rules for a single chart type.
+ */
 export interface ScoringResultForChartType {
   /**
    * scoring for this chart type: standard ChartId or any string for custom chart

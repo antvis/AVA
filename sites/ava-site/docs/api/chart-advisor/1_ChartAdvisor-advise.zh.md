@@ -8,7 +8,7 @@ order: 1
 
 
 ```sign
-ChartAdvisor.advise(params: AdviseParams): ChartAdvisorList[];
+ChartAdvisor.advise(params: AdviseParams): Advice[];
 ```
 
 ## 参数
@@ -127,9 +127,9 @@ type GraphAdvisorOptions = {
 
 ## 返回值
 
-_`ChartAdvisorList[]`_
+_`Advice[]`_
 
-* _**ChartAdvisorList**_ 参数配置。
+* _**Advice**_ 参数配置。
 
 | 属性  | 类型        | 描述           | 样例         |
 | ----- | ----------- | -------------- | ------------ |

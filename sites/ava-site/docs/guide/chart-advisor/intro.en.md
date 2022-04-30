@@ -48,7 +48,7 @@ The `ChartAdvisor` class provides the `advise()` method,
 which can provide automatic chart recommendation and optimization abilities.
 Its input parameter is `AdviseParams` and its output is the recommended charts and corresponding optimization suggestions, 
 where the required input is the source data `data: any[]` and 
-detailed input and output parameters are described in the [ChartAdvisor.advise() API](../../api/chart-advisor/chartAdvice)
+detailed input and output parameters are described in the [ChartAdvisor.advise() API](../../api/chart-advisor/1_ChartAdvisor-advise)
 
 ```js
 import { Advisor, Linter, ChartAdvisor } from '@antv/chart-advisor';
@@ -89,7 +89,7 @@ The `Advisor` class provides the `advise()` method,
 which aimed to provide automatic chart recommendation ability.
 Its input parameter is `AdviseParams` and its output is the recommended charts, 
 where the required input is the source data `data: any[]` and 
-detailed input and output parameters are described in the [Advisor.advise() API](../../api/chart-advisor/advice).
+detailed input and output parameters are described in the [Advisor.advise() API](../../api/chart-advisor/11_Advisor-advise).
 
 ```js
 import { Advisor } from '@antv/chart-advisor';
@@ -128,7 +128,7 @@ The `Linter` class provides the `Linter()` method,
 which can provide automatic chart optimization suggestions.
 Its input parameter is `LintParams` and its output is the recommended optimization suggestions, 
 where the required input is  the input chart schema `spec: AntVSpec` and 
-detailed input and output parameters are described in the [Linter.Linter() API](../../api/chart-advisor/lint)
+detailed input and output parameters are described in the [Linter.Linter() API](../../api/chart-advisor/21_Linter-lint)
 
 ```js
 import { Linter } from '@antv/chart-advisor';
