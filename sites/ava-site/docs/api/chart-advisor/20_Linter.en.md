@@ -1,6 +1,6 @@
 ---
 title: Linter
-order: 5
+order: 20
 ---
 
 `markdown:docs/common/style.md`
@@ -21,16 +21,16 @@ Class Linter(ruleCfg?: RuleConfig)
   * _optional_
   * `Parameter type`: RuleConfig object
 
-* ***RuleConfig*** Parameter configuration.
+* _**RuleConfig**_ Parameter configuration.
 
-| Properties | Type | Description | Default |  
-| ----| ---- | ---- | -----|
-| exclude | `string[]` | Specify to exclude rules in `ruler`. | None `Optional` |
-| include | `string[]` | Specify to include rules, with lower priority than exclude. | None `Optional` |
-| custom | `Record<string, RuleModule>` | Customized rules. | None `Optional` |
-| options | `ChartRuleConfigMap` | Rule configuration. | None `Optional` |
+| Properties | Type                         | Description                                                 | Default         |
+| ---------- | ---------------------------- | ----------------------------------------------------------- | --------------- |
+| exclude    | `string[]`                   | Specify to exclude rules in `ruler`.                        | None `Optional` |
+| include    | `string[]`                   | Specify to include rules, with lower priority than exclude. | None `Optional` |
+| custom     | `Record<string, RuleModule>` | Customized rules.                                           | None `Optional` |
+| options    | `ChartRuleConfigMap`         | Rule configuration.                                         | None `Optional` |
 
-* ***RuleModule*** `ruler` Custom rules, see [Ruler](./Ruler) for details.
+* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./Ruler) for details.
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -46,7 +46,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* ***ChartRuleConfigMap*** `ruler` Rule configuration, see [Ruler](./Ruler) for details.
+* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./Ruler) for details.
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
