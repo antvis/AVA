@@ -1,6 +1,6 @@
 ---
 title: Advisor.advise
-order: 4
+order: 11
 ---
 
 `markdown:docs/common/style.md`
@@ -135,7 +135,7 @@ type GraphAdvisorOptions = {
 
 ## Return value
 
-*`ChartList[]`* 
+_`ChartList[]`_
 
 * _**ChartList**_ Parameter configuration.
 
