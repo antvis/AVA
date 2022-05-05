@@ -20,7 +20,7 @@ jobs:
           node-version: '14.x' # semantic-release requires Node version 14.17 or higher
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --no-package-lock
 
       - name: Lerna bootstrap
         run: npm run boot -- --no-ci

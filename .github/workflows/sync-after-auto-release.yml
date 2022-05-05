@@ -6,7 +6,6 @@ on:
     workflows: ["🤖 Auto Release"]
     branches:
       - stable
-      - alpha # just for test semantic-release
     types:
       - completed
 
@@ -17,12 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: 'alpha' # just for test semantic-release
-
-      - name: Use Node.js 14.x
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14.x'
+          ref: 'stable'
 
       - name: Git bootstrap
         run: |
@@ -31,19 +25,6 @@ jobs:
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/$GITHUB_REPOSITORY
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
-
-      - name: Checkout branch
-        run: |
-          git checkout -b chore-sync-after-auto-release
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Push
-        run: |
-          git add .
-          git commit -m "chore: update package.json and CHANGELOG" --no-verify
-          git push origin chore-sync-after-auto-release
 
       - name: Create PR
         run: |
