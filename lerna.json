@@ -1,13 +1,4 @@
 {
-  "packages": [
-    "demo",
-    "packages/ckb",
-    "packages/chart-advisor",
-    "packages/lite-insight",
-    "packages/smart-board",
-    "packages/data-wizard",
-    "packages/auto-chart"
-  ],
   "useWorkspaces": true,
   "command": {
     "publish": {
