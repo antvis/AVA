@@ -28,6 +28,6 @@ jobs:
 
       - name: Create PR
         run: |
-          gh pr create --title "chore: update package.json and CHANGELOG" --body "🤖 Create by [[After Auto Release](https://github.com/antvis/AVA/blob/master/.github/workflows/after-auto-release.yml)]."
+          gh pr create --title "chore: update package.json and CHANGELOG" --body "🤖 Create by [Sync After Auto Release](https://github.com/antvis/AVA/blob/master/.github/workflows/sync-after-auto-release.yml)."
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
