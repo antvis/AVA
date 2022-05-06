@@ -2,21 +2,18 @@ name: 🔁 Sync After Auto Release
 
 # Sync Package.json and CHANGELOG After Auto Release
 on:
-  workflow_run:
-    workflows: ["🤖 Auto Release"]
+  push:
     branches:
-      - stable
-    types:
-      - completed
+      - alpha
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v2
         with:
-          ref: 'stable'
+          ref: 'alpha'
 
       - name: Git bootstrap
         run: |
@@ -28,6 +25,6 @@ jobs:
 
       - name: Create PR
         run: |
-          gh pr create --title "chore: update package.json and CHANGELOG" --body "🤖 Create by [[After Auto Release](https://github.com/antvis/AVA/blob/master/.github/workflows/after-auto-release.yml)]."
+          gh pr create --title "chore: update package.json and CHANGELOG" --body "🤖 Create by [[Sync After Auto Release](https://github.com/antvis/AVA/blob/master/.github/workflows/sync-after-auto-release.yml)]."
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}

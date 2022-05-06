@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - stable
-      - alpha # just for test semantic-release
 
 jobs:
   release:
