@@ -1,8 +1,6 @@
 module.exports = {
   branches: [
     'stable',
-    // just for test semantic-release
-    { name: 'alpha', prerelease: true },
   ],
   extends: 'semantic-release-monorepo',
   plugins: [
