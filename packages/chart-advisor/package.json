@@ -53,9 +53,9 @@
   },
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/ckb": "^2.0.0",
+    "@antv/ckb": "^2.0.3",
     "@antv/color-schema": "^0.2.3",
-    "@antv/data-wizard": "^2.0.0",
+    "@antv/data-wizard": "^2.0.3",
     "@antv/smart-color": "^0.2.1",
     "tslib": "^2.3.1"
   },
