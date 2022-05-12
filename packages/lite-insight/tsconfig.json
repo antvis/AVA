@@ -1,11 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./esm",
+    "outDir": "./lib",
     "declaration": true,
-    "declarationDir": "./esm",
-    "module": "ESNext"
+    "declarationDir": "./lib"
   },
-  "include": ["./src"],
-  "exclude": ["./src/insight-node"]
+  "include": ["./src"]
 }

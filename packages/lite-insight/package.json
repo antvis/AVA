@@ -20,9 +20,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "lib/insight-node/index.js",
-  "module": "esm/insight-browser/index.js",
-  "types": "lib/insight-node/index.d.ts",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
   "files": [
     "esm",
@@ -39,8 +39,8 @@
     "size": "limit-size",
     "clean": "rimraf lib esm dist",
     "build:umd": "rimraf ./dist && rollup -c && npm run size",
-    "build:cjs": "rimraf ./lib && tsc -p tsconfig-cjs.json --module commonjs",
-    "build:esm": "rimraf ./esm && tsc -p tsconfig.json",
+    "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
+    "build:esm": "rimraf ./esm && tsc --module es6 --outDir esm",
     "build": "run-p build:*",
     "test": "jest",
     "coverage": "jest --coverage",
