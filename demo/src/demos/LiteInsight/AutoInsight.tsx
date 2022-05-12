@@ -5,7 +5,7 @@ import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
 import { InsightCard } from 'antv-site-demo-rc';
-import { getDataInsightsAsync, InsightInfo, Datum, PatternInfo } from '@antv/lite-insight';
+import { getDataInsights, InsightInfo, Datum, PatternInfo } from '@antv/lite-insight';
 
 const { Option } = Select;
 
@@ -94,13 +94,12 @@ export default function App() {
 
   const getInsights = async () => {
     setInsightLoading(true);
-    getDataInsightsAsync(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true })
-      .then((res) => {
-        if (res?.insights) setInsights(res.insights);
-      })
-      .finally(() => {
-        setInsightLoading(false);
-      });
+    const result = getDataInsights(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true });
+    if (result?.insights) {
+      setInsights(result.insights);
+    }
+
+    setInsightLoading(false);
   };
 
   useEffect(() => {
