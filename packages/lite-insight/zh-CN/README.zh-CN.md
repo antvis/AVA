@@ -26,6 +26,8 @@
 
 ## 📦 安装
 
+⚠️ LiteInsight 内部使用了 Web Workers，请确认你的打包工具（Webpack>=5）是否支持这一语法。
+
 ```bash
 $ npm install @antv/lite-insight
 ```
