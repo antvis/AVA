@@ -94,7 +94,9 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
-      "prettier --write",
+      "prettier --write"
+    ],
+    "packages/*.{js,jsx,ts,tsx}": [
       "jest --bail --findRelatedTests"
     ]
   },
