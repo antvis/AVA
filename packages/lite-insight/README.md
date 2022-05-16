@@ -24,7 +24,10 @@ The pipeline of Auto-Insights:
 
 <img src='https://gw.alipayobjects.com/zos/antfincdn/qtmrmqJKH%26/li-pipeline-en.jpg' alt='LiteInsight pipeline' />
 
+
 ## 📦 Installation
+
+⚠️ LiteInsight uses Web Workers internally, please make sure your bundler(Webpack>=5) supports this syntax.
 
 ```bash
 $ npm install @antv/lite-insight
