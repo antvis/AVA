@@ -69,7 +69,9 @@
     "date-fns": "^2.23.0",
     "mersenne-twister": "^1.1.0",
     "randexp": "^0.5.3",
-    "tslib": "^2.3.1"
+    "tslib": "^2.3.1",
+    "graphology": "^0.24.1",
+    "graphology-types": "^0.24.3"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
