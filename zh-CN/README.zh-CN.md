@@ -104,5 +104,14 @@ SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据
 
 <div style="font-size: 12px; color: grey">
 Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. <i>IEEE transactions on visualization and computer graphics</i>, 28(1), pp.206-216.
-<div>
+</div>
+<br>
+
+
+[《数据可视化设计的类型学实践》](https://www.cnki.com.cn/Article/CJFDTotal-MSDG202203021.htm)
+
+
+<div style="font-size: 12px; color: grey">
+蓝星宇, 王嘉喆. 数据可视化设计的类型学实践, 《美术大观》, 2022(3), 149-152.
+</div>
 <br>
