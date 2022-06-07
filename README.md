@@ -102,3 +102,12 @@ More at [Wiki: Development](https://github.com/antvis/AVA/wiki/Development).
 <div align="center">
   <a href="https://idvxlab.com/"><img src="https://gw.alipayobjects.com/zos/antfincdn/rxgntN5msN/idvx.png" alt="iDVx" width="140" align="middle" hspace="20"></a>
 </div>
+
+## Papers
+
+[VizLinter](https://vegalite-linter.idvxlab.com/)
+
+<div style="font-size: 12px; color: grey">
+Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. <i>IEEE transactions on visualization and computer graphics</i>, 28(1), pp.206-216.
+<div>
+<br>
