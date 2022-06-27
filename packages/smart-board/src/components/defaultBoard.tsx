@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Chart, SmartBoardDashboardProps } from '../interfaces';
+import { Chart, SmartBoardDashboardProps } from '../types';
 
 import { SmartBoardChartView as ChartView } from './defaultChartView';
 
@@ -11,8 +11,8 @@ export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
 
   // when the interactionMode is connection mode and a chart was selected, filter and resort charts
   const sortedChartList = new Array<Chart>(chartList.length);
-  chartGraph.nodes.forEach((d) => {
-    sortedChartList[chartOrder[d.id]] = d;
+  chartGraph.nodes?.forEach((d) => {
+    sortedChartList[chartOrder?.[d.id]] = d;
   });
 
   const [connectionID, changeConnectionID] = useState<string>('');
@@ -23,7 +23,7 @@ export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
   let curChartList = sortedChartList;
   const chartID = sortedChartList.map((d) => d.id);
   if (chartID.includes(connectionID) && interactionMode === 'connectionMode') {
-    const connectionLinks = chartGraph.links.filter(
+    const connectionLinks = chartGraph.links?.filter(
       (d: { source: string; target: string }) => d.source === connectionID || d.target === connectionID
     );
 
@@ -52,7 +52,7 @@ export const SmartBoardDashboard = (props: SmartBoardDashboardProps) => {
   return (
     <div id="dashboard">
       {curChartList.map((chart) => {
-        const clusterIndex = chartCluster[chart.id];
+        const clusterIndex = chartCluster?.[chart.id];
         return (
           <ChartView
             key={chart.id}

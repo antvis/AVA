@@ -1,6 +1,6 @@
 import { InsightInfo, PatternInfo } from '@antv/lite-insight';
 
-import { Chart, ConfigObj } from '../interfaces';
+import { Chart, ConfigObj } from '../types';
 
 /**
  * Get smart-board config.
@@ -130,6 +130,12 @@ const insightTransfer = [
 
 export function insights2Board(insights: InsightInfo<PatternInfo>[]) {
   return insights?.map((item) => {
+    const chartSchema = item.visualizationSchemas?.[0]?.chartSchema;
+
+    if (chartSchema?.annotations?.length > 10) {
+      chartSchema.annotations = chartSchema.annotations.slice(0, 10);
+    }
+
     return {
       data: item.data,
       subspace: item.subspace,
@@ -139,7 +145,7 @@ export function insights2Board(insights: InsightInfo<PatternInfo>[]) {
       }),
       score: item.score,
       chartType: item.visualizationSchemas?.[0]?.chartType,
-      chartSchema: item.visualizationSchemas?.[0]?.chartSchema,
+      chartSchema,
       description: item.visualizationSchemas?.[0]?.caption,
       insightType: insightTransfer.filter((type) => {
         return type.insight === item.patterns?.[0]?.type;
