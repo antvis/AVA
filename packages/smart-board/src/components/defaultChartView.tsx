@@ -6,7 +6,7 @@ import { statistics } from '@antv/data-wizard';
 import { g2plotRender } from '@antv/antv-spec';
 
 import { smartBoardConfig } from '../utils/smartBoardConfig';
-import { SmartBoardChartViewProps, ConfigObj } from '../interfaces';
+import { SmartBoardChartViewProps, ConfigObj } from '../types';
 
 export const SmartBoardChartView = (props: SmartBoardChartViewProps) => {
   const { chartID, chartInfo, clusterID, interactionMode, hasLocked, hasInsight, changeConnectionID, quitResort } =

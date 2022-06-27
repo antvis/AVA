@@ -1,36 +1,49 @@
+import type { Measure } from '@antv/lite-insight';
+
+export type ConnectionType = 'SAME_DIMENSION' | 'SAME_MEASURE' | 'SAME_INSIGHT_TYPE';
+
 /** Subspace Array */
-type Subspace = {
+export type Subspace = {
   dimension: string;
   value: string;
 }[];
 
 /** Insight Type */
-type InsightType =
-  | 'outlier'
+export type InsightType =
+  | 'category_outlier'
   | 'trend'
-  | 'extreme'
-  | 'proportion'
-  | 'distribution'
-  | 'rank'
-  | 'categorization'
-  | 'difference'
-  | 'value'
-  | 'association';
+  | 'change_point'
+  | 'time_series_outlier'
+  | 'majority'
+  | 'low_variance'
+  | 'correlation';
 
 /** Chart Type */
-type ChartType = 'line_chart' | 'column_chart' | 'pie_chart' | 'grouped_column_chart' | 'stack_column_chart';
+export type ChartType =
+  | 'line_chart'
+  | 'column_chart'
+  | 'pie_chart'
+  | 'grouped_column_chart'
+  | 'stack_column_chart'
+  | 'scatter_plot';
+
+/** Input Data Type */
+export type Datum = Record<string, string | number>;
+
+export type SmartBoardType = 'insight' | 'advisor' | 'chart';
 
 export interface InputChart {
-  id?: string;
-  data: [];
-  subspace: Subspace;
-  dimensions: string[];
-  measures: string[];
+  data: Datum[];
+  id?: number | string;
+  measures?: string[];
+  dimensions?: string[];
+  subspace?: Subspace;
   dataUrl?: string;
   fieldInfo?: any;
   insightType?: InsightType;
   score?: number; // The insight score
-  chartType?: ChartType;
+  chartType?: string | ChartType;
+  chartScore?: number;
   chartSchema?: any; // antv-spec
   description?: string | string[];
 }
@@ -43,7 +56,7 @@ export interface Chart extends Omit<InputChart, 'id'> {
 export type ChartListInfo = InputChart[];
 
 /** The link of chart graph */
-export interface link {
+export interface Link {
   source: string;
   target: string;
   weight: number;
@@ -53,7 +66,7 @@ export interface link {
 /** The chart graph */
 export interface ChartGraph {
   nodes: Chart[];
-  links: link[];
+  links: Link[];
 }
 
 /** The chart cluster */
@@ -112,4 +125,12 @@ export interface SmartBoardDashboardProps {
   chartCluster: ChartCluster;
   interactionMode?: string;
   hasInsight?: boolean;
+}
+
+export interface DataToBoardProps {
+  inputData: Datum[];
+  measures?: Measure[];
+  dimensions?: string[];
+  insightTypeList?: InsightType[];
+  insightNumber?: number;
 }
