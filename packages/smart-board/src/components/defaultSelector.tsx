@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Select } from 'antd';
 
-import { SmartBoardSelectorProps } from '../interfaces';
+import { SmartBoardSelectorProps } from '../types';
 
 const { Option } = Select;
 

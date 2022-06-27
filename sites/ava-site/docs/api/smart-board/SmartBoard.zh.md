@@ -61,7 +61,7 @@ SmartBoard.chartGraph;
 ```ts
 interface ChartGraph {
   nodes: Chart[];
-  links: link[];
+  links: Link[];
 }
 ```
 

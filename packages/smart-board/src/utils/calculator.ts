@@ -1,7 +1,5 @@
-import { Chart } from '../interfaces';
-
-type ConnectionType = 'SAME_DIMENSION' | 'SAME_MEASURE' | 'SAME_INSIGHT_TYPE';
-type ConnectionTypes = ConnectionType[];
+import { Chart, InsightType, ConnectionType } from '../types';
+import { INSIGHT_TYPES } from '../constants';
 
 /**
  * Calculate the similarity between 2 charts by how many dimensions and measures they share
@@ -9,14 +7,14 @@ type ConnectionTypes = ConnectionType[];
  * @param chart2
  * @returns
  */
-function calSimilarityOfCharts(chart1: Chart, chart2: Chart): any {
+function calSimilarityOfCharts(chart1: Chart, chart2: Chart): { similarity: number; description: ConnectionType[] } {
   const b1 = chart1.dimensions;
   const b2 = chart2.dimensions;
   const m1 = chart1.measures;
   const m2 = chart2.measures;
   const dimIntersection = b1.filter((d) => b2.includes(d));
   const meaIntersection = m1.filter((d) => m2.includes(d));
-  const description: ConnectionTypes = [];
+  const description: ConnectionType[] = [];
   let isSameInsightType = false;
 
   if (dimIntersection.length) {
@@ -72,13 +70,13 @@ function permutation(m: string[], n: number, currentIndex = 0, chosenArr: any = 
  * @param ChartList
  * @returns
  */
-export function getChartConnection(ChartList: Chart[]): any {
+export function getChartConnection(ChartList: Chart[]) {
   const chartList = ChartList;
-  const chartIDs = chartList.map((d) => d.id);
-  const chartPairs = permutation(chartIDs, 2);
+  const chartIds = chartList.map((d) => d.id);
+  const chartPairs = permutation(chartIds, 2);
   const chartConnection = chartPairs.map((d) => {
-    const chart1 = chartList[chartIDs.indexOf(d[0])];
-    const chart2 = chartList[chartIDs.indexOf(d[1])];
+    const chart1 = chartList[chartIds.indexOf(d[0])];
+    const chart2 = chartList[chartIds.indexOf(d[1])];
     const { similarity, description } = calSimilarityOfCharts(chart1, chart2);
     return {
       chart1,
@@ -95,18 +93,33 @@ export function getChartConnection(ChartList: Chart[]): any {
  * @param ChartList
  * @returns
  */
-export function getDegreeImportance(ChartList: Chart[]): any {
+export function getDegreeImportance(ChartList: Chart[]) {
   const chartConnection = getChartConnection(ChartList);
-  const degreeOfchart = new Map();
-  const chartsID = ChartList.map((d) => d.id);
-  chartsID.forEach((d) => {
-    degreeOfchart.set(d, 0);
+  const degreeOfChart = new Map();
+  const chartsId = ChartList.map((d) => d.id);
+  chartsId.forEach((d) => {
+    degreeOfChart.set(d, 0);
   });
-  chartConnection.forEach((d: { similarity: number; chart1: { id: any }; chart2: { id: any } }) => {
+  chartConnection.forEach((d) => {
     if (d.similarity > 0) {
-      degreeOfchart.set(d.chart1.id, degreeOfchart.get(d.chart1.id) + 1);
-      degreeOfchart.set(d.chart2.id, degreeOfchart.get(d.chart2.id) + 1);
+      degreeOfChart.set(d.chart1.id, degreeOfChart.get(d.chart1.id) + 1);
+      degreeOfChart.set(d.chart2.id, degreeOfChart.get(d.chart2.id) + 1);
     }
   });
-  return degreeOfchart;
+  return degreeOfChart;
 }
+
+/**
+ * Check if the user-defined insight types accomplish with LI-defined
+ * @param insightTypeList
+ * @returns
+ */
+export const checkInsightTypes = (insightTypeList: InsightType[]) => {
+  let allowed = true;
+  insightTypeList.forEach((type) => {
+    if (!INSIGHT_TYPES.includes(type)) {
+      allowed = false;
+    }
+  });
+  return allowed;
+};
