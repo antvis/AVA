@@ -1,6 +1,6 @@
 # ChartAdvisor
 
-`markdown:docs/api/chart-advisor/intro.zh.md`
+`markdown:docs/api/chart-advisor/0_ChartAdvisor.zh.md`
 
 # ChartAdvisor.advise
 

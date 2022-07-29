@@ -56,4 +56,4 @@ ReactDOM.render(
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/auto-chart/intro)
+For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/auto-chart/AutoChart)
