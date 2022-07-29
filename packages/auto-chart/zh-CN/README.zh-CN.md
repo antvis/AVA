@@ -51,7 +51,7 @@ ReactDOM.render(<AutoChart data={data} />, document.getElementById('container'))
 
 ## 📖 文档
 
-更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/auto-chart/autoChart)
+更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/auto-chart/AutoChart)
 
 
 ## 贡献
