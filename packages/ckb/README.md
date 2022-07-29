@@ -81,6 +81,9 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 ## Documentation
 
 * For more usages, please check the [Quick API](./API.md)
+```js
+// ../../docs/api/knowledge.md does not exist
+```
 * Detailed [API Reference](../../docs/api/knowledge.md)
 * [User Guide](./USERGUIDE.md)
 

@@ -87,7 +87,7 @@ It can automatically generates the corresponding Dashboard configurations based 
 ## Sources
 
 * [Guide](https://ava.antv.vision/en/docs/guide/intro)
-* [API](https://ava.antv.vision/en/docs/api/intro)
+* [API](https://ava.antv.vision/en/docs/api)
 * [Examples](https://ava.antv.vision/en/examples/gallery)
 * [Wiki](https://github.com/antvis/AVA/wiki)
 

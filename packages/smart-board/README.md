@@ -81,7 +81,7 @@ const dashboardContent =
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/intro)
+For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/SmartBoard)
 
 
 ## 📄 License

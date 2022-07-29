@@ -1,3 +1,3 @@
 # SmartBoard
 
-`markdown:docs/api/smart-board/intro.zh.md`
+`markdown:docs/api/smart-board/SmartBoard.zh.md`
