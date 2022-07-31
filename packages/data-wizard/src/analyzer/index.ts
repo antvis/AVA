@@ -277,16 +277,20 @@ export function isOrdinal(info: FieldInfo): boolean {
   if (recommendation !== 'string') return false;
   if (isConst(info)) return false;
   const list = rawData.filter((item) => !utils.isNull(item) && utils.isString(item));
-  if (list.length === 0) return false;
+  // All the datum in rawData must meet the pre ordinal requirements before entering the subsequent codes
+  if (list.length !== rawData.length) return false;
+  // Use them to find ordinal string
   let start: null | string = null;
   let end: null | string = null;
   let startIndex = -1;
+  // From right to left to define index
   let endIndex = -1;
 
-  let through = true;
-  while (through) {
+  const listLength = list.length;
+  // From start to end to find startIndex
+  while (true) {
     let through = true;
-    for (let i = 0; i < list.length; i += 1) {
+    for (let i = 0; i < listLength; i += 1) {
       const item = list[i];
       const char = item[startIndex + 1];
       if (start === null || i === 0) start = char;
@@ -295,13 +299,16 @@ export function isOrdinal(info: FieldInfo): boolean {
         break;
       }
     }
-    if (!through) break;
     startIndex += 1;
+    if (!through) break;
+    // Max startIndex cannot be larger than the last index of the any item (There is no need to find the shortest item)
+    // It's not necessary, but it can prevent unexpected infinite loop when necessary
+    if (startIndex >= list[0].length - 1) break;
   }
-  through = true;
-  while (through) {
+  // From end to start to find endIndex
+  while (true) {
     let through = true;
-    for (let i = 0; i < list.length; i += 1) {
+    for (let i = 0; i < listLength; i += 1) {
       const item = list[i];
       const char = item[item.length - 1 - (endIndex + 1)];
       if (end === null || i === 0) end = char;
@@ -310,16 +317,18 @@ export function isOrdinal(info: FieldInfo): boolean {
         break;
       }
     }
-    if (!through) break;
     endIndex += 1;
+    if (!through) break;
+    // Max endIndex cannot be larger than the last index of the any item
+    // It's not necessary, but it can prevent unexpected infinite loop when necessary
+    if (endIndex >= list[0].length - 1) break;
   }
-  const partners = [/\d+/, /(零|一|二|三|四|五|六|七|八|九|十)+/, /(一|二|三|四|五|六|日)/, /^[a-z]$/, /^[A-Z]$/];
-  if (startIndex === -1 && endIndex === -1) return false;
-  const arr = list.map((item) =>
-    item.slice(startIndex === -1 ? 0 : startIndex + 1, endIndex === -1 ? undefined : item.length - endIndex - 1)
-  );
-  for (let i = 0; i < partners.length; i += 1) {
-    const p = partners[i];
+
+  const patterns = [/\d+/, /(零|一|二|三|四|五|六|七|八|九|十)+/, /(一|二|三|四|五|六|日)/, /^[a-z]$/, /^[A-Z]$/];
+  if (startIndex === 0 && endIndex === 0) return false;
+  const arr = list.map((item) => item.slice(startIndex, endIndex === 0 ? undefined : item.length - endIndex));
+  for (let i = 0; i < patterns.length; i += 1) {
+    const p = patterns[i];
     const notMatch = arr.some((item) => !p.test(item));
     if (!notMatch) return true;
   }

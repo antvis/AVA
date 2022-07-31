@@ -443,3 +443,23 @@ test('date cols not boolean', () => {
   expect(d.minimum).toBe('2019-01-01');
   expect(d.maximum).toBe('2019-01-02');
 });
+
+test('analyze mixed data', () => {
+  const array1 = [1, { a: 1 }, 566, [5, 6, 7]];
+  const info = analyzeField(array1);
+  expect(info.type).toBe('mixed');
+  expect(info.recommendation).toBe('string');
+  expect(info.levelOfMeasurements).toStrictEqual(['Nominal']);
+
+  const array2 = ['str', { a: 1 }, 'str'];
+  const info2 = analyzeField(array2);
+  expect(info2.type).toBe('string');
+  expect(info2.recommendation).toBe('string');
+  expect(info2.levelOfMeasurements).toStrictEqual(['Nominal']);
+
+  const array3 = ['星期一', { a: 1 }, '星期二'];
+  const info3 = analyzeField(array3);
+  expect(info3.type).toBe('string');
+  expect(info3.recommendation).toBe('string');
+  expect(info3.levelOfMeasurements).toStrictEqual(['Nominal']);
+});
