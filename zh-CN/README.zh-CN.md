@@ -80,7 +80,7 @@ SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据
 ## 相关链接
 
 * [教程文档 Guide](https://ava.antv.vision/zh/docs/guide/intro)
-* [接口文档 API](https://ava.antv.vision/zh/docs/api/intro)
+* [接口文档 API](https://ava.antv.vision/zh/docs/api)
 * [示例大全 Examples](https://ava.antv.vision/zh/examples/gallery)
 * [相关知识 Wiki](https://github.com/antvis/AVA/wiki)
 
