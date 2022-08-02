@@ -1,6 +1,6 @@
 import _groupBy from 'lodash/groupBy';
 
-import { PatternInfo, InsightInfo, InsightType } from '../../interface';
+import { PatternInfo, InsightInfo, InsightType, Language } from '../../interface';
 import { SubjectsDescInfo, AbstractNarrativeGenerator } from '../interface';
 import {
   subjectsDescStrategy,
@@ -22,8 +22,8 @@ export class InsightNarrativeGenerator extends AbstractNarrativeGenerator<Patter
 
   private patternGroups: Partial<Record<InsightType, PatternInfo[]>>;
 
-  constructor(patterns: PatternInfo[], insight: InsightInfo<PatternInfo>) {
-    super(patterns, insight);
+  constructor(patterns: PatternInfo[], insight: InsightInfo<PatternInfo>, lang: Language) {
+    super(patterns, insight, lang);
   }
 
   protected prepareVariables(patterns: PatternInfo[], insight: InsightInfo<PatternInfo>) {
@@ -40,28 +40,28 @@ export class InsightNarrativeGenerator extends AbstractNarrativeGenerator<Patter
   }
 
   protected applyStrategy() {
-    this.caption = subjectsDescStrategy(this.globalVariableMap);
+    this.caption = subjectsDescStrategy(this.globalVariableMap, this.lang);
     this.summaries = [];
     Object.keys(this.patternGroups).forEach((type) => {
       const patterns = this.patternGroups[type];
       if (patterns) {
         if (type === 'trend') {
-          this.summaries.push(trendStrategy(patterns[0]));
+          this.summaries.push(trendStrategy(patterns[0], this.lang));
         }
         if (type === 'majority') {
-          this.summaries.push(majorityStrategy(patterns[0]));
+          this.summaries.push(majorityStrategy(patterns[0], this.lang));
         }
         if (type === 'low_variance') {
-          this.summaries.push(lowVarianceStrategy(patterns[0]));
+          this.summaries.push(lowVarianceStrategy(patterns[0], this.lang));
         }
         if (type === 'category_outlier' || type === 'time_series_outlier') {
-          this.summaries.push(outliersStrategy(patterns));
+          this.summaries.push(outliersStrategy(patterns, this.lang));
         }
         if (type === 'change_point') {
-          this.summaries.push(changePointStrategy(patterns[0]));
+          this.summaries.push(changePointStrategy(patterns, this.lang));
         }
         if (type === 'correlation') {
-          this.summaries.push(correlationStrategy(patterns[0]));
+          this.summaries.push(correlationStrategy(patterns[0], this.lang));
         }
       }
     });

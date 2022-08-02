@@ -33,6 +33,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | Properties | Type | Description | Default| 
 | ----| ---- | ---- | -----|
 | summaryType |  `text`\|`schema` | pure text or text schema to description insight summary | 'text' |
+| lang |  `en-US`\|`zh-CN` | insight summary language type | 'en-US' |
 
 * ***InsightInfo|HomogeneousInsightInfo*** Insight information.
 

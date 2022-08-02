@@ -69,7 +69,7 @@
     "@ant-design/icons": "^4.6.3",
     "@antv/ckb": "^2.0.4-beta.0",
     "@antv/data-wizard": "^2.0.4-beta.0",
-    "@antv/text-schema": "^0.1.5-alpha.5",
+    "@antv/narrative-text-schema": "^0.3.7",
     "@stdlib/stats": "^0.0.12",
     "@stdlib/stats-lowess": "^0.0.5",
     "bayesian-changepoint": "^1.0.1",
