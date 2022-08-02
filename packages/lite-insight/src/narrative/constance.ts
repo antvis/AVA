@@ -1,4 +1,6 @@
-export const SYMBOL = {
+import { Language } from '../interface';
+
+export const SYMBOL: Record<Language, { [key: string]: string }> = {
   'en-US': {
     punctuation_stop: '.',
     punctuation_comma: ',',

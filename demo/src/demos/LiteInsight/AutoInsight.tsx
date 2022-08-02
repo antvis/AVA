@@ -5,7 +5,7 @@ import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
 import { InsightCard } from 'antv-site-demo-rc';
-import { getDataInsightsAsync, InsightInfo, Datum, PatternInfo } from '@antv/lite-insight';
+import { getDataInsights, InsightInfo, Datum, PatternInfo, InsightOptions } from '@antv/lite-insight';
 
 const { Option } = Select;
 
@@ -20,7 +20,7 @@ const datasetOptions = [
   'income',
 ];
 
-const datasetConfigs = {
+const datasetConfigs: Record<string, InsightOptions> = {
   gapminder: {
     limit: 30,
     measures: [
@@ -92,15 +92,19 @@ export default function App() {
     }
   };
 
-  const getInsights = async () => {
+  const getInsights = () => {
     setInsightLoading(true);
-    getDataInsightsAsync(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true })
-      .then((res) => {
-        if (res?.insights) setInsights(res.insights);
-      })
-      .finally(() => {
-        setInsightLoading(false);
+    setTimeout(() => {
+      const result = getDataInsights(data, {
+        ...(datasetConfigs[dataset] ?? {}),
+        visualization: {
+          summaryType: 'schema',
+          lang: 'zh-CN',
+        },
       });
+      if (result?.insights) setInsights(result.insights);
+      setInsightLoading(false);
+    });
   };
 
   useEffect(() => {

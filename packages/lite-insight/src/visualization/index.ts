@@ -31,12 +31,13 @@ export const getInsightVisualizationSchema = (
   const { dimensions, patterns, measures } = insight;
 
   const schemas: VisualizationSchema[] = [];
-  const summaryType = _get(visualizationOptions, 'summaryType', 'text');
+  const summaryType: any = _get(visualizationOptions, 'summaryType', 'text');
+  const lang = _get(visualizationOptions, 'lang', 'en-US');
 
   const patternGroups = _groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
 
   Object.entries(patternGroups).forEach(([chartType, patternGroup]: [string, PatternInfo[]]) => {
-    const narrative = new InsightNarrativeGenerator(patterns, insight);
+    const narrative = new InsightNarrativeGenerator(patterns, insight, lang);
 
     // TODO chart schema generation
     const plotSchema = {
@@ -103,8 +104,9 @@ export const getHomogeneousInsightVisualizationSchema = (
   const { dimensions, patterns, measures } = insight;
 
   const schemas: VisualizationSchema[] = [];
-  const summaryType = _get(visualizationOptions, 'summaryType', 'text');
-  const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
+  const summaryType: any = _get(visualizationOptions, 'summaryType', 'text');
+  const lang = _get(visualizationOptions, 'lang', 'en-US');
+  const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight, lang);
 
   patterns.forEach((pattern) => {
     const { insightType } = pattern;

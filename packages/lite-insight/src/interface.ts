@@ -1,4 +1,4 @@
-import { IPhrase } from '@antv/text-schema';
+import { PhraseSpec } from '@antv/narrative-text-schema';
 
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
@@ -7,6 +7,8 @@ export type Datum = Record<string, string | number>;
 export type DataType = 'Nominal' | 'Ordinal' | 'Interval' | 'Discrete' | 'Continuous' | 'Time';
 
 export type FieldType = 'measure' | 'dimension';
+
+export type Language = 'zh-CN' | 'en-US';
 
 export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DISTINCT';
 
@@ -65,7 +67,7 @@ export interface VisualizationSchema {
    * @description insight summaries display type, it dependent
    * @default string[]
    */
-  insightSummaries?: string[] | IPhrase[][];
+  insightSummaries?: string[] | PhraseSpec[][];
 }
 
 /** insight information */
@@ -88,6 +90,11 @@ export interface VisualizationOptions {
    * @default 'text'
    * */
   summaryType: 'text' | 'schema' | false;
+  /**
+   * @description summary language type
+   * @default 'en-US'
+   */
+  lang?: Language;
 }
 
 /** custom options */
