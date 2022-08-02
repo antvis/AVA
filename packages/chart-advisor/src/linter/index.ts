@@ -82,12 +82,17 @@ export class Linter {
     // step 2: lint rules
     // HARD and SOFT rules
     Object.values(this.ruleBase)
-      .filter((r: RuleModule) => r.type !== 'DESIGN' && !r.option?.off && r.trigger(info))
+      .filter((r: RuleModule) => {
+        const others = r.option?.customFeatures;
+        return r.type !== 'DESIGN' && !r.option?.off && r.trigger({ ...info, others });
+      })
       .forEach((r: RuleModule) => {
         const { type, id, docs } = r;
 
+        const others = r.option?.customFeatures;
+
         // no weight for linter's result
-        const score = (r as ChartRuleModule).validator(info) as number;
+        const score = (r as ChartRuleModule).validator({ ...info, others }) as number;
 
         log.push({ phase: 'LINT', ruleId: r.id, score, base: score, weight: 1, ruleType: r.type });
 
@@ -96,7 +101,10 @@ export class Linter {
 
     // DESIGN rules
     Object.values(this.ruleBase)
-      .filter((r: RuleModule) => r.type === 'DESIGN' && !r.option?.off && r.trigger(info))
+      .filter((r: RuleModule) => {
+        const others = r.option?.customFeatures;
+        return r.type === 'DESIGN' && !r.option?.off && r.trigger({ ...info, others });
+      })
       .forEach((r: RuleModule) => {
         const { type, id, docs } = r;
         const fix = (r as DesignRuleModule).optimizer(dataProps, spec);
