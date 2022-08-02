@@ -53,10 +53,14 @@ const scoreRules = (
 
   let hardScore = 1;
   Object.values(ruleBase)
-    .filter((r: RuleModule) => r.type === 'HARD' && r.trigger(info) && !ruleBase[r.id].option?.off)
+    .filter((r: RuleModule) => {
+      const others = r.option?.customFeatures;
+      return r.type === 'HARD' && r.trigger({ ...info, others }) && !ruleBase[r.id].option?.off;
+    })
     .forEach((hr: RuleModule) => {
       const weight = ruleBase[hr.id].option?.weight || defaultWeights[hr.id] || 1;
-      const base = (hr as ChartRuleModule).validator(info) as number;
+      const others = hr.option?.customFeatures;
+      const base = (hr as ChartRuleModule).validator({ ...info, others }) as number;
       const score = weight * base;
 
       hardScore *= score;
@@ -75,10 +79,14 @@ const scoreRules = (
 
   let softScore = 0;
   Object.values(ruleBase)
-    .filter((r: RuleModule) => r.type === 'SOFT' && r.trigger(info) && !ruleBase[r.id].option?.off)
+    .filter((r: RuleModule) => {
+      const others = r.option?.customFeatures;
+      return r.type === 'SOFT' && r.trigger({ ...info, others }) && !ruleBase[r.id].option?.off;
+    })
     .forEach((sr: RuleModule) => {
       const weight = ruleBase[sr.id].option?.weight || defaultWeights[sr.id] || 1;
-      const base = (sr as ChartRuleModule).validator(info) as number;
+      const others = sr.option?.customFeatures;
+      const base = (sr as ChartRuleModule).validator({ ...info, others }) as number;
       const score = weight * base;
 
       softScore += score;

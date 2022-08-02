@@ -77,6 +77,10 @@ export interface ChartRuleConfig {
    * whether to ignore the rule
    */
   off?: boolean;
+  /**
+   * customized features
+   */
+  customFeatures?: Record<string, any>;
 }
 
 /**
