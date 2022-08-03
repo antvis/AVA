@@ -2,9 +2,9 @@ import { DataFrame } from '@antv/data-wizard';
 
 import { processRuleCfg } from '../ruler';
 
-import { getChartType } from './get-charttype';
+import { getChartType, lintRules } from './utils';
 
-import type { RuleConfig, RuleModule, ChartRuleModule, DesignRuleModule, BasicDataPropertyForAdvice } from '../ruler';
+import type { RuleConfig, RuleModule, BasicDataPropertyForAdvice } from '../ruler';
 import type { Specification, DataRows, Lint, LintsWithLog } from '../types';
 import type { LinterOptions } from './interface';
 import type { ScoringResultForRule } from '../advisor';
@@ -27,7 +27,7 @@ export class Linter {
    *
    * - spec: chart spec written in antv-spec
    * - dataProps?: data props if customized
-   * - ontions?: linting options
+   * - options?: linting options
    * @returns error[], the issues violated by the chart spec
    */
   lint(params: LintParams): Lint[] {
@@ -81,33 +81,10 @@ export class Linter {
 
     // step 2: lint rules
     // HARD and SOFT rules
-    Object.values(this.ruleBase)
-      .filter((r: RuleModule) => r.type !== 'DESIGN' && !r.option?.off && r.trigger(info))
-      .forEach((r: RuleModule) => {
-        const { type, id, docs } = r;
-
-        // no weight for linter's result
-        const score = (r as ChartRuleModule).validator(info) as number;
-
-        log.push({ phase: 'LINT', ruleId: r.id, score, base: score, weight: 1, ruleType: r.type });
-
-        lints.push({ type, id, score, docs });
-      });
+    lintRules(this.ruleBase, 'notDESIGN', info, log, lints);
 
     // DESIGN rules
-    Object.values(this.ruleBase)
-      .filter((r: RuleModule) => r.type === 'DESIGN' && !r.option?.off && r.trigger(info))
-      .forEach((r: RuleModule) => {
-        const { type, id, docs } = r;
-        const fix = (r as DesignRuleModule).optimizer(dataProps, spec);
-
-        // no fix -> means no violation
-        const score = Object.keys(fix).length === 0 ? 1 : 0;
-
-        log.push({ phase: 'LINT', ruleId: r.id, score, base: score, weight: 1, ruleType: 'DESIGN' });
-
-        lints.push({ type, id, score, fix, docs });
-      });
+    lintRules(this.ruleBase, 'DESIGN', info, log, lints, spec);
 
     // filter rules with problems (score<1)
     lints = lints.filter((record) => record.score !== 1);

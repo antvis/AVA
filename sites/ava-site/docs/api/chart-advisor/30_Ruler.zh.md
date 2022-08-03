@@ -183,6 +183,7 @@ const ChartDesignRuleID = ['x-axis-line-fading'];
 interface ChartRuleConfig {
   weight?: number;
   off?: boolean;
+  extra?: Record<string, any>;
 }
 ```
 
