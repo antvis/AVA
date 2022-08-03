@@ -38,7 +38,7 @@ const lintRules = (
         const score = (r as ChartRuleModule).validator({ ...info, weight, ...extra }) as number;
         lints.push({ type, id, score, docs });
       }
-      log.push({ phase: 'LINT', ruleId: r.id, score, base: score, weight: 1, ruleType: r.type });
+      log.push({ phase: 'LINT', ruleId: id, score, base: score, weight: 1, ruleType: type });
     });
 };
 export default lintRules;

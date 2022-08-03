@@ -21,6 +21,34 @@ const myRule: RuleModule = {
   },
 };
 
+const ruleWithExtra: RuleModule = {
+  id: 'shushu-rule',
+  type: 'SOFT',
+  docs: {
+    lintText: 'listen to shushu',
+  },
+  option: {
+    off: false,
+    weight: 0.5,
+    extra: {
+      name: 'ShuShu',
+      level: 99,
+    },
+  },
+  trigger: (args) => {
+    const { chartType, weight } = args;
+    return ['pie_chart'].indexOf(chartType) !== -1 && weight > 0;
+  },
+  validator: (args) => {
+    let result = 0;
+    const { name, level } = args;
+    if (name === 'ShuShu' && level > 50) {
+      result = 1;
+    }
+    return result;
+  },
+};
+
 describe('init Ruler', () => {
   // TODO other test of ruler
   test('rule amount', () => {
@@ -124,5 +152,16 @@ describe('customized Rule', () => {
     const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
     const { ruleBase } = myAdvisor;
     expect(ruleBase?.['data-check']?.option?.off).toBe(true);
+  });
+
+  test('customized rule with option and extra', () => {
+    const myRuleCfg: RuleConfig = {
+      custom: {
+        'shushu-rule': ruleWithExtra,
+      },
+    };
+    const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+    const { ruleBase } = myAdvisor;
+    expect(ruleBase['shushu-rule'].option?.extra).toHaveProperty(['name'], 'ShuShu');
   });
 });
