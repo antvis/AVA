@@ -77,6 +77,10 @@ export interface ChartRuleConfig {
    * whether to ignore the rule
    */
   off?: boolean;
+  /**
+   * user customized parameters of Validator
+   */
+  extra?: Record<string, any>;
 }
 
 /**

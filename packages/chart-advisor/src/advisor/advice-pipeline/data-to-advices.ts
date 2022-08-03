@@ -1,7 +1,6 @@
 import { hexToColor, colorToHex, paletteGeneration, colorSimulation } from '@antv/smart-color';
 
-import { DEFAULT_RULE_WEIGHTS } from '../../constants';
-import { deepMix } from '../utils';
+import { deepMix, computeScore } from '../utils';
 
 import { getChartTypeSpec } from './spec-mapping';
 
@@ -9,7 +8,7 @@ import type { ChartID, ChartKnowledgeJSON } from '@antv/ckb';
 import type { SimulationType } from '@antv/smart-color';
 import type { ColorSchemeType } from '@antv/color-schema';
 import type { Advice, AdvicesWithLog, DataRows, Specification } from '../../types';
-import type { BasicDataPropertyForAdvice, ChartRuleModule, DesignRuleModule, RuleModule } from '../../ruler/interface';
+import type { BasicDataPropertyForAdvice, DesignRuleModule, RuleModule } from '../../ruler/interface';
 import type {
   AdvisorOptions,
   Theme,
@@ -44,25 +43,13 @@ const scoreRules = (
   const showLog = options?.showLog;
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
-  const defaultWeights = DEFAULT_RULE_WEIGHTS;
 
   // for log
   const log: ScoringResultForRule[] = [];
 
   const info = { dataProps, chartType, purpose, preferences };
 
-  let hardScore = 1;
-  Object.values(ruleBase)
-    .filter((r: RuleModule) => r.type === 'HARD' && r.trigger(info) && !ruleBase[r.id].option?.off)
-    .forEach((hr: RuleModule) => {
-      const weight = ruleBase[hr.id].option?.weight || defaultWeights[hr.id] || 1;
-      const base = (hr as ChartRuleModule).validator(info) as number;
-      const score = weight * base;
-
-      hardScore *= score;
-
-      log.push({ phase: 'ADVISE', ruleId: hr.id, score, base, weight, ruleType: 'HARD' });
-    });
+  const hardScore = computeScore(ruleBase, 'HARD', info, log);
 
   // Hard-Rule pruning
   // holding for showLog @deprecated and testing
@@ -73,18 +60,7 @@ const scoreRules = (
   //   return result;
   // }
 
-  let softScore = 0;
-  Object.values(ruleBase)
-    .filter((r: RuleModule) => r.type === 'SOFT' && r.trigger(info) && !ruleBase[r.id].option?.off)
-    .forEach((sr: RuleModule) => {
-      const weight = ruleBase[sr.id].option?.weight || defaultWeights[sr.id] || 1;
-      const base = (sr as ChartRuleModule).validator(info) as number;
-      const score = weight * base;
-
-      softScore += score;
-
-      log.push({ phase: 'ADVISE', ruleId: sr.id, score, base, weight, ruleType: 'SOFT' });
-    });
+  const softScore = computeScore(ruleBase, 'SOFT', info, log);
 
   /** @since 3.0.0 @todo score normalization  */
   // proposal:
