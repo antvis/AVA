@@ -78,9 +78,9 @@ export interface ChartRuleConfig {
    */
   off?: boolean;
   /**
-   * customized features
+   * user customized parameters of Validator
    */
-  customFeatures?: Record<string, any>;
+  extra?: Record<string, any>;
 }
 
 /**

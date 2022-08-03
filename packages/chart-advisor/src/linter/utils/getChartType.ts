@@ -1,4 +1,4 @@
-import type { Specification, ChartSpec } from '../types';
+import type { Specification, ChartSpec } from '../../types';
 
 const getPointChart = (spec: ChartSpec) => {
   const specLayer = spec.layer[0];
