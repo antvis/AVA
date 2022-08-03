@@ -72,6 +72,7 @@ type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
 interface ChartRuleConfig {
   weight?: number;
   off?: boolean;
+  extra?: Record<string, any>;
 }
 ```
 
