@@ -43,6 +43,14 @@
         "zh": "定制 ChartAdvisor 所使用的 CKB 和规则"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/Rw0cVZ%26ZW/custom-ckb-rules-ca.gif"
+    },
+    {
+      "filename": "extra-custom-rules-ca.jsx",
+      "title": {
+        "en": "Further customization using extra",
+        "zh": "ChartAdvisor 规则的进一步定制"
+      },
+      "screenshot": ""
     }
   ]
 }
