@@ -57,8 +57,14 @@ export interface Info {
 /**
  * @public
  */
-export type Validator = (args: Info) => number | boolean;
-export type Trigger = (args: Info) => boolean;
+export type ValidatorFunction = (args: Info) => number | boolean;
+export type TriggerFunction = (args: Info) => boolean;
+
+export type CustomValidator = { func: ValidatorFunction; customArgs?: Record<string, any> };
+export type CustomTrigger = { func: TriggerFunction; customArgs?: Record<string, any> };
+
+export type Validator = ValidatorFunction | CustomValidator;
+export type Trigger = TriggerFunction | CustomTrigger;
 
 export type Optimizer = (
   dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice | Partial<analyzer.GraphProps>,

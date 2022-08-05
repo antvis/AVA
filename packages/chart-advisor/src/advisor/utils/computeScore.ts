@@ -1,4 +1,5 @@
 import { Info, RuleModule } from '../../ruler';
+import { isCustomTrigger, isCustomValidator } from '../../ruler/utils';
 import { DEFAULT_RULE_WEIGHTS } from '../../constants';
 
 import type { ScoringResultForRule } from '../advice-pipeline/interface';
@@ -15,15 +16,30 @@ const computeScore = (
   // initial score is 1 for HARD rules and 0 for SOFT rules
   let computedScore = ruleType === 'HARD' ? 1 : 0;
   Object.values(ruleBase)
-    .filter((r: RuleModule) => {
+    .filter((r: ChartRuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
-      const extra = r.option?.extra;
-      return r.type === ruleType && r.trigger({ ...info, weight, ...extra }) && !r.option?.off;
+      if (isCustomTrigger(r.trigger)) {
+        const { customArgs } = r.trigger.customArgs;
+        return r.type === ruleType && r.trigger.func({ ...info, weight, ...customArgs }) && !r.option?.off;
+      }
+      return r.type === ruleType && r.trigger({ ...info, weight }) && !r.option?.off;
     })
-    .forEach((r: RuleModule) => {
+    .forEach((r: ChartRuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
-      const extra = r.option?.extra;
-      const base = (r as ChartRuleModule).validator({ ...info, weight, ...extra }) as number;
+      let base: number;
+      if (isCustomValidator(r.validator)) {
+        const { customArgs } = r.validator.customArgs;
+        base = r.validator.func({
+          ...info,
+          weight,
+          ...customArgs,
+        }) as number;
+      } else {
+        base = r.validator({
+          ...info,
+          weight,
+        }) as number;
+      }
       const score = weight * base;
       // scores are multiplied for HARD rules and added for SOFT rules
       if (ruleType === 'HARD') {

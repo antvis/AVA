@@ -1,5 +1,13 @@
 import { Advisor } from '../src/advisor';
-import { builtInRules, RuleConfig, RuleModule, getChartRule } from '../src/ruler';
+import {
+  builtInRules,
+  RuleConfig,
+  RuleModule,
+  getChartRule,
+  ChartRuleModule,
+  CustomTrigger,
+  CustomValidator,
+} from '../src/ruler';
 
 const myRule: RuleModule = {
   id: 'fufu-rule',
@@ -35,17 +43,27 @@ const ruleWithExtra: RuleModule = {
       level: 99,
     },
   },
-  trigger: (args) => {
-    const { chartType, weight } = args;
-    return ['pie_chart'].indexOf(chartType) !== -1 && weight > 0;
+  trigger: {
+    func: (args) => {
+      const { chartType, weight } = args;
+      return ['pie_chart'].indexOf(chartType) !== -1 && weight > 0;
+    },
+    customArgs: {
+      level: 99,
+    },
   },
-  validator: (args) => {
-    let result = 0;
-    const { name, level } = args;
-    if (name === 'ShuShu' && level > 50) {
-      result = 1;
-    }
-    return result;
+  validator: {
+    func: (args) => {
+      let result = 0;
+      const { name, level } = args;
+      if (name === 'ShuShu' && level > 50) {
+        result = 1;
+      }
+      return result;
+    },
+    customArgs: {
+      name: 'ShuShu',
+    },
   },
 };
 
@@ -162,6 +180,10 @@ describe('customized Rule', () => {
     };
     const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
     const { ruleBase } = myAdvisor;
-    expect(ruleBase['shushu-rule'].option?.extra).toHaveProperty(['name'], 'ShuShu');
+    expect((ruleBase['shushu-rule'].trigger as CustomTrigger).customArgs).toHaveProperty(['level'], 99);
+    expect(((ruleBase['shushu-rule'] as ChartRuleModule).validator as CustomValidator).customArgs).toHaveProperty(
+      ['name'],
+      'ShuShu'
+    );
   });
 });

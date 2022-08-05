@@ -1,6 +1,7 @@
 import { hexToColor, colorToHex, paletteGeneration, colorSimulation } from '@antv/smart-color';
 
 import { deepMix, computeScore } from '../utils';
+import { isCustomTrigger } from '../../ruler/utils';
 
 import { getChartTypeSpec } from './spec-mapping';
 
@@ -84,10 +85,12 @@ function applyDesignRules(
   ruleBase: Record<string, RuleModule>,
   chartSpec: Specification
 ) {
-  const toCheckRules = Object.values(ruleBase).filter(
-    (rule: RuleModule) =>
-      rule.type === 'DESIGN' && rule.trigger({ dataProps, chartType }) && !ruleBase[rule.id].option?.off
-  );
+  const toCheckRules = Object.values(ruleBase).filter((rule: RuleModule) => {
+    if (isCustomTrigger(rule.trigger)) {
+      return rule.type === 'DESIGN' && rule.trigger.func({ dataProps, chartType }) && !rule.option?.off;
+    }
+    return rule.type === 'DESIGN' && rule.trigger({ dataProps, chartType }) && !rule.option?.off;
+  });
   const encodingSpec = toCheckRules.reduce((lastSpec, rule: RuleModule) => {
     const relatedSpec = (rule as DesignRuleModule).optimizer(dataProps, chartSpec);
     return deepMix(lastSpec, relatedSpec);

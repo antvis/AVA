@@ -1,7 +1,7 @@
 import { intersects } from '../utils';
 
 import type { LevelOfMeasurement as LOM, DataPrerequisiteJSON } from '@antv/ckb';
-import type { BasicDataPropertyForAdvice } from './interface';
+import type { BasicDataPropertyForAdvice, CustomTrigger, CustomValidator, DesignRuleModule } from './interface';
 
 export function compare(f1: any, f2: any) {
   if (f1.distinct < f2.distinct) {
@@ -35,3 +35,15 @@ export function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: BasicD
 export function isUndefined(value: any) {
   return value === undefined;
 }
+
+export const isDesignRuleModule = (props: any): props is DesignRuleModule => {
+  return props.type === 'DESIGN';
+};
+
+export const isCustomTrigger = (props: any): props is CustomTrigger => {
+  return props.func !== undefined;
+};
+
+export const isCustomValidator = (props: any): props is CustomValidator => {
+  return props.func !== undefined;
+};
