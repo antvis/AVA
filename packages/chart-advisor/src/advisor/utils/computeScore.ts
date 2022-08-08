@@ -19,7 +19,7 @@ const computeScore = (
     .filter((r: ChartRuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
       if (isCustomTrigger(r.trigger)) {
-        const { customArgs } = r.trigger.customArgs;
+        const { customArgs } = r.trigger;
         return r.type === ruleType && r.trigger.func({ ...info, weight, ...customArgs }) && !r.option?.off;
       }
       return r.type === ruleType && r.trigger({ ...info, weight }) && !r.option?.off;
@@ -28,7 +28,7 @@ const computeScore = (
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
       let base: number;
       if (isCustomValidator(r.validator)) {
-        const { customArgs } = r.validator.customArgs;
+        const { customArgs } = r.validator;
         base = r.validator.func({
           ...info,
           weight,

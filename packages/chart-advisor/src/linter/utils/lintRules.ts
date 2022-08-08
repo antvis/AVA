@@ -23,7 +23,7 @@ const lintRules = (
     .filter((r: RuleModule) => {
       const { weight } = r.option || {};
       if (isCustomTrigger(r.trigger)) {
-        const { customArgs } = r.trigger.customArgs;
+        const { customArgs } = r.trigger;
         return judge(r.type) && !r.option?.off && r.trigger.func({ ...info, weight, ...customArgs });
       }
       return judge(r.type) && !r.option?.off && r.trigger({ ...info, weight });
@@ -41,7 +41,7 @@ const lintRules = (
         // no weight for linter's result
         let score: number;
         if (isCustomValidator(r.validator)) {
-          const { customArgs } = r.validator.customArgs;
+          const { customArgs } = r.validator;
           r.validator.func({
             ...info,
             weight,

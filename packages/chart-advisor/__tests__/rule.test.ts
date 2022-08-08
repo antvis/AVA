@@ -1,13 +1,11 @@
 import { Advisor } from '../src/advisor';
-import {
-  builtInRules,
-  RuleConfig,
-  RuleModule,
-  getChartRule,
-  ChartRuleModule,
-  CustomTrigger,
-  CustomValidator,
-} from '../src/ruler';
+import { builtInRules, RuleConfig, RuleModule, getChartRule, CustomTrigger } from '../src/ruler';
+
+const toyData = [
+  { name: 'Alice', age: 19 },
+  { name: 'Becky', age: 18 },
+  { name: 'Cathy', age: 24 },
+];
 
 const myRule: RuleModule = {
   id: 'fufu-rule',
@@ -29,41 +27,33 @@ const myRule: RuleModule = {
   },
 };
 
-const ruleWithExtra: RuleModule = {
-  id: 'shushu-rule',
-  type: 'SOFT',
+const myRule2: RuleModule = {
+  id: 'check-blocked-users',
+  type: 'HARD',
   docs: {
-    lintText: 'listen to shushu',
+    lintText: 'No chart recommendation for blocked users.',
   },
   option: {
     off: false,
-    weight: 0.5,
-    extra: {
-      name: 'ShuShu',
-      level: 99,
-    },
   },
   trigger: {
     func: (args) => {
-      const { chartType, weight } = args;
-      return ['pie_chart'].indexOf(chartType) !== -1 && weight > 0;
+      // if the user is blocked, trigger the rule
+      const { userId, checkUserPermission } = args;
+      return checkUserPermission(userId);
     },
     customArgs: {
-      level: 99,
+      userId: '001',
+      checkUserPermission: (userId) => {
+        // suppose here we query for the permission of the user
+        const blocked = userId === '001';
+        return blocked;
+      },
     },
   },
-  validator: {
-    func: (args) => {
-      let result = 0;
-      const { name, level } = args;
-      if (name === 'ShuShu' && level > 50) {
-        result = 1;
-      }
-      return result;
-    },
-    customArgs: {
-      name: 'ShuShu',
-    },
+  validator: () => {
+    // never recommend for blocked users
+    return 0;
   },
 };
 
@@ -172,18 +162,18 @@ describe('customized Rule', () => {
     expect(ruleBase?.['data-check']?.option?.off).toBe(true);
   });
 
-  test('customized rule with option and extra', () => {
+  test('customized trigger and validator', () => {
     const myRuleCfg: RuleConfig = {
       custom: {
-        'shushu-rule': ruleWithExtra,
+        'check-user-permission': myRule2,
       },
     };
     const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
     const { ruleBase } = myAdvisor;
-    expect((ruleBase['shushu-rule'].trigger as CustomTrigger).customArgs).toHaveProperty(['level'], 99);
-    expect(((ruleBase['shushu-rule'] as ChartRuleModule).validator as CustomValidator).customArgs).toHaveProperty(
-      ['name'],
-      'ShuShu'
-    );
+    const results = myAdvisor.advise({ data: toyData });
+    // check if trigger has customArgs
+    expect((ruleBase['check-user-permission'].trigger as CustomTrigger).customArgs).toHaveProperty(['userId'], '001');
+    // check if the recommendation result is as expected
+    expect(results.length).toBe(0);
   });
 });
