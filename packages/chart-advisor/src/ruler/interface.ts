@@ -78,9 +78,13 @@ export interface ChartRuleConfig {
    */
   off?: boolean;
   /**
-   * user customized parameters of Validator
+   * user customized arguments of Trigger
    */
-  extra?: Record<string, any>;
+  customTriggerArgs?: Record<string, any>;
+  /**
+   * user customized arguments of Validator
+   */
+  customValidatorArgs?: Record<string, any>;
 }
 
 /**

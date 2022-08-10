@@ -13,7 +13,7 @@ const toyData = [
 ];
 
 // custom rule
-const ruleWithExtra = {
+const myRule = {
   id: 'check-blocked-users',
   type: 'HARD',
   docs: {
@@ -21,30 +21,33 @@ const ruleWithExtra = {
   },
   option: {
     off: false,
-    extra: {
+    customTriggerArgs: {
       userId: '001',
-      userPermission: (userId) => {
-        // suppose here we query for the permission of the user
-        const blocked = userId === '001';
-        return blocked;
+      checkUserPermission: (userId) => {
+        // suppose here we query and find user 001 is blocked
+        return userId === '001';
       },
+    },
+    customValidatorArgs: {
+      scoreForBlockedUser: 0,
     },
   },
   trigger: (args) => {
     // if the user is blocked, trigger the rule
-    const { userId, userPermission } = args;
-    return userPermission(userId);
+    const { userId, checkUserPermission } = args.customTriggerArgs;
+    return checkUserPermission(userId);
   },
   validator: (args) => {
     // never recommend for blocked users
-    return 0;
+    const { scoreForBlockedUser } = args.customValidatorArgs;
+    return scoreForBlockedUser;
   },
 };
 
 // custom rule Config
 const myRuleCfg = {
   custom: {
-    'check-blocked-users': ruleWithExtra,
+    'check-blocked-users': myRule,
   },
 };
 
@@ -63,12 +66,13 @@ const App = () => {
 
   const ruleContent = (
     <>
-      You can further customize your rules by setting <b>extra</b> in ruleConfig. Whatever within <b>extra</b> will
-      become your customized parameters in <b>trigger</b> and <b>validator</b> function.
+      You can further customize your rule by passing custom arguments to <b>validator</b> and <b>trigger</b>. To do
+      this, you can set <b>customTriggerArgs</b> and <b>customValidatorArgs</b> under the <b>option</b> field.
       <br />
       <br />
-      Here suppose we need to check for a user's permission before recommendation. We add a custom rule to check if a
-      user is blocked or not. For a blocked user, ChartAdvisor always recommend nothing.
+      Here suppose we need to check for a user's permission before recommendation. We add a rule with custom validator
+      and trigger arguments to check if a user is blocked or not. For a blocked user, ChartAdvisor always recommend
+      nothing.
       <br />
       <br />
       const myRuleCfg =

@@ -1,6 +1,12 @@
 import { Advisor } from '../src/advisor';
 import { builtInRules, RuleConfig, RuleModule, getChartRule } from '../src/ruler';
 
+const toyData = [
+  { name: 'Alice', age: 19 },
+  { name: 'Becky', age: 18 },
+  { name: 'Cathy', age: 24 },
+];
+
 const myRule: RuleModule = {
   id: 'fufu-rule',
   type: 'HARD',
@@ -21,31 +27,34 @@ const myRule: RuleModule = {
   },
 };
 
-const ruleWithExtra: RuleModule = {
-  id: 'shushu-rule',
-  type: 'SOFT',
+const myRule2: RuleModule = {
+  id: 'check-blocked-users',
+  type: 'HARD',
   docs: {
-    lintText: 'listen to shushu',
+    lintText: 'No chart recommendation for blocked users.',
   },
   option: {
     off: false,
-    weight: 0.5,
-    extra: {
-      name: 'ShuShu',
-      level: 99,
+    customTriggerArgs: {
+      userId: '001',
+      checkUserPermission: (userId) => {
+        // suppose here we query and find user 001 is blocked
+        return userId === '001';
+      },
+    },
+    customValidatorArgs: {
+      scoreForBlockedUser: 0,
     },
   },
   trigger: (args) => {
-    const { chartType, weight } = args;
-    return ['pie_chart'].indexOf(chartType) !== -1 && weight > 0;
+    // if the user is blocked, trigger the rule
+    const { userId, checkUserPermission } = args.customTriggerArgs;
+    return checkUserPermission(userId);
   },
   validator: (args) => {
-    let result = 0;
-    const { name, level } = args;
-    if (name === 'ShuShu' && level > 50) {
-      result = 1;
-    }
-    return result;
+    const { scoreForBlockedUser } = args.customValidatorArgs;
+    // never recommend for blocked users
+    return scoreForBlockedUser;
   },
 };
 
@@ -154,14 +163,20 @@ describe('customized Rule', () => {
     expect(ruleBase?.['data-check']?.option?.off).toBe(true);
   });
 
-  test('customized rule with option and extra', () => {
+  test('customized trigger and validator', () => {
     const myRuleCfg: RuleConfig = {
       custom: {
-        'shushu-rule': ruleWithExtra,
+        'check-blocked-users': myRule2,
       },
     };
     const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
     const { ruleBase } = myAdvisor;
-    expect(ruleBase['shushu-rule'].option?.extra).toHaveProperty(['name'], 'ShuShu');
+    const result = myAdvisor.advise({ data: toyData });
+    // check if customTriggerArgs works
+    expect(ruleBase['check-blocked-users'].option?.customTriggerArgs).toHaveProperty(['userId'], '001');
+    // check if customValidatorArgs works
+    expect(ruleBase['check-blocked-users'].option?.customValidatorArgs).toHaveProperty(['scoreForBlockedUser'], 0);
+    // check if the rule works as expected
+    expect(result.length).toBe(0);
   });
 });

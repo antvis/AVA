@@ -183,16 +183,19 @@ const ChartDesignRuleID = ['x-axis-line-fading'];
 interface ChartRuleConfig {
   weight?: number;
   off?: boolean;
-  extra?: Record<string, any>;
+  customTriggerArgs?: Record<string, any>;
+  customValidatorArgs?: Record<string, any>;
 }
 ```
 
 * **参数配置** *
 
-| 属性   | 类型      | 描述                 | 默认值    |
-| ------ | --------- | -------------------- | --------- |
-| weight | `number`  | 自定义规则权重。     | 无 `可选` |
-| off    | `boolean` | 是否默认忽视该规则。 | 无 `可选` |
+| 属性               | 类型                   | 描述                 | 默认值    |
+| ------------------ | --------------------- | ------------------- | -------- |
+| weight             | `number`              | 自定义规则权重。       | 无 `可选` |
+| off                | `boolean`             | 是否默认忽视该规则。    | 无 `可选` |
+| customTriggerArgs  | `Record<string, any>` | Trigger的自定义入参。  | 无 `可选` |
+| customValidatorArgs| `Record<string, any>` | Validator的自定义入参。| 无 `可选` |
 
 ## ChartRuleConfigMap
 

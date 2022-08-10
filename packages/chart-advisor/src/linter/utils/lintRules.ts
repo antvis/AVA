@@ -21,8 +21,8 @@ const lintRules = (
 
   Object.values(ruleBase)
     .filter((r: RuleModule) => {
-      const { weight, extra } = r.option || {};
-      return judge(r.type) && !r.option?.off && r.trigger({ ...info, weight, ...extra });
+      const { weight, customTriggerArgs } = r.option || {};
+      return judge(r.type) && !r.option?.off && r.trigger({ ...info, weight, customTriggerArgs });
     })
     .forEach((r: RuleModule) => {
       const { type, id, docs } = r;
@@ -33,9 +33,9 @@ const lintRules = (
         const score = Object.keys(fix).length === 0 ? 1 : 0;
         lints.push({ type, id, score, fix, docs });
       } else {
-        const { weight, extra } = r.option || {};
+        const { weight, customValidatorArgs } = r.option || {};
         // no weight for linter's result
-        const score = (r as ChartRuleModule).validator({ ...info, weight, ...extra }) as number;
+        const score = (r as ChartRuleModule).validator({ ...info, weight, customValidatorArgs }) as number;
         lints.push({ type, id, score, docs });
       }
       log.push({ phase: 'LINT', ruleId: id, score, base: score, weight: 1, ruleType: type });

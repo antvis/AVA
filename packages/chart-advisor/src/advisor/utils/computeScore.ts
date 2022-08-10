@@ -17,13 +17,13 @@ const computeScore = (
   Object.values(ruleBase)
     .filter((r: RuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
-      const extra = r.option?.extra;
-      return r.type === ruleType && r.trigger({ ...info, weight, ...extra }) && !r.option?.off;
+      const { customTriggerArgs } = r.option || {};
+      return r.type === ruleType && !r.option?.off && r.trigger({ ...info, weight, customTriggerArgs });
     })
     .forEach((r: RuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
-      const extra = r.option?.extra;
-      const base = (r as ChartRuleModule).validator({ ...info, weight, ...extra }) as number;
+      const { customValidatorArgs } = r.option || {};
+      const base = (r as ChartRuleModule).validator({ ...info, weight, customValidatorArgs }) as number;
       const score = weight * base;
       // scores are multiplied for HARD rules and added for SOFT rules
       if (ruleType === 'HARD') {

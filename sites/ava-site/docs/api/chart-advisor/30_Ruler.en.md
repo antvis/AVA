@@ -187,16 +187,19 @@ const ChartDesignRuleID = ['x-axis-line-fading'];
 interface ChartRuleConfig {
   weight?: number;
   off?: boolean;
-  extra?: Record<string, any>;
+  customTriggerArgs?: Record<string, any>;
+  customValidatorArgs?: Record<string, any>;
 }
 ```
 
 * **Parameters** *
 
-| Properties | Type      | Description                            | Default         |
-| ---------- | --------- | -------------------------------------- | --------------- |
-| weight     | `number`  | Customized weight.                     | None `Optional` |
-| off        | `boolean` | Whether to ignore the rule by default. | None `Optional` |
+| Properties         | Type                  | Description                            | Default         |
+| ------------------ | --------------------- | -------------------------------------- | --------------- |
+| weight             | `number`              | Customized weight.                     | None `Optional` |
+| off                | `boolean`             | Whether to ignore the rule by default. | None `Optional` |
+| customTriggerArgs  | `Record<string, any>` | Customized arguments of Trigger.       | None `Optional` |
+| customValidatorArgs| `Record<string, any>` | Customized arguments of Validator.     | None `Optional` |
 
 ## ChartRuleConfigMap
 
