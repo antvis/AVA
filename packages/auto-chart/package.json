@@ -28,10 +28,9 @@
     "format": "npm run prettier-fix && npm run lint-fix",
     "build:esm": "rimraf esm && FORMAT=esm rollup -c",
     "build:cjs": "rimraf lib && FORMAT=cjs rollup -c",
-    "build:umd": "rimraf dist && FORMAT=umd rollup -c && npm run size",
+    "build:umd": "rimraf dist && FORMAT=umd rollup -c",
     "build": "run-p build:*",
     "analysis": "rimraf dist stats.html && rollup -c rollup.config.js --environment FORMAT:umd,ANALYSIS",
-    "size": "limit-size",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "peerDependencies": {
@@ -62,7 +61,6 @@
     "autoprefixer": "^10.4.0",
     "eslint": "^7.32.0",
     "less": "^4.1.1",
-    "limit-size": "^0.1.4",
     "moment": "^2.29.1",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.3.11",
@@ -88,17 +86,6 @@
       "prettier --write"
     ]
   },
-  "limit-size": [
-    {
-      "path": "dist/index.min.js",
-      "limit": "1.2 Mb",
-      "gzip": true
-    },
-    {
-      "path": "dist/index.min.js",
-      "limit": "4.2 Mb"
-    }
-  ],
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/chart-advisor": "^2.0.4-beta.0",

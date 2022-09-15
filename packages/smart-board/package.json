@@ -31,9 +31,8 @@
     "prettier-fix": "npm run prettier -- --write",
     "format": "npm run prettier-fix && npm run lint-fix",
     "lint-staged": "lint-staged",
-    "size": "limit-size",
     "clean": "rimraf lib esm dist",
-    "build:umd": "rimraf ./dist && rollup -c && npm run size",
+    "build:umd": "rimraf ./dist && rollup -c",
     "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
     "build:esm": "rimraf ./esm && tsc --module es6 --outDir esm",
     "build": "run-p build:*",
@@ -53,7 +52,6 @@
     "@types/uuid": "^8.3.1",
     "eslint": "^7.32.0",
     "jest": "^24.9.0",
-    "limit-size": "^0.1.4",
     "lint-staged": "^11.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
@@ -82,16 +80,5 @@
       "eslint --fix",
       "prettier --write"
     ]
-  },
-  "limit-size": [
-    {
-      "path": "dist/index.min.js",
-      "limit": "1024 Kb",
-      "gzip": true
-    },
-    {
-      "path": "dist/index.min.js",
-      "limit": "4 Mb"
-    }
-  ]
+  }
 }
