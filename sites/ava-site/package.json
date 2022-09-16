@@ -36,6 +36,7 @@
     "@antv/smart-color": "^0.2.1",
     "@antv/thumbnails": "^2.0.0",
     "@antv/thumbnails-component": "^2.0.0",
+    "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "antd": "^4.4.0",
     "antv-site-demo-rc": "^0.1.0-alpha.22",
     "classnames": "^2.3.1",
@@ -48,7 +49,7 @@
     "react-i18next": "^11.7.3",
     "react-json-view": "^1.19.1",
     "react-vega": "^7.4.3",
-    "tslib": "2.2.0",
+    "tslib": "^2.2.0",
     "vega": "^5.15.0",
     "vega-lite": "^4.15.0"
   },
@@ -56,10 +57,9 @@
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "cross-env": "^7.0.2",
-    "increase-memory-limit": "^1.0.7",
     "gatsby": "^2.15.34",
     "gh-pages": "^3.1.0",
-    "tslib": "^2.2.0",
+    "increase-memory-limit": "^1.0.7",
     "typescript": "^4.4.2"
   }
 }

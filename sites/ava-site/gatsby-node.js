@@ -7,5 +7,13 @@ exports.onCreateWebpackConfig = ({ actions }) => {
       },
     },
     node: { fs: 'empty', child_process: 'empty' },
+    module: {
+      rules: [
+        {
+          test: /\.js$/,
+          loader: require.resolve('@open-wc/webpack-import-meta-loader'),
+        },
+      ],
+    },
   });
 };
