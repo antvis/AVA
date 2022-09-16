@@ -92,3 +92,21 @@ export const convertDataType = (data: any, type: Extra['columnTypes'][number]) =
   }
   return data;
 };
+
+export const mergeNonIntervalValue = (row: any[], nonIntervalColumn: number[]) => {
+  let key = '';
+  for (let i = 0; i < nonIntervalColumn.length; i += 1) {
+    key += row[nonIntervalColumn[i]];
+  }
+  return key;
+};
+
+/** merge two rows with same non-interval column values */
+export const merge2Rows = (data: any[][], a: number, b: number, intervalColumn: number[]) => {
+  const newData = data;
+  for (let i = 0; i < intervalColumn.length; i += 1) {
+    const columnIndex = intervalColumn[i];
+    newData[a][columnIndex] += newData[b][columnIndex];
+  }
+  newData.splice(b, 1);
+};

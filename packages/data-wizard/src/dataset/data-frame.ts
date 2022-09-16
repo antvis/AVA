@@ -11,6 +11,8 @@ import {
   stringify,
   getStringifyLength,
   convertDataType,
+  merge2Rows,
+  mergeNonIntervalValue,
 } from './utils';
 
 import type { FrameData, Axis, Extra, FieldsInfo } from './types';
@@ -662,5 +664,34 @@ export default class DataFrame extends BaseFrame {
             .join('')}${idxIndex !== this.indexes.length ? '\n' : ''}`
       )
       .join('')}`;
+  }
+
+  /** Aggregate dataset with duplicated lines
+   * @param
+   */
+  deduplicate() {
+    const info = this.info();
+
+    const nonIntervalColumn = [];
+    const intervalColumn = [];
+    for (let i = 0; i < info.length; i += 1) {
+      if (info[i].levelOfMeasurements.includes('Interval')) {
+        intervalColumn.push(i);
+      } else {
+        nonIntervalColumn.push(i);
+      }
+    }
+
+    const map = {};
+    for (let i = 0; i < this.data.length; i += 1) {
+      const key = mergeNonIntervalValue(this.data[i], nonIntervalColumn);
+      if (Object.keys(map).includes(key)) {
+        merge2Rows(this.data, map[key], i, intervalColumn);
+        i -= 1;
+      } else {
+        map[key] = i;
+      }
+    }
+    return this;
   }
 }
