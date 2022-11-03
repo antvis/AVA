@@ -1,0 +1,1 @@
+// export { getInsights } from './getInsights';
