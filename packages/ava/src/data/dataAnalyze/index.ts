@@ -1,0 +1,1 @@
+// export { dataAnalyze } from './dataAnalyze';
