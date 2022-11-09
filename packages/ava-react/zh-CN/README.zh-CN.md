@@ -1,4 +1,4 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18" alt="language icon" /> English | [简体中文](./zh-CN/README.zh-CN.md)
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18" alt="语言icon" /> 简体中文 | [English](../README.md)
 
 
 <h1 align="center">
@@ -7,16 +7,16 @@
 
 <div align="center">
 
-React components of AVA.
+AVA 的 React 组件库
 
 [![MIT License](https://img.shields.io/github/license/antvis/ava)](/LICENSE) [![Language](https://img.shields.io/badge/language-typescript-blue.svg)](https://www.typescriptlang.org) [![NPM Package](https://img.shields.io/npm/v/@antv/ava-react.svg)](https://www.npmjs.com/package/@antv/ava-react) [![NPM Downloads](http://img.shields.io/npm/dm/@antv/ava-react.svg)](https://www.npmjs.com/package/@antv/ava-react) 
 
 </div>
 
-## Components
+## 组件
 - NarrativeTextVis
 
-## Installation
+## 安装
 
 ```shell
 # npm
@@ -26,14 +26,12 @@ $ npm install @antv/ava-react --save
 $ yarn add @antv/ava-react
 ```
 
-## Usage
+## 用法
 
 ```ts
 import { NarrativeTextVis } from '@antv/ava-react';
 ```
 
-## Contributing
+## 贡献
 
-Pull requests and stars are highly welcome.
-
-For bugs and feature requests, please [create an issue](https://github.com/antvis/ava/issues/new).
+欢迎提交代码和 star。对于缺陷和功能需求可以通过 [issue](https://github.com/antvis/ava/issues/new) 来提出。
