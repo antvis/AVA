@@ -40,6 +40,7 @@
     "build:umd": "rimraf ./dist && rollup -c",
     "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
     "build:esm": "rimraf ./esm && tsc --module es6 --outDir esm",
+    "build:ntv-schema": "mkdir -p build && ts-json-schema-generator -f tsconfig.json -p src/text/index.ts -t NarrativeTextSpec --no-type-check --no-ref-encode > build/ntv-schema.json",
     "build": "run-p build:*",
     "test": "jest",
     "coverage": "jest --coverage",
@@ -52,6 +53,7 @@
     ]
   },
   "dependencies": {
+    "@types/react": "^18.0.25",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
@@ -63,6 +65,7 @@
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.59.0",
+    "ts-json-schema-generator": "^1.1.2",
     "typescript": "4.3.5"
   }
 }
