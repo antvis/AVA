@@ -11,13 +11,11 @@
   "homepage": "https://ava.antv.vision",
   "license": "MIT",
   "scripts": {
-    "start": "npm run clean && npm run develop",
-    "develop": "cross-env PORT=8880 gatsby develop --open",
-    "build": "npm run clean && node --max_old_space_size=8192 node_modules/.bin/gatsby build --prefix-paths",
+    "start": "npm run develop",
+    "develop": "dumi dev",
+    "build": "dumi build",
     "deploy": "npm run copy-mirror-action && gh-pages -d public",
     "copy-mirror-action": "mkdir -p public/.github/workflows && cp ../../.github/workflows/mirror.yml public/.github/workflows",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean",
     "fix-memory-limit": "cross-env LIMIT=8192 increase-memory-limit"
   },
   "resolutions": {
@@ -54,9 +52,11 @@
     "vega-lite": "^4.15.0"
   },
   "devDependencies": {
+    "@antv/dumi-theme-antv": "^0.3.0-beta.3",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "cross-env": "^7.0.2",
+    "dumi": "^2.0.0-beta.11",
     "gatsby": "^2.15.34",
     "gh-pages": "^3.1.0",
     "increase-memory-limit": "^1.0.7",
