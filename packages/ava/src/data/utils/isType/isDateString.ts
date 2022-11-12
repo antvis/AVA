@@ -1,4 +1,4 @@
-/**
+/*
  * Check whether the string is a date.
  */
 
