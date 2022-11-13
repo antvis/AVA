@@ -1,6 +1,11 @@
-import { TranslateList } from './interface';
+import type { CkbDictionary } from './types';
 
-export const zhCN: TranslateList = {
+/**
+ * Translate list of Chinese.
+ * ---
+ * 中文翻译表
+ */
+export const zhCN: CkbDictionary = {
   concepts: {
     family: {
       LineCharts: '折线图类',
