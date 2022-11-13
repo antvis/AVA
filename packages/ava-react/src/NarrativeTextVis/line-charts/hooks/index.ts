@@ -1,0 +1,1 @@
+export { useSvgWrapper } from './useSvgWrapper';

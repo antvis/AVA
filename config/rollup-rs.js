@@ -4,7 +4,7 @@ import typescript from '@rollup/plugin-typescript';
 import json from '@rollup/plugin-json';
 import { terser } from 'rollup-plugin-terser';
 
-export default (type, options, explugins = []) => {
+export default (options, explugins = []) => {
   const configs = {
     input: options.input,
     output: {
@@ -15,10 +15,6 @@ export default (type, options, explugins = []) => {
     },
     plugins: [resolve(), commonjs(), typescript(), terser(), json(), ...explugins],
   };
-
-  if (type === 'react') {
-    configs.external = ['react', 'react-dom', '@antv/g2plot'];
-  }
 
   return configs;
 };

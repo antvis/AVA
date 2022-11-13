@@ -1,6 +1,6 @@
-import rollupConfig from '../../rollup.config';
+import rollupTsConfig from '../../config/rollup-rs';
 
-export default rollupConfig('ts', {
+export default rollupTsConfig({
   input: './src/index.ts',
   output: {
     name: 'AVA',
