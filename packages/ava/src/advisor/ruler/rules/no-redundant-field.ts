@@ -1,0 +1,42 @@
+import { ckb } from '../../../ckb';
+
+import type { RuleModule } from '../interface';
+
+const Wiki = ckb();
+const allChartTypes = Object.keys(Wiki);
+
+export const noRedundantField: RuleModule = {
+  id: 'no-redundant-field',
+  type: 'HARD',
+  docs: {
+    lintText: 'No redundant field.',
+  },
+  trigger: ({ chartType }) => {
+    return allChartTypes.includes(chartType);
+  },
+  validator: (args): number => {
+    let result = 0;
+    const { dataProps, chartType } = args;
+
+    if (dataProps && chartType && Wiki[chartType]) {
+      const dataPres = Wiki[chartType].dataPres || [];
+      const maxFieldQty = dataPres
+        .map((e: any) => {
+          if (e.maxQty === '*') {
+            return 99;
+          }
+          return e.maxQty;
+        })
+        .reduce((acc: number, cv: number) => acc + cv);
+
+      if (dataProps.length) {
+        const fieldQty = dataProps.length;
+        if (fieldQty <= maxFieldQty) {
+          result = 1;
+        }
+      }
+    }
+
+    return result;
+  },
+};

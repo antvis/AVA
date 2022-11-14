@@ -1,0 +1,33 @@
+import { ckb } from '../../../ckb';
+import { verifyDataProps } from '../utils';
+
+import type { RuleModule, BasicDataPropertyForAdvice } from '../interface';
+
+const Wiki = ckb();
+const allChartTypes = Object.keys(Wiki) as string[];
+export const dataCheck: RuleModule = {
+  id: 'data-check',
+  type: 'HARD',
+  docs: {
+    lintText: 'Data must satisfy the data prerequisites.',
+  },
+  trigger: ({ chartType }) => {
+    return allChartTypes.includes(chartType);
+  },
+  validator: (args): number => {
+    let result = 0;
+    const { dataProps, chartType } = args;
+
+    if (dataProps && chartType && Wiki[chartType]) {
+      result = 1;
+      const dataPres = Wiki[chartType].dataPres || [];
+      dataPres.forEach((dataPre) => {
+        if (!verifyDataProps(dataPre, dataProps as BasicDataPropertyForAdvice[])) {
+          result = 0;
+        }
+        return true;
+      });
+    }
+    return result;
+  },
+};
