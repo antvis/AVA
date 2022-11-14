@@ -1,4 +1,4 @@
-import { unique, range, assert, isParentChild } from '../../../data/utils/common';
+import { unique, range, assert, isParentChild } from '../../../src/data/utils/common';
 
 test('unique', () => {
   const data = [1, 2, 3, 3, 2, 1];
