@@ -9,7 +9,7 @@ import {
   isNumber,
   isObject,
   isString,
-} from '../../../../data/utils/isType';
+} from '../../../../src/data/utils';
 
 test('isNull', () => {
   const data = 'null';
