@@ -1,9 +1,20 @@
 // CKB
 export {
+  /* APIs */
   ckb, // the main CKB API
   ckbDict, // translate
-  CkbConsts, // namespace of constants
+  /* Types */
   CkbTypes, // namespace of types
+  /* Constants */
+  CHANNELS,
+  CHART_IDS,
+  COORDINATE_SYSTEMS,
+  FAMILIES,
+  GRAPHIC_CATEGORIES,
+  LEVEL_OF_MEASUREMENTS,
+  PURPOSES,
+  RECOMMEND_RATINGS,
+  SHAPES,
 } from './ckb';
 
 // NTV(Narrative Text Vis)
