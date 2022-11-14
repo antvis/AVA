@@ -1,2 +1,2 @@
-// export { dataAnalyze } from './dataAnalyze';
-// export { dataset } from './dataset';
+export * from './dataAnalysis';
+export * as DataTypes from './types';

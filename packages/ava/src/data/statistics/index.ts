@@ -251,9 +251,9 @@ export function missing(value: unknown[]): number {
  * Calculate the counts of each distinct value in the array.
  * @param value - The array to process
  */
-export function valueMap(value: (string | number)[]): Record<string, number> {
+export function valueMap(value: unknown[]): Record<string, number> {
   const data: Record<string | number, number> = {};
-  value.forEach((v) => {
+  value.forEach((v: string | number) => {
     if (data[v]) data[v] += 1;
     else data[v] = 1;
   });
@@ -264,6 +264,6 @@ export function valueMap(value: (string | number)[]): Record<string, number> {
  * Calculate the counts of distinct value in the array.
  * @param value - The array to process
  */
-export function distinct(value: (string | number)[]): number {
+export function distinct(value: unknown[]): number {
   return Object.keys(valueMap(value)).length;
 }

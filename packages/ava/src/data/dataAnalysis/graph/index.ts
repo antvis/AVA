@@ -1,11 +1,14 @@
-import * as AlgorithmSync from '@antv/algorithm';
+// import * as AlgorithmSync from '@antv/algorithm';
 
-import { NodeData, LinkData } from '../dataset/types';
+import { analyzeField } from '../field';
 
-import { FieldInfo, GraphFeat, NodeStructFeat, LinkStructFeat, analyzeField } from './index';
+// TODO: Fix path
+import type { NodeData, LinkData } from '../dataset/types';
+import type { FieldInfo } from '../field/types';
+import type { GraphFeat, NodeStructFeat, LinkStructFeat } from './types';
 
 const GraphAlgorithms = {
-  ...AlgorithmSync,
+  // ...AlgorithmSync,
 };
 
 function generateColDataFromArray(arr: any[], columnNames: string[]) {
