@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@types/react": "^18.0.25",
+    "@antv/antv-spec": "^0.1.0-alpha.18",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
