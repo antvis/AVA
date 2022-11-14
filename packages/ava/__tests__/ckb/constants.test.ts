@@ -1,8 +1,18 @@
-import { CkbConsts } from '../../src/ckb';
+import {
+  CHANNELS,
+  CHART_IDS,
+  COORDINATE_SYSTEMS,
+  FAMILIES,
+  GRAPHIC_CATEGORIES,
+  LEVEL_OF_MEASUREMENTS,
+  PURPOSES,
+  RECOMMEND_RATINGS,
+  SHAPES,
+} from '../../src/ckb';
 
 describe('CKB Constants', () => {
   test('CkbConsts namespace', () => {
-    expect(CkbConsts.CHART_IDS).toEqual([
+    expect(CHART_IDS).toEqual([
       'line_chart',
       'step_line_chart',
       'area_chart',
@@ -85,7 +95,7 @@ describe('CKB Constants', () => {
       'table',
     ]);
 
-    expect(CkbConsts.FAMILIES).toEqual([
+    expect(FAMILIES).toEqual([
       'LineCharts',
       'ColumnCharts',
       'BarCharts',
@@ -105,7 +115,7 @@ describe('CKB Constants', () => {
       'Others',
     ]);
 
-    expect(CkbConsts.PURPOSES).toEqual([
+    expect(PURPOSES).toEqual([
       'Comparison',
       'Trend',
       'Distribution',
@@ -120,7 +130,7 @@ describe('CKB Constants', () => {
       'Value',
     ]);
 
-    expect(CkbConsts.COORDINATE_SYSTEMS).toEqual([
+    expect(COORDINATE_SYSTEMS).toEqual([
       'NumberLine',
       'Cartesian2D',
       'SymmetricCartesian',
@@ -132,9 +142,9 @@ describe('CKB Constants', () => {
       'Other',
     ]);
 
-    expect(CkbConsts.GRAPHIC_CATEGORIES).toEqual(['Statistic', 'Diagram', 'Graph', 'Map', 'Other']);
+    expect(GRAPHIC_CATEGORIES).toEqual(['Statistic', 'Diagram', 'Graph', 'Map', 'Other']);
 
-    expect(CkbConsts.SHAPES).toEqual([
+    expect(SHAPES).toEqual([
       'Lines',
       'Bars',
       'Round',
@@ -147,16 +157,9 @@ describe('CKB Constants', () => {
       'Other',
     ]);
 
-    expect(CkbConsts.LEVEL_OF_MEASUREMENTS).toEqual([
-      'Nominal',
-      'Ordinal',
-      'Interval',
-      'Discrete',
-      'Continuous',
-      'Time',
-    ]);
+    expect(LEVEL_OF_MEASUREMENTS).toEqual(['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Continuous', 'Time']);
 
-    expect(CkbConsts.CHANNELS).toEqual([
+    expect(CHANNELS).toEqual([
       'Position',
       'Length',
       'Color',
@@ -171,6 +174,6 @@ describe('CKB Constants', () => {
       'Lightness',
     ]);
 
-    expect(CkbConsts.RECOMMEND_RATINGS).toEqual(['Recommended', 'Use with Caution', 'Not Recommended']);
+    expect(RECOMMEND_RATINGS).toEqual(['Recommended', 'Use with Caution', 'Not Recommended']);
   });
 });
