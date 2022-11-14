@@ -1,8 +1,8 @@
-import { LOM_OPTIONS } from './interface';
+import { LEVEL_OF_MEASUREMENTS } from './constants';
 
-import type { ChartKnowledgeBase } from './interface';
+import type { PureChartKnowledgeBase } from './types';
 
-export const base: ChartKnowledgeBase = {
+export const base: PureChartKnowledgeBase = {
   line_chart: {
     id: 'line_chart',
     name: 'Line Chart',
@@ -1300,7 +1300,7 @@ export const base: ChartKnowledgeBase = {
     coord: ['Other'],
     category: ['Other'],
     shape: ['Other'],
-    dataPres: [{ minQty: 0, maxQty: '*', fieldConditions: [...LOM_OPTIONS] }],
+    dataPres: [{ minQty: 0, maxQty: '*', fieldConditions: [...LEVEL_OF_MEASUREMENTS] }],
     channel: [],
     recRate: 'Recommended',
   },
