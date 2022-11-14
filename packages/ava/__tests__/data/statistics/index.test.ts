@@ -19,7 +19,7 @@ import {
   covariance,
   pearson,
   coefficientOfVariance,
-} from '../../../data/statistics';
+} from '../../../src/data/statistics';
 
 test('statistics', () => {
   const data1 = ['张三', '李四', '王五'];
