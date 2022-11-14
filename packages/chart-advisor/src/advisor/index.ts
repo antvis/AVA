@@ -243,6 +243,7 @@ export class Advisor {
    * processing ckb config and setup ckb used for advising
    * @param ckbCfg input ckb configuration
    * @returns ckb: Record<string, ChartKnowledgeJSON>
+   * @todo 已经搬迁到 ckb
    */
   private processCKBCfg(ckbCfg: CKBConfig) {
     // step 1: exclude charts from default CKB
