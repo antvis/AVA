@@ -2,6 +2,7 @@ import type { ChartKnowledgeJSON } from '@antv/ckb';
 import type { BasicDataPropertyForAdvice } from '../ruler';
 import type { DataRows, Specification } from '../types';
 
+// TODO： 已经在 ckb 里了，合适时机删除
 export type CKBConfig = {
   /**
    * charts to exclude in the default CKB from @antv/ckb
