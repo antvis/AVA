@@ -22,7 +22,7 @@ export interface FieldInfo {
   type: TypeSpecifics | 'mixed'; // float integer bool date null string mixed
   /** recommendation type */
   recommendation: TypeSpecifics;
-  /** number of empty inclues null undefined or empty string */
+  /** number of empty includes null undefined or empty string */
   missing?: number;
   /** distinct count */
   distinct?: number;

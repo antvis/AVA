@@ -2,7 +2,7 @@
  * Statistical methods used internally by ava.
  */
 
-import { assert } from '../utils';
+import { assert, isNumber, isString } from '../utils';
 
 import * as cache from './caches';
 
@@ -12,9 +12,7 @@ import * as cache from './caches';
  */
 export function min(value: number[]): number {
   const cachedValue = cache.get<number>(value, 'min');
-  if (cachedValue !== undefined) {
-    return cachedValue;
-  }
+  if (cachedValue !== undefined) return cachedValue;
   return cache.set(value, 'min', Math.min(...value));
 }
 
@@ -253,9 +251,11 @@ export function missing(value: unknown[]): number {
  */
 export function valueMap(value: unknown[]): Record<string, number> {
   const data: Record<string | number, number> = {};
-  value.forEach((v: string | number) => {
-    if (data[v]) data[v] += 1;
-    else data[v] = 1;
+  value.forEach((v) => {
+    if (isString(v) || isNumber(v)) {
+      if (data[v]) data[v] += 1;
+      else data[v] = 1;
+    }
   });
   return data;
 }
