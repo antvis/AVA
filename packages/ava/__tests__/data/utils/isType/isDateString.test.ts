@@ -1,4 +1,4 @@
-import { getIsoDatePatterns, getIsoTimePatterns, isDateString } from '../../../../data/utils/isType/isDateString';
+import { getIsoDatePatterns, getIsoTimePatterns, isDateString } from '../../../../src/data/utils/isType/isDateString';
 
 describe('func: isDateString', () => {
   test('check a string is a date', () => {
