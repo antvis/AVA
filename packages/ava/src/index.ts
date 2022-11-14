@@ -17,6 +17,12 @@ export {
   SHAPES,
 } from './ckb';
 
+// data
+export {
+  analyzeField,
+  DataTypes, // namespace of types
+} from './data';
+
 // NTV(Narrative Text Vis)
 export { NtvTypes } from './ntv';
 // for advanced user
