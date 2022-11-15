@@ -3,8 +3,7 @@ title: DataWizard 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 DataWizard 是一个基于 js/ts 的前端数据处理库。在 AVA 的框架中，它被用来理解和处理输入端的数据集。不过，它也可以独立地被用来开发一些数据处理、数学统计、数据模拟之类的功能。

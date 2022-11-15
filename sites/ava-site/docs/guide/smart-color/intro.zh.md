@@ -3,8 +3,7 @@ title: SmartColor 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 SmartColor 是一个 js/ts 的前端颜色处理类库。

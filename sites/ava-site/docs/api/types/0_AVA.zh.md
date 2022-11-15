@@ -3,8 +3,7 @@ title: AVA 底层类型
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 ### Specification
 
 Specification 是指一种声明式的语法，通常基于图形语法，用静态化的对象来描述一个可视化的结构和内容。

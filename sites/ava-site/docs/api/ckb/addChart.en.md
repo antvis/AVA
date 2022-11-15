@@ -3,8 +3,7 @@ title: addChart
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Adds a custom chart to the base.

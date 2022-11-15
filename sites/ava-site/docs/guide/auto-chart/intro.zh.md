@@ -3,8 +3,7 @@ title: AutoChart 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 React 组件。
 

@@ -3,9 +3,7 @@ title: 颜色转换
 order: 6
 ---
 
-`markdown:docs/common/style.md`
-
-
+<embed src='@/docs/common/style.md'></embed>
 
 # 颜色转换
 

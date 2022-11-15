@@ -3,8 +3,7 @@ title: Introduction to SmartBoard
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Generating Dashboard based on input charts and insights。

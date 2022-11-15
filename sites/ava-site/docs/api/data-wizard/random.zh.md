@@ -3,8 +3,7 @@ title: random
 order: 2
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 DataWizard 的数据模拟模块 `random`，提供了非常丰富的模拟数据生成能力。可用于随机生成多种类型的数据，包括基础数据、文本数据、日期时间数据、颜色数据、Web 数据、位置数据、中文地址数据等。你可以用它来快速开发一些数据模拟或自动填充类的功能。你可以使用下面两种方式使用 `random`。

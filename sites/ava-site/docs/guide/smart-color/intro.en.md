@@ -3,8 +3,7 @@ title: Introduction to SmartColor
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 SmartColor is a js/ts library for color computation.

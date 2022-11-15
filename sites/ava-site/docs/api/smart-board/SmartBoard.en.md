@@ -3,9 +3,7 @@ title: SmartBoard
 order: 1
 ---
 
-`markdown:docs/common/style.md`
-
-
+<embed src='@/docs/common/style.md'></embed>
 
 ```sign
 Class SmartBoard(inputCharts: InputChart[])
