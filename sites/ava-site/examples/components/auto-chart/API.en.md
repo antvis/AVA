@@ -1,3 +1,3 @@
 # AutoChart
 
-`markdown:docs/api/auto-chart/AutoChart.en.md`
+<embed src='@/docs/api/auto-chart/AutoChart.en.md'></embed>

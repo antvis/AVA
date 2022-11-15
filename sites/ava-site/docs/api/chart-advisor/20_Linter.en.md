@@ -3,8 +3,7 @@ title: Linter
 order: 20
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 ```sign

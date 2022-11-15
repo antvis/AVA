@@ -3,8 +3,7 @@ title: 色板优化
 order: 2
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # 色板优化

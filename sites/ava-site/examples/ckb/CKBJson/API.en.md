@@ -1,3 +1,3 @@
 # CKBJson
 
-`markdown:docs/api/ckb/CKBJson.en.md`
+<embed src='@/docs/api/ckb/CKBJson.en.md'></embed>

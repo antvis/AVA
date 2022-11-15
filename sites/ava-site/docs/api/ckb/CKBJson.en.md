@@ -3,8 +3,7 @@ title: CKBJson
 order: 1
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Creates a **Chart Knowledge Base** in `JSON` format.

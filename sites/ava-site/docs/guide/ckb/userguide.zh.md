@@ -3,8 +3,7 @@ title: CKB 概念与属性
 order: 1
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 ## 图表类型

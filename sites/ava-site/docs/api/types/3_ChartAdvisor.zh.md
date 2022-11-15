@@ -3,8 +3,7 @@ title: ChartAdvisor 相关类型
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 ### Advice
 
 推荐建议：有图表推荐过程得出的某一个结果，针对一种图表类型。

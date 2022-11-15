@@ -1,11 +1,9 @@
 # Advisor
 
-`markdown:docs/api/chart-advisor/Advisor.en.md`
-
+<embed src='@/docs/api/chart-advisor/Advisor.en.md'></embed>
 # Advisor.advise
 
-`markdown:docs/api/chart-advisor/advice.en.md`
-
+<embed src='@/docs/api/chart-advisor/advice.en.md'></embed>
 # Ruler
 
-`markdown:docs/api/chart-advisor/30_Ruler.en.md`
+<embed src='@/docs/api/chart-advisor/30_Ruler.en.md'></embed>

@@ -1,7 +1,6 @@
 # Linter
 
-`markdown:docs/api/chart-advisor/Linter.zh.md`
-
+<embed src='@/docs/api/chart-advisor/Linter.zh.md'></embed>
 # Linter.lint
 
-`markdown:docs/api/chart-advisor/lint.zh.md`
+<embed src='@/docs/api/chart-advisor/lint.zh.md'></embed>

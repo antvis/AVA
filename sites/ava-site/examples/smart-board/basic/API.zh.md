@@ -1,3 +1,3 @@
 # SmartBoard
 
-`markdown:docs/api/smart-board/SmartBoard.zh.md`
+<embed src='@/docs/api/smart-board/SmartBoard.zh.md'></embed>

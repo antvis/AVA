@@ -3,8 +3,7 @@ title: Palette Generation
 order: 1
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # Palette Generation

@@ -3,7 +3,7 @@ title: Linter.LintWithLog
 order: 22
 ---
 
-`markdown:docs/common/style.md`
+<embed src='@/docs/common/style.md'></embed>
 
 ```sign
 lintWithLog(params: LintParams): LintsWithLog

@@ -3,8 +3,7 @@ title: Introduction to LiteInsight
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 A JavaScript library for automatically discovering interesting patterns from multi-dimensional data.

@@ -3,8 +3,7 @@ title: 什么是 CKB
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 
