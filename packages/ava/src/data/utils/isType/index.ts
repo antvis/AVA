@@ -5,7 +5,7 @@ export function isNil(value: unknown) {
   return value === null || value === undefined || value === '' || Number.isNaN(value as number) || value === 'null';
 }
 
-export function isString(value: unknown) {
+export function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
 
@@ -31,7 +31,7 @@ function isNumberString(value: string) {
   return tempValue.trim() !== '';
 }
 
-export function isNumber(value: unknown, checkString?: boolean) {
+export function isNumber(value: unknown, checkString?: boolean): value is number {
   if (typeof value === 'number') return true;
   if (checkString && isString(value)) return isNumberString(value as string);
   return false;
