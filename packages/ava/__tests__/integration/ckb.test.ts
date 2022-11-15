@@ -16,7 +16,7 @@ describe('integration - use CKB', () => {
     recRate: 'Not Recommend',
   };
 
-  const CHART_TYPE_AMOUNT = 80;
+  const CHART_TYPE_AMOUNT = 52;
 
   test('api - ckb: basic', () => {
     // return object
