@@ -2,7 +2,7 @@
  * Statistical methods used internally by ava.
  */
 
-import { assert, isNumber, isString } from '../utils';
+import { assert } from '../utils';
 
 import * as cache from './caches';
 
@@ -252,10 +252,9 @@ export function missing(value: unknown[]): number {
 export function valueMap(value: unknown[]): Record<string, number> {
   const data: Record<string | number, number> = {};
   value.forEach((v) => {
-    if (isString(v) || isNumber(v)) {
-      if (data[v]) data[v] += 1;
-      else data[v] = 1;
-    }
+    const vStr = `${v}`;
+    if (data[vStr]) data[vStr] += 1;
+    else data[vStr] = 1;
   });
   return data;
 }

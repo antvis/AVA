@@ -96,7 +96,7 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // interval_area_chart: {
@@ -114,7 +114,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // stream_chart: {
@@ -204,7 +204,7 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // interval_column_chart: {
@@ -345,7 +345,7 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // interval_bar_chart: {
@@ -399,7 +399,7 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // mirror_bar_chart: {
@@ -579,7 +579,7 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // overlapping_funnel_chart: {
@@ -667,7 +667,7 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // gauge_chart: {
@@ -1009,7 +1009,7 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // symbol_map: {
@@ -1027,7 +1027,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // chart_map: {
@@ -1045,7 +1045,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // column_map_3d: {
@@ -1063,7 +1063,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // scatter_map: {
@@ -1081,7 +1081,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // path_map: {
@@ -1099,7 +1099,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // isoline_map: {
@@ -1117,7 +1117,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // arc_map_3d: {
@@ -1135,7 +1135,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // choropleth_map: {
@@ -1153,7 +1153,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // choropleth_map_3d: {
@@ -1171,7 +1171,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // hexagonal_heat_map: {
@@ -1189,7 +1189,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // hexagonal_heat_map_3d: {
@@ -1207,7 +1207,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // classical_heat_map: {
@@ -1225,7 +1225,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // grid_heat_map: {
@@ -1243,7 +1243,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // bubble_map: {
@@ -1261,7 +1261,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // bubble_light_map: {
@@ -1279,7 +1279,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // packed_circles: {
@@ -1297,7 +1297,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // polar_treemap: {
@@ -1315,7 +1315,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // sunburst_diagram: {
@@ -1333,7 +1333,7 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /**
+  /*
    * WIP: unavailable until completed
    */
   // liquid_chart: {
