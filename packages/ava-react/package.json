@@ -53,14 +53,18 @@
   },
   "dependencies": {
     "@antv/ava": "3.0.0-alpha.0",
+    "canvg": "^4.0.1",
     "lodash": "^4.17.21",
     "styled-components": "^5.3.5",
-    "tslib": "^2.3.1"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.180",
+    "@types/react": "^17.0.15",
+    "@types/react-dom": "^17.0.9",
     "@types/styled-components": "^5.1.25",
+    "@types/uuid": "^8.3.1",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "jest": "^24.9.0",

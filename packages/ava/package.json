@@ -53,7 +53,7 @@
     ]
   },
   "dependencies": {
-    "@types/react": "^18.0.25",
+    "@types/react": "^17.0.15",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
