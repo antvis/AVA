@@ -3,8 +3,7 @@ title: 色板提取
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # 色板提取

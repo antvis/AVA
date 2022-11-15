@@ -3,8 +3,7 @@ title: ChartAdvisor 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 基于数据和分析需求来推荐和自动生成图表配置。

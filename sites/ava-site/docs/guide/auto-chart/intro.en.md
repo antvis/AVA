@@ -3,8 +3,7 @@ title: Introduction to AutoChart
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 AutoChart is a React component that can automatically recommends and renders the appropriate chart based on the input data.
 

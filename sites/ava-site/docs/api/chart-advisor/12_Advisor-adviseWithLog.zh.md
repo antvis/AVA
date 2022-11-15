@@ -3,7 +3,7 @@ title: Advisor.adviseWithLog
 order: 12
 ---
 
-`markdown:docs/common/style.md`
+<embed src='@/docs/common/style.md'></embed>
 
 ```sign
 Advisor.adviseWithLog(params: AdviseParams): AdvicesWithLog

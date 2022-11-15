@@ -3,8 +3,7 @@ title: CKBOptions
 order: 2
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Returns all possible options for each property of Chart Knowledge.

@@ -3,8 +3,7 @@ title: What is CKB
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Chart Knowledge Base (CKB) is a library offers knowledge base for chart wikis in a JSON format. 

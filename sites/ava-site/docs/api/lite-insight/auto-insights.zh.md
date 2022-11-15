@@ -3,8 +3,7 @@ title: getDataInsights
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 提取数据中存在的洞察。
@@ -50,8 +49,7 @@ order: 3
 | patterns |  `PatternInfo[]` | 该洞察数据主体上的模式集合 | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |
 | visualizationSchemas |  `VisualizationSchema[]` | 该洞察的可视化方案，包含图表类型、标题、洞察描述以及图表配置（基于G2Plot） | `[{ type: 'column_chart', caption: string, insightSummaries: string[] | IPhrase[][], chartSchema: G2PlotConfig }]` |
 
-`markdown:docs/common/phrase.zh.md`
-
+<embed src='@/docs/common/phrase.zh.md'></embed>
 ### 用例
 
 * 指定参与计算的指标和维度，以及返回的洞察数量。

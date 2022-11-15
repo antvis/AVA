@@ -3,8 +3,7 @@ title: 颜色模拟
 order: 4
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # 颜色模拟

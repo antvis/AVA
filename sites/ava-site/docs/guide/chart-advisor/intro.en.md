@@ -3,9 +3,7 @@ title: Introduction to ChartAdvisor
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
-
+<embed src='@/docs/common/style.md'></embed>
 
 Recommend and automatically generate chart configurations based on data and analytics requirements.
 

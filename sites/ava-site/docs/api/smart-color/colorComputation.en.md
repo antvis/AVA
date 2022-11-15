@@ -3,8 +3,7 @@ title: Color Computation
 order: 5
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # Color Computation

@@ -3,8 +3,7 @@ title: Ruler
 order: 30
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 `Ruler` is the default set of visual rule definitions within ChartAdvisor.

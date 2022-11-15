@@ -3,8 +3,7 @@ title: ChartAdvisor Types
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 ### Advice
 
 Single chart-recommandation from advisor.

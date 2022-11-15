@@ -3,8 +3,7 @@ title: Color Evaluation
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # Color Evaluation
