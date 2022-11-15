@@ -26,35 +26,55 @@ test('isString', () => {
 });
 
 test('isNumber', () => {
-  const data1 = 201;
-  expect(isNumber(data1)).toBe(true);
+  const data = 201;
+  expect(isNumber(data)).toBe(true);
+});
 
-  const data2 = '5.2';
+test('isNumberString', () => {
+  const data1 = '5.2';
+  expect(isNumberString(data1)).toBe(true);
+
+  const data2 = '.1';
   expect(isNumberString(data2)).toBe(true);
+
+  const data3 = '00000';
+  expect(isNumberString(data3)).toBe(true);
+
+  const data4 = '00000.1';
+  expect(isNumberString(data4)).toBe(true);
 });
 
 test('isInteger', () => {
-  const data1 = 1;
-  expect(isInteger(data1)).toBe(true);
+  const data = 1;
+  expect(isInteger(data)).toBe(true);
+});
 
-  const data2 = '1';
+test('isIntegerString', () => {
+  const data1 = '1';
+  expect(isIntegerString(data1)).toBe(true);
+
+  const data2 = '000001';
   expect(isIntegerString(data2)).toBe(true);
 });
 
 test('isFloat', () => {
-  const data1 = 1.2;
-  expect(isFloat(data1)).toBe(true);
+  const data = 1.2;
+  expect(isFloat(data)).toBe(true);
+});
 
-  const data2 = '1.2';
-  expect(isFloatString(data2)).toBe(true);
+test('isFloatString', () => {
+  const data = '1.2';
+  expect(isFloatString(data)).toBe(true);
 });
 
 test('isDate', () => {
-  const data1 = new Date();
-  expect(isDate(data1)).toBe(true);
+  const data = new Date();
+  expect(isDate(data)).toBe(true);
+});
 
-  const data2 = '2021-09-24';
-  expect(isDateString(data2)).toBe(true);
+test('isDateString', () => {
+  const data = '2021-09-24';
+  expect(isDateString(data)).toBe(true);
 });
 
 test('isBoolean', () => {
