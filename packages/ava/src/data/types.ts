@@ -1,1 +1,2 @@
-export type { FieldType, FieldInfo, StringFieldInfo, NumberFieldInfo, DateFieldInfo } from './analysis';
+export * from './analysis/types';
+export * from './dataset/types';

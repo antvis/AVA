@@ -1,7 +1,7 @@
-import { analyzeField } from '../analyzer';
-import { isArray, isObject, isString, isInteger, isNumber, isBasicType, range, assert } from '../utils';
+import { analyzeField } from '../../analysis';
+import { isArray, isObject, isString, isInteger, isNumber, isBasicType, range, assert } from '../../utils';
 
-import BaseFrame from './base-frame';
+import BaseFrame from './baseFrame';
 import Series from './series';
 import {
   generateArrayIndex,
@@ -13,7 +13,7 @@ import {
   convertDataType,
 } from './utils';
 
-import type { FrameData, Axis, Extra, FieldsInfo } from './types';
+import type { FrameData, Axis, Extra, FieldsInfo, SeriesData } from './types';
 
 /** 2D data structure */
 export default class DataFrame extends BaseFrame {
@@ -59,7 +59,7 @@ export default class DataFrame extends BaseFrame {
 
       /**
        * 2D: array
-       * Baseframe has made the first round of judgment. Now, if data0 is array, all the datum is array.
+       * Base frame has made the first round of judgment. Now, if data0 is array, all the datum is array.
        */
       if (isArray(data0)) {
         const columns = range(data0.length);
@@ -93,10 +93,10 @@ export default class DataFrame extends BaseFrame {
                 fillMissingValue(datum[column], extra.fillValue),
                 extra?.columnTypes?.[j]
               );
-              this.data[i].push(newDatum);
+              (this.data[i] as unknown[]).push(newDatum);
 
               if (this.colData[j]) {
-                this.colData[j].push(newDatum);
+                (this.colData[j] as unknown[]).push(newDatum);
               } else {
                 this.colData[j] = [newDatum];
               }
@@ -134,7 +134,9 @@ export default class DataFrame extends BaseFrame {
             const column = extra?.columns[i] as string;
 
             assert(columns.includes(column), `There is no column ${column} in data.`);
-            this.data.push(convertDataType(fillMissingValue(data[column], extra?.fillValue), extra?.columnTypes?.[i]));
+            (this.data as unknown[]).push(
+              convertDataType(fillMissingValue(data[column], extra?.fillValue), extra?.columnTypes?.[i])
+            );
           }
           this.colData = this.data.map((datum) => [datum]);
           this.data = [this.data];
@@ -145,7 +147,9 @@ export default class DataFrame extends BaseFrame {
 
             assert(isBasicType(datum), 'Data type is illegal');
 
-            this.data.push(convertDataType(fillMissingValue(datum, extra?.fillValue), extra?.columnTypes?.[i]));
+            (this.data as unknown[]).push(
+              convertDataType(fillMissingValue(datum, extra?.fillValue), extra?.columnTypes?.[i])
+            );
           }
           this.data = [this.data];
           this.colData = dataValues.map((datum) => [
@@ -182,7 +186,9 @@ export default class DataFrame extends BaseFrame {
 
           for (let j = 0; j < this.indexes.length; j += 1) {
             if (this.data[j]) {
-              this.data[j].push(convertDataType(fillMissingValue(datum[j], extra?.fillValue), extra?.columnTypes?.[i]));
+              (this.data[j] as unknown[]).push(
+                convertDataType(fillMissingValue(datum[j], extra?.fillValue), extra?.columnTypes?.[i])
+              );
             } else {
               this.data[j] = [convertDataType(fillMissingValue(datum[j], extra?.fillValue), extra?.columnTypes?.[i])];
             }
@@ -249,14 +255,14 @@ export default class DataFrame extends BaseFrame {
          */
         if (isObj && JSON.stringify(Object.keys(datum)) !== JSON.stringify(columns)) {
           if (this.data[i]) {
-            this.data[i].push(newDatum);
+            (this.data[i] as unknown[]).push(newDatum);
           } else {
             this.data[i] = [newDatum];
           }
         }
 
         if (this.colData[j]) {
-          this.colData[j].push(newDatum);
+          (this.colData[j] as unknown[]).push(newDatum);
         } else {
           this.colData[j] = [newDatum];
         }
@@ -280,7 +286,7 @@ export default class DataFrame extends BaseFrame {
         if (this.indexes.includes(rowLoc)) {
           const newData = this.data[rowLoc];
           const newIndex = this.columns;
-          return new Series(newData, { indexes: newIndex });
+          return new Series(newData as SeriesData, { indexes: newIndex });
         }
       } else if (isArray(rowLoc)) {
         // input is like [0, 1, 2]
@@ -383,20 +389,20 @@ export default class DataFrame extends BaseFrame {
     }
 
     // build new data and indexes
-    let newData: any[][] = [];
-    let newIndex: any[] = [];
+    let newData: unknown[][] = [];
+    let newIndex: Axis[] = [];
 
     assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the indexes.');
 
     if (startRowIdx >= 0 && endRowIdx >= 0) {
-      newData = this.data.slice(startRowIdx, endRowIdx);
+      newData = this.data.slice(startRowIdx, endRowIdx) as unknown[][];
       newIndex = this.indexes.slice(startRowIdx, endRowIdx);
     }
 
     if (rowIdxes.length > 0) {
       for (let i = 0; i < rowIdxes.length; i += 1) {
         const rowIdx = rowIdxes[i];
-        newData.push(this.data[rowIdx]);
+        newData.push(this.data[rowIdx] as unknown[]);
         newIndex.push(this.indexes[rowIdx]);
       }
     }
@@ -439,7 +445,7 @@ export default class DataFrame extends BaseFrame {
 
         const newData = this.data[rowLoc];
         const newIndex = this.columns;
-        return new Series(newData, { indexes: newIndex });
+        return new Series(newData as SeriesData, { indexes: newIndex });
       }
 
       if (isArray(rowLoc)) {
@@ -550,16 +556,16 @@ export default class DataFrame extends BaseFrame {
     assert((startRowIdx >= 0 && endRowIdx >= 0) || rowIdxes.length > 0, 'The rowLoc is not found in the indexes.');
 
     // build new data and indexes
-    let newData: any[][] = [];
-    let newIndex: any[] = [];
+    let newData: unknown[][] = [];
+    let newIndex: Axis[] = [];
 
     if (startRowIdx >= 0 && endRowIdx >= 0) {
-      newData = this.data.slice(startRowIdx, endRowIdx);
+      newData = this.data.slice(startRowIdx, endRowIdx) as unknown[][];
       newIndex = this.indexes.slice(startRowIdx, endRowIdx);
     } else if (rowIdxes.length > 0) {
       for (let i = 0; i < rowIdxes.length; i += 1) {
         const rowIdx = rowIdxes[i];
-        newData.push(this.data[rowIdx]);
+        newData.push(this.data[rowIdx] as unknown[]);
         newIndex.push(this.indexes[rowIdx]);
       }
     }
@@ -604,7 +610,7 @@ export default class DataFrame extends BaseFrame {
     assert(this.columns.includes(col), 'The col is illegal');
 
     const colIdx = this.columns.indexOf(col);
-    return new Series(this.colData[colIdx], {
+    return new Series(this.colData[colIdx] as SeriesData, {
       indexes: this.indexes,
     });
   }
@@ -616,7 +622,7 @@ export default class DataFrame extends BaseFrame {
     const fields: FieldsInfo = [];
     for (let i = 0; i < this.columns?.length; i += 1) {
       const column = this.columns[i];
-      fields.push({ ...analyzeField(this.colData[i]), name: String(column) });
+      fields.push({ ...analyzeField(this.colData[i] as unknown[]), name: String(column) });
     }
     return fields;
   }
@@ -637,7 +643,7 @@ export default class DataFrame extends BaseFrame {
       if (len > maxLengths[i + 1]) maxLengths[i + 1] = len;
     }
     for (let i = 0; i < this.colData.length; i += 1) {
-      for (let j = 0; j < this.colData[i].length; j += 1) {
+      for (let j = 0; j < (this.colData[i] as unknown[]).length; j += 1) {
         const len = getStringifyLength(this.colData[i][j]);
         if (len > maxLengths[i + 1]) maxLengths[i + 1] = len;
       }
@@ -652,7 +658,7 @@ export default class DataFrame extends BaseFrame {
       .join('')}\n${this.indexes
       .map(
         (idx, idxIndex) =>
-          `${idx}${generateSplit(maxLengths[0] - getStringifyLength(idx))}${this.data[idxIndex]
+          `${idx}${generateSplit(maxLengths[0] - getStringifyLength(idx))}${(this.data[idxIndex] as unknown[])
             ?.map(
               (datum, i) =>
                 `${stringify(datum)}${
