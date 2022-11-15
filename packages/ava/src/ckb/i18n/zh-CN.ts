@@ -125,16 +125,23 @@ export const zhCN: CkbDictionary = {
       def: '一种特殊的堆叠面积图，线段在同一维度值上的端点高度代表值在其中的占比，占比总和为百分之百。',
     },
 
-    interval_area_chart: {
-      name: '区间面积图',
-      alias: [],
-      def: 'TBD',
-    },
-    stream_chart: {
-      name: '流图',
-      alias: [],
-      def: 'TBD',
-    },
+    /*
+     * WIP: unavailable until completed
+     */
+    // interval_area_chart: {
+    //   name: '区间面积图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
+
+    /*
+     * WIP: unavailable until completed
+     */
+    // stream_chart: {
+    //   name: '流图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
 
     column_chart: {
       name: '柱状图',
@@ -157,11 +164,14 @@ export const zhCN: CkbDictionary = {
       def: '使用颜色不同的堆叠的柱形来显示各维度的数值。横轴标示出第一个分类维度，颜色标示出第二个分类维度，纵轴显示相应分类所占的百分比。',
     },
 
-    interval_column_chart: {
-      name: '区间柱状图',
-      alias: [],
-      def: 'TBD',
-    },
+    /*
+     * WIP: unavailable until completed
+     */
+    // interval_column_chart: {
+    //   name: '区间柱状图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
 
     range_column_chart: {
       name: '值域柱状图',
@@ -201,11 +211,14 @@ export const zhCN: CkbDictionary = {
       def: '使用颜色不同的堆叠的条形来显示各维度的数值。纵轴标示出第一个分类维度，颜色标示出第二个分类维度，横轴显示相应分类所占的百分比。',
     },
 
-    interval_bar_chart: {
-      name: '区间条形图',
-      alias: [],
-      def: 'TBD',
-    },
+    /*
+     * WIP: unavailable until completed
+     */
+    // interval_bar_chart: {
+    //   name: '区间条形图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
 
     range_bar_chart: {
       name: '值域条形图',
@@ -219,11 +232,14 @@ export const zhCN: CkbDictionary = {
       def: '径向条形图是一种在极坐标系下绘制的条形图。径向条形图沿半径方向展示分类维度，使用角度来反应数值。',
     },
 
-    mirror_bar_chart: {
-      name: '对称条形图',
-      alias: [],
-      def: 'TBD',
-    },
+    /*
+     * WIP: unavailable until completed
+     */
+    // mirror_bar_chart: {
+    //   name: '对称条形图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
 
     bullet_chart: {
       name: '子弹图',
@@ -277,11 +293,14 @@ export const zhCN: CkbDictionary = {
       def: '漏斗图，形如“漏斗”，用于单流程分析，在开始和结束之间由N个流程环节组成。',
     },
 
-    overlapping_funnel_chart: {
-      name: '重叠漏斗图',
-      alias: [],
-      def: 'TBD',
-    },
+    /*
+     * WIP: unavailable until completed
+     */
+    // overlapping_funnel_chart: {
+    //   name: '重叠漏斗图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
 
     mirror_funnel_chart: {
       name: '对比漏斗图',
@@ -307,11 +326,14 @@ export const zhCN: CkbDictionary = {
       def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计图表。',
     },
 
-    gauge_chart: {
-      name: '量规图',
-      alias: ['仪表盘'],
-      def: 'TBD',
-    },
+    /*
+     * WIP: unavailable until completed
+     */
+    // gauge_chart: {
+    //   name: '量规图',
+    //   alias: ['仪表盘'],
+    //   def: 'TBD',
+    // },
 
     radar_chart: {
       name: '雷达图',
@@ -423,110 +445,113 @@ export const zhCN: CkbDictionary = {
       def: '桑基图，是一种表现流程的示意图，用于描述一组值到另一组值的流向。分支的宽度对应了数据流量的大小。',
     },
 
-    symbol_map: {
-      name: '符号地图',
-      alias: [],
-      def: '散点地图的变体，用具象的图标指代抽象的圆点，无需图例就能直观看出数据点代表的内容，常用于地图上重要地标的显示或数据量较少时的信息表达。',
-    },
-    chart_map: {
-      name: '复合图表地图',
-      alias: [],
-      def: '是定点地图的变体，使用二维统计图表代替点状符号的一种特殊复合形式。',
-    },
-    column_map_3d: {
-      name: '3D 柱状图',
-      alias: [],
-      def: '用形状大小相同的柱状体代替点状符号，高度与数值大小映射共同表达离散现象分布特征的地图',
-    },
-    scatter_map: {
-      name: '散点地图',
-      alias: [],
-      def: '指地图上可用一个形状大小相同的圆点来定位，用表达离散现象分布特征的地图，如人口、农作物、动植物等的分布',
-    },
-    path_map: {
-      name: '路径地图',
-      alias: [],
-      def: '指需要用一连串首尾不闭合的点坐标对（xi,yi）来定位的一类图层。属于半依比例图层，线端点依附地图比例缩放，但线的粗细不会变化。',
-    },
-    isoline_map: {
-      name: '等值线地图',
-      alias: [],
-      def: 'TBD',
-    },
-    arc_map_3d: {
-      name: '3D 弧线地图',
-      alias: [],
-      def: '将两个点的连线绘制成弧形，绘制的弧线可以是贝塞尔曲线，大圆航线，通常用来表示两种地理事物关系和联系，或者人口迁移，物流起点目的地等。',
-    },
-    choropleth_map: {
-      name: '填充地图',
-      alias: [],
-      def: '填充图，也叫分级统计图，可在地图上不同领土区域进行着色，查看区域间的分布对比情况',
-    },
-    choropleth_map_3d: {
-      name: '3D 填充地图',
-      alias: [],
-      def: '填充地图的增强实现，通过三维视角中的高度模拟真实地物的高度。',
-    },
-    hexagonal_heat_map: {
-      name: '蜂窝热力地图',
-      alias: [],
-      def: '使用六边形将地图区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
-    },
-    hexagonal_heat_map_3d: {
-      name: '3D 蜂窝热力地图',
-      alias: [],
-      def: '使用3D 六边形将地图区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
-    },
-    classical_heat_map: {
-      name: '热力地图',
-      alias: [],
-      def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计地图。',
-    },
-    grid_heat_map: {
-      name: '网格热力地图',
-      alias: [],
-      def: '使用网格区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
-    },
-    bubble_map: {
-      name: '气泡地图',
-      alias: [],
-      def: '指地图上用一个形状相同、面积大小和数值成正比的圆点来定位的地图，是散点图的扩展，用于表达离散现象分布特征的地图。',
-    },
-    bubble_light_map: {
-      name: '亮点地图',
-      alias: [],
-      def: '散点图的变形，指用一个点代表一个值，连续渐进颜色代表数值大小，并通过色彩的叠加的达到效果增强，专为海量散点数据运用而生，解决远视角下，点颜色无法区分问题',
-    },
-    packed_circles: {
-      name: '打包图',
-      alias: [],
-      def: 'TBD',
-    },
-    polar_treemap: {
-      name: '极坐标树图',
-      alias: [],
-      def: 'TBD',
-    },
-    sunburst_diagram: {
-      name: '旭日图',
-      alias: ['太阳辐射图'],
-      def: 'TBD',
-    },
-    liquid_chart: {
-      name: '水波图',
-      alias: ['进度球'],
-      def: '一种用来表示进度的拟物化示意图',
-    },
-    kpi_panel: {
-      name: '指标卡',
-      alias: ['指标卡'],
-      def: '一种用来展示聚合数据的卡片区域',
-    },
-    table: {
-      name: '表格',
-      alias: ['交叉表'],
-      def: '表格就是由若干的行与列所构成的一种有序的组织形式',
-    },
+    /*
+     * WIP: unavailable until completed
+     */
+    // symbol_map: {
+    //   name: '符号地图',
+    //   alias: [],
+    //   def: '散点地图的变体，用具象的图标指代抽象的圆点，无需图例就能直观看出数据点代表的内容，常用于地图上重要地标的显示或数据量较少时的信息表达。',
+    // },
+    // chart_map: {
+    //   name: '复合图表地图',
+    //   alias: [],
+    //   def: '是定点地图的变体，使用二维统计图表代替点状符号的一种特殊复合形式。',
+    // },
+    // column_map_3d: {
+    //   name: '3D 柱状图',
+    //   alias: [],
+    //   def: '用形状大小相同的柱状体代替点状符号，高度与数值大小映射共同表达离散现象分布特征的地图',
+    // },
+    // scatter_map: {
+    //   name: '散点地图',
+    //   alias: [],
+    //   def: '指地图上可用一个形状大小相同的圆点来定位，用表达离散现象分布特征的地图，如人口、农作物、动植物等的分布',
+    // },
+    // path_map: {
+    //   name: '路径地图',
+    //   alias: [],
+    //   def: '指需要用一连串首尾不闭合的点坐标对（xi,yi）来定位的一类图层。属于半依比例图层，线端点依附地图比例缩放，但线的粗细不会变化。',
+    // },
+    // isoline_map: {
+    //   name: '等值线地图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
+    // arc_map_3d: {
+    //   name: '3D 弧线地图',
+    //   alias: [],
+    //   def: '将两个点的连线绘制成弧形，绘制的弧线可以是贝塞尔曲线，大圆航线，通常用来表示两种地理事物关系和联系，或者人口迁移，物流起点目的地等。',
+    // },
+    // choropleth_map: {
+    //   name: '填充地图',
+    //   alias: [],
+    //   def: '填充图，也叫分级统计图，可在地图上不同领土区域进行着色，查看区域间的分布对比情况',
+    // },
+    // choropleth_map_3d: {
+    //   name: '3D 填充地图',
+    //   alias: [],
+    //   def: '填充地图的增强实现，通过三维视角中的高度模拟真实地物的高度。',
+    // },
+    // hexagonal_heat_map: {
+    //   name: '蜂窝热力地图',
+    //   alias: [],
+    //   def: '使用六边形将地图区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
+    // },
+    // hexagonal_heat_map_3d: {
+    //   name: '3D 蜂窝热力地图',
+    //   alias: [],
+    //   def: '使用3D 六边形将地图区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
+    // },
+    // classical_heat_map: {
+    //   name: '热力地图',
+    //   alias: [],
+    //   def: '密度热力图是一种用在连续坐标系上用色点展现密度分布的统计地图。',
+    // },
+    // grid_heat_map: {
+    //   name: '网格热力地图',
+    //   alias: [],
+    //   def: '使用网格区域进行分割，计算每个区域中点数或其他累加值，将离散的点转换为数值。然后将数值映射到每个区域的色值、高度或其他参数',
+    // },
+    // bubble_map: {
+    //   name: '气泡地图',
+    //   alias: [],
+    //   def: '指地图上用一个形状相同、面积大小和数值成正比的圆点来定位的地图，是散点图的扩展，用于表达离散现象分布特征的地图。',
+    // },
+    // bubble_light_map: {
+    //   name: '亮点地图',
+    //   alias: [],
+    //   def: '散点图的变形，指用一个点代表一个值，连续渐进颜色代表数值大小，并通过色彩的叠加的达到效果增强，专为海量散点数据运用而生，解决远视角下，点颜色无法区分问题',
+    // },
+    // packed_circles: {
+    //   name: '打包图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
+    // polar_treemap: {
+    //   name: '极坐标树图',
+    //   alias: [],
+    //   def: 'TBD',
+    // },
+    // sunburst_diagram: {
+    //   name: '旭日图',
+    //   alias: ['太阳辐射图'],
+    //   def: 'TBD',
+    // },
+    // liquid_chart: {
+    //   name: '水波图',
+    //   alias: ['进度球'],
+    //   def: '一种用来表示进度的拟物化示意图',
+    // },
+    // kpi_panel: {
+    //   name: '指标卡',
+    //   alias: ['指标卡'],
+    //   def: '一种用来展示聚合数据的卡片区域',
+    // },
+    // table: {
+    //   name: '表格',
+    //   alias: ['交叉表'],
+    //   def: '表格就是由若干的行与列所构成的一种有序的组织形式',
+    // },
   },
 };
