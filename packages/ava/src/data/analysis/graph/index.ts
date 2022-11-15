@@ -61,7 +61,6 @@ export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): Field
  * find node clusters and assign the cluster field to each node
  * @param nodes
  * @param links
- * @returns
  */
 export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: FieldInfo[], links: LinkData[]): FieldInfo {
   const MAX_CLUSTER_NUM = 10;
@@ -107,7 +106,6 @@ export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: FieldInfo[], lin
  * Calculate statistical and structural features for graph
  * @param nodes
  * @param links
- * @returns
  */
 export function getAllStructFeats(nodes: NodeData[], links: LinkData[]) {
   const nodeStructFeats: Partial<NodeStructFeat>[] = [];

@@ -11,7 +11,20 @@ import {
   variance,
   valueMap as statsValueMap,
 } from '../../statistics';
-import { isBasicType, isBoolean, isDate, isFloat, isInteger, isNil, isNumber, isString, unique } from '../../utils';
+import {
+  isBasicType,
+  isBoolean,
+  isDate,
+  isDateString,
+  isFloatString,
+  isInteger,
+  isIntegerString,
+  isNil,
+  isNumber,
+  isNumberString,
+  isString,
+  unique,
+} from '../../utils';
 
 import type { DateFieldInfo, FieldInfo, FieldMeta, NumberFieldInfo, StringFieldInfo, FieldType } from './types';
 
@@ -194,11 +207,12 @@ export function analyzeNumber(value: number[]): Omit<NumberFieldInfo, keyof Fiel
  * Analyze date field info.
  * @param value - data
  */
-export function analyzeDate(value: Array<string | Date>, isInteger = false): Omit<DateFieldInfo, keyof FieldInfo> {
+export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<DateFieldInfo, keyof FieldInfo> {
   const list: number[] = value.map((item) => {
     if (isInteger) {
       const str = `${item}`;
-      if (str.length === 8) return new Date(`${str.substr(0, 4)}/${str.substr(4, 2)}/${str.substr(6, 2)}`).getTime();
+      if (str.length === 8)
+        return new Date(`${str.substring(0, 4)}/${str.substring(4, 2)}/${str.substring(6, 2)}`).getTime();
     }
     return new Date(item).getTime();
   });
@@ -218,12 +232,12 @@ export function analyzeType(value: unknown): 'null' | 'integer' | 'float' | 'dat
     return 'float';
   }
   if (isString(value)) {
-    if (isNumber(value, true)) {
+    if (isNumberString(value)) {
       if ((value as string).includes('.')) return 'float';
       return 'integer';
     }
   }
-  if (isDate(value, true)) return 'date';
+  if (isDate(value) || isDateString(value)) return 'date';
   return 'string';
 }
 
@@ -250,7 +264,7 @@ export function analyzeField(value: unknown[]): StringFieldInfo | NumberFieldInf
       // an integer field may be a date field
       if (recommendation === 'integer') {
         const data = list.filter((item) => item !== null);
-        if (data.map((num) => `${num}`).every((str) => isDate(str, true))) {
+        if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
           recommendation = 'date';
         }
       }
@@ -280,14 +294,14 @@ export function analyzeField(value: unknown[]): StringFieldInfo | NumberFieldInf
     let restNotNullArray = nonNullArray;
     types.forEach((item: string) => {
       if (item === 'date') {
-        meta.date = analyzeField(restNotNullArray.filter((item) => isDate(item, true))) as DateFieldInfo;
-        restNotNullArray = restNotNullArray.filter((item) => !isDate(item, true));
+        meta.date = analyzeField(restNotNullArray.filter((item) => isDateString(item))) as DateFieldInfo;
+        restNotNullArray = restNotNullArray.filter((item) => !isDateString(item));
       } else if (item === 'integer') {
-        meta.integer = analyzeField(restNotNullArray.filter((item) => isInteger(item, true))) as NumberFieldInfo;
-        restNotNullArray = restNotNullArray.filter((item) => !isInteger(item, true));
+        meta.integer = analyzeField(restNotNullArray.filter((item) => isIntegerString(item))) as NumberFieldInfo;
+        restNotNullArray = restNotNullArray.filter((item) => !isIntegerString(item));
       } else if (item === 'float') {
-        meta.float = analyzeField(restNotNullArray.filter((item) => isFloat(item, true))) as NumberFieldInfo;
-        restNotNullArray = restNotNullArray.filter((item) => !isFloat(item, true));
+        meta.float = analyzeField(restNotNullArray.filter((item) => isFloatString(item))) as NumberFieldInfo;
+        restNotNullArray = restNotNullArray.filter((item) => !isFloatString(item));
       } else if (item === 'string') {
         meta.string = analyzeField(
           restNotNullArray.filter((item) => analyzeType(item) === 'string')

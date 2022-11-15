@@ -1,7 +1,7 @@
-import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '../utils';
+import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '../../utils';
 
 import { fillMissingValue, convertDataType } from './utils';
-import BaseFrame from './base-frame';
+import BaseFrame from './baseFrame';
 
 import type { SeriesData, Extra, Axis } from './types';
 
@@ -28,7 +28,9 @@ export default class Series extends BaseFrame {
         for (let i = 0; i < extra?.indexes.length; i += 1) {
           const idx = extra?.indexes[i] as string;
           if (indexes.includes(idx)) {
-            this.data.push(convertDataType(fillMissingValue(data[idx], extra?.fillValue), extra?.columnTypes?.[0]));
+            (this.data as unknown[]).push(
+              convertDataType(fillMissingValue(data[idx], extra?.fillValue), extra?.columnTypes?.[0])
+            );
           }
         }
         this.setAxis(0, extra?.indexes);

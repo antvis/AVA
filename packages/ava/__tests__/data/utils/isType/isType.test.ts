@@ -3,10 +3,14 @@ import {
   isBasicType,
   isBoolean,
   isDate,
+  isDateString,
   isFloat,
+  isFloatString,
   isInteger,
+  isIntegerString,
   isNil,
   isNumber,
+  isNumberString,
   isObject,
   isString,
 } from '../../../../src/data/utils';
@@ -26,7 +30,7 @@ test('isNumber', () => {
   expect(isNumber(data1)).toBe(true);
 
   const data2 = '5.2';
-  expect(isNumber(data2, true)).toBe(true);
+  expect(isNumberString(data2)).toBe(true);
 });
 
 test('isInteger', () => {
@@ -34,7 +38,7 @@ test('isInteger', () => {
   expect(isInteger(data1)).toBe(true);
 
   const data2 = '1';
-  expect(isInteger(data2, true)).toBe(true);
+  expect(isIntegerString(data2)).toBe(true);
 });
 
 test('isFloat', () => {
@@ -42,7 +46,7 @@ test('isFloat', () => {
   expect(isFloat(data1)).toBe(true);
 
   const data2 = '1.2';
-  expect(isFloat(data2, true)).toBe(true);
+  expect(isFloatString(data2)).toBe(true);
 });
 
 test('isDate', () => {
@@ -50,7 +54,7 @@ test('isDate', () => {
   expect(isDate(data1)).toBe(true);
 
   const data2 = '2021-09-24';
-  expect(isDate(data2, true)).toBe(true);
+  expect(isDateString(data2)).toBe(true);
 });
 
 test('isBoolean', () => {
