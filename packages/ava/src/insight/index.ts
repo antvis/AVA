@@ -1,1 +1,3 @@
-// export { getInsights } from './getInsights';
+export { getDataInsights } from './pipeline';
+
+export * from './interface';
