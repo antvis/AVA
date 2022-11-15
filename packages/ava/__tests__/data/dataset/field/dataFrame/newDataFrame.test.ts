@@ -1,4 +1,4 @@
-import DataFrame from '../../../src/dataset/data-frame';
+import DataFrame from '../../../../../src/data/dataset/field/dataFrame';
 
 describe('new DataFrame', () => {
   test('1D: basic type', () => {
