@@ -1,10 +1,8 @@
-import { assert, isArray, isObject, isBasicType } from '../utils';
+import { assert, isArray, isObject, isBasicType } from '../../utils';
 
 import { generateArrayIndex, fillMissingValue, convertDataType } from './utils';
 
-import type { SeriesData, FrameData, Axis, Extra } from './types';
-
-type NDArray = any[] | any[][];
+import type { NDArray, SeriesData, FrameData, Axis, Extra } from './types';
 
 /** Base data structure */
 export default abstract class BaseFrame {
@@ -88,7 +86,7 @@ export default abstract class BaseFrame {
     this.axes[axis] = values;
   }
 
-  /** get value functions */
+  /* get value functions */
 
   /**
    * Get data by row location and column location.
