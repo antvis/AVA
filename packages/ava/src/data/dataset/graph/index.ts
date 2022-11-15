@@ -1,10 +1,13 @@
-import { analyzeField, isUnique, GraphProps } from '../analyzer';
-import { getNodeFields, getLinkFields, getAllFieldsInfo, getAllStructFeats, clusterNodes } from '../analyzer/graph';
-import { assert, isArray, isObject, isBasicType } from '../utils';
+import { analyzeField } from '../../analysis';
+import { getNodeFields, getLinkFields, getAllFieldsInfo, getAllStructFeats, clusterNodes } from '../../analysis/graph';
+import { isUnique } from '../../analysis/field';
+import { assert, isArray, isObject, isBasicType } from '../../utils';
+import DataFrame from '../field/dataFrame';
 
-import { NodeData, LinkData, GraphInput, GraphExtra } from './types';
-import DataFrame from './data-frame';
 import { flatObject } from './utils';
+
+import type { GraphProps } from '../../analysis/graph/types';
+import type { NodeData, LinkData, GraphInput, GraphExtra } from './types';
 
 /* eslint-disable no-param-reassign */
 function parseTreeNode(data: any, extra?: GraphExtra) {
@@ -30,7 +33,6 @@ function parseTreeNode(data: any, extra?: GraphExtra) {
 
 /**
  * @param data link array
- * @return null | { nodes: NodeData[], links: LinkData[]}
  */
 function parseArray(data: { [key: string]: any }[], extra?: GraphExtra) {
   const [data0] = data;
@@ -178,7 +180,7 @@ export default class GraphData {
   info(): GraphProps {
     const { nodes, links } = this.data;
     // calc fields statistics and structural statistics
-    const graphStrucFeats = getAllStructFeats(nodes, links);
+    const graphStructFeats = getAllStructFeats(nodes, links);
     const { nodeFields, nodeFieldNames } = getNodeFields(nodes);
     const { linkFields, linkFieldNames } = getLinkFields(links);
     const nodeFieldsInfo = getAllFieldsInfo(nodeFields, nodeFieldNames);
@@ -188,7 +190,7 @@ export default class GraphData {
     const graphProps = {
       nodeFieldsInfo,
       linkFieldsInfo,
-      ...graphStrucFeats,
+      ...graphStructFeats,
     };
     return graphProps;
   }

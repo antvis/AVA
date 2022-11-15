@@ -16,6 +16,7 @@ import {
   YEAR,
   YEARDAY,
 } from './constants';
+import { isString } from './isType';
 
 /**
  * Get ISO 8601 date regular expression string array
@@ -67,11 +68,13 @@ const isoDateAndTimeRegs: RegExp[] = isoDateAndTimePatterns.map((pattern) => {
   return new RegExp(`^${pattern}$`);
 });
 
-export function isDateString(value: string): boolean {
-  for (let i = 0; i < isoDateAndTimeRegs.length; i += 1) {
-    const reg = isoDateAndTimeRegs[i];
-    if (reg.test(value.trim())) {
-      return true;
+export function isDateString(value: unknown): value is string {
+  if (isString(value)) {
+    for (let i = 0; i < isoDateAndTimeRegs.length; i += 1) {
+      const reg = isoDateAndTimeRegs[i];
+      if (reg.test(value.trim())) {
+        return true;
+      }
     }
   }
   return false;
