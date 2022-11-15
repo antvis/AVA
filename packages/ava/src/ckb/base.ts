@@ -1,5 +1,3 @@
-import { LEVEL_OF_MEASUREMENTS } from './constants';
-
 import type { PureChartKnowledgeBase } from './types';
 
 export const base: PureChartKnowledgeBase = {
@@ -98,35 +96,41 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  interval_area_chart: {
-    id: 'interval_area_chart',
-    name: 'Interval Area Chart',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // interval_area_chart: {
+  //   id: 'interval_area_chart',
+  //   name: 'Interval Area Chart',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
-  stream_chart: {
-    id: 'stream_chart',
-    name: 'Stream Chart',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // stream_chart: {
+  //   id: 'stream_chart',
+  //   name: 'Stream Chart',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
   column_chart: {
     id: 'column_chart',
@@ -200,20 +204,23 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  interval_column_chart: {
-    id: 'interval_column_chart',
-    name: 'Interval Column Chart',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // interval_column_chart: {
+  //   id: 'interval_column_chart',
+  //   name: 'Interval Column Chart',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
   range_column_chart: {
     id: 'range_column_chart',
@@ -338,20 +345,23 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  interval_bar_chart: {
-    id: 'interval_bar_chart',
-    name: 'Interval Bar Chart',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // interval_bar_chart: {
+  //   id: 'interval_bar_chart',
+  //   name: 'Interval Bar Chart',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
   range_bar_chart: {
     id: 'range_bar_chart',
@@ -389,20 +399,23 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  mirror_bar_chart: {
-    id: 'mirror_bar_chart',
-    name: 'Mirror Bar Chart',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // mirror_bar_chart: {
+  //   id: 'mirror_bar_chart',
+  //   name: 'Mirror Bar Chart',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
   bullet_chart: {
     id: 'bullet_chart',
@@ -566,20 +579,23 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  overlapping_funnel_chart: {
-    id: 'overlapping_funnel_chart',
-    name: 'Overlapping Funnel Chart',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // overlapping_funnel_chart: {
+  //   id: 'overlapping_funnel_chart',
+  //   name: 'Overlapping Funnel Chart',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
   mirror_funnel_chart: {
     id: 'mirror_funnel_chart',
@@ -651,20 +667,23 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  gauge_chart: {
-    id: 'gauge_chart',
-    name: 'Gauge Chart',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // gauge_chart: {
+  //   id: 'gauge_chart',
+  //   name: 'Gauge Chart',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
   radar_chart: {
     id: 'radar_chart',
@@ -990,318 +1009,383 @@ export const base: PureChartKnowledgeBase = {
     recRate: 'Recommended',
   },
 
-  symbol_map: {
-    id: 'symbol_map',
-    name: 'Symbol Map',
-    alias: [],
-    family: ['PointLayer'],
-    def: 'Overlay symbols on the map as glyphs.',
-    purpose: ['Distribution', 'Comparison', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Scatter', 'Map'],
-    dataPres: [],
-    channel: ['Position'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // symbol_map: {
+  //   id: 'symbol_map',
+  //   name: 'Symbol Map',
+  //   alias: [],
+  //   family: ['PointLayer'],
+  //   def: 'Overlay symbols on the map as glyphs.',
+  //   purpose: ['Distribution', 'Comparison', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Scatter', 'Map'],
+  //   dataPres: [],
+  //   channel: ['Position'],
+  //   recRate: 'Recommended',
+  // },
 
-  chart_map: {
-    id: 'chart_map',
-    name: 'Chart Map',
-    alias: [],
-    family: ['PointLayer'],
-    def: 'Overlay charts on the map as glyphs.',
-    purpose: ['Composition', 'Distribution', 'Comparison', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Map'],
-    dataPres: [],
-    channel: ['Position'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // chart_map: {
+  //   id: 'chart_map',
+  //   name: 'Chart Map',
+  //   alias: [],
+  //   family: ['PointLayer'],
+  //   def: 'Overlay charts on the map as glyphs.',
+  //   purpose: ['Composition', 'Distribution', 'Comparison', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Map'],
+  //   dataPres: [],
+  //   channel: ['Position'],
+  //   recRate: 'Recommended',
+  // },
 
-  column_map_3d: {
-    id: 'column_map_3d',
-    name: '3D Column Map',
-    alias: [],
-    family: ['PointLayer'],
-    def: 'Maps that use height of 3D columns to represent distribution.',
-    purpose: ['Distribution', 'Comparison', 'Spatial'],
-    coord: [],
-    category: ['Map'],
-    shape: ['Map'],
-    dataPres: [],
-    channel: ['Position', 'Length'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // column_map_3d: {
+  //   id: 'column_map_3d',
+  //   name: '3D Column Map',
+  //   alias: [],
+  //   family: ['PointLayer'],
+  //   def: 'Maps that use height of 3D columns to represent distribution.',
+  //   purpose: ['Distribution', 'Comparison', 'Spatial'],
+  //   coord: [],
+  //   category: ['Map'],
+  //   shape: ['Map'],
+  //   dataPres: [],
+  //   channel: ['Position', 'Length'],
+  //   recRate: 'Recommended',
+  // },
 
-  scatter_map: {
-    id: 'scatter_map',
-    name: 'Scatter Map',
-    alias: [],
-    family: ['PointLayer'],
-    def: 'Overlay dots with same size on the map as glyphs.',
-    purpose: ['Distribution', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Scatter', 'Map'],
-    dataPres: [],
-    channel: ['Size', 'Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // scatter_map: {
+  //   id: 'scatter_map',
+  //   name: 'Scatter Map',
+  //   alias: [],
+  //   family: ['PointLayer'],
+  //   def: 'Overlay dots with same size on the map as glyphs.',
+  //   purpose: ['Distribution', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Scatter', 'Map'],
+  //   dataPres: [],
+  //   channel: ['Size', 'Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  path_map: {
-    id: 'path_map',
-    name: 'Path Map',
-    alias: [],
-    family: ['LineLayer'],
-    def: 'Overlay paths on the map as glyphs.',
-    purpose: ['Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Lines'],
-    dataPres: [],
-    channel: ['Size', 'Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // path_map: {
+  //   id: 'path_map',
+  //   name: 'Path Map',
+  //   alias: [],
+  //   family: ['LineLayer'],
+  //   def: 'Overlay paths on the map as glyphs.',
+  //   purpose: ['Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Lines'],
+  //   dataPres: [],
+  //   channel: ['Size', 'Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  isoline_map: {
-    id: 'isoline_map',
-    name: 'Isoline Map',
-    alias: [],
-    family: ['LineLayer'],
-    def: '',
-    purpose: ['Comparison'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Lines'],
-    dataPres: [],
-    channel: ['Size', 'Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // isoline_map: {
+  //   id: 'isoline_map',
+  //   name: 'Isoline Map',
+  //   alias: [],
+  //   family: ['LineLayer'],
+  //   def: '',
+  //   purpose: ['Comparison'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Lines'],
+  //   dataPres: [],
+  //   channel: ['Size', 'Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  arc_map_3d: {
-    id: 'arc_map_3d',
-    name: '3D Arc Map',
-    alias: [],
-    family: ['LineLayer'],
-    def: '',
-    purpose: ['Relation', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Lines'],
-    dataPres: [],
-    channel: ['Size', 'Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // arc_map_3d: {
+  //   id: 'arc_map_3d',
+  //   name: '3D Arc Map',
+  //   alias: [],
+  //   family: ['LineLayer'],
+  //   def: '',
+  //   purpose: ['Relation', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Lines'],
+  //   dataPres: [],
+  //   channel: ['Size', 'Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  choropleth_map: {
-    id: 'choropleth_map',
-    name: 'Choropleth Map',
-    alias: [],
-    family: ['PolygonLayer'],
-    def: 'A choropleth map is a type of thematic map in which areas are shaded or patterned in proportion to a statistical variable that represents an aggregate summary of a geographic characteristic within each area, such as population density or per-capita income.',
-    purpose: ['Comparison', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Area', 'Map'],
-    dataPres: [],
-    channel: ['Color', 'Position', 'Opacity', 'Stroke', 'LineWidth'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // choropleth_map: {
+  //   id: 'choropleth_map',
+  //   name: 'Choropleth Map',
+  //   alias: [],
+  //   family: ['PolygonLayer'],
+  //   def: 'A choropleth map is a type of thematic map in which areas are shaded or patterned in proportion to a statistical variable that represents an aggregate summary of a geographic characteristic within each area, such as population density or per-capita income.',
+  //   purpose: ['Comparison', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Area', 'Map'],
+  //   dataPres: [],
+  //   channel: ['Color', 'Position', 'Opacity', 'Stroke', 'LineWidth'],
+  //   recRate: 'Recommended',
+  // },
 
-  choropleth_map_3d: {
-    id: 'choropleth_map_3d',
-    name: '3D Choropleth Map',
-    alias: ['Extrude Map'],
-    family: ['PolygonLayer'],
-    def: '',
-    purpose: ['Comparison'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Area', 'Map'],
-    dataPres: [],
-    channel: ['Size', 'Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // choropleth_map_3d: {
+  //   id: 'choropleth_map_3d',
+  //   name: '3D Choropleth Map',
+  //   alias: ['Extrude Map'],
+  //   family: ['PolygonLayer'],
+  //   def: '',
+  //   purpose: ['Comparison'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Area', 'Map'],
+  //   dataPres: [],
+  //   channel: ['Size', 'Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  hexagonal_heat_map: {
-    id: 'hexagonal_heat_map',
-    name: 'Hexagonal Heat Map',
-    alias: [],
-    family: [],
-    def: 'Dividing the map area using hexagons.',
-    purpose: ['Distribution', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Area', 'Map'],
-    dataPres: [],
-    channel: ['Size', 'Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // hexagonal_heat_map: {
+  //   id: 'hexagonal_heat_map',
+  //   name: 'Hexagonal Heat Map',
+  //   alias: [],
+  //   family: [],
+  //   def: 'Dividing the map area using hexagons.',
+  //   purpose: ['Distribution', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Area', 'Map'],
+  //   dataPres: [],
+  //   channel: ['Size', 'Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  hexagonal_heat_map_3d: {
-    id: 'hexagonal_heat_map_3d',
-    name: '3D Hexagonal Heat Map',
-    alias: [],
-    family: [],
-    def: 'Dividing the 3D map area using hexagons.',
-    purpose: ['Distribution'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Map'],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // hexagonal_heat_map_3d: {
+  //   id: 'hexagonal_heat_map_3d',
+  //   name: '3D Hexagonal Heat Map',
+  //   alias: [],
+  //   family: [],
+  //   def: 'Dividing the 3D map area using hexagons.',
+  //   purpose: ['Distribution'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Map'],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
-  classical_heat_map: {
-    id: 'classical_heat_map',
-    name: 'Classical Heat Map',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: ['Distribution'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Map'],
-    dataPres: [],
-    channel: ['Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // classical_heat_map: {
+  //   id: 'classical_heat_map',
+  //   name: 'Classical Heat Map',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: ['Distribution'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Map'],
+  //   dataPres: [],
+  //   channel: ['Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  grid_heat_map: {
-    id: 'grid_heat_map',
-    name: 'Gird Heat Map',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: ['Distribution'],
-    coord: [],
-    category: ['Map'],
-    shape: ['Map'],
-    dataPres: [],
-    channel: ['Color', 'Position', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // grid_heat_map: {
+  //   id: 'grid_heat_map',
+  //   name: 'Gird Heat Map',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: ['Distribution'],
+  //   coord: [],
+  //   category: ['Map'],
+  //   shape: ['Map'],
+  //   dataPres: [],
+  //   channel: ['Color', 'Position', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  bubble_map: {
-    id: 'bubble_map',
-    name: 'Bubble Map',
-    alias: [],
-    family: ['PointLayer'],
-    def: 'Overlay bubbles on the map as glyphs.',
-    purpose: ['Distribution', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Scatter', 'Map'],
-    dataPres: [],
-    channel: ['Position', 'Color', 'Size'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // bubble_map: {
+  //   id: 'bubble_map',
+  //   name: 'Bubble Map',
+  //   alias: [],
+  //   family: ['PointLayer'],
+  //   def: 'Overlay bubbles on the map as glyphs.',
+  //   purpose: ['Distribution', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Scatter', 'Map'],
+  //   dataPres: [],
+  //   channel: ['Position', 'Color', 'Size'],
+  //   recRate: 'Recommended',
+  // },
 
-  bubble_light_map: {
-    id: 'bubble_light_map',
-    name: 'Bubble Light Map',
-    alias: [],
-    family: ['PointLayer'],
-    def: 'Overlay bubbles with different lightness on the map as glyphs.',
-    purpose: ['Distribution', 'Spatial'],
-    coord: ['Geo'],
-    category: ['Map'],
-    shape: ['Scatter', 'Map'],
-    dataPres: [],
-    channel: ['Position', 'Color', 'Size', 'Opacity'],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // bubble_light_map: {
+  //   id: 'bubble_light_map',
+  //   name: 'Bubble Light Map',
+  //   alias: [],
+  //   family: ['PointLayer'],
+  //   def: 'Overlay bubbles with different lightness on the map as glyphs.',
+  //   purpose: ['Distribution', 'Spatial'],
+  //   coord: ['Geo'],
+  //   category: ['Map'],
+  //   shape: ['Scatter', 'Map'],
+  //   dataPres: [],
+  //   channel: ['Position', 'Color', 'Size', 'Opacity'],
+  //   recRate: 'Recommended',
+  // },
 
-  packed_circles: {
-    id: 'packed_circles',
-    name: 'Packed Circles',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // packed_circles: {
+  //   id: 'packed_circles',
+  //   name: 'Packed Circles',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
-  polar_treemap: {
-    id: 'polar_treemap',
-    name: 'Polar Treemap',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // polar_treemap: {
+  //   id: 'polar_treemap',
+  //   name: 'Polar Treemap',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
-  sunburst_diagram: {
-    id: 'sunburst_diagram',
-    name: 'Sunburst',
-    alias: [],
-    family: [],
-    def: '',
-    purpose: [],
-    coord: [],
-    category: [],
-    shape: [],
-    dataPres: [],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // sunburst_diagram: {
+  //   id: 'sunburst_diagram',
+  //   name: 'Sunburst',
+  //   alias: [],
+  //   family: [],
+  //   def: '',
+  //   purpose: [],
+  //   coord: [],
+  //   category: [],
+  //   shape: [],
+  //   dataPres: [],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 
-  liquid_chart: {
-    id: 'liquid_chart',
-    name: 'Liquid Chart',
-    alias: ['Liquid Ball', 'Progress Ball'],
-    family: ['Others'],
-    def: 'Liquid chart is a diagram to represent progress.',
-    purpose: ['Composition'],
-    coord: ['Other'],
-    category: ['Diagram'],
-    shape: ['Round'],
-    dataPres: [{ minQty: 2, maxQty: 2, fieldConditions: ['Interval'] }],
-    channel: ['Position'],
-    recRate: 'Not Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   */
+  // liquid_chart: {
+  //   id: 'liquid_chart',
+  //   name: 'Liquid Chart',
+  //   alias: ['Liquid Ball', 'Progress Ball'],
+  //   family: ['Others'],
+  //   def: 'Liquid chart is a diagram to represent progress.',
+  //   purpose: ['Composition'],
+  //   coord: ['Other'],
+  //   category: ['Diagram'],
+  //   shape: ['Round'],
+  //   dataPres: [{ minQty: 2, maxQty: 2, fieldConditions: ['Interval'] }],
+  //   channel: ['Position'],
+  //   recRate: 'Not Recommended',
+  // },
 
-  kpi_panel: {
-    id: 'kpi_panel',
-    name: 'KPI Panel',
-    alias: ['KPI Panel'],
-    family: ['Others'],
-    def: 'KPI Panel is a card to show aggregated numbers',
-    purpose: ['Value'],
-    coord: ['Other'],
-    category: ['Other'],
-    shape: ['Other'],
-    dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Interval'] }],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   * @todo add channel 'Text'
+   */
+  // kpi_panel: {
+  //   id: 'kpi_panel',
+  //   name: 'KPI Panel',
+  //   alias: ['KPI Panel'],
+  //   family: ['Others'],
+  //   def: 'KPI Panel is a card to show aggregated numbers',
+  //   purpose: ['Value'],
+  //   coord: ['Other'],
+  //   category: ['Other'],
+  //   shape: ['Other'],
+  //   dataPres: [{ minQty: 1, maxQty: '*', fieldConditions: ['Interval'] }],
+  //   channel: [''],
+  //   recRate: 'Recommended',
+  // },
 
-  table: {
-    id: 'table',
-    name: 'Table',
-    alias: ['Information Table'],
-    family: ['Table'],
-    def: 'A table consists of an ordered arrangement of rows and columns.',
-    purpose: ['Value'],
-    coord: ['Other'],
-    category: ['Other'],
-    shape: ['Other'],
-    dataPres: [{ minQty: 0, maxQty: '*', fieldConditions: [...LEVEL_OF_MEASUREMENTS] }],
-    channel: [],
-    recRate: 'Recommended',
-  },
+  /**
+   * WIP: unavailable until completed
+   * @todo add channel 'Text'
+   */
+  // table: {
+  //   id: 'table',
+  //   name: 'Table',
+  //   alias: ['Information Table'],
+  //   family: ['Table'],
+  //   def: 'A table consists of an ordered arrangement of rows and columns.',
+  //   purpose: ['Value'],
+  //   coord: ['Other'],
+  //   category: ['Other'],
+  //   shape: ['Other'],
+  //   dataPres: [{ minQty: 0, maxQty: '*', fieldConditions: [...LEVEL_OF_MEASUREMENTS] }],
+  //   channel: [],
+  //   recRate: 'Recommended',
+  // },
 };
