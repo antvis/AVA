@@ -1,4 +1,4 @@
-import Series from '../../../src/dataset/series';
+import Series from '../../../../../src/data/dataset/field/series';
 
 describe('Series getter', () => {
   test('shape', () => {

@@ -1,4 +1,4 @@
-import DataFrame from '../../../src/dataset/data-frame';
+import DataFrame from '../../../../../src/data/dataset/field/dataFrame';
 
 describe('DataFrame data with columnTypes', () => {
   test('1D: basic type', () => {
@@ -108,13 +108,13 @@ describe('DataFrame data with columnTypes', () => {
     expect(df.data).toStrictEqual([
       [null, true, 3.1, new Date(1), 'undefined', undefined],
       [null, true, NaN, new Date('4'), 'undefined', undefined],
-      [undefined, false, 1, '2019-02-03', '0', 201],
+      [undefined, false, 1, new Date('2019-02-03'), '0', 201],
     ]);
     expect(df.colData).toStrictEqual([
       [null, null, undefined],
       [true, true, false],
       [3.1, NaN, 1],
-      [new Date(1), new Date('4'), '2019-02-03'],
+      [new Date(1), new Date('4'), new Date('2019-02-03')],
       ['undefined', 'undefined', '0'],
       [undefined, undefined, 201],
     ]);
