@@ -1,1 +1,1 @@
-export type { FieldType, FieldInfo, StringFieldInfo, NumberFieldInfo, DateFieldInfo } from './dataAnalysis';
+export type { FieldType, FieldInfo, StringFieldInfo, NumberFieldInfo, DateFieldInfo } from './analysis';

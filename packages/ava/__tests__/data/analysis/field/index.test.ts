@@ -11,7 +11,7 @@ import {
   isNumberFieldInfo,
   isStringFieldInfo,
   isDateFieldInfo,
-} from '../../../../src/data/dataAnalysis/field';
+} from '../../../../src/data/analysis/field';
 import { assert } from '../../../../src/data/utils';
 
 test('analyze integer', () => {

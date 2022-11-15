@@ -1,2 +1,2 @@
-export * from './dataAnalysis';
+export * from './analysis';
 export * as DataTypes from './types';
