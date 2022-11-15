@@ -1,5 +1,5 @@
-import DataFrame from '../../../src/dataset/data-frame';
-import * as analyzer from '../../../src/analyzer';
+import DataFrame from '../../../../../src/data/dataset/field/dataFrame';
+import { NumberFieldInfo } from '../../../../../src/data/types';
 
 describe('DataFrame info', () => {
   test('1D: basic type', () => {
@@ -133,7 +133,7 @@ describe('DataFrame info', () => {
     );
 
     const infos = df.info();
-    const info = infos[0] as analyzer.NumberFieldInfo & { name: String };
+    const info = infos[0] as NumberFieldInfo & { name: String };
 
     expect(info.count).toBe(3);
     expect(info.distinct).toBe(3);

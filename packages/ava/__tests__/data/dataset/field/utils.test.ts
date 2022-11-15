@@ -1,4 +1,4 @@
-import { isAxis, generateArrayIndex } from '../../src/dataset/utils';
+import { generateArrayIndex, isAxis } from '../../../../src/data/dataset/field/utils';
 
 test('isAxis', () => {
   expect(isAxis(1)).toBeTruthy();
