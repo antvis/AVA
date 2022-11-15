@@ -1,1 +1,0 @@
-export { AutoChart } from './AutoChart';
