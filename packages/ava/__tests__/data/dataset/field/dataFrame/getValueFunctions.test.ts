@@ -1,5 +1,5 @@
-import DataFrame from '../../../src/dataset/data-frame';
-import Series from '../../../src/dataset/series';
+import DataFrame from '../../../../../src/data/dataset/field/dataFrame';
+import Series from '../../../../../src/data/dataset/field/series';
 
 describe('DataFrame getter', () => {
   test('shape', () => {
