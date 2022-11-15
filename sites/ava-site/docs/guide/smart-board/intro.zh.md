@@ -3,9 +3,7 @@ title: SmartBoard 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
-
+<embed src='@/docs/common/style.md'></embed>
 
 根据输入图表和洞察自动生成 Dashboard。
 

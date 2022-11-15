@@ -3,8 +3,7 @@ title: LiteInsight 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 从多维数据中自动地发现数据洞察。

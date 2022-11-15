@@ -3,8 +3,7 @@ title: 推荐规则
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 <!-- omit in toc -->
 ## 推荐规则一览
 

@@ -3,8 +3,7 @@ title: Advisor.advise
 order: 11
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 ```sign

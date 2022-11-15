@@ -3,8 +3,7 @@ title: Palette Extraction
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # Palette Extraction

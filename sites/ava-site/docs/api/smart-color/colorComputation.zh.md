@@ -3,8 +3,7 @@ title: 色彩计算
 order: 5
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # 色彩计算

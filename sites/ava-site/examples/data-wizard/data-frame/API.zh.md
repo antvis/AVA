@@ -1,3 +1,3 @@
 # DataFrame
 
-`markdown:docs/api/data-wizard/data-frame.zh.md`
+<embed src='@/docs/api/data-wizard/data-frame.zh.md'></embed>

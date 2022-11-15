@@ -3,8 +3,7 @@ title: CKBOptions
 order: 2
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 得到图表知识所可能包含的所有属性。
