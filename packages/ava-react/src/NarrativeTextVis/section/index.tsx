@@ -1,12 +1,16 @@
 import React from 'react';
-import { SectionSpec, isCustomSection, isStandardSection } from '@antv/narrative-text-schema';
+
+import { isCustomSection, isStandardSection } from '@antv/ava';
 import { v4 } from 'uuid';
 import { isFunction } from 'lodash';
-import { getPrefixCls, classnames as cx } from '../utils';
-import { ThemeProps, ExtensionProps, SectionEvents } from '../interface';
-import { Container } from '../styled';
-import { Paragraph } from '../paragraph';
+
 import { presetPluginManager } from '../chore/plugin';
+import { getPrefixCls, classnames as cx } from '../utils';
+import { Paragraph } from '../paragraph';
+import { Container } from '../styled';
+
+import type { NtvTypes } from '@antv/ava';
+import type { ThemeProps, ExtensionProps, SectionEvents } from '../types';
 
 type SectionProps = ThemeProps &
   ExtensionProps &
@@ -15,7 +19,7 @@ type SectionProps = ThemeProps &
      * @description specification of section text spec
      * @description.zh-CN Section 描述 json 信息
      */
-    spec: SectionSpec;
+    spec: NtvTypes.SectionSpec;
   };
 
 export function Section({ spec, size = 'normal', pluginManager = presetPluginManager, ...events }: SectionProps) {

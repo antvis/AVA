@@ -1,7 +1,7 @@
-import { BlockDescriptor } from './plugin-protocol.type';
+import type { BlockDescriptor } from './plugin-protocol.type';
 
 export const createCustomBlockFactory = <CustomBlockSpec = any>(
-  descriptor: Omit<BlockDescriptor<CustomBlockSpec>, 'isBlock'>,
+  descriptor: Omit<BlockDescriptor<CustomBlockSpec>, 'isBlock'>
 ): BlockDescriptor<CustomBlockSpec> => {
   return { ...descriptor, isBlock: true };
 };

@@ -1,1 +1,3 @@
-export const getPrefixCls = (suffixCls?: string) => `ntv-${suffixCls}`;
+export function getPrefixCls(suffixCls?: string) {
+  return `ntv-${suffixCls}`;
+}
