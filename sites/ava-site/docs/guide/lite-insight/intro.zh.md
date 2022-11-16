@@ -19,7 +19,7 @@ order: 0
 
 自动洞察的流程如下：
 
-<img src='https://gw.alipayobjects.com/zos/antfincdn/nLmy8%26OiOh/li-pipeline-zh.jpg' alt='LiteInsight pipeline' />
+<img src='https://gw.alipayobjects.com/zos/antfincdn/nLmy8%26OiOh/li-pipeline-zh.jpg' alt='LiteInsight pipeline' width=100%/>
 
 ## 📦 安装
 
