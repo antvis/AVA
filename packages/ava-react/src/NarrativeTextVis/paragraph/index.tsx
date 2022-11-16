@@ -1,16 +1,13 @@
 import React from 'react';
-import {
-  ParagraphSpec,
-  isCustomParagraph,
-  isHeadingParagraph,
-  isTextParagraph,
-  isBulletParagraph,
-} from '@antv/narrative-text-schema';
+
+import { isCustomParagraph, isHeadingParagraph, isTextParagraph, isBulletParagraph } from '@antv/ava';
 
 import { Heading } from './Heading';
 import { TextLine } from './TextLine';
 import { Bullets } from './Bullets';
-import { ThemeProps, ExtensionProps, ParagraphEvents } from '../interface';
+
+import type { NtvTypes } from '@antv/ava';
+import type { ThemeProps, ExtensionProps, ParagraphEvents } from '../types';
 
 type ParagraphProps = ThemeProps &
   ExtensionProps &
@@ -19,7 +16,7 @@ type ParagraphProps = ThemeProps &
      * @description specification of paragraph text spec
      * @description.zh-CN 段落描述 json 信息
      */
-    spec: ParagraphSpec;
+    spec: NtvTypes.ParagraphSpec;
   };
 
 export function Paragraph({ spec, pluginManager, size = 'normal', ...events }: ParagraphProps) {

@@ -1,16 +1,19 @@
 import React from 'react';
-import { BulletsParagraphSpec } from '@antv/narrative-text-schema';
+
 import { v4 } from 'uuid';
+
 import { Ol, Ul, Li } from '../styled';
 import { Phrases } from '../phrases';
 import { getPrefixCls, classnames as cx } from '../utils';
-import { ThemeProps, ExtensionProps, ParagraphEvents } from '../interface';
 import { presetPluginManager } from '../chore/plugin';
+
+import type { NtvTypes } from '@antv/ava';
+import type { ThemeProps, ExtensionProps, ParagraphEvents } from '../types';
 
 type BulletsProps = ThemeProps &
   ExtensionProps &
   ParagraphEvents & {
-    spec: BulletsParagraphSpec;
+    spec: NtvTypes.BulletsParagraphSpec;
   };
 
 export function Bullets({ spec, size = 'normal', pluginManager = presetPluginManager, ...events }: BulletsProps) {

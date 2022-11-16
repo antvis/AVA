@@ -1,17 +1,22 @@
 import React, { useRef, useState, useLayoutEffect } from 'react';
-import { getElementFontSize, DEFAULT_FONT_SIZE } from './getElementFontSize';
 
-type SvgReactFC = React.FC<React.SVGProps<SVGSVGElement>>;
+import { seedToken } from '../../theme';
+
+import { getElementFontSize } from './getElementFontSize';
+
+import type { PropsWithChildren } from 'react';
+
+type SvgProps = PropsWithChildren<React.SVGProps<SVGSVGElement>>;
 
 export const useSvgWrapper = () => {
   const ele = useRef(null);
-  const [size, setSize] = useState<number>(DEFAULT_FONT_SIZE);
+  const [size, setSize] = useState<number>(seedToken.fontSizeBase);
   useLayoutEffect(() => {
     if (ele.current) {
-      setSize(getElementFontSize(ele.current, DEFAULT_FONT_SIZE));
+      setSize(getElementFontSize(ele.current, seedToken.fontSizeBase));
     }
   }, []);
-  const Svg: SvgReactFC = ({ children, ...otherProps }) => {
+  const Svg = ({ children, ...otherProps }: SvgProps) => {
     return (
       <svg
         style={{
@@ -25,5 +30,5 @@ export const useSvgWrapper = () => {
       </svg>
     );
   };
-  return [Svg, size] as [SvgReactFC, number];
+  return [Svg, size] as const;
 };

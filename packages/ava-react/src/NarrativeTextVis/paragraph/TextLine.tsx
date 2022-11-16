@@ -1,15 +1,17 @@
 import React from 'react';
-import { TextParagraphSpec } from '@antv/narrative-text-schema';
+
 import { P as StyledP } from '../styled';
 import { Phrases } from '../phrases';
 import { getPrefixCls, classnames as cx } from '../utils';
-import { ThemeProps, ExtensionProps, PhraseEvents } from '../interface';
 import { presetPluginManager } from '../chore/plugin';
+
+import type { NtvTypes } from '@antv/ava';
+import type { ThemeProps, ExtensionProps, PhraseEvents } from '../types';
 
 type TextLineProps = ThemeProps &
   ExtensionProps &
   PhraseEvents & {
-    spec: TextParagraphSpec;
+    spec: NtvTypes.TextParagraphSpec;
   };
 
 export function TextLine({ spec, size = 'normal', pluginManager = presetPluginManager, ...events }: TextLineProps) {
