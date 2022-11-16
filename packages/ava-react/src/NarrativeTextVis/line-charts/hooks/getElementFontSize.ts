@@ -1,4 +1,4 @@
-export const DEFAULT_FONT_SIZE = 14;
+import { seedToken } from '../../theme';
 
 function getStyle(ele: Element, style: string): string | undefined {
   // @ts-ignore currentStyle for IE
@@ -16,7 +16,7 @@ function getPxNumber(str: string): number | undefined {
   return undefined;
 }
 
-export function getElementFontSize(ele: Element, defaultSize = DEFAULT_FONT_SIZE): number {
+export function getElementFontSize(ele: Element, defaultSize = seedToken.fontSizeBase): number {
   const FONT_SIZE = 'font-size';
   const eleFontSizeStr = getStyle(ele, FONT_SIZE);
   if (eleFontSizeStr && isAbsoluteUnitPx(eleFontSizeStr)) {
