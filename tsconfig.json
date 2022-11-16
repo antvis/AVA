@@ -18,5 +18,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["node_modules", "**/esm", "**/lib", "**/dist", "**/build"]
 }
