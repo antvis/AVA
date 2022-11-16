@@ -1,5 +1,5 @@
 import { defineConfig } from 'dumi';
-import { repository } from './package.json';
+import { repository, homepage } from './package.json';
 
 export default defineConfig({
   locales: [{ id: 'zh', name: '中文' }, { id: 'en', name: 'English' }],
@@ -7,7 +7,7 @@ export default defineConfig({
     title: 'AVA',
     description: 'A framework and solution for more convenient visual analytics.',
     defaultLanguage: 'zh',
-    siteUrl: 'https://ava.antv.vision',
+    siteUrl: homepage,
     isAntVSite: false,
     githubUrl: repository.url,   
     // 是否显示搜索框
@@ -262,7 +262,7 @@ export default defineConfig({
     playground: {
         container: '<div id="container" />',
         devDependencies: {
-        typescript: 'latest',
+            typescript: 'latest',
         },
     },
     docsearchOptions: {
@@ -311,7 +311,8 @@ export default defineConfig({
               zh: '图表示例',
               en: 'Examples',
             },
-            link: `/examples/gallery`,
+            link: `/examples`,
+            type: 'primary',
           },
           {
             text: {
@@ -319,15 +320,14 @@ export default defineConfig({
               en: 'Getting Started',
             },
             link: `/docs/guide`,
-            type: 'primary',
           },
         ],
     },
     news: [
         {
             type: {
-                zh: '新闻',
-                en: 'News',
+                zh: '推荐',
+                en: 'Recommend',
             },
             title: {
                 zh: '利业·立业 - AntV 与业务的故事',
@@ -338,8 +338,8 @@ export default defineConfig({
         },
         {
           type: {
-            zh: '新闻',
-            en: 'News',
+            zh: '推荐',
+            en: 'Recommend',
           },
           title: {
             zh: 'AVA 1.0 你的图表参谋',
@@ -349,6 +349,11 @@ export default defineConfig({
           link: 'https://www.yuque.com/antv/blog/2020ava',
         },
     ],
+  },
+  mfsu: false,
+  alias: {
+    // 根据自己项目结构书写绝对路径
+    '@': __dirname
   },
   links: [
   ],
