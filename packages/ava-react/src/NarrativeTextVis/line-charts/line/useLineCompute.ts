@@ -1,17 +1,25 @@
 import { useState, useEffect } from 'react';
+
+import { seedToken } from '../../theme';
+
 import { scaleLinear, Scale } from './scaleLinear';
-import { DEFAULT_FONT_SIZE } from '../hooks/getElementFontSize';
 
 // adjust to draw line width
 const SCALE_ADJUST = 2;
 
 class Line {
   protected data: number[] = [];
-  protected size = DEFAULT_FONT_SIZE;
+
+  protected size = seedToken.fontSizeBase;
+
   protected height = this.size;
+
   protected width = this.getWidth();
+
   protected xScale: Scale | undefined;
+
   protected yScale: Scale | undefined;
+
   protected points: [number, number][] = [];
 
   constructor(size: number, data: number[]) {

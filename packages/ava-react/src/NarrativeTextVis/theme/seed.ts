@@ -8,7 +8,10 @@ export const seedToken = {
   colorMetricName: 'rgba(0, 0, 0, 0.88)',
   colorMetricValue: '#1677FF',
   colorOtherValue: '#1677FF',
+  colorProportionShadow: '#CDDDFD',
+  colorProportionFill: '#3471F9',
+  colorLineStroke: '#5B8FF9',
 
   fontSizeBase: 14,
   fontSizeSmall: 12,
-} as const;
+};

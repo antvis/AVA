@@ -1,6 +1,8 @@
 import styled from 'styled-components';
+
 import { seedToken, getFontSize } from '../theme';
-import type { ThemeProps } from '../interface';
+
+import type { ThemeProps } from '../types';
 
 export const Bullet = styled.div<ThemeProps>`
   padding-left: 16px;
