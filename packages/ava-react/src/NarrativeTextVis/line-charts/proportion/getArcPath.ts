@@ -1,3 +1,13 @@
+/**
+ * make data between 0 ~ 1
+ */
+function normalizeProportion(data: number | undefined) {
+  if (typeof data !== 'number') return 0;
+  if (data > 1) return 1;
+  if (data < 0) return 0;
+  return data;
+}
+
 export function getArcPath(size: number, data: number) {
   const cx = size / 2;
   const cy = size / 2;
@@ -11,14 +21,4 @@ export function getArcPath(size: number, data: number) {
     L ${cx} ${cy} Z
   `;
   return path;
-}
-
-/**
- * make data between 0 ~ 1
- */
-function normalizeProportion(data: number | undefined) {
-  if (typeof data !== 'number') return 0;
-  if (data > 1) return 1;
-  if (data < 0) return 0;
-  return data;
 }

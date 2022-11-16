@@ -1,14 +1,16 @@
 import React from 'react';
-import { HeadlineSpec } from '@antv/narrative-text-schema';
+
 import { Headline as StyledHeadline } from '../styled';
 import { Phrases } from '../phrases';
 import { getPrefixCls, classnames as cx } from '../utils';
-import { ExtensionProps, ParagraphEvents } from '../interface';
 import { presetPluginManager } from '../chore/plugin';
+
+import type { NtvTypes } from '@antv/ava';
+import type { ExtensionProps, ParagraphEvents } from '../types';
 
 type HeadlineProps = ExtensionProps &
   ParagraphEvents & {
-    spec: HeadlineSpec;
+    spec: NtvTypes.HeadlineSpec;
   };
 
 export function Headline({ spec, pluginManager = presetPluginManager, ...events }: HeadlineProps) {

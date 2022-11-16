@@ -1,16 +1,30 @@
-import React, { CSSProperties, ReactNode } from 'react';
-import { EntityMetaData, EntityType } from '@antv/narrative-text-schema';
+import React from 'react';
+
 import { cloneDeep } from 'lodash';
-import { PhraseDescriptor, SpecificEntityPhraseDescriptor, CustomEntityMode } from './plugin-protocol.type';
-import { createPhraseFactory } from './createPhraseFactory';
+
 import { functionalize } from '../../utils';
 
+import { createPhraseFactory } from './createPhraseFactory';
+
+import type { NtvTypes } from '@antv/ava';
+import type { CSSProperties } from 'react';
+import type { PhraseDescriptor, SpecificEntityPhraseDescriptor, CustomEntityMode } from './plugin-protocol.type';
+
+function getMergedDescriptor(
+  defaultDescriptor: SpecificEntityPhraseDescriptor,
+  customDescriptor: SpecificEntityPhraseDescriptor
+) {
+  const result = { ...defaultDescriptor, ...customDescriptor };
+  result.encoding = { ...(defaultDescriptor?.encoding || {}), ...(customDescriptor?.encoding || {}) };
+  return result;
+}
+
 export const createEntityPhraseFactory =
-  (key: EntityType, defaultDescriptor: SpecificEntityPhraseDescriptor) =>
+  (key: NtvTypes.EntityType, defaultDescriptor: SpecificEntityPhraseDescriptor) =>
   (
     customDescriptor?: SpecificEntityPhraseDescriptor,
-    mode: CustomEntityMode = 'merge',
-  ): PhraseDescriptor<EntityMetaData> => {
+    mode: CustomEntityMode = 'merge'
+  ): PhraseDescriptor<NtvTypes.EntityMetaData> => {
     const entityFactory = createPhraseFactory(true);
 
     let entityDescriptor = cloneDeep(defaultDescriptor);
@@ -23,16 +37,16 @@ export const createEntityPhraseFactory =
     if (entityDescriptor.encoding) {
       // handle style
       const { color, bgColor, fontSize, fontWeight, underline } = entityDescriptor.encoding;
-      const commonStyleFn = functionalize<CSSProperties>(entityDescriptor?.style, {});
+      const commonStyleFn = functionalize(entityDescriptor?.style, {});
 
-      const encodingStyle = (value: string, metadata: EntityMetaData): CSSProperties => {
+      const encodingStyle = (value: string, metadata: NtvTypes.EntityMetaData): CSSProperties => {
         return {
           ...commonStyleFn(value, metadata),
-          color: functionalize<string>(color, undefined)(value, metadata),
-          backgroundColor: functionalize<string>(bgColor, undefined)(value, metadata),
-          fontSize: functionalize<number | string>(fontSize, undefined)(value, metadata),
-          fontWeight: functionalize<number | string>(fontWeight, undefined)(value, metadata),
-          textDecoration: functionalize<boolean>(underline, false)(value, metadata) ? 'underline' : undefined,
+          color: functionalize(color, undefined)(value, metadata),
+          backgroundColor: functionalize(bgColor, undefined)(value, metadata),
+          fontSize: functionalize(fontSize, undefined)(value, metadata),
+          fontWeight: functionalize(fontWeight, undefined)(value, metadata),
+          textDecoration: functionalize(underline, false)(value, metadata) ? 'underline' : undefined,
         };
       };
       entityDescriptor.style = encodingStyle;
@@ -40,25 +54,16 @@ export const createEntityPhraseFactory =
       // handle content
       const { prefix, suffix, inlineChart } = entityDescriptor.encoding;
       const { content } = entityDescriptor;
-      entityDescriptor.content = (value: string, metadata: EntityMetaData) => (
+      entityDescriptor.content = (value: string, metadata: NtvTypes.EntityMetaData) => (
         <>
-          {functionalize<ReactNode>(prefix, null)(value, metadata)}
+          {functionalize(prefix, null)(value, metadata)}
           {content ? content(value, metadata) : value}
-          {functionalize<ReactNode>(suffix, null)(value, metadata)}
-          {functionalize<ReactNode>(inlineChart, null)(value, metadata)}
+          {functionalize(suffix, null)(value, metadata)}
+          {functionalize(inlineChart, null)(value, metadata)}
         </>
       );
       delete entityDescriptor.encoding;
     }
 
-    return entityFactory<EntityMetaData>({ key, ...entityDescriptor });
+    return entityFactory<NtvTypes.EntityMetaData>({ key, ...entityDescriptor });
   };
-
-function getMergedDescriptor(
-  defaultDescriptor: SpecificEntityPhraseDescriptor,
-  customDescriptor: SpecificEntityPhraseDescriptor,
-) {
-  const result = { ...defaultDescriptor, ...customDescriptor };
-  result.encoding = { ...(defaultDescriptor?.encoding || {}), ...(customDescriptor?.encoding || {}) };
-  return result;
-}

@@ -81,7 +81,7 @@
     "semantic-release": "^19.0.2",
     "semantic-release-monorepo": "^7.0.5",
     "ts-jest": "^24.1.0",
-    "typescript": "4.3.5"
+    "typescript": "^4.9.3"
   },
   "dependencies": {
     "@rollup/plugin-commonjs": "^20.0.0",

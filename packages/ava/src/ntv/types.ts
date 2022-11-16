@@ -18,5 +18,6 @@ export type {
   ValueAssessment,
   EntityType,
   EntityMetaData,
+  CustomMetaData,
 } from './schema';
 export type { Structure, StructureTemp, Variable } from './generate';
