@@ -24,5 +24,14 @@ if (window) {
     (window as any).smartColor = require('@antv/smart-color');
     (window as any).g6 = require('@antv/g6');
     (window as any).antvSiteDemoRc = require('antv-site-demo-rc');
+    (window as any).g2plot = require('@antv/g2plot');
+
+    (window as any).chartAdvisor = require('@antv/chart-advisor');
+    (window as any).dataWizard = require('@antv/data-wizard');
+    (window as any).autoChart = require('@antv/auto-chart');
+    (window as any).smartBoard = require('@antv/smart-board');
+    (window as any).ckb = require('@antv/ckb');
+    (window as any).liteInsight = require('@antv/lite-insight');
+
     require('antd/lib/alert/style/index.css');
 }
