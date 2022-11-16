@@ -50,7 +50,7 @@ ReactDOM.render(
 
 ### AutoChart 演示案例
 
-<playground path="components/auto-chart/demo/basic.jsx"></playground>
+<Playground path="components/auto-chart/demo/basic.jsx"></playground>
 
 ## 📖 文档
 

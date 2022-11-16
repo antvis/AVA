@@ -51,7 +51,7 @@ ReactDOM.render(
 
 ### AutoChart Demo
 
-<playground path="components/auto-chart/demo/basic.jsx"></playground>
+<Playground path="components/auto-chart/demo/basic.jsx"></playground>
 
 ## 📖 Documentation
 
