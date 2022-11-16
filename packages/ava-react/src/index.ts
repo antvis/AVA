@@ -1,1 +1,1 @@
-// export { NarrativeTextVis } from './NarrativeTextVis';
+export * from './NarrativeTextVis';

@@ -1,6 +1,8 @@
 import styled from 'styled-components';
-import { ThemeProps } from '../interface';
+
 import { seedToken, getFontSize } from '../theme';
+
+import type { ThemeProps } from '../types';
 
 export const Entity = styled.span<ThemeProps>`
   display: flex;

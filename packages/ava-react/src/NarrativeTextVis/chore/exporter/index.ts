@@ -1,2 +1,2 @@
 export { TextExporter } from './TextExporter';
-export { copyToClipboard } from './helpers/copy';
+export { copyToClipboard, getSelectionContentForCopy } from './helpers/copy';

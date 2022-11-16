@@ -1,8 +1,11 @@
 import React from 'react';
-import { PhraseSpec } from '@antv/narrative-text-schema';
-import { ThemeProps, ExtensionProps, PhraseEvents } from '../interface';
-import { Phrase } from './Phrase';
+
 import { presetPluginManager } from '../chore/plugin';
+
+import { Phrase } from './Phrase';
+
+import type { NtvTypes } from '@antv/ava';
+import type { ThemeProps, ExtensionProps, PhraseEvents } from '../types';
 
 type PhrasesProps = ThemeProps &
   ExtensionProps &
@@ -11,7 +14,7 @@ type PhrasesProps = ThemeProps &
      * @description specification of phrase text spec
      * @description.zh-CN 短语描述 json 信息
      */
-    spec: PhraseSpec[];
+    spec: NtvTypes.PhraseSpec[];
   };
 
 export function Phrases({ spec, size = 'normal', pluginManager = presetPluginManager, ...events }: PhrasesProps) {

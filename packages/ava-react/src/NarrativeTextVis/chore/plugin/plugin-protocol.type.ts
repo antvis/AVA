@@ -1,11 +1,12 @@
+import type { NtvTypes } from '@antv/ava';
 import type { CSSProperties, ReactNode } from 'react';
 import type { TooltipProps } from 'antd';
-import type { EntityMetaData, EntityEncoding, EntityType } from '@antv/narrative-text-schema';
+import type { EntityEncoding } from '../../types';
 
 /**
  * description for phrase render
  */
-export interface PhraseDescriptor<MetaData> {
+export type PhraseDescriptor<MetaData> = {
   /** key represent entityType of customType */
   key: string;
   isEntity: boolean;
@@ -20,7 +21,7 @@ export interface PhraseDescriptor<MetaData> {
    */
   tooltip?:
     | false
-    | (TooltipProps & {
+    | (Omit<TooltipProps, 'title'> & {
         // overwrite antd tooltip title props
         title: (value: string, metadata: MetaData) => ReactNode;
       });
@@ -38,15 +39,15 @@ export interface PhraseDescriptor<MetaData> {
    * @param metadata phrase spec metadata
    */
   overwrite?: (node: ReactNode, value: string, metadata: MetaData) => ReactNode;
-}
+};
 
 export type CustomPhraseDescriptor<MetaData> = PhraseDescriptor<MetaData> & { isEntity: false };
 
 /**
  * description for entity phrase render
  */
-export interface EntityPhraseDescriptor extends PhraseDescriptor<EntityMetaData> {
-  key: EntityType;
+export interface EntityPhraseDescriptor extends PhraseDescriptor<NtvTypes.EntityMetaData> {
+  key: NtvTypes.EntityType;
   isEntity: true;
   /**
    * entity phrase encoding channel based on entityType
@@ -59,10 +60,10 @@ export type CustomEntityMode = 'overwrite' | 'merge';
 
 export type EntityPhrasePlugin = (
   customPhraseDescriptor?: SpecificEntityPhraseDescriptor,
-  mode?: CustomEntityMode,
-) => PhraseDescriptor<EntityMetaData>;
+  mode?: CustomEntityMode
+) => PhraseDescriptor<NtvTypes.EntityMetaData>;
 
-export interface BlockDescriptor<CustomBlockSpec> {
+export type BlockDescriptor<CustomBlockSpec> = {
   key: string;
   isBlock: true;
   className?: string | ((spec: CustomBlockSpec) => string);
@@ -70,7 +71,7 @@ export interface BlockDescriptor<CustomBlockSpec> {
   render?: (spec: CustomBlockSpec) => ReactNode;
   getText?: (spec: CustomBlockSpec) => string;
   getMarkdown?: (spec: CustomBlockSpec) => string;
-}
+};
 
 export type AnyObject = Record<string, unknown>;
 

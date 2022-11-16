@@ -1,29 +1,28 @@
-import React, { ReactNode } from 'react';
-import { Tooltip } from 'antd';
-import {
-  PhraseSpec,
-  EntityPhraseSpec,
-  CustomPhraseSpec,
-  isTextPhrase,
-  isEntityPhrase,
-} from '@antv/narrative-text-schema';
+import React from 'react';
+
+import { Tooltip, TooltipProps } from 'antd';
+import { isTextPhrase, isEntityPhrase } from '@antv/ava';
 import { isFunction, kebabCase, isEmpty, isNil } from 'lodash';
+
 import { Entity, Bold, Italic, Underline } from '../styled';
 import { getPrefixCls, classnames as cx, functionalize } from '../utils';
-import { ThemeProps, ExtensionProps, PhraseEvents } from '../interface';
 import { PhraseDescriptor, presetPluginManager } from '../chore/plugin';
+
+import type { ReactNode } from 'react';
+import type { NtvTypes } from '@antv/ava';
+import type { ThemeProps, ExtensionProps, PhraseEvents } from '../types';
 
 type PhraseProps = ThemeProps &
   ExtensionProps &
   PhraseEvents & {
-    spec: PhraseSpec;
+    spec: NtvTypes.PhraseSpec;
   };
 
 function renderPhraseByDescriptor(
-  spec: EntityPhraseSpec | CustomPhraseSpec,
+  spec: NtvTypes.EntityPhraseSpec | NtvTypes.CustomPhraseSpec,
   descriptor: PhraseDescriptor<any>,
   theme: ThemeProps,
-  events: PhraseEvents,
+  events: PhraseEvents
 ) {
   const { value = '', metadata = {}, styles: specStyles = {} } = spec;
   const {
@@ -59,7 +58,7 @@ function renderPhraseByDescriptor(
       className={cx(
         getPrefixCls('value'),
         isEntityPhrase(spec) ? getPrefixCls(kebabCase(spec.metadata.entityType)) : '',
-        ...functionalize(classNames, [])(spec?.value, metadata as any),
+        ...functionalize(classNames, [])(spec?.value, metadata as any)
       )}
     >
       {content(value, metadata)}
@@ -69,7 +68,7 @@ function renderPhraseByDescriptor(
     defaultNode = overwrite(defaultNode, value, metadata);
   }
 
-  const nodeWithEvents =
+  const nodeWithEvents: ReactNode =
     !isEmpty(events) || isFunction(onClick) || isFunction(onHover) ? (
       <span onClick={handleClick} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         {defaultNode}
@@ -78,7 +77,7 @@ function renderPhraseByDescriptor(
       defaultNode
     );
 
-  const showTooltip = tooltip && tooltip?.title(value, metadata);
+  const showTooltip = tooltip && (tooltip?.title(value, metadata) as TooltipProps['title']);
   return !isNil(showTooltip) ? (
     <Tooltip {...tooltip} title={showTooltip}>
       {nodeWithEvents}
