@@ -53,12 +53,12 @@
     ]
   },
   "dependencies": {
-    "@types/react": "^18.0.25",
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
+    "@types/react": "^17.0.15",
     "eslint": "^7.32.0",
     "jest": "^24.9.0",
     "lint-staged": "^11.0.1",
