@@ -1,10 +1,9 @@
-import React from 'react';
-
-import ReactDOM from 'react-dom';
-import { Menu, Dropdown } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { Thumbnail } from '@antv/thumbnails-component';
 import Thumbnails from '@antv/thumbnails';
+import { Thumbnail } from '@antv/thumbnails-component';
+import { Dropdown, Menu } from 'antd';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 const chartTypeList = Object.keys(Thumbnails);
 
@@ -33,7 +32,7 @@ class App extends React.Component {
     return (
       <div>
         <Thumbnail chart={current} width="200" height="200" />
-        <Dropdown overlay={menu} placement="bottomLeft" trigger={['click']}>
+        <Dropdown menu={menu} placement="bottomLeft" trigger={['click']}>
           <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
             Select Chart Type <CaretDownOutlined />
           </a>

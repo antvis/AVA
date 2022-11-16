@@ -1,11 +1,10 @@
-import React from 'react';
-
-import ReactDOM from 'react-dom';
-import { Menu, Dropdown, Radio } from 'antd';
 import { CaretDownOutlined } from '@ant-design/icons';
-import { JSONView, TableView, ChartView, LintCard, StepBar } from 'antv-site-demo-rc';
 // import
 import { ChartAdvisor } from '@antv/chart-advisor';
+import { Dropdown, Menu, Radio } from 'antd';
+import { ChartView, JSONView, LintCard, StepBar, TableView } from 'antv-site-demo-rc';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
 const myChartAdvisor = new ChartAdvisor();
 
@@ -79,7 +78,7 @@ class App extends React.Component {
 
     const resultContent = (
       <>
-        <Dropdown overlay={advicesMenu} placement="bottomLeft" trigger={['click']} disabled={!results}>
+        <Dropdown menu={advicesMenu} placement="bottomLeft" trigger={['click']} disabled={!results}>
           <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
             {!results ? 'no advice' : `Advice ${currentResult}`} <CaretDownOutlined />
           </a>
