@@ -1,8 +1,3 @@
-import rollupConfig from '../../rollup.config';
+import rollupReactConfig from '../../rollup.config';
 
-export default rollupConfig('ts', {
-  input: './src/index.ts',
-  output: {
-    name: 'AVAReact',
-  },
-});
+export default rollupReactConfig('react', 'AVAReact');

@@ -37,9 +37,9 @@
     "format": "npm run prettier-fix && npm run lint-fix",
     "lint-staged": "lint-staged",
     "clean": "rimraf lib esm dist",
-    "build:umd": "rimraf ./dist && rollup -c",
-    "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
-    "build:esm": "rimraf ./esm && tsc --module es6 --outDir esm",
+    "build:esm": "rimraf ./esm && cross-env FORMAT=esm rollup -c",
+    "build:cjs": "rimraf ./lib && cross-env FORMAT=cjs rollup -c",
+    "build:umd": "rimraf ./dist && cross-env FORMAT=umd rollup -c",
     "build": "run-p build:*",
     "test": "jest",
     "coverage": "jest --coverage",
@@ -53,17 +53,33 @@
   },
   "dependencies": {
     "@antv/ava": "3.0.0-alpha.0",
-    "tslib": "^2.3.1"
+    "canvg": "^4.0.1",
+    "lodash": "^4.17.21",
+    "styled-components": "^5.3.5",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
+    "@types/lodash": "^4.14.180",
+    "@types/react": "^17.0.15",
+    "@types/react-dom": "^17.0.9",
+    "@types/styled-components": "^5.1.25",
+    "@types/uuid": "^8.3.1",
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "jest": "^24.9.0",
     "lint-staged": "^11.0.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "rollup": "^2.59.0",
     "typescript": "4.3.5"
+  },
+  "peerDependencies": {
+    "antd": ">=4.16.13",
+    "react": ">=16.9.0",
+    "react-dom": ">=16.9.0"
   }
 }
