@@ -1,8 +1,20 @@
 import React from 'react';
-import { isNumber } from 'lodash';
-import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
-import { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
+
+import { isNumber, isNaN } from 'lodash';
+
 import { ProportionChart } from '../../../line-charts';
+import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
+
+import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
+
+function getProportionNumber(text: string, value?: number | undefined): number {
+  if (value && !isNaN(value)) return value;
+  if (text?.endsWith('%')) {
+    const percentageValue = text?.replace(/%$/, '');
+    if (!isNaN(Number(percentageValue))) return Number(percentageValue) / 100;
+  }
+  return NaN;
+}
 
 const defaultProportionDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
@@ -14,15 +26,3 @@ const defaultProportionDescriptor: SpecificEntityPhraseDescriptor = {
 };
 
 export const createProportion = createEntityPhraseFactory('proportion', defaultProportionDescriptor);
-
-/** text & entity */
-const isNaN = (v: unknown) => Number.isNaN(v);
-
-function getProportionNumber(text: string, value?: number | undefined): number {
-  if (value && !isNaN(value)) return value;
-  if (text?.endsWith('%')) {
-    const percentageValue = text?.replace(/%$/, '');
-    if (!isNaN(Number(percentageValue))) return Number(percentageValue) / 100;
-  }
-  return NaN;
-}

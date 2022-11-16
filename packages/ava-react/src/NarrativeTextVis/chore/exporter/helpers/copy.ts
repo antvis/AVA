@@ -1,4 +1,4 @@
-import { transformHtml } from "./transformHtml";
+import { transformHtml } from './transformHtml';
 
 /**
  * put data to clipboard using execCommand api
@@ -7,33 +7,23 @@ import { transformHtml } from "./transformHtml";
  * @param onSuccess function to be called when the copy succeed
  * @param onError function to be called when the copy fail
  */
-const execCopyCommand = (
-  htmlStr: string,
-  plainText?: string,
-  onSuccess?: () => void,
-  onError?: () => void,
-) => {
+function execCopyCommand(htmlStr: string, plainText?: string, onSuccess?: () => void, onError?: () => void) {
   const listener = (e: ClipboardEvent) => {
     try {
       e.clipboardData?.setData('text/html', htmlStr);
       e.clipboardData?.setData('text/plain', plainText || htmlStr);
       e.preventDefault();
-      onSuccess?.()
+      onSuccess?.();
     } catch (err) {
-      onError?.()
+      onError?.();
     }
   };
   document.addEventListener('copy', listener);
   document.execCommand('copy');
   document.removeEventListener('copy', listener);
-};
+}
 
-export const copyToClipboard = (
-  htmlString: string,
-  plainText?: string,
-  onSuccess?: () => void,
-  onError?: () => void,
-) => {
+export function copyToClipboard(htmlString: string, plainText?: string, onSuccess?: () => void, onError?: () => void) {
   try {
     const html = new Blob([htmlString], { type: 'text/html' });
     const text = new Blob([plainText || htmlString], { type: 'text/plain' });
@@ -47,12 +37,12 @@ export const copyToClipboard = (
       onSuccess?.();
     });
   } catch (err) {
-    /** use the execCommand api as the fallback, in case that ClipboardItem is not available*/
+    /** use the execCommand api as the fallback, in case that ClipboardItem is not available */
     execCopyCommand(htmlString, plainText, onSuccess, onError);
   }
-};
+}
 
-export const getSelectionContentForCopy = async () => {
+export async function getSelectionContentForCopy() {
   // get the html string of selection
   const doms = window.getSelection()?.getRangeAt(0).cloneContents();
   const container = document.createElement('div');
@@ -60,9 +50,9 @@ export const getSelectionContentForCopy = async () => {
     container.appendChild(doms);
   }
   const plainText = container.innerText;
-  const transformedHtml = await transformHtml({elements: [container]});
+  const transformedHtml = await transformHtml({ elements: [container] });
   return {
-    plainText: plainText,
-    html: transformedHtml
-  }
-};
+    plainText,
+    html: transformedHtml,
+  };
+}

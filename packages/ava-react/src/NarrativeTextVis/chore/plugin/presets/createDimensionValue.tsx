@@ -1,6 +1,7 @@
 import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
-import { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 import { seedToken } from '../../../theme';
+
+import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 
 const defaultDimensionValueDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
