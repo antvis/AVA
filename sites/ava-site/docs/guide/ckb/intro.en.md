@@ -75,7 +75,7 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 ### Demo
 
-<playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
+<Playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
 
 ## 📖 Documentation
 

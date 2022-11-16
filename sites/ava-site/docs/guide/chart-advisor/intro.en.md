@@ -157,7 +157,7 @@ const problems = myLinter.lint({ spec })
 
 ### ChartAdvisor Demo
 
-<playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
+<Playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
 
 ## 📖 Documentation
 

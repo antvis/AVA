@@ -149,7 +149,7 @@ const problems = myLinter.lint({ spec })
 
 ### ChartAdvisor 演示案例
 
-<playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
+<Playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
 
 ## 📖 文档
 
