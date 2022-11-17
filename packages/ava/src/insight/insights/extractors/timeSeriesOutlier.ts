@@ -1,6 +1,6 @@
 import lowess from '@stdlib/stats-lowess';
 
-import { distinct } from '../../../data/statistics';
+import { distinct } from '../../../data';
 
 import { findOutliers } from './categoryOutlier';
 

@@ -148,7 +148,7 @@ export type PureChartKnowledge = {
  *
  * @public
  */
-export interface ChartKnowledge {
+export type ChartKnowledge = {
   id: string;
   name: string;
   alias: string[];
@@ -162,7 +162,7 @@ export interface ChartKnowledge {
   channel: string[];
   recRate: string;
   toSpec?: (data: Data, dataProps: any) => Specification | null;
-}
+};
 
 /**
  * TS type of pure CKB(Chart Knowledge Base).

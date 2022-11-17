@@ -8,14 +8,14 @@ import { cloneDeep } from '../utils';
 
 import { dataToAdvices } from './data-to-advices';
 
-import type { ChartKnowledgeBase } from '../../ckb/types';
+import type { CkbTypes } from '../../ckb';
 import type { AdviseResult, ChartAdviseParams } from '../types';
 import type { BasicDataPropertyForAdvice, RuleModule } from '../ruler';
 
 export function advicesForChart(
   params: ChartAdviseParams,
   exportLog = false,
-  ckb: ChartKnowledgeBase,
+  ckb: CkbTypes.ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>
 ): AdviseResult {
   const { data, dataProps, smartColor, options, colorOptions } = params;

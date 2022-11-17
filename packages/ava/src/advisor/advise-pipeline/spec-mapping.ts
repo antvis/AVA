@@ -4,20 +4,19 @@
  * 在 CKB 中增加 encode 相关描述，让这里的 spec mapping 简化
  */
 
-import { CHART_IDS } from '../../ckb/constants';
-import { pearson } from '../../data/statistics';
-import { isParentChild } from '../../data/utils';
+import { CHART_IDS } from '../../ckb';
+import { pearson, isParentChild } from '../../data';
 import { compare, hasSubset, intersects } from '../utils';
 
 import type { Data } from '../../common/types';
-import type { ChartKnowledge, LevelOfMeasurement as LOM } from '../../ckb/types';
+import type { CkbTypes } from '../../ckb';
 import type { Advice } from '../types';
 import type { BasicDataPropertyForAdvice } from '../ruler';
 
 type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal'; // TODO support in AntVSpec | 'geojson';
 declare type ChartID = typeof CHART_IDS[number];
 
-function LOM2EncodingType(lom: LOM): EncodingType {
+function LOM2EncodingType(lom: CkbTypes.LevelOfMeasurement): EncodingType {
   switch (lom) {
     case 'Nominal':
       return 'nominal';
@@ -615,7 +614,7 @@ export function getChartTypeSpec(
   chartType: string,
   data: Data,
   dataProps: BasicDataPropertyForAdvice[],
-  chartKnowledge?: ChartKnowledge
+  chartKnowledge?: CkbTypes.ChartKnowledge
 ) {
   // step 0: check whether the chartType is default in `ChartID`
   // if not, use customized `toSpec` function

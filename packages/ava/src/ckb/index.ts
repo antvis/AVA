@@ -6,8 +6,6 @@
 //  b. EIC（exclude,include,custom）用法
 //  c. 图表类型分割的具体逻辑（比如 单色柱状图、多色柱状图 是否是两个id？条形图、柱状图呢？为什么）
 
-import * as CkbTypes from './types';
-
 // the main CKB API - ckb
 export { ckb } from './ckb';
 // CKB i18n functions
@@ -15,4 +13,5 @@ export { ckbDict } from './i18n';
 // CKB constants
 export * from './constants';
 // CKB types
-export { CkbTypes };
+export * as CkbTypes from './types';
+export type { CkbConfig } from './ckb';
