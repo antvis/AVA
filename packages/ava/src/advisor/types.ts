@@ -1,8 +1,7 @@
 import type { ColorSchemeType } from '@antv/color-schema';
 import type { SimulationType } from '@antv/smart-color';
 /** AVA 包内跨模块引用 */
-import type { CkbConfig } from '../ckb/ckb';
-import type { Purpose } from '../ckb/types';
+import type { CkbTypes, CkbConfig } from '../ckb';
 import type { Specification, Data } from '../common/types';
 /** Advisor 模块内引用 */
 import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/type';
@@ -91,7 +90,7 @@ export type AdvisorOptions = {
    * Proportion
    * Composition
    */
-  purpose?: Purpose;
+  purpose?: CkbTypes.Purpose;
   /**
    * preference settings for landscape or portrait
    */
@@ -201,7 +200,7 @@ export interface ScoringResultForChartType {
 export type { Preferences } from './ruler/type';
 
 export interface LinterOptions {
-  purpose?: Purpose;
+  purpose?: CkbTypes.Purpose;
   preferences?: Preferences;
 }
 

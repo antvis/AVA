@@ -1,15 +1,13 @@
-// TODO
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { hexToColor, colorToHex, paletteGeneration, colorSimulation } from '@antv/smart-color';
 
 import { deepMix, computeScore } from '../utils';
-import { CHART_IDS } from '../../ckb/constants';
+import { CHART_IDS } from '../../ckb';
 
 import { getChartTypeSpec } from './spec-mapping';
 
 import type { SimulationType } from '@antv/smart-color';
 import type { ColorSchemeType } from '@antv/color-schema';
-import type { ChartKnowledge, ChartKnowledgeBase } from '../../ckb/types';
+import type { CkbTypes } from '../../ckb';
 import type { Specification, Data } from '../../common/types';
 import type { BasicDataPropertyForAdvice, DesignRuleModule, RuleModule } from '../ruler/type';
 import type {
@@ -40,7 +38,7 @@ declare type ChartID = typeof CHART_IDS[number];
  */
 function scoreRules(
   chartType: ChartID | string,
-  chartWIKI: ChartKnowledgeBase,
+  chartWIKI: CkbTypes.ChartKnowledgeBase,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
   options?: PipeAdvisorOptions
@@ -205,7 +203,7 @@ function applySmartColor(
 export function dataToAdvices(
   data: Data,
   dataProps: BasicDataPropertyForAdvice[],
-  chartWIKI: Record<string, ChartKnowledge>,
+  chartWIKI: Record<string, CkbTypes.ChartKnowledge>,
   ruleBase: Record<string, RuleModule>,
   smartColor?: boolean,
   options?: PipeAdvisorOptions,

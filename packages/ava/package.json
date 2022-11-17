@@ -64,6 +64,7 @@
     "tslib": "^2.3.1"
   },
   "devDependencies": {
+    "@antv/color-schema": "^0.2.3",
     "@stdlib/types": "^0.0.12",
     "@types/d3-array": "^3.0.1",
     "@types/jest": "^23.3.12",
