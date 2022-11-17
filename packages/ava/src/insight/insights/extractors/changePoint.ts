@@ -1,5 +1,6 @@
 import { ChangePoint } from '../../algorithms';
-import { Datum, ChangePointInfo, Measure } from '../../interface';
+
+import type { Datum, ChangePointInfo, Measure } from '../../types';
 
 type ChangePointItem = {
   index: number;
@@ -21,7 +22,7 @@ export const findChangePoints = (series: number[]): ChangePointItem[] => {
   return changePointsResult;
 };
 
-export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): ChangePointInfo[] => {
+export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): ChangePointInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].field;
   if (!data || data.length === 0) return [];
@@ -39,4 +40,4 @@ export const extractor = (data: Datum[], dimensions: string[], measures: Measure
     };
   });
   return outliers;
-};
+}

@@ -1,13 +1,13 @@
-import _lastIndexOf from 'lodash/lastIndexOf';
+import { lastIndexOf } from 'lodash';
 
 // sign
-export const sign = (value: number) => {
+export function sign(value: number) {
   if (value > 0) return 1;
   return value < 0 ? -1 : 0;
-};
+}
 
 // unique
-export const unique = (arr: string[] | number[]): [(string | number)[], number[]] => {
+export function unique(arr: string[] | number[]): [(string | number)[], number[]] {
   const sorted = arr.slice().sort();
 
   const uniqArr = [sorted[0]];
@@ -22,17 +22,17 @@ export const unique = (arr: string[] | number[]): [(string | number)[], number[]
   }
 
   return [uniqArr, countArr];
-};
+}
 
 // rank
-export const rank = (arr: (string | number)[]): number[] => {
+export function rank(arr: (string | number)[]): number[] {
   const sorted = arr.slice().sort();
-  const rank = [];
+  const rank: number[] = [];
   for (let i = 0; i < arr.length; i += 1) {
     const value = arr[i];
     const firstRank = sorted.indexOf(value) + 1;
-    const lastRank = _lastIndexOf(sorted, value) + 1;
+    const lastRank = lastIndexOf(sorted, value) + 1;
     rank.push(firstRank === lastRank ? firstRank : (firstRank + lastRank) / 2);
   }
   return rank;
-};
+}

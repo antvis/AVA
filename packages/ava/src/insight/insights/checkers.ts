@@ -1,9 +1,9 @@
-import _intersection from 'lodash/intersection';
+import { intersection } from 'lodash';
 
-import { Datum, SubjectInfo, InsightType } from '../interface';
+import { Datum, SubjectInfo, InsightType } from '../types';
 import { DataProperty } from '../pipeline/preprocess';
 
-import type { LevelOfMeasurement } from '@antv/ckb';
+import type { LevelOfMeasurement } from '../../ckb/types';
 
 export type ExtractorChecker = (
   data: Datum[],
@@ -27,7 +27,7 @@ const generalCheckerFor1M1D: ExtractorChecker = (data, subjectInfo, fieldPropsMa
   // check dimension type
   if (
     Array.isArray(lom)
-      ? !_intersection(fieldPropsMap[dimensions[0]]?.levelOfMeasurements, lom as LevelOfMeasurement[])?.length
+      ? !intersection(fieldPropsMap[dimensions[0]]?.levelOfMeasurements, lom as LevelOfMeasurement[])?.length
       : !fieldPropsMap[dimensions[0]]?.levelOfMeasurements?.includes(lom as LevelOfMeasurement)
   )
     return false;

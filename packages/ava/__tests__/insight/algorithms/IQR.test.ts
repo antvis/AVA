@@ -1,4 +1,4 @@
-import { IQR } from '../../src/algorithms';
+import { IQR } from '../../../src/insight/algorithms';
 
 const data = [38, 52, 61, 145, 48, 38, 38, 38];
 

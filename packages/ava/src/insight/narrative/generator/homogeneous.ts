@@ -1,4 +1,4 @@
-import { HomogeneousPatternInfo, InsightInfo } from '../../interface';
+import { HomogeneousPatternInfo, InsightInfo } from '../../types';
 import { AbstractNarrativeGenerator, HomogeneousInfo } from '../interface';
 import { homogeneousStrategy } from '../strategy';
 import { PhrasesBuilder } from '../utils/phrases-builder';

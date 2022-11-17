@@ -1,13 +1,13 @@
 import pcorrtest from '@stdlib/stats/pcorrtest';
 
-import { Datum, Measure, CorrelationInfo } from '../../interface';
+import { Datum, Measure, CorrelationInfo } from '../../types';
 
 type CorrelationResult = {
   significance: number;
   pcorr: number;
 };
 
-export const findCorrelation = (x: number[], y: number[]): CorrelationResult => {
+export function findCorrelation(x: number[], y: number[]): CorrelationResult | null {
   const testResult = pcorrtest(x, y);
   // @ts-ignore Type Result is missing the "pcorr"
   const { rejected, pcorr } = testResult;
@@ -19,9 +19,9 @@ export const findCorrelation = (x: number[], y: number[]): CorrelationResult => 
     };
   }
   return null;
-};
+}
 
-export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): CorrelationInfo[] => {
+export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CorrelationInfo[] {
   const xField = measures[0].field;
   const yField = measures[1].field;
   if (!data || !dimensions || data.length === 0) return [];
@@ -38,4 +38,4 @@ export const extractor = (data: Datum[], dimensions: string[], measures: Measure
     ];
   }
   return [];
-};
+}

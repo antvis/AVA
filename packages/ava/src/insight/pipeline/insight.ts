@@ -2,12 +2,13 @@ import Heap from 'heap-js';
 
 import { InsightDefaultLimit } from '../constant';
 import { getInsightVisualizationSchema, getHomogeneousInsightVisualizationSchema } from '../visualization';
-import { Datum, InsightOptions, Measure, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../interface';
 import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 
 import { enumerateInsights } from './extract';
 import { DataProperty, dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
 import { insightPriorityComparator, homogeneousInsightPriorityComparator } from './util';
+
+import type { Datum, InsightOptions, Measure, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../types';
 
 interface ReferenceInfo {
   fieldPropsMap: Record<string, DataProperty>;
@@ -19,7 +20,7 @@ type InsightsResult = {
   homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[];
 };
 
-export const extractInsights = (sourceData: Datum[], options?: InsightOptions): InsightsResult => {
+export function extractInsights(sourceData: Datum[], options?: InsightOptions): InsightsResult {
   // get data columns infomations (column type, statistics, etc.)
   const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
   const dataProps = dataToDataProps(data);
@@ -58,42 +59,42 @@ export const extractInsights = (sourceData: Datum[], options?: InsightOptions): 
   enumerateInsights(data, dimensions, measures, referenceInfo, insightsHeap, homogeneousInsightsHeap, options);
 
   // get top N results
-  const insights = [];
+  const insights: InsightInfo<PatternInfo>[] = [];
   const heapSize = insightsHeap.size();
   const insightsSize = heapSize > insightsLimit ? insightsLimit : heapSize;
   for (let i = 0; i < insightsSize; i += 1) {
-    const top = insightsHeap.pop();
+    const top = insightsHeap.pop() as InsightInfo<PatternInfo>;
     insights.push(top);
   }
 
   const result: InsightsResult = { insights: insights.reverse() };
 
   if (options?.homogeneous) {
-    const homogeneousInsightsResult = [];
+    const homogeneousInsightsResult: InsightInfo<HomogeneousPatternInfo>[] = [];
     const homogeneousHeapSize = homogeneousInsightsHeap.size();
     const homogeneousInsightsSize = homogeneousHeapSize > insightsLimit ? insightsLimit : homogeneousHeapSize;
 
     for (let i = 0; i < homogeneousInsightsSize; i += 1) {
-      const top = homogeneousInsightsHeap.pop();
+      const top = homogeneousInsightsHeap.pop() as InsightInfo<HomogeneousPatternInfo>;
       homogeneousInsightsResult.push(top);
     }
     result.homogeneousInsights = homogeneousInsightsResult.reverse();
   }
 
   return result;
-};
+}
 
-export const generateInsightsWithVisualizationSchemas = (
+export function generateInsightsWithVisualizationSchemas(
   extraction: InsightsResult,
   options?: InsightOptions
-): InsightsResult => {
+): InsightsResult {
   const { insights, homogeneousInsights } = extraction;
   const insightsWithVis = insights.map((item) => ({
     ...item,
-    visualizationSchemas: getInsightVisualizationSchema(item, options.visualization),
+    visualizationSchemas: getInsightVisualizationSchema(item, options?.visualization),
   }));
   const result: InsightsResult = { insights: insightsWithVis };
-  if (homogeneousInsights && options.homogeneous) {
+  if (homogeneousInsights && options?.homogeneous) {
     const homogeneousInsightsWithVis = homogeneousInsights.map((item) => {
       const visualizationSchemas = getHomogeneousInsightVisualizationSchema(item, options.visualization);
       const { data, measures, dimensions } = item;
@@ -108,4 +109,4 @@ export const generateInsightsWithVisualizationSchemas = (
     result.homogeneousInsights = homogeneousInsightsWithVis;
   }
   return result;
-};
+}
