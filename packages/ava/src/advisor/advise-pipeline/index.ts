@@ -1,0 +1,1 @@
+export { advicesForChart } from './advicesForChart';
