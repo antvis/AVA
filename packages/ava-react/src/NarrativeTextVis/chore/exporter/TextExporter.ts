@@ -12,11 +12,13 @@ import {
 import { pad } from 'lodash';
 
 import { PluginManager } from '../plugin';
-import { NTV_CONTAINER_CLS } from '../../constants';
+import { NTV_PREFIX_CLS } from '../../constants';
 
 import { ImageExtra, transformHtml } from './helpers/transformHtml';
 
 import type { NtvTypes } from '@antv/ava';
+
+const NTV_CONTAINER_CLS = `${NTV_PREFIX_CLS}-container`;
 
 export class TextExporter extends PluginManager {
   /**

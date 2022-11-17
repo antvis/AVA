@@ -2,7 +2,9 @@ import React, { useRef, useEffect } from 'react';
 
 import { v4 } from 'uuid';
 
-import { classnames as cx, getPrefixCls } from './utils';
+import { classnames as cx } from '../utils';
+
+import { NTV_PREFIX_CLS } from './constants';
 import { Container } from './styled';
 import { Headline } from './paragraph';
 import { Section } from './section';
@@ -76,7 +78,7 @@ export function NarrativeTextVis({
   return (
     <Container
       size={size}
-      className={cx(className, getPrefixCls('container'))}
+      className={cx(className, `${NTV_PREFIX_CLS}-container`)}
       style={styles}
       onClick={onClick}
       onMouseEnter={onMouseEnter}

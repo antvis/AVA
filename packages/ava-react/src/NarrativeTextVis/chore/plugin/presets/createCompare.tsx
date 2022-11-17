@@ -4,7 +4,7 @@ import { isNumber } from 'lodash';
 
 import { ArrowDown, ArrowUp } from '../../../assets/icons';
 import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
-import { getPrefixCls } from '../../../utils';
+import { NTV_PREFIX_CLS } from '../../../constants';
 import { seedToken } from '../../../theme';
 
 import type { NtvTypes } from '@antv/ava';
@@ -33,7 +33,7 @@ const defaultDeltaValueDescriptor: SpecificEntityPhraseDescriptor = {
     color: (value, { assessment }) => getCompareColor(assessment),
     prefix: (value, { assessment }) => getComparePrefix(assessment, ['-', '+']),
   },
-  classNames: (value, { assessment }) => [getPrefixCls(`value-${assessment}`)],
+  classNames: (value, { assessment }) => [`${NTV_PREFIX_CLS}-value-${assessment}`],
   getText: getAssessmentText,
   tooltip: {
     title: (value, metadata) => (isNumber(metadata.origin) ? `${metadata.origin}` : null),
@@ -47,7 +47,7 @@ const defaultRatioValueDescriptor: SpecificEntityPhraseDescriptor = {
     color: (value, { assessment }) => getCompareColor(assessment),
     prefix: (value, { assessment }) => getComparePrefix(assessment, [<ArrowDown key="neg" />, <ArrowUp key="pos" />]),
   },
-  classNames: (value, { assessment }) => [getPrefixCls(`value-${assessment}`)],
+  classNames: (value, { assessment }) => [`${NTV_PREFIX_CLS}-value-${assessment}`],
   getText: getAssessmentText,
   tooltip: {
     title: (value, metadata) => (isNumber(metadata.origin) ? `${metadata.origin}` : null),
