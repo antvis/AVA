@@ -8,11 +8,16 @@ import { DataFrame } from '../../data';
 import { getChartType } from './getChartType';
 import { lintRules } from './lintRules';
 
+import type { ChartKnowledgeBase } from '../../ckb/types';
 import type { LintResult, ScoringResultForRule, LintParams, Lint } from '../types';
-import type { BasicDataPropertyForAdvice } from '../ruler';
+import type { BasicDataPropertyForAdvice, RuleModule } from '../ruler';
 import type { Datum } from '../../common/types';
 
-export function checkRules(params: LintParams): LintResult {
+export function checkRules(
+  params: LintParams,
+  ruleBase: Record<string, RuleModule>,
+  ckb: ChartKnowledgeBase
+): LintResult {
   const { spec, options } = params;
   let { dataProps } = params;
 
@@ -47,10 +52,10 @@ export function checkRules(params: LintParams): LintResult {
 
   // step 2: lint rules
   // HARD and SOFT rules
-  lintRules(this.ruleBase, 'notDESIGN', info, log, lints);
+  lintRules(ruleBase, 'notDESIGN', info, log, lints, ckb);
 
   // DESIGN rules
-  lintRules(this.ruleBase, 'DESIGN', info, log, lints, spec);
+  lintRules(ruleBase, 'DESIGN', info, log, lints, ckb, spec);
 
   // filter rules with problems (score<1)
   lints = lints.filter((record) => record.score !== 1);

@@ -1,7 +1,5 @@
 // eslint-disable-next-line import/no-unresolved
-import { analyzer } from '../../../../data';
-// TODO update DW
-
+import type { DataTypes } from '../../data';
 import type { LevelOfMeasurement as LOM, ChartKnowledgeBase } from '../../ckb/types';
 import type { Specification } from '../../common/types';
 
@@ -23,9 +21,9 @@ export interface BasicDataPropertyForAdvice {
   readonly levelOfMeasurements?: LOM[];
   /** used for split column xy series */
   readonly rawData: any[];
-  /** required types in analyzer FieldInfo */
-  readonly recommendation: analyzer.FieldInfo['recommendation'];
-  readonly type: analyzer.FieldInfo['type'];
+  /** required types in DataTypes. FieldInfo */
+  readonly recommendation: DataTypes.FieldInfo['recommendation'];
+  readonly type: DataTypes.FieldInfo['type'];
   readonly distinct?: number;
   readonly count?: number;
   readonly sum?: number;
@@ -50,7 +48,7 @@ export interface Preferences {
 export interface Info {
   chartType?: string;
   chartWIKI?: ChartKnowledgeBase;
-  dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice | Partial<analyzer.GraphProps>;
+  dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice;
   purpose?: string;
   preferences?: Preferences;
   customWeight?: number;
@@ -64,7 +62,7 @@ export type Validator = (args: Info) => number | boolean;
 export type Trigger = (args: Info) => boolean;
 
 export type Optimizer = (
-  dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice | Partial<analyzer.GraphProps>,
+  dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice,
   chartSpec: Specification
 ) => object;
 

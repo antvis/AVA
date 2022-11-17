@@ -5,7 +5,8 @@
  */
 
 import { CHART_IDS } from '../../ckb/constants';
-import { statistics, utils as dwUtils } from '../../data';
+import { pearson } from '../../data/statistics';
+import { isParentChild } from '../../data/utils';
 import { compare, hasSubset, intersects } from '../utils';
 
 import type { Data } from '../../common/types';
@@ -354,7 +355,7 @@ function splitColumnXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnFi
 
   let field4X;
   let Field4Series;
-  if (dwUtils.isParentChild(sortedNominalFields[1]?.rawData, sortedNominalFields[0]?.rawData)) {
+  if (isParentChild(sortedNominalFields[1]?.rawData, sortedNominalFields[0]?.rawData)) {
     [Field4Series, field4X] = sortedNominalFields;
   } else {
     [field4X, Field4Series] = sortedNominalFields;
@@ -509,7 +510,7 @@ function bubbleChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advic
   };
   for (let i = 0; i < intervalFields.length; i += 1) {
     for (let j = i + 1; j < intervalFields.length; j += 1) {
-      const p = statistics.pearson(intervalFields[i].rawData, intervalFields[j].rawData);
+      const p = pearson(intervalFields[i].rawData, intervalFields[j].rawData);
       if (Math.abs(p) > triple.corr) {
         triple.x = intervalFields[i];
         triple.y = intervalFields[j];

@@ -59,7 +59,7 @@ export class Advisor {
   }
 
   lint(params: LintParams): Lint[] {
-    this.lintResult = checkRules(params);
+    this.lintResult = checkRules(params, this.ruleBase, this.ckb);
     return this.lintResult.lints;
   }
 

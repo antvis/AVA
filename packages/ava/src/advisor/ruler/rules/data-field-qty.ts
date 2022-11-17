@@ -11,10 +11,10 @@ export const dataFieldQty: RuleModule = {
   },
   validator: (args): number => {
     let result = 0;
-    const { dataProps, chartType } = args;
-    if (dataProps && chartType && Wiki[chartType]) {
+    const { dataProps, chartType, chartWIKI } = args;
+    if (dataProps && chartType && chartWIKI[chartType]) {
       result = 1;
-      const dataPres = Wiki[chartType].dataPres || [];
+      const dataPres = chartWIKI[chartType].dataPres || [];
       const minFieldQty = dataPres.map((e: any) => e.minQty).reduce((acc: number, cv: number) => acc + cv);
 
       if (dataProps.length) {

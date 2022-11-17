@@ -1,6 +1,6 @@
 import { intersects } from '../utils';
 
-import type { LevelOfMeasurement as LOM, DataPrerequisiteJSON } from '@antv/ckb';
+import type { LevelOfMeasurement as LOM, DataPrerequisite } from '../../ckb/types';
 import type { BasicDataPropertyForAdvice } from './type';
 
 export function compare(f1: any, f2: any) {
@@ -14,7 +14,7 @@ export function compare(f1: any, f2: any) {
   return 0;
 }
 
-export function verifyDataProps(dataPre: DataPrerequisiteJSON, dataProps: BasicDataPropertyForAdvice[]) {
+export function verifyDataProps(dataPre: DataPrerequisite, dataProps: BasicDataPropertyForAdvice[]) {
   const fieldsLOMs: LOM[][] = dataProps.map((info: any) => {
     return info.levelOfMeasurements as LOM[];
   });

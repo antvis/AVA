@@ -1,4 +1,4 @@
-import type { ChartSpec } from '../../types';
+import type { ChartSpec } from '../../../common/types';
 import type { RuleModule } from '../type';
 
 const applyChartTypes = [
