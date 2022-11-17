@@ -1,6 +1,6 @@
 import { intersects } from '../utils';
 
-import type { LevelOfMeasurement as LOM, DataPrerequisite } from '../../ckb/types';
+import type { CkbTypes } from '../../ckb';
 import type { BasicDataPropertyForAdvice } from './type';
 
 export function compare(f1: any, f2: any) {
@@ -14,9 +14,12 @@ export function compare(f1: any, f2: any) {
   return 0;
 }
 
-export function verifyDataProps(dataPre: DataPrerequisite, dataProps: BasicDataPropertyForAdvice[]) {
-  const fieldsLOMs: LOM[][] = dataProps.map((info: any) => {
-    return info.levelOfMeasurements as LOM[];
+export function verifyDataProps(
+  dataPre: CkbTypes.ChartKnowledge['dataPres'][number],
+  dataProps: BasicDataPropertyForAdvice[]
+) {
+  const fieldsLOMs: CkbTypes.LevelOfMeasurement[][] = dataProps.map((info: any) => {
+    return info.levelOfMeasurements as CkbTypes.LevelOfMeasurement[];
   });
   if (fieldsLOMs) {
     let lomCount = 0;

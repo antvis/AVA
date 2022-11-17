@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import type { DataTypes } from '../../data';
-import type { LevelOfMeasurement as LOM, ChartKnowledgeBase } from '../../ckb/types';
+import type { CkbTypes } from '../../ckb';
 import type { Specification } from '../../common/types';
 
 /**
@@ -17,8 +17,8 @@ export type RuleType = 'HARD' | 'SOFT' | 'DESIGN';
 export interface BasicDataPropertyForAdvice {
   /** field name */
   readonly name?: string;
-  /** LOM */
-  readonly levelOfMeasurements?: LOM[];
+  /** LevelOfMeasurement */
+  readonly levelOfMeasurements?: CkbTypes.LevelOfMeasurement[];
   /** used for split column xy series */
   readonly rawData: any[];
   /** required types in DataTypes. FieldInfo */
@@ -47,7 +47,7 @@ export interface Preferences {
  */
 export interface Info {
   chartType?: string;
-  chartWIKI?: ChartKnowledgeBase;
+  chartWIKI?: CkbTypes.ChartKnowledgeBase;
   dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice;
   purpose?: string;
   preferences?: Preferences;

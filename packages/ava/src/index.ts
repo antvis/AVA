@@ -19,8 +19,10 @@ export {
 
 // data
 export {
-  analyzeField,
-  DataTypes, // namespace of types
+  analyzeField, // Analyze field info
+  Series, // 1D data structure
+  DataFrame, // 2D data structure
+  DataTypes, // Namespace of types
 } from './data';
 
 // insight
