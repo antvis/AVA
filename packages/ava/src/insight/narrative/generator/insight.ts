@@ -1,6 +1,6 @@
-import _groupBy from 'lodash/groupBy';
+import { groupBy } from 'lodash';
 
-import { PatternInfo, InsightInfo, InsightType } from '../../interface';
+import { PatternInfo, InsightInfo, InsightType } from '../../types';
 import { SubjectsDescInfo, AbstractNarrativeGenerator } from '../interface';
 import {
   subjectsDescStrategy,
@@ -28,7 +28,7 @@ export class InsightNarrativeGenerator extends AbstractNarrativeGenerator<Patter
 
   protected prepareVariables(patterns: PatternInfo[], insight: InsightInfo<PatternInfo>) {
     // patterns group by insight type, as point pattern has more then one meta
-    this.patternGroups = _groupBy(patterns, 'type');
+    this.patternGroups = groupBy(patterns, 'type');
 
     this.globalVariableMap = {
       insightTypes: Object.keys(this.patternGroups) as InsightType[],

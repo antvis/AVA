@@ -1,4 +1,4 @@
-import { extractor } from '../../src/insights/extractors/majority';
+import { extractor } from '../../../src/insight/insights/extractors/majority';
 
 const data = [
   {

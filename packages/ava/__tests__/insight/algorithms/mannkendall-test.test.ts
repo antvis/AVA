@@ -1,4 +1,4 @@
-import { mkTest } from '../../src/algorithms';
+import { mkTest } from '../../../src/insight/algorithms';
 
 const increasingData = [3, 4, 3.5, 5, 4.9, 6, 7, 9, 13, 15];
 

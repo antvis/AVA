@@ -1,4 +1,4 @@
-import { PointPatternInfo } from '../../interface';
+import { PointPatternInfo } from '../../types';
 import { HomogeneousInfo } from '../interface';
 import { PhrasesBuilder } from '../utils/phrases-builder';
 

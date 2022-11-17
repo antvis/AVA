@@ -1,7 +1,7 @@
-import { IPhrase, IEntityType } from '@antv/text-schema';
-
 import { Language, SymbolType } from '../interface';
 import { SYMBOL } from '../constance';
+
+import type { NtvTypes } from '../../../ntv';
 
 export function removeLastSpace(value: string) {
   const lastLetter = value.substr(value.length - 1);
@@ -18,7 +18,7 @@ interface PhraseOption {
 }
 
 export class PhrasesBuilder {
-  private schema: IPhrase[];
+  private schema: NtvTypes.PhraseSpec[];
 
   private content: string;
 
@@ -31,7 +31,7 @@ export class PhrasesBuilder {
     this.content = '';
   }
 
-  add(value: string, type?: IEntityType, options: PhraseOption = { leftSpace: false, rightSpace: true }) {
+  add(value: string, type?: NtvTypes.EntityType, options: PhraseOption = { leftSpace: false, rightSpace: true }) {
     const { leftSpace, rightSpace } = options;
     const newValue = this.lang === 'en-US' ? `${leftSpace ? ' ' : ''}${value}${rightSpace ? ' ' : ''}` : value;
     if (type) {
@@ -70,7 +70,7 @@ export class PhrasesBuilder {
         // remove space before
         const beforePhrase = this.schema.pop();
         if (beforePhrase) {
-          const beforeValue = removeLastSpace(beforePhrase.value);
+          const beforeValue = removeLastSpace(beforePhrase.value as string);
           if (beforeValue) {
             beforePhrase.value = beforeValue;
             this.schema.push(beforePhrase);

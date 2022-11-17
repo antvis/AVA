@@ -1,4 +1,10 @@
-export const ascending = (left: any, right: any) => {
+/**
+ * lodash sortby asc function
+ * @param left unknown
+ * @param right unknown
+ * @returns number
+ */
+export function ascending(left: unknown, right: unknown) {
   const leftIsNull = left === null || left === undefined;
   const rightIsNull = right === null || right === undefined;
   if (leftIsNull && rightIsNull) {
@@ -10,10 +16,16 @@ export const ascending = (left: any, right: any) => {
   if (rightIsNull) {
     return -1;
   }
-  return left - right;
-};
+  return (left as number) - (right as number);
+}
 
-export const descending = (left: any, right: any) => {
+/**
+ * lodash sortby desc function
+ * @param left any
+ * @param right any
+ * @returns number
+ */
+export function descending(left: unknown, right: unknown) {
   const leftIsNull = left === null || left === undefined;
   const rightIsNull = right === null || right === undefined;
   if (leftIsNull && rightIsNull) {
@@ -25,5 +37,5 @@ export const descending = (left: any, right: any) => {
   if (rightIsNull) {
     return -1;
   }
-  return right - left;
-};
+  return (right as number) - (left as number);
+}

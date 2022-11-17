@@ -1,5 +1,5 @@
 import { PhrasesBuilder } from '../utils/phrases-builder';
-import { TrendInfo } from '../../interface';
+import { TrendInfo } from '../../types';
 
 /**
  * @template: `The ${measure} goes ${trend.desc}.`

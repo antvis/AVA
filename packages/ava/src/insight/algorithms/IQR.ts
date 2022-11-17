@@ -4,7 +4,7 @@ export interface IQRParams {
   k: number;
 }
 
-const getQuartilePercentValue = (array: number[], percent: number) => {
+function getQuartilePercentValue(array: number[], percent: number) {
   const product = percent * array.length;
   const ceil = Math.ceil(product);
 
@@ -18,7 +18,7 @@ const getQuartilePercentValue = (array: number[], percent: number) => {
     return (array[ceil - 1] + array[ceil]) / 2;
   }
   return array[ceil - 1];
-};
+}
 
 interface IQRResult {
   upper: {
@@ -31,7 +31,7 @@ interface IQRResult {
   };
 }
 
-export const IQR = (data: number[], params?: IQRParams): IQRResult => {
+export function IQR(data: number[], params?: IQRParams): IQRResult {
   const k = params?.k || 1.5;
 
   const sorted = data.slice().sort(ascending);
@@ -64,4 +64,4 @@ export const IQR = (data: number[], params?: IQRParams): IQRResult => {
   });
 
   return outliers;
-};
+}
