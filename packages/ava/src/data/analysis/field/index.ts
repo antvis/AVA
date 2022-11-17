@@ -1,4 +1,3 @@
-import { CkbTypes } from '../../../ckb';
 import {
   max,
   maxIndex,
@@ -26,6 +25,7 @@ import {
   unique,
 } from '../../utils';
 
+import type { CkbTypes } from '../../../ckb';
 import type { DateFieldInfo, FieldInfo, FieldMeta, NumberFieldInfo, StringFieldInfo, FieldType } from './types';
 
 /**
