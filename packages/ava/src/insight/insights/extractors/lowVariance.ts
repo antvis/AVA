@@ -1,4 +1,4 @@
-import { coefficientOfVariance, mean } from '../../../data/statistics';
+import { coefficientOfVariance, mean } from '../../../data';
 
 import type { Datum, LowVarianceInfo, Measure } from '../../types';
 

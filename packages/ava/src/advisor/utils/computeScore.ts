@@ -1,17 +1,17 @@
 import { Info, RuleModule } from '../ruler';
 import { DEFAULT_RULE_WEIGHTS } from '../constants';
-import { CHART_IDS } from '../../ckb/constants';
+import { CHART_IDS } from '../../ckb';
 
 import type { ScoringResultForRule } from '../types';
 import type { ChartRuleModule } from '../ruler/type';
-import type { ChartKnowledgeBase } from '../../ckb/types';
+import type { CkbTypes } from '../../ckb';
 
 const defaultWeights = DEFAULT_RULE_WEIGHTS;
 declare type ChartID = typeof CHART_IDS[number];
 
 const computeScore = (
   chartType: ChartID | string,
-  chartWIKI: ChartKnowledgeBase,
+  chartWIKI: CkbTypes.ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>,
   ruleType: 'HARD' | 'SOFT',
   info: Info,
