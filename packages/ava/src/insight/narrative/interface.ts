@@ -6,7 +6,7 @@ import {
   HomogeneousPatternInfo,
   HomogeneousInsightType,
   PatternInfo,
-} from '../interface';
+} from '../types';
 
 import { SYMBOL } from './constance';
 

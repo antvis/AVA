@@ -1,5 +1,5 @@
 import { PhrasesBuilder } from '../utils/phrases-builder';
-import { CorrelationInfo } from '../../interface';
+import { CorrelationInfo } from '../../types';
 
 /**
  * @template: `There is a correlation between ${measures[0]} and ${measures[1]}.`

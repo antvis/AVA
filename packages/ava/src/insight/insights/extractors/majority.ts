@@ -1,4 +1,4 @@
-import { Datum, MajorityInfo, Measure } from '../../interface';
+import type { Datum, MajorityInfo, Measure } from '../../types';
 
 type MajorityItem = {
   index: number;
@@ -13,7 +13,7 @@ type MajorityParams = {
 
 const DEFAULT_PROPORTION_LIMIT = 0.6;
 
-export const findMajority = (values: number[], params?: MajorityParams): MajorityItem => {
+export function findMajority(values: number[], params?: MajorityParams): MajorityItem | null {
   let sum = 0;
   let max = -Infinity;
   let maxIndex = -1;
@@ -38,9 +38,9 @@ export const findMajority = (values: number[], params?: MajorityParams): Majorit
     };
   }
   return null;
-};
+}
 
-export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): MajorityInfo[] => {
+export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): MajorityInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].field;
   if (!data || data.length === 0) return [];
@@ -62,4 +62,4 @@ export const extractor = (data: Datum[], dimensions: string[], measures: Measure
     ];
   }
   return [];
-};
+}

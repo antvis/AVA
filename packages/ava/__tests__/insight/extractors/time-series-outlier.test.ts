@@ -1,4 +1,4 @@
-import { extractor } from '../../src/insights/extractors/timeSeriesOutlier';
+import { extractor } from '../../../src/insight/insights/extractors/timeSeriesOutlier';
 
 const data = [
   { year: '1991', value: 3 },

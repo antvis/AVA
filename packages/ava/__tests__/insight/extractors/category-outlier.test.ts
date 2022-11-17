@@ -1,4 +1,4 @@
-import { extractor } from '../../src/insights/extractors/lowVariance';
+import { extractor } from '../../../src/insight/insights/extractors/categoryOutlier';
 
 const data = [
   {
@@ -11,11 +11,11 @@ const data = [
   },
   {
     type: 'C',
-    sales: 48,
+    sales: 61,
   },
   {
     type: 'D',
-    sales: 45,
+    sales: 145,
   },
   {
     type: 'E',
@@ -35,9 +35,10 @@ const data = [
   },
 ];
 
-describe('extract low-variance insight', () => {
-  test('check low-variance result', () => {
+describe('extract category-outlier insight', () => {
+  test('check outliers result', () => {
     const result = extractor(data, ['type'], [{ field: 'sales', method: 'SUM' }]);
-    expect(result[0]?.significance).toBeGreaterThan(0.85);
+    const outlierIndexes = result?.map((item) => item.index);
+    expect(outlierIndexes).toStrictEqual([3]);
   });
 });

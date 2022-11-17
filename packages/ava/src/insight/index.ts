@@ -1,3 +1,3 @@
 export { getDataInsights } from './pipeline';
 
-export * from './interface';
+export * as InsightTypes from './types';
