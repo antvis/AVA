@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
+    "@antv/smart-color": "^0.2.1",
     "@stdlib/stats": "^0.0.12",
     "@stdlib/stats-lowess": "^0.0.5",
     "bayesian-changepoint": "^1.0.1",
