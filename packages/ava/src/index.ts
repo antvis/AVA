@@ -23,6 +23,12 @@ export {
   DataTypes, // namespace of types
 } from './data';
 
+// insight
+export {
+  getInsights,
+  InsightTypes, // namespace of types
+} from './insight';
+
 // NTV(Narrative Text Vis)
 export { NtvTypes } from './ntv';
 // for advanced user
