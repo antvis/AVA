@@ -1,5 +1,5 @@
 import { PhrasesBuilder } from '../utils/phrases-builder';
-import { MajorityInfo } from '../../interface';
+import { MajorityInfo } from '../../types';
 
 /**
  * @template: `For ${dimension}, ${x} accounts for the majority of ${measure}.`

@@ -1,25 +1,25 @@
-import _sumBy from 'lodash/sumBy';
-import _sum from 'lodash/sum';
-import _mean from 'lodash/mean';
+import { sumBy, sum, mean } from 'lodash';
 import maxabs from '@stdlib/stats/base/maxabs';
 
 import { calcPValue } from './window';
 
+import type { ChangePointItem } from './types';
+
 /**
  * Buishad U statistics test
  */
-export const buishandUTest = (data: number[]) => {
+export function buishandUTest(data: number[]): ChangePointItem & { uValue: number } {
   const n = data?.length;
-  const mean = _mean(data);
-  const Sk = data.map((_, index) => _sum(data.slice(0, index + 1)) - mean * (index + 1));
-  const U = _sumBy(Sk.slice(0, n - 1), (item) => item ** 2) / (n * (n + 1));
+  const meanValue = mean(data);
+  const Sk = data.map((_, index) => sum(data.slice(0, index + 1)) - meanValue * (index + 1));
+  const U = sumBy(Sk.slice(0, n - 1), (item) => item ** 2) / (n * (n + 1));
   const Smax = maxabs(n, Sk, 1);
 
   const maxIndex = Sk.findIndex((item) => item === Smax);
 
   return {
-    U,
+    uValue: U,
     index: maxIndex,
     significance: 1 - calcPValue(data, maxIndex),
   };
-};
+}
