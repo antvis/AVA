@@ -4,8 +4,10 @@ import { Tooltip, TooltipProps } from 'antd';
 import { isTextPhrase, isEntityPhrase } from '@antv/ava';
 import { isFunction, kebabCase, isEmpty, isNil } from 'lodash';
 
+import { NTV_PREFIX_CLS } from '../constants';
 import { Entity, Bold, Italic, Underline } from '../styled';
-import { getPrefixCls, classnames as cx, functionalize } from '../utils';
+import { functionalize } from '../utils';
+import { classnames as cx } from '../../utils';
 import { PhraseDescriptor, presetPluginManager } from '../chore/plugin';
 
 import type { ReactNode } from 'react';
@@ -56,8 +58,8 @@ function renderPhraseByDescriptor(
         ...specStyles,
       }}
       className={cx(
-        getPrefixCls('value'),
-        isEntityPhrase(spec) ? getPrefixCls(kebabCase(spec.metadata.entityType)) : '',
+        `${NTV_PREFIX_CLS}-value`,
+        isEntityPhrase(spec) ? `${NTV_PREFIX_CLS}-${kebabCase(spec.metadata.entityType)}` : '',
         ...functionalize(classNames, [])(spec?.value, metadata as any)
       )}
     >

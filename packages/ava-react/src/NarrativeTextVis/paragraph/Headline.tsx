@@ -1,8 +1,9 @@
 import React from 'react';
 
+import { NTV_PREFIX_CLS } from '../constants';
 import { Headline as StyledHeadline } from '../styled';
 import { Phrases } from '../phrases';
-import { getPrefixCls, classnames as cx } from '../utils';
+import { classnames as cx } from '../../utils';
 import { presetPluginManager } from '../chore/plugin';
 
 import type { NtvTypes } from '@antv/ava';
@@ -29,7 +30,7 @@ export function Headline({ spec, pluginManager = presetPluginManager, ...events 
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={cx(getPrefixCls('headline'), spec.className)}
+      className={cx(`${NTV_PREFIX_CLS}-headline`, spec.className)}
       style={spec.styles}
     >
       <Phrases spec={spec.phrases} pluginManager={pluginManager} {...phraseEvents} />
