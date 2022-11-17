@@ -1,16 +1,18 @@
 /* eslint-disable no-undef */
 import { Canvg } from 'canvg';
 
+import { NTV_PREFIX_CLS, NTV_IMG_ALT } from '../../../constants';
+
 export type ImageExtra = {
   jumpUrl?: string;
 };
 
 function isNegativeArrow(svgElement: SVGSVGElement) {
-  return svgElement?.parentElement?.className.includes('ntv-value-negative');
+  return svgElement?.parentElement?.className.includes(`${NTV_PREFIX_CLS}-value-negative`);
 }
 
 function isPositiveArrow(svgElement: SVGSVGElement) {
-  return svgElement.parentElement?.className.includes('ntv-value-positive');
+  return svgElement.parentElement?.className.includes(`${NTV_PREFIX_CLS}-value-positive`);
 }
 
 /** 用于控制显隐的 eye icon 不复制 */
@@ -52,14 +54,14 @@ async function svgToPngUrl(data: { width?: number; height?: number; svg: string 
 async function svgToImageHtml(svgElement: SVGSVGElement, svgHtml: string, canvas: HTMLCanvasElement) {
   const { width, height } = svgElement.getBBox() || {};
   const imageUrl = await svgToPngUrl({ width, height, svg: svgHtml }, canvas);
-  const imageHtml = `<img alt="ntv" src="${imageUrl}" width="${width}" height="${height}"/>`;
+  const imageHtml = `<img alt="${NTV_IMG_ALT}" src="${imageUrl}" width="${width}" height="${height}"/>`;
   return imageHtml;
 }
 
 function canvasToImageHtml(canvasElement: HTMLCanvasElement, imgExtra: ImageExtra) {
   const pngUrl = canvasElement.toDataURL();
   const { width, height } = canvasElement || {};
-  const baseImageHtml = `<img alt="ntv" src="${pngUrl}" width="${width}" height="${height}" />`;
+  const baseImageHtml = `<img alt="${NTV_IMG_ALT}" src="${pngUrl}" width="${width}" height="${height}" />`;
   const imageHtml = imgExtra?.jumpUrl ? `<a href="${imgExtra.jumpUrl}">${baseImageHtml}</a>` : baseImageHtml;
   return imageHtml;
 }
