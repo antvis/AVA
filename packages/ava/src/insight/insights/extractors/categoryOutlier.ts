@@ -1,6 +1,6 @@
 import { sortBy } from 'lodash';
 
-import { distinct } from '../../../data/statistics';
+import { distinct } from '../../../data';
 import { IQR } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
 import { Datum, Measure, CategoryOutlierInfo } from '../../types';

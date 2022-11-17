@@ -3,7 +3,7 @@ import { Info, RuleModule } from '../ruler';
 import type { Specification } from '../../common/types';
 import type { ScoringResultForRule, Lint } from '../types';
 import type { ChartRuleModule, DesignRuleModule } from '../ruler';
-import type { ChartKnowledgeBase } from '../../ckb/types';
+import type { CkbTypes } from '../../ckb';
 
 // TODO：remove log param and console, add a func to return log
 export function lintRules(
@@ -12,7 +12,7 @@ export function lintRules(
   info: Info,
   log: ScoringResultForRule[],
   lints: Lint[],
-  ckb: ChartKnowledgeBase,
+  ckb: CkbTypes.ChartKnowledgeBase,
   spec?: Specification
 ) {
   const judge = (type: 'HARD' | 'SOFT' | 'DESIGN') => {
