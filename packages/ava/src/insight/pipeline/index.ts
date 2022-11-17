@@ -7,7 +7,7 @@ type InsightsResult = {
   homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[];
 };
 
-export function getDataInsights(sourceData: Datum[], options?: InsightOptions): InsightsResult {
+export function getInsights(sourceData: Datum[], options?: InsightOptions): InsightsResult {
   const extractResult = extractInsights(sourceData, options);
   if (options?.visualization) {
     return generateInsightsWithVisualizationSchemas(extractResult, options);
