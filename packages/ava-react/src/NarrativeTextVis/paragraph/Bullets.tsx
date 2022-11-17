@@ -4,7 +4,8 @@ import { v4 } from 'uuid';
 
 import { Ol, Ul, Li } from '../styled';
 import { Phrases } from '../phrases';
-import { getPrefixCls, classnames as cx } from '../utils';
+import { NTV_PREFIX_CLS } from '../constants';
+import { classnames as cx } from '../../utils';
 import { presetPluginManager } from '../chore/plugin';
 
 import type { NtvTypes } from '@antv/ava';
@@ -31,7 +32,7 @@ export function Bullets({ spec, size = 'normal', pluginManager = presetPluginMan
     };
     return (
       <Li
-        className={cx(getPrefixCls('li'), bullet.className)}
+        className={cx(`${NTV_PREFIX_CLS}-li`, bullet.className)}
         key={spec.key || v4()}
         style={bullet.styles}
         onClick={onClickLi}
@@ -66,7 +67,7 @@ export function Bullets({ spec, size = 'normal', pluginManager = presetPluginMan
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       size={size}
-      className={cx(getPrefixCls(tag), spec.className)}
+      className={cx(`${NTV_PREFIX_CLS}-${tag}`, spec.className)}
       style={spec.styles}
     >
       {children}

@@ -4,8 +4,9 @@ import { isCustomSection, isStandardSection } from '@antv/ava';
 import { v4 } from 'uuid';
 import { isFunction } from 'lodash';
 
+import { NTV_PREFIX_CLS } from '../constants';
 import { presetPluginManager } from '../chore/plugin';
-import { getPrefixCls, classnames as cx } from '../utils';
+import { classnames as cx } from '../../utils';
 import { Paragraph } from '../paragraph';
 import { Container } from '../styled';
 
@@ -46,7 +47,7 @@ export function Section({ spec, size = 'normal', pluginManager = presetPluginMan
     <Container
       size={size}
       as="section"
-      className={cx(getPrefixCls('section'), spec.className)}
+      className={cx(`${NTV_PREFIX_CLS}-section`, spec.className)}
       style={spec.styles}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
