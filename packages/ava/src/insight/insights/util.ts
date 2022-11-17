@@ -1,10 +1,11 @@
-import _mean from 'lodash/mean';
-import { statistics } from '@antv/data-wizard';
+import { mean } from 'lodash';
 import { cdf } from '@stdlib/stats/base/dists/normal';
 
+import { standardDeviation } from '../../data/statistics';
+
 export const calculatePValue = (values: number[], target: number) => {
-  const mean = _mean(values);
-  const std = statistics.standardDeviation(values);
-  const pValue = 1 - cdf(target, mean, std);
+  const meanValue = mean(values);
+  const std = standardDeviation(values);
+  const pValue = 1 - cdf(target, meanValue, std);
   return pValue;
 };

@@ -1,6 +1,6 @@
-import { PatternInfo, PointPatternInfo, HomogeneousPatternInfo } from '../interface';
-
 import { dataFormat } from './util';
+
+import type { PatternInfo, PointPatternInfo, HomogeneousPatternInfo } from '../types';
 
 const COLOR: Record<string, string> = {
   highlight: '#E09322',
@@ -20,7 +20,7 @@ interface Text {
   style?: Record<string, number | string>;
 }
 
-const annotationText = (texts: Text[], position: [number | string, number | string], offsetY: number = 0) => {
+function annotationText(texts: Text[], position: [number | string, number | string], offsetY: number = 0) {
   return texts.map((text, i) => ({
     type: 'text',
     content: dataFormat(text.content),
@@ -31,9 +31,9 @@ const annotationText = (texts: Text[], position: [number | string, number | stri
       ...text.style,
     },
   }));
-};
+}
 
-const generateAnnotationConfigItem = (pattern: PatternInfo) => {
+function generateAnnotationConfigItem(pattern: PatternInfo) {
   if (pattern.type === 'change_point' || pattern.type === 'time_series_outlier') {
     const { x, y } = pattern;
     const color = pattern.type === 'time_series_outlier' ? COLOR.outlier : COLOR.highlight;
@@ -146,10 +146,10 @@ const generateAnnotationConfigItem = (pattern: PatternInfo) => {
     ];
   }
   return [];
-};
+}
 
-export const generateInsightAnnotationConfigs = (patterns: PatternInfo[]) => {
-  const annotations = [];
+export function generateInsightAnnotationConfigs(patterns: PatternInfo[]) {
+  const annotations: any[] = [];
   const others: { [key: string]: any } = {};
   patterns.forEach((pattern) => {
     const configItems = generateAnnotationConfigItem(pattern);
@@ -168,10 +168,10 @@ export const generateInsightAnnotationConfigs = (patterns: PatternInfo[]) => {
     }
   });
   return { ...others, annotations };
-};
+}
 
-export const generateHomogeneousInsightAnnotationConfig = (pattern: HomogeneousPatternInfo) => {
-  const annotations = [];
+export function generateHomogeneousInsightAnnotationConfig(pattern: HomogeneousPatternInfo) {
+  const annotations: any[] = [];
   const { insightType, childPatterns } = pattern;
 
   if (['change_point', 'time_series_outlier'].includes(insightType)) {
@@ -218,4 +218,4 @@ export const generateHomogeneousInsightAnnotationConfig = (pattern: HomogeneousP
   }
 
   return annotations;
-};
+}

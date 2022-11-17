@@ -1,22 +1,8 @@
-import _groupBy from 'lodash/groupBy';
-import _uniq from 'lodash/uniq';
-import _flatten from 'lodash/flatten';
+import { groupBy, uniq, flatten } from 'lodash';
 import Heap from 'heap-js';
 
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
 import { insightExtractors, ExtractorCheckers } from '../insights';
-import {
-  Datum,
-  InsightOptions,
-  Measure,
-  Subspace,
-  InsightInfo,
-  ImpactMeasure,
-  SubjectInfo,
-  InsightType,
-  PatternInfo,
-  HomogeneousPatternInfo,
-} from '../interface';
 import { aggregate } from '../utils/aggregate';
 
 import { DataProperty, calculateImpactValue } from './preprocess';
@@ -27,18 +13,31 @@ import {
 } from './homogeneous';
 import { addInsightsToHeap } from './util';
 
+import type {
+  Datum,
+  InsightOptions,
+  Measure,
+  Subspace,
+  InsightInfo,
+  ImpactMeasure,
+  SubjectInfo,
+  InsightType,
+  PatternInfo,
+  HomogeneousPatternInfo,
+} from '../types';
+
 interface ReferenceInfo {
   fieldPropsMap: Record<string, DataProperty>;
   impactMeasureReferences: Record<string, number>;
 }
 
 /** calculate the Impact which reflects the importance of the subject of an insight against the entire dataset  */
-const computeSubspaceImpact = (
+function computeSubspaceImpact(
   data: Datum[],
   subspace: Subspace,
   impactMeasureReferences: ReferenceInfo['impactMeasureReferences'],
   measures?: ImpactMeasure[]
-) => {
+) {
   if (!measures?.length || !subspace) return 1;
   const impactValues = measures.map((measure) => {
     const measureValue = calculateImpactValue(data, measure);
@@ -47,15 +46,15 @@ const computeSubspaceImpact = (
     return measureValue / referenceValue;
   });
   return Math.max(...impactValues);
-};
+}
 
 /** extract patterns from a specific subject */
-const extractPatternsFromSubject = (
+function extractPatternsFromSubject(
   data: Datum[],
   subjectInfo: SubjectInfo,
   fieldPropsMap: Record<string, DataProperty>,
   options?: InsightOptions
-): PatternCollection => {
+): PatternCollection {
   const { measures, dimensions } = subjectInfo;
 
   const enumInsightTypes = options?.insightTypes || PATTERN_TYPES;
@@ -75,36 +74,36 @@ const extractPatternsFromSubject = (
       const extractedPatterns = insightExtractor(data, dimensions, measures);
       patterns[insightType as InsightType] = extractedPatterns as PatternInfo[];
     } else {
-      patterns[insightType as InsightType] = null;
+      patterns[insightType as InsightType] = undefined;
     }
   });
 
   return patterns;
-};
+}
 
-export const extractInsightsFor1M1DCombination = (
+export function extractInsightsFor1M1DCombination(
   data: Datum[],
   dimensions: string[],
   measures: Measure[],
   subspace: Subspace,
   referenceInfo: ReferenceInfo,
   options: InsightOptions
-): InsightInfo<PatternInfo>[][] => {
+): (InsightInfo<PatternInfo> | null)[][] {
   const { fieldPropsMap } = referenceInfo;
 
-  const insights: InsightInfo<PatternInfo>[][] = [];
+  const insights: (InsightInfo<PatternInfo> | null)[][] = [];
 
   dimensions.forEach((dimension) => {
-    const insightsPerDim: InsightInfo<PatternInfo>[] = [];
+    const insightsPerDim: (InsightInfo<PatternInfo> | null)[] = [];
 
-    const isTimeField = fieldPropsMap[dimension].levelOfMeasurements.includes('Time');
+    const isTimeField = fieldPropsMap[dimension]?.levelOfMeasurements?.includes('Time');
     measures.forEach((measure) => {
       const childSubjectInfo = { dimensions: [dimension], subspace, measures: [measure] };
       const aggregatedData = aggregate(data, dimension, [measure], isTimeField);
 
       const patterns = extractPatternsFromSubject(aggregatedData, childSubjectInfo, fieldPropsMap, options);
 
-      const patternsArray = _flatten(Object.values(patterns).filter((item) => item?.length > 0)).sort(
+      const patternsArray = flatten(Object.values(patterns).filter((item) => item?.length > 0)).sort(
         (a, b) => b.significance - a.significance
       );
       if (patternsArray.length) {
@@ -126,16 +125,16 @@ export const extractInsightsFor1M1DCombination = (
   });
 
   return insights;
-};
+}
 
-export const extractInsightsForCorrelation = (
+export function extractInsightsForCorrelation(
   data: Datum[],
   dimensions: string[],
   measures: Measure[],
   subspace: Subspace,
   referenceInfo: ReferenceInfo,
   options: InsightOptions
-): InsightInfo<PatternInfo>[] => {
+): InsightInfo<PatternInfo>[] {
   const { fieldPropsMap } = referenceInfo;
 
   const insights: InsightInfo<PatternInfo>[] = [];
@@ -167,10 +166,10 @@ export const extractInsightsForCorrelation = (
     }
   }
   return insights;
-};
+}
 
 /** recursive extraction in data subspace */
-export const extractInsightsFromSubspace = (
+export function extractInsightsFromSubspace(
   data: Datum[],
   dimensions: string[],
   measures: Measure[],
@@ -179,7 +178,7 @@ export const extractInsightsFromSubspace = (
   insightsHeap: Heap<InsightInfo<PatternInfo>>,
   homogeneousInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
   options: InsightOptions
-): InsightInfo<PatternInfo>[] => {
+): (InsightInfo<PatternInfo> | null)[] {
   /** subspace pruning */
   if (!data?.length) {
     return [];
@@ -196,17 +195,19 @@ export const extractInsightsFromSubspace = (
 
   // pruning2: check if the impact score is greater than the minimum score in heap
   const impactScoreWeight =
-    options?.impactWeight >= 0 && options?.impactWeight < 1 ? options.impactWeight : ImpactScoreWeight;
+    !!options?.impactWeight && options.impactWeight >= 0 && options.impactWeight < 1
+      ? options.impactWeight
+      : ImpactScoreWeight;
   const optimalScore = subspaceImpact * impactScoreWeight + 1 * (1 - impactScoreWeight);
   if (insightsHeap.length >= insightsHeap.limit) {
-    const minScoreInHeap = insightsHeap.peek()?.score;
+    const minScoreInHeap = insightsHeap.peek()?.score as number;
     if (optimalScore <= minScoreInHeap) {
       return [];
     }
   }
 
   /** insight extraction */
-  const insights = [];
+  const insights: (InsightInfo<PatternInfo> | null)[] = [];
   // TODO Combination 1:  1D(dimension) or 1M(measure)
 
   // Combination 2: 1M * 1D */
@@ -220,7 +221,7 @@ export const extractInsightsFromSubspace = (
   );
   insightsFor1M1DCombination.forEach((insightsPerDim) => {
     const insightsForMeasures = insightsPerDim
-      .filter((item) => !!item)
+      .filter((item): item is InsightInfo<PatternInfo> => !!item)
       .map((item) => ({ ...item, score: item.score * (1 - impactScoreWeight) + subspaceImpact * impactScoreWeight }));
     insights.push(...insightsPerDim);
     addInsightsToHeap(insightsForMeasures, insightsHeap);
@@ -268,9 +269,9 @@ export const extractInsightsFromSubspace = (
 
     if (remainDimensionFields.length > 0) {
       remainDimensionFields.forEach((dimension) => {
-        const siblingGroupInsights: InsightInfo<PatternInfo>[][] = [];
-        const groupedData = _groupBy(data, dimension);
-        const breakdownValues: string[] = _uniq(fieldPropsMap[dimension].rawData);
+        const siblingGroupInsights: (InsightInfo<PatternInfo> | null)[][] = [];
+        const groupedData = groupBy(data, dimension);
+        const breakdownValues: string[] = uniq(fieldPropsMap[dimension].rawData);
 
         const dimensionsInSubspace = remainDimensionFields.filter((item) => item !== dimension);
         if (breakdownValues.length > 1) {
@@ -296,15 +297,17 @@ export const extractInsightsFromSubspace = (
           dimensionsInSubspace.forEach((dim) => {
             measures.forEach((measure) => {
               const siblingGroupInsightsArr = siblingGroupInsights.map((siblingItem) => {
-                return siblingItem.find((insight) => {
-                  return (
-                    !!insight &&
-                    insight.dimensions.length === 1 &&
-                    insight.dimensions[0] === dim &&
-                    insight.measures.length === 1 &&
-                    insight.measures[0].field === measure.field
-                  );
-                });
+                return (
+                  siblingItem.find((insight) => {
+                    return (
+                      !!insight &&
+                      insight.dimensions.length === 1 &&
+                      insight.dimensions[0] === dim &&
+                      insight.measures.length === 1 &&
+                      insight.measures[0].field === measure.field
+                    );
+                  }) || null
+                );
               });
 
               const homogeneousPatternsForSiblingGroups = extractHomogeneousPatternsForSiblingGroups(
@@ -328,10 +331,10 @@ export const extractInsightsFromSubspace = (
   }
 
   return insights;
-};
+}
 
 /** insight subject enumeration in the data */
-export const enumerateInsights = (
+export function enumerateInsights(
   data: Datum[],
   dimensions: string[],
   measures: Measure[],
@@ -339,7 +342,7 @@ export const enumerateInsights = (
   insightsHeap: Heap<InsightInfo<PatternInfo>>,
   metaInsightsHeap: Heap<InsightInfo<HomogeneousPatternInfo>>,
   options: InsightOptions = {}
-) => {
+) {
   const initSubspace = [];
 
   extractInsightsFromSubspace(
@@ -352,4 +355,4 @@ export const enumerateInsights = (
     metaInsightsHeap,
     options
   );
-};
+}

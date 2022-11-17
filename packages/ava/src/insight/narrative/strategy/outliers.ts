@@ -1,5 +1,5 @@
 import { PhrasesBuilder } from '../utils/phrases-builder';
-import { PointPatternInfo } from '../../interface';
+import { PointPatternInfo } from '../../types';
 
 /**
  * @template `There are ${outliers.length} outliers in total, which are ${outliersPositionsString}.`

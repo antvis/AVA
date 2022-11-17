@@ -1,4 +1,4 @@
-import { extractor } from '../../src/insights/extractors/correlation';
+import { extractor } from '../../../src/insight/insights/extractors/correlation';
 
 const data = [
   { x: 1, y: 4.181 },

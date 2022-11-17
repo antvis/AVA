@@ -1,4 +1,4 @@
-import { extractor } from '../../src/insights/extractors/trend';
+import { extractor } from '../../../src/insight/insights/extractors/trend';
 
 const data = [
   { year: '1991', value: 3 },

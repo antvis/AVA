@@ -1,4 +1,4 @@
-import _upperFirst from 'lodash/upperFirst';
+import { upperFirst } from 'lodash';
 
 import { PhrasesBuilder } from '../utils/phrases-builder';
 import { SubjectsDescInfo } from '../interface';
@@ -38,7 +38,7 @@ export function subjectsDescStrategy(variableMap: SubjectsDescInfo) {
 
   insightTypes.forEach((type, index) => {
     let insightType = type.replace('_', ' ');
-    if (index === 0 && !hasSubspace) insightType = _upperFirst(insightType);
+    if (index === 0 && !hasSubspace) insightType = upperFirst(insightType);
     phrases.add(insightType);
     if (index < insightTypes.length - 2) {
       phrases.addSymbol('punctuation_comma');

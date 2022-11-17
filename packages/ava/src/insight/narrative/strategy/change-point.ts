@@ -1,5 +1,5 @@
 import { PhrasesBuilder } from '../utils/phrases-builder';
-import { ChangePointInfo } from '../../interface';
+import { ChangePointInfo } from '../../types';
 
 /**
  * @template `There are ${changePoints.length} abrupt changes in total, which occur in ${changePointsPositionsString}.`
