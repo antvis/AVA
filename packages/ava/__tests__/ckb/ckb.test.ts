@@ -16,7 +16,7 @@ describe('api - ckb', () => {
     recRate: 'Not Recommend',
   };
 
-  const CHART_TYPE_AMOUNT = 80;
+  const CHART_TYPE_AMOUNT = 52;
 
   test('ckb works without param', () => {
     // return object

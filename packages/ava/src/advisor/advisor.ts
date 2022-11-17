@@ -22,7 +22,7 @@ import type {
 type AdviseLog = ScoringResultForChartType[];
 type LintLog = ScoringResultForRule[];
 
-/**
+/*
  * 搬运计划
  * 0. 架构设计
  * 1. Advisor 搬运
@@ -33,7 +33,7 @@ export class Advisor {
   /**
    * CKB used for advising
    */
-  CKB: ChartKnowledgeBase;
+  ckb: ChartKnowledgeBase;
 
   /**
    * rule base used for advising
@@ -45,12 +45,12 @@ export class Advisor {
   lintResult: LintResult;
 
   constructor(config: AdvisorConfig = {}) {
-    this.CKB = ckb(config.ckbCfg);
+    this.ckb = ckb(config.ckbCfg);
     this.ruleBase = processRuleCfg(config.ruleCfg);
   }
 
   advise(params: AdviseParams): Advice[] {
-    this.adviseResult = advicesForChart(params as ChartAdviseParams, true);
+    this.adviseResult = advicesForChart(params as ChartAdviseParams, true, this.ckb, this.ruleBase);
     return this.adviseResult.advices;
   }
 

@@ -1,6 +1,6 @@
 import { intersects } from '../../utils';
 
-import type { RuleModule } from '../interface';
+import type { RuleModule } from '../type';
 
 const applyChartTypes = ['line_chart', 'area_chart', 'stacked_area_chart', 'percent_stacked_area_chart'];
 

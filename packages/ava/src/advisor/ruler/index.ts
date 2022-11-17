@@ -1,6 +1,6 @@
 import { rules } from './rules';
 
-import type { RuleModule, RuleConfig } from './interface';
+import type { RuleModule, RuleConfig } from './type';
 
 export const builtInRules = Object.keys(rules);
 
@@ -89,4 +89,4 @@ export const processRuleCfg = (ruleCfg?: RuleConfig) => {
   return finalRuleBase;
 };
 
-export * from './interface';
+export * from './type';

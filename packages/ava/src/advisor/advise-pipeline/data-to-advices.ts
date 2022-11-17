@@ -1,3 +1,4 @@
+// TODO
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { hexToColor, colorToHex, paletteGeneration, colorSimulation } from '@antv/smart-color';
 
@@ -8,9 +9,9 @@ import { getChartTypeSpec } from './spec-mapping';
 
 import type { SimulationType } from '@antv/smart-color';
 import type { ColorSchemeType } from '@antv/color-schema';
-import type { ChartKnowledge } from '../../ckb/types';
-import type { Specification, Datum } from '../../common/types';
-import type { BasicDataPropertyForAdvice, DesignRuleModule, RuleModule } from '../ruler/interface';
+import type { ChartKnowledge, ChartKnowledgeBase } from '../../ckb/types';
+import type { Specification, Data } from '../../common/types';
+import type { BasicDataPropertyForAdvice, DesignRuleModule, RuleModule } from '../ruler/type';
 import type {
   AdvisorOptions,
   Theme,
@@ -39,13 +40,12 @@ declare type ChartID = typeof CHART_IDS[number];
  */
 function scoreRules(
   chartType: ChartID | string,
+  chartWIKI: ChartKnowledgeBase,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
   options?: PipeAdvisorOptions
 ): ScoringResultForChartType {
   const exportLog = options?.exportLog;
-  /** @deprecated */
-  const showLog = options?.showLog;
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
 
@@ -54,7 +54,7 @@ function scoreRules(
 
   const info = { dataProps, chartType, purpose, preferences };
 
-  const hardScore = computeScore(ruleBase, 'HARD', info, log);
+  const hardScore = computeScore(chartType, chartWIKI, ruleBase, 'HARD', info, log);
 
   // Hard-Rule pruning
   // holding for showLog @deprecated and testing
@@ -65,17 +65,12 @@ function scoreRules(
   //   return result;
   // }
 
-  const softScore = computeScore(ruleBase, 'SOFT', info, log);
+  const softScore = computeScore(chartType, chartWIKI, ruleBase, 'SOFT', info, log);
 
   /** @since 3.0.0 @todo score normalization  */
   // proposal:
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);
-
-  // eslint-disable-next-line no-console
-  if (showLog) console.log('💯score: ', score, '=', hardScore, '* (1 +', softScore, ') ;charttype: ', chartType);
-  // eslint-disable-next-line no-console
-  if (showLog) console.log(log);
 
   const result: ScoringResultForChartType = { chartType, score };
   if (exportLog) result.log = log;
@@ -208,7 +203,7 @@ function applySmartColor(
  * @returns chart list [ { type: chartTypes, spec: antv-spec, score: >0 }, ... ]
  */
 export function dataToAdvices(
-  data: Datum[],
+  data: Data,
   dataProps: BasicDataPropertyForAdvice[],
   chartWIKI: Record<string, ChartKnowledge>,
   ruleBase: Record<string, RuleModule>,
@@ -220,11 +215,6 @@ export function dataToAdvices(
    * `refine`: whether to apply design rules
    */
   const enableRefine = options?.refine === undefined ? false : options.refine;
-  /**
-   * `showLog`: log on/off
-   * @deprecated since 3.0.0, use `exportLog` instead
-   */
-  const showLog = options?.showLog;
   /**
    * whether to include scoring log in result advices
    */
@@ -254,7 +244,7 @@ export function dataToAdvices(
   // score every possible chart
   const list: Advice[] = CHART_ID_OPTIONS.map((t: string) => {
     // step 1: analyze score by rule
-    const resultForChartType = scoreRules(t, dataProps, ruleBase, options);
+    const resultForChartType = scoreRules(t, ChartWIKI, dataProps, ruleBase, options);
     log.push(resultForChartType);
 
     const { score } = resultForChartType;
@@ -321,11 +311,6 @@ export function dataToAdvices(
     return advice.score > 0 && (requireSpec ? advice.spec : true);
   };
   const resultList = list.filter(isAvailableAdvice).sort(compareAdvices);
-
-  // eslint-disable-next-line no-console
-  if (showLog) console.log('🍒🍒🍒🍒🍒🍒 resultList 🍒🍒🍒🍒🍒🍒');
-  // eslint-disable-next-line no-console
-  if (showLog) console.log(resultList);
 
   const result = exportLog
     ? {

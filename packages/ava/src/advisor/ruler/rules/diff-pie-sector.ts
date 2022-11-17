@@ -1,6 +1,6 @@
 import { hasSubset } from '../../utils';
 
-import type { RuleModule } from '../interface';
+import type { RuleModule } from '../type';
 
 const applyChartTypes = ['pie_chart', 'donut_chart'];
 

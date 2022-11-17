@@ -4,6 +4,8 @@ import type { Specification } from '../../common/types';
 import type { ScoringResultForRule, Lint } from '../types';
 import type { ChartRuleModule, DesignRuleModule } from '../ruler';
 
+
+// TODO：remove log param and console, add a func to return log
 export function lintRules(
   ruleBase: Record<string, RuleModule>,
   ruleTypeToLint: 'notDESIGN' | 'DESIGN',

@@ -1,13 +1,14 @@
-/**
+/*
  * TODO
  * -- statistics 改为从 dw 直接引入
+ * 在 CKB 中增加 encode 相关描述，让这里的 spec mapping 简化
  */
 
 import { CHART_IDS } from '../../ckb/constants';
 import { statistics, utils as dwUtils } from '../../data';
 import { compare, hasSubset, intersects } from '../utils';
 
-import type { Datum } from '../../common/types';
+import type { Data } from '../../common/types';
 import type { ChartKnowledge, LevelOfMeasurement as LOM } from '../../ckb/types';
 import type { Advice } from '../types';
 import type { BasicDataPropertyForAdvice } from '../ruler';
@@ -41,7 +42,7 @@ function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField,
   return [field4Color, field4Angle];
 }
 
-function pieChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4Color, field4Angle] = splitAngleColor(dataProps);
   if (!field4Angle || !field4Color) return null;
 
@@ -68,7 +69,7 @@ function pieChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advic
   return spec;
 }
 
-function donutChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function donutChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4Color, field4Angle] = splitAngleColor(dataProps);
   if (!field4Angle || !field4Color) return null;
 
@@ -107,7 +108,7 @@ function splitLineXY(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, Ret
   return [field4X, field4Y, field4Color];
 }
 
-function lineChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function lineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Color] = splitLineXY(dataProps);
   if (!field4X || !field4Y) return null;
 
@@ -132,7 +133,7 @@ function lineChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advi
   return spec;
 }
 
-function stepLineChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function stepLineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Color] = splitLineXY(dataProps);
   if (!field4X || !field4Y) return null;
 
@@ -167,7 +168,7 @@ function splitAreaXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnFiel
   return [field4X, field4Y, field4Series];
 }
 
-function areaChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function areaChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const field4X = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
   const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
@@ -190,7 +191,7 @@ function areaChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advi
   return spec;
 }
 
-function stackedAreaChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function stackedAreaChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitAreaXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
@@ -212,7 +213,7 @@ function stackedAreaChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]
   return spec;
 }
 
-function percentStackedAreaChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function percentStackedAreaChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitAreaXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
@@ -247,7 +248,7 @@ function splitBarXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnField
 }
 
 // barchart in AVA means: horizontal bar chart
-function barChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
   const sortedNominalFields = nominalFields.sort(compare);
   const field4Y = sortedNominalFields[0];
@@ -277,7 +278,7 @@ function barChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advic
   return spec;
 }
 
-function groupedBarChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function groupedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
@@ -300,7 +301,7 @@ function groupedBarChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[])
   return spec;
 }
 
-function stackedBarChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function stackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
@@ -322,7 +323,7 @@ function stackedBarChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[])
   return spec;
 }
 
-function percentStackedBarChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function percentStackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
 
@@ -363,7 +364,7 @@ function splitColumnXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnFi
   return [field4X, field4Y, Field4Series];
 }
 
-function columnChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function columnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
   const sortedNominalFields = nominalFields.sort(compare);
   const field4X = sortedNominalFields[0];
@@ -393,7 +394,7 @@ function columnChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Ad
   return spec;
 }
 
-function groupedColumnChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function groupedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
   if (!field4X || !field4Y || !Field4Series) return null;
 
@@ -416,7 +417,7 @@ function groupedColumnChart(data: Datum[], dataProps: BasicDataPropertyForAdvice
   return spec;
 }
 
-function stackedColumnChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function stackedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
   if (!field4X || !field4Y || !Field4Series) return null;
 
@@ -438,7 +439,7 @@ function stackedColumnChart(data: Datum[], dataProps: BasicDataPropertyForAdvice
   return spec;
 }
 
-function percentStackedColumnChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function percentStackedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
   if (!field4X || !field4Y || !Field4Series) return null;
 
@@ -463,7 +464,7 @@ function percentStackedColumnChart(data: Datum[], dataProps: BasicDataPropertyFo
 /* !!!END column_chart & grouped_column_chart & stacked_column_chart & percent_stacked_column_chart ------------------- */
 
 /* !!!START scatter_plot ------------------- */
-function scatterPlot(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function scatterPlot(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
   const sortedIntervalFields = intervalFields.sort(compare);
   const field4X = sortedIntervalFields[0];
@@ -497,7 +498,7 @@ function scatterPlot(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Ad
 /* !!!END scatter_plot ------------------- */
 
 /* !!!START bubble_chart ------------------- */
-function bubbleChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function bubbleChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
 
   const triple = {
@@ -548,7 +549,7 @@ function bubbleChart(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Ad
 /* !!!END bubble_chart ------------------- */
 
 /* !!!START histogram ------------------- */
-function histogram(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function histogram(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const field = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
   if (!field) return null;
 
@@ -571,7 +572,7 @@ function histogram(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advi
 /* !!!END histogram ------------------- */
 
 /* !!!END heatmap ------------------- */
-function heatmap(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+function heatmap(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const axisFields = dataProps.filter((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal']));
   const sortedFields = axisFields.sort(compare);
   const field4X = sortedFields[0];
@@ -611,7 +612,7 @@ function heatmap(data: Datum[], dataProps: BasicDataPropertyForAdvice[]): Advice
  */
 export function getChartTypeSpec(
   chartType: string,
-  data: Datum[],
+  data: Data,
   dataProps: BasicDataPropertyForAdvice[],
   chartKnowledge?: ChartKnowledge
 ) {

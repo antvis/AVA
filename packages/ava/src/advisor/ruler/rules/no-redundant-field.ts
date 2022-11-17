@@ -1,9 +1,4 @@
-import { ckb } from '../../../ckb';
-
-import type { RuleModule } from '../interface';
-
-const Wiki = ckb();
-const allChartTypes = Object.keys(Wiki);
+import type { RuleModule } from '../type';
 
 export const noRedundantField: RuleModule = {
   id: 'no-redundant-field',
@@ -11,15 +6,15 @@ export const noRedundantField: RuleModule = {
   docs: {
     lintText: 'No redundant field.',
   },
-  trigger: ({ chartType }) => {
-    return allChartTypes.includes(chartType);
+  trigger: () => {
+    return true;
   },
   validator: (args): number => {
     let result = 0;
-    const { dataProps, chartType } = args;
+    const { dataProps, chartType, chartWIKI } = args;
 
-    if (dataProps && chartType && Wiki[chartType]) {
-      const dataPres = Wiki[chartType].dataPres || [];
+    if (dataProps && chartType && chartWIKI[chartType]) {
+      const dataPres = chartWIKI[chartType].dataPres || [];
       const maxFieldQty = dataPres
         .map((e: any) => {
           if (e.maxQty === '*') {

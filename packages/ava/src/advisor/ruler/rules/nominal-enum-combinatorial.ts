@@ -1,11 +1,7 @@
-import { ckb } from '../../../ckb';
 import { hasSubset } from '../../utils';
 import { compare } from '../utils';
 
-import type { RuleModule, BasicDataPropertyForAdvice } from '../interface';
-
-const Wiki = ckb();
-const allChartTypes = Object.keys(Wiki);
+import type { RuleModule, BasicDataPropertyForAdvice } from '../type';
 
 const applyChartTypes = [
   'bar_chart',
@@ -34,7 +30,7 @@ export const nominalEnumCombinatorial: RuleModule = {
     let result = 0;
     const { dataProps, chartType } = args;
 
-    if (dataProps && allChartTypes) {
+    if (dataProps) {
       const nominalFields = getNominalFields(dataProps as BasicDataPropertyForAdvice[]);
 
       if (nominalFields.length >= 2) {

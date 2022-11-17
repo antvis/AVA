@@ -1,17 +1,13 @@
-import { ckb } from '../../../ckb';
+import type { RuleModule } from '../type';
 
-import type { RuleModule } from '../interface';
-
-const Wiki = ckb();
-const allChartTypes = Object.keys(Wiki) as string[];
 export const aggregationSingleRow: RuleModule = {
   id: 'aggregation-single-row',
   type: 'HARD',
   docs: {
     lintText: 'Recommend kpi_panel when only one row of aggregated data is available.',
   },
-  trigger: ({ chartType }) => {
-    return allChartTypes.indexOf(chartType) !== -1;
+  trigger: () => {
+    return true;
   },
   validator: (args): number => {
     let result = 0;

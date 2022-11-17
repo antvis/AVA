@@ -3,9 +3,9 @@ import type { SimulationType } from '@antv/smart-color';
 /** AVA 包内跨模块引用 */
 import type { CkbConfig } from '../ckb/ckb';
 import type { Purpose } from '../ckb/types';
-import type { Specification, Datum } from '../common/types';
+import type { Specification, Data } from '../common/types';
 /** Advisor 模块内引用 */
-import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/interface';
+import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/type';
 
 /**
  * TODO:
@@ -65,7 +65,7 @@ export type AdviseParams = ChartAdviseParams;
 
 export type ChartAdviseParams = {
   /** input data to advise */
-  data: Datum[];
+  data: Data;
   /** customized data props to advise */
   dataProps?: BasicDataPropertyForAdvice[];
   /** data fields to focus, apply in `data` and `dataProps` */
@@ -198,7 +198,7 @@ export interface ScoringResultForChartType {
   log?: ScoringResultForRule[];
 }
 
-export type { Preferences } from './ruler/interface';
+export type { Preferences } from './ruler/type';
 
 export interface LinterOptions {
   purpose?: Purpose;

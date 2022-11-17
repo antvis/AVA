@@ -1,11 +1,7 @@
-import { ckb } from '../../../ckb';
 import { intersects } from '../../utils';
 import { compare } from '../utils';
 
-import type { RuleModule, BasicDataPropertyForAdvice } from '../interface';
-
-const Wiki = ckb();
-const allChartTypes = Object.keys(Wiki) as string[];
+import type { RuleModule, BasicDataPropertyForAdvice } from '../type';
 
 function hasSeriesField(dataProps: BasicDataPropertyForAdvice[]): boolean {
   const nominalOrOrdinalFields = dataProps.filter((field) =>
@@ -30,14 +26,14 @@ export const limitSeries: RuleModule = {
   docs: {
     lintText: 'Avoid too many values in one series.',
   },
-  trigger: ({ chartType, dataProps }) => {
-    return allChartTypes.includes(chartType) && hasSeriesField(dataProps as BasicDataPropertyForAdvice[]);
+  trigger: ({ dataProps }) => {
+    return hasSeriesField(dataProps as BasicDataPropertyForAdvice[]);
   },
   validator: (args): number => {
     let result = 0;
     const { dataProps, chartType } = args;
 
-    if (dataProps && allChartTypes) {
+    if (dataProps) {
       const nominalOrOrdinalFields = dataProps.filter((field) =>
         intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal'])
       );

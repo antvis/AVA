@@ -1,9 +1,4 @@
-import { ckb } from '../../../ckb';
-
-import type { RuleModule } from '../interface';
-
-const Wiki = ckb();
-const allChartTypes = Object.keys(Wiki) as string[];
+import type { RuleModule } from '../type';
 
 export const dataFieldQty: RuleModule = {
   id: 'data-field-qty',
@@ -11,8 +6,8 @@ export const dataFieldQty: RuleModule = {
   docs: {
     lintText: 'Data must have at least the min qty of the prerequisite.',
   },
-  trigger: ({ chartType }) => {
-    return allChartTypes.indexOf(chartType) !== -1;
+  trigger: () => {
+    return true;
   },
   validator: (args): number => {
     let result = 0;

@@ -1,12 +1,17 @@
 import { Info, RuleModule } from '../ruler';
 import { DEFAULT_RULE_WEIGHTS } from '../constants';
+import { CHART_IDS } from '../../ckb/constants';
 
 import type { ScoringResultForRule } from '../types';
-import type { ChartRuleModule } from '../ruler/interface';
+import type { ChartRuleModule } from '../ruler/type';
+import type { ChartKnowledgeBase } from '../../ckb/types';
 
 const defaultWeights = DEFAULT_RULE_WEIGHTS;
+declare type ChartID = typeof CHART_IDS[number];
 
 const computeScore = (
+  chartType: ChartID | string,
+  chartWIKI: ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>,
   ruleType: 'HARD' | 'SOFT',
   info: Info,
@@ -18,12 +23,12 @@ const computeScore = (
     .filter((r: RuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
       const extra = r.option?.extra;
-      return r.type === ruleType && r.trigger({ ...info, weight, ...extra }) && !r.option?.off;
+      return r.type === ruleType && r.trigger({ ...info, weight, ...extra, chartType, chartWIKI }) && !r.option?.off;
     })
     .forEach((r: RuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
       const extra = r.option?.extra;
-      const base = (r as ChartRuleModule).validator({ ...info, weight, ...extra }) as number;
+      const base = (r as ChartRuleModule).validator({ ...info, weight, ...extra, chartType, chartWIKI }) as number;
       const score = weight * base;
       // scores are multiplied for HARD rules and added for SOFT rules
       if (ruleType === 'HARD') {

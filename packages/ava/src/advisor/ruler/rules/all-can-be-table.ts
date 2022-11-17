@@ -1,6 +1,6 @@
 import { isUndefined } from '../utils';
 
-import type { RuleModule } from '../interface';
+import type { RuleModule } from '../type';
 
 const applyChartTypes = ['table'];
 
