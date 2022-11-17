@@ -1,9 +1,9 @@
-import _sortBy from 'lodash/sortBy';
-import { statistics } from '@antv/data-wizard';
+import { sortBy } from 'lodash';
 
+import { distinct } from '../../../data/statistics';
 import { IQR } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
-import { Datum, Measure, CategoryOutlierInfo } from '../../interface';
+import { Datum, Measure, CategoryOutlierInfo } from '../../types';
 import { calculatePValue } from '../util';
 
 type OutlierItem = {
@@ -12,12 +12,18 @@ type OutlierItem = {
   value: number;
 };
 
+type OutlierCandidateItem = {
+  index: number;
+  type: 'lower' | 'upper';
+  value: number;
+};
+
 export const findOutliers = (values: number[]): OutlierItem[] => {
   const IQRResult = IQR(values, { k: 1.8 });
 
   const lowerOutlierIndexes = IQRResult.lower.indexes;
   const upperOutlierIndexes = IQRResult.upper.indexes;
-  const candidates = [];
+  const candidates: OutlierCandidateItem[] = [];
   lowerOutlierIndexes.forEach((item) => {
     const value = values[item];
     candidates.push({
@@ -34,7 +40,7 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
       value,
     });
   });
-  const sortedCandidates = _sortBy(candidates, (item) => Math.abs(IQRResult[item.type].threshold - item.value));
+  const sortedCandidates = sortBy(candidates, (item) => Math.abs(IQRResult[item.type].threshold - item.value));
 
   const results: OutlierItem[] = [];
   for (let i = 0; i < sortedCandidates.length; i += 1) {
@@ -54,12 +60,12 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
   return results;
 };
 
-export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): CategoryOutlierInfo[] => {
+export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CategoryOutlierInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].field;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
-  if (statistics.distinct(values) === 1) return [];
+  if (distinct(values) === 1) return [];
   const outliers: CategoryOutlierInfo[] = findOutliers(values).map((item) => {
     const { index, significance } = item;
     return {
@@ -73,4 +79,4 @@ export const extractor = (data: Datum[], dimensions: string[], measures: Measure
     };
   });
   return outliers;
-};
+}

@@ -1,14 +1,14 @@
-import _sumBy from 'lodash/sumBy';
+import { sumBy } from 'lodash';
 import { cdf, quantile } from '@stdlib/stats/base/dists/normal';
 
 import { sign, unique } from '../utils/common';
-import { TrendType } from '../interface';
+import { TrendType } from '../types';
 
 // http://vsp.pnnl.gov/help/Vsample/Design_Trend_Mann_Kendall.htm
 // the Mann-Kendall (MK) test is to statistically assess if there
 // is a monotonic upward or downward trend of the variable of
 // interest over time.
-export const mkTest = (data: number[], alpha: number = 0.05) => {
+export function mkTest(data: number[], alpha: number = 0.05) {
   const length = data?.length;
   let S = 0;
   for (let k = 0; k < length - 1; k += 1) {
@@ -22,7 +22,7 @@ export const mkTest = (data: number[], alpha: number = 0.05) => {
 
   const varS =
     (length * (length - 1) * (2 * length + 5) -
-      (uniqLength === length ? 0 : _sumBy(uniqCount, (c) => c * (c - 1) * (2 * c + 5)))) /
+      (uniqLength === length ? 0 : sumBy(uniqCount, (c) => c * (c - 1) * (2 * c + 5)))) /
     18;
 
   let zScore = 0;
@@ -49,4 +49,4 @@ export const mkTest = (data: number[], alpha: number = 0.05) => {
     pValue,
     zScore,
   };
-};
+}

@@ -1,6 +1,6 @@
-import { IPhrase } from '@antv/text-schema';
-
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
+
+import type { NtvTypes } from '../ntv';
 
 export type Datum = Record<string, string | number>;
 
@@ -65,7 +65,7 @@ export interface VisualizationSchema {
    * @description insight summaries display type, it dependent
    * @default string[]
    */
-  insightSummaries?: string[] | IPhrase[][];
+  insightSummaries?: string[] | NtvTypes.PhraseSpec[][];
 }
 
 /** insight information */

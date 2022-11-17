@@ -1,4 +1,4 @@
-import { extractor } from '../../src/insights/extractors/changePoint';
+import { extractor } from '../../../src/insight/insights/extractors/changePoint';
 
 const data = [
   { year: '1991', value: 0.3 },

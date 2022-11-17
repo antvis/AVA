@@ -1,5 +1,5 @@
 import { PhrasesBuilder } from '../utils/phrases-builder';
-import { LowVarianceInfo } from '../../interface';
+import { LowVarianceInfo } from '../../types';
 
 /**
  * @template `The ${measures} data points of ${dimension} are very similar to the mean, that is, the variance is low.`

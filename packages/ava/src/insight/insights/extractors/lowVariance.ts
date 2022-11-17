@@ -1,6 +1,6 @@
-import { statistics } from '@antv/data-wizard';
+import { coefficientOfVariance, mean } from '../../../data/statistics';
 
-import { Datum, LowVarianceInfo, Measure } from '../../interface';
+import type { Datum, LowVarianceInfo, Measure } from '../../types';
 
 type LowVarianceItem = {
   significance: number;
@@ -14,8 +14,8 @@ type LowVarianceParams = {
 // Coefficient of variation threshold
 const CV_THRESHOLD = 0.15;
 
-export const findLowVariance = (values: number[], params?: LowVarianceParams): LowVarianceItem => {
-  const cv = statistics.coefficientOfVariance(values);
+export function findLowVariance(values: number[], params?: LowVarianceParams): LowVarianceItem | null {
+  const cv = coefficientOfVariance(values);
 
   const cvThreshold = params?.cvThreshold || CV_THRESHOLD;
   if (cv >= cvThreshold) {
@@ -23,15 +23,15 @@ export const findLowVariance = (values: number[], params?: LowVarianceParams): L
   }
   // The smaller the CV is, the greater the significance is.
   const significance = 1 - cv;
-  const mean = statistics.mean(values);
+  const meanValue = mean(values);
 
   return {
     significance,
-    mean,
+    mean: meanValue,
   };
-};
+}
 
-export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): LowVarianceInfo[] => {
+export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): LowVarianceInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].field;
   if (!data || data.length === 0) return [];
@@ -52,4 +52,4 @@ export const extractor = (data: Datum[], dimensions: string[], measures: Measure
     ];
   }
   return [];
-};
+}
