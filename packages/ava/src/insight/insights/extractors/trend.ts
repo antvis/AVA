@@ -1,6 +1,6 @@
 import regression from 'regression';
 
-import { Datum, Measure, TrendInfo } from '../../interface';
+import { Datum, Measure, TrendInfo } from '../../types';
 import { mkTest } from '../../algorithms';
 
 type TrendResult = {
@@ -9,7 +9,7 @@ type TrendResult = {
   regression: TrendInfo['regression'];
 };
 
-export const findTimeSeriesTrend = (series: number[]): TrendResult => {
+export function findTimeSeriesTrend(series: number[]): TrendResult {
   const testResult = mkTest(series, 0.05);
   const { pValue, trend } = testResult;
 
@@ -24,9 +24,9 @@ export const findTimeSeriesTrend = (series: number[]): TrendResult => {
       equation,
     },
   };
-};
+}
 
-export const extractor = (data: Datum[], dimensions: string[], measures: Measure[]): TrendInfo[] => {
+export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): TrendInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].field;
   if (!data || data.length === 0) return [];
@@ -43,4 +43,4 @@ export const extractor = (data: Datum[], dimensions: string[], measures: Measure
     ];
   }
   return [];
-};
+}

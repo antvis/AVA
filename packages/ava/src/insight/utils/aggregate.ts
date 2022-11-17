@@ -1,6 +1,6 @@
 import { groupBy, sumBy, minBy, maxBy, meanBy, sortBy, flatten, uniq } from 'lodash';
 
-import { Aggregator, Datum, Measure, MeasureMethod } from '../interface';
+import { Aggregator, Datum, Measure, MeasureMethod } from '../types';
 
 const sum = (data: Datum[], measure: string) => {
   return sumBy(data, measure);
@@ -35,7 +35,7 @@ export const AggregatorMap: Record<MeasureMethod, Aggregator> = {
   COUNT_DISTINCT: countDistinct,
 };
 
-export const aggregate = (data: Datum[], groupByField: string, measures: Measure[], sort?: boolean) => {
+export function aggregate(data: Datum[], groupByField: string, measures: Measure[], sort?: boolean) {
   const grouped = groupBy(data, groupByField);
   const entries = sort ? sortBy(Object.entries(grouped), '0') : Object.entries(grouped);
   return entries.map(([value, dataGroup]) => {
@@ -47,11 +47,11 @@ export const aggregate = (data: Datum[], groupByField: string, measures: Measure
     });
     return datum;
   });
-};
+}
 
-export const aggregateWithMeasures = (data: Datum[], groupByField: string, measures: Measure[]) => {
+export function aggregateWithMeasures(data: Datum[], groupByField: string, measures: Measure[]) {
   const grouped = groupBy(data, groupByField);
-  const result = [];
+  const result: Datum[] = [];
   Object.entries(grouped).forEach(([value, dataGroup]) => {
     measures.forEach((measure) => {
       const { field: measureField, method } = measure;
@@ -67,9 +67,9 @@ export const aggregateWithMeasures = (data: Datum[], groupByField: string, measu
     });
   });
   return result;
-};
+}
 
-export const aggregateWithSeries = (data: Datum[], groupByField: string, measure: Measure, expandingField: string) => {
+export function aggregateWithSeries(data: Datum[], groupByField: string, measure: Measure, expandingField: string) {
   const grouped = groupBy(data, groupByField);
   const { field: measureField, method } = measure;
   const aggregator = AggregatorMap[method];
@@ -90,4 +90,4 @@ export const aggregateWithSeries = (data: Datum[], groupByField: string, measure
       });
     })
   );
-};
+}

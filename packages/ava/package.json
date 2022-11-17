@@ -21,7 +21,7 @@
     "access": "public"
   },
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "types": "lib/src/index.d.ts",
   "unpkg": "dist/index.min.js",
   "module": "esm/index.js",
   "files": [
@@ -55,10 +55,19 @@
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/smart-color": "^0.2.1",
+    "@stdlib/stats": "^0.0.12",
+    "@stdlib/stats-lowess": "^0.0.5",
+    "bayesian-changepoint": "^1.0.1",
+    "heap-js": "^2.1.6",
+    "lodash": "^4.17.21",
+    "regression": "^2.0.1",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
+    "@stdlib/types": "^0.0.12",
+    "@types/d3-array": "^3.0.1",
+    "@types/jest": "^23.3.12",
+    "@types/lodash": "^4.14.171",
     "@types/react": "^17.0.15",
     "eslint": "^7.32.0",
     "jest": "^24.9.0",
@@ -68,6 +77,6 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.59.0",
     "ts-json-schema-generator": "^1.1.2",
-    "typescript": "4.3.5"
+    "typescript": "^4.9.3"
   }
 }
