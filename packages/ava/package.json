@@ -64,6 +64,7 @@
     "tslib": "^2.3.1"
   },
   "devDependencies": {
+    "@antv/algorithm": "^0.1.25",
     "@antv/color-schema": "^0.2.3",
     "@stdlib/types": "^0.0.12",
     "@types/d3-array": "^3.0.1",
