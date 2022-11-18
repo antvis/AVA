@@ -61,6 +61,7 @@
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "@types/jest": "^23.3.12",
+    "@types/lodash": "^4.14.180",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "cross-env": "^7.0.2",
