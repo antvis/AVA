@@ -1,14 +1,16 @@
-// import * as AlgorithmSync from '@antv/algorithm';
+// TODO @chenluli: move @antv/algorithm from devDep to dep after this file is complete
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as AlgorithmSync from '@antv/algorithm';
 
 import { analyzeField } from '../field';
 
 // TODO: Fix path
-import type { NodeData, LinkData } from '../dataset/types';
+import type { NodeData, LinkData } from '../../dataset/graph/types';
 import type { FieldInfo } from '../field/types';
 import type { GraphFeat, NodeStructFeat, LinkStructFeat } from './types';
 
 const GraphAlgorithms = {
-  // ...AlgorithmSync,
+  ...AlgorithmSync,
 };
 
 function generateColDataFromArray(arr: any[], columnNames: string[]) {
@@ -163,7 +165,7 @@ export function getAllStructFeats(nodes: NodeData[], links: LinkData[]) {
   const linkFeats = getAllFieldsInfo(generateColDataFromArray(linkStructFeats, linkFeatNames), linkFeatNames);
 
   // Calculate the structural features and statistics of all nodes and links
-  const nodeDegrees = nodes.map((node) => node.degree);
+  const nodeDegrees = nodes.map((node) => Number(node.degree));
   const avgDegree = nodeDegrees.reduce((x, y) => x + y) / nodeDegrees.length;
   const degreeDev = nodeDegrees.map((x) => x - avgDegree);
   const degreeStd = Math.sqrt(degreeDev.map((x) => x ** 2).reduce((x, y) => x + y) / (nodeDegrees.length - 1));
