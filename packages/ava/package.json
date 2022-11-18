@@ -21,7 +21,7 @@
     "access": "public"
   },
   "main": "lib/index.js",
-  "types": "lib/src/index.d.ts",
+  "types": "lib/index.d.ts",
   "unpkg": "dist/index.min.js",
   "module": "esm/index.js",
   "files": [
