@@ -5,5 +5,5 @@
     "declaration": true,
     "declarationDir": "./lib"
   },
-  "include": ["__tests__"]
+  "include": ["./src"]
 }
