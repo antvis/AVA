@@ -1,5 +1,5 @@
 import { sumBy, sum, mean } from 'lodash';
-import maxabs from '@stdlib/stats/base/maxabs';
+import { maxabs } from '@stdlib/stats/base';
 
 import { calcPValue } from './window';
 
