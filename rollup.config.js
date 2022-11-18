@@ -70,7 +70,7 @@ export default (type, name, config = {}) => {
       include: /node_modules/,
     }),
 
-    filesize(),
+    json(),
     ...extraPlugins,
   ];
 
@@ -80,6 +80,7 @@ export default (type, name, config = {}) => {
   if (format === 'umd') {
     output.file = `dist/${kebabCase(name)}.min.js`;
     plugins.push(terser());
+    plugins.push(filesize());
     output.globals = {
       react: 'React',
       'react-dom': 'ReactDOM',
