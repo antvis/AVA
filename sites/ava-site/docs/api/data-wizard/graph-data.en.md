@@ -3,7 +3,7 @@ title: GraphData
 order: 3
 ---
 
-`markdown:docs/common/style.md`
+<embed src='@/docs/common/style.md'></embed>
 
 <div class="doc-md">
 

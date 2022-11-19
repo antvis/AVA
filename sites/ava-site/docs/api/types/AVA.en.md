@@ -3,8 +3,7 @@ title: AVA General Types
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 ### Specification
 
 Specification: declarative schema to describe a visualization.

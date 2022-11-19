@@ -3,9 +3,7 @@ title: SmartBoard 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
-
+<embed src='@/docs/common/style.md'></embed>
 
 根据输入图表和洞察自动生成 Dashboard。
 
@@ -17,7 +15,7 @@ order: 0
 
 SmartBoard 的流程如下：
 
-<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' />
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' width=100%/>
 
 ## 📦 安装
 

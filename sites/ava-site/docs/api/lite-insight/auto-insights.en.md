@@ -3,8 +3,7 @@ title: getDataInsights
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Automatically discovering interesting patterns from multi-dimensional data.
@@ -46,8 +45,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | patterns |  `PatternInfo[]` | The collection of patterns in the data | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |
 | visualizationSchemas |  `VisualizationSchema[]` | The insight visualization scheme, including chart type, title, insight description, and chart configuration (based on G2Plot) | `[{ type: 'column_chart', caption: string, insightSummaries: string[] | IPhrase[][], chartSchema: G2PlotConfig }]` |
 
-`markdown:docs/common/phrase.en.md`
-
+<embed src='@/docs/common/phrase.en.md'></embed>
 ### Usage
 
 * Specify the measures and dimensions involved in the calculation, and the number of insights returned.

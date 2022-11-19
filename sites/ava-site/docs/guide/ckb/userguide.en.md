@@ -3,8 +3,7 @@ title: CKB Concepts & Properties
 order: 1
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 ## Chart Classification

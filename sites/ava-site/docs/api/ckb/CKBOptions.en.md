@@ -3,8 +3,7 @@ title: CKBOptions
 order: 2
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Returns all possible options for each property of Chart Knowledge.
@@ -25,7 +24,7 @@ CKBOptions(lang)
 
 *object* * contains the following keys:
 
-## `CKBOptions().family`
+##### `CKBOptions().family`
 
 > Types of chart similarity or so called *Chart Family*.
 
@@ -42,7 +41,7 @@ Examples:
 * RadarCharts
 * Others
 
-## `CKBOptions().category`
+##### `CKBOptions().category`
 
 > Types of higher level of chart taxonomy or so called *Graphic Category*.
 
@@ -53,7 +52,7 @@ Examples:
 * Graph
 * Map
 
-## `CKBOptions().purpose`
+##### `CKBOptions().purpose`
 
 > Types of purpose for which the visualization is used.
 
@@ -66,7 +65,7 @@ Examples:
 * Proportion
 * Composition
 
-## `CKBOptions().coord`
+##### `CKBOptions().coord`
 
 > Types of *Coordinate Systems*.
 
@@ -80,7 +79,7 @@ Examples:
 * NodeLink
 * Radar
 
-## `CKBOptions().shape`
+##### `CKBOptions().shape`
 
 > Shapes of the skeleton of visualization.
 
@@ -94,7 +93,7 @@ Examples:
 * Scatter
 * Symmetric
 
-## `CKBOptions().channel`
+##### `CKBOptions().channel`
 
 > *Visual Channels*.
 
@@ -109,7 +108,7 @@ Examples:
 * Direction
 * Size
 
-## `CKBOptions().lom`
+##### `CKBOptions().lom`
 
 > *Level of Measurement*.
 

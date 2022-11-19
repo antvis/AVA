@@ -3,8 +3,7 @@ title: Introduction to CKB
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 
@@ -76,7 +75,7 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 ### Demo
 
-<playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
+<Playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
 
 ## 📖 Documentation
 

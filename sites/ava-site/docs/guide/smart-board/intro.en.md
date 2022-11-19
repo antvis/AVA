@@ -3,8 +3,7 @@ title: Introduction to SmartBoard
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Generating Dashboard based on input charts and insights。
@@ -17,7 +16,7 @@ Generating Dashboard based on input charts and insights。
 
 The pipeline of SmartBoard:
 
-<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' />
+<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*1P_URIfu2GwAAAAAAAAAAAAAARQnAQ' alt='SmartBoard pipeline' width=100%/>
 
 ## 📦 Installation
 

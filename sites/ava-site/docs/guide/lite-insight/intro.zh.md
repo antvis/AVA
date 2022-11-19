@@ -3,8 +3,7 @@ title: LiteInsight 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 从多维数据中自动地发现数据洞察。
@@ -20,7 +19,7 @@ order: 0
 
 自动洞察的流程如下：
 
-<img src='https://gw.alipayobjects.com/zos/antfincdn/nLmy8%26OiOh/li-pipeline-zh.jpg' alt='LiteInsight pipeline' />
+<img src='https://gw.alipayobjects.com/zos/antfincdn/nLmy8%26OiOh/li-pipeline-zh.jpg' alt='LiteInsight pipeline' width=100%/>
 
 ## 📦 安装
 

@@ -61,7 +61,7 @@ ReactDOM.render(
 
 <br>
 
-<playground path="components/auto-chart/demo/basic.jsx"></playground>
+<Playground path="components/auto-chart/demo/basic.jsx"></playground>
 
 
 ## Packages

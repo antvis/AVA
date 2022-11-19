@@ -3,8 +3,7 @@ title: CKBJson
 order: 1
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 得到一个 `JSON` 格式的 **图表知识库（Chart Knowledge Base）**，以下简称 CKB。
