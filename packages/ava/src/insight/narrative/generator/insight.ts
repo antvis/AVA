@@ -1,7 +1,6 @@
 import { groupBy } from 'lodash';
 
 import { PatternInfo, InsightInfo, InsightType } from '../../types';
-import { SubjectsDescInfo, AbstractNarrativeGenerator } from '../interface';
 import {
   subjectsDescStrategy,
   trendStrategy,
@@ -13,7 +12,9 @@ import {
 } from '../strategy';
 import { PhrasesBuilder } from '../utils/phrases-builder';
 
-export class InsightNarrativeGenerator extends AbstractNarrativeGenerator<PatternInfo> {
+import type { SubjectsDescInfo } from '../types';
+
+export class InsightNarrativeGenerator {
   caption: PhrasesBuilder;
 
   summaries: PhrasesBuilder[];
@@ -23,7 +24,8 @@ export class InsightNarrativeGenerator extends AbstractNarrativeGenerator<Patter
   private patternGroups: Partial<Record<InsightType, PatternInfo[]>>;
 
   constructor(patterns: PatternInfo[], insight: InsightInfo<PatternInfo>) {
-    super(patterns, insight);
+    this.prepareVariables(patterns, insight);
+    this.applyStrategy();
   }
 
   protected prepareVariables(patterns: PatternInfo[], insight: InsightInfo<PatternInfo>) {

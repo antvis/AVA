@@ -1,6 +1,7 @@
 import { PointPatternInfo } from '../../types';
-import { HomogeneousInfo } from '../interface';
 import { PhrasesBuilder } from '../utils/phrases-builder';
+
+import type { HomogeneousInfo } from '../types';
 
 function setPrefix(phrases: PhrasesBuilder, subspace: HomogeneousInfo['subspace']) {
   phrases.add('For');

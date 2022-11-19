@@ -1,7 +1,8 @@
 import { upperFirst } from 'lodash';
 
 import { PhrasesBuilder } from '../utils/phrases-builder';
-import { SubjectsDescInfo } from '../interface';
+
+import type { SubjectsDescInfo } from '../types';
 
 /**
  * case 1: has subspace

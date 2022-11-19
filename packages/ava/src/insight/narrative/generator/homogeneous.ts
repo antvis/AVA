@@ -1,15 +1,17 @@
 import { HomogeneousPatternInfo, InsightInfo } from '../../types';
-import { AbstractNarrativeGenerator, HomogeneousInfo } from '../interface';
 import { homogeneousStrategy } from '../strategy';
 import { PhrasesBuilder } from '../utils/phrases-builder';
 
-export class HomogeneousNarrativeGenerator extends AbstractNarrativeGenerator<HomogeneousPatternInfo> {
+import type { HomogeneousInfo } from '../types';
+
+export class HomogeneousNarrativeGenerator {
   summary: PhrasesBuilder;
 
   private globalVariableMap: HomogeneousInfo;
 
   constructor(patterns: HomogeneousPatternInfo[], insight: InsightInfo<HomogeneousPatternInfo>) {
-    super(patterns, insight);
+    this.prepareVariables(patterns, insight);
+    this.applyStrategy();
   }
 
   protected prepareVariables(patterns: HomogeneousPatternInfo[], insight: InsightInfo<HomogeneousPatternInfo>) {

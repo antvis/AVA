@@ -29,6 +29,8 @@
     "clean": "git clean -dfx",
     "setup:playground": "cd playground && npm install",
     "start:playground": "cd playground && npm start",
+    "setup:site": "cd site && npm install",
+    "start:site": "cd site && npm start",
     "prepare": "husky install",
     "ci": "run-s format lint-staged build",
     "release": "lerna exec --no-private --concurrency 1 -- npx --no-install semantic-release",
