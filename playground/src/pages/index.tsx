@@ -91,7 +91,19 @@ class App extends React.Component<{}, TestState> {
                 })}
               </Menu.SubMenu>
               <Menu.SubMenu title="ava-react" key="ava-react">
-                <Menu.Item key="ntv">ntv</Menu.Item>
+                {manifest.avaReactDemos.map((demo) => {
+                  return (
+                    <Menu.Item
+                      key={demo.id}
+                      onClick={() => {
+                        this.setDemo(demo);
+                      }}
+                      icon={demo.icon}
+                    >
+                      {demo.name}
+                    </Menu.Item>
+                  );
+                })}
               </Menu.SubMenu>
             </Menu>
           </Sider>

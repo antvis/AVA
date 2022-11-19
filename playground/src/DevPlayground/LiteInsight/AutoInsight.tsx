@@ -5,7 +5,8 @@ import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
 import { InsightCard } from 'antv-site-demo-rc';
-import { getDataInsightsAsync, InsightInfo, Datum, PatternInfo } from '@antv/lite-insight';
+
+import { getInsights, InsightTypes } from '../../../../packages/ava/lib';
 
 const { Option } = Select;
 
@@ -67,10 +68,10 @@ const datasetConfigs = {
 };
 
 export default function App() {
-  const [insights, setInsights] = useState<InsightInfo<PatternInfo>[]>([]);
+  const [insights, setInsights] = useState<InsightTypes.InsightInfo<InsightTypes.PatternInfo>[]>([]);
   const [dataset, setDataset] = useState('gapminder');
-  const [data, setData] = useState<Datum[]>([]);
-  const [tableColumns, setTableColumns] = useState<Datum[]>([]);
+  const [data, setData] = useState<InsightTypes.Datum[]>([]);
+  const [tableColumns, setTableColumns] = useState<InsightTypes.Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [insightLoading, setInsightLoading] = useState<boolean>(false);
   const [showTextSchema, setShowTextSchema] = useState<boolean>(false);
@@ -92,15 +93,10 @@ export default function App() {
     }
   };
 
-  const getInsights = async () => {
+  const getDataInsights = async () => {
     setInsightLoading(true);
-    getDataInsightsAsync(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true })
-      .then((res) => {
-        if (res?.insights) setInsights(res.insights);
-      })
-      .finally(() => {
-        setInsightLoading(false);
-      });
+    const { insights } = getInsights(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true });
+    if (insights) setInsights(insights);
   };
 
   useEffect(() => {
@@ -108,7 +104,7 @@ export default function App() {
   }, [dataset]);
   return (
     <>
-      <div style={{ padding: 16, display: 'flex', height: 500 }}>
+      <div style={{ padding: 16, display: 'flex', height: 520, border: '1px solid rgb(238, 238, 238)' }}>
         <div
           style={{ flex: 1, borderRight: '2px solid #bfbfbf', paddingRight: 20, height: '100%', overflow: 'hidden' }}
         >
@@ -132,7 +128,7 @@ export default function App() {
               </Select>
             </div>
             <div>
-              <Button disabled={dataLoading} type="primary" icon={<GiftOutlined />} onClick={getInsights}>
+              <Button disabled={dataLoading} type="primary" icon={<GiftOutlined />} onClick={() => getDataInsights()}>
                 Get Insights!
               </Button>
             </div>
