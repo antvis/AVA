@@ -7,11 +7,8 @@ import type { Specification, Data } from '../common/types';
 import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/type';
 
 /**
- * TODO:
- * -- BasicDataPropertyForAdvice 改为从 DW 引入
- * -- Lint 类型引入
+ * Advisor config type
  */
-
 export type AdvisorConfig = {
   ckbCfg?: CkbConfig;
   ruleCfg?: RuleConfig;
