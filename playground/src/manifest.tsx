@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { EyeOutlined, GiftOutlined, RobotOutlined } from '@ant-design/icons';
+import { EyeOutlined, GiftOutlined, RobotOutlined, DatabaseOutlined, FontSizeOutlined } from '@ant-design/icons';
 
 import CKBList from './DevPlayground/CKBList';
-// import Data from './DevPlayground/Data';
+import Data from './DevPlayground/Data';
 import LiteInsight from './DevPlayground/LiteInsight';
 import ChartAdvisor from './DevPlayground/ChartAdvisor';
 
@@ -29,12 +29,12 @@ const manifest: Manifest = {
       contentComp: CKBList,
       icon: <EyeOutlined />,
     },
-    // {
-    //   id: 'Data',
-    //   name: 'Data',
-    //   contentComp: Data,
-    //   icon: <EyeOutlined />,
-    // },
+    {
+      id: 'Data',
+      name: 'Data',
+      contentComp: Data,
+      icon: <DatabaseOutlined />,
+    },
     {
       id: 'ChartAdvisor',
       name: 'Advisor',
@@ -43,7 +43,7 @@ const manifest: Manifest = {
     },
     {
       id: 'LiteInsight',
-      name: 'LiteInsight',
+      name: 'Insight',
       contentComp: LiteInsight,
       icon: <GiftOutlined />,
     },
@@ -52,8 +52,8 @@ const manifest: Manifest = {
     {
       id: 'ntv',
       name: 'ntv',
-      contentComp: CKBList,
-      icon: <EyeOutlined />,
+      contentComp: null,
+      icon: <FontSizeOutlined />,
     },
   ],
 };
