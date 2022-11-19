@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { PagList, JSONView } from 'antv-site-demo-rc';
 // import
-import { ChartAdvisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 
 // contants
 
@@ -78,7 +78,7 @@ const myCKBCfg = {
 };
 
 // usage
-const myChartAdvisor = new ChartAdvisor({ ckbCfg: myCKBCfg });
+const myChartAdvisor = new Advisor({ ckbCfg: myCKBCfg });
 
 const results = myChartAdvisor.advise({ data: trickyData });
 

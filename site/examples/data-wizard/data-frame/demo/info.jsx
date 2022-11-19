@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import ReactDOM from 'react-dom';
 import { Divider, Input, Alert } from 'antd';
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 import ReactJson from 'react-json-view';
 
 const { TextArea } = Input;

@@ -2,9 +2,9 @@ import React from 'react';
 
 import ReactDOM from 'react-dom';
 import { JSONView, ChartView, LintCard, StepBar } from 'antv-site-demo-rc';
-import { Linter } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 
-const myLinter = new Linter();
+const myAdvisor = new Advisor();
 
 // contants
 
@@ -45,7 +45,7 @@ class App extends React.Component {
     this.state = {
       currentStep: 0,
       spec: errorSpec,
-      problems: myLinter.lint({ spec: errorSpec }),
+      problems: myAdvisor.lint({ spec: errorSpec }),
     };
 
     this.myRef = React.createRef();

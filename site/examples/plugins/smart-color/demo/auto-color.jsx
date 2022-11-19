@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { specToG2Plot } from '@antv/antv-spec';
 import { colorToHex } from '@antv/smart-color';
-import { Advisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 
 const myAdvisor = new Advisor();
 

@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { ChartView, JSONView, StepBar, TableView, PagList } from 'antv-site-demo-rc';
 // import
-import { ChartAdvisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 
 // contants
 
@@ -111,7 +111,7 @@ const myRuleCfg = {
 };
 
 // usage
-const myChartAdvisor = new ChartAdvisor({ ckbCfg: myCKBCfg, ruleCfg: myRuleCfg });
+const myChartAdvisor = new Advisor({ ckbCfg: myCKBCfg, ruleCfg: myRuleCfg });
 
 const results = myChartAdvisor.advise({ data: trickyData });
 

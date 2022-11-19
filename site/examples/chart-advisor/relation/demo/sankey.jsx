@@ -1,4 +1,4 @@
-import { Advisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 import G6 from '@antv/g6';
 import { specToG6Config } from '@antv/antv-spec';
 
