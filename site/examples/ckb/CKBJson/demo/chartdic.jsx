@@ -5,15 +5,15 @@ import Thumbnails from '@antv/thumbnails';
 import { Thumbnail } from '@antv/thumbnails-component';
 import { Popover } from 'antd';
 // import
-import { CKBJson } from '@antv/ckb';
+import { ckb } from '@antv/ava';
 
 const chartTypeList = Object.keys(Thumbnails);
 
-const ckb = CKBJson('en-US', true);
+const myCkb = ckb();
 
 const ViewAll = () =>
   chartTypeList.map((item) => {
-    const { name, alias, def, purpose, coord, shape, channel } = ckb[item];
+    const { name, alias, def, purpose, coord, shape, channel } = myCkb[item];
 
     const content = (
       <div>

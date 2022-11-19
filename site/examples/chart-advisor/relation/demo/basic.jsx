@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Advisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 import ReactDOM from 'react-dom';
 import { specToG6Plot } from '@antv/antv-spec';
 

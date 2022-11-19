@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import insertCss from 'insert-css';
 import { Spin, Switch, Form, Row, Col } from 'antd';
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 import { PlotCard } from 'antv-site-demo-rc';
 
 insertCss(`
@@ -43,12 +43,12 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [summaryType, setSummaryType] = useState('schema');
 
-  const getInsights = async () => {
+  const getMyInsights = async () => {
     fetch('https://cdn.jsdelivr.net/npm/vega-datasets@2.2.0/data/gapminder.json')
       .then((res) => res.json())
       .then((data) => {
         if (data) {
-          const insightResult = getDataInsights(data, {
+          const insightResult = getInsights(data, {
             limit: 10,
             measures: [
               { field: 'life_expect', method: 'MEAN' },
@@ -67,7 +67,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    getInsights();
+    getMyInsights();
   }, [summaryType]);
 
   return (

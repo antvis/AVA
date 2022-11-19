@@ -2,12 +2,12 @@ import React from 'react';
 
 import { CaretDownOutlined } from '@ant-design/icons';
 // import
-import { ChartAdvisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 import { Dropdown, Menu, Radio } from 'antd';
 import { ChartView, JSONView, LintCard, StepBar, TableView } from 'antv-site-demo-rc';
 import ReactDOM from 'react-dom';
 
-const myChartAdvisor = new ChartAdvisor();
+const myChartAdvisor = new Advisor();
 
 // contants
 
@@ -29,7 +29,10 @@ class App extends React.Component {
     this.state = {
       currentStep: 0,
       data: defaultData,
-      results: myChartAdvisor.advise({ data: defaultData }),
+      results: myChartAdvisor.advise({ data: defaultData }).map((advice) => {
+        const lints = myChartAdvisor.lint({ spec: advice.spec });
+        return { ...advice, lint: lints };
+      }),
       currentResult: 0,
       dataRadioValue: 'Table',
     };

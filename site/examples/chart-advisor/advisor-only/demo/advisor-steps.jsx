@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { CaretDownOutlined } from '@ant-design/icons';
-import { Advisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 import { Dropdown, Menu, Radio } from 'antd';
 import { ChartView, JSONView, StepBar, TableView } from 'antv-site-demo-rc';
 import ReactDOM from 'react-dom';

@@ -3,7 +3,7 @@ import React, { useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { ChartView, LintCard } from 'antv-site-demo-rc';
 // import
-import { Linter } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 
 // contants
 
@@ -68,9 +68,9 @@ const myRuleCfg = {
 };
 
 // usage
-const myLinter = new Linter(myRuleCfg);
+const myAdvisor = new Advisor(myRuleCfg);
 
-const problems = myLinter.lint({ spec: iDontLikeSpec });
+const problems = myAdvisor.lint({ spec: iDontLikeSpec });
 
 const App = () => {
   const myRef = useRef();

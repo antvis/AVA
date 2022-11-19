@@ -1,4 +1,4 @@
-import { Advisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 import { specToG6Plot } from '@antv/antv-spec';
 
 // Prepare tabular data that describe relations: each row of data represents an edge

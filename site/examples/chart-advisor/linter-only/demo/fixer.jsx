@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 
 import ReactDOM from 'react-dom';
 import { Badge, Popover, Checkbox } from 'antd';
-import { Linter } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 import { ChartView } from 'antv-site-demo-rc';
 
 const errorSpec = {
@@ -44,12 +44,12 @@ const errorSpec = {
   ],
 };
 
-const myLinter = new Linter();
+const myAdvisor = new Advisor();
 
 const App = () => {
   const chartRef = useRef(null);
 
-  const [rules, setRules] = useState(myLinter.lint({ spec: errorSpec }));
+  const [rules, setRules] = useState(myAdvisor.lint({ spec: errorSpec }));
   const [spec, setSpec] = useState(errorSpec);
 
   const checkFix = (e, checkedRuleId) => {

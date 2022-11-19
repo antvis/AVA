@@ -6,4 +6,4 @@
 <embed src='@/docs/api/chart-advisor/advice.zh.md'></embed>
 # Ruler
 
-<embed src='@/docs/api/chart-advisor/30_Ruler.zh.md'></embed>
+<embed src='@/docs/api/chart-advisor/Ruler.zh.md'></embed>

@@ -2,8 +2,7 @@ import React from 'react';
 
 import ReactDOM from 'react-dom';
 import { PagList, JSONView } from 'antv-site-demo-rc';
-// import
-import { ChartAdvisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 
 // contants
 
@@ -14,7 +13,7 @@ const defaultData = [
 ];
 
 // usage
-const myChartAdvisor = new ChartAdvisor();
+const myChartAdvisor = new Advisor();
 const results = myChartAdvisor.advise({ data: defaultData });
 
 const App = () => (

@@ -1,4 +1,4 @@
-import { Advisor } from '@antv/chart-advisor';
+import { Advisor } from '@antv/ava';
 import { specToG6Plot } from '@antv/antv-spec';
 
 // Prepare hierachical data: some entities have a parent-child relationship with each other

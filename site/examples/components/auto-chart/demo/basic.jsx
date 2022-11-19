@@ -1,7 +1,7 @@
 import React from 'react';
 
 import ReactDOM from 'react-dom';
-import { AutoChart } from '@antv/auto-chart';
+import { AutoChart } from '@antv/ava';
 
 const data = [
   { f1: '2019-01', f2: 100 },
