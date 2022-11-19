@@ -152,3 +152,8 @@ export type CorrelationInfo = BasePatternInfo<'correlation'> & {
   pcorr: number;
   measures: [string, string];
 };
+
+export type InsightsResult = {
+  insights: InsightInfo<PatternInfo>[];
+  homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[];
+};

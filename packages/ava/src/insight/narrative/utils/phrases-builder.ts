@@ -1,6 +1,6 @@
-import { Language, SymbolType } from '../interface';
-import { SYMBOL } from '../constance';
+import { SYMBOL } from '../constants';
 
+import type { Language, SymbolType } from '../types';
 import type { NtvTypes } from '../../../ntv';
 
 export function removeLastSpace(value: string) {

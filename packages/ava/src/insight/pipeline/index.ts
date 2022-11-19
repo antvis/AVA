@@ -1,11 +1,6 @@
 import { extractInsights, generateInsightsWithVisualizationSchemas } from './insight';
 
-import type { Datum, InsightOptions, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../types';
-
-type InsightsResult = {
-  insights: InsightInfo<PatternInfo>[];
-  homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[];
-};
+import type { Datum, InsightOptions, InsightsResult } from '../types';
 
 export function getInsights(sourceData: Datum[], options?: InsightOptions): InsightsResult {
   const extractResult = extractInsights(sourceData, options);
