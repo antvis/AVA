@@ -62,116 +62,108 @@ export default defineConfig({
     ],
     docs: [
         {
-        slug: 'guide/auto-chart',
-        title: {
-            zh: 'AutoChart 组件',
-            en: 'AutoChart Component',
-        },
-        order: 1,
-        },
-        {
-        slug: 'guide/ckb',
-        title: {
-            zh: '图表知识库(CKB)',
-            en: 'Chart Knowledge Base (CKB)',
-        },
-        order: 2,
+            slug: 'guide/auto-chart',
+            title: {
+                zh: 'AutoChart 组件',
+                en: 'AutoChart Component',
+            },
+            order: 1,
         },
         {
-        slug: 'guide/data-wizard',
-        title: {
-            zh: 'DataWizard',
-            en: 'DataWizard',
-        },
-        order: 3,
-        },
-        {
-        slug: 'guide/chart-advisor',
-        title: {
-            zh: 'ChartAdvisor',
-            en: 'ChartAdvisor',
-        },
-        order: 4,
+            slug: 'guide/ckb',
+            title: {
+                zh: '图表知识库(CKB)',
+                en: 'Chart Knowledge Base (CKB)',
+            },
+            order: 2,
         },
         {
-        slug: 'guide/rules',
-        title: {
-            zh: '推荐规则',
-            en: 'Rules',
-        },
-        order: 5,
-        },
-        {
-        slug: 'guide/lite-insight',
-        title: {
-            zh: 'LiteInsight',
-            en: 'LiteInsight',
-        },
-        order: 6,
+            slug: 'guide/data-wizard',
+            title: {
+                zh: 'DataWizard',
+                en: 'DataWizard',
+            },
+            order: 3,
         },
         {
-        slug: 'guide/smart-board',
-        title: {
-            zh: 'SmartBoard',
-            en: 'SmartBoard',
-        },
-        order: 7,
-        },
-        {
-        slug: 'guide/smart-color',
-        title: {
-            zh: 'SmartColor',
-            en: 'SmartColor',
-        },
-        order: 8,
+            slug: 'guide/chart-advisor',
+            title: {
+                zh: 'ChartAdvisor',
+                en: 'ChartAdvisor',
+            },
+            order: 4,
         },
         {
-        slug: 'api/auto-chart',
-        title: {
-            zh: 'AutoChart',
-            en: 'AutoChart',
-        },
-        order: 1,
-        },
-        {
-        slug: 'api/ckb',
-        title: {
-            zh: '图表知识库(CKB)',
-            en: 'Chart Knowledge Base (CKB)',
-        },
-        order: 2,
+            slug: 'guide/rules',
+            title: {
+                zh: '推荐规则',
+                en: 'Rules',
+            },
+            order: 5,
         },
         {
-        slug: 'api/data-wizard',
-        title: {
-            zh: 'DataWizard',
-            en: 'DataWizard',
-        },
-        order: 3,
-        },
-        {
-        slug: 'api/chart-advisor',
-        title: {
-            zh: 'ChartAdvisor',
-            en: 'ChartAdvisor',
-        },
-        order: 4,
+            slug: 'guide/lite-insight',
+            title: {
+                zh: 'LiteInsight',
+                en: 'LiteInsight',
+            },
+            order: 6,
         },
         {
-        slug: 'api/chart-linter',
-        title: {
-            zh: 'ChartLinter',
-            en: 'ChartLinter',
-        },
-        order: 5,
+            slug: 'guide/smart-board',
+            title: {
+                zh: 'SmartBoard',
+                en: 'SmartBoard',
+            },
+            order: 7,
         },
         {
-        slug: 'api/lite-insight',
-        title: {
-            zh: 'LiteInsight',
-            en: 'LiteInsight',
+            slug: 'guide/smart-color',
+            title: {
+                zh: 'SmartColor',
+                en: 'SmartColor',
+            },
+            order: 8,
         },
-        order: 6,
+        {
+            slug: 'api/auto-chart',
+            title: {
+                zh: 'AutoChart',
+                en: 'AutoChart',
+            },
+            order: 1,
+        },
+        {
+            slug: 'api/ckb',
+            title: {
+                zh: '图表知识库(CKB)',
+                en: 'Chart Knowledge Base (CKB)',
+            },
+            order: 2,
+        },
+        {
+            slug: 'api/data-wizard',
+            title: {
+                zh: 'DataWizard',
+                en: 'DataWizard',
+            },
+            order: 3,   
+        },
+        {
+            slug: 'api/chart-advisor',
+            title: {
+                zh: 'ChartAdvisor',
+                en: 'ChartAdvisor',
+            },
+            order: 4,
+        },
+        {
+            slug: 'api/lite-insight',
+            title: {
+                zh: 'LiteInsight',
+                en: 'LiteInsight',
+            },
+            order: 6,
         },
         {
         slug: 'api/smart-board',
@@ -182,86 +174,79 @@ export default defineConfig({
         order: 7,
         },
         {
-        slug: 'api/smart-color',
-        title: {
-            zh: 'SmartColor',
-            en: 'SmartColor',
-        },
-        order: 8,
+            slug: 'api/smart-color',
+            title: {
+                zh: 'SmartColor',
+                en: 'SmartColor',
+            },
+            order: 8,
         },
         {
-        slug: 'api/types',
-        title: {
-            zh: '类型 Types',
-            en: 'Types',
-        },
-        order: 99,
+            slug: 'api/types',
+            title: {
+                zh: '类型 Types',
+                en: 'Types',
+            },
+            order: 9,
         },
     ],
     examples: [
         {
-        slug: 'components',
-        title: {
-            zh: 'React 组件',
-            en: 'React Components',
-        },
-        order: 0,
-        },
-        {
-        slug: 'data-wizard',
-        title: {
-            zh: '数据处理（DataWizard）',
-            en: 'DataWizard',
-        },
-        order: 1,
+            slug: 'components',
+            title: {
+                zh: 'React 组件',
+                en: 'React Components',
+            },
+            order: 0,
         },
         {
-        slug: 'ckb',
-        title: {
-            zh: '图表知识库（CKB)',
-            en: 'Chart Knowledge Base (CKB)',
-        },
-        order: 2,
-        },
-        {
-        slug: 'chart-advisor',
-        title: {
-            zh: '图表推荐（ChartAdvisor）',
-            en: 'ChartAdvisor',
-        },
-        order: 3,
+            slug: 'data-wizard',
+            title: {
+                zh: '数据处理（DataWizard）',
+                en: 'DataWizard',
+            },
+            order: 1,
+            includes: [],
         },
         {
-        slug: 'lite-insight',
-        title: {
-            zh: '智能洞察（LiteInsight）',
-            en: 'LiteInsight',
-        },
-        order: 4,
-        },
-        {
-        slug: 'smart-board',
-        title: {
-            zh: '增强展现（SmartBoard）',
-            en: 'SmartBoard',
-        },
-        order: 5,
+            slug: 'ckb',
+            title: {
+                zh: '图表知识库（CKB)',
+                en: 'Chart Knowledge Base (CKB)',
+            },
+            order: 2,
         },
         {
-        slug: 'plugins',
-        title: {
-            zh: '插件',
-            en: 'Plugins',
-        },
-        order: 6,
+            slug: 'chart-advisor',
+            title: {
+                zh: '图表推荐（ChartAdvisor）',
+                en: 'ChartAdvisor',
+            },
+            order: 3,
         },
         {
-        slug: 'others',
-        title: {
-            zh: '其他',
-            en: 'Others',
+            slug: 'lite-insight',
+            title: {
+                zh: '智能洞察（LiteInsight）',
+                en: 'LiteInsight',
+            },
+            order: 4,
         },
-        order: 7,
+        {
+            slug: 'plugins',
+            title: {
+                zh: '插件',
+                en: 'Plugins',
+            },
+            order: 5,
+        },
+            {
+            slug: 'others',
+            title: {
+                zh: '其他',
+                en: 'Others',
+            },
+            order: 6,
         },
     ],
     // 编辑器配置
@@ -343,16 +328,16 @@ export default defineConfig({
             link: 'https://www.yuque.com/antv/blog/2020story',
         },
         {
-          type: {
-            zh: '推荐',
-            en: 'Recommend',
-          },
-          title: {
-            zh: 'AVA 1.0 你的图表参谋',
-            en: 'AVA 1.0 Your Chart Secretary',
-          },
-          date: '2020.11.22',
-          link: 'https://www.yuque.com/antv/blog/2020ava',
+            type: {
+                zh: '推荐',
+                en: 'Recommend',
+            },
+            title: {
+                zh: 'AVA 1.0 你的图表参谋',
+                en: 'AVA 1.0 Your Chart Secretary',
+            },
+            date: '2020.11.22',
+            link: 'https://www.yuque.com/antv/blog/2020ava',
         },
     ],
   },
