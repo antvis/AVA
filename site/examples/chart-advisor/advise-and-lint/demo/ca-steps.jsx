@@ -1,24 +1,20 @@
-import { CaretDownOutlined } from '@ant-design/icons';
-import { Advisor } from '@antv/chart-advisor';
-import { Dropdown, Menu, Radio } from 'antd';
-import { ChartView, JSONView, StepBar, TableView } from 'antv-site-demo-rc';
 import React from 'react';
+
+import { CaretDownOutlined } from '@ant-design/icons';
+// import
+import { ChartAdvisor } from '@antv/chart-advisor';
+import { Dropdown, Menu, Radio } from 'antd';
+import { ChartView, JSONView, LintCard, StepBar, TableView } from 'antv-site-demo-rc';
 import ReactDOM from 'react-dom';
 
-const myAdvisor = new Advisor();
+const myChartAdvisor = new ChartAdvisor();
 
 // contants
 
 const defaultData = [
-  { year: '2007', sales: 28 },
-  { year: '2008', sales: 55 },
-  { year: '2009', sales: 43 },
-  { year: '2010', sales: 91 },
-  { year: '2011', sales: 81 },
-  { year: '2012', sales: 53 },
-  { year: '2013', sales: 19 },
-  { year: '2014', sales: 87 },
-  { year: '2015', sales: 52 },
+  { price: 100, type: 'A' },
+  { price: 120, type: 'B' },
+  { price: 150, type: 'C' },
 ];
 
 const dataRadioOptions = [
@@ -33,8 +29,8 @@ class App extends React.Component {
     this.state = {
       currentStep: 0,
       data: defaultData,
-      advices: myAdvisor.advise({ data: defaultData }),
-      currentAdvice: 0,
+      results: myChartAdvisor.advise({ data: defaultData }),
+      currentResult: 0,
       dataRadioValue: 'Table',
     };
 
@@ -54,12 +50,12 @@ class App extends React.Component {
   onAdviceMenuClick = (e) => {
     const index = parseInt(e.key.split('-')[0], 10);
     this.setState({
-      currentAdvice: index,
+      currentResult: index,
     });
   };
 
   render() {
-    const { currentStep, advices, currentAdvice, data, dataRadioValue } = this.state;
+    const { currentStep, results, currentResult, data, dataRadioValue } = this.state;
 
     const dataContent = (
       <>
@@ -70,35 +66,34 @@ class App extends React.Component {
           optionType="button"
           buttonStyle="solid"
         />
-        {dataRadioValue === 'Table' ? (
-          <TableView style={{ padding: 20 }} tableWidth={400} data={data} s2Configs={{ adaptive: true }} />
-        ) : (
-          <JSONView json={data} />
-        )}
+        {dataRadioValue === 'Table' ? <TableView data={data} tableWidth={200} /> : <JSONView json={data} />}
       </>
     );
     const advicesMenu = (
-      <Menu onClick={this.onAdviceMenuClick} selectedKeys={[this.state.currentAdvice]}>
-        {(advices || []).map((item, index) => {
+      <Menu onClick={this.onAdviceMenuClick} selectedKeys={[currentResult]}>
+        {(results || []).map((item, index) => {
           return <Menu.Item key={`${index}-${item.type}`}>{`${index}: ${item.type}`}</Menu.Item>;
         })}
       </Menu>
     );
 
-    const advicesContent = (
+    const resultContent = (
       <>
-        <Dropdown menu={advicesMenu} placement="bottomLeft" trigger={['click']} disabled={!advices}>
+        <Dropdown menu={advicesMenu} placement="bottomLeft" trigger={['click']} disabled={!results}>
           <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-            {!advices ? 'no advice' : `Advice ${this.state.currentAdvice}`} <CaretDownOutlined />
+            {!results ? 'no advice' : `Advice ${currentResult}`} <CaretDownOutlined />
           </a>
         </Dropdown>
-        <JSONView json={advices[currentAdvice]} />
+        <JSONView json={results[currentResult]} />
       </>
     );
 
-    const specContent = <JSONView json={advices[currentAdvice].spec} />;
-
-    const plotContent = <ChartView chartRef={this.myRef} spec={advices[currentAdvice].spec} />;
+    const plotContent = (
+      <>
+        <LintCard lintProblems={results[currentResult].lint} />
+        <ChartView chartRef={this.myRef} spec={results[currentResult].spec} />
+      </>
+    );
 
     // manifest
 
@@ -109,18 +104,13 @@ class App extends React.Component {
         content: dataContent,
       },
       {
-        title: 'Advices',
-        desc: 'Advices list recommended from data:',
-        content: advicesContent,
-      },
-      {
-        title: 'Spec',
-        desc: 'Pick an advice and get its specification.',
-        content: specContent,
+        title: 'Results',
+        desc: 'Advices with lint recommended from data:',
+        content: resultContent,
       },
       {
         title: 'Chart',
-        desc: 'Render chart with specification.',
+        desc: 'Render chart but you also know the limits.',
         content: plotContent,
       },
     ];
