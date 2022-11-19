@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 
 import { Table, Button, Divider, Row, Col } from 'antd';
-import { ChartAdvisor } from '@antv/chart-advisor';
 
+import { AdvisorTypes, Advisor } from '../../../../../packages/ava/lib';
 import testData from '../data.json';
 
-import { CACard } from './CACard';
+import { AdviceCard } from './AdviceCard';
 
-export const CAPanel = () => {
-  const myCA = new ChartAdvisor();
-  const [results, setResults] = useState([]);
+export const AdvisorPanel = () => {
+  const myAdvisor = new Advisor();
+  const [advices, setAdvices] = useState<AdvisorTypes.Advice[]>([]);
 
   const getAdvicesFromAdvisor = () => {
-    const myResults = myCA.advise({ data: testData, fields: ['price', 'type'] });
-    setResults(myResults);
+    const myAdvices: AdvisorTypes.Advice[] = myAdvisor.advise({
+      data: testData,
+      fields: ['price', 'type'],
+      options: { theme: { primaryColor: '#ff9900' } },
+    });
+    setAdvices(myAdvices);
   };
 
   const dataCols = [
@@ -31,16 +35,17 @@ export const CAPanel = () => {
 
   return (
     <div style={{ marginBottom: 20, maxWidth: 1000 }}>
+      {/* <h1>Advisor</h1> */}
       <Divider orientation="left" plain style={{ fontSize: 20 }}>
         {' '}
-        ChartAdvisor{' '}
+        Advisor{' '}
       </Divider>
       <Row align="middle" justify="space-around">
         <Col span={8}>
           <Table
-            rowKey={(_, index) => index}
+            rowKey={(_, index): any => index}
             size="small"
-            style={{ width: '100%', marginLeft: 10, marginRight: 10 }}
+            style={{ marginLeft: 10, marginRight: 10 }}
             dataSource={testData}
             columns={dataCols}
             pagination={false}
@@ -54,7 +59,7 @@ export const CAPanel = () => {
           </div>
         </Col>
         <Col span={12}>
-          <CACard results={results}></CACard>
+          <AdviceCard advices={advices}></AdviceCard>
         </Col>
       </Row>
     </div>
