@@ -18,9 +18,8 @@ class App extends React.Component<{}, TestState> {
   constructor(props: {}) {
     super(props);
 
-    // init for test
-    const openCategories = [manifest.demos[1].name];
-    const demo = manifest.demos[1].subTests![0];
+    const openCategories = ['ava', 'ava-react'];
+    const demo = manifest.avaDemos[0];
 
     this.state = {
       openCategories,
@@ -73,49 +72,27 @@ class App extends React.Component<{}, TestState> {
             <Menu
               mode="inline"
               selectedKeys={[demo.id]}
-              openKeys={openCategories}
+              defaultOpenKeys={openCategories}
               style={{ height: '100%', borderRight: 0 }}
             >
-              {manifest.demos.map((demo) => {
-                const { subTests } = demo;
-                if (subTests && subTests.length) {
+              <Menu.SubMenu title="ava" key="ava">
+                {manifest.avaDemos.map((demo) => {
                   return (
-                    <Menu.SubMenu
+                    <Menu.Item
                       key={demo.id}
-                      title={demo.name}
-                      icon={demo.icon}
-                      onTitleClick={() => {
-                        this.onMenuTitleClick(demo.id);
+                      onClick={() => {
                         this.setDemo(demo);
                       }}
+                      icon={demo.icon}
                     >
-                      {subTests.map((subTest) => (
-                        <Menu.Item
-                          key={subTest.id}
-                          icon={subTest.icon}
-                          onClick={() => {
-                            this.setDemo(subTest);
-                          }}
-                        >
-                          {subTest.name}
-                        </Menu.Item>
-                      ))}
-                    </Menu.SubMenu>
+                      {demo.name}
+                    </Menu.Item>
                   );
-                }
-
-                return (
-                  <Menu.Item
-                    key={demo.id}
-                    onClick={() => {
-                      this.setDemo(demo);
-                    }}
-                    icon={demo.icon}
-                  >
-                    {demo.name}
-                  </Menu.Item>
-                );
-              })}
+                })}
+              </Menu.SubMenu>
+              <Menu.SubMenu title="ava-react" key="ava-react">
+                <Menu.Item key="ntv">ntv</Menu.Item>
+              </Menu.SubMenu>
             </Menu>
           </Sider>
           <Content style={{ padding: 24 }}>{demo.contentComp}</Content>

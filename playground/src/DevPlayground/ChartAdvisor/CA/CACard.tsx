@@ -1,12 +1,12 @@
 import React from 'react';
 
 import { List } from 'antd';
-import { Lint, Advice } from '@antv/chart-advisor';
 
+import { AdvisorTypes } from '../../../../../packages/ava/lib';
 import { Chart } from '../Chart';
 
-type Result = Advice & {
-  lint: Lint[];
+type Result = AdvisorTypes.Advice & {
+  lint: AdvisorTypes.Lint[];
 };
 
 type CAProps = {
@@ -43,7 +43,7 @@ export const CACard = ({ results }: CAProps) => {
               pagination={{ pageSize: 1, size: 'small', simple: true, defaultCurrent: 1 }}
               dataSource={item.lint}
               split={false}
-              renderItem={(item: Lint, index) => {
+              renderItem={(item: AdvisorTypes.Lint, index) => {
                 return (
                   <List.Item key={index} style={{ height: 150, width: '80%', margin: '20 auto' }}>
                     <div>

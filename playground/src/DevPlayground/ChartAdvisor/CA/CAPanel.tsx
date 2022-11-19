@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 
 import { Table, Button, Divider, Row, Col } from 'antd';
-import { Advice, Advisor } from '@antv/chart-advisor';
 
+import { Advisor } from '../../../../../packages/ava/lib';
 import testData from '../data.json';
 
-import { AdviceCard } from './AdviceCard';
+import { CACard } from './CACard';
 
-export const AdvisorPanel = () => {
-  const myAdvisor = new Advisor();
-  const [advices, setAdvices] = useState<Advice[]>([]);
+export const CAPanel = () => {
+  const myCA = new Advisor();
+  const [results, setResults] = useState([]);
 
   const getAdvicesFromAdvisor = () => {
-    const myAdvices: Advice[] = myAdvisor.advise({
-      data: testData,
-      fields: ['price', 'type'],
-      options: { theme: { primaryColor: '#ff9900' } },
+    const myAdviseResults = myCA.advise({ data: testData, fields: ['price', 'type'] });
+    const myLintResults = myAdviseResults.map((item) => {
+      const lints = myCA.lint({ spec: item.spec! });
+      return { ...item, lint: lints };
     });
-    setAdvices(myAdvices);
+    setResults(myLintResults);
   };
 
   const dataCols = [
@@ -35,17 +35,16 @@ export const AdvisorPanel = () => {
 
   return (
     <div style={{ marginBottom: 20, maxWidth: 1000 }}>
-      {/* <h1>Advisor</h1> */}
       <Divider orientation="left" plain style={{ fontSize: 20 }}>
         {' '}
-        Advisor{' '}
+        Advisor and Linter{' '}
       </Divider>
       <Row align="middle" justify="space-around">
         <Col span={8}>
           <Table
-            rowKey={(_, index): any => index}
+            rowKey={(_, index) => index}
             size="small"
-            style={{ marginLeft: 10, marginRight: 10 }}
+            style={{ width: '100%', marginLeft: 10, marginRight: 10 }}
             dataSource={testData}
             columns={dataCols}
             pagination={false}
@@ -54,12 +53,12 @@ export const AdvisorPanel = () => {
         <Col span={4}>
           <div style={{ textAlign: 'center' }}>
             <Button onClick={getAdvicesFromAdvisor} style={{ margin: 'auto' }}>
-              Advise
+              Advise and Lint
             </Button>
           </div>
         </Col>
         <Col span={12}>
-          <AdviceCard advices={advices}></AdviceCard>
+          <CACard results={results}></CACard>
         </Col>
       </Row>
     </div>
