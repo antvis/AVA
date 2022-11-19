@@ -1,0 +1,68 @@
+{
+  "name": "@antv/ava-site",
+  "private": true,
+  "version": "1.1.7",
+  "description": "AVA site deployed on gh-pages",
+  "keywords": [
+    "antv",
+    "AVA",
+    "site"
+  ],
+  "homepage": "https://ava.antv.vision",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/AVA"
+  },
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run develop",
+    "develop": "dumi dev",
+    "build": "dumi build",
+    "deploy": "npm run copy-mirror-action && gh-pages -d public",
+    "copy-mirror-action": "mkdir -p public/.github/workflows && cp ../../.github/workflows/mirror.yml public/.github/workflows",
+    "fix-memory-limit": "cross-env LIMIT=8192 increase-memory-limit"
+  },
+  "resolutions": {
+    "monaco-editor-webpack-plugin": "2.0.0",
+    "monaco-editor": "0.21.0"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.4.0",
+    "@antv/antv-spec": "^0.1.0-alpha.18",
+    "@antv/g2plot": "^2.3.39",
+    "@antv/g6": "^4.3.11",
+    "@antv/dumi-theme-antv": "^0.3.0-beta.13",
+    "@antv/narrative-text-vis": "^0.1.6-alpha.5",
+    "@antv/s2": "^1.15.0",
+    "@antv/s2-react": "^1.14.0",
+    "@antv/smart-color": "^0.2.1",
+    "@antv/thumbnails": "^2.0.0",
+    "@antv/thumbnails-component": "^2.0.0",
+    "@open-wc/webpack-import-meta-loader": "^0.4.7",
+    "antd": "^4.4.0",
+    "antv-site-demo-rc": "^0.1.0-alpha.22",
+    "classnames": "^2.3.1",
+    "insert-css": "^2.0.0",
+    "pica": "^7.1.0",
+    "qrcode": "^1.4.4",
+    "react": "^17.0.1",
+    "react-color": "^2.19.3",
+    "react-dom": "^17.0.1",
+    "react-i18next": "^11.7.3",
+    "react-json-view": "^1.19.1",
+    "react-vega": "^7.4.3",
+    "tslib": "^2.2.0",
+    "vega": "^5.15.0",
+    "vega-lite": "^4.15.0"
+  },
+  "devDependencies": {
+    "@antv/dumi-theme-antv": "^0.3.0-beta.3",
+    "@types/react": "^16.9.2",
+    "@types/react-dom": "^16.9.0",
+    "cross-env": "^7.0.2",
+    "dumi": "^2.0.0-beta.11",
+    "gh-pages": "^3.1.0",
+    "increase-memory-limit": "^1.0.7",
+    "typescript": "^4.4.2"
+  }
+}
