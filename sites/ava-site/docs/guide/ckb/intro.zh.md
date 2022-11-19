@@ -3,8 +3,7 @@ title: CKB 简介
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 Chart Knowledge Base (CKB) 是一个提供图表经验的知识库，它的形式基于 JSON。
@@ -79,7 +78,7 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 ### 演示案例
 
-<playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
+<Playground path="ckb/CKBJson/demo/chartdic.jsx"></playground>
 
 ## 📖 文档
 

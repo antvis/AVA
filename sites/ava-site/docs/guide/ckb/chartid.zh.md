@@ -3,8 +3,7 @@ title: 图表类型 ID 一览
 order: 2
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 CKB 中的所有图表类型 id:

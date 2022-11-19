@@ -3,8 +3,7 @@ title: Chart IDs
 order: 2
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 All chart IDs in CKB:

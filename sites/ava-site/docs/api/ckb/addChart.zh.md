@@ -3,8 +3,7 @@ title: addChart
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 为知识库结构添加一种新的自定义图表类型。

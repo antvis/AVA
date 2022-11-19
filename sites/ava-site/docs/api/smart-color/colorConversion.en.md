@@ -3,9 +3,7 @@ title: Color Conversion
 order: 6
 ---
 
-`markdown:docs/common/style.md`
-
-
+<embed src='@/docs/common/style.md'></embed>
 
 # Color Conversion
 

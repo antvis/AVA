@@ -3,9 +3,7 @@ title: Introduction to ChartAdvisor
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
-
+<embed src='@/docs/common/style.md'></embed>
 
 Recommend and automatically generate chart configurations based on data and analytics requirements.
 
@@ -159,7 +157,7 @@ const problems = myLinter.lint({ spec })
 
 ### ChartAdvisor Demo
 
-<playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
+<Playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
 
 ## 📖 Documentation
 

@@ -1,19 +1,18 @@
 ---
-title: ChartAdvisor.advise
-order: 1
+title: Advisor.advise
+order: 11
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 ```sign
-ChartAdvisor.advise(params: AdviseParams): Advice[];
+Advisor.advise(params: AdviseParams): ChartList[];
 ```
 
 ## Parameters
 
-* **params** * ChartAdvisor configurations
+* **params** * Advisor configurations
   * _required_
   * `type`: AdviseParams
 
@@ -114,29 +113,36 @@ type GraphAdvisorOptions = {
 };
 ```
 
-| Properties     | Type             | Description                                                                            | Default         |
-| -------------- | ---------------- | -------------------------------------------------------------------------------------- | --------------- |
-| nodeColors     | `string[]`       | The color of the node.                                                                 | None `Optional` |
-| nodeSizeRange  | `number[]`       | The node size range.                                                                   | None `Optional` |
-| edgeWidthRange | `number[]`       | The width range of the edge.                                                           | None `Optional` |
-| extra          | `{ *Key, ...}`   | Specifies the graph-related attributes.                                                | None `Optional` |
-| *Key           | `string`         | Specifies the location of the point-edge relationship (point, edge, origin, pointing). | None `Optional` |
-| AdvisorOptions | `AdvisorOptions` | Same as the recommended configuration items for statistical graphs.                    | None `Optional` |
+| Properties     | Type             | Description                                                         | Default         |
+| -------------- | ---------------- | ------------------------------------------------------------------- | --------------- |
+| nodeColors     | `string[]`       | The color of the node.                                              | None `Optional` |
+| nodeSizeRange  | `number[]`       | The node size range.                                                | None `Optional` |
+| edgeWidthRange | `number[]`       | The width range of the edge.                                        | None `Optional` |
+| extra          | `{ *Key, ...}`   | Specifies the graph-related attributes.                             | See below.      |
+| AdvisorOptions | `AdvisorOptions` | Same as the recommended configuration items for statistical graphs. | None `Optional` |
 
+* _**extra**_ Parameter configuration.
+
+| Properties  | Type     | Description                                                          | Default   |
+| ----------- | -------- | -------------------------------------------------------------------- | --------- |
+| nodeKey     | `string` | Specifies the property name of nodes in the given graph data.        | `nodes`   |
+| edgeKey     | `string` | Specifies the property name of edges in the given graph data.        | `edges    | links` |
+| sourceKey   | `string` | Specifies the property name of source node in edges.                 | `source`  |
+| targetKey   | `string` | Specifies the property name of target node in edges.                 | `target`  |
+| childrenKey | `string` | Specifies the property name of children in the given hirerachy data. | `children | to`    |
 
 
 ## Return value
 
-_`Advice[]`_
+_`ChartList[]`_
 
-* _**Advice**_ Parameter configuration.
+* _**ChartList**_ Parameter configuration.
 
-| Properties | Type        | Description                         | Examples     |
-| ---------- | ----------- | ----------------------------------- | ------------ |
-| type       | `ChartType` | The type of the chart.              | `line-chart` |
-| spec       | `AntVSpec`  | The chart attribute information.    | See below.   |
-| lint       | `Lint`      | The chart optimization suggestions. | See below.   |
-| score      | `number`    | The chart score.                    | `1.0`        |
+| Properties | Type        | Description                      | Examples     |
+| ---------- | ----------- | -------------------------------- | ------------ |
+| type       | `ChartType` | The type of the chart.           | `line-chart` |
+| spec       | `AntVSpec`  | The chart attribute information. | See below.   |
+| score      | `number`    | The chart score.                 | `1.0`        |
 
 * _**AntVSpec**_ Parameter configuration.
 
@@ -148,19 +154,6 @@ See [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md) for d
 | basis      | The basic information.   | `basis: { type: 'chart' }`                                         |
 | data       | The data information.    | `data: { type: 'json-array', values: [...] }`                      |
 | layer      | The drawing information. | `{ [ encoding: { x: {...} , y:{...} }, mark: { type: 'line' } ] }` |
-
-
-* _**Lint**_ Parameter configuration.
-
-
-| Properties | Type     | Description                      | Examples               |
-| ---------- | -------- | -------------------------------- | ---------------------- |
-| type       | `string` | Rule type.                       | `hard / soft / design` |
-| id         | `string` | Rule id.                         | `10`                   |
-| score      | `number` | The score of the rule.           | ` 1`                   |
-| fix        | `any`    | The solution based on this rule. |                        |
-| docs       | `any`    | The documentation for the rule.  |                        |
-
 
 
 

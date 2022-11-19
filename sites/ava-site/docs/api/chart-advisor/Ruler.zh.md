@@ -3,8 +3,7 @@ title: Ruler
 order: 30
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 `Ruler` 是 ChartAdvisor 内部默认的可视化规则定义集合，不包含向外透出函数。

@@ -3,8 +3,7 @@ title: 色彩评价
 order: 3
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 # 色彩评价

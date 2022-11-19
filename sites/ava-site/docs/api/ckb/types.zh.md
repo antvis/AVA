@@ -3,8 +3,7 @@ title: Types & Interfaces
 order: 4
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 一些相关类型和接口的描述：

@@ -3,8 +3,7 @@ title: statistics
 order: 1
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 The `statistics` module of DataWizard provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` is also based on `statistics`. The method will store the values calculated once in the cache, and the values can be taken directly from the cache when calculated again to avoid duplicated calculation cost.

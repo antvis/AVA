@@ -3,8 +3,7 @@ title: Introduction to LiteInsight
 order: 0
 ---
 
-`markdown:docs/common/style.md`
-
+<embed src='@/docs/common/style.md'></embed>
 
 
 A JavaScript library for automatically discovering interesting patterns from multi-dimensional data.
@@ -19,7 +18,7 @@ A JavaScript library for automatically discovering interesting patterns from mul
 
 The pipeline of Auto-Insights:
 
-<img src='https://gw.alipayobjects.com/zos/antfincdn/qtmrmqJKH%26/li-pipeline-en.jpg' alt='LiteInsight pipeline' />
+<img src='https://gw.alipayobjects.com/zos/antfincdn/qtmrmqJKH%26/li-pipeline-en.jpg' alt='LiteInsight pipeline' width=100%/>
 
 ## 📦 Installation
 

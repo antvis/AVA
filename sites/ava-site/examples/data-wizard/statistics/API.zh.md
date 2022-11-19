@@ -1,3 +1,3 @@
 # statistics
 
-`markdown:docs/api/data-wizard/statistics.zh.md`
+<embed src='@/docs/api/data-wizard/statistics.zh.md'></embed>
