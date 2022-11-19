@@ -1,11 +1,11 @@
-// CKB
+/* advisor */
+export { Advisor } from './advisor';
+export type { AdvisorTypes } from './advisor';
+
+/* CKB */
 export {
-  /* APIs */
-  ckb, // the main CKB API
-  ckbDict, // translate
-  /* Types */
-  CkbTypes, // namespace of types
-  /* Constants */
+  ckb,
+  ckbDict,
   CHANNELS,
   CHART_IDS,
   COORDINATE_SYSTEMS,
@@ -16,24 +16,17 @@ export {
   RECOMMEND_RATINGS,
   SHAPES,
 } from './ckb';
+export type { CkbTypes } from './ckb';
 
-// data
-export {
-  analyzeField, // Analyze field info
-  Series, // 1D data structure
-  DataFrame, // 2D data structure
-  DataTypes, // Namespace of types
-} from './data';
+/* data */
+export { analyzeField, Series, DataFrame } from './data';
+export type { DataTypes } from './data';
 
-// insight
-export {
-  getInsights,
-  InsightTypes, // namespace of types
-} from './insight';
+/* insight */
+export { getInsights } from './insight';
+export type { InsightTypes } from './insight';
 
-// NTV(Narrative Text Vis)
-export { NtvTypes } from './ntv';
-// for advanced user
+/* NTV (Narrative Text Vis) */
 export {
   generateTextSpec,
   isCustomSection,
@@ -48,3 +41,4 @@ export {
   isTextPhrase,
   ENTITY_TYPES,
 } from './ntv';
+export type { NtvTypes } from './ntv';
