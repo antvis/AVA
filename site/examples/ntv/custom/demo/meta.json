@@ -1,0 +1,24 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "phrase.tsx",
+      "title": {
+        "en": "Custom Phrases",
+        "zh": "自定义短语"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*IXhfQ41Sz44AAAAAAAAAAAAADi2DAQ/original"
+    },
+    {
+      "filename": "block.tsx",
+      "title": {
+        "en": "Custom Block",
+        "zh": "自定义区块"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*H8hzQo2NAHMAAAAAAAAAAAAADi2DAQ/original"
+    }
+  ]
+}

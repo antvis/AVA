@@ -1,0 +1,24 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "coordinated-chart.tsx",
+      "title": {
+        "en": "Coordinated with Chart",
+        "zh": "图文联动"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*Nut_S6vkJkEAAAAAAAAAAAAADi2DAQ/original"
+    },
+    {
+      "filename": "analysis.tsx",
+      "title": {
+        "en": "Analysis with Text",
+        "zh": "分析交互"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*tUMpTIzwLeMAAAAAAAAAAAAADi2DAQ/original"
+    }
+  ]
+}

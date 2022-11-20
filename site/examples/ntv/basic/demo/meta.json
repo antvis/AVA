@@ -1,0 +1,32 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.tsx",
+      "title": {
+        "en": "Basic",
+        "zh": "基本示例"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*67I9SKDXqvgAAAAAAAAAAAAADi2DAQ/original"
+    },
+    {
+      "filename": "entity-phrases.tsx",
+      "title": {
+        "en": "Entity Phrases",
+        "zh": "实体短语一览"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*8ObFTp4TfOcAAAAAAAAAAAAADi2DAQ/original"
+    },
+    {
+      "filename": "theme-size.tsx",
+      "title": {
+        "en": "Size",
+        "zh": "设置大小"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*JwKTT5EGpREAAAAAAAAAAAAADi2DAQ/original"
+    }
+  ]
+}
