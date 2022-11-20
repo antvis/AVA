@@ -1,4 +1,4 @@
-import type { RuleModule } from '../type';
+import type { RuleModule } from '../types';
 
 export const aggregationSingleRow: RuleModule = {
   id: 'aggregation-single-row',

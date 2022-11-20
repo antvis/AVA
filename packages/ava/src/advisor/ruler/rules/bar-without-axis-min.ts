@@ -1,5 +1,5 @@
 import type { ChartSpec } from '../../../common/types';
-import type { RuleModule } from '../type';
+import type { RuleModule } from '../types';
 
 const applyChartTypes = [
   'bar_chart',

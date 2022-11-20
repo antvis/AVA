@@ -17,7 +17,7 @@ import { seriesQtyLimit } from './series-qty-limit';
 // Design rules
 import { xAxisLineFading } from './x-axis-line-fading';
 
-import type { RuleModule } from '../type';
+import type { RuleModule } from '../types';
 
 /**
  * @public

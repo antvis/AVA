@@ -1,6 +1,6 @@
 import isNil from './isNil';
 
-import type { BasicDataPropertyForAdvice } from '../ruler/type';
+import type { BasicDataPropertyForAdvice } from '../ruler/types';
 
 const compare = (f1: BasicDataPropertyForAdvice, f2: BasicDataPropertyForAdvice): number => {
   if (isNil(f1.distinct) || isNil(f2.distinct)) {

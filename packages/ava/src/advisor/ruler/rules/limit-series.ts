@@ -1,7 +1,7 @@
 import { intersects } from '../../utils';
 import { compare } from '../utils';
 
-import type { RuleModule, BasicDataPropertyForAdvice } from '../type';
+import type { RuleModule, BasicDataPropertyForAdvice } from '../types';
 
 function hasSeriesField(dataProps: BasicDataPropertyForAdvice[]): boolean {
   const nominalOrOrdinalFields = dataProps.filter((field) =>
