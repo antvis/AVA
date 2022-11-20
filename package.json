@@ -2,8 +2,7 @@
   "name": "ava",
   "private": true,
   "workspaces": [
-    "packages/ava",
-    "packages/ava-react"
+    "packages/*"
   ],
   "scripts": {
     "boot": "lerna bootstrap --force-local",
