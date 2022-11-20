@@ -10,7 +10,7 @@ function hasSeriesField(dataProps: BasicDataPropertyForAdvice[]): boolean {
   return nominalOrOrdinalFields.length >= 2;
 }
 
-// TODO: 重构规则逻辑
+// TODO @neoddish: 重构规则逻辑
 /*
 sort 后取distinct第二大的字段，是因为第一个要留给维度映射，第二个才轮到 series（一般是颜色映射什么的）。
 
@@ -40,14 +40,13 @@ export const limitSeries: RuleModule = {
       if (nominalOrOrdinalFields.length >= 2) {
         const sortedFields = nominalOrOrdinalFields.sort(compare);
 
-        // const f1 = sortedFields[0];
-        const f2 = sortedFields[1];
+        const f = sortedFields[1];
 
-        if (f2.distinct) {
-          result = 1 / f2.distinct;
+        if (f.distinct) {
+          result = 1 / f.distinct;
 
-          if (f2.distinct > 6 && chartType === 'heatmap') {
-            // TODO 为什么 result 可以是 2？
+          if (f.distinct > 6 && chartType === 'heatmap') {
+            // TODO @neoddish: 为什么 result 可以是 2？
             result = 2;
           } else if (chartType === 'heatmap') {
             result = 0;

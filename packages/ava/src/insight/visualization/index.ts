@@ -38,7 +38,6 @@ export function getInsightVisualizationSchema(
   Object.entries(patternGroups).forEach(([chartType, patternGroup]: [string, PatternInfo[]]) => {
     const narrative = new InsightNarrativeGenerator(patterns, insight);
 
-    // TODO chart schema generation
     const plotSchema = {
       [chartType === 'pie_chart' ? 'colorField' : 'xField']:
         chartType === 'scatter_plot' ? measures[1].field : dimensions[0],
@@ -108,8 +107,8 @@ export function getHomogeneousInsightVisualizationSchema(
 
   patterns.forEach((pattern) => {
     const { insightType } = pattern;
-    // TODO chart schema generation
     const chartType = ChartTypeMap[insightType];
+
     let plotSchema;
     if (measures.length > 1) {
       plotSchema = {

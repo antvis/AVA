@@ -1353,8 +1353,8 @@ export const base: PureChartKnowledgeBase = {
 
   /**
    * WIP: unavailable until completed
-   * @todo add channel 'Text'
    */
+  // TODO @neoddish: add channel 'Text'
   // kpi_panel: {
   //   id: 'kpi_panel',
   //   name: 'KPI Panel',
@@ -1372,8 +1372,8 @@ export const base: PureChartKnowledgeBase = {
 
   /**
    * WIP: unavailable until completed
-   * @todo add channel 'Text'
    */
+  // TODO @neoddish: add channel 'Text'
   // table: {
   //   id: 'table',
   //   name: 'Table',
