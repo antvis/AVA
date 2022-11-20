@@ -31,11 +31,11 @@ NarrativeTextVis.SingleLineChart = SingleLineChart;
 NarrativeTextVis.ProportionChart = ProportionChart;
 
 export {
-  PluginManager,
+  PluginManager as NtvPluginManager,
   createCustomPhraseFactory,
   createEntityPhraseFactory,
   createCustomBlockFactory,
-  presetPlugins,
+  presetPlugins as presetNtvPlugins,
   createMetricName,
   createMetricValue,
   createDeltaValue,
@@ -52,4 +52,4 @@ export { seedToken } from './theme';
 
 export type { NtvTypes } from '@antv/ava';
 export type { NarrativeTextVisProps } from './NarrativeTextVis';
-export type { PluginType } from './chore/plugin';
+export type { PluginType as NtvPluginType } from './chore/plugin';
