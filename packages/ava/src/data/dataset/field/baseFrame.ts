@@ -4,7 +4,7 @@ import { generateArrayIndex, fillMissingValue, convertDataType } from './utils';
 
 import type { NDArray, SeriesData, FrameData, Axis, Extra } from './types';
 
-/** Base data structure */
+/* Base data structure */
 export default abstract class BaseFrame {
   axes: [Axis[]] | [Axis[], Axis[]] = [[]];
 
@@ -15,7 +15,7 @@ export default abstract class BaseFrame {
   constructor(data: SeriesData | FrameData, extra?: Extra) {
     assert(!extra || isObject(extra), 'If extra exists, it must be an object.');
 
-    /** 1D: basic type */
+    /* 1D: basic type */
     if (isBasicType(data)) {
       // generate indexes
       if (extra?.indexes) {
@@ -28,7 +28,7 @@ export default abstract class BaseFrame {
         this.setAxis(0, [0]);
       }
     } else if (isArray(data)) {
-      /** 1D: array */
+      /* 1D: array */
       let legal = true;
 
       for (let i = 0; i < data.length; i += 1) {

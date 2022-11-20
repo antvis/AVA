@@ -14,7 +14,7 @@ export default class Series extends BaseFrame {
 
     assert(isObject(data) || isBasicType(data) || isArray(data), 'Data type is illegal');
 
-    /** 1D: object */
+    /* 1D: object */
     if (isObject(data)) {
       // generate indexes
       const indexes = Object.keys(data);
@@ -41,7 +41,7 @@ export default class Series extends BaseFrame {
         this.setAxis(0, indexes);
       }
     } else if (isArray(data)) {
-      /** 1D: array */
+      /* 1D: array */
       const [data0] = data;
       if (!isBasicType(data0)) {
         if (extra?.indexes) {

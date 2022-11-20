@@ -12,7 +12,7 @@ function newBase(): PureChartKnowledgeBase {
 /**
  * Configuration to pick, omit and customize CKB.
  * Priority: exclude > include, + custom.
- * ---
+ *
  * 用来摘选、剔除和自定义 CKB 的配置。
  * 优先级逻辑是：先从原装 CKB 中剔除`exclude`的部分，然后在剩余的图表类型中摘选出`include`的部分，
  * 最后额外加上自定义的图表类型。
@@ -25,7 +25,7 @@ export type CkbConfig = {
 
 /**
  * Process ckb config to given CKB object.
- * ---
+ *
  * 根据配置项处理 CKB 内容，得到最终使用的 CKB
  *
  * @param ckbCfg - CKB Configuration {@link CkbConfig}

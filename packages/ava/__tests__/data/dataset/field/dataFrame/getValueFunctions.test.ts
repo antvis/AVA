@@ -20,7 +20,7 @@ describe('DataFrame get value functions', () => {
   ]);
 
   test('get', () => {
-    /** only rowLoc */
+    /* only rowLoc */
     // rowLoc is Axis
     const rowLocNum = df.get(0);
     expect(rowLocNum).toStrictEqual(
@@ -52,7 +52,7 @@ describe('DataFrame get value functions', () => {
       ['a', 'b', 'c'],
     ]);
 
-    /** rowLoc and colLoc */
+    /* rowLoc and colLoc */
     // rowLoc is axis, colLoc is axis
     const rowLocNumColLocNum = df.get(1, 'c');
     expect(rowLocNumColLocNum.data).toStrictEqual([[8]]);
@@ -112,7 +112,7 @@ describe('DataFrame get value functions', () => {
   });
 
   test('getByIndex', () => {
-    /** only rowLoc */
+    /* only rowLoc */
     // rowLoc is int
     const rowLocInt = df.getByIndex(0);
     expect(rowLocInt).toStrictEqual(
@@ -144,7 +144,7 @@ describe('DataFrame get value functions', () => {
       ['a', 'b', 'c'],
     ]);
 
-    /** rowLoc and colLoc */
+    /* rowLoc and colLoc */
     // rowLoc is int, colLoc is int
     const rowLocIntColLocInt = df.getByIndex(1, 2);
     expect(rowLocIntColLocInt.data).toStrictEqual([[8]]);

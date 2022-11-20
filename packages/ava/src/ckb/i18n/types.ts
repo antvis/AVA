@@ -12,7 +12,7 @@ import type {
 
 /**
  * TS type of translated terms for all concepts (properties) involved in chart knowledge.
- * ---
+ *
  * 图表信息中涉及到的所有概念（属性）的翻译词汇表的 TS 类型
  */
 type Concepts = {
@@ -36,7 +36,7 @@ type Concepts = {
 
 /**
  * TS type of properties that need to be internationalised in each chart knowledge.
- * ---
+ *
  * 图表知识中需要被国际化的属性的 TS 类型
  */
 export type TransKnowledgeProps = {
@@ -47,7 +47,7 @@ export type TransKnowledgeProps = {
 
 /**
  * TS type of complete translation dictionary of a CKB.
- * ---
+ *
  * 完整的翻译内容结构的 TS 类型
  */
 export type CkbDictionary = {

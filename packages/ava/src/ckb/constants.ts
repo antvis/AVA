@@ -1,6 +1,6 @@
 /**
  * Array of standard IDs for each chart type.
- * ---
+ *
  * 所有图表类型的标准 ID
  *
  * @public
@@ -62,7 +62,7 @@ export const CHART_IDS = [
 
 /**
  * Array of chart families.
- * ---
+ *
  * 所有图表家族
  *
  * @public
@@ -89,7 +89,7 @@ export const FAMILIES = [
 
 /**
  * Array of analysis purposes.
- * ---
+ *
  * 所有分析目的
  *
  * @public
@@ -111,7 +111,7 @@ export const PURPOSES = [
 
 /**
  * Array of coordinate systems.
- * ---
+ *
  * 所有坐标系类型
  *
  * @public
@@ -130,7 +130,7 @@ export const COORDINATE_SYSTEMS = [
 
 /**
  * Array of graphic categories.
- * ---
+ *
  * 所有图形大类
  *
  * @public
@@ -139,7 +139,7 @@ export const GRAPHIC_CATEGORIES = ['Statistic', 'Diagram', 'Graph', 'Map', 'Othe
 
 /**
  * Array of shapes.
- * ---
+ *
  * 所有形状
  *
  * @public
@@ -159,7 +159,7 @@ export const SHAPES = [
 
 /**
  * Array of level of measurements.
- * ---
+ *
  * 所有度量水平
  *
  * @public
@@ -168,7 +168,7 @@ export const LEVEL_OF_MEASUREMENTS = ['Nominal', 'Ordinal', 'Interval', 'Discret
 
 /**
  * Array of channels.
- * ---
+ *
  * 所有通道
  *
  * @public
@@ -193,7 +193,7 @@ export const CHANNELS = [
  * Recommend - For chart types you can safely recommend
  * Use with Caution - Not recommended unless you understand the pitfalls of these chart types.
  * Not Recommended - We know this chart type exists in the community, but it's really not recommended.
- * ---
+ *
  * 所有推荐评级
  * Recommend - 可以安全推荐的图表类型
  * Use with Caution - 除非你了解这些图表类型的缺陷，否则不推荐使用

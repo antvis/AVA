@@ -3,7 +3,7 @@ import { CkbDictionary, I18nLanguage } from './types';
 
 /**
  * Mapping from languages to translation lists.
- * ---
+ *
  * 从语言类型到翻译表的映射
  */
 const translateMapping: Record<I18nLanguage, CkbDictionary | null> = {
@@ -12,7 +12,7 @@ const translateMapping: Record<I18nLanguage, CkbDictionary | null> = {
 
 /**
  * Get CKB dictionary of specific language except English.
- * ---
+ *
  * 得到除英文外的所有语言词汇表
  *
  * @param lang i18n Language code

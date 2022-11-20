@@ -1,9 +1,3 @@
-/*
- * TODO
- * -- statistics 改为从 dw 直接引入
- * 在 CKB 中增加 encode 相关描述，让这里的 spec mapping 简化
- */
-
 import { CHART_IDS } from '../../ckb';
 import { pearson, isParentChild } from '../../data';
 import { compare, hasSubset, intersects } from '../utils';
