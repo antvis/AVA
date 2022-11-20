@@ -79,7 +79,7 @@ const zhCompletedKB = CKBJson('zh-CN', true);
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/ckb/intro)
+For more usages, please check the [API Reference](https://ava.antv.antgroup.com/en/docs/api/ckb/intro)
 
 
 

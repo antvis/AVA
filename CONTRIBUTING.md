@@ -1,3 +1,5 @@
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./CONTRIBUTING.zh-CN.md)
+
 # Guide for Contributing 🌟
 
 **We sincerely invite you to click on the ⭐ star in the upper right corner of this page to follow this project, which will allow you to receive our latest news in time. Thank you!**

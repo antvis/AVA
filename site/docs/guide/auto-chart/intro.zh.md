@@ -54,4 +54,4 @@ ReactDOM.render(
 
 ## 📖 文档
 
-更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/auto-chart/AutoChart)
+更多用法请移步至 [官网API](https://ava.antv.antgroup.com/zh/docs/api/auto-chart/AutoChart)

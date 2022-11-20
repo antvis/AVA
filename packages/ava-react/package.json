@@ -4,9 +4,9 @@
   "description": "A framework for automated visual analytics.",
   "author": {
     "name": "AntV",
-    "url": "https://antv.vision/"
+    "url": "https://antv.antgroup.com/"
   },
-  "homepage": "https://ava.antv.vision",
+  "homepage": "https://ava.antv.antgroup.com",
   "repository": {
     "type": "git",
     "url": "https://github.com/antvis/AVA/tree/master/packages/ava-react"

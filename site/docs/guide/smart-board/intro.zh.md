@@ -11,7 +11,7 @@ order: 0
 
 * **Dashboard 生成**: 基于给定图表自动的计算 Dashboard 所需属性。
 * **Dashboard 绘制**: 提供基于上述属性的 React Dashboard 绘制组件 `SmartBoardDashboard`。
-* **结合洞察**: 可以与 [LiteInsight](https://ava.antv.vision/zh/docs/api/lite-insight/auto-insights) 结合从而展示数据背后的洞察信息。
+* **结合洞察**: 可以与 [LiteInsight](https://ava.antv.antgroup.com/zh/docs/api/lite-insight/auto-insights) 结合从而展示数据背后的洞察信息。
 
 SmartBoard 的流程如下：
 
@@ -129,4 +129,4 @@ ReactDOM.render(
 
 ## 📖 文档
 
-更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/smart-board/SmartBoard)
+更多用法请移步至 [官网API](https://ava.antv.antgroup.com/zh/docs/api/smart-board/SmartBoard)
