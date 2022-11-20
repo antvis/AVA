@@ -11,7 +11,7 @@ export default defineConfig({
     isAntVSite: false,
     githubUrl: repository.url,
     // 是否显示搜索框
-    showSearch: false,
+    showSearch: true,
     // 是否显示头部的 GitHub icon
     showGithubCorner: true,
     // 是否显示 GitHub star 数量
