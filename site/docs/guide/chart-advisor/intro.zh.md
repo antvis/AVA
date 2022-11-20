@@ -153,7 +153,7 @@ const problems = myLinter.lint({ spec })
 
 ## 📖 文档
 
-更多用法请移步至 [官网API](https://ava.antv.vision/zh/docs/api/chart-advisor/ChartAdvisor)
+更多用法请移步至 [官网API](https://ava.antv.antgroup.com/zh/docs/api/chart-advisor/ChartAdvisor)
 
 
 

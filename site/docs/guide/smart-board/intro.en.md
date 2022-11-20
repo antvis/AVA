@@ -12,7 +12,7 @@ Generating Dashboard based on input charts and insights。
 
 * **Auto-Dashboarding**: Automatically compute dashboarding configurations based on input chart schemas.
 * **Dashboard Drawing**: Provides a React component `SmartBoardDashboard` for Dashboard drawing based on the above configurations.
-* **Combine with Insight**: Easily combined with [LiteInsight](https://ava.antv.vision/en/docs/api/lite-insight/auto-insights) for better visualize insights behind data.
+* **Combine with Insight**: Easily combined with [LiteInsight](https://ava.antv.antgroup.com/en/docs/api/lite-insight/auto-insights) for better visualize insights behind data.
 
 The pipeline of SmartBoard:
 
@@ -129,7 +129,7 @@ ReactDOM.render(
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](https://ava.antv.vision/en/docs/api/smart-board/SmartBoard)
+For more usages, please check the [API Reference](https://ava.antv.antgroup.com/en/docs/api/smart-board/SmartBoard)
 
 
 

@@ -1,21 +1,21 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./zh-CN/README.zh-CN.md)
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./README.zh-CN.md)
 
 <div align="center">
-  <img width="200" height="120" src="./common/img/logo.svg" alt="AVA logo">
+  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
 </div>
 
 <div align="center">
 
 <i>A framework for automated visual analytics.</i>
-<i><a href="https://ava.antv.vision/en"><https://ava.antv.vision/en></a></i>
+<i><a href="https://ava.antv.antgroup.com/"><https://ava.antv.antgroup.com></a></i>
 
 </div>
 
 ----
 
-<a href="https://ava.antv.vision"><img src="./common/img/vectorA.svg" align="left" width="180" hspace="10" vspace="6"></a>
+<a href="https://ava.antv.antgroup.com"><img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*rXVYRJ0EMDsAAAAAAAAAAAAADmJ7AQ/original" align="left" width="180" hspace="10" vspace="6"></a>
 
-**AVA** (<img src="./common/img/vectorASymbol.svg" width="16">  Visual Analytics) is a framework and solution for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is to become an *AI driven*, *Automated* solution that supports *Augmented* analytics.
+**AVA** (<img src="[./common/img/vectorASymbol.svg](https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original)" width="16">  Visual Analytics) is a framework and solution for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is to become an *AI driven*, *Automated* solution that supports *Augmented* analytics.
 
 <br />
 
@@ -86,9 +86,9 @@ It can automatically generates the corresponding Dashboard configurations based 
 
 ## Sources
 
-* [Guide](https://ava.antv.vision/en/docs/guide/intro)
-* [API](https://ava.antv.vision/en/docs/api)
-* [Examples](https://ava.antv.vision/en/examples/gallery)
+* [Guide](https://ava.antv.antgroup.com/en/docs/guide/intro)
+* [API](https://ava.antv.antgroup.com/en/docs/api)
+* [Examples](https://ava.antv.antgroup.com/en/examples/gallery)
 * [Wiki](https://github.com/antvis/AVA/wiki)
 
 ## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)

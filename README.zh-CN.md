@@ -1,21 +1,21 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](../README.md) | 简体中文
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](./README.md) | 简体中文
 
 <div align="center">
-  <img width="200" height="120" src="../common/img/logo.svg" alt="AVA logo">
+  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
 </div>
 
 <div align="center">
 
 <i>智能可视分析框架</i>
-<i><a href="https://antv-ava.gitee.io/zh"><https://antv-ava.gitee.io/zh></a></i>
+<i><a href="https://ava.antv.antgroup.com/"><https://ava.antv.antgroup.com></a></i>
 
 </div>
 
 ----
 
-<a href="https://ava.antv.vision"><img src="../common/img/vectorA.svg" align="left"  width="180"  hspace="10" vspace="6"></a>
+<a href="https://ava.antv.antgroup.com"><img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*rXVYRJ0EMDsAAAAAAAAAAAAADmJ7AQ/original" align="left"  width="180"  hspace="10" vspace="6"></a>
 
-**AVA** (<img src="../common/img/vectorASymbol.svg" width="16"> Visual Analytics) 是为了更简便的可视分析而生的技术框架。 其名称中的第一个 **A** 具有多重涵义：一个智能驱动（*AI driven*）、自动化（*Automated*）、支持增强分析（*Augmented*）的可视分析解决方案。
+**AVA** (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16"> Visual Analytics) 是为了更简便的可视分析而生的技术框架。 其名称中的第一个 **A** 具有多重涵义：一个智能驱动（*AI driven*）、自动化（*Automated*）、支持增强分析（*Augmented*）的可视分析解决方案。
 
 <br />
 
@@ -79,9 +79,9 @@ SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据
 
 ## 相关链接
 
-* [教程文档 Guide](https://ava.antv.vision/zh/docs/guide/intro)
-* [接口文档 API](https://ava.antv.vision/zh/docs/api)
-* [示例大全 Examples](https://ava.antv.vision/zh/examples/gallery)
+* [教程文档 Guide](https://ava.antv.antgroup.com/zh/docs/guide/intro)
+* [接口文档 API](https://ava.antv.antgroup.com/zh/docs/api)
+* [示例大全 Examples](https://ava.antv.antgroup.com/zh/examples/gallery)
 * [相关知识 Wiki](https://github.com/antvis/AVA/wiki)
 
 ## 参与贡献 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
