@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import type { DataTypes } from '../../data';
 import type { CkbTypes } from '../../ckb';
 import type { Specification } from '../../common/types';

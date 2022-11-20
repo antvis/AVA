@@ -1,19 +1,18 @@
 ---
-title: ChartAdvisor
-order: 0
+title: Advisor
+order: 10
 ---
 
-<embed src="@/docs/common/style.md"></embed>
+<embed src='@/docs/common/style.md'></embed>
 
 
 ```sign
-Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = {})
+Class Advisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = {})
 ```
 
-* **ChartAdvisor**: 是一个同时包含图表推荐和图表优化功能的工具类。
+* **Advisor**: 是对应图表推荐的工具类。
 
-`ChartAdvisor` 中同时包含了一个 `Advisor` 和一个 `Linter` 对象，并提供了 `advise()` 函数用于图表推荐和优化，
-相对于 `Advisor` 中的同名函数多了一个 `Lint` 类型的输出作为图表优化建议项。
+`Advisor` 提供了几个主要函数， `advise()` 函数用于提供图表推荐配置项，`Lint()` 函数优化图表中存在的问题。
 
 ## 参数
 
@@ -47,7 +46,7 @@ Class ChartAdvisor(config?: Partial<Pick<ChartAdvisor, 'ckbCfg' | 'ruleCfg'>> = 
 | custom  | `Record<string, RuleModule>` | 自定义规则。                         | 无  `可选` |
 | options | `ChartRuleConfigMap`         | 规则配置。                           | 无  `可选` |
 
-* _**RuleModule**_ `ruler` 自定义规则，详见 [Ruler](./30_Ruler)。
+* _**RuleModule**_ `ruler` 自定义规则，详见 [Ruler](./Ruler.zh.md)。
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -63,7 +62,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* _**ChartRuleConfigMap**_ `ruler` 规则配置，详见 [Ruler](./30_Ruler)。
+* _**ChartRuleConfigMap**_ `ruler` 规则配置，详见 [Ruler](./Ruler.zh.md)。
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -77,22 +76,42 @@ interface ChartRuleConfig {
 
 ## 方法
 
-### ChartAdvisor.advise
+### Advisor.advise
 
-获得图表推荐结果.
-
-```ts
-ChartAdvisor.advise(params: AdviseParams): Advice[];
-```
-
-详见 [ChartAdvisor.advise](./1_ChartAdvisor-advise)。
-
-### ChartAdvisor.adviseWithLog
-
-作用和 [ChartAdvisor.advise](./1_ChartAdvisor-advise) 几乎完全相同。只不过会额外地将推荐过程中的打分细节一并返回，方便在应用中进行后续的推荐解释。
+获得图表推荐结果的 `Advice[]`。
 
 ```ts
-ChartAdvisor.adviseWithLog(params: AdviseParams): AdvicesWithLog
+Advisor.advise(params: AdviseParams): Advice[];
 ```
 
-详见 [ChartAdvisor.adviseWithLog](./2_ChartAdvisor-adviseWithLog)。
+详见 [Advisor.advise](./Advisor-advise.zh.md).
+
+### Advisor.lint
+
+获得图表优化建议结果的 `Lint[]`。
+
+```ts
+Advisor.lint(params: LintParams): Lint[];
+```
+
+详见 [Advisor.lint](./Advisor-lint.zh.md)。
+
+### Advisor.getAdviseLog
+
+`Advisor.getAdviseLog()` 方法 需要用在 [Advisor.advise](./Advisor-advise.zh.md) 方法之后，用于获取推荐过程中的打分细节，方便在应用中进行后续的解释。
+
+```ts
+Advisor.getAdviseLog(params: AdviseParams): AdvicesWithLog
+```
+
+详见 [Advisor.getAdviseLog](./Advisor-getAdviseLog.zh.md)。
+
+
+### Advisor.getLintLog
+
+`Advisor.getLintLog` 方法需要用在 [Advisor.lint](./Advisor-lint.zh.md) 方法之后，用于获取查错过程中的打分细节，方便在应用中进行后续的解释。
+```ts
+Advisor.getLintLog(params: LintParams): LintsWithLog
+```
+
+详见 [Advisor.getLintLog](./Advisor-getLintLog.zh.md)。

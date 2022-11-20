@@ -6,10 +6,10 @@ order: 30
 <embed src='@/docs/common/style.md'></embed>
 
 
-`Ruler` is the default set of visual rule definitions within ChartAdvisor.
+`Ruler` is the default set of visual rule definitions within Advisor.
 It does not provide any outward function or syntax.
 
-In order to facilitate user customization of ChartAdvisor, 
+In order to facilitate user customization of Advisor, 
 we will introduce the relevant interfaces for rule customization in this API file.
 
 

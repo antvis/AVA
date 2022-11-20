@@ -17,10 +17,10 @@ Advisor.advise(params: AdviseParams): ChartList[];
   * `参数类型`: AdviseParams 对象
 
 ```ts
-type AdviseParams = ChartAdviseParams | GraphAdviseParams;
+type AdviseParams = ChartAdviseParams;
 ```
 
-其中，`ChartAdviseParams` 和 `GraphAdviseParams` 分别代表图表推荐和图推荐所需要的参数类型。
+其中，`ChartAdviseParams` 代表图表推荐所需要的参数类型。
 
 ### 统计图表推荐参数
 
@@ -71,55 +71,19 @@ type Theme = {
 
 * _**SmartColorOptions**_ 参数配置。
 
+```ts
+type SmartColorOptions = {
+  themeColor?: string;
+  colorSchemeType?: ColorSchemeType;
+  simulationType?: SimulationType;
+}
+```
+
 | 属性            | 类型              | 描述             | 默认值                  |
 | --------------- | ----------------- | ---------------- | ----------------------- |
 | themeColor      | `string`          | 十六进制主题色。 | `#006f94`  `可选`       |
 | colorSchemeType | `ColorSchemeType` | 色板生成模式。   | `monochromatic`  `可选` |
 | simulationType  | `SimulationType`  | 颜色模拟模式。   | `normal`  `可选`        |
-
-### 图推荐参数
-
-* _**GraphAdviseParams**_ 参数配置。
-
-| 属性    | 类型                                     | 描述           | 默认值    |
-| ------- | ---------------------------------------- | -------------- | --------- |
-| data    | `any[]`                                  | 源数据。       | 无        |
-| fields  | `{ nodes: string[];, links: string[]; }` | 数据点边信息。 | 无 `可选` |
-| options | `GraphAdvisorOptions`                    | 图推荐配置项。 | 无 `可选` |
-
-* _**GraphAdvisorOptions**_ 参数配置。
-
-```ts
-type GraphAdvisorOptions = {
-  nodeColors?: string[];
-  nodeSizeRange?: number[];
-  edgeWidthRange?: number[];
-  extra?: {
-    nodeKey?: string;
-    edgeKey?: string;
-    sourceKey?: string;
-    targetKey?: string;
-    childrenKey?: string;
-  };
-  ...AdvisorOptions;
-};
-```
-
-| 属性           | 类型             | 描述                     | 默认值    |
-| -------------- | ---------------- | ------------------------ | --------- |
-| nodeColors     | `string[]`       | 节点颜色。               | 无 `可选` |
-| nodeSizeRange  | `number[]`       | 节点大小范围。           | 无 `可选` |
-| edgeWidthRange | `number[]`       | 边宽度范围。             | 无 `可选` |
-| extra          | `{ *Key, ...}`   | 指定输入数据的相关属性。 | 见下文    |
-| AdvisorOptions | `AdvisorOptions` | 同统计图表推荐配置项。   | 无 `可选` |
-
-* _**extra**_ 参数配置。
-
-| nodeKey | `string` | 指定节点数组在输入的图数据中对应属性名称（键名）。 | `nodes` |
-| edgeKey | `string` | 指定边数组在输入的图数据中对应属性名称。 | `edges | links` |
-| sourceKey | `string` | 指定边的源节点在边中对应属性名称。 | `source` |
-| targetKey | `string` | 指定边的目标节点在边中对应属性名称。 | `target` |
-| childrenKey | `string` | 指定孩子节点属性在输入的层次数据中对应属性名称。 | `children` |
 
 ## 返回值
 

@@ -9,23 +9,23 @@ export default defineConfig({
     defaultLanguage: 'zh',
     siteUrl: homepage,
     isAntVSite: false,
-    githubUrl: repository.url,   
+    githubUrl: repository.url,
     // 是否显示搜索框
-    showSearch: true,   
-    // 是否显示头部的 GitHub icon                                                
-    showGithubCorner: true,     
-    // 是否显示 GitHub star 数量                                        
-    showGithubStars: true,      
-    // 是否显示 AntV 产品汇总的卡片                                        
-    showAntVProductsCard: true,  
-    // 是否显示官网语言切换                                       
-    showLanguageSwitcher: true,     
-    // 是否显示头部菜单的微信公众号                                    
-    showWxQrcode: true,   
-    // 是否在 demo 页展示图表视图切换                                              
-    showChartResize: true,   
-    // 是否在 demo 页展示API文档 
-    showAPIDoc: true,   
+    showSearch: true,
+    // 是否显示头部的 GitHub icon
+    showGithubCorner: true,
+    // 是否显示 GitHub star 数量
+    showGithubStars: true,
+    // 是否显示 AntV 产品汇总的卡片
+    showAntVProductsCard: true,
+    // 是否显示官网语言切换
+    showLanguageSwitcher: true,
+    // 是否显示头部菜单的微信公众号
+    showWxQrcode: true,
+    // 是否在 demo 页展示图表视图切换
+    showChartResize: true,
+    // 是否在 demo 页展示API文档
+    showAPIDoc: true,
     // 添加国内镜像链接
     internalSite: {
         url: 'https://ava.antv.antgroup.com',
@@ -33,7 +33,7 @@ export default defineConfig({
           zh: '国内镜像',
           en: 'China Mirror',
         },
-    },                         
+    },
     navs: [
         {
         slug: 'docs/guide',
@@ -86,10 +86,10 @@ export default defineConfig({
             order: 3,
         },
         {
-            slug: 'guide/chart-advisor',
+            slug: 'guide/advisor',
             title: {
-                zh: 'ChartAdvisor',
-                en: 'ChartAdvisor',
+                zh: 'Advisor',
+                en: 'Advisor',
             },
             order: 4,
         },
@@ -147,13 +147,13 @@ export default defineConfig({
                 zh: 'DataWizard',
                 en: 'DataWizard',
             },
-            order: 3,   
+            order: 3,
         },
         {
-            slug: 'api/chart-advisor',
+            slug: 'api/advisor',
             title: {
-                zh: 'ChartAdvisor',
-                en: 'ChartAdvisor',
+                zh: 'Advisor',
+                en: 'Advisor',
             },
             order: 4,
         },
@@ -217,9 +217,9 @@ export default defineConfig({
             order: 2,
         },
         {
-            slug: 'chart-advisor',
+            slug: 'advisor',
             title: {
-                zh: '图表推荐（ChartAdvisor）',
+                zh: '图表推荐（Advisor）',
                 en: 'ChartAdvisor',
             },
             order: 3,
@@ -270,7 +270,7 @@ export default defineConfig({
         { name: '京东', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*yh-HRr3hCpgAAAAAAAAAAABkARQnAQ' },
         { name: 'yunos', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*_js7SaNosUwAAAAAAAAAAABkARQnAQ' },
         { name: '菜鸟', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*TgV-RZDODJIAAAAAAAAAAABkARQnAQ' },
-    ], 
+    ],
     cases: [
         {
             logo: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*-dLnTIexOxwAAAAAAAAAAABkARQnAQ',
