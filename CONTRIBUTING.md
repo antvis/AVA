@@ -1,26 +1,58 @@
-# Guide for Specific Package 🌟
+# Guide for Contributing 🌟
 
 **We sincerely invite you to click on the ⭐ star in the upper right corner of this page to follow this project, which will allow you to receive our latest news in time. Thank you!**
-
-To contribute to specific package, you may want to check relevant guide for each package after skimming the general one. Some specific guides contains content for non-developers.
-
-* [Contribution Guide for AVA/CKB](./packages/knowledge/CONTRIBUTING.md)
-* Contribution Guide for AVA/DataWizard
-* Contribution Guide for AVA/ChartAdvisor
-
-# General Contribution Guide
 
 If you have any comment or advice, please report your [issue](https://github.com/antvis/AVA/issues),
 or make any change as you wish and submit an [PR](https://github.com/antvis/AVA/pulls).
 
-## Language
+## For Non-Developers
+
+You can still contribute to the Chart Knowledge Base and WE DO NEED YOU!
+
+If you are new to GitHub, [get yourself a GitHub Account](https://github.com/join) first.
+
+After that, you can help us by creating an [issue](https://github.com/antvis/AVA/issues) or a [pull request](https://github.com/antvis/AVA/pulls).
+
+### Create an Issue
+
+GitHub issues are like comment board where you post your comment, advices, bugs you found, etc.
+
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" />
+</div>
+<br>
+
+Create a new issue on the [issue page](https://github.com/antvis/AVA/issues).
+
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" />
+</div>
+<br>
+
+You don't have to do anything about coding. We will reply you to discuss with you. If your suggestions are accepted, we will do the coding things.
+
+* To Modify the Knowledge of a Chart Type?
+* To Add a Chart Type?
+* To Modify Options of Knowledge Properties?
+
+Just leave your comments in an issue.
+
+### Submit a Pull Request
+
+If you can code or you are not afraid to learn some programming, and you want to make your suggestions as clear as code (or maybe you are just willing to make our lives easier), submit a pull request!
+
+[Learn more about pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
+
+## For Developers
+
+### Language
 
 * All code and comments must be written in English.
 * The description language in all issues and Pull Requests is recommended to be English, and in some cases Chinese can also be selected for description accuracy.
 
 We give priority to English to serve a wider range of developers, to deepen international cooperation and co-construction, and to avoid duplicate submissions between different languages.
 
-## Reporting New Issues
+### Reporting New Issues
 
 * Please specify what kind of issue it is.
 * Before you report an issue, please search for related issues. Make sure you are not going to open a duplicate issue.
@@ -28,9 +60,9 @@ We give priority to English to serve a wider range of developers, to deepen inte
 
 AntV group members will confirm the purpose of the issue, replace more accurate tags for it, identify related milestone, and assign developers working on it.
 
-## Submitting Code
+### Submitting Code
 
-### Pull Request Guide
+#### Pull Request Guide
 
 If you are developer of AntV repo and you are willing to contribute, feel free to create a new branch, finish your modification and submit a PR. AntV group will review your work and merge it to master branch.
 
@@ -56,11 +88,11 @@ No one can guarantee how much will be remembered about certain PR after some tim
 3. Related Testing: Briefly describe what part of testing is relevant to your modification.
 4. User Tips: Notice for g2 users. You can skip this part, if the PR is not about update in API or potential compatibility problem.
 
-### Style Guide
+#### Style Guide
 
 Eslint can help to identify styling issues that may exist in your code. Your code is required to pass the test from eslint. Run the test locally by `$ npm run lint`.
 
-### Commit Message Format
+#### Commit Message Format
 
 You are encouraged to use [angular commit-message-format](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit-message-format) to write commit message. In this way, we could have a more trackable history and an automatically generated changelog.
 
@@ -123,11 +155,11 @@ BREAKING CHANGE:
 
 Look at [these files](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit) for more details.
 
-## Release
+### Release
 
 AVA uses semantic versioning in release process based on [semver].
 
-### Branch Strategy
+#### Branch Strategy
 
 `master` branch is the latest stable version. 
 
@@ -135,15 +167,15 @@ AVA uses semantic versioning in release process based on [semver].
 * All new features will be added into `master` or `next` branch as well as all bug-fix except security issues. In such way, we can motivate developers to update to the latest stable version.
 
 
-### Release Strategy
+#### Release Strategy
 
 In the release of every stable version, there will be a PM who has the following responsibilities in different stages of the release.
 
-#### Preparation
+##### Preparation
 
 * Set up milestone. Confirm that request is related to milestone.
 
-#### Before Release
+##### Before Release
 
 * Confirm that performance test is passed and all issues in current Milestone are either closed or can be delayed to later versions.
 * Open a new [Release Proposal MR], and write `History` as [node CHANGELOG]. Don't forget to correct content in documentation which is related to the releasing version. Commits can be generated automatically.
@@ -153,4 +185,3 @@ In the release of every stable version, there will be a PM who has the following
 [semver]: http://semver.org/lang/zh-CN/
 [Release proposal MR]: https://github.com/nodejs/node/pull/4181
 [node CHANGELOG]: https://github.com/nodejs/node/blob/master/CHANGELOG.md
-[『我是如何发布一个 npm 包的』]: https://fengmk2.com/blog/2016/how-i-publish-a-npm-package
