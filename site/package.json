@@ -42,6 +42,7 @@
     "antd": "^4.4.0",
     "antv-site-demo-rc": "^0.1.0-alpha.22",
     "classnames": "^2.3.1",
+    "copy-to-clipboard": "^3.3.3",
     "insert-css": "^2.0.0",
     "mockjs": "^1.1.0",
     "moment": "^2.29.4",

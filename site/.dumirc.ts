@@ -126,6 +126,14 @@ export default defineConfig({
             order: 8,
         },
         {
+            slug: 'guide/ntv',
+            title: {
+                zh: '解读文本可视化（NTV）',
+                en: 'Narrative Text Vis (NTV)',
+            },
+            order: 9,
+        },
+        {
             slug: 'api/auto-chart',
             title: {
                 zh: 'AutoChart',
@@ -188,6 +196,14 @@ export default defineConfig({
                 en: 'Types',
             },
             order: 9,
+        },
+        {
+          slug: 'api/ntv',
+          title: {
+              zh: 'NarrativeTextVis(NTV)',
+              en: 'NarrativeTextVis(NTV)',
+          },
+          order: 10,
         },
     ],
     examples: [
