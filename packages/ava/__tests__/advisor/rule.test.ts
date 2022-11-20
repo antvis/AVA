@@ -50,7 +50,6 @@ const ruleWithExtra: RuleModule = {
 };
 
 describe('init Ruler', () => {
-  // TODO other test of ruler
   test('rule amount', () => {
     const rules = builtInRules;
     expect(rules.length).toBe(13);

@@ -22,8 +22,8 @@ import type {
 
 /**
  * options for advising inner pipeline
- * @todo refactor since 3.0.0
  */
+// TODO @neoddish: refactor since 3.0.0
 type PipeAdvisorOptions = AdvisorOptions & { exportLog?: boolean };
 declare type ChartID = typeof CHART_IDS[number];
 
@@ -56,7 +56,7 @@ function scoreRules(
 
   // Hard-Rule pruning
   // holding for showLog @deprecated and testing
-  /** @since 3.0.0 @todo */
+  // @since 3.0.0 TODO @neoddish
   // if (hardScore === 0) {
   //   const result: ScoringResult = { chartType, score: 0 };
   //   if (exportLog) result.log = log;
@@ -65,7 +65,7 @@ function scoreRules(
 
   const softScore = computeScore(chartType, chartWIKI, ruleBase, 'SOFT', info, log);
 
-  /** @since 3.0.0 @todo score normalization  */
+  // @since 3.0.0 TODO @neoddish score normalization
   // proposal:
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * (1 + softScore);

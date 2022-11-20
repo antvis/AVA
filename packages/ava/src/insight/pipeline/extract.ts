@@ -208,9 +208,8 @@ export function extractInsightsFromSubspace(
 
   /** insight extraction */
   const insights: (InsightInfo<PatternInfo> | null)[] = [];
-  // TODO Combination 1:  1D(dimension) or 1M(measure)
 
-  // Combination 2: 1M * 1D */
+  /** Combination: 1M * 1D */
   const insightsFor1M1DCombination = extractInsightsFor1M1DCombination(
     data,
     dimensions,
