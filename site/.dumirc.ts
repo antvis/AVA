@@ -86,10 +86,10 @@ export default defineConfig({
             order: 3,
         },
         {
-            slug: 'guide/chart-advisor',
+            slug: 'guide/advisor',
             title: {
-                zh: 'ChartAdvisor',
-                en: 'ChartAdvisor',
+                zh: 'Advisor',
+                en: 'Advisor',
             },
             order: 4,
         },
@@ -150,10 +150,10 @@ export default defineConfig({
             order: 3,
         },
         {
-            slug: 'api/chart-advisor',
+            slug: 'api/advisor',
             title: {
-                zh: 'ChartAdvisor',
-                en: 'ChartAdvisor',
+                zh: 'Advisor',
+                en: 'Advisor',
             },
             order: 4,
         },
@@ -217,9 +217,9 @@ export default defineConfig({
             order: 2,
         },
         {
-            slug: 'chart-advisor',
+            slug: 'advisor',
             title: {
-                zh: '图表推荐（ChartAdvisor）',
+                zh: '图表推荐（Advisor）',
                 en: 'ChartAdvisor',
             },
             order: 3,

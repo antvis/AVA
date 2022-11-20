@@ -6,9 +6,9 @@ order: 30
 <embed src='@/docs/common/style.md'></embed>
 
 
-`Ruler` 是 ChartAdvisor 内部默认的可视化规则定义集合，不包含向外透出函数。
+`Ruler` 是 Advisor 内部默认的可视化规则定义集合，不包含向外透出函数。
 
-为了便于用户定制 ChartAdvisor，我们将在本 API 文档中介绍规则定制相关的接口参数。
+为了便于用户定制 Advisor，我们将在本 API 文档中介绍规则定制相关的接口参数。
 
 ## RuleType
 

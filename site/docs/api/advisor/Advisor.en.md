@@ -12,7 +12,7 @@ Class Advisor(config?: Partial<Pick<Advisor, 'ckbCfg' | 'ruleCfg'>> = {})
 
 * **Advisor**: is the tool classes for recommending charts automatically.
 
-`Advisor` provides `advise()` function for providing chart recommendation schemas.
+`Advisor` provides several main functions, `advise()` is for providing chart recommendation schemas,  `lint()` is for optimizing potential problems in charts.
 
 ## Parameters
 
@@ -46,7 +46,7 @@ Class Advisor(config?: Partial<Pick<Advisor, 'ckbCfg' | 'ruleCfg'>> = {})
 | custom     | `Record<string, RuleModule>` | Customized rules.                                           | None `Optional` |
 | options    | `ChartRuleConfigMap`         | Rule configuration.                                         | None `Optional` |
 
-* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./30_Ruler) for details.
+* _**RuleModule**_ `ruler` Custom rules, see [Ruler](./Ruler.en.md) for details.
 
 ```ts
 type RuleModule = ChartRuleModule | DesignRuleModule;
@@ -62,7 +62,7 @@ type DesignRuleModule = DefaultRuleModule & {
 };
 ```
 
-* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./30_Ruler) for details.
+* _**ChartRuleConfigMap**_ `ruler` Rule configuration, see [Ruler](./Ruler.en.md) for details.
 
 ```ts
 type ChartRuleConfigMap = Record<string, ChartRuleConfig>;
@@ -78,20 +78,42 @@ interface ChartRuleConfig {
 
 ### Advisor.advise
 
-Get the `AdvisorList[]` of chart recommendation results.
+Get the `Advice[]` of chart recommendation results.
 
 ```ts
-Advisor.advise(params: AdviseParams): AdvisorList[];
+Advisor.advise(params: AdviseParams): Advice[];
 ```
 
-See [Advisor.advise](./11_Advisor-advise).
+See [Advisor.advise](./Advisor-advise.en.md).
 
-### Advisor.adviseWithLog
 
-This method does almost exactly the same thing as [Advisor.advise](./11_Advisor-advise) except that it additionally returns the scoring details of the recommendation process for subsequent interpretation of the recommendation in any application.
+### Advisor.lint
+
+Get the `Lint[]` of chart optimization results.
 
 ```ts
-Advisor.adviseWithLog(params: AdviseParams): AdvicesWithLog
+Advisor.Lint(params: LintParams): Lint[];
 ```
 
-See [Advisor.adviseWithLog](./12_Advisor-adviseWithLog)。
+See [Advisor.lint](./Advisor-lint.en.md)。
+
+### Advisor.getAdviseLog
+
+`Advisor.getAdviseLog` should be used right after [Advisor.Advise](./Advisor-advise.en.md) ，which is used for getting the scoring details of the recommending process。
+
+```ts
+Advisor.getAdviseLog(params: AdviseParams): AdvicesWithLog
+```
+
+See [Advisor.getAdviseLog](./Advisor-getAdviseLog.en.md)。
+
+
+### Advisor.getLintLog
+
+`Advisor.getLintLog` should be used right after [Advisor.lint](./Advisor-lint.en.md) ，which is used for getting the scoring details of the optimizing process。
+
+```ts
+Advisor.getLintLog(params: LintParams): LintsWithLog
+```
+
+详见 [Advisor.getLintLog](./Advisor-getLintLog.en.md)。

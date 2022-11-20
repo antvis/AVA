@@ -1,5 +1,5 @@
 ---
-title: Linter.lint
+title: Advisor.lint
 order: 21
 ---
 
@@ -7,7 +7,7 @@ order: 21
 
 
 ```sign
-Linter.lint(params: LintParams): Lint[];
+Advisor.lint(params: LintParams): Lint[];
 ```
 
 ## Parameters
@@ -41,7 +41,7 @@ See [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md) for d
 | layer      | The drawing information. | `{ [ encoding: { x: {...} , y:{...} }, mark: { type: 'line' } ] }` |
 
 
-* _**BasicDataPropertyForAdvice**_ Parameter configuration, see [Ruler](./30_Ruler) for details..
+* _**BasicDataPropertyForAdvice**_ Parameter configuration, see [Ruler](./Ruler.en.md) for details..
 
 ```ts
 interface BasicDataPropertyForAdvice {

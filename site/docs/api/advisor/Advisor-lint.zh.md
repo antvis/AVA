@@ -1,5 +1,5 @@
 ---
-title: Linter.lint
+title: Advisor.lint
 order: 21
 ---
 
@@ -7,7 +7,7 @@ order: 21
 
 
 ```sign
-Linter.lint(params: LintParams): Lint[];
+Advisor.lint(params: LintParams): Lint[];
 ```
 
 ## 参数
@@ -39,7 +39,7 @@ interface LintParams {
 | data  | 数据信息。 | `data: { type: 'json-array', values: [...] }`                     |
 | layer | 绘制信息。 | `{ [ encoding: { x: {...}, y:{...} }, mark: { type: 'line' } ] }` |
 
-* _**BasicDataPropertyForAdvice**_ 参数配置，详见 [Ruler](./30_Ruler)。
+* _**BasicDataPropertyForAdvice**_ 参数配置，详见 [Ruler](./Ruler.zh.md)。
 
 ```ts
 interface BasicDataPropertyForAdvice {
