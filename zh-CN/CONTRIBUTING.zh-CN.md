@@ -1,26 +1,58 @@
-# 指定包的贡献指南 🌟
+# 贡献指南 🌟
 
 **诚邀点击右上角 ⭐ Star，关注本项目，获得最新信息，便于参与共建。谢谢您！**
-
-如果想要针对某个特定的包进行贡献，请在浏览完「通用代码贡献指南」后，特别查阅一下具体包的贡献指南细节。其中有些贡献类型是针对**非开发人员**的。
-
-* [AVA/CKB 特殊贡献指南](../packages/knowledge/zh-CN/CONTRIBUTING.zh-CN.md)
-* AVA/DataWizard 特殊贡献指南
-* AVA/ChartAdvisor 特殊贡献指南
- 
-# 通用代码贡献指南
 
 有任何疑问，欢迎提交 [issue](https://github.com/antvis/AVA/issues)，
 或者直接修改提交 [PR](https://github.com/antvis/AVA/pulls)!
 
-## 语言
+## 致 非开发者
+
+也许你是设计师、产品经理、普通用户，你也可以为我们的图表知识库出一份力！**而且我们真的很需要你！**
+
+如果你还没有 GitHub 账号，先 [申请一个](https://github.com/join)。这很值得。
+
+然后，你可以通过提交 [issue](https://github.com/antvis/AVA/issues) 或 [pull request](https://github.com/antvis/AVA/pulls) 的方式来提供你的建议。
+
+### 提交 Issue
+
+GitHub 的 issues 是一个类似评论区的功能，你可以在这里留下你的想法、建议、发现的 bug，等等。
+
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" />
+</div>
+<br>
+
+在 [issue 标签页](https://github.com/antvis/AVA/issues) 新建一个 issue。
+
+<div align="center">
+  <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" />
+</div>
+<br>
+
+你不需要写任何代码，只需要留下你的建议，我们会回复你并和你讨论。如果你的建议被采用了，我们会负责相关的代码修改。
+
+* 修改一个已有图表的知识内容？
+* 新增一个图表类型？
+* 修改图表知识的分类角度的可选值？
+
+留一个 issue 就好。
+
+### 提交 Pull Request
+
+如果你会写代码，或者对学一点代码并不感到抵触，同时你希望把你的建议描述地想代码一样清晰（或者你就是想帮我们省点时间），那太好了！试试提交一个 pull request！
+
+[什么是 pull request](https://help.github.com/cn/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
+ 
+## 致 开发者
+
+### 语言
 
 * 源码和注释中的内容必须使用英语。
 * 所有的 issue 和 PR 中描述语言推荐使用英语，部分情况下为描述准确性也可以选择使用中文。
 
 我们优先使用英语，是为了服务更广泛的开发者、深化国际化合作共建，也为了避免不同语言间重复提交问题。
 
-## 提交 issue
+### 提交 issue
 
 * 请确定 issue 的类型。
 * 请避免提交重复的 issue，在提交之前搜索现有的 issue。
@@ -28,9 +60,9 @@
 
 随后 AntV 负责人会确认 issue 意图，更新合适的标签，关联 milestone，指派开发者。
 
-## 提交代码
+### 提交代码
 
-### 提交 Pull Request
+#### 提交 Pull Request
 
 如果你有仓库的开发者权限，而且希望贡献代码，那么你可以创建分支修改代码提交 PR，AntV 开发团队会 review 代码合并到主干。
 
@@ -57,11 +89,11 @@ $ git push origin branch-name
 3. 框架测试点（可以关联到测试文件，不用详细描述，关键点即可）
 4. 关注点（针对用户而言，可以没有，一般是不兼容更新等，需要额外提示）
 
-### 代码风格
+#### 代码风格
 
 你的代码风格必须通过 eslint，你可以运行 `$ npm run lint` 本地测试。
 
-### Commit 提交规范
+#### Commit 提交规范
 
 根据 [angular 规范](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit-message-format)提交 commit，
 这样 history 看起来更加清晰，还可以自动生成 changelog。
@@ -125,7 +157,7 @@ BREAKING CHANGE:
 
 查看具体[文档](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit)
 
-## 发布管理
+### 发布管理
 
 AVA 基于 [semver] 语义化版本号进行发布。
 
@@ -134,21 +166,21 @@ AVA 基于 [semver] 语义化版本号进行发布。
 * 直接从 `master` 切出开发分支
 * 所有 API 的废弃都需要在当前的稳定版本上 `deprecate` 提示，并保证在当前的稳定版本上一直兼容到新版本的发布。
 
-### 发布策略
+#### 发布策略
 
 每个大版本都有一个发布经理管理（PM），他/她要做的事情
 
-#### 准备工作
+##### 准备工作
 
 * 建立 milestone，确认需求关联 milestone，指派和更新 issues。
 
-#### 发布前
+##### 发布前
 
 * 确认当前 Milestone 所有的 issue 都已关闭或可延期，完成性能测试。
 * 发起一个新的 [Release Proposal MR]，按照 [node CHANGELOG] 进行 `History` 的编写，修正文档中与版本相关的内容，commits 可以自动生成。`$ npm run commits`
 * 指定下一个大版本的 PM。
 
-#### 发布时
+##### 发布时
 
 * 将老的稳定版本（master）备份到以当前大版本为名字的分支上（例如 `1.x`），并设置 tag 为 {v}.x`（ v 为当前版本，例如 `1.x`）。
 * 发布新的稳定版本到 [npm]，并通知上层框架进行更新。
