@@ -3,7 +3,7 @@ import { DEFAULT_RULE_WEIGHTS } from '../constants';
 import { CHART_IDS } from '../../ckb';
 
 import type { ScoringResultForRule } from '../types';
-import type { ChartRuleModule } from '../ruler/type';
+import type { ChartRuleModule } from '../ruler/types';
 import type { CkbTypes } from '../../ckb';
 
 const defaultWeights = DEFAULT_RULE_WEIGHTS;

@@ -1,4 +1,4 @@
-import type { RuleModule } from '../type';
+import type { RuleModule } from '../types';
 
 export const noRedundantField: RuleModule = {
   id: 'no-redundant-field',

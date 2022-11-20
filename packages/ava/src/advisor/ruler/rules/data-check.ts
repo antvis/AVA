@@ -1,6 +1,6 @@
 import { verifyDataProps } from '../utils';
 
-import type { RuleModule, BasicDataPropertyForAdvice } from '../type';
+import type { RuleModule, BasicDataPropertyForAdvice } from '../types';
 
 export const dataCheck: RuleModule = {
   id: 'data-check',

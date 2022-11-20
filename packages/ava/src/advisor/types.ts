@@ -4,7 +4,7 @@ import type { SimulationType } from '@antv/smart-color';
 import type { CkbTypes, CkbConfig } from '../ckb';
 import type { Specification, Data } from '../common/types';
 /** Advisor 模块内引用 */
-import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/type';
+import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/types';
 
 /**
  * Advisor config type
@@ -194,7 +194,7 @@ export interface ScoringResultForChartType {
   log?: ScoringResultForRule[];
 }
 
-export type { Preferences } from './ruler/type';
+export type { Preferences } from './ruler/types';
 
 export interface LinterOptions {
   purpose?: CkbTypes.Purpose;

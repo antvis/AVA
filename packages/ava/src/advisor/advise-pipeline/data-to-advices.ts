@@ -9,7 +9,7 @@ import type { SimulationType } from '@antv/smart-color';
 import type { ColorSchemeType } from '@antv/color-schema';
 import type { CkbTypes } from '../../ckb';
 import type { Specification, Data } from '../../common/types';
-import type { BasicDataPropertyForAdvice, DesignRuleModule, RuleModule } from '../ruler/type';
+import type { BasicDataPropertyForAdvice, DesignRuleModule, RuleModule } from '../ruler/types';
 import type {
   AdvisorOptions,
   Theme,

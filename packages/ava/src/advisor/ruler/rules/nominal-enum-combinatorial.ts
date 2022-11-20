@@ -1,7 +1,7 @@
 import { hasSubset } from '../../utils';
 import { compare } from '../utils';
 
-import type { RuleModule, BasicDataPropertyForAdvice } from '../type';
+import type { RuleModule, BasicDataPropertyForAdvice } from '../types';
 
 const applyChartTypes = [
   'bar_chart',

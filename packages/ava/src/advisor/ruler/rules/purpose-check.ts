@@ -1,4 +1,4 @@
-import type { RuleModule } from '../type';
+import type { RuleModule } from '../types';
 
 export const purposeCheck: RuleModule = {
   id: 'purpose-check',
