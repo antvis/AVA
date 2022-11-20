@@ -18,6 +18,7 @@ if (window) {
     (window as any).mockjs = require('mockjs');
     (window as any).moment = require('moment');
     (window as any).lodash = require('lodash');
+    (window as any).copyToClipboard = require('copy-to-clipboard');
     (window as any).reactVega = require('react-vega');
     (window as any).reactColor = require('react-color');
     (window as any).thumbnails = require('@antv/thumbnails');

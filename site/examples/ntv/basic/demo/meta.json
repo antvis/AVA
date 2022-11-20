@@ -27,6 +27,14 @@
         "zh": "设置大小"
       },
       "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*JwKTT5EGpREAAAAAAAAAAAAADi2DAQ/original"
+    },
+    {
+      "filename": "export.tsx",
+      "title": {
+        "en": "Export",
+        "zh": "导出"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*7XxYQLKmMr8AAAAAAAAAAAAADmJ7AQ/original"
     }
   ]
 }

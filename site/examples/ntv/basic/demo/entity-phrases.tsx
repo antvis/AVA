@@ -8,7 +8,7 @@ const { Phrase } = NarrativeTextVis;
 
 const App = () => (
   <div style={{ marginBottom: 48 }}>
-    <Descriptions bordered size="small">
+    <Descriptions bordered column={2} size="small">
       <Descriptions.Item label="指标名 metric_name">
         <Phrase
           spec={{
