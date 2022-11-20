@@ -2,7 +2,7 @@ import type { CkbDictionary } from './types';
 
 /**
  * Translate list of Chinese.
- * ---
+ *
  * 中文翻译表
  */
 export const zhCN: CkbDictionary = {

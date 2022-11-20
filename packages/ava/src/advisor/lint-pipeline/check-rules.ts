@@ -1,8 +1,3 @@
-/**
- * TODO
- * -- DataFrame 改为从 dw 直接引入
- */
-
 import { DataFrame } from '../../data';
 
 import { getChartType } from './getChartType';

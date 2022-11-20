@@ -1,11 +1,11 @@
-/**
+/*
  * implementation of deepMix in antv/utils
  */
 
 const MAX_MIX_LEVEL = 5;
 
 const isObjectLike = (value: any): value is object => {
-  /**
+  /*
    * isObjectLike({}) => true
    * isObjectLike([1, 2, 3]) => true
    * isObjectLike(Function) => false
@@ -19,7 +19,7 @@ const { toString } = {};
 const isType = (value: any, type: string): boolean => toString.call(value) === `[object ${type}]`;
 
 const isPlainObject = (value: any): value is object => {
-  /**
+  /*
    * isObjectLike(new Foo) => false
    * isObjectLike([1, 2, 3]) => false
    * isObjectLike({ x: 0, y: 0 }) => true

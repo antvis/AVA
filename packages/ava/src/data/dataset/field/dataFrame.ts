@@ -15,7 +15,7 @@ import {
 
 import type { FrameData, Axis, Extra, FieldsInfo, SeriesData } from './types';
 
-/** 2D data structure */
+/* 2D data structure */
 export default class DataFrame extends BaseFrame {
   constructor(data: FrameData, extra?: Extra) {
     super(data, extra);
@@ -50,14 +50,14 @@ export default class DataFrame extends BaseFrame {
     if (isArray(data)) {
       const [data0] = data;
 
-      /** 1D: basic type | array */
+      /* 1D: basic type | array */
       if (this.data.length > 0) {
         this.generateColumns([0], extra?.columns);
         this.colData = [this.data];
         this.data = this.data.map((datum) => [datum]);
       }
 
-      /**
+      /*
        * 2D: array
        * Base frame has made the first round of judgment. Now, if data0 is array, all the datum is array.
        */
@@ -67,7 +67,7 @@ export default class DataFrame extends BaseFrame {
         this.generateColumns(columns, extra?.columns);
       }
 
-      /** 2D: object array */
+      /* 2D: object array */
       if (isObject(data0)) {
         const keys: string[] = [];
 
@@ -116,7 +116,7 @@ export default class DataFrame extends BaseFrame {
       const dataValues = Object.values(data);
       const [data0] = dataValues;
 
-      /** 1D: object */
+      /* 1D: object */
       if (isBasicType(data0)) {
         const columns = Object.keys(data);
 
@@ -159,7 +159,7 @@ export default class DataFrame extends BaseFrame {
         }
       }
 
-      /** 2D: array object */
+      /* 2D: array object */
       if (isArray(data0)) {
         this.setAxis(0, generateArrayIndex(data0, extra?.indexes));
         const columns = Object.keys(data);
@@ -277,7 +277,7 @@ export default class DataFrame extends BaseFrame {
   get(rowLoc: Axis | Axis[] | string, colLoc?: Axis | Axis[] | string): DataFrame | Series | any {
     assert(isAxis(rowLoc) || isArray(rowLoc), 'The rowLoc is illegal');
 
-    /** colLoc does not exist */
+    /* colLoc does not exist */
     if (colLoc === undefined) {
       // input is like 1
       if (isNumber(rowLoc)) {
@@ -318,7 +318,7 @@ export default class DataFrame extends BaseFrame {
       }
     }
 
-    /** colLoc exists */
+    /* colLoc exists */
     let startRowIdx = -1;
     let endRowIdx = -1;
     const rowIdxes = [];
@@ -437,7 +437,7 @@ export default class DataFrame extends BaseFrame {
   getByIndex(rowLoc: number | number[] | string, colLoc?: number | number[] | string): DataFrame | Series | any {
     assert(isInteger(rowLoc) || isArray(rowLoc) || isString(rowLoc), 'The rowLoc is illegal');
 
-    /** colLoc does not exist */
+    /* colLoc does not exist */
     if (colLoc === undefined) {
       // input is like 1
       if (isInteger(rowLoc)) {
@@ -479,7 +479,7 @@ export default class DataFrame extends BaseFrame {
       }
     }
 
-    /** colLoc exists */
+    /* colLoc exists */
     let startRowIdx = -1;
     let endRowIdx = -1;
     const rowIdxes = [];

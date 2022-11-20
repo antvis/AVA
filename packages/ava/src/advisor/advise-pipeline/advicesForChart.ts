@@ -1,8 +1,3 @@
-/**
- * TODO
- * -- DataFrame 改为从 dw 直接引入
- */
-
 import { DataFrame } from '../../data';
 import { cloneDeep } from '../utils';
 
@@ -37,7 +32,7 @@ export function advicesForChart(
     return null;
   }
 
-  // get dataProps from dataframe
+  // get dataProps from DataFrame
   let dataPropsForAdvice: BasicDataPropertyForAdvice[];
   if (dataProps) {
     // filter out fields that are not included for advising
