@@ -67,6 +67,7 @@
     "@types/react-dom": "^17.0.9",
     "@types/styled-components": "^5.1.25",
     "@types/uuid": "^8.3.1",
+    "antd": "^4.16.13",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "jest": "^24.9.0",
