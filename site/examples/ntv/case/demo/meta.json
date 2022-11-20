@@ -1,0 +1,24 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "chart-explanation.tsx",
+      "title": {
+        "en": "Chart Explanation",
+        "zh": "图表解读"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*K3EmTK-ywA0AAAAAAAAAAAAADi2DAQ/original"
+    },
+    {
+      "filename": "report.tsx",
+      "title": {
+        "en": "Briefing",
+        "zh": "业务简报"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*Kw1LQrr9slcAAAAAAAAAAAAADi2DAQ/original"
+    }
+  ]
+}

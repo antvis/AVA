@@ -55,7 +55,7 @@
     "antd": "^4.8.0",
     "antv-site-demo-rc": "0.2.4",
     "csstype": "^3.0.5",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-json-view": "^1.19.1",

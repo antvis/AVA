@@ -15,6 +15,9 @@ if (window) {
     (window as any).classnames = require('classnames');
     (window as any).pica = require('pica');
     (window as any).qrcode = require('qrcode');
+    (window as any).mockjs = require('mockjs');
+    (window as any).moment = require('moment');
+    (window as any).lodash = require('lodash');
     (window as any).reactVega = require('react-vega');
     (window as any).reactColor = require('react-color');
     (window as any).thumbnails = require('@antv/thumbnails');
@@ -27,6 +30,7 @@ if (window) {
     (window as any).g2plot = require('@antv/g2plot');
 
     (window as any).ava = require('../../packages/ava/src');
+    (window as any).avaReact = require('../../packages/ava-react/src');
 
     require('antd/lib/alert/style/index.css');
 }
