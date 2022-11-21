@@ -1,19 +1,3 @@
-import { defineConfig } from 'father';
+import fatherConfig from '../../.fatherrc';
 
-export default defineConfig({
-  esm: {
-    output: 'esm',
-  },
-  cjs: {
-    output: 'lib',
-  },
-  umd: {
-    name: 'AVAReact',
-    output: 'dist',
-    externals: {
-      antd: 'antd',
-      react: 'react',
-      'react-dom': 'ReactDom',
-    }
-  },
-});
+export default fatherConfig('react', 'AVAReact');
