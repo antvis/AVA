@@ -16,7 +16,7 @@ React components of AVA.
 ## Components
 - NarrativeTextVis
 
-## Installation
+## Install
 
 ```shell
 # npm

@@ -1,7 +1,7 @@
 {
   "name": "@antv/ava-react",
   "version": "3.0.0-alpha.0",
-  "description": "A framework for automated visual analytics.",
+  "description": "React components of AVA.",
   "author": {
     "name": "AntV",
     "url": "https://antv.antgroup.com/"
@@ -14,7 +14,9 @@
   "keywords": [
     "visualization",
     "augmented-analytics",
-    "insight"
+    "insight",
+    "react",
+    "component"
   ],
   "license": "MIT",
   "publishConfig": {
