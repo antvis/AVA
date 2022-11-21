@@ -6,6 +6,7 @@ import CKBList from './DevPlayground/CKBList';
 import Data from './DevPlayground/Data';
 import LiteInsight from './DevPlayground/LiteInsight';
 import ChartAdvisor from './DevPlayground/ChartAdvisor';
+import NtvDemo from './DevPlayground/NTV';
 
 export interface Demo {
   id: string;
@@ -52,7 +53,7 @@ const manifest: Manifest = {
     {
       id: 'ntv',
       name: 'ntv',
-      contentComp: null,
+      contentComp: NtvDemo,
       icon: <FontSizeOutlined />,
     },
   ],
