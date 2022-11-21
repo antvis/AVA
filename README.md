@@ -15,81 +15,19 @@
 
 <a href="https://ava.antv.antgroup.com"><img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*rXVYRJ0EMDsAAAAAAAAAAAAADmJ7AQ/original" align="left" width="180" hspace="10" vspace="6"></a>
 
-**AVA** (<img src="[./common/img/vectorASymbol.svg](https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original)" width="16">  Visual Analytics) is a framework and solution for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is to become an *AI driven*, *Automated* solution that supports *Augmented* analytics.
+**AVA** (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16">  Visual Analytics) is a framework and solution for more convenient visual analytics. The first **A** of AVA  has many meanings. It states that this framework is to become an *AI driven*, *Automated* solution that supports *Augmented* analytics.
 
 <br />
 
 <div align="center">
-  <img width="800" src="https://gw.alipayobjects.com/zos/antfincdn/oCtZLZ5Y%26/AVA%252520Pipeline.png" alt="AVA pipeline">
+  <img width="800" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*BujvQJHKs4AAAAAAAAAAAAAADmJ7AQ/original" alt="AVA pipeline">
 </div>
 
 ## Packages
 
-### [AVA/AutoChart](https://github.com/antvis/AVA/blob/master/packages/auto-chart)
+### [@antv/ava](https://github.com/antvis/AVA/blob/master/packages/ava)
 
-AutoChart is a React component that automatically suggests and renders the right chart based on data.
-It can automatically generate and render the proper chart for visualization based on the input data with one-line of code.
-
-```protobuf
-@antv/auto-chart // one-click visualization component
-```
-
-### [AVA/CKB](https://github.com/antvis/AVA/tree/master/packages/knowledge)
-
-CKB stands for Chart Knowledge Base.
-This package is the KB where empirical knowledge about visualization and charts is stored. The chart recommendation is based on it.
-
-At the same time, this package also facilitates us to develop products of chart type selection.
-
-
-```protobuf
-@antv/ckb // to get the chart knowledge base
-```
-
-### [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/data-wizard)
-
-DataWizard is a js/ts library for data processing.
-In the AVA framework, it is used to understand and process the input dataset.
-Moreover, it can also be used independently to develop some data processing, statistics or data mocking functions.
-
-```ts
-import { DataFrame } from @antv/data-wizard // data processing
-import { statistics } from @antv/data-wizard // statistical methods
-import { random } from @antv/data-wizard // data mocking
-```
-
-### [AVA/ChartAdvisor](https://github.com/antvis/AVA/tree/master/packages/chart-advisor)
-
-ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
-
-```protobuf
-@antv/chart-advisor // to make charts automatically
-```
-
-### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight)
-
-LiteInsight is a js/ts library employed for Exploratory Data Analysis (EDA).
-It can automatically discover data insights from multidimensional data.
-
-```protobuf
-@antv/lite-insight // to get data insight
-```
-
-### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board)
-
-SmartBoard is a js/ts library employed for Dashboard visualization of charts.
-It can automatically generates the corresponding Dashboard configurations based on input charts and insights.
-
-```protobuf
-@antv/smart-board // to get Dashboard parameters
-```
-
-## Sources
-
-* [Guide](https://ava.antv.antgroup.com/en/docs/guide/intro)
-* [API](https://ava.antv.antgroup.com/en/docs/api)
-* [Examples](https://ava.antv.antgroup.com/en/examples/gallery)
-* [Wiki](https://github.com/antvis/AVA/wiki)
+### [@antv/ava-react](https://github.com/antvis/AVA/tree/master/packages/ava-react)
 
 ## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
