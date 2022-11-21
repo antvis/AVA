@@ -20,69 +20,14 @@
 <br />
 
 <div align="center">
-  <img width="800" src="https://gw.alipayobjects.com/zos/antfincdn/oCtZLZ5Y%26/AVA%252520Pipeline.png" alt="AVA pipeline">
+  <img width="800" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*BujvQJHKs4AAAAAAAAAAAAAADmJ7AQ/original" alt="AVA pipeline">
 </div>
 
 ## npm 包
 
-### [AVA/AutoChart](https://github.com/antvis/AVA/blob/master/packages/auto-chart/zh-CN/README.zh-CN.md)
+### [@antv/ava](https://github.com/antvis/AVA/blob/master/packages/ava)
 
-AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 React 组件。它可以为用户提供一行代码实现智能可视化的能力。
-
-```protobuf
-@antv/auto-chart // 一键可视化组件
-```
-
-### [AVA/CKB](https://github.com/antvis/AVA/blob/master/packages/auto-chart/zh-CN/README.zh-CN.md)
-
-CKB 的意思是 Chart Knowledge Base，也就是图表知识库。这个包中包含了基于经验总结的关于可视化和图表的各种基本知识和观察。图表的推荐必须基于这些基本概念。
-
-同时，这个包也让开发图表类型筛选相关的产品变得非常简单。
-
-```protobuf
-@antv/ckb // 图表知识库
-```
-
-### [AVA/DataWizard](https://github.com/antvis/AVA/blob/master/packages/data-wizard/zh-CN/README.zh-CN.md)
-
-DataWizard 是一个基于 js/ts 的前端数据处理库。在 AVA 的框架中，它被用来理解和处理输入端的数据集。不过，它也可以独立地被用来开发一些数据处理、数学统计、数据模拟之类的功能。
-
-```ts
-import { DataFrame } from @antv/data-wizard // 数据处理模块
-import { statistics } from @antv/data-wizard // 数学统计模块
-import { random } from @antv/data-wizard // 数据模拟模块
-```
-
-### [AVA/ChartAdvisor](https://github.com/antvis/AVA/blob/master/packages/chart-advisor/zh-CN/README.zh-CN.md)
-
-ChartAdvisor 是 AVA 的核心部分。它基于数据和分析需求来推荐图表类型和具体的图表细节设置。
-
-```protobuf
-@antv/chart-advisor // 图表推荐和自动生成
-```
-
-### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight/zh-CN/README.zh-CN.md)
-
-LiteInsight 是一个用于探索性数据分析的 js/ts 工具库，它可以从多维数据中自动地发现数据洞察。
-
-```protobuf
-@antv/lite-insight // 数据洞察库
-```
-
-### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board/zh-CN/README.zh-CN.md)
-
-SmartBoard 是一个用于 Dashboard 数据展示的 js/ts 工具库。它根据输入图表和洞察自动生成对应的 Dashboard。
-
-```protobuf
-@antv/smart-board // 增强展现库
-```
-
-## 相关链接
-
-* [教程文档 Guide](https://ava.antv.antgroup.com/zh/docs/guide/intro)
-* [接口文档 API](https://ava.antv.antgroup.com/zh/docs/api)
-* [示例大全 Examples](https://ava.antv.antgroup.com/zh/examples/gallery)
-* [相关知识 Wiki](https://github.com/antvis/AVA/wiki)
+### [@antv/ava-react](https://github.com/antvis/AVA/tree/master/packages/ava-react)
 
 ## 参与贡献 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
