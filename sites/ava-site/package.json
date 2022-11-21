@@ -31,7 +31,6 @@
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/g2plot": "^2.3.39",
     "@antv/g6": "^4.3.11",
-    "@antv/dumi-theme-antv": "^0.3.0-beta.13",
     "@antv/narrative-text-vis": "^0.1.6-alpha.5",
     "@antv/s2": "^1.15.0",
     "@antv/s2-react": "^1.14.0",
@@ -56,11 +55,11 @@
     "vega-lite": "^4.15.0"
   },
   "devDependencies": {
-    "@antv/dumi-theme-antv": "^0.3.0-beta.3",
+    "@antv/dumi-theme-antv": "^0.3.0",
     "@types/react": "^16.9.2",
     "@types/react-dom": "^16.9.0",
     "cross-env": "^7.0.2",
-    "dumi": "^2.0.0-beta.11",
+    "dumi": "^2.0.3",
     "gh-pages": "^3.1.0",
     "increase-memory-limit": "^1.0.7",
     "typescript": "^4.4.2"

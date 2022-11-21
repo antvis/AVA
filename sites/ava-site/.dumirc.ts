@@ -11,7 +11,7 @@ export default defineConfig({
     isAntVSite: false,
     githubUrl: repository.url,   
     // 是否显示搜索框
-    showSearch: true,   
+    showSearch: false,   
     // 是否显示头部的 GitHub icon                                                
     showGithubCorner: true,     
     // 是否显示 GitHub star 数量                                        
@@ -336,11 +336,11 @@ export default defineConfig({
                 en: 'Recommend',
             },
             title: {
-                zh: '利业·立业 - AntV 与业务的故事',
-                en: 'How AntV Supports Business',
+                zh: '远方 · 远芳 AntV 2022 年度发布',
+                en: 'AntV Anniversary 2022',
             },
-            date: '2020.11.22',
-            link: 'https://www.yuque.com/antv/blog/2020story',
+            date: '2022.11.22',
+            link: 'https://www.yuque.com/antv/blog/1122_6',
         },
         {
           type: {
@@ -348,11 +348,11 @@ export default defineConfig({
             en: 'Recommend',
           },
           title: {
-            zh: 'AVA 1.0 你的图表参谋',
-            en: 'AVA 1.0 Your Chart Secretary',
+            zh: 'AVA：见字如晤，展信舒颜',
+            en: 'AVA 3.0 Pre-Publish',
           },
-          date: '2020.11.22',
-          link: 'https://www.yuque.com/antv/blog/2020ava',
+          date: '2022.11.22',
+          link: 'https://www.yuque.com/antv/blog/ava2022',
         },
     ],
   },
