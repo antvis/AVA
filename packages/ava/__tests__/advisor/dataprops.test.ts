@@ -2,6 +2,7 @@ import { Specification as AntVSpec } from '../../src/common/types';
 import { DataFrame } from '../../src/data';
 import { Advisor } from '../../src/advisor/index';
 import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../../src/advisor/ruler';
+import { assembleDataProps } from '../../src/advisor/advise-pipeline/advicesForChart';
 
 const data = [
   { price: 100, type: 'A', volume: 1000 },
@@ -76,5 +77,19 @@ describe('dataprops test', () => {
     const results = myAdvisor.lint({ spec, dataProps: newDps });
     expect(results.length).toBe(1);
     expect(results[0].id).toBe('fufu-rule');
+  });
+
+  test('customized dataProps', () => {
+    const defaultProps = assembleDataProps(data, ['price', 'type']);
+    const defaultTypeOfPrice = defaultProps.find((item) => item.name === 'price')?.levelOfMeasurements;
+
+    const userSpecifiedProps = [
+      { name: 'price', levelOfMeasurements: ['Interval'] },
+    ] as Partial<BasicDataPropertyForAdvice>[];
+    const customProps = assembleDataProps(data, ['price', 'type'], userSpecifiedProps);
+    const customTypeOfPrice = customProps.find((item) => item.name === 'price')?.levelOfMeasurements;
+
+    expect(defaultTypeOfPrice).toEqual(['Interval', 'Discrete']);
+    expect(customTypeOfPrice).toEqual(['Interval']);
   });
 });
