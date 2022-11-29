@@ -63,7 +63,7 @@ export type ChartAdviseParams = {
   /** input data to advise */
   data: Data;
   /** customized data props to advise */
-  dataProps?: BasicDataPropertyForAdvice[];
+  dataProps?: Partial<BasicDataPropertyForAdvice>[];
   /** data fields to focus, apply in `data` and `dataProps` */
   fields?: string[];
   /** SmartColor mode on/off */
