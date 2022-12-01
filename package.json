@@ -30,7 +30,7 @@
     "start:playground": "cd playground && npm start",
     "setup:site": "cd site && npm install",
     "start:site": "cd site && npm start",
-    "build:site": "cd site && npm build",
+    "build:site": "cd site && npm run build",
     "prepare": "husky install",
     "ci": "run-s format lint-staged build",
     "release": "lerna exec --no-private --concurrency 1 -- npx --no-install semantic-release",
