@@ -13,7 +13,7 @@ import type { BasicDataPropertyForAdvice, RuleModule } from '../ruler';
  * @param copyData a copy of original data
  * @param fields the fields that user specified to be used in dataset
  * @param inputDataProps user input dataProps which will cover or combine with dataProps from DataFrame
- * @returns
+ * @returns assembled data props
  */
 export function assembleDataProps(
   copyData: Data,
