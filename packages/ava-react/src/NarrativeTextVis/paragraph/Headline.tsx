@@ -7,24 +7,37 @@ import { classnames as cx } from '../../utils';
 import { presetPluginManager } from '../chore/plugin';
 
 import type { NtvTypes } from '@antv/ava';
-import type { ExtensionProps, ParagraphEvents } from '../types';
+import type { ExtensionProps, ParagraphEvents, ThemeStylesProps } from '../types';
 
 type HeadlineProps = ExtensionProps &
+  ThemeStylesProps &
   ParagraphEvents & {
     spec: NtvTypes.HeadlineSpec;
   };
 
-export function Headline({ spec, pluginManager = presetPluginManager, ...events }: HeadlineProps) {
+export function Headline({
+  spec,
+  pluginManager = presetPluginManager,
+  size = 'normal',
+  theme = 'light',
+  ...events
+}: HeadlineProps) {
   const { onClickParagraph, onMouseEnterParagraph, onMouseLeaveParagraph, ...phraseEvents } = events || {};
+
+  const themeStyles = { size, theme };
+
   const onClick = () => {
     onClickParagraph?.(spec);
   };
+
   const onMouseEnter = () => {
     onMouseEnterParagraph?.(spec);
   };
+
   const onMouseLeave = () => {
     onMouseLeaveParagraph?.(spec);
   };
+
   return (
     <StyledHeadline
       onClick={onClick}
@@ -32,8 +45,9 @@ export function Headline({ spec, pluginManager = presetPluginManager, ...events 
       onMouseLeave={onMouseLeave}
       className={cx(`${NTV_PREFIX_CLS}-headline`, spec.className)}
       style={spec.styles}
+      {...themeStyles}
     >
-      <Phrases spec={spec.phrases} pluginManager={pluginManager} {...phraseEvents} />
+      <Phrases spec={spec.phrases} pluginManager={pluginManager} {...themeStyles} {...phraseEvents} />
     </StyledHeadline>
   );
 }

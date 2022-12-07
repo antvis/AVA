@@ -21,7 +21,15 @@
       "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*8ObFTp4TfOcAAAAAAAAAAAAADi2DAQ/original"
     },
     {
-      "filename": "theme-size.tsx",
+      "filename": "theme.tsx",
+      "title": {
+        "en": "Theme",
+        "zh": "主题色"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*MYGGTa9z2MEAAAAAAAAAAAAADmJ7AQ/original"
+    },
+    {
+      "filename": "size.tsx",
       "title": {
         "en": "Size",
         "zh": "设置大小"

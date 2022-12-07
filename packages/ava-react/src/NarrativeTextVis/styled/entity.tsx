@@ -1,17 +1,17 @@
 import styled from 'styled-components';
 
-import { seedToken, getFontSize } from '../theme';
+import { getFontSize, getThemeColor } from '../theme';
 
-import type { ThemeProps } from '../types';
+import type { ThemeStylesProps } from '../types';
 
-export const Entity = styled.span<ThemeProps>`
+export const Entity = styled.span<ThemeStylesProps>`
   display: flex;
   display: inline-block;
   align-items: center;
   box-sizing: border-box;
-  font-size: ${getFontSize};
+  font-size: ${({ size }) => getFontSize(size)};
   font-family: Roboto-Medium, sans-serif;
-  line-height: 1.5em;
   border-radius: 2px;
-  color: ${seedToken.colorEntityBase};
+  color: ${({ theme }) => getThemeColor('colorEntityBase', theme)};
+  margin: 0 1px;
 `;

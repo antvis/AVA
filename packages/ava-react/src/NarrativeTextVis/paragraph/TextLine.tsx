@@ -7,18 +7,25 @@ import { classnames as cx } from '../../utils';
 import { presetPluginManager } from '../chore/plugin';
 
 import type { NtvTypes } from '@antv/ava';
-import type { ThemeProps, ExtensionProps, PhraseEvents } from '../types';
+import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
 
-type TextLineProps = ThemeProps &
+type TextLineProps = ThemeStylesProps &
   ExtensionProps &
   PhraseEvents & {
     spec: NtvTypes.TextParagraphSpec;
   };
 
-export function TextLine({ spec, size = 'normal', pluginManager = presetPluginManager, ...events }: TextLineProps) {
+export function TextLine({
+  spec,
+  size = 'normal',
+  theme = 'light',
+  pluginManager = presetPluginManager,
+  ...events
+}: TextLineProps) {
+  const themeStyles = { size, theme };
   return (
-    <StyledP size={size} className={cx(`${NTV_PREFIX_CLS}-p`, spec.className)} style={spec.styles}>
-      <Phrases spec={spec.phrases} size={size} pluginManager={pluginManager} {...events} />
+    <StyledP {...themeStyles} className={cx(`${NTV_PREFIX_CLS}-p`, spec.className)} style={spec.styles}>
+      <Phrases spec={spec.phrases} pluginManager={pluginManager} {...themeStyles} {...events} />
     </StyledP>
   );
 }

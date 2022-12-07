@@ -7,7 +7,8 @@ order: 1
 
 ## Props
 
-| 属性         | 类型                | 描述                 | 默认值          |
+| Props         | type               | description                | default         |
 | ------------ | ------------------- | -------------------- | --------------- |
-| spec         | `NtvTypes.NarrativeTextSpec`             | data             | 无              |
-| size         | 'default' \| 'small'    | font size, default is 14px, small is 12px           | 'default'              |
+| spec         | `NtvTypes.NarrativeTextSpec`             | data             | -              |
+| size         | 'normal' \| 'small'    | font size, normal is 14px, small is 12px           | 'normal'              |
+| theme         | 'light' \| 'dark'    | theme color, current support light mode and dark mode        | 'light'              |

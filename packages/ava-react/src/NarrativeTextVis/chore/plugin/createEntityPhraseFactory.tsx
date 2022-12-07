@@ -9,6 +9,7 @@ import { createPhraseFactory } from './createPhraseFactory';
 import type { NtvTypes } from '@antv/ava';
 import type { CSSProperties } from 'react';
 import type { PhraseDescriptor, SpecificEntityPhraseDescriptor, CustomEntityMode } from './plugin-protocol.type';
+import type { ThemeStylesProps } from '../../types';
 
 function getMergedDescriptor(
   defaultDescriptor: SpecificEntityPhraseDescriptor,
@@ -39,14 +40,19 @@ export const createEntityPhraseFactory =
       const { color, bgColor, fontSize, fontWeight, underline } = entityDescriptor.encoding;
       const commonStyleFn = functionalize(entityDescriptor?.style, {});
 
-      const encodingStyle = (value: string, metadata: NtvTypes.EntityMetaData): CSSProperties => {
+      const encodingStyle = (
+        value: string,
+        metadata: NtvTypes.EntityMetaData,
+        themeStyles: ThemeStylesProps
+      ): CSSProperties => {
+        const args = [value, metadata, themeStyles] as const;
         return {
-          ...commonStyleFn(value, metadata),
-          color: functionalize(color, undefined)(value, metadata),
-          backgroundColor: functionalize(bgColor, undefined)(value, metadata),
-          fontSize: functionalize(fontSize, undefined)(value, metadata),
-          fontWeight: functionalize(fontWeight, undefined)(value, metadata),
-          textDecoration: functionalize(underline, false)(value, metadata) ? 'underline' : undefined,
+          ...commonStyleFn(...args),
+          color: functionalize(color, undefined)(...args),
+          backgroundColor: functionalize(bgColor, undefined)(...args),
+          fontSize: functionalize(fontSize, undefined)(...args),
+          fontWeight: functionalize(fontWeight, undefined)(...args),
+          textDecoration: functionalize(underline, false)(...args) ? 'underline' : undefined,
         };
       };
       entityDescriptor.style = encodingStyle;
@@ -54,14 +60,17 @@ export const createEntityPhraseFactory =
       // handle content
       const { prefix, suffix, inlineChart } = entityDescriptor.encoding;
       const { content } = entityDescriptor;
-      entityDescriptor.content = (value: string, metadata: NtvTypes.EntityMetaData) => (
-        <>
-          {functionalize(prefix, null)(value, metadata)}
-          {content ? content(value, metadata) : value}
-          {functionalize(suffix, null)(value, metadata)}
-          {functionalize(inlineChart, null)(value, metadata)}
-        </>
-      );
+      entityDescriptor.content = (...args) => {
+        const [value] = args;
+        return (
+          <>
+            {functionalize(prefix, null)(...args)}
+            {content ? content(...args) : value}
+            {functionalize(suffix, null)(...args)}
+            {functionalize(inlineChart, null)(...args)}
+          </>
+        );
+      };
       delete entityDescriptor.encoding;
     }
 

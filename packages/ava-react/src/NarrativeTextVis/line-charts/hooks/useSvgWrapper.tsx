@@ -5,17 +5,20 @@ import { seedToken } from '../../theme';
 import { getElementFontSize } from './getElementFontSize';
 
 import type { PropsWithChildren } from 'react';
+import type { SizeType } from '../../types';
 
 type SvgProps = PropsWithChildren<React.SVGProps<SVGSVGElement>>;
 
-export const useSvgWrapper = () => {
+export const useSvgWrapper = (size: SizeType = 'normal') => {
   const ele = useRef(null);
-  const [size, setSize] = useState<number>(seedToken.fontSizeBase);
+  const [fontSize, setFontSize] = useState<number>(seedToken.fontSizeBase);
   useLayoutEffect(() => {
-    if (ele.current) {
-      setSize(getElementFontSize(ele.current, seedToken.fontSizeBase));
+    if (size) {
+      setFontSize(size === 'normal' ? seedToken.fontSizeBase : seedToken.fontSizeSmall);
+    } else if (ele.current) {
+      setFontSize(getElementFontSize(ele.current, seedToken.fontSizeBase));
     }
-  }, []);
+  }, [size]);
   const Svg = ({ children, ...otherProps }: SvgProps) => {
     return (
       <svg
@@ -30,5 +33,5 @@ export const useSvgWrapper = () => {
       </svg>
     );
   };
-  return [Svg, size] as const;
+  return [Svg, fontSize] as const;
 };

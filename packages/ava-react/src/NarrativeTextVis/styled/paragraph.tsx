@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
-import { seedToken, getFontSize } from '../theme';
+import { getThemeColor, getFontSize, getLineHeight } from '../theme';
 
-import type { ThemeProps } from '../types';
+import type { ThemeStylesProps } from '../types';
 
-export const P = styled.p<ThemeProps>`
+export const P = styled.p<ThemeStylesProps>`
   font-family: PingFangSC, sans-serif;
-  color: ${seedToken.colorBase};
-  font-size: ${getFontSize};
+  color: ${({ theme }) => getThemeColor('colorBase', theme)};
+  font-size: ${({ size }) => getFontSize(size)};
   min-height: 24px;
-  line-height: 24px;
+  line-height: ${({ size }) => getLineHeight(size)};
   margin-bottom: 4px;
 `;

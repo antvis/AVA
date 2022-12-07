@@ -1,15 +1,16 @@
 import styled from 'styled-components';
 
-import { seedToken, getFontSize } from '../theme';
+import { getFontSize, getThemeColor, getLineHeight } from '../theme';
 
-import type { ThemeProps } from '../types';
+import type { ThemeStylesProps } from '../types';
 
-export const Bullet = styled.div<ThemeProps>`
+export const Bullet = styled.div<ThemeStylesProps>`
   padding-left: 16px;
   font-family: PingFangSC, sans-serif;
-  color: ${seedToken.colorBase};
-  font-size: ${getFontSize};
+  color: ${({ theme }) => getThemeColor('colorBase', theme)};
+  font-size: ${({ size }) => getFontSize(size)};
   margin-bottom: 4px;
+  line-height: ${({ size }) => getLineHeight(size)};
 `;
 
 export const Ol = styled(Bullet)`
@@ -20,9 +21,11 @@ export const Ul = styled(Bullet)`
   list-style-type: disc;
 `;
 
-export const Li = styled.li`
+export const Li = styled.li<ThemeStylesProps>`
   list-style: inherit;
-  line-height: 1.74;
+  color: ${({ theme }) => getThemeColor('colorBase', theme)};
+  font-size: ${({ size }) => getFontSize(size)};
+  line-height: ${({ size }) => getLineHeight(size)};
 
   ::marker {
     margin-right: -8px;

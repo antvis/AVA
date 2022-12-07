@@ -4,15 +4,15 @@ import { isArray } from 'lodash';
 
 import { SingleLineChart } from '../../../line-charts';
 import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
-import { seedToken } from '../../../theme';
+import { getThemeColor } from '../../../theme';
 
 import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 
 const defaultTrendDescDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    color: seedToken.colorConclusion,
-    inlineChart: (value, { detail }) => {
-      if (isArray(detail) && detail.length) return <SingleLineChart data={detail} />;
+    color: (value, metadata, { theme }) => getThemeColor('colorConclusion', theme),
+    inlineChart: (value, { detail }, themeStyles) => {
+      if (isArray(detail) && detail.length) return <SingleLineChart data={detail} {...themeStyles} />;
       return null;
     },
   },

@@ -5,15 +5,16 @@ import { isNumber } from 'lodash';
 import { ArrowDown, ArrowUp } from '../../../assets/icons';
 import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
 import { NTV_PREFIX_CLS } from '../../../constants';
-import { seedToken } from '../../../theme';
+import { getThemeColor } from '../../../theme';
 
 import type { NtvTypes } from '@antv/ava';
 import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
+import type { ThemeType } from '../../../types';
 
-function getCompareColor(assessment: NtvTypes.ValueAssessment) {
+function getCompareColor(assessment: NtvTypes.ValueAssessment, theme: ThemeType) {
   let color: string;
-  if (assessment === 'positive') color = seedToken.colorPositive;
-  if (assessment === 'negative') color = seedToken.colorNegative;
+  if (assessment === 'positive') color = getThemeColor('colorPositive', theme);
+  if (assessment === 'negative') color = getThemeColor('colorNegative', theme);
   return color;
 }
 
@@ -30,7 +31,7 @@ function getAssessmentText(value: string, metadata: NtvTypes.EntityMetaData) {
 
 const defaultDeltaValueDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    color: (value, { assessment }) => getCompareColor(assessment),
+    color: (value, { assessment }, { theme }) => getCompareColor(assessment, theme),
     prefix: (value, { assessment }) => getComparePrefix(assessment, ['-', '+']),
   },
   classNames: (value, { assessment }) => [`${NTV_PREFIX_CLS}-value-${assessment}`],
@@ -44,7 +45,7 @@ export const createDeltaValue = createEntityPhraseFactory('delta_value', default
 
 const defaultRatioValueDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    color: (value, { assessment }) => getCompareColor(assessment),
+    color: (value, { assessment }, { theme }) => getCompareColor(assessment, theme),
     prefix: (value, { assessment }) => getComparePrefix(assessment, [<ArrowDown key="neg" />, <ArrowUp key="pos" />]),
   },
   classNames: (value, { assessment }) => [`${NTV_PREFIX_CLS}-value-${assessment}`],

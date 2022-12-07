@@ -18,7 +18,9 @@ function getProportionNumber(text: string, value?: number | undefined): number {
 
 const defaultProportionDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    inlineChart: (value, { origin }) => <ProportionChart data={getProportionNumber(value, origin as number)} />,
+    inlineChart: (value, { origin }, themeStyles) => (
+      <ProportionChart data={getProportionNumber(value, origin as number)} {...themeStyles} />
+    ),
   },
   tooltip: {
     title: (value, metadata) => (isNumber(metadata.origin) ? `${metadata.origin}` : null),

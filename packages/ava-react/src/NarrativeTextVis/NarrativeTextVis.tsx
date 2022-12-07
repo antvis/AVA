@@ -12,9 +12,9 @@ import { presetPluginManager } from './chore/plugin';
 import { copyToClipboard, getSelectionContentForCopy } from './chore/exporter';
 
 import type { NtvTypes } from '@antv/ava';
-import type { ThemeProps, ExtensionProps, NarrativeEvents } from './types';
+import type { ThemeStylesProps, ExtensionProps, NarrativeEvents } from './types';
 
-export type NarrativeTextVisProps = ThemeProps &
+export type NarrativeTextVisProps = ThemeStylesProps &
   ExtensionProps &
   NarrativeEvents & {
     /**
@@ -32,12 +32,16 @@ export type NarrativeTextVisProps = ThemeProps &
 export function NarrativeTextVis({
   spec,
   size = 'normal',
+  theme = 'light',
   pluginManager = presetPluginManager,
   copyNarrative,
   ...events
 }: NarrativeTextVisProps) {
   const narrativeDomRef = useRef<HTMLDivElement>(null);
+
   const { headline, sections, styles, className } = spec;
+  const themeStyles = { theme, size };
+
   const {
     onClickNarrative,
     onMouseEnterNarrative,
@@ -46,12 +50,15 @@ export function NarrativeTextVis({
     onCopyFailure,
     ...sectionEvents
   } = events || {};
+
   const onClick = () => {
     onClickNarrative?.(spec);
   };
+
   const onMouseEnter = () => {
     onMouseEnterNarrative?.(spec);
   };
+
   const onMouseLeave = () => {
     onMouseLeaveNarrative?.(spec);
   };
@@ -77,22 +84,22 @@ export function NarrativeTextVis({
 
   return (
     <Container
-      size={size}
       className={cx(className, `${NTV_PREFIX_CLS}-container`)}
       style={styles}
+      {...themeStyles}
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       ref={narrativeDomRef}
     >
-      {headline ? <Headline spec={headline} pluginManager={pluginManager} {...sectionEvents} /> : null}
+      {headline ? <Headline spec={headline} pluginManager={pluginManager} {...themeStyles} {...sectionEvents} /> : null}
       {sections
         ? sections?.map((section) => (
             <Section
               key={section.key || v4()}
-              size={size}
               spec={section}
               pluginManager={pluginManager}
+              {...themeStyles}
               {...sectionEvents}
             />
           ))
