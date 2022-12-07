@@ -9,24 +9,31 @@ import { Entity, Bold, Italic, Underline } from '../styled';
 import { functionalize } from '../utils';
 import { classnames as cx } from '../../utils';
 import { PhraseDescriptor, presetPluginManager } from '../chore/plugin';
+import { getThemeColor } from '../theme';
 
 import type { ReactNode } from 'react';
 import type { NtvTypes } from '@antv/ava';
-import type { ThemeProps, ExtensionProps, PhraseEvents } from '../types';
+import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
 
-type PhraseProps = ThemeProps &
+type PhraseProps = ThemeStylesProps &
   ExtensionProps &
   PhraseEvents & {
     spec: NtvTypes.PhraseSpec;
   };
 
-function renderPhraseByDescriptor(
-  spec: NtvTypes.EntityPhraseSpec | NtvTypes.CustomPhraseSpec,
-  descriptor: PhraseDescriptor<any>,
-  theme: ThemeProps,
-  events: PhraseEvents
-) {
+function renderPhraseByDescriptor({
+  spec,
+  descriptor,
+  themeStyles,
+  events,
+}: {
+  spec: NtvTypes.EntityPhraseSpec | NtvTypes.CustomPhraseSpec;
+  descriptor: PhraseDescriptor<any>;
+  themeStyles: ThemeStylesProps;
+  events: PhraseEvents;
+}) {
   const { value = '', metadata = {}, styles: specStyles = {} } = spec;
+  const { theme = 'light' } = themeStyles;
   const {
     overwrite,
     classNames,
@@ -38,12 +45,12 @@ function renderPhraseByDescriptor(
   } = descriptor || {};
 
   const handleClick = () => {
-    onClick?.(spec?.value, metadata);
+    onClick?.(spec?.value, metadata, themeStyles);
     events?.onClickPhrase?.(spec);
   };
 
   const handleMouseEnter = () => {
-    onHover?.(spec?.value, metadata);
+    onHover?.(spec?.value, metadata, themeStyles);
     events?.onMouseEnterPhrase?.(spec);
   };
   const handleMouseLeave = () => {
@@ -52,22 +59,22 @@ function renderPhraseByDescriptor(
 
   let defaultNode: ReactNode = (
     <Entity
-      {...theme}
+      {...themeStyles}
       style={{
-        ...functionalize(descriptorStyle, {})(spec?.value, metadata as any),
+        ...functionalize(descriptorStyle, {})(spec?.value, metadata as any, themeStyles),
         ...specStyles,
       }}
       className={cx(
         `${NTV_PREFIX_CLS}-value`,
         isEntityPhrase(spec) ? `${NTV_PREFIX_CLS}-${kebabCase(spec.metadata.entityType)}` : '',
-        ...functionalize(classNames, [])(spec?.value, metadata as any)
+        ...functionalize(classNames, [])(spec?.value, metadata as any, themeStyles)
       )}
     >
-      {content(value, metadata)}
+      {content(value, metadata, themeStyles)}
     </Entity>
   );
   if (isFunction(overwrite)) {
-    defaultNode = overwrite(defaultNode, value, metadata);
+    defaultNode = overwrite(defaultNode, value, metadata, themeStyles);
   }
 
   const nodeWithEvents: ReactNode =
@@ -79,9 +86,14 @@ function renderPhraseByDescriptor(
       defaultNode
     );
 
-  const showTooltip = tooltip && (tooltip?.title(value, metadata) as TooltipProps['title']);
+  const showTooltip = tooltip && (tooltip?.title(value, metadata, themeStyles) as TooltipProps['title']);
   return !isNil(showTooltip) ? (
-    <Tooltip {...tooltip} title={showTooltip}>
+    <Tooltip
+      color={theme === 'dark' ? 'white' : undefined}
+      {...tooltip}
+      overlayInnerStyle={theme === 'dark' ? { color: getThemeColor('colorBase', 'light') } : undefined}
+      title={showTooltip}
+    >
       {nodeWithEvents}
     </Tooltip>
   ) : (
@@ -93,18 +105,24 @@ function renderPhraseByDescriptor(
 export const Phrase: React.FC<PhraseProps> = ({
   spec: phrase,
   size = 'normal',
+  theme = 'light',
   pluginManager = presetPluginManager,
   ...events
 }) => {
+  const themeStyles = { size, theme };
+
   const onClick = () => {
     events?.onClickPhrase?.(phrase);
   };
+
   const onMouseEnter = () => {
     events?.onMouseEnterPhrase?.(phrase);
   };
+
   const onMouseLeave = () => {
     events?.onMouseLeavePhrase?.(phrase);
   };
+
   let defaultText = !isEmpty(events) ? (
     <span onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       {phrase.value}
@@ -112,6 +130,7 @@ export const Phrase: React.FC<PhraseProps> = ({
   ) : (
     <>{phrase.value}</>
   );
+
   if (isTextPhrase(phrase)) {
     if (phrase.bold) defaultText = <Bold>{defaultText}</Bold>;
     if (phrase.italic) defaultText = <Italic>{defaultText}</Italic>;
@@ -127,7 +146,7 @@ export const Phrase: React.FC<PhraseProps> = ({
 
   const descriptor = pluginManager?.getPhraseDescriptorBySpec(phrase);
   if (descriptor) {
-    return <>{renderPhraseByDescriptor(phrase, descriptor, { size }, events)}</>;
+    return <>{renderPhraseByDescriptor({ spec: phrase, descriptor, themeStyles, events })}</>;
   }
 
   return defaultText;

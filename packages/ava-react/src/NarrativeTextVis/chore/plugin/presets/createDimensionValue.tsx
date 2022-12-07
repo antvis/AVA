@@ -1,11 +1,11 @@
 import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
-import { seedToken } from '../../../theme';
+import { getThemeColor } from '../../../theme';
 
 import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 
 const defaultDimensionValueDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    color: seedToken.colorDimensionValue,
+    color: (value, metadata, { theme }) => getThemeColor('colorDimensionValue', theme),
   },
   tooltip: false,
 };

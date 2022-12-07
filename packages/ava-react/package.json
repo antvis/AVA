@@ -51,7 +51,7 @@
     ]
   },
   "dependencies": {
-    "@antv/ava": "3.0.0-alpha.0",
+    "@antv/ava": "^3.0.0-alpha.3",
     "canvg": "^4.0.1",
     "lodash": "^4.17.21",
     "styled-components": "^5.3.5",

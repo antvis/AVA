@@ -5,9 +5,9 @@ import { presetPluginManager } from '../chore/plugin';
 import { Phrase } from './Phrase';
 
 import type { NtvTypes } from '@antv/ava';
-import type { ThemeProps, ExtensionProps, PhraseEvents } from '../types';
+import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
 
-type PhrasesProps = ThemeProps &
+type PhrasesProps = ThemeStylesProps &
   ExtensionProps &
   PhraseEvents & {
     /**
@@ -17,12 +17,21 @@ type PhrasesProps = ThemeProps &
     spec: NtvTypes.PhraseSpec[];
   };
 
-export function Phrases({ spec, size = 'normal', pluginManager = presetPluginManager, ...events }: PhrasesProps) {
+export function Phrases({
+  spec,
+  size = 'normal',
+  theme = 'light',
+  pluginManager = presetPluginManager,
+  ...events
+}: PhrasesProps) {
+  const themeStyles = { theme, size };
   return (
     <>
       {spec?.map((phrase, index) => {
         const key = `${index}-${phrase.value}`;
-        return <Phrase key={phrase.key || key} size={size} spec={phrase} pluginManager={pluginManager} {...events} />;
+        return (
+          <Phrase key={phrase.key || key} spec={phrase} pluginManager={pluginManager} {...themeStyles} {...events} />
+        );
       })}
     </>
   );

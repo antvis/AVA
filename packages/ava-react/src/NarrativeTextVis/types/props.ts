@@ -2,13 +2,22 @@ import type { NtvTypes } from '@antv/ava';
 import type { PluginManager } from '../chore/plugin';
 
 export type PhraseType = 'text' | NtvTypes.EntityType | null;
+export type ThemeType = 'light' | 'dark';
+export type SizeType = 'normal' | 'small';
 
-export type ThemeProps = {
+export type ThemeStylesProps = {
   /**
    * @description size of text
    * @description.zh-CN 文本大小
+   * @default 'normal'
    */
-  size?: 'normal' | 'small';
+  size?: SizeType;
+  /**
+   * @description theme
+   * @description.zh-CN 主题颜色
+   * @default 'light'
+   */
+  theme?: ThemeType;
 };
 
 export type ExtensionProps = {

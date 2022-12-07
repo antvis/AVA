@@ -1,6 +1,9 @@
 import type { NtvTypes } from '@antv/ava';
+import type { ThemeStylesProps } from './props';
 
-export type TypeOrMetaReturnType<T> = T | ((value: string, metadata: NtvTypes.EntityMetaData) => T);
+export type TypeOrMetaReturnType<T> =
+  | T
+  | ((value: string, metadata: NtvTypes.EntityMetaData, themeStyles: ThemeStylesProps) => T);
 
 /** entity phrase encoding channel */
 export type EntityEncoding<NodeType> = Partial<{

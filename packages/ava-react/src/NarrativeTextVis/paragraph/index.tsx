@@ -7,9 +7,9 @@ import { TextLine } from './TextLine';
 import { Bullets } from './Bullets';
 
 import type { NtvTypes } from '@antv/ava';
-import type { ThemeProps, ExtensionProps, ParagraphEvents } from '../types';
+import type { ThemeStylesProps, ExtensionProps, ParagraphEvents } from '../types';
 
-type ParagraphProps = ThemeProps &
+type ParagraphProps = ThemeStylesProps &
   ExtensionProps &
   ParagraphEvents & {
     /**
@@ -19,31 +19,41 @@ type ParagraphProps = ThemeProps &
     spec: NtvTypes.ParagraphSpec;
   };
 
-export function Paragraph({ spec, pluginManager, size = 'normal', ...events }: ParagraphProps) {
+export function Paragraph({ spec, pluginManager, size = 'normal', theme = 'light', ...events }: ParagraphProps) {
+  const themeStyles = { size, theme };
   const { onClickParagraph, onMouseEnterParagraph, onMouseLeaveParagraph, ...phraseEvents } = events || {};
+
   const onClick = () => {
     onClickParagraph?.(spec);
   };
+
   const onMouseEnter = () => {
     onMouseEnterParagraph?.(spec);
   };
+
   const onMouseLeave = () => {
     onMouseLeaveParagraph?.(spec);
   };
+
   let content = null;
+
   if (isCustomParagraph(spec)) {
     const descriptor = pluginManager.getBlockDescriptor(spec.customType);
-    if (descriptor && descriptor?.render) content = descriptor.render(spec);
+    if (descriptor && descriptor?.render) content = descriptor.render(spec, themeStyles);
   }
+
   if (isHeadingParagraph(spec)) {
-    content = <Heading spec={spec} pluginManager={pluginManager} {...phraseEvents} />;
+    content = <Heading spec={spec} pluginManager={pluginManager} {...themeStyles} {...phraseEvents} />;
   }
+
   if (isTextParagraph(spec)) {
-    content = <TextLine spec={spec} size={size} pluginManager={pluginManager} {...phraseEvents} />;
+    content = <TextLine spec={spec} pluginManager={pluginManager} {...themeStyles} {...phraseEvents} />;
   }
+
   if (isBulletParagraph(spec)) {
-    content = <Bullets spec={spec} size={size} pluginManager={pluginManager} {...events} />;
+    content = <Bullets spec={spec} pluginManager={pluginManager} {...themeStyles} {...events} />;
   }
+
   return content ? (
     <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       {content}
