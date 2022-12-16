@@ -53,7 +53,7 @@ export function advicesForChart(
   ckb: CkbTypes.ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>
 ): AdviseResult {
-  const { data, dataProps, smartColor, options, colorOptions, fields } = params;
+  const { data, dataProps, smartColor, options, colorOptions, fields, supplementData } = params;
 
   try {
     // otherwise the input data will be mutated
@@ -85,7 +85,8 @@ export function advicesForChart(
       ruleBase,
       smartColor,
       { ...options, exportLog },
-      colorOptions
+      colorOptions,
+      supplementData
     );
 
     return adviceResult as AdviseResult;

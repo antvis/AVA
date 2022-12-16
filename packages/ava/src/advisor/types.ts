@@ -72,6 +72,8 @@ export type ChartAdviseParams = {
   options?: AdvisorOptions;
   /** smart color options */
   colorOptions?: SmartColorOptions;
+  /** potential data to be used in generating spec */
+  supplementData?: any;
 };
 
 /**

@@ -161,7 +161,7 @@ export type ChartKnowledge = {
   dataPres: (Omit<DataPrerequisite, 'fieldConditions'> & { fieldConditions: string[] })[];
   channel: string[];
   recRate: string;
-  toSpec?: (data: Data, dataProps: any) => Specification | null;
+  toSpec?: (data: Data, dataProps: any, supplementData?: any) => Specification | null;
 };
 
 /**

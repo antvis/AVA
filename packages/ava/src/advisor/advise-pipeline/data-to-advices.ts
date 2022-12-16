@@ -34,6 +34,7 @@ declare type ChartID = typeof CHART_IDS[number];
  * @param dataProps data props of the input data
  * @param ruleBase rule base
  * @param options
+ * @param supplementData potential data could be used to generate spec
  * @returns
  */
 function scoreRules(
@@ -41,7 +42,8 @@ function scoreRules(
   chartWIKI: CkbTypes.ChartKnowledgeBase,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
-  options?: PipeAdvisorOptions
+  options?: PipeAdvisorOptions,
+  supplementData?: any
 ): ScoringResultForChartType {
   const exportLog = options?.exportLog;
   const purpose = options ? options.purpose : '';
@@ -50,7 +52,7 @@ function scoreRules(
   // for log
   const log: ScoringResultForRule[] = [];
 
-  const info = { dataProps, chartType, purpose, preferences };
+  const info = { dataProps, chartType, purpose, preferences, supplementData };
 
   const hardScore = computeScore(chartType, chartWIKI, ruleBase, 'HARD', info, log);
 
@@ -198,6 +200,7 @@ function applySmartColor(
  * @param smartColor switch smart color on/off, optional props, default is off
  * @param options options for advising such as log, preferences
  * @param colorOptions color options, optional props, @see {@link SmartColorOptions}
+ * @param supplementData potential data could be used to generate spec
  * @returns chart list [ { type: chartTypes, spec: antv-spec, score: >0 }, ... ]
  */
 export function dataToAdvices(
@@ -207,7 +210,8 @@ export function dataToAdvices(
   ruleBase: Record<string, RuleModule>,
   smartColor?: boolean,
   options?: PipeAdvisorOptions,
-  colorOptions?: SmartColorOptions
+  colorOptions?: SmartColorOptions,
+  supplementData?: any
 ): Advice[] | AdviseResult {
   /**
    * `refine`: whether to apply design rules
@@ -253,7 +257,7 @@ export function dataToAdvices(
     }
 
     // step 2: field mapping to spec encoding
-    const chartTypeSpec = getChartTypeSpec(t, data, dataProps, chartWIKI[t]);
+    const chartTypeSpec = getChartTypeSpec(t, data, dataProps, chartWIKI[t], supplementData);
 
     // FIXME kpi_panel and table spec to be null temporarily
     const customChartType = ['kpi_panel', 'table'];

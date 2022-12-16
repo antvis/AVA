@@ -126,6 +126,64 @@ describe('init Advisor', () => {
     expect(advices.length).toBe(1);
   });
 
+  test('data to advices with supplementData', () => {
+    const toYoubeiChart = (
+      data: Data,
+      dataProps: BasicDataPropertyForAdvice[],
+      supplementData: any
+    ): Specification | null => {
+      if (!dataProps || !data) {
+        return null;
+      }
+      const spec: Specification = {
+        basis: {
+          type: 'chart',
+        },
+        data: {
+          type: 'json-array',
+          values: data,
+          supplementData,
+        },
+        layer: [
+          {
+            mark: {
+              type: 'arc',
+            },
+            encoding: {},
+          },
+        ],
+      };
+      return spec;
+    };
+    const myChart: ChartKnowledge = {
+      id: 'Youbei_chart',
+      name: 'YoubeiChart',
+      alias: ['YoubeiChart'],
+      family: ['YoubeiCharts'],
+      def: 'This chart is defined by Youbei',
+      purpose: ['Comparison', 'Composition', 'Proportion'],
+      coord: ['Polar'],
+      category: ['Statistic'],
+      shape: ['Round'],
+      dataPres: [
+        { minQty: 1, maxQty: 1, fieldConditions: ['Nominal', 'Ordinal'] },
+        { minQty: 1, maxQty: 1, fieldConditions: ['Interval'] },
+      ],
+      channel: ['Angle', 'Area', 'Color'],
+      recRate: 'Use with Caution',
+      toSpec: toYoubeiChart,
+    };
+    const myCKBCfg: CkbConfig = {
+      custom: {
+        youbei_chart: myChart,
+      },
+      include: ['line_chart'],
+    };
+    const myAdvisor = new Advisor({ ckbCfg: myCKBCfg });
+    const advices = myAdvisor.advise({ data, fields: ['price', 'type'], supplementData: { penetrated: 'true' } });
+    expect(advices?.[0].spec?.data.supplementData).toEqual({ penetrated: 'true' });
+  });
+
   test('data to advices with custom rule', () => {
     const myRuleCfg: RuleConfig = {
       include: ['data-field-qty'],

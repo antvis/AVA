@@ -602,19 +602,21 @@ function heatmap(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['s
  * @param data input data [ { col1: ..., col2: ... } ]
  * @param dataProps data property for advisor derived by data-wizard
  * @param chartKnowledge chart knowledge of a singble chart
+ * @param supplementData potential data could be used to generate spec
  * @returns spec or null
  */
 export function getChartTypeSpec(
   chartType: string,
   data: Data,
   dataProps: BasicDataPropertyForAdvice[],
-  chartKnowledge?: CkbTypes.ChartKnowledge
+  chartKnowledge?: CkbTypes.ChartKnowledge,
+  supplementData?: any
 ) {
   // step 0: check whether the chartType is default in `ChartID`
   // if not, use customized `toSpec` function
   if (!CHART_IDS.includes(chartType as ChartID) && chartKnowledge) {
     if (chartKnowledge.toSpec) {
-      const spec = chartKnowledge.toSpec(data, dataProps);
+      const spec = chartKnowledge.toSpec(data, dataProps, supplementData);
       return spec;
     }
     return null;
