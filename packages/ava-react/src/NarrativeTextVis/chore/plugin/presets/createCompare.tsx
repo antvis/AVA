@@ -12,7 +12,7 @@ import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 import type { ThemeType } from '../../../types';
 
 function getCompareColor(assessment: NtvTypes.ValueAssessment, theme: ThemeType) {
-  let color: string;
+  let color: string = getThemeColor('colorOtherValue', theme);
   if (assessment === 'positive') color = getThemeColor('colorPositive', theme);
   if (assessment === 'negative') color = getThemeColor('colorNegative', theme);
   return color;

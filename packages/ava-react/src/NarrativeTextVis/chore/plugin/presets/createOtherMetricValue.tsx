@@ -7,7 +7,6 @@ import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 
 const defaultOtherMetricValueDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    fontWeight: 'bold',
     color: (value, metadata, { theme }) => getThemeColor('colorOtherValue', theme),
   },
   tooltip: {

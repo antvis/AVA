@@ -10,7 +10,7 @@ export const Entity = styled.span<ThemeStylesProps>`
   align-items: center;
   box-sizing: border-box;
   font-size: ${({ size }) => getFontSize(size)};
-  font-family: Roboto-Medium, sans-serif;
+  font-family: Roboto-Medium, PingFangSC, sans-serif;
   border-radius: 2px;
   color: ${({ theme }) => getThemeColor('colorEntityBase', theme)};
   margin: 0 1px;
