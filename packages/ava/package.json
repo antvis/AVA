@@ -22,7 +22,7 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "unpkg": "dist/index.min.js",
+  "unpkg": "dist/ava.min.js",
   "module": "esm/index.js",
   "files": [
     "esm",
