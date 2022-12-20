@@ -37,6 +37,7 @@ const textSpec: NtvTypes.NarrativeTextSpec = {
             marginBottom: 24,
           },
         },
+        // step1: 自定义块级元素 customType metadata
         {
           customType: 'line',
           value: {
@@ -63,6 +64,7 @@ const LineChart = ({ config }) => {
 };
 
 const pluginManager = new NtvPluginManager([
+  // step2: 通过 createCustomBlockFactory 声明自定义元素的表现方式
   createCustomBlockFactory({
     key: 'line',
     render(metadata) {
@@ -75,7 +77,11 @@ const pluginManager = new NtvPluginManager([
 const App = () => {
   return (
     <>
-      <NarrativeTextVis spec={textSpec} pluginManager={pluginManager} />
+      <NarrativeTextVis
+        spec={textSpec}
+        // step3: 将插件传入组件
+        pluginManager={pluginManager}
+      />
     </>
   );
 };

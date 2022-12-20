@@ -5,6 +5,14 @@
   },
   "demos": [
     {
+      "filename": "entity.tsx",
+      "title": {
+        "en": "Custom Entities",
+        "zh": "自定义实体短语"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A0AGQLEX1nwAAAAAAAAAAAAADmJ7AQ/original"
+    },
+    {
       "filename": "phrase.tsx",
       "title": {
         "en": "Custom Phrases",
