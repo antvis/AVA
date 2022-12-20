@@ -53,6 +53,7 @@ function fetchData(compareDate = moment().subtract(1, 'week').format(DATE_FORMAT
                   {
                     type: 'custom',
                     value: compareDate,
+                    // step1 定义 customType；
                     metadata: {
                       customType: 'compare_date',
                       // 服务端告诉客户端只允许用户选择的时间范围
@@ -161,6 +162,7 @@ const App = () => {
 
   useEffect(() => {
     getTextSpecFormServer();
+    // step2 通过工厂函数（createXxx）定义插件
     pluginManager.registerAll([
       createCustomBlockFactory({
         key: 'plot',
@@ -241,7 +243,11 @@ const App = () => {
 
   return (
     <Spin spinning={loading}>
-      <NarrativeTextVis spec={textSpec} pluginManager={pluginManager} />
+      <NarrativeTextVis
+        spec={textSpec}
+        // step3 传入 NarrativeTextVis 组件
+        pluginManager={pluginManager}
+      />
     </Spin>
   );
 };

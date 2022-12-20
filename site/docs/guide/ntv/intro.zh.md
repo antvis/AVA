@@ -7,7 +7,6 @@ order: 0
 
 <img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*cnvURpTDLk4AAAAAAAAAAAAADmJ7AQ/original" alt="NTV命名" style="width: 800px;" />
 
-<!-- TODO 等白皮书头图 -->
 
 ## 功能特性
 
@@ -89,4 +88,4 @@ export default () => {
 点击 [`<NarrativeTextVis />` 组件介绍](./ntv-comp.zh.md) 查看更多。
 
 
-<Playground path="ntv/basic/demo/basic.jsx"></Playground>
+<Playground path="ntv/case/demo/report.tsx"></Playground>
