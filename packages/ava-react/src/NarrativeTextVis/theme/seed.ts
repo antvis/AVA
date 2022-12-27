@@ -14,8 +14,8 @@ const presetLightColors = {
 } as const;
 
 const presetDarkColors = {
-  colorBaseDark: 'rgba(255, 255, 255, 0.45)',
-  colorEntityBaseDark: 'rgba(255, 255, 255, 0.45)',
+  colorBaseDark: 'rgba(255, 255, 255, 0.65)',
+  colorEntityBaseDark: 'rgba(255, 255, 255, 0.65)',
   colorPositiveDark: '#FA541C',
   colorNegativeDark: '#13A8A8',
   colorConclusionDark: '#D8C3F3',
