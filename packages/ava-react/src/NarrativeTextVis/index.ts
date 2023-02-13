@@ -51,5 +51,5 @@ export { TextExporter, copyToClipboard } from './chore/exporter';
 export { seedToken } from './theme';
 
 export type { NtvTypes } from '@antv/ava';
-export type { NarrativeTextVisProps } from './NarrativeTextVis';
+export type { NarrativeTextVisProps } from './types';
 export type { PluginType as NtvPluginType } from './chore/plugin';
