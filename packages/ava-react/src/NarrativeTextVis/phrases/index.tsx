@@ -8,7 +8,7 @@ import type { NtvTypes } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
 
 type PhrasesProps = ThemeStylesProps &
-  ExtensionProps &
+  Pick<ExtensionProps, 'pluginManager'> &
   PhraseEvents & {
     /**
      * @description specification of phrase text spec

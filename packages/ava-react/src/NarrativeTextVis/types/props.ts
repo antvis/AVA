@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { NtvTypes } from '@antv/ava';
 import type { PluginManager } from '../chore/plugin';
 
@@ -20,12 +21,41 @@ export type ThemeStylesProps = {
   theme?: ThemeType;
 };
 
+export type CollapseConfig = {
+  /** 是否展示连接线 */
+  showLine: boolean;
+  /** 自定义展开/折叠图标 */
+  switcherIcon: (collapsed: boolean) => ReactNode;
+
+  // TODO key 受控
+  /** 收起 key 受控 */
+  // collapsedKeys: string[];
+  /** 收起事件 */
+  // onCollapsed: (
+  //   collapsedKeys: string[],
+  //   // 增加参数
+  //   info: {
+  //     node: NtvTypes.ParagraphSpec;
+  //     expanded: boolean;
+  //     nativeEvent: MouseEvent;
+  //   }
+  // ) => void;
+
+  // TODO 展开折叠深度设置
+  /** 折叠深度层级，为 false 的时候全部展开，number 则展开到具体的深度 */
+  // collapsedDepth: false | number;
+};
+
 export type ExtensionProps = {
   /**
    * @description extension plugin
    * @description.zh-CN 扩展插件
    */
   pluginManager?: PluginManager;
+  /**
+   * 是否允许收起
+   */
+  showCollapse?: boolean | Partial<CollapseConfig>;
 };
 
 export type PhraseEvents = Partial<{
@@ -57,3 +87,18 @@ export type NarrativeEvents = SectionEvents &
     onCopySuccess: (e?: ClipboardEvent) => void;
     onCopyFailure: (e?: ClipboardEvent) => void;
   }>;
+
+export type NarrativeTextVisProps = ThemeStylesProps &
+  ExtensionProps &
+  NarrativeEvents & {
+    /**
+     * @description specification of narrative text spec
+     * @description.zh-CN Narrative 描述 json 信息
+     */
+    spec: NtvTypes.NarrativeTextSpec;
+    /**
+     * @description the function to be called when copy event is listened. If it is undefined, the default behavior is to put the transformed html and plain text into user's clipboard
+     * @description.监听到 copy 事件时执行的函数，可用于控制复制的内容和复制行为，如果不传，默认将会把转换后的富文本和纯文本内容放入剪切板
+     */
+    copyNarrative?: (content: { spec: NtvTypes.NarrativeTextSpec; plainText: string; html: string }) => void;
+  };

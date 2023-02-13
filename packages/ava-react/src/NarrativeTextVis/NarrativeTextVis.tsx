@@ -11,29 +11,14 @@ import { Section } from './section';
 import { presetPluginManager } from './chore/plugin';
 import { copyToClipboard, getSelectionContentForCopy } from './chore/exporter';
 
-import type { NtvTypes } from '@antv/ava';
-import type { ThemeStylesProps, ExtensionProps, NarrativeEvents } from './types';
-
-export type NarrativeTextVisProps = ThemeStylesProps &
-  ExtensionProps &
-  NarrativeEvents & {
-    /**
-     * @description specification of narrative text spec
-     * @description.zh-CN Narrative 描述 json 信息
-     */
-    spec: NtvTypes.NarrativeTextSpec;
-    /**
-     * @description the function to be called when copy event is listened. If it is undefined, the default behavior is to put the transformed html and plain text into user's clipboard
-     * @description.监听到 copy 事件时执行的函数，可用于控制复制的内容和复制行为，如果不传，默认将会把转换后的富文本和纯文本内容放入剪切板
-     */
-    copyNarrative?: (content: { spec: NtvTypes.NarrativeTextSpec; plainText: string; html: string }) => void;
-  };
+import type { NarrativeTextVisProps } from './types';
 
 export function NarrativeTextVis({
   spec,
   size = 'normal',
   theme = 'light',
   pluginManager = presetPluginManager,
+  showCollapse = false,
   copyNarrative,
   ...events
 }: NarrativeTextVisProps) {
@@ -99,6 +84,7 @@ export function NarrativeTextVis({
               key={section.key || v4()}
               spec={section}
               pluginManager={pluginManager}
+              showCollapse={showCollapse}
               {...themeStyles}
               {...sectionEvents}
             />
