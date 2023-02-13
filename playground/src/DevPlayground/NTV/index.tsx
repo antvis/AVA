@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Skeleton } from 'antd';
 
-import { NarrativeTextVis } from '../../../../packages/ava-react/esm';
+import { NarrativeTextVis } from '../../../../packages/ava-react/src';
 
 const App = () => {
   const [loading, setLoading] = useState(true);

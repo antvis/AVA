@@ -9,4 +9,8 @@ export default defineConfig({
   ],
   fastRefresh: {},
   webpack5: {},
+  chainWebpack: (memo) => {
+    memo.module.rule('ts-in-node_modules').include.clear();
+    return memo;
+  },
 });
