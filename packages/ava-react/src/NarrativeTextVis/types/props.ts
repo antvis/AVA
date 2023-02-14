@@ -22,28 +22,34 @@ export type ThemeStylesProps = {
 };
 
 export type CollapseConfig = {
-  /** 是否展示连接线 */
-  showLine: boolean;
-  /** 自定义展开/折叠图标 */
+  /**
+   * show level line
+   * 是否展示连接线
+   */
+  showBulletsLine: boolean;
+  /**
+   * custom switcher icon
+   * 自定义展开/折叠图标
+   */
   switcherIcon: (collapsed: boolean) => ReactNode;
-
-  // TODO key 受控
-  /** 收起 key 受控 */
-  // collapsedKeys: string[];
-  /** 收起事件 */
-  // onCollapsed: (
-  //   collapsedKeys: string[],
-  //   // 增加参数
-  //   info: {
-  //     node: NtvTypes.ParagraphSpec;
-  //     expanded: boolean;
-  //     nativeEvent: MouseEvent;
-  //   }
-  // ) => void;
-
-  // TODO 展开折叠深度设置
-  /** 折叠深度层级，为 false 的时候全部展开，number 则展开到具体的深度 */
-  // collapsedDepth: false | number;
+  /**
+   * controlled collapsed keys
+   * 收起 key 受控
+   */
+  collapsedKeys?: string[];
+  /**
+   * collapse key change event
+   * 收起事件
+   */
+  onCollapsed?: (
+    collapsedKeys: string[]
+    // TODO 其他参数视情况添加
+    // info: {
+    //   node: NtvTypes.ParagraphSpec;
+    //   expanded: boolean;
+    //   nativeEvent: MouseEvent;
+    // }
+  ) => void;
 };
 
 export type ExtensionProps = {
@@ -53,6 +59,7 @@ export type ExtensionProps = {
    */
   pluginManager?: PluginManager;
   /**
+   * Paragraph collapsible configuration
    * 是否允许收起
    */
   showCollapse?: boolean | Partial<CollapseConfig>;

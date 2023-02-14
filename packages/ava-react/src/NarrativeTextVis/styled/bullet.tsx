@@ -5,8 +5,10 @@ import { NTV_PREFIX_CLS } from '../constants';
 
 import type { ThemeStylesProps } from '../types';
 
+const BULLET_PADDING_LEFT = 24;
+
 export const Bullet = styled.div<ThemeStylesProps>`
-  padding-left: 16px;
+  padding-left: ${`${BULLET_PADDING_LEFT}px`};
   font-family: PingFangSC, sans-serif;
   color: ${({ theme }) => getThemeColor('colorBase', theme)};
   font-size: ${({ size }) => getFontSize(size)};
@@ -27,7 +29,7 @@ const SWITCHER_ICON_TOP = '24px';
 export const Li = styled.li<
   ThemeStylesProps & {
     collapsible: boolean;
-    showLine: boolean;
+    showBulletsLine: boolean;
   }
 >`
   list-style: inherit;
@@ -43,7 +45,7 @@ export const Li = styled.li<
 
   > .${NTV_PREFIX_CLS}-switcher-icon {
     position: absolute;
-    left: ${({ size }) => (size === 'small' ? '-30px' : '-32px')};
+    left: ${({ size }) => (size === 'small' ? `${-BULLET_PADDING_LEFT - 8}px` : `${-BULLET_PADDING_LEFT - 12}px`)};
     top: 0px;
     cursor: pointer;
     color: #979797;
@@ -53,11 +55,11 @@ export const Li = styled.li<
   ::before {
     content: '';
     position: absolute;
-    left: ${({ size }) => (size === 'small' ? '-24px' : '-26px')};
+    left: ${({ size }) => (size === 'small' ? `${-BULLET_PADDING_LEFT - 2}px` : `${-BULLET_PADDING_LEFT - 6}px`)};
     top: ${SWITCHER_ICON_TOP};
     width: 1px;
     height: ${`calc(100% - ${SWITCHER_ICON_TOP})`};
-    border-right: ${({ showLine }) => (showLine ? '0.8px solid rgba(31, 3, 82, 0.2)' : undefined)};
+    border-right: ${({ showBulletsLine }) => (showBulletsLine ? '0.8px solid rgba(31, 3, 82, 0.2)' : undefined)};
     box-sizing: border-box;
   }
 `;

@@ -6,7 +6,7 @@ import { isBoolean } from 'lodash';
 import type { ExtensionProps, CollapseConfig } from '../types';
 
 const defaultCollapseProps: CollapseConfig = {
-  showLine: true,
+  showBulletsLine: true,
   switcherIcon: (collapsed) => (collapsed ? <PlusCircleOutlined /> : <MinusCircleOutlined />),
 };
 

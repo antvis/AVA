@@ -43,6 +43,14 @@
         "zh": "导出"
       },
       "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*7XxYQLKmMr8AAAAAAAAAAAAADmJ7AQ/original"
+    },
+    {
+      "filename": "collapse.tsx",
+      "title": {
+        "en": "Collapse",
+        "zh": "可折叠"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*oA5rT4iGJKAAAAAAAAAAAAAADmJ7AQ/original"
     }
   ]
 }
