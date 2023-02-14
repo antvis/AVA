@@ -30,13 +30,20 @@ export function Bullets({
   const themeStyles = { theme, size };
   const { onClickParagraph, onMouseEnterParagraph, onMouseLeaveParagraph, ...phraseEvents } = events || {};
   const collapseProps = getCollapseProps(showCollapse);
-  // TODO 受控
-  const [collapsed, setCollapsed] = useState(false);
 
-  // 配置折叠属性 && 有子节点含儿子节点的才具备可折叠样式
+  if (!spec.bullets) return null;
+  // 配置折叠属性 && 有孙子节点的才可折叠，只有儿子的不用显示折叠属性
   const collapsible = !!collapseProps && spec.bullets.some((bullet) => bullet.subBullet);
+  // 儿子节点均含有 key 的时候表示可以受控
+  const collapseControlled = !!collapseProps && spec.bullets.every((bullet) => bullet.key);
 
-  const children = spec.bullets?.map((bullet) => {
+  const [collapsedKeys, setCollapsedKeys] = useState<string[]>(
+    (collapseControlled && collapseProps && collapseProps?.collapsedKeys) || []
+  );
+
+  const children = spec.bullets.map((bullet, index) => {
+    const collapseKey = bullet.key || `${index}`;
+    const collapsed = collapsedKeys.includes(collapseKey);
     const onClickLi = () => {
       onClickParagraph?.(bullet);
     };
@@ -50,17 +57,27 @@ export function Bullets({
     };
 
     const toggleCollapse = () => {
-      setCollapsed(!collapsed);
+      let newCollapsedKeys: string[] = [...collapsedKeys];
+      if (collapsed) {
+        newCollapsedKeys = newCollapsedKeys.filter((i) => i !== collapseKey);
+      } else {
+        newCollapsedKeys.push(collapseKey);
+      }
+      // 只有当用户指定 key 的时候折叠受控才生效
+      if (bullet.key && collapseProps && collapseProps.onCollapsed) {
+        collapseProps.onCollapsed(newCollapsedKeys);
+      }
+      setCollapsedKeys(newCollapsedKeys);
     };
 
     return (
       <Li
+        key={bullet.key || v4()}
         className={cx(`${NTV_PREFIX_CLS}-li`, bullet.className)}
-        key={spec.key || v4()}
         style={bullet.styles}
         {...themeStyles}
         collapsible={collapsible}
-        showLine={collapseProps && collapseProps.showLine}
+        showBulletsLine={collapseProps && collapseProps.showBulletsLine}
         onClick={onClickLi}
         onMouseEnter={onMouseEnterLi}
         onMouseLeave={onMouseLeaveLi}

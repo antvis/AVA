@@ -12,6 +12,20 @@ order: 1
 | spec         | `NtvTypes.NarrativeTextSpec`             | 结构数据             | 无              |
 | size         | 'normal' \| 'small'    | 字体大小，normal 是 14px，small 是 12px           | 'default'              |
 | theme         | 'light' \| 'dark'    | 主题色，当前支持 light 亮色模式和 dark 暗色模式          | 'light'              |
+| showCollapse         | boolean \| CollapseConfig    |     段落可折叠配置      | false              |
+
+```typescript
+type CollapseConfig = {
+  /** 是否展示连接线 */
+  showBulletsLine?: boolean;
+  /** 自定义展开/折叠图标 */
+  switcherIcon?: (collapsed: boolean) => ReactNode;
+  /** 收起 key 受控 */
+  collapsedKeys?: string[];
+  /** 收起事件 */
+  onCollapsed?: (collapsedKeys: string[]) => void;
+};
+```
 
 ## 插件工厂函数
 
