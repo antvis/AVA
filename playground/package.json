@@ -27,6 +27,7 @@
     ]
   },
   "devDependencies": {
+    "@types/numeral": "^2.0.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@umijs/preset-react": "1.x",
@@ -56,6 +57,7 @@
     "antv-site-demo-rc": "0.2.4",
     "csstype": "^3.0.5",
     "lodash": "^4.17.21",
+    "numeral": "^2.0.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-json-view": "^1.19.1",
