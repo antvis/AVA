@@ -39,6 +39,7 @@ export {
   isEntityPhrase,
   isCustomPhrase,
   isTextPhrase,
+  isEntityType,
   ENTITY_TYPES,
 } from './ntv';
 export type { NtvTypes } from './ntv';

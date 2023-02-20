@@ -1,5 +1,5 @@
 import { isObject, isString } from '../../utils';
-import { ENTITY_TYPES } from '../schema';
+import { EntityType, ENTITY_TYPES } from '../schema';
 
 import type {
   SectionSpec,
@@ -53,6 +53,10 @@ export function isHeadingParagraph(spec: ParagraphSpec): spec is HeadingParagrap
 
 export function isCustomPhrase(spec: PhraseSpec): spec is CustomPhraseSpec {
   return spec?.type === 'custom' && !!spec?.metadata?.customType;
+}
+
+export function isEntityType(type: any): type is EntityType {
+  return ENTITY_TYPES.includes(type);
 }
 
 export function isEntityPhrase(spec: PhraseSpec): spec is EntityPhraseSpec {
