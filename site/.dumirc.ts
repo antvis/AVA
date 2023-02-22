@@ -200,7 +200,7 @@ export default defineConfig({
         {
           slug: 'api/ntv',
           title: {
-              zh: 'NarrativeTextVis(NTV)',
+              zh: '解读文本可视化（NTV）',
               en: 'NarrativeTextVis(NTV)',
           },
           order: 10,

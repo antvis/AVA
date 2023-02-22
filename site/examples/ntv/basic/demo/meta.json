@@ -51,6 +51,14 @@
         "zh": "可折叠"
       },
       "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*oA5rT4iGJKAAAAAAAAAAAAAADmJ7AQ/original"
+    },
+    {
+      "filename": "generate.tsx",
+      "title": {
+        "en": "generate ntv schema",
+        "zh": "构建 ntv-schema"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*hhkARaq-A6sAAAAAAAAAAAAADmJ7AQ/original"
     }
   ]
 }

@@ -1,4 +1,13 @@
-export default {
+/* eslint-disable no-template-curly-in-string */
+import React from 'react';
+
+import ReactDOM from 'react-dom';
+import { Tooltip, Popover, Checkbox } from 'antd';
+import { generateTextSpec } from '@antv/ava';
+import { NarrativeTextVis, NtvPluginManager, createCustomPhraseFactory, seedToken } from '@antv/ava-react';
+import numeral from 'numeral';
+
+const fluctuationData = {
   analysisResult: {
     overview: {
       measureId: 'D2020120800161505000000674978',
@@ -592,3 +601,188 @@ export default {
     },
   ],
 };
+
+const customDeltaValue = createCustomPhraseFactory({
+  key: 'custom_delta_value',
+  content: (value: string, metadata: any) => {
+    return (
+      <Tooltip title={metadata.diff}>
+        <span
+          style={{
+            color: metadata.diff > 0 ? seedToken.colorPositive : seedToken.colorNegative,
+          }}
+        >
+          {`${metadata.diff > 0 ? '+' : '-'}${numeral(Math.abs(metadata.diff)).format('0.0a')}（${numeral(
+            metadata.compare
+          ).format('0.0a')} ➝ ${numeral(metadata.current).format('0.0a')}）`}
+        </span>
+      </Tooltip>
+    );
+  },
+});
+
+const drillDownDims = createCustomPhraseFactory({
+  key: 'drill_down_dims',
+  content: (value: string, metadata: any) => {
+    return (
+      <Popover
+        placement="right"
+        content={
+          <Checkbox.Group
+            options={metadata.dims.map((item: any) => ({
+              label: item.queryFieldName,
+              value: item.queryFieldId,
+            }))}
+          />
+        }
+      >
+        <span style={{ color: 'blue' }}>继续归因</span>
+      </Popover>
+    );
+  },
+});
+
+const ntvPluginManager = new NtvPluginManager([customDeltaValue, drillDownDims]);
+
+const fluctuationSpec = generateTextSpec({
+  structures: [
+    {
+      // 2022-11-12 ~ 2022-11-18，单价1.76亿，环比+3,000.35万（1.46亿 -> 1.76亿），变化率20.51%。
+      template: '${analysisTime[0]} ~ ${analysisTime[1]}，&{mainMeasureDesc}，&{mainMeasureCompareAnalytic}。',
+      variableMetaMap: {
+        'analysisTime[0]': {
+          varType: 'time_desc',
+        },
+        'analysisTime[1]': {
+          varType: 'time_desc',
+        },
+      },
+      className: 'overview',
+    },
+    {
+      template: '波动主要影响因素：',
+      className: 'summary-title',
+    },
+    {
+      // 数量，变化差值+4.83万 (4,619.17万 -> 4,624.00万)，变化率0.10%，对整体波动的贡献度是105.86%。
+      template:
+        '${.measureName}，变化差值 ${_customDeltaValue}，变化率 ${.rate}，对整体波动贡献度是 ${.contribution} ${_drillDownDims}。',
+      displayType: 'bullet',
+      useVariable: 'analysisResult.impactFactor.all',
+      bulletOrder: true,
+      className: 'summary-detail',
+      variableMetaMap: {
+        '.measureName': {
+          varType: 'metric_name',
+        },
+        _customDeltaValue: {
+          varType: 'custom_delta_value',
+          extraCustomMeta: (gv, sv) => ({
+            diff: sv?.diff,
+            compare: sv?.comparisonMeasureValue,
+            current: sv?.currentMeasureValue,
+          }),
+        },
+        '.rate': {
+          varType: 'ratio_value',
+          formatter: (value) => numeral(value).format('0.00%'),
+        },
+        '.contribution': {
+          varType: 'contribute_ratio',
+          formatter: (value) => numeral(value).format('0.00%'),
+        },
+        _drillDownDims: {
+          varType: 'drill_down_dims',
+          extraCustomMeta: (gv) => ({
+            dims: gv.deepDrillDownDimensions,
+          }),
+        },
+      },
+      children: {
+        // 商品子类别 = 便签纸，变化差值+20.20万 (405.31万 -> 425.51万)，变化率4.98%，对整体波动的贡献度是442.85%。
+        template:
+          '&{drillDownDims}，变化差值 ${_customDeltaValue}，变化率 ${.rate}，对整体波动贡献度是 ${.contribution} ${_drillDownDims}。',
+        useVariable: '.subFactors',
+        bulletOrder: true,
+        variableMetaMap: {
+          _customDeltaValue: {
+            varType: 'custom_delta_value',
+            extraCustomMeta: (gv, sv) => ({
+              diff: sv?.diff,
+              compare: sv?.comparisonMeasureValue,
+              current: sv?.currentMeasureValue,
+            }),
+          },
+          _drillDownDims: {
+            varType: 'drill_down_dims',
+            extraCustomMeta: (gv) => ({
+              dims: gv.deepDrillDownDimensions,
+            }),
+          },
+          '.rate': {
+            varType: 'ratio_value',
+            formatter: (value) => numeral(value).format('0.00%'),
+          },
+          '.contribution': {
+            varType: 'contribute_ratio',
+            formatter: (value) => numeral(value).format('0.00%'),
+          },
+        },
+      },
+    },
+  ],
+  structureTemps: [
+    {
+      templateId: 'mainMeasureDesc',
+      template: '${.measureName} ${.currentMeasureValue}',
+      useVariable: 'analysisResult.overview',
+      variableMetaMap: {
+        '.measureName': {
+          varType: 'metric_name',
+        },
+        '.currentMeasureValue': {
+          varType: 'metric_value',
+          formatter: (value) => numeral(value).format('0.0a'),
+        },
+      },
+    },
+    {
+      templateId: 'mainMeasureCompareAnalytic',
+      template: '${comparisonMode} ${_customDeltaValue}，变化率 ${.rate}',
+      useVariable: 'analysisResult.overview',
+      variableMetaMap: {
+        _customDeltaValue: {
+          varType: 'custom_delta_value',
+          extraCustomMeta: (gv, sv) => ({
+            diff: sv?.diff,
+            compare: sv?.comparisonMeasureValue,
+            current: sv?.currentMeasureValue,
+          }),
+        },
+        '.rate': {
+          varType: 'ratio_value',
+          formatter: (value) => numeral(value).format('0.0%'),
+        },
+      },
+    },
+    {
+      templateId: 'drillDownDims',
+      template: '${_dims}',
+      useVariable: '.dimensions',
+      separator: '，',
+      variableMetaMap: {
+        _dims: {
+          varType: 'dim_value',
+          getDisplayValue: '${.name} = ${.value}',
+        },
+      },
+    },
+  ],
+  variable: fluctuationData,
+});
+
+const App = () => {
+  return <NarrativeTextVis pluginManager={ntvPluginManager} spec={fluctuationSpec} />;
+};
+
+ReactDOM.render(<App />, document.getElementById('container'));
