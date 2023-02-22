@@ -157,8 +157,7 @@ const fluctuationSpec = generateTextSpec({
         _drillDownDims: {
           varType: 'drill_down_dims',
           extraCustomMeta: (gv) => ({
-            // 这里应该是传入可下钻的维度，暂时用指标示意
-            dims: gv.measures,
+            dims: gv.deepDrillDownDimensions,
           }),
         },
       },
@@ -180,8 +179,7 @@ const fluctuationSpec = generateTextSpec({
           _drillDownDims: {
             varType: 'drill_down_dims',
             extraCustomMeta: (gv) => ({
-              // 这里应该是传入可下钻的维度，暂时用指标示意
-              dims: gv.measures,
+              dims: gv.deepDrillDownDimensions,
             }),
           },
           '.rate': {

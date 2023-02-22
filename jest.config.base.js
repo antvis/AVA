@@ -8,4 +8,10 @@ module.exports = {
   collectCoverage: false,
   coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$'],
   verbose: false,
+  globals: {
+    'ts-jest': {
+      // 跳过 ts 报错
+      diagnostics: false,
+    },
+  },
 };
