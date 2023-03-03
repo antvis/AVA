@@ -83,12 +83,8 @@ NTV 相关技术基于 json 数据来自服务端生成，前端消费 schema �
 
 ### 基于变量和模版快速拼装 schema
 
-为了方便前端拼装 schema 的场景，我们提供了 `generateTextSpec` 工具函数，只需要定义静态化的文本描述结构（structures 和 structureTemps），依据输入不同的变量特点（比如根据列表个数循环、特征值判断是否输出模板）。该文本描述结构提高了可读性的同时，可以作为业务文案模版进行定义、管理与消费。使用方式如下，更多细节见 [API 定义](../../api/ntv/generate)。
+为了方便前端拼装 schema 的场景，我们提供了 `generateTextSpec` 工具函数，只需要定义静态化的文本描述结构（structures 和 structureTemps），依据输入不同的变量特点（比如根据列表个数循环、特征值判断是否输出模板），即可生成所需数据结构。该文本描述结构极大的降低了 ntv-schema 的构建成本，有效解决了业务模版可维护性、可读性、定制性等问题。使用方式如下，更多细节见 [API 定义](../../api/ntv/generate)。
 
 ```js
 const textSpec = generateTextSpec({ structures, structureTemps, variable });
 ```
-
-下面是一个基础的例子：
-
-<Playground path="ntv/basic/demo/generate.tsx"></Playground>
