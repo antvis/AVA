@@ -69,6 +69,7 @@
     "@antv/color-schema": "^0.2.3",
     "@antv/g2": "5.0.0-beta.13",
     "@antv/data-samples": "^1.0.1",
+    "@antv/g2": "5.0.0-beta.12",
     "@stdlib/types": "^0.0.12",
     "@types/d3-array": "^3.0.1",
     "@types/jest": "^23.3.12",
