@@ -87,4 +87,4 @@ export const CHART_ID_OPTIONS = [
 /**
  * @public
  */
-export type ChartID = typeof CHART_ID_OPTIONS[number];
+export type ChartID = (typeof CHART_ID_OPTIONS)[number];

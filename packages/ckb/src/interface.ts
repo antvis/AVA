@@ -26,7 +26,7 @@ export const FAMILY_OPTIONS = [
 /**
  * @public
  */
-export type Family = typeof FAMILY_OPTIONS[number];
+export type Family = (typeof FAMILY_OPTIONS)[number];
 
 /**
  * @public
@@ -49,7 +49,7 @@ export const PURPOSE_OPTIONS = [
 /**
  * @public
  */
-export type Purpose = typeof PURPOSE_OPTIONS[number];
+export type Purpose = (typeof PURPOSE_OPTIONS)[number];
 
 /**
  * @public
@@ -69,7 +69,7 @@ export const COORD_TYPE_OPTIONS = [
 /**
  * @public
  */
-export type CoordinateSystem = typeof COORD_TYPE_OPTIONS[number];
+export type CoordinateSystem = (typeof COORD_TYPE_OPTIONS)[number];
 
 /**
  * @public
@@ -79,7 +79,7 @@ export const GRAPHIC_CATEGORY_OPTIONS = ['Statistic', 'Diagram', 'Graph', 'Map',
 /**
  * @public
  */
-export type GraphicCategory = typeof GRAPHIC_CATEGORY_OPTIONS[number];
+export type GraphicCategory = (typeof GRAPHIC_CATEGORY_OPTIONS)[number];
 
 /**
  * @public
@@ -100,7 +100,7 @@ export const SHAPE_OPTIONS = [
 /**
  * @public
  */
-export type Shape = typeof SHAPE_OPTIONS[number];
+export type Shape = (typeof SHAPE_OPTIONS)[number];
 
 /**
  * @public
@@ -110,7 +110,7 @@ export const LOM_OPTIONS = ['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Conti
 /**
  * @public
  */
-export type LevelOfMeasurement = typeof LOM_OPTIONS[number];
+export type LevelOfMeasurement = (typeof LOM_OPTIONS)[number];
 
 /**
  * @public
@@ -151,7 +151,7 @@ export const CHANNEL_OPTIONS = [
 /**
  * @public
  */
-export type Channel = typeof CHANNEL_OPTIONS[number];
+export type Channel = (typeof CHANNEL_OPTIONS)[number];
 
 /**
  * @public
@@ -161,7 +161,7 @@ export const RECOMMEND_RATING_OPTIONS = ['Recommended', 'Use with Caution', 'Not
 /**
  * @public
  */
-export type RecommendRating = typeof RECOMMEND_RATING_OPTIONS[number];
+export type RecommendRating = (typeof RECOMMEND_RATING_OPTIONS)[number];
 
 /**
  * @public
