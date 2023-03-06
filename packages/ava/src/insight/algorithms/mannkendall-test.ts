@@ -1,8 +1,9 @@
 import { sumBy } from 'lodash';
-import { cdf, quantile } from '@stdlib/stats/base/dists/normal';
+import { quantile } from '@stdlib/stats/base/dists/normal';
 
 import { sign, unique } from '../utils/common';
 import { TrendType } from '../types';
+import { cdf } from '../../data/statistics/cdf';
 
 // http://vsp.pnnl.gov/help/Vsample/Design_Trend_Mann_Kendall.htm
 // the Mann-Kendall (MK) test is to statistically assess if there
