@@ -21,6 +21,7 @@ import {
   coefficientOfVariance,
 } from '../../../../src/data/statistics';
 import { cdf } from '../../../../src/data/statistics/cdf';
+import { maxabs } from '../../../../src/data/statistics/maxabs';
 
 test('statistics', () => {
   const data1 = ['张三', '李四', '王五'];
@@ -76,8 +77,8 @@ test('statistics', () => {
   expect(minIndex(data5)).toBe(0);
   expect(maxIndex(data5)).toBe(4);
 
-  // test cdf
   expect(cdf(-0.1, -0.1, 2)).toBe(0.5);
   expect(cdf(2, 0, 1)).toBe(0.977);
   expect(cdf(2, 2, -3)).toBe(NaN);
+  expect(maxabs([0, 2, -7])).toBe(7);
 });
