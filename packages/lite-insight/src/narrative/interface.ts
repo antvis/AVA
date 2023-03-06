@@ -13,7 +13,7 @@ import { SYMBOL } from './constance';
 
 export type VariableType = 'insightTypes';
 
-export type SymbolType = keyof typeof SYMBOL['en-US'];
+export type SymbolType = keyof (typeof SYMBOL)['en-US'];
 
 /** generate subject desc -- title */
 export type SubjectsDescInfo = {

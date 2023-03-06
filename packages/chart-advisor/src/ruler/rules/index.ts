@@ -42,7 +42,7 @@ export const CHART_RULE_ID = [
 /**
  * @public
  */
-export type ChartRuleID = typeof CHART_RULE_ID[number];
+export type ChartRuleID = (typeof CHART_RULE_ID)[number];
 
 /**
  * @public
@@ -52,7 +52,7 @@ export const CHART_DESIGN_RULE_ID = ['x-axis-line-fading'] as const;
 /**
  * @public
  */
-export type ChartDesignRuleID = typeof CHART_DESIGN_RULE_ID[number];
+export type ChartDesignRuleID = (typeof CHART_DESIGN_RULE_ID)[number];
 
 export type RuleId = ChartRuleID | ChartDesignRuleID;
 

@@ -41,9 +41,9 @@ export interface SubjectInfo {
   measures: Measure[];
 }
 
-export type InsightType = typeof PATTERN_TYPES[number];
+export type InsightType = (typeof PATTERN_TYPES)[number];
 
-export type HomogeneousInsightType = typeof HOMOGENEOUS_PATTERN_TYPES[number];
+export type HomogeneousInsightType = (typeof HOMOGENEOUS_PATTERN_TYPES)[number];
 
 /** insight chart type recommendation */
 export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart' | 'scatter_plot';
