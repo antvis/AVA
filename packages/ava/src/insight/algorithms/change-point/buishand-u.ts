@@ -1,5 +1,6 @@
 import { sumBy, sum, mean } from 'lodash';
-import { maxabs } from '@stdlib/stats/base';
+
+import { maxabs } from '../../../data/statistics/maxabs';
 
 import { calcPValue } from './window';
 
@@ -13,7 +14,7 @@ export function buishandUTest(data: number[]): ChangePointItem & { uValue: numbe
   const meanValue = mean(data);
   const Sk = data.map((_, index) => sum(data.slice(0, index + 1)) - meanValue * (index + 1));
   const U = sumBy(Sk.slice(0, n - 1), (item) => item ** 2) / (n * (n + 1));
-  const Smax = maxabs(n, Sk, 1);
+  const Smax = maxabs(Sk);
 
   const maxIndex = Sk.findIndex((item) => item === Smax);
 
