@@ -12,4 +12,5 @@ export const Entity = styled.span<ThemeStylesProps>`
   border-radius: 2px;
   color: ${({ theme }) => getThemeColor('colorEntityBase', theme)};
   margin: 0 1px;
+  overflow-wrap: break-word;
 `;
