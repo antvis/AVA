@@ -20,9 +20,7 @@ import {
   pearson,
   coefficientOfVariance,
 } from '../../../../src/data/statistics';
-import { cdf } from '../../../../src/data/statistics/cdf';
-import { maxabs } from '../../../../src/data/statistics/maxabs';
-import { normalDistributionQuantile } from '../../../../src/data/statistics/quantile';
+import { cdf, maxabs, normalDistributionQuantile } from '../../../../src/data/statistics/stdlib';
 
 test('statistics', () => {
   const data1 = ['张三', '李四', '王五'];

@@ -1,6 +1,6 @@
 import { sumBy, sum, mean } from 'lodash';
 
-import { maxabs } from '../../../data/statistics/maxabs';
+import { maxabs } from '../../../data/statistics/stdlib';
 
 import { calcPValue } from './window';
 
