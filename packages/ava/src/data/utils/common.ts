@@ -16,6 +16,16 @@ export function range(number: Number) {
   return [...Array(number).keys()];
 }
 
+/** Generate an array with all 1 elements */
+export function nOnes(n: number) {
+  return Array(n).fill(1);
+}
+
+/** Generate an array with all 0 elements */
+export function nZeros(n: number) {
+  return Array(n).fill(0);
+}
+
 /**
  * assert
  * @param condition

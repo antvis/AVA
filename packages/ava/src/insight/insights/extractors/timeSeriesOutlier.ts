@@ -1,6 +1,5 @@
-import lowess from '@stdlib/stats-lowess';
-
 import { distinct } from '../../../data';
+import { lowess } from '../../../data/statistics/stdlib';
 
 import { findOutliers } from './categoryOutlier';
 
@@ -17,7 +16,7 @@ function findTimeSeriesOutliers(values: number[]): OutlierItem[] {
   const indexes = Array(values.length)
     .fill(0)
     .map((_, index) => index);
-  const fitted = lowess(indexes, values, { nsteps: 1 });
+  const fitted = lowess(indexes, values, { nSteps: 1 });
   const max = Math.max(...values);
   const min = Math.max(...values);
   const range = max - min;

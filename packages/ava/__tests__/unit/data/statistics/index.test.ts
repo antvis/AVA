@@ -1,3 +1,6 @@
+import '@testing-library/jest-dom/extend-expect';
+import { isArray, isNumber } from 'lodash';
+
 import {
   valid,
   missing,
@@ -20,7 +23,40 @@ import {
   pearson,
   coefficientOfVariance,
 } from '../../../../src/data/statistics';
-import { cdf, maxabs, normalDistributionQuantile } from '../../../../src/data/statistics/stdlib';
+import {
+  cdf,
+  maxabs,
+  normalDistributionQuantile,
+  vectorAdd,
+  vectorInnerProduct,
+  vectorSubtract,
+  matrixMultiply,
+  multiMatrixMultiply,
+  matrixTranspose,
+  constructDiagonalMatrix,
+  inverseSecondOrderMatrix,
+  tricubeWeightFunction,
+  bisquareWeightFunction,
+  weightedLinearRegression,
+  lowess,
+} from '../../../../src/data/statistics/stdlib';
+
+expect.extend({
+  toBeCloseToArray(received: number[] | number[][], argument: number[] | number[][]) {
+    const pass = received
+      .map((value: number | number[], i) => {
+        const compareValue = argument[i];
+        if (isArray(value) && isArray(compareValue)) return value[0] - compareValue[0] < 1e-3;
+        if (isNumber(value) && isNumber(compareValue)) return value - compareValue < 1e-3;
+        return false;
+      })
+      .includes(false);
+    return {
+      message: () => `expect ${received} to be close to ${argument}`,
+      pass,
+    };
+  },
+});
 
 test('statistics', () => {
   const data1 = ['张三', '李四', '王五'];
@@ -85,4 +121,117 @@ test('statistics', () => {
   expect(normalDistributionQuantile(0.7673, 0, 1)).toBe(0.73);
   expect(normalDistributionQuantile(0.5, 10.0, 2.0)).toBe(10);
   expect(normalDistributionQuantile(0.504, 0, 1)).toBe(0.01);
+
+  // vector/matrix
+  expect(vectorAdd([1, 2, 3], [2, 9, 0])).toBe([3, 11, 3]);
+  expect(vectorSubtract([1, 2, 3], [2, 9, 0])).toBe([-1, -7, 3]);
+  expect(vectorInnerProduct([1, 2, 3], [2, 9, 0])).toBe([-1, -7, 3]);
+  expect(
+    matrixMultiply(
+      [
+        [1, 2, 3],
+        [3, 3, 4],
+        [4, 5, 2],
+        [4, 1, 2],
+      ],
+      [
+        [1, 2, 1, 2],
+        [2, 3, 4, 1],
+        [5, 4, 3, 3],
+      ]
+    )
+  ).toBe([
+    [20, 20, 18, 13],
+    [29, 31, 27, 21],
+    [24, 31, 30, 19],
+    [16, 19, 14, 15],
+  ]);
+  expect(
+    multiMatrixMultiply([
+      [
+        [1, 2, 3],
+        [3, 3, 4],
+        [4, 5, 2],
+        [4, 1, 2],
+      ],
+      [
+        [1, 2, 1, 2],
+        [2, 3, 4, 1],
+        [5, 4, 3, 3],
+      ],
+    ])
+  ).toBe([
+    [20, 20, 18, 13],
+    [29, 31, 27, 21],
+    [24, 31, 30, 19],
+    [16, 19, 14, 15],
+  ]);
+  expect(
+    multiMatrixMultiply([
+      [
+        [1, 2, 3],
+        [3, 3, 4],
+        [4, 5, 2],
+        [4, 1, 2],
+      ],
+      [
+        [1, 2, 1, 2],
+        [2, 3, 4, 1],
+        [5, 4, 3, 3],
+      ],
+      [
+        [1, 2, 3],
+        [3, 3, 4],
+        [4, 5, 2],
+        [4, 1, 2],
+      ],
+    ])
+  ).toBe([
+    [204, 203, 202],
+    [314, 307, 307],
+    [189, 174, 182],
+  ]);
+  expect(
+    matrixTranspose([
+      [1, 2, 3],
+      [3, 3, 4],
+      [4, 5, 2],
+      [4, 1, 2],
+    ])
+  ).toBe([
+    [1, 3, 4, 4],
+    [2, 3, 5, 1],
+    [3, 4, 2, 2],
+  ]);
+  expect(constructDiagonalMatrix([1, 2, 3])).toBe([
+    [1, 0, 0],
+    [0, 2, 0],
+    [0, 0, 3],
+  ]);
+  expect(
+    inverseSecondOrderMatrix([
+      [1, 3],
+      [2, 8],
+    ])
+  ).toBe([
+    [4, -1.5],
+    [-1, 0.5],
+  ]);
+
+  // LOWESS
+  expect(bisquareWeightFunction(2)).toBe(0);
+  expect(tricubeWeightFunction(-3)).toBe(0);
+  expect(
+    weightedLinearRegression(
+      [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      [2, 23, 44, 67, 1, 22, 65, -3, -11],
+      [0, 0, 0.2, 0.9, 0.5, 0, 0, 0, 0]
+    )
+  ).toBeCloseToArray([[-113.4951], [58.4466]]);
+  expect(
+    weightedLinearRegression([1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 1, 1, 1, 1, 1, 1, 1, 1])
+  ).toBeCloseToArray([[0], [1]]);
+  expect(lowess([1, 2, 3, 4, 5, 6, 7, 8, 9], [1, 2, 3, 4, 5, 6, 7, 8, 9], { nSteps: 1 })).toBeCloseToArray([
+    1, 2, 3, 4, 5, 6, 7, 8, 9,
+  ]);
 });

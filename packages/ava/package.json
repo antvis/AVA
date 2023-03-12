@@ -70,6 +70,7 @@
     "@stdlib/types": "^0.0.12",
     "@types/d3-array": "^3.0.1",
     "@types/jest": "^23.3.12",
+    "@testing-library/jest-dom": "^4.2.4",
     "@types/lodash": "^4.14.171",
     "@types/numeral": "^2.0.2",
     "@types/react": "^17.0.15",
