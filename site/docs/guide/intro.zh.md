@@ -17,7 +17,7 @@ redirect_from:
 
 ----
 
-<a href="https://ava.antv.antgroup.com"><img src="http://alipay-rmsdeploy-image.cn-hangzhou.alipay.aliyun-inc.com/antfincdn/ZIA50SVLax/vectorA.svg" align="left" hspace="10" vspace="6"></a>
+<a href="https://ava.antv.antgroup.com"><img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*rXVYRJ0EMDsAAAAAAAAAAAAADmJ7AQ/original" align="left" hspace="10" vspace="6" width="160"></a>
 
 
 **AVA** (A Visual Analytics) 是为了更简便的可视分析而生的技术框架。 其名称中的第一个 **A** 具有多重涵义：它说明了这是一个出自阿里巴巴集团（*Alibaba*）技术框架，其目标是成为一个自动化（*Automated*）、智能驱动（*AI driven*）、支持增强分析（*Augmented*）的可视分析解决方案。
@@ -26,8 +26,10 @@ redirect_from:
 
 AVA 的整体架构如下：
 
+> v3 版本的架构基于 v2 进行了改良，之前的许多个包被整合成了一个 @antv/ava。所有原先的核心 API 都被保留在其中了，并且在保持原有灵活性的基础上简化了用法。新框架还单独提供了 React 组件库 @antv/react，其中提供了可以直接使用新的解读文本模块 NTV 的组件。
+
 <div align="center">
-<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="100%" alt='AVA framework' />
+<img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*jfG3TqYY8PYAAAAAAAAAAAAADmJ7AQ/original' width="100%" alt='AVA framework' />
 </div>
 
 <br />
@@ -62,7 +64,8 @@ ReactDOM.render(
 
 <br>
 
-<Playground path="components/auto-chart/demo/basic.jsx"></playground>
+<!-- <Playground path="components/auto-chart/demo/basic.jsx"></playground> -->
+<!-- FIXME: 关联 insightcard 一类的 demo -->
 
 
 ## 包

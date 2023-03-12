@@ -17,7 +17,7 @@ redirect_from:
 
 ----
 
-<a href="https://ava.antv.antgroup.com"><img src="http://alipay-rmsdeploy-image.cn-hangzhou.alipay.aliyun-inc.com/antfincdn/ZIA50SVLax/vectorA.svg" align="left" hspace="10" vspace="6"></a>
+<a href="https://ava.antv.antgroup.com"><img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*rXVYRJ0EMDsAAAAAAAAAAAAADmJ7AQ/original" align="left" hspace="10" vspace="6" width="160"></a>
 
 **AVA** is a framework (or a solution) for more convenient **Visual Analytics**. The first **A** of AVA  has many meanings. It states that this framework is from *Alibaba*, and its goal is to become an *Automated*, *AI driven* solution that supports *Augmented* analytics.
 
@@ -26,7 +26,7 @@ redirect_from:
 The framework of AVA can be illustrated as follows:
 
 <div align="center">
-<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="100%" alt='AVA framework' />
+<img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*jfG3TqYY8PYAAAAAAAAAAAAADmJ7AQ/original' width="100%" alt='AVA framework' />
 </div>
 
 <br />
@@ -61,7 +61,8 @@ ReactDOM.render(
 
 <br>
 
-<Playground path="components/auto-chart/demo/basic.jsx"></playground>
+<!-- <Playground path="components/auto-chart/demo/basic.jsx"></playground> -->
+<!-- FIXME: 关联 insightcard 一类的 demo -->
 
 
 ## Packages
