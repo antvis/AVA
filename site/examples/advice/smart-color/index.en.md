@@ -1,5 +1,5 @@
 ---
 title: SmartColor Usage
-order: 0
+order: 3
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: 推荐规则
-order: 0
+order: 1
 ---
 
 <embed src='@/docs/common/style.md'></embed>

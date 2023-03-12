@@ -7,7 +7,7 @@ order: 0
 
 
 
-Chart Knowledge Base (CKB) is a library offers knowledge base for chart wikis in a JSON format. 
+Chart Knowledge Base (ckb) is a library offers knowledge base for chart wikis in a JSON format. 
 
 The JSON is like this:
 
