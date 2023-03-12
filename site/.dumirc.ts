@@ -61,133 +61,103 @@ export default defineConfig({
         },
     ],
     docs: [
-        {
-            slug: 'guide/auto-chart',
-            title: {
-                zh: 'AutoChart 组件',
-                en: 'AutoChart Component',
-            },
-            order: 1,
-        },
+        // v3 暂时不透出 AutoChart
+        // {
+        //     slug: 'guide/auto-chart',
+        //     title: {
+        //         zh: 'AutoChart 组件',
+        //         en: 'AutoChart Component',
+        //     },
+        //     order: 1,
+        // },
         {
             slug: 'guide/ckb',
             title: {
-                zh: '图表知识库(CKB)',
-                en: 'Chart Knowledge Base (CKB)',
+                zh: '图表知识库(ckb)',
+                en: 'Chart Knowledge Base (ckb)',
             },
             order: 2,
         },
         {
-            slug: 'guide/data-wizard',
+            slug: 'guide/data',
             title: {
-                zh: 'DataWizard',
-                en: 'DataWizard',
+                zh: '数据处理(data)',
+                en: 'Data Processing (data)',
             },
             order: 3,
         },
         {
-            slug: 'guide/advisor',
+            slug: 'guide/advice',
             title: {
-                zh: 'Advisor',
-                en: 'Advisor',
+                zh: '图表推荐(advisor)',
+                en: 'Chart Recommendation (advisor)',
             },
             order: 4,
         },
         {
-            slug: 'guide/rules',
+            slug: 'guide/insight',
             title: {
-                zh: '推荐规则',
-                en: 'Rules',
-            },
-            order: 5,
-        },
-        {
-            slug: 'guide/lite-insight',
-            title: {
-                zh: 'LiteInsight',
-                en: 'LiteInsight',
+                zh: '自动洞察(insight)',
+                en: 'Auto Insight (insight)',
             },
             order: 6,
-        },
-        {
-            slug: 'guide/smart-board',
-            title: {
-                zh: 'SmartBoard',
-                en: 'SmartBoard',
-            },
-            order: 7,
-        },
-        {
-            slug: 'guide/smart-color',
-            title: {
-                zh: 'SmartColor',
-                en: 'SmartColor',
-            },
-            order: 8,
         },
         {
             slug: 'guide/ntv',
             title: {
-                zh: '解读文本可视化（NTV）',
-                en: 'Narrative Text Vis (NTV)',
+                zh: '解读文本可视化(ntv)',
+                en: 'Narrative Text Vis (ntv)',
             },
             order: 9,
         },
-        {
-            slug: 'api/auto-chart',
-            title: {
-                zh: 'AutoChart',
-                en: 'AutoChart',
-            },
-            order: 1,
-        },
+        // v3 暂时不透出 AutoChart
+        // {
+        //     slug: 'api/auto-chart',
+        //     title: {
+        //         zh: 'AutoChart',
+        //         en: 'AutoChart',
+        //     },
+        //     order: 1,
+        // },
         {
             slug: 'api/ckb',
             title: {
-                zh: '图表知识库(CKB)',
-                en: 'Chart Knowledge Base (CKB)',
+                zh: '图表知识库(ckb)',
+                en: 'Chart Knowledge Base (ckb)',
             },
             order: 2,
         },
         {
-            slug: 'api/data-wizard',
+            slug: 'api/data',
             title: {
-                zh: 'DataWizard',
-                en: 'DataWizard',
+              zh: '数据处理(data)',
+              en: 'Data Processing (data)',
             },
             order: 3,
         },
         {
-            slug: 'api/advisor',
+            slug: 'api/advice',
             title: {
-                zh: 'Advisor',
-                en: 'Advisor',
+              zh: '图表推荐(advisor)',
+              en: 'Chart Recommendation (advisor)',
             },
             order: 4,
         },
         {
-            slug: 'api/lite-insight',
+            slug: 'api/insight',
             title: {
-                zh: 'LiteInsight',
-                en: 'LiteInsight',
+              zh: '自动洞察(insight)',
+              en: 'Auto Insight (insight)',
             },
             order: 6,
         },
         {
-        slug: 'api/smart-board',
-        title: {
-            zh: 'SmartBoard',
-            en: 'SmartBoard',
-        },
-        order: 7,
-        },
-        {
-            slug: 'api/smart-color',
-            title: {
-                zh: 'SmartColor',
-                en: 'SmartColor',
-            },
-            order: 8,
+          slug: 'api/ntv',
+          title: {
+              zh: '解读文本可视化(ntv)',
+              en: 'NarrativeTextVis (ntv)',
+          },
+          order: 7,
         },
         {
             slug: 'api/types',
@@ -197,80 +167,62 @@ export default defineConfig({
             },
             order: 9,
         },
-        {
-          slug: 'api/ntv',
-          title: {
-              zh: '解读文本可视化（NTV）',
-              en: 'NarrativeTextVis(NTV)',
-          },
-          order: 10,
-        },
     ],
     examples: [
         {
-            slug: 'components',
-            title: {
-                zh: 'React 组件',
-                en: 'React Components',
-            },
-            order: 0,
+          slug: 'ckb',
+          icon: 'block',
+          title: {
+              zh: '图表知识库(ckb)',
+              en: 'Chart Knowledge Base (ckb)',
+          },
+          order: 2,
         },
         {
-            slug: 'data-wizard',
+            slug: 'data',
+            icon: 'facet',
             title: {
-                zh: '数据处理（DataWizard）',
-                en: 'DataWizard',
+              zh: '数据处理(data)',
+              en: 'Data Processing (data)',
             },
             order: 1,
             includes: [],
         },
         {
-            slug: 'ckb',
+            slug: 'advice',
+            icon: 'star-single-line',
             title: {
-                zh: '图表知识库（CKB)',
-                en: 'Chart Knowledge Base (CKB)',
-            },
-            order: 2,
-        },
-        {
-            slug: 'advisor',
-            title: {
-                zh: '图表推荐（Advisor）',
-                en: 'ChartAdvisor',
+              zh: '图表推荐(advisor)',
+              en: 'Chart Recommendation (advisor)',
             },
             order: 3,
         },
         {
-            slug: 'lite-insight',
+            slug: 'insight',
+            icon: 'bulb',
             title: {
-                zh: '智能洞察（LiteInsight）',
-                en: 'LiteInsight',
+              zh: '自动洞察(insight)',
+              en: 'Auto Insight (insight)',
             },
             order: 4,
         },
         {
-            slug: 'plugins',
-            title: {
-                zh: '插件',
-                en: 'Plugins',
-            },
-            order: 5,
+          slug: 'ntv',
+          icon: 'build',
+          title: {
+              zh: '解读文本可视化(ntv)',
+              en: 'Narrative Text Vis (ntv)',
+          },
+          order: 5,
         },
-            {
+        {
             slug: 'others',
+            icon: 'other',
             title: {
                 zh: '其他',
                 en: 'Others',
             },
             order: 6,
-        },
-        {
-          slug: 'ntv',
-          title: {
-              zh: '解读文本可视化（NTV）',
-              en: 'Narrative Text Vis (NTV)',
-          },
-          order: 10,
         },
     ],
     // 编辑器配置

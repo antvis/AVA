@@ -7,7 +7,7 @@ order: 0
 
 
 
-Chart Knowledge Base (CKB) 是一个提供图表经验的知识库，它的形式基于 JSON。
+Chart Knowledge Base (ckb) 是一个提供图表经验的知识库，它的形式基于 JSON。
 
 ## 包
 
