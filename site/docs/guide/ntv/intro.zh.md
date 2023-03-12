@@ -1,5 +1,5 @@
 ---
-title: 解读文本可视化（NTV）简介
+title: 解读文本可视化(NTV)简介
 order: 0
 ---
 

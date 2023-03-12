@@ -16,7 +16,7 @@ Class Advisor(config?: Partial<Pick<Advisor, 'ckbCfg' | 'ruleCfg'>> = {})
 
 ## Parameters
 
-* **config** * Chart Knowledge Base (CKB) & Rule Config
+* **config** * Chart Knowledge Base (ckb) & Rule Config
   * _optional_
   * `Parameter type`: CKBConfig | RuleConfig object
 
