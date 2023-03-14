@@ -1,28 +1,6 @@
-import { ScaleTypes, Mark } from '@antv/g2';
+import { ScaleTypes } from '@antv/g2';
 import { mapValues } from 'lodash';
-
-type Primitive = number | string | boolean | Date;
-
-type TabularData = Record<string, Primitive>[];
-
-type Callback = (datum: Record<string, Primitive>, index: number, data: TabularData) => Primitive;
-
-type DataType = 'quantitative' | 'categorical' | 'temporal';
-
-/** Encode 的值 */
-type Encode = Primitive | Callback;
-
-/** Encode 的对象 */
-type MarkEncode = Record<string, Encode>;
-
-/** 带有字段类型的 Encode 对象 */
-type MarkEncodeWithType = Record<string, { field: Encode; type: DataType }>;
-
-/** 原 G2 spec 去掉复杂 Encode 类型并添加简易版 Encode 类型 */
-export type G2ChartSpec = Omit<Mark, 'encode'> & { encode: MarkEncode };
-
-/** 原 G2 spec 去掉复杂 Encode 类型并添加简易版（带字段类型的） Encode 类型 */
-export type ChartSpecWithEncodeType = Omit<Mark, 'encode'> & { encode: MarkEncodeWithType };
+import { Callback, ChartSpecWithEncodeType, DataType, Encode, G2ChartSpec, Primitive, TabularData } from '../types';
 
 function isQuantitative(d: any): boolean {
   return typeof d === 'number';
