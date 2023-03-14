@@ -1,5 +1,4 @@
-import type { AntVSpec, ChartAntVSpec } from '@antv/antv-spec';
-
+import { G2ChartSpec } from '../advisor/types';
 /**
  * One row(record) of data in JSON.
  */
@@ -13,5 +12,5 @@ export type Data = Datum[];
 /**
  * Specification: declarative schema to describe a visualization.
  */
-export type Specification = AntVSpec;
-export type ChartSpec = ChartAntVSpec;
+export type Specification = G2ChartSpec;
+export type ChartSpec = G2ChartSpec;
