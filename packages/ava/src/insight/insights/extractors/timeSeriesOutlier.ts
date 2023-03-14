@@ -16,7 +16,7 @@ function findTimeSeriesOutliers(values: number[]): OutlierItem[] {
   const indexes = Array(values.length)
     .fill(0)
     .map((_, index) => index);
-  const fitted = lowess(indexes, values, { nSteps: 1 });
+  const fitted = lowess(indexes, values, { nSteps: 2 });
   const max = Math.max(...values);
   const min = Math.max(...values);
   const range = max - min;

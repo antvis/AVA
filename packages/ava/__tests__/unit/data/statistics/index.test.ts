@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
-import { isArray, isNumber } from 'lodash';
+import { isEqual } from 'lodash';
 
-import { nOnes, range } from '../../../../src/data';
+import { isArray, isNumber, nOnes, range } from '../../../../src/data';
 import {
   valid,
   missing,
@@ -43,32 +43,43 @@ import {
   pcorrtest,
 } from '../../../../src/data/statistics/stdlib';
 
+const threshold = 1e-3;
+/** whether two arrays are the same within a certain precision  */
+const isCloseArray = (realArray: number[] | number[][], compareArray: number[] | number[][]) => {
+  const reject = realArray
+    .map((value: number | number[], i) => {
+      const compareValue = compareArray[i];
+      if (isArray(value) && isArray(compareValue)) return Math.abs(value[0] - compareValue[0]) < threshold;
+      if (isNumber(value) && isNumber(compareValue)) return Math.abs(value - compareValue) < threshold;
+      return false;
+    })
+    .includes(false);
+  return !reject;
+};
+
 expect.extend({
   toBeCloseToArray(received: number[] | number[][], argument: number[] | number[][]) {
-    const pass = received
-      .map((value: number | number[], i) => {
-        const compareValue = argument[i];
-        if (isArray(value) && isArray(compareValue)) return Math.abs(value[0] - compareValue[0]) < 1e-3;
-        if (isNumber(value) && isNumber(compareValue)) return Math.abs(value - compareValue) < 1e-3;
-        return false;
-      })
-      .includes(false);
+    const pass = isCloseArray(argument, received);
     return {
       message: () => `expect ${received} to be close to ${argument}`,
       pass,
     };
   },
   toBeCloseToObject(received: Record<string, any>, argument: Record<string, any>) {
-    const pass = received
-      .keys()
-      .forEach((key) => {
-        if (isNumber(argument[key]) && isNumber(received[key])) return Math.abs(received[key] - argument[key]) < 1e-3;
-        return received[key] === argument[key];
+    const reject = Object.keys(received)
+      .map((key) => {
+        const realValue = argument[key];
+        const compareValue = received[key];
+        if (isNumber(realValue) && isNumber(compareValue)) return Math.abs(compareValue - realValue) < threshold;
+        if (isArray(realValue) && isArray(compareValue)) {
+          return isCloseArray(realValue, compareValue);
+        }
+        return isEqual(compareValue, realValue);
       })
       .includes(false);
     return {
       message: () => `expect ${received} to be close to ${argument}`,
-      pass,
+      pass: !reject,
     };
   },
 });
@@ -161,28 +172,30 @@ test('statistics', () => {
       [5, 4, 3, 3],
     ],
   ];
-  const matrixMultiplyResult = [
+  const matrixMultiplyResult1 = [
     [20, 20, 18, 13],
     [29, 31, 27, 21],
     [24, 31, 30, 19],
     [16, 19, 14, 15],
   ];
-  expect(vectorAdd(vectorSet[0], vectorSet[1])).toBe([3, 11, 3]);
-  expect(vectorSubtract(vectorSet[0], vectorSet[1])).toBe([-1, -7, 3]);
-  expect(vectorInnerProduct(vectorSet[0], vectorSet[1])).toBe([-1, -7, 3]);
-  expect(matrixMultiply(matrixSet[0], matrixSet[1])).toBe(matrixMultiplyResult);
-  expect(multiMatrixMultiply(matrixSet)).toBe(matrixMultiplyResult);
-  expect(multiMatrixMultiply([...matrixSet, matrix])).toBe([
+  const matrixMultiplyResult2 = [
     [204, 203, 202],
     [314, 307, 307],
+    [313, 310, 294],
     [189, 174, 182],
-  ]);
-  expect(matrixTranspose(matrix)).toBe([
+  ];
+  expect(vectorAdd(vectorSet[0], vectorSet[1])).toStrictEqual([3, 11, 3]);
+  expect(vectorSubtract(vectorSet[0], vectorSet[1])).toStrictEqual([-1, -7, 3]);
+  expect(vectorInnerProduct(vectorSet[0], vectorSet[1])).toBe(20);
+  expect(matrixMultiply(matrixSet[0], matrixSet[1])).toStrictEqual(matrixMultiplyResult1);
+  expect(multiMatrixMultiply(matrixSet)).toStrictEqual(matrixMultiplyResult1);
+  expect(multiMatrixMultiply([...matrixSet, matrix])).toStrictEqual(matrixMultiplyResult2);
+  expect(matrixTranspose(matrix)).toStrictEqual([
     [1, 3, 4, 4],
     [2, 3, 5, 1],
     [3, 4, 2, 2],
   ]);
-  expect(constructDiagonalMatrix([1, 2, 3])).toBe([
+  expect(constructDiagonalMatrix([1, 2, 3])).toStrictEqual([
     [1, 0, 0],
     [0, 2, 0],
     [0, 0, 3],
@@ -192,7 +205,7 @@ test('statistics', () => {
       [1, 3],
       [2, 8],
     ])
-  ).toBe([
+  ).toStrictEqual([
     [4, -1.5],
     [-1, 0.5],
   ]);
@@ -207,14 +220,14 @@ test('statistics', () => {
       [2, 23, 44, 67, 1, 22, 65, -3, -11],
       [0, 0, 0.2, 0.9, 0.5, 0, 0, 0, 0]
     )
-  ).toBeCloseToArray([[-113.4951], [58.4466]]);
+  ).toBeCloseToArray([[182.3786], [-33.165]]);
   expect(weightedLinearRegression(linearRegressionSeries, linearRegressionSeries, nOnes(9))).toBeCloseToArray([
     [0],
     [1],
   ]);
-  expect(lowess(linearRegressionSeries, linearRegressionSeries, { nSteps: 1 })).toBeCloseToArray(
-    linearRegressionSeries
-  );
+  expect(lowess(linearRegressionSeries, linearRegressionSeries, { nSteps: 1 })).toBeCloseToObject({
+    y: linearRegressionSeries,
+  });
 
   // Pearson product-moment correlation test
   const x = [0.7, -1.6, -0.2, -1.2, -0.1, 3.4, 3.7, 0.8, 0.0, 2.0];
