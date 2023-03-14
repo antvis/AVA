@@ -1,7 +1,6 @@
 import { mergeWith } from 'lodash';
 
-import { pearson } from '../index';
-
+import { pearson } from './base';
 import { DEFAULT_PCORRTEST_OPTIONS } from './constants';
 import { normalDistributionQuantile, tDistributionQuantile } from './quantile';
 import { PCorrTestOptions, PCorrTestOutput } from './types';

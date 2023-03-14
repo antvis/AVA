@@ -1,7 +1,7 @@
 /**
  * function options of LOWESS method
  */
-export type LOWESSOptions = {
+export type LowessOptions = {
   /**
    * Proportion of points for local regression which influence smoothing at each value; default: 2/3
    * */
@@ -20,7 +20,7 @@ export type LOWESSOptions = {
 /**
  * LOWESS output
  */
-export type LOWESSOutput = {
+export type LowessOutput = {
   /** Fitted values */
   y: number[];
 };

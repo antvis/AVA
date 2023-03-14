@@ -23,8 +23,6 @@ import {
   covariance,
   pearson,
   coefficientOfVariance,
-} from '../../../../src/data/statistics';
-import {
   cdf,
   maxabs,
   normalDistributionQuantile,
@@ -41,7 +39,7 @@ import {
   weightedLinearRegression,
   lowess,
   pcorrtest,
-} from '../../../../src/data/statistics/stdlib';
+} from '../../../../src/data/statistics';
 
 const threshold = 1e-3;
 /** whether two arrays are the same within a certain precision  */

@@ -1,10 +1,10 @@
 import { isNumber, mergeWith } from 'lodash';
 
-import { median } from '../index';
-import { nOnes, nZeros } from '../../utils';
+import { nOnes, nZeros } from '../utils';
 
+import { median } from './base';
 import { DEFAULT_LOWESS_OPTIONS } from './constants';
-import { LOWESSOptions, LOWESSOutput } from './types';
+import { LowessOptions, LowessOutput } from './types';
 import {
   constructDiagonalMatrix,
   inverseSecondOrderMatrix,
@@ -49,7 +49,7 @@ export const weightedLinearRegression = (x: number[], y: number[], w: number[]) 
  * - General idea: perform weighted linear regression on localized subsets of the data point by point to calculate fitted value.
  * - Reference: William S. Cleveland. Robust Locally Weighted Regression and Smoothing Scatterplots. Journal of the American Statistical Association. 1979. Vol. 74(368):829-836.
  * */
-export const lowess = (x: number[], y: number[], options?: LOWESSOptions): LOWESSOutput => {
+export const lowess = (x: number[], y: number[], options?: LowessOptions): LowessOutput => {
   const xLength = x.length;
   const mergeOptions = mergeWith(DEFAULT_LOWESS_OPTIONS, options, (defaultValue, inputValue) => {
     return inputValue ?? defaultValue;

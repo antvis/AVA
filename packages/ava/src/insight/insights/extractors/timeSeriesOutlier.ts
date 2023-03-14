@@ -1,5 +1,4 @@
-import { distinct } from '../../../data';
-import { lowess } from '../../../data/statistics/stdlib';
+import { distinct, lowess } from '../../../data';
 
 import { findOutliers } from './categoryOutlier';
 

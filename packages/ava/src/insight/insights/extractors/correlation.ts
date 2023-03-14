@@ -1,4 +1,4 @@
-import { pcorrtest } from '../../../data/statistics/stdlib';
+import { pcorrtest } from '../../../data';
 import { Datum, Measure, CorrelationInfo } from '../../types';
 
 type CorrelationResult = {
