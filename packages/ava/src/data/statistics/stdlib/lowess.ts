@@ -3,7 +3,7 @@ import { isNumber, mergeWith } from 'lodash';
 import { median } from '../index';
 import { nOnes, nZeros } from '../../utils';
 
-import { DEFAULT_OPTIONS } from './constants';
+import { DEFAULT_LOWESS_OPTIONS } from './constants';
 import { LOWESSOptions, LOWESSOutput } from './types';
 import {
   constructDiagonalMatrix,
@@ -51,7 +51,7 @@ export const weightedLinearRegression = (x: number[], y: number[], w: number[]) 
  * */
 export const lowess = (x: number[], y: number[], options?: LOWESSOptions): LOWESSOutput => {
   const xLength = x.length;
-  const mergeOptions = mergeWith(DEFAULT_OPTIONS, options, (defaultValue, inputValue) => {
+  const mergeOptions = mergeWith(DEFAULT_LOWESS_OPTIONS, options, (defaultValue, inputValue) => {
     return inputValue ?? defaultValue;
   });
   // length of subset
@@ -67,6 +67,7 @@ export const lowess = (x: number[], y: number[], options?: LOWESSOptions): LOWES
     return x.map((xk) => tricubeWeightFunction((xk - xi) / h[i]));
   });
   const robustCoefficient = nOnes(xLength);
+  /** fitted values */
   const yFit = nZeros(xLength);
   for (let iter = 0; iter < mergeOptions.nSteps; iter += 1) {
     for (let i = 0; i < xLength; i += 1) {

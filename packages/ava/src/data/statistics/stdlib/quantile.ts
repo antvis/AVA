@@ -29,3 +29,27 @@ export const normalDistributionQuantile = (p: number, mu: number = 0, sigma: num
    */
   return Number(Xp.toFixed(3));
 };
+
+/**
+ * student's t distribution quantile function
+ * @param p probability
+ * @param v degree of freedom
+ */
+export const tDistributionQuantile = (p: number, d: number = 1): number => {
+  if (p > 1 || p < 0 || d <= 0) return NaN;
+  // when the degree of freedom is 1, the t distribution is the same as a standard Cauchy distribution
+  // reference to equation 35 in http://www.homepages.ucl.ac.uk/~ucahwts/lgsnotes/JCF_Student.pdf
+  if (d === 1) return -Math.cos(Math.PI * p) / Math.sin(Math.PI * p);
+  // reference to equation 36 in http://www.homepages.ucl.ac.uk/~ucahwts/lgsnotes/JCF_Student.pdf
+  if (d === 2) return (2 * p - 1) / Math.sqrt(2 * p * (1 - p));
+  // Q(x) = p, Q(x) + F(x) = 1, F(x) is standard normal distribution CDF
+  const prop = p > 0.5 ? p : 1 - p;
+  const x = normalDistributionQuantile(prop);
+  const g1 = (x ** 3 + x) / 4;
+  const g2 = (5 * x ** 5 + 16 * x ** 3 + 3 * x) / 96;
+  const g3 = (3 * x ** 7 + 19 * x ** 5 + 17 * x ** 3 - 15 * x) / 384;
+  const g4 = (79 * x ** 9 + 776 * x ** 7 + 1482 * x ** 5 - 1920 * x ** 3 - 945 * x) / 92160;
+  // Cornish–Fisher expansions
+  // reference to equation 26.7.5 in https://personal.math.ubc.ca/~cbm/aands/abramowitz_and_stegun.pdf
+  return (p > 0.5 ? 1 : -1) * (x + g1 / d + g2 / d ** 2 + g3 / d ** 3 + g4 / d ** 4);
+};
