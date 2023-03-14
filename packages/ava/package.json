@@ -55,8 +55,6 @@
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/smart-color": "^0.2.1",
-    "@stdlib/stats": "^0.0.12",
-    "@stdlib/stats-lowess": "^0.0.5",
     "bayesian-changepoint": "^1.0.1",
     "heap-js": "^2.1.6",
     "lodash": "^4.17.21",
@@ -67,7 +65,6 @@
     "@antv/algorithm": "^0.1.25",
     "@antv/color-schema": "^0.2.3",
     "@antv/data-samples": "^1.0.1",
-    "@stdlib/types": "^0.0.12",
     "@types/d3-array": "^3.0.1",
     "@types/jest": "^23.3.12",
     "@testing-library/jest-dom": "^4.2.4",
