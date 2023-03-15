@@ -9,7 +9,7 @@ const data = [
   { year: '1996', value: 6 },
   { year: '1997', value: 7 },
   { year: '1998', value: 13 },
-  { year: '1999', value: 4 },
+  { year: '1999', value: 9 },
 ];
 
 describe('extract time-series-outlier insight', () => {
