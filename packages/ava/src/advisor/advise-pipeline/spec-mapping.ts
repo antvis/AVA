@@ -7,27 +7,7 @@ import type { CkbTypes } from '../../ckb';
 import type { Advice } from '../types';
 import type { BasicDataPropertyForAdvice } from '../ruler';
 
-type EncodingType = 'quantitative' | 'temporal' | 'ordinal' | 'nominal'; // TODO support in AntVSpec | 'geojson';
-declare type ChartID = typeof CHART_IDS[number];
-
-function LOM2EncodingType(lom: CkbTypes.LevelOfMeasurement): EncodingType {
-  switch (lom) {
-    case 'Nominal':
-      return 'nominal';
-    case 'Ordinal':
-      return 'ordinal';
-    case 'Interval':
-      return 'quantitative';
-    case 'Time':
-      return 'temporal';
-    case 'Continuous':
-      return 'quantitative';
-    case 'Discrete':
-      return 'nominal';
-    default:
-      return 'nominal';
-  }
-}
+declare type ChartID = (typeof CHART_IDS)[number];
 
 /* !!!START pie_chart & donut_chart ------------------- */
 function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, ReturnField] {
@@ -41,24 +21,13 @@ function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['
   if (!field4Angle || !field4Color) return null;
 
   const spec: Advice['spec'] = {
-    basis: {
-      type: 'chart',
+    type: 'interval',
+    data,
+    encode: {
+      color: field4Color.name,
+      y: field4Angle.name,
     },
-    data: {
-      type: 'json-array',
-      values: data,
-    },
-    layer: [
-      {
-        mark: {
-          type: 'arc',
-        },
-        encoding: {
-          theta: { field: field4Angle.name, type: 'quantitative' },
-          color: { field: field4Color.name, type: 'nominal' },
-        },
-      },
-    ],
+    coordinate: { type: 'theta' },
   };
   return spec;
 }
@@ -68,27 +37,13 @@ function donutChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice
   if (!field4Angle || !field4Color) return null;
 
   const spec: Advice['spec'] = {
-    basis: {
-      type: 'chart',
+    type: 'interval',
+    data,
+    encode: {
+      color: field4Color.name,
+      y: field4Angle.name,
     },
-    data: {
-      type: 'json-array',
-      values: data,
-    },
-    layer: [
-      {
-        mark: {
-          type: 'arc',
-          style: {
-            innerRadius: 20,
-          },
-        },
-        encoding: {
-          theta: { field: field4Angle.name, type: 'quantitative' },
-          color: { field: field4Color.name, type: 'nominal' },
-        },
-      },
-    ],
+    coordinate: { type: 'theta', innerRadius: 0.6 },
   };
   return spec;
 }
@@ -107,21 +62,16 @@ function lineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice[
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'line' },
-        encoding: {
-          x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
-          y: { field: field4Y.name, type: 'quantitative' },
-        },
-      },
-    ],
+    type: 'line',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+    },
   };
 
   if (field4Color) {
-    spec.layer[0].encoding.color = { field: field4Color.name, type: 'nominal' };
+    spec.encode.color = field4Color.name;
   }
 
   return spec;
@@ -132,21 +82,17 @@ function stepLineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Adv
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'line', interpolate: 'step' },
-        encoding: {
-          x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
-          y: { field: field4Y.name, type: 'quantitative' },
-        },
-      },
-    ],
+    type: 'line',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      shape: 'hvh',
+    },
   };
 
   if (field4Color) {
-    spec.layer[0].encoding.color = { field: field4Color.name, type: 'nominal' };
+    spec.encode.color = field4Color.name;
   }
 
   return spec;
@@ -169,17 +115,12 @@ function areaChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice[
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'area' },
-        encoding: {
-          x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
-          y: { field: field4Y.name, type: 'quantitative' },
-        },
-      },
-    ],
+    type: 'area',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+    },
   };
 
   return spec;
@@ -190,18 +131,14 @@ function stackedAreaChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): 
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'area' },
-        encoding: {
-          x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
-          y: { field: field4Y.name, type: 'quantitative' },
-          color: { field: field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'area',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Series.name,
+    },
+    transform: [{ type: 'stackY' }],
   };
 
   return spec;
@@ -212,18 +149,14 @@ function percentStackedAreaChart(data: Data, dataProps: BasicDataPropertyForAdvi
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'area' },
-        encoding: {
-          x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
-          y: { field: field4Y.name, type: 'quantitative', stack: 'normalize' },
-          color: { field: field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'area',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Series.name,
+    },
+    transform: [{ type: 'stackY' }, { type: 'normalizeY' }],
   };
 
   return spec;
@@ -252,21 +185,19 @@ function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: field4X.name, type: 'quantitative' },
-          y: { field: field4Y.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+    },
+    coordinate: {
+      transform: [{ type: 'transpose' }],
+    },
   };
 
   if (field4Color) {
-    spec.layer[0].encoding.color = { field: field4Color.name, type: 'nominal' };
+    spec.encode.color = field4Color.name;
   }
 
   return spec;
@@ -277,19 +208,17 @@ function groupedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): A
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: field4X.name, type: 'quantitative' },
-          y: { field: field4Series.name, type: 'nominal' },
-          row: { field: field4Y.name, type: 'nominal' },
-          color: { field: field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Series.name,
+    },
+    transform: [{ type: 'dodgeX' }],
+    coordinate: {
+      transform: [{ type: 'transpose' }],
+    },
   };
 
   return spec;
@@ -300,18 +229,16 @@ function stackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): A
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: field4X.name, type: 'quantitative' },
-          y: { field: field4Y.name, type: 'nominal' },
-          color: { field: field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Series.name,
+    },
+    coordinate: {
+      transform: [{ type: 'transpose' }],
+    },
   };
 
   return spec;
@@ -322,18 +249,17 @@ function percentStackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvic
   if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: field4X.name, type: 'quantitative', stack: 'normalize' },
-          y: { field: field4Y.name, type: 'nominal' },
-          color: { field: field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Series.name,
+    },
+    transform: [{ type: 'stackY' }, { type: 'normalizeY' }],
+    coordinate: {
+      transform: [{ type: 'transpose' }],
+    },
   };
 
   return spec;
@@ -368,44 +294,34 @@ function columnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advic
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: field4X.name, type: 'nominal' },
-          y: { field: field4Y.name, type: 'quantitative' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+    },
   };
 
   if (field4Color) {
-    spec.layer[0].encoding.color = { field: field4Color.name, type: 'nominal' };
+    spec.encode.color = field4Color.name;
   }
 
   return spec;
 }
 
 function groupedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
-  if (!field4X || !field4Y || !Field4Series) return null;
+  const [field4X, field4Y, field4Series] = splitColumnXYSeries(dataProps);
+  if (!field4X || !field4Y || !field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: Field4Series.name, type: 'nominal' },
-          y: { field: field4Y.name, type: 'quantitative' },
-          column: { field: field4X.name, type: 'nominal' },
-          color: { field: Field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Series.name,
+    },
+    transform: [{ type: 'dodgeX' }],
   };
 
   return spec;
@@ -416,18 +332,14 @@ function stackedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[])
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: field4X.name, type: 'nominal' },
-          y: { field: field4Y.name, type: 'quantitative', stack: 'zero' },
-          color: { field: Field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: Field4Series.name,
+    },
+    transform: [{ type: 'stackY' }],
   };
 
   return spec;
@@ -438,18 +350,14 @@ function percentStackedColumnChart(data: Data, dataProps: BasicDataPropertyForAd
   if (!field4X || !field4Y || !Field4Series) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'bar' },
-        encoding: {
-          x: { field: field4X.name, type: 'nominal' },
-          y: { field: field4Y.name, type: 'quantitative', stack: 'normalize' },
-          color: { field: Field4Series.name, type: 'nominal' },
-        },
-      },
-    ],
+    type: 'interval',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: Field4Series.name,
+    },
+    transform: [{ type: 'stackY' }, { type: 'normalizeY' }],
   };
 
   return spec;
@@ -468,23 +376,16 @@ function scatterPlot(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advic
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
-    basis: {
-      type: 'chart',
+    type: 'point',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
     },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: 'point',
-        encoding: {
-          x: { field: field4X.name, type: 'quantitative' },
-          y: { field: field4Y.name, type: 'quantitative' },
-        },
-      },
-    ],
   };
 
   if (field4Color) {
-    spec.layer[0].encoding.color = { field: field4Color.name, type: 'nominal' };
+    spec.encode.color = field4Color.name;
   }
 
   return spec;
@@ -523,19 +424,14 @@ function bubbleChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advic
   if (!field4X || !field4Y || !field4Size || !field4Color) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'point' },
-        encoding: {
-          x: { field: field4X.name, type: 'quantitative' },
-          y: { field: field4Y.name, type: 'quantitative' },
-          color: { field: field4Color.name, type: 'nominal' },
-          size: { field: field4Size.name, type: 'quantitative' },
-        },
-      },
-    ],
+    type: 'point',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Color.name,
+      size: field4Size.name,
+    },
   };
 
   return spec;
@@ -548,17 +444,12 @@ function histogram(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice[
   if (!field) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: 'bar',
-        encoding: {
-          x: { type: 'quantitative', field: field.name, bin: true },
-          y: { type: 'quantitative', aggregate: 'count' },
-        },
-      },
-    ],
+    type: 'rect',
+    data,
+    encode: {
+      x: field.name,
+    },
+    transform: [{ type: 'binX', y: 'count' }],
   };
 
   return spec;
@@ -576,18 +467,13 @@ function heatmap(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['s
   if (!field4X || !field4Y || !field4Color) return null;
 
   const spec: Advice['spec'] = {
-    basis: { type: 'chart' },
-    data: { type: 'json-array', values: data },
-    layer: [
-      {
-        mark: { type: 'rect' },
-        encoding: {
-          x: { field: field4X.name, type: LOM2EncodingType(field4X.levelOfMeasurements[0]) },
-          y: { field: field4Y.name, type: LOM2EncodingType(field4Y.levelOfMeasurements[0]) },
-          color: { field: field4Color.name, type: 'quantitative' },
-        },
-      },
-    ],
+    type: 'cell',
+    data,
+    encode: {
+      x: field4X.name,
+      y: field4Y.name,
+      color: field4Color.name,
+    },
   };
 
   return spec;
