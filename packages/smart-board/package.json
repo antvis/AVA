@@ -1,6 +1,6 @@
 {
   "name": "@antv/smart-board",
-  "version": "2.0.4",
+  "version": "2.0.5-alpha.0",
   "description": "A js library that solves chart dashboarding through calculations.",
   "author": {
     "name": "AntV",
@@ -64,7 +64,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/chart-advisor": "^2.0.4",
+    "@antv/chart-advisor": "^2.0.5-alpha.0",
     "@antv/data-wizard": "^2.0.4",
     "@antv/g2plot": "^2.3.40",
     "@antv/g6": "^4.5.1",
