@@ -1,5 +1,5 @@
 import { CKBJson } from '@antv/ckb';
-import { DataFrame, analyzer, GraphData } from '@antv/data-wizard';
+import { DataFrame, analyzer, GraphData  } from '@antv/data-wizard';
 
 import { processRuleCfg } from '../ruler';
 
@@ -22,6 +22,8 @@ export type ChartAdviseParams = {
   dataProps?: BasicDataPropertyForAdvice[];
   /** data fields to focus, apply in `data` and `dataProps` */
   fields?: string[];
+  /** specify data types for fields to focus, Please notice that this will modify the data you provided. It will convert the data according to fieldTypes  */
+  fieldTypes?: (analyzer.TypeSpecifics | '')[];
   /** SmartColor mode on/off */
   smartColor?: boolean;
   /** advising options such as purpose, layout preferences */
@@ -147,12 +149,12 @@ export class Advisor {
     const { data, dataProps, smartColor, options, colorOptions } = params;
     // otherwise the input data will be mutated
     const copyData = cloneDeep(data);
-    const { fields } = params as ChartAdviseParams;
+    const { fields, fieldTypes } = params as ChartAdviseParams;
     // transform data into DataFrame
     let dataFrame: DataFrame;
     try {
       if (fields) {
-        dataFrame = new DataFrame(copyData, { columns: fields });
+        dataFrame = new DataFrame(copyData, { columns: fields, columnTypes: fieldTypes });
       } else {
         dataFrame = new DataFrame(copyData);
       }
