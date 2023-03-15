@@ -1,5 +1,5 @@
 ---
-title: getDataInsights
+title: getInsights
 order: 3
 ---
 
@@ -8,7 +8,7 @@ order: 3
 
 提取数据中存在的洞察。
 
-## **getDataInsights**
+## **getInsights**
 
 <i>(data: Datum[], options?: InsightOptions) => { insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] } </i>
 
@@ -55,9 +55,9 @@ order: 3
 * 指定参与计算的指标和维度，以及返回的洞察数量。
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
-getDataInsights(data, {
+getInsights(data, {
   limit: 30,
   dimensions: ['year', 'country'],
   measures: [
@@ -71,9 +71,9 @@ getDataInsights(data, {
 * 设置影响力（Impact）分数的计算指标，调整洞察分数计算中的相关因子（置信度、影响力）的计算权重。
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
-getDataInsights(data, {
+getInsights(data, {
   impactWeight: 0.5,
   impactMeasures: [
     { field: 'life_expect', method: 'COUNT' },
@@ -85,9 +85,9 @@ getDataInsights(data, {
 * 开启数据中的共性/例外模式提取。
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
-const result = getDataInsights(data, {
+const result = getInsights(data, {
   homogeneous: true
 });
 
@@ -95,14 +95,3 @@ const { insights, homogeneousInsights } = result;
 console.log(homogeneousInsights);
 
 ```
-
-
-
-## **getDataInsightsAsync**
-
-<i>(data: Datum[], options?: InsightOptions) => Promise\<{ insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] }\></i>
-
-getDataInsights的异步版本，入参和返回相同。
-
-
-

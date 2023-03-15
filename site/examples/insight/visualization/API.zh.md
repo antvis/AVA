@@ -1,3 +1,3 @@
 # 自动洞察
 
-<embed src='@/docs/api/lite-insight/auto-insights.zh.md'></embed>
+<embed src='@/docs/api/insight/auto-insights.zh.md'></embed>
