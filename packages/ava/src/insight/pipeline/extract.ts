@@ -4,13 +4,13 @@ import Heap from 'heap-js';
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
 import { insightExtractors, ExtractorCheckers } from '../insights';
 import { aggregate } from '../utils/aggregate';
-
-import { DataProperty, calculateImpactValue } from './preprocess';
 import {
-  extractHomogeneousPatternsForMeausres,
+  extractHomogeneousPatternsForMeasures,
   extractHomogeneousPatternsForSiblingGroups,
   PatternCollection,
-} from './homogeneous';
+} from '../insights/extractors/homogeneous';
+
+import { calculateImpactValue } from './preprocess';
 import { addInsightsToHeap } from './util';
 
 import type {
@@ -24,6 +24,7 @@ import type {
   InsightType,
   PatternInfo,
   HomogeneousPatternInfo,
+  DataProperty,
 } from '../types';
 
 interface ReferenceInfo {
@@ -236,10 +237,10 @@ export function extractInsightsFromSubspace(
     addInsightsToHeap(insightsForCorrelation, insightsHeap);
   }
 
-  /**  extract homegenehous insight in measures */
+  /**  extract homogeneous insight in measures */
   if (options?.homogeneous) {
     insightsFor1M1DCombination.forEach((insightsPerDim, dimIndex) => {
-      const homogeneousPatternsForMeasures = extractHomogeneousPatternsForMeausres(measures, insightsPerDim);
+      const homogeneousPatternsForMeasures = extractHomogeneousPatternsForMeasures(measures, insightsPerDim);
       if (homogeneousPatternsForMeasures.length > 0) {
         const homogeneousInsights: InsightInfo<HomogeneousPatternInfo>[] = homogeneousPatternsForMeasures.map(
           (pattern) => ({

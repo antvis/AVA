@@ -1,7 +1,6 @@
 import { intersection } from 'lodash';
 
-import { Datum, SubjectInfo, InsightType } from '../types';
-import { DataProperty } from '../pipeline/preprocess';
+import { Datum, SubjectInfo, InsightType, DataProperty } from '../types';
 
 import type { CkbTypes } from '../../ckb';
 

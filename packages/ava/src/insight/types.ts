@@ -1,6 +1,8 @@
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
+import type { G2Spec } from '@antv/g2';
 import type { NtvTypes } from '../ntv';
+import type { DataTypes } from '../data';
 
 export type Datum = Record<string, string | number>;
 
@@ -15,15 +17,27 @@ export type ImpactMeasureMethod = 'SUM' | 'COUNT';
 
 export type Aggregator = (data: Datum[], measure: string) => number;
 
-export type Subspace = {
-  dimension: string;
-  value: string;
-}[];
+export type DataProperty =
+  | (DataTypes.NumberFieldInfo & { name: string; fieldType: FieldType })
+  | (DataTypes.DateFieldInfo & { name: string; fieldType: FieldType })
+  | (DataTypes.StringFieldInfo & { name: string; fieldType: FieldType });
 
 export type Measure = {
+  /** field id, currently, field id is the same as the field name */
   field: string;
   method: MeasureMethod;
 };
+
+export type Dimension = {
+  /** field id, currently, field id is the same as the field name */
+  field: string;
+};
+
+export type Subspace = {
+  dimension: string;
+  // TODO @chenluli may need a more general type to describe filter, such as string[] | number[] and add operator property to Subspace. If there is a real case then expand it
+  value: string;
+}[];
 
 export type ImpactMeasure = {
   field: string;
@@ -39,9 +53,9 @@ export interface SubjectInfo {
   measures: Measure[];
 }
 
-export type InsightType = typeof PATTERN_TYPES[number];
+export type InsightType = (typeof PATTERN_TYPES)[number];
 
-export type HomogeneousInsightType = typeof HOMOGENEOUS_PATTERN_TYPES[number];
+export type HomogeneousInsightType = (typeof HOMOGENEOUS_PATTERN_TYPES)[number];
 
 /** insight chart type recommendation */
 export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart' | 'scatter_plot';
@@ -56,19 +70,18 @@ export type PatternInfo =
   | ChangePointInfo
   | CorrelationInfo;
 
-/** visualization for insight */
-export interface VisualizationSchema {
+/** explanation and visualization for insight */
+export interface NarrativeVisualizationSchema {
   chartType: ChartType;
-  caption: string;
-  chartSchema: any; // TODO type
+  chartSchema: G2Spec;
   /**
-   * @description insight summaries display type, it dependent
-   * @default string[]
+   * @description pure text or text schema to describe insight
+   * @default string
    */
-  insightSummaries?: string[] | NtvTypes.PhraseSpec[][];
+  insightSummaries?: string[] | NtvTypes.NarrativeTextSpec[];
 }
 
-/** insight information */
+/** output insight information */
 export interface InsightInfo<T = PatternInfo> {
   subspace: Subspace;
   dimensions: string[];
@@ -76,7 +89,7 @@ export interface InsightInfo<T = PatternInfo> {
   score: number;
   data: Datum[];
   patterns: T[];
-  visualizationSchemas?: VisualizationSchema[];
+  visualizationSchemas?: NarrativeVisualizationSchema[];
 }
 
 /**
@@ -92,16 +105,24 @@ export interface VisualizationOptions {
 
 /** custom options */
 export interface InsightOptions {
+  /** dimensions (field names) for analysis */
   dimensions?: string[];
+  /** measures for analysis */
   measures?: Measure[];
-  impactMeasures?: ImpactMeasure[]; // Measures for Impact score
-  impactWeight?: number; // Insight score = Impact score * impactWeight + Significance * (1 - impactWeight)
+  /** Measures for Impact score */
+  impactMeasures?: ImpactMeasure[];
+  /** Insight score = Impact score * impactWeight + Significance * (1 - impactWeight) */
+  impactWeight?: number;
+  /** types of insight */
   insightTypes?: InsightType[];
-  limit?: number; // Limit on the number of insights
+  /** Limit on the number of insights */
+  limit?: number;
   /** on / off the output of visualization scheme */
   visualization?: boolean | VisualizationOptions;
-  homogeneous?: boolean; // on/off extra homogeneous insight extraction
-  ignoreSubspace?: boolean; // Whether to close the search for subspaces
+  /** on/off extra homogeneous insight extraction */
+  homogeneous?: boolean;
+  /** Whether to close the search for subspaces */
+  ignoreSubspace?: boolean;
 }
 
 export interface BasePatternInfo<T extends InsightType> {

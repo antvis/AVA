@@ -4,17 +4,17 @@ import {
   ChartType,
   HomogeneousPatternInfo,
   InsightInfo,
-  InsightType,
   PatternInfo,
-  VisualizationSchema,
+  NarrativeVisualizationSchema,
   InsightOptions,
   VisualizationOptions,
+  InsightType,
 } from '../types';
 import { InsightNarrativeGenerator, HomogeneousNarrativeGenerator } from '../narrative';
 
-import { generateInsightAnnotationConfigs, generateHomogeneousInsightAnnotationConfig } from './annotation';
+import { generateInsightAnnotationConfigs, generateHomogeneousInsightAnnotationConfig } from './strategy/annotations';
 
-export const ChartTypeMap: Record<InsightType, ChartType> = {
+const ChartTypeMap: Record<InsightType, ChartType> = {
   category_outlier: 'column_chart',
   trend: 'line_chart',
   change_point: 'line_chart',
@@ -27,10 +27,10 @@ export const ChartTypeMap: Record<InsightType, ChartType> = {
 export function getInsightVisualizationSchema(
   insight: InsightInfo<PatternInfo>,
   visualizationOptions: InsightOptions['visualization']
-): VisualizationSchema[] {
+): NarrativeVisualizationSchema[] {
   const { dimensions, patterns, measures } = insight;
 
-  const schemas: VisualizationSchema[] = [];
+  const schemas: NarrativeVisualizationSchema[] = [];
   const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
 
   const patternGroups = groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
@@ -52,7 +52,7 @@ export function getInsightVisualizationSchema(
     schemas.push({
       chartType: chartType as ChartType,
       chartSchema,
-      caption: narrative.caption?.getContent(),
+      // @ts-ignore TODO @yuxi modify ntv generator and put caption into insightSummaries
       insightSummaries:
         summaryType === 'schema'
           ? narrative.summaries?.map((i) => i.getSchema())
@@ -98,10 +98,10 @@ function lowlight(pattern: HomogeneousPatternInfo, colorField: string) {
 export function getHomogeneousInsightVisualizationSchema(
   insight: InsightInfo<HomogeneousPatternInfo>,
   visualizationOptions: InsightOptions['visualization']
-): VisualizationSchema[] {
+): NarrativeVisualizationSchema[] {
   const { dimensions, patterns, measures } = insight;
 
-  const schemas: VisualizationSchema[] = [];
+  const schemas: NarrativeVisualizationSchema[] = [];
   const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
   const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
 
@@ -135,7 +135,7 @@ export function getHomogeneousInsightVisualizationSchema(
     schemas.push({
       chartType,
       chartSchema,
-      caption: '',
+      // @ts-ignore TODO @yuxi modify ntv generator and put caption into insightSummaries
       insightSummaries: summaryType === 'schema' ? [summary.getSchema()] : [summary.getContent()],
     });
   });

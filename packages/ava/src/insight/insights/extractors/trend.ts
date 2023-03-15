@@ -1,7 +1,7 @@
 import regression from 'regression';
 
 import { Datum, Measure, TrendInfo } from '../../types';
-import { mkTest } from '../../algorithms';
+import { TrendDirection } from '../../algorithms';
 
 type TrendResult = {
   significance: number;
@@ -10,7 +10,7 @@ type TrendResult = {
 };
 
 export function findTimeSeriesTrend(series: number[]): TrendResult {
-  const testResult = mkTest(series, 0.05);
+  const testResult = TrendDirection.mkTest(series, 0.05);
   const { pValue, trend } = testResult;
 
   const regressionResult = regression.linear(series.map((item, index) => [index, item]));

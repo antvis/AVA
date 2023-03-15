@@ -5,7 +5,6 @@
     "packages/*"
   ],
   "scripts": {
-    "boot": "lerna bootstrap --force-local",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
     "lint-fix": "npm run lint -- --fix",
     "lint-staged": "lint-staged",

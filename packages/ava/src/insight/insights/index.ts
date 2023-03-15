@@ -6,6 +6,10 @@ import { extractor as ChangePointExtractor } from './extractors/changePoint';
 import { extractor as majorityExtractor } from './extractors/majority';
 import { extractor as lowVarianceExtractor } from './extractors/lowVariance';
 // import { extractor as correlationExtractor } from './extractors/correlation';
+import {
+  extractHomogeneousPatternsForMeasures,
+  extractHomogeneousPatternsForSiblingGroups,
+} from './extractors/homogeneous';
 
 export const insightExtractors = {
   // category_outlier: categoryOutlierExtractor,
@@ -15,6 +19,8 @@ export const insightExtractors = {
   majority: majorityExtractor,
   low_variance: lowVarianceExtractor,
   // correlation: correlationExtractor,
+  extractHomogeneousPatternsForMeasures,
+  extractHomogeneousPatternsForSiblingGroups,
 };
 
 export * from './checkers';

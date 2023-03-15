@@ -1,6 +1,6 @@
 import { groupBy, flatten } from 'lodash';
 
-import { PATTERN_TYPES } from '../constant';
+import { PATTERN_TYPES } from '../../constant';
 
 import type {
   Measure,
@@ -9,15 +9,14 @@ import type {
   PatternInfo,
   PointPatternInfo,
   HomogeneousPatternInfo,
-} from '../types';
-
-/**
- * homogeneous data pattern (HDP) represents a set of basic data patterns that share certain relations. HDP are identified by categorizing basic data patterns (within an HDP) into commonness(es) and exceptions considering inter-pattern similarity,
- */
+} from '../../types';
 
 export type PatternCollection = Partial<Record<InsightType, PatternInfo[]>>;
 type ScopePatternCollection = { key: string; patterns?: PatternInfo[] }[];
 
+/**
+ * homogeneous data pattern (HDP) represents a set of basic data patterns that share certain relations. HDP are identified by categorizing basic data patterns (within an HDP) into commonness(es) and exceptions considering inter-pattern similarity,
+ */
 function extractHomogeneousPatterns(collection: ScopePatternCollection, type: InsightType): HomogeneousPatternInfo[] {
   const homogeneousPatterns: HomogeneousPatternInfo[] = [];
   const scopeLength = collection.length;
@@ -84,7 +83,7 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
   return homogeneousPatterns;
 }
 
-export function extractHomogeneousPatternsForMeausres(
+export function extractHomogeneousPatternsForMeasures(
   measures: Measure[],
   insightsCollection: (InsightInfo<PatternInfo> | null)[]
 ): HomogeneousPatternInfo[] {

@@ -1,4 +1,4 @@
-import { ascending } from './base/compare';
+import { ascending } from '../base/compare';
 
 export interface IQRParams {
   k: number;
@@ -31,6 +31,12 @@ interface IQRResult {
   };
 }
 
+/**
+ *
+ * @param data
+ * @param params
+ * @returns
+ */
 export function IQR(data: number[], params?: IQRParams): IQRResult {
   const k = params?.k || 1.5;
 
