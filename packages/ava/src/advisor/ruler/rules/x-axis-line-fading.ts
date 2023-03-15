@@ -1,3 +1,5 @@
+import { getSpecWithEncodeType } from '../../utils/inferDataType';
+
 import type { RuleModule } from '../types';
 
 const applyChartTypes = ['line_chart'];
@@ -13,7 +15,8 @@ export const xAxisLineFading: RuleModule = {
     return applyChartTypes.includes(chartType);
   },
   optimizer: (dataProps, chartSpec): object => {
-    const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
+    const specWithEncodeType = getSpecWithEncodeType(chartSpec);
+    const layerEnc = specWithEncodeType.encode;
     if (layerEnc && layerEnc.y?.type === 'quantitative') {
       const fieldInfo = dataProps.find((item) => item.name === layerEnc.y?.field);
       if (fieldInfo) {
@@ -21,17 +24,12 @@ export const xAxisLineFading: RuleModule = {
         if (fieldInfo.minimum && fieldInfo.maximum && range < (fieldInfo.maximum * 2) / 3) {
           const yScaleMin = Math.floor(fieldInfo.minimum - range / 5);
           return {
-            encoding: {
-              x: {
-                axis: {
-                  ticks: false,
-                  domain: false,
-                },
-              },
+            axis: {
+              x: { tick: false },
+            },
+            scale: {
               y: {
-                scale: {
-                  domainMin: yScaleMin > 0 ? yScaleMin : 0,
-                },
+                domainMin: yScaleMin > 0 ? yScaleMin : 0,
               },
             },
           };
