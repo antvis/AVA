@@ -23,6 +23,8 @@ export function Heading({
   theme = 'light',
   size = 'normal',
   pluginManager = presetPluginManager,
+  // TODO 标题支持展开收起
+  // showCollapse = false,
   ...events
 }: HeadingProps) {
   const weight = getHeadingWeight(spec.type);

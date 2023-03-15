@@ -1,8 +1,8 @@
 import { sumBy } from 'lodash';
-import { cdf, quantile } from '@stdlib/stats/base/dists/normal';
 
 import { sign, unique } from '../../utils/common';
 import { TrendType } from '../../types';
+import { normalDistributionQuantile, cdf } from '../../../data';
 
 /**
  * http://vsp.pnnl.gov/help/Vsample/Design_Trend_Mann_Kendall.htm
@@ -40,7 +40,7 @@ export function mkTest(data: number[], alpha: number = 0.05) {
 
   // calculate the p_value
   const pValue = 2 * (1 - cdf(Math.abs(zScore), 0, 1));
-  const h = Math.abs(zScore) > quantile(1 - alpha / 2, 0, 1);
+  const h = Math.abs(zScore) > normalDistributionQuantile(1 - alpha / 2, 0, 1);
 
   let trend: TrendType = 'no trend';
   if (zScore < 0 && h) {

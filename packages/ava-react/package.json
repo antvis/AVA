@@ -1,6 +1,6 @@
 {
   "name": "@antv/ava-react",
-  "version": "3.0.0-alpha.3",
+  "version": "3.0.0-alpha.7",
   "description": "React components of AVA.",
   "author": {
     "name": "AntV",
@@ -51,13 +51,14 @@
     ]
   },
   "dependencies": {
-    "@antv/ava": "^3.0.0-alpha.3",
+    "@antv/ava": "^3.0.0-alpha.5",
     "canvg": "^4.0.1",
     "lodash": "^4.17.21",
     "styled-components": "^5.3.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@ant-design/icons": "^4.7.0",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.180",
     "@types/react": "^17.0.15",
@@ -77,6 +78,7 @@
     "typescript": "^4.9.3"
   },
   "peerDependencies": {
+    "@ant-design/icons": ">=4.7.0",
     "antd": ">=4.16.13",
     "react": ">=16.9.0",
     "react-dom": ">=16.9.0"

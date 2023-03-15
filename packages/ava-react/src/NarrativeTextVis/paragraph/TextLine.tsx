@@ -10,7 +10,7 @@ import type { NtvTypes } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
 
 type TextLineProps = ThemeStylesProps &
-  ExtensionProps &
+  Pick<ExtensionProps, 'pluginManager'> &
   PhraseEvents & {
     spec: NtvTypes.TextParagraphSpec;
   };

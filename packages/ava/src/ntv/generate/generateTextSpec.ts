@@ -1,130 +1,201 @@
-import { isUndefined, arr2map } from '../../utils';
+/* eslint-disable no-console */
+import { toString, isNumber } from 'lodash';
 
-import type { NarrativeTextSpec, ParagraphSpec, PhraseSpec, TextParagraphSpec, TextPhraseSpec } from '../schema';
-import type { Structure, Variable, StructureTemp } from './types';
+import { isEntityType } from '../utils';
 
-function getSentences(
-  template: string,
-  dataValue?: Variable['dataValue'],
-  dataMetaMap?: Variable['dataMetaMap']
-): PhraseSpec[][] {
-  const splitReg = /(\${.*?})/;
-  const varReg = /\${(.*?)}/;
-  const METRIC_NAME_SUFFIX = '[metric_name]';
+import {
+  templateStr2Structure,
+  getScopeVariableArray,
+  getFormattedNumberValue,
+  getAssessment,
+  getDisplayValue,
+  getByPath,
+} from './utils';
 
-  // "user ${name}, age is ${age}" => ["user ", "${name}", ", age is ", "${age}"]
-  const templateStrArr = template.split(splitReg).filter((str) => str);
-  // {} => [{}]
-  const formattedDataValue = Array.isArray(dataValue) ? dataValue : [dataValue || {}];
+import type {
+  NarrativeTextSpec,
+  SectionSpec,
+  ParagraphSpec,
+  PhraseSpec,
+  TextPhraseSpec,
+  BulletsParagraphSpec,
+} from '../schema';
+import type { Variable, Structure, StructureTemp, VariableMeta, VariableMetaMap } from './types';
 
-  return formattedDataValue.map((datum) => {
-    return templateStrArr.map<PhraseSpec>((str) => {
-      const varName: string | undefined = varReg.exec(str)?.[1]; // age
-      if (varName) {
-        if (varName.endsWith(METRIC_NAME_SUFFIX)) {
-          const fieldId = varName.slice(0, -METRIC_NAME_SUFFIX.length);
-          return {
-            type: 'entity',
-            value: dataMetaMap?.[fieldId]?.name || fieldId,
-            metadata: { entityType: 'metric_name' },
-          };
-        }
-
-        const data = isUndefined(datum[varName]) ? '-' : `${datum[varName]}`;
-        const dataMeta = dataMetaMap?.[varName];
-        if (dataMeta?.entityType) {
-          return { type: 'entity', value: data, metadata: { entityType: dataMeta?.entityType } };
-        }
-        return { type: 'text', value: data };
-      }
-      return { type: 'text', value: str };
-    });
-  });
-}
-
-/**
- * @WIP 能力完善中，api 可能有变动，如慎重使用在生产环境
- * @WIP The api may change as capabilities improve, such as carefully used in a production environment
- * use structure and variables to generate narrative text spec
- */
-function generateTextSpec({
-  structures,
-  structureTemps = [],
-  variables = [],
-}: {
+type GenerateParams = {
+  variable: Variable;
   structures: Structure[];
   structureTemps?: StructureTemp[];
-  variables?: Variable[];
-}): NarrativeTextSpec {
-  const variableMap = arr2map<Variable>(variables, 'variableId');
-  const structureTempMap = arr2map<StructureTemp>(structureTemps, 'templateId');
-  const splitReg = /(&{.*?})/;
-  const varReg = /&{(.*?)}/;
+};
 
-  // generate paragraphs by structure
-  let paragraphs: ParagraphSpec[] = [];
+class TextSpecGenerator {
+  private variable: Variable;
 
-  structures.forEach((structure, structureIdx) => {
-    const { template } = structure;
-    let { displayType = structureIdx === 0 ? 'paragraph' : 'phrase' } = structure;
-    // "System &{s1}, includes &{s2}." => ["System ", "&{s1}", ", includes ", "&{s2}", "."]
-    const templateStrArr = template.split(splitReg).filter((str) => str);
+  private structures: Structure[];
 
-    templateStrArr.forEach((templateStr, structureTempIdx) => {
-      const templateId: string | undefined = varReg.exec(templateStr)?.[1];
-      if (structureTempIdx > 0) displayType = 'phrase';
-      if (templateId && structureTempMap[templateId]) {
-        const structureTemp = structureTempMap[templateId];
-        const { template: subTemplate, variableId, separator, displayType: subDisplayType = 'phrase' } = structureTemp;
-        const variable: Variable | undefined = variableId && variableMap[variableId];
-        const sentences = getSentences(subTemplate, variable?.dataValue, variable?.dataMetaMap);
+  private structureTemps: StructureTemp[];
 
-        if (subDisplayType === 'paragraph') {
-          paragraphs = [
-            ...paragraphs,
-            ...sentences.map<TextParagraphSpec>((sentence, sentenceIdx) => {
-              const phrases = [...sentence];
-              if (separator && sentenceIdx < sentences.length - 1) {
-                phrases.push({ type: 'text', value: separator });
-              }
-              return {
-                type: 'normal',
-                phrases,
-              };
-            }),
-          ];
-        } else if (subDisplayType === 'phrase') {
-          if (!paragraphs.length) paragraphs.push({ type: 'normal', phrases: [] });
-          const latestParagraph = paragraphs[paragraphs.length - 1] as TextParagraphSpec;
-          latestParagraph.phrases = [
-            ...latestParagraph.phrases,
-            ...sentences.reduce((prev, curr, sentenceIdx) => {
-              const phrases = [...prev, ...curr];
-              if (separator && sentenceIdx < sentences.length - 1) {
-                phrases.push({ type: 'text', value: separator });
-              }
-              return phrases;
-            }, []),
-          ];
-        }
-      } else {
-        const currPhrase: TextPhraseSpec = { type: 'text', value: templateStr };
-        if (displayType === 'paragraph') {
-          paragraphs.push({ type: 'normal', phrases: [currPhrase] });
-        } else if (displayType === 'phrase') {
-          if (!paragraphs.length) paragraphs.push({ type: 'normal', phrases: [] });
-          const latestParagraph = paragraphs[paragraphs.length - 1] as TextParagraphSpec;
-          latestParagraph.phrases.push(currPhrase);
-        }
+  constructor({ variable, structures, structureTemps }: GenerateParams) {
+    this.variable = variable;
+    this.structures = structures;
+    this.structureTemps = structureTemps;
+  }
+
+  private generateTextPhrase(text: string): TextPhraseSpec {
+    // TODO 是否需要判断 value 为 string ？？是否需要默认的数值格式化？—— 暂时先简单 toString 下
+    return { type: 'text', value: toString(text) };
+  }
+
+  private generateVarPhrase(scopeVariable: Variable, value: any, metadata?: VariableMeta): PhraseSpec {
+    // 没有 meta 的一律按普通文本处理
+    if (!metadata) {
+      return this.generateTextPhrase(value);
+    }
+
+    const { varType, formatter, extraCustomMeta } = metadata;
+    const formattedValue = getFormattedNumberValue(varType, value, formatter);
+
+    // 声明 varType 的可能是 entity 也可能是 custom
+    if (varType) {
+      if (isEntityType(varType)) {
+        return {
+          type: 'entity',
+          value: formattedValue,
+          metadata: {
+            entityType: varType,
+            origin: isNumber(value) ? value : undefined,
+            assessment: getAssessment(varType, value),
+          },
+        };
       }
-    });
-  });
+      const extra = extraCustomMeta?.(this.variable, scopeVariable);
+      return {
+        type: 'custom',
+        value: formattedValue,
+        // TODO 完善自定义短语 metadata
+        metadata: {
+          customType: varType,
+          ...extra,
+        },
+      };
+    }
 
-  return {
-    // single section represent
-    // 当前构造可以只通过一个 section 表示
-    sections: [{ paragraphs }],
-  };
+    return this.generateTextPhrase(toString(value));
+  }
+
+  // 只处理行数据拼接逻辑，表格数据
+  private generateSentence(template: string, variable: Variable, variableMetaMap: VariableMetaMap): PhraseSpec[] {
+    let phrases: PhraseSpec[] = [];
+    const templateStructure = templateStr2Structure(template);
+
+    for (let i = 0; i < templateStructure.length; i += 1) {
+      const { type: tempStrType, value: tempStrValue } = templateStructure[i];
+      if (tempStrType === 'template') {
+        const targetTempId = tempStrValue;
+        // get template info by template id
+        const templateInfo = this.structureTemps.find(({ templateId }) => templateId === targetTempId);
+        if (templateInfo) {
+          const { template, useVariable, variableMetaMap, limit, separator = ',' } = templateInfo;
+          const scopeArrayVariable = getScopeVariableArray(this.variable, variable, useVariable, limit);
+          const subPhrases = scopeArrayVariable
+            .map((v) => this.generateSentence(template, v, variableMetaMap))
+            .reduce((prev, curr, index) => {
+              const result = [...prev, ...curr];
+              if (index !== scopeArrayVariable.length - 1) result.push(this.generateTextPhrase(separator));
+              return result;
+            }, []);
+          phrases = phrases.concat(...subPhrases);
+        } else {
+          console.warn(`${targetTempId} is not exist`);
+        }
+      } else if (tempStrType === 'variable') {
+        const key = tempStrValue;
+        const metadata = variableMetaMap?.[key];
+        const value = metadata?.getDisplayValue
+          ? getDisplayValue(metadata?.getDisplayValue, this.variable, variable)
+          : getByPath(this.variable, variable, key);
+        phrases.push(this.generateVarPhrase(variable, value, { ...metadata }));
+      } else if (tempStrType === 'text') {
+        phrases.push(this.generateTextPhrase(tempStrValue));
+      }
+    }
+
+    return phrases;
+  }
+
+  /**
+   * 生成段落
+   * 1. 当前支持段落类型 heading normal bullet
+   * 2. 生成段落个数取决于 variable 的类型：
+   *  2.1 非自带循环属性的段落（heading normal）遇到数组数据时自动循环多段；
+   *  2.2 自身循环段落（bullet）遇到非数组时只生成一个
+   * */
+  private generateParagraphs(structure: Structure, variable: Variable = this.variable): ParagraphSpec[] {
+    const {
+      variableMetaMap,
+      template,
+      displayType = 'paragraph',
+      useVariable = '',
+      limit,
+      // 段落级别暂时用不到 separator
+      // separator,
+      bulletOrder,
+      children,
+      className,
+    } = structure;
+    const scopeArrayVariable = getScopeVariableArray(this.variable, variable, useVariable, limit);
+
+    // TODO 接入更多类型
+    if (displayType === 'paragraph') {
+      return scopeArrayVariable.map((v) => ({
+        type: 'normal',
+        phrases: this.generateSentence(template, v, variableMetaMap),
+        className,
+      }));
+    }
+
+    if (displayType === 'bullet') {
+      return [
+        {
+          type: 'bullets',
+          className,
+          isOrder: bulletOrder,
+          bullets: scopeArrayVariable.map((v) => ({
+            type: 'bullet-item',
+            phrases: this.generateSentence(template, v, variableMetaMap),
+            subBullet: children
+              ? this.generateParagraphs(
+                  {
+                    ...children,
+                    displayType: 'bullet',
+                  },
+                  v
+                )[0]
+              : undefined,
+          })),
+        } as BulletsParagraphSpec,
+      ];
+    }
+
+    return null;
+  }
+
+  private generateSection(): SectionSpec {
+    return {
+      paragraphs: this.structures.reduce((prev, curr) => {
+        return [...prev, ...this.generateParagraphs(curr)];
+      }, []),
+    };
+  }
+
+  generateNarrative(): NarrativeTextSpec {
+    return {
+      // 当前只可能构建出一个 section
+      sections: [this.generateSection()],
+    };
+  }
 }
 
-export default generateTextSpec;
+export default function generateTextSpec(params: GenerateParams): NarrativeTextSpec {
+  return new TextSpecGenerator(params).generateNarrative();
+}
