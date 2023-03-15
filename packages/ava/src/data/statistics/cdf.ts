@@ -19,9 +19,5 @@ export const cdf = (x: number, mu: number = 0, sigma: number = 1): number => {
   const t = 1 / (1 + 0.33267 * normalX);
   // error less than 1e-5
   const Px = 1 - Zx * (0.4361836 * t - 0.1201676 * t ** 2 + 0.937298 * t ** 3);
-  /**
-   * consistent with the number of digits in @stdlib/stats/base/dists/normal
-   * @todo fix precision issue
-   */
-  return Number(Px.toFixed(3));
+  return Px;
 };

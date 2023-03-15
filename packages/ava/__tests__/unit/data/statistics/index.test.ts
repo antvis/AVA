@@ -136,15 +136,15 @@ test('statistics', () => {
   expect(minIndex(data5)).toBe(0);
   expect(maxIndex(data5)).toBe(4);
 
-  expect(cdf(-0.1, -0.1, 2)).toBe(0.5);
-  expect(cdf(2, 0, 1)).toBe(0.977);
+  expect(cdf(-0.1, -0.1, 2)).toBeCloseTo(0.5);
+  expect(cdf(2, 0, 1)).toBeCloseTo(0.977);
   expect(cdf(2, 2, -3)).toBe(NaN);
 
   expect(maxabs([0, 2, -7])).toBe(7);
 
-  expect(normalDistributionQuantile(0.7673, 0, 1)).toBe(0.73);
-  expect(normalDistributionQuantile(0.5, 10.0, 2.0)).toBe(10);
-  expect(normalDistributionQuantile(0.504, 0, 1)).toBe(0.01);
+  expect(normalDistributionQuantile(0.7673, 0, 1)).toBeCloseTo(0.73);
+  expect(normalDistributionQuantile(0.5, 10.0, 2.0)).toBeCloseTo(10);
+  expect(normalDistributionQuantile(0.504, 0, 1)).toBeCloseTo(0.01);
 
   // vector/matrix
   const vectorSet = [

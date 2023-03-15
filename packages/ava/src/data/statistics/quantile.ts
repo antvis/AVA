@@ -23,11 +23,7 @@ export const normalDistributionQuantile = (p: number, mu: number = 0, sigma: num
   const normalXp = p <= 0.5 ? -1 * qXp : qXp;
   // transfer to quantile of normal distribution N(mu, sigma)
   const Xp = sigma * normalXp + mu;
-  /**
-   * consistent with the number of digits in @stdlib/stats/base/dists/normal
-   * @todo fix precision issue
-   */
-  return Number(Xp.toFixed(3));
+  return Xp;
 };
 
 /**
