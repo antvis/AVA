@@ -1,5 +1,5 @@
 ---
-title: getDataInsights
+title: getInsights
 order: 3
 ---
 
@@ -8,7 +8,7 @@ order: 3
 
 Automatically discovering interesting patterns from multi-dimensional data.
 
-## **getDataInsights**
+## **getInsights**
 
 <i>(data: Datum[], options?: InsightOptions) => { insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] } </i>
 
@@ -51,9 +51,9 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 * Specify the measures and dimensions involved in the calculation, and the number of insights returned.
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
-getDataInsights(data, {
+getInsights(data, {
   limit: 30,
   dimensions: ['year', 'country'],
   measures: [
@@ -67,10 +67,10 @@ getDataInsights(data, {
 * Set the measures of the impact score, and adjust the calculation weight of the relevant factors (significance, impact) in the calculation of the insight score.
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
 
-getDataInsights(data, {
+getInsights(data, {
   impactWeight: 0.5,
   impactMeasures: [
     { field: 'life_expect', method: 'COUNT' },
@@ -82,9 +82,9 @@ getDataInsights(data, {
 * Enable the extraction of homogeneous data patterns.
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
-const result = getDataInsights(data, {
+const result = getInsights(data, {
   homogeneous: true
 });
 
@@ -92,12 +92,3 @@ const { insights, homogeneousInsights } = result;
 console.log(homogeneousInsights);
 
 ```
-
-
-## **getDataInsightsAsync**
-
-<i>(data: Datum[], options?: InsightOptions) => Promise\<{ insights: InsightInfo[], homogeneousInsights?: HomogeneousInsightInfo[] }\></i>
-
-Async version of ```getDataInsights```.
-
-

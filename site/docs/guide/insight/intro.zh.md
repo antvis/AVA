@@ -1,5 +1,5 @@
 ---
-title: LiteInsight 简介
+title: Insight 简介
 order: 0
 ---
 
@@ -24,16 +24,16 @@ order: 0
 ## 📦 安装
 
 ```bash
-$ npm install @antv/lite-insight
+$ npm install @antv/ava
 ```
 
 ## 🔨 使用
 
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
-getDataInsights(data, {
+getInsights(data, {
   limit: 30,
   measures: [
     { field: 'life_expect', method: 'MEAN' },
@@ -46,11 +46,11 @@ getDataInsights(data, {
 
 ## 📖 文档
 
-更多用法请移步至 [API](../../api/lite-insight/auto-insights)。
+更多用法请移步至 [API](../../api/insight/auto-insights)。
 
 ## 🧷 致谢
 
-LiteInsight 其中的一些功能设计受到以下论文的启发：
+Insight 其中的一些功能设计受到以下论文的启发：
 
 * [Extracting Top-K Insights from Multi-dimensional Data](https://www.microsoft.com/en-us/research/uploads/prod/2017/02/Insights_SIGMOD17.pdf)
 

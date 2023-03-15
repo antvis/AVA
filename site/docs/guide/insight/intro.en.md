@@ -1,5 +1,5 @@
 ---
-title: Introduction to LiteInsight
+title: Introduction to Insight
 order: 0
 ---
 
@@ -23,16 +23,16 @@ The pipeline of Auto-Insights:
 ## 📦 Installation
 
 ```bash
-$ npm install @antv/lite-insight
+$ npm install @antv/ava
 ```
 
 ## 🔨 Usage
 
 
 ```ts
-import { getDataInsights } from '@antv/lite-insight';
+import { getInsights } from '@antv/ava';
 
-getDataInsights(data, {
+getInsights(data, {
   limit: 30,
   measures: [
     { field: 'life_expect', method: 'MEAN' },
@@ -44,12 +44,12 @@ getDataInsights(data, {
 
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](../../api/lite-insight/auto-insights).
+For more usages, please check the [API Reference](../../api/insight/auto-insights).
 
 
 ## 🧷 Acknowledgement
 
-Some functionalities of LiteInsight are inspired by the following works.
+Some functionalities of Insight are inspired by the following works.
 
 * [Extracting Top-K Insights from Multi-dimensional Data](https://www.microsoft.com/en-us/research/uploads/prod/2017/02/Insights_SIGMOD17.pdf)
 

@@ -1,3 +1,3 @@
 # Auto-Insights
 
-<embed src='@/docs/api/lite-insight/auto-insights.en.md'></embed>
+<embed src='@/docs/api/insight/auto-insights.en.md'></embed>
