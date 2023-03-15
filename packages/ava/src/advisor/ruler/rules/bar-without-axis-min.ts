@@ -23,14 +23,15 @@ export const barWithoutAxisMin: RuleModule = {
     return applyChartTypes.includes(chartType);
   },
   optimizer: (_, chartSpec: ChartSpec): object => {
-    const { layer } = chartSpec;
-    const xMin = layer?.[0]?.encoding?.x?.axis?.min;
-    const yMin = layer?.[0]?.encoding?.y?.axis?.min;
+    const { scale } = chartSpec;
+    if (!scale) return {};
+    const xMin = scale.x?.domainMin;
+    const yMin = scale.y?.domainMin;
     if (xMin || yMin) {
-      const fixedLayer = JSON.parse(JSON.stringify(layer));
-      if (xMin) fixedLayer[0].encoding.x.axis.min = 0;
-      if (yMin) fixedLayer[0].encoding.y.axis.min = 0;
-      return { layer: fixedLayer };
+      const newScale = JSON.parse(JSON.stringify(scale));
+      if (xMin) newScale.x.domainMin = 0;
+      if (yMin) newScale.y.domainMin = 0;
+      return { scale: newScale };
     }
     return {};
   },
