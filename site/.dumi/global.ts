@@ -17,6 +17,7 @@ if (window) {
     (window as any).qrcode = require('qrcode');
     (window as any).mockjs = require('mockjs');
     (window as any).moment = require('moment');
+    (window as any).numeral = require('numeral');
     (window as any).lodash = require('lodash');
     (window as any).copyToClipboard = require('copy-to-clipboard');
     (window as any).reactVega = require('react-vega');

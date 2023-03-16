@@ -9,7 +9,7 @@ import { presetPluginManager } from '../chore/plugin';
 import type { NtvTypes } from '@antv/ava';
 import type { ExtensionProps, ParagraphEvents, ThemeStylesProps } from '../types';
 
-type HeadlineProps = ExtensionProps &
+type HeadlineProps = Pick<ExtensionProps, 'pluginManager'> &
   ThemeStylesProps &
   ParagraphEvents & {
     spec: NtvTypes.HeadlineSpec;

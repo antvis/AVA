@@ -28,6 +28,7 @@ export function Section({
   size = 'normal',
   theme = 'light',
   pluginManager = presetPluginManager,
+  showCollapse = false,
   ...events
 }: SectionProps) {
   const themeStyles = { size, theme };
@@ -68,7 +69,14 @@ export function Section({
       {renderCustomSection()}
       {isStandardSection(spec) &&
         spec.paragraphs.map((p) => (
-          <Paragraph key={p.key || v4()} spec={p} pluginManager={pluginManager} {...themeStyles} {...paragraphEvents} />
+          <Paragraph
+            key={p.key || v4()}
+            spec={p}
+            pluginManager={pluginManager}
+            showCollapse={showCollapse}
+            {...themeStyles}
+            {...paragraphEvents}
+          />
         ))}
     </Container>
   );

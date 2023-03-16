@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { v4 } from 'uuid';
 
-import { Ol, Ul, Li } from '../styled';
+import { Ol, Ul, Li, P as StyledP } from '../styled';
 import { Phrases } from '../phrases';
 import { NTV_PREFIX_CLS } from '../constants';
+import { getCollapseProps } from '../utils';
 import { classnames as cx } from '../../utils';
 import { presetPluginManager } from '../chore/plugin';
 
@@ -23,12 +24,26 @@ export function Bullets({
   size = 'normal',
   theme = 'light',
   pluginManager = presetPluginManager,
+  showCollapse = false,
   ...events
 }: BulletsProps) {
   const themeStyles = { theme, size };
   const { onClickParagraph, onMouseEnterParagraph, onMouseLeaveParagraph, ...phraseEvents } = events || {};
+  const collapseProps = getCollapseProps(showCollapse);
 
-  const children = spec.bullets?.map((bullet) => {
+  if (!spec.bullets) return null;
+  // 配置折叠属性 && 有孙子节点的才可折叠，只有儿子的不用显示折叠属性
+  const collapsible = !!collapseProps && spec.bullets.some((bullet) => bullet.subBullet);
+  // 儿子节点均含有 key 的时候表示可以受控
+  const collapseControlled = !!collapseProps && spec.bullets.every((bullet) => bullet.key);
+
+  const [collapsedKeys, setCollapsedKeys] = useState<string[]>(
+    (collapseControlled && collapseProps && collapseProps?.collapsedKeys) || []
+  );
+
+  const children = spec.bullets.map((bullet, index) => {
+    const collapseKey = bullet.key || `${index}`;
+    const collapsed = collapsedKeys.includes(collapseKey);
     const onClickLi = () => {
       onClickParagraph?.(bullet);
     };
@@ -41,19 +56,48 @@ export function Bullets({
       onMouseLeaveParagraph?.(bullet);
     };
 
+    const toggleCollapse = () => {
+      let newCollapsedKeys: string[] = [...collapsedKeys];
+      if (collapsed) {
+        newCollapsedKeys = newCollapsedKeys.filter((i) => i !== collapseKey);
+      } else {
+        newCollapsedKeys.push(collapseKey);
+      }
+      // 只有当用户指定 key 的时候折叠受控才生效
+      if (bullet.key && collapseProps && collapseProps.onCollapsed) {
+        collapseProps.onCollapsed(newCollapsedKeys);
+      }
+      setCollapsedKeys(newCollapsedKeys);
+    };
+
     return (
       <Li
+        key={bullet.key || v4()}
         className={cx(`${NTV_PREFIX_CLS}-li`, bullet.className)}
-        key={spec.key || v4()}
         style={bullet.styles}
         {...themeStyles}
+        collapsible={collapsible}
+        showBulletsLine={collapseProps && collapseProps.showBulletsLine}
         onClick={onClickLi}
         onMouseEnter={onMouseEnterLi}
         onMouseLeave={onMouseLeaveLi}
       >
-        <Phrases spec={bullet.phrases} pluginManager={pluginManager} {...themeStyles} {...phraseEvents} />
-        {bullet?.subBullet ? (
-          <Bullets spec={bullet?.subBullet} pluginManager={pluginManager} {...themeStyles} {...events} />
+        {bullet?.subBullet && collapseProps && (
+          <span className={cx(`${NTV_PREFIX_CLS}-switcher-icon`)} onClick={toggleCollapse}>
+            {collapseProps.switcherIcon(collapsed)}
+          </span>
+        )}
+        <StyledP {...themeStyles}>
+          <Phrases spec={bullet.phrases} pluginManager={pluginManager} {...themeStyles} {...phraseEvents} />
+        </StyledP>
+        {!collapsed && bullet?.subBullet ? (
+          <Bullets
+            spec={bullet?.subBullet}
+            pluginManager={pluginManager}
+            showCollapse={showCollapse}
+            {...themeStyles}
+            {...events}
+          />
         ) : null}
       </Li>
     );

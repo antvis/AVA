@@ -1,7 +1,6 @@
 import { mean } from 'lodash';
-import { cdf } from '@stdlib/stats/base/dists/normal';
 
-import { standardDeviation } from '../../data';
+import { standardDeviation, cdf } from '../../data';
 
 export const calculatePValue = (values: number[], target: number) => {
   const meanValue = mean(values);

@@ -17,7 +17,7 @@ redirect_from:
 
 ----
 
-<a href="https://ava.antv.antgroup.com"><img src="http://alipay-rmsdeploy-image.cn-hangzhou.alipay.aliyun-inc.com/antfincdn/ZIA50SVLax/vectorA.svg" align="left" hspace="10" vspace="6"></a>
+<a href="https://ava.antv.antgroup.com"><img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*rXVYRJ0EMDsAAAAAAAAAAAAADmJ7AQ/original" align="left" hspace="10" vspace="6" width="160"></a>
 
 **AVA** is a framework (or a solution) for more convenient **Visual Analytics**. The first **A** of AVA  has many meanings. It states that this framework is from *Alibaba*, and its goal is to become an *Automated*, *AI driven* solution that supports *Augmented* analytics.
 
@@ -26,7 +26,7 @@ redirect_from:
 The framework of AVA can be illustrated as follows:
 
 <div align="center">
-<img src='https://gw.alipayobjects.com/mdn/rms_fabca5/afts/img/A*cmCYSrUks9gAAAAAAAAAAAAAARQnAQ' width="100%" alt='AVA framework' />
+<img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*jfG3TqYY8PYAAAAAAAAAAAAADmJ7AQ/original' width="100%" alt='AVA framework' />
 </div>
 
 <br />
@@ -61,83 +61,128 @@ ReactDOM.render(
 
 <br>
 
-<Playground path="components/auto-chart/demo/basic.jsx"></playground>
+<!-- <Playground path="components/auto-chart/demo/basic.jsx"></playground> -->
+<!-- FIXME: 关联 insightcard 一类的 demo -->
 
 
-## Packages
+## [@antv/ava](https://www.npmjs.com/package/@antv/ava)
 
-### [AVA/AutoChart](https://github.com/antvis/AVA/blob/master/packages/auto-chart)
+`@antv/ava` is the core JS npm package of AVA. These are its key modules:
+
+### advisor (chart recommendation)
+
+> The original ChartAdvisor package `@antv/chart-advisor`
+
+`advisor` is the core part of AVA. It recommends charts based on dataset and analysis needs. It also lints exist chart-spec.
+
+Its core API includes:
+
+```js
+Advisor.advise() // chart recommendation
+Advisor.lint() // chart linting
+```
+
+Basic usage:
+
+```js
+import { Advisor } from '@antv/ava';
+
+const myAdvisor = new Advisor();
+
+// chart recommendation
+const data = [{ tax: 100, tag: 'A' }, { tax: 200, tag: 'B' }];
+const results = myAdvisor.advise({ data });
+
+// chart linting
+const spec = { someAntVSpec }; // check G2 v5 chart specification
+const errors = myAdvisor.lint({ spec });
+```
+
+### ckb (chart knowledge base)
+
+> The original CKB package `@antv/ckb`、`@antv/knowledge`
+
+CKB stands for Chart Knowledge Base.
+It's the KB where empirical knowledge about visualization and charts is stored. AVA's chart recommendation is based on it.
+
+At the same time, CKB also facilitates us to develop products of chart type selection.
+
+Basic usage:
+
+```js
+import { ckb } from '@antv/ava';
+
+const myCkb = ckb();
+// the structure in myCkb can then be read on demand
+```
+
+### data (data processing)
+
+> The original DataWizard package `@antv/data-wizard`
+
+The module `data` is for data processing in the AVA framework, it is used to understand and process the input dataset.
+Moreover, it can also be used independently to develop some data processing or statistics functions.
+
+
+Its core API includes:
+
+```js
+DataFrame.info()
+```
+
+Basic usage:
+
+```js
+import { DataFrame } from '@antv/ava';
+
+const df = new DataFrame([{ a: 1, b: 4 }, { a: 2, b: 5 }]);
+const infos = df.info();
+// the structure of infos will contain various statistical information about the dataset
+```
+
+### insight (auto insights)
+
+> The original LiteInsight package `@antv/lite-insight`
+
+The `insight` module can automatically discover data insights from multidimensional data.
+
+Its core API includes:
+
+```js
+getInsights()
+```
+
+Basic usage:
+
+```js
+import { getInsights } from '@antv/ava';
+
+const data = [{ tax: 100, tag: 'A' }, { tax: 200, tag: 'B' }];
+const insights = getInsights(data);
+```
+
+## [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react)
+
+`@antv/ava-react` is a plug-and-play React component library based on the integration of AVA capabilities.
+
+### \<AutoChart /\>
 
 AutoChart is a React component that automatically suggests and renders the right chart based on data.
 It can automatically generate and render the proper chart for visualization based on the input data with one-line of code.
 
-```sign
-@antv/auto-chart // one-click visualization component
+> Please look out for further updates to the AutoChart component in future versions.
+
+### \<NarrativeTextVis /\>
+
+The `ntv` module is used to display data insights in narrative text. Contains the `NtvTypes` related spec declaration in `@antv/ava` and a react component `NarrativeTextVis` in `@antv/ava-react`.
+
+Basic usage:
+
+```jsx
+import { NarrativeTextVis } from '@antv/ava-react';
+
+export default () => {
+  // textSpec in NtvTypes.NarrativeTextSpec
+  return <NarrativeTextVis spec={textSpec} />
+}
 ```
-
-### [AVA/CKB](https://github.com/antvis/AVA/tree/master/packages/knowledge)
-
-CKB stands for Chart Knowledge Base.
-This package is the KB where empirical knowledge about visualization and charts is stored. The chart recommendation is based on it.
-
-At the same time, this package also facilitates us to develop products of chart type selection.
-
-
-```sign
-@antv/ckb // to get the chart knowledge base
-```
-
-### [AVA/DataWizard](https://github.com/antvis/AVA/tree/master/packages/data-wizard)
-
-DataWizard is a js/ts library for data processing.
-In the AVA framework, it is used to understand and process the input dataset.
-Moreover, it can also be used independently to develop some data processing, statistics or data mocking functions.
-
-```sign
-import { DataFrame } from @antv/data-wizard // data processing
-import { statistics } from @antv/data-wizard // statistical methods
-import { random } from @antv/data-wizard // data mocking
-```
-
-### [AVA/ChartAdvisor](https://github.com/antvis/AVA/tree/master/packages/chart-advisor)
-
-ChartAdvisor is the core component of AVA. It recommends charts based on dataset and analysis needs.
-
-```sign
-@antv/chart-advisor // to make charts automatically
-```
-
-### [AVA/LiteInsight](https://github.com/antvis/AVA/blob/master/packages/lite-insight)
-
-LiteInsight is a js/ts library employed for Exploratory Data Analysis (EDA).
-It can automatically discover data insights from multidimensional data.
-
-```sign
-@antv/lite-insight // to get data insight
-```
-
-### [AVA/SmartBoard](https://github.com/antvis/AVA/blob/master/packages/smart-board)
-
-SmartBoard is a js/ts library employed for Dashboard visualization of charts.
-It can automatically generates the corresponding Dashboard configurations based on input charts and insights.
-
-```sign
-@antv/smart-board // to get Dashboard parameters
-```
-
-### [AVA/SmartColor](https://github.com/antvis/smart-color)
-
-SmartColor is a js/ts color processing class library.
-It allows deep customization of swatch patterns, color optimization and color correction of existing swatches, and one-click adaptation to color-blind scenes.
-
-```sign
-@antv/smart-color // to generate and customized color and palette.
-```
-
-## Links
-
-<img src="https://gw.alipayobjects.com/zos/antfincdn/1yMwFkBvyV/chartcube-logo-cube.svg" width="18"> [ChartCube](https://chartcube.alipay.com/) - Online chart making tool based on [G2Plot](https://github.com/antvis/G2Plot).
-
-<img src="https://gw.alipayobjects.com/zos/antfincdn/qxCT7b6aLE/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/) - A suite of plugins to enhance designers.
-
-<img src="https://ch-resources.oss-cn-shanghai.aliyuncs.com/images/kanaries-circular.png" width="18"> [Rath](https://github.com/Kanaries/Rath) - Augmented analytics tool with automated insight discovery and interactive visualization design.
