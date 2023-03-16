@@ -21,7 +21,7 @@ export const BaseIconButton: React.FC<BaseIconButtonProps> = ({ icon, onClick, d
   );
 };
 
-/** 内置的复制按钮 */
+/** default tool for copy */
 const defaultCopyButton = () => {
   return {
     type: 'copy',

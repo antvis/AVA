@@ -53,7 +53,7 @@ export type InsightCardProps = CommonProps &
     headerTools?: Tool[];
     /** tools in the footer of card, by default, there are copy and share tools */
     footerTools?: Tool[];
-    /** ntv schema 中，自己定制的 plugins */
+    /** custom plugins, should pass if your customized schema includes special plugins ntv schema 中，自己定制的 plugins */
     extraPlugins?: NtvPluginType[];
   };
 

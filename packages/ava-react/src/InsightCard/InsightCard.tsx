@@ -32,11 +32,11 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   ...restData
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
+  // TODO @chenluli if patterns are empty, need to calculate according to algorithms. status and error message are for future use.
   const [dataStatus] = useState<InsightDataStatus>('SUCCESS');
   const [errorMessage] = useState<string>('');
   const pluginManager = useRef<NtvPluginManager>(new NtvPluginManager([...insightCardPresetPlugins, ...extraPlugins]));
 
-  // TODO 如果没有 patterns, 计算
   const insightData: InsightData = {
     measures,
     algorithms,
@@ -64,7 +64,6 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       const html = await textExporter.getNarrativeHtml(ref.current);
       const plainText = contentSpec ? textExporter.getNarrativeText(contentSpec) : '';
       copyToClipboard(html, plainText);
-      // 传入组件的回调函数
       onCopy?.(insightData, ref.current);
     }
   };
@@ -93,16 +92,14 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   return (
     <div className={cx(className, prefixCls)} style={styles} ref={ref}>
-      {/* 标题区 */}
       <Title title={title} algorithms={algorithms} measures={measures} headerTools={headerTools} />
-      {/* 内容区 */}
+      {/* content */}
       <Spin spinning={dataStatus === 'RUNNING'}>
         {dataStatus === 'SUCCESS' && contentSpec ? (
           <>
             <div className={`${prefixCls}-insight-result-container`}>
               <NarrativeTextVis spec={contentSpec} size="small" pluginManager={pluginManager.current} />
             </div>
-            {/* 底部工具区，迷你卡片没有 */}
             {renderFooter()}
           </>
         ) : (

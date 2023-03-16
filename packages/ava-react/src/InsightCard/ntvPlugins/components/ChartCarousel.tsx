@@ -6,12 +6,7 @@ import { G2Chart } from './G2Chart';
 
 import type { G2Spec } from '@antv/g2';
 
-export const ChartCarousel = ({
-  charts,
-}: {
-  /** 图表类 schema, any 是因为不限制具体的图表类型 */
-  charts: G2Spec[];
-}) => {
+export const ChartCarousel = ({ charts }: { charts: G2Spec[] }) => {
   const [selectedChartIndex, setSelectedCardIndex] = useState(0);
 
   const onSelect = (value: number) => {
