@@ -1,8 +1,8 @@
 import React from 'react';
 
 import { createCustomBlockFactory } from '../../../NarrativeTextVis';
-import { CHART_CAROUSEL_PLUGIN_KEY } from '../../constants';
 import { ChartCarousel } from '../components/ChartCarousel';
+import { CHART_CAROUSEL_PLUGIN_KEY } from '../constants';
 import { ChartsSchema } from '../types';
 
 /** plugins to display charts in ntv */
