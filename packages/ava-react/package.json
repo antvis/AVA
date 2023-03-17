@@ -51,7 +51,6 @@
     ]
   },
   "dependencies": {
-    "@ant-design/icons": "^5.0.1",
     "@antv/ava": "^3.0.0-alpha.5",
     "@antv/g2": "^5.0.0-rc.1",
     "canvg": "^4.0.1",
