@@ -71,7 +71,7 @@ export type PatternInfo =
   | CorrelationInfo;
 
 /** explanation and visualization for insight */
-export interface NarrativeVisualizationSchema {
+export interface VisualizationSchema {
   chartType: ChartType;
   chartSchema: G2Spec;
   /**
@@ -89,7 +89,7 @@ export interface InsightInfo<T = PatternInfo> {
   score: number;
   data: Datum[];
   patterns: T[];
-  visualizationSchemas?: NarrativeVisualizationSchema[];
+  visualizationSchemas?: VisualizationSchema[];
 }
 
 /**

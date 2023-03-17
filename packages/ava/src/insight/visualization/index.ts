@@ -5,7 +5,7 @@ import {
   HomogeneousPatternInfo,
   InsightInfo,
   PatternInfo,
-  NarrativeVisualizationSchema,
+  VisualizationSchema,
   InsightOptions,
   VisualizationOptions,
   InsightType,
@@ -27,10 +27,10 @@ const ChartTypeMap: Record<InsightType, ChartType> = {
 export function getInsightVisualizationSchema(
   insight: InsightInfo<PatternInfo>,
   visualizationOptions: InsightOptions['visualization']
-): NarrativeVisualizationSchema[] {
+): VisualizationSchema[] {
   const { dimensions, patterns, measures } = insight;
 
-  const schemas: NarrativeVisualizationSchema[] = [];
+  const schemas: VisualizationSchema[] = [];
   const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
 
   const patternGroups = groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
@@ -98,10 +98,10 @@ function lowlight(pattern: HomogeneousPatternInfo, colorField: string) {
 export function getHomogeneousInsightVisualizationSchema(
   insight: InsightInfo<HomogeneousPatternInfo>,
   visualizationOptions: InsightOptions['visualization']
-): NarrativeVisualizationSchema[] {
+): VisualizationSchema[] {
   const { dimensions, patterns, measures } = insight;
 
-  const schemas: NarrativeVisualizationSchema[] = [];
+  const schemas: VisualizationSchema[] = [];
   const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
   const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
 
