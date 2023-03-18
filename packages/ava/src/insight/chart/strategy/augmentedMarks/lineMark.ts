@@ -1,18 +1,19 @@
 import { Mark } from '@antv/g2';
+import { isFunction } from 'lodash';
 
-import { COLOR } from '../../constants';
-import { LineMarkConfig } from '../../types';
+import { INSIGHT_COLOR_PLATTE } from '../../constants';
+import { LineMarkConfig, LineMarkData } from '../../types';
 
-export const lineMarkStrategy = ({ lineY, lineX, points, style, label }: LineMarkConfig): Mark => {
+export const lineMarkStrategy = ({ points, x, y }: LineMarkData, { style, label }: LineMarkConfig): Mark => {
   const common: Mark = {
     style: {
       lineDash: [2, 2],
-      stroke: COLOR.highlight,
+      stroke: INSIGHT_COLOR_PLATTE.highlight,
       ...style,
     },
     labels: [
       {
-        text: label,
+        text: isFunction(label) ? (d) => label(d) : label,
         selector: 'last',
         position: 'right',
         style: {
@@ -36,19 +37,19 @@ export const lineMarkStrategy = ({ lineY, lineX, points, style, label }: LineMar
     };
   }
 
-  if (lineX) {
+  if (x) {
     return {
       ...common,
       type: 'lineX',
-      data: [lineX],
+      data: [x],
     };
   }
 
-  if (lineY) {
+  if (y) {
     return {
       ...common,
       type: 'lineY',
-      data: [lineY],
+      data: [y],
     };
   }
   return null;

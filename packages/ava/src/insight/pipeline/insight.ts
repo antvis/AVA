@@ -6,8 +6,8 @@ import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 import { enumerateInsights } from './extract';
 import { dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
 import {
-  generateHomogeneousInsightVisualizationAndNarrativeSpec,
-  generateInsightVisualizationAndNarrativeSpec,
+  generateHomogeneousInsightVisualizationAndNarrativeSpec as generateHomogeneousInsightVisualizationSpec,
+  generateInsightVisualizationAndNarrativeSpec as generateInsightVisualizationSpec,
 } from './visualize';
 import { insightPriorityComparator, homogeneousInsightPriorityComparator } from './util';
 
@@ -103,12 +103,12 @@ export function generateInsightsWithVisualizationSpec(
   const { insights, homogeneousInsights } = extraction;
   const insightsWithVis = insights.map((item) => ({
     ...item,
-    visualizationSpecs: generateInsightVisualizationAndNarrativeSpec(item, options?.visualization),
+    visualizationSpecs: generateInsightVisualizationSpec(item, options?.visualization),
   }));
   const result: InsightsResult = { insights: insightsWithVis };
   if (homogeneousInsights && options?.homogeneous) {
     const homogeneousInsightsWithVis = homogeneousInsights.map((item) => {
-      const visualizationSpecs = generateHomogeneousInsightVisualizationAndNarrativeSpec(item, options.visualization);
+      const visualizationSpecs = generateHomogeneousInsightVisualizationSpec(item, options.visualization);
       const { data, measures, dimensions } = item;
       const insight = { ...item, visualizationSpecs };
       if (measures.length > 1) {

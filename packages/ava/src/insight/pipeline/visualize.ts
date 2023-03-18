@@ -10,8 +10,8 @@ import {
   VisualizationOptions,
   VisualizationSpec,
 } from '../types';
-import { generateInsightVisualizationSpec } from '../visualization';
-import { ChartTypeMap } from '../visualization/constants';
+import { generateInsightChartSpec } from '../chart';
+import { ChartTypeMap } from '../chart/constants';
 
 export const generateInsightVisualizationAndNarrativeSpec = (
   insight: InsightInfo<PatternInfo>,
@@ -20,14 +20,14 @@ export const generateInsightVisualizationAndNarrativeSpec = (
   const { patterns } = insight;
   const schemas: VisualizationSpec[] = [];
 
-  const patternGroups = groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
+  const patternGroups = groupBy(patterns, (pattern) => pattern.type);
 
   Object.entries(patternGroups).forEach(([chartType, patternGroup]: [string, PatternInfo[]]) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
     // todo generate narrative spec
     const narrativeSpec = [];
-    const chartSpec = generateInsightVisualizationSpec(insight, patternGroup);
+    const chartSpec = generateInsightChartSpec(insight, patternGroup);
     schemas.push({
       chartType: chartType as ChartType,
       chartSpec,
