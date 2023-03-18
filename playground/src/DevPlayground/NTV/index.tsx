@@ -11,7 +11,7 @@ import {
   createCustomPhraseFactory,
   seedToken,
 } from '../../../../packages/ava-react/src';
-import { generateTextSpec, NtvTypes } from '../../../../packages/ava/src';
+import { generateTextSpec, NtvTypes } from '../../../../packages/ava/lib';
 
 import fluctuationData from './mock-data';
 

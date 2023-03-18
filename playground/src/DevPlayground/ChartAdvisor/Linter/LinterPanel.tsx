@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import { Button, Divider, Row, Col } from 'antd';
-import { Specification } from '@antv/ava/src/common/types';
 
 import { Advisor, AdvisorTypes } from '../../../../../packages/ava/lib';
 import { Chart } from '../Chart';
@@ -32,7 +31,7 @@ export const LinterPanel = () => {
   const [lints, setLints] = useState<AdvisorTypes.Lint[]>([]);
 
   const getLint = () => {
-    const myLint = myAdvisor.lint({ spec: errorSpec as Specification });
+    const myLint = myAdvisor.lint({ spec: errorSpec as AdvisorTypes.Specification });
     setLints(myLint);
   };
 

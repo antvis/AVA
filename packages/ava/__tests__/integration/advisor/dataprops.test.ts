@@ -2,7 +2,8 @@ import { DataFrame } from '../../../src/data';
 import { Advisor } from '../../../src/advisor/index';
 import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../../../src/advisor/ruler';
 import { assembleDataProps } from '../../../src/advisor/advise-pipeline/advicesForChart';
-import { Specification } from '../../../src/common/types';
+
+import type { Specification } from '../../../src/common/types';
 
 const data = [
   { price: 100, type: 'A', volume: 1000 },
