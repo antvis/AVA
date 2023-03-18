@@ -41,7 +41,6 @@ export function IQR(data: number[], params?: IQRParams): IQRResult {
   const k = params?.k || 1.5;
 
   const sorted = data.slice().sort(ascending);
-
   const q25 = getQuartilePercentValue(sorted, 0.25);
   const q75 = getQuartilePercentValue(sorted, 0.75);
 
@@ -60,7 +59,6 @@ export function IQR(data: number[], params?: IQRParams): IQRResult {
 
   outliers.lower.threshold = q25 - k * iqr;
   outliers.upper.threshold = q75 + k * iqr;
-
   data.forEach((item, index) => {
     if (item <= outliers.lower.threshold) {
       outliers.lower.indexes.push(index);

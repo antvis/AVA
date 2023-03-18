@@ -1,8 +1,8 @@
-import { sortBy } from 'lodash';
+import { orderBy } from 'lodash';
 
 import { distinct } from '../../../data';
 import { categoryOutlier } from '../../algorithms';
-import { SignificanceBenchmark } from '../../constant';
+import { IQR_K, SignificanceBenchmark } from '../../constant';
 import { Datum, Measure, CategoryOutlierInfo } from '../../types';
 import { calculatePValue } from '../util';
 
@@ -18,46 +18,48 @@ type OutlierCandidateItem = {
   value: number;
 };
 
-export const findOutliers = (values: number[]): OutlierItem[] => {
-  const IQRResult = categoryOutlier.IQR(values, { k: 1.8 });
-
+export const findOutliers = (values: number[]): { outliers: OutlierItem[]; thresholds: [number, number] } => {
+  const IQRResult = categoryOutlier.IQR(values, { k: IQR_K });
   const lowerOutlierIndexes = IQRResult.lower.indexes;
   const upperOutlierIndexes = IQRResult.upper.indexes;
   const candidates: OutlierCandidateItem[] = [];
-  lowerOutlierIndexes.forEach((item) => {
-    const value = values[item];
+  lowerOutlierIndexes.forEach((index) => {
+    const value = values[index];
     candidates.push({
-      index: item,
+      index,
       type: 'lower',
       value,
     });
   });
-  upperOutlierIndexes.forEach((item) => {
-    const value = values[item];
+  upperOutlierIndexes.forEach((index) => {
+    const value = values[index];
     candidates.push({
-      index: item,
+      index,
       type: 'upper',
       value,
     });
   });
-  const sortedCandidates = sortBy(candidates, (item) => Math.abs(IQRResult[item.type].threshold - item.value));
+  const sortedCandidates = orderBy(candidates, (item) => Math.abs(IQRResult[item.type].threshold - item.value), [
+    'desc',
+  ]);
 
-  const results: OutlierItem[] = [];
+  const outliers: OutlierItem[] = [];
   for (let i = 0; i < sortedCandidates.length; i += 1) {
     const candidate = sortedCandidates[i];
-    const pValue = calculatePValue(values, candidate.value);
-    const significance = 1 - pValue;
+    const { value } = candidate;
+    const pValue = calculatePValue(values, value);
+    const significance = pValue > 0.5 ? pValue : 1 - pValue;
 
     if (significance < SignificanceBenchmark) {
       break;
     }
-    results.push({
+    outliers.push({
       index: candidate.index,
       value: candidate.value,
       significance,
     });
   }
-  return results;
+  return { outliers, thresholds: [IQRResult.lower.threshold, IQRResult.upper.threshold] };
 };
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CategoryOutlierInfo[] {
@@ -66,7 +68,8 @@ export function extractor(data: Datum[], dimensions: string[], measures: Measure
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   if (distinct(values) === 1) return [];
-  const outliers: CategoryOutlierInfo[] = findOutliers(values).map((item) => {
+  const { outliers } = findOutliers(values);
+  const categoryOutliers: CategoryOutlierInfo[] = outliers.map((item) => {
     const { index, significance } = item;
     return {
       type: 'category_outlier',
@@ -78,5 +81,5 @@ export function extractor(data: Datum[], dimensions: string[], measures: Measure
       y: data[index][measure] as number,
     };
   });
-  return outliers;
+  return categoryOutliers;
 }

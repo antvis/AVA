@@ -1,4 +1,6 @@
 import { distinct, lowess } from '../../../data';
+import { LowessOutput } from '../../../data/statistics/types';
+import { LOWESS_N_STEPS, RESIDUALS_OUTLIERS_LIMIT } from '../../constant';
 
 import { findOutliers } from './categoryOutlier';
 
@@ -11,19 +13,23 @@ type OutlierItem = {
 };
 
 // detect the outliers using LOWESS
-function findTimeSeriesOutliers(values: number[]): OutlierItem[] {
+function findTimeSeriesOutliers(values: number[]): {
+  outliers: OutlierItem[];
+  baselines: LowessOutput['y'];
+  thresholds: [number, number];
+} {
   const indexes = Array(values.length)
     .fill(0)
     .map((_, index) => index);
-  const fitted = lowess(indexes, values, { nSteps: 2 });
+  const baseline = lowess(indexes, values, { nSteps: LOWESS_N_STEPS });
   const max = Math.max(...values);
-  const min = Math.max(...values);
+  const min = Math.min(...values);
   const range = max - min;
-  const residuals = values.map((item, index) => item - fitted.y[index]);
-  const residualsOutliers: OutlierItem[] = findOutliers(residuals);
-  const candidates = residualsOutliers.filter((item) => Math.abs(item.value) / range >= 0.05);
+  const residuals = values.map((item, index) => item - baseline.y[index]);
+  const { outliers: residualsOutliers, thresholds } = findOutliers(residuals);
+  const outliers = residualsOutliers.filter((item) => Math.abs(item.value) / range >= RESIDUALS_OUTLIERS_LIMIT);
 
-  return candidates;
+  return { outliers, baselines: baseline.y, thresholds };
 }
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): TimeSeriesOutlierInfo[] {
@@ -32,7 +38,8 @@ export function extractor(data: Datum[], dimensions: string[], measures: Measure
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   if (distinct(values) === 1) return [];
-  const outliers: TimeSeriesOutlierInfo[] = findTimeSeriesOutliers(values).map((item) => {
+  const { outliers, baselines, thresholds } = findTimeSeriesOutliers(values);
+  const timeSeriesOutliers: TimeSeriesOutlierInfo[] = outliers.map((item) => {
     const { index, significance } = item;
     return {
       type: 'time_series_outlier',
@@ -42,7 +49,9 @@ export function extractor(data: Datum[], dimensions: string[], measures: Measure
       index,
       x: data[index][dimension],
       y: data[index][measure] as number,
+      baselines,
+      thresholds,
     };
   });
-  return outliers;
+  return timeSeriesOutliers;
 }
