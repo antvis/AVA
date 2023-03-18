@@ -1,7 +1,7 @@
 import Heap from 'heap-js';
 
 import { InsightDefaultLimit } from '../constant';
-import { getInsightVisualizationSchema, getHomogeneousInsightVisualizationSchema } from '../visualization';
+import { getInsightVisualizationSpec, getHomogeneousInsightVisualizationSpec } from '../visualization';
 import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 
 import { enumerateInsights } from './extract';
@@ -93,21 +93,21 @@ export function extractInsights(sourceData: Datum[], options?: InsightOptions): 
   return result;
 }
 
-export function generateInsightsWithVisualizationSchemas(
+export function generateInsightsWithVisualizationSpec(
   extraction: InsightsResult,
   options?: InsightOptions
 ): InsightsResult {
   const { insights, homogeneousInsights } = extraction;
   const insightsWithVis = insights.map((item) => ({
     ...item,
-    visualizationSchemas: getInsightVisualizationSchema(item, options?.visualization),
+    visualizationSpecs: getInsightVisualizationSpec(item, options?.visualization),
   }));
   const result: InsightsResult = { insights: insightsWithVis };
   if (homogeneousInsights && options?.homogeneous) {
     const homogeneousInsightsWithVis = homogeneousInsights.map((item) => {
-      const visualizationSchemas = getHomogeneousInsightVisualizationSchema(item, options.visualization);
+      const visualizationSpecs = getHomogeneousInsightVisualizationSpec(item, options.visualization);
       const { data, measures, dimensions } = item;
-      const insight = { ...item, visualizationSchemas };
+      const insight = { ...item, visualizationSpecs };
       if (measures.length > 1) {
         insight.data = aggregateWithMeasures(data, dimensions[0].fieldName, measures);
       } else {

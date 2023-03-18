@@ -35,7 +35,7 @@ order: 3
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| summaryType |  `text`\|`schema` | 洞察描述返回纯文本或者文本结构化描述 | 'text' |
+| summaryType |  `text`\|`spec` | 洞察描述返回纯文本或者文本结构化描述 | 'text' |
 
 
 * ***InsightInfo|HomogeneousInsightInfo*** 洞察信息
@@ -47,7 +47,7 @@ order: 3
 | measures |  `Measure[]` | 该洞察数据主体的计算指标。 | `[{ field: 'life_expect', method: 'MEAN' }]` |
 | data |  `Datum[]` | 该洞察数据主体的相关数据。 | `[{ country: 'China', life_expect: 61 }]` |
 | patterns |  `PatternInfo[]` | 该洞察数据主体上的模式集合 | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |
-| visualizationSchemas |  `VisualizationSchema[]` | 该洞察的可视化方案，包含图表类型、标题、洞察描述以及图表配置（基于G2Plot） | `[{ type: 'column_chart', caption: string, narrativeSchema: string[] | IPhrase[][], chartSchema: G2PlotConfig }]` |
+| visualizationSpecs |  `VisualizationSpec[]` | 该洞察的可视化方案，包含图表类型、标题、洞察描述以及图表配置（基于G2Plot） | `[{ type: 'column_chart', caption: string, narrativeSpec: string[] | IPhrase[][], chartSpec: G2PlotConfig }]` |
 
 <embed src='@/docs/common/phrase.zh.md'></embed>
 ### 用例
