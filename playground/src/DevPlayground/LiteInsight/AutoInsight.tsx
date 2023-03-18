@@ -6,7 +6,7 @@ import { GiftOutlined } from '@ant-design/icons';
 import datasets from 'vega-datasets';
 import { InsightCard } from 'antv-site-demo-rc';
 
-import { getInsights, InsightTypes } from '../../../../packages/ava/lib';
+import { getInsights, InsightTypes } from '../../../../packages/ava/src';
 
 const { Option } = Select;
 
@@ -25,51 +25,58 @@ const datasetConfigs = {
   gapminder: {
     limit: 30,
     measures: [
-      { field: 'life_expect', method: 'MEAN' },
-      { field: 'pop', method: 'SUM' },
-      { field: 'fertility', method: 'MEAN' },
+      { fieldName: 'life_expect', method: 'MEAN' },
+      { fieldName: 'pop', method: 'SUM' },
+      { fieldName: 'fertility', method: 'MEAN' },
     ],
     impactMeasures: [
-      { field: 'life_expect', method: 'COUNT' },
-      { field: 'pop', method: 'COUNT' },
-      { field: 'fertility', method: 'COUNT' },
+      { fieldName: 'life_expect', method: 'COUNT' },
+      { fieldName: 'pop', method: 'COUNT' },
+      { fieldName: 'fertility', method: 'COUNT' },
     ],
   },
   jobs: {
     limit: 60,
-    dimensions: ['sex', 'year', 'job'],
-    measures: [{ field: 'count', method: 'SUM' }],
-    impactMeasures: [{ field: 'count', method: 'COUNT' }],
+    dimensions: [{ fieldName: 'sex' }, { fieldName: 'year' }, { fieldName: 'job' }],
+    measures: [{ fieldName: 'count', method: 'SUM' }],
+    impactMeasures: [{ fieldName: 'count', method: 'COUNT' }],
   },
   'unemployment-across-industries': {
     limit: 60,
-    dimensions: ['series', 'year', 'month', 'date'],
+    dimensions: [{ fieldName: 'series' }, { fieldName: 'year' }, { fieldName: 'month' }, { fieldName: 'date' }],
     measures: [
-      { field: 'count', method: 'SUM' },
-      { field: 'rate', method: 'SUM' },
+      { fieldName: 'count', method: 'SUM' },
+      { fieldName: 'rate', method: 'SUM' },
     ],
-    impactMeasures: [{ field: 'count', method: 'COUNT' }],
+    impactMeasures: [{ fieldName: 'count', method: 'COUNT' }],
   },
   income: {
     limit: 30,
-    dimensions: ['name', 'region', 'group'],
+    dimensions: [{ fieldName: 'name' }, { fieldName: 'region' }, { fieldName: 'group' }],
     measures: [
-      { field: 'pct', method: 'SUM' },
-      { field: 'total', method: 'SUM' },
-      { field: 'id', method: 'SUM' },
+      { fieldName: 'pct', method: 'SUM' },
+      { fieldName: 'total', method: 'SUM' },
+      { fieldName: 'id', method: 'SUM' },
     ],
-    impactMeasures: [{ field: 'pct', method: 'COUNT' }],
+    impactMeasures: [{ fieldName: 'pct', method: 'COUNT' }],
   },
   // mock url: https://gw.alipayobjects.com/os/antfincdn/iee8e%26sH%26O/games.json
   games: {
-    dimensions: ['Platform', 'Year', 'Genre', 'Publisher'],
-    impactMeasures: [{ field: 'NA_Sales', method: 'COUNT' }],
+    dimensions: [{ fieldName: 'Platform' }, { fieldName: 'Year' }, { fieldName: 'Genre' }, { fieldName: 'Publisher' }],
+    impactMeasures: [{ fieldName: 'NA_Sales', method: 'COUNT' }],
+  },
+  anomaly: {
+    limit: 60,
+    dimensions: [{ fieldName: 'date' }],
+    measures: [{ fieldName: 'discountPrice', method: 'SUM' }],
+    impactMeasures: [{ fieldName: 'discountPrice', method: 'COUNT' }],
+    visualization: true,
   },
 };
 
 export default function App() {
   const [insights, setInsights] = useState<InsightTypes.InsightInfo<InsightTypes.PatternInfo>[]>([]);
-  const [dataset, setDataset] = useState('gapminder');
+  const [dataset, setDataset] = useState('anomaly');
   const [data, setData] = useState<InsightTypes.Datum[]>([]);
   const [tableColumns, setTableColumns] = useState<InsightTypes.Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
@@ -77,9 +84,95 @@ export default function App() {
   const [showTextSpec, setShowTextSpec] = useState<boolean>(false);
 
   const fetchDataset = async () => {
-    const datasetName = `${dataset}.json`;
-    setDataLoading(true);
-    const data = await datasets[datasetName]();
+    let data;
+    if (dataset === 'anomaly') {
+      data = [
+        {
+          date: '2019-08-12',
+          price: 967.95,
+          discountPrice: 781.99,
+        },
+        {
+          date: '2019-08-13',
+          price: 911.22,
+          discountPrice: 835.71,
+        },
+        {
+          date: '2019-08-14',
+          price: 738.11,
+          discountPrice: 839.24,
+        },
+        {
+          date: '2019-08-15',
+          price: 784.52,
+          discountPrice: 883.51,
+        },
+        {
+          date: '2019-08-16',
+          price: 983.89,
+          discountPrice: 873.98,
+        },
+        {
+          date: '2019-08-17',
+          price: 912.87,
+          discountPrice: 802.78,
+        },
+        {
+          date: '2019-08-18',
+          price: 1153.12,
+          discountPrice: 807.05,
+        },
+        {
+          date: '2019-08-19',
+          price: 1012.87,
+          discountPrice: 885.12,
+        },
+        {
+          date: '2019-08-20',
+          price: 1118.88,
+          discountPrice: 1018.85,
+        },
+        {
+          date: '2019-08-21',
+          price: 1054.53,
+          discountPrice: 934.49,
+        },
+        {
+          date: '2019-08-22',
+          price: 1234.53,
+          discountPrice: 908.74,
+        },
+        {
+          date: '2019-08-23',
+          price: 1312.34,
+          discountPrice: 930.55,
+        },
+        {
+          date: '2019-08-24',
+          price: 825.53,
+          discountPrice: 978.53,
+        },
+        {
+          date: '2019-08-25',
+          price: 1054.53,
+          discountPrice: 931.47,
+        },
+        {
+          date: '2019-08-26',
+          price: 1119.53,
+          discountPrice: 891,
+        },
+        {
+          date: '2019-08-27',
+          price: 1257.68,
+          discountPrice: 836.41,
+        },
+      ];
+    } else {
+      const datasetName = `${dataset}.json`;
+      setDataLoading(true);
+      data = await datasets[datasetName]();
+    }
     if (data) {
       const columns = Object.keys(data?.[0] || {}).map((item, index) => ({
         title: item,
@@ -96,6 +189,7 @@ export default function App() {
   const getDataInsights = async () => {
     setInsightLoading(true);
     const { insights } = getInsights(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true });
+
     if (insights) setInsights(insights);
   };
 
