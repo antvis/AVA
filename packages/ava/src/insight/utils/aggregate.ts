@@ -41,7 +41,7 @@ export function aggregate(data: Datum[], groupByField: string, measures: Measure
   return entries.map(([value, dataGroup]) => {
     const datum: Datum = { [groupByField]: value };
     measures.forEach((measure) => {
-      const { field: measureField, method } = measure;
+      const { fieldName: measureField, method } = measure;
       const aggregator = AggregatorMap[method];
       datum[measureField] = aggregator(dataGroup, measureField);
     });
@@ -54,7 +54,7 @@ export function aggregateWithMeasures(data: Datum[], groupByField: string, measu
   const result: Datum[] = [];
   Object.entries(grouped).forEach(([value, dataGroup]) => {
     measures.forEach((measure) => {
-      const { field: measureField, method } = measure;
+      const { fieldName: measureField, method } = measure;
       if (measureField in dataGroup[0]) {
         const aggregator = AggregatorMap[method];
         const measureValue = aggregator(dataGroup, measureField);
@@ -71,7 +71,7 @@ export function aggregateWithMeasures(data: Datum[], groupByField: string, measu
 
 export function aggregateWithSeries(data: Datum[], groupByField: string, measure: Measure, expandingField: string) {
   const grouped = groupBy(data, groupByField);
-  const { field: measureField, method } = measure;
+  const { fieldName: measureField, method } = measure;
   const aggregator = AggregatorMap[method];
   return flatten(
     Object.entries(grouped).map(([value, dataGroup]) => {
