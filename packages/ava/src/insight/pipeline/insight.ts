@@ -1,11 +1,11 @@
 import Heap from 'heap-js';
 
 import { InsightDefaultLimit } from '../constant';
-import { getInsightVisualizationSpec, getHomogeneousInsightVisualizationSpec } from '../visualization';
 import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 
 import { enumerateInsights } from './extract';
 import { dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
+import { generateHomogeneousInsightVisualizationSpec, generateInsightVisualizationSpec } from './visualize';
 import { insightPriorityComparator, homogeneousInsightPriorityComparator } from './util';
 
 import type {
@@ -100,12 +100,12 @@ export function generateInsightsWithVisualizationSpec(
   const { insights, homogeneousInsights } = extraction;
   const insightsWithVis = insights.map((item) => ({
     ...item,
-    visualizationSpecs: getInsightVisualizationSpec(item, options?.visualization),
+    visualizationSpecs: generateInsightVisualizationSpec(item, options?.visualization),
   }));
   const result: InsightsResult = { insights: insightsWithVis };
   if (homogeneousInsights && options?.homogeneous) {
     const homogeneousInsightsWithVis = homogeneousInsights.map((item) => {
-      const visualizationSpecs = getHomogeneousInsightVisualizationSpec(item, options.visualization);
+      const visualizationSpecs = generateHomogeneousInsightVisualizationSpec(item, options.visualization);
       const { data, measures, dimensions } = item;
       const insight = { ...item, visualizationSpecs };
       if (measures.length > 1) {
