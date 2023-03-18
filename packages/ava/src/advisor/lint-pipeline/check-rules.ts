@@ -33,7 +33,7 @@ export function checkRules(
   if (!dataProps || !dataProps.length) {
     let dataFrame: DataFrame;
     try {
-      dataFrame = new DataFrame(spec.data.values as Datum);
+      dataFrame = new DataFrame(spec.data as Datum);
       dataProps = dataFrame.info() as BasicDataPropertyForAdvice[];
     } catch (error) {
       // if the input data cannot be transformed into DataFrame

@@ -2,6 +2,7 @@ import { hexToColor, colorToHex, paletteGeneration, colorSimulation } from '@ant
 
 import { deepMix, computeScore } from '../utils';
 import { CHART_IDS } from '../../ckb';
+import { getSpecWithEncodeType } from '../utils/inferDataType';
 
 import { getChartTypeSpec } from './spec-mapping';
 
@@ -25,7 +26,7 @@ import type {
  */
 // TODO @neoddish: refactor since 3.0.0
 type PipeAdvisorOptions = AdvisorOptions & { exportLog?: boolean };
-declare type ChartID = typeof CHART_IDS[number];
+declare type ChartID = (typeof CHART_IDS)[number];
 
 /**
  * Run all rules for a given chart type, get scoring result.
@@ -98,8 +99,9 @@ const CATEGORICAL_PALETTE_TYPES = ['polychromatic', 'split-complementary', 'tria
 const DEFAULT_COLOR = '#678ef2';
 
 function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: Specification, theme: Theme) {
+  const specWithEncodeType = getSpecWithEncodeType(chartSpec);
   const { primaryColor } = theme;
-  const layerEnc = 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
+  const layerEnc = specWithEncodeType.encode;
   if (primaryColor && layerEnc) {
     // convert primary color
     const color = hexToColor(primaryColor);
@@ -118,20 +120,14 @@ function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: Specific
         count,
       });
       return {
-        encoding: {
-          color: {
-            scale: {
-              range: palette.colors.map((color) => colorToHex(color)),
-            },
-          },
+        scale: {
+          color: { range: palette.colors.map((color) => colorToHex(color)) },
         },
       };
     }
     return {
-      mark: {
-        style: {
-          color: colorToHex(color),
-        },
+      style: {
+        fill: colorToHex(color),
       },
     };
   }
@@ -145,7 +141,8 @@ function applySmartColor(
   colorType: ColorSchemeType,
   simulationType: SimulationType
 ) {
-  const layerEnc = 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
+  const specWithEncodeType = getSpecWithEncodeType(chartSpec);
+  const layerEnc = specWithEncodeType.encode;
   if (primaryColor && layerEnc) {
     // convert primary color
     const color = hexToColor(primaryColor);
@@ -166,22 +163,16 @@ function applySmartColor(
         count,
       });
       return {
-        encoding: {
-          color: {
-            scale: {
-              range: palette.colors.map((color) => {
-                return colorToHex(simulationType ? colorSimulation(color, simulationType) : color);
-              }),
-            },
-          },
+        scale: {
+          range: palette.colors.map((color) => {
+            return colorToHex(simulationType ? colorSimulation(color, simulationType) : color);
+          }),
         },
       };
     }
     return {
-      mark: {
-        style: {
-          color: colorToHex(color),
-        },
+      style: {
+        fill: colorToHex(color),
       },
     };
   }
@@ -262,14 +253,14 @@ export function dataToAdvices(
     // step 3: apply design rules
     if (chartTypeSpec && enableRefine) {
       const partEncSpec = applyDesignRules(t, dataProps, ruleBase, chartTypeSpec);
-      deepMix(chartTypeSpec.layer[0], partEncSpec);
+      deepMix(chartTypeSpec, partEncSpec);
     }
 
     // step 4: custom theme
     if (chartTypeSpec) {
       if (theme && !smartColorOn) {
         const partEncSpec = applyTheme(dataProps, chartTypeSpec, theme);
-        deepMix(chartTypeSpec.layer[0], partEncSpec);
+        deepMix(chartTypeSpec, partEncSpec);
       } else if (smartColorOn) {
         /**
          * `colorTheme`: theme for SmartColor
@@ -286,7 +277,7 @@ export function dataToAdvices(
          */
         const simulationType = colorOptions?.simulationType;
         const partEncSpec = applySmartColor(dataProps, chartTypeSpec, colorTheme, colorType, simulationType);
-        deepMix(chartTypeSpec.layer[0], partEncSpec);
+        deepMix(chartTypeSpec, partEncSpec);
       }
     }
 

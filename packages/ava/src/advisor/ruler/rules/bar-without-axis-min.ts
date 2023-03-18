@@ -25,7 +25,9 @@ export const barWithoutAxisMin: RuleModule = {
   optimizer: (_, chartSpec: ChartSpec): object => {
     const { scale } = chartSpec;
     if (!scale) return {};
+    // @ts-ignore 待 g2 发版后去掉@ts-ignore
     const xMin = scale.x?.domainMin;
+    //  @ts-ignore 同上
     const yMin = scale.y?.domainMin;
     if (xMin || yMin) {
       const newScale = JSON.parse(JSON.stringify(scale));
