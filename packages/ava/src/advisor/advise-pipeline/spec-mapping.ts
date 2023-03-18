@@ -7,7 +7,7 @@ import type { CkbTypes } from '../../ckb';
 import type { Advice } from '../types';
 import type { BasicDataPropertyForAdvice } from '../ruler';
 
-declare type ChartID = typeof CHART_IDS[number];
+declare type ChartID = (typeof CHART_IDS)[number];
 
 /* !!!START pie_chart & donut_chart ------------------- */
 function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, ReturnField] {
@@ -27,6 +27,7 @@ function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['
       color: field4Color.name,
       y: field4Angle.name,
     },
+    transform: [{ type: 'stackY' }],
     coordinate: { type: 'theta' },
   };
   return spec;
@@ -43,6 +44,7 @@ function donutChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice
       color: field4Color.name,
       y: field4Angle.name,
     },
+    transform: [{ type: 'stackY' }],
     coordinate: { type: 'theta', innerRadius: 0.6 },
   };
   return spec;

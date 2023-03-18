@@ -40,33 +40,19 @@ const toIronball = (data, dataProps) => {
   if (!fieldInterval) return null;
 
   const spec = {
-    basis: {
-      type: 'chart',
+    type: 'interval',
+    data,
+    encode: {
+      y: fieldInterval.name,
     },
-    data: {
-      type: 'json-array',
-      values: data,
-    },
-    layer: [
-      {
-        mark: 'arc',
-        encoding: {
-          theta: {
-            field: fieldInterval.name,
-            type: 'quantitative',
-          },
-        },
-      },
-    ],
+    transform: [{ type: 'stackY' }],
+    coordinate: { type: 'theta' },
   };
 
   if (fieldNominal) {
-    spec.layer[0].encoding.color = {
-      field: fieldNominal.name,
-      type: 'quantitative',
-      scale: {
-        range: ['#686971'],
-      },
+    spec.encode.color = fieldNominal.name;
+    spec.scale.color = {
+      range: ['#686971'],
     };
   }
 

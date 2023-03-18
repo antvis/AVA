@@ -78,6 +78,7 @@ describe('init Advisor', () => {
           color: field4Color.name,
           y: field4Angle.name,
         },
+        transform: [{ type: 'stackY' }],
         coordinate: { type: 'theta', innerRadius: 0.8 },
       };
       return spec;
