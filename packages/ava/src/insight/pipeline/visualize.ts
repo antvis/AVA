@@ -1,0 +1,65 @@
+import { get, groupBy } from 'lodash';
+
+import { HomogeneousNarrativeGenerator } from '../narrative';
+import {
+  ChartType,
+  HomogeneousPatternInfo,
+  InsightInfo,
+  InsightOptions,
+  PatternInfo,
+  VisualizationOptions,
+  VisualizationSpec,
+} from '../types';
+import { generateInsightVisualizationSpec } from '../visualization';
+import { ChartTypeMap } from '../visualization/constants';
+
+export const generateInsightVisualizationAndNarrativeSpec = (
+  insight: InsightInfo<PatternInfo>,
+  visualizationOptions: InsightOptions['visualization']
+): VisualizationSpec[] => {
+  const { patterns } = insight;
+  const schemas: VisualizationSpec[] = [];
+
+  const patternGroups = groupBy(patterns, (pattern) => ChartTypeMap[pattern.type] as ChartType);
+
+  Object.entries(patternGroups).forEach(([chartType, patternGroup]: [string, PatternInfo[]]) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
+    // todo generate narrative spec
+    const narrativeSpec = [];
+    const chartSpec = generateInsightVisualizationSpec(insight, patternGroup);
+    schemas.push({
+      chartType: chartType as ChartType,
+      chartSpec,
+      narrativeSpec,
+    });
+  });
+  return schemas;
+};
+
+// todo: 组装 ntv spec 和 chart spec
+export const generateHomogeneousInsightVisualizationAndNarrativeSpec = (
+  insight: InsightInfo<HomogeneousPatternInfo>,
+  visualizationOptions: InsightOptions['visualization']
+): VisualizationSpec[] => {
+  const { patterns } = insight;
+
+  const schemas: VisualizationSpec[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
+
+  patterns.forEach((pattern) => {
+    const { insightType } = pattern;
+    const chartType = ChartTypeMap[insightType];
+    const narrativeSpec = [];
+    const chartSpec = {};
+    schemas.push({
+      chartType,
+      chartSpec,
+      narrativeSpec,
+    });
+  });
+  return schemas;
+};

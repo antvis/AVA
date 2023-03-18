@@ -67,11 +67,11 @@ export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart' | 'scatter_p
 export type PatternInfo =
   | CategoryOutlierInfo
   | TimeSeriesOutlierInfo
-  | ChangePointInfo
   | LowVarianceInfo
   | TrendInfo
   | ChangePointInfo
-  | CorrelationInfo;
+  | CorrelationInfo
+  | MajorityInfo;
 
 /** explanation and visualization for insight */
 export interface VisualizationSpec {

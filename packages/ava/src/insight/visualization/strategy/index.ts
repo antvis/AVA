@@ -5,3 +5,4 @@ export { changePointStrategy } from './changePoint';
 export { majorityStrategy } from './majority';
 export { correlationStrategy } from './correlation';
 export { homogeneousStrategy } from './homogeneous';
+export { timeSeriesOutlierStrategy } from './timeSeriesOutlier';
