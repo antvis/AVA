@@ -13,7 +13,7 @@ import {
 import { generateInsightChartSpec } from '../chart';
 import { ChartTypeMap } from '../chart/constants';
 
-export const generateInsightVisualizationAndNarrativeSpec = (
+export const generateInsightVisualizationSpec = (
   insight: InsightInfo<PatternInfo>,
   visualizationOptions: InsightOptions['visualization']
 ): VisualizationSpec[] => {
@@ -38,7 +38,7 @@ export const generateInsightVisualizationAndNarrativeSpec = (
 };
 
 // todo: 组装 ntv spec 和 chart spec
-export const generateHomogeneousInsightVisualizationAndNarrativeSpec = (
+export const generateHomogeneousInsightVisualizationSpec = (
   insight: InsightInfo<HomogeneousPatternInfo>,
   visualizationOptions: InsightOptions['visualization']
 ): VisualizationSpec[] => {

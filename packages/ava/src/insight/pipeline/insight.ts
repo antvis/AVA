@@ -5,10 +5,7 @@ import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 
 import { enumerateInsights } from './extract';
 import { dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
-import {
-  generateHomogeneousInsightVisualizationAndNarrativeSpec as generateHomogeneousInsightVisualizationSpec,
-  generateInsightVisualizationAndNarrativeSpec as generateInsightVisualizationSpec,
-} from './visualize';
+import { generateHomogeneousInsightVisualizationSpec, generateInsightVisualizationSpec } from './visualize';
 import { insightPriorityComparator, homogeneousInsightPriorityComparator } from './util';
 
 import type {
