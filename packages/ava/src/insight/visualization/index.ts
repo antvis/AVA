@@ -51,7 +51,7 @@ export function getInsightVisualizationSpec(
     };
     specs.push({
       chartType: chartType as ChartType,
-      chartSpec: chartSpec,
+      chartSpec,
       // @ts-ignore TODO @yuxi modify ntv generator and put caption into narrativeSpec
       narrativeSpec:
         summaryType === 'spec'
@@ -134,7 +134,7 @@ export function getHomogeneousInsightVisualizationSpec(
     };
     specs.push({
       chartType,
-      chartSpec: chartSpec,
+      chartSpec,
       // @ts-ignore TODO @yuxi modify ntv generator and put caption into narrativeSpec
       narrativeSpec: summaryType === 'spec' ? [summary.getSpec()] : [summary.getContent()],
     });
