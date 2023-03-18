@@ -9,7 +9,7 @@ import { isNil } from 'lodash';
 export const cdf = (x: number, mu: number = 0, sigma: number = 1): number => {
   if (sigma < 0 || [x, mu, sigma].some((value) => isNil(value))) return NaN;
   // transfer to standard normal distribution
-  const normalX = (x - mu) / sigma;
+  const normalX = Math.abs((x - mu) / sigma);
   /** probability density function of the standard normal distribution */
   const Zx = (1 / Math.sqrt(2 * Math.PI)) * Math.exp((-1 * normalX ** 2) / 2);
   /**
@@ -19,5 +19,5 @@ export const cdf = (x: number, mu: number = 0, sigma: number = 1): number => {
   const t = 1 / (1 + 0.33267 * normalX);
   // error less than 1e-5
   const Px = 1 - Zx * (0.4361836 * t - 0.1201676 * t ** 2 + 0.937298 * t ** 3);
-  return Px;
+  return x > mu ? Px : 1 - Px;
 };
