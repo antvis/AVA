@@ -28,7 +28,7 @@ const QUANTITY_LIMIT = 6;
  */
 export function homogeneousStrategy(variableMap: HomogeneousInfo) {
   const phrases = new PhrasesBuilder();
-  const { subspace, measures, breakdown, type, insightType, childPattern, commSet, exc } = variableMap;
+  const { subspace, measures, breakdown, type, insightType, childPattern, commonSet, exceptions } = variableMap;
   const hasSubspace = subspace.length > 0;
 
   if (hasSubspace) {
@@ -36,7 +36,8 @@ export function homogeneousStrategy(variableMap: HomogeneousInfo) {
   }
 
   if (type === 'commonness') {
-    const subjects = commSet.length > QUANTITY_LIMIT ? commSet.slice(0, QUANTITY_LIMIT - 1).concat('...') : commSet;
+    const subjects =
+      commonSet.length > QUANTITY_LIMIT ? commonSet.slice(0, QUANTITY_LIMIT - 1).concat('...') : commonSet;
     subjects.forEach((item, index) => {
       phrases.add(item, 'dim_value');
       if (index < subjects.length - 2) {
@@ -68,14 +69,14 @@ export function homogeneousStrategy(variableMap: HomogeneousInfo) {
     phrases.add(`${y}`, 'metric_value');
   }
 
-  if (type === 'exception' && exc) {
+  if (type === 'exception' && exceptions) {
     phrases.addSymbol('punctuation_comma');
     phrases.add('except');
-    exc.forEach((item, index) => {
+    exceptions.forEach((item, index) => {
       phrases.add(item, 'dim_value');
-      if (index < exc.length - 2) {
+      if (index < exceptions.length - 2) {
         phrases.addSymbol('punctuation_comma');
-      } else if (index === exc.length - 2) {
+      } else if (index === exceptions.length - 2) {
         phrases.add('and');
       }
     });

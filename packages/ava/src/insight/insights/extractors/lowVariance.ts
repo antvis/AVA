@@ -33,7 +33,7 @@ export function findLowVariance(values: number[], params?: LowVarianceParams): L
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): LowVarianceInfo[] {
   const dimension = dimensions[0];
-  const measure = measures[0].field;
+  const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];
 
   const values = data.map((item) => item?.[measure] as number);

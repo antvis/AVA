@@ -1,13 +1,18 @@
 import { sumBy } from 'lodash';
 
-import { sign, unique } from '../utils/common';
-import { TrendType } from '../types';
-import { normalDistributionQuantile, cdf } from '../../data';
+import { sign, unique } from '../../insight/utils/common';
+import { TrendType } from '../../insight/types';
+import { normalDistributionQuantile, cdf } from '..';
 
-// http://vsp.pnnl.gov/help/Vsample/Design_Trend_Mann_Kendall.htm
-// the Mann-Kendall (MK) test is to statistically assess if there
-// is a monotonic upward or downward trend of the variable of
-// interest over time.
+/**
+ * http://vsp.pnnl.gov/help/Vsample/Design_Trend_Mann_Kendall.htm
+   the Mann-Kendall (MK) test is to statistically assess if there
+   is a monotonic upward or downward trend of the variable of
+   interest over time.
+   使用 Mann-Kendall 单调趋势检验判断趋势是否有方向性（上升/下降）
+ * @param data 
+ * @param alpha 
+ */
 export function mkTest(data: number[], alpha: number = 0.05) {
   const length = data?.length;
   let S = 0;

@@ -1,4 +1,4 @@
-import { ChangePoint } from '../../algorithms';
+import { changePoint } from '../../algorithms';
 
 import type { Datum, ChangePointInfo, Measure } from '../../types';
 
@@ -10,7 +10,7 @@ type ChangePointItem = {
 const SignificanceBenchmark = 0.85;
 
 export const findChangePoints = (series: number[]): ChangePointItem[] => {
-  const results = ChangePoint.Bayesian(series);
+  const results = changePoint.Bayesian(series);
 
   const changePointsResult: ChangePointItem[] = [];
 

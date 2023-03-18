@@ -1,7 +1,7 @@
 import { sortBy } from 'lodash';
 
 import { distinct } from '../../../data';
-import { IQR } from '../../algorithms';
+import { categoryOutlier } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
 import { Datum, Measure, CategoryOutlierInfo } from '../../types';
 import { calculatePValue } from '../util';
@@ -19,7 +19,7 @@ type OutlierCandidateItem = {
 };
 
 export const findOutliers = (values: number[]): OutlierItem[] => {
-  const IQRResult = IQR(values, { k: 1.8 });
+  const IQRResult = categoryOutlier.IQR(values, { k: 1.8 });
 
   const lowerOutlierIndexes = IQRResult.lower.indexes;
   const upperOutlierIndexes = IQRResult.upper.indexes;
@@ -62,7 +62,7 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CategoryOutlierInfo[] {
   const dimension = dimensions[0];
-  const measure = measures[0].field;
+  const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   if (distinct(values) === 1) return [];

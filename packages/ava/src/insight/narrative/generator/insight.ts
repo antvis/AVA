@@ -35,9 +35,9 @@ export class InsightNarrativeGenerator {
     this.globalVariableMap = {
       insightTypes: Object.keys(this.patternGroups) as InsightType[],
       subspace: insight.subspace,
-      measure: insight.measures[0].field,
+      measure: insight.measures[0].fieldName,
       measureMethod: insight.measures[0].method,
-      breakdown: insight.dimensions[0],
+      breakdown: insight.dimensions[0].fieldName,
     };
   }
 

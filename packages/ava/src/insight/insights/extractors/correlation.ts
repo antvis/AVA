@@ -21,8 +21,8 @@ export function findCorrelation(x: number[], y: number[]): CorrelationResult | n
 }
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CorrelationInfo[] {
-  const xField = measures[0].field;
-  const yField = measures[1].field;
+  const xField = measures[0].fieldName;
+  const yField = measures[1].fieldName;
   if (!data || !dimensions || data.length === 0) return [];
   const x = data.map((item) => item?.[xField] as number);
   const y = data.map((item) => item?.[yField] as number);

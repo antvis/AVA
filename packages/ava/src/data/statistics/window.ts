@@ -1,9 +1,9 @@
 import { mean } from 'lodash';
 
-import { SignificanceBenchmark } from '../../constant';
-import { calculatePValue } from '../../insights/util';
+import { SignificanceBenchmark } from '../../insight/constant';
+import { calculatePValue } from '../../insight/insights/util';
 
-import type { ChangePointItem } from './types';
+import { ChangePointItem } from './types';
 
 const DEFAULT_WINDOW_SIZE = 4;
 

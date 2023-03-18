@@ -1,3 +1,3 @@
-export * from './IQR';
-export * from './mannkendall-test';
-export * from './change-point';
+export * from './categoryOutlier';
+export * from './trendDirection';
+export * from './changePoint';

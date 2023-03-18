@@ -1,12 +1,14 @@
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
-import type { NtvTypes } from '../ntv';
+import type { G2Spec } from '@antv/g2';
+import type { NarrativeTextSpec } from '../ntv/types';
+import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo } from '../data/types';
 
 export type Datum = Record<string, string | number>;
 
 export type DataType = 'Nominal' | 'Ordinal' | 'Interval' | 'Discrete' | 'Continuous' | 'Time';
 
-export type FieldType = 'measure' | 'dimension';
+export type DomainType = 'measure' | 'dimension';
 
 export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DISTINCT';
 
@@ -15,15 +17,30 @@ export type ImpactMeasureMethod = 'SUM' | 'COUNT';
 
 export type Aggregator = (data: Datum[], measure: string) => number;
 
-export type Subspace = {
-  dimension: string;
-  value: string;
-}[];
+/** output of data module, plus the field name and its domain type  */
+export type DataProperty = (NumberFieldInfo | DateFieldInfo | StringFieldInfo) & {
+  /** field name */
+  name: string;
+  /** whether this field is used as a dimension or measure */
+  domainType: DomainType;
+};
 
 export type Measure = {
-  field: string;
+  /** use the field name as uniq key */
+  fieldName: string;
   method: MeasureMethod;
 };
+
+export type Dimension = {
+  /** use the field name as uniq key */
+  fieldName: string;
+};
+
+export type Subspace = {
+  dimension: string;
+  // TODO @chenluli may need a more general type to describe filter, such as string[] | number[] and add operator property to Subspace. If there is a real case then expand it
+  value: string;
+}[];
 
 export type ImpactMeasure = {
   field: string;
@@ -39,9 +56,9 @@ export interface SubjectInfo {
   measures: Measure[];
 }
 
-export type InsightType = typeof PATTERN_TYPES[number];
+export type InsightType = (typeof PATTERN_TYPES)[number];
 
-export type HomogeneousInsightType = typeof HOMOGENEOUS_PATTERN_TYPES[number];
+export type HomogeneousInsightType = (typeof HOMOGENEOUS_PATTERN_TYPES)[number];
 
 /** insight chart type recommendation */
 export type ChartType = 'column_chart' | 'line_chart' | 'pie_chart' | 'scatter_plot';
@@ -56,22 +73,21 @@ export type PatternInfo =
   | ChangePointInfo
   | CorrelationInfo;
 
-/** visualization for insight */
+/** explanation and visualization for insight */
 export interface VisualizationSchema {
   chartType: ChartType;
-  caption: string;
-  chartSchema: any; // TODO type
+  chartSchema: G2Spec;
   /**
-   * @description insight summaries display type, it dependent
-   * @default string[]
+   * @description pure text or text schema to describe insight
+   * @default string
    */
-  insightSummaries?: string[] | NtvTypes.PhraseSpec[][];
+  narrativeSchema?: string[] | NarrativeTextSpec[];
 }
 
-/** insight information */
+/** output insight information */
 export interface InsightInfo<T = PatternInfo> {
   subspace: Subspace;
-  dimensions: string[];
+  dimensions: Dimension[];
   measures: Measure[];
   score: number;
   data: Datum[];
@@ -92,16 +108,24 @@ export interface VisualizationOptions {
 
 /** custom options */
 export interface InsightOptions {
-  dimensions?: string[];
+  /** dimensions for analysis */
+  dimensions?: Dimension[];
+  /** measures for analysis */
   measures?: Measure[];
-  impactMeasures?: ImpactMeasure[]; // Measures for Impact score
-  impactWeight?: number; // Insight score = Impact score * impactWeight + Significance * (1 - impactWeight)
+  /** Measures for Impact score */
+  impactMeasures?: ImpactMeasure[];
+  /** Insight score = Impact score * impactWeight + Significance * (1 - impactWeight) */
+  impactWeight?: number;
+  /** types of insight */
   insightTypes?: InsightType[];
-  limit?: number; // Limit on the number of insights
+  /** Limit on the number of insights */
+  limit?: number;
   /** on / off the output of visualization scheme */
   visualization?: boolean | VisualizationOptions;
-  homogeneous?: boolean; // on/off extra homogeneous insight extraction
-  ignoreSubspace?: boolean; // Whether to close the search for subspaces
+  /** on/off extra homogeneous insight extraction */
+  homogeneous?: boolean;
+  /** Whether to close the search for subspaces */
+  ignoreSubspace?: boolean;
 }
 
 export interface BasePatternInfo<T extends InsightType> {
@@ -114,8 +138,10 @@ export interface HomogeneousPatternInfo {
   significance: number;
   insightType: InsightType;
   childPatterns: PatternInfo[];
-  exc?: string[];
-  commSet: string[];
+  /** dimension values that share same patterns */
+  commonSet: string[];
+  /** dimension values that do not share same patterns with others */
+  exceptions?: string[];
 }
 
 export type PointPatternInfo = {

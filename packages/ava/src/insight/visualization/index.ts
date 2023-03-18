@@ -4,17 +4,17 @@ import {
   ChartType,
   HomogeneousPatternInfo,
   InsightInfo,
-  InsightType,
   PatternInfo,
   VisualizationSchema,
   InsightOptions,
   VisualizationOptions,
+  InsightType,
 } from '../types';
 import { InsightNarrativeGenerator, HomogeneousNarrativeGenerator } from '../narrative';
 
-import { generateInsightAnnotationConfigs, generateHomogeneousInsightAnnotationConfig } from './annotation';
+import { generateInsightAnnotationConfigs, generateHomogeneousInsightAnnotationConfig } from './strategy/annotations';
 
-export const ChartTypeMap: Record<InsightType, ChartType> = {
+const ChartTypeMap: Record<InsightType, ChartType> = {
   category_outlier: 'column_chart',
   trend: 'line_chart',
   change_point: 'line_chart',
@@ -40,8 +40,8 @@ export function getInsightVisualizationSchema(
 
     const plotSchema = {
       [chartType === 'pie_chart' ? 'colorField' : 'xField']:
-        chartType === 'scatter_plot' ? measures[1].field : dimensions[0],
-      [chartType === 'pie_chart' ? 'angleField' : 'yField']: measures[0].field,
+        chartType === 'scatter_plot' ? measures[1].fieldName : dimensions[0],
+      [chartType === 'pie_chart' ? 'angleField' : 'yField']: measures[0].fieldName,
     };
     const annotationConfigs = generateInsightAnnotationConfigs(patternGroup);
 
@@ -52,8 +52,8 @@ export function getInsightVisualizationSchema(
     schemas.push({
       chartType: chartType as ChartType,
       chartSchema,
-      caption: narrative.caption?.getContent(),
-      insightSummaries:
+      // @ts-ignore TODO @yuxi modify ntv generator and put caption into narrativeSchema
+      narrativeSchema:
         summaryType === 'schema'
           ? narrative.summaries?.map((i) => i.getSchema())
           : narrative.summaries?.map((i) => i.getContent()),
@@ -65,13 +65,13 @@ export function getInsightVisualizationSchema(
 
 /** lowlight information that does not require attention */
 function lowlight(pattern: HomogeneousPatternInfo, colorField: string) {
-  const { type, insightType, commSet, exc = [] } = pattern;
+  const { type, insightType, commonSet, exceptions = [] } = pattern;
   const chartType = ChartTypeMap[insightType];
   let highlightSet: string[] = [];
   if (type === 'commonness') {
-    highlightSet = commSet;
+    highlightSet = commonSet;
   } else if (type === 'exception') {
-    highlightSet = exc;
+    highlightSet = exceptions;
   }
   const opacity = (value: string) => (highlightSet.includes(value) ? 1 : 0.2);
   if (chartType === 'line_chart') {
@@ -119,7 +119,7 @@ export function getHomogeneousInsightVisualizationSchema(
     } else {
       plotSchema = {
         xField: dimensions[1],
-        yField: measures[0].field,
+        yField: measures[0].fieldName,
         seriesField: dimensions[0],
       };
     }
@@ -135,8 +135,8 @@ export function getHomogeneousInsightVisualizationSchema(
     schemas.push({
       chartType,
       chartSchema,
-      caption: '',
-      insightSummaries: summaryType === 'schema' ? [summary.getSchema()] : [summary.getContent()],
+      // @ts-ignore TODO @yuxi modify ntv generator and put caption into narrativeSchema
+      narrativeSchema: summaryType === 'schema' ? [summary.getSchema()] : [summary.getContent()],
     });
   });
 

@@ -45,11 +45,11 @@ const App = () => {
           {result?.insights &&
             result?.insights.slice(0, 3).map((item, index) => {
               const { data, visualizationSchemas } = item;
-              const { chartType, chartSchema, insightSummaries, caption } = visualizationSchemas[0];
+              const { chartType, chartSchema, narrativeSchema, caption } = visualizationSchemas[0];
               return (
                 <Card key={index} style={{ marginBottom: 12 }}>
                   <PlotCard chartType={chartType} data={data} caption={caption} schema={chartSchema} height={400} />
-                  {insightSummaries.map((summary, idx) => (
+                  {narrativeSchema.map((summary, idx) => (
                     <NarrativeTextVis.Paragraph key={idx} spec={{ type: 'normal', phrases: summary }} />
                   ))}
                 </Card>
