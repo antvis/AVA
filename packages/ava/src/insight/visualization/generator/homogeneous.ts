@@ -1,4 +1,8 @@
-export function generateHomogeneousInsightAnnotationConfig(pattern: HomogeneousPatternInfo) {
+import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, VisualizationSpec } from '../../types';
+import { COLOR } from '../constants';
+import { transparent } from '../strategy/augmentedMarks/transparent';
+
+export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPatternInfo) {
   const annotations: any[] = [];
   const { insightType, childPatterns } = pattern;
 
@@ -48,50 +52,35 @@ export function generateHomogeneousInsightAnnotationConfig(pattern: HomogeneousP
   return annotations;
 }
 
-export function getHomogeneousInsightVisualizationSchema(
+export function generateHomogeneousInsightVisualizationSpec(
   insight: InsightInfo<HomogeneousPatternInfo>,
-  visualizationOptions: InsightOptions['visualization']
-): VisualizationSchema[] {
-  const { dimensions, patterns, measures } = insight;
+  pattern: HomogeneousPatternInfo
+): VisualizationSpec[] {
+  const { dimensions, measures } = insight;
 
-  const schemas: VisualizationSchema[] = [];
-  const summaryType = get(visualizationOptions, 'summaryType', 'text') as VisualizationOptions['summaryType'];
-  const { summary } = new HomogeneousNarrativeGenerator(insight.patterns, insight);
-
-  patterns.forEach((pattern) => {
-    const { insightType } = pattern;
-    const chartType = ChartTypeMap[insightType];
-
-    let plotSchema;
-    if (measures.length > 1) {
-      plotSchema = {
-        xField: dimensions[0],
-        yField: 'value',
-        seriesField: 'measureName',
-      };
-    } else {
-      plotSchema = {
-        xField: dimensions[1],
-        yField: measures[0].fieldName,
-        seriesField: dimensions[0],
-      };
-    }
-
-    const style = lowlight(pattern, plotSchema.seriesField);
-    const annotationConfig = generateHomogeneousInsightAnnotationConfig(pattern);
-
-    const chartSchema = {
-      ...plotSchema,
-      ...style,
-      annotations: annotationConfig,
+  let plotSchema;
+  if (measures.length > 1) {
+    plotSchema = {
+      xField: dimensions[0],
+      yField: 'value',
+      seriesField: 'measureName',
     };
-    schemas.push({
-      chartType,
-      chartSchema,
-      // @ts-ignore TODO @yuxi modify ntv generator and put caption into narrativeSchema
-      narrativeSchema: summaryType === 'schema' ? [summary.getSchema()] : [summary.getContent()],
-    });
-  });
+  } else {
+    plotSchema = {
+      xField: dimensions[1],
+      yField: measures[0].fieldName,
+      seriesField: dimensions[0],
+    };
+  }
 
-  return schemas;
+  const style = transparent(pattern, plotSchema.seriesField);
+  const annotationConfig = generateHomogeneousInsightAugmentedMarks(pattern);
+
+  const chartSchema = {
+    ...plotSchema,
+    ...style,
+    annotations: annotationConfig,
+  };
+
+  return chartSchema;
 }

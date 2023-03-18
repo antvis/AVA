@@ -1,18 +1,19 @@
-import { ChartType, InsightType } from "../types";
+import { ChartType, InsightType } from '../types';
 
-const COLOR: Record<string, string> = {
+export const COLOR: Record<string, string> = {
   highlight: '#E09322',
   outlier: '#CB5140',
   font: '#2C3542',
-};
+  defaultPointColor: '#fff',
+} as const;
+
+export const BOLD_FONT_WEIGHT = 500;
 
 export const TEXT_STYLE = {
   textAlign: 'center',
   fill: COLOR.font,
   opacity: 0.65,
 };
-
-export const BOLD_FONT_WEIGHT = 500;
 
 export const ChartTypeMap: Record<InsightType, ChartType> = {
   category_outlier: 'column_chart',
