@@ -19,7 +19,7 @@ class App extends React.Component<{}, TestState> {
     super(props);
 
     const openCategories = ['ava', 'ava-react'];
-    const demo = manifest.avaReactDemos[0];
+    const demo = manifest.avaDemos[3];
 
     this.state = {
       openCategories,

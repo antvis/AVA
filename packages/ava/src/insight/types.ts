@@ -1,7 +1,7 @@
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
 import type { G2Spec } from '@antv/g2';
-import type { NarrativeTextSpec } from '../ntv/types';
+import type { ParagraphSpec } from '../ntv/types';
 import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo } from '../data/types';
 
 export type Datum = Record<string, string | number>;
@@ -78,10 +78,10 @@ export interface VisualizationSpec {
   chartType: ChartType;
   chartSpec: G2Spec;
   /**
-   * @description pure text or text spec to describe insight
-   * @default string
+   * @description explain insight by text
+   * @default ParagraphSpec[]
    */
-  narrativeSpec?: string[] | NarrativeTextSpec[];
+  narrativeSpec?: ParagraphSpec[];
 }
 
 /** output insight information */
@@ -95,16 +95,25 @@ export interface InsightInfo<T = PatternInfo> {
   visualizationSpecs?: VisualizationSpec[];
 }
 
+export type Language = 'zh-CN' | 'en-US';
+
 /**
  * config of visualization
  */
-export interface VisualizationOptions {
+export type VisualizationOptions = {
   /**
    * @description pure text or text specification to description insight summary
    * @default 'text'
    * */
-  summaryType: 'text' | 'spec' | false;
-}
+  // TODO @yuxi support text
+  // narrativeType: 'text' | 'spec' | false;
+  /**
+   * @description explain insight use which language
+   * @default 'en-US'
+   * @experimental Using natural language to describe insights is an experimental feature and the output may be subject to change.
+   */
+  lang: Language;
+};
 
 /** custom options */
 export interface InsightOptions {
@@ -121,7 +130,7 @@ export interface InsightOptions {
   /** Limit on the number of insights */
   limit?: number;
   /** on / off the output of visualization scheme */
-  visualization?: boolean | VisualizationOptions;
+  visualization?: boolean | Partial<VisualizationOptions>;
   /** on/off extra homogeneous insight extraction */
   homogeneous?: boolean;
   /** Whether to close the search for subspaces */
