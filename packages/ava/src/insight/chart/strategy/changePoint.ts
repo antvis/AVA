@@ -1,16 +1,17 @@
 import { G2Spec, Mark } from '@antv/g2';
 
 import { ChangePointInfo, InsightInfo } from '../../types';
-import { COLOR } from '../constants';
+import { INSIGHT_COLOR_PLATTE } from '../constants';
+import { dataFormat } from '../util';
 
 import { pointMarkStrategy } from './augmentedMarks/pointMark';
 import { textMarkStrategy } from './augmentedMarks/textMark';
-import { insight2ChartStrategy } from './basicCharts';
+import { insight2ChartStrategy } from './chartStrategy';
 
 export const changePointAugmentedMarksStrategy = (patterns: ChangePointInfo[]): Mark[] => {
-  const color = COLOR.highlight;
+  const color = INSIGHT_COLOR_PLATTE.highlight;
   const pointMark = pointMarkStrategy(patterns, { strokeColor: color });
-  const textMark = textMarkStrategy(patterns);
+  const textMark = textMarkStrategy(patterns, { formatter: dataFormat });
   return [pointMark, textMark];
 };
 

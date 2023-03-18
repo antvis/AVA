@@ -1,6 +1,6 @@
 import { ChartType, InsightType } from '../types';
 
-export const COLOR: Record<string, string> = {
+export const INSIGHT_COLOR_PLATTE: Record<string, string> = {
   highlight: '#E09322',
   outlier: '#CB5140',
   font: '#2C3542',
@@ -11,7 +11,7 @@ export const BOLD_FONT_WEIGHT = 500;
 
 export const TEXT_STYLE = {
   textAlign: 'center',
-  fill: COLOR.font,
+  fill: INSIGHT_COLOR_PLATTE.font,
   opacity: 0.65,
 };
 

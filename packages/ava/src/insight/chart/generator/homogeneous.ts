@@ -1,5 +1,5 @@
 import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, VisualizationSpec } from '../../types';
-import { COLOR } from '../constants';
+import { INSIGHT_COLOR_PLATTE } from '../constants';
 import { transparent } from '../strategy/augmentedMarks/transparent';
 
 export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPatternInfo) {
@@ -9,7 +9,7 @@ export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPat
   if (['change_point', 'time_series_outlier'].includes(insightType)) {
     const { x } = childPatterns[0] as PointPatternInfo;
     const text = insightType === 'change_point' ? 'Abrupt Change' : 'Outlier';
-    const color = insightType === 'change_point' ? COLOR.highlight : COLOR.outlier;
+    const color = insightType === 'change_point' ? INSIGHT_COLOR_PLATTE.highlight : INSIGHT_COLOR_PLATTE.outlier;
     // draw line
     const line = {
       type: 'line',
@@ -52,7 +52,7 @@ export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPat
   return annotations;
 }
 
-export function generateHomogeneousInsightVisualizationSpec(
+export function generateHomogeneousInsightChartSpec(
   insight: InsightInfo<HomogeneousPatternInfo>,
   pattern: HomogeneousPatternInfo
 ): VisualizationSpec[] {
@@ -73,7 +73,7 @@ export function generateHomogeneousInsightVisualizationSpec(
     };
   }
 
-  const style = transparent(pattern, plotSchema.seriesField);
+  const style = transparent(pattern);
   const annotationConfig = generateHomogeneousInsightAugmentedMarks(pattern);
 
   const chartSchema = {
