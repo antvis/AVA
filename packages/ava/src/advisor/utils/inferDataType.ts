@@ -1,5 +1,6 @@
 import { ScaleTypes } from '@antv/g2';
 import { mapValues } from 'lodash';
+
 import { Callback, ChartSpecWithEncodeType, DataType, Encode, G2ChartSpec, Primitive, TabularData } from '../types';
 
 function isQuantitative(d: any): boolean {
@@ -69,7 +70,7 @@ export function inferDataType(data: TabularData, encode: Encode, scale: ScaleTyp
 export function getSpecWithEncodeType(chartSpec: G2ChartSpec): ChartSpecWithEncodeType {
   const { encode, data, scale } = chartSpec;
   const newEncode = mapValues(encode, (value, key) => {
-    return { field: value, type: inferDataType(data, value, scale[key].type) };
+    return { field: value, type: inferDataType(data, value, scale?.[key].type) };
   });
   return { ...chartSpec, encode: newEncode };
 }
