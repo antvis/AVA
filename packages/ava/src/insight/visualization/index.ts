@@ -40,8 +40,8 @@ export function getInsightVisualizationSchema(
 
     const plotSchema = {
       [chartType === 'pie_chart' ? 'colorField' : 'xField']:
-        chartType === 'scatter_plot' ? measures[1].field : dimensions[0],
-      [chartType === 'pie_chart' ? 'angleField' : 'yField']: measures[0].field,
+        chartType === 'scatter_plot' ? measures[1].fieldName : dimensions[0],
+      [chartType === 'pie_chart' ? 'angleField' : 'yField']: measures[0].fieldName,
     };
     const annotationConfigs = generateInsightAnnotationConfigs(patternGroup);
 
@@ -52,8 +52,8 @@ export function getInsightVisualizationSchema(
     schemas.push({
       chartType: chartType as ChartType,
       chartSchema,
-      // @ts-ignore TODO @yuxi modify ntv generator and put caption into insightSummaries
-      insightSummaries:
+      // @ts-ignore TODO @yuxi modify ntv generator and put caption into narrativeSchema
+      narrativeSchema:
         summaryType === 'schema'
           ? narrative.summaries?.map((i) => i.getSchema())
           : narrative.summaries?.map((i) => i.getContent()),
@@ -119,7 +119,7 @@ export function getHomogeneousInsightVisualizationSchema(
     } else {
       plotSchema = {
         xField: dimensions[1],
-        yField: measures[0].field,
+        yField: measures[0].fieldName,
         seriesField: dimensions[0],
       };
     }
@@ -135,8 +135,8 @@ export function getHomogeneousInsightVisualizationSchema(
     schemas.push({
       chartType,
       chartSchema,
-      // @ts-ignore TODO @yuxi modify ntv generator and put caption into insightSummaries
-      insightSummaries: summaryType === 'schema' ? [summary.getSchema()] : [summary.getContent()],
+      // @ts-ignore TODO @yuxi modify ntv generator and put caption into narrativeSchema
+      narrativeSchema: summaryType === 'schema' ? [summary.getSchema()] : [summary.getContent()],
     });
   });
 

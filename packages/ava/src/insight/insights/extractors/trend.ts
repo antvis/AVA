@@ -28,7 +28,7 @@ export function findTimeSeriesTrend(series: number[]): TrendResult {
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): TrendInfo[] {
   const dimension = dimensions[0];
-  const measure = measures[0].field;
+  const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   const result = findTimeSeriesTrend(values);

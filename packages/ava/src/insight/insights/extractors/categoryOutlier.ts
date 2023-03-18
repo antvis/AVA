@@ -62,7 +62,7 @@ export const findOutliers = (values: number[]): OutlierItem[] => {
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CategoryOutlierInfo[] {
   const dimension = dimensions[0];
-  const measure = measures[0].field;
+  const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   if (distinct(values) === 1) return [];

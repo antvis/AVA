@@ -112,7 +112,7 @@ export function extractInsightsFor1M1DCombination(
           subspace,
           dimensions: [
             {
-              field: dimension,
+              fieldName: dimension,
             },
           ],
           measures: [measure],
@@ -159,7 +159,7 @@ export function extractInsightsForCorrelation(
         if (patternsArray?.length) {
           const insight = {
             subspace,
-            dimensions: dimensions.map((d) => ({ field: d })),
+            dimensions: dimensions.map((d) => ({ fieldName: d })),
             measures: [measures[i], measures[j]],
             patterns: patternsArray,
             data,
@@ -249,7 +249,7 @@ export function extractInsightsFromSubspace(
         const homogeneousInsights: InsightInfo<HomogeneousPatternInfo>[] = homogeneousPatternsForMeasures.map(
           (pattern) => ({
             subspace,
-            dimensions: [{ field: dimensions[dimIndex] }],
+            dimensions: [{ fieldName: dimensions[dimIndex] }],
             measures,
             patterns: [pattern],
             data,
@@ -265,9 +265,9 @@ export function extractInsightsFromSubspace(
   if (!options?.ignoreSubspace) {
     const searchedDimensions = subspace.map((item) => item.dimension);
     const remainDimensionFields = (
-      options?.dimensions.map((dimension) => dimension.field) ||
+      options?.dimensions.map((dimension) => dimension.fieldName) ||
       Object.values(fieldPropsMap)
-        .filter((item) => item.fieldType === 'dimension')
+        .filter((item) => item.domainType === 'dimension')
         .map((item) => item.name)
     ).filter((field) => !searchedDimensions.includes(field));
 
@@ -306,9 +306,9 @@ export function extractInsightsFromSubspace(
                     return (
                       !!insight &&
                       insight.dimensions.length === 1 &&
-                      insight.dimensions[0].field === dim &&
+                      insight.dimensions[0].fieldName === dim &&
                       insight.measures.length === 1 &&
-                      insight.measures[0].field === measure.field
+                      insight.measures[0].fieldName === measure.fieldName
                     );
                   }) || null
                 );
@@ -320,7 +320,7 @@ export function extractInsightsFromSubspace(
               );
               const insightsForSiblingGroup = homogeneousPatternsForSiblingGroups.map((pattern) => ({
                 subspace,
-                dimensions: [{ field: dimension }, { field: dim }],
+                dimensions: [{ fieldName: dimension }, { fieldName: dim }],
                 measures: [measure],
                 patterns: [pattern],
                 data,

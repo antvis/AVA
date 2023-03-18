@@ -1,14 +1,14 @@
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
 import type { G2Spec } from '@antv/g2';
-import type { NtvTypes } from '../ntv';
-import type { DataTypes } from '../data';
+import type { NarrativeTextSpec } from '../ntv/types';
+import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo } from '../data/types';
 
 export type Datum = Record<string, string | number>;
 
 export type DataType = 'Nominal' | 'Ordinal' | 'Interval' | 'Discrete' | 'Continuous' | 'Time';
 
-export type FieldType = 'measure' | 'dimension';
+export type DomainType = 'measure' | 'dimension';
 
 export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DISTINCT';
 
@@ -17,20 +17,23 @@ export type ImpactMeasureMethod = 'SUM' | 'COUNT';
 
 export type Aggregator = (data: Datum[], measure: string) => number;
 
-export type DataProperty =
-  | (DataTypes.NumberFieldInfo & { name: string; fieldType: FieldType })
-  | (DataTypes.DateFieldInfo & { name: string; fieldType: FieldType })
-  | (DataTypes.StringFieldInfo & { name: string; fieldType: FieldType });
+/** output of data module, plus the field name and its domain type  */
+export type DataProperty = (NumberFieldInfo | DateFieldInfo | StringFieldInfo) & {
+  /** field name */
+  name: string;
+  /** whether this field is used as a dimension or measure */
+  domainType: DomainType;
+};
 
 export type Measure = {
-  /** field id, currently, field id is the same as the field name */
-  field: string;
+  /** use the field name as uniq key */
+  fieldName: string;
   method: MeasureMethod;
 };
 
 export type Dimension = {
-  /** field id, currently, field id is the same as the field name */
-  field: string;
+  /** use the field name as uniq key */
+  fieldName: string;
 };
 
 export type Subspace = {
@@ -78,7 +81,7 @@ export interface VisualizationSchema {
    * @description pure text or text schema to describe insight
    * @default string
    */
-  insightSummaries?: string[] | NtvTypes.NarrativeTextSpec[];
+  narrativeSchema?: string[] | NarrativeTextSpec[];
 }
 
 /** output insight information */
@@ -105,7 +108,7 @@ export interface VisualizationOptions {
 
 /** custom options */
 export interface InsightOptions {
-  /** dimensions (field names) for analysis */
+  /** dimensions for analysis */
   dimensions?: Dimension[];
   /** measures for analysis */
   measures?: Measure[];
@@ -135,8 +138,10 @@ export interface HomogeneousPatternInfo {
   significance: number;
   insightType: InsightType;
   childPatterns: PatternInfo[];
-  exceptions?: string[];
+  /** dimension values that share same patterns */
   commonSet: string[];
+  /** dimension values that do not share same patterns with others */
+  exceptions?: string[];
 }
 
 export type PointPatternInfo = {

@@ -87,7 +87,7 @@ export function extractHomogeneousPatternsForMeasures(
   measures: Measure[],
   insightsCollection: (InsightInfo<PatternInfo> | null)[]
 ): HomogeneousPatternInfo[] {
-  const series = measures.map((item) => item.field);
+  const series = measures.map((item) => item.fieldName);
   const patternsForAllMeasures = insightsCollection.map((item) => item?.patterns);
   const homogeneousPatterns: HomogeneousPatternInfo[] = [];
   PATTERN_TYPES.forEach((type) => {

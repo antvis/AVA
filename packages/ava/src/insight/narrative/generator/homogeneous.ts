@@ -19,7 +19,7 @@ export class HomogeneousNarrativeGenerator {
     this.globalVariableMap = {
       subspace: insight.subspace,
       measures: insight.measures,
-      breakdown: insight.dimensions[0].field,
+      breakdown: insight.dimensions[0].fieldName,
       type,
       insightType,
       commonSet,

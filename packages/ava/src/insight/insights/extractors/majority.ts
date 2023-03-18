@@ -42,7 +42,7 @@ export function findMajority(values: number[], params?: MajorityParams): Majorit
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): MajorityInfo[] {
   const dimension = dimensions[0];
-  const measure = measures[0].field;
+  const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   const majority = findMajority(values);

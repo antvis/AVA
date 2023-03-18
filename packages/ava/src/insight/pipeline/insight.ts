@@ -48,14 +48,14 @@ export function extractInsights(sourceData: Datum[], options?: InsightOptions): 
   const measures: Measure[] =
     options?.measures ||
     dataProps
-      .filter((item) => item.fieldType === 'measure')
+      .filter((item) => item.domainType === 'measure')
       .map((item) => ({
-        field: item.name,
+        fieldName: item.name,
         method: 'SUM',
       }));
   const dimensions =
-    options?.dimensions.map((dimension) => dimension.field) ||
-    dataProps.filter((item) => item.fieldType === 'dimension').map((item) => item.name);
+    options?.dimensions.map((dimension) => dimension.fieldName) ||
+    dataProps.filter((item) => item.domainType === 'dimension').map((item) => item.name);
 
   // init insights storage
   const insightsHeap = new Heap(insightPriorityComparator);
@@ -109,9 +109,9 @@ export function generateInsightsWithVisualizationSchemas(
       const { data, measures, dimensions } = item;
       const insight = { ...item, visualizationSchemas };
       if (measures.length > 1) {
-        insight.data = aggregateWithMeasures(data, dimensions[0].field, measures);
+        insight.data = aggregateWithMeasures(data, dimensions[0].fieldName, measures);
       } else {
-        insight.data = aggregateWithSeries(data, dimensions[0].field, measures[0], dimensions[1].field);
+        insight.data = aggregateWithSeries(data, dimensions[0].fieldName, measures[0], dimensions[1].fieldName);
       }
       return insight;
     });

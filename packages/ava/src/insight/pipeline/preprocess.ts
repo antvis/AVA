@@ -14,12 +14,12 @@ export function dataToDataProps(data: Datum[]): DataProperty[] {
   const dataProps: DataProperty[] = [];
 
   dataTypeInfos.forEach((info) => {
-    const newInfo = {
+    const newInfo: DataProperty = {
       ...info,
-      fieldType: intersection(['Interval', 'Continuous'], info.levelOfMeasurements)?.length ? 'measure' : 'dimension',
+      domainType: intersection(['Interval', 'Continuous'], info.levelOfMeasurements)?.length ? 'measure' : 'dimension',
     };
 
-    dataProps.push(newInfo as DataProperty);
+    dataProps.push(newInfo);
   });
 
   return dataProps;
