@@ -1,5 +1,5 @@
 ---
-title: Insight 简介
+title: insight 简介
 order: 0
 ---
 
@@ -50,7 +50,7 @@ getInsights(data, {
 
 ## 🧷 致谢
 
-Insight 其中的一些功能设计受到以下论文的启发：
+insight 其中的一些功能设计受到以下论文的启发：
 
 * [Extracting Top-K Insights from Multi-dimensional Data](https://www.microsoft.com/en-us/research/uploads/prod/2017/02/Insights_SIGMOD17.pdf)
 
