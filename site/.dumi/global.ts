@@ -30,6 +30,7 @@ if (window) {
     (window as any).g6 = require('@antv/g6');
     (window as any).antvSiteDemoRc = require('antv-site-demo-rc');
     (window as any).g2plot = require('@antv/g2plot');
+    (window as any).g2 = require('@antv/g2');
 
     (window as any).ava = require('../../packages/ava/src');
     (window as any).avaReact = require('../../packages/ava-react/src');

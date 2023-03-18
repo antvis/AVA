@@ -32,7 +32,7 @@ The `Advisor` class provides the `advise()` method,
 which aimed to provide automatic chart recommendation ability.
 Its input parameter is `AdviseParams` and its output is the recommended charts, 
 where the required input is the source data `data: any[]` and 
-detailed input and output parameters are described in the [Advisor.advise() API](../../api/advisor/Advisor.en.md).
+detailed input and output parameters are described in the [Advisor.advise() API](../../api/advice/Advisor.en.md).
 
 ```js
 import { Advisor } from '@antv/ava';
@@ -68,7 +68,7 @@ The `Advisor` class provides the `Lint()` method,
 which can provide automatic chart optimization suggestions.
 Its input parameter is `LintParams` and its output is the recommended optimization suggestions, 
 where the required input is  the input chart schema `spec: AntVSpec` and 
-detailed input and output parameters are described in the [Advisor.linter() API](../../api/advisor/Advisor-lint.en.md)
+detailed input and output parameters are described in the [Advisor.linter() API](../../api/advice/Advisor-lint.en.md)
 
 ```js
 import { Advisor } from '@antv/ava';
@@ -120,7 +120,7 @@ const adviseResults = myChartAdvisor.advise({ data })；
 
 const lintedResults = adviseResults.map((advice) => {
   const linter = myChartAdvisor.lint(advice.spec);
-  return {...advice, ...linter};
+  return {...advice, lint: linter};
 });
 
 return lintedResults;
@@ -188,13 +188,9 @@ return lintedResults;
 // }
 ```
 
-### Advisor Demo
-
-<Playground path="chart-advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
-
 ## 📖 Documentation
 
-For more usages, please check the [API Reference](../../api/advisor/Advisor.en.md)
+For more usages, please check the [API Reference](../../api/advice/Advisor.en.md)
 
 
 

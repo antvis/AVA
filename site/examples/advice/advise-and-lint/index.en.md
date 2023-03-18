@@ -1,5 +1,5 @@
 ---
-title: ChartAdvisor - advise and lint
+title: Advisor - advise and lint
 order: 0
 ---
 

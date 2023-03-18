@@ -32,7 +32,7 @@ $ npm install @antv/ava
 ### Advise() 使用
 
 `Advisor` 类中提供了 `advise()` 方法，用于提供自动图表推荐和优化功能，输入参数为 `AdviseParams`，
-输出结果为推荐图表和优化建议，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [Advisor.advise() API](../../api/advisor/Advisor.zh.md)。
+输出结果为推荐图表和优化建议，其中必选参数为源数据 `data: any[]`，其他输入输出参数详见 [Advisor.advise() API](../../api/advice/Advisor.zh.md)。
 
 ```js
 import { Advisor } from '@antv/ava';
@@ -65,7 +65,7 @@ return adviseResults;
 ### Lint() 使用
 
 `Advisor` 类中提供了 `lint()` 方法，用于提供自动图表修复功能，输入参数为 `LintParams`，
-输出结果为优化建议，其中必选参数为输入图表语法 `spec: AntVSpec`，其他输入输出参数详见 [Advisor.lint() API](../../api/advisor/Advisor-lint.zh.md)。
+输出结果为优化建议，其中必选参数为输入图表语法 `spec: AntVSpec`，其他输入输出参数详见 [Advisor.lint() API](../../api/advice/Advisor-lint.zh.md)。
 
 ```js
 import { Advisor } from '@antv/ava';
@@ -117,7 +117,7 @@ const adviseResults = myChartAdvisor.advise({ data })；
 
 const lintedResults = adviseResults.map((advice) => {
   const linter = myChartAdvisor.lint(advice.spec);
-  return {...advice, ...linter};
+  return {...advice, lint: linter};
 });
 
 return lintedResults;
@@ -185,13 +185,9 @@ return lintedResults;
 // }
 ```
 
-### Advisor 演示案例
-
-<Playground path="advisor/advise-and-lint/demo/ca-steps.jsx"></playground>
-
 ## 📖 文档
 
-更多用法请移步至 [官网API](../../api/advisor/Advisor.zh.md)
+更多用法请移步至 [官网API](../../api/advice/Advisor.zh.md)
 
 
 
