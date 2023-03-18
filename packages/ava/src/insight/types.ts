@@ -154,7 +154,11 @@ export type PointPatternInfo = {
 };
 
 export type CategoryOutlierInfo = BasePatternInfo<'category_outlier'> & PointPatternInfo;
-export type TimeSeriesOutlierInfo = BasePatternInfo<'time_series_outlier'> & PointPatternInfo;
+export type TimeSeriesOutlierInfo = BasePatternInfo<'time_series_outlier'> &
+  PointPatternInfo & {
+    baselines: number[];
+    thresholds: [number, number];
+  };
 export type ChangePointInfo = BasePatternInfo<'change_point'> & PointPatternInfo;
 export type MajorityInfo = BasePatternInfo<'majority'> & PointPatternInfo & { proportion: number };
 
