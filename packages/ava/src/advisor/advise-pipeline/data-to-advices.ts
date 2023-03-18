@@ -164,9 +164,11 @@ function applySmartColor(
       });
       return {
         scale: {
-          range: palette.colors.map((color) => {
-            return colorToHex(simulationType ? colorSimulation(color, simulationType) : color);
-          }),
+          color: {
+            range: palette.colors.map((color) => {
+              return colorToHex(simulationType ? colorSimulation(color, simulationType) : color);
+            }),
+          },
         },
       };
     }
