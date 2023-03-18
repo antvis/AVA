@@ -57,20 +57,17 @@ You can easily build a chart type recommendation system with this knowledge base
 ## 📦 Installation
 
 ```bash
-$ npm install @antv/ckb
+$ npm install @antv/ava
 ```
 
 ## 🔨 Usage
 
 ```js
-import { CKBJson } from '@antv/ckb';
+import { ckb } from '@antv/ava';
 
 
-// Knowledage base for all charts in English.
-const knowledgeBase = CKBJson();
-
-// Knowledage base for completed charts in Chinese.
-const zhCompletedKB = CKBJson('zh-CN', true);
+// Get CKB object
+const myCkb = ckb();
 ```
 
 ### Demo
