@@ -8,29 +8,22 @@ describe('utils test', () => {
       { price: 150, cost: 410, revenue: 600, amount: 60, type: 'C' },
     ];
     const spec = {
-      basis: { type: 'chart' },
-      data: { type: 'json-array', values: data },
-      layer: [
-        {
-          mark: { type: 'point' },
-          encoding: {
-            x: { field: 'price', type: 'quantitative' },
-            y: { field: 'volume', type: 'quantitative' },
-          },
-        },
-      ],
-    };
-    const partOfNewSpec = {
-      encoding: {
-        x: {
-          axis: {
-            domain: false,
-            ticks: false,
-          },
-        },
+      type: 'point',
+      data,
+      encode: {
+        x: 'price',
+        y: 'volume',
+      },
+      axis: {
+        domain: false,
       },
     };
-    deepMix(spec.layer[0], partOfNewSpec);
-    expect(spec.layer[0].encoding.x).toHaveProperty('axis');
+    const partOfNewSpec = {
+      axis: {
+        ticks: false,
+      },
+    };
+    deepMix(spec, partOfNewSpec);
+    expect(spec.axis).toHaveProperty('ticks');
   });
 });

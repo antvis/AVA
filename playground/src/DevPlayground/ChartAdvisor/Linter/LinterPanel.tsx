@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 import { Button, Divider, Row, Col } from 'antd';
-import { AntVSpec } from '@antv/antv-spec';
 
 import { Advisor, AdvisorTypes } from '../../../../../packages/ava/lib';
 import { Chart } from '../Chart';
@@ -9,33 +8,22 @@ import { Chart } from '../Chart';
 import { LintCard } from './LintCard';
 
 const errorSpec = {
-  basis: {
-    type: 'chart',
-  },
-  data: {
-    type: 'json-array',
-    values: [
-      { category: 'A', value: 4 },
-      { category: 'B', value: 6 },
-      { category: 'C', value: 10 },
-      { category: 'D', value: 3 },
-      { category: 'E', value: 7 },
-      { category: 'F', value: 8 },
-    ],
-  },
-  layer: [
-    {
-      mark: 'arc',
-      encoding: {
-        theta: { field: 'value', type: 'quantitative' },
-        color: {
-          field: 'category',
-          type: 'nominal',
-          scale: { range: ['#5b8ff9', '#753d91', '#b03c63', '#d5b471', '#4fb01f', '#608b7d'] },
-        },
-      },
-    },
+  type: 'interval',
+  data: [
+    { category: 'A', value: 4 },
+    { category: 'B', value: 6 },
+    { category: 'C', value: 10 },
+    { category: 'D', value: 3 },
+    { category: 'E', value: 7 },
+    { category: 'F', value: 8 },
   ],
+  encode: {
+    theta: 'value',
+    color: 'category',
+  },
+  scale: {
+    color: { range: ['#5b8ff9', '#753d91', '#b03c63', '#d5b471', '#4fb01f', '#608b7d'] },
+  },
 };
 
 export const LinterPanel = () => {
@@ -43,7 +31,7 @@ export const LinterPanel = () => {
   const [lints, setLints] = useState<AdvisorTypes.Lint[]>([]);
 
   const getLint = () => {
-    const myLint = myAdvisor.lint({ spec: errorSpec as AntVSpec });
+    const myLint = myAdvisor.lint({ spec: errorSpec as AdvisorTypes.Specification });
     setLints(myLint);
   };
 

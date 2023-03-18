@@ -1,3 +1,5 @@
+import { IntervalMark, RectMark, LineMark, PointMark, TextMark, CellMark, AreaMark } from '@antv/g2';
+
 import type { ColorSchemeType } from '@antv/color-schema';
 import type { SimulationType } from '@antv/smart-color';
 /** AVA 包内跨模块引用 */
@@ -5,7 +7,6 @@ import type { CkbTypes, CkbConfig } from '../ckb';
 import type { Specification, Data } from '../common/types';
 /** Advisor 模块内引用 */
 import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/types';
-import { IntervalMark, RectMark, LineMark, PointMark, TextMark, CellMark, AreaMark } from '@antv/g2';
 
 /**
  * Advisor config type
@@ -208,7 +209,6 @@ export interface LintParams {
   options?: LinterOptions;
 }
 
-
 /** g2-spec 相关types */
 
 export type Mark = IntervalMark | RectMark | LineMark | PointMark | TextMark | CellMark | AreaMark;
@@ -235,3 +235,5 @@ export type G2ChartSpec = Omit<Mark, 'encode'> & { encode: MarkEncode };
 
 /** 原 G2 spec 去掉复杂 Encode 类型并添加简易版（带字段类型的） Encode 类型 */
 export type ChartSpecWithEncodeType = Omit<Mark, 'encode'> & { encode: MarkEncodeWithType };
+
+export type { Specification };
