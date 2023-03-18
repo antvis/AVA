@@ -14,7 +14,7 @@ export type VariableType = 'insightTypes';
 
 export type Language = 'zh-CN' | 'en-US';
 
-export type SymbolType = keyof typeof SYMBOL['en-US'];
+export type SymbolType = keyof (typeof SYMBOL)['en-US'];
 
 /** generate subject desc -- title */
 export type SubjectsDescInfo = {
@@ -31,4 +31,4 @@ export type HomogeneousInfo = {
   breakdown: string;
   type: HomogeneousInsightType;
   childPattern: PatternInfo;
-} & Pick<HomogeneousPatternInfo, 'commSet' | 'exc' | 'insightType'>;
+} & Pick<HomogeneousPatternInfo, 'commonSet' | 'exceptions' | 'insightType'>;

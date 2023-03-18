@@ -5,10 +5,18 @@ import { getInsightVisualizationSchema, getHomogeneousInsightVisualizationSchema
 import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 
 import { enumerateInsights } from './extract';
-import { DataProperty, dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
+import { dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';
 import { insightPriorityComparator, homogeneousInsightPriorityComparator } from './util';
 
-import type { Datum, InsightOptions, Measure, InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../types';
+import type {
+  Datum,
+  InsightOptions,
+  Measure,
+  InsightInfo,
+  PatternInfo,
+  HomogeneousPatternInfo,
+  DataProperty,
+} from '../types';
 
 interface ReferenceInfo {
   fieldPropsMap: Record<string, DataProperty>;
@@ -40,13 +48,14 @@ export function extractInsights(sourceData: Datum[], options?: InsightOptions): 
   const measures: Measure[] =
     options?.measures ||
     dataProps
-      .filter((item) => item.fieldType === 'measure')
+      .filter((item) => item.domainType === 'measure')
       .map((item) => ({
-        field: item.name,
+        fieldName: item.name,
         method: 'SUM',
       }));
   const dimensions =
-    options?.dimensions || dataProps.filter((item) => item.fieldType === 'dimension').map((item) => item.name);
+    options?.dimensions.map((dimension) => dimension.fieldName) ||
+    dataProps.filter((item) => item.domainType === 'dimension').map((item) => item.name);
 
   // init insights storage
   const insightsHeap = new Heap(insightPriorityComparator);
@@ -100,9 +109,9 @@ export function generateInsightsWithVisualizationSchemas(
       const { data, measures, dimensions } = item;
       const insight = { ...item, visualizationSchemas };
       if (measures.length > 1) {
-        insight.data = aggregateWithMeasures(data, dimensions[0], measures);
+        insight.data = aggregateWithMeasures(data, dimensions[0].fieldName, measures);
       } else {
-        insight.data = aggregateWithSeries(data, dimensions[0], measures[0], dimensions[1]);
+        insight.data = aggregateWithSeries(data, dimensions[0].fieldName, measures[0], dimensions[1].fieldName);
       }
       return insight;
     });

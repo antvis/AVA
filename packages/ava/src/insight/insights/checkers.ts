@@ -1,7 +1,6 @@
 import { intersection } from 'lodash';
 
-import { Datum, SubjectInfo, InsightType } from '../types';
-import { DataProperty } from '../pipeline/preprocess';
+import { Datum, SubjectInfo, InsightType, DataProperty } from '../types';
 
 import type { CkbTypes } from '../../ckb';
 
@@ -61,7 +60,7 @@ export const majorityChecker: ExtractorChecker = (data, subjectInfo, fieldPropsM
 export const lowVarianceChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
   if (!generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, ['Nominal', 'Discrete', 'Ordinal'])) return false;
   const { measures } = subjectInfo;
-  return fieldPropsMap[measures[0].field].distinct !== 1;
+  return fieldPropsMap[measures[0].fieldName].distinct !== 1;
 };
 
 export const correlationChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
@@ -71,8 +70,8 @@ export const correlationChecker: ExtractorChecker = (data, subjectInfo, fieldPro
   // check field quantity
   if (measures.length !== 2) return false;
   if (
-    !fieldPropsMap[measures[0].field].levelOfMeasurements?.includes('Continuous') ||
-    !fieldPropsMap[measures[1].field].levelOfMeasurements?.includes('Continuous')
+    !fieldPropsMap[measures[0].fieldName].levelOfMeasurements?.includes('Continuous') ||
+    !fieldPropsMap[measures[1].fieldName].levelOfMeasurements?.includes('Continuous')
   )
     return false;
   return true;

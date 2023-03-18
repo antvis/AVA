@@ -1,6 +1,6 @@
 import { groupBy, flatten } from 'lodash';
 
-import { PATTERN_TYPES } from '../constant';
+import { PATTERN_TYPES } from '../../constant';
 
 import type {
   Measure,
@@ -9,15 +9,14 @@ import type {
   PatternInfo,
   PointPatternInfo,
   HomogeneousPatternInfo,
-} from '../types';
-
-/**
- * homogeneous data pattern (HDP) represents a set of basic data patterns that share certain relations. HDP are identified by categorizing basic data patterns (within an HDP) into commonness(es) and exceptions considering inter-pattern similarity,
- */
+} from '../../types';
 
 export type PatternCollection = Partial<Record<InsightType, PatternInfo[]>>;
 type ScopePatternCollection = { key: string; patterns?: PatternInfo[] }[];
 
+/**
+ * homogeneous data pattern (HDP) represents a set of basic data patterns that share certain relations. HDP are identified by categorizing basic data patterns (within an HDP) into commonness(es) and exceptions considering inter-pattern similarity,
+ */
 function extractHomogeneousPatterns(collection: ScopePatternCollection, type: InsightType): HomogeneousPatternInfo[] {
   const homogeneousPatterns: HomogeneousPatternInfo[] = [];
   const scopeLength = collection.length;
@@ -35,8 +34,8 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
           type: 'exception',
           insightType: type,
           childPatterns: flatten(validScopes.map((item) => item.patterns)) as PatternInfo[],
-          commSet: parts[0].map((item) => item.key),
-          exc: parts[1].map((item) => item.key),
+          commonSet: parts[0].map((item) => item.key),
+          exceptions: parts[1].map((item) => item.key),
           significance: 1 - parts[1].length / scopeLength,
         });
       } else {
@@ -49,7 +48,7 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
                 type: 'commonness',
                 insightType: type,
                 childPatterns,
-                commSet: part.map((item) => item.key),
+                commonSet: part.map((item) => item.key),
                 significance: ratio,
               });
             }
@@ -58,10 +57,10 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
       }
     }
     if (['change_point', 'outlier', 'time_series_outlier'].includes(type)) {
-      const commSetIndexes = Object.values(
+      const commonSetIndexes = Object.values(
         groupBy(flatten(validScopes.map((item) => (item.patterns as PointPatternInfo[]).map((item) => item.index))))
       ).sort((a, b) => b.length - a.length);
-      commSetIndexes.forEach((indexArr) => {
+      commonSetIndexes.forEach((indexArr) => {
         const ratio = indexArr.length / scopeLength;
         if (ratio > 0.3 && indexArr.length >= 3) {
           const scopes = validScopes.filter((item) =>
@@ -74,7 +73,7 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
             type: 'commonness',
             insightType: type,
             childPatterns,
-            commSet: scopes.map((item) => item.key),
+            commonSet: scopes.map((item) => item.key),
             significance: ratio,
           });
         }
@@ -84,11 +83,11 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
   return homogeneousPatterns;
 }
 
-export function extractHomogeneousPatternsForMeausres(
+export function extractHomogeneousPatternsForMeasures(
   measures: Measure[],
   insightsCollection: (InsightInfo<PatternInfo> | null)[]
 ): HomogeneousPatternInfo[] {
-  const series = measures.map((item) => item.field);
+  const series = measures.map((item) => item.fieldName);
   const patternsForAllMeasures = insightsCollection.map((item) => item?.patterns);
   const homogeneousPatterns: HomogeneousPatternInfo[] = [];
   PATTERN_TYPES.forEach((type) => {
