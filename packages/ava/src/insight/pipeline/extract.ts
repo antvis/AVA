@@ -4,13 +4,13 @@ import Heap from 'heap-js';
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
 import { insightExtractors, ExtractorCheckers } from '../insights';
 import { aggregate } from '../utils/aggregate';
-
-import { DataProperty, calculateImpactValue } from './preprocess';
 import {
-  extractHomogeneousPatternsForMeausres,
+  extractHomogeneousPatternsForMeasures,
   extractHomogeneousPatternsForSiblingGroups,
   PatternCollection,
-} from './homogeneous';
+} from '../insights/extractors/homogeneous';
+
+import { calculateImpactValue } from './preprocess';
 import { addInsightsToHeap } from './util';
 
 import type {
@@ -24,6 +24,7 @@ import type {
   InsightType,
   PatternInfo,
   HomogeneousPatternInfo,
+  DataProperty,
 } from '../types';
 
 interface ReferenceInfo {
@@ -109,7 +110,11 @@ export function extractInsightsFor1M1DCombination(
       if (patternsArray.length) {
         const insight = {
           subspace,
-          dimensions: [dimension],
+          dimensions: [
+            {
+              fieldName: dimension,
+            },
+          ],
           measures: [measure],
           patterns: patternsArray,
           data: aggregatedData,
@@ -154,7 +159,7 @@ export function extractInsightsForCorrelation(
         if (patternsArray?.length) {
           const insight = {
             subspace,
-            dimensions,
+            dimensions: dimensions.map((d) => ({ fieldName: d })),
             measures: [measures[i], measures[j]],
             patterns: patternsArray,
             data,
@@ -236,15 +241,15 @@ export function extractInsightsFromSubspace(
     addInsightsToHeap(insightsForCorrelation, insightsHeap);
   }
 
-  /**  extract homegenehous insight in measures */
+  /**  extract homogeneous insight in measures */
   if (options?.homogeneous) {
     insightsFor1M1DCombination.forEach((insightsPerDim, dimIndex) => {
-      const homogeneousPatternsForMeasures = extractHomogeneousPatternsForMeausres(measures, insightsPerDim);
+      const homogeneousPatternsForMeasures = extractHomogeneousPatternsForMeasures(measures, insightsPerDim);
       if (homogeneousPatternsForMeasures.length > 0) {
         const homogeneousInsights: InsightInfo<HomogeneousPatternInfo>[] = homogeneousPatternsForMeasures.map(
           (pattern) => ({
             subspace,
-            dimensions: [dimensions[dimIndex]],
+            dimensions: [{ fieldName: dimensions[dimIndex] }],
             measures,
             patterns: [pattern],
             data,
@@ -260,9 +265,9 @@ export function extractInsightsFromSubspace(
   if (!options?.ignoreSubspace) {
     const searchedDimensions = subspace.map((item) => item.dimension);
     const remainDimensionFields = (
-      options?.dimensions ||
+      options?.dimensions.map((dimension) => dimension.fieldName) ||
       Object.values(fieldPropsMap)
-        .filter((item) => item.fieldType === 'dimension')
+        .filter((item) => item.domainType === 'dimension')
         .map((item) => item.name)
     ).filter((field) => !searchedDimensions.includes(field));
 
@@ -301,9 +306,9 @@ export function extractInsightsFromSubspace(
                     return (
                       !!insight &&
                       insight.dimensions.length === 1 &&
-                      insight.dimensions[0] === dim &&
+                      insight.dimensions[0].fieldName === dim &&
                       insight.measures.length === 1 &&
-                      insight.measures[0].field === measure.field
+                      insight.measures[0].fieldName === measure.fieldName
                     );
                   }) || null
                 );
@@ -315,7 +320,7 @@ export function extractInsightsFromSubspace(
               );
               const insightsForSiblingGroup = homogeneousPatternsForSiblingGroups.map((pattern) => ({
                 subspace,
-                dimensions: [dimension, dim],
+                dimensions: [{ fieldName: dimension }, { fieldName: dim }],
                 measures: [measure],
                 patterns: [pattern],
                 data,

@@ -1,8 +1,8 @@
 import { sumBy } from 'lodash';
 
-import { rank } from '../../utils/common';
+import { rank } from '../../insight/utils/common';
 
-import type { ChangePointItem } from './types';
+import { ChangePointItem } from './types';
 
 /**
  * Pettitt's (1979) method is a rank-based nonparametric test for abrupt changes in a time series.

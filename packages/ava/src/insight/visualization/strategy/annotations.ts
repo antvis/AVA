@@ -1,6 +1,6 @@
-import { dataFormat } from './util';
+import { dataFormat } from '../util';
 
-import type { PatternInfo, PointPatternInfo, HomogeneousPatternInfo } from '../types';
+import type { PatternInfo, PointPatternInfo, HomogeneousPatternInfo } from '../../types';
 
 const COLOR: Record<string, string> = {
   highlight: '#E09322',

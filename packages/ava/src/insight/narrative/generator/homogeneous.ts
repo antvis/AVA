@@ -15,15 +15,15 @@ export class HomogeneousNarrativeGenerator {
   }
 
   protected prepareVariables(patterns: HomogeneousPatternInfo[], insight: InsightInfo<HomogeneousPatternInfo>) {
-    const { type, insightType, childPatterns, commSet, exc } = patterns[0];
+    const { type, insightType, childPatterns, commonSet, exceptions } = patterns[0];
     this.globalVariableMap = {
       subspace: insight.subspace,
       measures: insight.measures,
-      breakdown: insight.dimensions[0],
+      breakdown: insight.dimensions[0].fieldName,
       type,
       insightType,
-      commSet,
-      exc,
+      commonSet,
+      exceptions,
       childPattern: childPatterns[0],
     };
   }

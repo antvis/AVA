@@ -43,7 +43,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | measures |  `Measure[]` | The measures of the data subject | `[{ field: 'life_expect', method: 'MEAN' }]` |
 | data |  `Datum[]` | data | `[{ country: 'China', life_expect: 61 }]` |
 | patterns |  `PatternInfo[]` | The collection of patterns in the data | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |
-| visualizationSchemas |  `VisualizationSchema[]` | The insight visualization scheme, including chart type, title, insight description, and chart configuration (based on G2Plot) | `[{ type: 'column_chart', caption: string, insightSummaries: string[] | IPhrase[][], chartSchema: G2PlotConfig }]` |
+| visualizationSchemas |  `VisualizationSchema[]` | The insight visualization scheme, including chart type, title, insight description, and chart configuration (based on G2Plot) | `[{ type: 'column_chart', caption: string, narrativeSchema: string[] | IPhrase[][], chartSchema: G2PlotConfig }]` |
 
 <embed src='@/docs/common/phrase.en.md'></embed>
 ### Usage

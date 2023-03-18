@@ -1,14 +1,9 @@
 import { intersection } from 'lodash';
 
-import { DataFrame, DataTypes } from '../../data';
+import { DataFrame } from '../../data';
 import { AggregatorMap } from '../utils/aggregate';
 
-import type { FieldType, Datum, ImpactMeasure } from '../types';
-
-export type DataProperty =
-  | (DataTypes.NumberFieldInfo & { name: string; fieldType: FieldType })
-  | (DataTypes.DateFieldInfo & { name: string; fieldType: FieldType })
-  | (DataTypes.StringFieldInfo & { name: string; fieldType: FieldType });
+import type { Datum, ImpactMeasure, DataProperty } from '../types';
 
 export function dataToDataProps(data: Datum[]): DataProperty[] {
   if (!data) {
@@ -19,12 +14,12 @@ export function dataToDataProps(data: Datum[]): DataProperty[] {
   const dataProps: DataProperty[] = [];
 
   dataTypeInfos.forEach((info) => {
-    const newInfo = {
+    const newInfo: DataProperty = {
       ...info,
-      fieldType: intersection(['Interval', 'Continuous'], info.levelOfMeasurements)?.length ? 'measure' : 'dimension',
+      domainType: intersection(['Interval', 'Continuous'], info.levelOfMeasurements)?.length ? 'measure' : 'dimension',
     };
 
-    dataProps.push(newInfo as DataProperty);
+    dataProps.push(newInfo);
   });
 
   return dataProps;
