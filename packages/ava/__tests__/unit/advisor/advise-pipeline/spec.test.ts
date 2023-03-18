@@ -13,17 +13,13 @@ describe('chart mapping', () => {
     const chartMapping = getChartTypeSpec('pie_chart', data, dataFrame.info() as BasicDataPropertyForAdvice[]);
 
     const expectMapping = {
-      basis: { type: 'chart' },
-      data: { type: 'json-array', values: data },
-      layer: [
-        {
-          mark: { type: 'arc' },
-          encoding: {
-            theta: { field: 'price', type: 'quantitative' },
-            color: { field: 'type', type: 'nominal' },
-          },
-        },
-      ],
+      type: 'interval',
+      data,
+      encode: {
+        color: 'type',
+        y: 'price',
+      },
+      coordinate: { type: 'theta' },
     };
     expect(chartMapping).toEqual(expectMapping);
   });

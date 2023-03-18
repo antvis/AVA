@@ -25,10 +25,10 @@ const getIntervalChart = (spec: ChartSpec) => {
 
   /** 柱状图、条形图类型推断 */
   const { transform } = spec;
-  const isBarChart = coordinate.transform.some((item) => item.type === 'transpose');
-  const isNormalized = transform.some((item) => item.type === 'normalizeY');
-  const isStacked = transform.some((item) => item.type === 'stackY');
-  const isGrouped = transform.some((item) => item.type === 'dodgeX');
+  const isBarChart = coordinate?.transform?.some((item) => item.type === 'transpose');
+  const isNormalized = transform?.some((item) => item.type === 'normalizeY');
+  const isStacked = transform?.some((item) => item.type === 'stackY');
+  const isGrouped = transform?.some((item) => item.type === 'dodgeX');
 
   if (isBarChart) {
     // Bar
@@ -51,8 +51,8 @@ const getIntervalChart = (spec: ChartSpec) => {
  */
 const getAreaChart = (spec: ChartSpec) => {
   const { transform } = spec;
-  const isStacked = transform.some((item) => item.type === 'stackY');
-  const isNormalized = transform.some((item) => item.type === 'normalizeY');
+  const isStacked = transform?.some((item) => item.type === 'stackY');
+  const isNormalized = transform?.some((item) => item.type === 'normalizeY');
   if (isStacked) {
     if (isNormalized) {
       return 'percent_stacked_area_chart';

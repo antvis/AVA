@@ -33,12 +33,12 @@ export function lintRules(
       if (ruleTypeToLint === 'DESIGN') {
         const fix = (r as DesignRuleModule).optimizer(info.dataProps, spec);
         // no fix -> means no violation
-        const score = Object.keys(fix).length === 0 ? 1 : 0;
+        score = Object.keys(fix).length === 0 ? 1 : 0;
         lints.push({ type, id, score, fix, docs });
       } else {
         const { weight, extra } = r.option || {};
         // no weight for linter's result
-        const score = (r as ChartRuleModule).validator({ ...info, weight, ...extra, chartWIKI: ckb }) as number;
+        score = (r as ChartRuleModule).validator({ ...info, weight, ...extra, chartWIKI: ckb }) as number;
         lints.push({ type, id, score, docs });
       }
       log.push({ phase: 'LINT', ruleId: id, score, base: score, weight: 1, ruleType: type });

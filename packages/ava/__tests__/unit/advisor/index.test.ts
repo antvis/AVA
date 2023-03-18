@@ -69,30 +69,16 @@ describe('init Advisor', () => {
 
     const toFuChart = (data: Data, dataProps: BasicDataPropertyForAdvice[]): Specification | null => {
       const [field4Color, field4Angle] = splitAngleColor(dataProps);
-      if (!field4Angle || !field4Color) return null;
+      if (!field4Angle?.name || !field4Color?.name) return null;
 
       const spec: Specification = {
-        basis: {
-          type: 'chart',
+        type: 'interval',
+        data,
+        encode: {
+          color: field4Color.name,
+          y: field4Angle.name,
         },
-        data: {
-          type: 'json-array',
-          values: data,
-        },
-        layer: [
-          {
-            mark: {
-              type: 'arc',
-              style: {
-                innerRadius: 0.8,
-              },
-            },
-            encoding: {
-              theta: { field: field4Angle.name, type: 'quantitative' },
-              color: { field: field4Color.name, type: 'nominal' },
-            },
-          },
-        ],
+        coordinate: { type: 'theta', innerRadius: 0.8 },
       };
       return spec;
     };
@@ -163,60 +149,42 @@ describe('init Advisor', () => {
 });
 
 describe('init Linter', () => {
-  const dataOfRightSpec = {
-    type: 'json-array',
-    values: [
-      { year: '2007', sales: 28 },
-      { year: '2008', sales: 55 },
-      { year: '2009', sales: 43 },
-      { year: '2010', sales: 91 },
-      { year: '2011', sales: 81 },
-      { year: '2012', sales: 53 },
-      { year: '2013', sales: 19 },
-      { year: '2014', sales: 87 },
-      { year: '2015', sales: 52 },
-    ],
-  };
+  const dataOfRightSpec = [
+    { year: '2007', sales: 28 },
+    { year: '2008', sales: 55 },
+    { year: '2009', sales: 43 },
+    { year: '2010', sales: 91 },
+    { year: '2011', sales: 81 },
+    { year: '2012', sales: 53 },
+    { year: '2013', sales: 19 },
+    { year: '2014', sales: 87 },
+    { year: '2015', sales: 52 },
+  ];
 
-  const dataOfErrorSpec = {
-    type: 'json-array',
-    values: [
-      { year: '2007', sales: 28, amount: 141 },
-      { year: '2008', sales: 55, amount: 187 },
-      { year: '2009', sales: 43, amount: 88 },
-      { year: '2010', sales: 91, amount: 108 },
-      { year: '2011', sales: 81, amount: 68 },
-      { year: '2012', sales: 53, amount: 90 },
-      { year: '2013', sales: 19, amount: 44 },
-      { year: '2014', sales: 87, amount: 123 },
-      { year: '2015', sales: 52, amount: 88 },
-    ],
-  };
+  const dataOfErrorSpec = [
+    { year: '2007', sales: 28, amount: 141 },
+    { year: '2008', sales: 55, amount: 187 },
+    { year: '2009', sales: 43, amount: 88 },
+    { year: '2010', sales: 91, amount: 108 },
+    { year: '2011', sales: 81, amount: 68 },
+    { year: '2012', sales: 53, amount: 90 },
+    { year: '2013', sales: 19, amount: 44 },
+    { year: '2014', sales: 87, amount: 123 },
+    { year: '2015', sales: 52, amount: 88 },
+  ];
 
   const partOfSpec = {
-    basis: {
-      type: 'chart',
+    type: 'area',
+    encode: {
+      x: 'year',
+      y: 'sales',
     },
-    layer: [
-      {
-        mark: 'area',
-        encoding: {
-          x: {
-            field: 'year',
-            type: 'temporal',
-          },
-          y: {
-            field: 'sales',
-            type: 'quantitative',
-          },
-        },
-      },
-    ],
   };
 
   test('Linter test with no error spec', () => {
     const myLt = new Advisor();
-    const errors = myLt.lint({ spec: { ...partOfSpec, data: dataOfRightSpec } as Specification });
+    const spec = { spec: { ...partOfSpec, data: dataOfRightSpec } as Specification };
+    const errors = myLt.lint(spec);
     expect(errors.length).toBe(0);
   });
 

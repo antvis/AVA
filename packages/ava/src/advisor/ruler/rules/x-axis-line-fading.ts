@@ -16,9 +16,9 @@ export const xAxisLineFading: RuleModule = {
   },
   optimizer: (dataProps, chartSpec): object => {
     const specWithEncodeType = getSpecWithEncodeType(chartSpec);
-    const layerEnc = specWithEncodeType.encode;
-    if (layerEnc && layerEnc.y?.type === 'quantitative') {
-      const fieldInfo = dataProps.find((item) => item.name === layerEnc.y?.field);
+    const { encode } = specWithEncodeType;
+    if (encode && encode.y?.type === 'quantitative') {
+      const fieldInfo = dataProps.find((item) => item.name === encode.y?.field);
       if (fieldInfo) {
         const range = fieldInfo.maximum - fieldInfo.minimum;
         if (fieldInfo.minimum && fieldInfo.maximum && range < (fieldInfo.maximum * 2) / 3) {
