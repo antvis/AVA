@@ -31,3 +31,10 @@ CKBJson(lang, completed)
 ckb(ckbCfg?)
 ```
 
+The language selection parameter `lang` was originally provided to make it easier for users to switch between languages when creating wiki-like pages using CKB. However, in view of the small number of such requirements, v3 removes this parameter and provides an alternative: an API `ckbDict(lang?)` which is dedicated to obtaining translation cross-references. For CKB usage scenarios with non-English requirements, you can customize your own translations on demand. Contributions to CKB's multilingual/dictionary are also welcome!
+
+The `completed` parameter was originally supplied to exclude imperfect chart types from the CKB. Considering that the chart types are not perfect/complete, they are simply omitted. Contributions to the CKB standard chart types are welcome!
+
+Comply with the stricter naming convention by changing the API name to lower case.
+
+The original customization capabilities for CKB have been integrated into this API. The `ckbCfg` parameter can be configured with `exclude`/ `include`/ `custom` to customize CKB.

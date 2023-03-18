@@ -60,20 +60,17 @@ AVA 的智能图表推荐的能力是以 CKB 为依托的。有了 CKB，你也�
 ## 📦 安装
 
 ```bash
-$ npm install @antv/ckb
+$ npm install @antv/ava
 ```
 
 ## 🔨 使用
 
 ```js
-import { CKBJson } from '@antv/ckb';
+import { ckb } from '@antv/ava';
 
 
-// 得到全量的英文图表知识库
-const knowledgeBase = CKBJson();
-
-// 得到只包含完整信息的图表构成的中文图表知识库
-const zhCompletedKB = CKBJson('zh-CN', true);
+// 得到图表知识库对象
+const myCkb = ckb();
 ```
 
 ### 演示案例
