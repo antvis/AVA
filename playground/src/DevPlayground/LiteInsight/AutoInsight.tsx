@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { Select, Button, Table, Row, Col, Form, Switch } from 'antd';
+import { Select, Button, Table, Tag } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
-import { InsightCard } from 'antv-site-demo-rc';
 
 import { getInsights, InsightTypes } from '../../../../packages/ava/src';
+import { NarrativeTextVis } from '../../../../packages/ava-react/src';
 
 const { Option } = Select;
 
@@ -81,7 +81,6 @@ export default function App() {
   const [tableColumns, setTableColumns] = useState<InsightTypes.Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [insightLoading, setInsightLoading] = useState<boolean>(false);
-  const [showTextSpec, setShowTextSpec] = useState<boolean>(false);
 
   const fetchDataset = async () => {
     let data;
@@ -188,7 +187,10 @@ export default function App() {
 
   const getDataInsights = async () => {
     setInsightLoading(true);
-    const { insights } = getInsights(data, { ...(datasetConfigs[dataset] ?? {}), visualization: true });
+    const { insights } = getInsights(data, {
+      ...(datasetConfigs[dataset] ?? {}),
+      visualization: { lang: 'zh-CN' },
+    });
 
     if (insights) setInsights(insights);
   };
@@ -231,16 +233,25 @@ export default function App() {
       </div>
       {insights.length > 0 && (
         <div style={{ borderTop: '1px solid grey' }}>
-          <Row justify="space-between" style={{ fontSize: 20, fontWeight: 600, margin: 16 }}>
-            <Col>Insights</Col>
-            <Col>
-              <Form.Item label="Use Text Plugin">
-                <Switch checked={showTextSpec} onChange={setShowTextSpec} />
-              </Form.Item>
-            </Col>
-          </Row>
-          {insights.map((item, index) => (
-            <InsightCard key={index} insightInfo={item as any} height={400} />
+          {insights.map((insight, insightKey) => (
+            <div key={insightKey} style={{ margin: 12, padding: 12, border: '1px solid #ccc' }}>
+              {insight.visualizationSpecs?.map((visSpec, visKey) => (
+                <div key={visKey}>
+                  {insight?.patterns.map((pattern, i) => (
+                    <Tag key={i}>{pattern.type}</Tag>
+                  ))}
+                  {visSpec.narrativeSpec && (
+                    <NarrativeTextVis
+                      spec={{
+                        sections: [{ paragraphs: visSpec.narrativeSpec }],
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+            // TODO 替换 ava-react InsightCard
+            // <InsightCard key={index} insightInfo={item as any} height={400} />
           ))}
         </div>
       )}

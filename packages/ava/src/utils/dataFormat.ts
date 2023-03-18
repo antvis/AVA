@@ -2,7 +2,7 @@
 // dataFormat(12, 1) = 12
 // dataFormat(1234, 1) = 1.2k
 // dataFormat(123.456, 2) = 123.46
-export function dataFormat(value: number | string, digits: number = 2) {
+export default function dataFormat(value: number | string, digits: number = 2) {
   if (typeof value === 'string') return value;
 
   const formatMap = [
