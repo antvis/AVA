@@ -1,7 +1,7 @@
 import { sortBy } from 'lodash';
 
 import { distinct } from '../../../data';
-import { CategoryOutlier } from '../../algorithms';
+import { categoryOutlier } from '../../algorithms';
 import { SignificanceBenchmark } from '../../constant';
 import { Datum, Measure, CategoryOutlierInfo } from '../../types';
 import { calculatePValue } from '../util';
@@ -19,7 +19,7 @@ type OutlierCandidateItem = {
 };
 
 export const findOutliers = (values: number[]): OutlierItem[] => {
-  const IQRResult = CategoryOutlier.IQR(values, { k: 1.8 });
+  const IQRResult = categoryOutlier.IQR(values, { k: 1.8 });
 
   const lowerOutlierIndexes = IQRResult.lower.indexes;
   const upperOutlierIndexes = IQRResult.upper.indexes;

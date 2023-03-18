@@ -1,8 +1,8 @@
 import { sumBy } from 'lodash';
 
-import { sign, unique } from '../../utils/common';
-import { TrendType } from '../../types';
-import { normalDistributionQuantile, cdf } from '../../../data';
+import { sign, unique } from '../../insight/utils/common';
+import { TrendType } from '../../insight/types';
+import { normalDistributionQuantile, cdf } from '..';
 
 /**
  * http://vsp.pnnl.gov/help/Vsample/Design_Trend_Mann_Kendall.htm

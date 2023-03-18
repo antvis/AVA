@@ -1,4 +1,4 @@
-import { ascending } from '../base/compare';
+import { ascending } from '../../insight/algorithms/base/compare';
 
 export interface IQRParams {
   k: number;

@@ -1,3 +1,3 @@
-export * from './category-outlier';
-export * from './trend-direction';
-export * from './change-point';
+export * from './categoryOutlier';
+export * from './trendDirection';
+export * from './changePoint';

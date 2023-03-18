@@ -67,3 +67,8 @@ export type PCorrTestOutput = {
    * */
   nullValue?: number;
 };
+
+export type ChangePointItem = {
+  index: number;
+  significance: number;
+};
