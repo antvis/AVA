@@ -50,6 +50,7 @@
     "@antv/lite-insight": "^2.0.3",
     "@antv/narrative-text-vis": "^0.3.6",
     "@antv/s2": "^1.0.0-beta.9",
+    "@antv/s2-react": "^1.37.1",
     "@antv/smart-board": "^2.0.3",
     "@antv/smart-color": "^0.2.1",
     "@antv/thumbnails": "^2.0.0",
