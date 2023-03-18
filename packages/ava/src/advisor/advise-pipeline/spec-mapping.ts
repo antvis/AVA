@@ -7,7 +7,7 @@ import type { CkbTypes } from '../../ckb';
 import type { Advice } from '../types';
 import type { BasicDataPropertyForAdvice } from '../ruler';
 
-declare type ChartID = (typeof CHART_IDS)[number];
+declare type ChartID = typeof CHART_IDS[number];
 
 /* !!!START pie_chart & donut_chart ------------------- */
 function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, ReturnField] {
@@ -421,7 +421,7 @@ function bubbleChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advic
   const field4Color = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Nominal']));
 
   // require x,y,size,color at the same time
-  if (!field4X || !field4Y || !field4Size || !field4Color) return null;
+  if (!field4X || !field4Y || !field4Size) return null;
 
   const spec: Advice['spec'] = {
     type: 'point',
@@ -429,10 +429,13 @@ function bubbleChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advic
     encode: {
       x: field4X.name,
       y: field4Y.name,
-      color: field4Color.name,
       size: field4Size.name,
     },
   };
+
+  if (field4Color) {
+    spec.encode.color = field4Color.name;
+  }
 
   return spec;
 }

@@ -10,7 +10,6 @@ describe('should advise bubble', () => {
     const myAdvisor = new Advisor();
     const advices = myAdvisor.advise({ data });
 
-    // TODO bubble chart is invalid in advisor beacuse failed to generate spec
     expect(advices.map((advice) => advice.type).includes('bubble_chart')).toBe(true);
   });
 });
