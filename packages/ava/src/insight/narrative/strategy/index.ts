@@ -1,8 +1,16 @@
-export { subjectsDescStrategy } from './subjects-desc';
-export { trendStrategy } from './trend';
-export { lowVarianceStrategy } from './low-variance';
-export { outliersStrategy } from './outliers';
-export { changePointStrategy } from './change-point';
-export { majorityStrategy } from './majority';
-export { correlationStrategy } from './correlation';
-export { homogeneousStrategy } from './homogeneous';
+// 趋势类 trend
+export { default as ChangePointNarrativeStrategy } from './changePoint';
+export { default as TimeSeriesOutlierNarrativeStrategy } from './timeSeriesOutlier';
+export { default as TrendNarrativeStrategy } from './trend';
+
+// 分布类 distribute
+export { default as MajorityNarrativeStrategy } from './majority';
+export { default as LowVarianceNarrativeStrategy } from './lowVariance';
+export { default as CategoryNarrativeStrategy } from './categoryOutlier';
+
+// 多指标 multi metric
+export { default as CorrelationNarrativeStrategy } from './correlation';
+
+// 共性/例外 homogeneous
+export { default as CommonnessNarrativeStrategy } from './commonness';
+export { default as ExceptionNarrativeStrategy } from './exception';
