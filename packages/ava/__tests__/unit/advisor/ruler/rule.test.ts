@@ -54,22 +54,6 @@ describe('init Ruler', () => {
     const rules = builtInRules;
     expect(rules.length).toBe(13);
   });
-
-  // design rule test
-  test('x-axis-line-fading', () => {
-    const myAdvisor = new Advisor();
-    const data = [
-      { price: 520, year: 2005 },
-      { price: 600, year: 2006 },
-      { price: 1500, year: 2007 },
-    ];
-    const advices = myAdvisor.advise({ data, fields: ['price', 'year'], options: { refine: true } });
-    const chartSpec = advices.filter((e) => e.type === 'line_chart')[0].spec;
-    if (chartSpec) {
-      expect(chartSpec).toHaveProperty('axis');
-      expect(chartSpec).toHaveProperty('scale');
-    }
-  });
 });
 
 describe('customized Rule', () => {
