@@ -42,7 +42,7 @@ function computeSubspaceImpact(
   if (!measures?.length || !subspace) return 1;
   const impactValues = measures.map((measure) => {
     const measureValue = calculateImpactValue(data, measure);
-    const referenceKey = `${measure.field}@${measure.method}`;
+    const referenceKey = `${measure.fieldName}@${measure.method}`;
     const referenceValue = impactMeasureReferences[referenceKey];
     return measureValue / referenceValue;
   });
@@ -265,7 +265,7 @@ export function extractInsightsFromSubspace(
   if (!options?.ignoreSubspace) {
     const searchedDimensions = subspace.map((item) => item.dimension);
     const remainDimensionFields = (
-      options?.dimensions.map((dimension) => dimension.fieldName) ||
+      options?.dimensions?.map((dimension) => dimension.fieldName) ||
       Object.values(fieldPropsMap)
         .filter((item) => item.domainType === 'dimension')
         .map((item) => item.name)

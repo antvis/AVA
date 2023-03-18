@@ -54,7 +54,7 @@ export function extractInsights(sourceData: Datum[], options?: InsightOptions): 
         method: 'SUM',
       }));
   const dimensions =
-    options?.dimensions.map((dimension) => dimension.fieldName) ||
+    options?.dimensions?.map((dimension) => dimension.fieldName) ||
     dataProps.filter((item) => item.domainType === 'dimension').map((item) => item.name);
 
   // init insights storage
