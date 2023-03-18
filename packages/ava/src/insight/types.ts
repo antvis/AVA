@@ -43,7 +43,7 @@ export type Subspace = {
 }[];
 
 export type ImpactMeasure = {
-  field: string;
+  fieldName: string;
   method: ImpactMeasureMethod;
 };
 

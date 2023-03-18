@@ -27,7 +27,7 @@ export function dataToDataProps(data: Datum[]): DataProperty[] {
 
 export function calculateImpactValue(data: Datum[], measure: ImpactMeasure) {
   const measureAggregator = AggregatorMap[measure.method];
-  const value = measureAggregator(data, measure.field);
+  const value = measureAggregator(data, measure.fieldName);
   return value;
 }
 
@@ -35,7 +35,7 @@ export function calculateImpactValue(data: Datum[], measure: ImpactMeasure) {
 export function calculateImpactMeasureReferenceValues(data: Datum[], measures?: ImpactMeasure[]) {
   const referenceMap: Record<string, number> = {};
   measures?.forEach((measure) => {
-    const measureKey = `${measure.field}@${measure.method}`;
+    const measureKey = `${measure.fieldName}@${measure.method}`;
     const value = calculateImpactValue(data, measure);
     referenceMap[measureKey] = value;
   });
