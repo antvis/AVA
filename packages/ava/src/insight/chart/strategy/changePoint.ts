@@ -2,7 +2,7 @@ import { G2Spec, Mark } from '@antv/g2';
 
 import { ChangePointInfo, InsightInfo } from '../../types';
 import { INSIGHT_COLOR_PLATTE } from '../constants';
-import { dataFormat } from '../util';
+import { dataFormat } from '../../../utils';
 
 import { pointMarkStrategy } from './augmentedMarks/pointMark';
 import { textMarkStrategy } from './augmentedMarks/textMark';

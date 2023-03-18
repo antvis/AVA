@@ -2,7 +2,7 @@ import { G2Spec, Mark } from '@antv/g2';
 
 import { InsightInfo, CategoryOutlierInfo } from '../../types';
 import { BOLD_FONT_WEIGHT } from '../constants';
-import { dataFormat } from '../util';
+import { dataFormat } from '../../../utils';
 
 import { textMarkStrategy } from './augmentedMarks/textMark';
 import { insight2ChartStrategy } from './chartStrategy';
