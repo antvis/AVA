@@ -32,7 +32,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 
 | Properties | Type | Description | Default| 
 | ----| ---- | ---- | -----|
-| summaryType |  `text`\|`schema` | pure text or text schema to description insight summary | 'text' |
+| summaryType |  `text`\|`spec` | pure text or text spec to description insight summary | 'text' |
 
 * ***InsightInfo|HomogeneousInsightInfo*** Insight information.
 
