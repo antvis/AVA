@@ -35,7 +35,7 @@ order: 3
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| summaryType |  `text`\|`schema` | 洞察描述返回纯文本或者文本结构化描述 | 'text' |
+| summaryType |  `text`\|`spec` | 洞察描述返回纯文本或者文本结构化描述 | 'text' |
 
 
 * ***InsightInfo|HomogeneousInsightInfo*** 洞察信息

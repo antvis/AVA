@@ -75,14 +75,14 @@ export type PatternInfo =
   | MajorityInfo;
 
 /** explanation and visualization for insight */
-export interface VisualizationSchema {
+export interface VisualizationSpec {
   chartType: ChartType;
-  chartSchema: G2Spec;
+  chartSpec: G2Spec;
   /**
-   * @description pure text or text schema to describe insight
+   * @description pure text or text spec to describe insight
    * @default string
    */
-  narrativeSchema?: string[] | NarrativeTextSpec[];
+  narrativeSpec?: string[] | NarrativeTextSpec[];
 }
 
 /** output insight information */
@@ -93,7 +93,7 @@ export interface InsightInfo<T = PatternInfo> {
   score: number;
   data: Datum[];
   patterns: T[];
-  visualizationSchemas?: VisualizationSchema[];
+  visualizationSpecs?: VisualizationSpec[];
 }
 
 /**
@@ -101,10 +101,10 @@ export interface InsightInfo<T = PatternInfo> {
  */
 export interface VisualizationOptions {
   /**
-   * @description pure text or text schema to description insight summary
+   * @description pure text or text specification to description insight summary
    * @default 'text'
    * */
-  summaryType: 'text' | 'schema' | false;
+  summaryType: 'text' | 'spec' | false;
 }
 
 /** custom options */

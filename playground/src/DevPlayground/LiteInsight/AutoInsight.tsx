@@ -74,7 +74,7 @@ export default function App() {
   const [tableColumns, setTableColumns] = useState<InsightTypes.Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [insightLoading, setInsightLoading] = useState<boolean>(false);
-  const [showTextSchema, setShowTextSchema] = useState<boolean>(false);
+  const [showTextSpec, setShowTextSpec] = useState<boolean>(false);
 
   const fetchDataset = async () => {
     const datasetName = `${dataset}.json`;
@@ -141,7 +141,7 @@ export default function App() {
             <Col>Insights</Col>
             <Col>
               <Form.Item label="Use Text Plugin">
-                <Switch checked={showTextSchema} onChange={setShowTextSchema} />
+                <Switch checked={showTextSpec} onChange={setShowTextSpec} />
               </Form.Item>
             </Col>
           </Row>
