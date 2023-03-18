@@ -8,34 +8,16 @@ import { Advisor } from '@antv/ava';
 // contants
 
 const iDontLikeSpec = {
-  basis: {
-    type: 'chart',
-  },
-  data: {
-    type: 'json-array',
-    values: [
-      { price: 520, year: 2005 },
-      { price: 600, year: 2006 },
-      { price: 1500, year: 2007 },
-    ],
-  },
-  layer: [
-    {
-      mark: {
-        type: 'line',
-      },
-      encoding: {
-        x: {
-          field: 'year',
-          type: 'temporal',
-        },
-        y: {
-          field: 'price',
-          type: 'quantitative',
-        },
-      },
-    },
+  type: 'line',
+  data: [
+    { price: 520, year: 2005 },
+    { price: 600, year: 2006 },
+    { price: 1500, year: 2007 },
   ],
+  encode: {
+    x: 'year',
+    y: 'price',
+  },
 };
 
 // custom rule

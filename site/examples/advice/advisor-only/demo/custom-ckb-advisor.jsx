@@ -38,32 +38,13 @@ const toTriNominal = (data, dataProps) => {
   if (!field4X || !field4Y || !field4Color) return null;
 
   const spec = {
-    basis: {
-      type: 'chart',
+    type: 'cell',
+    data,
+    encode: {
+      x: field4X.name,
+      color: field4Color.name,
+      y: field4Y.name,
     },
-    data: {
-      type: 'json-array',
-      values: data,
-    },
-    layer: [
-      {
-        mark: 'rect',
-        encoding: {
-          x: {
-            field: field4X.name,
-            type: 'nominal',
-          },
-          color: {
-            field: field4Color.name,
-            type: 'nominal',
-          },
-          y: {
-            field: field4Y.name,
-            type: 'nominal',
-          },
-        },
-      },
-    ],
   };
 
   return spec;

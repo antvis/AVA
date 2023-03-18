@@ -19,6 +19,7 @@ describe('chart mapping', () => {
         color: 'type',
         y: 'price',
       },
+      transform: [{ type: 'stackY' }],
       coordinate: { type: 'theta' },
     };
     expect(chartMapping).toEqual(expectMapping);

@@ -6,42 +6,25 @@ import { Advisor } from '@antv/ava';
 import { ChartView } from 'antv-site-demo-rc';
 
 const errorSpec = {
-  basis: {
-    type: 'chart',
-  },
-  data: {
-    type: 'json-array',
-    values: [
-      { type: 'furniture', sales: 38 },
-      { type: 'food', sales: 52 },
-      { type: 'fruit', sales: 61 },
-      { type: 'lights', sales: 145 },
-      { type: 'kitchen', sales: 48 },
-      { type: 'garden', sales: 38 },
-      { type: 'drink', sales: 38 },
-      { type: 'pets', sales: 38 },
-    ],
-  },
-  layer: [
-    {
-      mark: {
-        type: 'bar',
-      },
-      encoding: {
-        x: {
-          field: 'type',
-          type: 'nominal',
-        },
-        y: {
-          field: 'sales',
-          type: 'quantitative',
-          axis: {
-            min: 20,
-          },
-        },
-      },
-    },
+  type: 'interval',
+  data: [
+    { type: 'furniture', sales: 38 },
+    { type: 'food', sales: 52 },
+    { type: 'fruit', sales: 61 },
+    { type: 'lights', sales: 145 },
+    { type: 'kitchen', sales: 48 },
+    { type: 'garden', sales: 38 },
+    { type: 'drink', sales: 38 },
+    { type: 'pets', sales: 38 },
   ],
+  encode: {
+    x: 'type',
+    y: 'sales',
+  },
+  scale: {
+    y: { domainMin: 20 },
+  },
+  clip: true,
 };
 
 const myAdvisor = new Advisor();

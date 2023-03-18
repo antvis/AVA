@@ -32,6 +32,7 @@ export const xAxisLineFading: RuleModule = {
                 domainMin: yScaleMin > 0 ? yScaleMin : 0,
               },
             },
+            clip: true,
           };
         }
       }

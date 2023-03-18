@@ -48,6 +48,7 @@ const spec: Specification = {
   scale: {
     color: { range: ['#5b8ff9', '#753d91', '#b03c63', '#d5b471', '#4fb01f', '#608b7d'] },
   },
+  transform: [{ type: 'stackY' }],
   coordinate: { type: 'theta' },
 };
 
