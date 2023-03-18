@@ -100,7 +100,7 @@ export default defineConfig({
                 zh: '自动洞察(insight)',
                 en: 'Auto Insight (insight)',
             },
-            order: 6,
+            order: 5,
         },
         {
             slug: 'guide/ntv',
@@ -108,7 +108,15 @@ export default defineConfig({
                 zh: '解读文本可视化(ntv)',
                 en: 'Narrative Text Vis (ntv)',
             },
-            order: 9,
+            order: 6,
+        },
+        {
+          slug: 'guide/migrate',
+          title: {
+              zh: '版本升级指引',
+              en: 'Migrate',
+          },
+          order: 7,
         },
         // v3 暂时不透出 AutoChart
         // {
@@ -149,15 +157,15 @@ export default defineConfig({
               zh: '自动洞察(insight)',
               en: 'Auto Insight (insight)',
             },
-            order: 6,
+            order: 5,
         },
         {
-          slug: 'api/ntv',
-          title: {
-              zh: '解读文本可视化(ntv)',
-              en: 'NarrativeTextVis (ntv)',
-          },
-          order: 7,
+            slug: 'api/ntv',
+            title: {
+                zh: '解读文本可视化(ntv)',
+                en: 'NarrativeTextVis (ntv)',
+            },
+            order: 6,
         },
         {
             slug: 'api/types',
@@ -165,8 +173,8 @@ export default defineConfig({
                 zh: '类型 Types',
                 en: 'Types',
             },
-            order: 9,
-        },
+            order: 7,
+        }
     ],
     examples: [
         {
