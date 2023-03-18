@@ -1,0 +1,23 @@
+@import '../../../common/styles/index.less';
+
+@prefix: ~'@{avar-prefix}-insight-card';
+
+.@{prefix} {
+  &-tools-container {
+    display: inline-block;
+  }
+  &-icon-button-tooltip {
+    font-size: 12px;
+  }
+  &-icon-button {
+    margin-left: 8px;
+    &:hover,
+    &:focus,
+    &:active {
+      color: @active-color;
+    }
+  }
+  &-like-icon-liked {
+    color: @active-color;
+  }
+}
