@@ -66,11 +66,8 @@ describe('init Ruler', () => {
     const advices = myAdvisor.advise({ data, fields: ['price', 'year'], options: { refine: true } });
     const chartSpec = advices.filter((e) => e.type === 'line_chart')[0].spec;
     if (chartSpec) {
-      const layerEnc = chartSpec.layer && 'encoding' in chartSpec.layer[0] ? chartSpec.layer[0].encoding : null;
-      if (layerEnc) {
-        expect(layerEnc.x).toHaveProperty('axis');
-        expect(layerEnc.y).toHaveProperty('scale');
-      }
+      expect(chartSpec).toHaveProperty('axis');
+      expect(chartSpec).toHaveProperty('scale');
     }
   });
 });
