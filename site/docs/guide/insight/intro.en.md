@@ -1,5 +1,5 @@
 ---
-title: Introduction to Insight
+title: Introduction to insight
 order: 0
 ---
 
@@ -49,7 +49,7 @@ For more usages, please check the [API Reference](../../api/insight/auto-insight
 
 ## 🧷 Acknowledgement
 
-Some functionalities of Insight are inspired by the following works.
+Some functionalities of insight are inspired by the following works.
 
 * [Extracting Top-K Insights from Multi-dimensional Data](https://www.microsoft.com/en-us/research/uploads/prod/2017/02/Insights_SIGMOD17.pdf)
 
