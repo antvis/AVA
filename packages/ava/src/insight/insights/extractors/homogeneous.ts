@@ -34,8 +34,8 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
           type: 'exception',
           insightType: type,
           childPatterns: flatten(validScopes.map((item) => item.patterns)) as PatternInfo[],
-          commSet: parts[0].map((item) => item.key),
-          exc: parts[1].map((item) => item.key),
+          commonSet: parts[0].map((item) => item.key),
+          exceptions: parts[1].map((item) => item.key),
           significance: 1 - parts[1].length / scopeLength,
         });
       } else {
@@ -48,7 +48,7 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
                 type: 'commonness',
                 insightType: type,
                 childPatterns,
-                commSet: part.map((item) => item.key),
+                commonSet: part.map((item) => item.key),
                 significance: ratio,
               });
             }
@@ -57,10 +57,10 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
       }
     }
     if (['change_point', 'outlier', 'time_series_outlier'].includes(type)) {
-      const commSetIndexes = Object.values(
+      const commonSetIndexes = Object.values(
         groupBy(flatten(validScopes.map((item) => (item.patterns as PointPatternInfo[]).map((item) => item.index))))
       ).sort((a, b) => b.length - a.length);
-      commSetIndexes.forEach((indexArr) => {
+      commonSetIndexes.forEach((indexArr) => {
         const ratio = indexArr.length / scopeLength;
         if (ratio > 0.3 && indexArr.length >= 3) {
           const scopes = validScopes.filter((item) =>
@@ -73,7 +73,7 @@ function extractHomogeneousPatterns(collection: ScopePatternCollection, type: In
             type: 'commonness',
             insightType: type,
             childPatterns,
-            commSet: scopes.map((item) => item.key),
+            commonSet: scopes.map((item) => item.key),
             significance: ratio,
           });
         }

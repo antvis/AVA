@@ -37,7 +37,7 @@ export class InsightNarrativeGenerator {
       subspace: insight.subspace,
       measure: insight.measures[0].field,
       measureMethod: insight.measures[0].method,
-      breakdown: insight.dimensions[0],
+      breakdown: insight.dimensions[0].field,
     };
   }
 

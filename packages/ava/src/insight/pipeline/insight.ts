@@ -54,7 +54,7 @@ export function extractInsights(sourceData: Datum[], options?: InsightOptions): 
         method: 'SUM',
       }));
   const dimensions =
-    options?.dimensions.map((dimension) => dimension) ||
+    options?.dimensions.map((dimension) => dimension.field) ||
     dataProps.filter((item) => item.fieldType === 'dimension').map((item) => item.name);
 
   // init insights storage
@@ -109,9 +109,9 @@ export function generateInsightsWithVisualizationSchemas(
       const { data, measures, dimensions } = item;
       const insight = { ...item, visualizationSchemas };
       if (measures.length > 1) {
-        insight.data = aggregateWithMeasures(data, dimensions[0], measures);
+        insight.data = aggregateWithMeasures(data, dimensions[0].field, measures);
       } else {
-        insight.data = aggregateWithSeries(data, dimensions[0], measures[0], dimensions[1]);
+        insight.data = aggregateWithSeries(data, dimensions[0].field, measures[0], dimensions[1].field);
       }
       return insight;
     });

@@ -65,13 +65,13 @@ export function getInsightVisualizationSchema(
 
 /** lowlight information that does not require attention */
 function lowlight(pattern: HomogeneousPatternInfo, colorField: string) {
-  const { type, insightType, commSet, exc = [] } = pattern;
+  const { type, insightType, commonSet, exceptions = [] } = pattern;
   const chartType = ChartTypeMap[insightType];
   let highlightSet: string[] = [];
   if (type === 'commonness') {
-    highlightSet = commSet;
+    highlightSet = commonSet;
   } else if (type === 'exception') {
-    highlightSet = exc;
+    highlightSet = exceptions;
   }
   const opacity = (value: string) => (highlightSet.includes(value) ? 1 : 0.2);
   if (chartType === 'line_chart') {

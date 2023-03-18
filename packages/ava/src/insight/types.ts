@@ -84,7 +84,7 @@ export interface VisualizationSchema {
 /** output insight information */
 export interface InsightInfo<T = PatternInfo> {
   subspace: Subspace;
-  dimensions: string[];
+  dimensions: Dimension[];
   measures: Measure[];
   score: number;
   data: Datum[];
@@ -106,7 +106,7 @@ export interface VisualizationOptions {
 /** custom options */
 export interface InsightOptions {
   /** dimensions (field names) for analysis */
-  dimensions?: string[];
+  dimensions?: Dimension[];
   /** measures for analysis */
   measures?: Measure[];
   /** Measures for Impact score */
@@ -135,8 +135,8 @@ export interface HomogeneousPatternInfo {
   significance: number;
   insightType: InsightType;
   childPatterns: PatternInfo[];
-  exc?: string[];
-  commSet: string[];
+  exceptions?: string[];
+  commonSet: string[];
 }
 
 export type PointPatternInfo = {
