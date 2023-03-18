@@ -27,7 +27,7 @@ const App = () => {
             // 洞察结果中会增加对应的可视化展示方案（基于g2plot）
             // the corresponding visualization scheme will be added to the insight results (based on g2plot)
             visualization: {
-              summaryType: 'schema',
+              summaryType: 'spec',
             },
           });
           setResult(insightResult);
@@ -44,12 +44,12 @@ const App = () => {
         <>
           {result?.insights &&
             result?.insights.slice(0, 3).map((item, index) => {
-              const { data, visualizationSchemas } = item;
-              const { chartType, chartSchema, narrativeSchema, caption } = visualizationSchemas[0];
+              const { data, visualizationSpecs } = item;
+              const { chartType, chartSpec, narrativeSpec, caption } = visualizationSpecs[0];
               return (
                 <Card key={index} style={{ marginBottom: 12 }}>
-                  <PlotCard chartType={chartType} data={data} caption={caption} schema={chartSchema} height={400} />
-                  {narrativeSchema.map((summary, idx) => (
+                  <PlotCard chartType={chartType} data={data} caption={caption} schema={chartSpec} height={400} />
+                  {narrativeSpec.map((summary, idx) => (
                     <NarrativeTextVis.Paragraph key={idx} spec={{ type: 'normal', phrases: summary }} />
                   ))}
                 </Card>

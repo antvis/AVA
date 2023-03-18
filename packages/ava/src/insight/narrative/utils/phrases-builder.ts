@@ -18,7 +18,7 @@ interface PhraseOption {
 }
 
 export class PhrasesBuilder {
-  private schema: NtvTypes.PhraseSpec[];
+  private spec: NtvTypes.PhraseSpec[];
 
   private content: string;
 
@@ -27,7 +27,7 @@ export class PhrasesBuilder {
   // TODO 语言默认英文，之后再处理中文的情况
   constructor(lang: Language = 'en-US') {
     this.lang = lang;
-    this.schema = [];
+    this.spec = [];
     this.content = '';
   }
 
@@ -36,12 +36,12 @@ export class PhrasesBuilder {
     const newValue = this.lang === 'en-US' ? `${leftSpace ? ' ' : ''}${value}${rightSpace ? ' ' : ''}` : value;
     if (type) {
       if (leftSpace) {
-        this.schema.push({
+        this.spec.push({
           type: 'text',
           value: ' ',
         });
       }
-      this.schema.push({
+      this.spec.push({
         type: 'entity',
         value,
         metadata: {
@@ -49,13 +49,13 @@ export class PhrasesBuilder {
         },
       });
       if (rightSpace) {
-        this.schema.push({
+        this.spec.push({
           type: 'text',
           value: ' ',
         });
       }
     } else {
-      this.schema.push({
+      this.spec.push({
         type: 'text',
         value: newValue,
       });
@@ -68,12 +68,12 @@ export class PhrasesBuilder {
     if (value) {
       if (this.lang === 'en-US' && needRemoveBeforeSpace.includes(symbol)) {
         // remove space before
-        const beforePhrase = this.schema.pop();
+        const beforePhrase = this.spec.pop();
         if (beforePhrase) {
           const beforeValue = removeLastSpace(beforePhrase.value as string);
           if (beforeValue) {
             beforePhrase.value = beforeValue;
-            this.schema.push(beforePhrase);
+            this.spec.push(beforePhrase);
           }
           this.content = removeLastSpace(this.content);
         }
@@ -82,8 +82,8 @@ export class PhrasesBuilder {
     }
   }
 
-  getSchema() {
-    return this.schema;
+  getSpec() {
+    return this.spec;
   }
 
   getContent() {
