@@ -75,7 +75,7 @@ export type PatternInfo =
 
 /** explanation and visualization for insight */
 export interface VisualizationSpec {
-  chartType: ChartType;
+  patternType: InsightType;
   chartSpec: G2Spec;
   /**
    * @description explain insight by text

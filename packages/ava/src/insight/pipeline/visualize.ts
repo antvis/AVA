@@ -2,7 +2,7 @@ import { groupBy, omit } from 'lodash';
 
 import generateInsightNarrative from '../narrative';
 import {
-  ChartType,
+  InsightType,
   HomogeneousPatternInfo,
   InsightInfo,
   PatternInfo,
@@ -10,7 +10,6 @@ import {
   VisualizationSpec,
 } from '../types';
 import { generateInsightChartSpec } from '../chart';
-import { ChartTypeMap } from '../chart/constants';
 
 export const generateInsightVisualizationSpec = (
   insight: InsightInfo<PatternInfo>,
@@ -21,10 +20,10 @@ export const generateInsightVisualizationSpec = (
 
   const patternGroups = groupBy(patterns, (pattern) => pattern.type);
 
-  Object.entries(patternGroups).forEach(([chartType, patternGroup]: [string, PatternInfo[]]) => {
+  Object.entries(patternGroups).forEach(([patternType, patternGroup]: [string, PatternInfo[]]) => {
     const chartSpec = generateInsightChartSpec(insight, patternGroup);
     specs.push({
-      chartType: chartType as ChartType,
+      patternType: patternType as InsightType,
       chartSpec,
       narrativeSpec: generateInsightNarrative({ ...insight, patterns: patternGroup }, visualizationOptions),
     });
@@ -40,10 +39,9 @@ export const generateHomogeneousInsightVisualizationSpec = (
   const schemas: VisualizationSpec[] = [];
   patterns.forEach((pattern) => {
     const { insightType } = pattern;
-    const chartType = ChartTypeMap[insightType];
     const chartSpec = {};
     schemas.push({
-      chartType,
+      patternType: insightType,
       chartSpec,
       narrativeSpec: generateInsightNarrative({ ...omit(insight, ['patterns']), ...pattern }, visualizationOptions),
     });
