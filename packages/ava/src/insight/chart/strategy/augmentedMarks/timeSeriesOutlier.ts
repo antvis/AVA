@@ -51,7 +51,7 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
     tooltip: {
       title: '',
       items: [
-        (d, i, data, column) => ({
+        (_d, i, _data, column) => ({
           name: INTERVAL,
           value: `${column.y.value[i as number]}-${column.y1.value[i as number]}`,
           color: '#ffd8b8',

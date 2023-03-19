@@ -4,7 +4,7 @@ import { CorrelationInfo, InsightInfo } from '../../../types';
 import { insight2ChartStrategy } from '../chart';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const correlationStrategy = (insight: InsightInfo<CorrelationInfo>, patterns: CorrelationInfo[]): Mark[] => {
+export const correlationStrategy = (insight: InsightInfo<CorrelationInfo>, _patterns: CorrelationInfo[]): Mark[] => {
   // todo add correlation regression line and value
   const chartMark = insight2ChartStrategy(insight);
   return [chartMark];

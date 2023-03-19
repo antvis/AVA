@@ -27,6 +27,7 @@ export function generateInsightAugmentedMarks(
     string,
     (patternGroup: PatternInfo[], markStyleConfig?: TextMarkConfig | LineMarkConfig | PointMarkConfig) => Mark[]
   > = {
+    // @ts-ignore The generateInsightAugmentedMarks needs to be refactored, it's not exported now.
     trend: trendAugmentedMarksStrategy,
     category_outlier: categoryOutlierAugmentedMarksStrategy,
     change_point: changePointAugmentedMarksStrategy,
