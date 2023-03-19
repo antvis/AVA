@@ -13,8 +13,11 @@ export const categoryOutlierAugmentedMarksStrategy = (patterns: CategoryOutlierI
   return [textMark];
 };
 
-export const categoryOutlierStrategy = (insight: InsightInfo<CategoryOutlierInfo>): G2Spec => {
-  const marks = categoryOutlierAugmentedMarksStrategy(insight.patterns);
+export const categoryOutlierStrategy = (
+  insight: InsightInfo<CategoryOutlierInfo>,
+  patterns: CategoryOutlierInfo[]
+): G2Spec => {
+  const marks = categoryOutlierAugmentedMarksStrategy(patterns);
   const chart = insight2ChartStrategy(insight);
   return {
     chart,
