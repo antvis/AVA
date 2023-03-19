@@ -1,4 +1,4 @@
-import { G2Spec, Mark } from '@antv/g2';
+import { Mark } from '@antv/g2';
 
 import { LowVarianceInfo, InsightInfo } from '../../types';
 
@@ -15,11 +15,8 @@ export const lowVarianceAugmentedMarkStrategy = (patterns: LowVarianceInfo[]): M
   return marks;
 };
 
-export const lowVarianceStrategy = (insight: InsightInfo<LowVarianceInfo>, patterns: LowVarianceInfo[]): G2Spec => {
-  const chartSpec = insight2ChartStrategy(insight);
+export const lowVarianceStrategy = (insight: InsightInfo<LowVarianceInfo>, patterns: LowVarianceInfo[]): Mark[] => {
+  const chartMark = insight2ChartStrategy(insight);
   const marks = lowVarianceAugmentedMarkStrategy(patterns);
-  return {
-    chartSpec,
-    ...marks,
-  };
+  return [chartMark, ...marks];
 };
