@@ -17,6 +17,6 @@ export const lowVarianceAugmentedMarkStrategy = (patterns: LowVarianceInfo[]): M
 
 export const lowVarianceStrategy = (insight: InsightInfo<LowVarianceInfo>, patterns: LowVarianceInfo[]): Mark[] => {
   const chartMark = insight2ChartStrategy(insight);
-  const marks = lowVarianceAugmentedMarkStrategy(patterns);
-  return [chartMark, ...marks];
+  const augmentedMarks = lowVarianceAugmentedMarkStrategy(patterns);
+  return [chartMark, ...augmentedMarks];
 };

@@ -5,23 +5,33 @@ import { TrendInfo, InsightInfo } from '../../types';
 import { lineMarkStrategy } from './commonMarks';
 import { insight2ChartStrategy } from './chartStrategy';
 
-export const trendAugmentedMarksStrategy = (patterns: TrendInfo[]): Mark[] => {
-  const marks = [];
-  patterns.forEach((pattern) => {
+export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>, patterns: TrendInfo[]): Mark[] => {
+  const {
+    data: chartData,
+    dimensions: [{ fieldName: dimensionName }],
+  } = insight;
+
+  const points = chartData.map((datum, index) => {
     const {
-      regression: {
-        points,
-        equation: [m, c],
-      },
-    } = pattern;
-    const regressionLineMark = lineMarkStrategy({ points }, { label: `y=${m.toFixed(2)}x+${c.toFixed(2)}` });
-    marks.push(regressionLineMark);
+      regression: { points },
+    } = patterns[0];
+    const point = points[index];
+    return [datum[dimensionName], point] as [number, number];
   });
-  return marks;
+
+  const {
+    regression: {
+      equation: [m, c],
+    },
+  } = patterns[0];
+
+  const regressionLineMark = lineMarkStrategy({ points }, { label: `y=${m.toFixed(2)}x+${c.toFixed(2)}` });
+
+  return [regressionLineMark];
 };
 
 export const trendStrategy = (insight: InsightInfo<TrendInfo>, patterns: TrendInfo[]): Mark[] => {
   const chart = insight2ChartStrategy(insight);
-  const marks = trendAugmentedMarksStrategy(patterns);
-  return [chart, ...marks];
+  const augmentedMarks = trendAugmentedMarksStrategy(insight, patterns);
+  return [chart, ...augmentedMarks];
 };
