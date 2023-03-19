@@ -36,6 +36,6 @@ describe('should NOT advise pie', () => {
 
     const myAdvisor = new Advisor();
     const advices = myAdvisor.advise({ data });
-    expect(advices[0].type === 'pie_chart'); // TODO: .toBeFalse()
+    expect(advices[0].type === 'pie_chart').toBe(false);
   });
 });

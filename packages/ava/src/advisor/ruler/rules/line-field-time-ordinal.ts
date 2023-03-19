@@ -1,5 +1,7 @@
 import { intersects } from '../../utils';
 
+import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
+
 import type { RuleModule } from '../types';
 
 const applyChartTypes = ['line_chart', 'area_chart', 'stacked_area_chart', 'percent_stacked_area_chart'];
@@ -14,13 +16,13 @@ export const lineFieldTimeOrdinal: RuleModule = {
     return applyChartTypes.includes(chartType);
   },
   validator: (args): number => {
-    let result = 0;
+    let result = 1;
     const { dataProps } = args;
     if (dataProps) {
       const field4TimeOrOrdinal = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Ordinal', 'Time']));
 
       if (field4TimeOrOrdinal) {
-        result = 1;
+        result = MAX_SOFT_RULE_COEFFICIENT * 0.5;
       }
     }
     return result;

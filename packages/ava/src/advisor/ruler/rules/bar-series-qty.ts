@@ -1,5 +1,7 @@
 import { hasSubset } from '../../utils';
 
+import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
+
 import type { RuleModule } from '../types';
 
 const applyChartTypes = [
@@ -23,18 +25,17 @@ export const barSeriesQty: RuleModule = {
     return applyChartTypes.includes(chartType);
   },
   validator: (args): number => {
-    let result = 0;
+    let result = 1;
     const { dataProps, chartType } = args;
     if (dataProps && chartType) {
       const field4Series = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
       const seriesQty = field4Series && field4Series.count ? field4Series.count : 0;
-      // TODO limit for this rule
-      if (seriesQty >= 2 && seriesQty <= 20) {
-        result = 1;
-      } else if (seriesQty > 20) {
+
+      if (seriesQty > 20) {
         result = 20 / seriesQty;
       }
     }
+    result = result < 1 / MAX_SOFT_RULE_COEFFICIENT ? 1 / MAX_SOFT_RULE_COEFFICIENT : result;
     return result;
   },
 };

@@ -1,6 +1,8 @@
 import { intersects } from '../../utils';
 import { compare } from '../utils';
 
+import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
+
 import type { RuleModule, BasicDataPropertyForAdvice } from '../types';
 
 function hasSeriesField(dataProps: BasicDataPropertyForAdvice[]): boolean {
@@ -10,14 +12,9 @@ function hasSeriesField(dataProps: BasicDataPropertyForAdvice[]): boolean {
   return nominalOrOrdinalFields.length >= 2;
 }
 
-// TODO @neoddish: 重构规则逻辑
 /*
-sort 后取distinct第二大的字段，是因为第一个要留给维度映射，第二个才轮到 series（一般是颜色映射什么的）。
-
-颜色>6 （颜色非常多的时候）只有 heatmap 的颜色是适合做映射的（因为可以把这样的映射粗看成连续色板）
-这里 result=2 是因为如果针对出现这种情况，要给 heatmap 疯狂加分，使得尽可能结果上 heatmap 排到第一名去。
-
-这种规则设置方式整体很不合理，需要在下一轮迭代中重构。
+只有 heatmap 能映射两个 维值非常多的 字段，因为对于 其他图表，如柱状图来说，第二个维度字段 就要映射成 颜色了。而颜色不适合映射特别多的维度。
+所以，在有 两个 维度字段的时候，在两个维度的维值都很多的情况下，要给 heatmap 加分，给其他图表减分。
  */
 
 export const limitSeries: RuleModule = {
@@ -30,7 +27,7 @@ export const limitSeries: RuleModule = {
     return hasSeriesField(dataProps as BasicDataPropertyForAdvice[]);
   },
   validator: (args): number => {
-    let result = 0;
+    let result = 1;
     const { dataProps, chartType } = args;
 
     if (dataProps) {
@@ -43,13 +40,12 @@ export const limitSeries: RuleModule = {
         const f = sortedFields[1];
 
         if (f.distinct) {
-          result = 1 / f.distinct;
+          result = f.distinct > MAX_SOFT_RULE_COEFFICIENT ? 1 / MAX_SOFT_RULE_COEFFICIENT : 1 / f.distinct;
 
           if (f.distinct > 6 && chartType === 'heatmap') {
-            // TODO @neoddish: 为什么 result 可以是 2？
-            result = 2;
+            result = MAX_SOFT_RULE_COEFFICIENT * 0.5;
           } else if (chartType === 'heatmap') {
-            result = 0;
+            result = 1;
           }
         }
       }

@@ -1,3 +1,5 @@
+import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
+
 import type { RuleModule, Info } from '../types';
 
 const applyChartTypes = [
@@ -25,7 +27,7 @@ export const landscapeOrPortrait: RuleModule = {
     return applyChartTypes.includes(info.chartType) && hasCanvasLayout(info);
   },
   validator: (args): number => {
-    let result = 0;
+    let result = 1;
     const { chartType, preferences } = args;
 
     if (hasCanvasLayout(args)) {
@@ -33,14 +35,14 @@ export const landscapeOrPortrait: RuleModule = {
         preferences.canvasLayout === 'portrait' &&
         ['bar_chart', 'grouped_bar_chart', 'stacked_bar_chart', 'percent_stacked_bar_chart'].includes(chartType)
       ) {
-        result = 1;
+        result = MAX_SOFT_RULE_COEFFICIENT * 0.5;
       } else if (
         preferences.canvasLayout === 'landscape' &&
         ['column_chart', 'grouped_column_chart', 'stacked_column_chart', 'percent_stacked_column_chart'].includes(
           chartType
         )
       ) {
-        result = 1;
+        result = MAX_SOFT_RULE_COEFFICIENT * 0.5;
       }
     }
 

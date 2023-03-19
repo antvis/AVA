@@ -1,5 +1,7 @@
 import { getSpecWithEncodeType } from '../../utils/inferDataType';
 
+import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
+
 import type { RuleModule } from '../types';
 
 const applyChartTypes = ['line_chart'];
@@ -22,7 +24,7 @@ export const xAxisLineFading: RuleModule = {
       if (fieldInfo) {
         const range = fieldInfo.maximum - fieldInfo.minimum;
         if (fieldInfo.minimum && fieldInfo.maximum && range < (fieldInfo.maximum * 2) / 3) {
-          const yScaleMin = Math.floor(fieldInfo.minimum - range / 5);
+          const yScaleMin = Math.floor(fieldInfo.minimum - range / (MAX_SOFT_RULE_COEFFICIENT * 0.5));
           return {
             axis: {
               x: { tick: false },

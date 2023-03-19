@@ -26,7 +26,7 @@ import type {
  */
 // TODO @neoddish: refactor since 3.0.0
 type PipeAdvisorOptions = AdvisorOptions & { exportLog?: boolean };
-declare type ChartID = (typeof CHART_IDS)[number];
+declare type ChartID = typeof CHART_IDS[number];
 
 /**
  * Run all rules for a given chart type, get scoring result.
@@ -69,7 +69,7 @@ function scoreRules(
   // @since 3.0.0 TODO @neoddish score normalization
   // proposal:
   // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
-  const score = hardScore * (1 + softScore);
+  const score = hardScore * softScore;
 
   const result: ScoringResultForChartType = { chartType, score };
   if (exportLog) result.log = log;
