@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 
 import { Select, Button, Table, Tag } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
+import { ChartView } from 'antv-site-demo-rc';
 
 import { getInsights, InsightTypes } from '../../../../packages/ava/src';
 import { NarrativeTextVis } from '../../../../packages/ava-react/src';
@@ -11,6 +12,7 @@ import { NarrativeTextVis } from '../../../../packages/ava-react/src';
 const { Option } = Select;
 
 const datasetOptions = [
+  'anomaly',
   'gapminder',
   'burtin',
   'crimea',
@@ -192,7 +194,10 @@ export default function App() {
       visualization: { lang: 'zh-CN' },
     });
 
-    if (insights) setInsights(insights);
+    if (insights) {
+      setInsights(insights);
+      setInsightLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -247,11 +252,16 @@ export default function App() {
                       }}
                     />
                   )}
+                  <ChartView
+                    chartRef={createRef()}
+                    spec={visSpec.chartSpec}
+                    style={{
+                      height: 480,
+                    }}
+                  />
                 </div>
               ))}
             </div>
-            // TODO 替换 ava-react InsightCard
-            // <InsightCard key={index} insightInfo={item as any} height={400} />
           ))}
         </div>
       )}
