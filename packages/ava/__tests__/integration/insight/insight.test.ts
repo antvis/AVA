@@ -4,17 +4,24 @@ import { isEqual, isNil } from 'lodash';
 import { getInsights } from '../../../src';
 import {
   ChangePointInfo,
-  InsightsResult,
+  LowVarianceInfo,
   MajorityInfo,
   TimeSeriesOutlierInfo,
   TrendInfo,
+  CategoryOutlierInfo,
+  CorrelationInfo,
+  InsightInfo,
+  PatternInfo,
+  HomogeneousPatternInfo,
 } from '../../../src/insight/types';
 
-// 趋势类
+const isCloseToNumber = (expect: number = 0, real: number = 0) => {
+  return Math.abs(real - expect) < 0.01;
+};
+// Trend
 
 /**
- * 比较TimeSeriesOutlierInfo或ChangePointInfo是否符合期望
- * - 目前只看info类型和突变点或outlier位置是否相同
+ * Check if TimeSeriesOutlierInfo or ChangePointInfo meets expectations
  * */
 const isCloseToOutlierOrChangePointInfo = ({
   expectInfo,
@@ -31,37 +38,102 @@ const isCloseToOutlierOrChangePointInfo = ({
   return realInfo?.index === expectInfo?.index && realInfo?.type === expectInfo?.type;
 };
 
-/** 比对TrendInfo是否符合期望
- * - 只看趋势类型（increasing/decreasing）是否相同以及显著性水平的差异在期望范围内
+/**
+ * Check if TrendInfo meets expectations
  * */
 const isCloseToTrendInfo = ({ expectInfo, realInfo }: { expectInfo: TrendInfo; realInfo: TrendInfo }) => {
-  return realInfo?.trend === expectInfo?.trend && realInfo?.significance - expectInfo?.significance < 0.01;
+  return realInfo?.trend === expectInfo?.trend && isCloseToNumber(expectInfo?.significance, realInfo?.significance);
 };
 
-// 分布类
-/** 比对MajorityInfo是否符合期望
- * - 只看趋势类型（increasing/decreasing）是否相同以及显著性水平的差异在期望范围内
+// Distribution
+/**
+ * Check if MajorityInfo or CategoryOutlierInfo meets expectations
  * */
-const isCloseToMajorityInfo = ({ expectInfo, realInfo }: { expectInfo: MajorityInfo; realInfo: MajorityInfo }) => {
+const isCloseToMajorityOrCategoryOutlierInfo = ({
+  expectInfo,
+  realInfo,
+}:
+  | {
+      expectInfo: CategoryOutlierInfo;
+      realInfo: CategoryOutlierInfo;
+    }
+  | {
+      expectInfo: MajorityInfo;
+      realInfo: MajorityInfo;
+    }) => {
   return (
     realInfo?.index === expectInfo?.index &&
-    realInfo?.significance - expectInfo?.significance < 0.01 &&
+    isCloseToNumber(expectInfo?.significance, realInfo?.significance) &&
     realInfo?.x === expectInfo?.x &&
     realInfo?.y === expectInfo?.y
   );
 };
 
 /**
- * @todo 补充剩余类型
+ * Check if LowVarianceInfo meets expectations
+ * */
+const isCloseToLowVarianceInfo = ({
+  expectInfo,
+  realInfo,
+}: {
+  expectInfo: LowVarianceInfo;
+  realInfo: LowVarianceInfo;
+}) => {
+  return (
+    realInfo?.type === expectInfo?.type &&
+    isCloseToNumber(expectInfo?.significance, realInfo?.significance) &&
+    realInfo?.mean === expectInfo?.mean
+  );
+};
+
+// Multiple metrics
+/**
+ * Check if CorrelationInfo meets expectations
+ * */
+const isCloseToCorrelationInfo = ({
+  expectInfo,
+  realInfo,
+}: {
+  expectInfo: CorrelationInfo;
+  realInfo: CorrelationInfo;
+}) => {
+  return (
+    realInfo?.type === expectInfo?.type &&
+    isCloseToNumber(expectInfo?.pcorr, realInfo?.pcorr) &&
+    isCloseToNumber(expectInfo?.significance, realInfo?.significance) &&
+    isEqual(realInfo?.measures, expectInfo?.measures)
+  );
+};
+
+/**
+ *
  */
+const isCloseToHomogeneousInfo = ({
+  expectInfo,
+  realInfo,
+}: {
+  expectInfo: HomogeneousPatternInfo;
+  realInfo: HomogeneousPatternInfo;
+}) => {
+  return (
+    expectInfo?.type === realInfo?.type &&
+    expectInfo?.insightType === realInfo?.insightType &&
+    isEqual(realInfo?.commSet, expectInfo?.commSet) &&
+    isEqual(realInfo?.exc, expectInfo?.exc) &&
+    isCloseToNumber(expectInfo?.significance, realInfo?.significance)
+  );
+};
 
 expect.extend({
-  toBeIncludeInsights(received: InsightsResult['insights'], argument: InsightsResult['insights']) {
-    // 检验计算得到的insight是否包含预期的几个类型
+  toBeIncludeInsights(
+    received: InsightInfo<PatternInfo | HomogeneousPatternInfo>[],
+    argument: InsightInfo<PatternInfo | HomogeneousPatternInfo>[]
+  ) {
+    // Check whether the calculated insight contains the expected contents
     const reject = argument
-      .map((expectInsight) => {
+      ?.map((expectInsight) => {
         const { dimensions, measures, patterns, subspace } = expectInsight;
-        // 先筛选出subSpace，dimension，measure都相同的insight
+        // Filter out insights with the same subSpace, dimension and measure
         const sameSpaceInsights = received?.filter(
           (receivedInsight) =>
             isEqual(receivedInsight.dimensions, dimensions) &&
@@ -69,38 +141,66 @@ expect.extend({
             isEqual(receivedInsight.subspace, subspace)
         );
         if (sameSpaceInsights.length === 0) return false;
-        // 筛选出相同类型的info
+        // Filter out the same type of info
         const samePatterns = patterns.map((expectPattern) => {
-          // 原则上sameSpaceInsights最多只有一个元素，找到info类型能匹配得上的
+          // sameSpaceInsights has at most one element, find the pattern that can match the expected pattern
           const matchPattern = sameSpaceInsights[0].patterns?.find(
             (receivedInfo) => receivedInfo.type === expectPattern.type
           );
-          // 检测相同类型的info中的信息符合要求
           if (isNil(matchPattern)) return false;
           const { type } = matchPattern;
-          if (type === 'trend')
-            return isCloseToTrendInfo({
-              expectInfo: expectPattern as TrendInfo,
-              realInfo: matchPattern,
-            });
-          if (type === 'change_point')
-            return isCloseToOutlierOrChangePointInfo({
-              expectInfo: expectPattern as ChangePointInfo,
-              realInfo: matchPattern,
-            });
-          if (type === 'time_series_outlier')
-            return isCloseToOutlierOrChangePointInfo({
-              expectInfo: expectPattern as TimeSeriesOutlierInfo,
-              realInfo: matchPattern,
-            });
-          if (type === 'majority')
-            return isCloseToMajorityInfo({
-              expectInfo: expectPattern as MajorityInfo,
-              realInfo: matchPattern,
-            });
-          return false;
+          // Check whether different types of info meet expectations
+          switch (type) {
+            case 'trend':
+              return isCloseToTrendInfo({
+                expectInfo: expectPattern as TrendInfo,
+                realInfo: matchPattern,
+              });
+            case 'change_point':
+              return isCloseToOutlierOrChangePointInfo({
+                expectInfo: expectPattern as ChangePointInfo,
+                realInfo: matchPattern,
+              });
+            case 'time_series_outlier':
+              return isCloseToOutlierOrChangePointInfo({
+                expectInfo: expectPattern as TimeSeriesOutlierInfo,
+                realInfo: matchPattern,
+              });
+            case 'majority':
+              return isCloseToMajorityOrCategoryOutlierInfo({
+                expectInfo: expectPattern as MajorityInfo,
+                realInfo: matchPattern,
+              });
+            case 'low_variance':
+              return isCloseToLowVarianceInfo({
+                expectInfo: expectPattern as LowVarianceInfo,
+                realInfo: matchPattern,
+              });
+            case 'category_outlier':
+              return isCloseToMajorityOrCategoryOutlierInfo({
+                expectInfo: expectPattern as CategoryOutlierInfo,
+                realInfo: matchPattern,
+              });
+            case 'correlation':
+              return isCloseToCorrelationInfo({
+                expectInfo: expectPattern as CorrelationInfo,
+                realInfo: matchPattern,
+              });
+            case 'commonness':
+              return isCloseToHomogeneousInfo({
+                expectInfo: expectPattern as HomogeneousPatternInfo,
+                realInfo: matchPattern,
+              });
+            case 'exception':
+              return isCloseToHomogeneousInfo({
+                expectInfo: expectPattern as HomogeneousPatternInfo,
+                realInfo: matchPattern,
+              });
+            default:
+              return false;
+          }
         });
-        // 期望的pattern是否都存在于筛选出的insight中的pattern中
+        // Whether the expected pattern exists in the pattern in the filtered insight
         return !samePatterns.includes(false);
       })
       .includes(false);
@@ -181,7 +281,7 @@ describe('test for trend insight', () => {
   });
 
   test('trend', async () => {
-    // 上升趋势
+    // data showing a increasing trend
     const increasingData = [
       { year: '2000', increasingValue: 1 },
       { year: '2001', increasingValue: 2 },
@@ -213,7 +313,7 @@ describe('test for trend insight', () => {
       },
     ]);
 
-    // 下降趋势
+    // data showing a decreasing trend
     const decreasingData = [
       { year: '2000', decreasingValue: -1 },
       { year: '2001', decreasingValue: 2 },
@@ -245,8 +345,211 @@ describe('test for trend insight', () => {
       },
     ]);
   });
+});
 
-  test('multiple pattens', async () => {
+describe('test for distribution insight', () => {
+  const dataWithMajorityAndOutlier = [
+    { product: 'apple', yield: 160 },
+    { product: 'banana', yield: 10 },
+    { product: 'watermelon', yield: 5 },
+    { product: 'orange', yield: 1 },
+    { product: 'eggplant', yield: 2 },
+    { product: 'egg', yield: 4 },
+    { product: 'celery', yield: 9 },
+    { product: 'mango', yield: 7 },
+    { product: 'persimmon', yield: 8.5 },
+    { product: 'tomato', yield: 5 },
+  ];
+  // 主要因素
+  test('Majority', async () => {
+    const result = getInsights(dataWithMajorityAndOutlier, {
+      insightTypes: ['majority'],
+      dimensions: ['product'],
+    });
+    expect(result.insights).toBeIncludeInsights([
+      {
+        measures: [{ field: 'yield', method: 'SUM' }],
+        dimensions: ['product'],
+        subspace: [],
+        patterns: [
+          {
+            type: 'majority',
+            index: 0,
+            significance: 0.75,
+            x: 'apple',
+            y: 160,
+          },
+        ],
+      },
+    ]);
+  });
+  // 分布均匀
+  test('low variance', async () => {
+    const data = [
+      { product: 'apple', yield: 160, price: 5 },
+      { product: 'banana', yield: 10, price: 5.1 },
+      { product: 'watermelon', yield: 5, price: 5 },
+      { product: 'orange', yield: 1, price: 5 },
+      { product: 'eggplant', yield: 2, price: 5.5 },
+      { product: 'egg', yield: 4, price: 5.7 },
+      { product: 'celery', yield: 9, price: 5 },
+      { product: 'mango', yield: 7, price: 5.2 },
+      { product: 'persimmon', yield: 8.5, price: 5 },
+      { product: 'tomato', yield: 5, price: 5 },
+    ];
+    const result = getInsights(data, {
+      insightTypes: ['low_variance'],
+      dimensions: ['product'],
+    });
+    expect(result.insights).toBeIncludeInsights([
+      {
+        measures: [{ field: 'price', method: 'SUM' }],
+        dimensions: ['product'],
+        subspace: [],
+        patterns: [
+          {
+            type: 'low_variance',
+            significance: 0.95,
+            mean: 5.15,
+          },
+        ],
+      },
+    ]);
+  });
+  // 异常值
+  test('category outlier', async () => {
+    const result = getInsights(dataWithMajorityAndOutlier, {
+      insightTypes: ['category_outlier'],
+      dimensions: ['product'],
+    });
+    expect(result.insights).toBeIncludeInsights([
+      {
+        measures: [{ field: 'yield', method: 'SUM' }],
+        dimensions: ['product'],
+        subspace: [],
+        patterns: [
+          {
+            type: 'category_outlier',
+            significance: 0.998,
+            index: 0,
+            x: 'apple',
+            y: 160,
+          },
+        ],
+      },
+    ]);
+  });
+});
+
+describe('test for multiple metrics', () => {
+  test('correlation', async () => {
+    // data from https://stdlib.io/docs/api/latest/@stdlib/stats/pcorrtest
+    const x = [0.7, -1.6, -0.2, -1.2, -0.1, 3.4, 3.7, 0.8, 0.0, 2.0];
+    const y = [1.9, 0.8, 1.1, 0.1, -0.1, 4.4, 5.5, 1.6, 4.6, 3.4];
+    const data = x.map((xi, i) => {
+      return { index: i, x: xi, y: y[i] };
+    });
+    const result = getInsights(data, {
+      insightTypes: ['correlation'],
+      dimensions: ['index'],
+    });
+    expect(result.insights).toBeIncludeInsights([
+      {
+        measures: [
+          { field: 'x', method: 'SUM' },
+          { field: 'y', method: 'SUM' },
+        ],
+        dimensions: ['index'],
+        subspace: [],
+        patterns: [
+          {
+            type: 'correlation',
+            significance: 0.795,
+            pcorr: 0.795,
+            measures: ['x', 'y'],
+          },
+        ],
+      },
+    ]);
+  });
+
+  test('homogeneous', async () => {
+    const data1 = [
+      { year: '2000', increasingValue: 1, country: 'abc' },
+      { year: '2001', increasingValue: 2, country: 'abc' },
+      { year: '2002', increasingValue: 3, country: 'abc' },
+      { year: '2003', increasingValue: 3, country: 'abc' },
+      { year: '2004', increasingValue: 5, country: 'abc' },
+      { year: '2005', increasingValue: 7, country: 'abc' },
+      { year: '2006', increasingValue: 6, country: 'abc' },
+      { year: '2007', increasingValue: 9, country: 'abc' },
+      { year: '2008', increasingValue: 9, country: 'abc' },
+      { year: '2009', increasingValue: 10, country: 'abc' },
+      { year: '2000', increasingValue: 1, country: 'jbk' },
+      { year: '2001', increasingValue: 2, country: 'jbk' },
+      { year: '2002', increasingValue: 3, country: 'jbk' },
+      { year: '2003', increasingValue: 3, country: 'jbk' },
+      { year: '2004', increasingValue: 5, country: 'jbk' },
+      { year: '2005', increasingValue: 7, country: 'jbk' },
+      { year: '2006', increasingValue: 6, country: 'jbk' },
+      { year: '2007', increasingValue: 9, country: 'jbk' },
+      { year: '2008', increasingValue: 9, country: 'jbk' },
+      { year: '2009', increasingValue: 10, country: 'ike' },
+      { year: '2000', increasingValue: 1, country: 'ike' },
+      { year: '2001', increasingValue: 2, country: 'ike' },
+      { year: '2002', increasingValue: 3, country: 'ike' },
+      { year: '2003', increasingValue: 3, country: 'ike' },
+      { year: '2004', increasingValue: 5, country: 'ike' },
+      { year: '2005', increasingValue: 7, country: 'ike' },
+      { year: '2006', increasingValue: 6, country: 'ike' },
+      { year: '2007', increasingValue: 9, country: 'ike' },
+      { year: '2008', increasingValue: 9, country: 'ike' },
+      { year: '2009', increasingValue: 10, country: 'ike' },
+      { year: '2009', increasingValue: 10, country: 'ike' },
+      { year: '2000', increasingValue: 1, country: 'iuy' },
+      { year: '2001', increasingValue: 2, country: 'iuy' },
+      { year: '2002', increasingValue: 3, country: 'iuy' },
+      { year: '2003', increasingValue: 3, country: 'iuy' },
+      { year: '2004', increasingValue: 5, country: 'iuy' },
+      { year: '2005', increasingValue: 7, country: 'iuy' },
+      { year: '2006', increasingValue: 6, country: 'iuy' },
+      { year: '2007', increasingValue: 9, country: 'iuy' },
+      { year: '2008', increasingValue: 9, country: 'iuy' },
+      { year: '2009', increasingValue: 10, country: 'iuy' },
+    ];
+    const result = getInsights(data1, {
+      measures: [{ field: 'increasingValue', method: 'SUM' }],
+      homogeneous: true,
+    });
+    expect(result.homogeneousInsights).toBeIncludeInsights([
+      {
+        measures: [{ field: 'increasingValue', method: 'SUM' }],
+        dimensions: ['country', 'year'],
+        subspace: [],
+        patterns: [
+          {
+            type: 'commonness',
+            insightType: 'trend',
+            commSet: ['abc', 'jbk', 'ike', 'iuy'],
+            significance: 1,
+            childPatterns: [
+              {
+                trend: 'increasing',
+                significance: 0.999,
+                type: 'trend',
+                dimension: 'year',
+                measure: 'increasingValue',
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+  });
+});
+
+describe('test for multiple insights', () => {
+  test('trend and distribution insights', async () => {
     const multiPattensData = [
       { year: '2000', country: 'China', export: 10, humidity: 30 },
       { year: '2001', country: 'China', export: 11, humidity: 31 },
