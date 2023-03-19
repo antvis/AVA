@@ -49,7 +49,6 @@ export function assembleDataProps(
 
 export function advicesForChart(
   params: ChartAdviseParams,
-  exportLog = false,
   ckb: CkbTypes.ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>
 ): AdviseResult {
@@ -84,7 +83,7 @@ export function advicesForChart(
       ckb,
       ruleBase,
       smartColor,
-      { ...options, exportLog },
+      options,
       colorOptions
     );
 

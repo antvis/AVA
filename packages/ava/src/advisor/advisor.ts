@@ -14,13 +14,8 @@ import type {
   AdviseResult,
   LintResult,
   LintParams,
-  ScoringResultForChartType,
-  ScoringResultForRule,
   Lint,
 } from './types';
-
-type AdviseLog = ScoringResultForChartType[];
-type LintLog = ScoringResultForRule[];
 
 /*
  * 搬运计划
@@ -40,30 +35,28 @@ export class Advisor {
    */
   ruleBase: Record<string, RuleModule>;
 
-  adviseResult: AdviseResult;
-
-  lintResult: LintResult;
-
   constructor(config: AdvisorConfig = {}) {
     this.ckb = ckb(config.ckbCfg);
     this.ruleBase = processRuleCfg(config.ruleCfg);
   }
 
   advise(params: AdviseParams): Advice[] {
-    this.adviseResult = advicesForChart(params as ChartAdviseParams, true, this.ckb, this.ruleBase);
-    return this.adviseResult.advices;
+    const adviseResult = advicesForChart(params as ChartAdviseParams, this.ckb, this.ruleBase);
+    return adviseResult.advices;
   }
 
-  getAdviseLog(): AdviseLog {
-    return this.adviseResult.log;
+  adviseWithLog(params: AdviseParams): AdviseResult {
+    const adviseResult = advicesForChart(params as ChartAdviseParams, this.ckb, this.ruleBase);
+    return adviseResult;
   }
 
   lint(params: LintParams): Lint[] {
-    this.lintResult = checkRules(params, this.ruleBase, this.ckb);
-    return this.lintResult.lints;
+    const lintResult = checkRules(params, this.ruleBase, this.ckb);
+    return lintResult.lints;
   }
 
-  getLintLog(): LintLog {
-    return this.lintResult.log;
+  lintWithLog(params: LintParams): LintResult {
+    const lintResult = checkRules(params, this.ruleBase, this.ckb);
+    return lintResult;
   }
 }
