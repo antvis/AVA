@@ -20,9 +20,9 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | ----| ---- | ---- | -----|
 | measures | `Measure[]` | Specify the fields as measures and the corresponding aggregation methods. | All quantitative (numeric) fields |
 | dimensions | `Dimensions[]` | Specify the dimensions involved in the calculation. | All categorical, time fields |
-| insightTypes |  `InsightType[]` | Specify the types of insight. | `['category_outlier', 'trend', 'change_point', 'time_series_outlier', 'majority','low_variance']`(All supported types) |
+| insightTypes |  `InsightType[]` | Specify the types of insight. | `['category_outlier', 'trend', 'change_point', 'time_series_outlier', 'majority','low_variance', 'correlation']`(All supported types) |
 | limit |  `number` | Limit on the number of insights. | 30 |
-| visualization |  `boolean | VisualizationOptions` | on / off the output of visualization scheme, or visualization options. | `false` |
+| visualization |  `boolean \| VisualizationOptions` | on / off the output of visualization scheme, or visualization options. | `false` |
 | impactMeasures |  `ImpactMeasure[]` | Measures for Impact score. | none |
 | impactWeight |  `number ∈(0, 1)` | Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | on/off extra homogeneous insight extraction. | `false` |
@@ -42,8 +42,8 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | dimensions | `string[]` | The dimensions of the data subject | `['country']` |
 | measures |  `Measure[]` | The measures of the data subject | `[{ field: 'life_expect', method: 'MEAN' }]` |
 | data |  `Datum[]` | data | `[{ country: 'China', life_expect: 61 }]` |
-| patterns |  `PatternInfo[]` | The collection of patterns in the data | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |
-| visualizationSchemas |  `VisualizationSchema[]` | The insight visualization scheme, including chart type, title, insight description, and chart configuration (based on G2Plot) | `[{ type: 'column_chart', caption: string, insightSummaries: string[] | IPhrase[][], chartSchema: G2PlotConfig }]` |
+| patterns |  `PatternInfo[] \| HomogeneousPatternInfo[]` | The collection of patterns in the data | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |
+| visualizationSchemas |  `VisualizationSchema[]` | The insight visualization scheme, including chart type, title, insight description, and chart configuration (based on G2Plot) | `[{ type: 'column_chart', caption: string, insightSummaries: string[] \| IPhrase[][], chartSchema: G2PlotConfig }]` |
 
 <embed src='@/docs/common/phrase.en.md'></embed>
 ### Usage

@@ -18,7 +18,7 @@ A JavaScript library for automatically discovering interesting patterns from mul
 
 The pipeline of Auto-Insights:
 
-<img src='https://gw.alipayobjects.com/zos/antfincdn/qtmrmqJKH%26/li-pipeline-en.jpg' alt='LiteInsight pipeline' width=100%/>
+<img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*mmGnTLk5JUsAAAAAAAAAAAAADmJ7AQ/original' alt='LiteInsight pipeline' width=100%/>
 
 ## 📦 Installation
 
