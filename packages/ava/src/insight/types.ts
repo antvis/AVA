@@ -54,7 +54,8 @@ export type PatternInfo =
   | LowVarianceInfo
   | TrendInfo
   | ChangePointInfo
-  | CorrelationInfo;
+  | CorrelationInfo
+  | MajorityInfo;
 
 /** visualization for insight */
 export interface VisualizationSchema {

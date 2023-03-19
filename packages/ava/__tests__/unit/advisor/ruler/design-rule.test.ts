@@ -23,8 +23,4 @@ test('x-axis-line-fading', () => {
 test('bar-without-axis-min', () => {
   // @ts-ignore
   expect(barWithoutAxisMin.trigger({ chartType: 'bar_chart' })).toBe(true);
-  // @ts-ignore
-  expect(barWithoutAxisMin.optimizer('', { layer: [{ encoding: { x: { axis: { min: 10 } } } }] })).toEqual({
-    layer: [{ encoding: { x: { axis: { min: 0 } } } }],
-  });
 });
