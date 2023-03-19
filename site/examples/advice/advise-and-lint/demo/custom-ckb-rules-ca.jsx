@@ -51,8 +51,10 @@ const toIronball = (data, dataProps) => {
 
   if (fieldNominal) {
     spec.encode.color = fieldNominal.name;
-    spec.scale.color = {
-      range: ['#686971'],
+    spec.scale = {
+      color: {
+        range: ['#686971'],
+      },
     };
   }
 
