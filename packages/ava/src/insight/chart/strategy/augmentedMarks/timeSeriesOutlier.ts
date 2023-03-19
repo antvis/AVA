@@ -1,10 +1,9 @@
 import { Mark } from '@antv/g2';
 
-import { TimeSeriesOutlierInfo, InsightInfo } from '../../types';
-import { AreaMarkData, LineMarkData } from '../types';
-
-import { insight2ChartStrategy } from './chartStrategy';
-import { areaMarkStrategy, lineMarkStrategy, pointMarkStrategy } from './commonMarks';
+import { TimeSeriesOutlierInfo, InsightInfo } from '../../../types';
+import { AreaMarkData, LineMarkData } from '../../types';
+import { insight2ChartStrategy } from '../chart';
+import { areaMarkStrategy, lineMarkStrategy, pointMarkStrategy } from '../commonMarks';
 
 const BASELINE = 'baseline';
 const INTERVAL = 'interval';
