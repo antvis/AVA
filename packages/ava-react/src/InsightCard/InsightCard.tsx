@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Empty, Row, Spin } from 'antd';
 import cx from 'classnames';
+import { isFunction } from 'lodash';
+import { getInsights } from '@antv/ava';
 
 import { copyToClipboard, NarrativeTextVis, NtvPluginManager, TextExporter } from '../NarrativeTextVis';
 
@@ -19,9 +21,7 @@ import './index.less';
 export const InsightCard: React.FC<InsightCardProps> = ({
   className,
   styles,
-  algorithms = [],
-  measures = [],
-  insightId,
+  insightInfo,
   headerTools = [],
   footerTools,
   title,
@@ -29,34 +29,61 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   onCardExpose,
   onChange,
   onCopy,
-  ...restData
+  insightGenerateConfig,
+  customContentSpecGenerator,
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
-  // TODO @chenluli if patterns are empty, need to calculate according to algorithms. status and error message are for future use.
-  const [dataStatus] = useState<InsightDataStatus>('SUCCESS');
-  const [errorMessage] = useState<string>('');
+  const { measures = [], patterns: defaultPatterns, dimensions = [] } = insightInfo;
+  const [insightPatterns, setInsightPatterns] = useState<InsightData['patterns']>(defaultPatterns);
+  const [dataStatus, setDataStatus] = useState<InsightDataStatus>('SUCCESS');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const pluginManager = useRef<NtvPluginManager>(new NtvPluginManager([...insightCardPresetPlugins, ...extraPlugins]));
 
-  const insightData: InsightData = {
-    measures,
-    algorithms,
-    insightId,
-    ...restData,
-  };
-
   const contentSpec = useMemo(() => {
-    return generateNarrativeVisSpec(insightData);
-  }, [algorithms, measures]);
+    const defaultSpec = generateNarrativeVisSpec(insightInfo);
+    return isFunction(customContentSpecGenerator)
+      ? customContentSpecGenerator?.(insightInfo, defaultSpec)
+      : defaultSpec;
+  }, [insightInfo]);
 
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    onCardExpose?.(insightData, ref.current);
+    if (insightInfo.patterns) {
+      setInsightPatterns(insightInfo.patterns);
+    } else if (insightGenerateConfig && !insightInfo.visualizationSpecs) {
+      const { allData, algorithms } = insightGenerateConfig;
+      setDataStatus('RUNNING');
+      try {
+        const { insights } = getInsights(allData, {
+          ...insightInfo,
+          insightTypes: algorithms,
+        });
+        const patterns = [];
+        insights.forEach((insight) => {
+          patterns.push(...insight.patterns);
+        });
+        setInsightPatterns(patterns);
+      } catch (err) {
+        setErrorMessage('');
+      }
+      setDataStatus('SUCCESS');
+    }
+  }, [insightInfo]);
+
+  useEffect(() => {
+    onCardExpose?.(insightInfo, ref.current);
   }, []);
 
   useEffect(() => {
-    onChange?.(insightData);
-  }, [insightData]);
+    onChange?.(
+      {
+        ...insightInfo,
+        patterns: insightPatterns,
+      },
+      contentSpec
+    );
+  }, [insightPatterns, contentSpec]);
 
   const onClickCopy = async () => {
     if (ref?.current) {
@@ -64,7 +91,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       const html = await textExporter.getNarrativeHtml(ref.current);
       const plainText = contentSpec ? textExporter.getNarrativeText(contentSpec) : '';
       copyToClipboard(html, plainText);
-      onCopy?.(insightData, ref.current);
+      onCopy?.(insightInfo, ref.current);
     }
   };
 
@@ -72,6 +99,9 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     {
       type: 'copy',
       onClick: onClickCopy,
+    },
+    {
+      type: 'export',
     },
   ];
 
@@ -84,7 +114,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     return (
       footerTools && (
         <Row className={`${prefixCls}-footer`} justify="end">
-          <Toolbar tools={footerTools} data={insightData} />
+          <Toolbar tools={footerTools} data={insightInfo} />
         </Row>
       )
     );
@@ -92,7 +122,13 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   return (
     <div className={cx(className, prefixCls)} style={styles} ref={ref}>
-      <Title title={title} algorithms={algorithms} measures={measures} headerTools={headerTools} />
+      <Title
+        title={title}
+        measures={measures}
+        dimensions={dimensions}
+        patterns={insightPatterns}
+        headerTools={headerTools}
+      />
       {/* content */}
       <Spin spinning={dataStatus === 'RUNNING'}>
         {dataStatus === 'SUCCESS' && contentSpec ? (

@@ -39,9 +39,9 @@
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.3",
-    "@antv/ava": "^3.0.0-alpha.5",
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/auto-chart": "^2.0.3",
+    "@antv/ava": "^3.0.0-alpha.5",
     "@antv/chart-advisor": "^2.0.3",
     "@antv/ckb": "^2.0.3",
     "@antv/data-wizard": "^2.0.3",
@@ -51,6 +51,7 @@
     "@antv/lite-insight": "^2.0.3",
     "@antv/narrative-text-vis": "^0.3.6",
     "@antv/s2": "^1.0.0-beta.9",
+    "@antv/s2-react": "^1.37.1",
     "@antv/smart-board": "^2.0.3",
     "@antv/smart-color": "^0.2.1",
     "@antv/thumbnails": "^2.0.0",

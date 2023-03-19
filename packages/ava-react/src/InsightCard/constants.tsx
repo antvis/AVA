@@ -17,6 +17,6 @@ export const ALGORITHM_NAME_MAP: Record<InsightType, string> = {
 /** default minimum height for card */
 export const CARD_CONTENT_HEIGHT = 48;
 /** default chart height in card */
-export const CHART_HEIGHT = 150;
+export const CHART_HEIGHT = 280;
 /** chart carousel plugin key  */
-export const CHART_CAROUSEL_PLUGIN_KEY = 'chartCarousel';
+export const DISPLAY_CHARTS_PLUGIN_KEY = 'charts';

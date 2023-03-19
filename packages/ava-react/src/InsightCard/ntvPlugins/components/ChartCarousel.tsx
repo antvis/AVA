@@ -8,9 +8,12 @@ import type { G2Spec } from '@antv/g2';
 
 export const ChartCarousel = ({
   charts,
+  height = CHART_HEIGHT,
+  width,
 }: {
-  /** 图表类 schema, any 是因为不限制具体的图表类型 */
   charts: G2Spec[];
+  height?: number;
+  width?: number;
 }) => {
   const [selectedChartIndex, setSelectedCardIndex] = useState(0);
 
@@ -23,10 +26,12 @@ export const ChartCarousel = ({
       label: (
         <span
           style={{
-            border: 'solid 1px',
-            borderColor: index === selectedChartIndex ? '#3471f9' : 'rgba(0,0,0,0.25)',
+            border: index === selectedChartIndex ? '1px solid rgba(0,0,0,0.15)' : '1px solid rgba(0,0,0,0.1)',
             borderRadius: '2px',
-            padding: '2px',
+            display: 'inline-block',
+            width: index === selectedChartIndex ? '18px' : '12px',
+            height: '4px',
+            backgroundColor: index === selectedChartIndex ? '#fff' : 'rgba(0,0,0,0.15)',
             cursor: 'pointer',
             margin: '2px',
           }}
@@ -41,9 +46,9 @@ export const ChartCarousel = ({
 
   return (
     <div className={`${INSIGHT_CARD_PREFIX_CLS}-chart-carousel`}>
-      <G2Chart spec={charts[selectedChartIndex]} height={CHART_HEIGHT} />
+      <G2Chart spec={charts[selectedChartIndex]} height={height} width={width} />
       {chartsOptions.length > 1 && (
-        <div style={{ marginTop: '4px', textAlign: 'center' }}>
+        <div style={{ textAlign: 'center' }}>
           {chartsOptions.map((option) => (
             <span key={option.value}>{option.label}</span>
           ))}

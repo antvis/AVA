@@ -4,9 +4,11 @@ import { Select, Button, Table, Row, Col, Form, Switch } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
-import { InsightCard } from 'antv-site-demo-rc';
 
+import { InsightCard } from '../../../../packages/ava-react/src';
 import { getInsights, InsightTypes } from '../../../../packages/ava/lib';
+
+import { customInsightCardContentSpec } from './mockSpec';
 
 const { Option } = Select;
 
@@ -69,15 +71,15 @@ const datasetConfigs = {
 
 export default function App() {
   const [insights, setInsights] = useState<InsightTypes.InsightInfo<InsightTypes.PatternInfo>[]>([]);
-  const [dataset, setDataset] = useState('gapminder');
+  const [dataset, setDataset] = useState<keyof typeof datasetConfigs>('gapminder');
   const [data, setData] = useState<InsightTypes.Datum[]>([]);
   const [tableColumns, setTableColumns] = useState<InsightTypes.Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [insightLoading, setInsightLoading] = useState<boolean>(false);
-  const [showTextSchema, setShowTextSchema] = useState<boolean>(false);
+  const [showTextSchema, setShowTextSchema] = useState<boolean>(true);
 
   const fetchDataset = async () => {
-    const datasetName = `${dataset}.json`;
+    const datasetName = `${dataset}.json` as keyof typeof datasets;
     setDataLoading(true);
     const data = await datasets[datasetName]();
     if (data) {
@@ -118,7 +120,7 @@ export default function App() {
                 loading={insightLoading}
                 value={dataset}
                 style={{ width: 120, marginLeft: 12 }}
-                onChange={(v) => setDataset(v as string)}
+                onChange={(v) => setDataset(v)}
               >
                 {datasetOptions.map((item) => (
                   <Option value={item} key={item}>
@@ -145,9 +147,21 @@ export default function App() {
               </Form.Item>
             </Col>
           </Row>
-          {insights.map((item, index) => (
-            <InsightCard key={index} insightInfo={item as any} height={400} />
-          ))}
+          <Row justify="space-around">
+            {insights.map((insightInfo, index) => {
+              const insightCardProps = {
+                insightInfo,
+                customContentSpecGenerator: () => {
+                  return customInsightCardContentSpec;
+                },
+              };
+              return (
+                <Col key={index}>
+                  <InsightCard {...insightCardProps} styles={{ width: 400 }} />
+                </Col>
+              );
+            })}
+          </Row>
         </div>
       )}
     </>

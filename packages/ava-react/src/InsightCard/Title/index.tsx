@@ -1,19 +1,21 @@
 import React from 'react';
 
 import cx from 'classnames';
-import { isFunction } from 'lodash';
+import { isFunction, uniq } from 'lodash';
 
 import { Toolbar } from '../Toolbar';
 import { ALGORITHM_NAME_MAP, INSIGHT_CARD_PREFIX_CLS } from '../constants';
 
-import type { InsightCardProps } from '../types';
+import type { InsightCardProps, InsightData } from '../types';
 
 import './index.less';
 
-export type TitleProps = Pick<InsightCardProps, 'algorithms' | 'measures' | 'headerTools' | 'title'>;
-export const Title: React.FC<TitleProps> = ({ title, algorithms, measures, headerTools }) => {
+export type TitleProps = Pick<InsightCardProps, 'headerTools' | 'title'> &
+  Pick<InsightData, 'measures' | 'dimensions' | 'patterns'>;
+export const Title: React.FC<TitleProps> = ({ title, patterns, measures, headerTools }) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
-  const measureNames = measures?.map((measure) => measure.field).join(',');
+  const algorithms = uniq(patterns?.map((pattern) => pattern.type) ?? []);
+  const measureNames = uniq(measures?.map((measure) => measure.field)).join(',');
   const analysisName = algorithms.map((algorithm) => ALGORITHM_NAME_MAP[algorithm]).join(',') ?? '';
   const defaultTitle = (
     <div>
