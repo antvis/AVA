@@ -9,7 +9,7 @@ export const wrapViewSpec = (marks: Mark[]): G2Spec => {
       y: { title: false },
     },
     scale: {
-      y: { zero: true, nice: true },
+      y: { nice: true },
     },
     interaction: {
       tooltip: { groupName: false },

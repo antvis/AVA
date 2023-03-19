@@ -17,7 +17,7 @@ export const categoryOutlierStrategy = (
   insight: InsightInfo<CategoryOutlierInfo>,
   patterns: CategoryOutlierInfo[]
 ): Mark[] => {
-  const marks = categoryOutlierAugmentedMarksStrategy(patterns);
   const chart = insight2ChartStrategy(insight);
-  return [chart, ...marks];
+  const augmentedMarks = categoryOutlierAugmentedMarksStrategy(patterns);
+  return [chart, ...augmentedMarks];
 };
