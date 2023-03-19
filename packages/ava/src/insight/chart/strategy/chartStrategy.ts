@@ -1,10 +1,11 @@
-import { G2ChartSpec } from '../../../advisor/types';
+import { Mark } from '@antv/g2';
+
 import { InsightInfo } from '../../types';
 
-export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationSpecs'>): G2ChartSpec => {
+export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationSpecs'>): Mark => {
   const { data, patterns, dimensions, measures } = insight;
   const { type: insightType } = patterns[0];
-  const commonSpec: G2ChartSpec = {
+  const commonSpec: Mark = {
     data,
     encode: {
       x: dimensions[0].fieldName,

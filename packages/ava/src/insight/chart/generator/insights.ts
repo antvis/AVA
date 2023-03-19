@@ -1,4 +1,4 @@
-import { G2Spec } from '@antv/g2';
+import { G2Spec, Mark } from '@antv/g2';
 
 import { InsightInfo, PatternInfo } from '../../types';
 import {
@@ -16,6 +16,8 @@ import {
 } from '../strategy';
 import { LineMarkConfig, PointMarkConfig, TextMarkConfig } from '../types';
 
+import { wrapViewSpec } from './viewSpec';
+
 export function generateInsightAugmentedMarks(
   patternGroup: PatternInfo[],
   markStyleConfig?: TextMarkConfig | LineMarkConfig | PointMarkConfig
@@ -24,7 +26,7 @@ export function generateInsightAugmentedMarks(
 
   const insightType2Strategy: Record<
     string,
-    (patternGroup: PatternInfo[], markStyleConfig?: TextMarkConfig | LineMarkConfig | PointMarkConfig) => G2Spec
+    (patternGroup: PatternInfo[], markStyleConfig?: TextMarkConfig | LineMarkConfig | PointMarkConfig) => Mark[]
   > = {
     trend: trendAugmentedMarksStrategy,
     category_outlier: categoryOutlierAugmentedMarksStrategy,
@@ -32,14 +34,14 @@ export function generateInsightAugmentedMarks(
     low_variance: lowVarianceAugmentedMarkStrategy,
   };
 
-  const chartSpec: G2Spec = insightType2Strategy[insightType]?.(patternGroup, markStyleConfig);
-  return chartSpec;
+  const augmentedMarks = insightType2Strategy[insightType]?.(patternGroup, markStyleConfig);
+  return augmentedMarks;
 }
 
 export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>, patternGroup: PatternInfo[]): G2Spec {
   const { type: insightType } = patternGroup[0];
 
-  const insightType2Strategy: Record<string, (insight: InsightInfo<PatternInfo>, patterns: PatternInfo[]) => G2Spec> = {
+  const insightType2Strategy: Record<string, (insight: InsightInfo<PatternInfo>, patterns: PatternInfo[]) => Mark[]> = {
     trend: trendStrategy,
     time_series_outlier: timeSeriesOutlierStrategy,
     category_outlier: categoryOutlierStrategy,
@@ -49,6 +51,6 @@ export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>, patt
     correlation: correlationStrategy,
   };
 
-  const chartSpec: G2Spec = insightType2Strategy[insightType]?.(insight, patternGroup);
-  return chartSpec;
+  const marks = insightType2Strategy[insightType]?.(insight, patternGroup);
+  return wrapViewSpec(marks);
 }

@@ -1,3 +1,5 @@
+import { IntervalMark, RectMark, LineMark, PointMark, TextMark, CellMark, AreaMark } from '@antv/g2';
+
 import type { ColorSchemeType } from '@antv/color-schema';
 import type { SimulationType } from '@antv/smart-color';
 /** AVA 包内跨模块引用 */
@@ -5,7 +7,6 @@ import type { CkbTypes, CkbConfig } from '../ckb';
 import type { Specification, Data } from '../common/types';
 /** Advisor 模块内引用 */
 import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/types';
-import { IntervalMark, RectMark, LineMark, PointMark, TextMark, CellMark, AreaMark } from '@antv/g2';
 
 /**
  * Advisor config type
@@ -207,7 +208,6 @@ export interface LintParams {
   dataProps?: BasicDataPropertyForAdvice[];
   options?: LinterOptions;
 }
-
 
 /** g2-spec 相关types */
 

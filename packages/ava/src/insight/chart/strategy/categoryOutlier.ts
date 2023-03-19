@@ -1,4 +1,4 @@
-import { G2Spec, Mark } from '@antv/g2';
+import { Mark } from '@antv/g2';
 
 import { InsightInfo, CategoryOutlierInfo } from '../../types';
 import { BOLD_FONT_WEIGHT } from '../constants';
@@ -16,11 +16,8 @@ export const categoryOutlierAugmentedMarksStrategy = (patterns: CategoryOutlierI
 export const categoryOutlierStrategy = (
   insight: InsightInfo<CategoryOutlierInfo>,
   patterns: CategoryOutlierInfo[]
-): G2Spec => {
+): Mark[] => {
   const marks = categoryOutlierAugmentedMarksStrategy(patterns);
   const chart = insight2ChartStrategy(insight);
-  return {
-    chart,
-    ...marks,
-  };
+  return [chart, ...marks];
 };
