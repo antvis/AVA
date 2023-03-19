@@ -16,7 +16,7 @@ export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationS
   if (insightType === 'majority') {
     return {
       ...commonSpec,
-      type: 'pie',
+      type: 'interval',
       transform: [{ type: 'stackY' }],
       coordinate: { type: 'theta' },
     };

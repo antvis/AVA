@@ -12,8 +12,8 @@ export type TextMarkConfig = {
 };
 
 export type PointMarkConfig = {
-  strokeColor?: string;
-  fillColor?: string;
+  style?: Mark['style'];
+  tooltip?: Mark['tooltip'];
 };
 
 export type LineMarkData = {
@@ -22,10 +22,18 @@ export type LineMarkData = {
   /** draw a horizontal line at y value */
   y?: number;
   /** draw a line using specific points */
-  points?: (number | string)[];
+  points?: [number, number][];
 };
 
 export type LineMarkConfig = {
   label?: LabelType;
   style?: Mark['style'];
+  tooltip?: Mark['tooltip'];
+};
+
+export type AreaMarkData = [number, [number, number][]][];
+
+export type AreaMarkConfig = {
+  style?: Mark['style'];
+  tooltip?: Mark['tooltip'];
 };

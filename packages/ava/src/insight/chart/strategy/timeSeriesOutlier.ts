@@ -1,8 +1,10 @@
 import { Mark } from '@antv/g2';
 
 import { TimeSeriesOutlierInfo, InsightInfo } from '../../types';
+import { AreaMarkData, LineMarkData } from '../types';
 
 import { insight2ChartStrategy } from './chartStrategy';
+import { areaMarkStrategy, lineMarkStrategy, pointMarkStrategy } from './commonMarks';
 
 const BASELINE = 'baseline';
 const INTERVAL = 'interval';
@@ -13,47 +15,36 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
   patterns: TimeSeriesOutlierInfo[]
 ): Mark[] => {
   const { baselines, thresholds } = patterns[0];
-  const outlierIndexes = patterns.map((pattern) => pattern.index);
   const {
     data: chartData,
     dimensions: [{ fieldName: dimensionName }],
-    measures: [{ fieldName: measureName }],
   } = insight;
   const data = chartData.map((datum, index) => {
     const baseline = baselines[index];
     const interval = [baseline - Math.abs(thresholds[0]), baseline + thresholds[1]];
     return {
-      [dimensionName]: datum[dimensionName],
-      baseline,
-      interval,
-      ...(outlierIndexes.includes(index) ? { [OUTLIER]: datum[measureName] } : undefined),
+      baseline: [datum[dimensionName], baseline],
+      interval: [datum[dimensionName], interval],
     };
   });
+  const baselineData = data.map((datum) => datum[BASELINE]) as LineMarkData['points'];
+  const baselineMark = lineMarkStrategy(
+    { points: baselineData },
+    {
+      style: {
+        lineWidth: 1,
+        stroke: '#ffa45c',
+        lineDash: undefined,
+      },
+      tooltip: {
+        title: '',
+        items: [{ name: BASELINE, channel: 'y' }],
+      },
+    }
+  );
 
-  const baselineMark: Mark = {
-    type: 'line',
-    data,
-    encode: {
-      x: dimensionName,
-      y: BASELINE,
-    },
-    style: {
-      lineWidth: 2,
-      stroke: '#ffa45c',
-    },
-    tooltip: {
-      title: '',
-      items: [{ name: BASELINE, channel: 'y' }],
-    },
-  };
-
-  const intervalMark: Mark = {
-    type: 'area',
-    data,
-    encode: {
-      x: dimensionName,
-      y: INTERVAL,
-    },
+  const intervalData = data.map((datum) => datum[INTERVAL]) as AreaMarkData;
+  const intervalMark = areaMarkStrategy(intervalData, {
     style: {
       fillOpacity: 0.3,
       fill: '#ffd8b8',
@@ -68,25 +59,18 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
         }),
       ],
     },
-  };
+  });
 
-  const outlierMark: Mark = {
-    type: 'point',
-    data,
-    encode: {
-      x: dimensionName,
-      y: OUTLIER,
-      shape: 'point',
-      size: 3,
-    },
+  const outlierMark = pointMarkStrategy(patterns, {
     style: {
       fill: '#f4664a',
+      stroke: '#f4664a',
     },
     tooltip: {
       title: '',
       items: [{ name: OUTLIER, channel: 'y' }],
     },
-  };
+  });
 
   return [baselineMark, intervalMark, outlierMark];
 };
