@@ -1,6 +1,6 @@
 import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, VisualizationSpec } from '../../types';
 import { INSIGHT_COLOR_PLATTE } from '../constants';
-import { transparent } from '../strategy/commonMarks/transparent';
+import { transparent } from '../strategy';
 
 export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPatternInfo) {
   const annotations: any[] = [];
