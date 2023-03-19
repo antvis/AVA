@@ -13,10 +13,9 @@ import {
   categoryOutlierAugmentedMarksStrategy,
   changePointAugmentedMarksStrategy,
   lowVarianceAugmentedMarkStrategy,
+  viewSpecStrategy,
 } from '../strategy';
 import { LineMarkConfig, PointMarkConfig, TextMarkConfig } from '../types';
-
-import { wrapViewSpec } from './viewSpec';
 
 export function generateInsightAugmentedMarks(
   patternGroup: PatternInfo[],
@@ -52,5 +51,5 @@ export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>, patt
   };
 
   const marks = insightType2Strategy[insightType]?.(insight, patternGroup);
-  return wrapViewSpec(marks);
+  return viewSpecStrategy(marks);
 }

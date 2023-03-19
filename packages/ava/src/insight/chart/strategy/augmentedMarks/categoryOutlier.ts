@@ -1,11 +1,10 @@
 import { Mark } from '@antv/g2';
 
-import { InsightInfo, CategoryOutlierInfo } from '../../types';
-import { BOLD_FONT_WEIGHT } from '../constants';
-import { dataFormat } from '../../../utils';
-
-import { insight2ChartStrategy } from './chartStrategy';
-import { textMarkStrategy } from './commonMarks';
+import { dataFormat } from '../../../../utils';
+import { InsightInfo, CategoryOutlierInfo } from '../../../types';
+import { BOLD_FONT_WEIGHT } from '../../constants';
+import { insight2ChartStrategy } from '../chart';
+import { textMarkStrategy } from '../commonMarks';
 
 export const categoryOutlierAugmentedMarksStrategy = (patterns: CategoryOutlierInfo[]): Mark[] => {
   // todo @chenluli change color of outliers
