@@ -240,27 +240,28 @@ export default function App() {
         <div style={{ borderTop: '1px solid grey' }}>
           {insights.map((insight, insightKey) => (
             <div key={insightKey} style={{ margin: 12, padding: 12, border: '1px solid #ccc' }}>
-              {insight.visualizationSpecs?.map((visSpec, visKey) => (
-                <div key={visKey}>
-                  {insight?.patterns.map((pattern, i) => (
-                    <Tag key={i}>{pattern.type}</Tag>
-                  ))}
-                  {visSpec.narrativeSpec && (
-                    <NarrativeTextVis
-                      spec={{
-                        sections: [{ paragraphs: visSpec.narrativeSpec }],
+              {insight.visualizationSpecs?.map((visSpec, visKey) => {
+                const { patternType, chartSpec, narrativeSpec } = visSpec;
+                return (
+                  <div key={visKey}>
+                    <Tag>{patternType}</Tag>
+                    {visSpec.narrativeSpec && (
+                      <NarrativeTextVis
+                        spec={{
+                          sections: [{ paragraphs: narrativeSpec }],
+                        }}
+                      />
+                    )}
+                    <ChartView
+                      chartRef={createRef()}
+                      spec={chartSpec}
+                      style={{
+                        height: 480,
                       }}
                     />
-                  )}
-                  <ChartView
-                    chartRef={createRef()}
-                    spec={visSpec.chartSpec}
-                    style={{
-                      height: 480,
-                    }}
-                  />
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           ))}
         </div>
