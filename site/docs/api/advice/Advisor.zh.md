@@ -96,22 +96,22 @@ Advisor.lint(params: LintParams): Lint[];
 
 详见 [Advisor.lint](./Advisor-lint.zh.md)。
 
-### Advisor.getAdviseLog
+### Advisor.adviseWithLog
 
-`Advisor.getAdviseLog()` 方法 需要用在 [Advisor.advise](./Advisor-advise.zh.md) 方法之后，用于获取推荐过程中的打分细节，方便在应用中进行后续的解释。
+`Advisor.adviseWithLog()` 方法 需要用在 [Advisor.advise](./Advisor-advise.zh.md) 方法之后，用于获取推荐过程中的打分细节，方便在应用中进行后续的解释。
 
 ```ts
-Advisor.getAdviseLog(params: AdviseParams): AdvicesWithLog
+Advisor.adviseWithLog(params: AdviseParams): AdvicesWithLog
 ```
 
-详见 [Advisor.getAdviseLog](./Advisor-getAdviseLog.zh.md)。
+详见 [Advisor.adviseWithLog](./Advisor-adviseWithLog.zh.md)。
 
 
-### Advisor.getLintLog
+### Advisor.lintWithLog
 
-`Advisor.getLintLog` 方法需要用在 [Advisor.lint](./Advisor-lint.zh.md) 方法之后，用于获取查错过程中的打分细节，方便在应用中进行后续的解释。
+`Advisor.lintWithLog` 方法需要用在 [Advisor.lint](./Advisor-lint.zh.md) 方法之后，用于获取查错过程中的打分细节，方便在应用中进行后续的解释。
 ```ts
-Advisor.getLintLog(params: LintParams): LintsWithLog
+Advisor.lintWithLog(params: LintParams): LintsWithLog
 ```
 
-详见 [Advisor.getLintLog](./Advisor-getLintLog.zh.md)。
+详见 [Advisor.lintWithLog](./Advisor-lintWithLog.zh.md)。

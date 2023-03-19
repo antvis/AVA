@@ -9,14 +9,14 @@ Recommend and automatically generate chart configurations based on data and anal
 
 ## ✨ Features
 
-Advisor class contains several tool functions including `Advise()` , `getAdviseLog()` , `Lint()` and `getLintLog()`.
+Advisor class contains several tool functions including `Advise()` , `adviseWithLog()` , `Lint()` and `lintWithLog()`.
 * **Advise()**: is the tool function for recommending charts automatically.
 
 * **Lint()**: is the tool function for providing chart optimization suggestions.
 
-* **getAdviseLog()**: is corresponding to `Advise()` function，which is used to getting the recommendation log to explain the logic.
+* **adviseWithLog()**: is corresponding to `Advise()` function，which is used to getting the recommendation log to explain the logic.
 
-* **getLintLog()**: is corresponding to `Lint()` function，which is used to getting the optimizing log to explain the logic.
+* **lintWithLog()**: is corresponding to `Lint()` function，which is used to getting the optimizing log to explain the logic.
 
 ## 📦 Installation
 
