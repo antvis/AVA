@@ -4,8 +4,8 @@ import { InsightInfo, CategoryOutlierInfo } from '../../types';
 import { BOLD_FONT_WEIGHT } from '../constants';
 import { dataFormat } from '../../../utils';
 
-import { textMarkStrategy } from './augmentedMarks/textMark';
 import { insight2ChartStrategy } from './chartStrategy';
+import { textMarkStrategy } from './commonMarks';
 
 export const categoryOutlierAugmentedMarksStrategy = (patterns: CategoryOutlierInfo[]): Mark[] => {
   // todo @chenluli change color of outliers

@@ -2,7 +2,7 @@ import { G2Spec, Mark } from '@antv/g2';
 
 import { TrendInfo, InsightInfo } from '../../types';
 
-import { lineMarkStrategy } from './augmentedMarks/lineMark';
+import { lineMarkStrategy } from './commonMarks';
 import { insight2ChartStrategy } from './chartStrategy';
 
 export const trendAugmentedMarksStrategy = (patterns: TrendInfo[]): Mark[] => {
