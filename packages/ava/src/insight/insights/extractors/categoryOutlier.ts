@@ -2,7 +2,7 @@ import { orderBy } from 'lodash';
 
 import { distinct } from '../../../data';
 import { categoryOutlier } from '../../algorithms';
-import { IQR_K, SignificanceBenchmark } from '../../constant';
+import { IQR_K, SIGNIFICANCE_BENCHMARK } from '../../constant';
 import { Datum, Measure, CategoryOutlierInfo } from '../../types';
 import { calculatePValue } from '../util';
 
@@ -47,12 +47,14 @@ export const findOutliers = (values: number[]): { outliers: OutlierItem[]; thres
   for (let i = 0; i < sortedCandidates.length; i += 1) {
     const candidate = sortedCandidates[i];
     const { value } = candidate;
-    const pValue = calculatePValue(values, value);
-    const significance = pValue > 0.5 ? pValue : 1 - pValue;
+    const pValue = calculatePValue(values, value, 'two-sided');
 
-    if (significance < SignificanceBenchmark) {
+    const significance = 1 - pValue;
+
+    if (significance < SIGNIFICANCE_BENCHMARK) {
       break;
     }
+
     outliers.push({
       index: candidate.index,
       value: candidate.value,
