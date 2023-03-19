@@ -24,8 +24,7 @@ import type {
 /**
  * options for advising inner pipeline
  */
-// TODO @neoddish: refactor since 3.0.0
-type PipeAdvisorOptions = AdvisorOptions & { exportLog?: boolean };
+type PipeAdvisorOptions = AdvisorOptions;
 declare type ChartID = typeof CHART_IDS[number];
 
 /**
@@ -44,7 +43,6 @@ function scoreRules(
   ruleBase: Record<string, RuleModule>,
   options?: PipeAdvisorOptions
 ): ScoringResultForChartType {
-  const exportLog = options?.exportLog;
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
 
@@ -56,23 +54,16 @@ function scoreRules(
   const hardScore = computeScore(chartType, chartWIKI, ruleBase, 'HARD', info, log);
 
   // Hard-Rule pruning
-  // holding for showLog @deprecated and testing
-  // @since 3.0.0 TODO @neoddish
-  // if (hardScore === 0) {
-  //   const result: ScoringResult = { chartType, score: 0 };
-  //   if (exportLog) result.log = log;
-  //   return result;
-  // }
+  if (hardScore === 0) {
+    const result: ScoringResultForChartType = { chartType, score: 0, log };
+    return result;
+  }
 
   const softScore = computeScore(chartType, chartWIKI, ruleBase, 'SOFT', info, log);
 
-  // @since 3.0.0 TODO @neoddish score normalization
-  // proposal:
-  // const score = hardScore * 100 * (softFullScore ? softScore / softFullScore : 0);
   const score = hardScore * softScore;
 
-  const result: ScoringResultForChartType = { chartType, score };
-  if (exportLog) result.log = log;
+  const result: ScoringResultForChartType = { chartType, score, log };
 
   return result;
 }
@@ -201,15 +192,11 @@ export function dataToAdvices(
   smartColor?: boolean,
   options?: PipeAdvisorOptions,
   colorOptions?: SmartColorOptions
-): Advice[] | AdviseResult {
+): AdviseResult {
   /**
    * `refine`: whether to apply design rules
    */
   const enableRefine = options?.refine === undefined ? false : options.refine;
-  /**
-   * whether to include scoring log in result advices
-   */
-  const exportLog = options?.exportLog || false;
   /**
    * `smartColorOn`: switch SmartColor on/off
    */
@@ -303,12 +290,10 @@ export function dataToAdvices(
   };
   const resultList = list.filter(isAvailableAdvice).sort(compareAdvices);
 
-  const result = exportLog
-    ? {
-        advices: resultList,
-        log,
-      }
-    : resultList;
+  const result = {
+    advices: resultList,
+    log,
+  };
 
   return result;
 }

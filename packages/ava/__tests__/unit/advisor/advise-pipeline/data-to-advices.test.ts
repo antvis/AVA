@@ -3,8 +3,6 @@ import { builtInRules, getChartRules } from '../../../../src/advisor/ruler';
 import { DataFrame } from '../../../../src/data';
 import { ckb } from '../../../../src';
 
-import type { Advice } from '../../../../src/advisor/types';
-
 describe('UNIT TEST: dataToAdvices', () => {
   test('should assign score to chartType without toSpec', () => {
     const testData = [
@@ -40,15 +38,15 @@ describe('UNIT TEST: dataToAdvices', () => {
     const chartKnowledgeBase: any = ckb();
     chartKnowledgeBase.ironball_chart = ironBallChart;
 
-    const resultRequireSpecByDefault = dataToAdvices(testData, dataProps, chartKnowledgeBase, ruleBase) as Advice[];
-    const customChartAdvice1 = resultRequireSpecByDefault.find((advice) => advice.type === 'ironball_chart');
+    const resultRequireSpecByDefault = dataToAdvices(testData, dataProps, chartKnowledgeBase, ruleBase);
+    const customChartAdvice1 = resultRequireSpecByDefault.advices.find((advice) => advice.type === 'ironball_chart');
     expect(customChartAdvice1).toBe(undefined);
 
     const resultNotRequireSpec = dataToAdvices(testData, dataProps, chartKnowledgeBase, ruleBase, false, {
       requireSpec: false,
-    }) as Advice[];
+    });
 
-    const customChartAdvice2 = resultNotRequireSpec.find((advice) => advice.type === 'ironball_chart');
+    const customChartAdvice2 = resultNotRequireSpec.advices.find((advice) => advice.type === 'ironball_chart');
     expect(!!customChartAdvice2).toBe(true);
   });
 });
