@@ -178,11 +178,7 @@ function splitBarXYSeries(dataProps: BasicDataPropertyForAdvice[]): [ReturnField
 
 // barchart in AVA means: horizontal bar chart
 function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
-  const sortedNominalFields = nominalFields.sort(compare);
-  const field4Y = sortedNominalFields[0];
-  const field4Color = sortedNominalFields[1];
-  const field4X = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+  const [field4X, field4Y, field4Color] = splitBarXYSeries(dataProps);
 
   if (!field4X || !field4Y) return null;
 
@@ -190,8 +186,8 @@ function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['
     type: 'interval',
     data,
     encode: {
-      x: field4X.name,
-      y: field4Y.name,
+      x: field4Y.name,
+      y: field4X.name,
     },
     coordinate: {
       transform: [{ type: 'transpose' }],
@@ -200,6 +196,7 @@ function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['
 
   if (field4Color) {
     spec.encode.color = field4Color.name;
+    spec.transform = [{ type: 'stackY' }];
   }
 
   return spec;
@@ -213,8 +210,8 @@ function groupedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): A
     type: 'interval',
     data,
     encode: {
-      x: field4X.name,
-      y: field4Y.name,
+      x: field4Y.name,
+      y: field4X.name,
       color: field4Series.name,
     },
     transform: [{ type: 'dodgeX' }],
@@ -234,10 +231,11 @@ function stackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): A
     type: 'interval',
     data,
     encode: {
-      x: field4X.name,
-      y: field4Y.name,
+      x: field4Y.name,
+      y: field4X.name,
       color: field4Series.name,
     },
+    transform: [{ type: 'stackY' }],
     coordinate: {
       transform: [{ type: 'transpose' }],
     },
@@ -254,8 +252,8 @@ function percentStackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvic
     type: 'interval',
     data,
     encode: {
-      x: field4X.name,
-      y: field4Y.name,
+      x: field4Y.name,
+      y: field4X.name,
       color: field4Series.name,
     },
     transform: [{ type: 'stackY' }, { type: 'normalizeY' }],
@@ -306,6 +304,7 @@ function columnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advic
 
   if (field4Color) {
     spec.encode.color = field4Color.name;
+    spec.transform = [{ type: 'stackY' }];
   }
 
   return spec;
