@@ -1,4 +1,4 @@
-import { G2Spec, Mark } from '@antv/g2';
+import { Mark } from '@antv/g2';
 
 import { TrendInfo, InsightInfo } from '../../types';
 
@@ -20,11 +20,8 @@ export const trendAugmentedMarksStrategy = (patterns: TrendInfo[]): Mark[] => {
   return marks;
 };
 
-export const trendStrategy = (insight: InsightInfo<TrendInfo>, patterns: TrendInfo[]): G2Spec => {
+export const trendStrategy = (insight: InsightInfo<TrendInfo>, patterns: TrendInfo[]): Mark[] => {
   const chart = insight2ChartStrategy(insight);
   const marks = trendAugmentedMarksStrategy(patterns);
-  return {
-    chart,
-    ...marks,
-  };
+  return [chart, ...marks];
 };
