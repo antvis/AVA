@@ -136,9 +136,19 @@ test('statistics', () => {
   expect(minIndex(data5)).toBe(0);
   expect(maxIndex(data5)).toBe(4);
 
+  // 不小于均值
   expect(cdf(-0.1, -0.1, 2)).toBeCloseTo(0.5);
   expect(cdf(2, 0, 1)).toBeCloseTo(0.977);
   expect(cdf(2, 2, -3)).toBe(NaN);
+  // 小于均值
+  const cdfTestData = [
+    -31.20860982319482, 12.590973577445197, 6.405819130157852, 40.749230591240234, 20.729801362383682,
+    -61.037096924074945, -67.5656613441704, 1.336135458046897, 124.85998285693745, 27.915065732344942,
+    -9.261606232548274, 14.535172710349343, 66.9231081402304, 25.407440121578702, -8.392386043428473,
+    -54.91091630601909,
+  ];
+  expect(cdf(cdfTestData[0], mean(cdfTestData), standardDeviation(cdfTestData))).toBeCloseTo(0.2103);
+  expect(cdf(-1.11, 0, 1)).toBeCloseTo(0.1334);
 
   expect(maxabs([0, 2, -7])).toBe(7);
 
