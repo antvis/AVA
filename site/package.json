@@ -29,6 +29,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.4.0",
     "@antv/antv-spec": "^0.1.0-alpha.18",
+    "@antv/g2": "5.0.0-rc.2",
     "@antv/g2plot": "^2.3.39",
     "@antv/g6": "^4.3.11",
     "@antv/narrative-text-vis": "^0.1.6-alpha.5",
@@ -39,7 +40,7 @@
     "@antv/thumbnails-component": "^2.0.0",
     "@open-wc/webpack-import-meta-loader": "^0.4.7",
     "antd": "^4.4.0",
-    "antv-site-demo-rc": "^0.1.0-alpha.22",
+    "antv-site-demo-rc": "^1.0.0",
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.3",
     "insert-css": "^2.0.0",
