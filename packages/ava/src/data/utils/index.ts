@@ -4,3 +4,4 @@
 
 export * from './common';
 export * from './isType';
+export * from './aggregation';

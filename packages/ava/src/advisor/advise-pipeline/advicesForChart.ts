@@ -1,5 +1,6 @@
-import { DataFrame } from '../../data';
+import { autoAggregation, DataFrame } from '../../data';
 import { cloneDeep } from '../utils';
+import { AggregationMethodType } from '../../data/analysis/field/types';
 
 import { dataToAdvices } from './data-to-advices';
 
@@ -78,8 +79,35 @@ export function advicesForChart(
       filteredData = copyData;
     }
 
+    let finalData = filteredData;
+
+    let shouldAggregate = false;
+    /** if nominal fields contain duplicated values, the data should be aggregated */
+    dataPropsForAdvice.forEach((props) => {
+      const isDimension = !props.levelOfMeasurements?.includes('Interval') ?? true;
+      const isDuplicated = (props.distinct ?? 0) < (props.count ?? 1);
+      if (isDimension && isDuplicated) {
+        shouldAggregate = true;
+      }
+    });
+    if (shouldAggregate) {
+      const dimensions: string[] = dataPropsForAdvice
+        .filter((item) => !item.levelOfMeasurements.includes('Interval'))
+        .map((item) => item.name);
+      const measures: string[] = dataPropsForAdvice
+        .filter((item) => item.levelOfMeasurements.includes('Interval'))
+        .map((item) => item.name);
+      const aggMethods: Record<string, AggregationMethodType> = {};
+      dataPropsForAdvice.forEach((props) => {
+        if (props?.aggregationMethod) {
+          aggMethods[props.name] = props?.aggregationMethod;
+        }
+      });
+      finalData = autoAggregation(filteredData, dimensions, measures, aggMethods);
+    }
+
     const adviceResult = dataToAdvices(
-      filteredData,
+      finalData,
       dataPropsForAdvice,
       ckb,
       ruleBase,

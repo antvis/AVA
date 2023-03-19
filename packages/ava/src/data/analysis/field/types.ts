@@ -1,6 +1,20 @@
 import { CkbTypes } from '../../../ckb';
 
 /**
+ * 聚合类型
+ */
+export const AGGREGATION_METHOD_TYPES = [
+  'sum',
+  'avg',
+  'max',
+  'min',
+  'count',
+  'count_distinct',
+  'aggregate-none',
+] as const;
+export type AggregationMethodType = typeof AGGREGATION_METHOD_TYPES[number];
+
+/**
  * Field Type
  * @public
  */
@@ -41,6 +55,8 @@ export type FieldInfo = {
   meta?: FieldMeta;
   /** level of measurements */
   levelOfMeasurements?: CkbTypes.LevelOfMeasurement[];
+  /** aggregation methods */
+  aggregationMethod?: AggregationMethodType;
 };
 
 /**
