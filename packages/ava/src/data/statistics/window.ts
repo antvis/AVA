@@ -1,6 +1,6 @@
 import { mean } from 'lodash';
 
-import { SignificanceBenchmark } from '../../insight/constant';
+import { SIGNIFICANCE_BENCHMARK } from '../../insight/constant';
 import { calculatePValue } from '../../insight/insights/util';
 
 import { ChangePointItem } from './types';
@@ -20,7 +20,7 @@ export function windowBasedMean(
 
   if (len <= 2 * K + 3) return [];
 
-  const significanceLimit = params?.significanceLimit || SignificanceBenchmark;
+  const significanceLimit = params?.significanceLimit || SIGNIFICANCE_BENCHMARK;
 
   const diff = Array(len).fill(0);
   for (let i = K; i <= len - K; i += 1) {

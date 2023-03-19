@@ -1,4 +1,7 @@
-export const SignificanceBenchmark = 0.88;
+// Should be confidence level. Is the SIGNIFICANCE_BENCHMARK naming correct? by @pddpd
+export const SIGNIFICANCE_BENCHMARK = 0.95;
+
+export const SIGNIFICANCE_LEVEL = 0.05;
 
 export const InsightScoreBenchmark = 0.01;
 
@@ -6,11 +9,9 @@ export const ImpactScoreWeight = 0.2;
 
 export const InsightDefaultLimit = 20;
 
-export const IQR_K = 0.8;
+export const IQR_K = 1.5;
 
 export const LOWESS_N_STEPS = 2;
-
-export const RESIDUALS_OUTLIERS_LIMIT = 0.05;
 
 export const PATTERN_TYPES = [
   'category_outlier',

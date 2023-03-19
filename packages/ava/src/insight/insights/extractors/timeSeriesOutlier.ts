@@ -1,6 +1,6 @@
 import { distinct, lowess } from '../../../data';
 import { LowessOutput } from '../../../data/statistics/types';
-import { LOWESS_N_STEPS, RESIDUALS_OUTLIERS_LIMIT } from '../../constant';
+import { LOWESS_N_STEPS, SIGNIFICANCE_LEVEL } from '../../constant';
 
 import { findOutliers } from './categoryOutlier';
 
@@ -27,7 +27,10 @@ function findTimeSeriesOutliers(values: number[]): {
   const range = max - min;
   const residuals = values.map((item, index) => item - baseline.y[index]);
   const { outliers: residualsOutliers, thresholds } = findOutliers(residuals);
-  const outliers = residualsOutliers.filter((item) => Math.abs(item.value) / range >= RESIDUALS_OUTLIERS_LIMIT);
+  // Is the filter necessary? by @pddpd
+  const outliers = residualsOutliers.filter((item) => {
+    return Math.abs(item.value) / range >= SIGNIFICANCE_LEVEL;
+  });
 
   return { outliers, baselines: baseline.y, thresholds };
 }
