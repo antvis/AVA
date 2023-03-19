@@ -32,7 +32,6 @@ export default class CommonnessNarrativeStrategy extends InsightNarrativeStrateg
     ],
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   generateTextSpec(insightInfo: HomogeneousInsightInfo, lang: Language) {
     const { measures, dimensions, insightType } = insightInfo;
     const spec = generateTextSpec({

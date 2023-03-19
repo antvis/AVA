@@ -1,9 +1,8 @@
 import { Mark } from '@antv/g2';
 
-import { LowVarianceInfo, InsightInfo } from '../../types';
-
-import { lineMarkStrategy } from './commonMarks';
-import { insight2ChartStrategy } from './chartStrategy';
+import { LowVarianceInfo, InsightInfo } from '../../../types';
+import { lineMarkStrategy } from '../commonMarks';
+import { insight2ChartStrategy } from '../chart';
 
 export const lowVarianceAugmentedMarkStrategy = (patterns: LowVarianceInfo[]): Mark[] => {
   const marks = [];

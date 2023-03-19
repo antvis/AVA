@@ -1,16 +1,15 @@
 import { Mark } from '@antv/g2';
 
-import { ChangePointInfo, InsightInfo } from '../../types';
-import { INSIGHT_COLOR_PLATTE } from '../constants';
-import { dataFormat } from '../../../utils';
-
-import { pointMarkStrategy } from './commonMarks/pointMark';
-import { textMarkStrategy } from './commonMarks/textMark';
-import { insight2ChartStrategy } from './chartStrategy';
+import { ChangePointInfo, InsightInfo } from '../../../types';
+import { INSIGHT_COLOR_PLATTE } from '../../constants';
+import { dataFormat } from '../../../../utils';
+import { pointMarkStrategy } from '../commonMarks/pointMark';
+import { textMarkStrategy } from '../commonMarks/textMark';
+import { insight2ChartStrategy } from '../chart';
 
 export const changePointAugmentedMarksStrategy = (patterns: ChangePointInfo[]): Mark[] => {
   const color = INSIGHT_COLOR_PLATTE.highlight;
-  const pointMark = pointMarkStrategy(patterns, { strokeColor: color });
+  const pointMark = pointMarkStrategy(patterns, { style: { strokeColor: color } });
   const textMark = textMarkStrategy(patterns, { formatter: dataFormat });
   return [pointMark, textMark];
 };

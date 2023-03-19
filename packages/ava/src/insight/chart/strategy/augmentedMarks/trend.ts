@@ -1,9 +1,8 @@
 import { Mark } from '@antv/g2';
 
-import { TrendInfo, InsightInfo } from '../../types';
-
-import { lineMarkStrategy } from './commonMarks';
-import { insight2ChartStrategy } from './chartStrategy';
+import { lineMarkStrategy } from '../commonMarks';
+import { insight2ChartStrategy } from '../chart';
+import { InsightInfo, TrendInfo } from '../../../types';
 
 export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>, patterns: TrendInfo[]): Mark[] => {
   const {

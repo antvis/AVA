@@ -57,7 +57,6 @@ export default class ExceptionNarrativeStrategy extends InsightNarrativeStrategy
     ],
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   generateTextSpec(insightInfo: HomogeneousInsightInfo, lang: Language) {
     const { measures, dimensions, insightType, exceptions } = insightInfo;
     const spec = generateTextSpec({
