@@ -2,6 +2,8 @@ import { G2Spec, Mark } from '@antv/g2';
 
 export const wrapViewSpec = (marks: Mark[]): G2Spec => {
   return {
+    type: 'view',
+    theme: 'classic',
     axis: {
       x: { labelAutoHide: true, labelAutoRotate: false, title: false },
       y: { title: false },
