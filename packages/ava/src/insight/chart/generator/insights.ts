@@ -39,7 +39,7 @@ export function generateInsightAugmentedMarks(
 export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>, patternGroup: PatternInfo[]): G2Spec {
   const { type: insightType } = patternGroup[0];
 
-  const insightType2Strategy: Record<string, (insight: InsightInfo<PatternInfo>) => G2Spec> = {
+  const insightType2Strategy: Record<string, (insight: InsightInfo<PatternInfo>, patterns: PatternInfo[]) => G2Spec> = {
     trend: trendStrategy,
     time_series_outlier: timeSeriesOutlierStrategy,
     category_outlier: categoryOutlierStrategy,
@@ -49,6 +49,6 @@ export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>, patt
     correlation: correlationStrategy,
   };
 
-  const chartSpec: G2Spec = insightType2Strategy[insightType]?.(insight);
+  const chartSpec: G2Spec = insightType2Strategy[insightType]?.(insight, patternGroup);
   return chartSpec;
 }

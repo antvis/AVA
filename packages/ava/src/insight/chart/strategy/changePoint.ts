@@ -15,8 +15,7 @@ export const changePointAugmentedMarksStrategy = (patterns: ChangePointInfo[]): 
   return [pointMark, textMark];
 };
 
-export const changePointStrategy = (insight: InsightInfo<ChangePointInfo>): G2Spec => {
-  const { patterns } = insight;
+export const changePointStrategy = (insight: InsightInfo<ChangePointInfo>, patterns: ChangePointInfo[]): G2Spec => {
   const chart = insight2ChartStrategy(insight);
   const augmentedMarks = changePointAugmentedMarksStrategy(patterns);
   return {
