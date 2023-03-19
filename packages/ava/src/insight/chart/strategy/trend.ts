@@ -20,9 +20,9 @@ export const trendAugmentedMarksStrategy = (patterns: TrendInfo[]): Mark[] => {
   return marks;
 };
 
-export const trendStrategy = (insight: InsightInfo<TrendInfo>): G2Spec => {
+export const trendStrategy = (insight: InsightInfo<TrendInfo>, patterns: TrendInfo[]): G2Spec => {
   const chart = insight2ChartStrategy(insight);
-  const marks = trendAugmentedMarksStrategy(insight.patterns);
+  const marks = trendAugmentedMarksStrategy(patterns);
   return {
     chart,
     ...marks,
