@@ -1,13 +1,12 @@
 ---
-title: Advisor.advise
-order: 11
+title: Advisor.adviseWithLog
+order: 12
 ---
 
 <embed src='@/docs/common/style.md'></embed>
 
-
 ```sign
-Advisor.advise(params: AdviseParams): Advice[];
+Advisor.adviseWithLog(): AdviseResult
 ```
 
 ## 参数
@@ -84,7 +83,16 @@ type SmartColorOptions = {
 | colorSchemeType | `ColorSchemeType` | 色板生成模式。   | `monochromatic`  `可选` |
 | simulationType  | `SimulationType`  | 颜色模拟模式。   | `normal`  `可选`        |
 
+`Advisor.adviseWithLog` 方法 需要用在 [Advisor.advise](./Advisor-advise) 方法之后，用于获取推荐过程中的打分细节，方便在应用中进行后续的解释。
+
 ## 返回值
+
+```ts
+type AdviseResult = {
+  advices: Advice[];
+  log: ScoringResultForChartType[];
+};
+```
 
 _`Advice[]`_ 
 
@@ -107,5 +115,30 @@ _`Advice[]`_
 | data  | 数据信息。 | `data: { type: 'json-array', values: [...] }`                     |
 | layer | 绘制信息。 | `{ [ encoding: { x: {...}, y:{...} }, mark: { type: 'line' } ] }` |
 
+_`AdviseLog`_
 
+```ts
+log: ScoringResultForChartType[];
+```
 
+* _**AdviseLog**_ 参数配置。
+
+| 属性    | 类型                                                                             | 可选  | 示例 | 描述                                         |
+| ------- | -------------------------------------------------------------------------------- | :---: | ---- | -------------------------------------------- |
+| log     | ScoringResultForChartType[] |       |      | 所有图表的汇总打分记录。                     |
+
+## 示例
+
+```ts
+import { Advisor } from '@antv/ava';
+
+const data = [
+  { f1: 'a', f2: 10 },
+  { f1: 'b', f2: 20 },
+  { f1: 'c', f2: 30 },
+];
+
+const myAdvisor = new Advisor();
+const adviseResult = myAdvisor.adviseWithLog({data});
+console.log(adviseResult.log);
+```

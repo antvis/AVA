@@ -1,13 +1,12 @@
 ---
-title: Advisor.lint
-order: 21
+title: Advisor.lintWithLog
+order: 22
 ---
 
 <embed src='@/docs/common/style.md'></embed>
 
-
 ```sign
-Advisor.lint(params: LintParams): Lint[];
+lintWithLog(params: LintParams): LintResult
 ```
 
 ## Parameters
@@ -87,8 +86,14 @@ interface Preferences {
 }
 ```
 
-
 ## Return value
+
+```ts
+type LintResult = {
+  lints: Lint[];
+  log: ScoringResultForRule[];
+};
+```
 
 _`Lint[]`_
 
@@ -102,5 +107,26 @@ _`Lint[]`_
 | fix        | `any`    | The solution based on this rule. |                        |
 | docs       | `any`    | The documentation for the rule.  |                        |
 
+_`LintLog`_
 
+```ts
+  log: ScoringResultForRule[];
+```
 
+* _**LintLog**_ Return Type.
+
+| Properties | Type                                                                   | Optional | Examples | Description                                       |
+| ---------- | ---------------------------------------------------------------------- | :------: | -------- | ------------------------------------------------- |
+| log        | [ScoringResultForRule][] |          |          | Summary lint scoring records for that chart spec. |
+
+## Examples
+
+```ts
+import { Advisor } from '@antv/ava';
+
+const myAdvisor= new Advisor();
+const spec = { ...someBadSpec };
+
+const lintResult = myAdvisor.lintWithLog({ spec });
+console.log(lintResult.log);
+```

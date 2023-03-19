@@ -1,14 +1,14 @@
 ---
-title: Advisor.lint
-order: 21
+title: Advisor.lintWithLog
+order: 22
 ---
 
 <embed src='@/docs/common/style.md'></embed>
 
-
 ```sign
-Advisor.lint(params: LintParams): Lint[];
+lintWithLog(params: LintParams): LintResult
 ```
+
 
 ## 参数
 
@@ -87,6 +87,13 @@ interface Preferences {
 
 ## 返回值
 
+```ts
+type LintResult = {
+  lints: Lint[];
+  log: ScoringResultForRule[];
+};
+```
+
 _`Lint[]`_
 
 * _**Lint**_ 参数配置。
@@ -99,5 +106,26 @@ _`Lint[]`_
 | fix   | `any`    | 基于该规则的解决方案。 |                        |
 | docs  | `any`    | 该规则的相关文档。     |                        |
 
+_`LintLog`_
 
+```ts
+log: ScoringResultForRule[];
+```
 
+* _**Log**_ 返回值类型.
+
+| 属性  | 类型                                                                   | 可选  | 示例 | 描述                                        |
+| ----- | ---------------------------------------------------------------------- | :---: | ---- | ------------------------------------------- |
+| log   | [ScoringResultForRule][] |       |      | 针对给定 Specification 的所有汇总检测记录。 |
+
+## 示例
+
+```ts
+import { Advisor } from '@antv/ava';
+
+const myAdvisor= new Advisor();
+const spec = { ...someBadSpec };
+
+const lintResult = myAdvisor.lintWithLog({ spec });
+console.log(lintResult.log);
+```

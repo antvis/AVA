@@ -1,13 +1,12 @@
 ---
-title: Advisor.advise
-order: 11
+title: Advisor.adviseWithLog
+order: 12
 ---
 
 <embed src='@/docs/common/style.md'></embed>
 
-
 ```sign
-Advisor.advise(params: AdviseParams): Advice[];
+Advisor.adviseWithLog(params: AdviseParams): AdviseResult;
 ```
 
 ## Parameters
@@ -86,7 +85,15 @@ type SmartColorOptions = {
 | simulationType  | `SimulationType`  | The color simulation mode.        | `normal` `Optional`        |
 
 
+
 ## Return value
+
+```ts
+type AdviseResult = {
+  advices: Advice[];
+  log: ScoringResultForChartType[];
+};
+```
 
 _`Advice[]`_
 
@@ -109,5 +116,32 @@ _`Advice[]`_
 | data       | The data information.    | `data: { type: 'json-array', values: [...] }`                      |
 | layer      | The drawing information. | `{ [ encoding: { x: {...} , y:{...} }, mark: { type: 'line' } ] }` |
 
+_`AdviseLog`_
 
+```ts
+log: ScoringResultForChartType[];
+```
 
+* _**adviseWithLog**_ Parameter configuration.
+
+| Properties | Type                                                                             | Optional | Examples | Description                                         |
+| ---------- | -------------------------------------------------------------------------------- | :------: | -------- | --------------------------------------------------- |
+| log        | ScoringResultForChartType[] |          |          | Summary scoring records for all chart types.        |
+
+## Examples
+
+```ts
+import { Advisor } from '@antv/ava';
+
+const myAdvisor = new Advisor();
+const data = [
+  { f1: 'a', f2: 10 },
+  { f1: 'b', f2: 20 },
+  { f1: 'c', f2: 30 },
+];
+
+const advices = myAdvisor.advise({data});
+const log = myAdvisor.adviseWithLog();
+console.log(advices);
+console.log(log);
+```

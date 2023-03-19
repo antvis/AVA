@@ -13,7 +13,7 @@ type Specification = AntVSpec;
 ```
 
 `AntVSpec` is the declarative grammar that supports various technology stacks of AntV. 
-See [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md) for detail configurations.
+
 
 | Properties | Description              | Examples                                                           |
 | ---------- | ------------------------ | ------------------------------------------------------------------ |

@@ -97,23 +97,23 @@ Advisor.Lint(params: LintParams): Lint[];
 
 See [Advisor.lint](./Advisor-lint.en.md)。
 
-### Advisor.getAdviseLog
+### Advisor.adviseWithLog
 
-`Advisor.getAdviseLog` should be used right after [Advisor.Advise](./Advisor-advise.en.md) ，which is used for getting the scoring details of the recommending process。
-
-```ts
-Advisor.getAdviseLog(params: AdviseParams): AdvicesWithLog
-```
-
-See [Advisor.getAdviseLog](./Advisor-getAdviseLog.en.md)。
-
-
-### Advisor.getLintLog
-
-`Advisor.getLintLog` should be used right after [Advisor.lint](./Advisor-lint.en.md) ，which is used for getting the scoring details of the optimizing process。
+`Advisor.adviseWithLog` should be used right after [Advisor.Advise](./Advisor-advise.en.md) ，which is used for getting the scoring details of the recommending process。
 
 ```ts
-Advisor.getLintLog(params: LintParams): LintsWithLog
+Advisor.adviseWithLog(params: AdviseParams): AdvicesWithLog
 ```
 
-详见 [Advisor.getLintLog](./Advisor-getLintLog.en.md)。
+See [Advisor.adviseWithLog](./Advisor-adviseWithLog.en.md)。
+
+
+### Advisor.lintWithLog
+
+`Advisor.lintWithLog` should be used right after [Advisor.lint](./Advisor-lint.en.md) ，which is used for getting the scoring details of the optimizing process。
+
+```ts
+Advisor.lintWithLog(params: LintParams): LintsWithLog
+```
+
+详见 [Advisor.lintWithLog](./Advisor-lintWithLog.en.md)。

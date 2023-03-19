@@ -13,7 +13,7 @@ type Specification = AntVSpec;
 ```
 
 `AntVSpec` 是 AntV 技术栈的声明式语法。
-详细配置项见 [AntVSpec API](https://github.com/antvis/antv-spec/blob/master/API.md)。
+
 
 | 属性  | 描述       | 样例                                                              |
 | ----- | ---------- | ----------------------------------------------------------------- |
