@@ -185,6 +185,8 @@ function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['
   const spec: Advice['spec'] = {
     type: 'interval',
     data,
+    // G2's implementation converts column chart (vertical bar) and bar chart (horizontal bar) by transpose, so the x and y fields need to be swapped.
+    // 由于g2的实现是通过transpose来转换 column chart（竖着的bar）和bar chart（横着的bar），所以x和y的字段需要做交换
     encode: {
       x: field4Y.name,
       y: field4X.name,
