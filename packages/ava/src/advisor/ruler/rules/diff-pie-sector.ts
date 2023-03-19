@@ -1,5 +1,7 @@
 import { hasSubset } from '../../utils';
 
+import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
+
 import type { RuleModule } from '../types';
 
 const applyChartTypes = ['pie_chart', 'donut_chart'];
@@ -14,7 +16,7 @@ export const diffPieSector: RuleModule = {
     return applyChartTypes.includes(chartType);
   },
   validator: (args): number => {
-    let result = 0;
+    let result = 1;
     const { dataProps } = args;
 
     if (dataProps) {
@@ -30,10 +32,10 @@ export const diffPieSector: RuleModule = {
         const count = intervalField.rawData.length;
         const maxProduct = (1 / count) ** count;
 
-        result = Math.abs(maxProduct - Math.abs(scaledProduct)) / maxProduct;
+        result = MAX_SOFT_RULE_COEFFICIENT * (Math.abs(maxProduct - Math.abs(scaledProduct)) / maxProduct);
       }
     }
-
+    result = result < 1 / MAX_SOFT_RULE_COEFFICIENT ? 1 / MAX_SOFT_RULE_COEFFICIENT : result;
     return result;
   },
 };

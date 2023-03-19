@@ -30,7 +30,6 @@ describe('should advise line', () => {
         { name: 'y', levelOfMeasurements: ['Nominal'] },
       ],
     });
-
     expect(advices.map((advice) => advice.type).includes('heatmap')).toBe(true);
   });
 });

@@ -1,6 +1,8 @@
 import { hasSubset } from '../../utils';
 import { compare } from '../utils';
 
+import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
+
 import type { RuleModule, BasicDataPropertyForAdvice } from '../types';
 
 const applyChartTypes = [
@@ -27,7 +29,7 @@ export const nominalEnumCombinatorial: RuleModule = {
     return applyChartTypes.includes(chartType) && getNominalFields.length >= 2;
   },
   validator: (args): number => {
-    let result = 0;
+    let result = 1;
     const { dataProps, chartType } = args;
 
     if (dataProps) {
@@ -41,7 +43,7 @@ export const nominalEnumCombinatorial: RuleModule = {
 
         if (f1.distinct === f1.count) {
           if (['bar_chart', 'column_chart'].includes(chartType)) {
-            result = 1;
+            result = MAX_SOFT_RULE_COEFFICIENT * 0.5;
           }
         }
 
@@ -53,7 +55,7 @@ export const nominalEnumCombinatorial: RuleModule = {
             'stacked_column_chart',
           ];
           if (typeOptions.includes(chartType)) {
-            result = 1;
+            result = MAX_SOFT_RULE_COEFFICIENT * 0.5;
           }
         }
       }
