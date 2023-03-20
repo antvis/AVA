@@ -29,7 +29,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.4.0",
     "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/g2": "^5.0.0-beta.13",
+    "@antv/g2": "5.0.0-rc.2",
     "@antv/g2plot": "^2.3.39",
     "@antv/g6": "^4.3.11",
     "@antv/narrative-text-vis": "^0.1.6-alpha.5",
