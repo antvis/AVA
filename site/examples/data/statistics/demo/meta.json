@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "index.jsx",
+      "title": {
+        "zh": "常用统计学方法示例",
+        "en": "Statistical methods"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/WLciSdHENb/statistics.gif"
+    }
+  ]
+}
