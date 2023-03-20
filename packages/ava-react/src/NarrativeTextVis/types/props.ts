@@ -1,8 +1,16 @@
 import type { ReactNode } from 'react';
-import type { NtvTypes } from '@antv/ava';
+import type {
+  EntityType,
+  PhraseSpec,
+  HeadlineSpec,
+  ParagraphSpec,
+  BulletItemSpec,
+  SectionSpec,
+  NarrativeTextSpec,
+} from '@antv/ava';
 import type { PluginManager } from '../chore/plugin';
 
-export type PhraseType = 'text' | NtvTypes.EntityType | null;
+export type PhraseType = 'text' | EntityType | null;
 export type ThemeType = 'light' | 'dark';
 export type SizeType = 'normal' | 'small';
 
@@ -45,7 +53,7 @@ export type CollapseConfig = {
     collapsedKeys: string[]
     // TODO 其他参数视情况添加
     // info: {
-    //   node: NtvTypes.ParagraphSpec;
+    //   node: ParagraphSpec;
     //   expanded: boolean;
     //   nativeEvent: MouseEvent;
     // }
@@ -66,12 +74,12 @@ export type ExtensionProps = {
 };
 
 export type PhraseEvents = Partial<{
-  onClickPhrase: (spec: NtvTypes.PhraseSpec) => void;
-  onMouseEnterPhrase: (spec: NtvTypes.PhraseSpec) => void;
-  onMouseLeavePhrase: (spec: NtvTypes.PhraseSpec) => void;
+  onClickPhrase: (spec: PhraseSpec) => void;
+  onMouseEnterPhrase: (spec: PhraseSpec) => void;
+  onMouseLeavePhrase: (spec: PhraseSpec) => void;
 }>;
 
-type NormalParagraphSpec = NtvTypes.HeadlineSpec | NtvTypes.ParagraphSpec | NtvTypes.BulletItemSpec;
+type NormalParagraphSpec = HeadlineSpec | ParagraphSpec | BulletItemSpec;
 export type ParagraphEvents = PhraseEvents &
   Partial<{
     onClickParagraph: (spec: NormalParagraphSpec) => void;
@@ -81,16 +89,16 @@ export type ParagraphEvents = PhraseEvents &
 
 export type SectionEvents = ParagraphEvents &
   Partial<{
-    onClickSection: (spec: NtvTypes.SectionSpec) => void;
-    onMouseEnterSection: (spec: NtvTypes.SectionSpec) => void;
-    onMouseLeaveSection: (spec: NtvTypes.SectionSpec) => void;
+    onClickSection: (spec: SectionSpec) => void;
+    onMouseEnterSection: (spec: SectionSpec) => void;
+    onMouseLeaveSection: (spec: SectionSpec) => void;
   }>;
 
 export type NarrativeEvents = SectionEvents &
   Partial<{
-    onClickNarrative: (spec: NtvTypes.NarrativeTextSpec) => void;
-    onMouseEnterNarrative: (spec: NtvTypes.NarrativeTextSpec) => void;
-    onMouseLeaveNarrative: (spec: NtvTypes.NarrativeTextSpec) => void;
+    onClickNarrative: (spec: NarrativeTextSpec) => void;
+    onMouseEnterNarrative: (spec: NarrativeTextSpec) => void;
+    onMouseLeaveNarrative: (spec: NarrativeTextSpec) => void;
     onCopySuccess: (e?: ClipboardEvent) => void;
     onCopyFailure: (e?: ClipboardEvent) => void;
   }>;
@@ -102,10 +110,10 @@ export type NarrativeTextVisProps = ThemeStylesProps &
      * @description specification of narrative text spec
      * @description.zh-CN Narrative 描述 json 信息
      */
-    spec: NtvTypes.NarrativeTextSpec;
+    spec: NarrativeTextSpec;
     /**
      * @description the function to be called when copy event is listened. If it is undefined, the default behavior is to put the transformed html and plain text into user's clipboard
      * @description.监听到 copy 事件时执行的函数，可用于控制复制的内容和复制行为，如果不传，默认将会把转换后的富文本和纯文本内容放入剪切板
      */
-    copyNarrative?: (content: { spec: NtvTypes.NarrativeTextSpec; plainText: string; html: string }) => void;
+    copyNarrative?: (content: { spec: NarrativeTextSpec; plainText: string; html: string }) => void;
   };

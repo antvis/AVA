@@ -7,25 +7,25 @@ import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
 import { NTV_PREFIX_CLS } from '../../../constants';
 import { getThemeColor } from '../../../theme';
 
-import type { NtvTypes } from '@antv/ava';
+import { ValueAssessment, EntityMetaData } from '@antv/ava';
 import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 import type { ThemeType } from '../../../types';
 
-function getCompareColor(assessment: NtvTypes.ValueAssessment, theme: ThemeType) {
+function getCompareColor(assessment: ValueAssessment, theme: ThemeType) {
   let color: string = getThemeColor('colorOtherValue', theme);
   if (assessment === 'positive') color = getThemeColor('colorPositive', theme);
   if (assessment === 'negative') color = getThemeColor('colorNegative', theme);
   return color;
 }
 
-function getComparePrefix(assessment: NtvTypes.ValueAssessment, [neg, pos]: [ReactNode, ReactNode]): ReactNode {
+function getComparePrefix(assessment: ValueAssessment, [neg, pos]: [ReactNode, ReactNode]): ReactNode {
   let prefix = null;
   if (assessment === 'negative') prefix = neg;
   if (assessment === 'positive') prefix = pos;
   return prefix;
 }
 
-function getAssessmentText(value: string, metadata: NtvTypes.EntityMetaData) {
+function getAssessmentText(value: string, metadata: EntityMetaData) {
   return `${metadata?.assessment === 'negative' ? '-' : ''}${value}`;
 }
 

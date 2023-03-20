@@ -1,4 +1,4 @@
-import type { NtvTypes } from '@antv/ava';
+import type { EntityMetaData, EntityType } from '@antv/ava';
 import type { CSSProperties, ReactNode } from 'react';
 import type { TooltipProps } from 'antd';
 import type { EntityEncoding, ThemeStylesProps } from '../../types';
@@ -52,8 +52,8 @@ export type CustomPhraseDescriptor<MetaData> = PhraseDescriptor<MetaData> & { is
 /**
  * description for entity phrase render
  */
-export interface EntityPhraseDescriptor extends PhraseDescriptor<NtvTypes.EntityMetaData> {
-  key: NtvTypes.EntityType;
+export interface EntityPhraseDescriptor extends PhraseDescriptor<EntityMetaData> {
+  key: EntityType;
   isEntity: true;
   /**
    * entity phrase encoding channel based on entityType
@@ -67,7 +67,7 @@ export type CustomEntityMode = 'overwrite' | 'merge';
 export type EntityPhrasePlugin = (
   customPhraseDescriptor?: SpecificEntityPhraseDescriptor,
   mode?: CustomEntityMode
-) => PhraseDescriptor<NtvTypes.EntityMetaData>;
+) => PhraseDescriptor<EntityMetaData>;
 
 type BlockDefineFun<CustomBlockSpec, ReturnType> = (
   spec: CustomBlockSpec,

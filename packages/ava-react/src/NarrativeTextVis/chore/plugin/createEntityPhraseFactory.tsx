@@ -6,7 +6,7 @@ import { functionalize } from '../../utils';
 
 import { createPhraseFactory } from './createPhraseFactory';
 
-import type { NtvTypes } from '@antv/ava';
+import type { EntityType, EntityMetaData } from '@antv/ava';
 import type { CSSProperties } from 'react';
 import type { PhraseDescriptor, SpecificEntityPhraseDescriptor, CustomEntityMode } from './plugin-protocol.type';
 import type { ThemeStylesProps } from '../../types';
@@ -21,11 +21,11 @@ function getMergedDescriptor(
 }
 
 export const createEntityPhraseFactory =
-  (key: NtvTypes.EntityType, defaultDescriptor: SpecificEntityPhraseDescriptor) =>
+  (key: EntityType, defaultDescriptor: SpecificEntityPhraseDescriptor) =>
   (
     customDescriptor?: SpecificEntityPhraseDescriptor,
     mode: CustomEntityMode = 'merge'
-  ): PhraseDescriptor<NtvTypes.EntityMetaData> => {
+  ): PhraseDescriptor<EntityMetaData> => {
     const entityFactory = createPhraseFactory(true);
 
     let entityDescriptor = cloneDeep(defaultDescriptor);
@@ -40,11 +40,7 @@ export const createEntityPhraseFactory =
       const { color, bgColor, fontSize, fontWeight, underline } = entityDescriptor.encoding;
       const commonStyleFn = functionalize(entityDescriptor?.style, {});
 
-      const encodingStyle = (
-        value: string,
-        metadata: NtvTypes.EntityMetaData,
-        themeStyles: ThemeStylesProps
-      ): CSSProperties => {
+      const encodingStyle = (value: string, metadata: EntityMetaData, themeStyles: ThemeStylesProps): CSSProperties => {
         const args = [value, metadata, themeStyles] as const;
         return {
           ...commonStyleFn(...args),
@@ -74,5 +70,5 @@ export const createEntityPhraseFactory =
       delete entityDescriptor.encoding;
     }
 
-    return entityFactory<NtvTypes.EntityMetaData>({ key, ...entityDescriptor });
+    return entityFactory<EntityMetaData>({ key, ...entityDescriptor });
   };

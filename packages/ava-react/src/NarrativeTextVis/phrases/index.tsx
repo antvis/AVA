@@ -4,7 +4,7 @@ import { presetPluginManager } from '../chore/plugin';
 
 import { Phrase } from './Phrase';
 
-import type { NtvTypes } from '@antv/ava';
+import type { PhraseSpec } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
 
 type PhrasesProps = ThemeStylesProps &
@@ -14,7 +14,7 @@ type PhrasesProps = ThemeStylesProps &
      * @description specification of phrase text spec
      * @description.zh-CN 短语描述 json 信息
      */
-    spec: NtvTypes.PhraseSpec[];
+    spec: PhraseSpec[];
   };
 
 export function Phrases({

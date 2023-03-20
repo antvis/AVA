@@ -9,13 +9,13 @@ import { Phrases } from '../phrases';
 import { classnames as cx } from '../../utils';
 import { presetPluginManager } from '../chore/plugin';
 
-import type { NtvTypes } from '@antv/ava';
+import type { HeadingParagraphSpec } from '@antv/ava';
 import type { ExtensionProps, PhraseEvents, ThemeStylesProps } from '../types';
 
 type HeadingProps = ExtensionProps &
   ThemeStylesProps &
   PhraseEvents & {
-    spec: NtvTypes.HeadingParagraphSpec;
+    spec: HeadingParagraphSpec;
   };
 
 export function Heading({

@@ -16,7 +16,7 @@ import { NTV_PREFIX_CLS } from '../../constants';
 
 import { ImageExtra, transformHtml } from './helpers/transformHtml';
 
-import type { NtvTypes } from '@antv/ava';
+import type { NarrativeTextSpec, SectionSpec, ParagraphSpec, BulletItemSpec, PhraseSpec } from '@antv/ava';
 
 const NTV_CONTAINER_CLS = `${NTV_PREFIX_CLS}-container`;
 
@@ -26,7 +26,7 @@ export class TextExporter extends PluginManager {
    * @param {NarrativeTextSpec} spec - the narrative text schema you want to export
    * @returns
    */
-  getNarrativeText(spec: NtvTypes.NarrativeTextSpec) {
+  getNarrativeText(spec: NarrativeTextSpec) {
     let text = '';
     if (spec?.headline?.phrases) text += this.getPhrasesText(spec.headline.phrases);
     if (spec?.sections) {
@@ -35,7 +35,7 @@ export class TextExporter extends PluginManager {
     return text;
   }
 
-  getSectionText(spec: NtvTypes.SectionSpec) {
+  getSectionText(spec: SectionSpec) {
     if (isStandardSection(spec)) {
       return spec.paragraphs.reduce((prev, curr) => `${prev}\r\n${this.getParagraphText(curr)}`, '');
     }
@@ -48,7 +48,7 @@ export class TextExporter extends PluginManager {
     return '';
   }
 
-  getParagraphText(spec: NtvTypes.ParagraphSpec) {
+  getParagraphText(spec: ParagraphSpec) {
     if (isHeadingParagraph(spec) || isTextParagraph(spec)) return this.getPhrasesText(spec.phrases);
     if (isBulletParagraph(spec)) {
       const level = 1;
@@ -69,7 +69,7 @@ export class TextExporter extends PluginManager {
     return '';
   }
 
-  getBulletsText(spec: NtvTypes.BulletItemSpec, level = 1): string {
+  getBulletsText(spec: BulletItemSpec, level = 1): string {
     let text = '';
     if (spec?.phrases) {
       text = this.getPhrasesText(spec.phrases);
@@ -90,7 +90,7 @@ export class TextExporter extends PluginManager {
     return text;
   }
 
-  getPhrasesText(spec: NtvTypes.PhraseSpec[]) {
+  getPhrasesText(spec: PhraseSpec[]) {
     return spec.reduce((prev, curr) => {
       let text = curr?.value;
       if (isEntityPhrase(curr) || isCustomPhrase(curr)) {
@@ -108,7 +108,7 @@ export class TextExporter extends PluginManager {
    * @param {NarrativeTextSpec} spec - the narrative text schema you want to export
    * @returns
    */
-  getNarrativeMarkdown(spec: NtvTypes.NarrativeTextSpec) {
+  getNarrativeMarkdown(spec: NarrativeTextSpec) {
     let text = '';
     // if there is a headline, add '# Headline' and a horizontal rule beneath
     if (spec?.headline?.phrases) text += `# ${this.getPhrasesMarkdown(spec.headline.phrases)}\r\n\r\n---`;
@@ -121,7 +121,7 @@ export class TextExporter extends PluginManager {
     return text;
   }
 
-  getSectionMarkdown(spec: NtvTypes.SectionSpec) {
+  getSectionMarkdown(spec: SectionSpec) {
     if (isStandardSection(spec)) {
       return spec.paragraphs.reduce((prev, curr) => `${prev}\r\n${this.getParagraphMarkdown(curr)}`, '');
     }
@@ -137,7 +137,7 @@ export class TextExporter extends PluginManager {
     return '';
   }
 
-  getParagraphMarkdown(spec: NtvTypes.ParagraphSpec) {
+  getParagraphMarkdown(spec: ParagraphSpec) {
     if (isTextParagraph(spec)) return this.getPhrasesMarkdown(spec.phrases);
     if (isHeadingParagraph(spec)) {
       return `${'#'.repeat(getHeadingWeight(spec.type))} ${this.getPhrasesMarkdown(spec.phrases)}`;
@@ -167,7 +167,7 @@ export class TextExporter extends PluginManager {
     return '';
   }
 
-  getBulletsMarkdown(spec: NtvTypes.BulletItemSpec, level = 1): string {
+  getBulletsMarkdown(spec: BulletItemSpec, level = 1): string {
     let text = '';
     if (spec?.phrases) {
       text = this.getPhrasesMarkdown(spec.phrases);
@@ -189,7 +189,7 @@ export class TextExporter extends PluginManager {
   }
 
   // TODO: in getPhrasesMarkdown, support styles defined by entity type and user customization
-  getPhrasesMarkdown(spec: NtvTypes.PhraseSpec[]) {
+  getPhrasesMarkdown(spec: PhraseSpec[]) {
     return spec.reduce((prev, curr) => {
       let text = curr?.value;
       if (isEntityPhrase(curr) || isCustomPhrase(curr)) {

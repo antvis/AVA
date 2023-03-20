@@ -9,13 +9,13 @@ import { getCollapseProps } from '../utils';
 import { classnames as cx } from '../../utils';
 import { presetPluginManager } from '../chore/plugin';
 
-import type { NtvTypes } from '@antv/ava';
+import type { BulletsParagraphSpec } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, ParagraphEvents } from '../types';
 
 type BulletsProps = ThemeStylesProps &
   ExtensionProps &
   ParagraphEvents & {
-    spec: NtvTypes.BulletsParagraphSpec;
+    spec: BulletsParagraphSpec;
   };
 
 // TODO 嵌套列表支持 render 自定义元素？

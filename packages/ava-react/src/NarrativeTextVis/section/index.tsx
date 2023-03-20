@@ -10,7 +10,7 @@ import { classnames as cx } from '../../utils';
 import { Paragraph } from '../paragraph';
 import { Container } from '../styled';
 
-import type { NtvTypes } from '@antv/ava';
+import type { SectionSpec } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, SectionEvents } from '../types';
 
 type SectionProps = ThemeStylesProps &
@@ -20,7 +20,7 @@ type SectionProps = ThemeStylesProps &
      * @description specification of section text spec
      * @description.zh-CN Section 描述 json 信息
      */
-    spec: NtvTypes.SectionSpec;
+    spec: SectionSpec;
   };
 
 export function Section({
