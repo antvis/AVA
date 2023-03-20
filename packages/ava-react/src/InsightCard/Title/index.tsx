@@ -15,7 +15,7 @@ export type TitleProps = Pick<InsightCardProps, 'headerTools' | 'title'> &
 export const Title: React.FC<TitleProps> = ({ title, patterns, measures, headerTools }) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
   const insightTypes = uniq(patterns?.map((pattern) => pattern.type) ?? []);
-  const measureNames = uniq(measures?.map((measure) => measure.field)).join(',');
+  const measureNames = uniq(measures?.map((measure) => measure.fieldName)).join(',');
   const analysisName = insightTypes.map((algorithm) => ALGORITHM_NAME_MAP[algorithm]).join(',') ?? '';
   const defaultTitle = (
     <div>

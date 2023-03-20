@@ -9,7 +9,7 @@ export const G2Chart = ({ spec, height, width }: { spec: G2Spec; height?: number
   const chartRef = React.useRef<Chart>(null);
 
   useEffect(() => {
-    if (containerRef?.current) {
+    if (!chartRef?.current) {
       chartRef.current = new Chart({ container: containerRef?.current, autoFit: true });
       chartRef.current.options({
         width: containerRef.current?.clientWidth,
@@ -18,7 +18,7 @@ export const G2Chart = ({ spec, height, width }: { spec: G2Spec; height?: number
       });
     } else {
       chartRef.current.options({
-        width: containerRef.current?.clientHeight,
+        width: containerRef.current?.clientWidth,
         height: containerRef.current?.clientHeight,
         ...spec,
       });
