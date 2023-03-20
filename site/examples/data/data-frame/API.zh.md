@@ -1,3 +1,3 @@
 # DataFrame
 
-<embed src='@/docs/api/data-wizard/data-frame.zh.md'></embed>
+<embed src='@/docs/api/data/data-frame.zh.md'></embed>
