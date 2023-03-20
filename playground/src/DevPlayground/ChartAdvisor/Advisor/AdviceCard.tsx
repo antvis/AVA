@@ -2,11 +2,11 @@ import React from 'react';
 
 import { List } from 'antd';
 
-import { AdvisorTypes } from '../../../../../packages/ava/lib';
+import { Advice } from '../../../../../packages/ava/lib';
 import { Chart } from '../Chart';
 
 type AdviceProps = {
-  advices: AdvisorTypes.Advice[];
+  advices: Advice[];
 };
 
 export const AdviceCard = ({ advices }: AdviceProps) => {
@@ -20,7 +20,7 @@ export const AdviceCard = ({ advices }: AdviceProps) => {
       }}
       split={false}
       dataSource={advices}
-      renderItem={(item: AdvisorTypes.Advice, index) => {
+      renderItem={(item: Advice, index) => {
         return (
           <List.Item key={index}>
             <div style={{ display: 'flex' }}>

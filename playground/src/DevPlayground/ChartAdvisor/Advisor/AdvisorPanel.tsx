@@ -2,17 +2,17 @@ import React, { useState } from 'react';
 
 import { Table, Button, Divider, Row, Col } from 'antd';
 
-import { AdvisorTypes, Advisor } from '../../../../../packages/ava/lib';
+import { Advice, Advisor } from '../../../../../packages/ava/lib';
 import testData from '../data.json';
 
 import { AdviceCard } from './AdviceCard';
 
 export const AdvisorPanel = () => {
   const myAdvisor = new Advisor();
-  const [advices, setAdvices] = useState<AdvisorTypes.Advice[]>([]);
+  const [advices, setAdvices] = useState<Advice[]>([]);
 
   const getAdvicesFromAdvisor = () => {
-    const myAdvices: AdvisorTypes.Advice[] = myAdvisor.advise({
+    const myAdvices: Advice[] = myAdvisor.advise({
       data: testData,
       fields: ['price', 'type'],
       options: { theme: { primaryColor: '#ff9900' } },

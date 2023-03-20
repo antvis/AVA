@@ -11,7 +11,7 @@ import {
   createCustomPhraseFactory,
   seedToken,
 } from '../../../../packages/ava-react/src';
-import { generateTextSpec, NtvTypes } from '../../../../packages/ava/lib';
+import { generateTextSpec, NarrativeTextSpec } from '../../../../packages/ava/lib';
 
 import fluctuationData from './mock-data';
 
@@ -246,7 +246,7 @@ const fluctuationSpec = generateTextSpec({
   },
 });
 
-const bulletCollapseSpec: NtvTypes.NarrativeTextSpec = {
+const bulletCollapseSpec: NarrativeTextSpec = {
   sections: [
     {
       paragraphs: [
