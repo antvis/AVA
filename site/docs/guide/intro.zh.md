@@ -181,7 +181,7 @@ AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 Rea
 import { NarrativeTextVis } from '@antv/ava-react';
 
 export default () => {
-  // 其中 textSpec 类型为 NtvTypes.NarrativeTextSpec
+  // 其中 textSpec 类型为 NarrativeTextSpec
   return <NarrativeTextVis spec={textSpec} />
 }
 ```

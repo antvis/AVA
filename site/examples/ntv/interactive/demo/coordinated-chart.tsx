@@ -6,7 +6,7 @@ import { NarrativeTextVis } from '@antv/ava-react';
 import { get } from 'lodash';
 import insertCss from 'insert-css';
 
-import type { NtvTypes } from '@antv/ava-react';
+import type { NarrativeTextSpec } from '@antv/ava-react';
 
 insertCss(`
   .hover-g2plot-pie {
@@ -24,7 +24,7 @@ const data = [
   { city: '广州', mau: 600, rc: +0.02 },
 ];
 
-const textSpec: NtvTypes.NarrativeTextSpec = {
+const textSpec: NarrativeTextSpec = {
   sections: [
     {
       paragraphs: [

@@ -9,7 +9,7 @@ order: 1
 
 | Props         | type               | description                | default         |
 | ------------ | ------------------- | -------------------- | --------------- |
-| spec         | `NtvTypes.NarrativeTextSpec`             | data             | -              |
+| spec         | `NarrativeTextSpec`             | data             | -              |
 | size         | 'normal' \| 'small'    | font size, normal is 14px, small is 12px           | 'normal'              |
 | theme         | 'light' \| 'dark'    | theme color, current support light mode and dark mode        | 'light'              |
 | showCollapse         | boolean \| CollapseConfig    |     Paragraph collapsible configuration      | false              |

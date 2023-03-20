@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { Line } from '@antv/g2plot';
 import { NarrativeTextVis, NtvPluginManager, createCustomBlockFactory } from '@antv/ava-react';
 
-import type { NtvTypes } from '@antv/ava-react';
+import type { NarrativeTextSpec } from '@antv/ava-react';
 
 const SALES_BY_AREA = [
   { month: '2020-01', value: 2681567, count: 1 },
@@ -15,7 +15,7 @@ const SALES_BY_AREA = [
   { month: '2020-06', value: 1303124 },
 ];
 
-const textSpec: NtvTypes.NarrativeTextSpec = {
+const textSpec: NarrativeTextSpec = {
   sections: [
     {
       paragraphs: [

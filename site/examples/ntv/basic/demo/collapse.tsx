@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
 import { NarrativeTextVis } from '@antv/ava-react';
 // import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 
-import type { NtvTypes } from '@antv/ava-react';
+import type { NarrativeTextSpec } from '@antv/ava-react';
 
-const spec: NtvTypes.NarrativeTextSpec = {
+const spec: NarrativeTextSpec = {
   sections: [
     {
       paragraphs: [

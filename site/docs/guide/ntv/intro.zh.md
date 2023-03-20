@@ -24,7 +24,7 @@ order: 0
 
 ## 核心能力
 
-1. `NtvTypes.NarrativeTextSpec`（ntv-schema）进行了解读文本的标准化定义；
+1. `NarrativeTextSpec`（ntv-schema）进行了解读文本的标准化定义；
 2. `<NarrativeTextVis />` 组件消费 ntv-schema 并应用文本可视化映射完成解读文本展示；
 
 ## 使用
@@ -35,7 +35,7 @@ order: 0
 
 ```ts
 import { NtvTypes } from '@antv/ava';
-// NtvTypes.NarrativeTextSpec
+// NarrativeTextSpec
 ```
 
 一个 ntv-schema json 数据示例：
@@ -77,7 +77,7 @@ import { NtvTypes } from '@antv/ava';
 ```tsx
 import { NarrativeTextVis, NtvTypes } from "@antv/ava-react";
 
-const textSpec: NtvTypes.NarrativeTextSpec = {
+const textSpec: NarrativeTextSpec = {
   // ...
 };
 
