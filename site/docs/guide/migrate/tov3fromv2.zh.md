@@ -275,6 +275,65 @@ const myAdvisor = new Advisor();
 const problems = myAdvisor.lintWithLog({ spec });
 ```
 
+### data
+
+#### DataFrame
+
+`DataFrame` 直接从 `@antv/ava` 中导出，使用方法未发生变化。
+
+API:
+
+```js
+// v2
+import { DataFrame } from '@antv/data-wizard';
+
+const df = new DataFrame([{ a: 1, b: 4 }, { a: 2, b: 5 }]);
+const infos = df.info();
+
+// v3
+import { DataFrame } from '@antv/ava'
+
+const df = new DataFrame([{ a: 1, b: 4 }, { a: 2, b: 5 }]);
+const infos = df.info();
+```
+
+#### statistics
+`statistics` 中的方法直接从 `@antv/ava` 中分别导出，不再提供 `statistics` namespace。
+
+```js
+// v2
+import { statistics as stats } from '@antv/data';
+
+/** 计算最小值 */
+stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
+// 1
+
+/** 计算方差 */
+stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
+// 106372.359375
+
+/** 计算皮尔逊系数 */
+stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
+// 0.8863724626851197
+
+// v3
+import { min, variance, pearson } from '@antv/data';
+
+/** 计算最小值 */
+min([1, 2, 3, 201, 999, 4, 5, 10]);
+// 1
+
+/** 计算方差 */
+variance([1, 2, 3, 201, 999, 4, 5, 10]);
+// 106372.359375
+
+/** 计算皮尔逊系数 */
+pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
+// 0.8863724626851197
+```
+
+#### random
+`random` 模块已废弃。
 
 ### insight
 
