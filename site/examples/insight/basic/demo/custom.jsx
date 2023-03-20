@@ -24,13 +24,13 @@ const App = () => {
             // 自定义指标字段
             // custom measures
             measures: [
-              { field: 'life_expect', method: 'MEAN' },
-              { field: 'pop', method: 'SUM' },
-              { field: 'fertility', method: 'MEAN' },
+              { fieldName: 'life_expect', method: 'MEAN' },
+              { fieldName: 'pop', method: 'SUM' },
+              { fieldName: 'fertility', method: 'MEAN' },
             ],
             // 自定义维度字段
             // custom dimensions
-            dimensions: ['country', 'year'],
+            dimensions: [{ fieldName: 'country' }, { fieldName: 'year' }],
           });
           setResult(insightResult);
           setLoading(false);

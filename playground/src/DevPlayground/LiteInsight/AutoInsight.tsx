@@ -70,8 +70,7 @@ const datasetConfigs = {
   anomaly: {
     limit: 60,
     dimensions: [{ fieldName: 'date' }],
-    measures: [{ fieldName: 'discountPrice', method: 'SUM' }],
-    impactMeasures: [{ fieldName: 'discountPrice', method: 'COUNT' }],
+    measures: [{ fieldName: 'discount_price', method: 'SUM' }],
     visualization: true,
   },
 };
@@ -91,82 +90,82 @@ export default function App() {
         {
           date: '2019-08-12',
           price: 967.95,
-          discountPrice: 781.99,
+          discount_price: 781.99,
         },
         {
           date: '2019-08-13',
           price: 911.22,
-          discountPrice: 835.71,
+          discount_price: 835.71,
         },
         {
           date: '2019-08-14',
           price: 738.11,
-          discountPrice: 839.24,
+          discount_price: 839.24,
         },
         {
           date: '2019-08-15',
           price: 784.52,
-          discountPrice: 883.51,
+          discount_price: 883.51,
         },
         {
           date: '2019-08-16',
           price: 983.89,
-          discountPrice: 873.98,
+          discount_price: 873.98,
         },
         {
           date: '2019-08-17',
           price: 912.87,
-          discountPrice: 802.78,
+          discount_price: 802.78,
         },
         {
           date: '2019-08-18',
           price: 1153.12,
-          discountPrice: 807.05,
+          discount_price: 807.05,
         },
         {
           date: '2019-08-19',
           price: 1012.87,
-          discountPrice: 885.12,
+          discount_price: 885.12,
         },
         {
           date: '2019-08-20',
           price: 1118.88,
-          discountPrice: 1018.85,
+          discount_price: 1018.85,
         },
         {
           date: '2019-08-21',
           price: 1054.53,
-          discountPrice: 934.49,
+          discount_price: 934.49,
         },
         {
           date: '2019-08-22',
           price: 1234.53,
-          discountPrice: 908.74,
+          discount_price: 908.74,
         },
         {
           date: '2019-08-23',
           price: 1312.34,
-          discountPrice: 930.55,
+          discount_price: 930.55,
         },
         {
           date: '2019-08-24',
           price: 825.53,
-          discountPrice: 978.53,
+          discount_price: 978.53,
         },
         {
           date: '2019-08-25',
           price: 1054.53,
-          discountPrice: 931.47,
+          discount_price: 931.47,
         },
         {
           date: '2019-08-26',
           price: 1119.53,
-          discountPrice: 891,
+          discount_price: 891,
         },
         {
           date: '2019-08-27',
           price: 1257.68,
-          discountPrice: 836.41,
+          discount_price: 836.41,
         },
       ];
     } else {
@@ -245,7 +244,7 @@ export default function App() {
                 return (
                   <div key={visKey}>
                     <Tag>{patternType}</Tag>
-                    {visSpec.narrativeSpec && (
+                    {narrativeSpec && (
                       <NarrativeTextVis
                         spec={{
                           sections: [{ paragraphs: narrativeSpec }],
