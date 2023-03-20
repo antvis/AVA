@@ -46,11 +46,11 @@ export default class TimeSeriesOutlierNarrativeStrategy extends InsightNarrative
     'zh-CN': [
       {
         template:
-          '${dateRange}，${measure}波动范围为最大值 ${max}, 最小值 ${min}，有 ${total} 个异常点，按超过基线大小排序如下：',
+          '${dateRange}，${measure} 波动范围为最大值 ${max}, 最小值 ${min}，有 ${total} 个异常点，按超过基线大小排序如下：',
         variableMetaMap,
       },
       {
-        template: '${.x}，${measure} 为 ${.y}, 相比基线值（${.base}）${.diffDesc} ${.diff}。',
+        template: '${.x}，${measure} 为 ${.y}, 相比基线（${.base}）${.diffDesc} ${.diff}。',
         displayType: 'bullet',
         bulletOrder: true,
         useVariable: 'outliers',

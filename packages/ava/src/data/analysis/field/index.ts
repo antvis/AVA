@@ -25,7 +25,7 @@ import {
   unique,
 } from '../../utils';
 
-import type { CkbTypes } from '../../../ckb';
+import type { LevelOfMeasurement } from '../../../ckb';
 import type { DateFieldInfo, FieldInfo, FieldMeta, NumberFieldInfo, StringFieldInfo, FieldType } from './types';
 
 /**
@@ -331,7 +331,7 @@ export function analyzeField(value: unknown[]): StringFieldInfo | NumberFieldInf
     Object.assign(fieldInfo, analyzeDate(nonNullArray as (string | Date)[], fieldInfo.type === 'integer'));
   }
 
-  const levelOfMeasurements: CkbTypes.LevelOfMeasurement[] = [];
+  const levelOfMeasurements: LevelOfMeasurement[] = [];
 
   if (isNominal(fieldInfo)) levelOfMeasurements.push('Nominal');
   if (isOrdinal(fieldInfo)) levelOfMeasurements.push('Ordinal');

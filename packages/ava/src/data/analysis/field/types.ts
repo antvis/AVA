@@ -1,4 +1,4 @@
-import { CkbTypes } from '../../../ckb';
+import type { LevelOfMeasurement } from '../../../ckb';
 
 /**
  * Field Type
@@ -40,7 +40,7 @@ export type FieldInfo = {
   /** more info */
   meta?: FieldMeta;
   /** level of measurements */
-  levelOfMeasurements?: CkbTypes.LevelOfMeasurement[];
+  levelOfMeasurements?: LevelOfMeasurement[];
 };
 
 /**

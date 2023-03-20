@@ -3,7 +3,7 @@ import { pearson, isParentChild } from '../../data';
 import { compare, hasSubset, intersects } from '../utils';
 
 import type { Data } from '../../common/types';
-import type { CkbTypes } from '../../ckb';
+import type { ChartKnowledge } from '../../ckb';
 import type { Advice } from '../types';
 import type { BasicDataPropertyForAdvice } from '../ruler';
 
@@ -500,7 +500,7 @@ export function getChartTypeSpec(
   chartType: string,
   data: Data,
   dataProps: BasicDataPropertyForAdvice[],
-  chartKnowledge?: CkbTypes.ChartKnowledge
+  chartKnowledge?: ChartKnowledge
 ) {
   // step 0: check whether the chartType is default in `ChartID`
   // if not, use customized `toSpec` function

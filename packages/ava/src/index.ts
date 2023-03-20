@@ -1,6 +1,6 @@
 /* advisor */
 export { Advisor } from './advisor';
-export type { AdvisorTypes } from './advisor';
+export * from './advisor/types';
 
 /* CKB */
 export {
@@ -16,15 +16,16 @@ export {
   RECOMMEND_RATINGS,
   SHAPES,
 } from './ckb';
-export type { CkbTypes } from './ckb';
+export * from './ckb/types';
 
 /* data */
-export { analyzeField, Series, DataFrame } from './data';
-export type { DataTypes } from './data';
+export * from './data/analysis';
+export * from './data/dataset';
+export * from './data/statistics';
+export * from './data/types';
 
 /* insight */
-export { getInsights } from './insight';
-export type { InsightTypes } from './insight';
+export * from './insight';
 
 /* NTV (Narrative Text Vis) */
 export {
@@ -42,4 +43,4 @@ export {
   isEntityType,
   ENTITY_TYPES,
 } from './ntv';
-export type { NtvTypes } from './ntv';
+export * from './ntv/types';

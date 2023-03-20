@@ -6,7 +6,8 @@ import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo } from '../data/ty
 
 export type Datum = Record<string, string | number>;
 
-export type DataType = 'Nominal' | 'Ordinal' | 'Interval' | 'Discrete' | 'Continuous' | 'Time';
+// Multiple exports of name 'DataType'
+// export type DataType = 'Nominal' | 'Ordinal' | 'Interval' | 'Discrete' | 'Continuous' | 'Time';
 
 export type DomainType = 'measure' | 'dimension';
 

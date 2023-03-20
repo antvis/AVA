@@ -3,7 +3,7 @@ import { DataFrame } from '../../data';
 import { getChartType } from './getChartType';
 import { lintRules } from './lintRules';
 
-import type { CkbTypes } from '../../ckb';
+import type { ChartKnowledgeBase } from '../../ckb';
 import type { LintResult, ScoringResultForRule, LintParams, Lint } from '../types';
 import type { BasicDataPropertyForAdvice, RuleModule } from '../ruler';
 import type { Datum } from '../../common/types';
@@ -11,7 +11,7 @@ import type { Datum } from '../../common/types';
 export function checkRules(
   params: LintParams,
   ruleBase: Record<string, RuleModule>,
-  ckb: CkbTypes.ChartKnowledgeBase
+  ckb: ChartKnowledgeBase
 ): LintResult {
   const { spec, options } = params;
   let { dataProps } = params;

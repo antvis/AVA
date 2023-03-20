@@ -3,7 +3,7 @@ import { Info, RuleModule } from '../ruler';
 import type { Specification } from '../../common/types';
 import type { ScoringResultForRule, Lint } from '../types';
 import type { ChartRuleModule, DesignRuleModule } from '../ruler';
-import type { CkbTypes } from '../../ckb';
+import type { ChartKnowledgeBase } from '../../ckb';
 
 export function lintRules(
   ruleBase: Record<string, RuleModule>,
@@ -11,7 +11,7 @@ export function lintRules(
   info: Info,
   log: ScoringResultForRule[],
   lints: Lint[],
-  ckb: CkbTypes.ChartKnowledgeBase,
+  ckb: ChartKnowledgeBase,
   spec?: Specification
 ) {
   const judge = (type: 'HARD' | 'SOFT' | 'DESIGN') => {

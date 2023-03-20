@@ -12,5 +12,4 @@ export { ckbDict } from './i18n';
 // CKB constants
 export * from './constants';
 // CKB types
-export * as CkbTypes from './types';
-export type { CkbConfig } from './ckb';
+export * from './types';

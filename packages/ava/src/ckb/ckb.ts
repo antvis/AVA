@@ -1,6 +1,6 @@
 import { base } from './base';
 
-import type { PureChartKnowledgeBase, ChartKnowledgeBase } from './types';
+import type { PureChartKnowledgeBase, ChartKnowledgeBase, CkbConfig } from './types';
 
 /**
  * A cheap way to get a copy of base.
@@ -8,20 +8,6 @@ import type { PureChartKnowledgeBase, ChartKnowledgeBase } from './types';
 function newBase(): PureChartKnowledgeBase {
   return JSON.parse(JSON.stringify(base));
 }
-
-/**
- * Configuration to pick, omit and customize CKB.
- * Priority: exclude > include, + custom.
- *
- * 用来摘选、剔除和自定义 CKB 的配置。
- * 优先级逻辑是：先从原装 CKB 中剔除`exclude`的部分，然后在剩余的图表类型中摘选出`include`的部分，
- * 最后额外加上自定义的图表类型。
- */
-export type CkbConfig = {
-  exclude?: string[];
-  include?: string[];
-  custom?: ChartKnowledgeBase;
-};
 
 /**
  * Process ckb config to given CKB object.

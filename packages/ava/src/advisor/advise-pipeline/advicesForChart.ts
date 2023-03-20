@@ -3,7 +3,7 @@ import { cloneDeep } from '../utils';
 
 import { dataToAdvices } from './data-to-advices';
 
-import type { CkbTypes } from '../../ckb';
+import type { ChartKnowledgeBase } from '../../ckb';
 import type { Data } from '../../common/types';
 import type { AdviseResult, ChartAdviseParams } from '../types';
 import type { BasicDataPropertyForAdvice, RuleModule } from '../ruler';
@@ -49,7 +49,7 @@ export function assembleDataProps(
 
 export function advicesForChart(
   params: ChartAdviseParams,
-  ckb: CkbTypes.ChartKnowledgeBase,
+  ckb: ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>
 ): AdviseResult {
   const { data, dataProps, smartColor, options, colorOptions, fields } = params;
