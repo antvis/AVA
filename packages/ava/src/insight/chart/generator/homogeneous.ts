@@ -1,6 +1,5 @@
 import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, VisualizationSpec } from '../../types';
 import { INSIGHT_COLOR_PLATTE } from '../constants';
-import { transparent } from '../strategy';
 
 export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPatternInfo) {
   const annotations: any[] = [];
@@ -73,12 +72,10 @@ export function generateHomogeneousInsightChartSpec(
     };
   }
 
-  const style = transparent(pattern);
   const annotationConfig = generateHomogeneousInsightAugmentedMarks(pattern);
 
   const chartSchema = {
     ...plotSchema,
-    ...style,
     annotations: annotationConfig,
   };
 

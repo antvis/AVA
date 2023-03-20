@@ -4,7 +4,8 @@ import { LowVarianceInfo, InsightInfo } from '../../../types';
 import { lineMarkStrategy } from '../commonMarks';
 import { insight2ChartStrategy } from '../chart';
 
-export const lowVarianceAugmentedMarkStrategy = (patterns: LowVarianceInfo[]): Mark[] => {
+export const lowVarianceAugmentedMarkStrategy = (insight: InsightInfo<LowVarianceInfo>): Mark[] => {
+  const { patterns } = insight;
   const marks = [];
   patterns.forEach((pattern) => {
     const { mean } = pattern;
@@ -14,8 +15,8 @@ export const lowVarianceAugmentedMarkStrategy = (patterns: LowVarianceInfo[]): M
   return marks;
 };
 
-export const lowVarianceStrategy = (insight: InsightInfo<LowVarianceInfo>, patterns: LowVarianceInfo[]): Mark[] => {
+export const lowVarianceStrategy = (insight: InsightInfo<LowVarianceInfo>): Mark[] => {
   const chartMark = insight2ChartStrategy(insight);
-  const augmentedMarks = lowVarianceAugmentedMarkStrategy(patterns);
+  const augmentedMarks = lowVarianceAugmentedMarkStrategy(insight);
   return [chartMark, ...augmentedMarks];
 };

@@ -7,15 +7,29 @@ import { pointMarkStrategy } from '../commonMarks/pointMark';
 import { textMarkStrategy } from '../commonMarks/textMark';
 import { insight2ChartStrategy } from '../chart';
 
-export const changePointAugmentedMarksStrategy = (patterns: ChangePointInfo[]): Mark[] => {
+export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePointInfo>): Mark[] => {
+  const { patterns } = insight;
   const color = INSIGHT_COLOR_PLATTE.highlight;
-  const pointMark = pointMarkStrategy(patterns, { style: { strokeColor: color } });
-  const textMark = textMarkStrategy(patterns, { formatter: dataFormat });
+  const { dimension, measure } = patterns?.[0];
+  const pointMark = pointMarkStrategy(patterns, { style: { fill: color } });
+  const textMark = textMarkStrategy(patterns, {
+    formatter: dataFormat,
+    label: (d) => `${d[dimension]}, ${measure}: ${d[measure]}`,
+    style: {
+      dy: -20,
+      background: true,
+      backgroundRadius: 2,
+      connector: true,
+      startMarker: true,
+      startMarkerFill: '#2C3542',
+      startMarkerFillOpacity: 0.65,
+    },
+  });
   return [pointMark, textMark];
 };
 
-export const changePointStrategy = (insight: InsightInfo<ChangePointInfo>, patterns: ChangePointInfo[]): Mark[] => {
+export const changePointStrategy = (insight: InsightInfo<ChangePointInfo>): Mark[] => {
   const chart = insight2ChartStrategy(insight);
-  const augmentedMarks = changePointAugmentedMarksStrategy(patterns);
+  const augmentedMarks = changePointAugmentedMarksStrategy(insight);
   return [chart, ...augmentedMarks];
 };

@@ -13,7 +13,9 @@ import { generateInsightChartSpec } from '../chart';
 
 export const generateInsightVisualizationSpec = (
   insight: InsightInfo<PatternInfo>,
-  visualizationOptions: VisualizationOptions
+  visualizationOptions: VisualizationOptions = {
+    lang: 'en-US',
+  }
 ): VisualizationSpec[] => {
   const { patterns } = insight;
   const specs: VisualizationSpec[] = [];
@@ -21,7 +23,7 @@ export const generateInsightVisualizationSpec = (
   const patternGroups = groupBy(patterns, (pattern) => pattern.type);
 
   Object.entries(patternGroups).forEach(([patternType, patternGroup]: [string, PatternInfo[]]) => {
-    const chartSpec = generateInsightChartSpec(insight, patternGroup);
+    const chartSpec = generateInsightChartSpec({ ...insight, patterns: patternGroup });
     specs.push({
       patternType: patternType as InsightType,
       chartSpec,
@@ -33,7 +35,9 @@ export const generateInsightVisualizationSpec = (
 
 export const generateHomogeneousInsightVisualizationSpec = (
   insight: InsightInfo<HomogeneousPatternInfo>,
-  visualizationOptions: VisualizationOptions
+  visualizationOptions: VisualizationOptions = {
+    lang: 'en-US',
+  }
 ): VisualizationSpec[] => {
   const { patterns } = insight;
   const schemas: VisualizationSpec[] = [];

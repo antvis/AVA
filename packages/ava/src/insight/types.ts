@@ -89,7 +89,7 @@ export interface InsightInfo<T = PatternInfo> {
   subspace: Subspace;
   dimensions: Dimension[];
   measures: Measure[];
-  score: number;
+  score?: number;
   data: Datum[];
   patterns: T[];
   visualizationSpecs?: VisualizationSpec[];
