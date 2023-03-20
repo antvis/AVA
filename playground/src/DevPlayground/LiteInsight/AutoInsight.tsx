@@ -151,7 +151,7 @@ export default function App() {
             {insights.map((insightInfo, index) => {
               const insightCardProps = {
                 insightInfo,
-                customContentSpecGenerator: () => {
+                customContentSpec: () => {
                   return customInsightCardContentSpec;
                 },
               };

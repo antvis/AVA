@@ -29,8 +29,8 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   onCardExpose,
   onChange,
   onCopy,
-  insightGenerateOptions,
-  customContentSpecGenerator,
+  autoInsightOptions,
+  customContentSpec,
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
   const { measures = [], dimensions = [] } = defaultInsightInfo;
@@ -42,14 +42,14 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   const ref = useRef<HTMLDivElement>(null);
 
   const calculateAndSetInsightPatterns = () => {
-    const { allData } = insightGenerateOptions;
+    const { allData } = autoInsightOptions;
     setDataStatus('RUNNING');
     try {
       const { insights } = getInsights(allData, {
         measures,
         dimensions,
         // todo 待 getInsights 支持传入 subspace 后增加传入 subspace
-        ...insightGenerateOptions,
+        ...autoInsightOptions,
       });
       setCurrentInsightInfo(insights[0]);
     } catch (err) {
@@ -64,17 +64,18 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       setCurrentInsightInfo(defaultInsightInfo);
       return;
     }
-    // if patterns and visualizationSpecs are empty, use insightGenerateOptions to generate insight patterns
-    if (insightGenerateOptions) {
+    // if patterns and visualizationSpecs are empty, use autoInsightOptions to generate insight patterns
+    if (autoInsightOptions) {
       calculateAndSetInsightPatterns();
     }
-  }, [defaultInsightInfo, insightGenerateOptions]);
+  }, [defaultInsightInfo, autoInsightOptions]);
 
   const contentSpec = useMemo(() => {
     const defaultSpec = generateNarrativeVisSpec(currentInsightInfo);
-    return isFunction(customContentSpecGenerator)
-      ? customContentSpecGenerator?.(currentInsightInfo, defaultSpec)
-      : defaultSpec;
+    const customSpec = isFunction(customContentSpec)
+      ? customContentSpec?.(currentInsightInfo, defaultSpec)
+      : customContentSpec;
+    return customSpec ?? defaultSpec;
   }, [currentInsightInfo]);
 
   useEffect(() => {
