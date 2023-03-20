@@ -302,7 +302,7 @@ const infos = df.info();
 
 ```js
 // v2
-import { statistics as stats } from '@antv/data';
+import { statistics as stats } from '@antv/ava';
 
 /** 计算最小值 */
 stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
@@ -317,7 +317,7 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 // 0.8863724626851197
 
 // v3
-import { min, variance, pearson } from '@antv/data';
+import { min, variance, pearson } from '@antv/ava';
 
 /** 计算最小值 */
 min([1, 2, 3, 201, 999, 4, 5, 10]);

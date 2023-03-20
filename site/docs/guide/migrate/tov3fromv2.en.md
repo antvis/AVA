@@ -291,7 +291,7 @@ The methods in `statistics` are directly exported from `@antv/ava`, and the name
 
 ```js
 // v2
-import { statistics as stats } from '@antv/data';
+import { statistics as stats } from '@antv/ava';
 
 /** Calculate minimum */
 stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
@@ -306,7 +306,7 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 // 0.8863724626851197
 
 // v3
-import { min, variance, pearson } from '@antv/data';
+import { min, variance, pearson } from '@antv/ava';
 
 /** Calculate minimum */
 min([1, 2, 3, 201, 999, 4, 5, 10]);

@@ -54,12 +54,6 @@ With AVA/CKB, you can quickly build your chart dictionary product like this: <im
 
 You can easily build a chart type recommendation system with this knowledge base and your customized rules.
 
-## 📦 Installation
-
-```bash
-$ npm install @antv/ava
-```
-
 ## 🔨 Usage
 
 ```js

@@ -6,7 +6,7 @@ order: 0
 <embed src='@/docs/common/style.md'></embed>
 
 
-A JavaScript library for automatically discovering interesting patterns from multi-dimensional data.
+A module for automatically discovering interesting patterns from multi-dimensional data.
 
 </div>
 
@@ -19,12 +19,6 @@ A JavaScript library for automatically discovering interesting patterns from mul
 The pipeline of Auto-Insights:
 
 <img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*mmGnTLk5JUsAAAAAAAAAAAAADmJ7AQ/original' alt='LiteInsight pipeline' width=100%/>
-
-## 📦 Installation
-
-```bash
-$ npm install @antv/ava
-```
 
 ## 🔨 Usage
 

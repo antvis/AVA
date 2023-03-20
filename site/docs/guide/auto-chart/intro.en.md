@@ -16,13 +16,6 @@ It combines the major capabilities of `ChartAdvisor`, the core chart recommendat
 AutoChart can be used to automatically generate and render appropriate charts based on the given data and analysis requirements.
 The core purpose of AutoChart is to provide users with the ability to automatically illustrate proper chart of data with a single line of code.
 
-
-## 📦 Installation
-
-```bash
-$ npm install @antv/auto-chart
-```
-
 ## 🔨 Usage
 
 

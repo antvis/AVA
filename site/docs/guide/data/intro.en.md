@@ -1,26 +1,20 @@
 ---
-title: Introduction to DataWizard
+title: Introduction to data
 order: 0
 ---
 
 <embed src='@/docs/common/style.md'></embed>
 
 
-DataWizard is a js/ts library for data processing. In the AVA framework, it is used to understand and process the input dataset. Moreover, it can also be used independently to develop some data processing, statistics or data mocking functions.
-
-<div align="center">
-<img src='https://gw.alipayobjects.com/zos/antfincdn/kP9ZgcHVyn/DataWizard%252520Framework.png' width="320" alt='DataWizard framework' />
-</div>
+`data` is a module for data processing. In the AVA framework, it is used to understand and process the input dataset.
 
 ## ✨ Features
 
 ### Data Processing
 
-DataWizard can help you extract information of fields from a dataset sample by its `DataFrame` module. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
+`data` can help you extract information of fields from a dataset sample by its `DataFrame` module. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
-For relational data (network data), DW processes and analyzes it through the `GraphData` module, which supports reading nodes-links data, links arrays, and hierarchical data. Using `GraphData`, you can parse arrays, graph data and hierarchical data, and extract common-used structural and statistical features. Also, the nodes and edges can be converted to `DataFrame`, and its API to analyze the statistics of each node field and link field.
-
-In short, `DataFrame` and `GraphData` can help you understand and process a dataset. This is the premise of data analysis and Automatic chart recommendation.
+In short, `DataFrame` can help you understand and process a dataset. This is the premise of data analysis and Automatic chart recommendation.
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/4qbDDKfhu2/DataFrame.gif" width="600" alt="DataFrame demo" />
@@ -28,32 +22,18 @@ In short, `DataFrame` and `GraphData` can help you understand and process a data
 
 ### Statistical Methods
 
-The `statistics` module of DataWizard provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` and `GraphData` is also based on `statistics`.
+The `statistics` module of `data` provides common statistical methods, including computing minimum, maximum, variance, Pearson correlation coefficient, etc. The statistical information extracting of `DataFrame` is also based on `statistics`.
 
 <div align="center">
 <img src="https://gw.alipayobjects.com/zos/antfincdn/WLciSdHENb/statistics.gif" width="600" alt="statistics demo" />
 </div>
-
-### Data Mocking
-
-The `random` module of DataWizard provides you comprehensive data mocking options. Data types include basic data, text data, datetime data, color data, Web data, location data, Chinese data address, etc.. You can use it to quickly develop some data generating or auto-filling functions. For example, the auto-fill function in the desgin engineering plugin <img src="https://gw.alipayobjects.com/zos/rmsportal/LFooOLwmxGLsltmUjTAP.svg" width="18"> [Kitchen](https://kitchen.alipay.com/).
-
-<div align="center">
-<img src="https://gw.alipayobjects.com/zos/antfincdn/VopHAgkeMZ/random.gif" width="600" alt="random demo" />
-</div>
-
-## 📦 Installation
-
-```bash
-$ npm install @antv/data-wizard
-```
 
 ## 🔨 Usage
 
 ### DataFrame
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 /* Basic usage */
 const df = new DataFrame([
@@ -161,7 +141,7 @@ df.info();
 ### statistics
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 /** Calculate minimum */
 stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
@@ -176,50 +156,10 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 // 0.8863724626851197
 ```
 
-
-### random
-
-```ts
-import { random } from '@antv/data-wizard';
-
-const r = new random();
-
-/** Mock boolean */
-r.boolean();
-// true
-
-/** Mock phone number */
-r.phone({asterisk: true});
-// '182****8595'
-
-/** Mock datatime */
-r.datetime();
-// '2019-01-23T09:54:06+08:00'
-
-/** Mock color */
-r.rgb();
-// 'rgb(202,80,38)'
-
-/** Mock URL */
-r.url();
-// 'http://alo.tg/vivso'
-
-/** Mock coordinates */
-r.coordinates();
-// '95.7034666, 80.9377218'
-
-/** Mock Chinese address */
-r.address();
-// '广东省惠州市龙门县黄河胡同378号'
-```
-
 ## 📖 Documentation
 
 For more usages, please check the API reference.
 
-* [DataFrame](../../api/data-wizard/data-frame)
-* [GraphData](../../api/data-wizard/graph-data)
-* [statistics](../../api/data-wizard/statistics)
-* [random](../../api/data-wizard/random)
-
+* [DataFrame](../../api/data/data-frame)
+* [statistics](../../api/data/statistics)
 

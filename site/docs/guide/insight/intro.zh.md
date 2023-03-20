@@ -21,12 +21,6 @@ order: 0
 
 <img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*es5sSYS6XIUAAAAAAAAAAAAADmJ7AQ/original' alt='LiteInsight pipeline' width=100%/>
 
-## 📦 安装
-
-```bash
-$ npm install @antv/ava
-```
-
 ## 🔨 使用
 
 

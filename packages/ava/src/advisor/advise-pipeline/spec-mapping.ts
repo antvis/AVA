@@ -492,7 +492,7 @@ function heatmap(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['s
  *
  * @param chartType chart type
  * @param data input data [ { col1: ..., col2: ... } ]
- * @param dataProps data property for advisor derived by data-wizard
+ * @param dataProps data property for advisor derived by data
  * @param chartKnowledge chart knowledge of a singble chart
  * @returns spec or null
  */

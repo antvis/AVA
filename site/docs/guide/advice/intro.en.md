@@ -18,12 +18,6 @@ Advisor class contains several tool functions including `Advise()` , `adviseWith
 
 * **lintWithLog()**: is corresponding to `Lint()` function，which is used to getting the optimizing log to explain the logic.
 
-## 📦 Installation
-
-```bash
-$ npm install @antv/ava
-```
-
 ## 🔨 Usage
 
 ### Advise() Usage

@@ -15,13 +15,6 @@ AutoChart 中透出了 `AutoChart` 组件供用户使用。
 AutoChart 可以到做到基于给定数据和分析需求来自动生成并渲染合适的图表，
 我们推出 AutoChart 的核心目的就是为用户提供一行代码实现智能可视化的能力。
 
-
-## 📦 安装
-
-```bash
-$ npm install @antv/auto-chart
-```
-
 ## 🔨 使用
 
 

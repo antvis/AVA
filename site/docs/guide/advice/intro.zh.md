@@ -20,12 +20,6 @@ order: 0
 
 * **lintWithLog()**: 与 `Lint()` 方法对应，用于获取图表优化的 log 记录，以解释 图表优化结果 的获取逻辑。
 
-## 📦 安装
-
-```bash
-$ npm install @antv/ava
-```
-
 ## 🔨 使用
 声明 Advisor 对象后， 可以独立分别调用 `Advise()` 和 `Lint()` 两个方法，也可以搭配使用。
 

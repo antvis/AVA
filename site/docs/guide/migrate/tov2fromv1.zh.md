@@ -17,7 +17,7 @@ AVA 作为一套智能可视化解决方案，在 v1 版本中发布了以下相
 ### 变更包
 
 * `@antv/knowledge` 更名为 `@antv/ckb`，基本使用不变；
-* `@antv/dw-*` 系列（包括 `@antv/dw-analyzer`、`@antv/dw-random`、`@antv/dw-util`、`@antv/dw-transform`）统一为 `@antv/data-wizard`，api 也有升级，详情见下方 api 变更内容；
+* `@antv/dw-*` 系列（包括 `@antv/dw-analyzer`、`@antv/dw-random`、`@antv/dw-util`、`@antv/dw-transform`）统一为 `@antv/data`，api 也有升级，详情见下方 api 变更内容；
 
 ### 废弃包
 
@@ -58,13 +58,13 @@ options 对应一览：
 
 #### `@antv/dw-*`
 
-`@antv/dw-*` 系列的所有 `DataWizard` 相关包，整合为 `@antv/data-wizard`，可直接从统一包中获取所需方法，变更概述如下：
+`@antv/dw-*` 系列的所有 `DataWizard` 相关包，整合为 `@antv/data`，可直接从统一包中获取所需方法，变更概述如下：
 
-* `@antv/dw-analyzer` 变更为 `import { analyzer } from '@antv/data-wizard`，并新增 `import { DataFrame } from '@antv/data-wizard` 用于数据操作。
-* `@antv/dw-random` 变更为 `import { random } from '@antv/data-wizard`。
-* `@antv/dw-util` 变更为 `import { utils } from '@antv/data-wizard`。
+* `@antv/dw-analyzer` 变更为 `import { analyzer } from '@antv/data`，并新增 `import { DataFrame } from '@antv/data` 用于数据操作。
+* `@antv/dw-random` 变更为 `import { random } from '@antv/data`。
+* `@antv/dw-util` 变更为 `import { utils } from '@antv/data`。
 * `@antv/dw-transform` 废弃，相关方法将融入 `DataFrame` 和 `utils`。
-* 新增 `statistics` 方法，引用方式为 `import { statistics } from '@antv/data-wizard`。
+* 新增 `statistics` 方法，引用方式为 `import { statistics } from '@antv/data`。
 
 引用方式举例：
 
@@ -75,20 +75,20 @@ const a = [1, 2, 3];
 const info = type(a);
 
 // After
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 const df = new DataFrame([1, 2, 3]);
 const info = df.info();
 // or
-import { analyzeField } from '@antv/data-wizard';
+import { analyzeField } from '@antv/ava';
 const a = [1, 2, 3];
 const info = analyzeField(a);
 ```
 
 详情使用方式可查看
 
-* [DataFrame](../api/data-wizard/data-frame)
-* [statistics](../api/data-wizard/statistics)
-* [random](../api/data-wizard/random)
+* [DataFrame](../api/data/data-frame)
+* [statistics](../api/data/statistics)
+* [random](../api/data/random)
 
 ### 新增包
 
