@@ -1,7 +1,7 @@
-import type { NtvTypes, NtvPluginType } from '../NarrativeTextVis';
+import type { NtvPluginType } from '../NarrativeTextVis';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Tool } from './Toolbar/types';
-import type { InsightInfo, InsightOptions } from '@antv/ava';
+import type { InsightInfo, InsightOptions, NarrativeTextSpec } from '@antv/ava';
 
 export type CardType = 'mini' | 'standard' | 'expand' | 'detail';
 
@@ -29,7 +29,7 @@ export type InsightCardEventHandlers = {
   /** events emitted when the card expose */
   onCardExpose?: (insightInfo?: InsightCardInfo, dom?: HTMLElement) => void;
   /** events emitted when insight data change */
-  onChange?: (insightInfo?: InsightCardInfo, contentSpec?: NtvTypes.NarrativeTextSpec) => void;
+  onChange?: (insightInfo?: InsightCardInfo, contentSpec?: NarrativeTextSpec) => void;
 };
 
 export type InsightCardProps = CommonProps &
@@ -48,8 +48,8 @@ export type InsightCardProps = CommonProps &
     };
     /** function for customizing content */
     customContentSpec?:
-      | NtvTypes.NarrativeTextSpec
-      | ((insightInfo?: InsightCardInfo, defaultSpec?: NtvTypes.NarrativeTextSpec) => NtvTypes.NarrativeTextSpec);
+      | NarrativeTextSpec
+      | ((insightInfo?: InsightCardInfo, defaultSpec?: NarrativeTextSpec) => NarrativeTextSpec);
     /** custom plugins, should pass if your customized schema includes special plugins ntv schema 中，自己定制的 plugins */
     extraPlugins?: NtvPluginType[];
   };
