@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
-import { Empty, Row, Spin } from 'antd';
+import { Empty, notification, Row, Spin } from 'antd';
 import cx from 'classnames';
 import { isFunction } from 'lodash';
 import { getInsights } from '@antv/ava';
 
 import { copyToClipboard, NarrativeTextVis, NtvPluginManager, TextExporter } from '../NarrativeTextVis';
 
-import { generateNarrativeVisSpec } from './utils/specGenerator';
+import { generateContentVisSpec } from './utils/specGenerator';
 import { Title } from './Title';
 import { Toolbar } from './Toolbar';
 import { insightCardPresetPlugins } from './ntvPlugins';
@@ -60,7 +60,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   useEffect(() => {
     // if patterns or visualizationSpecs is not empty, do not need generate insight patterns
-    if (defaultInsightInfo.patterns || defaultInsightInfo.visualizationSpecs) {
+    if (defaultInsightInfo.patterns) {
       setCurrentInsightInfo(defaultInsightInfo);
       return;
     }
@@ -71,7 +71,10 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   }, [defaultInsightInfo, autoInsightOptions]);
 
   const contentSpec = useMemo(() => {
-    const defaultSpec = generateNarrativeVisSpec(currentInsightInfo);
+    if (!currentInsightInfo)
+      return isFunction(customContentSpec) ? customContentSpec?.(currentInsightInfo) : customContentSpec;
+
+    const defaultSpec = generateContentVisSpec(currentInsightInfo, autoInsightOptions?.visualizationOptions);
     const customSpec = isFunction(customContentSpec)
       ? customContentSpec?.(currentInsightInfo, defaultSpec)
       : customContentSpec;
@@ -91,7 +94,9 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       const textExporter = new TextExporter([...insightCardPresetPlugins, ...extraPlugins]);
       const html = await textExporter.getNarrativeHtml(ref.current);
       const plainText = contentSpec ? textExporter.getNarrativeText(contentSpec) : '';
-      copyToClipboard(html, plainText);
+      copyToClipboard(html, plainText, () => {
+        notification.success({ message: '复制成功' });
+      });
       onCopy?.(currentInsightInfo, ref.current);
     }
   };
@@ -132,7 +137,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       />
       {/* content */}
       <Spin spinning={dataStatus === 'RUNNING'}>
-        {dataStatus === 'SUCCESS' && contentSpec ? (
+        {dataStatus === 'SUCCESS' && !!contentSpec ? (
           <>
             <div className={`${prefixCls}-insight-result-container`}>
               <NarrativeTextVis spec={contentSpec} size="small" pluginManager={pluginManager.current} />
