@@ -41,7 +41,6 @@
     "@ant-design/icons": "^4.6.3",
     "@antv/antv-spec": "^0.1.0-alpha.18",
     "@antv/auto-chart": "^2.0.3",
-    "@antv/ava": "^3.0.0-alpha.5",
     "@antv/chart-advisor": "^2.0.3",
     "@antv/ckb": "^2.0.3",
     "@antv/data-wizard": "^2.0.3",

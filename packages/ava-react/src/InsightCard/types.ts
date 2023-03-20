@@ -2,7 +2,7 @@ import type { NtvTypes, NtvPluginType } from '@antv/ava-react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Tool } from './Toolbar/types';
 // TODO @chenluli export form insight module
-import type { InsightInfo, InsightType, PatternInfo } from '@antv/ava/lib/insight/types';
+import type { InsightInfo, InsightOptions, PatternInfo } from '@antv/ava/lib/insight/types';
 
 export type CardType = 'mini' | 'standard' | 'expand' | 'detail';
 
@@ -15,42 +15,41 @@ export type CommonProps = {
  * @description basic info of an insight
  * @description.zh-CN 洞察的基本信息
  */
-export type InsightData = Omit<InsightInfo, 'score' | 'patterns'> & {
+export type InsightCardInfo = Omit<InsightInfo, 'score' | 'patterns'> & {
   /**
-   * analysis result data, if not defined, will be referred by algorithms. One of `algorithms` and `patterns` must be assigned
-   * 分析得到的洞察数据，`insightGenerateConfig` 和 `patterns` 至少有一个必须被赋值
-   */
+ * analysis result data, if not defined, will be referred by insightGenerateOptions. One of `insightGenerateOptions` and `patterns` must be assigned
+  分析得到的洞察数据，`insightGenerateOptions` 和 `patterns` 至少有一个必须被赋值
+*/
   patterns?: PatternInfo[];
 };
 
 /** events that may be emitted by card */
 export type InsightCardEventHandlers = {
   /** events emitted when the card content copied */
-  onCopy?: (insight?: InsightData, dom?: HTMLElement) => void;
+  onCopy?: (insight?: InsightCardInfo, dom?: HTMLElement) => void;
   /** events emitted when the card expose */
-  onCardExpose?: (insight?: InsightData, dom?: HTMLElement) => void;
+  onCardExpose?: (insight?: InsightCardInfo, dom?: HTMLElement) => void;
   /** events emitted when insight data change */
-  onChange?: (insight?: InsightData, contentSpec?: NtvTypes.NarrativeTextSpec) => void;
+  onChange?: (insight?: InsightCardInfo, contentSpec?: NtvTypes.NarrativeTextSpec) => void;
 };
 
 export type InsightCardProps = CommonProps &
   InsightCardEventHandlers & {
     /** basic info of an insight */
-    insightInfo: InsightData;
+    insightInfo: InsightCardInfo;
     /** title of insight card, analysis name and measure name by default 洞察卡片的标题，默认为一个分析类型+分析指标名称 */
     title?: ((defaultTitle?: ReactNode) => ReactNode) | ReactNode;
     /** tools in the header of card, by default, there are no tools 标题右侧的工具栏 */
     headerTools?: Tool[];
     /** tools in the footer of card, by default, there are copy and share tools */
     footerTools?: Tool[];
-    /** configs (algorithms, allData,) used to generate the insight, one of `insightGenerateConfig` and `patterns` must be assigned */
-    insightGenerateConfig?: {
-      algorithms: InsightType[];
+    /** options used to generate the insight, one of `insightGenerateOptions` and `patterns` must be assigned */
+    insightGenerateOptions?: Omit<InsightOptions, 'visualization' | 'dimensions' | 'measures'> & {
       allData: { [x: string]: any }[];
     };
     /** function for customizing content */
     customContentSpecGenerator?: (
-      insightMeta?: InsightData,
+      insightMeta?: InsightCardInfo,
       defaultSpec?: NtvTypes.NarrativeTextSpec
     ) => NtvTypes.NarrativeTextSpec;
     /** custom plugins, should pass if your customized schema includes special plugins ntv schema 中，自己定制的 plugins */

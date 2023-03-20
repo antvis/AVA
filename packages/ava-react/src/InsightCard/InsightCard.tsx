@@ -14,14 +14,14 @@ import { insightCardPresetPlugins } from './ntvPlugins';
 import { INSIGHT_CARD_PREFIX_CLS } from './constants';
 
 import type { Tool } from './Toolbar/types';
-import type { InsightCardProps, InsightData, InsightDataStatus } from './types';
+import type { InsightCardProps, InsightCardInfo, InsightDataStatus } from './types';
 
 import './index.less';
 
 export const InsightCard: React.FC<InsightCardProps> = ({
   className,
   styles,
-  insightInfo,
+  insightInfo: defaultInsightInfo,
   headerTools = [],
   footerTools,
   title,
@@ -29,61 +29,61 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   onCardExpose,
   onChange,
   onCopy,
-  insightGenerateConfig,
+  insightGenerateOptions,
   customContentSpecGenerator,
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
-  const { measures = [], patterns: defaultPatterns, dimensions = [] } = insightInfo;
-  const [insightPatterns, setInsightPatterns] = useState<InsightData['patterns']>(defaultPatterns);
+  const { measures = [], dimensions = [] } = defaultInsightInfo;
+  const [currentInsightInfo, setCurrentInsightInfo] = useState<InsightCardInfo>(defaultInsightInfo);
   const [dataStatus, setDataStatus] = useState<InsightDataStatus>('SUCCESS');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const pluginManager = useRef<NtvPluginManager>(new NtvPluginManager([...insightCardPresetPlugins, ...extraPlugins]));
 
-  const contentSpec = useMemo(() => {
-    const defaultSpec = generateNarrativeVisSpec(insightInfo);
-    return isFunction(customContentSpecGenerator)
-      ? customContentSpecGenerator?.(insightInfo, defaultSpec)
-      : defaultSpec;
-  }, [insightInfo]);
-
   const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (insightInfo.patterns) {
-      setInsightPatterns(insightInfo.patterns);
-    } else if (insightGenerateConfig && !insightInfo.visualizationSpecs) {
-      const { allData, algorithms } = insightGenerateConfig;
-      setDataStatus('RUNNING');
-      try {
-        const { insights } = getInsights(allData, {
-          ...insightInfo,
-          insightTypes: algorithms,
-        });
-        const patterns = [];
-        insights.forEach((insight) => {
-          patterns.push(...insight.patterns);
-        });
-        setInsightPatterns(patterns);
-      } catch (err) {
-        setErrorMessage('');
-      }
-      setDataStatus('SUCCESS');
+  const calculateAndSetInsightPatterns = () => {
+    const { allData } = insightGenerateOptions;
+    setDataStatus('RUNNING');
+    try {
+      const { insights } = getInsights(allData, {
+        measures,
+        dimensions,
+        // todo 待 getInsights 支持传入 subspace 后增加传入 subspace
+        ...insightGenerateOptions,
+      });
+      setCurrentInsightInfo(insights[0]);
+    } catch (err) {
+      setErrorMessage('');
     }
-  }, [insightInfo]);
+    setDataStatus('SUCCESS');
+  };
 
   useEffect(() => {
-    onCardExpose?.(insightInfo, ref.current);
+    // if patterns or visualizationSpecs is not empty, do not need generate insight patterns
+    if (defaultInsightInfo.patterns || defaultInsightInfo.visualizationSpecs) {
+      setCurrentInsightInfo(defaultInsightInfo);
+      return;
+    }
+    // if patterns and visualizationSpecs are empty, use insightGenerateOptions to generate insight patterns
+    if (insightGenerateOptions) {
+      calculateAndSetInsightPatterns();
+    }
+  }, [defaultInsightInfo, insightGenerateOptions]);
+
+  const contentSpec = useMemo(() => {
+    const defaultSpec = generateNarrativeVisSpec(currentInsightInfo);
+    return isFunction(customContentSpecGenerator)
+      ? customContentSpecGenerator?.(currentInsightInfo, defaultSpec)
+      : defaultSpec;
+  }, [currentInsightInfo]);
+
+  useEffect(() => {
+    onCardExpose?.(currentInsightInfo, ref.current);
   }, []);
 
   useEffect(() => {
-    onChange?.(
-      {
-        ...insightInfo,
-        patterns: insightPatterns,
-      },
-      contentSpec
-    );
-  }, [insightPatterns, contentSpec]);
+    onChange?.(currentInsightInfo, contentSpec);
+  }, [currentInsightInfo, contentSpec]);
 
   const onClickCopy = async () => {
     if (ref?.current) {
@@ -91,7 +91,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       const html = await textExporter.getNarrativeHtml(ref.current);
       const plainText = contentSpec ? textExporter.getNarrativeText(contentSpec) : '';
       copyToClipboard(html, plainText);
-      onCopy?.(insightInfo, ref.current);
+      onCopy?.(currentInsightInfo, ref.current);
     }
   };
 
@@ -114,7 +114,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     return (
       footerTools && (
         <Row className={`${prefixCls}-footer`} justify="end">
-          <Toolbar tools={footerTools} data={insightInfo} />
+          <Toolbar tools={footerTools} data={currentInsightInfo} />
         </Row>
       )
     );
@@ -126,7 +126,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
         title={title}
         measures={measures}
         dimensions={dimensions}
-        patterns={insightPatterns}
+        patterns={currentInsightInfo.patterns}
         headerTools={headerTools}
       />
       {/* content */}
