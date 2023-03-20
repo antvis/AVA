@@ -35,9 +35,9 @@ import { getInsights } from '@antv/ava';
 getInsights(data, {
   limit: 30,
   measures: [
-    { field: 'life_expect', method: 'MEAN' },
-    { field: 'pop', method: 'SUM' },
-    { field: 'fertility', method: 'MEAN' },
+    { fieldName: 'life_expect', method: 'MEAN' },
+    { fieldName: 'pop', method: 'SUM' },
+    { fieldName: 'fertility', method: 'MEAN' },
   ]
 });
 ```

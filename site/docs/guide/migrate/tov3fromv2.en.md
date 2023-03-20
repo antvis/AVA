@@ -263,3 +263,66 @@ const myAdvisor = new Advisor();
 
 const problems = myAdvisor.lintWithLog({ spec });
 ```
+
+### insight
+
+#### getDataInsights
+
+`getDataInsights` method renamed to `getInsights`
+
+API:
+
+```js
+//v2
+getDataInsights(data, options);
+
+//v3
+getInsights(data, options);
+
+```
+
+#### InsightOptions
+
+The type `InsightOptions` of the optional configuration `options` is changed as follows:
+
+| Properties | Type | v2 | v3 |
+| ----| ---- | ---- | -----|
+| dimensions | `Dimensions[]` | ['year'] | [{`fieldName`: 'year'}] |
+| measure | `Measure[]` | [{`field`: 'life_expect', method: 'MEAN'}] | [{`fieldName`: 'life_expect', method: 'MEAN' }] |
+| visualization |  `boolean \| VisualizationOptions` | false \| {`summaryType`: 'text \| 'spec} | false \| {`lang`: 'en-US' \| 'zh-CN' } |
+
+example:
+
+```js
+//v2
+getDataInsights(data, {
+  limit: 30,
+  dimensions: ['year'],
+  measures: [
+    { field: 'life_expect', method: 'MEAN' },
+    { field: 'pop', method: 'SUM' },
+    { field: 'fertility', method: 'MEAN' },
+  ]
+});
+
+//v3
+getInsights(data, {
+  limit: 30,
+  dimensions: [{ fieldName: 'year' }],
+  measures: [
+    { fieldName: 'life_expect', method: 'MEAN' },
+    { fieldName: 'pop', method: 'SUM' },
+    { fieldName: 'fertility', method: 'MEAN' },
+  ]
+});
+
+```
+
+#### HomogeneousInsightInfo
+
+V3 modified some property names of `homogeneousInsights`.
+
+| v2 Property | v3 Property |
+| ----| ---- |
+| commSet | commonSet |
+| exc | exceptions | 

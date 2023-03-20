@@ -275,3 +275,67 @@ const myAdvisor = new Advisor();
 const problems = myAdvisor.lintWithLog({ spec });
 ```
 
+
+### insight
+
+#### getDataInsights
+
+`getDataInsights` 方法更名为 `getInsights`
+
+API:
+
+```js
+//v2
+getDataInsights(data, options);
+
+//v3
+getInsights(data, options);
+
+```
+
+#### InsightOptions
+
+可选配置`options`的类型`InsightOptions`改动如下：
+
+
+| 属性 | 类型 | v2 | v3 |
+| ----| ---- | ---- | -----|
+| dimensions | `Dimensions[]` | ['year'] | [{`fieldName`: 'year'}] |
+| measure | `Measure[]` | [{`field`: 'life_expect', method: 'MEAN'}] | [{`fieldName`: 'life_expect', method: 'MEAN' }] |
+| visualization |  `boolean \| VisualizationOptions` | false \| {`summaryType`: 'text \| 'spec} | false \| {`lang`: 'en-US' \| 'zh-CN' } |
+
+示例：
+
+```js
+//v2
+getDataInsights(data, {
+  limit: 30,
+  dimensions: ['year'],
+  measures: [
+    { field: 'life_expect', method: 'MEAN' },
+    { field: 'pop', method: 'SUM' },
+    { field: 'fertility', method: 'MEAN' },
+  ]
+});
+
+//v3
+getInsights(data, {
+  limit: 30,
+  dimensions: [{ fieldName: 'year' }],
+  measures: [
+    { fieldName: 'life_expect', method: 'MEAN' },
+    { fieldName: 'pop', method: 'SUM' },
+    { fieldName: 'fertility', method: 'MEAN' },
+  ]
+});
+
+```
+
+#### HomogeneousInsightInfo
+
+输出的洞察信息`homogeneousInsights`的类型 `HomogeneousInsightInfo`部分属性名改动如下：
+
+| v2属性名 | v3属性名 |
+| ----| ---- |
+| commSet | commonSet |
+| exc | exceptions | 
