@@ -19,14 +19,6 @@
         "en": "Custom Impact measures and weight"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/WZQxVppHR%26/li-impact-measure.gif"
-    },
-    {
-      "filename": "homogeneous.jsx",
-      "title": {
-        "zh": "提取共性/例外模式",
-        "en": "Extract homogeneous data patterns"
-      },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/onsB512jmI/li-homogeneous.gif"
     }
   ]
 }
