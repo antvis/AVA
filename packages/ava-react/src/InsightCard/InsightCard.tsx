@@ -73,7 +73,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     if (!currentInsightInfo)
       return isFunction(customContentSpec) ? customContentSpec?.(currentInsightInfo) : customContentSpec;
 
-    const defaultSpec = generateContentVisSpec(currentInsightInfo, autoInsightOptions?.visualizationOptions);
+    const defaultSpec = generateContentVisSpec(currentInsightInfo, autoInsightOptions?.visualization);
     const customSpec = isFunction(customContentSpec)
       ? customContentSpec?.(currentInsightInfo, defaultSpec)
       : customContentSpec;
