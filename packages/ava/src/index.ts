@@ -1,6 +1,21 @@
 /* advisor */
 export { Advisor } from './advisor';
-export * from './advisor/types';
+export type {
+  Advice,
+  Lint,
+  AdviseParams,
+  ChartAdviseParams,
+  AdvisorOptions,
+  Theme,
+  SmartColorOptions,
+  AdviseResult,
+  LintResult,
+  ScoringResultForRule,
+  ScoringResultForChartType,
+  Preferences,
+  LinterOptions,
+  LintParams,
+} from './advisor';
 
 /* CKB */
 export {
@@ -16,7 +31,21 @@ export {
   RECOMMEND_RATINGS,
   SHAPES,
 } from './ckb';
-export * from './ckb/types';
+export type {
+  ChartId,
+  Family,
+  Purpose,
+  CoordinateSystem,
+  GraphicCategory,
+  Shape,
+  LevelOfMeasurement,
+  DataPrerequisite,
+  Channel,
+  RecommendRating,
+  PureChartKnowledge,
+  ChartKnowledgeBase,
+  CkbConfig,
+} from './ckb';
 
 /* data */
 export * from './data/analysis';
