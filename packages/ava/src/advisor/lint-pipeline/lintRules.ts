@@ -5,7 +5,6 @@ import type { ScoringResultForRule, Lint } from '../types';
 import type { ChartRuleModule, DesignRuleModule } from '../ruler';
 import type { CkbTypes } from '../../ckb';
 
-// TODO：remove log param and console, add a func to return log
 export function lintRules(
   ruleBase: Record<string, RuleModule>,
   ruleTypeToLint: 'notDESIGN' | 'DESIGN',

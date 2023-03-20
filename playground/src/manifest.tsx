@@ -11,7 +11,7 @@ import NtvDemo from './DevPlayground/NTV';
 export interface Demo {
   id: string;
   name: string;
-  contentComp: React.ReactNode; // TODO: ts type for ContentPage rc
+  contentComp: React.ReactNode;
   icon?: React.ReactNode;
   subTests?: Demo[];
 }
