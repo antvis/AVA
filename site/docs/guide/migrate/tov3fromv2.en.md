@@ -264,6 +264,66 @@ const myAdvisor = new Advisor();
 const problems = myAdvisor.lintWithLog({ spec });
 ```
 
+### data
+
+#### DataFrame
+
+The `DataFrame` is directly exported from `@antv/ava`, and the usage has not changed.
+
+API:
+
+```js
+// v2
+import { DataFrame } from '@antv/data-wizard';
+
+const df = new DataFrame([{ a: 1, b: 4 }, { a: 2, b: 5 }]);
+const infos = df.info();
+
+// v3
+import { DataFrame } from '@antv/ava'
+
+const df = new DataFrame([{ a: 1, b: 4 }, { a: 2, b: 5 }]);
+const infos = df.info();
+```
+
+#### statistics
+The methods in `statistics` are directly exported from `@antv/ava`, and the namespace is no longer provided.
+
+```js
+// v2
+import { statistics as stats } from '@antv/data';
+
+/** Calculate minimum */
+stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
+// 1
+
+/** Calculate variance */
+stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
+// 106372.359375
+
+/** Calculate Pearson correlation coefficient */
+stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
+// 0.8863724626851197
+
+// v3
+import { min, variance, pearson } from '@antv/data';
+
+/** Calculate minimum */
+min([1, 2, 3, 201, 999, 4, 5, 10]);
+// 1
+
+/** Calculate variance */
+variance([1, 2, 3, 201, 999, 4, 5, 10]);
+// 106372.359375
+
+/** Calculate Pearson correlation coefficient */
+pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
+// 0.8863724626851197
+```
+
+#### random
+`random` is deprecated.
+
 ### insight
 
 #### getDataInsights
