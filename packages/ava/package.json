@@ -1,6 +1,6 @@
 {
   "name": "@antv/ava",
-  "version": "3.0.0-alpha.6",
+  "version": "3.0.0-beta.0",
   "description": "A framework for automated visual analytics.",
   "author": {
     "name": "AntV",
