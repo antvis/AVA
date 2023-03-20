@@ -41,5 +41,5 @@ export const Toolbar = ({ tools = [], data }: ToolbarProps) => {
     return tool;
   });
 
-  return tools.length ? <div className={INSIGHT_CARD_PREFIX_CLS}>{toolButtons}</div> : null;
+  return tools.length ? <div className={`${INSIGHT_CARD_PREFIX_CLS}-toolbar`}>{toolButtons}</div> : null;
 };

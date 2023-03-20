@@ -1,13 +1,16 @@
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Select, Button, Table, Tag } from 'antd';
+import { Select, Button, Table, Col, Row } from 'antd';
 import { GiftOutlined } from '@ant-design/icons';
 // @ts-ignore
 import datasets from 'vega-datasets';
-import { ChartView } from 'antv-site-demo-rc';
 
-import { getInsights, InsightInfo, PatternInfo, Datum } from '../../../../packages/ava/src';
-import { NarrativeTextVis } from '../../../../packages/ava-react/src';
+import { InsightCard } from '../../../../packages/ava-react/src';
+import { getInsights } from '../../../../packages/ava/lib';
+
+import { customInsightCardContentSpec } from './mockSpec';
+
+import type { InsightInfo, PatternInfo, Datum } from '../../../../packages/ava';
 
 const { Option } = Select;
 
@@ -258,7 +261,7 @@ export default function App() {
                 loading={insightLoading}
                 value={dataset}
                 style={{ width: 120, marginLeft: 12 }}
-                onChange={(v) => setDataset(v as string)}
+                onChange={(v) => setDataset(v)}
               >
                 {datasetOptions.map((item) => (
                   <Option value={item} key={item}>
@@ -277,32 +280,21 @@ export default function App() {
       </div>
       {insights.length > 0 && (
         <div style={{ borderTop: '1px solid grey' }}>
-          {insights.map((insight, insightKey) => (
-            <div key={insightKey} style={{ margin: 12, padding: 12, border: '1px solid #ccc' }}>
-              {insight.visualizationSpecs?.map((visSpec, visKey) => {
-                const { patternType, chartSpec, narrativeSpec } = visSpec;
-                return (
-                  <div key={visKey}>
-                    <Tag>{patternType}</Tag>
-                    {narrativeSpec && (
-                      <NarrativeTextVis
-                        spec={{
-                          sections: [{ paragraphs: narrativeSpec }],
-                        }}
-                      />
-                    )}
-                    <ChartView
-                      chartRef={createRef()}
-                      spec={chartSpec}
-                      style={{
-                        height: 480,
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+          <Row justify="space-around">
+            {insights.map((insightInfo, index) => {
+              const insightCardProps = {
+                insightInfo,
+                customContentSpec: () => {
+                  return customInsightCardContentSpec;
+                },
+              };
+              return (
+                <Col key={index}>
+                  <InsightCard {...insightCardProps} styles={{ width: 400 }} />
+                </Col>
+              );
+            })}
+          </Row>
         </div>
       )}
     </>

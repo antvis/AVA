@@ -1,19 +1,33 @@
-import type { G2Spec } from '@antv/g2';
-import type { NtvTypes } from '@antv/ava';
-import type { InsightData } from '../types';
+import { DISPLAY_CHARTS_PLUGIN_KEY } from '../constants';
 
-// todo
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const generateVisualizationSpec = (insightData: InsightData): G2Spec => {
-  return {};
-};
+import type { NtvTypes } from '@antv/ava-react';
+import type { InsightCardInfo } from '../types';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const generateNarrativeParagraphs = (insightData: InsightData): NtvTypes.ParagraphSpec[] => {
-  return [];
-};
+/** generate narrative paragraphs and visualizations for insight data */
+export const generateNarrativeVisSpec = (insightInfo: InsightCardInfo): NtvTypes.NarrativeTextSpec => {
+  const { visualizationSpecs } = insightInfo;
+  if (visualizationSpecs) {
+    const narrativeParagraphs: NtvTypes.ParagraphSpec[] = [];
+    const charts: NtvTypes.ParagraphSpec[] = [];
+    visualizationSpecs.forEach((visualizationSpec) => {
+      const { narrativeSpec, chartSpec } = visualizationSpec;
+      narrativeParagraphs.push(...narrativeSpec);
+      charts.push({
+        type: 'custom',
+        customType: DISPLAY_CHARTS_PLUGIN_KEY,
+        chartSpecs: [chartSpec],
+      });
+    });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const generateNarrativeVisSpec = (insightData: InsightData): NtvTypes.NarrativeTextSpec => {
+    const insightContentSpec: NtvTypes.NarrativeTextSpec = {
+      sections: [
+        {
+          paragraphs: [...narrativeParagraphs, ...charts],
+        },
+      ],
+    };
+    return insightContentSpec;
+  }
+  // todo 调用 insight module 中的方法生成 spec
   return {};
 };

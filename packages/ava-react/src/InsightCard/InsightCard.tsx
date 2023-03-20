@@ -1,7 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
 import { Empty, Row, Spin } from 'antd';
 import cx from 'classnames';
+import { isFunction } from 'lodash';
+import { getInsights } from '@antv/ava';
 
 import { copyToClipboard, NarrativeTextVis, NtvPluginManager, TextExporter } from '../NarrativeTextVis';
 
@@ -12,16 +14,14 @@ import { insightCardPresetPlugins } from './ntvPlugins';
 import { INSIGHT_CARD_PREFIX_CLS } from './constants';
 
 import type { Tool } from './Toolbar/types';
-import type { InsightCardProps, InsightData, InsightDataStatus } from './types';
+import type { InsightCardProps, InsightCardInfo, InsightDataStatus } from './types';
 
 import './index.less';
 
 export const InsightCard: React.FC<InsightCardProps> = ({
   className,
   styles,
-  algorithms = [],
-  measures = [],
-  insightId,
+  insightInfo: defaultInsightInfo,
   headerTools = [],
   footerTools,
   title,
@@ -29,34 +29,62 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   onCardExpose,
   onChange,
   onCopy,
-  ...restData
+  autoInsightOptions,
+  customContentSpec,
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
-  // TODO @chenluli if patterns are empty, need to calculate according to algorithms. status and error message are for future use.
-  const [dataStatus] = useState<InsightDataStatus>('SUCCESS');
-  const [errorMessage] = useState<string>('');
+  const { measures = [], dimensions = [] } = defaultInsightInfo;
+  const [currentInsightInfo, setCurrentInsightInfo] = useState<InsightCardInfo>(defaultInsightInfo);
+  const [dataStatus, setDataStatus] = useState<InsightDataStatus>('SUCCESS');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const pluginManager = useRef<NtvPluginManager>(new NtvPluginManager([...insightCardPresetPlugins, ...extraPlugins]));
-
-  const insightData: InsightData = {
-    measures,
-    algorithms,
-    insightId,
-    ...restData,
-  };
-
-  const contentSpec = useMemo(() => {
-    return generateNarrativeVisSpec(insightData);
-  }, [algorithms, measures]);
 
   const ref = useRef<HTMLDivElement>(null);
 
+  const calculateAndSetInsightPatterns = useCallback(() => {
+    const { allData } = autoInsightOptions;
+    setDataStatus('RUNNING');
+    try {
+      const { insights } = getInsights(allData, {
+        measures,
+        dimensions,
+        // todo 待 getInsights 支持传入 subspace 后增加传入 subspace
+        ...autoInsightOptions,
+      });
+      setCurrentInsightInfo(insights[0]);
+    } catch (err) {
+      setErrorMessage('');
+    }
+    setDataStatus('SUCCESS');
+  }, [measures, dimensions, autoInsightOptions]);
+
   useEffect(() => {
-    onCardExpose?.(insightData, ref.current);
+    // if patterns or visualizationSpecs is not empty, do not need generate insight patterns
+    if (defaultInsightInfo.patterns || defaultInsightInfo.visualizationSpecs) {
+      setCurrentInsightInfo(defaultInsightInfo);
+      return;
+    }
+    // if patterns and visualizationSpecs are empty, use autoInsightOptions to generate insight patterns
+    if (autoInsightOptions) {
+      calculateAndSetInsightPatterns();
+    }
+  }, [defaultInsightInfo, autoInsightOptions]);
+
+  const contentSpec = useMemo(() => {
+    const defaultSpec = generateNarrativeVisSpec(currentInsightInfo);
+    const customSpec = isFunction(customContentSpec)
+      ? customContentSpec?.(currentInsightInfo, defaultSpec)
+      : customContentSpec;
+    return customSpec ?? defaultSpec;
+  }, [currentInsightInfo]);
+
+  useEffect(() => {
+    onCardExpose?.(currentInsightInfo, ref.current);
   }, []);
 
   useEffect(() => {
-    onChange?.(insightData);
-  }, [insightData]);
+    onChange?.(currentInsightInfo, contentSpec);
+  }, [currentInsightInfo, contentSpec]);
 
   const onClickCopy = async () => {
     if (ref?.current) {
@@ -64,7 +92,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       const html = await textExporter.getNarrativeHtml(ref.current);
       const plainText = contentSpec ? textExporter.getNarrativeText(contentSpec) : '';
       copyToClipboard(html, plainText);
-      onCopy?.(insightData, ref.current);
+      onCopy?.(currentInsightInfo, ref.current);
     }
   };
 
@@ -72,6 +100,9 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     {
       type: 'copy',
       onClick: onClickCopy,
+    },
+    {
+      type: 'export',
     },
   ];
 
@@ -84,7 +115,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     return (
       footerTools && (
         <Row className={`${prefixCls}-footer`} justify="end">
-          <Toolbar tools={footerTools} data={insightData} />
+          <Toolbar tools={footerTools} data={currentInsightInfo} />
         </Row>
       )
     );
@@ -92,7 +123,13 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   return (
     <div className={cx(className, prefixCls)} style={styles} ref={ref}>
-      <Title title={title} algorithms={algorithms} measures={measures} headerTools={headerTools} />
+      <Title
+        title={title}
+        measures={measures}
+        dimensions={dimensions}
+        patterns={currentInsightInfo.patterns}
+        headerTools={headerTools}
+      />
       {/* content */}
       <Spin spinning={dataStatus === 'RUNNING'}>
         {dataStatus === 'SUCCESS' && contentSpec ? (
