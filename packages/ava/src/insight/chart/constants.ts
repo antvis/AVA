@@ -24,3 +24,8 @@ export const ChartTypeMap: Record<InsightType, ChartType> = {
   low_variance: 'column_chart',
   correlation: 'scatter_plot',
 };
+
+export const PIE_RADIUS_STYLE = {
+  innerRadius: 0.25,
+  outerRadius: 0.8,
+};

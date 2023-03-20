@@ -26,24 +26,12 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
       interval: [datum[dimensionName], interval],
     };
   });
-  const baselineData = data.map((datum) => datum[BASELINE]) as LineMarkData['points'];
-  const baselineMark = lineMarkStrategy(
-    { points: baselineData },
-    {
-      style: {
-        lineWidth: 1,
-        stroke: '#ffa45c',
-        lineDash: undefined,
-      },
-      tooltip: {
-        title: '',
-        items: [{ name: BASELINE, channel: 'y' }],
-      },
-    }
-  );
 
   const intervalData = data.map((datum) => datum[INTERVAL]) as AreaMarkData;
   const intervalMark = areaMarkStrategy(intervalData, {
+    encode: {
+      shape: 'smooth',
+    },
     style: {
       fillOpacity: 0.3,
       fill: '#ffd8b8',
@@ -60,6 +48,25 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
     },
   });
 
+  const baselineData = data.map((datum) => datum[BASELINE]) as LineMarkData['points'];
+  const baselineMark = lineMarkStrategy(
+    { points: baselineData },
+    {
+      encode: {
+        shape: 'smooth',
+      },
+      style: {
+        lineWidth: 1,
+        stroke: '#ffa45c',
+        lineDash: undefined,
+      },
+      tooltip: {
+        title: '',
+        items: [{ name: BASELINE, channel: 'y' }],
+      },
+    }
+  );
+
   const outlierMark = pointMarkStrategy(patterns, {
     style: {
       fill: '#f4664a',
@@ -71,11 +78,13 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
     },
   });
 
-  return [baselineMark, intervalMark, outlierMark];
+  return [intervalMark, baselineMark, outlierMark];
 };
 
 export const timeSeriesOutlierStrategy = (insight: InsightInfo<TimeSeriesOutlierInfo>): Mark[] => {
+  // Should to support marks free combination
   const chartMark = insight2ChartStrategy(insight);
-  const augmentedMarks = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight);
-  return [chartMark, ...augmentedMarks];
+  const augmentedMarks = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight)?.slice();
+  augmentedMarks.splice(2, 0, chartMark);
+  return augmentedMarks;
 };

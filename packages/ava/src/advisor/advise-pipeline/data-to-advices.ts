@@ -1,6 +1,7 @@
 import { hexToColor, colorToHex, paletteGeneration, colorSimulation } from '@antv/smart-color';
 
-import { deepMix, computeScore } from '../utils';
+import { computeScore } from '../ruler/utils';
+import { deepMix } from '../utils';
 import { CHART_IDS } from '../../ckb';
 import { getSpecWithEncodeType } from '../utils/inferDataType';
 
@@ -25,7 +26,7 @@ import type {
  * options for advising inner pipeline
  */
 type PipeAdvisorOptions = AdvisorOptions;
-declare type ChartID = typeof CHART_IDS[number];
+declare type ChartID = (typeof CHART_IDS)[number];
 
 /**
  * Run all rules for a given chart type, get scoring result.

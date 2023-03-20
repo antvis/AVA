@@ -1,6 +1,7 @@
 import { Mark } from '@antv/g2';
 
 import { InsightInfo } from '../../types';
+import { PIE_RADIUS_STYLE } from '../constants';
 
 export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationSpecs'>): Mark => {
   const { data, patterns, dimensions, measures } = insight;
@@ -22,7 +23,11 @@ export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationS
         y: measures[0].fieldName,
       },
       transform: [{ type: 'stackY' }],
-      coordinate: { type: 'theta', innerRadius: 0.25, outerRadius: 0.8 },
+      coordinate: {
+        type: 'theta',
+        innerRadius: PIE_RADIUS_STYLE.innerRadius,
+        outerRadius: PIE_RADIUS_STYLE.outerRadius,
+      },
       tooltip: {
         items: [{ field: dimensions[0].fieldName }, { field: measures[0].fieldName }],
       },
@@ -34,6 +39,9 @@ export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationS
     return {
       ...commonSpec,
       type: 'line',
+      style: {
+        lineWidth: 2,
+      },
     };
   }
 

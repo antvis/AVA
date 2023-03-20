@@ -74,3 +74,192 @@ const myCkb = ckb({
   },
 });
 ```
+
+
+### Advisor
+
+#### Advisor.advise()
+
+```js
+// v2
+import { Advisor, Linter, ChartAdvisor } from '@antv/chart-advisor';
+
+const defaultData = [
+  { price: 100, type: 'A' },
+  { price: 120, type: 'B' },
+  { price: 150, type: 'C' },
+];
+
+const myChartAdvisor = new ChartAdvisor();
+
+const results = myChartAdvisor.advise({ data });
+// [{
+//     "type": "pie_chart",
+//     "spec": {
+//         "basis": {
+//             "type": "chart"
+//         },
+//         "data": {...},
+//         "layer": [...]
+//     },
+//     "score": 1.5535986680617797,
+// }]
+```
+
+```js
+// v3
+import { Advisor } from '@antv/ava';
+
+const defaultData = [
+  { price: 100, type: 'A' },
+  { price: 120, type: 'B' },
+  { price: 150, type: 'C' },
+];
+const myAdvisor = new Advisor();
+const advices = myAdvisor.advise({ data });
+// [{
+//     "type": "pie_chart",
+//     "spec": {
+//         "basis": {
+//             "type": "chart"
+//         },
+//         "data": {...},
+//         "layer": [...]
+//     },
+//     "score": 1.5535986680617797,
+// }]
+```
+
+#### Advisor.adviseWithLog()
+
+```js
+// v2 doesn't support this function
+```
+
+```js
+// v3
+import { Advisor } from '@antv/ava';
+
+const defaultData = [
+  { price: 100, type: 'A' },
+  { price: 120, type: 'B' },
+  { price: 150, type: 'C' },
+];
+const myAdvisor = new Advisor();
+const adviseResult = myAdvisor.adviseWithLog({ data });
+// {
+//         advices: [
+//           { type: 'pie_chart', spec: [Object], score: 0.9186951743562324 },
+//           { type: 'donut_chart', spec: [Object], score: 0.9186951743562324 },
+//           { type: 'column_chart', spec: [Object], score: 0.5 },
+//           { type: 'bar_chart', spec: [Object], score: 0.5 }
+//         ],
+//         log: [
+//           { chartType: 'line_chart', score: 0, log: [Array] },
+//           { chartType: 'step_line_chart', score: 0, log: [Array] },
+//           { chartType: 'area_chart', score: 0, log: [Array] },
+//           { chartType: 'stacked_area_chart', score: 0, log: [Array] },
+//            ...
+//            ...
+//         ]
+//       }
+```
+
+
+#### Advisor.lint()
+
+```js
+// v2
+import { Linter } from '@antv/chart-advisor';
+
+const spec = {
+  basis: {
+    type: 'chart',
+  },
+  data: {
+    type: 'json-array',
+    values: [...],
+  },
+  layer: [...],
+};
+
+const myLinter = new Linter();
+
+const problems = myLinter.lint({ spec })
+// [{
+//     "type": "SOFT",
+//     "id": "diff-pie-sector",
+//     "score": 0.3752209678037489,
+//     "docs": {
+//         "lintText": "Difference should be big enough for pie sectors."
+//     }
+// }]
+```
+
+```js
+// v3
+import { Advisor } from '@antv/ava';
+
+const spec = {
+  basis: {
+    type: 'chart',
+  },
+  data: {
+    type: 'json-array',
+    values: [...],
+  },
+  layer: [...],
+};
+
+const myAdvisor = new Advisor();
+
+const problems = myAdvisor.lint({ spec });
+// [{
+//     "type": "SOFT",
+//     "id": "diff-pie-sector",
+//     "score": 0.3752209678037489,
+//     "docs": {
+//         "lintText": "Difference should be big enough for pie sectors."
+//     }
+// }]
+```
+
+#### Advisor.lintWithLog()
+
+```js
+/* v2 
+In v2,  adviseWithLog method in ChartAdvisor Class has integrated both advise and lint.
+Therefore, lintWithLog in V2 could be used as adviseWithLog.
+*/
+import { Advisor, Linter, ChartAdvisor } from '@antv/chart-advisor';
+
+const defaultData = [
+  { price: 100, type: 'A' },
+  { price: 120, type: 'B' },
+  { price: 150, type: 'C' },
+];
+
+const myChartAdvisor = new ChartAdvisor();
+
+const results = myChartAdvisor.adviseWithLog({ data });
+```
+
+```js
+// v3
+import { Advisor } from '@antv/ava';
+
+const spec = {
+  basis: {
+    type: 'chart',
+  },
+  data: {
+    type: 'json-array',
+    values: [...],
+  },
+  layer: [...],
+};
+
+const myAdvisor = new Advisor();
+
+const problems = myAdvisor.lintWithLog({ spec });
+```

@@ -26,6 +26,7 @@ export type LineMarkData = {
 };
 
 export type LineMarkConfig = {
+  encode?: Mark['encode'];
   label?: LabelType;
   style?: Mark['style'];
   tooltip?: Mark['tooltip'];
@@ -34,6 +35,7 @@ export type LineMarkConfig = {
 export type AreaMarkData = [number, [number, number][]][];
 
 export type AreaMarkConfig = {
+  encode?: Mark['encode'];
   style?: Mark['style'];
   tooltip?: Mark['tooltip'];
 };
