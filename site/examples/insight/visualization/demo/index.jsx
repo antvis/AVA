@@ -10,84 +10,124 @@ const App = () => {
   const data = useMemo(
     () => [
       {
+        date: '2019-08-01',
+        discount_price: 727.12,
+      },
+      {
+        date: '2019-08-02',
+        discount_price: 729.59,
+      },
+      {
+        date: '2019-08-03',
+        discount_price: 730.21,
+      },
+      {
+        date: '2019-08-04',
+        discount_price: 732.11,
+      },
+      {
+        date: '2019-08-05',
+        discount_price: 733.22,
+      },
+      {
+        date: '2019-08-06',
+        discount_price: 741.19,
+      },
+      {
+        date: '2019-08-07',
+        discount_price: 742.37,
+      },
+      {
+        date: '2019-08-08',
+        discount_price: 752.34,
+      },
+      {
+        date: '2019-08-09',
+        discount_price: 761.12,
+      },
+      {
+        date: '2019-08-10',
+        discount_price: 783.99,
+      },
+      {
+        date: '2019-08-11',
+        discount_price: 791.23,
+      },
+      {
         date: '2019-08-12',
-        price: 967.95,
         discount_price: 781.99,
       },
       {
         date: '2019-08-13',
-        price: 911.22,
         discount_price: 835.71,
       },
       {
         date: '2019-08-14',
-        price: 738.11,
         discount_price: 839.24,
       },
       {
         date: '2019-08-15',
-        price: 784.52,
         discount_price: 883.51,
       },
       {
         date: '2019-08-16',
-        price: 983.89,
         discount_price: 873.98,
       },
       {
         date: '2019-08-17',
-        price: 912.87,
         discount_price: 802.78,
       },
       {
         date: '2019-08-18',
-        price: 1153.12,
         discount_price: 807.05,
       },
       {
         date: '2019-08-19',
-        price: 1012.87,
         discount_price: 885.12,
       },
       {
         date: '2019-08-20',
-        price: 1118.88,
         discount_price: 1018.85,
       },
       {
         date: '2019-08-21',
-        price: 1054.53,
         discount_price: 934.49,
       },
       {
         date: '2019-08-22',
-        price: 1234.53,
         discount_price: 908.74,
       },
       {
         date: '2019-08-23',
-        price: 1312.34,
         discount_price: 930.55,
       },
       {
         date: '2019-08-24',
-        price: 825.53,
         discount_price: 978.53,
       },
       {
         date: '2019-08-25',
-        price: 1054.53,
         discount_price: 931.47,
       },
       {
         date: '2019-08-26',
-        price: 1119.53,
         discount_price: 891,
       },
       {
         date: '2019-08-27',
-        price: 1257.68,
         discount_price: 836.41,
+      },
+      {
+        date: '2019-08-28',
+        discount_price: 826.11,
+      },
+      {
+        date: '2019-08-29',
+        discount_price: 820.11,
+      },
+      {
+        date: '2019-08-30',
+        discount_price: 811.11,
       },
     ],
     []
