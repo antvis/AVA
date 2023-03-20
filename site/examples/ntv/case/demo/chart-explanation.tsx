@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 import ReactDOM from 'react-dom';
-import { Skeleton, Card } from 'antd';
-import { PlotCard } from 'antv-site-demo-rc';
+import { Skeleton } from 'antd';
 import { getInsights } from '@antv/ava';
-import { NarrativeTextVis } from '@antv/ava-react';
+import { InsightCard } from '@antv/ava-react';
 
 import type { InsightsResult } from '@antv/ava';
 
@@ -20,15 +19,11 @@ const App = () => {
           const insightResult = getInsights(data, {
             limit: 10,
             measures: [
-              { field: 'life_expect', method: 'MEAN' },
-              { field: 'pop', method: 'SUM' },
-              { field: 'fertility', method: 'MEAN' },
+              { fieldName: 'life_expect', method: 'MEAN' },
+              { fieldName: 'pop', method: 'SUM' },
+              { fieldName: 'fertility', method: 'MEAN' },
             ],
-            // 洞察结果中会增加对应的可视化展示方案（基于g2plot）
-            // the corresponding visualization scheme will be added to the insight results (based on g2plot)
-            visualization: {
-              summaryType: 'spec',
-            },
+            visualization: false,
           });
           setResult(insightResult);
           setLoading(false);
@@ -42,19 +37,10 @@ const App = () => {
         <Skeleton />
       ) : (
         <>
-          {result?.insights &&
-            result?.insights.slice(0, 3).map((item, index) => {
-              const { data, visualizationSpecs } = item;
-              const { chartType, chartSpec, narrativeSpec, caption } = visualizationSpecs[0];
-              return (
-                <Card key={index} style={{ marginBottom: 12 }}>
-                  <PlotCard chartType={chartType} data={data} caption={caption} schema={chartSpec} height={400} />
-                  {narrativeSpec.map((summary, idx) => (
-                    <NarrativeTextVis.Paragraph key={idx} spec={{ type: 'normal', phrases: summary }} />
-                  ))}
-                </Card>
-              );
-            })}
+          {result?.insights?.map((insightInfo, index) => {
+            // 基于 NTV 的 InsightCard 组件展示图表解读
+            return <InsightCard insightInfo={insightInfo} styles={{ width: 400 }} key={index} />;
+          })}
         </>
       )}
     </>
