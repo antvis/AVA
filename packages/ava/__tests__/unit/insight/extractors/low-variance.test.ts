@@ -37,7 +37,7 @@ const data = [
 
 describe('extract low-variance insight', () => {
   test('check low-variance result', () => {
-    const result = extractor(data, ['type'], [{ field: 'sales', method: 'SUM' }]);
+    const result = extractor(data, ['type'], [{ fieldName: 'sales', method: 'SUM' }]);
     expect(result[0]?.significance).toBeGreaterThan(0.85);
   });
 });
