@@ -53,7 +53,7 @@ export function checkRules(
   lintRules(ruleBase, 'DESIGN', info, log, lints, ckb, spec);
 
   // filter rules with problems (score<1)
-  lints = lints.filter((record) => record.score !== 1);
+  lints = lints.filter((record) => record.score < 1);
 
   const result: LintResult = {
     lints,
