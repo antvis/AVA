@@ -530,7 +530,7 @@ describe('test for multiple metrics', () => {
           {
             type: 'commonness',
             insightType: 'trend',
-            commSet: ['abc', 'jbk', 'ike', 'iuy'],
+            commonSet: ['abc', 'jbk', 'ike', 'iuy'],
             significance: 1,
             childPatterns: [
               {
@@ -578,7 +578,7 @@ describe('test for multiple insights', () => {
     expect(multiPattensResult.insights).toBeIncludeInsights([
       {
         measures: [{ fieldName: 'export', method: 'SUM' }],
-        dimensions: ['year'],
+        dimensions: [{ fieldName: 'year' }],
         subspace: [{ dimension: 'country', value: 'China' }],
         patterns: [
           {
@@ -590,7 +590,7 @@ describe('test for multiple insights', () => {
       },
       {
         measures: [{ fieldName: 'export', method: 'SUM' }],
-        dimensions: ['country'],
+        dimensions: [{ fieldName: 'country' }],
         subspace: [{ dimension: 'year', value: '2000' }],
         patterns: [
           {
