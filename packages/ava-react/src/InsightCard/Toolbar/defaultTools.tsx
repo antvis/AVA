@@ -4,19 +4,26 @@ import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 
 import { INSIGHT_CARD_PREFIX_CLS } from '../constants';
+import { IconButton } from '../styled/iconButton';
 
 import type { BaseIconButtonProps, DefaultToolType } from './types';
 
 export const BaseIconButton: React.FC<BaseIconButtonProps> = ({ icon, onClick, description }) => {
   return (
-    <Tooltip title={description} overlayClassName={`${INSIGHT_CARD_PREFIX_CLS}-icon-button-tooltip`}>
-      <Button
-        icon={icon}
-        className={`${INSIGHT_CARD_PREFIX_CLS}-icon-button`}
-        onClick={onClick}
-        type="text"
-        size="small"
-      />
+    <Tooltip
+      title={description}
+      overlayClassName={`${INSIGHT_CARD_PREFIX_CLS}-icon-button-tooltip`}
+      overlayStyle={{ fontSize: '12px' }}
+    >
+      <IconButton>
+        <Button
+          icon={icon}
+          className={`${INSIGHT_CARD_PREFIX_CLS}-icon-button`}
+          onClick={onClick}
+          type="text"
+          size="small"
+        />
+      </IconButton>
     </Tooltip>
   );
 };

@@ -5,10 +5,9 @@ import { isFunction, uniq } from 'lodash';
 
 import { Toolbar } from '../Toolbar';
 import { ALGORITHM_NAME_MAP, INSIGHT_CARD_PREFIX_CLS } from '../constants';
+import { MeasureName, Tag as StyledTag } from '../styled/tag';
 
 import type { InsightCardProps, InsightCardInfo } from '../types';
-
-import './index.less';
 
 export type TitleProps = Pick<InsightCardProps, 'headerTools' | 'title'> &
   Pick<InsightCardInfo, 'measures' | 'dimensions' | 'patterns'>;
@@ -19,8 +18,8 @@ export const Title: React.FC<TitleProps> = ({ title, patterns, measures, headerT
   const analysisName = insightTypes.map((algorithm) => ALGORITHM_NAME_MAP[algorithm]).join(',') ?? '';
   const defaultTitle = (
     <div>
-      <span className={`${prefixCls}-measure-name`}>{measureNames}</span>
-      <span className={cx(`${prefixCls}-analysis-tag`)}>{analysisName}</span>
+      <MeasureName className={`${prefixCls}-measure-name`}>{measureNames}</MeasureName>
+      <StyledTag className={cx(`${prefixCls}-analysis-tag`)}>{analysisName}</StyledTag>
     </div>
   );
   const customTitle = title && isFunction(title) ? title(defaultTitle) : title;

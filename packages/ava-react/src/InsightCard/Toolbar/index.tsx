@@ -9,8 +9,6 @@ import { BaseIconButton, getDefaultTool } from './defaultTools';
 
 import type { DefaultToolType, ToolbarProps } from './types';
 
-import './index.less';
-
 export const Toolbar = ({ tools = [], data }: ToolbarProps) => {
   const getDefaultIconProps = (type: DefaultToolType) => {
     if (DEFAULT_TOOLS.includes(type)) {
@@ -41,5 +39,9 @@ export const Toolbar = ({ tools = [], data }: ToolbarProps) => {
     return tool;
   });
 
-  return tools.length ? <div className={`${INSIGHT_CARD_PREFIX_CLS}-toolbar`}>{toolButtons}</div> : null;
+  return tools.length ? (
+    <div className={`${INSIGHT_CARD_PREFIX_CLS}-toolbar`} style={{ display: 'inline-block' }}>
+      {toolButtons}
+    </div>
+  ) : null;
 };
