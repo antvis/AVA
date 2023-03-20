@@ -6,7 +6,7 @@ import { GiftOutlined } from '@ant-design/icons';
 import datasets from 'vega-datasets';
 import { ChartView } from 'antv-site-demo-rc';
 
-import { getInsights, InsightTypes } from '../../../../packages/ava/src';
+import { getInsights, InsightInfo, PatternInfo, Datum } from '../../../../packages/ava/src';
 import { NarrativeTextVis } from '../../../../packages/ava-react/src';
 
 const { Option } = Select;
@@ -76,10 +76,10 @@ const datasetConfigs = {
 };
 
 export default function App() {
-  const [insights, setInsights] = useState<InsightTypes.InsightInfo<InsightTypes.PatternInfo>[]>([]);
+  const [insights, setInsights] = useState<InsightInfo<PatternInfo>[]>([]);
   const [dataset, setDataset] = useState('anomaly');
-  const [data, setData] = useState<InsightTypes.Datum[]>([]);
-  const [tableColumns, setTableColumns] = useState<InsightTypes.Datum[]>([]);
+  const [data, setData] = useState<Datum[]>([]);
+  const [tableColumns, setTableColumns] = useState<Datum[]>([]);
   const [dataLoading, setDataLoading] = useState<boolean>(false);
   const [insightLoading, setInsightLoading] = useState<boolean>(false);
 

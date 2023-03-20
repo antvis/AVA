@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { Button, Divider, Row, Col } from 'antd';
 
-import { Advisor, AdvisorTypes } from '../../../../../packages/ava/lib';
+import { Advisor, Lint, Specification } from '../../../../../packages/ava/lib';
 import { Chart } from '../Chart';
 
 import { LintCard } from './LintCard';
@@ -30,10 +30,10 @@ const errorSpec = {
 
 export const LinterPanel = () => {
   const myAdvisor = new Advisor();
-  const [lints, setLints] = useState<AdvisorTypes.Lint[]>([]);
+  const [lints, setLints] = useState<Lint[]>([]);
 
   const getLint = () => {
-    const myLint = myAdvisor.lint({ spec: errorSpec as AdvisorTypes.Specification });
+    const myLint = myAdvisor.lint({ spec: errorSpec as Specification });
     setLints(myLint);
   };
 

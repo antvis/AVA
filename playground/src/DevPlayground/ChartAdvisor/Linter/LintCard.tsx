@@ -2,10 +2,10 @@ import React from 'react';
 
 import { List } from 'antd';
 
-import { AdvisorTypes } from '../../../../../packages/ava/lib';
+import { Lint } from '../../../../../packages/ava/lib';
 
 type LintProps = {
-  lints: AdvisorTypes.Lint[];
+  lints: Lint[];
 };
 
 export const LintCard = ({ lints }: LintProps) => {
@@ -17,7 +17,7 @@ export const LintCard = ({ lints }: LintProps) => {
       pagination={{ pageSize: 1 }}
       dataSource={lints}
       split={false}
-      renderItem={(item: AdvisorTypes.Lint, index) => {
+      renderItem={(item: Lint, index) => {
         return (
           <List.Item key={index}>
             <strong style={{ fontSize: 18 }}>Error ID: {item.id}</strong>
