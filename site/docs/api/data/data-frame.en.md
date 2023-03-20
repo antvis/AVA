@@ -5,7 +5,7 @@ order: 0
 
 <embed src='@/docs/common/style.md'></embed>
 
-`DataFrame` is the specified 2D data structure in DW. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
+`DataFrame` is the specified 2D data structure in data. You can get or slice data by it. The information includes the field's characteristics (field name, data type, statistics, etc.) and properties (continuity, discreteness, etc.), as well as field-to-field relationships (correlation, periodicity, etc.).
 
 ## new DataFrame
 
@@ -47,7 +47,7 @@ Used to configure indexes, columns, and missing values.
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 /* Basic usage */
 const data = [
@@ -170,7 +170,7 @@ Get the DataFrame data row and column dimensions.
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 }
@@ -211,7 +211,7 @@ Type `(string | number) | (string | number)[] | string`
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 /* Get data by indexes value */
 const df = new DataFrame([
@@ -350,7 +350,7 @@ Type `number | number[] | string`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 /* Get data by row index */
 const df = new DataFrame([
@@ -392,7 +392,7 @@ Type `string | number`
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 }
@@ -422,7 +422,7 @@ Get statistical information.
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },

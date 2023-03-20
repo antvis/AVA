@@ -177,7 +177,7 @@ function applySmartColor(
  * recommending charts given data and dataProps, based on CKB and RuleBase
  *
  * @param data input data [ {a: xxx, b: xxx}, ... ]
- * @param dataProps data props derived from data-wizard or customized by users
+ * @param dataProps data props derived from data or customized by users
  * @param chartWIKI ckb
  * @param ruleBase rule base
  * @param smartColor switch smart color on/off, optional props, default is off

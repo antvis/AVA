@@ -6,7 +6,7 @@ order: 0
 <embed src='@/docs/common/style.md'></embed>
 
 
-DW 中的二维数据结构，支持读取不同类型的一维和二维源数据，将其转换为 `DataFrame` 数据基本流转单元来处理数据。使用 `DataFrame`，你可以从一个数据集样本中获取和切割数据，也可以提取出各个字段的信息。这些信息包括字段的特征（字段名称、数据类型、统计信息等），性质（连续性、离散性等），以及多字段间的字段间关系（相关性、周期性等）。
+data 中的二维数据结构，支持读取不同类型的一维和二维源数据，将其转换为 `DataFrame` 数据基本流转单元来处理数据。使用 `DataFrame`，你可以从一个数据集样本中获取和切割数据，也可以提取出各个字段的信息。这些信息包括字段的特征（字段名称、数据类型、统计信息等），性质（连续性、离散性等），以及多字段间的字段间关系（相关性、周期性等）。
 
 ## new DataFrame
 
@@ -48,7 +48,7 @@ DW 中的二维数据结构，支持读取不同类型的一维和二维源数�
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 /* Basic usage */
 const data = [
@@ -171,7 +171,7 @@ DataFrame
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
@@ -211,7 +211,7 @@ df.shape;
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 /* 使用 indexes值 获取数据 */
 const df = new DataFrame([
@@ -351,7 +351,7 @@ DataFrame
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 /* 行列索引获取数据 */
 const df = new DataFrame([
@@ -393,7 +393,7 @@ DataFrame
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },
@@ -424,7 +424,7 @@ Series
 
 
 ```ts
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 
 const df = new DataFrame([
   { a: 1, b: 4, c: 7 },

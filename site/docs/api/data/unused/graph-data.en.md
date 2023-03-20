@@ -7,45 +7,47 @@ order: 3
 
 <div class="doc-md">
 
-DW 中的图数据结构，支持读取点边数据、边数组、树型结构数据，将其转换为标准化 `GraphData` 数据。使用 `GraphData`，你可以解析非标准化的数组、图数据和层次型数据，并提取图中的常用的结构和统计特征，还可以得到标准化为 `DataFrame` 的点表和边表，使用 `DataFrame` 提供的 API 来分析点、边各个字段的统计特征。
+For relational data (network data), DW processes and analyzes it through the `GraphData` module, which supports reading nodes-links data, links arrays, and hierarchical data. Using `GraphData`, you can parse arrays, graph data and hierarchical data, and extract common-used structural and statistical features. Also, the nodes and edges can be converted to `DataFrame`, and its API to analyze the statistics of each node field and link field.
 
 ## new GraphData
+### Parameters
 
-***<font size=4>参数</font>***
+***<font size=4>Parameters</font>***
 
-**data** 源数据 _必选_
+**data** Raw data _required_
 
-Objects or arrays that can be converted to nodes-links data.
+Accept one-dimensional and two-dimensional data.
 
-类型
-* 图结构数据
-  * 点边结构数据，`{ [key: string]: any[] }`, 例如 `{ nodes: [], links: [] }`，当节点数组和边数组对应的属性名称不是 `nodes`, `links` 或 `edges` 时，需要通过 `extra` 参数指定属性名称。
-  * 边数组， `{ [key: string]: any }[]`
-* 树型结构数据（层次数据）` { id: string; children: Tree[]; }`
+Type
 
-**extra** 额外参数 _可选_
+* Graph data
+  * nodes-links object, `{ [key: string]: any[] }`, e.g. `{ nodes: [], links: [] }`, if the property names corresponding to the nodes and links are not `nodes`, `links` or `edges`, the property names need to be specified with the `extra` parameter.
+  * an array of links, `{ [key: string]: any }[]`
+* Hierachical data: ` { id: string; children: Tree[]; }`
 
-用于配置节点、边、源、目标、孩子节点的键值和索引。
-  
-| 属性 | 类型 | 描述 | 默认值 | 必选 | 
-| ----| ---- | ---- | ---- | ---- |
-| nodeKey | `string` | 指定节点数组在输入的图数据中对应属性名称（键名）。 | `nodes` |
-| edgeKey | `string` | 指定边数组在输入的图数据中对应属性名称。 | `edges | links` |
-| sourceKey | `string` | 指定边的源节点在边中对应属性名称。 | `source` |
-| targetKey | `string` | 指定边的目标节点在边中对应属性名称。 | `target` |
-| childrenKey | `string` | 指定孩子节点属性在输入的层次数据中对应属性名称。 | `children` |
-| nodeIndexes | `string | number` | 节点数据的行索引 | - | - |
-| nodeColumns | `string | number` | 节点数据的列索引 | - | - |
-| linkIndexes | `string | number` | 边数据的行索引 | - | - |
-| linkColumns | `string | number` | 边数据的列索引 | - | - |
+**extra** extra parameters _optional_
 
-***<font size=4>返回值</font>***
+Used to configure the keys and indexes of nodes, edges, sources, targets, and children.
+
+| Properties | Type | Description |
+| ----| ---- | ---- |
+| nodeKey | `string` | Specifies the property name of nodes in the given graph data. | `nodes` |
+| edgeKey | `string` | Specifies the property name of edges in the given graph data. | `edges | links` |
+| sourceKey | `string` | Specifies the property name of source node in edges. | `source` |
+| targetKey | `string` | Specifies the property name of target node in edges. | `target` |
+| childrenKey | `string` | Specifies the property name of children in the given hirerachy data. | `children | to` |
+| nodeIndexes | `string | number` | Indexes of nodes |
+| nodeColumns | `string | number` | Columns of nodes |
+| linkIndexes | `string | number` | Indexes of edges |
+| linkColumns | `string | number` | Columns of edges |
+
+***<font size=4>Return value</font>***
 
 `GraphData`
 
-***<font size=4>用法</font>***
+***<font size=4>Usage</font>***
 ```ts
-import { GraphData } from '@antv/data-wizard';
+import { GraphData } from '@antv/ava';
 
 /* Basic usage */
 const data = [
@@ -93,7 +95,7 @@ GraphData
 ```
 
 ## data
-获取转换后的标准图数据。标准化后的图数据类型定义如下：
+Get the standardized graph data. The standardized graph data type is defined as below:
 
 ```ts
 type Graph = { 
@@ -113,38 +115,37 @@ type LinkData = {
 ```
 
 ## getNodeFrame
-获取节点数组的 DataFrame，便于调用 DataFrame 相关方法对点表进行操作和分析。
+Get the DataFrame of the node array, so that you can use DataFrame to manipulate and analyze the node table.
 
-***<font size=4>返回值</font>***
-
+***<font size=4>Return value</font>***
 `DataFrame`
 
 ## getEdgeFrame
-获取边数组的 DataFrame，便于调用 DataFrame 相关方法对边表进行操作和分析。
+Get the DataFrame of the link array, so that you can use DataFrame to manipulate and analyze the link table.
 
-***<font size=4>返回值</font>***
-
+***<font size=4>Return value</font>***
 `DataFrame`
 
 ## info
-获取常用的图中的统计学信息。
+Obtain structural and statistical features of the network data.
 
-***<font size=4>返回值</font>***
+***<font size=4>Return value</font>***
 
 `GraphProps`
-GraphProps 中的详细信息如下：
 
-| 属性 | 类型 | 描述 | 
-| ----| ---- | ---- | 
-| nodeFeats | `{ [key: string]: any }[]` | 节点的结构特征，包括 `degree`, `inDegree`, `outDegree`, `pageRank` |
-| linkFeats | `{ [key: string]: any }[]` | 边的结构特征。 |
-| graphInfo | `GraphFeat` | 全图的结构特征，包括 `nodeCount`、`linkCount`、`direction`、`isDirected`、`isCycle`、`isConnected`、`isDAG`、`maxDegree`、`avgDegree`、`cycleCount`、`directedCycleCount` 、`componentCount`、`strongConnectedComponents`。 |
-| nodeFieldsInfo | `FieldInfo[]` | 节点属性的统计学信息，由 `DataFrame` 计算得到。 |
-| linkFieldsInfo | `FieldInfo[]` | 边属性的统计学信息，由 `DataFrame` 计算得到。  |
+The details in GraphProps are as below.
 
-***<font size=4>用法</font>***
+| Properties | Type | Description |
+| ----| ---- | ---- |
+| nodeFeats | `{ [key: string]: any }[]` | Structural features of node, including `degree`, `inDegree`, `outDegree`, `pageRank`. |
+| linkFeats | `{ [key: string]: any }[]` | Structural features of link.  |
+| graphInfo | `GraphFeat` | Structural and statistical features of the graph, including `nodeCount`、`linkCount`、`direction`、`isDirected`、`isCycle`、`isConnected`、`isDAG`、`maxDegree`、`avgDegree`、`cycleCount`、`directedCycleCount` 、`componentCount`、`strongConnectedComponents`。 |
+| nodeFieldsInfo | `FieldInfo[]` | Statistics about the node attributes, computed by the `DataFrame`. |
+| linkFieldsInfo | `FieldInfo[]` | Statistics about the node attributes, computed by the `DataFrame`. |
+
+***<font size=4>Usage</font>***
 ```ts
-import { GraphData } from '@antv/data-wizard';
+import { GraphData } from '@antv/ava';
 
 const graph = new GraphData([
   {source: 'person1', target: 'person2'},

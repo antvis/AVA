@@ -6,7 +6,7 @@ order: 1
 <embed src='@/docs/common/style.md'></embed>
 
 
-DataWizard 的数学统计模块 `statistics`，支持最大值、最小值、方差、皮尔逊系数、变异系数等常用统计学方法。`DataFrame` 的统计信息计算能力，也是基于 `statitstics` 实现的。该方法会将计算过一次的值存储在缓存中，再次计算时可直接从缓存中取值，避免重复计算开销。
+data 的数学统计模块 `statistics`，支持最大值、最小值、方差、皮尔逊系数、变异系数等常用统计学方法。`DataFrame` 的统计信息计算能力，也是基于 `statitstics` 实现的。该方法会将计算过一次的值存储在缓存中，再次计算时可直接从缓存中取值，避免重复计算开销。
 
 ## min
 
@@ -25,33 +25,10 @@ DataWizard 的数学统计模块 `statistics`，支持最大值、最小值、�
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1
-```
-
-## minIndex
-
-计算数组最小值索引。
-
-***<font size=4>参数</font>***
-
-**array** 原数组数据 _必选_
-
-类型 `number[]`
-
-***<font size=4>返回值</font>***
-
-`number`
-
-***<font size=4>用法</font>***
-
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-stats.minIndex([1, 2, 3, 201, 999, 4, 5, 10]);
-// 0
 ```
 
 ## max
@@ -71,33 +48,10 @@ stats.minIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
 // 999
-```
-
-## maxIndex
-
-计算数组最大值索引。
-
-***<font size=4>参数</font>***
-
-**array** 原数组数据 _必选_
-
-类型 `number[]`
-
-***<font size=4>返回值</font>***
-
-`number`
-
-***<font size=4>用法</font>***
-
-```ts
-import { statistics as stats } from '@antv/data-wizard';
-
-stats.maxIndex([1, 2, 3, 201, 999, 4, 5, 10]);
-// 4
 ```
 
 ## sum
@@ -117,7 +71,7 @@ stats.maxIndex([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1225
@@ -146,7 +100,7 @@ stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
 // 4.5
@@ -175,7 +129,7 @@ stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 // [ 2.5, 4.5, 105.5 ]
@@ -208,7 +162,7 @@ stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 // 10
@@ -231,7 +185,7 @@ stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 153.125
@@ -254,7 +208,7 @@ stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 11.162021352303842
@@ -277,7 +231,7 @@ stats.geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 3.34824774196937
@@ -300,7 +254,7 @@ stats.harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
 // 106372.359375
@@ -323,7 +277,7 @@ stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
 // 326.1477569676051
@@ -346,7 +300,7 @@ stats.standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 // 2.1299445352986455
@@ -373,7 +327,7 @@ stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
 // 324526.3125
@@ -400,7 +354,7 @@ stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25,
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
 // 0.8863724626851197
@@ -423,7 +377,7 @@ stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 21
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.valid([1, 2, NaN, 201, undefined, 4, 5, null]);
 // 5
@@ -446,7 +400,7 @@ stats.valid([1, 2, NaN, 201, undefined, 4, 5, null]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.missing([1, 2, NaN, 201, undefined, 4, 5, null]);
 // 3
@@ -469,7 +423,7 @@ stats.missing([1, 2, NaN, 201, undefined, 4, 5, null]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
 // { '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '10': 1, '201': 1, '999': 1 }
@@ -492,7 +446,7 @@ stats.valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 // 8
@@ -519,7 +473,7 @@ stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 const objects = [{ 'n': 1 }, { 'n': 2 }];
 
@@ -548,7 +502,7 @@ stats.minBy(objects, 'n');
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 const objects = [{ 'n': 1 }, { 'n': 2 }];
 
@@ -577,7 +531,7 @@ stats.maxBy(objects, 'n');
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 const objects = [{ 'n': 1 }, { 'n': 2 }];
 
@@ -606,7 +560,7 @@ stats.sumBy(objects, 'n');
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 const objects = [{ 'n': 1 }, { 'n': 2 }];
 
@@ -635,7 +589,7 @@ stats.meanBy(objects, 'n');
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 const objects = [{ 'n': 1 }, { 'n': 2 }];
 
@@ -664,7 +618,7 @@ stats.countBy(objects, 'n');
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 const objects = [
   {
@@ -736,7 +690,7 @@ type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
 ***<font size=4>用法</font>***
 
 ```ts
-import { statistics as stats } from '@antv/data-wizard';
+import { statistics as stats } from '@antv/ava';
 
 const objects = [
   {

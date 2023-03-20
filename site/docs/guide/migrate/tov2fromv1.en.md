@@ -17,7 +17,7 @@ With the reorganization of the architecture, AVA internal capabilities were reor
 ### Change packages
 
 * `@antv/knowledge` changed to `@antv/ckb`, basic usage remains the same;
-* `@antv/dw-*` series, including `@antv/dw-analyzer`、`@antv/dw-transform`、`@antv/dw-random` and `@antv/dw-util` uniform as `@antv/data-wizard`. The api has also been updated, see the api changes below for details.
+* `@antv/dw-*` series, including `@antv/dw-analyzer`、`@antv/dw-transform`、`@antv/dw-random` and `@antv/dw-util` uniform as `@antv/data`. The api has also been updated, see the api changes below for details.
 
 ### Deprecated packages
 
@@ -60,13 +60,13 @@ options list:
 
 #### `@antv/dw-*`
 
-`DataWizard` related packages were integrated into `@antv/data-wizard`, and the methods could be imported directly from it. The changes are as follows:
+`DataWizard` related packages were integrated into `@antv/data`, and the methods could be imported directly from it. The changes are as follows:
 
-* Use `import { analyzer } from '@antv/data-wizard` instead of `@antv/dw-analyzer`，and add `import { DataFrame } from '@antv/data-wizard` to support data manipulation.
-* Use `import { random } from '@antv/data-wizard` instead of `@antv/dw-random`。
-* Use `import { utils } from '@antv/data-wizard` instead of `@antv/dw-util`。
+* Use `import { analyzer } from '@antv/data` instead of `@antv/dw-analyzer`，and add `import { DataFrame } from '@antv/data` to support data manipulation.
+* Use `import { random } from '@antv/data` instead of `@antv/dw-random`。
+* Use `import { utils } from '@antv/data` instead of `@antv/dw-util`。
 * `@antv/dw-transform` was deprecated，using `DataFrame` 和 `utils` instead of it。
-* Add `statistics` by `import { statistics } from '@antv/data-wizard`。
+* Add `statistics` by `import { statistics } from '@antv/data`。
 
 Import method:
 
@@ -77,20 +77,20 @@ const a = [1, 2, 3];
 const info = type(a);
 
 // After
-import { DataFrame } from '@antv/data-wizard';
+import { DataFrame } from '@antv/ava';
 const df = new DataFrame([1, 2, 3]);
 const info = df.info();
 // or
-import { analyzeField } from '@antv/data-wizard';
+import { analyzeField } from '@antv/ava';
 const a = [1, 2, 3];
 const info = analyzeField(a);
 ```
 
 More details: 
 
-* [DataFrame](../api/data-wizard/data-frame)
-* [statistics](../api/data-wizard/statistics)
-* [random](../api/data-wizard/random)
+* [DataFrame](../api/data/data-frame)
+* [statistics](../api/data/statistics)
+* [random](../api/data/random)
 
 ### New
 
