@@ -35,7 +35,7 @@ order: 3
 
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| summaryType |  `text`\|`spec` | 洞察描述返回纯文本或者文本结构化描述 | 'text' |
+| lang | `en-US`\|`zh-CN` | 洞察描述返回纯文本或者文本结构化描述 | 'en-US' |
 
 
 * ***InsightInfo|HomogeneousInsightInfo*** 洞察信息
@@ -43,7 +43,7 @@ order: 3
 | 属性 | 类型 | 描述 | 示例 |  
 | ----| ---- | ---- | -----|
 | subspace | `Subspace` | 该洞察数据主体的子空间信息（Subspace）。 | `[{ dimension: 'Year', value: '2000' }]`(子空间为 Year = 2000) |
-| dimensions | `string[]` | 该洞察数据主体的维度, 并且作为下一轮子空间划分的分组维度。 | `['country']` |
+| dimensions | `string[]` | 该洞察数据主体的维度, 并且作为下一轮子空间划分的分组维度。 | `[fieldName: 'country']` |
 | measures |  `Measure[]` | 该洞察数据主体的计算指标。 | `[{ field: 'life_expect', method: 'MEAN' }]` |
 | data |  `Datum[]` | 该洞察数据主体的相关数据。 | `[{ country: 'China', life_expect: 61 }]` |
 | patterns |  `PatternInfo[] \| HomogeneousPatternInfo[]` | 该洞察数据主体上的模式集合 | `[{ type: 'outlier', significance: 0.98, dimension: 'country', measure: 'life_expect', index: 5, x: 'china', y: '43' }, ...]` |
@@ -62,9 +62,9 @@ getInsights(data, {
   limit: 30,
   dimensions: ['year', 'country'],
   measures: [
-    { field: 'life_expect', method: 'MEAN' },
-    { field: 'pop', method: 'SUM' },
-    { field: 'fertility', method: 'MEAN' },
+    { fieldName: 'life_expect', method: 'MEAN' },
+    { fieldName: 'pop', method: 'SUM' },
+    { fieldName: 'fertility', method: 'MEAN' },
   ]
 });
 ```
@@ -77,8 +77,8 @@ import { getInsights } from '@antv/ava';
 getInsights(data, {
   impactWeight: 0.5,
   impactMeasures: [
-    { field: 'life_expect', method: 'COUNT' },
-    { field: 'pop', method: 'SUM' },
+    { fieldName: 'life_expect', method: 'COUNT' },
+    { fieldName: 'pop', method: 'SUM' },
   ]
 });
 ```

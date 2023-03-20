@@ -32,7 +32,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 
 | Properties | Type | Description | Default| 
 | ----| ---- | ---- | -----|
-| summaryType |  `text`\|`spec` | pure text or text spec to description insight summary | 'text' |
+| lang |  `en-US`\|`zh-CN` | explain insight use which language | 'en-US' |
 
 * ***InsightInfo|HomogeneousInsightInfo*** Insight information.
 
@@ -57,9 +57,9 @@ getInsights(data, {
   limit: 30,
   dimensions: ['year', 'country'],
   measures: [
-    { field: 'life_expect', method: 'MEAN' },
-    { field: 'pop', method: 'SUM' },
-    { field: 'fertility', method: 'MEAN' },
+    { fieldName: 'life_expect', method: 'MEAN' },
+    { fieldName: 'pop', method: 'SUM' },
+    { fieldName: 'fertility', method: 'MEAN' },
   ]
 });
 ```
@@ -73,8 +73,8 @@ import { getInsights } from '@antv/ava';
 getInsights(data, {
   impactWeight: 0.5,
   impactMeasures: [
-    { field: 'life_expect', method: 'COUNT' },
-    { field: 'pop', method: 'SUM' },
+    { fieldName: 'life_expect', method: 'COUNT' },
+    { fieldName: 'pop', method: 'SUM' },
   ]
 });
 ```
