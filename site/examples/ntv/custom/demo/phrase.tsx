@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
 import { Tooltip } from 'antd';
 import { NarrativeTextVis, NtvPluginManager, createMetricName, createCustomPhraseFactory } from '@antv/ava-react';
 
-import type { NtvTypes } from '@antv/ava-react';
+import type { NarrativeTextSpec } from '@antv/ava-react';
 
-const textSpec: NtvTypes.NarrativeTextSpec = {
+const textSpec: NarrativeTextSpec = {
   sections: [
     {
       paragraphs: [

@@ -10,7 +10,7 @@ ntv-schema 一套用于声明式描述解读文本结构的 json schema，是 NT
 1. 使用类型定义
 ```ts
 import { NtvTypes } from '@antv/ava';
-// NtvTypes.NarrativeTextSpec
+// NarrativeTextSpec
 ```
 2. 使用 json-schema
 

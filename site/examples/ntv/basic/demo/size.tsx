@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
 import { Form, Radio } from 'antd';
 import { NarrativeTextVis } from '@antv/ava-react';
 
-import type { NtvTypes, NarrativeTextVisProps } from '@antv/ava-react';
+import type { NarrativeTextSpec, BulletItemSpec, NarrativeTextVisProps } from '@antv/ava-react';
 
-const spec: NtvTypes.NarrativeTextSpec = {
+const spec: NarrativeTextSpec = {
   sections: [
     {
       paragraphs: [
@@ -41,7 +41,7 @@ const spec: NtvTypes.NarrativeTextSpec = {
             ...[
               ['数金服务', '3.23亿', '40.12%'],
               ['民生服务', '1.23亿', '20.12%'],
-            ].map<NtvTypes.BulletItemSpec>((item) => ({
+            ].map<BulletItemSpec>((item) => ({
               type: 'bullet-item',
               phrases: [
                 { type: 'entity', value: item[0], metadata: { entityType: 'dim_value' } },

@@ -15,7 +15,7 @@ import moment from 'moment';
 import Mock from 'mockjs';
 
 import type { Plot } from '@antv/g2plot';
-import type { NtvTypes } from '@antv/ava-react';
+import type { NarrativeTextSpec } from '@antv/ava-react';
 
 const DATE_FORMAT = 'YYYY.MM.DD';
 const mockData = Array.from({ length: 100 }, (v, i) => ({
@@ -149,7 +149,7 @@ const Chart = ({ chartTypes, config }) => {
 
 const App = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [textSpec, setTextSpec] = useState<NtvTypes.NarrativeTextSpec>({});
+  const [textSpec, setTextSpec] = useState<NarrativeTextSpec>({});
   const [pluginManager] = useState(new NtvPluginManager());
 
   const getTextSpecFormServer = useCallback((compareDate?: string) => {

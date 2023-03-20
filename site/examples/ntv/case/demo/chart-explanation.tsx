@@ -6,11 +6,11 @@ import { PlotCard } from 'antv-site-demo-rc';
 import { getInsights } from '@antv/ava';
 import { NarrativeTextVis } from '@antv/ava-react';
 
-import type { InsightTypes } from '@antv/ava';
+import type { InsightsResult } from '@antv/ava';
 
 const App = () => {
   const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState<InsightTypes.InsightsResult>();
+  const [result, setResult] = useState<InsightsResult>();
 
   useEffect(() => {
     fetch('https://cdn.jsdelivr.net/npm/vega-datasets@2.2.0/data/gapminder.json')

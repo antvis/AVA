@@ -10,7 +10,7 @@ generateTextSpec({ structures, structureTemps, variable }: {
   variable: Variable;
   structures: Structure[];
   structureTemps?: StructureTemp[];
-}): NtvTypes.NarrativeTextVis
+}): NarrativeTextVis
 ```
 
 ### Structure

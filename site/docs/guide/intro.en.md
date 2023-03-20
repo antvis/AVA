@@ -182,7 +182,7 @@ Basic usage:
 import { NarrativeTextVis } from '@antv/ava-react';
 
 export default () => {
-  // textSpec in NtvTypes.NarrativeTextSpec
+  // textSpec in NarrativeTextSpec
   return <NarrativeTextVis spec={textSpec} />
 }
 ```

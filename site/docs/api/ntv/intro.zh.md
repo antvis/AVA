@@ -9,7 +9,7 @@ order: 1
 
 | 属性         | 类型                | 描述                 | 默认值          |
 | ------------ | ------------------- | -------------------- | --------------- |
-| spec         | `NtvTypes.NarrativeTextSpec`             | 结构数据             | 无              |
+| spec         | `NarrativeTextSpec`             | 结构数据             | 无              |
 | size         | 'normal' \| 'small'    | 字体大小，normal 是 14px，small 是 12px           | 'default'              |
 | theme         | 'light' \| 'dark'    | 主题色，当前支持 light 亮色模式和 dark 暗色模式          | 'light'              |
 | showCollapse         | boolean \| CollapseConfig    |     段落可折叠配置      | false              |

@@ -15,7 +15,7 @@ order: 2
 ```tsx
 import { NarrativeTextVis, NtvTypes } from '@antv/ava-react';
 
-const textSpec: NtvTypes.NarrativeTextSpec = {
+const textSpec: NarrativeTextSpec = {
   // ...
 };
 
