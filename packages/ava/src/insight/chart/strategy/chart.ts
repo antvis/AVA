@@ -27,6 +27,9 @@ export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationS
     return {
       ...commonSpec,
       type: 'line',
+      style: {
+        lineWidth: 2,
+      },
     };
   }
 
