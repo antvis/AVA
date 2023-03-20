@@ -1,8 +1,7 @@
-import type { NtvTypes, NtvPluginType } from '@antv/ava-react';
+import type { NtvPluginType } from '../NarrativeTextVis';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Tool } from './Toolbar/types';
-// TODO @chenluli export form insight module
-import type { InsightInfo, InsightOptions, PatternInfo } from '@antv/ava/lib/insight/types';
+import type { InsightInfo, InsightOptions, NarrativeTextSpec } from '@antv/ava';
 
 export type CardType = 'mini' | 'standard' | 'expand' | 'detail';
 
@@ -20,7 +19,7 @@ export type InsightCardInfo = Omit<InsightInfo, 'score' | 'patterns' | 'visualiz
    * analysis result data, if not defined, will be referred by autoInsightOptions. One of `autoInsightOptions` and `patterns` must be assigned
     分析得到的洞察数据，`autoInsightOptions` 和 `patterns` 至少有一个必须被赋值
   */
-  patterns?: PatternInfo[];
+  patterns?: InsightInfo['patterns'];
 };
 
 /** events that may be emitted by card */
@@ -30,7 +29,7 @@ export type InsightCardEventHandlers = {
   /** events emitted when the card expose */
   onCardExpose?: (insightInfo?: InsightCardInfo, dom?: HTMLElement) => void;
   /** events emitted when insight data change */
-  onChange?: (insightInfo?: InsightCardInfo, contentSpec?: NtvTypes.NarrativeTextSpec) => void;
+  onChange?: (insightInfo?: InsightCardInfo, contentSpec?: NarrativeTextSpec) => void;
 };
 
 export type InsightCardProps = CommonProps &
@@ -44,13 +43,13 @@ export type InsightCardProps = CommonProps &
     /** tools in the footer of card, by default, there are copy and share tools */
     footerTools?: Tool[];
     /** options used to generate the insight, one of `autoInsightOptions` and `patterns` must be assigned */
-    autoInsightOptions?: Omit<InsightOptions, 'visualization' | 'dimensions' | 'measures'> & {
+    autoInsightOptions?: Omit<InsightOptions, 'dimensions' | 'measures'> & {
       allData: { [x: string]: any }[];
     };
     /** function for customizing content */
     customContentSpec?:
-      | NtvTypes.NarrativeTextSpec
-      | ((insightInfo?: InsightCardInfo, defaultSpec?: NtvTypes.NarrativeTextSpec) => NtvTypes.NarrativeTextSpec);
+      | NarrativeTextSpec
+      | ((insightInfo?: InsightCardInfo, defaultSpec?: NarrativeTextSpec) => NarrativeTextSpec);
     /** custom plugins, should pass if your customized schema includes special plugins ntv schema 中，自己定制的 plugins */
     extraPlugins?: NtvPluginType[];
   };
