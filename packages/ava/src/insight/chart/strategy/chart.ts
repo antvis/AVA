@@ -17,8 +17,15 @@ export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationS
     return {
       ...commonSpec,
       type: 'interval',
+      encode: {
+        color: dimensions[0].fieldName,
+        y: measures[0].fieldName,
+      },
       transform: [{ type: 'stackY' }],
-      coordinate: { type: 'theta' },
+      coordinate: { type: 'theta', innerRadius: 0.25, outerRadius: 0.8 },
+      tooltip: {
+        items: [{ field: dimensions[0].fieldName }, { field: measures[0].fieldName }],
+      },
     };
   }
 

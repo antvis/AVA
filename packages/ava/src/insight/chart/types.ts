@@ -37,3 +37,7 @@ export type AreaMarkConfig = {
   style?: Mark['style'];
   tooltip?: Mark['tooltip'];
 };
+
+export type IntervalMarkConfig = {
+  style?: Mark['style'];
+};

@@ -17,12 +17,16 @@ export const textMarkStrategy = (patterns: PointPatternInfo[], textConfig?: Text
   return {
     type: 'text',
     data,
+    encode: {
+      x: dimension,
+      y: measure,
+    },
     style: {
       text: label
         ? customLabel
         : (d) => {
-            const value = isFunction(formatter) ? formatter(d.y) : d.y;
-            return `${d.x}, ${measure}: ${value}`;
+            const value = isFunction(formatter) ? formatter(d[measure]) : d[measure];
+            return `${d[dimension]}\n${value}`;
           },
       ...TEXT_STYLE,
       ...style,

@@ -17,31 +17,31 @@ import {
 } from '../strategy';
 import { LineMarkConfig, PointMarkConfig, TextMarkConfig } from '../types';
 
+// The generateInsightAugmentedMarks needs to be refactored, it's not exported now.
 export function generateInsightAugmentedMarks(
-  patternGroup: PatternInfo[],
+  insight: InsightInfo<PatternInfo>,
   markStyleConfig?: TextMarkConfig | LineMarkConfig | PointMarkConfig
 ): G2Spec {
-  const { type: insightType } = patternGroup[0];
+  const { type: insightType } = insight?.patterns[0];
 
   const insightType2Strategy: Record<
     string,
-    (patternGroup: PatternInfo[], markStyleConfig?: TextMarkConfig | LineMarkConfig | PointMarkConfig) => Mark[]
+    (insight: InsightInfo<PatternInfo>, markStyleConfig?: TextMarkConfig | LineMarkConfig | PointMarkConfig) => Mark[]
   > = {
-    // @ts-ignore The generateInsightAugmentedMarks needs to be refactored, it's not exported now.
     trend: trendAugmentedMarksStrategy,
     category_outlier: categoryOutlierAugmentedMarksStrategy,
     change_point: changePointAugmentedMarksStrategy,
     low_variance: lowVarianceAugmentedMarkStrategy,
   };
 
-  const augmentedMarks = insightType2Strategy[insightType]?.(patternGroup, markStyleConfig);
+  const augmentedMarks = insightType2Strategy[insightType]?.(insight, markStyleConfig);
   return augmentedMarks;
 }
 
-export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>, patternGroup: PatternInfo[]): G2Spec {
-  const { type: insightType } = patternGroup[0];
+export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>): G2Spec {
+  const { type: insightType } = insight.patterns[0];
 
-  const insightType2Strategy: Record<string, (insight: InsightInfo<PatternInfo>, patterns: PatternInfo[]) => Mark[]> = {
+  const insightType2Strategy: Record<string, (insight: InsightInfo<PatternInfo>) => Mark[]> = {
     trend: trendStrategy,
     time_series_outlier: timeSeriesOutlierStrategy,
     category_outlier: categoryOutlierStrategy,
@@ -51,6 +51,6 @@ export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>, patt
     correlation: correlationStrategy,
   };
 
-  const marks = insightType2Strategy[insightType]?.(insight, patternGroup);
+  const marks = insightType2Strategy[insightType]?.(insight);
   return viewSpecStrategy(marks);
 }

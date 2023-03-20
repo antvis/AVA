@@ -4,19 +4,21 @@ import { dataFormat } from '../../../../utils';
 import { InsightInfo, CategoryOutlierInfo } from '../../../types';
 import { BOLD_FONT_WEIGHT } from '../../constants';
 import { insight2ChartStrategy } from '../chart';
-import { textMarkStrategy } from '../commonMarks';
+import { textMarkStrategy, intervalMarkStrategy } from '../commonMarks';
 
-export const categoryOutlierAugmentedMarksStrategy = (patterns: CategoryOutlierInfo[]): Mark[] => {
+export const categoryOutlierAugmentedMarksStrategy = (insight: InsightInfo<CategoryOutlierInfo>): Mark[] => {
+  const { patterns } = insight;
   // todo @chenluli change color of outliers
-  const textMark = textMarkStrategy(patterns, { style: { fontWeight: BOLD_FONT_WEIGHT, formatter: dataFormat } });
-  return [textMark];
+  const rectMark = intervalMarkStrategy(patterns);
+  const textMark = textMarkStrategy(patterns, {
+    style: { fontWeight: BOLD_FONT_WEIGHT, dy: -8 },
+    formatter: dataFormat,
+  });
+  return [rectMark, textMark];
 };
 
-export const categoryOutlierStrategy = (
-  insight: InsightInfo<CategoryOutlierInfo>,
-  patterns: CategoryOutlierInfo[]
-): Mark[] => {
+export const categoryOutlierStrategy = (insight: InsightInfo<CategoryOutlierInfo>): Mark[] => {
   const chart = insight2ChartStrategy(insight);
-  const augmentedMarks = categoryOutlierAugmentedMarksStrategy(patterns);
+  const augmentedMarks = categoryOutlierAugmentedMarksStrategy(insight);
   return [chart, ...augmentedMarks];
 };
