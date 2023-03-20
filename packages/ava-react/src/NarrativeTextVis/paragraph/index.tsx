@@ -6,7 +6,7 @@ import { Heading } from './Heading';
 import { TextLine } from './TextLine';
 import { Bullets } from './Bullets';
 
-import type { NtvTypes } from '@antv/ava';
+import type { ParagraphSpec } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, ParagraphEvents } from '../types';
 
 type ParagraphProps = ThemeStylesProps &
@@ -16,7 +16,7 @@ type ParagraphProps = ThemeStylesProps &
      * @description specification of paragraph text spec
      * @description.zh-CN 段落描述 json 信息
      */
-    spec: NtvTypes.ParagraphSpec;
+    spec: ParagraphSpec;
   };
 
 export function Paragraph({ spec, pluginManager, size = 'normal', theme = 'light', ...events }: ParagraphProps) {

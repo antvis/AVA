@@ -50,6 +50,28 @@ export {
 export { TextExporter, copyToClipboard } from './chore/exporter';
 export { seedToken } from './theme';
 
-export type { NtvTypes } from '@antv/ava';
+export type {
+  NarrativeTextSpec,
+  HeadlineSpec,
+  SectionSpec,
+  StandardSectionSpec,
+  ParagraphSpec,
+  HeadingParagraphSpec,
+  TextParagraphSpec,
+  BulletsParagraphSpec,
+  BulletItemSpec,
+  CustomBlockElement,
+  PhraseSpec,
+  TextPhraseSpec,
+  EntityPhraseSpec,
+  CustomPhraseSpec,
+  ValueAssessment,
+  EntityType,
+  EntityMetaData,
+  CustomMetaData,
+  Structure,
+  StructureTemp,
+  Variable,
+} from '@antv/ava';
 export type { NarrativeTextVisProps } from './types';
 export type { PluginType as NtvPluginType } from './chore/plugin';

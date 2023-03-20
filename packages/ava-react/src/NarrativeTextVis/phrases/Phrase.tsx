@@ -12,13 +12,13 @@ import { PhraseDescriptor, presetPluginManager } from '../chore/plugin';
 import { getThemeColor } from '../theme';
 
 import type { ReactNode } from 'react';
-import type { NtvTypes } from '@antv/ava';
+import type { PhraseSpec, EntityPhraseSpec, CustomPhraseSpec } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
 
 type PhraseProps = ThemeStylesProps &
   ExtensionProps &
   PhraseEvents & {
-    spec: NtvTypes.PhraseSpec;
+    spec: PhraseSpec;
   };
 
 function renderPhraseByDescriptor({
@@ -27,7 +27,7 @@ function renderPhraseByDescriptor({
   themeStyles,
   events,
 }: {
-  spec: NtvTypes.EntityPhraseSpec | NtvTypes.CustomPhraseSpec;
+  spec: EntityPhraseSpec | CustomPhraseSpec;
   descriptor: PhraseDescriptor<any>;
   themeStyles: ThemeStylesProps;
   events: PhraseEvents;
