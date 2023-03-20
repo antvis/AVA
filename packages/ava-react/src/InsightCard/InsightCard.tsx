@@ -12,11 +12,10 @@ import { Title } from './Title';
 import { Toolbar } from './Toolbar';
 import { insightCardPresetPlugins } from './ntvPlugins';
 import { INSIGHT_CARD_PREFIX_CLS } from './constants';
+import { Container } from './styled/container';
 
 import type { Tool } from './Toolbar/types';
 import type { InsightCardProps, InsightCardInfo, InsightDataStatus } from './types';
-
-import './index.less';
 
 export const InsightCard: React.FC<InsightCardProps> = ({
   className,
@@ -74,7 +73,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     if (!currentInsightInfo)
       return isFunction(customContentSpec) ? customContentSpec?.(currentInsightInfo) : customContentSpec;
 
-    const defaultSpec = generateContentVisSpec(currentInsightInfo, autoInsightOptions?.visualizationOptions);
+    const defaultSpec = generateContentVisSpec(currentInsightInfo, autoInsightOptions?.visualization);
     const customSpec = isFunction(customContentSpec)
       ? customContentSpec?.(currentInsightInfo, defaultSpec)
       : customContentSpec;
@@ -127,7 +126,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   };
 
   return (
-    <div className={cx(className, prefixCls)} style={styles} ref={ref}>
+    <Container className={cx(className, prefixCls)} style={styles} ref={ref}>
       <Title
         title={title}
         measures={measures}
@@ -153,6 +152,6 @@ export const InsightCard: React.FC<InsightCardProps> = ({
         )}
       </Spin>
       {dataStatus === 'ERROR' && <p>{errorMessage}</p>}
-    </div>
+    </Container>
   );
 };

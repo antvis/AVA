@@ -1,5 +1,5 @@
 import { chartsDisplayPlugin } from './plugins/chartPlugin';
 
-import type { NtvPluginType } from '@antv/ava-react';
+import type { NtvPluginType } from '../../NarrativeTextVis';
 
 export const insightCardPresetPlugins: NtvPluginType[] = [chartsDisplayPlugin];
