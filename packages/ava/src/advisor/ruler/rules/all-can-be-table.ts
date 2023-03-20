@@ -11,7 +11,7 @@ export const allCanBeTable: RuleModule = {
     lintText: 'all dataset can be table',
   },
   trigger: ({ chartType }) => {
-    return applyChartTypes.indexOf(chartType) !== -1;
+    return applyChartTypes.includes(chartType);
   },
   validator: ({ weight }): number => {
     return isUndefined(weight) ? 1 : weight;
