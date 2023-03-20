@@ -14,7 +14,7 @@ const data = [
 
 describe('extract change-point insight', () => {
   test('check change-point result', () => {
-    const result = extractor(data, ['year'], [{ field: 'value', method: 'SUM' }]);
+    const result = extractor(data, ['year'], [{ fieldName: 'value', method: 'SUM' }]);
     expect(result[0]?.index).toEqual(5);
   });
 });
