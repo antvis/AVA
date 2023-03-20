@@ -34,7 +34,7 @@ export interface BasicDataPropertyForAdvice {
 }
 
 /**
- * 偏好选项
+ * 偏好选项：横向布局 - landscape | 纵向布局 - portrait
  * @public
  */
 export interface Preferences {
