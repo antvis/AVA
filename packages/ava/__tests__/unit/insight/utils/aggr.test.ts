@@ -42,8 +42,8 @@ describe('Aggregation', () => {
   test('aggregation', () => {
     expect(
       aggregate(data, 'grade', [
-        { field: 'count', method: 'SUM' },
-        { field: 'score', method: 'MEAN' },
+        { fieldName: 'count', method: 'SUM' },
+        { fieldName: 'score', method: 'MEAN' },
       ])
     ).toEqual([
       { count: 205, grade: 'grade1', score: 8 },
@@ -52,7 +52,7 @@ describe('Aggregation', () => {
   });
 
   test('aggregation with expandingField', () => {
-    expect(aggregateWithSeries(data, 'grade', { field: 'count', method: 'SUM' }, 'class')).toEqual([
+    expect(aggregateWithSeries(data, 'grade', { fieldName: 'count', method: 'SUM' }, 'class')).toEqual([
       { class: 'class1', count: 70, grade: 'grade1' },
       { class: 'class2', count: 80, grade: 'grade1' },
       { class: 'class3', count: 55, grade: 'grade1' },
@@ -65,8 +65,8 @@ describe('Aggregation', () => {
   test('aggregation with blending measures', () => {
     expect(
       aggregateWithMeasures(data, 'grade', [
-        { field: 'count', method: 'SUM' },
-        { field: 'score', method: 'MEAN' },
+        { fieldName: 'count', method: 'SUM' },
+        { fieldName: 'score', method: 'MEAN' },
       ])
     ).toEqual([
       { grade: 'grade1', measureName: 'count', value: 205 },

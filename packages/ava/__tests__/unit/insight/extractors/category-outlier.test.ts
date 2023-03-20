@@ -37,7 +37,7 @@ const data = [
 
 describe('extract category-outlier insight', () => {
   test('check outliers result', () => {
-    const result = extractor(data, ['type'], [{ field: 'sales', method: 'SUM' }]);
+    const result = extractor(data, ['type'], [{ fieldName: 'sales', method: 'SUM' }]);
     const outlierIndexes = result?.map((item) => item.index);
     expect(outlierIndexes).toStrictEqual([3]);
   });

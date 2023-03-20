@@ -40,8 +40,8 @@ describe('extract correlation insight', () => {
       data,
       [],
       [
-        { field: 'x', method: 'SUM' },
-        { field: 'y', method: 'SUM' },
+        { fieldName: 'x', method: 'SUM' },
+        { fieldName: 'y', method: 'SUM' },
       ]
     );
     expect(result[0]?.pcorr).toBeGreaterThan(0.8);

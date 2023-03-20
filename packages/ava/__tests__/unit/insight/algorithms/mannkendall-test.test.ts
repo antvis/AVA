@@ -1,4 +1,4 @@
-import { mkTest } from '../../../../src/insight/algorithms';
+import { trendDirection } from '../../../../src/insight/algorithms';
 
 const increasingData = [3, 4, 3.5, 5, 4.9, 6, 7, 9, 13, 15];
 
@@ -20,8 +20,8 @@ const noTrendData = [
 
 describe('Mann-Kendall Test', () => {
   test('check trends result', () => {
-    expect(mkTest(increasingData, 0.05).trend).toBe('increasing');
-    expect(mkTest(decreasingData, 0.05).trend).toBe('decreasing');
-    expect(mkTest(noTrendData, 0.05).trend).toBe('no trend');
+    expect(trendDirection.mkTest(increasingData, 0.05).trend).toBe('increasing');
+    expect(trendDirection.mkTest(decreasingData, 0.05).trend).toBe('decreasing');
+    expect(trendDirection.mkTest(noTrendData, 0.05).trend).toBe('no trend');
   });
 });

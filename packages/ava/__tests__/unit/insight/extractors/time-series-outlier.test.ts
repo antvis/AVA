@@ -14,7 +14,7 @@ const data = [
 
 describe('extract time-series-outlier insight', () => {
   test('check outliers result', () => {
-    const result = extractor(data, ['year'], [{ field: 'value', method: 'SUM' }]);
+    const result = extractor(data, ['year'], [{ fieldName: 'value', method: 'SUM' }]);
     const outliers = result?.map((item) => item.index);
     expect(outliers).toStrictEqual([7]);
   });

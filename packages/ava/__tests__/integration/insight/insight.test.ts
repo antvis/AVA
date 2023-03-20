@@ -118,8 +118,8 @@ const isCloseToHomogeneousInfo = ({
   return (
     expectInfo?.type === realInfo?.type &&
     expectInfo?.insightType === realInfo?.insightType &&
-    isEqual(realInfo?.commSet, expectInfo?.commSet) &&
-    isEqual(realInfo?.exc, expectInfo?.exc) &&
+    isEqual(realInfo?.commonSet, expectInfo?.commonSet) &&
+    isEqual(realInfo?.exceptions, expectInfo?.exceptions) &&
     isCloseToNumber(expectInfo?.significance, realInfo?.significance)
   );
 };
@@ -227,12 +227,12 @@ describe('test for trend insight', () => {
     ];
     const result = getInsights(data, {
       insightTypes: ['change_point'],
-      dimensions: ['year'],
+      dimensions: [{ fieldName: 'year' }],
     });
     expect(result.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'value', method: 'SUM' }],
-        dimensions: ['year'],
+        measures: [{ fieldName: 'value', method: 'SUM' }],
+        dimensions: [{ fieldName: 'year' }],
         subspace: [],
         patterns: [
           {
@@ -261,12 +261,12 @@ describe('test for trend insight', () => {
     ];
     const result = getInsights(data, {
       insightTypes: ['time_series_outlier'],
-      dimensions: ['year'],
+      dimensions: [{ fieldName: 'year' }],
     });
     expect(result.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'value', method: 'SUM' }],
-        dimensions: ['year'],
+        measures: [{ fieldName: 'value', method: 'SUM' }],
+        dimensions: [{ fieldName: 'year' }],
         subspace: [],
         patterns: [
           {
@@ -296,12 +296,12 @@ describe('test for trend insight', () => {
     ];
     const increasingResult = getInsights(increasingData, {
       insightTypes: ['trend'],
-      dimensions: ['year'],
+      dimensions: [{ fieldName: 'year' }],
     });
     expect(increasingResult.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'increasingValue', method: 'SUM' }],
-        dimensions: ['year'],
+        measures: [{ fieldName: 'increasingValue', method: 'SUM' }],
+        dimensions: [{ fieldName: 'year' }],
         subspace: [],
         patterns: [
           {
@@ -328,12 +328,12 @@ describe('test for trend insight', () => {
     ];
     const decreasingResult = getInsights(decreasingData, {
       insightTypes: ['trend'],
-      dimensions: ['year'],
+      dimensions: [{ fieldName: 'year' }],
     });
     expect(decreasingResult.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'decreasingValue', method: 'SUM' }],
-        dimensions: ['year'],
+        measures: [{ fieldName: 'decreasingValue', method: 'SUM' }],
+        dimensions: [{ fieldName: 'year' }],
         subspace: [],
         patterns: [
           {
@@ -364,12 +364,12 @@ describe('test for distribution insight', () => {
   test('Majority', async () => {
     const result = getInsights(dataWithMajorityAndOutlier, {
       insightTypes: ['majority'],
-      dimensions: ['product'],
+      dimensions: [{ fieldName: 'product' }],
     });
     expect(result.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'yield', method: 'SUM' }],
-        dimensions: ['product'],
+        measures: [{ fieldName: 'yield', method: 'SUM' }],
+        dimensions: [{ fieldName: 'product' }],
         subspace: [],
         patterns: [
           {
@@ -399,12 +399,12 @@ describe('test for distribution insight', () => {
     ];
     const result = getInsights(data, {
       insightTypes: ['low_variance'],
-      dimensions: ['product'],
+      dimensions: [{ fieldName: 'product' }],
     });
     expect(result.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'price', method: 'SUM' }],
-        dimensions: ['product'],
+        measures: [{ fieldName: 'price', method: 'SUM' }],
+        dimensions: [{ fieldName: 'product' }],
         subspace: [],
         patterns: [
           {
@@ -420,12 +420,12 @@ describe('test for distribution insight', () => {
   test('category outlier', async () => {
     const result = getInsights(dataWithMajorityAndOutlier, {
       insightTypes: ['category_outlier'],
-      dimensions: ['product'],
+      dimensions: [{ fieldName: 'product' }],
     });
     expect(result.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'yield', method: 'SUM' }],
-        dimensions: ['product'],
+        measures: [{ fieldName: 'yield', method: 'SUM' }],
+        dimensions: [{ fieldName: 'product' }],
         subspace: [],
         patterns: [
           {
@@ -451,15 +451,15 @@ describe('test for multiple metrics', () => {
     });
     const result = getInsights(data, {
       insightTypes: ['correlation'],
-      dimensions: ['index'],
+      dimensions: [{ fieldName: 'index' }],
     });
     expect(result.insights).toBeIncludeInsights([
       {
         measures: [
-          { field: 'x', method: 'SUM' },
-          { field: 'y', method: 'SUM' },
+          { fieldName: 'x', method: 'SUM' },
+          { fieldName: 'y', method: 'SUM' },
         ],
-        dimensions: ['index'],
+        dimensions: [{ fieldName: 'index' }],
         subspace: [],
         patterns: [
           {
@@ -518,13 +518,13 @@ describe('test for multiple metrics', () => {
       { year: '2009', increasingValue: 10, country: 'iuy' },
     ];
     const result = getInsights(data1, {
-      measures: [{ field: 'increasingValue', method: 'SUM' }],
+      measures: [{ fieldName: 'increasingValue', method: 'SUM' }],
       homogeneous: true,
     });
     expect(result.homogeneousInsights).toBeIncludeInsights([
       {
-        measures: [{ field: 'increasingValue', method: 'SUM' }],
-        dimensions: ['country', 'year'],
+        measures: [{ fieldName: 'increasingValue', method: 'SUM' }],
+        dimensions: [{ fieldName: 'country' }, { fieldName: 'year' }],
         subspace: [],
         patterns: [
           {
@@ -573,11 +573,11 @@ describe('test for multiple insights', () => {
       { year: '2009', country: 'England', export: 20, humidity: 7 },
     ];
     const multiPattensResult = getInsights(multiPattensData, {
-      dimensions: ['year', 'country'],
+      dimensions: [{ fieldName: 'year' }, { fieldName: 'country' }],
     });
     expect(multiPattensResult.insights).toBeIncludeInsights([
       {
-        measures: [{ field: 'export', method: 'SUM' }],
+        measures: [{ fieldName: 'export', method: 'SUM' }],
         dimensions: ['year'],
         subspace: [{ dimension: 'country', value: 'China' }],
         patterns: [
@@ -589,7 +589,7 @@ describe('test for multiple insights', () => {
         ],
       },
       {
-        measures: [{ field: 'export', method: 'SUM' }],
+        measures: [{ fieldName: 'export', method: 'SUM' }],
         dimensions: ['country'],
         subspace: [{ dimension: 'year', value: '2000' }],
         patterns: [
@@ -605,8 +605,8 @@ describe('test for multiple insights', () => {
         ],
       },
       {
-        measures: [{ field: 'humidity', method: 'SUM' }],
-        dimensions: ['year'],
+        measures: [{ fieldName: 'humidity', method: 'SUM' }],
+        dimensions: [{ fieldName: 'year' }],
         subspace: [{ dimension: 'country', value: 'England' }],
         patterns: [
           {
