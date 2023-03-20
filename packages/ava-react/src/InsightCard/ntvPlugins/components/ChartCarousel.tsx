@@ -26,12 +26,12 @@ export const ChartCarousel = ({
       label: (
         <span
           style={{
-            border: index === selectedChartIndex ? '1px solid rgba(0,0,0,0.15)' : '1px solid rgba(0,0,0,0.1)',
+            border: index === selectedChartIndex ? '1px solid rgba(0,0,0,0.1)' : '1px solid rgba(0,0,0,0.15)',
             borderRadius: '2px',
             display: 'inline-block',
-            width: index === selectedChartIndex ? '18px' : '12px',
-            height: '4px',
-            backgroundColor: index === selectedChartIndex ? '#fff' : 'rgba(0,0,0,0.15)',
+            width: index === selectedChartIndex ? '8px' : '12px',
+            height: '8px',
+            backgroundColor: index === selectedChartIndex ? 'rgba(0,0,0,0.15)' : '#fff',
             cursor: 'pointer',
             margin: '2px',
           }}

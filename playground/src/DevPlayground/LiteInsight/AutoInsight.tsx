@@ -8,14 +8,14 @@ import datasets from 'vega-datasets';
 import { InsightCard } from '../../../../packages/ava-react/src';
 import { getInsights } from '../../../../packages/ava/lib';
 
-import { customInsightCardContentSpec } from './mockSpec';
-
 import type { InsightInfo, PatternInfo, Datum } from '../../../../packages/ava';
 
 const { Option } = Select;
 
 const datasetOptions = [
   'anomaly',
+  'majority',
+  'changePoint',
   'gapminder',
   'burtin',
   'crimea',
@@ -211,6 +211,32 @@ export default function App() {
           discount_price: 811.11,
         },
       ];
+    } else if (dataset === 'majority') {
+      data = [
+        { product: 'apple', yield: 160 },
+        { product: 'banana', yield: 10 },
+        { product: 'watermelon', yield: 5 },
+        { product: 'orange', yield: 1 },
+        { product: 'eggplant', yield: 2 },
+        { product: 'egg', yield: 4 },
+        { product: 'celery', yield: 9 },
+        { product: 'mango', yield: 7 },
+        { product: 'persimmon', yield: 8.5 },
+        { product: 'tomato', yield: 5 },
+      ];
+    } else if (dataset === 'changePoint') {
+      data = [
+        { year: '2000', value: 0.3 },
+        { year: '2001', value: 0.3 },
+        { year: '2002', value: -0.5 },
+        { year: '2003', value: 0.05 },
+        { year: '2004', value: -0.2 },
+        { year: '2005', value: 0.4 },
+        { year: '2006', value: 9 },
+        { year: '2007', value: 7 },
+        { year: '2008', value: 8.5 },
+        { year: '2009', value: 5 },
+      ];
     } else {
       const datasetName = `${dataset}.json`;
       setDataLoading(true);
@@ -282,15 +308,9 @@ export default function App() {
         <div style={{ borderTop: '1px solid grey' }}>
           <Row justify="space-around">
             {insights.map((insightInfo, index) => {
-              const insightCardProps = {
-                insightInfo,
-                customContentSpec: () => {
-                  return customInsightCardContentSpec;
-                },
-              };
               return (
                 <Col key={index}>
-                  <InsightCard {...insightCardProps} styles={{ width: 400 }} />
+                  <InsightCard insightInfo={insightInfo} styles={{ width: 400 }} />
                 </Col>
               );
             })}

@@ -8,7 +8,6 @@ import { textMarkStrategy, intervalMarkStrategy } from '../commonMarks';
 
 export const categoryOutlierAugmentedMarksStrategy = (insight: InsightInfo<CategoryOutlierInfo>): Mark[] => {
   const { patterns } = insight;
-  // todo @chenluli change color of outliers
   const rectMark = intervalMarkStrategy(patterns);
   const textMark = textMarkStrategy(patterns, {
     style: { fontWeight: BOLD_FONT_WEIGHT, dy: -8 },
