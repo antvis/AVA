@@ -175,9 +175,9 @@ const App = () => {
                 )}
                 <ChartView
                   chartRef={createRef()}
-                  spec={chartSpec}
+                  spec={{ ...chartSpec, height: 280 }}
                   style={{
-                    height: 480,
+                    height: 300,
                   }}
                 />
               </div>
