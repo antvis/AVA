@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
 import { Empty, Row, Spin } from 'antd';
 import cx from 'classnames';
@@ -41,7 +41,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const calculateAndSetInsightPatterns = () => {
+  const calculateAndSetInsightPatterns = useCallback(() => {
     const { allData } = autoInsightOptions;
     setDataStatus('RUNNING');
     try {
@@ -56,7 +56,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       setErrorMessage('');
     }
     setDataStatus('SUCCESS');
-  };
+  }, [measures, dimensions, autoInsightOptions]);
 
   useEffect(() => {
     // if patterns or visualizationSpecs is not empty, do not need generate insight patterns
