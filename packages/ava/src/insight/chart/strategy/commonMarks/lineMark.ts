@@ -4,7 +4,10 @@ import { isFunction } from 'lodash';
 import { INSIGHT_COLOR_PLATTE } from '../../constants';
 import { LineMarkConfig, LineMarkData } from '../../types';
 
-export const lineMarkStrategy = ({ points, x, y }: LineMarkData, { style, label, tooltip }: LineMarkConfig): Mark => {
+export const lineMarkStrategy = (
+  { points, x, y }: LineMarkData,
+  { encode, style, label, tooltip }: LineMarkConfig
+): Mark => {
   const common: Mark = {
     style: {
       lineDash: [2, 2],
@@ -36,6 +39,7 @@ export const lineMarkStrategy = ({ points, x, y }: LineMarkData, { style, label,
       encode: {
         x: (point) => point[0],
         y: (point) => point[1],
+        ...encode,
       },
     };
   }
