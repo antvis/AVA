@@ -58,8 +58,6 @@ options list:
 
 `dataToDataProps` ...
 
-<!-- TODO @龙朱 @pdd -->
-
 #### `@antv/dw-*`
 
 `DataWizard` related packages were integrated into `@antv/data-wizard`, and the methods could be imported directly from it. The changes are as follows:

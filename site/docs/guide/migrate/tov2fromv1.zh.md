@@ -56,8 +56,6 @@ options 对应一览：
 
 `dataToDataProps` ...
 
-<!-- TODO @龙朱 @pdd -->
-
 #### `@antv/dw-*`
 
 `@antv/dw-*` 系列的所有 `DataWizard` 相关包，整合为 `@antv/data-wizard`，可直接从统一包中获取所需方法，变更概述如下：
