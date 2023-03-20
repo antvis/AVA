@@ -10,14 +10,14 @@ const INTERVAL = 'interval';
 const OUTLIER = 'outlier';
 
 export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
-  insight: InsightInfo<TimeSeriesOutlierInfo>,
-  patterns: TimeSeriesOutlierInfo[]
+  insight: InsightInfo<TimeSeriesOutlierInfo>
 ): Mark[] => {
-  const { baselines, thresholds } = patterns[0];
   const {
     data: chartData,
     dimensions: [{ fieldName: dimensionName }],
+    patterns,
   } = insight;
+  const { baselines, thresholds } = patterns[0];
   const data = chartData.map((datum, index) => {
     const baseline = baselines[index];
     const interval = [baseline - Math.abs(thresholds[0]), baseline + thresholds[1]];
@@ -83,11 +83,10 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
 
 export const timeSeriesOutlierStrategy = (
   insight: InsightInfo<TimeSeriesOutlierInfo>,
-  patterns: TimeSeriesOutlierInfo[]
 ): Mark[] => {
   // Should to support marks free combination
   const chartMark = insight2ChartStrategy(insight);
-  const augmentedMarks = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight, patterns)?.slice();
+  const augmentedMarks = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight)?.slice();
   augmentedMarks.splice(2, 0, chartMark);
   return augmentedMarks;
 };
