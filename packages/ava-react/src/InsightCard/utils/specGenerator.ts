@@ -1,8 +1,6 @@
-import { InsightTypes } from '@antv/ava';
+import { InsightTypes, generateInsightVisualizationSpec } from '@antv/ava';
 
 import { DISPLAY_CHARTS_PLUGIN_KEY } from '../constants';
-// todo import from ava after ava 3.0 is published
-import { generateInsightVisualizationSpec } from '../../../../ava/src/insight';
 
 import type { NtvTypes } from '../../NarrativeTextVis';
 import type { InsightCardInfo } from '../types';

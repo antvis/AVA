@@ -1,7 +1,7 @@
 import type { NtvTypes, NtvPluginType } from '../NarrativeTextVis';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Tool } from './Toolbar/types';
-import type { InsightTypes } from '@antv/ava';
+import type { InsightInfo, InsightOptions } from '@antv/ava';
 
 export type CardType = 'mini' | 'standard' | 'expand' | 'detail';
 
@@ -14,12 +14,12 @@ export type CommonProps = {
  * @description basic info of an insight
  * @description.zh-CN 洞察的基本信息
  */
-export type InsightCardInfo = Omit<InsightTypes.InsightInfo, 'score' | 'patterns' | 'visualizationSpecs'> & {
+export type InsightCardInfo = Omit<InsightInfo, 'score' | 'patterns' | 'visualizationSpecs'> & {
   /**
    * analysis result data, if not defined, will be referred by autoInsightOptions. One of `autoInsightOptions` and `patterns` must be assigned
     分析得到的洞察数据，`autoInsightOptions` 和 `patterns` 至少有一个必须被赋值
   */
-  patterns?: InsightTypes.PatternInfo[];
+  patterns?: InsightInfo['patterns'];
 };
 
 /** events that may be emitted by card */
@@ -43,7 +43,7 @@ export type InsightCardProps = CommonProps &
     /** tools in the footer of card, by default, there are copy and share tools */
     footerTools?: Tool[];
     /** options used to generate the insight, one of `autoInsightOptions` and `patterns` must be assigned */
-    autoInsightOptions?: Omit<InsightTypes.InsightOptions, 'dimensions' | 'measures'> & {
+    autoInsightOptions?: Omit<InsightOptions, 'dimensions' | 'measures'> & {
       allData: { [x: string]: any }[];
     };
     /** function for customizing content */
