@@ -48,13 +48,80 @@ export type {
 } from './ckb';
 
 /* data */
-export * from './data/analysis';
-export * from './data/dataset';
-export * from './data/statistics';
-export * from './data/types';
+export { analyzeField } from './data/analysis';
+export { Series, DataFrame } from './data/dataset';
+export {
+  min,
+  max,
+  sum,
+  mean,
+  normalDistributionQuantile,
+  tDistributionQuantile,
+  distinct,
+  valueMap,
+  missing,
+  valid,
+  pearson,
+  covariance,
+  coefficientOfVariance,
+  standardDeviation,
+  variance,
+  quantile,
+  quartile,
+  median,
+  harmonicMean,
+  geometricMean,
+  pcorrtest,
+  cdf,
+  maxabs,
+} from './data/statistics';
+export type {
+  FieldType,
+  FieldInfo,
+  StringFieldInfo,
+  NumberFieldInfo,
+  DateFieldInfo,
+  NDArray,
+  SeriesData,
+  FrameData,
+  Axis,
+  Extra,
+  FieldsInfo,
+} from './data/types';
 
 /* insight */
-export * from './insight';
+export { getInsights, generateInsightVisualizationSpec } from './insight';
+export type {
+  Datum,
+  DomainType,
+  MeasureMethod,
+  ImpactMeasureMethod,
+  Aggregator,
+  DataProperty,
+  Measure,
+  Dimension,
+  Subspace,
+  ImpactMeasure,
+  SubjectInfo,
+  InsightType,
+  HomogeneousInsightType,
+  PatternInfo,
+  VisualizationSpec,
+  InsightInfo,
+  VisualizationOptions,
+  InsightOptions,
+  BasePatternInfo,
+  HomogeneousPatternInfo,
+  PointPatternInfo,
+  CategoryOutlierInfo,
+  TimeSeriesOutlierInfo,
+  ChangePointInfo,
+  MajorityInfo,
+  LinearRegressionResult,
+  LowVarianceInfo,
+  CorrelationInfo,
+  InsightsResult,
+} from './insight';
 
 /* NTV (Narrative Text Vis) */
 export {
@@ -72,4 +139,26 @@ export {
   isEntityType,
   ENTITY_TYPES,
 } from './ntv';
-export * from './ntv/types';
+export type {
+  NarrativeTextSpec,
+  HeadlineSpec,
+  SectionSpec,
+  StandardSectionSpec,
+  ParagraphSpec,
+  HeadingParagraphSpec,
+  TextParagraphSpec,
+  BulletsParagraphSpec,
+  BulletItemSpec,
+  CustomBlockElement,
+  PhraseSpec,
+  TextPhraseSpec,
+  EntityPhraseSpec,
+  CustomPhraseSpec,
+  ValueAssessment,
+  EntityType,
+  EntityMetaData,
+  CustomMetaData,
+  Structure,
+  StructureTemp,
+  Variable,
+} from './ntv/types';

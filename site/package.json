@@ -32,7 +32,6 @@
     "@antv/g2": "5.0.0-rc.2",
     "@antv/g2plot": "^2.3.39",
     "@antv/g6": "^4.3.11",
-    "@antv/narrative-text-vis": "^0.1.6-alpha.5",
     "@antv/s2": "^1.15.0",
     "@antv/s2-react": "^1.14.0",
     "@antv/smart-color": "^0.2.1",

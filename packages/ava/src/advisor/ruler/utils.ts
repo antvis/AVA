@@ -3,7 +3,7 @@ import { DEFAULT_RULE_WEIGHTS } from '../constants';
 import { CHART_IDS } from '../../ckb';
 
 import type { ScoringResultForRule } from '../types';
-import type { ChartKnowledge, LevelOfMeasurement } from '../../ckb';
+import type { ChartKnowledge, LevelOfMeasurement, ChartKnowledgeBase } from '../../ckb';
 import type { BasicDataPropertyForAdvice, ChartRuleModule, Info, RuleModule } from './types';
 
 export function compare(f1: any, f2: any) {
@@ -44,7 +44,7 @@ declare type ChartID = (typeof CHART_IDS)[number];
 
 export const computeScore = (
   chartType: ChartID | string,
-  chartWIKI: CkbTypes.ChartKnowledgeBase,
+  chartWIKI: ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>,
   ruleType: 'HARD' | 'SOFT',
   info: Info,
