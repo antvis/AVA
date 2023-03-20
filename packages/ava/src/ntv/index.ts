@@ -1,4 +1,4 @@
-export * as NtvTypes from './types';
+export * from './types';
 export { ENTITY_TYPES } from './schema';
 export * from './utils';
-export * from './generate';
+export { generateTextSpec } from './generate';

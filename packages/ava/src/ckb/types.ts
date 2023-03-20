@@ -9,7 +9,7 @@ import type { Data, Specification } from '../common/types';
  *
  * @public
  */
-export type ChartId = typeof constants.CHART_IDS[number];
+export type ChartId = (typeof constants.CHART_IDS)[number];
 
 /**
  * TS type of chart families.
@@ -18,7 +18,7 @@ export type ChartId = typeof constants.CHART_IDS[number];
  *
  * @public
  */
-export type Family = typeof constants.FAMILIES[number];
+export type Family = (typeof constants.FAMILIES)[number];
 
 /**
  * TS type of analysis purposes.
@@ -27,7 +27,7 @@ export type Family = typeof constants.FAMILIES[number];
  *
  * @public
  */
-export type Purpose = typeof constants.PURPOSES[number];
+export type Purpose = (typeof constants.PURPOSES)[number];
 
 /**
  * TS type of coordinate systems.
@@ -36,7 +36,7 @@ export type Purpose = typeof constants.PURPOSES[number];
  *
  * @public
  */
-export type CoordinateSystem = typeof constants.COORDINATE_SYSTEMS[number];
+export type CoordinateSystem = (typeof constants.COORDINATE_SYSTEMS)[number];
 
 /**
  * TS type of graphic categories.
@@ -45,7 +45,7 @@ export type CoordinateSystem = typeof constants.COORDINATE_SYSTEMS[number];
  *
  * @public
  */
-export type GraphicCategory = typeof constants.GRAPHIC_CATEGORIES[number];
+export type GraphicCategory = (typeof constants.GRAPHIC_CATEGORIES)[number];
 
 /**
  * TS type of shapes.
@@ -54,7 +54,7 @@ export type GraphicCategory = typeof constants.GRAPHIC_CATEGORIES[number];
  *
  * @public
  */
-export type Shape = typeof constants.SHAPES[number];
+export type Shape = (typeof constants.SHAPES)[number];
 
 /**
  * TS type of level of measurements.
@@ -63,7 +63,7 @@ export type Shape = typeof constants.SHAPES[number];
  *
  * @public
  */
-export type LevelOfMeasurement = typeof constants.LEVEL_OF_MEASUREMENTS[number];
+export type LevelOfMeasurement = (typeof constants.LEVEL_OF_MEASUREMENTS)[number];
 
 /**
  * TS type of A prerequisite for being able to plot data for a specific chart type.
@@ -105,7 +105,7 @@ export type DataPrerequisite = {
  *
  * @public
  */
-export type Channel = typeof constants.CHANNELS[number];
+export type Channel = (typeof constants.CHANNELS)[number];
 
 /**
  * TS type of recommend ratings.
@@ -115,7 +115,7 @@ export type Channel = typeof constants.CHANNELS[number];
  * @public
  * @see {@link ./constants.ts#RECOMMEND_RATINGS}
  */
-export type RecommendRating = typeof constants.RECOMMEND_RATINGS[number];
+export type RecommendRating = (typeof constants.RECOMMEND_RATINGS)[number];
 
 /**
  * TS type of pure knowledge for a chart type.
@@ -183,3 +183,17 @@ export type PureChartKnowledgeBase = Record<ChartId, PureChartKnowledge>;
  * @public
  */
 export type ChartKnowledgeBase = Record<string, ChartKnowledge>;
+
+/**
+ * Configuration to pick, omit and customize CKB.
+ * Priority: exclude > include, + custom.
+ *
+ * 用来摘选、剔除和自定义 CKB 的配置。
+ * 优先级逻辑是：先从原装 CKB 中剔除`exclude`的部分，然后在剩余的图表类型中摘选出`include`的部分，
+ * 最后额外加上自定义的图表类型。
+ */
+export type CkbConfig = {
+  exclude?: string[];
+  include?: string[];
+  custom?: ChartKnowledgeBase;
+};

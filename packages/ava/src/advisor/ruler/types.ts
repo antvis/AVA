@@ -1,5 +1,5 @@
-import type { DataTypes } from '../../data';
-import type { CkbTypes } from '../../ckb';
+import type { FieldInfo } from '../../data';
+import type { LevelOfMeasurement, ChartKnowledgeBase } from '../../ckb';
 import type { Specification } from '../../common/types';
 
 /**
@@ -17,12 +17,12 @@ export interface BasicDataPropertyForAdvice {
   /** field name */
   readonly name?: string;
   /** LevelOfMeasurement */
-  readonly levelOfMeasurements?: CkbTypes.LevelOfMeasurement[];
+  readonly levelOfMeasurements?: LevelOfMeasurement[];
   /** used for split column xy series */
   readonly rawData: any[];
-  /** required types in DataTypes. FieldInfo */
-  readonly recommendation: DataTypes.FieldInfo['recommendation'];
-  readonly type: DataTypes.FieldInfo['type'];
+  /** required types in  FieldInfo */
+  readonly recommendation: FieldInfo['recommendation'];
+  readonly type: FieldInfo['type'];
   readonly distinct?: number;
   readonly count?: number;
   readonly sum?: number;
@@ -46,7 +46,7 @@ export interface Preferences {
  */
 export interface Info {
   chartType?: string;
-  chartWIKI?: CkbTypes.ChartKnowledgeBase;
+  chartWIKI?: ChartKnowledgeBase;
   dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice;
   purpose?: string;
   preferences?: Preferences;

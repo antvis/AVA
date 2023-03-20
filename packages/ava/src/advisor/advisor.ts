@@ -4,7 +4,7 @@ import { processRuleCfg } from './ruler';
 import { advicesForChart } from './advise-pipeline';
 import { checkRules } from './lint-pipeline/check-rules';
 
-import type { CkbTypes } from '../ckb';
+import type { ChartKnowledgeBase } from '../ckb';
 import type { RuleModule } from './ruler';
 import type {
   AdvisorConfig,
@@ -28,7 +28,7 @@ export class Advisor {
   /**
    * CKB used for advising
    */
-  ckb: CkbTypes.ChartKnowledgeBase;
+  ckb: ChartKnowledgeBase;
 
   /**
    * rule base used for advising

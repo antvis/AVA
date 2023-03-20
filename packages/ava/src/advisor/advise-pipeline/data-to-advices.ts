@@ -9,7 +9,7 @@ import { getChartTypeSpec } from './spec-mapping';
 
 import type { SimulationType } from '@antv/smart-color';
 import type { ColorSchemeType } from '@antv/color-schema';
-import type { CkbTypes } from '../../ckb';
+import type { ChartKnowledgeBase, ChartKnowledge } from '../../ckb';
 import type { Specification, Data } from '../../common/types';
 import type { BasicDataPropertyForAdvice, DesignRuleModule, RuleModule } from '../ruler/types';
 import type {
@@ -26,7 +26,7 @@ import type {
  * options for advising inner pipeline
  */
 type PipeAdvisorOptions = AdvisorOptions;
-declare type ChartID = typeof CHART_IDS[number];
+declare type ChartID = (typeof CHART_IDS)[number];
 
 /**
  * Run all rules for a given chart type, get scoring result.
@@ -39,7 +39,7 @@ declare type ChartID = typeof CHART_IDS[number];
  */
 function scoreRules(
   chartType: ChartID | string,
-  chartWIKI: CkbTypes.ChartKnowledgeBase,
+  chartWIKI: ChartKnowledgeBase,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
   options?: PipeAdvisorOptions
@@ -188,7 +188,7 @@ function applySmartColor(
 export function dataToAdvices(
   data: Data,
   dataProps: BasicDataPropertyForAdvice[],
-  chartWIKI: Record<string, CkbTypes.ChartKnowledge>,
+  chartWIKI: Record<string, ChartKnowledge>,
   ruleBase: Record<string, RuleModule>,
   smartColor?: boolean,
   options?: PipeAdvisorOptions,

@@ -1,50 +1,17 @@
-import { intersects } from '../utils';
+import { Info, RuleModule } from '../ruler';
 import { DEFAULT_RULE_WEIGHTS } from '../constants';
 import { CHART_IDS } from '../../ckb';
 
 import type { ScoringResultForRule } from '../types';
-import type { ChartKnowledge, LevelOfMeasurement } from '../../ckb';
-import type { BasicDataPropertyForAdvice, ChartRuleModule, Info, RuleModule } from './types';
-
-export function compare(f1: any, f2: any) {
-  if (f1.distinct < f2.distinct) {
-    return 1;
-  }
-  if (f1.distinct > f2.distinct) {
-    return -1;
-  }
-
-  return 0;
-}
-
-export function verifyDataProps(dataPre: ChartKnowledge['dataPres'][number], dataProps: BasicDataPropertyForAdvice[]) {
-  const fieldsLOMs: LevelOfMeasurement[][] = dataProps.map((info: any) => {
-    return info.levelOfMeasurements as LevelOfMeasurement[];
-  });
-  if (fieldsLOMs) {
-    let lomCount = 0;
-    fieldsLOMs.forEach((fieldLOM) => {
-      if (fieldLOM && intersects(fieldLOM, dataPre.fieldConditions)) {
-        lomCount += 1;
-      }
-    });
-    if (lomCount >= dataPre.minQty && (lomCount <= dataPre.maxQty || dataPre.maxQty === '*')) {
-      return true;
-    }
-  }
-  return false;
-}
-
-export function isUndefined(value: any) {
-  return value === undefined;
-}
+import type { ChartRuleModule } from '../ruler/types';
+import type { ChartKnowledgeBase } from '../../ckb';
 
 const defaultWeights = DEFAULT_RULE_WEIGHTS;
 declare type ChartID = (typeof CHART_IDS)[number];
 
-export const computeScore = (
+const computeScore = (
   chartType: ChartID | string,
-  chartWIKI: CkbTypes.ChartKnowledgeBase,
+  chartWIKI: ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>,
   ruleType: 'HARD' | 'SOFT',
   info: Info,
@@ -68,3 +35,5 @@ export const computeScore = (
     });
   return computedScore;
 };
+
+export default computeScore;

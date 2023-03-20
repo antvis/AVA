@@ -2,13 +2,13 @@ import { intersection } from 'lodash';
 
 import { Datum, SubjectInfo, InsightType, DataProperty } from '../types';
 
-import type { CkbTypes } from '../../ckb';
+import type { LevelOfMeasurement } from '../../ckb';
 
 export type ExtractorChecker = (
   data: Datum[],
   subjectInfo: SubjectInfo,
   fieldPropsMap: Record<string, DataProperty>,
-  lom?: CkbTypes.LevelOfMeasurement | CkbTypes.LevelOfMeasurement[]
+  lom?: LevelOfMeasurement | LevelOfMeasurement[]
 ) => boolean;
 
 const fieldsQuantityChecker = (subjectInfo: SubjectInfo, dimensionsQuantity: number, measuresQuantity: number) => {
@@ -26,8 +26,8 @@ const generalCheckerFor1M1D: ExtractorChecker = (data, subjectInfo, fieldPropsMa
   // check dimension type
   if (
     Array.isArray(lom)
-      ? !intersection(fieldPropsMap[dimensions[0]]?.levelOfMeasurements, lom as CkbTypes.LevelOfMeasurement[])?.length
-      : !fieldPropsMap[dimensions[0]]?.levelOfMeasurements?.includes(lom as CkbTypes.LevelOfMeasurement)
+      ? !intersection(fieldPropsMap[dimensions[0]]?.levelOfMeasurements, lom as LevelOfMeasurement[])?.length
+      : !fieldPropsMap[dimensions[0]]?.levelOfMeasurements?.includes(lom as LevelOfMeasurement)
   )
     return false;
   return true;

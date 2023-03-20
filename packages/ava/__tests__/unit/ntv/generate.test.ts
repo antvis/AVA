@@ -696,7 +696,7 @@ describe('utils test', () => {
                   },
                   {
                     type: 'entity',
-                    value: '1000',
+                    value: '1k',
                     metadata: {
                       entityType: 'metric_value',
                       origin: 1000,
