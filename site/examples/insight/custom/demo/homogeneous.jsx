@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createRef } from 'react';
 
 import ReactDOM from 'react-dom';
 import { Spin } from 'antd';
 import { getInsights } from '@antv/ava';
-import { InsightCard } from 'antv-site-demo-rc';
+import { ChartView } from 'antv-site-demo-rc';
 
 const App = () => {
   const [result, setResult] = useState({});
@@ -17,9 +17,9 @@ const App = () => {
           const insightResult = getInsights(data, {
             limit: 10,
             measures: [
-              { field: 'life_expect', method: 'MEAN' },
-              { field: 'pop', method: 'SUM' },
-              { field: 'fertility', method: 'MEAN' },
+              { fieldName: 'life_expect', method: 'MEAN' },
+              { fieldName: 'pop', method: 'SUM' },
+              { fieldName: 'fertility', method: 'MEAN' },
             ],
             visualization: true,
             // 开启共性/例外模式的提取
@@ -43,7 +43,18 @@ const App = () => {
         <div style={{ width: '100%' }}>
           {result.homogeneousInsights &&
             result.homogeneousInsights.map((item, index) => (
-              <InsightCard key={index} insightInfo={item} height={400} />
+              <>
+                {item?.visualizationSpecs?.map(({ chartSpec }) => (
+                  <ChartView
+                    key={index}
+                    chartRef={createRef()}
+                    spec={chartSpec}
+                    style={{
+                      height: 400,
+                    }}
+                  />
+                ))}
+              </>
             ))}
         </div>
       </Spin>
