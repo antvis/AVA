@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { CopyOutlined } from '@ant-design/icons';
+import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 
 import { INSIGHT_CARD_PREFIX_CLS } from '../constants';
@@ -25,14 +25,23 @@ export const BaseIconButton: React.FC<BaseIconButtonProps> = ({ icon, onClick, d
 const defaultCopyButton = () => {
   return {
     type: 'copy',
-    description: 'copy insight content',
+    description: 'copy',
     icon: <CopyOutlined />,
+  };
+};
+
+const defaultExportButton = () => {
+  return {
+    type: 'export',
+    description: 'export',
+    icon: <ExportOutlined />,
   };
 };
 
 export const getDefaultTool = (type: DefaultToolType) => {
   const toolsFunctionMap = {
     copy: defaultCopyButton,
+    export: defaultExportButton,
   };
   return toolsFunctionMap[type]?.();
 };
