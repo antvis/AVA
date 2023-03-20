@@ -48,9 +48,10 @@ export type {
 } from './ckb';
 
 /* data */
-export { analyzeField } from './data/analysis';
-export { Series, DataFrame } from './data/dataset';
 export {
+  analyzeField,
+  Series,
+  DataFrame,
   min,
   max,
   sum,
@@ -74,7 +75,7 @@ export {
   pcorrtest,
   cdf,
   maxabs,
-} from './data/statistics';
+} from './data';
 export type {
   FieldType,
   FieldInfo,
@@ -87,7 +88,7 @@ export type {
   Axis,
   Extra,
   FieldsInfo,
-} from './data/types';
+} from './data';
 
 /* insight */
 export { getInsights, generateInsightVisualizationSpec } from './insight';
