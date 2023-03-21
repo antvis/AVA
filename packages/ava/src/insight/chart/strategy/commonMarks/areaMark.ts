@@ -14,8 +14,8 @@ export const areaMarkStrategy = (data: AreaMarkData, { encode, style, tooltip }:
       type: 'area',
       data,
       encode: {
-        x: (data) => data[0],
-        y: (data) => data[1],
+        x: 'x',
+        y: 'y',
         ...encode,
       },
     };

@@ -22,7 +22,7 @@ export type LineMarkData = {
   /** draw a horizontal line at y value */
   y?: number;
   /** draw a line using specific points */
-  points?: [number, number][];
+  points?: { x: number; y: number }[];
 };
 
 export type LineMarkConfig = {
@@ -32,7 +32,7 @@ export type LineMarkConfig = {
   tooltip?: Mark['tooltip'];
 };
 
-export type AreaMarkData = [number, [number, number][]][];
+export type AreaMarkData = { x: number; y: [number, number] }[];
 
 export type AreaMarkConfig = {
   encode?: Mark['encode'];

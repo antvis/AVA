@@ -22,8 +22,14 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
     const baseline = baselines[index];
     const interval = [baseline - Math.abs(thresholds[0]), baseline + thresholds[1]];
     return {
-      baseline: [datum[dimensionName], baseline],
-      interval: [datum[dimensionName], interval],
+      baseline: {
+        x: datum[dimensionName],
+        y: baseline,
+      },
+      interval: {
+        x: datum[dimensionName],
+        y: interval,
+      },
     };
   });
 
@@ -81,9 +87,7 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
   return [intervalMark, baselineMark, outlierMark];
 };
 
-export const timeSeriesOutlierStrategy = (
-  insight: InsightInfo<TimeSeriesOutlierInfo>,
-): Mark[] => {
+export const timeSeriesOutlierStrategy = (insight: InsightInfo<TimeSeriesOutlierInfo>): Mark[] => {
   // Should to support marks free combination
   const chartMark = insight2ChartStrategy(insight);
   const augmentedMarks = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight)?.slice();

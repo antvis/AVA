@@ -37,8 +37,8 @@ export const lineMarkStrategy = (
       type: 'line',
       data: points,
       encode: {
-        x: (point) => point[0],
-        y: (point) => point[1],
+        x: 'x',
+        y: 'y',
         ...encode,
       },
     };
