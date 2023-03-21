@@ -19,7 +19,7 @@ export const generateInsightVisualizationSpec = (
 ): VisualizationSpec[] => {
   const { patterns } = insight;
   const specs: VisualizationSpec[] = [];
-
+  if (!patterns.length) return [];
   const patternGroups = groupBy(patterns, (pattern) => pattern.type);
 
   Object.entries(patternGroups).forEach(([patternType, patternGroup]: [string, PatternInfo[]]) => {
