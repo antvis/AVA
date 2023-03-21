@@ -26,7 +26,7 @@ export type LineMarkData = {
 
 export type LineMarkConfig = {
   encode?: Mark['encode'];
-  label?: LabelType;
+  label?: string;
   style?: Mark['style'];
   tooltip?: Mark['tooltip'];
 };
