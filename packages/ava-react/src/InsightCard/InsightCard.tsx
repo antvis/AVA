@@ -14,6 +14,7 @@ import { insightCardPresetPlugins } from './ntvPlugins';
 import { INSIGHT_CARD_PREFIX_CLS } from './constants';
 import { Container } from './styled/container';
 
+import type { InsightInfo } from '@antv/ava';
 import type { Tool } from './Toolbar/types';
 import type { InsightCardProps, InsightCardInfo, InsightDataStatus } from './types';
 
@@ -29,6 +30,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   onChange,
   onCopy,
   autoInsightOptions,
+  visualizationOptions,
   customContentSpec,
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
@@ -70,10 +72,10 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   }, [defaultInsightInfo, autoInsightOptions]);
 
   const contentSpec = useMemo(() => {
-    if (!currentInsightInfo)
+    if (!currentInsightInfo?.patterns)
       return isFunction(customContentSpec) ? customContentSpec?.(currentInsightInfo) : customContentSpec;
 
-    const defaultSpec = generateContentVisSpec(currentInsightInfo, autoInsightOptions?.visualization);
+    const defaultSpec = generateContentVisSpec(currentInsightInfo as InsightInfo, visualizationOptions);
     const customSpec = isFunction(customContentSpec)
       ? customContentSpec?.(currentInsightInfo, defaultSpec)
       : customContentSpec;
