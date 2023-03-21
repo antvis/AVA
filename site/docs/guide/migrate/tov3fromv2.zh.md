@@ -302,7 +302,7 @@ getInsights(data, options);
 | ----| ---- | ---- | -----|
 | dimensions | `Dimensions[]` | ['year'] | [{`fieldName`: 'year'}] |
 | measure | `Measure[]` | [{`field`: 'life_expect', method: 'MEAN'}] | [{`fieldName`: 'life_expect', method: 'MEAN' }] |
-| visualization |  `boolean \| VisualizationOptions` | false \| {`summaryType`: 'text \| 'spec} | false \| {`lang`: 'en-US' \| 'zh-CN' } |
+| visualization |  `boolean \| InsightVisualizationOptions` | false \| {`summaryType`: 'text \| 'spec} | false \| {`lang`: 'en-US' \| 'zh-CN' } |
 
 示例：
 

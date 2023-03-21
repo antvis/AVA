@@ -74,7 +74,7 @@ export type PatternInfo =
   | MajorityInfo;
 
 /** explanation and visualization for insight */
-export interface VisualizationSpec {
+export interface InsightVisualizationSpec {
   patternType: InsightType;
   chartSpec: G2Spec;
   /**
@@ -92,7 +92,7 @@ export interface InsightInfo<T = PatternInfo> {
   score?: number;
   data: Datum[];
   patterns: T[];
-  visualizationSpecs?: VisualizationSpec[];
+  visualizationSpecs?: InsightVisualizationSpec[];
 }
 
 export type Language = 'zh-CN' | 'en-US';
@@ -100,7 +100,7 @@ export type Language = 'zh-CN' | 'en-US';
 /**
  * config of visualization
  */
-export type VisualizationOptions = {
+export type InsightVisualizationOptions = {
   /**
    * @description pure text or text specification to description insight summary
    * @default 'text'
@@ -130,7 +130,7 @@ export interface InsightOptions {
   /** Limit on the number of insights */
   limit?: number;
   /** on / off the output of visualization scheme */
-  visualization?: boolean | Partial<VisualizationOptions>;
+  visualization?: boolean | Partial<InsightVisualizationOptions>;
   /** on/off extra homogeneous insight extraction */
   homogeneous?: boolean;
   /** Whether to close the search for subspaces */

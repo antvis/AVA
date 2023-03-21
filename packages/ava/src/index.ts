@@ -23,8 +23,38 @@ export { analyzeField, Series, DataFrame } from './data';
 export type { DataTypes } from './data';
 
 /* insight */
-export { getInsights } from './insight';
-export type { InsightTypes } from './insight';
+export { getInsights, generateInsightVisualizationSpec } from './insight';
+export type {
+  Datum,
+  DomainType,
+  MeasureMethod,
+  ImpactMeasureMethod,
+  Aggregator,
+  DataProperty,
+  Measure,
+  Dimension,
+  Subspace,
+  ImpactMeasure,
+  SubjectInfo,
+  InsightType,
+  HomogeneousInsightType,
+  PatternInfo,
+  InsightVisualizationSpec,
+  InsightInfo,
+  InsightVisualizationOptions,
+  InsightOptions,
+  BasePatternInfo,
+  HomogeneousPatternInfo,
+  PointPatternInfo,
+  CategoryOutlierInfo,
+  TimeSeriesOutlierInfo,
+  ChangePointInfo,
+  MajorityInfo,
+  LinearRegressionResult,
+  LowVarianceInfo,
+  CorrelationInfo,
+  InsightsResult,
+} from './insight';
 
 /* NTV (Narrative Text Vis) */
 export {

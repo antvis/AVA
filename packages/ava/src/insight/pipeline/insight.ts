@@ -16,7 +16,7 @@ import type {
   PatternInfo,
   HomogeneousPatternInfo,
   DataProperty,
-  VisualizationOptions,
+  InsightVisualizationOptions,
 } from '../types';
 
 interface ReferenceInfo {
@@ -96,7 +96,7 @@ export function extractInsights(sourceData: Datum[], options?: InsightOptions): 
 
 export function generateInsightsWithVisualizationSpec(
   extraction: InsightsResult,
-  options?: InsightOptions & { visualization: VisualizationOptions }
+  options?: InsightOptions & { visualization: InsightVisualizationOptions }
 ): InsightsResult {
   const { insights, homogeneousInsights } = extraction;
   const insightsWithVis = insights.map((item) => ({
