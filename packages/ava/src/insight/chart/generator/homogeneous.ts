@@ -1,4 +1,4 @@
-import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, VisualizationSpec } from '../../types';
+import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, InsightVisualizationSpec } from '../../types';
 import { INSIGHT_COLOR_PLATTE } from '../constants';
 
 export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPatternInfo) {
@@ -54,7 +54,7 @@ export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPat
 export function generateHomogeneousInsightChartSpec(
   insight: InsightInfo<HomogeneousPatternInfo>,
   pattern: HomogeneousPatternInfo
-): VisualizationSpec[] {
+): InsightVisualizationSpec[] {
   const { dimensions, measures } = insight;
 
   let plotSchema;

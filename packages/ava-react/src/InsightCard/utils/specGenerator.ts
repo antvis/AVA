@@ -1,14 +1,13 @@
-import { generateInsightVisualizationSpec } from '@antv/ava';
-
+import { generateInsightVisualizationSpec } from '../../../../ava/src';
 import { DISPLAY_CHARTS_PLUGIN_KEY } from '../constants';
 
 import type { G2Spec } from '@antv/g2';
-import type { NarrativeTextSpec, ParagraphSpec, InsightInfo, VisualizationOptions } from '@antv/ava';
+import type { NarrativeTextSpec, ParagraphSpec, InsightInfo, InsightVisualizationOptions } from '@antv/ava';
 
 /** generate narrative paragraphs and visualizations for insight data */
 export const generateContentVisSpec = (
   insightInfo: InsightInfo,
-  visualizationOptions: VisualizationOptions
+  visualizationOptions: InsightVisualizationOptions
 ): NarrativeTextSpec => {
   const visualizationSpecs = generateInsightVisualizationSpec(insightInfo, visualizationOptions);
   if (visualizationSpecs) {
