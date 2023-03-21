@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import ReactDOM from 'react-dom';
-import { specToG2Plot } from '@antv/antv-spec';
+import { ChartView } from 'antv-site-demo-rc';
 import { colorSimulation, colorToHex, COLOR_BLINDNESS_SIMULATION_TYPES } from '@antv/smart-color';
 import { Advisor } from '@antv/ava';
 
@@ -23,7 +23,7 @@ const defaultData = [
 
 const initColor = {
   model: 'rgb',
-  value: { r: 126, g: 63, b: 235 },
+  value: { r: 239, g: 137, b: 56 },
 };
 
 const SIMULATION_TYPES = [...COLOR_BLINDNESS_SIMULATION_TYPES, 'grayscale'];
@@ -50,18 +50,14 @@ const App = () => {
     },
   });
 
-  useEffect(() => {
-    if (advices[currentAdvice]) {
-      specToG2Plot(advices[currentAdvice].spec, document.getElementById('vis'));
-    }
-  }, []);
-
   return (
     <>
       <p>Render chart with specified color theme.</p>
 
       <div className="vis-content" style={{ height: 'calc(100% - 80px)' }}>
-        <div id="vis" key="plot" style={{ flex: 5, height: '100%' }}></div>
+        <div id="vis" key="plot" style={{ flex: 5, height: '100%' }}>
+          <ChartView chartRef={React.createRef()} spec={advices[currentAdvice].spec}></ChartView>
+        </div>
       </div>
     </>
   );

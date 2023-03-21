@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import ReactDOM from 'react-dom';
-import { specToG2Plot } from '@antv/antv-spec';
+import { ChartView } from 'antv-site-demo-rc';
 import { colorToHex } from '@antv/smart-color';
 import { Advisor } from '@antv/ava';
 
@@ -94,21 +94,14 @@ const App = () => {
     colorOptions: setColors,
   });
 
-  useEffect(() => {
-    if (advices[currentAdvice]) {
-      specToG2Plot(advices[currentAdvice].spec, document.getElementById('init'));
-    }
-    if (advicesWithColor[currentAdvice]) {
-      specToG2Plot(advicesWithColor[currentAdvice].spec, document.getElementById('smart'));
-    }
-  }, []);
-
   return (
-    <>
+    <div>
       <p>Render chart with specified color theme.</p>
 
       <div className="init-content" style={{ height: 'calc(55% - 80px)' }}>
-        <div id="init" key="plot" style={{ flex: 5, height: '100%' }}></div>
+        <div id="init" key="plot" style={{ flex: 5, height: '480px' }}>
+          <ChartView chartRef={React.createRef()} spec={advices[currentAdvice].spec}></ChartView>
+        </div>
       </div>
 
       <p>
@@ -116,9 +109,11 @@ const App = () => {
       </p>
 
       <div className="smart-content" style={{ height: 'calc(55% - 80px)' }}>
-        <div id="smart" key="plot" style={{ flex: 5, height: '100%' }}></div>
+        <div id="smart" key="plot" style={{ flex: 5, height: '480px' }}>
+          <ChartView chartRef={React.createRef()} spec={advicesWithColor[currentAdvice].spec}></ChartView>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

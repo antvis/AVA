@@ -117,11 +117,18 @@ function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: Specific
         },
       };
     }
-    return {
-      style: {
-        fill: colorToHex(color),
-      },
-    };
+
+    return chartSpec.type === 'line'
+      ? {
+          style: {
+            stroke: colorToHex(color),
+          },
+        }
+      : {
+          style: {
+            fill: colorToHex(color),
+          },
+        };
   }
   return {};
 }
@@ -164,11 +171,18 @@ function applySmartColor(
         },
       };
     }
-    return {
-      style: {
-        fill: colorToHex(color),
-      },
-    };
+
+    return chartSpec.type === 'line'
+      ? {
+          style: {
+            stroke: colorToHex(color),
+          },
+        }
+      : {
+          style: {
+            fill: colorToHex(color),
+          },
+        };
   }
   return {};
 }
