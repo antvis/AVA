@@ -1,9 +1,9 @@
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import ReactDOM from 'react-dom';
 import { Spin } from 'antd';
 import { getInsights } from '@antv/ava';
-import { ChartView } from 'antv-site-demo-rc';
+import { InsightCard } from '@antv/ava-react';
 
 const App = () => {
   const [result, setResult] = useState({});
@@ -22,9 +22,9 @@ const App = () => {
               { fieldName: 'fertility', method: 'MEAN' },
             ],
             visualization: true,
-            // 只提取categoryOutlier类型的洞察
-            // extract categoryOutlier
-            insightTypes: ['category_outlier'],
+            // 提取time_series_outlier、trend类型的洞察
+            // extract time_series_outlier and trend
+            insightTypes: ['time_series_outlier', 'trend'],
           });
           setResult(insightResult);
           setLoading(false);
@@ -42,19 +42,8 @@ const App = () => {
       <Spin spinning={loading} style={{ marginTop: 80 }}>
         <div style={{ width: '100%' }}>
           {result.insights &&
-            result.insights.map((insight) => {
-              return insight.visualizationSpecs?.map((spec) => {
-                const { chartSpec } = spec;
-                return chartSpec ? (
-                  <ChartView
-                    chartRef={createRef()}
-                    spec={chartSpec}
-                    style={{
-                      height: 480,
-                    }}
-                  />
-                ) : null;
-              });
+            result.insights.map((insight, index) => {
+              return <InsightCard insightInfo={insight} key={index} />;
             })}
         </div>
       </Spin>

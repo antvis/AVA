@@ -1,9 +1,9 @@
-import React, { useState, useEffect, createRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import ReactDOM from 'react-dom';
 import { Spin } from 'antd';
 import { getInsights } from '@antv/ava';
-import { ChartView } from 'antv-site-demo-rc';
+import { InsightCard } from '@antv/ava-react';
 
 const App = () => {
   const [result, setResult] = useState({});
@@ -48,21 +48,7 @@ const App = () => {
       <h2 style={{ borderBottom: '1px solid #e9e9e9' }}>Insight list</h2>
       <Spin spinning={loading} style={{ marginTop: 80 }}>
         <div style={{ width: '100%' }}>
-          {result.insights &&
-            result.insights.map((item, index) => (
-              <>
-                {item?.visualizationSpecs?.map(({ chartSpec }) => (
-                  <ChartView
-                    key={index}
-                    chartRef={createRef()}
-                    spec={chartSpec}
-                    style={{
-                      height: 400,
-                    }}
-                  />
-                ))}
-              </>
-            ))}
+          {result.insights && result.insights.map((item, index) => <InsightCard insightInfo={item} key={index} />)}
         </div>
       </Spin>
     </>
