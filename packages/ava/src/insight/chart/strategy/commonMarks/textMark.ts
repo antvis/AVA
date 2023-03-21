@@ -9,25 +9,25 @@ import { TextMarkConfig } from '../../types';
 export const textMarkStrategy = (patterns: PointPatternInfo[], textConfig?: TextMarkConfig): Mark => {
   const { style, label, formatter } = textConfig || {};
   const { measure, dimension } = patterns[0];
-  const data = patterns.map((pattern) => ({
-    [dimension]: pattern.x,
-    [measure]: pattern.y,
-  }));
-  const customLabel = isFunction(label) ? (d) => label(d) : label;
+  const data = patterns.map((pattern) => {
+    const customLabel = isFunction(label) ? label(pattern) : label;
+    const value = isFunction(formatter) ? formatter(pattern.y) : pattern.y;
+    return {
+      [dimension]: pattern.x,
+      [measure]: pattern.y,
+      label: customLabel ?? `${pattern.x}\n${value}`,
+    };
+  });
+
   return {
     type: 'text',
     data,
     encode: {
       x: dimension,
       y: measure,
+      text: 'label',
     },
     style: {
-      text: label
-        ? customLabel
-        : (d) => {
-            const value = isFunction(formatter) ? formatter(d[measure]) : d[measure];
-            return `${d[dimension]}\n${value}`;
-          },
       ...TEXT_STYLE,
       ...style,
     },
