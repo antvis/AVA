@@ -1,6 +1,5 @@
-import { Mark } from '@antv/g2';
-
-import { Datum } from '../types';
+import type { Mark } from '@antv/g2';
+import type { Datum } from '../types';
 
 type LabelType = string | ((d: Datum) => string);
 

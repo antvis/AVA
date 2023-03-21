@@ -10,11 +10,11 @@ import { insight2ChartStrategy } from '../chart';
 export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePointInfo>): Mark[] => {
   const { patterns } = insight;
   const color = INSIGHT_COLOR_PLATTE.highlight;
-  const { dimension, measure } = patterns?.[0];
+  const { measure } = patterns?.[0];
   const pointMark = pointMarkStrategy(patterns, { style: { fill: color } });
   const textMark = textMarkStrategy(patterns, {
     formatter: dataFormat,
-    label: (d) => `${d[dimension]}, ${measure}: ${d[measure]}`,
+    label: (pattern) => `${pattern.x}, ${measure}: ${pattern.y}`,
     style: {
       dy: -20,
       background: true,

@@ -1,5 +1,4 @@
 import { Mark } from '@antv/g2';
-import { isFunction } from 'lodash';
 
 import { INSIGHT_COLOR_PLATTE } from '../../constants';
 import { LineMarkConfig, LineMarkData } from '../../types';
@@ -17,7 +16,7 @@ export const lineMarkStrategy = (
     labels: label
       ? [
           {
-            text: isFunction(label) ? (d) => label(d) : label,
+            text: label,
             selector: 'last',
             position: 'right',
             style: {
