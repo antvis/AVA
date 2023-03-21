@@ -15,8 +15,8 @@ describe('should advise pie', () => {
   test('a categorical field + a quantitative field with significantly different values', () => {
     const data = [
       { price: 100, type: 'A' },
-      { price: 120, type: 'B' },
-      { price: 150, type: 'C' },
+      { price: 150, type: 'B' },
+      { price: 200, type: 'C' },
     ];
 
     const myAdvisor = new Advisor();

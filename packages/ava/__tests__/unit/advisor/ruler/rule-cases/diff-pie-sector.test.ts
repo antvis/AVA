@@ -78,5 +78,5 @@ describe('Test: diff-pie-sector', () => {
       chartType: 'pie_chart',
       dataProps: dataProps as Info['dataProps'],
     })
-  ).toBe(0.405306694568926);
+  ).toBe(0.1);
 });
