@@ -32,7 +32,8 @@ export const diffPieSector: RuleModule = {
         const count = intervalField.rawData.length;
         const maxProduct = (1 / count) ** count;
 
-        result = MAX_SOFT_RULE_COEFFICIENT * (Math.abs(maxProduct - Math.abs(scaledProduct)) / maxProduct);
+        // Math.abs(maxProduct - Math.abs(scaledProduct)) / maxProduct 这个值 小于 0.5 会被认为有点问题
+        result = MAX_SOFT_RULE_COEFFICIENT * 0.2 * (Math.abs(maxProduct - Math.abs(scaledProduct)) / maxProduct);
       }
     }
     result = result < 1 / MAX_SOFT_RULE_COEFFICIENT ? 1 / MAX_SOFT_RULE_COEFFICIENT : result;
