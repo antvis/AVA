@@ -25,7 +25,9 @@ export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Ma
     },
   } = patterns[0];
 
-  const regressionLineMark = lineMarkStrategy({ points }, { label: `y=${m.toFixed(2)}x+${c.toFixed(2)}` });
+  const lineData = points.map((point) => ({ x: point[0], y: point[1] }));
+
+  const regressionLineMark = lineMarkStrategy({ points: lineData }, { label: `y=${m.toFixed(2)}x+${c.toFixed(2)}` });
 
   return [regressionLineMark];
 };

@@ -5,14 +5,14 @@ import { PointMarkConfig } from '../../types';
 
 /** get mark for point patterns, the patterns should have same dimension and measure */
 export const pointMarkStrategy = (patterns: PointPatternInfo[], config: PointMarkConfig): Mark => {
-  const data = patterns.map(({ x, y }) => [x, y]);
+  const data = patterns.map(({ x, y }) => ({ x, y }));
 
   const pointMark: Mark = {
     type: 'point',
     data,
     encode: {
-      x: (point) => point[0],
-      y: (point) => point[1],
+      x: 'x',
+      y: 'y',
     },
     ...config,
   };
