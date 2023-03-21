@@ -6,20 +6,21 @@ import {
   HomogeneousPatternInfo,
   InsightInfo,
   PatternInfo,
-  VisualizationOptions,
-  VisualizationSpec,
+  InsightVisualizationOptions,
+  InsightVisualizationSpec,
 } from '../types';
 import { generateInsightChartSpec } from '../chart';
 
 export const generateInsightVisualizationSpec = (
   insight: InsightInfo<PatternInfo>,
-  visualizationOptions: VisualizationOptions = {
+  visualizationOptions: InsightVisualizationOptions = {
     lang: 'en-US',
   }
-): VisualizationSpec[] => {
+): InsightVisualizationSpec[] => {
   const { patterns } = insight;
-  const specs: VisualizationSpec[] = [];
+  const specs: InsightVisualizationSpec[] = [];
   if (!patterns.length) return [];
+
   const patternGroups = groupBy(patterns, (pattern) => pattern.type);
 
   Object.entries(patternGroups).forEach(([patternType, patternGroup]: [string, PatternInfo[]]) => {
@@ -35,12 +36,12 @@ export const generateInsightVisualizationSpec = (
 
 export const generateHomogeneousInsightVisualizationSpec = (
   insight: InsightInfo<HomogeneousPatternInfo>,
-  visualizationOptions: VisualizationOptions = {
+  visualizationOptions: InsightVisualizationOptions = {
     lang: 'en-US',
   }
-): VisualizationSpec[] => {
+): InsightVisualizationSpec[] => {
   const { patterns } = insight;
-  const schemas: VisualizationSpec[] = [];
+  const schemas: InsightVisualizationSpec[] = [];
   patterns.forEach((pattern) => {
     const { insightType } = pattern;
     const chartSpec = {};

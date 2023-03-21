@@ -1,7 +1,7 @@
 import type { NtvPluginType } from '../NarrativeTextVis';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Tool } from './Toolbar/types';
-import type { InsightInfo, InsightOptions, NarrativeTextSpec, VisualizationOptions } from '@antv/ava';
+import type { InsightInfo, InsightOptions, NarrativeTextSpec, InsightVisualizationOptions } from '@antv/ava';
 
 export type CardType = 'mini' | 'standard' | 'expand' | 'detail';
 
@@ -46,7 +46,7 @@ export type InsightCardProps = CommonProps &
     autoInsightOptions?: Omit<InsightOptions, 'dimensions' | 'measures' | 'visualization'> & {
       allData: { [x: string]: any }[];
     };
-    visualizationOptions?: VisualizationOptions;
+    visualizationOptions?: InsightVisualizationOptions;
     /** function for customizing content */
     customContentSpec?:
       | NarrativeTextSpec
