@@ -26,7 +26,7 @@ redirect_from:
 The framework of AVA can be illustrated as follows:
 
 <div align="center">
-<img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*jfG3TqYY8PYAAAAAAAAAAAAADmJ7AQ/original' width="100%" alt='AVA framework' />
+<img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*ZINwQ6ubADQAAAAAAAAAAAAADmJ7AQ/original' width="100%" alt='AVA framework' />
 </div>
 
 <br />

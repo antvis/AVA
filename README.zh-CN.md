@@ -20,7 +20,7 @@
 <br />
 
 <div align="center">
-  <img width="800" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*jfG3TqYY8PYAAAAAAAAAAAAADmJ7AQ/original" alt="AVA pipeline">
+  <img width="800" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*ZINwQ6ubADQAAAAAAAAAAAAADmJ7AQ/original" alt="AVA pipeline">
 </div>
 
 ## npm 包
