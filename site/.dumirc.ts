@@ -266,7 +266,7 @@ export default defineConfig({
                 zh: '链接人和数据，联通数据分析链条上的“最后一公里”',
                 en: 'Link people and data, connect the last kilometer of the data analysis chain'
             },
-            image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*1V11QafW_-0AAAAAAAAAAAAADmJ7AQ/original',
+            image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*tSRFR6-peecAAAAAAAAAAAAADmJ7AQ/original',
         }
     ],
     /** 首页技术栈介绍 */
