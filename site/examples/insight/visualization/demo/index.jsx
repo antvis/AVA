@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useEffect, createRef } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
 import ReactDOM from 'react-dom';
-import { Spin, Tag } from 'antd';
+import { Spin } from 'antd';
 import { getInsights } from '@antv/ava';
-import { NarrativeTextVis } from '@antv/ava-react';
-import { ChartView, JSONView, TableView, StepBar } from 'antv-site-demo-rc';
+import { InsightCard } from '@antv/ava-react';
+import { JSONView, TableView, StepBar } from 'antv-site-demo-rc';
 
 const App = () => {
   const data = useMemo(
@@ -160,29 +160,8 @@ const App = () => {
   const plotContent = (
     <div key="plot" style={{ flex: 5, height: '100%' }}>
       {result.insights &&
-        result.insights.map((insight) => {
-          return insight.visualizationSpecs?.map((spec, index) => {
-            const { patternType, chartSpec, narrativeSpec } = spec;
-            return (
-              <div key={index}>
-                <Tag>{patternType}</Tag>
-                {narrativeSpec && (
-                  <NarrativeTextVis
-                    spec={{
-                      sections: [{ paragraphs: narrativeSpec }],
-                    }}
-                  />
-                )}
-                <ChartView
-                  chartRef={createRef()}
-                  spec={{ ...chartSpec, height: 280 }}
-                  style={{
-                    height: 300,
-                  }}
-                />
-              </div>
-            );
-          });
+        result.insights.map((insight, index) => {
+          return <InsightCard insightInfo={insight} key={index} />;
         })}
     </div>
   );
