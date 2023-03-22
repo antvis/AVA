@@ -1,4 +1,5 @@
-import { generateInsightVisualizationSpec } from '../../../../ava/src';
+import { generateInsightVisualizationSpec } from '@antv/ava';
+
 import { DISPLAY_CHARTS_PLUGIN_KEY } from '../constants';
 
 import type { G2Spec } from '@antv/g2';
