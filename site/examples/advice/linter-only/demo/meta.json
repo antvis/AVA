@@ -7,16 +7,16 @@
     {
       "filename": "linter-steps.jsx",
       "title": {
-        "en": "Existing Chart to Linter",
-        "zh": "给定图表到 Linter 进行优化"
+        "en": "Existing Chart to Lint",
+        "zh": "给定图表到 Advisor.lint() 进行优化"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/Gu8zDCffu/linter-steps.gif"
     },
     {
       "filename": "chart-linter.jsx",
       "title": {
-        "en": "Basic Linter",
-        "zh": "Linter 基础用法"
+        "en": "Basic Lint",
+        "zh": "Advisor.lint() 基础用法"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/1bZn%26b5Os/chart-linter.gif"
     },
@@ -24,15 +24,15 @@
       "filename": "custom-rules-linter.jsx",
       "title": {
         "en": "Custom rules for Linter",
-        "zh": "定制 Linter 所使用的规则"
+        "zh": "定制 Lint 所使用的规则"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/2Jjp04b6%26/custom-rules-linter.gif"
     },
     {
       "filename": "fixer.jsx",
       "title": {
-        "en": "Basic Fixer",
-        "zh": "Fixer 基础用法"
+        "en": "Basic Fix",
+        "zh": "Fix 基础用法"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/kOe0rIsAR7/basic-fixer.gif"
     }

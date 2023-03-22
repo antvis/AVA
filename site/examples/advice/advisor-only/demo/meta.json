@@ -7,34 +7,34 @@
     {
       "filename": "advisor-steps.jsx",
       "title": {
-        "en": "Data to Advisor",
-        "zh": "从数据到 Advisor 推荐图表"
+        "en": "Data to Advisor.advise()",
+        "zh": "从数据到 Advisor.advise() 推荐图表"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/HkgFEc28b/advisor-steps.gif"
     },
     {
       "filename": "data-advisor.jsx",
       "title": {
-        "en": "Basic Advisor",
-        "zh": "Advisor 基础用法"
+        "en": "Basic Advisor.advise()",
+        "zh": "Advisor.advise() 基础用法"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/y7adoyPqC/data-advisor.png"
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*ylwZRLCHaSkAAAAAAAAAAAAADmJ7AQ/original"
     },
     {
       "filename": "custom-ckb-advisor.jsx",
       "title": {
-        "en": "Custom CKB for Advisor",
-        "zh": "定制 Advisor 所使用的 CKB"
+        "en": "Custom CKB for Advisor.advise()",
+        "zh": "定制 Advisor.advise() 所使用的 CKB"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/F5LoluYAc/custom-ckb-advisor.png"
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*CfxBQrOGrycAAAAAAAAAAAAADmJ7AQ/original"
     },
     {
       "filename": "custom-rules-advisor.jsx",
       "title": {
-        "en": "Custom rules for Advisor",
-        "zh": "定制 Advisor 所使用的规则"
+        "en": "Custom rules for Advisor.advise()",
+        "zh": "定制 Advisor.advise() 所使用的规则"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/Y%24Mua0oHX/custom-rules-advisor.png"
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*k-cSRJAA3QsAAAAAAAAAAAAADmJ7AQ/original"
     }
   ]
 }
