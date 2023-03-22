@@ -18,8 +18,7 @@
     "start": "npm run develop",
     "develop": "dumi dev",
     "build": "dumi build",
-    "deploy": "npm run copy-mirror-action && gh-pages -d public",
-    "copy-mirror-action": "mkdir -p public/.github/workflows && cp ../../.github/workflows/mirror.yml public/.github/workflows",
+    "deploy": "gh-pages -d dist",
     "fix-memory-limit": "cross-env LIMIT=8192 increase-memory-limit"
   },
   "resolutions": {

@@ -37,3 +37,14 @@ if (window) {
 
     require('antd/lib/alert/style/index.css');
 }
+
+
+if (
+  location.host === 'ava.antv.vision' ||
+  location.host === 'antv-ava.gitee.io'
+) {
+  (window as any).location.href = location.href.replace(
+    location.origin,
+    'https://ava.antv.antgroup.com',
+  );
+}
