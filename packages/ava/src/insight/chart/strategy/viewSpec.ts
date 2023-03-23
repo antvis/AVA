@@ -1,6 +1,11 @@
 import { G2Spec, Mark } from '@antv/g2';
 
-export const viewSpecStrategy = (marks: Mark[]): G2Spec => {
+export const viewSpecStrategy = (
+  marks: Mark[],
+  viewConfig?: {
+    scale?: Mark['scale'];
+  }
+): G2Spec => {
   return {
     type: 'view',
     theme: 'classic',
@@ -8,13 +13,11 @@ export const viewSpecStrategy = (marks: Mark[]): G2Spec => {
       x: { labelAutoHide: true, labelAutoRotate: false, title: false },
       y: { title: false },
     },
-    scale: {
-      y: { nice: true },
-    },
     interaction: {
       tooltip: { groupName: false },
     },
     legend: false,
     children: marks,
+    ...viewConfig,
   };
 };

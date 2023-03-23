@@ -58,6 +58,10 @@ export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationS
     return {
       ...commonSpec,
       type: 'point',
+      encode: {
+        x: measures[0]?.fieldName,
+        y: measures[1]?.fieldName,
+      },
     };
   }
   return null;
