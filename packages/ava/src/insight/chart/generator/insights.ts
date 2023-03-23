@@ -51,6 +51,13 @@ export function generateInsightChartSpec(insight: InsightInfo<PatternInfo>): G2S
     correlation: correlationStrategy,
   };
 
+  // majority insight pattern visualizes as 'pie', should not use y nice (G2 handle it as rescale y, the pie chart will be less than 100%)
+  const isThetaCoordinate = insight.patterns.map((pattern) => pattern.type).includes('majority');
+  const viewConfig = isThetaCoordinate
+    ? { scale: { y: { nice: false } } }
+    : {
+        scale: { y: { nice: true } },
+      };
   const marks = insightType2Strategy[insightType]?.(insight);
-  return viewSpecStrategy(marks);
+  return viewSpecStrategy(marks, viewConfig);
 }

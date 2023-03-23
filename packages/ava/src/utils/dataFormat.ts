@@ -21,5 +21,5 @@ export default function dataFormat(value: number | string, digits: number = 2) {
     .find((item) => {
       return value >= item.value;
     });
-  return item ? (value / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : '0';
+  return item ? (value / item.value).toFixed(digits).replace(rx, '$1') + item.symbol : value.toFixed(digits);
 }
