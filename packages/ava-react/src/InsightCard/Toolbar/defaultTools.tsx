@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { CopyOutlined, ExportOutlined } from '@ant-design/icons';
-import { Button, Tooltip } from 'antd';
+import { CopyOutlined, MoreOutlined } from '@ant-design/icons';
+import { Button, Tooltip, Dropdown } from 'antd';
 
 import { INSIGHT_CARD_PREFIX_CLS } from '../constants';
 import { IconButton } from '../styled/iconButton';
 
 import type { BaseIconButtonProps, DefaultToolType } from './types';
+import type { DropdownProps } from 'antd';
 
 export const BaseIconButton: React.FC<BaseIconButtonProps> = ({ icon, onClick, description }) => {
   return (
@@ -37,18 +38,23 @@ const defaultCopyButton = () => {
   };
 };
 
-const defaultExportButton = () => {
+export const defaultMoreButton = (props: DropdownProps['menu'] = {}) => {
+  const { items, onClick } = props;
   return {
-    type: 'export',
-    description: 'export',
-    icon: <ExportOutlined />,
+    type: 'others',
+    description: '',
+    icon: (
+      <Dropdown menu={{ items, onClick }}>
+        <MoreOutlined />
+      </Dropdown>
+    ),
   };
 };
 
 export const getDefaultTool = (type: DefaultToolType) => {
   const toolsFunctionMap = {
     copy: defaultCopyButton,
-    export: defaultExportButton,
+    others: defaultMoreButton,
   };
   return toolsFunctionMap[type]?.();
 };

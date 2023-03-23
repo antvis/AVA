@@ -20,3 +20,14 @@ export const CARD_CONTENT_HEIGHT = 48;
 export const CHART_HEIGHT = 280;
 /** chart carousel plugin key  */
 export const DISPLAY_CHARTS_PLUGIN_KEY = 'charts';
+
+export const EXPORT_DATA_LABEL = {
+  'zh-CN': {
+    insightInfo: '复制洞察结果',
+    spec: '复制可视化 schema',
+  },
+  'en-US': {
+    insightInfo: 'copy insight result data',
+    spec: 'copy visualization spec',
+  },
+};
