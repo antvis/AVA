@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 
-import { Empty, notification, Row, Spin } from 'antd';
+import { Empty, message, Row, Spin } from 'antd';
 import cx from 'classnames';
 import { isFunction } from 'lodash';
 import { getInsights } from '@antv/ava';
@@ -11,8 +11,9 @@ import { generateContentVisSpec } from './utils/specGenerator';
 import { Title } from './Title';
 import { Toolbar } from './Toolbar';
 import { insightCardPresetPlugins } from './ntvPlugins';
-import { INSIGHT_CARD_PREFIX_CLS } from './constants';
+import { EXPORT_DATA_LABEL, INSIGHT_CARD_PREFIX_CLS } from './constants';
 import { Container } from './styled/container';
+import { defaultMoreButton } from './Toolbar/defaultTools';
 
 import type { InsightInfo } from '@antv/ava';
 import type { Tool } from './Toolbar/types';
@@ -90,14 +91,16 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     onChange?.(currentInsightInfo, contentSpec);
   }, [currentInsightInfo, contentSpec]);
 
+  const onCopySuccess = () => {
+    message.success(visualizationOptions?.lang === 'zh-CN' ? '复制成功' : 'Copy Success');
+  };
+
   const onClickCopy = async () => {
     if (ref?.current) {
       const textExporter = new TextExporter([...insightCardPresetPlugins, ...extraPlugins]);
       const html = await textExporter.getNarrativeHtml(ref.current);
       const plainText = contentSpec ? textExporter.getNarrativeText(contentSpec) : '';
-      copyToClipboard(html, plainText, () => {
-        notification.success({ message: '复制成功' });
-      });
+      copyToClipboard(html, plainText, onCopySuccess);
       onCopy?.(currentInsightInfo, ref.current);
     }
   };
@@ -107,9 +110,22 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       type: 'copy',
       onClick: onClickCopy,
     },
-    {
-      type: 'export',
-    },
+    defaultMoreButton({
+      items: [
+        { key: 'insightInfo', label: EXPORT_DATA_LABEL[visualizationOptions?.lang || 'en-US'].insightInfo },
+        { key: 'spec', label: EXPORT_DATA_LABEL[visualizationOptions?.lang || 'en-US'].insightInfo },
+      ],
+      onClick: (menuInfo) => {
+        if (menuInfo.key === 'insightInfo') {
+          const insightInfoString = JSON.stringify(currentInsightInfo);
+          copyToClipboard(insightInfoString, insightInfoString, onCopySuccess);
+        }
+        if (menuInfo.key === 'spec') {
+          const specString = JSON.stringify(contentSpec);
+          copyToClipboard(specString, specString, onCopySuccess);
+        }
+      },
+    }),
   ];
 
   if (!footerTools) {

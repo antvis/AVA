@@ -1,1 +1,1 @@
-export const DEFAULT_TOOLS = ['copy', 'export'] as const;
+export const DEFAULT_TOOLS = ['copy', 'others'] as const;
