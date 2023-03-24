@@ -1,7 +1,13 @@
-// data format.
-// dataFormat(12, 1) = 12
-// dataFormat(1234, 1) = 1.2k
-// dataFormat(123.456, 2) = 123.46
+/**
+ * data format.
+ * dataFormat(0.8849) = 0.88
+ * dataFormat(12, 1) = 12
+ * dataFormat(1234, 1) = 1.2k
+ * dataFormat(123.456, 2) = 123.46
+ * @param value value to be formatted
+ * @param digits the number of digits to keep after the decimal point, 2 by default
+ * @returns formatted value string
+ */
 export default function dataFormat(value: number | string, digits: number = 2) {
   if (typeof value === 'string') return value;
 
