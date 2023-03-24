@@ -196,7 +196,7 @@ export interface ScoringResultForChartType {
   log?: ScoringResultForRule[];
 }
 
-export type { Preferences } from './ruler/types';
+export * from './ruler/types';
 
 export interface LinterOptions {
   purpose?: Purpose;
