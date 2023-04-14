@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Tooltip, TooltipProps } from 'antd';
-import { isTextPhrase, isEntityPhrase } from '@antv/ava';
+import { isTextPhrase, isEntityPhrase, isEscapePhrase } from '@antv/ava';
 import { isFunction, kebabCase, isEmpty, isNil } from 'lodash';
 
 import { NTV_PREFIX_CLS } from '../constants';
@@ -143,6 +143,10 @@ export const Phrase: React.FC<PhraseProps> = ({
       );
     return defaultText;
   }
+
+  // use pre to render escape character
+  // 使用 pre 标签渲染特殊转义字符
+  if (isEscapePhrase(phrase)) return <pre>{phrase.value}</pre>;
 
   const descriptor = pluginManager?.getPhraseDescriptorBySpec(phrase);
   if (descriptor) {

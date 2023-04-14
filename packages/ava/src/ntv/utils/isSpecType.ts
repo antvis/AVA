@@ -13,6 +13,7 @@ import type {
   CustomPhraseSpec,
   EntityPhraseSpec,
   TextPhraseSpec,
+  EscapePhraseSpec,
 } from '../schema';
 
 export function isCustomSection(spec: SectionSpec): spec is CustomBlockElement {
@@ -65,4 +66,8 @@ export function isEntityPhrase(spec: PhraseSpec): spec is EntityPhraseSpec {
 
 export function isTextPhrase(spec: PhraseSpec): spec is TextPhraseSpec {
   return spec?.type === 'text';
+}
+
+export function isEscapePhrase(spec: PhraseSpec): spec is EscapePhraseSpec {
+  return spec?.type === 'escape';
 }

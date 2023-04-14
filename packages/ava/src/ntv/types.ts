@@ -14,6 +14,7 @@ export type {
   PhraseSpec,
   TextPhraseSpec,
   EntityPhraseSpec,
+  EscapePhraseSpec,
   CustomPhraseSpec,
   ValueAssessment,
   EntityType,

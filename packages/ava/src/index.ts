@@ -139,6 +139,7 @@ export {
   isCustomPhrase,
   isTextPhrase,
   isEntityType,
+  isEscapePhrase,
   ENTITY_TYPES,
 } from './ntv';
 export type {
@@ -155,6 +156,7 @@ export type {
   PhraseSpec,
   TextPhraseSpec,
   EntityPhraseSpec,
+  EscapePhraseSpec,
   CustomPhraseSpec,
   ValueAssessment,
   EntityType,
