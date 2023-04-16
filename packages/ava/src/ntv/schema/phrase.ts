@@ -1,7 +1,12 @@
 import { CustomMetaData, CommonProps } from './common';
 
 // P used for custom phrase;
-export type PhraseSpec = TextPhraseSpec | EntityPhraseSpec | EscapePhraseSpec | CustomPhraseSpec<CustomMetaData>;
+export type PhraseSpec =
+  | TextPhraseSpec
+  | EntityPhraseSpec
+  | EscapePhraseSpec
+  | FormulaPhraseSpec
+  | CustomPhraseSpec<CustomMetaData>;
 
 export type TextPhraseSpec = CommonProps & {
   type: 'text';
@@ -17,6 +22,14 @@ export type TextPhraseSpec = CommonProps & {
  */
 export type EscapePhraseSpec = CommonProps & {
   type: 'escape';
+  value: string;
+};
+
+/**
+ * math formula
+ */
+export type FormulaPhraseSpec = CommonProps & {
+  type: 'formula';
   value: string;
 };
 

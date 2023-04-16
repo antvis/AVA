@@ -55,6 +55,7 @@
     "@antv/g2": "5.0.0",
     "canvg": "^4.0.1",
     "classnames": "^2.3.2",
+    "katex": "^0.16.4",
     "lodash": "^4.17.21",
     "styled-components": "^5.3.5",
     "uuid": "^8.3.2"
@@ -62,6 +63,7 @@
   "devDependencies": {
     "@ant-design/icons": "^4.7.0",
     "@types/jest": "^26.0.24",
+    "@types/katex": "^0.16.0",
     "@types/lodash": "^4.14.180",
     "@types/react": "^17.0.15",
     "@types/react-dom": "^17.0.9",

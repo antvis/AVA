@@ -141,6 +141,7 @@ export {
   isTextPhrase,
   isEntityType,
   isEscapePhrase,
+  isFormulaPhrase,
   ENTITY_TYPES,
 } from './ntv';
 export type {
@@ -156,6 +157,7 @@ export type {
   CustomBlockElement,
   PhraseSpec,
   TextPhraseSpec,
+  FormulaPhraseSpec,
   EntityPhraseSpec,
   EscapePhraseSpec,
   CustomPhraseSpec,

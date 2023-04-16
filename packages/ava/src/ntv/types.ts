@@ -13,6 +13,7 @@ export type {
   TextPhraseSpec,
   EntityPhraseSpec,
   EscapePhraseSpec,
+  FormulaPhraseSpec,
   CustomPhraseSpec,
   ValueAssessment,
   EntityType,
