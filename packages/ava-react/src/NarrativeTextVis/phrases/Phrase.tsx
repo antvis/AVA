@@ -1,11 +1,12 @@
 import React from 'react';
 
 import { Tooltip, TooltipProps } from 'antd';
-import { isTextPhrase, isEntityPhrase, isEscapePhrase } from '@antv/ava';
+import { isTextPhrase, isEntityPhrase, isEscapePhrase, isFormulaPhrase } from '@antv/ava';
 import { isFunction, kebabCase, isEmpty, isNil } from 'lodash';
+import katex from 'katex';
 
 import { NTV_PREFIX_CLS } from '../constants';
-import { Entity, Bold, Italic, Underline } from '../styled';
+import { Entity, Bold, Italic, Underline, FormulaWrapper } from '../styled';
 import { functionalize } from '../utils';
 import { classnames as cx } from '../../utils';
 import { PhraseDescriptor, presetPluginManager } from '../chore/plugin';
@@ -147,6 +148,23 @@ export const Phrase: React.FC<PhraseProps> = ({
   // use pre to render escape character
   // 使用 pre 标签渲染特殊转义字符
   if (isEscapePhrase(phrase)) return <pre>{phrase.value}</pre>;
+
+  // use katex to render formula
+  // 使用 katex 渲染公式
+  if (isFormulaPhrase(phrase))
+    return (
+      <FormulaWrapper
+        className={`${NTV_PREFIX_CLS}-formula`}
+        dangerouslySetInnerHTML={{
+          __html: katex.renderToString(phrase.value, {
+            throwOnError: false,
+            displayMode: true,
+            strict: 'ignore',
+            fleqn: true,
+          }),
+        }}
+      />
+    );
 
   const descriptor = pluginManager?.getPhraseDescriptorBySpec(phrase);
   if (descriptor) {

@@ -369,6 +369,31 @@ const App = () => {
           ],
         }}
       />
+      <Divider>公式</Divider>
+      <NarrativeTextVis
+        spec={{
+          sections: [
+            {
+              paragraphs: [
+                {
+                  type: 'normal',
+                  phrases: [
+                    {
+                      type: 'text',
+                      value: '渲染公式：',
+                    },
+                    {
+                      type: 'formula',
+                      // eslint-disable-next-line no-useless-escape, quotes
+                      value: `c = \\pm\\sqrt{a^2 + b^2}`,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        }}
+      />
     </>
   );
 };
