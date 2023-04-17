@@ -14,7 +14,7 @@ import { NtvTypes } from '@antv/ava';
 ```
 2. 使用 json-schema
 
-`https://antv.github.io/ntv-schema/[version].json`
+`https://antv.vision/ntv-schema/[version].json`
 
 ## 结构介绍
 
