@@ -174,7 +174,7 @@ It can automatically generate and render the proper chart for visualization base
 
 ### \<NarrativeTextVis /\>
 
-The `ntv` module is used to display data insights in narrative text. Contains the `NtvTypes` related spec declaration in `@antv/ava` and a react component `NarrativeTextVis` in `@antv/ava-react`.
+The `ntv` module is used to display data insights in narrative text. Contains the ntv-schema types, such as `NarrativeTextSpec`, related spec declaration in `@antv/ava` and a react component `NarrativeTextVis` in `@antv/ava-react`.
 
 Basic usage:
 

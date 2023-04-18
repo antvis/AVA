@@ -173,7 +173,7 @@ AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 Rea
 
 ### \<NarrativeTextVis /\>
 
-`ntv` 模块用来展示数据洞察解读文本。包含 `@antv/ava` 中的 `NtvTypes` 相关 spec 声明，以及 `@antv/ava-react` 中一个 react 组件 `NarrativeTextVis`。
+`ntv` 模块用来展示数据洞察解读文本。包含 `@antv/ava` 中的 ntv-schema types（比如 `NarrativeTextSpec`）相关 spec 声明，以及 `@antv/ava-react` 中一个 react 组件 `NarrativeTextVis`。
 
 基本用法举例：
 

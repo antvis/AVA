@@ -1,5 +1,3 @@
-/* export all needed types of NtvTypes */
-
 export type {
   NarrativeTextSpec,
   HeadlineSpec,
