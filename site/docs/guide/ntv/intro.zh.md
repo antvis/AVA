@@ -34,8 +34,7 @@ order: 0
 获取 TS 类型定义：
 
 ```ts
-import { NtvTypes } from '@antv/ava';
-// NarrativeTextSpec
+import { NarrativeTextSpec } from '@antv/ava';
 ```
 
 一个 ntv-schema json 数据示例：
@@ -75,7 +74,7 @@ import { NtvTypes } from '@antv/ava';
 ### 2. 使用 `<NarrativeTextVis />` 渲染
 
 ```tsx
-import { NarrativeTextVis, NtvTypes } from "@antv/ava-react";
+import { NarrativeTextVis, NarrativeTextSpec } from "@antv/ava-react";
 
 const textSpec: NarrativeTextSpec = {
   // ...

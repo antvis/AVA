@@ -1,5 +1,3 @@
-/* export all needed types of NtvTypes */
-
 export type {
   NarrativeTextSpec,
   HeadlineSpec,
@@ -14,6 +12,7 @@ export type {
   PhraseSpec,
   TextPhraseSpec,
   EntityPhraseSpec,
+  EscapePhraseSpec,
   CustomPhraseSpec,
   ValueAssessment,
   EntityType,

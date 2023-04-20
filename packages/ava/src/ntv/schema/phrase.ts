@@ -1,7 +1,7 @@
 import { CustomMetaData, CommonProps } from './common';
 
 // P used for custom phrase;
-export type PhraseSpec = TextPhraseSpec | EntityPhraseSpec | CustomPhraseSpec<CustomMetaData>;
+export type PhraseSpec = TextPhraseSpec | EntityPhraseSpec | EscapePhraseSpec | CustomPhraseSpec<CustomMetaData>;
 
 export type TextPhraseSpec = CommonProps & {
   type: 'text';
@@ -10,6 +10,14 @@ export type TextPhraseSpec = CommonProps & {
   italic?: boolean;
   underline?: boolean;
   url?: string;
+};
+
+/**
+ * escape character 支持转义字符
+ */
+export type EscapePhraseSpec = CommonProps & {
+  type: 'escape';
+  value: string;
 };
 
 export type EntityPhraseSpec = CommonProps & {
@@ -79,7 +87,7 @@ export const ENTITY_TYPES = [
   'proportion',
 ] as const;
 
-export type EntityType = typeof ENTITY_TYPES[number];
+export type EntityType = (typeof ENTITY_TYPES)[number];
 
 export type EntityMetaData = {
   /**

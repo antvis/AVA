@@ -337,6 +337,38 @@ const App = () => {
       <NarrativeTextVis spec={templateSpec} />
       <Divider />
       <NarrativeTextVis spec={fluctuationSpec} pluginManager={ntvPluginManager} />
+      <Divider>转义字符</Divider>
+      <NarrativeTextVis
+        spec={{
+          sections: [
+            {
+              paragraphs: [
+                {
+                  type: 'normal',
+                  phrases: [
+                    {
+                      type: 'text',
+                      value: '在 text 中的转义字符字符 \r\n 无效，后面是 escape 类型短语，换行：',
+                    },
+                    {
+                      type: 'escape',
+                      value: '\n',
+                    },
+                    {
+                      type: 'text',
+                      value: '回车',
+                    },
+                    {
+                      type: 'escape',
+                      value: '\r',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        }}
+      />
     </>
   );
 };
