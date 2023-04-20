@@ -1,6 +1,6 @@
 {
   "name": "@antv/ava-react",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "React components of AVA.",
   "author": {
     "name": "AntV",
@@ -51,7 +51,7 @@
     ]
   },
   "dependencies": {
-    "@antv/ava": "^3.0.1",
+    "@antv/ava": "^3.0.2",
     "@antv/g2": "5.0.0",
     "canvg": "^4.0.1",
     "classnames": "^2.3.2",
