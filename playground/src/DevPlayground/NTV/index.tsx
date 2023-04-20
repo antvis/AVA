@@ -386,6 +386,10 @@ const App = () => {
                       type: 'formula',
                       // eslint-disable-next-line no-useless-escape, quotes
                       value: `c = \\pm\\sqrt{a^2 + b^2}`,
+                      className: 'my-formula',
+                      styles: {
+                        color: 'red',
+                      },
                     },
                   ],
                 },
