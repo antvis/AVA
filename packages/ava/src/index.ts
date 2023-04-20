@@ -16,6 +16,7 @@ export type {
   LinterOptions,
   LintParams,
   RuleModule,
+  AdvisorConfig,
 } from './advisor';
 
 /* CKB */
