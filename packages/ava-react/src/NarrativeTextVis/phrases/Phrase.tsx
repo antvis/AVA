@@ -147,14 +147,20 @@ export const Phrase: React.FC<PhraseProps> = ({
 
   // use pre to render escape character
   // 使用 pre 标签渲染特殊转义字符
-  if (isEscapePhrase(phrase)) return <pre>{phrase.value}</pre>;
+  if (isEscapePhrase(phrase))
+    return (
+      <pre className={cx(phrase.className)} style={phrase.styles}>
+        {phrase.value}
+      </pre>
+    );
 
   // use katex to render formula
   // 使用 katex 渲染公式
   if (isFormulaPhrase(phrase))
     return (
       <FormulaWrapper
-        className={`${NTV_PREFIX_CLS}-formula`}
+        className={cx(phrase.className, `${NTV_PREFIX_CLS}-formula`)}
+        style={phrase.styles}
         dangerouslySetInnerHTML={{
           __html: katex.renderToString(phrase.value, {
             throwOnError: false,
