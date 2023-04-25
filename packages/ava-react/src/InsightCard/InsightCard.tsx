@@ -44,14 +44,14 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   const ref = useRef<HTMLDivElement>(null);
 
   const calculateAndSetInsightPatterns = useCallback(() => {
-    const { allData } = autoInsightOptions;
+    const { allData, ...restOptions } = autoInsightOptions;
     setDataStatus('RUNNING');
     try {
       const { insights } = getInsights(allData, {
         measures,
         dimensions,
         // todo 待 getInsights 支持传入 subspace 后增加传入 subspace
-        ...autoInsightOptions,
+        ...restOptions,
       });
       setCurrentInsightInfo(insights[0]);
     } catch (err) {
