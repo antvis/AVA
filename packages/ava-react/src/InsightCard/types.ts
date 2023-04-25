@@ -16,8 +16,8 @@ export type CommonProps = {
  */
 export type InsightCardInfo = Pick<InsightInfo, 'dimensions' | 'measures' | 'data' | 'subspace'> & {
   /**
-   * analysis result data, if not defined, will be referred by autoInsightOptions. One of `autoInsightOptions` and `patterns` must be assigned
-    分析得到的洞察数据，`autoInsightOptions` 和 `patterns` 至少有一个必须被赋值
+   * analysis result data
+    分析得到的洞察数据
   */
   patterns?: InsightInfo['patterns'];
 };
@@ -34,16 +34,16 @@ export type InsightCardEventHandlers = {
 
 export type InsightCardProps = CommonProps &
   InsightCardEventHandlers & {
-    /** basic info of an insight */
-    insightInfo: InsightCardInfo;
     /** title of insight card, analysis name and measure name by default 洞察卡片的标题，默认为一个分析类型+分析指标名称 */
     title?: ((defaultTitle?: ReactNode) => ReactNode) | ReactNode;
+    /** basic info of an insight, if not defined, will be referred by autoInsightOptions. One of `insightInfo` and `autoInsightOptions` must be assigned 洞察结果数据，如果不传入，需要通过配置`autoInsightOptions` 指定自动产生洞察结果的方式。`autoInsightOptions` 和 `insightInfo` 至少有一个必须被赋值 */
+    insightInfo?: InsightCardInfo;
     /** tools in the header of card, by default, there are no tools 标题右侧的工具栏 */
     headerTools?: Tool[];
     /** tools in the footer of card, by default, there are copy and share tools */
     footerTools?: Tool[];
-    /** options used to generate the insight, one of `autoInsightOptions` and `patterns` must be assigned */
-    autoInsightOptions?: Omit<InsightOptions, 'dimensions' | 'measures' | 'visualization'> & {
+    /** [Note: this property is experimental and might be adjusted in the future version]. Options used to generate the insight, one of `autoInsightOptions` and `insightInfo` must be assigned */
+    autoInsightOptions?: Omit<InsightOptions, 'visualization'> & {
       allData: { [x: string]: any }[];
     };
     visualizationOptions?: InsightVisualizationOptions;
