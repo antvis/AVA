@@ -1,0 +1,24 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.tsx",
+      "title": {
+        "en": "Visualize insight result",
+        "zh": "展示洞察结果"
+      },
+      "screenshot": ""
+    },
+    {
+      "filename": "insight.tsx",
+      "title": {
+        "en": "Combine with @antv/insight",
+        "zh": "和 @antv/insight 串联使用"
+      },
+      "screenshot": ""
+    }
+  ]
+}
