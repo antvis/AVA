@@ -33,27 +33,28 @@ The framework of AVA can be illustrated as follows:
 
 ## Demo
 
-```html
-<div id="mountNode"></div>
-```
-
-```js
-import { AutoChart } from '@antv/auto-chart';
+```jsx
+import { getInsights } from '@antv/ava'
+import { InsightCard } from '@antv/ava-react';
 
 const data = [
-  {field1: 'a', field2: '100'},
-  {field1: 'b', field2: '300'},
-  {field1: 'c', field2: '800'},
-];
+  { year: '2000', value: 1 },
+  { year: '2001', value: -1 },
+  { year: '2002', value: 2 },
+  { year: '2003', value: -2 },
+  { year: '2004', value: 7 },
+  { year: '2005', value: 3 },
+  { year: '2006', value: -3 },
+  { year: '2007', value: 0 },
+  { year: '2008', value: 0 },
+  { year: '2009', value: 1 },
+]
+
+const insights = getInsights(data)
 
 ReactDOM.render(
   <>
-    <AutoChart 
-      title="CASE 1" 
-      description="auto chart analysis" 
-      data={data} 
-      language={'zh-CN'} 
-    />
+    <InsightCard insightInfo={insightInfo} visualizationOptions={{ lang: 'en-US' }} />
   </>,
   mountNode,
 );
@@ -165,13 +166,6 @@ const insights = getInsights(data);
 
 `@antv/ava-react` is a plug-and-play React component library based on the integration of AVA capabilities.
 
-### \<AutoChart /\>
-
-AutoChart is a React component that automatically suggests and renders the right chart based on data.
-It can automatically generate and render the proper chart for visualization based on the input data with one-line of code.
-
-> Please look out for further updates to the AutoChart component in future versions.
-
 ### \<NarrativeTextVis /\>
 
 The `ntv` module is used to display data insights in narrative text. Contains the ntv-schema types, such as `NarrativeTextSpec`, related spec declaration in `@antv/ava` and a react component `NarrativeTextVis` in `@antv/ava-react`.
@@ -186,3 +180,24 @@ export default () => {
   return <NarrativeTextVis spec={textSpec} />
 }
 ```
+
+
+### \<InsightCard /\>
+`InsightCard` 是一个用图文结合的方式展示数据洞察数据的 React 组件。可以接收指定类型的洞察结果数据，对结果进行可视化和解读的展示，也可以直接接收数据，自动进行洞察。
+`InsightCard` is a React Component that displays data insights using visualization and explanation. It can receive a specified type of insight result data, visualize and interpret the result, or directly receive data and automatically perform insight.
+
+```jsx
+import { NarrativeTextVis } from '@antv/ava-react';
+
+export default () => {
+  // 其中 textSpec 类型为 NarrativeTextSpec
+  return <InsightCard insightInfo={insightInfo} />
+}
+```
+
+### \<AutoChart /\>
+
+AutoChart is a React component that automatically suggests and renders the right chart based on data.
+It can automatically generate and render the proper chart for visualization based on the input data with one-line of code.
+
+> Please look out for further updates to the AutoChart component in future versions.

@@ -41,22 +41,27 @@ AVA 的整体架构如下：
 ```
 
 ```js
-import { AutoChart } from '@antv/auto-chart';
+import { getInsights } from '@antv/ava';
+import { InsightCard } from '@antv/ava-react';
 
 const data = [
-  {field1: 'a', field2: '100'},
-  {field1: 'b', field2: '300'},
-  {field1: 'c', field2: '800'},
-];
+  { year: '2000', value: 1 },
+  { year: '2001', value: -1 },
+  { year: '2002', value: 2 },
+  { year: '2003', value: -2 },
+  { year: '2004', value: 7 },
+  { year: '2005', value: 3 },
+  { year: '2006', value: -3 },
+  { year: '2007', value: 0 },
+  { year: '2008', value: 0 },
+  { year: '2009', value: 1 },
+]
+
+const firstInsight = getInsights(data)[0]
 
 ReactDOM.render(
   <>
-    <AutoChart 
-      title="CASE 1" 
-      description="auto chart analysis" 
-      data={data} 
-      language={'zh-CN'} 
-    />
+    <InsightCard insightInfo={firstInsight} visualizationOptions={{ lang: 'zh-CN' }} />
   </>,
   mountNode,
 );
@@ -165,12 +170,6 @@ const insights = getInsights(data);
 
 `@antv/ava-react` 是基于 AVA 能力整合而成的即插即用的 React 组件库。
 
-### \<AutoChart /\>
-
-AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 React 组件。它可以为用户提供一行代码实现智能可视化的能力。
-
-> AutoChart 组件进一步升级中，期待后续版本。
-
 ### \<NarrativeTextVis /\>
 
 `ntv` 模块用来展示数据洞察解读文本。包含 `@antv/ava` 中的 ntv-schema types（比如 `NarrativeTextSpec`）相关 spec 声明，以及 `@antv/ava-react` 中一个 react 组件 `NarrativeTextVis`。
@@ -185,3 +184,21 @@ export default () => {
   return <NarrativeTextVis spec={textSpec} />
 }
 ```
+
+### \<InsightCard /\>
+`InsightCard` 是一个用图文结合的方式展示数据洞察数据的 React 组件。可以接收指定类型的洞察结果数据，对结果进行可视化和解读的展示，也可以直接接收数据，自动进行洞察。
+
+```jsx
+import { NarrativeTextVis } from '@antv/ava-react';
+
+export default () => {
+  // 其中 textSpec 类型为 NarrativeTextSpec
+  return <InsightCard insightInfo={insightInfo} />
+}
+```
+
+### \<AutoChart /\>
+
+AutoChart 是一个可以根据数据自动推荐合适的图表并渲染的 React 组件。它可以为用户提供一行代码实现智能可视化的能力。
+
+> AutoChart 组件进一步升级中，期待后续版本。
