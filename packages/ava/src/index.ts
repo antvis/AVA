@@ -93,7 +93,7 @@ export type {
 } from './data';
 
 /* insight */
-export { getInsights, generateInsightVisualizationSpec } from './insight';
+export { getInsights, generateInsightVisualizationSpec, dimensionDrillDownAttribution } from './insight';
 export type {
   Datum,
   DomainType,
@@ -124,6 +124,7 @@ export type {
   LowVarianceInfo,
   CorrelationInfo,
   InsightsResult,
+  DimensionDrillDownProps,
 } from './insight';
 
 /* NTV (Narrative Text Vis) */
