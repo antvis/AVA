@@ -26,14 +26,8 @@ export default defineConfig({
     showChartResize: true,
     // 是否在 demo 页展示API文档
     showAPIDoc: true,
-    // 添加国内镜像链接
-    internalSite: {
-        url: 'https://ava.antv.antgroup.com',
-        name: {
-          zh: '国内镜像',
-          en: 'China Mirror',
-        },
-    },
+    // 是否展示国内镜像链接     
+    showChinaMirror: false,  
     navs: [
         {
         slug: 'docs/guide',
