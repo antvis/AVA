@@ -50,7 +50,7 @@ const data = [
   { year: '2009', value: 1 },
 ]
 
-const insights = getInsights(data)
+const insightInfo = getInsights(data).insights[0]
 
 ReactDOM.render(
   <>
@@ -183,14 +183,12 @@ export default () => {
 
 
 ### \<InsightCard /\>
-`InsightCard` 是一个用图文结合的方式展示数据洞察数据的 React 组件。可以接收指定类型的洞察结果数据，对结果进行可视化和解读的展示，也可以直接接收数据，自动进行洞察。
 `InsightCard` is a React Component that displays data insights using visualization and explanation. It can receive a specified type of insight result data, visualize and interpret the result, or directly receive data and automatically perform insight.
 
 ```jsx
 import { NarrativeTextVis } from '@antv/ava-react';
 
-export default () => {
-  // 其中 textSpec 类型为 NarrativeTextSpec
+export default () => { 
   return <InsightCard insightInfo={insightInfo} />
 }
 ```

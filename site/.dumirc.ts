@@ -111,12 +111,20 @@ export default defineConfig({
             order: 6,
         },
         {
+            slug: 'guide/insight-card',
+            title: {
+                zh: '洞察卡片(InsightCard)',
+                en: 'Insight Visualization (InsightCard)',
+            },
+            order: 7,
+        },
+        {
           slug: 'guide/migrate',
           title: {
               zh: '版本升级指引',
               en: 'Migrate',
           },
-          order: 7,
+          order: 8,
         },
         // v3 暂时不透出 AutoChart
         // {
@@ -168,12 +176,20 @@ export default defineConfig({
             order: 6,
         },
         {
+            slug: 'api/insight-card',
+            title: {
+                zh: '洞察展现卡片(InsightCard)',
+                en: 'Insight Visualization (InsightCard)',
+            },
+            order: 7,
+        },
+        {
             slug: 'api/types',
             title: {
                 zh: '类型 Types',
                 en: 'Types',
             },
-            order: 7,
+            order: 8,
         }
     ],
     examples: [
@@ -224,13 +240,22 @@ export default defineConfig({
           order: 5,
         },
         {
+            slug: 'insight-card',
+            icon: 'star-single-line',
+            title: {
+                zh: '洞察展现卡片(InsightCard)',
+                en: 'Insight Visualization (InsightCard)',
+            },
+            order: 6,
+        },
+        {
             slug: 'others',
             icon: 'other',
             title: {
                 zh: '其他',
                 en: 'Others',
             },
-            order: 6,
+            order: 7,
         },
     ],
     // 编辑器配置

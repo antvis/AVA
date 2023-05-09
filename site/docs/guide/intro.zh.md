@@ -57,7 +57,7 @@ const data = [
   { year: '2009', value: 1 },
 ]
 
-const firstInsight = getInsights(data)[0]
+const firstInsight = getInsights(data).insights[0]
 
 ReactDOM.render(
   <>
@@ -192,7 +192,7 @@ export default () => {
 import { NarrativeTextVis } from '@antv/ava-react';
 
 export default () => {
-  // 其中 textSpec 类型为 NarrativeTextSpec
+  // 其中 insightInfo 类型参考 insight 模块输出的数据洞察
   return <InsightCard insightInfo={insightInfo} />
 }
 ```
