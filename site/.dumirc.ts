@@ -178,7 +178,7 @@ export default defineConfig({
         {
             slug: 'api/insight-card',
             title: {
-                zh: '洞察展现卡片(InsightCard)',
+                zh: '洞察卡片(InsightCard)',
                 en: 'Insight Visualization (InsightCard)',
             },
             order: 7,
@@ -243,7 +243,7 @@ export default defineConfig({
             slug: 'insight-card',
             icon: 'star-single-line',
             title: {
-                zh: '洞察展现卡片(InsightCard)',
+                zh: '洞察卡片(InsightCard)',
                 en: 'Insight Visualization (InsightCard)',
             },
             order: 6,
