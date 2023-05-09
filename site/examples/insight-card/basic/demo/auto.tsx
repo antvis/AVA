@@ -3,7 +3,52 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { InsightCard } from '@antv/ava-react';
 
-import { timeSeriesData } from './mockData';
+const timeSeriesData = [
+  {
+    year: '1955',
+    pop: 2182678196,
+  },
+  {
+    year: '1960',
+    pop: 2394564086,
+  },
+  {
+    year: '1965',
+    pop: 2618176519,
+  },
+  {
+    year: '1970',
+    pop: 2906025531,
+  },
+  {
+    year: '1975',
+    pop: 3211425244,
+  },
+  {
+    year: '1980',
+    pop: 3500588903,
+  },
+  {
+    year: '1985',
+    pop: 3804113397,
+  },
+  {
+    year: '1990',
+    pop: 4133335721,
+  },
+  {
+    year: '1995',
+    pop: 4455059580,
+  },
+  {
+    year: '2000',
+    pop: 4749735887,
+  },
+  {
+    year: '2005',
+    pop: 5014673090,
+  },
+];
 
 // 由于自动洞察目前内置的显著性打分效果不是很好，导致选择第一个洞察展示经常不能达到最优效果，待这个问题优化后再透出 demo
 ReactDOM.render(
