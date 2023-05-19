@@ -1,4 +1,5 @@
 import { verifyDataProps } from '../utils';
+import { intersects } from '../../utils';
 
 import type { RuleModule, BasicDataPropertyForAdvice } from '../types';
 
@@ -22,7 +23,20 @@ export const dataCheck: RuleModule = {
         if (!verifyDataProps(dataPre, dataProps as BasicDataPropertyForAdvice[])) {
           result = 0;
         }
-        return true;
+      });
+      const fieldsLOMs = dataProps.map((info: any) => {
+        return info.levelOfMeasurements;
+      });
+      fieldsLOMs.forEach((fieldLOM) => {
+        let flag = false;
+        dataPres.forEach((dataPre) => {
+          if (fieldLOM && intersects(fieldLOM, dataPre.fieldConditions)) {
+            flag = true;
+          }
+        });
+        if (!flag) {
+          result = 0;
+        }
       });
     }
     return result;
