@@ -28,7 +28,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.4.0",
     "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/g2": "5.0.0",
+    "@antv/g2": "^5.0.8",
     "@antv/g2plot": "^2.3.39",
     "@antv/g6": "^4.3.11",
     "@antv/s2": "^1.15.0",
