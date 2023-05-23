@@ -136,6 +136,12 @@ export interface InsightOptions {
   homogeneous?: boolean;
   /** Whether to close the search for subspaces */
   ignoreSubspace?: boolean;
+  /**
+   * Whether only the main standard symbols recommended in ISO 8601 can be recognized as date fields, default is true.
+   * - Reference: https://www.cl.cam.ac.uk/~mgk25/iso-time.html
+   * - For example, '202301' is recognized as a date string only when strictDatePattern is false.
+   * */
+  strictDatePattern?: boolean;
 }
 
 export interface BasePatternInfo<T extends InsightType> {

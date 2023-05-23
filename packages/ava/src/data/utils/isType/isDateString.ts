@@ -54,22 +54,24 @@ export function getIsoTimePatterns(strict = true) {
   ];
 }
 
-const isoDatePatterns = getIsoDatePatterns();
-const isoTimePatterns = getIsoTimePatterns();
-const isoDateAndTimePatterns = [...isoDatePatterns, ...isoTimePatterns];
+const getIsoDateAndTimeRegs = (strictDatePattern?: boolean): RegExp[] => {
+  const isoDatePatterns = getIsoDatePatterns(strictDatePattern);
+  const isoTimePatterns = getIsoTimePatterns(strictDatePattern);
+  const isoDateAndTimePatterns = [...isoDatePatterns, ...isoTimePatterns];
 
-isoDatePatterns.forEach((d) => {
-  isoTimePatterns.forEach((t) => {
-    isoDateAndTimePatterns.push(`${d}[T\\s]${t}`);
+  isoDatePatterns.forEach((d) => {
+    isoTimePatterns.forEach((t) => {
+      isoDateAndTimePatterns.push(`${d}[T\\s]${t}`);
+    });
   });
-});
+  return isoDateAndTimePatterns.map((pattern) => {
+    return new RegExp(`^${pattern}$`);
+  });
+};
 
-const isoDateAndTimeRegs: RegExp[] = isoDateAndTimePatterns.map((pattern) => {
-  return new RegExp(`^${pattern}$`);
-});
-
-export function isDateString(value: unknown): value is string {
+export function isDateString(value: unknown, strictDatePattern?: boolean): value is string {
   if (isString(value)) {
+    const isoDateAndTimeRegs = getIsoDateAndTimeRegs(strictDatePattern);
     for (let i = 0; i < isoDateAndTimeRegs.length; i += 1) {
       const reg = isoDateAndTimeRegs[i];
       if (reg.test(value.trim())) {
