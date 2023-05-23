@@ -225,19 +225,23 @@ export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<D
 /**
  * Determine what type a value is, may be one of [integer float date string null].
  */
-export function analyzeType(value: unknown): 'null' | 'integer' | 'float' | 'date' | 'string' {
+export function analyzeType(
+  value: unknown,
+  strictDatePattern?: boolean
+): 'null' | 'integer' | 'float' | 'date' | 'string' {
   if (isNil(value)) return 'null';
   if (isNumber(value)) {
     if (isInteger(value)) return 'integer';
     return 'float';
   }
+  // 优先识别日期类型，避免字符型日期被判断成字符
+  if (isDate(value) || isDateString(value, strictDatePattern)) return 'date';
   if (isString(value)) {
     if (isNumberString(value)) {
       if ((value as string).includes('.')) return 'float';
       return 'integer';
     }
   }
-  if (isDate(value) || isDateString(value)) return 'date';
   return 'string';
 }
 
@@ -246,12 +250,15 @@ export function analyzeType(value: unknown): 'null' | 'integer' | 'float' | 'dat
  * @param value - data
  * @public
  */
-export function analyzeField(value: unknown[]): StringFieldInfo | NumberFieldInfo | DateFieldInfo {
+export function analyzeField(
+  value: unknown[],
+  strictDatePattern?: boolean
+): StringFieldInfo | NumberFieldInfo | DateFieldInfo {
   const list = value.map((item) => (isNil(item) ? null : item));
   const valueMap = statsValueMap(list);
   let recommendation: FieldType;
   const nonNullArray = valueMap.null ? list.filter((item) => item !== null) : list;
-  const typeArray = list.map((item) => analyzeType(item));
+  const typeArray = list.map((item) => analyzeType(item, strictDatePattern));
   const types = Object.keys(statsValueMap(typeArray)).filter((item) => item !== 'null') as FieldType[];
 
   // generate recommendation
@@ -294,19 +301,28 @@ export function analyzeField(value: unknown[]): StringFieldInfo | NumberFieldInf
     let restNotNullArray = nonNullArray;
     types.forEach((item: string) => {
       if (item === 'date') {
-        meta.date = analyzeField(restNotNullArray.filter((item) => isDateString(item))) as DateFieldInfo;
+        meta.date = analyzeField(
+          restNotNullArray.filter((item) => isDateString(item)),
+          strictDatePattern
+        ) as DateFieldInfo;
         restNotNullArray = restNotNullArray.filter((item) => !isDateString(item));
       } else if (item === 'integer') {
-        meta.integer = analyzeField(restNotNullArray.filter((item) => isIntegerString(item))) as NumberFieldInfo;
+        meta.integer = analyzeField(
+          restNotNullArray.filter((item) => isIntegerString(item)),
+          strictDatePattern
+        ) as NumberFieldInfo;
         restNotNullArray = restNotNullArray.filter((item) => !isIntegerString(item));
       } else if (item === 'float') {
-        meta.float = analyzeField(restNotNullArray.filter((item) => isFloatString(item))) as NumberFieldInfo;
+        meta.float = analyzeField(
+          restNotNullArray.filter((item) => isFloatString(item)),
+          strictDatePattern
+        ) as NumberFieldInfo;
         restNotNullArray = restNotNullArray.filter((item) => !isFloatString(item));
       } else if (item === 'string') {
         meta.string = analyzeField(
-          restNotNullArray.filter((item) => analyzeType(item) === 'string')
+          restNotNullArray.filter((item) => analyzeType(item, strictDatePattern) === 'string')
         ) as StringFieldInfo;
-        restNotNullArray = restNotNullArray.filter((item) => analyzeType(item) !== 'string');
+        restNotNullArray = restNotNullArray.filter((item) => analyzeType(item, strictDatePattern) !== 'string');
       }
     });
     fieldInfo.meta = meta;

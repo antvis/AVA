@@ -116,6 +116,10 @@ export type Extra = {
   fillValue?: unknown;
   /** When the columnType is empty, no data type is specified */
   columnTypes?: (FieldType | '')[];
+  /**
+   * Whether only the main standard symbols recommended in ISO 8601 can be recognized as date fields, default is true.
+   * */
+  strictDatePattern?: boolean;
 };
 
 /**

@@ -32,7 +32,7 @@ type InsightsResult = {
 export function extractInsights(sourceData: Datum[], options?: InsightOptions): InsightsResult {
   // get data columns infomations (column type, statistics, etc.)
   const data = sourceData.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
-  const dataProps = dataToDataProps(data);
+  const dataProps = dataToDataProps(data, { strictDatePattern: options.strictDatePattern });
 
   const fieldPropsMap: Record<string, DataProperty> = dataProps.reduce((acc, item) => {
     acc[item.name] = item;

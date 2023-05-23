@@ -21,6 +21,7 @@ export default class DataFrame extends BaseFrame {
     super(data, extra);
 
     this.colData = [];
+    this.extra = extra || {};
 
     assert(isBasicType(data) || isArray(data) || isObject(data), 'Data type is illegal');
 
@@ -622,7 +623,10 @@ export default class DataFrame extends BaseFrame {
     const fields: FieldsInfo = [];
     for (let i = 0; i < this.columns?.length; i += 1) {
       const column = this.columns[i];
-      fields.push({ ...analyzeField(this.colData[i] as unknown[]), name: String(column) });
+      fields.push({
+        ...analyzeField(this.colData[i] as unknown[], this.extra.strictDatePattern),
+        name: String(column),
+      });
     }
     return fields;
   }

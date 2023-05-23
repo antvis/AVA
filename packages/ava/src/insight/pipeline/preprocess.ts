@@ -1,15 +1,15 @@
 import { intersection } from 'lodash';
 
-import { DataFrame } from '../../data';
+import { DataFrame, Extra } from '../../data';
 import { AggregatorMap } from '../utils/aggregate';
 
 import type { Datum, ImpactMeasure, DataProperty } from '../types';
 
-export function dataToDataProps(data: Datum[]): DataProperty[] {
+export function dataToDataProps(data: Datum[], extra?: Extra): DataProperty[] {
   if (!data) {
     throw new Error('Argument `data` is missing.');
   }
-  const df = new DataFrame(data);
+  const df = new DataFrame(data, extra);
   const dataTypeInfos = df.info();
   const dataProps: DataProperty[] = [];
 

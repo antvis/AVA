@@ -9,20 +9,20 @@ const { TextArea } = Input;
 
 const App = () => {
   const [data, setData] = useState([
-    { city: 'Shanghai', population: 24281400 },
-    { city: 'Chengdu', population: 20938000 },
-    { city: 'Hangzhou', population: 11936010 },
-    { city: 'Beijing', population: 21893000 },
-    { city: 'Chongqing', population: 30170000 },
-    { city: 'Changsha', population: 10047914 },
-    { city: 'Wuhan', population: 11212000 },
-    { city: 'Nanchang', population: 6255000 },
-    { city: 'Lanzhou', population: 3319200 },
-    { city: 'Guangzhou', population: 18676600 },
+    { city: 'Chengdu', population: 20938000, date: '2023-01' },
+    { city: 'Lanzhou', population: 3319200, date: '2023-01-12 12:00:21' },
+    { city: 'Guangzhou', population: 18676600, date: '12-22-2023' },
+    { city: 'Hangzhou', population: 11936010, date: '2023/01/12' },
+    { city: 'Beijing', population: 21893000, date: '2023-W01-1' },
+    { city: 'Wuhan', population: 11212000, date: '2023-01-29' },
+    { city: 'Chongqing', population: 30170000, date: '2023' },
+    { city: 'Shanghai', population: 24281400, date: '202301' },
+    { city: 'Nanchang', population: 6255000, date: '20230112' },
   ]);
   const [textAreaValue, setTextAreaValue] = useState(JSON.stringify(data));
   const [errorMessage, setErrorMessage] = useState('');
-  const df = new DataFrame(data);
+  // 宽松模式识别日期
+  const df = new DataFrame(data, { strictDatePattern: false });
 
   return (
     <div>
