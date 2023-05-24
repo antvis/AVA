@@ -2,7 +2,7 @@ import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
 import type { G2Spec } from '@antv/g2';
 import type { ParagraphSpec } from '../ntv/types';
-import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo } from '../data/types';
+import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo, Extra } from '../data/types';
 
 export type Datum = Record<string, string | number>;
 
@@ -136,12 +136,8 @@ export interface InsightOptions {
   homogeneous?: boolean;
   /** Whether to close the search for subspaces */
   ignoreSubspace?: boolean;
-  /**
-   * Whether only the main standard symbols recommended in ISO 8601 can be recognized as date fields, default is true.
-   * - Reference: https://www.cl.cam.ac.uk/~mgk25/iso-time.html
-   * - For example, '202301' is recognized as a date string only when strictDatePattern is false.
-   * */
-  strictDatePattern?: boolean;
+  /** Parameter passed through to the data frame during data pre-processing */
+  dataProcessInfo?: Extra;
 }
 
 export interface BasePatternInfo<T extends InsightType> {
