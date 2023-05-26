@@ -81,7 +81,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       ? customContentSpec?.(currentInsightInfo, defaultSpec)
       : customContentSpec;
     return customSpec ?? defaultSpec;
-  }, [currentInsightInfo]);
+  }, [currentInsightInfo, customContentSpec]);
 
   useEffect(() => {
     onCardExpose?.(currentInsightInfo, ref.current);
