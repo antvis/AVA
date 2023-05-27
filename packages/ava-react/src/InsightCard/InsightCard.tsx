@@ -35,7 +35,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   customContentSpec,
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
-  const { measures = [], dimensions = [] } = defaultInsightInfo;
+  const { measures = [], dimensions = [] } = defaultInsightInfo || {};
   const [currentInsightInfo, setCurrentInsightInfo] = useState<InsightCardInfo>(defaultInsightInfo);
   const [dataStatus, setDataStatus] = useState<InsightDataStatus>('SUCCESS');
   const [errorMessage, setErrorMessage] = useState<string>('');
@@ -62,7 +62,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   useEffect(() => {
     // if patterns or visualizationSpecs is not empty, do not need generate insight patterns
-    if (defaultInsightInfo.patterns) {
+    if (defaultInsightInfo?.patterns) {
       setCurrentInsightInfo(defaultInsightInfo);
       return;
     }
@@ -149,7 +149,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
         title={title}
         measures={measures}
         dimensions={dimensions}
-        patterns={currentInsightInfo.patterns}
+        patterns={currentInsightInfo?.patterns}
         headerTools={headerTools}
       />
       {/* content */}
