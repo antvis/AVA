@@ -75,18 +75,18 @@ export default class TimeSeriesOutlierNarrativeStrategy extends InsightNarrative
 
   generateTextSpec(insightInfo: InsightInfo<TimeSeriesOutlierInfo>, lang: Language) {
     const { patterns, data } = insightInfo;
-    const { measure } = patterns[0];
+    const { measure, dimension } = patterns[0];
 
     const spec = generateTextSpec({
       structures: TimeSeriesOutlierNarrativeStrategy.structures[lang],
       variable: {
-        dateRange: `${first(patterns).x}~${last(patterns).x}`,
+        dateRange: `${first(data)[dimension]}~${last(data)[dimension]}`,
         total: patterns.length,
         measure,
         max: maxBy(data, measure)[measure],
         min: minBy(data, measure)[measure],
-        outliers: patterns.map((point, index) => {
-          const base = point.baselines[index];
+        outliers: patterns.map((point) => {
+          const base = point.baselines[point.index];
           const diff = point.y - base;
           return {
             ...point,
