@@ -13,7 +13,7 @@
 
 ----
 
-## ❓ 什么是 AVA
+## 什么是 AVA
 
 [AVA](https://github.com/antvis/AVA)（<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics）是为了更简便的可视分析而生的技术框架。第一个 **A** 具有多重涵义：智能驱动（*AI driven*）、自动化（*Automated*）、支持增强分析（*Augmented*）, **VA** 代表可视分析。它可以辅助用户进行**数据处理**、提取**数据洞察**、实现**图表的推荐和自动生成**，此外它还可以**优化已有的图表**。
 <br />
@@ -22,7 +22,7 @@
   <img width="800" src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*wpo3RpdULnAAAAAAAAAAAAAADvmcAQ/original" alt="AVA pipeline">
 </div>
 
-## 📁 AVA 的组成
+## AVA 的组成
 
 AVA 包含2个包，分别为 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 和 [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react) ：
 
@@ -39,19 +39,19 @@ AVA 包含2个包，分别为 [@antv/ava](https://www.npmjs.com/package/@antv/av
   * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">\<AutoChart \/></span>>：根据数据自动推荐合适的图表并渲染。它可以为用户提供一行代码实现智能可视化的能力，目前该组件正在进一步升级中。
 
 
-## ✨ AVA 的特性
+## AVA 的特性
 
 * 智能式驱动：集自动化、智能化于一体，简化可视分析过程。
 * 丰富的功能：其功能覆盖数据分析全过程，链接人和数据，联通数据分析链条上的“最后一公里”。
 * 灵活的语法：内置丰富的配置项，支持自定义。
 
-## 📑 文档
+## 文档
 
 * <a href='https://ava.antv.antgroup.com/guide/intro' target='_blank'>入门教程</a>
 * <a href='https://ava.antv.antgroup.com/api/ckb/ckb' target='_blank'>API文档</a>
 * <a href='https://ava.antv.antgroup.com/examples' target='_blank'>图表示例</a>
 
-## 💻 开始使用
+## 开始使用
 
 可以通过 NPM 包管理器来安装 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 和 [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react)。
 
@@ -110,7 +110,7 @@ $ npm install @antv/ava-react
 
 
 
-## 👥 参与贡献 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+## 参与贡献 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 我们欢迎任何共建。请先阅读 [贡献指南](./CONTRIBUTING.zh-CN.md)。欢迎通过 [pull requests](https://github.com/antvis/AVA/pulls) 或 [GitHub issues](https://github.com/antvis/AVA/issues) 向我们提供你的想法。让我们一起来把 AVA 做得更好！
 
@@ -118,13 +118,13 @@ $ npm install @antv/ava-react
 
 > 强烈推荐阅读 [《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way)、[《如何向开源社区提问题》](https://github.com/seajs/seajs/issues/545) 和 [《如何有效地报告 Bug》](http://www.chiark.greenend.org.uk/%7Esgtatham/bugs-cn.html)、[《如何向开源项目提交无法解答的问题》](https://zhuanlan.zhihu.com/p/25795393)，更好的问题更容易获得帮助。
 
-## 🏫 合作机构
+## 合作机构
 
 <div align="center">
   <a href="https://idvxlab.com/"><img src="https://gw.alipayobjects.com/zos/antfincdn/rxgntN5msN/idvx.png" alt="iDVx" width="140" align="middle" hspace="20"></a>
 </div>
 
-## 📜 学术成果
+## 学术成果
 
 [VizLinter](https://vegalite-linter.idvxlab.com/)
 
@@ -139,6 +139,6 @@ Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Li
 蓝星宇, 王嘉喆. 数据可视化设计的类型学实践, 《美术大观》, 2022(3), 149-152.
 </div>
 
-## ❗ 许可证
+## 许可证
 
 MIT@[AntV](https://github.com/antvis).
