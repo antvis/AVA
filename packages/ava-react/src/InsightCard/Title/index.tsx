@@ -4,18 +4,19 @@ import cx from 'classnames';
 import { isFunction, uniq } from 'lodash';
 
 import { Toolbar } from '../Toolbar';
-import { ALGORITHM_NAME_MAP, INSIGHT_CARD_PREFIX_CLS } from '../constants';
+import { ALGORITHM_NAME_MAP, ALGORITHM_NAME_MAP_ZH, INSIGHT_CARD_PREFIX_CLS } from '../constants';
 import { MeasureName, Tag as StyledTag } from '../styled/tag';
 
 import type { InsightCardProps, InsightCardInfo } from '../types';
 
-export type TitleProps = Pick<InsightCardProps, 'headerTools' | 'title'> &
+export type TitleProps = Pick<InsightCardProps, 'headerTools' | 'title' | 'visualizationOptions'> &
   Pick<InsightCardInfo, 'measures' | 'dimensions' | 'patterns'>;
-export const Title: React.FC<TitleProps> = ({ title, patterns, measures, headerTools }) => {
+export const Title: React.FC<TitleProps> = ({ title, patterns, measures, headerTools, visualizationOptions }) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
   const insightTypes = uniq(patterns?.map((pattern) => pattern.type) ?? []);
   const measureNames = uniq(measures?.map((measure) => measure.fieldName)).join(',');
-  const analysisName = insightTypes.map((algorithm) => ALGORITHM_NAME_MAP[algorithm]).join(',') ?? '';
+  const algorithmNameMap = visualizationOptions?.lang === 'zh-CN' ? ALGORITHM_NAME_MAP_ZH : ALGORITHM_NAME_MAP;
+  const analysisName = insightTypes.map((algorithm) => algorithmNameMap[algorithm]).join(',') ?? '';
   const defaultTitle = (
     <div>
       <MeasureName className={`${prefixCls}-measure-name`}>{measureNames}</MeasureName>
