@@ -35,12 +35,11 @@ export const InsightCard: React.FC<InsightCardProps> = ({
   customContentSpec,
 }: InsightCardProps) => {
   const prefixCls = INSIGHT_CARD_PREFIX_CLS;
-  const { measures = [], dimensions = [] } = defaultInsightInfo || {};
   const [currentInsightInfo, setCurrentInsightInfo] = useState<InsightCardInfo>(defaultInsightInfo);
   const [dataStatus, setDataStatus] = useState<InsightDataStatus>('SUCCESS');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const pluginManager = useRef<NtvPluginManager>(new NtvPluginManager([...insightCardPresetPlugins, ...extraPlugins]));
-
+  const { measures = [], dimensions = [], patterns = [] } = currentInsightInfo || {};
   const ref = useRef<HTMLDivElement>(null);
 
   const calculateAndSetInsightPatterns = useCallback(() => {
@@ -48,8 +47,6 @@ export const InsightCard: React.FC<InsightCardProps> = ({
     setDataStatus('RUNNING');
     try {
       const { insights } = getInsights(allData, {
-        measures,
-        dimensions,
         // todo 待 getInsights 支持传入 subspace 后增加传入 subspace
         ...restOptions,
       });
@@ -58,7 +55,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
       setErrorMessage('');
     }
     setDataStatus('SUCCESS');
-  }, [measures, dimensions, autoInsightOptions]);
+  }, [autoInsightOptions]);
 
   useEffect(() => {
     // if patterns or visualizationSpecs is not empty, do not need generate insight patterns
@@ -145,13 +142,7 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   return (
     <Container className={cx(className, prefixCls)} style={styles} ref={ref}>
-      <Title
-        title={title}
-        measures={measures}
-        dimensions={dimensions}
-        patterns={currentInsightInfo?.patterns}
-        headerTools={headerTools}
-      />
+      <Title title={title} measures={measures} dimensions={dimensions} patterns={patterns} headerTools={headerTools} />
       {/* content */}
       <Spin spinning={dataStatus === 'RUNNING'}>
         {dataStatus === 'SUCCESS' && !!contentSpec ? (
