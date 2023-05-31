@@ -17,19 +17,21 @@ import { NarrativeTextSpec } from '@antv/ava';
 
 ## 结构介绍
 
-![ntv-schema](https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*r_AtT5YHFvgAAAAAAAAAAAAADmJ7AQ/original)
+![ntv-schema](https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*iKn_RIyeOi8AAAAAAAAAAAAADmJ7AQ/original)
 
 从结构层看：
 - 整套解读结构称为 narrative，包括一个题目（headline）和多个章节（section）；
 - 每个章节有多个段落（paragraph）构成，段落有标题类（heading）、正文类（normal）、列表类（bullets）和自定义类型；
 - 每个段落又由多个短语（phrase）构成。
 
-而短语层则体现出“数据描述文本”和普通文本的最大差别。短语（phrase）分为三种：text、entity 和 custom。
-- text 就是普通纯文本；
-- entity 是具有数据含义的短语，将数据映射为文本，是解读文本可视化的主要内容；
-- custom 则是一种提供给用户自定义的短语插槽，当前常被用于实现一些短语级别的交互。
+而短语层则体现出“数据描述文本”和普通文本的最大差别。短语（phrase）分为五种：
+1. text 普通纯文本内容，支持配置属性 bold 加粗、italic 斜体、underline 下划线，以及 url 传入超链接；
+2. escape 转义字符；
+3. formula 数学公式，对应 katex 语法。备注：如使用 `NarrativeTextVis` 组件渲染含 formula 的内容，需要自行引入 css cdn 资源，详情见 [katex 官方网站](https://katex.org/)；
+4. entity 是具有数据含义的短语，将数据映射为文本，是解读文本可视化的主要内容；
+5. custom 则是一种提供给用户自定义的短语插槽，当前常被用于实现一些短语级别的交互。
 
-以下是所有类型为 Entity 的短语一览：
+以下是所有类型为 Entity 的短语一览，其他短语类型效果与使用参考 demo [其他短语类型](../../../examples/ntv/basic/#extra-phrases)。
 
 <Playground path="ntv/basic/demo/entity-phrases.tsx" ></Playground>
 

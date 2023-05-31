@@ -36,6 +36,7 @@ if (window) {
     (window as any).avaReact = require('../../packages/ava-react/src');
 
     require('antd/lib/alert/style/index.css');
+    require('katex/dist/katex.min.css');
 }
 
 

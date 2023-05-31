@@ -42,6 +42,7 @@
     "classnames": "^2.3.1",
     "copy-to-clipboard": "^3.3.3",
     "insert-css": "^2.0.0",
+    "katex": "^0.16.4",
     "lodash": "^4.17.21",
     "mockjs": "^1.1.0",
     "moment": "^2.29.4",
