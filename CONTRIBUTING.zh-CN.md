@@ -1,49 +1,48 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](./CONTRIBUTING.md) | 简体中文
 
-# 贡献指南 🌟
+# 贡献指南
 
-**诚邀点击右上角 ⭐ Star，关注本项目，获得最新信息，便于参与共建。谢谢您！**
+诚邀您点击右上角 ⭐ Star，关注本项目，以便及时获取最新信息，更好地参与共建。感谢您的支持！
 
 有任何疑问，欢迎提交 [issue](https://github.com/antvis/AVA/issues)，
 或者直接修改提交 [PR](https://github.com/antvis/AVA/pulls)!
 
 ## 致 非开发者
 
-也许你是设计师、产品经理、普通用户，你也可以为我们的图表知识库出一份力！**而且我们真的很需要你！**
+无论您是设计师、产品经理或普通用户，均可为我们的图表知识库贡献一份力量！**我们非常珍视您的加入，期盼与您携手共建**。
 
-如果你还没有 GitHub 账号，先 [申请一个](https://github.com/join)。这很值得。
+如您尚未拥有 GitHub 账号，建议您先 [申请一个](https://github.com/join)。这一步骤非常值得。
 
-然后，你可以通过提交 [issue](https://github.com/antvis/AVA/issues) 或 [pull request](https://github.com/antvis/AVA/pulls) 的方式来提供你的建议。
+接下来，你可以通过提交 [issue](https://github.com/antvis/AVA/issues) 或 [pull request](https://github.com/antvis/AVA/pulls) 的方式来提供你的建议。
 
 ### 提交 Issue
 
-GitHub 的 issues 是一个类似评论区的功能，你可以在这里留下你的想法、建议、发现的 bug，等等。
+GitHub 的 issues 类似于评论区，您可以在此处留下有关想法、建议、需求等方面的反馈。此外，您还可以在此发现并报告仓库中的 bug。以下是提交 issues 的基本步骤：
 
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" />
-</div>
-<br>
+1.  新建 issue：切换到 issues 界面，点击右侧 New issue 按钮，在 [issue 标签页](https://github.com/antvis/AVA/issues) 新建一个 issue。
 
-在 [issue 标签页](https://github.com/antvis/AVA/issues) 新建一个 issue。
+    <div align="center">
+      <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" alt="new issue"/>
+    </div>
+    <br>
 
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" />
-</div>
-<br>
+2. 编辑及提交 issue：您无需编写任何代码，只需简要说明您的建议，我们将与您进行讨论并提出反馈。如果您的建议被采纳，我们会负责相应的代码修改。针对某一个具体的问题，只需提交一个 issue 即可。以下是一些 issues 示例：
 
-你不需要写任何代码，只需要留下你的建议，我们会回复你并和你讨论。如果你的建议被采用了，我们会负责相关的代码修改。
+    * 修改一个已有图表的知识内容？
+    * 新增一个图表类型？
+    * 修改图表知识的分类角度的可选值？
 
-* 修改一个已有图表的知识内容？
-* 新增一个图表类型？
-* 修改图表知识的分类角度的可选值？
-
-留一个 issue 就好。
+    <br>
+    <div align="center">
+      <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" alt="eidt and submit issue"/>
+    </div>
+    <br>
 
 ### 提交 Pull Request
 
-如果你会写代码，或者对学一点代码并不感到抵触，同时你希望把你的建议描述地想代码一样清晰（或者你就是想帮我们省点时间），那太好了！试试提交一个 pull request！
+如果您具备编写代码的能力，或者对学习一些代码并不感到抵触，同时又希望将自己的建议以代码的形式清晰地表达出来（或者您希望帮助我们节省时间），那就太棒了！请尝试提交一个 pull request ，这将有助于我们更快地处理您的建议并快速落实到项目中。
 
-[什么是 pull request](https://help.github.com/cn/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
+如果您还不了解什么是 pull request，请参考：[什么是 pull request](https://help.github.com/cn/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
  
 ## 致 开发者
 
@@ -57,34 +56,33 @@ GitHub 的 issues 是一个类似评论区的功能，你可以在这里留下�
 ### 提交 issue
 
 * 请确定 issue 的类型。
-* 请避免提交重复的 issue，在提交之前搜索现有的 issue。
-* 在标签(分类参考**标签分类**), 标题 或者内容中体现明确的意图。
+* 请避免提交重复的 issue，在提交之前搜索现有的 issues。
+* 在**标签**(分类参考**标签分类**), **标题**或者**内容**中体现明确的意图。
 
-随后 AntV 负责人会确认 issue 意图，更新合适的标签，关联 milestone，指派开发者。
+随后 AntV 负责人会确认 issue 意图，更新合适的标签，关联 milestone，并指派开发者来跟进处理。
 
 ### 提交代码
 
 #### 提交 Pull Request
 
-如果你有仓库的开发者权限，而且希望贡献代码，那么你可以创建分支修改代码提交 PR，AntV 开发团队会 review 代码合并到主干。
+如果您拥有仓库的开发者权限，并希望向项目中贡献代码，那么您可以创建分支并修改代码，随后提交 pull request。AntV 开发团队会对您提交的代码进行 review，并将其合并到主干分支中。
 
 ```bash
-# 先创建开发分支开发，分支名应该有含义，避免使用 update、tmp 之类的
+# 先创建开发分支开发，分支名应该有含义，避免使用 update、tmp 等
 $ git checkout -b branch-name
 
 # 开发完成后跑下测试是否通过，必要时需要新增或修改测试用例
 $ npm test
 
-# 测试通过后，提交代码，message 见下面的规范
-
+# 测试通过后，提交代码，其 commit message 的规范如下
 $ git add . # git add -u 删除文件
 $ git commit -m "fix(role): role.use must xxx"
 $ git push origin branch-name
 ```
 
-提交后就可以在 [AVA](https://github.com/antvis/AVA/pulls) 创建 Pull Request 了。
+提交后即可在 [AVA](https://github.com/antvis/AVA/pulls) 创建 Pull Request 了。
 
-由于谁也无法保证过了多久之后还记得多少，为了后期回溯历史的方便，请在提交 MR 时确保提供了以下信息。
+为了便于后期回溯历史记录，请在提交 MR（merge request）时务必提供以下信息：
 
 1. 需求点（一般关联 issue 或者注释都算）
 2. 升级原因（不同于 issue，可以简要描述下为什么要处理）
@@ -93,12 +91,11 @@ $ git push origin branch-name
 
 #### 代码风格
 
-你的代码风格必须通过 eslint，你可以运行 `$ npm run lint` 本地测试。
+您的的代码风格必须通过 eslint，可以运行 `$ npm run lint` 进行本地测试。
 
 #### Commit 提交规范
 
-根据 [angular 规范](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit-message-format)提交 commit，
-这样 history 看起来更加清晰，还可以自动生成 changelog。
+我们建议遵循 [angular 规范](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#commit-message-format) 来提交 commit。这样能够使历史记录更加清晰易懂，并且还可以方便地自动生成 changelog。
 
 ```xml
 <type>(<scope>): <subject>
