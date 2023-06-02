@@ -1,49 +1,48 @@
 <img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> English | [简体中文](./CONTRIBUTING.zh-CN.md)
 
-# Guide for Contributing 🌟
+# Guide for Contributing
 
-**We sincerely invite you to click on the ⭐ star in the upper right corner of this page to follow this project, which will allow you to receive our latest news in time. Thank you!**
+We sincerely invite you to click on the ⭐ star in the upper right corner of this page to follow this project, which will allow you to get the latest information and better participate in the co-build. Thank you for your support!
 
 If you have any comment or advice, please report your [issue](https://github.com/antvis/AVA/issues),
 or make any change as you wish and submit an [PR](https://github.com/antvis/AVA/pulls).
 
 ## For Non-Developers
 
-You can still contribute to the Chart Knowledge Base and WE DO NEED YOU!
+Whether you are a designer, a product manager or a regular user, you can contribute to the Chart Knowledge Base. **We value your participation and look forward to working with you to build it together**.
 
-If you are new to GitHub, [get yourself a GitHub Account](https://github.com/join) first.
+If you don't already have a GitHub account, we recommend that you [get yourself a GitHub Account](https://github.com/join) first. This step is well worth it.
 
 After that, you can help us by creating an [issue](https://github.com/antvis/AVA/issues) or a [pull request](https://github.com/antvis/AVA/pulls).
 
 ### Create an Issue
 
-GitHub issues are like comment board where you post your comment, advices, bugs you found, etc.
+GitHub issues are similar to the comments section, where you can leave feedback about ideas, suggestions, requirements, and more. You can also find and report bugs in the repository here, and here are the basic steps for submitting issues:
 
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" />
-</div>
-<br>
+1. New issue: Switch to the issues screen, click the New issue button on the right, and create a new issue in the [issue page](https://github.com/antvis/AVA/issues).
 
-Create a new issue on the [issue page](https://github.com/antvis/AVA/issues).
+    <div align="center">
+      <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" alt="new issue"/>
+    </div>
+    <br>
 
-<div align="center">
-  <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" />
-</div>
-<br>
+2. Edit and submit issue: You don't need to write any code, just a brief description of your suggestion and we will discuss it with you and provide feedback. If your suggestion is accepted, we will take care of the corresponding code changes. For a specific issue, just submit an issue. Here are some examples of issues:
 
-You don't have to do anything about coding. We will reply you to discuss with you. If your suggestions are accepted, we will do the coding things.
+    * To Modify the Knowledge of a Chart Type?
+    * To Add a Chart Type?
+    * To Modify Options of Knowledge Properties?
 
-* To Modify the Knowledge of a Chart Type?
-* To Add a Chart Type?
-* To Modify Options of Knowledge Properties?
-
-Just leave your comments in an issue.
+    <br>
+      <div align="center">
+        <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" alt="eidt and submit issue"/>
+      </div>
+    <br>
 
 ### Submit a Pull Request
 
-If you can code or you are not afraid to learn some programming, and you want to make your suggestions as clear as code (or maybe you are just willing to make our lives easier), submit a pull request!
+If you have the ability to write code, or don't feel resistant to learning some code, and want to put your suggestions into clear code form (or if you want to help us save time), that's great! **Please try submitting a pull request**, it will help us to process your suggestions faster and implement them into the project quickly.
 
-[Learn more about pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
+If you don't know what a pull request is, please refer to: [Learn more about pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests).
 
 ## For Developers
 
@@ -58,7 +57,7 @@ We give priority to English to serve a wider range of developers, to deepen inte
 
 * Please specify what kind of issue it is.
 * Before you report an issue, please search for related issues. Make sure you are not going to open a duplicate issue.
-* Explain your purpose clearly in tags(see **Useful Tags**), title, or content.
+* Explain your purpose clearly in **tags**(see **Useful Tags**), **title**, or **content**.
 
 AntV group members will confirm the purpose of the issue, replace more accurate tags for it, identify related milestone, and assign developers working on it.
 
