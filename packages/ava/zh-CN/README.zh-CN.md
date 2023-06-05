@@ -21,7 +21,9 @@
 * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">advisor (图表推荐和自动生成)</span>：图表推荐模块。基于数据和分析需求来推荐图表类型和具体的图表细节设置，也可对既有的图表进行图表优化。
 
 
-## 下载
+## 安装使用
+
+可以通过 npm 或 yarn 包管理器进行安装。
 
 ```shell
 # npm
@@ -30,8 +32,6 @@ $ npm install @antv/ava --save
 # yarn
 $ yarn add @antv/ava
 ```
-
-## 使用方式
 
 下面我们结合实际案例了解 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 四个主要模块的使用方式：
 
@@ -62,6 +62,8 @@ const chartAdvisor = new Advisor();
 // 基于输入数据，推荐图表并给出优化建议
 const results = chartAdvisor.advise({ data });
 ```
+
+更多案例请参考：[AVA 官网](https://ava.antv.antgroup.com/examples)
 
 ## 贡献
 
