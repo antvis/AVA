@@ -36,7 +36,7 @@ export function extractor(data: Datum[], dimensions: string[], measures: Measure
   const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];
 
-  const values = data.map((item) => item?.[measure] as number);
+  const values = data.map((item) => Number(item?.[measure]));
   const lowVariance = findLowVariance(values);
 
   if (lowVariance) {
