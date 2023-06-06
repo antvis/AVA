@@ -415,6 +415,48 @@ describe('test for distribution insight', () => {
         ],
       },
     ]);
+
+    // 值完全相同的序列应视为低方差序列
+    const data1 = [
+      {
+        name: 'x1',
+        value: 1,
+      },
+      {
+        name: 'x2',
+        value: 1,
+      },
+      {
+        name: 'x3',
+        value: 1,
+      },
+      {
+        name: 'x4',
+        value: 1,
+      },
+      {
+        name: 'x5',
+        value: 1,
+      },
+    ];
+    const result1 = getInsights(data1, {
+      insightTypes: ['low_variance'],
+      dimensions: [{ fieldName: 'name' }],
+    });
+    expect(result1.insights).toBeIncludeInsights([
+      {
+        measures: [{ fieldName: 'value', method: 'SUM' }],
+        dimensions: [{ fieldName: 'name' }],
+        subspace: [],
+        patterns: [
+          {
+            type: 'low_variance',
+            significance: 1,
+            mean: 1,
+          },
+        ],
+      },
+    ]);
   });
   // 异常值
   test('category outlier', async () => {
