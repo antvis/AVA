@@ -1,6 +1,7 @@
 import { intersection } from 'lodash';
 
 import { Datum, SubjectInfo, InsightType, DataProperty } from '../types';
+import { NumberFieldInfo } from '../../data';
 
 import type { LevelOfMeasurement } from '../../ckb';
 
@@ -60,7 +61,11 @@ export const majorityChecker: ExtractorChecker = (data, subjectInfo, fieldPropsM
 export const lowVarianceChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
   if (!generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, ['Nominal', 'Discrete', 'Ordinal'])) return false;
   const { measures } = subjectInfo;
-  return fieldPropsMap[measures[0].fieldName].distinct !== 1;
+  // 低方差检验使用变异系数 sigma/mean 作为检验统计量，要求均值不能为0
+  if (['float', 'integer'].includes(fieldPropsMap[measures[0].fieldName].recommendation)) {
+    return (fieldPropsMap[measures[0].fieldName] as NumberFieldInfo).mean !== 0;
+  }
+  return false;
 };
 
 export const correlationChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
