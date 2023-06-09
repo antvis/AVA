@@ -13,10 +13,17 @@ React components of AVA.
 
 </div>
 
-## Components
-- NarrativeTextVis
+## Introduction
 
-## Install
+[@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react) is a plug-and-play React component library based on the integration of AVA capabilities, which contains three core components:
+
+* `<NarrativeTextVis/>`: Demonstrate data insight interpretation text. In a full-flow presentation of data analysis, using text to describe data phenomena is as critical as giving insightful conclusions.
+* `<InsightCard/>`: Present data insights in a combination of graphics and text. It is possible to either receive data directly and perform insights automatically, or to visualize and interpret only the insight result data for presentation.
+* `<AutoChart/>`: Automatically recommends and renders the appropriate chart based on the data. It provides users with the ability to implement intelligent visualizations in one line of code, and the component is currently undergoing further upgrades.
+
+## Installation and Usage
+
+Installation can be done via npm or the yarn package manager.
 
 ```shell
 # npm
@@ -26,14 +33,36 @@ $ npm install @antv/ava-react --save
 $ yarn add @antv/ava-react
 ```
 
-## Usage
+The following is a practical example of how the three main components of [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react) can be used:
+
+1. Examples of `<NarrativeTextVis/>`:
+
+    ```ts
+    import { NarrativeTextVis } from '@antv/ava-react';
+    export default () => {
+    // where textSpec is of type NarrativeTextSpec
+    return <NarrativeTextVis spec={textSpec} />
+    }
+    ```
+
+2. Examples of `<InsightCard/>`:
+
+    ```ts
+    import { InsightCard } from '@antv/ava-react';
+    export default () => {
+    // where the insightInfo type refers to the data insight output by the insight module
+    return <InsightCard insightInfo={insightInfo} />
+    }
+    ```
+
+3. `<AutoChart/>` is being further upgraded, so stay tuned.
 
 ```ts
 import { NarrativeTextVis } from '@antv/ava-react';
 ```
 
-## Contributing
+## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-Pull requests and stars are highly welcome.
+We welcome all contributions. Please read our [Contributing Guide](./CONTRIBUTING.md) first. You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
 
-For bugs and feature requests, please [create an issue](https://github.com/antvis/ava/issues/new).
+More at [Wiki: Development](https://github.com/antvis/AVA/wiki/Development).
