@@ -15,28 +15,22 @@ If you don't already have a GitHub account, we recommend that you [get yourself 
 
 After that, you can help us by creating an [issue](https://github.com/antvis/AVA/issues) or a [pull request](https://github.com/antvis/AVA/pulls).
 
-### Create an Issue
+### Create an Discussion
 
-GitHub issues are similar to the comments section, where you can leave feedback about ideas, suggestions, requirements, and more. You can also find and report bugs in the repository here, and here are the basic steps for submitting issues:
+GitHub Discussions is like a message board where you can share ideas, ask questions, answer queries, exchange experiences, and more. Here are the basic steps for submitting discussions:
 
-1. New issue: Switch to the issues screen, click the New issue button on the right, and create a new issue in the [issue page](https://github.com/antvis/AVA/issues).
+1. New discussion: Switch to the [Discussions tab](https://github.com/antvis/AVA/discussions) and click the **New discussion** button on the right to create a new discussion.
 
     <div align="center">
-      <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" alt="new issue"/>
+      <img src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*3dpQTJI1niAAAAAAAAAAAAAADvmcAQ/original" width="600" alt="new discussion"/>
     </div>
     <br>
 
-2. Edit and submit issue: You don't need to write any code, just a brief description of your suggestion and we will discuss it with you and provide feedback. If your suggestion is accepted, we will take care of the corresponding code changes. For a specific issue, just submit an issue. Here are some examples of issues:
+2. Submit discussion: Select an appropriate [Discussion category](https://github.com/antvis/AVA/discussions/new/choose) and click **Get Start** to go to the discussion fill page. The description here should include the topic you want to discuss, your question or idea. Once completed, click **Start discussion** to submit your discussion.
+    <div align="center">
+      <img src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*ZOf9To_Cpw4AAAAAAAAAAAAADvmcAQ/original" width="600" alt="write a discussion"/>
+    </div>
 
-    * To Modify the Knowledge of a Chart Type?
-    * To Add a Chart Type?
-    * To Modify Options of Knowledge Properties?
-
-    <br>
-      <div align="center">
-        <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" alt="eidt and submit issue"/>
-      </div>
-    <br>
 
 ### Submit a Pull Request
 
@@ -67,10 +61,25 @@ AntV group members will confirm the purpose of the issue, replace more accurate 
 
 If you are developer of AntV repo and you are willing to contribute, feel free to create a new branch, finish your modification and submit a PR. AntV group will review your work and merge it to master branch.
 
+Start-up project
+
 ```bash
 # Create a new branch for development. The name of branch should be semantic, avoiding words like 'update' or 'tmp'. We suggest to use feature/xxx, if the modification is about to implement a new feature.
 $ git checkout -b branch-name
 
+# Initialization of the project and installation of dependencies.
+$ npm run one-stop-setup
+
+# Launching the official website in development mode.
+$ npm run start:site
+
+# Launch playground in development mode.
+$ npm run star开发模式下启动playgroundt:playground
+```
+
+Test and Submit
+
+```bash
 # Run the test after you finish your modification. Add new test cases or change old ones if you feel necessary
 $ npm test
 
@@ -109,19 +118,29 @@ You are encouraged to use [angular commit-message-format](https://github.com/ang
 
 Must be one of the following:
 
+* chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
+* docs: Documentation-only changes
 * feat: A new feature
 * fix: A bug fix
-* docs: Documentation-only changes
-* style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * refactor: A code change that neither fixes a bug nor adds a feature
-* perf: A code change that improves performance
+* revert: Undo the changes made by a previously committed commit
+* style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
 * test: Adding missing tests
-* chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
-* deps: Updates about dependencies
 
 （2）scope
 
-The scope could be anything specifying place of the commit change.
+The scope of the modified file, i.e., the packages and modules involved. A single commit usually does not allow multiple packages to be involved, and the order in parentheses is based on the following array order. The specific scope is as follows:
+
+* global: Changes to the root directory
+* ava
+* ava/advisor
+* ava/ckb
+* ava/data
+* ava/insight
+* ava/ntv
+* ava-react
+* ava-react/ntv
+* ava-react/insight-card
 
 （3）subject
 

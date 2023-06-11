@@ -15,28 +15,21 @@
 
 接下来，你可以通过提交 [issue](https://github.com/antvis/AVA/issues) 或 [pull request](https://github.com/antvis/AVA/pulls) 的方式来提供你的建议。
 
-### 提交 Issue
+### 提交 Discussion
 
-GitHub 的 issues 类似于评论区，您可以在此处留下有关想法、建议、需求等方面的反馈。此外，您还可以在此发现并报告仓库中的 bug。以下是提交 issues 的基本步骤：
+GitHub 的 Discussions 类似于留言板，您可以在此处分享想法、提出问题、解答疑惑、交流经验等。以下是提交 Discussions 的基本步骤：
 
-1.  新建 issue：切换到 issues 界面，点击右侧 New issue 按钮，在 [issue 标签页](https://github.com/antvis/AVA/issues) 新建一个 issue。
+1.  新建 Discussion：切换到 [Discussions 标签页](https://github.com/antvis/AVA/discussions)，点击右侧 **New discussion** 按钮新建一个 discussion。
 
     <div align="center">
-      <img src="https://gw.alipayobjects.com/zos/antfincdn/6maXNcnO8T/issue.png" width="600" alt="new issue"/>
+      <img src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*3dpQTJI1niAAAAAAAAAAAAAADvmcAQ/original" width="600" alt="new discussion"/>
     </div>
     <br>
 
-2. 编辑及提交 issue：您无需编写任何代码，只需简要说明您的建议，我们将与您进行讨论并提出反馈。如果您的建议被采纳，我们会负责相应的代码修改。针对某一个具体的问题，只需提交一个 issue 即可。以下是一些 issues 示例：
-
-    * 修改一个已有图表的知识内容？
-    * 新增一个图表类型？
-    * 修改图表知识的分类角度的可选值？
-
-    <br>
+2. 提交 Discussion：选择一个适当的 [Discussion 类别](https://github.com/antvis/AVA/discussions/new/choose)，点击 **Get Start** 进入到 discussion 填写页面。这里的描述应该包括您想要探讨的话题、您的问题或想法。填写完成后，点击 **Start discussion** 提交您的 discussion。
     <div align="center">
-      <img src="https://gw.alipayobjects.com/zos/antfincdn/gRt9ryUqUc/newissue.png" width="600" alt="eidt and submit issue"/>
+      <img src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*ZOf9To_Cpw4AAAAAAAAAAAAADvmcAQ/original" width="600" alt="write a discussion"/>
     </div>
-    <br>
 
 ### 提交 Pull Request
 
@@ -67,10 +60,25 @@ GitHub 的 issues 类似于评论区，您可以在此处留下有关想法、�
 
 如果您拥有仓库的开发者权限，并希望向项目中贡献代码，那么您可以创建分支并修改代码，随后提交 pull request。AntV 开发团队会对您提交的代码进行 review，并将其合并到主干分支中。
 
+启动项目：
+
 ```bash
 # 先创建开发分支开发，分支名应该有含义，避免使用 update、tmp 等
 $ git checkout -b branch-name
 
+# 项目的初始化及依赖安装
+$ npm run one-stop-setup
+
+# 开发模式下启动官网
+$ npm run start:site
+
+# 开发模式下启动playground
+$ npm run start:playground
+```
+
+测试及提交：
+
+```bash
 # 开发完成后跑下测试是否通过，必要时需要新增或修改测试用例
 $ npm test
 
@@ -109,19 +117,29 @@ $ git push origin branch-name
 
 提交 commit 的类型，包括以下几种
 
+* chore: 修改工具相关（包括但不限于文档、代码生成等）
+* docs: 修改文档
 * feat: 新功能
 * fix: 修复问题
-* docs: 修改文档
-* style: 修改代码格式，不影响代码逻辑
 * refactor: 重构代码，理论上不影响现有功能
-* perf: 提升性能
+* revert: 撤销之前提交的某个 commit 所做的修改
+* style: 修改代码格式，不影响代码逻辑
 * test: 增加修改测试用例
-* chore: 修改工具相关（包括但不限于文档、代码生成等）
-* deps: 升级依赖
 
 （2）scope
 
-修改文件的范围
+修改文件的范围，即涉及的包和模块。单 commit 通常不允许涉及多包，括号内顺序以下列数组顺序为准。具体范围如下：
+
+* global: 根目录的变革
+* ava
+* ava/advisor
+* ava/ckb
+* ava/data
+* ava/insight
+* ava/ntv
+* ava-react
+* ava-react/ntv
+* ava-react/insight-card
 
 （3）subject
 
