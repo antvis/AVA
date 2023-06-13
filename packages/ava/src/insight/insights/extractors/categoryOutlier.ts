@@ -4,7 +4,7 @@ import { distinct } from '../../../data';
 import { categoryOutlier } from '../../algorithms';
 import { IQR_K, SIGNIFICANCE_BENCHMARK } from '../../constant';
 import { Datum, Measure, CategoryOutlierInfo } from '../../types';
-import { calculatePValue } from '../util';
+import { calculatePValue, calculateOutlierThresholds } from '../util';
 
 type OutlierItem = {
   index: number;
@@ -42,6 +42,7 @@ export const findOutliers = (values: number[]): { outliers: OutlierItem[]; thres
   const sortedCandidates = orderBy(candidates, (item) => Math.abs(IQRResult[item.type].threshold - item.value), [
     'desc',
   ]);
+  const thresholds = calculateOutlierThresholds(values, SIGNIFICANCE_BENCHMARK, 'two-sided');
 
   const outliers: OutlierItem[] = [];
   for (let i = 0; i < sortedCandidates.length; i += 1) {
@@ -61,7 +62,7 @@ export const findOutliers = (values: number[]): { outliers: OutlierItem[]; thres
       significance,
     });
   }
-  return { outliers, thresholds: [IQRResult.lower.threshold, IQRResult.upper.threshold] };
+  return { outliers, thresholds };
 };
 
 export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CategoryOutlierInfo[] {
