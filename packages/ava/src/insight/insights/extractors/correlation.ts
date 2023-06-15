@@ -1,5 +1,5 @@
 import { pcorrtest } from '../../../data';
-import { Datum, Measure, CorrelationInfo } from '../../types';
+import { CorrelationInfo, InsightExtractorProp } from '../../types';
 
 type CorrelationResult = {
   significance: number;
@@ -20,7 +20,7 @@ export function findCorrelation(x: number[], y: number[]): CorrelationResult | n
   return null;
 }
 
-export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): CorrelationInfo[] {
+export function extractor({ data, dimensions, measures }: InsightExtractorProp): CorrelationInfo[] {
   const xField = measures[0].fieldName;
   const yField = measures[1].fieldName;
   if (!data || !dimensions || data.length === 0) return [];

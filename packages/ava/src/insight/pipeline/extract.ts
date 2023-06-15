@@ -72,7 +72,7 @@ function extractPatternsFromSubject(
     }
     const insightExtractor = insightExtractors[insightType];
     if (isValid && insightExtractor) {
-      const extractedPatterns = insightExtractor(data, dimensions, measures);
+      const extractedPatterns = insightExtractor({ data, dimensions, measures, options });
       patterns[insightType as InsightType] = extractedPatterns as PatternInfo[];
     } else {
       patterns[insightType as InsightType] = undefined;
