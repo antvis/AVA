@@ -1,6 +1,6 @@
 import { coefficientOfVariance, mean } from '../../../data';
 
-import type { Datum, LowVarianceInfo, Measure } from '../../types';
+import type { InsightExtractorProp, LowVarianceInfo } from '../../types';
 
 type LowVarianceItem = {
   significance: number;
@@ -31,7 +31,7 @@ export function findLowVariance(values: number[], params?: LowVarianceParams): L
   };
 }
 
-export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): LowVarianceInfo[] {
+export function extractor({ data, dimensions, measures }: InsightExtractorProp): LowVarianceInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];

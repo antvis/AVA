@@ -1,6 +1,6 @@
 import regression from 'regression';
 
-import { Datum, Measure, TrendInfo } from '../../types';
+import { InsightExtractorProp, TrendInfo } from '../../types';
 import { trendDirection } from '../../algorithms';
 
 type TrendResult = {
@@ -26,7 +26,7 @@ export function findTimeSeriesTrend(series: number[]): TrendResult {
   };
 }
 
-export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): TrendInfo[] {
+export function extractor({ data, dimensions, measures }: InsightExtractorProp): TrendInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];

@@ -116,6 +116,31 @@ export type InsightVisualizationOptions = {
   lang: Language;
 };
 
+export type InsightExtractorProp = {
+  data: Datum[];
+  dimensions: string[];
+  measures: Measure[];
+  options?: InsightOptions;
+};
+
+/** Key parameters in the algorithm for extracting insights */
+export type AdjustableAlgorithmParameter = {
+  /**
+   * Contains both category outlier and time series outlier
+   * */
+  outlier?: {
+    /**
+     * - IQR: Box and Whisker Plot method which is used by default. A point is considered an outlier when it lies outside of iqrK times the inter quartile range.
+     * - normalityTest: Assuming that the data follows a normal distribution, a point is considered an outlier if the probability of occurrence is less than 1-confidenceInterval.
+     * */
+    method?: 'IQR' | 'NormalityTest';
+    /** Default value is 1.5. */
+    iqrK?: number;
+    /** Default value is 0.95. */
+    confidenceInterval?: number;
+  };
+};
+
 /** custom options */
 export interface InsightOptions {
   /** dimensions for analysis */
@@ -138,6 +163,8 @@ export interface InsightOptions {
   ignoreSubspace?: boolean;
   /** Parameter passed through to the data frame during data pre-processing */
   dataProcessInfo?: Extra;
+  /** Key parameters in the algorithm for extracting insights */
+  adjustableAlgorithmParameter?: AdjustableAlgorithmParameter;
 }
 
 export interface BasePatternInfo<T extends InsightType> {

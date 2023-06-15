@@ -1,4 +1,4 @@
-import type { Datum, MajorityInfo, Measure } from '../../types';
+import type { InsightExtractorProp, MajorityInfo } from '../../types';
 
 type MajorityItem = {
   index: number;
@@ -40,7 +40,7 @@ export function findMajority(values: number[], params?: MajorityParams): Majorit
   return null;
 }
 
-export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): MajorityInfo[] {
+export function extractor({ data, dimensions, measures }: InsightExtractorProp): MajorityInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];

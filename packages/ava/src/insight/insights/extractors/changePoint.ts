@@ -1,6 +1,6 @@
 import { changePoint } from '../../algorithms';
 
-import type { Datum, ChangePointInfo, Measure } from '../../types';
+import type { ChangePointInfo, InsightExtractorProp } from '../../types';
 
 type ChangePointItem = {
   index: number;
@@ -22,7 +22,7 @@ export const findChangePoints = (series: number[]): ChangePointItem[] => {
   return changePointsResult;
 };
 
-export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): ChangePointInfo[] {
+export function extractor({ data, dimensions, measures }: InsightExtractorProp): ChangePointInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];

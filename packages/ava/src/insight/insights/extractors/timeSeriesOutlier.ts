@@ -1,10 +1,10 @@
 import { distinct, lowess } from '../../../data';
 import { LowessOutput } from '../../../data/statistics/types';
-import { LOWESS_N_STEPS, SIGNIFICANCE_LEVEL } from '../../constant';
+import { LOWESS_N_STEPS } from '../../constant';
 
 import { findOutliers } from './categoryOutlier';
 
-import type { Datum, Measure, TimeSeriesOutlierInfo } from '../../types';
+import type { InsightExtractorProp, InsightOptions, TimeSeriesOutlierInfo } from '../../types';
 
 type OutlierItem = {
   index: number;
@@ -13,7 +13,10 @@ type OutlierItem = {
 };
 
 // detect the outliers using LOWESS
-function findTimeSeriesOutliers(values: number[]): {
+function findTimeSeriesOutliers(
+  values: number[],
+  options?: InsightOptions
+): {
   outliers: OutlierItem[];
   baselines: LowessOutput['y'];
   thresholds: [number, number];
@@ -22,26 +25,18 @@ function findTimeSeriesOutliers(values: number[]): {
     .fill(0)
     .map((_, index) => index);
   const baseline = lowess(indexes, values, { nSteps: LOWESS_N_STEPS });
-  const max = Math.max(...values);
-  const min = Math.min(...values);
-  const range = max - min;
   const residuals = values.map((item, index) => item - baseline.y[index]);
-  const { outliers: residualsOutliers, thresholds } = findOutliers(residuals);
-  // Is the filter necessary? by @pddpd
-  const outliers = residualsOutliers.filter((item) => {
-    return Math.abs(item.value) / range >= SIGNIFICANCE_LEVEL;
-  });
-
+  const { outliers, thresholds } = findOutliers(residuals, options);
   return { outliers, baselines: baseline.y, thresholds };
 }
 
-export function extractor(data: Datum[], dimensions: string[], measures: Measure[]): TimeSeriesOutlierInfo[] {
+export function extractor({ data, dimensions, measures, options }: InsightExtractorProp): TimeSeriesOutlierInfo[] {
   const dimension = dimensions[0];
   const measure = measures[0].fieldName;
   if (!data || data.length === 0) return [];
   const values = data.map((item) => item?.[measure] as number);
   if (distinct(values) === 1) return [];
-  const { outliers, baselines, thresholds } = findTimeSeriesOutliers(values);
+  const { outliers, baselines, thresholds } = findTimeSeriesOutliers(values, options);
   const timeSeriesOutliers: TimeSeriesOutlierInfo[] = outliers.map((item) => {
     const { index, significance } = item;
     return {
