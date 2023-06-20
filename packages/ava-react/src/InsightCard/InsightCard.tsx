@@ -59,12 +59,10 @@ export const InsightCard: React.FC<InsightCardProps> = ({
 
   useEffect(() => {
     // if patterns or visualizationSpecs is not empty, do not need generate insight patterns
-    if (defaultInsightInfo?.patterns) {
-      setCurrentInsightInfo(defaultInsightInfo);
-      return;
-    }
+    setCurrentInsightInfo(defaultInsightInfo);
+
     // if patterns and visualizationSpecs are empty, use autoInsightOptions to generate insight patterns
-    if (autoInsightOptions) {
+    if (!defaultInsightInfo?.patterns && autoInsightOptions) {
       calculateAndSetInsightPatterns();
     }
   }, [defaultInsightInfo, autoInsightOptions]);

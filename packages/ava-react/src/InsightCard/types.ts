@@ -42,7 +42,7 @@ export type InsightCardProps = CommonProps &
     headerTools?: Tool[];
     /** tools in the footer of card, by default, there are copy and share tools */
     footerTools?: Tool[];
-    /** [Note: this property is experimental and might be adjusted in the future version]. Options used to generate the insight, one of `autoInsightOptions` and `insightInfo` must be assigned */
+    /** [Note: this property is experimental and might be adjusted in the future version]. Options used to generate the insight, one of `autoInsightOptions` and `insightInfo` must be assigned. `insightInfo` will override auto-generated insights  */
     autoInsightOptions?: Omit<InsightOptions, 'visualization'> & {
       allData: { [x: string]: any }[];
     };
