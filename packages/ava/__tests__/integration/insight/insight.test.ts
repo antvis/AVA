@@ -460,11 +460,39 @@ describe('test for distribution insight', () => {
   });
   // 异常值
   test('category outlier', async () => {
+    // 使用默认的IQR方法识别异常值
     const result = getInsights(dataWithMajorityAndOutlier, {
       insightTypes: ['category_outlier'],
       dimensions: [{ fieldName: 'product' }],
     });
     expect(result.insights).toBeIncludeInsights([
+      {
+        measures: [{ fieldName: 'yield', method: 'SUM' }],
+        dimensions: [{ fieldName: 'product' }],
+        subspace: [],
+        patterns: [
+          {
+            type: 'category_outlier',
+            significance: 0.9,
+            index: 0,
+            x: 'apple',
+            y: 160,
+          },
+        ],
+      },
+    ]);
+
+    // 指定用p-value来检测异常值
+    const pValueResult = getInsights(dataWithMajorityAndOutlier, {
+      insightTypes: ['category_outlier'],
+      dimensions: [{ fieldName: 'product' }],
+      algorithmParameter: {
+        outlier: {
+          method: 'p-value',
+        },
+      },
+    });
+    expect(pValueResult.insights).toBeIncludeInsights([
       {
         measures: [{ fieldName: 'yield', method: 'SUM' }],
         dimensions: [{ fieldName: 'product' }],
