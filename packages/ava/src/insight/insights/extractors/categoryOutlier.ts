@@ -16,17 +16,13 @@ export const findOutliers = (
   values: number[],
   options?: InsightOptions
 ): { outliers: OutlierItem[]; thresholds: [number, number] } => {
-  const {
-    method,
-    iqrK,
-    confidenceInterval = SIGNIFICANCE_BENCHMARK,
-  } = options?.adjustableAlgorithmParameter?.outlier || {};
+  const { method, iqrK, confidenceInterval = SIGNIFICANCE_BENCHMARK } = options?.algorithmParameter?.outlier || {};
   const outliers: OutlierItem[] = [];
   const thresholds = [];
   const candidates = values.map((item, index) => {
     return { index, value: item };
   });
-  if (method !== 'NormalityTest') {
+  if (method !== 'p-value') {
     const IQRResult = categoryOutlier.IQR(values, { k: iqrK ?? IQR_K });
     const lowerOutlierIndexes = IQRResult.lower.indexes;
     const upperOutlierIndexes = IQRResult.upper.indexes;

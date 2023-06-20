@@ -36,14 +36,14 @@ const data = [
 
 describe('extract correlation insight', () => {
   test('check correlation result', () => {
-    const result = extractor(
+    const result = extractor({
       data,
-      [],
-      [
+      dimensions: [],
+      measures: [
         { fieldName: 'x', method: 'SUM' },
         { fieldName: 'y', method: 'SUM' },
-      ]
-    );
+      ],
+    });
     expect(result[0]?.pcorr).toBeGreaterThan(0.8);
   });
 });

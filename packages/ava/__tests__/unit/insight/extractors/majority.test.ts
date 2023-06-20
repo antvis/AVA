@@ -37,7 +37,7 @@ const data = [
 
 describe('extract majority insight', () => {
   test('check majority result', () => {
-    const result = extractor(data, ['type'], [{ fieldName: 'sales', method: 'SUM' }]);
+    const result = extractor({ data, dimensions: ['type'], measures: [{ fieldName: 'sales', method: 'SUM' }] });
     expect(result[0]?.index).toEqual(5);
   });
 });

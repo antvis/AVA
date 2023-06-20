@@ -14,7 +14,7 @@ const data = [
 
 describe('extract trend insight', () => {
   test('check trend result', () => {
-    const result = extractor(data, ['year'], [{ fieldName: 'value', method: 'SUM' }]);
+    const result = extractor({ data, dimensions: ['year'], measures: [{ fieldName: 'value', method: 'SUM' }] });
     expect(result[0]?.trend).toEqual('increasing');
   });
 });
