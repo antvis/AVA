@@ -277,8 +277,19 @@ export function analyzeField(
       }
       break;
     case 2:
-      if (types.includes('integer') && types.includes('float')) recommendation = 'float';
-      else recommendation = 'string';
+      if (types.includes('integer') && types.includes('float')) {
+        recommendation = 'float';
+        break;
+      }
+      if (types.includes('integer') && types.includes('date')) {
+        // an integer field may be a date field
+        const data = list.filter((item) => item !== null);
+        if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
+          recommendation = 'date';
+          break;
+        }
+      }
+      recommendation = 'string';
       break;
     default:
       recommendation = 'string';
