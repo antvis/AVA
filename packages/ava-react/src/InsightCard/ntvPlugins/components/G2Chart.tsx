@@ -14,10 +14,15 @@ export const G2Chart = ({ spec, height, width }: { spec: G2Spec; height?: number
       chartRef.current = new Chart({
         container: containerRef?.current,
         autoFit: true,
-        paddingLeft: 'auto',
+        padding: 'auto',
       });
       chartRef.current.options(spec);
     } else {
+      chartRef.current.clear();
+      chartRef.current.options({
+        autoFit: true,
+        padding: 'auto',
+      });
       chartRef.current.options(spec);
     }
 
