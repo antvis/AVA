@@ -39,11 +39,12 @@ export default class ChangePointNarrativeStrategy extends InsightNarrativeStrate
   };
 
   generateTextSpec(insightInfo: InsightInfo<ChangePointInfo>, lang: Language) {
-    const { patterns } = insightInfo;
+    const { patterns, data } = insightInfo;
+    const { dimension } = patterns[0];
     const spec = generateTextSpec({
       structures: ChangePointNarrativeStrategy.structures[lang],
       variable: {
-        dateRange: `${first(patterns).x}~${last(patterns).x}`,
+        dateRange: `${first(data)[dimension]}~${last(data)[dimension]}`,
         measure: patterns[0].measure,
         total: patterns.length,
       },
