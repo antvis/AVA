@@ -24,17 +24,6 @@ import { NarrativeTextSpec } from '@antv/ava';
 - 每个章节有多个段落（paragraph）构成，段落有标题类（heading）、正文类（normal）、列表类（bullets）和自定义类型；
 - 每个段落又由多个短语（phrase）构成。
 
-而短语层则体现出“数据描述文本”和普通文本的最大差别。短语（phrase）分为五种：
-1. text 普通纯文本内容，支持配置属性 bold 加粗、italic 斜体、underline 下划线，以及 url 传入超链接；
-2. escape 转义字符；
-3. formula 数学公式，对应 katex 语法。备注：如使用 `NarrativeTextVis` 组件渲染含 formula 的内容，需要自行引入 css cdn 资源，详情见 [katex 官方网站](https://katex.org/)；
-4. entity 是具有数据含义的短语，将数据映射为文本，是解读文本可视化的主要内容；
-5. custom 则是一种提供给用户自定义的短语插槽，当前常被用于实现一些短语级别的交互。
-
-以下是所有类型为 Entity 的短语一览，其他短语类型效果与使用参考 demo [其他短语类型](../../../examples/ntv/basic/#extra-phrases)。
-
-<Playground path="ntv/basic/demo/entity-phrases.tsx" ></Playground>
-
 一个 ntv-schema json 数据示例：
 
 ```json
@@ -66,6 +55,46 @@ import { NarrativeTextSpec } from '@antv/ava';
   ]
 }
 ```
+
+### Phrase 短语
+
+而短语层则体现出“数据描述文本”和普通文本的最大差别。短语（phrase）分为五种：
+1. text 普通纯文本内容，支持配置属性 bold 加粗、italic 斜体、underline 下划线，以及 url 传入超链接；
+2. escape 转义字符；
+3. formula 数学公式，对应 katex 语法。备注：如使用 `NarrativeTextVis` 组件渲染含 formula 的内容，需要自行引入 css cdn 资源，详情见 [katex 官方网站](https://katex.org/)；
+4. entity 是具有数据含义的短语，将数据映射为文本，是解读文本可视化的主要内容；
+5. custom 则是一种提供给用户自定义的短语插槽，当前常被用于实现一些短语级别的交互。
+
+以下是所有类型为 Entity 的短语一览，其他短语类型效果与使用参考 demo [其他短语类型](../../../examples/ntv/basic/#extra-phrases)。
+
+<Playground path="ntv/basic/demo/entity-phrases.tsx" ></Playground>
+
+### Paragraph 段落
+
+段落包括标题类（heading）、正文类（normal）、列表类（bullets）和自定义类型。
+
+其中，正文类段落类型支持排版属性：`indents`，参考 word 排版，包括：首行缩紧（first-line）、左缩进（left）、右缩进（right）、 悬挂缩进（情况较少，暂不支持），可同时设置多种缩进方式。
+
+![缩进示意图](https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*m5yVQJqR3rkAAAAAAAAAAAAADmJ7AQ/original)
+
+```typescript
+/**
+ * indents 段落缩紧
+ */
+export type ParagraphIndent = {
+  /** 缩进类型 */
+  type: 'first-line' | 'left' | 'right';
+  /** 缩进值，支持 css text-indent 值，比如 12px 20% 2em */
+  length: string | number;
+};
+
+export type TextParagraphSpec = CommonProps & {
+  type: 'normal';
+  phrases: PhraseSpec[];
+  indents?: ParagraphIndent[];
+};
+```
+
 
 ## 关于 ntv-schema 的学习成本
 

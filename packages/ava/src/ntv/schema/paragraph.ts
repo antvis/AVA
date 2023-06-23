@@ -11,9 +11,20 @@ export type HeadingParagraphSpec = CommonProps & {
   phrases: PhraseSpec[];
 };
 
+/**
+ * indents 段落缩紧
+ */
+export type ParagraphIndent = {
+  /** 缩进类型：参考 word 排版，包括：首行缩紧、左缩进、右缩进、 悬挂缩进（情况较少，暂不支持） */
+  type: 'first-line' | 'left' | 'right';
+  /** 缩进值，支持 css text-indent 值，比如 12px 20% 2em */
+  length: string;
+};
+
 export type TextParagraphSpec = CommonProps & {
   type: 'normal';
   phrases: PhraseSpec[];
+  indents?: ParagraphIndent[];
 };
 
 export type BulletsParagraphSpec = CommonProps & {
