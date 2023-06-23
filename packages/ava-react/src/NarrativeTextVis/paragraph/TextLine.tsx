@@ -24,7 +24,12 @@ export function TextLine({
 }: TextLineProps) {
   const themeStyles = { size, theme };
   return (
-    <StyledP {...themeStyles} className={cx(`${NTV_PREFIX_CLS}-p`, spec.className)} style={spec.styles}>
+    <StyledP
+      {...themeStyles}
+      indents={spec.indents}
+      className={cx(`${NTV_PREFIX_CLS}-p`, spec.className)}
+      style={spec.styles}
+    >
       <Phrases spec={spec.phrases} pluginManager={pluginManager} {...themeStyles} {...events} />
     </StyledP>
   );

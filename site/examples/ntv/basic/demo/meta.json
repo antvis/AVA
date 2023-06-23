@@ -29,6 +29,14 @@
       "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*ujvNSL7X4fEAAAAAAAAAAAAADmJ7AQ/original"
     },
     {
+      "filename": "paragraph.tsx",
+      "title": {
+        "en": "Paragraph",
+        "zh": "段落缩进"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*m5yVQJqR3rkAAAAAAAAAAAAADmJ7AQ/original"
+    },
+    {
       "filename": "theme.tsx",
       "title": {
         "en": "Theme",
