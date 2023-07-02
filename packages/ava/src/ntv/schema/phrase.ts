@@ -1,3 +1,5 @@
+import { Variable } from '../generate/types';
+
 import { CustomMetaData, CommonProps } from './common';
 
 // P used for custom phrase;
@@ -123,4 +125,11 @@ export type EntityMetaData = {
   /** source id of the variable, to access the variable info from variableSourceMap */
   // TODO 重新设计完善之后透出
   // sourceId?: string;
+  /**
+   * generate variable info, 通过模版拼接工具函数生成过程中得到的变量信息
+   */
+  generateVariableInfo?: {
+    scopeVariable: Variable;
+    path: string;
+  };
 };
