@@ -46,7 +46,7 @@ class TextSpecGenerator {
     return { type: 'text', value: toString(text) };
   }
 
-  private generateVarPhrase(scopeVariable: Variable, value: any, metadata?: VariableMeta): PhraseSpec {
+  private generateVarPhrase(scopeVariable: Variable, path: string, value: any, metadata?: VariableMeta): PhraseSpec {
     // 没有 meta 的一律按普通文本处理
     if (!metadata) {
       return this.generateTextPhrase(value);
@@ -65,6 +65,7 @@ class TextSpecGenerator {
             entityType: varType,
             origin: isNumber(value) ? value : undefined,
             assessment: getAssessment(varType, value),
+            generateVariableInfo: { scopeVariable, path },
           },
         };
       }
@@ -75,6 +76,7 @@ class TextSpecGenerator {
         // TODO 完善自定义短语 metadata
         metadata: {
           customType: varType,
+          generateVariableInfo: { scopeVariable, path },
           ...extra,
         },
       };
@@ -114,7 +116,7 @@ class TextSpecGenerator {
         const value = metadata?.getDisplayValue
           ? getDisplayValue(metadata?.getDisplayValue, this.variable, variable)
           : getByPath(this.variable, variable, key);
-        phrases.push(this.generateVarPhrase(variable, value, { ...metadata }));
+        phrases.push(this.generateVarPhrase(variable, key, value, { ...metadata }));
       } else if (tempStrType === 'text') {
         phrases.push(this.generateTextPhrase(tempStrValue));
       }

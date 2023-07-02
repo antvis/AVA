@@ -665,6 +665,27 @@ describe('utils test', () => {
                     value: '单价',
                     metadata: {
                       entityType: 'metric_name',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          measureName: '单价',
+                          measureValue: 1.23,
+                          top3: [
+                            {
+                              name: '北京',
+                              value: 1000,
+                            },
+                            {
+                              name: '上海',
+                              value: 800,
+                            },
+                            {
+                              name: '杭州',
+                              value: 600,
+                            },
+                          ],
+                        },
+                        path: 'measureName',
+                      },
                     },
                   },
                   {
@@ -677,6 +698,27 @@ describe('utils test', () => {
                     metadata: {
                       entityType: 'metric_value',
                       origin: 1.23,
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          measureName: '单价',
+                          measureValue: 1.23,
+                          top3: [
+                            {
+                              name: '北京',
+                              value: 1000,
+                            },
+                            {
+                              name: '上海',
+                              value: 800,
+                            },
+                            {
+                              name: '杭州',
+                              value: 600,
+                            },
+                          ],
+                        },
+                        path: 'measureValue',
+                      },
                     },
                   },
                   {
@@ -688,6 +730,13 @@ describe('utils test', () => {
                     value: '北京',
                     metadata: {
                       entityType: 'dim_value',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          name: '北京',
+                          value: 1000,
+                        },
+                        path: '.name',
+                      },
                     },
                   },
                   {
@@ -700,6 +749,13 @@ describe('utils test', () => {
                     metadata: {
                       entityType: 'metric_value',
                       origin: 1000,
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          name: '北京',
+                          value: 1000,
+                        },
+                        path: '.value',
+                      },
                     },
                   },
                   {
@@ -715,6 +771,13 @@ describe('utils test', () => {
                     value: '上海',
                     metadata: {
                       entityType: 'dim_value',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          name: '上海',
+                          value: 800,
+                        },
+                        path: '.name',
+                      },
                     },
                   },
                   {
@@ -727,6 +790,13 @@ describe('utils test', () => {
                     metadata: {
                       entityType: 'metric_value',
                       origin: 800,
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          name: '上海',
+                          value: 800,
+                        },
+                        path: '.value',
+                      },
                     },
                   },
                   {
@@ -742,6 +812,13 @@ describe('utils test', () => {
                     value: '杭州',
                     metadata: {
                       entityType: 'dim_value',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          name: '杭州',
+                          value: 600,
+                        },
+                        path: '.name',
+                      },
                     },
                   },
                   {
@@ -754,6 +831,13 @@ describe('utils test', () => {
                     metadata: {
                       entityType: 'metric_value',
                       origin: 600,
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          name: '杭州',
+                          value: 600,
+                        },
+                        path: '.value',
+                      },
                     },
                   },
                   {
@@ -928,6 +1012,653 @@ describe('utils test', () => {
                     value: '2022-11-12',
                     metadata: {
                       entityType: 'time_desc',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          analysisResult: {
+                            overview: {
+                              measureId: 'D2020120800161505000000674978',
+                              measureName: '单价',
+                              currentMeasureValue: 176266263.42,
+                              comparisonMeasureValue: 146262773.7,
+                              diff: 30003489.72,
+                              rate: 0.2051341497293101,
+                              isFraction: false,
+                            },
+                            impactFactor: {
+                              all: [
+                                {
+                                  measureId: 'D2020120800161505000000674980',
+                                  measureName: '数量',
+                                  currentMeasureValue: 46239969,
+                                  comparisonMeasureValue: 46191678,
+                                  diff: 48291,
+                                  rate: 0.001045448056682418,
+                                  contribution: 1.0586254595355833,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '便签纸',
+                                        },
+                                      ],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['便签纸'],
+                                      currentMeasureValue: 4255122,
+                                      comparisonMeasureValue: 4053110,
+                                      diff: 202012,
+                                      rate: 0.04984123302846456,
+                                      contribution: 4.428465890780937,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['纸张'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '纸张',
+                                        },
+                                      ],
+                                      currentMeasureValue: 4127829,
+                                      comparisonMeasureValue: 3964794,
+                                      diff: 163035,
+                                      rate: 0.04112067360876757,
+                                      contribution: 3.5740200409058382,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['本子'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '本子',
+                                        },
+                                      ],
+                                      currentMeasureValue: 4080766,
+                                      comparisonMeasureValue: 4242152,
+                                      diff: -161386,
+                                      rate: -0.03804342701534504,
+                                      contribution: -3.5378709989979424,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['沃尔玛'],
+                                      dimensions: [
+                                        {
+                                          name: '销售渠道',
+                                          value: '沃尔玛',
+                                        },
+                                      ],
+                                      currentMeasureValue: 6542176,
+                                      comparisonMeasureValue: 6685872,
+                                      diff: -143696,
+                                      rate: -0.02149248445079415,
+                                      contribution: -3.15007442449784,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['家乐福'],
+                                      dimensions: [
+                                        {
+                                          name: '销售渠道',
+                                          value: '家乐福',
+                                        },
+                                      ],
+                                      currentMeasureValue: 6674355,
+                                      comparisonMeasureValue: 6531961,
+                                      diff: 142394,
+                                      rate: 0.021799579023818422,
+                                      contribution: 3.121532245865893,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                                {
+                                  measureId: 'D2020120800161505000000674975',
+                                  measureName: '折扣',
+                                  currentMeasureValue: 37805.02,
+                                  comparisonMeasureValue: 40479.32,
+                                  diff: -2674.300000000003,
+                                  rate: -0.06606583312170271,
+                                  contribution: -0.058625459535648745,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['收纳具'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '收纳具',
+                                        },
+                                      ],
+                                      currentMeasureValue: 1482.98,
+                                      comparisonMeasureValue: 3460.33,
+                                      diff: -1977.35,
+                                      rate: -0.5714339383815994,
+                                      contribution: -0.0433470636850073,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['柜子'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '柜子',
+                                        },
+                                      ],
+                                      currentMeasureValue: 2883.23,
+                                      comparisonMeasureValue: 2075.56,
+                                      diff: 807.67,
+                                      rate: 0.3891335350459635,
+                                      contribution: 0.017705577124166105,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['电话'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '电话',
+                                        },
+                                      ],
+                                      currentMeasureValue: 2259.37,
+                                      comparisonMeasureValue: 1707.25,
+                                      diff: 552.12,
+                                      rate: 0.3233972763215698,
+                                      contribution: 0.012103462109270607,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['笔'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '笔',
+                                        },
+                                      ],
+                                      currentMeasureValue: 1788.27,
+                                      comparisonMeasureValue: 2327.47,
+                                      diff: -539.2,
+                                      rate: -0.23166786252884036,
+                                      contribution: -0.011820232502569571,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['信封'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '信封',
+                                        },
+                                      ],
+                                      currentMeasureValue: 2097.72,
+                                      comparisonMeasureValue: 2549.27,
+                                      diff: -451.55,
+                                      rate: -0.1771291389299682,
+                                      contribution: -0.009898787067016487,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                              positive: [
+                                {
+                                  measureId: 'D2020120800161505000000674980',
+                                  measureName: '数量',
+                                  currentMeasureValue: 46239969,
+                                  comparisonMeasureValue: 46191678,
+                                  diff: 48291,
+                                  rate: 0.001045448056682418,
+                                  contribution: 1.0586254595355833,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['便签纸'],
+                                      currentMeasureValue: 4255122,
+                                      comparisonMeasureValue: 4053110,
+                                      diff: 202012,
+                                      rate: 0.04984123302846456,
+                                      contribution: 4.428465890780937,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['纸张'],
+                                      currentMeasureValue: 4127829,
+                                      comparisonMeasureValue: 3964794,
+                                      diff: 163035,
+                                      rate: 0.04112067360876757,
+                                      contribution: 3.5740200409058382,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['家乐福'],
+                                      currentMeasureValue: 6674355,
+                                      comparisonMeasureValue: 6531961,
+                                      diff: 142394,
+                                      rate: 0.021799579023818422,
+                                      contribution: 3.121532245865893,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['柜子'],
+                                      currentMeasureValue: 2070904,
+                                      comparisonMeasureValue: 1968475,
+                                      diff: 102429,
+                                      rate: 0.05203469691004458,
+                                      contribution: 2.2454276613607145,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['其他'],
+                                      currentMeasureValue: 6758960,
+                                      comparisonMeasureValue: 6658057,
+                                      diff: 100903,
+                                      rate: 0.015155021953101333,
+                                      contribution: 2.211975000383487,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                              negative: [
+                                {
+                                  measureId: 'D2020120800161505000000674975',
+                                  measureName: '折扣',
+                                  currentMeasureValue: 37805.02,
+                                  comparisonMeasureValue: 40479.32,
+                                  diff: -2674.300000000003,
+                                  rate: -0.06606583312170271,
+                                  contribution: -0.058625459535648745,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['收纳具'],
+                                      currentMeasureValue: 1482.98,
+                                      comparisonMeasureValue: 3460.33,
+                                      diff: -1977.35,
+                                      rate: -0.5714339383815994,
+                                      contribution: -0.0433470636850073,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['笔'],
+                                      currentMeasureValue: 1788.27,
+                                      comparisonMeasureValue: 2327.47,
+                                      diff: -539.2,
+                                      rate: -0.23166786252884036,
+                                      contribution: -0.011820232502569571,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['信封'],
+                                      currentMeasureValue: 2097.72,
+                                      comparisonMeasureValue: 2549.27,
+                                      diff: -451.55,
+                                      rate: -0.1771291389299682,
+                                      contribution: -0.009898787067016487,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['大润发'],
+                                      currentMeasureValue: 5312.19,
+                                      comparisonMeasureValue: 5740.92,
+                                      diff: -428.73,
+                                      rate: -0.07467966806713906,
+                                      contribution: -0.00939853167809097,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['沃尔玛'],
+                                      currentMeasureValue: 5372.16,
+                                      comparisonMeasureValue: 5781.95,
+                                      diff: -409.79,
+                                      rate: -0.07087401309246881,
+                                      contribution: -0.008983332858360504,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          },
+                          analysisTime: ['2022-11-12', '2022-11-18'],
+                          comparisonMode: '环比',
+                          comparisonTime: ['2022-11-05', '2022-11-11'],
+                          prefixCls: 'di-embed-summary',
+                          factorType: 'all',
+                          measures: [
+                            {
+                              queryFieldName: '单价',
+                              queryFieldId: 'beb66404-a90c-4637-9c3c-b1deaa17c6c9',
+                              fieldName: '单价',
+                              fieldId: 'D2020120800161505000000674978',
+                              aggregateMethod: 'sum',
+                              format: 'auto',
+                            },
+                            {
+                              queryFieldName: '数量',
+                              queryFieldId: '318b17f4-6fcc-48c7-afd8-fa34f0a55730',
+                              fieldName: '数量',
+                              fieldId: 'D2020120800161505000000674980',
+                              aggregateMethod: 'sum',
+                              format: 'auto',
+                            },
+                            {
+                              queryFieldName: '折扣',
+                              queryFieldId: '5d22b7a2-7989-43ed-9a45-40ab587be106',
+                              fieldName: '折扣',
+                              fieldId: 'D2020120800161505000000674975',
+                              aggregateMethod: 'sum',
+                              format: 'auto',
+                            },
+                          ],
+                          showMeasuresConfig: true,
+                          anomalyExplanationConfig: {
+                            showAnomalyPhrase: false,
+                          },
+                          deepDrillDownDimensions: [
+                            {
+                              queryFieldName: '物流方式',
+                              queryFieldId: '19155f3f-83ac-4364-91e3-2cda45f8a015',
+                              fieldName: '物流方式',
+                              fieldId: 'D2020120800161505000000674977',
+                            },
+                            {
+                              queryFieldName: '商品子类别',
+                              queryFieldId: 'f903b673-1ece-4b84-8984-f0c7d49e5940',
+                              fieldName: '商品子类别',
+                              fieldId: 'D2020120800161505000000674983',
+                            },
+                            {
+                              queryFieldName: '销售渠道',
+                              queryFieldId: '6a8af850-5b84-4c4d-9201-99e87d13e77f',
+                              fieldName: '销售渠道',
+                              fieldId: 'D2020120800161505000000674974',
+                            },
+                          ],
+                        },
+                        path: 'analysisTime[0]',
+                      },
                     },
                   },
                   {
@@ -939,6 +1670,653 @@ describe('utils test', () => {
                     value: '2022-11-18',
                     metadata: {
                       entityType: 'time_desc',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          analysisResult: {
+                            overview: {
+                              measureId: 'D2020120800161505000000674978',
+                              measureName: '单价',
+                              currentMeasureValue: 176266263.42,
+                              comparisonMeasureValue: 146262773.7,
+                              diff: 30003489.72,
+                              rate: 0.2051341497293101,
+                              isFraction: false,
+                            },
+                            impactFactor: {
+                              all: [
+                                {
+                                  measureId: 'D2020120800161505000000674980',
+                                  measureName: '数量',
+                                  currentMeasureValue: 46239969,
+                                  comparisonMeasureValue: 46191678,
+                                  diff: 48291,
+                                  rate: 0.001045448056682418,
+                                  contribution: 1.0586254595355833,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '便签纸',
+                                        },
+                                      ],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['便签纸'],
+                                      currentMeasureValue: 4255122,
+                                      comparisonMeasureValue: 4053110,
+                                      diff: 202012,
+                                      rate: 0.04984123302846456,
+                                      contribution: 4.428465890780937,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['纸张'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '纸张',
+                                        },
+                                      ],
+                                      currentMeasureValue: 4127829,
+                                      comparisonMeasureValue: 3964794,
+                                      diff: 163035,
+                                      rate: 0.04112067360876757,
+                                      contribution: 3.5740200409058382,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['本子'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '本子',
+                                        },
+                                      ],
+                                      currentMeasureValue: 4080766,
+                                      comparisonMeasureValue: 4242152,
+                                      diff: -161386,
+                                      rate: -0.03804342701534504,
+                                      contribution: -3.5378709989979424,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['沃尔玛'],
+                                      dimensions: [
+                                        {
+                                          name: '销售渠道',
+                                          value: '沃尔玛',
+                                        },
+                                      ],
+                                      currentMeasureValue: 6542176,
+                                      comparisonMeasureValue: 6685872,
+                                      diff: -143696,
+                                      rate: -0.02149248445079415,
+                                      contribution: -3.15007442449784,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['家乐福'],
+                                      dimensions: [
+                                        {
+                                          name: '销售渠道',
+                                          value: '家乐福',
+                                        },
+                                      ],
+                                      currentMeasureValue: 6674355,
+                                      comparisonMeasureValue: 6531961,
+                                      diff: 142394,
+                                      rate: 0.021799579023818422,
+                                      contribution: 3.121532245865893,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                                {
+                                  measureId: 'D2020120800161505000000674975',
+                                  measureName: '折扣',
+                                  currentMeasureValue: 37805.02,
+                                  comparisonMeasureValue: 40479.32,
+                                  diff: -2674.300000000003,
+                                  rate: -0.06606583312170271,
+                                  contribution: -0.058625459535648745,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['收纳具'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '收纳具',
+                                        },
+                                      ],
+                                      currentMeasureValue: 1482.98,
+                                      comparisonMeasureValue: 3460.33,
+                                      diff: -1977.35,
+                                      rate: -0.5714339383815994,
+                                      contribution: -0.0433470636850073,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['柜子'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '柜子',
+                                        },
+                                      ],
+                                      currentMeasureValue: 2883.23,
+                                      comparisonMeasureValue: 2075.56,
+                                      diff: 807.67,
+                                      rate: 0.3891335350459635,
+                                      contribution: 0.017705577124166105,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['电话'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '电话',
+                                        },
+                                      ],
+                                      currentMeasureValue: 2259.37,
+                                      comparisonMeasureValue: 1707.25,
+                                      diff: 552.12,
+                                      rate: 0.3233972763215698,
+                                      contribution: 0.012103462109270607,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['笔'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '笔',
+                                        },
+                                      ],
+                                      currentMeasureValue: 1788.27,
+                                      comparisonMeasureValue: 2327.47,
+                                      diff: -539.2,
+                                      rate: -0.23166786252884036,
+                                      contribution: -0.011820232502569571,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['信封'],
+                                      dimensions: [
+                                        {
+                                          name: '商品子类别',
+                                          value: '信封',
+                                        },
+                                      ],
+                                      currentMeasureValue: 2097.72,
+                                      comparisonMeasureValue: 2549.27,
+                                      diff: -451.55,
+                                      rate: -0.1771291389299682,
+                                      contribution: -0.009898787067016487,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                              positive: [
+                                {
+                                  measureId: 'D2020120800161505000000674980',
+                                  measureName: '数量',
+                                  currentMeasureValue: 46239969,
+                                  comparisonMeasureValue: 46191678,
+                                  diff: 48291,
+                                  rate: 0.001045448056682418,
+                                  contribution: 1.0586254595355833,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['便签纸'],
+                                      currentMeasureValue: 4255122,
+                                      comparisonMeasureValue: 4053110,
+                                      diff: 202012,
+                                      rate: 0.04984123302846456,
+                                      contribution: 4.428465890780937,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['纸张'],
+                                      currentMeasureValue: 4127829,
+                                      comparisonMeasureValue: 3964794,
+                                      diff: 163035,
+                                      rate: 0.04112067360876757,
+                                      contribution: 3.5740200409058382,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['家乐福'],
+                                      currentMeasureValue: 6674355,
+                                      comparisonMeasureValue: 6531961,
+                                      diff: 142394,
+                                      rate: 0.021799579023818422,
+                                      contribution: 3.121532245865893,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['柜子'],
+                                      currentMeasureValue: 2070904,
+                                      comparisonMeasureValue: 1968475,
+                                      diff: 102429,
+                                      rate: 0.05203469691004458,
+                                      contribution: 2.2454276613607145,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['其他'],
+                                      currentMeasureValue: 6758960,
+                                      comparisonMeasureValue: 6658057,
+                                      diff: 100903,
+                                      rate: 0.015155021953101333,
+                                      contribution: 2.211975000383487,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: false,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674980',
+                                          measureName: '数量',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                              negative: [
+                                {
+                                  measureId: 'D2020120800161505000000674975',
+                                  measureName: '折扣',
+                                  currentMeasureValue: 37805.02,
+                                  comparisonMeasureValue: 40479.32,
+                                  diff: -2674.300000000003,
+                                  rate: -0.06606583312170271,
+                                  contribution: -0.058625459535648745,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: null,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  subFactors: [
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['收纳具'],
+                                      currentMeasureValue: 1482.98,
+                                      comparisonMeasureValue: 3460.33,
+                                      diff: -1977.35,
+                                      rate: -0.5714339383815994,
+                                      contribution: -0.0433470636850073,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['笔'],
+                                      currentMeasureValue: 1788.27,
+                                      comparisonMeasureValue: 2327.47,
+                                      diff: -539.2,
+                                      rate: -0.23166786252884036,
+                                      contribution: -0.011820232502569571,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674983'],
+                                      dimensionNames: ['商品子类别'],
+                                      dimensionValues: ['信封'],
+                                      currentMeasureValue: 2097.72,
+                                      comparisonMeasureValue: 2549.27,
+                                      diff: -451.55,
+                                      rate: -0.1771291389299682,
+                                      contribution: -0.009898787067016487,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['大润发'],
+                                      currentMeasureValue: 5312.19,
+                                      comparisonMeasureValue: 5740.92,
+                                      diff: -428.73,
+                                      rate: -0.07467966806713906,
+                                      contribution: -0.00939853167809097,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                    {
+                                      dimensionIds: ['D2020120800161505000000674974'],
+                                      dimensionNames: ['销售渠道'],
+                                      dimensionValues: ['沃尔玛'],
+                                      currentMeasureValue: 5372.16,
+                                      comparisonMeasureValue: 5781.95,
+                                      diff: -409.79,
+                                      rate: -0.07087401309246881,
+                                      contribution: -0.008983332858360504,
+                                      influenceOfWeight: null,
+                                      isSimpsonMeasure: true,
+                                      rateContribution: null,
+                                      proportionContribution: null,
+                                      currentProportion: null,
+                                      comparisonProportion: null,
+                                      parentInfo: {
+                                        measureInfo: {
+                                          measureId: 'D2020120800161505000000674975',
+                                          measureName: '折扣',
+                                        },
+                                      },
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          },
+                          analysisTime: ['2022-11-12', '2022-11-18'],
+                          comparisonMode: '环比',
+                          comparisonTime: ['2022-11-05', '2022-11-11'],
+                          prefixCls: 'di-embed-summary',
+                          factorType: 'all',
+                          measures: [
+                            {
+                              queryFieldName: '单价',
+                              queryFieldId: 'beb66404-a90c-4637-9c3c-b1deaa17c6c9',
+                              fieldName: '单价',
+                              fieldId: 'D2020120800161505000000674978',
+                              aggregateMethod: 'sum',
+                              format: 'auto',
+                            },
+                            {
+                              queryFieldName: '数量',
+                              queryFieldId: '318b17f4-6fcc-48c7-afd8-fa34f0a55730',
+                              fieldName: '数量',
+                              fieldId: 'D2020120800161505000000674980',
+                              aggregateMethod: 'sum',
+                              format: 'auto',
+                            },
+                            {
+                              queryFieldName: '折扣',
+                              queryFieldId: '5d22b7a2-7989-43ed-9a45-40ab587be106',
+                              fieldName: '折扣',
+                              fieldId: 'D2020120800161505000000674975',
+                              aggregateMethod: 'sum',
+                              format: 'auto',
+                            },
+                          ],
+                          showMeasuresConfig: true,
+                          anomalyExplanationConfig: {
+                            showAnomalyPhrase: false,
+                          },
+                          deepDrillDownDimensions: [
+                            {
+                              queryFieldName: '物流方式',
+                              queryFieldId: '19155f3f-83ac-4364-91e3-2cda45f8a015',
+                              fieldName: '物流方式',
+                              fieldId: 'D2020120800161505000000674977',
+                            },
+                            {
+                              queryFieldName: '商品子类别',
+                              queryFieldId: 'f903b673-1ece-4b84-8984-f0c7d49e5940',
+                              fieldName: '商品子类别',
+                              fieldId: 'D2020120800161505000000674983',
+                            },
+                            {
+                              queryFieldName: '销售渠道',
+                              queryFieldId: '6a8af850-5b84-4c4d-9201-99e87d13e77f',
+                              fieldName: '销售渠道',
+                              fieldId: 'D2020120800161505000000674974',
+                            },
+                          ],
+                        },
+                        path: 'analysisTime[1]',
+                      },
                     },
                   },
                   {
@@ -950,6 +2328,18 @@ describe('utils test', () => {
                     value: '单价',
                     metadata: {
                       entityType: 'metric_name',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          measureId: 'D2020120800161505000000674978',
+                          measureName: '单价',
+                          currentMeasureValue: 176266263.42,
+                          comparisonMeasureValue: 146262773.7,
+                          diff: 30003489.72,
+                          rate: 0.2051341497293101,
+                          isFraction: false,
+                        },
+                        path: '.measureName',
+                      },
                     },
                   },
                   {
@@ -962,6 +2352,18 @@ describe('utils test', () => {
                     metadata: {
                       entityType: 'metric_value',
                       origin: 176266263.42,
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          measureId: 'D2020120800161505000000674978',
+                          measureName: '单价',
+                          currentMeasureValue: 176266263.42,
+                          comparisonMeasureValue: 146262773.7,
+                          diff: 30003489.72,
+                          rate: 0.2051341497293101,
+                          isFraction: false,
+                        },
+                        path: '.currentMeasureValue',
+                      },
                     },
                   },
                   {
@@ -980,6 +2382,18 @@ describe('utils test', () => {
                     type: 'custom',
                     metadata: {
                       customType: 'custom_delta_value',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          measureId: 'D2020120800161505000000674978',
+                          measureName: '单价',
+                          currentMeasureValue: 176266263.42,
+                          comparisonMeasureValue: 146262773.7,
+                          diff: 30003489.72,
+                          rate: 0.2051341497293101,
+                          isFraction: false,
+                        },
+                        path: '_customDeltaValue',
+                      },
                       diff: 30003489.72,
                       compare: 146262773.7,
                       current: 176266263.42,
@@ -996,6 +2410,18 @@ describe('utils test', () => {
                       entityType: 'ratio_value',
                       origin: 0.2051341497293101,
                       assessment: 'positive',
+                      generateVariableInfo: {
+                        scopeVariable: {
+                          measureId: 'D2020120800161505000000674978',
+                          measureName: '单价',
+                          currentMeasureValue: 176266263.42,
+                          comparisonMeasureValue: 146262773.7,
+                          diff: 30003489.72,
+                          rate: 0.2051341497293101,
+                          isFraction: false,
+                        },
+                        path: '.rate',
+                      },
                     },
                   },
                   {
@@ -1028,6 +2454,166 @@ describe('utils test', () => {
                         value: '数量',
                         metadata: {
                           entityType: 'metric_name',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674980',
+                              measureName: '数量',
+                              currentMeasureValue: 46239969,
+                              comparisonMeasureValue: 46191678,
+                              diff: 48291,
+                              rate: 0.001045448056682418,
+                              contribution: 1.0586254595355833,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '便签纸',
+                                    },
+                                  ],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['便签纸'],
+                                  currentMeasureValue: 4255122,
+                                  comparisonMeasureValue: 4053110,
+                                  diff: 202012,
+                                  rate: 0.04984123302846456,
+                                  contribution: 4.428465890780937,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['纸张'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '纸张',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4127829,
+                                  comparisonMeasureValue: 3964794,
+                                  diff: 163035,
+                                  rate: 0.04112067360876757,
+                                  contribution: 3.5740200409058382,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['本子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '本子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4080766,
+                                  comparisonMeasureValue: 4242152,
+                                  diff: -161386,
+                                  rate: -0.03804342701534504,
+                                  contribution: -3.5378709989979424,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['沃尔玛'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '沃尔玛',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6542176,
+                                  comparisonMeasureValue: 6685872,
+                                  diff: -143696,
+                                  rate: -0.02149248445079415,
+                                  contribution: -3.15007442449784,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['家乐福'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '家乐福',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6674355,
+                                  comparisonMeasureValue: 6531961,
+                                  diff: 142394,
+                                  rate: 0.021799579023818422,
+                                  contribution: 3.121532245865893,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '.measureName',
+                          },
                         },
                       },
                       {
@@ -1038,6 +2624,166 @@ describe('utils test', () => {
                         type: 'custom',
                         metadata: {
                           customType: 'custom_delta_value',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674980',
+                              measureName: '数量',
+                              currentMeasureValue: 46239969,
+                              comparisonMeasureValue: 46191678,
+                              diff: 48291,
+                              rate: 0.001045448056682418,
+                              contribution: 1.0586254595355833,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '便签纸',
+                                    },
+                                  ],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['便签纸'],
+                                  currentMeasureValue: 4255122,
+                                  comparisonMeasureValue: 4053110,
+                                  diff: 202012,
+                                  rate: 0.04984123302846456,
+                                  contribution: 4.428465890780937,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['纸张'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '纸张',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4127829,
+                                  comparisonMeasureValue: 3964794,
+                                  diff: 163035,
+                                  rate: 0.04112067360876757,
+                                  contribution: 3.5740200409058382,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['本子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '本子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4080766,
+                                  comparisonMeasureValue: 4242152,
+                                  diff: -161386,
+                                  rate: -0.03804342701534504,
+                                  contribution: -3.5378709989979424,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['沃尔玛'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '沃尔玛',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6542176,
+                                  comparisonMeasureValue: 6685872,
+                                  diff: -143696,
+                                  rate: -0.02149248445079415,
+                                  contribution: -3.15007442449784,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['家乐福'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '家乐福',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6674355,
+                                  comparisonMeasureValue: 6531961,
+                                  diff: 142394,
+                                  rate: 0.021799579023818422,
+                                  contribution: 3.121532245865893,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '_customDeltaValue',
+                          },
                           diff: 48291,
                           compare: 46191678,
                           current: 46239969,
@@ -1054,6 +2800,166 @@ describe('utils test', () => {
                           entityType: 'ratio_value',
                           origin: 0.001045448056682418,
                           assessment: 'positive',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674980',
+                              measureName: '数量',
+                              currentMeasureValue: 46239969,
+                              comparisonMeasureValue: 46191678,
+                              diff: 48291,
+                              rate: 0.001045448056682418,
+                              contribution: 1.0586254595355833,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '便签纸',
+                                    },
+                                  ],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['便签纸'],
+                                  currentMeasureValue: 4255122,
+                                  comparisonMeasureValue: 4053110,
+                                  diff: 202012,
+                                  rate: 0.04984123302846456,
+                                  contribution: 4.428465890780937,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['纸张'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '纸张',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4127829,
+                                  comparisonMeasureValue: 3964794,
+                                  diff: 163035,
+                                  rate: 0.04112067360876757,
+                                  contribution: 3.5740200409058382,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['本子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '本子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4080766,
+                                  comparisonMeasureValue: 4242152,
+                                  diff: -161386,
+                                  rate: -0.03804342701534504,
+                                  contribution: -3.5378709989979424,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['沃尔玛'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '沃尔玛',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6542176,
+                                  comparisonMeasureValue: 6685872,
+                                  diff: -143696,
+                                  rate: -0.02149248445079415,
+                                  contribution: -3.15007442449784,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['家乐福'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '家乐福',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6674355,
+                                  comparisonMeasureValue: 6531961,
+                                  diff: 142394,
+                                  rate: 0.021799579023818422,
+                                  contribution: 3.121532245865893,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '.rate',
+                          },
                         },
                       },
                       {
@@ -1066,6 +2972,166 @@ describe('utils test', () => {
                         metadata: {
                           entityType: 'contribute_ratio',
                           origin: 1.0586254595355833,
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674980',
+                              measureName: '数量',
+                              currentMeasureValue: 46239969,
+                              comparisonMeasureValue: 46191678,
+                              diff: 48291,
+                              rate: 0.001045448056682418,
+                              contribution: 1.0586254595355833,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '便签纸',
+                                    },
+                                  ],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['便签纸'],
+                                  currentMeasureValue: 4255122,
+                                  comparisonMeasureValue: 4053110,
+                                  diff: 202012,
+                                  rate: 0.04984123302846456,
+                                  contribution: 4.428465890780937,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['纸张'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '纸张',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4127829,
+                                  comparisonMeasureValue: 3964794,
+                                  diff: 163035,
+                                  rate: 0.04112067360876757,
+                                  contribution: 3.5740200409058382,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['本子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '本子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4080766,
+                                  comparisonMeasureValue: 4242152,
+                                  diff: -161386,
+                                  rate: -0.03804342701534504,
+                                  contribution: -3.5378709989979424,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['沃尔玛'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '沃尔玛',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6542176,
+                                  comparisonMeasureValue: 6685872,
+                                  diff: -143696,
+                                  rate: -0.02149248445079415,
+                                  contribution: -3.15007442449784,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['家乐福'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '家乐福',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6674355,
+                                  comparisonMeasureValue: 6531961,
+                                  diff: 142394,
+                                  rate: 0.021799579023818422,
+                                  contribution: 3.121532245865893,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '.contribution',
+                          },
                         },
                       },
                       {
@@ -1076,6 +3142,166 @@ describe('utils test', () => {
                         type: 'custom',
                         metadata: {
                           customType: 'drill_down_dims',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674980',
+                              measureName: '数量',
+                              currentMeasureValue: 46239969,
+                              comparisonMeasureValue: 46191678,
+                              diff: 48291,
+                              rate: 0.001045448056682418,
+                              contribution: 1.0586254595355833,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '便签纸',
+                                    },
+                                  ],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['便签纸'],
+                                  currentMeasureValue: 4255122,
+                                  comparisonMeasureValue: 4053110,
+                                  diff: 202012,
+                                  rate: 0.04984123302846456,
+                                  contribution: 4.428465890780937,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['纸张'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '纸张',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4127829,
+                                  comparisonMeasureValue: 3964794,
+                                  diff: 163035,
+                                  rate: 0.04112067360876757,
+                                  contribution: 3.5740200409058382,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['本子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '本子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 4080766,
+                                  comparisonMeasureValue: 4242152,
+                                  diff: -161386,
+                                  rate: -0.03804342701534504,
+                                  contribution: -3.5378709989979424,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['沃尔玛'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '沃尔玛',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6542176,
+                                  comparisonMeasureValue: 6685872,
+                                  diff: -143696,
+                                  rate: -0.02149248445079415,
+                                  contribution: -3.15007442449784,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674974'],
+                                  dimensionNames: ['销售渠道'],
+                                  dimensionValues: ['家乐福'],
+                                  dimensions: [
+                                    {
+                                      name: '销售渠道',
+                                      value: '家乐福',
+                                    },
+                                  ],
+                                  currentMeasureValue: 6674355,
+                                  comparisonMeasureValue: 6531961,
+                                  diff: 142394,
+                                  rate: 0.021799579023818422,
+                                  contribution: 3.121532245865893,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: false,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674980',
+                                      measureName: '数量',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '_drillDownDims',
+                          },
                           dims: [
                             {
                               queryFieldName: '物流方式',
@@ -1115,6 +3341,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 便签纸',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '便签纸',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1125,6 +3358,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '便签纸',
+                                      },
+                                    ],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['便签纸'],
+                                    currentMeasureValue: 4255122,
+                                    comparisonMeasureValue: 4053110,
+                                    diff: 202012,
+                                    rate: 0.04984123302846456,
+                                    contribution: 4.428465890780937,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: 202012,
                                 compare: 4053110,
                                 current: 4255122,
@@ -1141,6 +3405,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: 0.04984123302846456,
                                 assessment: 'positive',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '便签纸',
+                                      },
+                                    ],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['便签纸'],
+                                    currentMeasureValue: 4255122,
+                                    comparisonMeasureValue: 4053110,
+                                    diff: 202012,
+                                    rate: 0.04984123302846456,
+                                    contribution: 4.428465890780937,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1153,6 +3448,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: 4.428465890780937,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '便签纸',
+                                      },
+                                    ],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['便签纸'],
+                                    currentMeasureValue: 4255122,
+                                    comparisonMeasureValue: 4053110,
+                                    diff: 202012,
+                                    rate: 0.04984123302846456,
+                                    contribution: 4.428465890780937,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1163,6 +3489,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '便签纸',
+                                      },
+                                    ],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['便签纸'],
+                                    currentMeasureValue: 4255122,
+                                    comparisonMeasureValue: 4053110,
+                                    diff: 202012,
+                                    rate: 0.04984123302846456,
+                                    contribution: 4.428465890780937,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1199,6 +3556,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 纸张',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '纸张',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1209,6 +3573,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['纸张'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '纸张',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4127829,
+                                    comparisonMeasureValue: 3964794,
+                                    diff: 163035,
+                                    rate: 0.04112067360876757,
+                                    contribution: 3.5740200409058382,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: 163035,
                                 compare: 3964794,
                                 current: 4127829,
@@ -1225,6 +3620,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: 0.04112067360876757,
                                 assessment: 'positive',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['纸张'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '纸张',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4127829,
+                                    comparisonMeasureValue: 3964794,
+                                    diff: 163035,
+                                    rate: 0.04112067360876757,
+                                    contribution: 3.5740200409058382,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1237,6 +3663,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: 3.5740200409058382,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['纸张'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '纸张',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4127829,
+                                    comparisonMeasureValue: 3964794,
+                                    diff: 163035,
+                                    rate: 0.04112067360876757,
+                                    contribution: 3.5740200409058382,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1247,6 +3704,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['纸张'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '纸张',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4127829,
+                                    comparisonMeasureValue: 3964794,
+                                    diff: 163035,
+                                    rate: 0.04112067360876757,
+                                    contribution: 3.5740200409058382,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1283,6 +3771,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 本子',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '本子',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1293,6 +3788,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['本子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '本子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4080766,
+                                    comparisonMeasureValue: 4242152,
+                                    diff: -161386,
+                                    rate: -0.03804342701534504,
+                                    contribution: -3.5378709989979424,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: -161386,
                                 compare: 4242152,
                                 current: 4080766,
@@ -1309,6 +3835,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: -0.03804342701534504,
                                 assessment: 'negative',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['本子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '本子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4080766,
+                                    comparisonMeasureValue: 4242152,
+                                    diff: -161386,
+                                    rate: -0.03804342701534504,
+                                    contribution: -3.5378709989979424,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1321,6 +3878,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: -3.5378709989979424,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['本子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '本子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4080766,
+                                    comparisonMeasureValue: 4242152,
+                                    diff: -161386,
+                                    rate: -0.03804342701534504,
+                                    contribution: -3.5378709989979424,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1331,6 +3919,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['本子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '本子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 4080766,
+                                    comparisonMeasureValue: 4242152,
+                                    diff: -161386,
+                                    rate: -0.03804342701534504,
+                                    contribution: -3.5378709989979424,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1367,6 +3986,13 @@ describe('utils test', () => {
                               value: '销售渠道 = 沃尔玛',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '销售渠道',
+                                    value: '沃尔玛',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1377,6 +4003,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['沃尔玛'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '沃尔玛',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6542176,
+                                    comparisonMeasureValue: 6685872,
+                                    diff: -143696,
+                                    rate: -0.02149248445079415,
+                                    contribution: -3.15007442449784,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: -143696,
                                 compare: 6685872,
                                 current: 6542176,
@@ -1393,6 +4050,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: -0.02149248445079415,
                                 assessment: 'negative',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['沃尔玛'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '沃尔玛',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6542176,
+                                    comparisonMeasureValue: 6685872,
+                                    diff: -143696,
+                                    rate: -0.02149248445079415,
+                                    contribution: -3.15007442449784,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1405,6 +4093,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: -3.15007442449784,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['沃尔玛'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '沃尔玛',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6542176,
+                                    comparisonMeasureValue: 6685872,
+                                    diff: -143696,
+                                    rate: -0.02149248445079415,
+                                    contribution: -3.15007442449784,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1415,6 +4134,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['沃尔玛'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '沃尔玛',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6542176,
+                                    comparisonMeasureValue: 6685872,
+                                    diff: -143696,
+                                    rate: -0.02149248445079415,
+                                    contribution: -3.15007442449784,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1451,6 +4201,13 @@ describe('utils test', () => {
                               value: '销售渠道 = 家乐福',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '销售渠道',
+                                    value: '家乐福',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1461,6 +4218,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['家乐福'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '家乐福',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6674355,
+                                    comparisonMeasureValue: 6531961,
+                                    diff: 142394,
+                                    rate: 0.021799579023818422,
+                                    contribution: 3.121532245865893,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: 142394,
                                 compare: 6531961,
                                 current: 6674355,
@@ -1477,6 +4265,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: 0.021799579023818422,
                                 assessment: 'positive',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['家乐福'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '家乐福',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6674355,
+                                    comparisonMeasureValue: 6531961,
+                                    diff: 142394,
+                                    rate: 0.021799579023818422,
+                                    contribution: 3.121532245865893,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1489,6 +4308,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: 3.121532245865893,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['家乐福'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '家乐福',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6674355,
+                                    comparisonMeasureValue: 6531961,
+                                    diff: 142394,
+                                    rate: 0.021799579023818422,
+                                    contribution: 3.121532245865893,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1499,6 +4349,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674974'],
+                                    dimensionNames: ['销售渠道'],
+                                    dimensionValues: ['家乐福'],
+                                    dimensions: [
+                                      {
+                                        name: '销售渠道',
+                                        value: '家乐福',
+                                      },
+                                    ],
+                                    currentMeasureValue: 6674355,
+                                    comparisonMeasureValue: 6531961,
+                                    diff: 142394,
+                                    rate: 0.021799579023818422,
+                                    contribution: 3.121532245865893,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: false,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674980',
+                                        measureName: '数量',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1538,6 +4419,166 @@ describe('utils test', () => {
                         value: '折扣',
                         metadata: {
                           entityType: 'metric_name',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674975',
+                              measureName: '折扣',
+                              currentMeasureValue: 37805.02,
+                              comparisonMeasureValue: 40479.32,
+                              diff: -2674.300000000003,
+                              rate: -0.06606583312170271,
+                              contribution: -0.058625459535648745,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['收纳具'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '收纳具',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1482.98,
+                                  comparisonMeasureValue: 3460.33,
+                                  diff: -1977.35,
+                                  rate: -0.5714339383815994,
+                                  contribution: -0.0433470636850073,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['柜子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '柜子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2883.23,
+                                  comparisonMeasureValue: 2075.56,
+                                  diff: 807.67,
+                                  rate: 0.3891335350459635,
+                                  contribution: 0.017705577124166105,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['电话'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '电话',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2259.37,
+                                  comparisonMeasureValue: 1707.25,
+                                  diff: 552.12,
+                                  rate: 0.3233972763215698,
+                                  contribution: 0.012103462109270607,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['笔'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '笔',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1788.27,
+                                  comparisonMeasureValue: 2327.47,
+                                  diff: -539.2,
+                                  rate: -0.23166786252884036,
+                                  contribution: -0.011820232502569571,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['信封'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '信封',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2097.72,
+                                  comparisonMeasureValue: 2549.27,
+                                  diff: -451.55,
+                                  rate: -0.1771291389299682,
+                                  contribution: -0.009898787067016487,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '.measureName',
+                          },
                         },
                       },
                       {
@@ -1548,6 +4589,166 @@ describe('utils test', () => {
                         type: 'custom',
                         metadata: {
                           customType: 'custom_delta_value',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674975',
+                              measureName: '折扣',
+                              currentMeasureValue: 37805.02,
+                              comparisonMeasureValue: 40479.32,
+                              diff: -2674.300000000003,
+                              rate: -0.06606583312170271,
+                              contribution: -0.058625459535648745,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['收纳具'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '收纳具',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1482.98,
+                                  comparisonMeasureValue: 3460.33,
+                                  diff: -1977.35,
+                                  rate: -0.5714339383815994,
+                                  contribution: -0.0433470636850073,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['柜子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '柜子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2883.23,
+                                  comparisonMeasureValue: 2075.56,
+                                  diff: 807.67,
+                                  rate: 0.3891335350459635,
+                                  contribution: 0.017705577124166105,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['电话'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '电话',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2259.37,
+                                  comparisonMeasureValue: 1707.25,
+                                  diff: 552.12,
+                                  rate: 0.3233972763215698,
+                                  contribution: 0.012103462109270607,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['笔'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '笔',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1788.27,
+                                  comparisonMeasureValue: 2327.47,
+                                  diff: -539.2,
+                                  rate: -0.23166786252884036,
+                                  contribution: -0.011820232502569571,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['信封'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '信封',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2097.72,
+                                  comparisonMeasureValue: 2549.27,
+                                  diff: -451.55,
+                                  rate: -0.1771291389299682,
+                                  contribution: -0.009898787067016487,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '_customDeltaValue',
+                          },
                           diff: -2674.300000000003,
                           compare: 40479.32,
                           current: 37805.02,
@@ -1564,6 +4765,166 @@ describe('utils test', () => {
                           entityType: 'ratio_value',
                           origin: -0.06606583312170271,
                           assessment: 'negative',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674975',
+                              measureName: '折扣',
+                              currentMeasureValue: 37805.02,
+                              comparisonMeasureValue: 40479.32,
+                              diff: -2674.300000000003,
+                              rate: -0.06606583312170271,
+                              contribution: -0.058625459535648745,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['收纳具'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '收纳具',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1482.98,
+                                  comparisonMeasureValue: 3460.33,
+                                  diff: -1977.35,
+                                  rate: -0.5714339383815994,
+                                  contribution: -0.0433470636850073,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['柜子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '柜子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2883.23,
+                                  comparisonMeasureValue: 2075.56,
+                                  diff: 807.67,
+                                  rate: 0.3891335350459635,
+                                  contribution: 0.017705577124166105,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['电话'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '电话',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2259.37,
+                                  comparisonMeasureValue: 1707.25,
+                                  diff: 552.12,
+                                  rate: 0.3233972763215698,
+                                  contribution: 0.012103462109270607,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['笔'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '笔',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1788.27,
+                                  comparisonMeasureValue: 2327.47,
+                                  diff: -539.2,
+                                  rate: -0.23166786252884036,
+                                  contribution: -0.011820232502569571,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['信封'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '信封',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2097.72,
+                                  comparisonMeasureValue: 2549.27,
+                                  diff: -451.55,
+                                  rate: -0.1771291389299682,
+                                  contribution: -0.009898787067016487,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '.rate',
+                          },
                         },
                       },
                       {
@@ -1576,6 +4937,166 @@ describe('utils test', () => {
                         metadata: {
                           entityType: 'contribute_ratio',
                           origin: -0.058625459535648745,
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674975',
+                              measureName: '折扣',
+                              currentMeasureValue: 37805.02,
+                              comparisonMeasureValue: 40479.32,
+                              diff: -2674.300000000003,
+                              rate: -0.06606583312170271,
+                              contribution: -0.058625459535648745,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['收纳具'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '收纳具',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1482.98,
+                                  comparisonMeasureValue: 3460.33,
+                                  diff: -1977.35,
+                                  rate: -0.5714339383815994,
+                                  contribution: -0.0433470636850073,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['柜子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '柜子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2883.23,
+                                  comparisonMeasureValue: 2075.56,
+                                  diff: 807.67,
+                                  rate: 0.3891335350459635,
+                                  contribution: 0.017705577124166105,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['电话'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '电话',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2259.37,
+                                  comparisonMeasureValue: 1707.25,
+                                  diff: 552.12,
+                                  rate: 0.3233972763215698,
+                                  contribution: 0.012103462109270607,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['笔'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '笔',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1788.27,
+                                  comparisonMeasureValue: 2327.47,
+                                  diff: -539.2,
+                                  rate: -0.23166786252884036,
+                                  contribution: -0.011820232502569571,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['信封'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '信封',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2097.72,
+                                  comparisonMeasureValue: 2549.27,
+                                  diff: -451.55,
+                                  rate: -0.1771291389299682,
+                                  contribution: -0.009898787067016487,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '.contribution',
+                          },
                         },
                       },
                       {
@@ -1586,6 +5107,166 @@ describe('utils test', () => {
                         type: 'custom',
                         metadata: {
                           customType: 'drill_down_dims',
+                          generateVariableInfo: {
+                            scopeVariable: {
+                              measureId: 'D2020120800161505000000674975',
+                              measureName: '折扣',
+                              currentMeasureValue: 37805.02,
+                              comparisonMeasureValue: 40479.32,
+                              diff: -2674.300000000003,
+                              rate: -0.06606583312170271,
+                              contribution: -0.058625459535648745,
+                              influenceOfWeight: null,
+                              isSimpsonMeasure: null,
+                              rateContribution: null,
+                              proportionContribution: null,
+                              currentProportion: null,
+                              comparisonProportion: null,
+                              subFactors: [
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['收纳具'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '收纳具',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1482.98,
+                                  comparisonMeasureValue: 3460.33,
+                                  diff: -1977.35,
+                                  rate: -0.5714339383815994,
+                                  contribution: -0.0433470636850073,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['柜子'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '柜子',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2883.23,
+                                  comparisonMeasureValue: 2075.56,
+                                  diff: 807.67,
+                                  rate: 0.3891335350459635,
+                                  contribution: 0.017705577124166105,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['电话'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '电话',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2259.37,
+                                  comparisonMeasureValue: 1707.25,
+                                  diff: 552.12,
+                                  rate: 0.3233972763215698,
+                                  contribution: 0.012103462109270607,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['笔'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '笔',
+                                    },
+                                  ],
+                                  currentMeasureValue: 1788.27,
+                                  comparisonMeasureValue: 2327.47,
+                                  diff: -539.2,
+                                  rate: -0.23166786252884036,
+                                  contribution: -0.011820232502569571,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                                {
+                                  dimensionIds: ['D2020120800161505000000674983'],
+                                  dimensionNames: ['商品子类别'],
+                                  dimensionValues: ['信封'],
+                                  dimensions: [
+                                    {
+                                      name: '商品子类别',
+                                      value: '信封',
+                                    },
+                                  ],
+                                  currentMeasureValue: 2097.72,
+                                  comparisonMeasureValue: 2549.27,
+                                  diff: -451.55,
+                                  rate: -0.1771291389299682,
+                                  contribution: -0.009898787067016487,
+                                  influenceOfWeight: null,
+                                  isSimpsonMeasure: true,
+                                  rateContribution: null,
+                                  proportionContribution: null,
+                                  currentProportion: null,
+                                  comparisonProportion: null,
+                                  parentInfo: {
+                                    measureInfo: {
+                                      measureId: 'D2020120800161505000000674975',
+                                      measureName: '折扣',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            path: '_drillDownDims',
+                          },
                           dims: [
                             {
                               queryFieldName: '物流方式',
@@ -1625,6 +5306,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 收纳具',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '收纳具',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1635,6 +5323,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['收纳具'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '收纳具',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1482.98,
+                                    comparisonMeasureValue: 3460.33,
+                                    diff: -1977.35,
+                                    rate: -0.5714339383815994,
+                                    contribution: -0.0433470636850073,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: -1977.35,
                                 compare: 3460.33,
                                 current: 1482.98,
@@ -1651,6 +5370,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: -0.5714339383815994,
                                 assessment: 'negative',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['收纳具'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '收纳具',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1482.98,
+                                    comparisonMeasureValue: 3460.33,
+                                    diff: -1977.35,
+                                    rate: -0.5714339383815994,
+                                    contribution: -0.0433470636850073,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1663,6 +5413,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: -0.0433470636850073,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['收纳具'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '收纳具',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1482.98,
+                                    comparisonMeasureValue: 3460.33,
+                                    diff: -1977.35,
+                                    rate: -0.5714339383815994,
+                                    contribution: -0.0433470636850073,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1673,6 +5454,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['收纳具'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '收纳具',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1482.98,
+                                    comparisonMeasureValue: 3460.33,
+                                    diff: -1977.35,
+                                    rate: -0.5714339383815994,
+                                    contribution: -0.0433470636850073,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1709,6 +5521,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 柜子',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '柜子',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1719,6 +5538,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['柜子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '柜子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2883.23,
+                                    comparisonMeasureValue: 2075.56,
+                                    diff: 807.67,
+                                    rate: 0.3891335350459635,
+                                    contribution: 0.017705577124166105,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: 807.67,
                                 compare: 2075.56,
                                 current: 2883.23,
@@ -1735,6 +5585,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: 0.3891335350459635,
                                 assessment: 'positive',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['柜子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '柜子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2883.23,
+                                    comparisonMeasureValue: 2075.56,
+                                    diff: 807.67,
+                                    rate: 0.3891335350459635,
+                                    contribution: 0.017705577124166105,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1747,6 +5628,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: 0.017705577124166105,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['柜子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '柜子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2883.23,
+                                    comparisonMeasureValue: 2075.56,
+                                    diff: 807.67,
+                                    rate: 0.3891335350459635,
+                                    contribution: 0.017705577124166105,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1757,6 +5669,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['柜子'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '柜子',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2883.23,
+                                    comparisonMeasureValue: 2075.56,
+                                    diff: 807.67,
+                                    rate: 0.3891335350459635,
+                                    contribution: 0.017705577124166105,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1793,6 +5736,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 电话',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '电话',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1803,6 +5753,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['电话'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '电话',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2259.37,
+                                    comparisonMeasureValue: 1707.25,
+                                    diff: 552.12,
+                                    rate: 0.3233972763215698,
+                                    contribution: 0.012103462109270607,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: 552.12,
                                 compare: 1707.25,
                                 current: 2259.37,
@@ -1819,6 +5800,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: 0.3233972763215698,
                                 assessment: 'positive',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['电话'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '电话',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2259.37,
+                                    comparisonMeasureValue: 1707.25,
+                                    diff: 552.12,
+                                    rate: 0.3233972763215698,
+                                    contribution: 0.012103462109270607,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1831,6 +5843,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: 0.012103462109270607,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['电话'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '电话',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2259.37,
+                                    comparisonMeasureValue: 1707.25,
+                                    diff: 552.12,
+                                    rate: 0.3233972763215698,
+                                    contribution: 0.012103462109270607,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1841,6 +5884,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['电话'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '电话',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2259.37,
+                                    comparisonMeasureValue: 1707.25,
+                                    diff: 552.12,
+                                    rate: 0.3233972763215698,
+                                    contribution: 0.012103462109270607,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1877,6 +5951,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 笔',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '笔',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1887,6 +5968,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['笔'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '笔',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1788.27,
+                                    comparisonMeasureValue: 2327.47,
+                                    diff: -539.2,
+                                    rate: -0.23166786252884036,
+                                    contribution: -0.011820232502569571,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: -539.2,
                                 compare: 2327.47,
                                 current: 1788.27,
@@ -1903,6 +6015,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: -0.23166786252884036,
                                 assessment: 'negative',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['笔'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '笔',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1788.27,
+                                    comparisonMeasureValue: 2327.47,
+                                    diff: -539.2,
+                                    rate: -0.23166786252884036,
+                                    contribution: -0.011820232502569571,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1915,6 +6058,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: -0.011820232502569571,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['笔'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '笔',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1788.27,
+                                    comparisonMeasureValue: 2327.47,
+                                    diff: -539.2,
+                                    rate: -0.23166786252884036,
+                                    contribution: -0.011820232502569571,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -1925,6 +6099,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['笔'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '笔',
+                                      },
+                                    ],
+                                    currentMeasureValue: 1788.27,
+                                    comparisonMeasureValue: 2327.47,
+                                    diff: -539.2,
+                                    rate: -0.23166786252884036,
+                                    contribution: -0.011820232502569571,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
@@ -1961,6 +6166,13 @@ describe('utils test', () => {
                               value: '商品子类别 = 信封',
                               metadata: {
                                 entityType: 'dim_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    name: '商品子类别',
+                                    value: '信封',
+                                  },
+                                  path: '_dims',
+                                },
                               },
                             },
                             {
@@ -1971,6 +6183,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'custom_delta_value',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['信封'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '信封',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2097.72,
+                                    comparisonMeasureValue: 2549.27,
+                                    diff: -451.55,
+                                    rate: -0.1771291389299682,
+                                    contribution: -0.009898787067016487,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_customDeltaValue',
+                                },
                                 diff: -451.55,
                                 compare: 2549.27,
                                 current: 2097.72,
@@ -1987,6 +6230,37 @@ describe('utils test', () => {
                                 entityType: 'ratio_value',
                                 origin: -0.1771291389299682,
                                 assessment: 'negative',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['信封'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '信封',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2097.72,
+                                    comparisonMeasureValue: 2549.27,
+                                    diff: -451.55,
+                                    rate: -0.1771291389299682,
+                                    contribution: -0.009898787067016487,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.rate',
+                                },
                               },
                             },
                             {
@@ -1999,6 +6273,37 @@ describe('utils test', () => {
                               metadata: {
                                 entityType: 'contribute_ratio',
                                 origin: -0.009898787067016487,
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['信封'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '信封',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2097.72,
+                                    comparisonMeasureValue: 2549.27,
+                                    diff: -451.55,
+                                    rate: -0.1771291389299682,
+                                    contribution: -0.009898787067016487,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '.contribution',
+                                },
                               },
                             },
                             {
@@ -2009,6 +6314,37 @@ describe('utils test', () => {
                               type: 'custom',
                               metadata: {
                                 customType: 'drill_down_dims',
+                                generateVariableInfo: {
+                                  scopeVariable: {
+                                    dimensionIds: ['D2020120800161505000000674983'],
+                                    dimensionNames: ['商品子类别'],
+                                    dimensionValues: ['信封'],
+                                    dimensions: [
+                                      {
+                                        name: '商品子类别',
+                                        value: '信封',
+                                      },
+                                    ],
+                                    currentMeasureValue: 2097.72,
+                                    comparisonMeasureValue: 2549.27,
+                                    diff: -451.55,
+                                    rate: -0.1771291389299682,
+                                    contribution: -0.009898787067016487,
+                                    influenceOfWeight: null,
+                                    isSimpsonMeasure: true,
+                                    rateContribution: null,
+                                    proportionContribution: null,
+                                    currentProportion: null,
+                                    comparisonProportion: null,
+                                    parentInfo: {
+                                      measureInfo: {
+                                        measureId: 'D2020120800161505000000674975',
+                                        measureName: '折扣',
+                                      },
+                                    },
+                                  },
+                                  path: '_drillDownDims',
+                                },
                                 dims: [
                                   {
                                     queryFieldName: '物流方式',
