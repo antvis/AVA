@@ -142,7 +142,11 @@ export const Phrase: React.FC<PhraseProps> = ({
           {defaultText}
         </a>
       );
-    return defaultText;
+    return (
+      <span style={phrase?.styles} className={cx(phrase?.className)}>
+        {defaultText}
+      </span>
+    );
   }
 
   // use pre to render escape character
