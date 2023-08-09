@@ -1,5 +1,5 @@
 import type { PhraseSpec } from './phrase';
-import type { CommonProps, CustomBlockElement } from './common';
+import type { CommonProps, CustomBlockElement, BlockMetaData } from './common';
 
 export type ParagraphSpec = HeadingParagraphSpec | TextParagraphSpec | BulletsParagraphSpec | CustomBlockElement;
 
@@ -25,12 +25,14 @@ export type TextParagraphSpec = CommonProps & {
   type: 'normal';
   phrases: PhraseSpec[];
   indents?: ParagraphIndent[];
+  metadata?: BlockMetaData;
 };
 
 export type BulletsParagraphSpec = CommonProps & {
   type: 'bullets';
   isOrder: boolean;
   bullets: BulletItemSpec[];
+  metadata?: BlockMetaData;
 };
 
 export type BulletItemSpec = CommonProps & {
@@ -38,4 +40,5 @@ export type BulletItemSpec = CommonProps & {
   phrases: PhraseSpec[];
   // nested list
   subBullet?: BulletsParagraphSpec;
+  metadata?: BlockMetaData;
 };
