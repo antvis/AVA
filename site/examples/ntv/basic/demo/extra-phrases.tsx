@@ -17,7 +17,7 @@ const spec: NarrativeTextSpec = {
           phrases: [
             {
               type: 'text',
-              value: '在 text 中的转义字符字符 \r\n 无效，后面是 escape 类型短语，换行：',
+              value: '通过 escape 类型短语换行：',
             },
             {
               type: 'escape',
@@ -25,7 +25,7 @@ const spec: NarrativeTextSpec = {
             },
             {
               type: 'text',
-              value: '回车',
+              value: '回车：',
             },
             {
               type: 'escape',

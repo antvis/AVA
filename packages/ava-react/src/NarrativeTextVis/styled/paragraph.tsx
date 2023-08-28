@@ -6,6 +6,7 @@ import type { TextParagraphSpec } from '@antv/ava';
 import type { ThemeStylesProps } from '../types';
 
 export const P = styled.p<ThemeStylesProps & Pick<TextParagraphSpec, 'indents'>>`
+  white-space: pre-wrap; // 默认 pre 显示，可以显示空格和转义字符
   font-family: PingFangSC, sans-serif;
   color: ${({ theme }) => getThemeColor('colorBase', theme)};
   font-size: ${({ size }) => getFontSize(size)};

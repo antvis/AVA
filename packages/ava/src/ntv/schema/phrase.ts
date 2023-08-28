@@ -22,6 +22,7 @@ export type TextPhraseSpec = CommonProps & {
 /**
  * escape character 支持转义字符
  */
+// @deprecated 通过 white-space: pre; 可以让普通文本也具有转义字符大部分效果，之后版本可以考虑去掉
 export type EscapePhraseSpec = CommonProps & {
   type: 'escape';
   value: string;
