@@ -9,6 +9,7 @@ export type {
   BulletsParagraphSpec,
   BulletItemSpec,
   CustomBlockElement,
+  NestedParagraphSpec,
   PhraseSpec,
   TextPhraseSpec,
   EntityPhraseSpec,
