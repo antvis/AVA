@@ -9,7 +9,7 @@ import { Bullets } from './Bullets';
 import type { ParagraphSpec } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, ParagraphEvents } from '../types';
 
-type ParagraphProps = ThemeStylesProps &
+export type ParagraphProps = ThemeStylesProps &
   ExtensionProps &
   ParagraphEvents & {
     /**
@@ -54,11 +54,13 @@ export function Paragraph({ spec, pluginManager, size = 'normal', theme = 'light
     content = <Bullets spec={spec} pluginManager={pluginManager} {...themeStyles} {...events} />;
   }
 
-  return content ? (
-    <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      {content}
-    </div>
-  ) : null;
+  return (
+    content && (
+      <div onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+        {content}
+      </div>
+    )
+  );
 }
 
 export { Headline } from './Headline';

@@ -17,3 +17,7 @@ export type StandardSectionSpec = {
 };
 
 export type SectionSpec = (StandardSectionSpec | CustomBlockElement) & CommonProps;
+
+export type NestedParagraphSpec = CommonProps & {
+  children: (ParagraphSpec | NestedParagraphSpec)[];
+};

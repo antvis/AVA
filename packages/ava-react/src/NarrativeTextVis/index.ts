@@ -1,5 +1,6 @@
 import { Section } from './section';
 import { Paragraph, Headline } from './paragraph';
+import { NestedParagraph } from './nested';
 import { Phrase } from './phrases';
 import { ArrowUp, ArrowDown } from './assets/icons';
 import { SingleLineChart, ProportionChart } from './line-charts';
@@ -9,6 +10,7 @@ type NarrativeTextVisType = typeof InnerNarrativeTextVis & {
   Headline: typeof Headline;
   Section: typeof Section;
   Paragraph: typeof Paragraph;
+  NestedParagraph: typeof NestedParagraph;
   Phrase: typeof Phrase;
   ArrowUp: typeof ArrowUp;
   ArrowDown: typeof ArrowDown;
@@ -24,6 +26,7 @@ NarrativeTextVis.Section = Section;
 NarrativeTextVis.Headline = Headline;
 NarrativeTextVis.Paragraph = Paragraph;
 NarrativeTextVis.Paragraph = Paragraph;
+NarrativeTextVis.NestedParagraph = NestedParagraph;
 NarrativeTextVis.Phrase = Phrase;
 NarrativeTextVis.ArrowUp = ArrowUp;
 NarrativeTextVis.ArrowDown = ArrowDown;
@@ -57,6 +60,7 @@ export type {
   StandardSectionSpec,
   ParagraphSpec,
   HeadingParagraphSpec,
+  NestedParagraphSpec,
   TextParagraphSpec,
   BulletsParagraphSpec,
   BulletItemSpec,
