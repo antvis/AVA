@@ -11,6 +11,7 @@ export type CommonProps = {
 export type CustomBlockElement = CommonProps & {
   // customType is required for custom block structure
   customType: string;
+  metadata?: BlockMetaData;
   [key: string]: unknown;
 };
 
@@ -20,3 +21,10 @@ export type CustomMetaData = {
   customType: string;
   [key: string]: unknown;
 };
+
+/** block element (section,paragraph) metadata info */
+export type BlockMetaData = Partial<{
+  /** if element is generate by loop */
+  loopId: string;
+  // TODO 之后这里还会扩展条件判断等...
+}>;
