@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Tooltip, TooltipProps } from 'antd';
 import { isTextPhrase, isEntityPhrase, isEscapePhrase, isFormulaPhrase } from '@antv/ava';
 import { isFunction, kebabCase, isEmpty, isNil } from 'lodash';
-import katex from 'katex';
 
 import { NTV_PREFIX_CLS } from '../constants';
 import { Entity, Bold, Italic, Underline, FormulaWrapper } from '../styled';
@@ -13,8 +12,31 @@ import { PhraseDescriptor, presetPluginManager } from '../chore/plugin';
 import { getThemeColor } from '../theme';
 
 import type { ReactNode } from 'react';
-import type { PhraseSpec, EntityPhraseSpec, CustomPhraseSpec } from '@antv/ava';
+import type { PhraseSpec, EntityPhraseSpec, CustomPhraseSpec, FormulaPhraseSpec } from '@antv/ava';
 import type { ThemeStylesProps, ExtensionProps, PhraseEvents } from '../types';
+
+const FormulaPhrase: React.FC<{
+  spec: FormulaPhraseSpec;
+}> = ({ spec }) => {
+  const [katex, setKatex] = useState(null);
+  useEffect(() => {
+    import('katex').then(setKatex);
+  }, []);
+  return katex ? (
+    <FormulaWrapper
+      className={cx(spec.className, `${NTV_PREFIX_CLS}-formula`)}
+      style={spec.styles}
+      dangerouslySetInnerHTML={{
+        __html: katex.renderToString(spec.value, {
+          throwOnError: false,
+          displayMode: true,
+          strict: 'ignore',
+          fleqn: true,
+        }),
+      }}
+    />
+  ) : null;
+};
 
 type PhraseProps = ThemeStylesProps &
   ExtensionProps &
@@ -160,21 +182,7 @@ export const Phrase: React.FC<PhraseProps> = ({
 
   // use katex to render formula
   // 使用 katex 渲染公式
-  if (isFormulaPhrase(phrase))
-    return (
-      <FormulaWrapper
-        className={cx(phrase.className, `${NTV_PREFIX_CLS}-formula`)}
-        style={phrase.styles}
-        dangerouslySetInnerHTML={{
-          __html: katex.renderToString(phrase.value, {
-            throwOnError: false,
-            displayMode: true,
-            strict: 'ignore',
-            fleqn: true,
-          }),
-        }}
-      />
-    );
+  if (isFormulaPhrase(phrase)) return <FormulaPhrase spec={phrase} />;
 
   const descriptor = pluginManager?.getPhraseDescriptorBySpec(phrase);
   if (descriptor) {
