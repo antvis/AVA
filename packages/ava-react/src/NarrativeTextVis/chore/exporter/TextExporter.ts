@@ -201,10 +201,10 @@ export class TextExporter extends PluginManager {
           return descriptor.getText(curr.value, curr.metadata);
         }
       } else {
-        if (curr.bold) {
+        if ('bold' in curr && curr.bold) {
           text = `**${text}**`;
         }
-        if (curr.italic) {
+        if ('italic' in curr && curr.italic) {
           text = `*${text}*`;
         }
       }

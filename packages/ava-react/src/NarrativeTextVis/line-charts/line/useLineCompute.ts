@@ -10,11 +10,11 @@ const SCALE_ADJUST = 2;
 class Line {
   protected data: number[] = [];
 
-  protected size = seedToken.fontSizeBase;
+  protected size: number = seedToken.fontSizeBase;
 
-  protected height = this.size;
+  protected height: number = this.size;
 
-  protected width = this.getWidth();
+  protected width: number = this.getWidth();
 
   protected xScale: Scale | undefined;
 
