@@ -1,14 +1,13 @@
-import { coefficientOfVariance, mean } from '../../../data';
+import { get } from 'lodash';
 
-import type { InsightExtractorProp, LowVarianceInfo } from '../../types';
+import { coefficientOfVariance, mean } from '../../../data';
+import { getAlgorithmStandardInput, getNonSignificantInsight, preValidation } from '../util';
+
+import type { GetPatternInfo, LowVarianceInfo, LowVarianceParams } from '../../types';
 
 type LowVarianceItem = {
   significance: number;
   mean: number;
-};
-
-type LowVarianceParams = {
-  cvThreshold?: number;
 };
 
 // Coefficient of variation threshold
@@ -31,25 +30,25 @@ export function findLowVariance(values: number[], params?: LowVarianceParams): L
   };
 }
 
-export function extractor({ data, dimensions, measures }: InsightExtractorProp): LowVarianceInfo[] {
-  const dimension = dimensions[0];
-  const measure = measures[0].fieldName;
-  if (!data || data.length === 0) return [];
-
-  const values = data.map((item) => Number(item?.[measure]));
-  const lowVariance = findLowVariance(values);
-
+export const getLowVarianceInfo: GetPatternInfo<LowVarianceInfo> = (props) => {
+  const valid = preValidation(props);
+  const insightType = 'low_variance';
+  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+  const { dimension, values, measure } = getAlgorithmStandardInput(props);
+  const customOptions = get(props, 'options.algorithmParameter.lowVariance');
+  const lowVariance = findLowVariance(values, customOptions);
   if (lowVariance) {
     const { significance, mean } = lowVariance;
     return [
       {
-        type: 'low_variance',
+        type: insightType,
         dimension,
         measure,
         significance,
         mean,
+        nonSignificantInsight: false,
       },
     ];
   }
-  return [];
-}
+  return getNonSignificantInsight({ insightType, infoType: 'noInsight' });
+};

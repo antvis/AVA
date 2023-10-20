@@ -5,12 +5,12 @@ import { NumberFieldInfo } from '../../data';
 
 import type { LevelOfMeasurement } from '../../ckb';
 
-export type ExtractorChecker = (
-  data: Datum[],
-  subjectInfo: SubjectInfo,
-  fieldPropsMap: Record<string, DataProperty>,
-  lom?: LevelOfMeasurement | LevelOfMeasurement[]
-) => boolean;
+export type ExtractorChecker = (props: {
+  data: Datum[];
+  subjectInfo: SubjectInfo;
+  fieldPropsMap: Record<string, DataProperty>;
+  lom?: LevelOfMeasurement | LevelOfMeasurement[];
+}) => boolean;
 
 const fieldsQuantityChecker = (subjectInfo: SubjectInfo, dimensionsQuantity: number, measuresQuantity: number) => {
   const { dimensions, measures } = subjectInfo;
@@ -18,7 +18,7 @@ const fieldsQuantityChecker = (subjectInfo: SubjectInfo, dimensionsQuantity: num
   return false;
 };
 
-const generalCheckerFor1M1D: ExtractorChecker = (data, subjectInfo, fieldPropsMap, lom) => {
+const generalCheckerFor1M1D: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap, lom }) => {
   const { dimensions } = subjectInfo;
   // check data length
   if (data?.length < 3) return false;
@@ -34,32 +34,33 @@ const generalCheckerFor1M1D: ExtractorChecker = (data, subjectInfo, fieldPropsMa
   return true;
 };
 
-export const trendChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
-  return generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, 'Time');
+export const trendChecker: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap }) => {
+  return generalCheckerFor1M1D({ data, subjectInfo, fieldPropsMap, lom: 'Time' });
 };
 
-export const categoryOutlierChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
-  return generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, ['Nominal', 'Discrete', 'Ordinal']);
+export const categoryOutlierChecker: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap }) => {
+  return generalCheckerFor1M1D({ data, subjectInfo, fieldPropsMap, lom: ['Nominal', 'Discrete', 'Ordinal'] });
 };
 
-export const changePointChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
-  return generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, 'Time');
+export const changePointChecker: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap }) => {
+  return generalCheckerFor1M1D({ data, subjectInfo, fieldPropsMap, lom: 'Time' });
 };
 
-export const timeSeriesChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
-  return generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, 'Time');
+export const timeSeriesChecker: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap }) => {
+  return generalCheckerFor1M1D({ data, subjectInfo, fieldPropsMap, lom: 'Time' });
 };
 
-export const majorityChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
-  if (!generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, ['Nominal', 'Discrete', 'Ordinal', 'Time']))
+export const majorityChecker: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap }) => {
+  if (!generalCheckerFor1M1D({ data, subjectInfo, fieldPropsMap, lom: ['Nominal', 'Discrete', 'Ordinal', 'Time'] }))
     return false;
   const { measures } = subjectInfo;
   if (!['count', 'sum'].includes(measures[0].method)) return false;
   return true;
 };
 
-export const lowVarianceChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
-  if (!generalCheckerFor1M1D(data, subjectInfo, fieldPropsMap, ['Nominal', 'Discrete', 'Ordinal'])) return false;
+export const lowVarianceChecker: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap }) => {
+  if (!generalCheckerFor1M1D({ data, subjectInfo, fieldPropsMap, lom: ['Nominal', 'Discrete', 'Ordinal'] }))
+    return false;
   const { measures } = subjectInfo;
   // 低方差检验使用变异系数 sigma/mean 作为检验统计量，要求均值不能为0
   if (['float', 'integer'].includes(fieldPropsMap[measures[0].fieldName].recommendation)) {
@@ -68,7 +69,7 @@ export const lowVarianceChecker: ExtractorChecker = (data, subjectInfo, fieldPro
   return false;
 };
 
-export const correlationChecker: ExtractorChecker = (data, subjectInfo, fieldPropsMap) => {
+export const correlationChecker: ExtractorChecker = ({ data, subjectInfo, fieldPropsMap }) => {
   const { measures } = subjectInfo;
   // check data length
   if (data?.length < 3) return false;

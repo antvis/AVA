@@ -1,7 +1,9 @@
 import regression from 'regression';
+import { get } from 'lodash';
 
-import { InsightExtractorProp, TrendInfo } from '../../types';
+import { GetPatternInfo, TrendInfo } from '../../types';
 import { trendDirection } from '../../algorithms';
+import { getAlgorithmStandardInput, getNonSignificantInsight, preValidation } from '../util';
 
 type TrendResult = {
   significance: number;
@@ -9,8 +11,8 @@ type TrendResult = {
   regression: TrendInfo['regression'];
 };
 
-export function findTimeSeriesTrend(series: number[]): TrendResult {
-  const testResult = trendDirection.mkTest(series, 0.05);
+export function findTimeSeriesTrend(series: number[], significance: number = 0.05): TrendResult {
+  const testResult = trendDirection.mkTest(series, significance);
   const { pValue, trend } = testResult;
 
   const regressionResult = regression.linear(series.map((item, index) => [index, item]));
@@ -26,21 +28,21 @@ export function findTimeSeriesTrend(series: number[]): TrendResult {
   };
 }
 
-export function extractor({ data, dimensions, measures }: InsightExtractorProp): TrendInfo[] {
-  const dimension = dimensions[0];
-  const measure = measures[0].fieldName;
-  if (!data || data.length === 0) return [];
-  const values = data.map((item) => item?.[measure] as number);
-  const result = findTimeSeriesTrend(values);
-  if (result.trend !== 'no trend') {
-    return [
-      {
-        ...result,
-        type: 'trend',
-        dimension,
-        measure,
-      },
-    ];
-  }
-  return [];
-}
+export const getTrendInfo: GetPatternInfo<TrendInfo> = (props) => {
+  const valid = preValidation(props);
+  const insightType = 'trend';
+  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+
+  const { dimension, values, measure } = getAlgorithmStandardInput(props);
+  const significance = get(props, 'options.algorithmParameter.trend.significance', 0.05);
+  const result: TrendResult = findTimeSeriesTrend(values, significance);
+  return [
+    {
+      ...result,
+      type: 'trend',
+      dimension,
+      measure,
+      nonSignificantInsight: result.trend === 'no trend',
+    },
+  ];
+};

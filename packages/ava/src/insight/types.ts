@@ -1,3 +1,5 @@
+import { PCorrTestOptions } from '../data/statistics/types';
+
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
 import type { G2Spec } from '@antv/g2';
@@ -116,11 +118,31 @@ export type InsightVisualizationOptions = {
   lang: Language;
 };
 
-export type InsightExtractorProp = {
-  data: Datum[];
-  dimensions: string[];
-  measures: Measure[];
-  options?: InsightOptions;
+export type LowVarianceParams = {
+  /** Default value is 0.15  */
+  cvThreshold?: number;
+};
+
+export type MajorityParams = {
+  /** Proportion greater than limit is considered as significant. Default value is 0.6 */
+  limit?: number;
+};
+
+export type OutlierParams = {
+  /**
+   * - IQR: Inter Quartile Range method which is used by default. A point is considered an outlier when it lies outside of iqrK times the inter quartile range.
+   * - p-value: Assuming that the data follows a normal distribution, a point is considered an outlier if the two-sided test p-value is less than 1-confidenceInterval.
+   * */
+  method?: 'IQR' | 'p-value';
+  /** Parameter of Inter Quartile Range method. Default value is 1.5. */
+  iqrK?: number;
+  /** Parameter of p-value method. Default value is 0.95. */
+  confidenceInterval?: number;
+};
+
+export type CommonParams = {
+  /** Significance level (alpha) in test */
+  significance?: number;
 };
 
 /** Key parameters in the algorithm for extracting insights */
@@ -128,17 +150,43 @@ export type AlgorithmParameter = {
   /**
    * Contains both category outlier and time series outlier
    * */
-  outlier?: {
-    /**
-     * - IQR: Inter Quartile Range method which is used by default. A point is considered an outlier when it lies outside of iqrK times the inter quartile range.
-     * - p-value: Assuming that the data follows a normal distribution, a point is considered an outlier if the two-sided test p-value is less than 1-confidenceInterval.
-     * */
-    method?: 'IQR' | 'p-value';
-    /** Parameter of Inter Quartile Range method. Default value is 1.5. */
-    iqrK?: number;
-    /** Parameter of p-value method. Default value is 0.95. */
-    confidenceInterval?: number;
-  };
+  outlier?: OutlierParams;
+  /** time series trend, Default value of significance is 0.05 */
+  trend?: CommonParams;
+  /** Significance level (alpha) in Bayesian online change point detection. Default value is 0.15 */
+  changePoint?: CommonParams;
+  correlation?: PCorrTestOptions;
+  lowVariance?: LowVarianceParams;
+  majority?: MajorityParams;
+};
+
+export type InsightExtractorOptions = {
+  /** Whether to filter non-significant insights. The default is false. */
+  filterInsight?: boolean;
+  /** Key parameters in the algorithm for extracting insights */
+  algorithmParameter?: AlgorithmParameter;
+  /** Whether data length, type, etc. need to be verified. The default is false. */
+  dataValidation?: boolean;
+  /** Parameter used for data preprocessing during data validation */
+  dataProcessInfo?: Extra;
+};
+
+export type InsightExtractorProps = {
+  data: Datum[];
+  dimensions: string[];
+  measures: Measure[];
+  insightType: InsightType;
+  options?: InsightExtractorOptions;
+};
+
+export type PreValidationProps = Omit<InsightExtractorProps, 'algorithmParameter'>;
+
+export type GetPatternInfo<T = PatternInfo> = (props: InsightExtractorProps) => T[] | [NoPatternInfo];
+
+export type AlgorithmStandardInput = {
+  dimension: string;
+  measure: string;
+  values: number[];
 };
 
 /** custom options */
@@ -170,6 +218,8 @@ export interface InsightOptions {
 export interface BasePatternInfo<T extends InsightType> {
   type: T;
   significance: number;
+  /** Non significant insight at the specified significance threshold */
+  nonSignificantInsight?: boolean;
 }
 
 export interface HomogeneousPatternInfo {
@@ -191,12 +241,13 @@ export type PointPatternInfo = {
   y: number;
 };
 
+export type TimeSeriesInfo = {
+  baselines: number[];
+  thresholds: [number, number];
+};
+
 export type CategoryOutlierInfo = BasePatternInfo<'category_outlier'> & PointPatternInfo;
-export type TimeSeriesOutlierInfo = BasePatternInfo<'time_series_outlier'> &
-  PointPatternInfo & {
-    baselines: number[];
-    thresholds: [number, number];
-  };
+export type TimeSeriesOutlierInfo = BasePatternInfo<'time_series_outlier'> & PointPatternInfo & TimeSeriesInfo;
 export type ChangePointInfo = BasePatternInfo<'change_point'> & PointPatternInfo;
 export type MajorityInfo = BasePatternInfo<'majority'> & PointPatternInfo & { proportion: number };
 
@@ -220,6 +271,13 @@ export type LowVarianceInfo = BasePatternInfo<'low_variance'> & { dimension: str
 export type CorrelationInfo = BasePatternInfo<'correlation'> & {
   pcorr: number;
   measures: [string, string];
+};
+
+export type NoPatternInfo = {
+  nonSignificantInsight: boolean;
+  info: string;
+  type?: InsightType;
+  [key: string]: any;
 };
 
 export type InsightsResult = {
