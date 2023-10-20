@@ -1,4 +1,4 @@
-import { extractor } from '../../../../src/insight/insights/extractors/majority';
+import { insightExtractor } from '../../../../src/insight/insights';
 
 const data = [
   {
@@ -37,7 +37,15 @@ const data = [
 
 describe('extract majority insight', () => {
   test('check majority result', () => {
-    const result = extractor({ data, dimensions: ['type'], measures: [{ fieldName: 'sales', method: 'SUM' }] });
+    const result = insightExtractor({
+      data,
+      dimensions: ['type'],
+      measures: [{ fieldName: 'sales', method: 'SUM' }],
+      insightType: 'majority',
+      options: {
+        filterInsight: true,
+      },
+    });
     expect(result[0]?.index).toEqual(5);
   });
 });

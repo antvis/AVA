@@ -1,4 +1,4 @@
-import { extractor } from '../../../../src/insight/insights/extractors/lowVariance';
+import { insightExtractor } from '../../../../src/insight/insights';
 
 const data = [
   {
@@ -37,7 +37,15 @@ const data = [
 
 describe('extract low-variance insight', () => {
   test('check low-variance result', () => {
-    const result = extractor({ data, dimensions: ['type'], measures: [{ fieldName: 'sales', method: 'SUM' }] });
+    const result = insightExtractor({
+      data,
+      dimensions: ['type'],
+      measures: [{ fieldName: 'sales', method: 'SUM' }],
+      insightType: 'low_variance',
+      options: {
+        filterInsight: true,
+      },
+    });
     expect(result[0]?.significance).toBeGreaterThan(0.85);
   });
 });

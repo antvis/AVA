@@ -1,4 +1,4 @@
-import { extractor } from '../../../../src/insight/insights/extractors/categoryOutlier';
+import { insightExtractor } from '../../../../src/insight/insights';
 
 const data = [
   {
@@ -37,7 +37,15 @@ const data = [
 
 describe('extract category-outlier insight', () => {
   test('check outliers result', () => {
-    const result = extractor({ data, dimensions: ['type'], measures: [{ fieldName: 'sales', method: 'SUM' }] });
+    const result = insightExtractor({
+      data,
+      dimensions: ['type'],
+      measures: [{ fieldName: 'sales', method: 'SUM' }],
+      insightType: 'category_outlier',
+      options: {
+        filterInsight: true,
+      },
+    });
     const outlierIndexes = result?.map((item) => item.index);
     expect(outlierIndexes).toStrictEqual([3]);
   });
