@@ -2,7 +2,7 @@ import { groupBy, uniq, flatten } from 'lodash';
 import Heap from 'heap-js';
 
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
-import { insightExtractors, ExtractorCheckers } from '../insights';
+import { insightExtractor, ExtractorCheckers } from '../insights';
 import { aggregate } from '../utils/aggregate';
 import {
   extractHomogeneousPatternsForMeasures,
@@ -25,6 +25,7 @@ import type {
   PatternInfo,
   HomogeneousPatternInfo,
   DataProperty,
+  InsightExtractorOptions,
 } from '../types';
 
 interface ReferenceInfo {
@@ -68,11 +69,25 @@ function extractPatternsFromSubject(
 
     // Check whether the data requirements of the extractor are met
     if (insightExtractorChecker) {
-      if (!insightExtractorChecker(data, subjectInfo, fieldPropsMap)) isValid = false;
+      if (!insightExtractorChecker({ data, subjectInfo, fieldPropsMap })) isValid = false;
     }
-    const insightExtractor = insightExtractors[insightType];
     if (isValid && insightExtractor) {
-      const extractedPatterns = insightExtractor({ data, dimensions, measures, options });
+      const { algorithmParameter, dataProcessInfo } = options || {};
+      const extractorOptions: InsightExtractorOptions = {
+        algorithmParameter,
+        dataProcessInfo,
+        // Validation has been done in method extractInsights
+        dataValidation: false,
+        // Select only significant insights
+        filterInsight: true,
+      };
+      const extractedPatterns = insightExtractor({
+        data,
+        dimensions,
+        measures,
+        insightType,
+        options: extractorOptions,
+      });
       patterns[insightType as InsightType] = extractedPatterns as PatternInfo[];
     } else {
       patterns[insightType as InsightType] = undefined;

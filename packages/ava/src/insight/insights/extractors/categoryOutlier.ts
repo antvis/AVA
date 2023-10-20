@@ -1,10 +1,16 @@
-import { orderBy } from 'lodash';
+import { get, orderBy } from 'lodash';
 
 import { distinct, mean } from '../../../data';
 import { categoryOutlier } from '../../algorithms';
 import { IQR_K, SIGNIFICANCE_BENCHMARK } from '../../constant';
-import { CategoryOutlierInfo, InsightExtractorProp, InsightOptions } from '../../types';
-import { calculatePValue, calculateOutlierThresholds } from '../util';
+import { CategoryOutlierInfo, GetPatternInfo, OutlierParams } from '../../types';
+import {
+  calculatePValue,
+  calculateOutlierThresholds,
+  preValidation,
+  getAlgorithmStandardInput,
+  getNonSignificantInsight,
+} from '../util';
 
 type OutlierItem = {
   index: number;
@@ -14,9 +20,9 @@ type OutlierItem = {
 
 export const findOutliers = (
   values: number[],
-  options?: InsightOptions
+  outlierOptions?: OutlierParams
 ): { outliers: OutlierItem[]; thresholds: [number, number] } => {
-  const { method, iqrK, confidenceInterval = SIGNIFICANCE_BENCHMARK } = options?.algorithmParameter?.outlier || {};
+  const { method, iqrK, confidenceInterval = SIGNIFICANCE_BENCHMARK } = outlierOptions || {};
   const outliers: OutlierItem[] = [];
   const thresholds = [];
   const candidates = values.map((item, index) => {
@@ -64,24 +70,31 @@ export const findOutliers = (
   return { outliers, thresholds: thresholds as [number, number] };
 };
 
-export function extractor({ data, dimensions, measures, options }: InsightExtractorProp): CategoryOutlierInfo[] {
-  const dimension = dimensions[0];
-  const measure = measures[0].fieldName;
-  if (!data || data.length === 0) return [];
-  const values = data.map((item) => item?.[measure] as number);
-  if (distinct(values) === 1) return [];
-  const { outliers } = findOutliers(values, options);
+export const getCategoryOutlierInfo: GetPatternInfo<CategoryOutlierInfo> = (props) => {
+  const valid = preValidation(props);
+  const insightType = 'category_outlier';
+  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+  const { dimension, values, measure } = getAlgorithmStandardInput(props);
+  const noInsightResult = getNonSignificantInsight({ insightType, infoType: 'noInsight' });
+  if (distinct(values) === 1) return noInsightResult;
+
+  const { data } = props;
+  const outlierOptions = get(props, 'options.algorithmParameter.outlier');
+  const { outliers } = findOutliers(values, outlierOptions);
+  if (outliers.length === 0) return noInsightResult;
+
   const categoryOutliers: CategoryOutlierInfo[] = outliers.map((item) => {
     const { index, significance } = item;
     return {
-      type: 'category_outlier',
+      type: insightType,
       dimension,
       measure,
       significance,
       index,
       x: data[index][dimension],
       y: data[index][measure] as number,
+      nonSignificantInsight: false,
     };
   });
   return categoryOutliers;
-}
+};

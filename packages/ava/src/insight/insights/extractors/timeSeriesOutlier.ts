@@ -1,10 +1,13 @@
+import { get } from 'lodash';
+
 import { distinct, lowess } from '../../../data';
 import { LowessOutput } from '../../../data/statistics/types';
 import { LOWESS_N_STEPS } from '../../constant';
+import { getAlgorithmStandardInput, getNonSignificantInsight, preValidation } from '../util';
 
 import { findOutliers } from './categoryOutlier';
 
-import type { InsightExtractorProp, InsightOptions, TimeSeriesOutlierInfo } from '../../types';
+import type { GetPatternInfo, OutlierParams, TimeSeriesOutlierInfo } from '../../types';
 
 type OutlierItem = {
   index: number;
@@ -15,7 +18,7 @@ type OutlierItem = {
 // detect the outliers using LOWESS
 function findTimeSeriesOutliers(
   values: number[],
-  options?: InsightOptions
+  outlierOptions?: OutlierParams
 ): {
   outliers: OutlierItem[];
   baselines: LowessOutput['y'];
@@ -26,21 +29,34 @@ function findTimeSeriesOutliers(
     .map((_, index) => index);
   const baseline = lowess(indexes, values, { nSteps: LOWESS_N_STEPS });
   const residuals = values.map((item, index) => item - baseline.y[index]);
-  const { outliers, thresholds } = findOutliers(residuals, options);
+  const { outliers, thresholds } = findOutliers(residuals, outlierOptions);
   return { outliers, baselines: baseline.y, thresholds };
 }
 
-export function extractor({ data, dimensions, measures, options }: InsightExtractorProp): TimeSeriesOutlierInfo[] {
-  const dimension = dimensions[0];
-  const measure = measures[0].fieldName;
-  if (!data || data.length === 0) return [];
-  const values = data.map((item) => item?.[measure] as number);
-  if (distinct(values) === 1) return [];
-  const { outliers, baselines, thresholds } = findTimeSeriesOutliers(values, options);
+export const getTimeSeriesOutlierInfo: GetPatternInfo<TimeSeriesOutlierInfo> = (props) => {
+  const valid = preValidation(props);
+  const insightType = 'time_series_outlier';
+  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+
+  const { data } = props;
+  const { dimension, values, measure } = getAlgorithmStandardInput(props);
+
+  if (distinct(values) === 1) return getNonSignificantInsight({ insightType, infoType: 'noInsight' });
+
+  const outlierOptions = get(props, 'options.algorithmParameter.outlier');
+  const { outliers, baselines, thresholds } = findTimeSeriesOutliers(values, outlierOptions);
+
+  if (outliers.length === 0)
+    return getNonSignificantInsight({
+      insightType,
+      infoType: 'noInsight',
+      customInfo: { baselines, thresholds },
+    });
+
   const timeSeriesOutliers: TimeSeriesOutlierInfo[] = outliers.map((item) => {
     const { index, significance } = item;
     return {
-      type: 'time_series_outlier',
+      type: insightType,
       dimension,
       measure,
       significance,
@@ -49,7 +65,8 @@ export function extractor({ data, dimensions, measures, options }: InsightExtrac
       y: data[index][measure] as number,
       baselines,
       thresholds,
+      nonSignificantInsight: false,
     };
   });
   return timeSeriesOutliers;
-}
+};
