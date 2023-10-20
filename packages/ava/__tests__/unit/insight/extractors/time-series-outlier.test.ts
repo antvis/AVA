@@ -1,4 +1,4 @@
-import { extractor } from '../../../../src/insight/insights/extractors/timeSeriesOutlier';
+import { insightExtractor } from '../../../../src/insight/insights';
 
 const data = [
   { year: '1991', value: 3 },
@@ -14,7 +14,15 @@ const data = [
 
 describe('extract time-series-outlier insight', () => {
   test('check outliers result', () => {
-    const result = extractor({ data, dimensions: ['year'], measures: [{ fieldName: 'value', method: 'SUM' }] });
+    const result = insightExtractor({
+      data,
+      dimensions: ['year'],
+      measures: [{ fieldName: 'value', method: 'SUM' }],
+      insightType: 'time_series_outlier',
+      options: {
+        filterInsight: true,
+      },
+    });
     const outliers = result?.map((item) => item.index);
     expect(outliers).toStrictEqual([7]);
   });

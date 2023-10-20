@@ -1,4 +1,4 @@
-import { extractor } from '../../../../src/insight/insights/extractors/trend';
+import { insightExtractor } from '../../../../src/insight/insights';
 
 const data = [
   { year: '1991', value: 3 },
@@ -14,7 +14,15 @@ const data = [
 
 describe('extract trend insight', () => {
   test('check trend result', () => {
-    const result = extractor({ data, dimensions: ['year'], measures: [{ fieldName: 'value', method: 'SUM' }] });
+    const result = insightExtractor({
+      data,
+      dimensions: ['year'],
+      measures: [{ fieldName: 'value', method: 'SUM' }],
+      insightType: 'trend',
+      options: {
+        filterInsight: true,
+      },
+    });
     expect(result[0]?.trend).toEqual('increasing');
   });
 });

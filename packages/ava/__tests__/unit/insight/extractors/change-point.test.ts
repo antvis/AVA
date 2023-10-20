@@ -1,4 +1,4 @@
-import { extractor } from '../../../../src/insight/insights/extractors/changePoint';
+import { insightExtractor } from '../../../../src/insight/insights';
 
 const data = [
   { year: '1991', value: 0.3 },
@@ -14,7 +14,15 @@ const data = [
 
 describe('extract change-point insight', () => {
   test('check change-point result', () => {
-    const result = extractor({ data, dimensions: ['year'], measures: [{ fieldName: 'value', method: 'SUM' }] });
+    const result = insightExtractor({
+      data,
+      dimensions: ['year'],
+      measures: [{ fieldName: 'value', method: 'SUM' }],
+      insightType: 'change_point',
+      options: {
+        filterInsight: true,
+      },
+    });
     expect(result[0]?.index).toEqual(5);
   });
 });

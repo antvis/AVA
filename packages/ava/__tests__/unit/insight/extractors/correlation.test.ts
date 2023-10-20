@@ -1,4 +1,4 @@
-import { extractor } from '../../../../src/insight/insights/extractors/correlation';
+import { insightExtractor } from '../../../../src/insight/insights';
 
 const data = [
   { x: 1, y: 4.181 },
@@ -36,13 +36,17 @@ const data = [
 
 describe('extract correlation insight', () => {
   test('check correlation result', () => {
-    const result = extractor({
+    const result = insightExtractor({
       data,
       dimensions: [],
       measures: [
         { fieldName: 'x', method: 'SUM' },
         { fieldName: 'y', method: 'SUM' },
       ],
+      insightType: 'correlation',
+      options: {
+        filterInsight: true,
+      },
     });
     expect(result[0]?.pcorr).toBeGreaterThan(0.8);
   });
