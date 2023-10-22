@@ -1,13 +1,13 @@
-import { get } from 'lodash';
+import { get, isString } from 'lodash';
 
 import { distinct, lowess } from '../../../data';
 import { LowessOutput } from '../../../data/statistics/types';
 import { LOWESS_N_STEPS } from '../../constant';
-import { getAlgorithmStandardInput, getNonSignificantInsight, preValidation } from '../util';
+import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
 import { findOutliers } from './categoryOutlier';
 
-import type { GetPatternInfo, OutlierParams, TimeSeriesOutlierInfo } from '../../types';
+import type { GetPatternInfo, OutlierParameter, TimeSeriesOutlierInfo } from '../../types';
 
 type OutlierItem = {
   index: number;
@@ -18,7 +18,7 @@ type OutlierItem = {
 // detect the outliers using LOWESS
 function findTimeSeriesOutliers(
   values: number[],
-  outlierOptions?: OutlierParams
+  outlierParameter?: OutlierParameter
 ): {
   outliers: OutlierItem[];
   baselines: LowessOutput['y'];
@@ -29,28 +29,35 @@ function findTimeSeriesOutliers(
     .map((_, index) => index);
   const baseline = lowess(indexes, values, { nSteps: LOWESS_N_STEPS });
   const residuals = values.map((item, index) => item - baseline.y[index]);
-  const { outliers, thresholds } = findOutliers(residuals, outlierOptions);
+  const { outliers, thresholds } = findOutliers(residuals, outlierParameter);
   return { outliers, baselines: baseline.y, thresholds };
 }
 
 export const getTimeSeriesOutlierInfo: GetPatternInfo<TimeSeriesOutlierInfo> = (props) => {
   const valid = preValidation(props);
   const insightType = 'time_series_outlier';
-  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+  if (isString(valid))
+    return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
 
   const { data } = props;
-  const { dimension, values, measure } = getAlgorithmStandardInput(props);
+  const { dimension, values, measure } = getAlgorithmCommonInput(props);
 
   if (distinct(values) === 1) return getNonSignificantInsight({ insightType, infoType: 'noInsight' });
 
-  const outlierOptions = get(props, 'options.algorithmParameter.outlier');
-  const { outliers, baselines, thresholds } = findTimeSeriesOutliers(values, outlierOptions);
+  const outlierParameter = get(props, 'options.algorithmParameter.outlier');
+  const { outliers, baselines, thresholds } = findTimeSeriesOutliers(values, outlierParameter);
 
   if (outliers.length === 0)
     return getNonSignificantInsight({
       insightType,
       infoType: 'noInsight',
-      customInfo: { baselines, thresholds },
+      customInfo: {
+        baselines,
+        thresholds,
+        dimension,
+        measure,
+        info: 'No outliers were found.',
+      },
     });
 
   const timeSeriesOutliers: TimeSeriesOutlierInfo[] = outliers.map((item) => {
@@ -65,7 +72,7 @@ export const getTimeSeriesOutlierInfo: GetPatternInfo<TimeSeriesOutlierInfo> = (
       y: data[index][measure] as number,
       baselines,
       thresholds,
-      nonSignificantInsight: false,
+      significantInsight: true,
     };
   });
   return timeSeriesOutliers;

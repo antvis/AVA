@@ -1,9 +1,9 @@
 import regression from 'regression';
-import { get } from 'lodash';
+import { get, isString } from 'lodash';
 
-import { GetPatternInfo, TrendInfo } from '../../types';
+import { CommonParameter, GetPatternInfo, TrendInfo } from '../../types';
 import { trendDirection } from '../../algorithms';
-import { getAlgorithmStandardInput, getNonSignificantInsight, preValidation } from '../util';
+import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
 type TrendResult = {
   significance: number;
@@ -11,7 +11,8 @@ type TrendResult = {
   regression: TrendInfo['regression'];
 };
 
-export function findTimeSeriesTrend(series: number[], significance: number = 0.05): TrendResult {
+export function findTimeSeriesTrend(series: number[], trendParameter: CommonParameter): TrendResult {
+  const significance = trendParameter?.significance ?? 0.05;
   const testResult = trendDirection.mkTest(series, significance);
   const { pValue, trend } = testResult;
 
@@ -31,18 +32,26 @@ export function findTimeSeriesTrend(series: number[], significance: number = 0.0
 export const getTrendInfo: GetPatternInfo<TrendInfo> = (props) => {
   const valid = preValidation(props);
   const insightType = 'trend';
-  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+  if (isString(valid))
+    return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
 
-  const { dimension, values, measure } = getAlgorithmStandardInput(props);
-  const significance = get(props, 'options.algorithmParameter.trend.significance', 0.05);
-  const result: TrendResult = findTimeSeriesTrend(values, significance);
+  const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  const trendParameter = get(props, 'options.algorithmParameter.trend');
+  const result: TrendResult = findTimeSeriesTrend(values, trendParameter);
   return [
     {
       ...result,
       type: 'trend',
       dimension,
       measure,
-      nonSignificantInsight: result.trend === 'no trend',
+      ...(result.trend === 'no trend'
+        ? {
+            significantInsight: false,
+            info: 'The Mann-Kendall (MK) test does not pass at the specified significance (alpha).',
+          }
+        : {
+            significantInsight: true,
+          }),
     },
   ];
 };

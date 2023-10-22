@@ -1,4 +1,4 @@
-import { groupBy, uniq, flatten } from 'lodash';
+import { groupBy, uniq, flatten, isString } from 'lodash';
 import Heap from 'heap-js';
 
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
@@ -69,7 +69,7 @@ function extractPatternsFromSubject(
 
     // Check whether the data requirements of the extractor are met
     if (insightExtractorChecker) {
-      if (!insightExtractorChecker({ data, subjectInfo, fieldPropsMap })) isValid = false;
+      if (isString(insightExtractorChecker({ data, subjectInfo, fieldPropsMap }))) isValid = false;
     }
     if (isValid && insightExtractor) {
       const { algorithmParameter, dataProcessInfo } = options || {};
