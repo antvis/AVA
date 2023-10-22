@@ -3,10 +3,10 @@ import { mergeWith } from 'lodash';
 import { pearson } from './base';
 import { DEFAULT_PCORRTEST_OPTIONS } from './constants';
 import { normalDistributionQuantile, tDistributionQuantile } from './quantile';
-import { PCorrTestOptions, PCorrTestOutput } from './types';
+import { PCorrTestParameter, PCorrTestOutput } from './types';
 
 /** Perform a Pearson product-moment correlation test between paired samples  */
-export const pcorrtest = (x: number[], y: number[], options?: PCorrTestOptions): PCorrTestOutput => {
+export const pcorrtest = (x: number[], y: number[], options?: PCorrTestParameter): PCorrTestOutput => {
   if (x.length !== y.length) {
     // eslint-disable-next-line no-console
     console.error('invalid arguments: First and second arguments must be arrays having the same length');

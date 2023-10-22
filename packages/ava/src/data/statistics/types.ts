@@ -25,7 +25,7 @@ export type LowessOutput = {
   y: number[];
 };
 
-export type PCorrTestOptions = {
+export type PCorrTestParameter = {
   /**
    * Significance level (default: 0.05).
    */

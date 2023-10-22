@@ -44,7 +44,7 @@ export const calculateOutlierThresholds = (
   ];
 };
 
-export const getAlgorithmStandardInput = ({
+export const getAlgorithmCommonInput = ({
   data,
   dimensions,
   measures,
@@ -55,9 +55,15 @@ export const getAlgorithmStandardInput = ({
   return { dimension, measure, values };
 };
 
-export const preValidation = ({ data, dimensions, measures, options, insightType }: PreValidationProps) => {
+export const preValidation = ({
+  data,
+  dimensions,
+  measures,
+  options,
+  insightType,
+}: PreValidationProps): string | true => {
   const { dataValidation = false, dataProcessInfo } = options || {};
-  if (!data || data.length === 0) return false;
+  if (!data || data.length === 0) return 'No data. ';
   if (!dataValidation) return true;
   const filteredData = data.filter((item) => !Object.values(item).some((v) => v === null || v === undefined));
   const dataProps = dataToDataProps(filteredData, dataProcessInfo);
@@ -67,33 +73,37 @@ export const preValidation = ({ data, dimensions, measures, options, insightType
   }, {});
   const checker = ExtractorCheckers[insightType];
   if (!checker) return true;
-  const valid = checker({
+  const result = checker({
     data,
     subjectInfo: { dimensions, measures, subspace: [] },
     fieldPropsMap,
   });
-  return valid;
+  return result;
 };
 
 export const getNonSignificantInsight = ({
   infoType,
   insightType,
+  detailInfo = '',
   customInfo = {},
 }: {
   insightType: InsightType;
+  detailInfo?: string;
   infoType: 'verificationFailure' | 'noInsight';
   customInfo?: Record<string, any>;
 }): [NoPatternInfo] => {
+  const info = `${detailInfo}${infoType === 'noInsight' ? NO_PATTERN_INFO : VERIFICATION_FAILURE_INFO}`;
   return [
     {
-      nonSignificantInsight: true,
+      significantInsight: false,
       type: insightType,
-      info: infoType === 'noInsight' ? NO_PATTERN_INFO : VERIFICATION_FAILURE_INFO,
+      info,
+      significance: 0,
       ...customInfo,
     },
   ];
 };
 
 export const pickValidPattern = (infos: PatternInfo[] = []): PatternInfo[] => {
-  return infos.filter((info) => !info.nonSignificantInsight);
+  return infos.filter((info) => info.significantInsight);
 };

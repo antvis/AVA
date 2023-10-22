@@ -1,4 +1,4 @@
-import { LowessOptions, PCorrTestOptions } from './types';
+import { LowessOptions, PCorrTestParameter } from './types';
 
 /** default options in LOWESS */
 export const DEFAULT_LOWESS_OPTIONS: LowessOptions = {
@@ -8,7 +8,7 @@ export const DEFAULT_LOWESS_OPTIONS: LowessOptions = {
 };
 
 /** default options in LOWESS */
-export const DEFAULT_PCORRTEST_OPTIONS: PCorrTestOptions = {
+export const DEFAULT_PCORRTEST_OPTIONS: PCorrTestParameter = {
   alpha: 0.05,
   alternative: 'two-sided',
   rho: 0,

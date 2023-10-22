@@ -1,5 +1,7 @@
+import { isString } from 'lodash';
+
 import { pcorrtest } from '../../../data';
-import { PCorrTestOptions } from '../../../data/statistics/types';
+import { PCorrTestParameter } from '../../../data/statistics/types';
 import { CorrelationInfo, GetPatternInfo } from '../../types';
 import { getNonSignificantInsight, preValidation } from '../util';
 
@@ -11,9 +13,9 @@ type CorrelationResult = {
 export function findCorrelation(
   x: number[],
   y: number[],
-  correlationOptions?: PCorrTestOptions
+  pCorrTestParameter?: PCorrTestParameter
 ): CorrelationResult | null {
-  const testResult = pcorrtest(x, y, correlationOptions);
+  const testResult = pcorrtest(x, y, pCorrTestParameter);
   // @ts-ignore Type Result is missing the "pcorr"
   const { rejected, pcorr } = testResult;
 
@@ -30,7 +32,12 @@ export const getCorrelationInfo: GetPatternInfo<CorrelationInfo> = (props) => {
   const valid = preValidation(props);
   const insightType = 'correlation';
   const { data, measures, dimensions, options } = props;
-  if (!valid || !dimensions) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+  if (isString(valid) || !dimensions)
+    return getNonSignificantInsight({
+      insightType,
+      infoType: 'verificationFailure',
+      ...(isString(valid) ? { detailInfo: valid } : {}),
+    });
   const xField = measures[0].fieldName;
   const yField = measures[1].fieldName;
   const x = data.map((item) => item?.[xField] as number);
@@ -42,9 +49,10 @@ export const getCorrelationInfo: GetPatternInfo<CorrelationInfo> = (props) => {
         ...result,
         type: insightType,
         measures: [xField, yField],
-        nonSignificantInsight: false,
+        significantInsight: true,
       },
     ];
   }
-  return getNonSignificantInsight({ insightType, infoType: 'noInsight' });
+  const info = 'The Pearson product-moment correlation test does not pass at the specified significance (alpha).';
+  return getNonSignificantInsight({ insightType, infoType: 'noInsight', customInfo: { info } });
 };

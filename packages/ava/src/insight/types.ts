@@ -1,4 +1,4 @@
-import { PCorrTestOptions } from '../data/statistics/types';
+import { PCorrTestParameter } from '../data/statistics/types';
 
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
 
@@ -118,17 +118,17 @@ export type InsightVisualizationOptions = {
   lang: Language;
 };
 
-export type LowVarianceParams = {
+export type LowVarianceParameter = {
   /** Default value is 0.15  */
   cvThreshold?: number;
 };
 
-export type MajorityParams = {
+export type MajorityParameter = {
   /** Proportion greater than limit is considered as significant. Default value is 0.6 */
   limit?: number;
 };
 
-export type OutlierParams = {
+export type OutlierParameter = {
   /**
    * - IQR: Inter Quartile Range method which is used by default. A point is considered an outlier when it lies outside of iqrK times the inter quartile range.
    * - p-value: Assuming that the data follows a normal distribution, a point is considered an outlier if the two-sided test p-value is less than 1-confidenceInterval.
@@ -140,8 +140,8 @@ export type OutlierParams = {
   confidenceInterval?: number;
 };
 
-export type CommonParams = {
-  /** Significance level (alpha) in test */
+export type CommonParameter = {
+  /** Significance level (alpha) in hypothesis testing */
   significance?: number;
 };
 
@@ -150,14 +150,14 @@ export type AlgorithmParameter = {
   /**
    * Contains both category outlier and time series outlier
    * */
-  outlier?: OutlierParams;
+  outlier?: OutlierParameter;
   /** time series trend, Default value of significance is 0.05 */
-  trend?: CommonParams;
+  trend?: CommonParameter;
   /** Significance level (alpha) in Bayesian online change point detection. Default value is 0.15 */
-  changePoint?: CommonParams;
-  correlation?: PCorrTestOptions;
-  lowVariance?: LowVarianceParams;
-  majority?: MajorityParams;
+  changePoint?: CommonParameter;
+  correlation?: PCorrTestParameter;
+  lowVariance?: LowVarianceParameter;
+  majority?: MajorityParameter;
 };
 
 export type InsightExtractorOptions = {
@@ -218,8 +218,9 @@ export interface InsightOptions {
 export interface BasePatternInfo<T extends InsightType> {
   type: T;
   significance: number;
-  /** Non significant insight at the specified significance threshold */
-  nonSignificantInsight?: boolean;
+  /** Significant insight at the specified significance threshold */
+  significantInsight?: boolean;
+  info?: string;
 }
 
 export interface HomogeneousPatternInfo {
@@ -273,10 +274,8 @@ export type CorrelationInfo = BasePatternInfo<'correlation'> & {
   measures: [string, string];
 };
 
-export type NoPatternInfo = {
-  nonSignificantInsight: boolean;
+export type NoPatternInfo = BasePatternInfo<InsightType> & {
   info: string;
-  type?: InsightType;
   [key: string]: any;
 };
 

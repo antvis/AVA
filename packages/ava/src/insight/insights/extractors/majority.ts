@@ -1,8 +1,8 @@
-import { get } from 'lodash';
+import { get, isString } from 'lodash';
 
-import { getAlgorithmStandardInput, getNonSignificantInsight, preValidation } from '../util';
+import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
-import type { GetPatternInfo, MajorityInfo, MajorityParams } from '../../types';
+import type { GetPatternInfo, MajorityInfo, MajorityParameter } from '../../types';
 
 type MajorityItem = {
   index: number;
@@ -13,7 +13,7 @@ type MajorityItem = {
 
 const DEFAULT_PROPORTION_LIMIT = 0.6;
 
-export function findMajority(values: number[], params?: MajorityParams): MajorityItem | null {
+export function findMajority(values: number[], majorityParameter?: MajorityParameter): MajorityItem | null {
   let sum = 0;
   let max = -Infinity;
   let maxIndex = -1;
@@ -25,7 +25,7 @@ export function findMajority(values: number[], params?: MajorityParams): Majorit
     }
   }
 
-  const proportionLimit = params?.limit || DEFAULT_PROPORTION_LIMIT;
+  const proportionLimit = majorityParameter?.limit || DEFAULT_PROPORTION_LIMIT;
   if (sum === 0) return null;
 
   const proportion = max / sum;
@@ -43,11 +43,12 @@ export function findMajority(values: number[], params?: MajorityParams): Majorit
 export const getMajorityInfo: GetPatternInfo<MajorityInfo> = (props) => {
   const valid = preValidation(props);
   const insightType = 'majority';
-  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
+  if (isString(valid))
+    return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
   const { data } = props;
-  const { dimension, values, measure } = getAlgorithmStandardInput(props);
-  const customOptions = get(props, 'options.algorithmParameter.majority');
-  const majority = findMajority(values, customOptions);
+  const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  const majorityParameter = get(props, 'options.algorithmParameter.majority');
+  const majority = findMajority(values, majorityParameter);
   if (majority) {
     const { significance, index, proportion } = majority;
     return [
@@ -60,9 +61,16 @@ export const getMajorityInfo: GetPatternInfo<MajorityInfo> = (props) => {
         proportion,
         x: data[index][dimension],
         y: data[index][measure] as number,
-        nonSignificantInsight: false,
+        significantInsight: true,
       },
     ];
   }
-  return getNonSignificantInsight({ insightType, infoType: 'noInsight' });
+  const info = `After disassembling with the given dimension, the proportion of the maximum value does not exceed ${
+    majorityParameter?.limit || DEFAULT_PROPORTION_LIMIT
+  }.`;
+  return getNonSignificantInsight({
+    insightType,
+    infoType: 'noInsight',
+    customInfo: { info, dimension, measure },
+  });
 };

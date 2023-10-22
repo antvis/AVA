@@ -1,9 +1,9 @@
-import { get } from 'lodash';
+import { get, isString } from 'lodash';
 
 import { coefficientOfVariance, mean } from '../../../data';
-import { getAlgorithmStandardInput, getNonSignificantInsight, preValidation } from '../util';
+import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
-import type { GetPatternInfo, LowVarianceInfo, LowVarianceParams } from '../../types';
+import type { GetPatternInfo, LowVarianceInfo, LowVarianceParameter } from '../../types';
 
 type LowVarianceItem = {
   significance: number;
@@ -13,10 +13,10 @@ type LowVarianceItem = {
 // Coefficient of variation threshold
 const CV_THRESHOLD = 0.15;
 
-export function findLowVariance(values: number[], params?: LowVarianceParams): LowVarianceItem | null {
+export function findLowVariance(values: number[], lowVarianceParameter?: LowVarianceParameter): LowVarianceItem | null {
   const cv = coefficientOfVariance(values);
 
-  const cvThreshold = params?.cvThreshold || CV_THRESHOLD;
+  const cvThreshold = lowVarianceParameter?.cvThreshold || CV_THRESHOLD;
   if (cv >= cvThreshold) {
     return null;
   }
@@ -33,10 +33,11 @@ export function findLowVariance(values: number[], params?: LowVarianceParams): L
 export const getLowVarianceInfo: GetPatternInfo<LowVarianceInfo> = (props) => {
   const valid = preValidation(props);
   const insightType = 'low_variance';
-  if (!valid) return getNonSignificantInsight({ insightType, infoType: 'verificationFailure' });
-  const { dimension, values, measure } = getAlgorithmStandardInput(props);
-  const customOptions = get(props, 'options.algorithmParameter.lowVariance');
-  const lowVariance = findLowVariance(values, customOptions);
+  if (isString(valid))
+    return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
+  const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  const lowVarianceParameter = get(props, 'options.algorithmParameter.lowVariance');
+  const lowVariance = findLowVariance(values, lowVarianceParameter);
   if (lowVariance) {
     const { significance, mean } = lowVariance;
     return [
@@ -46,9 +47,12 @@ export const getLowVarianceInfo: GetPatternInfo<LowVarianceInfo> = (props) => {
         measure,
         significance,
         mean,
-        nonSignificantInsight: false,
+        significantInsight: true,
       },
     ];
   }
-  return getNonSignificantInsight({ insightType, infoType: 'noInsight' });
+  const info = `The coefficient of variance of the data is greater than ${
+    lowVarianceParameter?.cvThreshold || CV_THRESHOLD
+  }. The data does not follow a uniform distribution.`;
+  return getNonSignificantInsight({ insightType, infoType: 'noInsight', customInfo: { info } });
 };
