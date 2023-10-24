@@ -7,6 +7,7 @@ import Data from './DevPlayground/Data';
 import LiteInsight from './DevPlayground/LiteInsight';
 import ChartAdvisor from './DevPlayground/ChartAdvisor';
 import NtvDemo from './DevPlayground/NTV';
+import AugmentedInputDemo from './DevPlayground/AugmentedInput';
 
 export interface Demo {
   id: string;
@@ -54,6 +55,12 @@ const manifest: Manifest = {
       id: 'ntv',
       name: 'ntv',
       contentComp: NtvDemo,
+      icon: <FontSizeOutlined />,
+    },
+    {
+      id: 'AugmentedInput',
+      name: 'AugmentedInput',
+      contentComp: AugmentedInputDemo,
       icon: <FontSizeOutlined />,
     },
   ],
