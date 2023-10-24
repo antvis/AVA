@@ -59,7 +59,10 @@
     "katex": "^0.16.4",
     "lodash": "^4.17.21",
     "styled-components": "^5.3.5",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "@tiptap/react": "^2.1.12",
+    "@tiptap/pm": "^2.1.12",
+    "@tiptap/starter-kit": "^2.1.12"
   },
   "devDependencies": {
     "@ant-design/icons": "^4.7.0",
