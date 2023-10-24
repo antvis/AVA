@@ -17,6 +17,7 @@ module.exports = {
         'ava-react',
         'ava-react/ntv',
         'ava-react/insight-card',
+        'ava-react/aug-input',
       ],
     ],
   },
