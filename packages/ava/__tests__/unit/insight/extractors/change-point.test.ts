@@ -1,4 +1,4 @@
-import { insightExtractor } from '../../../../src/insight/insights';
+import { insightPatternsExtractor } from '../../../../src/insight/insights';
 
 const data = [
   { year: '1991', value: 0.3 },
@@ -14,7 +14,7 @@ const data = [
 
 describe('extract change-point insight', () => {
   test('check change-point result', () => {
-    const result = insightExtractor({
+    const result = insightPatternsExtractor({
       data,
       dimensions: ['year'],
       measures: [{ fieldName: 'value', method: 'SUM' }],

@@ -4,6 +4,7 @@ import { get, isString } from 'lodash';
 import { CommonParameter, GetPatternInfo, TrendInfo } from '../../types';
 import { trendDirection } from '../../algorithms';
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
+import { SIGNIFICANCE_LEVEL } from '../../constant';
 
 type TrendResult = {
   significance: number;
@@ -12,7 +13,7 @@ type TrendResult = {
 };
 
 export function findTimeSeriesTrend(series: number[], trendParameter: CommonParameter): TrendResult {
-  const significance = trendParameter?.significance ?? 0.05;
+  const significance = trendParameter?.threshold ?? SIGNIFICANCE_LEVEL;
   const testResult = trendDirection.mkTest(series, significance);
   const { pValue, trend } = testResult;
 
@@ -47,7 +48,9 @@ export const getTrendInfo: GetPatternInfo<TrendInfo> = (props) => {
       ...(result.trend === 'no trend'
         ? {
             significantInsight: false,
-            info: 'The Mann-Kendall (MK) test does not pass at the specified significance (alpha).',
+            info: `The Mann-Kendall (MK) test does not pass at the specified significance level ${
+              trendParameter?.threshold ?? SIGNIFICANCE_LEVEL
+            }.`,
           }
         : {
             significantInsight: true,

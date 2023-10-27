@@ -1,4 +1,4 @@
-import { insightExtractor } from '../../../../src/insight/insights';
+import { insightPatternsExtractor } from '../../../../src/insight/insights';
 
 const data = [
   { x: 1, y: 4.181 },
@@ -36,7 +36,7 @@ const data = [
 
 describe('extract correlation insight', () => {
   test('check correlation result', () => {
-    const result = insightExtractor({
+    const result = insightPatternsExtractor({
       data,
       dimensions: [],
       measures: [

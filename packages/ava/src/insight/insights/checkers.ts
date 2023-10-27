@@ -90,7 +90,7 @@ export const correlationChecker: ExtractorChecker = ({ data, subjectInfo, fieldP
     !fieldPropsMap[measures[0].fieldName].levelOfMeasurements?.includes('Continuous') ||
     !fieldPropsMap[measures[1].fieldName].levelOfMeasurements?.includes('Continuous')
   )
-    return 'Level of measure is not continuous. ';
+    return 'Level of measurement is not continuous. ';
   return true;
 };
 

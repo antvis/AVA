@@ -21,7 +21,7 @@ export const extractorMap = {
   correlation: getCorrelationInfo,
 };
 
-export const insightExtractor = (props: InsightExtractorProps): PatternInfo[] => {
+export const insightPatternsExtractor = (props: InsightExtractorProps): PatternInfo[] => {
   const { insightType = 'trend', options } = props;
   const { filterInsight = false } = options || {};
   const extractor = extractorMap[insightType];

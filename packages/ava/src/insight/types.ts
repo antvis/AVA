@@ -142,7 +142,7 @@ export type OutlierParameter = {
 
 export type CommonParameter = {
   /** Significance level (alpha) in hypothesis testing */
-  significance?: number;
+  threshold?: number;
 };
 
 /** Key parameters in the algorithm for extracting insights */
