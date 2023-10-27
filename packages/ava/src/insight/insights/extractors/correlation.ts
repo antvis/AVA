@@ -4,6 +4,7 @@ import { pcorrtest } from '../../../data';
 import { PCorrTestParameter } from '../../../data/statistics/types';
 import { CorrelationInfo, GetPatternInfo } from '../../types';
 import { getNonSignificantInsight, preValidation } from '../util';
+import { DEFAULT_PCORRTEST_OPTIONS } from '../../../data/statistics/constants';
 
 type CorrelationResult = {
   significance: number;
@@ -42,7 +43,8 @@ export const getCorrelationInfo: GetPatternInfo<CorrelationInfo> = (props) => {
   const yField = measures[1].fieldName;
   const x = data.map((item) => item?.[xField] as number);
   const y = data.map((item) => item?.[yField] as number);
-  const result = findCorrelation(x, y, options?.algorithmParameter?.correlation);
+  const correlationParameter = options?.algorithmParameter?.correlation;
+  const result = findCorrelation(x, y, correlationParameter);
   if (result) {
     return [
       {
@@ -53,6 +55,8 @@ export const getCorrelationInfo: GetPatternInfo<CorrelationInfo> = (props) => {
       },
     ];
   }
-  const info = 'The Pearson product-moment correlation test does not pass at the specified significance (alpha).';
+  const info = `The Pearson product-moment correlation test does not pass at the specified significance level ${
+    correlationParameter?.alpha ?? DEFAULT_PCORRTEST_OPTIONS.alpha
+  }.`;
   return getNonSignificantInsight({ insightType, infoType: 'noInsight', customInfo: { info } });
 };

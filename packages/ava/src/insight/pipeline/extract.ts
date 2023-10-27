@@ -2,7 +2,7 @@ import { groupBy, uniq, flatten, isString } from 'lodash';
 import Heap from 'heap-js';
 
 import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
-import { insightExtractor, ExtractorCheckers } from '../insights';
+import { insightPatternsExtractor, ExtractorCheckers } from '../insights';
 import { aggregate } from '../utils/aggregate';
 import {
   extractHomogeneousPatternsForMeasures,
@@ -71,7 +71,7 @@ function extractPatternsFromSubject(
     if (insightExtractorChecker) {
       if (isString(insightExtractorChecker({ data, subjectInfo, fieldPropsMap }))) isValid = false;
     }
-    if (isValid && insightExtractor) {
+    if (isValid && insightPatternsExtractor) {
       const { algorithmParameter, dataProcessInfo } = options || {};
       const extractorOptions: InsightExtractorOptions = {
         algorithmParameter,
@@ -81,7 +81,7 @@ function extractPatternsFromSubject(
         // Select only significant insights
         filterInsight: true,
       };
-      const extractedPatterns = insightExtractor({
+      const extractedPatterns = insightPatternsExtractor({
         data,
         dimensions,
         measures,

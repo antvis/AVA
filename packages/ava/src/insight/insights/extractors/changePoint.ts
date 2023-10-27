@@ -2,6 +2,7 @@ import { get, isString } from 'lodash';
 
 import { changePoint } from '../../algorithms';
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
+import { CHANGE_POINT_SIGNIFICANCE_BENCHMARK } from '../../constant';
 
 import type { ChangePointInfo, CommonParameter, GetPatternInfo } from '../../types';
 
@@ -15,7 +16,7 @@ export const findChangePoints = (series: number[], changePointsParameter: Common
 
   const changePointsResult: ChangePointItem[] = [];
   // significanceBenchmark is equivalent to the confidence interval in hypothesis testing
-  const significanceBenchmark = 1 - (changePointsParameter?.significance ?? 0.15);
+  const significanceBenchmark = 1 - (changePointsParameter?.threshold ?? CHANGE_POINT_SIGNIFICANCE_BENCHMARK);
   results.forEach((item) => {
     // item.significance is similar to confidence interval
     if (item?.index >= 0 && item?.significance >= significanceBenchmark) {

@@ -1,4 +1,4 @@
-import { insightExtractor } from '../../../../src/insight/insights';
+import { insightPatternsExtractor } from '../../../../src/insight/insights';
 
 const data = [
   {
@@ -37,7 +37,7 @@ const data = [
 
 describe('extract low-variance insight', () => {
   test('check low-variance result', () => {
-    const result = insightExtractor({
+    const result = insightPatternsExtractor({
       data,
       dimensions: ['type'],
       measures: [{ fieldName: 'sales', method: 'SUM' }],

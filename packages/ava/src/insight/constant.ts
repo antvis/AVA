@@ -28,3 +28,5 @@ export const HOMOGENEOUS_PATTERN_TYPES = ['commonness', 'exception'] as const;
 export const VERIFICATION_FAILURE_INFO = 'The input does not meet the requirements.';
 
 export const NO_PATTERN_INFO = 'No insights were found at the specified significance threshold.';
+
+export const CHANGE_POINT_SIGNIFICANCE_BENCHMARK = 0.15;
