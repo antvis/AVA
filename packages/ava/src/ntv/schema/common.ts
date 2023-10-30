@@ -1,8 +1,8 @@
-import type { CSSProperties } from 'react';
+import type { Properties } from 'csstype';
 
 /** common props for block ele and inline ele */
 export type CommonProps = {
-  styles?: CSSProperties;
+  styles?: Properties;
   className?: string;
   key?: string;
 };
