@@ -5,7 +5,7 @@ export const SIGNIFICANCE_LEVEL = 0.05;
 
 export const InsightScoreBenchmark = 0.01;
 
-export const ImpactScoreWeight = 0.2;
+export const IMPACT_SCORE_WEIGHT = 0.2;
 
 export const InsightDefaultLimit = 20;
 

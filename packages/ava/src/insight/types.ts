@@ -80,6 +80,8 @@ export type PatternInfo =
 export interface InsightVisualizationSpec {
   patternType: InsightType;
   chartSpec: G2Spec;
+  /** augmented marks */
+  annotationSpec?: Record<string, G2Spec>;
   /**
    * @description explain insight by text
    * @default ParagraphSpec[]
@@ -282,4 +284,17 @@ export type NoPatternInfo = BasePatternInfo<InsightType> & {
 export type InsightsResult = {
   insights: InsightInfo<PatternInfo>[];
   homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[];
+};
+
+export type SpecificInsightProps = {
+  data: Datum[];
+  dimensions: string[];
+  measures: Measure[];
+  insightType: InsightType;
+  /** 包括自定义的算法参数，是否进行数据校验等内容 */
+  options?: InsightExtractorOptions;
+};
+
+export type PatternInfo2InsightInfoProps = SpecificInsightProps & {
+  patternInfos: PatternInfo[];
 };

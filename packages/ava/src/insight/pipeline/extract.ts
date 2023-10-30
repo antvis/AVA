@@ -1,7 +1,7 @@
 import { groupBy, uniq, flatten, isString } from 'lodash';
 import Heap from 'heap-js';
 
-import { PATTERN_TYPES, InsightScoreBenchmark, ImpactScoreWeight } from '../constant';
+import { PATTERN_TYPES, InsightScoreBenchmark, IMPACT_SCORE_WEIGHT } from '../constant';
 import { insightPatternsExtractor, ExtractorCheckers } from '../insights';
 import { aggregate } from '../utils/aggregate';
 import {
@@ -217,7 +217,7 @@ export function extractInsightsFromSubspace(
   const impactScoreWeight =
     !!options?.impactWeight && options.impactWeight >= 0 && options.impactWeight < 1
       ? options.impactWeight
-      : ImpactScoreWeight;
+      : IMPACT_SCORE_WEIGHT;
   const optimalScore = subspaceImpact * impactScoreWeight + 1 * (1 - impactScoreWeight);
   if (insightsHeap.length >= insightsHeap.limit) {
     const minScoreInHeap = insightsHeap.peek()?.score as number;
