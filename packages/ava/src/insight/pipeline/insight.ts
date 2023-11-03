@@ -1,6 +1,6 @@
 import Heap from 'heap-js';
 
-import { InsightDefaultLimit } from '../constant';
+import { INSIGHT_DEFAULT_LIMIT } from '../constant';
 import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
 
 import { enumerateInsights } from './extract';
@@ -61,7 +61,7 @@ export function extractInsights(sourceData: Datum[], options?: InsightOptions): 
   // init insights storage
   const insightsHeap = new Heap(insightPriorityComparator);
   const homogeneousInsightsHeap = new Heap(homogeneousInsightPriorityComparator);
-  const insightsLimit = options?.limit || InsightDefaultLimit;
+  const insightsLimit = options?.limit || INSIGHT_DEFAULT_LIMIT;
   insightsHeap.limit = insightsLimit;
   insightsHeap.init([]);
   homogeneousInsightsHeap.init([]);

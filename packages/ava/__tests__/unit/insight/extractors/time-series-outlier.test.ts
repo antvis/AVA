@@ -16,7 +16,7 @@ describe('extract time-series-outlier insight', () => {
   test('check outliers result', () => {
     const result = insightPatternsExtractor({
       data,
-      dimensions: ['year'],
+      dimensions: [{ fieldName: 'year' }],
       measures: [{ fieldName: 'value', method: 'SUM' }],
       insightType: 'time_series_outlier',
       options: {

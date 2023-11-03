@@ -1,4 +1,4 @@
-import { get, isString } from 'lodash';
+import { get, isNil, isString } from 'lodash';
 
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
@@ -47,6 +47,13 @@ export const getMajorityInfo: GetPatternInfo<MajorityInfo> = (props) => {
     return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
   const { data } = props;
   const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  if (isNil(dimension) || isNil(measure))
+    return getNonSignificantInsight({
+      detailInfo: 'Measure or dimension is empty.',
+      insightType,
+      infoType: 'verificationFailure',
+    });
+
   const majorityParameter = get(props, 'options.algorithmParameter.majority');
   const majority = findMajority(values, majorityParameter);
   if (majority) {

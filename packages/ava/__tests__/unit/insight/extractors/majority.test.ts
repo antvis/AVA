@@ -39,7 +39,7 @@ describe('extract majority insight', () => {
   test('check majority result', () => {
     const result = insightPatternsExtractor({
       data,
-      dimensions: ['type'],
+      dimensions: [{ fieldName: 'type' }],
       measures: [{ fieldName: 'sales', method: 'SUM' }],
       insightType: 'majority',
       options: {

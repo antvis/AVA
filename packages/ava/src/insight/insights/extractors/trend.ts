@@ -1,5 +1,5 @@
 import regression from 'regression';
-import { get, isString } from 'lodash';
+import { get, isNil, isString } from 'lodash';
 
 import { CommonParameter, GetPatternInfo, TrendInfo } from '../../types';
 import { trendDirection } from '../../algorithms';
@@ -37,6 +37,13 @@ export const getTrendInfo: GetPatternInfo<TrendInfo> = (props) => {
     return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
 
   const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  if (isNil(dimension) || isNil(measure))
+    return getNonSignificantInsight({
+      detailInfo: 'Measure or dimension is empty.',
+      insightType,
+      infoType: 'verificationFailure',
+    });
+
   const trendParameter = get(props, 'options.algorithmParameter.trend');
   const result: TrendResult = findTimeSeriesTrend(values, trendParameter);
   return [

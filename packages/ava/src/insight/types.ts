@@ -175,7 +175,7 @@ export type InsightExtractorOptions = {
 
 export type InsightExtractorProps = {
   data: Datum[];
-  dimensions: string[];
+  dimensions: Dimension[];
   measures: Measure[];
   insightType: InsightType;
   options?: InsightExtractorOptions;
@@ -288,7 +288,7 @@ export type InsightsResult = {
 
 export type SpecificInsightProps = {
   data: Datum[];
-  dimensions: string[];
+  dimensions: Dimension[];
   measures: Measure[];
   insightType: InsightType;
   /** 包括自定义的算法参数，是否进行数据校验等内容 */

@@ -1,4 +1,4 @@
-import { get, isString } from 'lodash';
+import { get, isNil, isString } from 'lodash';
 
 import { distinct, lowess } from '../../../data';
 import { LowessOutput } from '../../../data/statistics/types';
@@ -41,6 +41,12 @@ export const getTimeSeriesOutlierInfo: GetPatternInfo<TimeSeriesOutlierInfo> = (
 
   const { data } = props;
   const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  if (isNil(dimension) || isNil(measure))
+    return getNonSignificantInsight({
+      detailInfo: 'Measure or dimension is empty.',
+      insightType,
+      infoType: 'verificationFailure',
+    });
 
   if (distinct(values) === 1) return getNonSignificantInsight({ insightType, infoType: 'noInsight' });
 

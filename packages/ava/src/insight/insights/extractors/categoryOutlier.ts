@@ -1,4 +1,4 @@
-import { get, isString, orderBy } from 'lodash';
+import { get, isNil, isString, orderBy } from 'lodash';
 
 import { distinct, mean } from '../../../data';
 import { categoryOutlier } from '../../algorithms';
@@ -76,6 +76,13 @@ export const getCategoryOutlierInfo: GetPatternInfo<CategoryOutlierInfo> = (prop
   if (isString(valid))
     return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
   const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  if (isNil(dimension) || isNil(measure))
+    return getNonSignificantInsight({
+      detailInfo: 'Measure or dimension is empty.',
+      insightType,
+      infoType: 'verificationFailure',
+    });
+
   if (distinct(values) === 1)
     return getNonSignificantInsight({
       insightType,

@@ -1,4 +1,4 @@
-import { get, isString } from 'lodash';
+import { get, isNil, isString } from 'lodash';
 
 import { coefficientOfVariance, mean } from '../../../data';
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
@@ -36,6 +36,13 @@ export const getLowVarianceInfo: GetPatternInfo<LowVarianceInfo> = (props) => {
   if (isString(valid))
     return getNonSignificantInsight({ detailInfo: valid, insightType, infoType: 'verificationFailure' });
   const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  if (isNil(dimension) || isNil(measure))
+    return getNonSignificantInsight({
+      detailInfo: 'Measure or dimension is empty.',
+      insightType,
+      infoType: 'verificationFailure',
+    });
+
   const lowVarianceParameter = get(props, 'options.algorithmParameter.lowVariance');
   const lowVariance = findLowVariance(values, lowVarianceParameter);
   if (lowVariance) {

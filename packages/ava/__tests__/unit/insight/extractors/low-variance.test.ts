@@ -39,7 +39,7 @@ describe('extract low-variance insight', () => {
   test('check low-variance result', () => {
     const result = insightPatternsExtractor({
       data,
-      dimensions: ['type'],
+      dimensions: [{ fieldName: 'type' }],
       measures: [{ fieldName: 'sales', method: 'SUM' }],
       insightType: 'low_variance',
       options: {

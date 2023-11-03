@@ -12,11 +12,7 @@ export const patternInfo2InsightInfo = (props: PatternInfo2InsightInfoProps) => 
   const score = patternInfos[0] ? patternInfos[0].significance * (1 - IMPACT_SCORE_WEIGHT) + IMPACT_SCORE_WEIGHT : 0;
   return {
     subspace: [],
-    dimensions: [
-      {
-        fieldName: dimensions[0],
-      },
-    ],
+    dimensions,
     measures,
     patterns: patternInfos,
     data,

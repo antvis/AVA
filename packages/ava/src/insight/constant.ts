@@ -3,11 +3,11 @@ export const SIGNIFICANCE_BENCHMARK = 0.95;
 
 export const SIGNIFICANCE_LEVEL = 0.05;
 
-export const InsightScoreBenchmark = 0.01;
+export const INSIGHT_SCORE_BENCHMARK = 0.01;
 
 export const IMPACT_SCORE_WEIGHT = 0.2;
 
-export const InsightDefaultLimit = 20;
+export const INSIGHT_DEFAULT_LIMIT = 20;
 
 export const IQR_K = 1.5;
 
