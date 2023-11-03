@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
-import { toString, isNumber } from 'lodash';
+import { toString } from 'lodash';
 
+import { isNumberLike } from '../../utils';
 import { isEntityType } from '../utils';
 
 import {
@@ -63,7 +64,7 @@ class TextSpecGenerator {
           value: formattedValue,
           metadata: {
             entityType: varType,
-            origin: isNumber(value) ? value : undefined,
+            origin: isNumberLike(value) ? value : undefined,
             assessment: getAssessment(varType, value),
             generateVariableInfo: { scopeVariable, path },
           },
