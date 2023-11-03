@@ -39,7 +39,7 @@ describe('extract category-outlier insight', () => {
   test('check outliers result', () => {
     const result = insightPatternsExtractor({
       data,
-      dimensions: ['type'],
+      dimensions: [{ fieldName: 'type' }],
       measures: [{ fieldName: 'sales', method: 'SUM' }],
       insightType: 'category_outlier',
       options: {

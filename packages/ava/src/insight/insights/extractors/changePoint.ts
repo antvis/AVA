@@ -1,4 +1,4 @@
-import { get, isString } from 'lodash';
+import { get, isNil, isString } from 'lodash';
 
 import { changePoint } from '../../algorithms';
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
@@ -34,6 +34,13 @@ export const getChangePointInfo: GetPatternInfo<ChangePointInfo> = (props) => {
 
   const { data } = props;
   const { dimension, values, measure } = getAlgorithmCommonInput(props);
+  if (isNil(dimension) || isNil(measure))
+    return getNonSignificantInsight({
+      detailInfo: 'Measure or dimension is empty.',
+      insightType,
+      infoType: 'verificationFailure',
+    });
+
   const changePointsParameter = get(props, 'options.algorithmParameter.changePoint');
   const changePoints = findChangePoints(values, changePointsParameter);
   if (changePoints.length === 0) {

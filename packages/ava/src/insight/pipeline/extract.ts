@@ -1,7 +1,7 @@
 import { groupBy, uniq, flatten, isString } from 'lodash';
 import Heap from 'heap-js';
 
-import { PATTERN_TYPES, InsightScoreBenchmark, IMPACT_SCORE_WEIGHT } from '../constant';
+import { PATTERN_TYPES, INSIGHT_SCORE_BENCHMARK, IMPACT_SCORE_WEIGHT } from '../constant';
 import { insightPatternsExtractor, ExtractorCheckers } from '../insights';
 import { aggregate } from '../utils/aggregate';
 import {
@@ -83,7 +83,7 @@ function extractPatternsFromSubject(
       };
       const extractedPatterns = insightPatternsExtractor({
         data,
-        dimensions,
+        dimensions: dimensions.map((dim) => ({ fieldName: dim })),
         measures,
         insightType,
         options: extractorOptions,
@@ -209,7 +209,7 @@ export function extractInsightsFromSubspace(
   const subspaceImpact = computeSubspaceImpact(data, subspace, impactMeasureReferences, options?.impactMeasures);
 
   // pruning1: check the subpace impact limit
-  if (subspaceImpact < InsightScoreBenchmark) {
+  if (subspaceImpact < INSIGHT_SCORE_BENCHMARK) {
     return [];
   }
 

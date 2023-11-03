@@ -49,8 +49,8 @@ export const getAlgorithmCommonInput = ({
   dimensions,
   measures,
 }: InsightExtractorProps): AlgorithmStandardInput => {
-  const dimension = dimensions[0];
-  const measure = measures[0].fieldName;
+  const dimension = dimensions[0]?.fieldName;
+  const measure = measures[0]?.fieldName;
   const values = data.map((item) => item?.[measure] as number);
   return { dimension, measure, values };
 };
@@ -75,7 +75,7 @@ export const preValidation = ({
   if (!checker) return true;
   const result = checker({
     data,
-    subjectInfo: { dimensions, measures, subspace: [] },
+    subjectInfo: { dimensions: dimensions?.map((dim) => dim.fieldName), measures, subspace: [] },
     fieldPropsMap,
   });
   return result;

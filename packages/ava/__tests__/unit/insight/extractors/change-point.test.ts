@@ -16,7 +16,7 @@ describe('extract change-point insight', () => {
   test('check change-point result', () => {
     const result = insightPatternsExtractor({
       data,
-      dimensions: ['year'],
+      dimensions: [{ fieldName: 'year' }],
       measures: [{ fieldName: 'value', method: 'SUM' }],
       insightType: 'change_point',
       options: {

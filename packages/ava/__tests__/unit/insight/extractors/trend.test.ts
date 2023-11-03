@@ -16,7 +16,7 @@ describe('extract trend insight', () => {
   test('check trend result', () => {
     const result = insightPatternsExtractor({
       data,
-      dimensions: ['year'],
+      dimensions: [{ fieldName: 'year' }],
       measures: [{ fieldName: 'value', method: 'SUM' }],
       insightType: 'trend',
       options: {
