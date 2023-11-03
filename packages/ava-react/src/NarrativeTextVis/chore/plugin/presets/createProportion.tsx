@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { isNumber, isNaN } from 'lodash';
+import { isNaN } from 'lodash';
 
 import { ProportionChart } from '../../../line-charts';
 import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
+import { isNumberLike } from '../../../../utils';
 
 import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 
@@ -23,7 +24,7 @@ const defaultProportionDescriptor: SpecificEntityPhraseDescriptor = {
     ),
   },
   tooltip: {
-    title: (value, metadata) => (isNumber(metadata.origin) ? `${metadata.origin}` : null),
+    title: (value, metadata) => (isNumberLike(metadata.origin) ? `${metadata.origin}` : null),
   },
 };
 

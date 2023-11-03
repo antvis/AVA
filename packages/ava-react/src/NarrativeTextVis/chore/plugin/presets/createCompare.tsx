@@ -1,13 +1,13 @@
 import React, { ReactNode } from 'react';
 
-import { isNumber } from 'lodash';
+import { ValueAssessment, EntityMetaData } from '@antv/ava';
 
 import { ArrowDown, ArrowUp } from '../../../assets/icons';
 import { createEntityPhraseFactory } from '../createEntityPhraseFactory';
 import { NTV_PREFIX_CLS } from '../../../constants';
 import { getThemeColor } from '../../../theme';
+import { isNumberLike } from '../../../../utils';
 
-import { ValueAssessment, EntityMetaData } from '@antv/ava';
 import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 import type { ThemeType } from '../../../types';
 
@@ -37,7 +37,7 @@ const defaultDeltaValueDescriptor: SpecificEntityPhraseDescriptor = {
   classNames: (value, { assessment }) => [`${NTV_PREFIX_CLS}-value-${assessment}`],
   getText: getAssessmentText,
   tooltip: {
-    title: (value, metadata) => (isNumber(metadata.origin) ? `${metadata.origin}` : null),
+    title: (value, metadata) => (isNumberLike(metadata.origin) ? `${metadata.origin}` : null),
   },
 };
 
@@ -51,7 +51,7 @@ const defaultRatioValueDescriptor: SpecificEntityPhraseDescriptor = {
   classNames: (value, { assessment }) => [`${NTV_PREFIX_CLS}-value-${assessment}`],
   getText: getAssessmentText,
   tooltip: {
-    title: (value, metadata) => (isNumber(metadata.origin) ? `${metadata.origin}` : null),
+    title: (value, metadata) => (isNumberLike(metadata.origin) ? `${metadata.origin}` : null),
   },
 };
 
