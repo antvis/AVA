@@ -3,10 +3,17 @@ import React from 'react';
 import { EditorProvider, FloatingMenu, BubbleMenu } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 
-// define your extension array
-const extensions = [StarterKit];
+import { Highlight } from './plugins';
 
-const content = '<p>Hello World!</p>';
+// define your extension array
+const extensions = [StarterKit, Highlight.configure()];
+
+const content = `
+  <p>
+    <measure-name>DAU</measure-name>
+    <span data-entity-type="metric_value">1.23亿</span>
+  </p>
+`;
 
 export const AugmentedInput = () => {
   return (
