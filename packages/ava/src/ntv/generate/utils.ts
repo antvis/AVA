@@ -1,6 +1,6 @@
-import { get, isArray, isUndefined, slice, isNumber, replace, isString, startsWith } from 'lodash';
+import { get, isArray, isUndefined, slice, replace, isString, startsWith } from 'lodash';
 
-import { dataFormat } from '../../utils';
+import { dataFormat, isNumberLike } from '../../utils';
 
 import type { Variable, VariableMeta } from './types';
 import type { EntityType } from '../schema';
@@ -58,7 +58,7 @@ export function getScopeVariableArray(globalVar: Variable, scopeVar: Variable, p
 }
 
 export function getAssessment(entityType: EntityType, value: any) {
-  if (!isNumber(value)) return undefined;
+  if (!isNumberLike(value)) return undefined;
   if (entityType === 'delta_value' || entityType === 'ratio_value') {
     if (value > 0) return 'positive';
     if (value < 0) return 'negative';
@@ -67,7 +67,7 @@ export function getAssessment(entityType: EntityType, value: any) {
 }
 
 export function getFormattedNumberValue(varType: string, value: any, formatter?: VariableMeta['formatter']) {
-  if (!isNumber(value)) return value;
+  if (!isNumberLike(value)) return value;
   if (varType === 'delta_value' || varType === 'ratio_value') {
     return formatter ? formatter(Math.abs(value)) : dataFormat(Math.abs(value));
   }
