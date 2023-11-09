@@ -5,7 +5,7 @@ import { insight2ChartStrategy } from '../chart';
 import { InsightInfo, TrendInfo } from '../../../types';
 import { TrendMark } from '../../types';
 
-export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Mark[] => {
+export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): TrendMark[] => {
   const {
     data: chartData,
     dimensions: [{ fieldName: dimensionName }],
@@ -30,18 +30,15 @@ export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Ma
 
   const regressionLineMark = lineMarkStrategy({ points: lineData }, { label: `y=${m.toFixed(2)}x+${c.toFixed(2)}` });
 
-  return [regressionLineMark];
-};
-
-export const getAugmentedTrendMarks = (insight: InsightInfo<TrendInfo>): TrendMark[] => {
-  const originalMarks = trendAugmentedMarksStrategy(insight);
-  return originalMarks.map((mark) => ({
-    trendLine: [mark as LineMark],
-  }));
+  return [
+    {
+      trendLine: [regressionLineMark as LineMark],
+    },
+  ];
 };
 
 export const trendStrategy = (insight: InsightInfo<TrendInfo>): Mark[] => {
   const chart = insight2ChartStrategy(insight);
-  const augmentedMarks = trendAugmentedMarksStrategy(insight);
-  return [chart, ...augmentedMarks];
+  const trendMarks = trendAugmentedMarksStrategy(insight);
+  return [chart, ...trendMarks[0].trendLine];
 };
