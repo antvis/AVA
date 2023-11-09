@@ -96,6 +96,10 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
 export const timeSeriesOutlierStrategy = (insight: InsightInfo<TimeSeriesOutlierInfo>): Mark[] => {
   // Should to support marks free combination
   const chartMark = insight2ChartStrategy(insight);
-  const { trendLine, anomalyArea, outliers } = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight)[0];
-  return [...anomalyArea, ...trendLine, ...outliers, chartMark];
+  const {
+    trendLine = [],
+    anomalyArea = [],
+    outliers = [],
+  } = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight)[0] || {};
+  return [...anomalyArea, ...trendLine, chartMark, ...outliers];
 };
