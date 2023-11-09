@@ -11,7 +11,7 @@ const OUTLIER = 'outlier';
 
 export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
   insight: InsightInfo<TimeSeriesOutlierInfo>
-): Mark[] => {
+): TimeSeriesOutlierMark[] => {
   const {
     data: chartData,
     dimensions: [{ fieldName: dimensionName }],
@@ -84,21 +84,11 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
     },
   });
 
-  return [intervalMark, baselineMark, outlierMark];
-};
-
-export const getAugmentedTimeSeriesOutlierMarks = (
-  insight: InsightInfo<TimeSeriesOutlierInfo>
-): TimeSeriesOutlierMark[] => {
-  const originalMarks = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight);
-  const lineMark = originalMarks.find((mark) => mark.type === 'line') as LineMark;
-  const areaMark = originalMarks.find((mark) => mark.type === 'area') as AreaMark;
-  const outlierMark = originalMarks.find((mark) => mark.type === 'point') as PointMark;
   return [
     {
-      trendLine: lineMark ? [lineMark] : [],
-      anomalyArea: areaMark ? [areaMark] : [],
-      outliers: outlierMark ? [outlierMark] : [],
+      trendLine: [baselineMark as LineMark],
+      anomalyArea: [intervalMark as AreaMark],
+      outliers: [outlierMark as PointMark],
     },
   ];
 };
@@ -106,7 +96,6 @@ export const getAugmentedTimeSeriesOutlierMarks = (
 export const timeSeriesOutlierStrategy = (insight: InsightInfo<TimeSeriesOutlierInfo>): Mark[] => {
   // Should to support marks free combination
   const chartMark = insight2ChartStrategy(insight);
-  const augmentedMarks = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight)?.slice();
-  augmentedMarks.splice(2, 0, chartMark);
-  return augmentedMarks;
+  const { trendLine, anomalyArea, outliers } = timeSeriesOutlierStrategyAugmentedMarksStrategy(insight)[0];
+  return [...anomalyArea, ...trendLine, ...outliers, chartMark];
 };
