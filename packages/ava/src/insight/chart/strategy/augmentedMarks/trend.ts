@@ -40,5 +40,5 @@ export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Tr
 export const trendStrategy = (insight: InsightInfo<TrendInfo>): Mark[] => {
   const chart = insight2ChartStrategy(insight);
   const trendMarks = trendAugmentedMarksStrategy(insight);
-  return [chart, ...trendMarks[0].trendLine];
+  return [chart, ...(trendMarks[0]?.trendLine ?? [])];
 };
