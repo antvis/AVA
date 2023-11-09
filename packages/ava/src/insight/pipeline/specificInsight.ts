@@ -1,8 +1,8 @@
 import {
   generateInsightChartSpec,
-  getAugmentedChangePointMarks,
-  getAugmentedTrendMarks,
-  getAugmentedTimeSeriesOutlierMarks,
+  changePointAugmentedMarksStrategy,
+  trendAugmentedMarksStrategy,
+  timeSeriesOutlierStrategyAugmentedMarksStrategy,
 } from '../chart';
 import { IMPACT_SCORE_WEIGHT } from '../constant';
 import { insightPatternsExtractor } from '../insights';
@@ -26,9 +26,9 @@ export const getAnnotationSpec = (insightInfo: InsightInfo<PatternInfo>): Augmen
   const { type: insightType } = insightInfo.patterns[0];
 
   const insightType2AugmentedMarks = {
-    trend: getAugmentedTrendMarks,
-    change_point: getAugmentedChangePointMarks,
-    time_series_outlier: getAugmentedTimeSeriesOutlierMarks,
+    trend: trendAugmentedMarksStrategy,
+    change_point: changePointAugmentedMarksStrategy,
+    time_series_outlier: timeSeriesOutlierStrategyAugmentedMarksStrategy,
   };
   return insightType2AugmentedMarks[insightType]?.(insightInfo);
 };

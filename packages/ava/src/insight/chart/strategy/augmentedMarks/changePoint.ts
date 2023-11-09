@@ -1,5 +1,5 @@
 import { Mark, PointMark, TextMark } from '@antv/g2';
-import { size } from 'lodash';
+import { flatten, size } from 'lodash';
 
 import { ChangePointInfo, InsightInfo } from '../../../types';
 import { INSIGHT_COLOR_PLATTE } from '../../constants';
@@ -9,30 +9,7 @@ import { textMarkStrategy } from '../commonMarks/textMark';
 import { insight2ChartStrategy } from '../chart';
 import { ChangePointMark } from '../../types';
 
-const CHANGE_POINT_TEXT_STYLE = {
-  dy: -20,
-  background: true,
-  backgroundRadius: 2,
-  connector: true,
-  startMarker: true,
-  startMarkerFill: '#2C3542',
-  startMarkerFillOpacity: 0.65,
-};
-
-export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePointInfo>): Mark[] => {
-  const { patterns } = insight;
-  const color = INSIGHT_COLOR_PLATTE.highlight;
-  const { measure } = patterns?.[0];
-  const pointMark = pointMarkStrategy(patterns, { style: { fill: color } });
-  const textMark = textMarkStrategy(patterns, {
-    formatter: dataFormat,
-    label: (pattern) => `${pattern.x}, ${measure}: ${pattern.y}`,
-    style: CHANGE_POINT_TEXT_STYLE,
-  });
-  return [pointMark, textMark];
-};
-
-export const getAugmentedChangePointMarks = (insight: InsightInfo<ChangePointInfo>): ChangePointMark[] => {
+export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePointInfo>): ChangePointMark[] => {
   const { patterns } = insight;
   const color = INSIGHT_COLOR_PLATTE.highlight;
 
@@ -45,7 +22,15 @@ export const getAugmentedChangePointMarks = (insight: InsightInfo<ChangePointInf
     const textMark = textMarkStrategy([pattern], {
       formatter: dataFormat,
       label: (pt) => `${pt.x}, ${measure}: ${pt.y}`,
-      style: CHANGE_POINT_TEXT_STYLE,
+      style: {
+        dy: -20,
+        background: true,
+        backgroundRadius: 2,
+        connector: true,
+        startMarker: true,
+        startMarkerFill: '#2C3542',
+        startMarkerFillOpacity: 0.65,
+      },
     }) as TextMark;
     changePointMarks.push({
       changePoint: [pointMark, textMark],
@@ -57,6 +42,7 @@ export const getAugmentedChangePointMarks = (insight: InsightInfo<ChangePointInf
 
 export const changePointStrategy = (insight: InsightInfo<ChangePointInfo>): Mark[] => {
   const chart = insight2ChartStrategy(insight);
-  const augmentedMarks = changePointAugmentedMarksStrategy(insight);
-  return [chart, ...augmentedMarks];
+  const changePointMarks = changePointAugmentedMarksStrategy(insight);
+  const marks = flatten(changePointMarks.map((changePointMark) => [...changePointMark.changePoint]));
+  return [chart, ...marks];
 };
