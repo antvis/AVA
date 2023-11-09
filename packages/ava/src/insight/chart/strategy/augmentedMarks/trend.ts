@@ -1,8 +1,9 @@
-import { Mark } from '@antv/g2';
+import { LineMark, Mark } from '@antv/g2';
 
 import { lineMarkStrategy } from '../commonMarks';
 import { insight2ChartStrategy } from '../chart';
 import { InsightInfo, TrendInfo } from '../../../types';
+import { TrendMark } from '../../types';
 
 export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Mark[] => {
   const {
@@ -30,6 +31,13 @@ export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Ma
   const regressionLineMark = lineMarkStrategy({ points: lineData }, { label: `y=${m.toFixed(2)}x+${c.toFixed(2)}` });
 
   return [regressionLineMark];
+};
+
+export const getAugmentedTrendMarks = (insight: InsightInfo<TrendInfo>): TrendMark[] => {
+  const originalMarks = trendAugmentedMarksStrategy(insight);
+  return originalMarks.map((mark) => ({
+    trendLine: [mark as LineMark],
+  }));
 };
 
 export const trendStrategy = (insight: InsightInfo<TrendInfo>): Mark[] => {

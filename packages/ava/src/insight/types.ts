@@ -1,6 +1,7 @@
 import { PCorrTestParameter } from '../data/statistics/types';
 
 import { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from './constant';
+import { AugmentedMarks } from './chart/types';
 
 import type { G2Spec } from '@antv/g2';
 import type { ParagraphSpec } from '../ntv/types';
@@ -81,7 +82,7 @@ export interface InsightVisualizationSpec {
   patternType: InsightType;
   chartSpec: G2Spec;
   /** augmented marks */
-  annotationSpec?: Record<string, G2Spec>;
+  annotationSpec?: AugmentedMarks;
   /**
    * @description explain insight by text
    * @default ParagraphSpec[]
