@@ -125,6 +125,8 @@ export type {
   CorrelationInfo,
   InsightsResult,
   InsightExtractorProps,
+  SpecificInsightProps,
+  AugmentedMarks,
 } from './insight';
 
 /* NTV (Narrative Text Vis) */

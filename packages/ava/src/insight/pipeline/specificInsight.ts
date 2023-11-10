@@ -3,11 +3,18 @@ import {
   changePointAugmentedMarksStrategy,
   trendAugmentedMarksStrategy,
   timeSeriesOutlierStrategyAugmentedMarksStrategy,
+  AugmentedMarks,
 } from '../chart';
 import { IMPACT_SCORE_WEIGHT } from '../constant';
 import { insightPatternsExtractor } from '../insights';
-import { InsightInfo, PatternInfo, PatternInfo2InsightInfoProps, SpecificInsightProps } from '../types';
-import { AugmentedMarks } from '../chart/types';
+import {
+  InsightInfo,
+  PatternInfo,
+  PatternInfo2InsightInfoProps,
+  SpecificInsightProps,
+  SpecificInsightResult,
+} from '../types';
+import generateInsightNarrative from '../narrative';
 
 export const patternInfo2InsightInfo = (props: PatternInfo2InsightInfoProps) => {
   const { dimensions, measures, data, patternInfos } = props;
@@ -33,11 +40,13 @@ export const getAnnotationSpec = (insightInfo: InsightInfo<PatternInfo>): Augmen
   return insightType2AugmentedMarks[insightType]?.(insightInfo);
 };
 
-export const getSpecificInsight = (props: SpecificInsightProps): InsightInfo<PatternInfo> => {
+export const getSpecificInsight = (props: SpecificInsightProps): SpecificInsightResult => {
+  const { visualizationOptions } = props.options || {};
   const patternInfos = insightPatternsExtractor(props);
   const insightInfo = patternInfo2InsightInfo({ ...props, patternInfos });
   const annotationSpec = getAnnotationSpec(insightInfo);
   const chartSpec = generateInsightChartSpec(insightInfo);
+  const narrativeSpec = generateInsightNarrative(insightInfo, visualizationOptions);
 
   return {
     ...insightInfo,
@@ -46,6 +55,7 @@ export const getSpecificInsight = (props: SpecificInsightProps): InsightInfo<Pat
         annotationSpec,
         chartSpec,
         patternType: props.insightType,
+        narrativeSpec,
       },
     ],
   };

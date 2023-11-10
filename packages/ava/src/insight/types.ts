@@ -163,15 +163,12 @@ export type AlgorithmParameter = {
   majority?: MajorityParameter;
 };
 
-export type InsightExtractorOptions = {
+export type InsightExtractorOptions = Pick<InsightOptions, 'algorithmParameter' | 'dataProcessInfo'> & {
   /** Whether to filter non-significant insights. The default is false. */
   filterInsight?: boolean;
-  /** Key parameters in the algorithm for extracting insights */
-  algorithmParameter?: AlgorithmParameter;
   /** Whether data length, type, etc. need to be verified. The default is false. */
   dataValidation?: boolean;
-  /** Parameter used for data preprocessing during data validation */
-  dataProcessInfo?: Extra;
+  visualizationOptions?: InsightVisualizationOptions;
 };
 
 export type InsightExtractorProps = {
@@ -287,13 +284,10 @@ export type InsightsResult = {
   homogeneousInsights?: InsightInfo<HomogeneousPatternInfo>[];
 };
 
-export type SpecificInsightProps = {
-  data: Datum[];
-  dimensions: Dimension[];
-  measures: Measure[];
-  insightType: InsightType;
-  /** 包括自定义的算法参数，是否进行数据校验等内容 */
-  options?: InsightExtractorOptions;
+export type SpecificInsightProps = InsightExtractorProps;
+
+export type SpecificInsightResult = InsightInfo<PatternInfo> & {
+  visualizationSpecs: Required<InsightVisualizationSpec>[];
 };
 
 export type PatternInfo2InsightInfoProps = SpecificInsightProps & {
