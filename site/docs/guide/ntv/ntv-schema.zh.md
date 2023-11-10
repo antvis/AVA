@@ -21,7 +21,7 @@ import { NarrativeTextSpec } from '@antv/ava';
 
 从结构层看：
 - 整套解读结构称为 narrative，包括一个题目（headline）和多个章节（section）；
-- 每个章节有多个段落（paragraph）构成，段落有标题类（heading）、正文类（normal）、列表类（bullets）和自定义类型；
+- 每个章节有多个段落（paragraph）构成，段落有标题类（heading）、正文类（normal）、列表类（bullets）、分割线（divider）和自定义类型；
 - 每个段落又由多个短语（phrase）构成。
 
 一个 ntv-schema json 数据示例：
