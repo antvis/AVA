@@ -1,4 +1,4 @@
-import type { AreaMark, LineMark, Mark, PointMark, TextMark } from '@antv/g2';
+import type { AreaMark, IntervalMark, LineMark, Mark, PointMark, TextMark } from '@antv/g2';
 import type { Datum } from '../types';
 
 type LabelType = string | ((d: Datum) => string);
@@ -57,4 +57,17 @@ export type TimeSeriesOutlierMark = {
   outliers?: PointMark[];
 };
 
-export type AugmentedMarks = ChangePointMark[] | TrendMark[] | TimeSeriesOutlierMark[];
+export type CategoryOutlierMark = {
+  categoryOutlier: (IntervalMark | TextMark)[];
+};
+
+export type LowVarianceMark = {
+  meanLine: LineMark[];
+};
+
+export type AugmentedMarks =
+  | ChangePointMark[]
+  | TrendMark[]
+  | TimeSeriesOutlierMark[]
+  | CategoryOutlierMark[]
+  | LowVarianceMark[];
