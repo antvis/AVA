@@ -1,5 +1,5 @@
 import { Mark, PointMark, TextMark } from '@antv/g2';
-import { flatten, size } from 'lodash';
+import { size } from 'lodash';
 
 import { ChangePointInfo, InsightInfo } from '../../../types';
 import { INSIGHT_COLOR_PLATTE } from '../../constants';
@@ -8,6 +8,7 @@ import { pointMarkStrategy } from '../commonMarks/pointMark';
 import { textMarkStrategy } from '../commonMarks/textMark';
 import { insight2ChartStrategy } from '../chart';
 import { ChangePointMark } from '../../types';
+import { augmentedMarks2Marks } from '../../utils';
 
 export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePointInfo>): ChangePointMark[] => {
   const { patterns } = insight;
@@ -43,6 +44,6 @@ export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePoi
 export const changePointStrategy = (insight: InsightInfo<ChangePointInfo>): Mark[] => {
   const chart = insight2ChartStrategy(insight);
   const changePointMarks = changePointAugmentedMarksStrategy(insight);
-  const marks = flatten(changePointMarks.map((changePointMark) => [...changePointMark.changePoint]));
+  const marks = augmentedMarks2Marks(changePointMarks);
   return [chart, ...marks];
 };
