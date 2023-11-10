@@ -1,7 +1,12 @@
 import type { PhraseSpec } from './phrase';
 import type { CommonProps, CustomBlockElement } from './common';
 
-export type ParagraphSpec = HeadingParagraphSpec | TextParagraphSpec | BulletsParagraphSpec | CustomBlockElement;
+export type ParagraphSpec =
+  | HeadingParagraphSpec
+  | TextParagraphSpec
+  | BulletsParagraphSpec
+  | DividerParagraphSpec
+  | CustomBlockElement;
 
 // As nouns the difference between heading and headline is that
 // heading is the title or topic of a document, article, chapter, or of a section thereof
@@ -25,6 +30,10 @@ export type TextParagraphSpec = CommonProps & {
   type: 'normal';
   phrases: PhraseSpec[];
   indents?: ParagraphIndent[];
+};
+
+export type DividerParagraphSpec = CommonProps & {
+  type: 'divider';
 };
 
 export type BulletsParagraphSpec = CommonProps & {
