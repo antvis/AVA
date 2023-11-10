@@ -137,6 +137,7 @@ export {
   isBulletParagraph,
   getHeadingWeight,
   isHeadingParagraph,
+  isDividerParagraph,
   isEntityPhrase,
   isCustomPhrase,
   isTextPhrase,

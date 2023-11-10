@@ -1,6 +1,13 @@
 import React from 'react';
 
-import { isCustomParagraph, isHeadingParagraph, isTextParagraph, isBulletParagraph } from '@antv/ava';
+import { Divider } from 'antd';
+import {
+  isCustomParagraph,
+  isHeadingParagraph,
+  isTextParagraph,
+  isBulletParagraph,
+  isDividerParagraph,
+} from '@antv/ava';
 
 import { Heading } from './Heading';
 import { TextLine } from './TextLine';
@@ -34,6 +41,10 @@ export function Paragraph({ spec, pluginManager, size = 'normal', theme = 'light
   const onMouseLeave = () => {
     onMouseLeaveParagraph?.(spec);
   };
+
+  if (isDividerParagraph(spec)) {
+    return <Divider style={spec.styles} className={spec.className} />;
+  }
 
   let content = null;
 

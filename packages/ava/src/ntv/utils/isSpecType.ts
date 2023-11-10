@@ -15,6 +15,7 @@ import type {
   TextPhraseSpec,
   EscapePhraseSpec,
   FormulaPhraseSpec,
+  DividerParagraphSpec,
 } from '../schema';
 
 export function isCustomSection(spec: SectionSpec): spec is CustomBlockElement {
@@ -35,6 +36,10 @@ export function isTextParagraph(spec: ParagraphSpec): spec is TextParagraphSpec 
 
 export function isBulletParagraph(spec: ParagraphSpec): spec is BulletsParagraphSpec {
   return isObject(spec) && spec?.type === 'bullets' && Array.isArray(spec?.bullets);
+}
+
+export function isDividerParagraph(spec: ParagraphSpec): spec is DividerParagraphSpec {
+  return isObject(spec) && spec?.type === 'divider';
 }
 
 export function getHeadingWeight(pType: string) {
