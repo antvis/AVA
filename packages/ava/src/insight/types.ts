@@ -286,7 +286,7 @@ export type InsightsResult = {
 
 export type SpecificInsightProps = InsightExtractorProps;
 
-export type SpecificInsightResult = InsightInfo<PatternInfo> & {
+export type SpecificInsightResult = Omit<InsightInfo<PatternInfo>, 'score'> & {
   visualizationSpecs: Required<InsightVisualizationSpec>[];
 };
 

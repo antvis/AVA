@@ -5,7 +5,6 @@ import {
   timeSeriesOutlierStrategyAugmentedMarksStrategy,
   AugmentedMarks,
 } from '../chart';
-import { IMPACT_SCORE_WEIGHT } from '../constant';
 import { insightPatternsExtractor } from '../insights';
 import {
   InsightInfo,
@@ -16,16 +15,16 @@ import {
 } from '../types';
 import generateInsightNarrative from '../narrative';
 
-export const patternInfo2InsightInfo = (props: PatternInfo2InsightInfoProps) => {
+export const patternInfo2InsightInfo = (
+  props: PatternInfo2InsightInfoProps
+): Omit<InsightInfo<PatternInfo>, 'score'> => {
   const { dimensions, measures, data, patternInfos } = props;
-  const score = patternInfos[0] ? patternInfos[0].significance * (1 - IMPACT_SCORE_WEIGHT) + IMPACT_SCORE_WEIGHT : 0;
   return {
     subspace: [],
     dimensions,
     measures,
     patterns: patternInfos,
     data,
-    score,
   };
 };
 
