@@ -40,7 +40,7 @@ export const getAnnotationSpec = (insightInfo: InsightInfo<PatternInfo>): Augmen
 };
 
 export const getSpecificInsight = (props: SpecificInsightProps): SpecificInsightResult => {
-  const { visualizationOptions } = props.options || {};
+  const { visualizationOptions = { lang: 'zh-CN' } } = props.options || {};
   const patternInfos = insightPatternsExtractor(props);
   const insightInfo = patternInfo2InsightInfo({ ...props, patternInfos });
   const annotationSpec = getAnnotationSpec(insightInfo);
