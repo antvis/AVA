@@ -1,4 +1,4 @@
-import { mean } from 'lodash';
+import { isNil, mean } from 'lodash';
 
 import { standardDeviation, cdf, normalDistributionQuantile, max, min } from '../../data';
 import {
@@ -9,6 +9,7 @@ import {
   NoPatternInfo,
   PatternInfo,
   PreValidationProps,
+  TimeSeriesOutlierInfo,
 } from '../types';
 import { dataToDataProps } from '../pipeline/preprocess';
 import { NO_PATTERN_INFO, VERIFICATION_FAILURE_INFO } from '../constant';
@@ -49,8 +50,8 @@ export const getAlgorithmCommonInput = ({
   dimensions,
   measures,
 }: InsightExtractorProps): AlgorithmStandardInput => {
-  const dimension = dimensions[0]?.fieldName;
-  const measure = measures[0]?.fieldName;
+  const dimension = dimensions?.[0]?.fieldName;
+  const measure = measures?.[0]?.fieldName;
   const values = data.map((item) => item?.[measure] as number);
   return { dimension, measure, values };
 };
@@ -106,4 +107,8 @@ export const getNonSignificantInsight = ({
 
 export const pickValidPattern = (infos: PatternInfo[] = []): PatternInfo[] => {
   return infos.filter((info) => info.significantInsight);
+};
+
+export const pickValidTimeSeriesOutlierPatterns = (infos: TimeSeriesOutlierInfo[] = []): TimeSeriesOutlierInfo[] => {
+  return infos.filter((info) => ![info.baselines, info.thresholds, info.x].every(isNil));
 };
