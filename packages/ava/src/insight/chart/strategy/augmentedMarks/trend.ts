@@ -4,6 +4,7 @@ import { lineMarkStrategy } from '../commonMarks';
 import { insight2ChartStrategy } from '../chart';
 import { InsightInfo, TrendInfo } from '../../../types';
 import { TrendMark } from '../../types';
+import { dataFormat } from '../../../../utils';
 
 export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): TrendMark[] => {
   const {
@@ -28,7 +29,10 @@ export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Tr
 
   const lineData = points.map((point) => ({ x: point[0], y: point[1] }));
 
-  const regressionLineMark = lineMarkStrategy({ points: lineData }, { label: `y=${m.toFixed(2)}x+${c.toFixed(2)}` });
+  const regressionLineMark = lineMarkStrategy(
+    { points: lineData },
+    { label: `y=${dataFormat(m)}x${c < 0 ? '' : '+'}${dataFormat(c)}` }
+  );
 
   return [
     {
