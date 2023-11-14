@@ -1,4 +1,5 @@
 import { size } from 'lodash';
+import { G2Spec } from '@antv/g2';
 
 import {
   generateInsightChartSpec,
@@ -21,8 +22,9 @@ import {
 } from '../types';
 import generateInsightNarrative from '../narrative';
 import { pickValidPattern, pickValidTimeSeriesOutlierPatterns } from '../insights/util';
+import { insight2ChartStrategy, viewSpecStrategy } from '../chart/strategy';
 
-export const patternInfo2InsightInfo = (props: PatternInfo2InsightInfoProps): SpecificInsightResult => {
+export const patternInfo2InsightInfo = (props: PatternInfo2InsightInfoProps): InsightInfo<PatternInfo> => {
   const { dimensions, measures, data, patternInfos } = props;
   return {
     subspace: [],
@@ -44,6 +46,11 @@ export const getAnnotationSpec = (insightInfo: InsightInfo<PatternInfo>): Augmen
     category_outlier: categoryOutlierAugmentedMarksStrategy,
   };
   return insightType2AugmentedMarks[insightType]?.(insightInfo);
+};
+
+export const getChartSpecWithoutAugmentedMarks = (insightInfo: InsightInfo<PatternInfo>): G2Spec => {
+  const chartMark = insight2ChartStrategy(insightInfo);
+  return viewSpecStrategy([chartMark], insightInfo);
 };
 
 export const filterValidInsightInfoForAnnotationSpec = ({
@@ -76,12 +83,22 @@ export const getSpecificInsight = (props: SpecificInsightProps): SpecificInsight
         {
           annotationSpec,
           chartSpec,
-          patternType: props.insightType,
+          patternType: insightType,
           narrativeSpec,
         },
       ],
     };
   }
 
-  return { ...totalInsightInfo };
+  const chartSpec = getChartSpecWithoutAugmentedMarks(totalInsightInfo);
+
+  return {
+    ...totalInsightInfo,
+    visualizationSpecs: [
+      {
+        chartSpec,
+        patternType: insightType,
+      },
+    ],
+  };
 };
