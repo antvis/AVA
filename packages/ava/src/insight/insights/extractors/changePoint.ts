@@ -56,8 +56,9 @@ export const getChangePointInfo: GetPatternInfo<ChangePointInfo> = (props) => {
       measure,
       significance,
       index,
-      x: data[index][dimension],
-      y: data[index][measure] as number,
+      // occasional abnormality: index is out of range
+      x: data[index]?.[dimension],
+      y: data[index]?.[measure] as number,
       significantInsight: true,
     };
   });

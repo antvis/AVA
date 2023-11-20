@@ -15,9 +15,11 @@ function breakpointVerifier(next: BreakPoint<number>, prev: BreakPoint<number>):
 /**
  * Bayesian Online Changepoint Detection
  */
-export function bayesian(series: number[]): ChangePointItem[] {
+export function bayesian(series: number[] = []): ChangePointItem[] {
   const detection = new BayesianChangePoint<number>({
     breakpointVerifier,
+    chunkSize: series.length,
+    iteratee: (t: unknown) => Number(t),
   });
 
   detection.exec(series);
