@@ -48,8 +48,18 @@ export const getAnnotationSpec = (insightInfo: InsightInfo<PatternInfo>): Augmen
   return insightType2AugmentedMarks[insightType]?.(insightInfo);
 };
 
-export const getChartSpecWithoutAugmentedMarks = (insightInfo: InsightInfo<PatternInfo>): G2Spec => {
-  const chartMark = insight2ChartStrategy(insightInfo);
+export const getChartSpecWithoutAugmentedMarks = (
+  insightInfo: InsightInfo<PatternInfo>,
+  insightType: InsightType
+): G2Spec => {
+  const chartMark = insight2ChartStrategy({
+    ...insightInfo,
+    ...(size(insightInfo.patterns) === 0
+      ? {
+          patterns: [{ type: insightType }],
+        }
+      : {}),
+  });
   return viewSpecStrategy([chartMark], insightInfo);
 };
 
@@ -90,7 +100,7 @@ export const getSpecificInsight = (props: SpecificInsightProps): SpecificInsight
     };
   }
 
-  const chartSpec = getChartSpecWithoutAugmentedMarks(totalInsightInfo);
+  const chartSpec = getChartSpecWithoutAugmentedMarks(totalInsightInfo, insightType);
 
   return {
     ...totalInsightInfo,

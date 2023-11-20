@@ -1,9 +1,11 @@
 import { Mark } from '@antv/g2';
 
-import { InsightInfo } from '../../types';
+import { InsightInfo, InsightType } from '../../types';
 import { PIE_RADIUS_STYLE } from '../constants';
 
-export const insight2ChartStrategy = (insight: Omit<InsightInfo, 'visualizationSpecs'>): Mark => {
+export const insight2ChartStrategy = (
+  insight: Omit<InsightInfo, 'visualizationSpecs' | 'patterns'> & { patterns: { type: InsightType }[] }
+): Mark => {
   const { data, patterns, dimensions, measures } = insight;
   const { type: insightType } = patterns[0];
   const commonSpec: Mark = {
