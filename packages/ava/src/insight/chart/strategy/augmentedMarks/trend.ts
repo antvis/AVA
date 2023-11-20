@@ -1,4 +1,4 @@
-import { LineMark, Mark } from '@antv/g2';
+import { Mark } from '@antv/g2';
 
 import { lineMarkStrategy } from '../commonMarks';
 import { insight2ChartStrategy } from '../chart';
@@ -36,7 +36,7 @@ export const trendAugmentedMarksStrategy = (insight: InsightInfo<TrendInfo>): Tr
 
   return [
     {
-      trendLine: [regressionLineMark as LineMark],
+      trendLine: [regressionLineMark],
     },
   ];
 };

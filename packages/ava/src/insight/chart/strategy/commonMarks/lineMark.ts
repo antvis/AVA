@@ -1,4 +1,4 @@
-import { Mark } from '@antv/g2';
+import { LineMark } from '@antv/g2';
 
 import { INSIGHT_COLOR_PLATTE } from '../../constants';
 import { LineMarkConfig, LineMarkData } from '../../types';
@@ -6,8 +6,8 @@ import { LineMarkConfig, LineMarkData } from '../../types';
 export const lineMarkStrategy = (
   { points, x, y }: LineMarkData,
   { encode, style, label, tooltip }: LineMarkConfig
-): Mark => {
-  const common: Mark = {
+): LineMark => {
+  const common: LineMark = {
     style: {
       lineDash: [2, 2],
       stroke: INSIGHT_COLOR_PLATTE.highlight,
