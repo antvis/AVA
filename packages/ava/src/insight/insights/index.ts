@@ -1,4 +1,4 @@
-import { flow } from 'lodash';
+import { flow, isFunction } from 'lodash';
 
 import { InsightExtractorProps, PatternInfo } from '../types';
 
@@ -25,6 +25,7 @@ export const insightPatternsExtractor = (props: InsightExtractorProps): PatternI
   const { insightType = 'trend', options } = props;
   const { filterInsight = false } = options || {};
   const extractor = extractorMap[insightType];
+  if (!isFunction(extractor)) return [];
   return flow([extractor, ...(filterInsight ? [pickValidPattern] : [])])(props);
 };
 
