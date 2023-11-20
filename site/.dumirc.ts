@@ -10,6 +10,7 @@ export default defineConfig({
     siteUrl: homepage,
     isAntVSite: false,
     githubUrl: repository.url,
+    footerTheme: 'light', // 白色 底部主题
     // 是否显示搜索框
     showSearch: false,
     // 是否显示头部的 GitHub icon
@@ -298,8 +299,15 @@ export default defineConfig({
           zh: 'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。',
           en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.'
         },
-        image: 'https://gw.alipayobjects.com/zos/bmw-prod/e11f026f-325b-4e71-8613-8297febcfdd0.svg',
+        image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yvxBT42GPRIAAAAAAAAAAAAADmJ7AQ/original',
         buttons: [
+          {
+            text: {
+              zh: '开始使用',
+              en: 'Getting Started',
+            },
+            link: `/guide/intro`,
+          },
           {
             text: {
               zh: '图表示例',
@@ -307,13 +315,6 @@ export default defineConfig({
             },
             link: `/examples`,
             type: 'primary',
-          },
-          {
-            text: {
-              zh: '开始使用',
-              en: 'Getting Started',
-            },
-            link: `/guide/intro`,
           },
         ],
     },
