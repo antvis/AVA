@@ -1,4 +1,4 @@
-import { LineMark, Mark } from '@antv/g2';
+import { Mark } from '@antv/g2';
 
 import { LowVarianceInfo, InsightInfo } from '../../../types';
 import { lineMarkStrategy } from '../commonMarks';
@@ -12,7 +12,7 @@ export const lowVarianceAugmentedMarkStrategy = (insight: InsightInfo<LowVarianc
   const marks: LowVarianceMark[] = [];
   patterns.forEach((pattern) => {
     const { mean } = pattern;
-    const meanLineMark = lineMarkStrategy({ y: mean }, { label: `mean: ${dataFormat(mean)}` }) as LineMark;
+    const meanLineMark = lineMarkStrategy({ y: mean }, { label: `mean: ${dataFormat(mean)}` });
     marks.push({
       meanLine: [meanLineMark],
     });

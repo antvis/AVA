@@ -1,4 +1,4 @@
-import { Mark, PointMark, TextMark } from '@antv/g2';
+import { Mark } from '@antv/g2';
 import { size } from 'lodash';
 
 import { ChangePointInfo, InsightInfo } from '../../../types';
@@ -19,7 +19,7 @@ export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePoi
   const { measure } = patterns[0];
   const changePointMarks: ChangePointMark[] = [];
   patterns.forEach((pattern) => {
-    const pointMark = pointMarkStrategy([pattern], { style: { fill: color } }) as PointMark;
+    const pointMark = pointMarkStrategy([pattern], { style: { fill: color } });
     const textMark = textMarkStrategy([pattern], {
       formatter: dataFormat,
       label: (pt) => `${pt.x}, ${measure}: ${pt.y}`,
@@ -32,7 +32,7 @@ export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePoi
         startMarkerFill: '#2C3542',
         startMarkerFillOpacity: 0.65,
       },
-    }) as TextMark;
+    });
     changePointMarks.push({
       changePoint: [pointMark, textMark],
     });

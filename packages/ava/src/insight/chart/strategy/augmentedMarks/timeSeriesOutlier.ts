@@ -1,4 +1,4 @@
-import { AreaMark, LineMark, Mark, PointMark } from '@antv/g2';
+import { Mark } from '@antv/g2';
 
 import { TimeSeriesOutlierInfo, InsightInfo } from '../../../types';
 import { AreaMarkData, LineMarkData, TimeSeriesOutlierMark } from '../../types';
@@ -86,9 +86,9 @@ export const timeSeriesOutlierStrategyAugmentedMarksStrategy = (
 
   return [
     {
-      trendLine: [baselineMark as LineMark],
-      anomalyArea: [intervalMark as AreaMark],
-      outliers: [outlierMark as PointMark],
+      trendLine: [baselineMark],
+      anomalyArea: [intervalMark],
+      outliers: [outlierMark],
     },
   ];
 };

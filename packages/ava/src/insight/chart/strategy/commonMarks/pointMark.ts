@@ -1,18 +1,18 @@
-import { Mark } from '@antv/g2';
+import { PointMark } from '@antv/g2';
 import { isNil } from 'lodash';
 
 import { PointPatternInfo } from '../../../types';
 import { PointMarkConfig } from '../../types';
 
 /** get mark for point patterns, the patterns should have same dimension and measure */
-export const pointMarkStrategy = (patterns: PointPatternInfo[], config: PointMarkConfig): Mark => {
+export const pointMarkStrategy = (patterns: PointPatternInfo[], config: PointMarkConfig): PointMark => {
   const data = [];
   patterns.forEach(({ x, y }) => {
     if (isNil(x) || isNil(y)) return;
     data.push({ x, y });
   });
 
-  const pointMark: Mark = {
+  const pointMark: PointMark = {
     type: 'point',
     data,
     encode: {
