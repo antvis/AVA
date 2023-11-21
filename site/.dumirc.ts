@@ -300,6 +300,10 @@ export default defineConfig({
           en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.'
         },
         image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yvxBT42GPRIAAAAAAAAAAAAADmJ7AQ/original',
+        imageStyle: {
+          marginLeft: '70px',
+          marginTop: '100px',
+        },
         buttons: [
           {
             text: {
