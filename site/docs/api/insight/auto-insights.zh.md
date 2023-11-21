@@ -1,6 +1,6 @@
 ---
 title: getInsights
-order: 3
+order: 1
 ---
 
 <embed src='@/docs/common/style.md'></embed>
@@ -30,6 +30,7 @@ order: 3
 | impactWeight |  `number ∈(0, 1)` | 指定洞察分数计算的Impact权重： Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | 是否提取数据中的共性洞察 | `false` |
 | ignoreSubspace |  `boolean` | 是否关闭对子空间的洞察提取 | `false` |
+| algorithmParameter | `AlgorithmParameter` | 可调的算法参数 | `{}` |
 
 * ***InsightVisualizationOptions*** 可视化输出配置
 
@@ -51,6 +52,7 @@ order: 3
 
 
 <embed src='@/docs/common/phrase.zh.md'></embed>
+
 ### 用例
 
 * 指定参与计算的指标和维度，以及返回的洞察数量。

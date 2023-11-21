@@ -1,6 +1,6 @@
 ---
 title: getInsights
-order: 3
+order: 1
 ---
 
 <embed src='@/docs/common/style.md'></embed>
@@ -27,6 +27,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | impactWeight |  `number ∈(0, 1)` | Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | on/off extra homogeneous insight extraction. | `false` |
 | ignoreSubspace |  `boolean` | Whether to close the search for subspaces. | `false` |
+| algorithmParameter | `AlgorithmParameter` | Adjustable algorithm parameters | `{}` |
 
 * ***InsightVisualizationOptions*** Insight output visualization options
 
@@ -46,6 +47,7 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | visualizationSpecs |  `InsightVisualizationSpec[]` | The insight visualization scheme, including chart type, title, insight description, and chart configuration (based on G2Spec) | `[{ type: 'column_chart', caption: string, narrativeSpec: string[] \| IPhrase[][], chartSpec: G2Spec }]` |
 
 <embed src='@/docs/common/phrase.en.md'></embed>
+
 ### Usage
 
 * Specify the measures and dimensions involved in the calculation, and the number of insights returned.

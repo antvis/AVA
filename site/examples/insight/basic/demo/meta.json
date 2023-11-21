@@ -19,6 +19,14 @@
         "en": "Custom measures and dimensions"
       },
       "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/ixkElKx8UT/li-custom-measures.gif"
+    },
+    {
+      "filename": "specify-type.jsx",
+      "title": {
+        "zh": "指定洞察类型",
+        "en": "Extract specified types of insights"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/zt2jXO97%262/li-basic.gif"
     }
   ]
 }

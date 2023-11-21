@@ -23,6 +23,10 @@ order: 0
 
 ## 🔨 使用
 
+### getInsights 使用
+
+`getInsights` 方法用于从多维数据中运行不同算法来发现数据中有趣的模式，并将不同类型的模式进行统一评估，按照分数返回高质量的数据洞察结果。输入输出参数详见 [getInsights API](../../api/insight/auto-insight.zh.md)。
+
 
 ```ts
 import { getInsights } from '@antv/ava';
@@ -37,6 +41,21 @@ getInsights(data, {
 });
 ```
 
+### insightPatternsExtractor 使用
+
+如果只想获取指定类型的洞察结果，那么`insightPatternsExtractor`将是你的首选。输入输出参数详见 [insightPatternsExtractor API](../../api/insight/insight-patterns-extractor.zh.md)。
+
+
+```ts
+import { insightPatternsExtractor } from '@antv/ava';
+
+insightPatternsExtractor({
+  data,
+  measures: [{ fieldName: 'life_expect', method: 'MEAN' }],
+  dimensions: [{ fieldName: 'date' }],
+  insightType: 'trend',
+});
+```
 
 ## 📖 文档
 
