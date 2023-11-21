@@ -22,6 +22,10 @@ The pipeline of Auto-Insights:
 
 ## 🔨 Usage
 
+### getInsights Usage
+
+The `getInsights` method runs different algorithms from multi-dimensional data to discover interesting patterns in the data, and perform unified evaluation of different types of patterns, and return high-quality data insights based on scores. Detailed input and output parameters are described in the [getInsights API](../../api/insight/auto-insight.en.md).
+
 
 ```ts
 import { getInsights } from '@antv/ava';
@@ -33,6 +37,22 @@ getInsights(data, {
     { fieldName: 'pop', method: 'SUM' },
     { fieldName: 'fertility', method: 'MEAN' },
   ]
+});
+```
+
+### insightPatternsExtractor Usage
+
+If you only want to get insights of a specific type, `insightPatternsExtractor` will be your first choice. Detailed input and output parameters are described in the [insightPatternsExtractor API](../../api/insight/insight-patterns-extractor.en.md).
+
+
+```ts
+import { insightPatternsExtractor } from '@antv/ava';
+
+insightPatternsExtractor({
+  data,
+  measures: [{ fieldName: 'life_expect', method: 'MEAN' }],
+  dimensions: [{ fieldName: 'date' }],
+  insightType: 'trend',
 });
 ```
 
