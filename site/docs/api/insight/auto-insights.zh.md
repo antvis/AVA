@@ -30,7 +30,26 @@ order: 1
 | impactWeight |  `number ∈(0, 1)` | 指定洞察分数计算的Impact权重： Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | 是否提取数据中的共性洞察 | `false` |
 | ignoreSubspace |  `boolean` | 是否关闭对子空间的洞察提取 | `false` |
-| algorithmParameter | `AlgorithmParameter` | 可调的算法参数 | `{}` |
+| algorithmParameter | `AlgorithmParameter` | 可调的算法参数 | 无 |
+| dataProcessInfo | `Extra` | 数据校验时数据处理的配置 | 无 |
+
+* ***AlgorithmParameter*** 可调的算法参数
+
+| 属性 | 类型 | 描述 | 默认值 |  
+| ----| ---- | ---- | -----|
+| outlier | `OutlierParameter` | 类别异常（category_outlier）和时序异常（time_series_outlier）的算法参数 | `{ method: 'IQR', iqrK: 1.5, confidenceInterval: 0.95 }` |
+| trend | `CommonParameter` | 趋势（trend）洞察算法的参数 | `{ threshold： 0.05 }` |
+| changePoint | `CommonParameter` | 突变点算法（change_point）的参数 | `{ threshold： 0.05 }` |
+| correlation | `PCorrTestParameter` |  相关性算法（correlation） 的参数 | `{ alpha 0.05, alternative: 'two-sided', rho: 0 }` |
+| lowVariance | `LowVarianceParameter` | 低方差算法（low_variance）的参数 | `{ cvThreshold 0.15 }` |
+| majority | `MajorityParameter` | 主要影响因素算法（majority）的参数 | `{ limit 0.6 }` |
+
+* ***Extra*** 数据处理配置
+
+| 属性 | 类型 | 描述 | 默认值 |  
+| ----| ---- | ---- | -----|
+| strictDatePattern | `boolean` | 是否按照ISO标准识别日期字段 | `true` |
+
 
 * ***InsightVisualizationOptions*** 可视化输出配置
 
