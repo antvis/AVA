@@ -21,23 +21,25 @@ order: 2
 | measures | `Measure[]` | 指定作为指标的字段和对应的聚合方法 | `[{ fieldName: 'value', method: 'SUM' }]` |
 | dimensions | `Dimensions[]` | 指定参与计算的维度 | `[fieldName: 'year']` |
 | insightType |  `InsightType[]` | 指定计算的洞察类型 | `['category_outlier', 'trend', 'change_point', 'time_series_outlier', 'majority','low_variance', 'correlation']`(所有支持类型) |
-| options |  `InsightExtractorOptions` | 可选配置项 |  |
+| options |  `InsightExtractorOptions` | 可选配置项 | 见下方`InsightExtractorOptions`的详细介绍 |
 
 * ***InsightExtractorOptions*** 可选配置项
 
+其中`dataProcessInfo`，`algorithmParameter`和`visualizationOptions`的内容可见 [InsightOptions API](./auto-insights.zh.md)。此处不再赘述。
+
 | 属性 | 类型 | 描述 | 默认值 |  
 | ----| ---- | ---- | -----|
-| algorithmParameter | `AlgorithmParameter` | 可调的算法参数 | `{}` |
+| algorithmParameter | `AlgorithmParameter` | 可调的算法参数 | 无 |
 | filterInsight | `boolean` | 是否过滤有效洞察 | `false` |
 | dataValidation | `boolean` | 是否校验数据是否符合要求 | `false` |
-| dataProcessInfo | `Extra` | 数据校验时数据处理的配置 | `{}` |
+| dataProcessInfo | `Extra` | 数据校验时数据处理的配置 | 无 |
 | visualizationOptions | `InsightVisualizationOptions` | 可视化spec配置 | `{ lang: 'zh-CN' }` |
 
 * ***PatternInfo*** 包含以下几种洞察类型
 
 | 类型 | 描述 | 示例 |  
 | ----| ---- | ---- |
-| TrendInfo | 趋势 | `{ type: 'trend', significance: 0.99, trend: 'decreasing', regression: {} }`|
+| TrendInfo | 趋势 | `{ type: 'trend', significance: 0.99, trend: 'decreasing', regression: { r2: 0.5, points: [], equation: [] } }`|
 | TimeSeriesOutlierInfo | 时序异常 | `{ type: 'time_series_outlier', significance: 0.96, baselines: [], thresholds: [], x: 12, y: 32, index: 2 }` |
 | CategoryOutlierInfo |  类别 | `{ type: 'category_outlier', significance: 0.97, x: 12, y: 32, index: 2 }` |
 | LowVarianceInfo |  低方差 | `{ type: 'low_variance', significance: 0.99, dimension: 'year', measure: 'country', mean: 43 }` |
@@ -57,5 +59,30 @@ insightPatternsExtractor({
   measures: [{ fieldName: 'life_expect', method: 'MEAN' }],
   dimensions: [{ fieldName: 'date' }],
   insightType: 'trend',
+});
+```
+
+* 自定义算法参数
+
+```ts
+import { getSpecificInsight } from '@antv/ava';
+
+const insightResult = getSpecificInsight({
+  data,
+  measures: [{ fieldName: 'life_expect', method: 'MEAN' }],
+  dimensions: [{ fieldName: 'date' }],
+  insightType: 'trend',
+  options: {
+    // 保留不显著的洞察结果
+    filterInsight: false,
+    // 进行数据校验
+    dataValidation: true,
+    // 调整显著性检验的相关参数
+    algorithmParameter: {
+      trend: {
+        threshold: 0.05,
+      },
+    },
+  }
 });
 ```

@@ -27,7 +27,25 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | impactWeight |  `number ∈(0, 1)` | Insight score = Impact score * impactWeight + Significance * (1 - impactWeight). | `0.3` |
 | homogeneous |  `boolean` | on/off extra homogeneous insight extraction. | `false` |
 | ignoreSubspace |  `boolean` | Whether to close the search for subspaces. | `false` |
-| algorithmParameter | `AlgorithmParameter` | Adjustable algorithm parameters | `{}` |
+| algorithmParameter | `AlgorithmParameter` | Adjustable algorithm parameters | none |
+| dataProcessInfo | `Extra` | Configuration of data processing during data verification | none |
+
+* ***AlgorithmParameter*** Adjustable algorithm parameters
+
+| Properties | Type | Description | Default|   
+| ----| ---- | ---- | -----|
+| outlier | `OutlierParameter` | parameter of category outlier and time series outlier algorithm | `{ method: 'IQR', iqrK: 1.5, confidenceInterval: 0.95 }` |
+| trend | `CommonParameter` | Parameters of the trend algorithm | `{ threshold： 0.05 }` |
+| changePoint | `CommonParameter` | Parameter of the change point algorithm | `{ threshold： 0.05 }` |
+| correlation | `PCorrTestParameter` |  Parameter of the correlation algorithm | `{ alpha 0.05, alternative: 'two-sided', rho: 0 }` |
+| lowVariance | `LowVarianceParameter` | Parameter of the low variance algorithm | `{ cvThreshold 0.15 }` |
+| majority | `MajorityParameter` | Parameter of the majority algorithm | `{ limit 0.6 }` |
+
+* ***Extra*** Parameter passed through to the data frame during data pre-processing
+
+| Properties | Type | Description | Default|  
+| ----| ---- | ---- | -----|
+| strictDatePattern | `boolean` | Whether only the main standard symbols recommended in ISO 8601 can be recognized as date fields | `true` |
 
 * ***InsightVisualizationOptions*** Insight output visualization options
 

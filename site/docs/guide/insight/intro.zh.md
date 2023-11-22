@@ -57,6 +57,24 @@ insightPatternsExtractor({
 });
 ```
 
+### getSpecificInsight 使用
+
+`getSpecificInsight`方法不仅能获取指定类型的洞察结果，还能输出可视化spec，结合`InsightCard`组件就能通过可视化的方式呈现指定类型的洞察结果。输入输出参数详见 [getSpecificInsight API](../../api/insight/get-specific-insight.zh.md)。
+
+
+```ts
+import { getSpecificInsight } from '@antv/ava';
+
+const insightResult = getSpecificInsight({
+  data,
+  measures: [{ fieldName: 'life_expect', method: 'MEAN' }],
+  dimensions: [{ fieldName: 'date' }],
+  insightType: 'trend',
+});
+
+<InsightCard insightInfo={insightResult}/>
+```
+
 ## 📖 文档
 
 更多用法请移步至 [API](../../api/insight/auto-insights)。
