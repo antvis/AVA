@@ -52,7 +52,7 @@ export const getAlgorithmCommonInput = ({
 }: InsightExtractorProps): AlgorithmStandardInput => {
   const dimension = dimensions?.[0]?.fieldName;
   const measure = measures?.[0]?.fieldName;
-  const values = data.map((item) => item?.[measure] as number);
+  const values = data.map((item) => Number(item?.[measure]));
   return { dimension, measure, values };
 };
 

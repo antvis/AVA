@@ -19,7 +19,7 @@ export function bayesian(series: number[] = []): ChangePointItem[] {
   const detection = new BayesianChangePoint<number>({
     breakpointVerifier,
     chunkSize: series.length,
-    iteratee: (t: unknown) => Number(t),
+    iteratee: (t: number) => t,
   });
 
   detection.exec(series);
