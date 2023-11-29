@@ -48,19 +48,21 @@ export const getChangePointInfo: GetPatternInfo<ChangePointInfo> = (props) => {
     return getNonSignificantInsight({ insightType, infoType: 'noInsight', customInfo: { info } });
   }
 
-  const outliers: ChangePointInfo[] = changePoints.map((item) => {
+  const outliers: ChangePointInfo[] = [];
+  changePoints.forEach((item) => {
     const { index, significance } = item;
-    return {
-      type: insightType,
-      dimension,
-      measure,
-      significance,
-      index,
-      // occasional abnormality: index is out of range
-      x: data[index]?.[dimension],
-      y: data[index]?.[measure] as number,
-      significantInsight: true,
-    };
+    if (!isNil(data[index])) {
+      outliers.push({
+        type: insightType,
+        dimension,
+        measure,
+        significance,
+        index,
+        x: data[index][dimension],
+        y: data[index][measure] as number,
+        significantInsight: true,
+      });
+    }
   });
   return outliers;
 };
