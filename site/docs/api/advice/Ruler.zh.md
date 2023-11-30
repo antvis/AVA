@@ -161,8 +161,6 @@ const ChartRuleID = [
   'diff-pie-sector',
   'nominal-enum-combinatorial',
   'limit-series',
-  'aggregation-single-row',
-  'all-can-be-table',
 ];
 ```
 
@@ -171,7 +169,7 @@ const ChartRuleID = [
 * **接口描述** *
 
 ```ts
-const ChartDesignRuleID = ['x-axis-line-fading'];
+const ChartDesignRuleID = ['x-axis-line-fading', 'bar-without-axis-min'];
 ```
 
 ## ChartRuleConfig
