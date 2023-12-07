@@ -7,7 +7,7 @@ export default defineConfig({
     title: 'AVA',
     description: 'A framework and solution for more convenient visual analytics.',
     defaultLanguage: 'zh',
-    siteUrl: homepage,
+    siteUrl: 'https://antv.antgroup.com/', // AntV 主站首页地址
     isAntVSite: false,
     githubUrl: repository.url,
     footerTheme: 'light', // 白色 底部主题
