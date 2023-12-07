@@ -19,58 +19,68 @@ import { xAxisLineFading } from './x-axis-line-fading';
 
 import type { RuleModule } from '../types';
 
-/**
- * @public
- */
-export const CHART_RULE_ID = [
+/** hard rules for validating chart type */
+const HARD_RULE_ID = [
+  // table and kpi_panel not include currently
+  // 'aggregation-single-row',
+  // 'all-can-be-table',
   'data-check',
   'data-field-qty',
   'no-redundant-field',
   'purpose-check',
+];
+
+/** soft rules for scoring chart type */
+const SOFT_RULE_ID = [
   'series-qty-limit',
   'bar-series-qty',
-  'bar-without-axis-min',
   'line-field-time-ordinal',
   'landscape-or-portrait',
   'diff-pie-sector',
   'nominal-enum-combinatorial',
   'limit-series',
-  'aggregation-single-row',
-  'all-can-be-table',
-] as const;
+];
 
 /**
  * @public
  */
-export type ChartRuleID = typeof CHART_RULE_ID[number];
+export const CHART_RULE_ID = [...HARD_RULE_ID, ...SOFT_RULE_ID] as const;
 
 /**
  * @public
  */
-export const CHART_DESIGN_RULE_ID = ['x-axis-line-fading'] as const;
+export type ChartRuleID = (typeof CHART_RULE_ID)[number];
 
 /**
  * @public
  */
-export type ChartDesignRuleID = typeof CHART_DESIGN_RULE_ID[number];
+export const CHART_DESIGN_RULE_ID = ['x-axis-line-fading', 'bar-without-axis-min'] as const;
+
+/**
+ * @public
+ */
+export type ChartDesignRuleID = (typeof CHART_DESIGN_RULE_ID)[number];
 
 export type RuleId = ChartRuleID | ChartDesignRuleID;
 
 export const rules: Partial<Record<RuleId, RuleModule>> = {
+  /** -- hard rules -- */
   // table and kpi_panel not include currently
   // 'aggregation-single-row': aggregationSingleRow,
   // 'all-can-be-table': allCanBeTable,
-  'bar-series-qty': barSeriesQty,
-  'bar-without-axis-min': barWithoutAxisMin,
   'data-check': dataCheck,
   'data-field-qty': dataFieldQty,
+  'no-redundant-field': noRedundantField,
+  'purpose-check': purposeCheck,
+  /** -- soft rules -- */
+  'bar-series-qty': barSeriesQty,
   'diff-pie-sector': diffPieSector,
   'landscape-or-portrait': landscapeOrPortrait,
   'limit-series': limitSeries,
   'line-field-time-ordinal': lineFieldTimeOrdinal,
-  'no-redundant-field': noRedundantField,
   'nominal-enum-combinatorial': nominalEnumCombinatorial,
-  'purpose-check': purposeCheck,
   'series-qty-limit': seriesQtyLimit,
+  /** -- design rules -- */
   'x-axis-line-fading': xAxisLineFading,
+  'bar-without-axis-min': barWithoutAxisMin,
 };

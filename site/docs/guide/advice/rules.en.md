@@ -5,26 +5,62 @@ order: 1
 
 <embed src='@/docs/common/style.md'></embed>
 <!-- omit in toc -->
+
+## Introduction
+
+`advisor` module is based on rules for chart recommendation and optimization, divided into three main categories of rules:
+1. Hard Rules: Rules that must be satisfied, and if the chart type cannot satisfy any of the rules in the hard rule set, it will not appear in the final list of recommended charts.
+2. Soft Rules: Rules that are recommended to be satisfied, used for scoring charts and giving suggestions, the higher the score, the more suitable it is to use the corresponding chart type.
+3. Design Rules: Rules for optimizing the chart spec.
+
+By default, the chart recommendation rules are used built-in recommendation rules for chart recommendation, and in addition, rules can be switched, configured, and customized with users' own rules.
+```js
+// custom rule Config
+const myRuleCfg = {
+  // not use data-field-qty rule
+  exclude: ['limit-series'],
+  // add a custom rule
+  custom: {
+    'no-line-chart-with-year': myRule,
+  },
+  options: {
+    // customize rule options
+    'diff-pie-sector': {
+      weight: 0.8
+    }
+  }
+};
+
+const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+```
+
+Details of `ruler` module can be found in：[Ruler API](../../api/advice/Ruler.zh.md)。
+
 ## Rules List
 
-* [General Rules](#general-rules)
-  * [data-check](#data-check)
-  * [data-field-qty](#data-field-qty)
-  * [no-redundant-field](#no-redundant-field)
-  * [purpose-check](#purpose-check)
-  * [bar-series-qty](#bar-series-qty)
-  * [diff-pie-sector](#diff-pie-sector)
-  * [landscape-or-portrait](#landscape-or-portrait)
-  * [limit-series](#limit-series)
-  * [line-field-time-ordinal](#line-field-time-ordinal)
-  * [nominal-enum-combinatorial](#nominal-enum-combinatorial)
-  * [series-qty-limit](#series-qty-limit)
-  * [bar-without-axis-min](#bar-without-axis-min)
-  * [x-axis-line-fading](#x-axis-line-fading)
+* [Hard Rules](#hard-rules)
+  * [data-check](#data-check): Having the minimum set of data fields necessary for a given chart type
+  * [data-field-qty](#data-field-qty): Data must have at least the min qty of the prerequisite.
+  * [no-redundant-field](#no-redundant-field): All fields should be assigned to a visual mapping.
+  * [purpose-check](#purpose-check): Choose chart types that satisfy the purpose, if purpose is defined.
+* [Soft Rules](#soft-rules)
+  * [bar-series-qty](#bar-series-qty): A Bar chart should has proper number of bars or bar groups.
+  * [diff-pie-sector](#diff-pie-sector): The difference between sectors of a pie chart should be large enough.
+  * [landscape-or-portrait](#landscape-or-portrait): 
+Recommend column charts for landscape layout and bar charts for portrait layout.
+  * [limit-series](#limit-series): Avoid too many values in one series.
+  * [line-field-time-ordinal](#line-field-time-ordinal): Data containing time or ordinal fields are suitable for line or area charts.
+  * [nominal-enum-combinatorial](#nominal-enum-combinatorial): Basic (column, bar) charts or grouped (or stacked) charts are recommended based on the repetition of dimension values.
+  * [series-qty-limit](#series-qty-limit): Some charts should has at most N values for the series.
+* [Design Rules](#design-rules)
+  * [bar-without-axis-min](#bar-without-axis-min): The measure axis of a bar chart or column chart should start with zero.
+  * [x-axis-line-fading](#x-axis-line-fading): The value range of the y-axis of the line graph should be set in a reasonable range.
 
-## General Rules
 
 <!-- ****************************** Hard Rules ****************************** -->
+## Hard Rules
+
+Hard rules are used to determine whether input data can be drawn using the given chart type. If any of hard rules is not met, the score of the given chart type will be 0, meaning that chart type will not appear in the advisor's recommended chart list.
 
 ### data-check
 
@@ -42,7 +78,7 @@ To be able to plot a certain type of chart, you must have at least the minimum s
 <!-- omit in toc -->
 #### Rule Details
 
-Each chart type has its own minimum set of necessary data fields. For example, to plot a bar chart, there must be at least two fields: a nominal field as a dimension, displayed on the x-axis, and a quantitative field as a measure, displayed on the y-axis. When we provide a dataset that does not meet this criterion, for example, with only two nominal fields, it is obviously impossible to draw a bar chart. This rule verifies that the input dataset meets the minimum set of data fields required for each chart type.
+Each chart type has its own minimum set of necessary data fields. For example, to plot a bar chart, there must be at least two fields: a nominal field as a dimension, displayed on the x-axis, and a quantitative field as a measure, displayed on the y-axis. When we provide a dataset that does not meet this criterion, for example, with only two nominal fields, it is obviously impossible to draw a bar chart. This rule verifies that the input dataset meets the minimum set of data fields required for each chart type. The required conditions of the fields for each chart type are from the `dataPres` property in `ckb`, and you can also go to [this link](https://www.yuque.com/antv/ava/cvv8u6fg7i7oqdak) to look through the field requirements for each chart.
 
 <!-- omit in toc -->
 #### Resources
@@ -151,6 +187,10 @@ The specific analysis purposes and the analysis purposes that each chart type ca
 <!-- ============================================================================== -->
 
 <!-- ****************************** Soft Rules ****************************** -->
+
+## Soft Rules
+
+Soft rules are used to score the given chart type and provide suggestions based on the input data. The higher the score, the corresponding chart type is more suitable for the input data.
 
 ### bar-series-qty
 
@@ -383,6 +423,9 @@ Some charts like pie charts, radar charts, where there will be a dimension as a 
 <!-- ============================================================================== -->
 
 <!-- ****************************** Design Rules ****************************** -->
+## Design Rules
+
+The design rules are applied to improve the existing chart specs, for example, adjusting axis scale config.
 
 ### bar-without-axis-min
 

@@ -5,26 +5,62 @@ order: 1
 
 <embed src='@/docs/common/style.md'></embed>
 <!-- omit in toc -->
+
+## 规则模块介绍
+
+advisor 模块基于规则进行图表推荐和优化，分为三大类规则：
+1. 强规则（Hard Rules）：必须满足的规则，如果图表类型不能满足强规则集中的任何一条，则不会出现在最终推荐图表列表中。
+2. 弱规则（Soft Rules）：建议满足的规则，用于对图表类型进行打分和给出建议，得分越高表明越适合用相应的图表类型。
+3. 设计规则（Design Rules）：图表 spec 优化规则，用于对产生的图表 spec 进行优化。
+
+默认使用[内置推荐规则](#推荐规则一览)进行图表推荐，除此之外，还可以对规则进行开关、配置和定制自己的规则：
+```js
+// custom rule Config
+const myRuleCfg = {
+  // not use data-field-qty rule
+  exclude: ['limit-series'],
+  // add a custom rule
+  custom: {
+    'no-line-chart-with-year': myRule,
+  },
+  options: {
+    // customize rule options
+    'diff-pie-sector': {
+      weight: 0.8
+    }
+  }
+};
+
+const myAdvisor = new Advisor({ ruleCfg: myRuleCfg });
+```
+
+规则模块的详细用法可参考：[Ruler API](../../api/advice/Ruler.zh.md)。
+
 ## 推荐规则一览
 
-* [通用规则](#通用规则)
-  * [data-check](#data-check)
-  * [data-field-qty](#data-field-qty)
-  * [no-redundant-field](#no-redundant-field)
-  * [purpose-check](#purpose-check)
-  * [bar-series-qty](#bar-series-qty)
-  * [diff-pie-sector](#diff-pie-sector)
-  * [landscape-or-portrait](#landscape-or-portrait)
-  * [limit-series](#limit-series)
-  * [line-field-time-ordinal](#line-field-time-ordinal)
-  * [nominal-enum-combinatorial](#nominal-enum-combinatorial)
-  * [series-qty-limit](#series-qty-limit)
-  * [bar-without-axis-min](#bar-without-axis-min)
-  * [x-axis-line-fading](#x-axis-line-fading)
+下面展示了所有的内置规则，可以点击查看相应规则的详细解释。
 
-## 通用规则
+* [强规则 Hard rules](#强规则)
+  * [data-check](#data-check): 数据字段是否满足相应图表类型绘制所需的要求
+  * [data-field-qty](#data-field-qty): 字段数量不少于图表所需的最小字段数量
+  * [no-redundant-field](#no-redundant-field): 每个字段在图表绘制中都需要被用上
+  * [purpose-check](#purpose-check): 如果指定了分析目的类型，只推荐能服务于这种分析目的的图表类型
+* [弱规则 Soft rules](#弱规则)
+  * [bar-series-qty](#bar-series-qty): 条形图应该具有恰当数量的条形或条形组
+  * [diff-pie-sector](#diff-pie-sector): 饼图各扇区之间应该有足够大的差异
+  * [landscape-or-portrait](#landscape-or-portrait): 竖向画布更推荐使用条形图，横向画布更推荐使用柱状图
+  * [limit-series](#limit-series): 避免一种序列的值过多
+  * [line-field-time-ordinal](#line-field-time-ordinal): 包含时间或顺序性字段的数据适合用折线图或面积图来展示
+  * [nominal-enum-combinatorial](#nominal-enum-combinatorial): 根据维值的重复性来推荐基础图表或分组图表
+  * [series-qty-limit](#series-qty-limit): 一些图表类型中的序列的值不能太多
+* [设计规则 Design rules](#设计规则)
+  * [bar-without-axis-min](#bar-without-axis-min): 柱状图或条形图的数值轴的刻度应该从零开始
+  * [x-axis-line-fading](#x-axis-line-fading): 图表值域应该设置在一个合理的范围
 
 <!-- ****************************** Hard Rules ****************************** -->
+## 强规则
+
+强规则用于判断输入数据是否能使用给定的图表类型绘制，不满足时，给定图表类型得分将为 0，即不满足强规则的图表类型不会出现在 advisor 推荐的图表列表中。
 
 ### data-check
 
@@ -42,7 +78,7 @@ order: 1
 <!-- omit in toc -->
 #### 详细解释
 
-每种图表类型都有自己必需的最小数据字段集合。比如要绘制一个柱状图，最少要有两个字段：一个名词型字段当做维度，展示在 x 轴；一个数值型字段当做度量，展示在 y 轴。当我们提供的数据集不符合这个标准，比如只有两个名词型字段，显然是无法绘制出一个柱状图的。本规则验证输入的数据集是否满足每一种图表类型的最小数据字段集合要求。
+每种图表类型都有自己必需的最小数据字段集合。比如要绘制一个柱状图，最少要有两个字段：一个名词型字段当做维度，展示在 x 轴；一个数值型字段当做度量，展示在 y 轴。当我们提供的数据集不符合这个标准，比如只有两个名词型字段，显然是无法绘制出一个柱状图的。本规则验证输入的数据集是否满足每一种图表类型的最小数据字段集合要求。每种图表类型所需的字段要求校验条件来自于 `ckb` 中图表对应的 `dataPres` 属性，也可以通过[图表所需的字段一览](https://www.yuque.com/antv/ava/cvv8u6fg7i7oqdak)快速查阅。
 
 <!-- omit in toc -->
 #### 相关链接
@@ -151,6 +187,9 @@ order: 1
 <!-- ============================================================================== -->
 
 <!-- ****************************** Soft Rules ****************************** -->
+## 弱规则
+
+弱规则用于根据输入数据为给定的图表类型打分和给出建议，得分越高表明越适合用相应的图表类型。
 
 ### bar-series-qty
 
@@ -382,6 +421,9 @@ order: 1
 <!-- ============================================================================== -->
 
 <!-- ****************************** Design Rules ****************************** -->
+## 设计规则
+
+设计规则用于优化已有的图表 spec ，例如调整坐标轴的 scale 配置。
 
 ### bar-without-axis-min
 
