@@ -58,7 +58,7 @@ insightPatternsExtractor({
 
 ### getSpecificInsight 使用
 
-The `getSpecificInsight` method can not only obtain the specified type of insight, but also output a visual spec. Combined with the `InsightCard` component, the insight results can be presented in a visual way. Input parameters are the same as the `insightPatternsExtractor` method. Detailed output parameters are described in the [InsightInfo API](../../api/insight/auto-insight.zh.md)。
+The `getSpecificInsight` method can not only obtain the specified type of insight, but also output a visual spec. Combined with the `InsightCard` component, the insight results can be presented in a visual way. Input parameters are the same as the `insightPatternsExtractor` method. Detailed output parameters are described in the [InsightInfo API](../../api/insight/auto-insights.zh.md)。
 
 
 ```ts
