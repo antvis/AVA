@@ -25,7 +25,7 @@ order: 0
 
 ### getInsights 使用
 
-`getInsights` 方法用于从多维数据中运行不同算法来发现数据中有趣的模式，并将不同类型的模式进行统一评估，按照分数返回高质量的数据洞察结果。输入输出参数详见 [getInsights API](../../api/insight/auto-insight.zh.md)。
+`getInsights` 方法用于从多维数据中运行不同算法来发现数据中有趣的模式，并将不同类型的模式进行统一评估，按照分数返回高质量的数据洞察结果。输入输出参数详见 [getInsights API](../../api/insight/auto-insights.zh.md)。
 
 
 ```ts
