@@ -319,7 +319,7 @@ export function analyzeField(
         restNotNullArray = restNotNullArray.filter((item) => !isDateString(item));
       } else if (item === 'integer') {
         meta.integer = analyzeField(
-          restNotNullArray.filter((item) => isIntegerString(item)),
+          restNotNullArray.filter((item) => isIntegerString(item) && !isDateString(item)),
           strictDatePattern
         ) as NumberFieldInfo;
         restNotNullArray = restNotNullArray.filter((item) => !isIntegerString(item));
