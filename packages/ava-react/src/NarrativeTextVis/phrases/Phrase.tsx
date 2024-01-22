@@ -35,6 +35,7 @@ function renderPhraseByDescriptor({
 }) {
   const { value = '', metadata = {}, styles: specStyles = {} } = spec;
   const { theme = 'light' } = themeStyles;
+
   const {
     overwrite,
     classNames,
@@ -74,6 +75,7 @@ function renderPhraseByDescriptor({
       {content(value, metadata, themeStyles)}
     </Entity>
   );
+
   if (isFunction(overwrite)) {
     defaultNode = overwrite(defaultNode, value, metadata, themeStyles);
   }
@@ -107,10 +109,11 @@ export const Phrase: React.FC<PhraseProps> = ({
   spec: phrase,
   size = 'normal',
   theme = 'light',
+  entityStyle,
   pluginManager = presetPluginManager,
   ...events
 }) => {
-  const themeStyles = { size, theme };
+  const themeStyles = { size, theme, entityStyle };
 
   const eventProps = !isEmpty(events)
     ? {

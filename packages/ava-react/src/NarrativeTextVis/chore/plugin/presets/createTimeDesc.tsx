@@ -5,7 +5,8 @@ import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 
 const defaultTimeDescDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    color: (value, metadata, { theme }) => getThemeColor('colorDimensionValue', theme),
+    color: (value, metadata, { theme, entityStyle }) =>
+      getThemeColor('colorDimensionValue', theme, entityStyle?.time_desc),
   },
   tooltip: false,
 };

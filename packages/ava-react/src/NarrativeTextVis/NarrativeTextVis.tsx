@@ -17,6 +17,7 @@ export function NarrativeTextVis({
   spec,
   size = 'normal',
   theme = 'light',
+  entityStyle,
   pluginManager = presetPluginManager,
   showCollapse = false,
   copyNarrative,
@@ -25,7 +26,7 @@ export function NarrativeTextVis({
   const narrativeDomRef = useRef<HTMLDivElement>(null);
 
   const { headline, sections, styles, className } = spec;
-  const themeStyles = { theme, size };
+  const themeStyles = { theme, size, entityStyle };
 
   const {
     onClickNarrative,

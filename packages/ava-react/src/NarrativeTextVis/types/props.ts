@@ -14,6 +14,18 @@ export type PhraseType = 'text' | EntityType | null;
 export type ThemeType = 'light' | 'dark';
 export type SizeType = 'normal' | 'small';
 
+type EntityStyle = Partial<
+  Record<
+    EntityType,
+    Partial<{
+      color: string;
+      bgColor: string;
+      positiveColor: string;
+      negativeColor: string;
+    }>
+  >
+>;
+
 export type ThemeStylesProps = {
   /**
    * @description size of text
@@ -27,6 +39,11 @@ export type ThemeStylesProps = {
    * @default 'light'
    */
   theme?: ThemeType;
+  /**
+   * @description encoding 主题
+   * @description.zh-CN 主题色板
+   */
+  entityStyle?: EntityStyle;
 };
 
 export type CollapseConfig = {
