@@ -26,8 +26,15 @@ export type ParagraphProps = ThemeStylesProps &
     spec: ParagraphSpec;
   };
 
-export function Paragraph({ spec, pluginManager, size = 'normal', theme = 'light', ...events }: ParagraphProps) {
-  const themeStyles = { size, theme };
+export function Paragraph({
+  spec,
+  pluginManager,
+  size = 'normal',
+  theme = 'light',
+  entityStyle,
+  ...events
+}: ParagraphProps) {
+  const themeStyles = { size, theme, entityStyle };
   const { onClickParagraph, onMouseEnterParagraph, onMouseLeaveParagraph, ...phraseEvents } = events || {};
 
   const onClick = () => {

@@ -19,10 +19,11 @@ export function TextLine({
   spec,
   size = 'normal',
   theme = 'light',
+  entityStyle,
   pluginManager = presetPluginManager,
   ...events
 }: TextLineProps) {
-  const themeStyles = { size, theme };
+  const themeStyles = { size, theme, entityStyle };
   return (
     <StyledP
       {...themeStyles}

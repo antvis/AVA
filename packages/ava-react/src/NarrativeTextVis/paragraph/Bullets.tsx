@@ -23,11 +23,12 @@ export function Bullets({
   spec,
   size = 'normal',
   theme = 'light',
+  entityStyle,
   pluginManager = presetPluginManager,
   showCollapse = false,
   ...events
 }: BulletsProps) {
-  const themeStyles = { theme, size };
+  const themeStyles = { theme, size, entityStyle };
   const { onClickParagraph, onMouseEnterParagraph, onMouseLeaveParagraph, ...phraseEvents } = events || {};
   const collapseProps = getCollapseProps(showCollapse);
 

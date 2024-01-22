@@ -5,7 +5,8 @@ import type { SpecificEntityPhraseDescriptor } from '../plugin-protocol.type';
 
 const defaultDimensionValueDescriptor: SpecificEntityPhraseDescriptor = {
   encoding: {
-    color: (value, metadata, { theme }) => getThemeColor('colorDimensionValue', theme),
+    color: (value, metadata, { theme, entityStyle }) =>
+      getThemeColor('colorDimensionValue', theme, entityStyle?.dim_value),
   },
   tooltip: false,
 };

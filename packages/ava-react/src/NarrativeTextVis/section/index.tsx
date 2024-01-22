@@ -27,11 +27,12 @@ export function Section({
   spec,
   size = 'normal',
   theme = 'light',
+  entityStyle,
   pluginManager = presetPluginManager,
   showCollapse = false,
   ...events
 }: SectionProps) {
-  const themeStyles = { size, theme };
+  const themeStyles = { size, theme, entityStyle };
   const { onClickSection, onMouseEnterSection, onMouseLeaveSection, ...paragraphEvents } = events || {};
 
   const onClick = () => {
