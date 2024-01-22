@@ -12,6 +12,7 @@ order: 1
 | spec         | `NarrativeTextSpec`             | 结构数据             | 无              |
 | size         | 'normal' \| 'small'    | 字体大小，normal 是 14px，small 是 12px           | 'default'              |
 | theme         | 'light' \| 'dark'    | 主题色，当前支持 light 亮色模式和 dark 暗色模式          | 'light'              |
+| entityStyle         | `EntityStyle`    | 实体样式配置          |               |
 | showCollapse         | boolean \| CollapseConfig    |     段落可折叠配置      | false              |
 
 ```typescript
