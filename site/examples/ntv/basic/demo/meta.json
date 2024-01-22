@@ -61,6 +61,14 @@
       "screenshot": "https://mdn.alipayobjects.com/huamei_vvq19s/afts/img/A*JwKTT5EGpREAAAAAAAAAAAAADi2DAQ/original"
     },
     {
+      "filename": "entity-style.tsx",
+      "title": {
+        "en": "Entity Style",
+        "zh": "实体样式配置"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*0sl-Tqd7G5UAAAAAAAAAAAAADmJ7AQ/original"
+    },
+    {
       "filename": "export.tsx",
       "title": {
         "en": "Export",
