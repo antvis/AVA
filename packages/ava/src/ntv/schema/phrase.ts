@@ -8,6 +8,7 @@ export type PhraseSpec =
   | EntityPhraseSpec
   | EscapePhraseSpec
   | FormulaPhraseSpec
+  | ImagePhraseSpec
   | CustomPhraseSpec<CustomMetaData>;
 
 export type TextPhraseSpec = CommonProps & {
@@ -17,6 +18,12 @@ export type TextPhraseSpec = CommonProps & {
   italic?: boolean;
   underline?: boolean;
   url?: string;
+};
+
+export type ImagePhraseSpec = CommonProps & {
+  type: 'image';
+  value: string;
+  alt?: string;
 };
 
 /**

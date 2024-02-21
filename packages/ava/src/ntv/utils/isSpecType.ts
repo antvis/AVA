@@ -16,6 +16,7 @@ import type {
   EscapePhraseSpec,
   FormulaPhraseSpec,
   DividerParagraphSpec,
+  ImagePhraseSpec,
 } from '../schema';
 
 export function isCustomSection(spec: SectionSpec): spec is CustomBlockElement {
@@ -80,4 +81,8 @@ export function isEscapePhrase(spec: PhraseSpec): spec is EscapePhraseSpec {
 
 export function isFormulaPhrase(spec: PhraseSpec): spec is FormulaPhraseSpec {
   return spec?.type === 'formula';
+}
+
+export function isImagePhrase(spec: PhraseSpec): spec is ImagePhraseSpec {
+  return spec?.type === 'image';
 }

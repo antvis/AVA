@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Tooltip, TooltipProps } from 'antd';
-import { isTextPhrase, isEntityPhrase, isEscapePhrase, isFormulaPhrase } from '@antv/ava';
+import { isTextPhrase, isEntityPhrase, isEscapePhrase, isFormulaPhrase, isImagePhrase } from '@antv/ava';
 import { isFunction, kebabCase, isEmpty, isNil } from 'lodash';
 import katex from 'katex';
 
@@ -175,6 +175,10 @@ export const Phrase: React.FC<PhraseProps> = ({
         }}
       />
     );
+
+  if (isImagePhrase(phrase)) {
+    return <img src={phrase.value} alt={phrase.alt} className={cx(phrase.className)} style={phrase.styles} />;
+  }
 
   const descriptor = pluginManager?.getPhraseDescriptorBySpec(phrase);
   if (descriptor) {

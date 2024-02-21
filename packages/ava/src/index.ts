@@ -141,6 +141,7 @@ export {
   isHeadingParagraph,
   isDividerParagraph,
   isEntityPhrase,
+  isImagePhrase,
   isCustomPhrase,
   isTextPhrase,
   isEntityType,
