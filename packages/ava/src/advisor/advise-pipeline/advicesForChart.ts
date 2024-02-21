@@ -92,6 +92,6 @@ export function advicesForChart(
     // if the input data cannot be transformed into DataFrame
     // eslint-disable-next-line no-console
     console.error('error: ', error);
-    return null;
+    return { advices: [], log: [] };
   }
 }
