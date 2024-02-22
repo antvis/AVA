@@ -112,26 +112,21 @@ export const Phrase: React.FC<PhraseProps> = ({
 }) => {
   const themeStyles = { size, theme };
 
-  const onClick = () => {
-    events?.onClickPhrase?.(phrase);
-  };
+  const eventProps = !isEmpty(events)
+    ? {
+        onClick: () => {
+          events?.onClickPhrase?.(phrase);
+        },
+        onMouseEnter: () => {
+          events?.onMouseEnterPhrase?.(phrase);
+        },
+        onMouseLeave: () => {
+          events?.onMouseLeavePhrase?.(phrase);
+        },
+      }
+    : {};
 
-  const onMouseEnter = () => {
-    events?.onMouseEnterPhrase?.(phrase);
-  };
-
-  const onMouseLeave = () => {
-    events?.onMouseLeavePhrase?.(phrase);
-  };
-
-  let defaultText = !isEmpty(events) ? (
-    <span onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
-      {phrase.value}
-    </span>
-  ) : (
-    <>{phrase.value}</>
-  );
-
+  let defaultText = <>{phrase.value}</>;
   if (isTextPhrase(phrase)) {
     if (phrase.bold) defaultText = <Bold>{defaultText}</Bold>;
     if (phrase.italic) defaultText = <Italic>{defaultText}</Italic>;
@@ -143,7 +138,7 @@ export const Phrase: React.FC<PhraseProps> = ({
         </a>
       );
     return (
-      <span style={phrase?.styles} className={cx(phrase?.className)}>
+      <span {...eventProps} style={phrase?.styles} className={cx(phrase?.className)}>
         {defaultText}
       </span>
     );
@@ -153,7 +148,7 @@ export const Phrase: React.FC<PhraseProps> = ({
   // 使用 pre 标签渲染特殊转义字符
   if (isEscapePhrase(phrase))
     return (
-      <pre className={cx(phrase.className)} style={phrase.styles}>
+      <pre {...eventProps} className={cx(phrase.className)} style={phrase.styles}>
         {phrase.value}
       </pre>
     );
@@ -163,6 +158,7 @@ export const Phrase: React.FC<PhraseProps> = ({
   if (isFormulaPhrase(phrase))
     return (
       <FormulaWrapper
+        {...eventProps}
         className={cx(phrase.className, `${NTV_PREFIX_CLS}-formula`)}
         style={phrase.styles}
         dangerouslySetInnerHTML={{
@@ -177,7 +173,9 @@ export const Phrase: React.FC<PhraseProps> = ({
     );
 
   if (isImagePhrase(phrase)) {
-    return <img src={phrase.value} alt={phrase.alt} className={cx(phrase.className)} style={phrase.styles} />;
+    return (
+      <img {...eventProps} src={phrase.value} alt={phrase.alt} className={cx(phrase.className)} style={phrase.styles} />
+    );
   }
 
   const descriptor = pluginManager?.getPhraseDescriptorBySpec(phrase);
@@ -185,5 +183,5 @@ export const Phrase: React.FC<PhraseProps> = ({
     return <>{renderPhraseByDescriptor({ spec: phrase, descriptor, themeStyles, events })}</>;
   }
 
-  return defaultText;
+  return !isEmpty(events) ? <span {...eventProps}>defaultText</span> : defaultText;
 };
