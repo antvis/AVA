@@ -41,6 +41,36 @@ getInsights(data, {
 });
 ```
 
+通过配置 ***insightTypes*** 属性指定计算的洞察类型，具体内容详见 [getInsights API](../../api/insight/auto-insights.zh.md)。
+
+```ts
+import { getInsights } from '@antv/ava';
+
+getInsights(data, {
+  limit: 30,
+  insightTypes: ['trend', 'time_series_outlier']
+});
+```
+
+使用 ***impactMeasures*** 和 ***impactWeight*** 属性来自定义影响力指标和权重。
+
+```ts
+import { getInsights } from '@antv/ava';
+
+getInsights(data, {
+  limit: 10,
+  // 自定义影响力（Impact）分数的计算指标
+  impactMeasures: [
+    { fieldName: 'life_expect', method: 'COUNT' },
+    { fieldName: 'pop', method: 'COUNT' },
+    { fieldName: 'fertility', method: 'COUNT' },
+  ],
+  // 自定义影响力（Impact）分数在洞察分数中的权重（0 ~ 1）
+  impactWeight: 0.5,
+});
+```
+
+
 ### insightPatternsExtractor 使用
 
 如果只想获取指定类型的洞察结果，那么`insightPatternsExtractor`将是你的首选。输入输出参数详见 [insightPatternsExtractor API](../../api/insight/insight-patterns-extractor.zh.md)。

@@ -30,6 +30,20 @@ Run different algorithms from multi-dimensional data to discover interesting pat
 | algorithmParameter | `AlgorithmParameter` | Adjustable algorithm parameters | none |
 | dataProcessInfo | `Extra` | Configuration of data processing during data verification | none |
 
+* ***InsightType*** Supported Insight Types
+
+The extractor types used by Insight are set by the ***insightTypes*** property in the configuration. There are 7 extractor types in total, and by default, Insight will run each algorithm to provide the results.
+
+| Type | Name | Algorithm | Description |  
+| ----| ---- | ---- | ---- |
+| `trend ` | Trend Detection | [Mann-Kendall test](https://cran.r-project.org/web/packages/trend/vignettes/trend.pdf#page=2) | Detect significant increases or decreases in time series. | 
+| `change_point ` | Change Point Detection | [Bayesian Online Changepoint Detection](https://arxiv.org/pdf/0710.3742.pdf) | Detect change points in time series. | 
+| `majority ` | Majority Detection | proportion limits | Detect the outstanding indicators of data. | 
+| `low_variance ` | Low Variance Detection | [coefficient of variation](https://en.wikipedia.org/wiki/Coefficient_of_variation) | Detect the uniformity and determine if data points are distributed around the mean value. |
+|  `category_outlier ` | Category Outlier Detection | [IQR](https://en.wikipedia.org/wiki/IQR) | Detect category outliers in the data. | 
+| `time_series_outlier `  | Time Series Outlier Detection| [STL decomposition](https://otexts.com/fpp2/stl.html) | Detect outlier points in time series.  |  
+| ` correlation` | Correlation Detection | [Pearson product-moment correlation coefficient](https://en.wikipedia.org/wiki/Pearson_correlation_coefficient) | Detect if there is a correlation between two sequences of data. | 
+
 * ***AlgorithmParameter*** Adjustable algorithm parameters
 
 | Properties | Type | Description | Default|   

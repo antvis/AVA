@@ -40,6 +40,36 @@ getInsights(data, {
 });
 ```
 
+Customize insight types by the  ***insightTypes*** attribute. Detailed parameters are described in the [getInsights API](../../api/insight/auto-insight.en.md).
+
+```ts
+import { getInsights } from '@antv/ava';
+
+getInsights(data, {
+  limit: 10,
+  insightTypes: ['trend', 'time_series_outlier']
+});
+```
+
+Customize impact measures and weights by setting up ***impactMeasures*** and  ***impactWeight***.
+
+```ts
+import { getInsights } from '@antv/ava';
+
+getInsights(data, {
+  limit: 10,
+  // set the measures of the impact score
+  impactMeasures: [
+    { fieldName: 'life_expect', method: 'COUNT' },
+    { fieldName: 'pop', method: 'COUNT' },
+    { fieldName: 'fertility', method: 'COUNT' },
+  ],
+  // adjust the calculation weight of the relevant factors (significance, impact) 
+  // in the calculation of the insight score.
+  impactWeight: 0.5,
+});
+```
+
 ### insightPatternsExtractor Usage
 
 If you only want to get insights of a specific type, `insightPatternsExtractor` will be your first choice. Detailed input and output parameters are described in the [insightPatternsExtractor API](../../api/insight/insight-patterns-extractor.en.md).
