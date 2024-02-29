@@ -33,6 +33,20 @@ order: 1
 | algorithmParameter | `AlgorithmParameter` | 可调的算法参数 | 无 |
 | dataProcessInfo | `Extra` | 数据校验时数据处理的配置 | 无 |
 
+* ***InsightType*** 支持的洞察类型
+
+算子类型共有7种，默认情况下会运行每一个算法来返回洞察结果，也可设置InsightOptions['insightTypes']参数指定参与计算的洞察类型。
+
+| 类型值 | 名称 | 算法 | 描述 |
+| ----| ---- | ---- | ---- | 
+| `trend ` | 趋势检测 | [Mann-Kendall 检验](https://cran.r-project.org/web/packages/trend/vignettes/trend.pdf#page=2) | 检测时间序列数据在某一指标上是否存在显著增加或者减少。 | 
+| `change_point ` | 突变点检测 | [贝叶斯在线变点检测](https://arxiv.org/pdf/0710.3742.pdf) | 检测在时间序列中某一属性发生的突变。 | 
+| `majority ` | 显著性检测 | 限制比例 | 检测数据分布的显著性，判断是否有突出的数据指标。 | 
+| `low_variance ` | 低方差检测 | [变异系数](https://zh.wikipedia.org/zh-hans/%E5%8F%98%E5%BC%82%E7%B3%BB%E6%95%B0) | 检测数据分布的均匀性，判断数据点是否分布在均值附近。 |
+|  `category_outlier ` | 类别异常检测 | [ IQR ](https://zh.wikipedia.org/wiki/%E5%9B%9B%E5%88%86%E4%BD%8D%E8%B7%9D) | 检测数据中的异常类别。 | 
+| `time_series_outlier ` | 时间序列异常检测 | [STL 分解](https://otexts.com/fpp2/stl.html) | 检测在时间序列中的异常点。 |  
+| ` correlation` | 相关性检测 | [Pearson 积矩相关检验](https://zh.wikipedia.org/wiki/%E7%9A%AE%E5%B0%94%E9%80%8A%E7%A7%AF%E7%9F%A9%E7%9B%B8%E5%85%B3%E7%B3%BB%E6%95%B0?wprov=srpw1_0) |检测两个序列之间是否存在相关关系。 |
+
 * ***AlgorithmParameter*** 可调的算法参数
 
 | 属性 | 类型 | 描述 | 默认值 |  
