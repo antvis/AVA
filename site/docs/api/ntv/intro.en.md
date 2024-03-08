@@ -12,7 +12,7 @@ order: 1
 | spec         | `NarrativeTextSpec`             | data             | -              |
 | size         | 'normal' \| 'small'    | font size, normal is 14px, small is 12px           | 'normal'              |
 | theme         | 'light' \| 'dark'    | theme color, current support light mode and dark mode        | 'light'              |
-| entityStyle         |  `EntityStyle`   | entity style configuration          |                       |            |
+| palette         |  `PaletteConfig`   | palette configuration          |                       |            |
 | showCollapse         | boolean \| CollapseConfig    |     Paragraph collapsible configuration      | false              |
 
 ```typescript
@@ -26,4 +26,21 @@ type CollapseConfig = {
   /** collapse key change event */
   onCollapsed?: (collapsedKeys: string[]) => void;
 };
+```
+
+```typescript
+type PaletteConfig = Partial<
+  Record<'light'|'dark', Partial<
+    Record<
+      EntityType | 'text', {
+        /** color */ 
+        color: string, 
+        /** color when metadata.assessment equal 'positive' */ 
+        positiveColor: string;
+        /** color when metadata.assessment equal 'negative' */ 
+        negativeColor: string;
+      }
+    >
+  >>
+>;
 ```

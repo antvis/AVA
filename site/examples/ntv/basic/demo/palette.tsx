@@ -75,17 +75,19 @@ const App = () => {
       ) : (
         <NarrativeTextVis
           spec={spec}
-          entityStyle={{
-            metric_value: {
-              color: metricValueColor,
-            },
-            delta_value: {
-              positiveColor,
-              negativeColor,
-            },
-            ratio_value: {
-              positiveColor,
-              negativeColor,
+          palette={{
+            light: {
+              metric_value: {
+                color: metricValueColor,
+              },
+              delta_value: {
+                positiveColor,
+                negativeColor,
+              },
+              ratio_value: {
+                positiveColor,
+                negativeColor,
+              },
             },
           }}
         />

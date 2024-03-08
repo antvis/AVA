@@ -12,7 +12,7 @@ order: 1
 | spec         | `NarrativeTextSpec`             | 结构数据             | 无              |
 | size         | 'normal' \| 'small'    | 字体大小，normal 是 14px，small 是 12px           | 'default'              |
 | theme         | 'light' \| 'dark'    | 主题色，当前支持 light 亮色模式和 dark 暗色模式          | 'light'              |
-| entityStyle         | `EntityStyle`    | 实体样式配置          |               |
+| palette         | `PaletteConfig`    | 自定义色板          |               |
 | showCollapse         | boolean \| CollapseConfig    |     段落可折叠配置      | false              |
 
 ```typescript
@@ -26,6 +26,23 @@ type CollapseConfig = {
   /** 收起事件 */
   onCollapsed?: (collapsedKeys: string[]) => void;
 };
+```
+
+```typescript
+type PaletteConfig = Partial<
+  Record<'light'|'dark', Partial<
+    Record<
+      EntityType | 'text', {
+        /** 颜色 */ 
+        color: string, 
+        /** 当 metadata.assessment 为 'positive' 时的颜色 */ 
+        positiveColor: string;
+        /** 当 metadata.assessment 为 'negative' 时的颜色 */ 
+        negativeColor: string;
+      }
+    >
+  >>
+>;
 ```
 
 ## 插件工厂函数
