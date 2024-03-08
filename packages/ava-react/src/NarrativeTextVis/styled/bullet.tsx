@@ -10,7 +10,7 @@ const BULLET_PADDING_LEFT = 24;
 export const Bullet = styled.div<ThemeStylesProps>`
   padding-left: ${`${BULLET_PADDING_LEFT}px`};
   font-family: PingFangSC, sans-serif;
-  color: ${({ theme }) => getThemeColor('colorBase', theme)};
+  color: ${({ theme }) => getThemeColor({ colorToken: 'colorBase', theme })};
   font-size: ${({ size }) => getFontSize(size)};
   margin-bottom: 8px;
   line-height: ${({ size }) => getLineHeight(size)};
@@ -33,7 +33,7 @@ export const Li = styled.li<
   }
 >`
   list-style: inherit;
-  color: ${({ theme }) => getThemeColor('colorBase', theme)};
+  color: ${({ theme }) => getThemeColor({ colorToken: 'colorBase', theme })};
   font-size: ${({ size }) => getFontSize(size)};
   line-height: ${({ size }) => getLineHeight(size)};
   position: relative;

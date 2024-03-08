@@ -10,21 +10,13 @@ import type {
 } from '@antv/ava';
 import type { PluginManager } from '../chore/plugin';
 
-export type PhraseType = 'text' | EntityType | null;
 export type ThemeType = 'light' | 'dark';
 export type SizeType = 'normal' | 'small';
-
-type EntityStyle = Partial<
-  Record<
-    EntityType,
-    Partial<{
-      color: string;
-      bgColor: string;
-      positiveColor: string;
-      negativeColor: string;
-    }>
-  >
->;
+export type PaletteType = Partial<{
+  color: string;
+  positiveColor: string;
+  negativeColor: string;
+}>;
 
 export type ThemeStylesProps = {
   /**
@@ -40,10 +32,10 @@ export type ThemeStylesProps = {
    */
   theme?: ThemeType;
   /**
-   * @description encoding 主题
+   * @description theme palette
    * @description.zh-CN 主题色板
    */
-  entityStyle?: EntityStyle;
+  palette?: Partial<Record<ThemeType, Partial<Record<EntityType | 'text', PaletteType>>>>;
 };
 
 export type CollapseConfig = {

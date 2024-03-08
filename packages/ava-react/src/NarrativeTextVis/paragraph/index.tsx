@@ -31,10 +31,10 @@ export function Paragraph({
   pluginManager,
   size = 'normal',
   theme = 'light',
-  entityStyle,
+  palette,
   ...events
 }: ParagraphProps) {
-  const themeStyles = { size, theme, entityStyle };
+  const themeStyles = { size, theme, palette };
   const { onClickParagraph, onMouseEnterParagraph, onMouseLeaveParagraph, ...phraseEvents } = events || {};
 
   const onClick = () => {

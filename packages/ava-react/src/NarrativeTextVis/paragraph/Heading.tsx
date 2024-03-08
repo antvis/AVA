@@ -22,14 +22,14 @@ export function Heading({
   spec,
   theme = 'light',
   size = 'normal',
-  entityStyle,
+  palette,
   pluginManager = presetPluginManager,
   // TODO 标题支持展开收起
   // showCollapse = false,
   ...events
 }: HeadingProps) {
   const weight = getHeadingWeight(spec.type);
-  const themeStyles = { theme, size, entityStyle };
+  const themeStyles = { theme, size, palette };
 
   if (isNaN(weight)) return null;
 
