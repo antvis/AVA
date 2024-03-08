@@ -16,11 +16,11 @@ export const ProportionChart: React.FC<{ data: number } & ThemeStylesProps> = ({
   const r = fontSize / 2;
   return (
     <Svg width={fontSize} height={fontSize}>
-      <circle cx={r} cy={r} r={r} fill={getThemeColor('colorProportionShadow', theme)} />
+      <circle cx={r} cy={r} r={r} fill={getThemeColor({ colorToken: 'colorProportionShadow', theme })} />
       {data >= 1 ? (
-        <circle cx={r} cy={r} r={r} fill={getThemeColor('colorProportionFill', theme)} />
+        <circle cx={r} cy={r} r={r} fill={getThemeColor({ colorToken: 'colorProportionFill', theme })} />
       ) : (
-        <path d={getArcPath(fontSize, data)} fill={getThemeColor('colorProportionFill', theme)} />
+        <path d={getArcPath(fontSize, data)} fill={getThemeColor({ colorToken: 'colorProportionFill', theme })} />
       )}
     </Svg>
   );

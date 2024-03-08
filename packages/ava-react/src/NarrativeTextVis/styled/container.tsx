@@ -6,7 +6,7 @@ import type { ThemeStylesProps } from '../types';
 
 export const Container = styled.div<ThemeStylesProps>`
   font-family: PingFangSC, sans-serif;
-  color: ${({ theme }) => getThemeColor('colorBase', theme)};
+  color: ${({ theme }) => getThemeColor({ colorToken: 'colorBase', theme })};
   font-size: ${({ size }) => getFontSize(size)};
   line-height: ${({ size }) => getLineHeight(size)};
 `;

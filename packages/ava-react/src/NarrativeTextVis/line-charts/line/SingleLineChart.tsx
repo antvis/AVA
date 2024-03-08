@@ -20,11 +20,13 @@ export const SingleLineChart: React.FC<{ data: number[] } & ThemeStylesProps> = 
     <Svg width={width} height={height}>
       <defs>
         <linearGradient x1="50%" y1="0%" x2="50%" y2="122.389541%" id={LINEAR_FILL_COLOR_ID}>
-          <stop stopColor={getThemeColor('colorLineStroke', theme)} offset="0%" />
+          <stop stopColor={getThemeColor({ colorToken: 'colorLineStroke', theme })} offset="0%" />
           <stop stopColor="#FFFFFF" stopOpacity="0" offset="100%" />
         </linearGradient>
       </defs>
-      {linePath && <path d={linePath} stroke={getThemeColor('colorLineStroke', theme)} fill="transparent" />}
+      {linePath && (
+        <path d={linePath} stroke={getThemeColor({ colorToken: 'colorLineStroke', theme })} fill="transparent" />
+      )}
       {polygonPath && <polygon points={polygonPath} fill={`url(#${LINEAR_FILL_COLOR_ID})`} />}
     </Svg>
   );

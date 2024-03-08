@@ -94,7 +94,9 @@ function renderPhraseByDescriptor({
     <Tooltip
       color={theme === 'dark' ? 'white' : undefined}
       {...tooltip}
-      overlayInnerStyle={theme === 'dark' ? { color: getThemeColor('colorBase', 'light') } : undefined}
+      overlayInnerStyle={
+        theme === 'dark' ? { color: getThemeColor({ colorToken: 'colorBase', theme: 'light' }) } : undefined
+      }
       title={showTooltip}
     >
       {nodeWithEvents}
@@ -109,11 +111,11 @@ export const Phrase: React.FC<PhraseProps> = ({
   spec: phrase,
   size = 'normal',
   theme = 'light',
-  entityStyle,
+  palette,
   pluginManager = presetPluginManager,
   ...events
 }) => {
-  const themeStyles = { size, theme, entityStyle };
+  const themeStyles = { size, theme, palette };
 
   const eventProps = !isEmpty(events)
     ? {

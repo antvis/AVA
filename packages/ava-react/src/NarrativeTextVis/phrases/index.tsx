@@ -21,11 +21,11 @@ export function Phrases({
   spec,
   size = 'normal',
   theme = 'light',
-  entityStyle,
+  palette,
   pluginManager = presetPluginManager,
   ...events
 }: PhrasesProps) {
-  const themeStyles = { theme, size, entityStyle };
+  const themeStyles = { theme, size, palette };
   return (
     <>
       {spec?.map((phrase, index) => {

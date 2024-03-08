@@ -8,7 +8,7 @@ import type { ThemeStylesProps } from '../types';
 export const P = styled.p<ThemeStylesProps & Pick<TextParagraphSpec, 'indents'>>`
   white-space: pre-wrap; // 默认 pre 显示，可以显示空格和转义字符
   font-family: PingFangSC, sans-serif;
-  color: ${({ theme }) => getThemeColor('colorBase', theme)};
+  color: ${({ theme, palette }) => getThemeColor({ colorToken: 'colorBase', theme, palette, type: 'text' })};
   font-size: ${({ size }) => getFontSize(size)};
   min-height: 24px;
   line-height: ${({ size }) => getLineHeight(size)};
