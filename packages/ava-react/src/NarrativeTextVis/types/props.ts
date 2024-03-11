@@ -14,7 +14,15 @@ export type ThemeType = 'light' | 'dark';
 export type SizeType = 'normal' | 'small';
 export type PaletteType = Partial<{
   color: string;
+  /**
+   * @description Compare the indicator with the assessment attribute value of 'positive'. The color Settings are displayed
+   * @description.zh-CN 对比类指标，对应 assessment 属性值 'positive' 显示颜色设置
+   */
   positiveColor: string;
+  /**
+   * @description Compare the indicator with the assessment attribute value of 'negative'. The color Settings are displayed
+   * @description.zh-CN 对比类指标，对应 assessment 属性值为 'negative' 显示颜色设置
+   */
   negativeColor: string;
 }>;
 

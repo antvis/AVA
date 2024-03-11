@@ -35,9 +35,9 @@ type PaletteConfig = Partial<
       EntityType | 'text', {
         /** color */ 
         color: string, 
-        /** color when metadata.assessment equal 'positive' */ 
+        /** Compare the indicator with the assessment attribute value of 'positive'. The color Settings are displayed */ 
         positiveColor: string;
-        /** color when metadata.assessment equal 'negative' */ 
+        /** Compare the indicator with the assessment attribute value of 'negative'. The color Settings are displayed */ 
         negativeColor: string;
       }
     >

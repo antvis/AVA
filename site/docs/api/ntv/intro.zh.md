@@ -35,9 +35,9 @@ type PaletteConfig = Partial<
       EntityType | 'text', {
         /** 颜色 */ 
         color: string, 
-        /** 当 metadata.assessment 为 'positive' 时的颜色 */ 
+        /** 对比类指标，对应 assessment 属性值 'positive' 显示颜色设置 */ 
         positiveColor: string;
-        /** 当 metadata.assessment 为 'negative' 时的颜色 */ 
+        /** 对比类指标，对应 assessment 属性值为 'negative' 显示颜色设置 */ 
         negativeColor: string;
       }
     >
