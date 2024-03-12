@@ -188,5 +188,5 @@ export const Phrase: React.FC<PhraseProps> = ({
     return <>{renderPhraseByDescriptor({ spec: phrase, descriptor, themeStyles, events })}</>;
   }
 
-  return !isEmpty(events) ? <span {...eventProps}>defaultText</span> : defaultText;
+  return !isEmpty(events) ? <span {...eventProps}>{defaultText}</span> : defaultText;
 };
