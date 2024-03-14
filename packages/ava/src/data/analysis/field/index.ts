@@ -277,7 +277,7 @@ export function analyzeField(
       }
       break;
     case 2:
-      if (types.includes('integer') && types.includes('float')) {
+      if ((types.includes('integer') || types.includes('date')) && types.includes('float')) {
         recommendation = 'float';
         break;
       }
@@ -325,7 +325,7 @@ export function analyzeField(
         restNotNullArray = restNotNullArray.filter((item) => !isIntegerString(item));
       } else if (item === 'float') {
         meta.float = analyzeField(
-          restNotNullArray.filter((item) => isFloatString(item)),
+          restNotNullArray.filter((item) => isFloatString(item) && !isDateString(item)),
           strictDatePattern
         ) as NumberFieldInfo;
         restNotNullArray = restNotNullArray.filter((item) => !isFloatString(item));
