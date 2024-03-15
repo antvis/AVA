@@ -443,3 +443,17 @@ test('date cols not boolean', () => {
   expect(d.minimum).toBe('2019-01-01');
   expect(d.maximum).toBe('2019-01-02');
 });
+
+test('recommendation hitting both float and Date types', () => {
+  const data = ['7007093.11', '2074.6'];
+  const d = analyzeField(data);
+  expect(d.type).toBe('mixed');
+  expect(d.recommendation).toBe('float');
+});
+
+test('recommendation hitting both integer and Date types', () => {
+  const data = ['32', '1980'];
+  const d = analyzeField(data);
+  expect(d.type).toBe('mixed');
+  expect(d.recommendation).toBe('integer');
+});
