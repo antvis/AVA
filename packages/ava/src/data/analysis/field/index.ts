@@ -286,8 +286,10 @@ export function analyzeField(
         const data = list.filter((item) => item !== null);
         if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
           recommendation = 'date';
-          break;
+        } else {
+          recommendation = 'integer';
         }
+        break;
       }
       recommendation = 'string';
       break;
