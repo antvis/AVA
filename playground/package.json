@@ -43,7 +43,7 @@
     "@antv/auto-chart": "^2.0.3",
     "@antv/chart-advisor": "^2.0.3",
     "@antv/ckb": "^2.0.3",
-    "@antv/g2": "5.0.0",
+    "@antv/g2": "^5.0.0",
     "@antv/g2plot": "^2.0.9",
     "@antv/g6": "^4.3.11",
     "@antv/lite-insight": "^2.0.3",

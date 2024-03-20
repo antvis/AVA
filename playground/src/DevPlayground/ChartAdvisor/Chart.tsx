@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import { render } from '@antv/g2';
 
 export const Chart = ({ id, spec }: any) => {
   const containerRef = useRef<HTMLElement>(null);
+
   useEffect(() => {
     if (containerRef.current) {
       const container = document.getElementById('container');
@@ -23,5 +24,5 @@ export const Chart = ({ id, spec }: any) => {
     }
   }, []);
   // @ts-ignore 待 g2 确认渲染方式
-  return <div ref={container} id={id} style={{ width: '100%', height: 200, margin: 'auto' }}></div>;
+  return <div ref={containerRef} id={id} style={{ width: '100%', height: 200, margin: 'auto' }}></div>;
 };
