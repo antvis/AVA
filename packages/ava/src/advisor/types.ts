@@ -62,17 +62,17 @@ export type Lint = {
 export type AdviseParams = ChartAdviseParams;
 
 export type ChartAdviseParams = {
-  /** input data to advise */
+  /** input data [ {a: xxx, b: xxx}, ... ]  */
   data: Data;
   /** customized data props to advise */
   dataProps?: Partial<BasicDataPropertyForAdvice>[];
   /** data fields to focus, apply in `data` and `dataProps` */
   fields?: string[];
-  /** SmartColor mode on/off */
-  smartColor?: boolean;
   /** advising options such as purpose, layout preferences */
   options?: AdvisorOptions;
-  /** smart color options */
+  /** SmartColor mode on/off, optional props, default is off */
+  smartColor?: boolean;
+  /** smart color options,  @see {@link SmartColorOptions} */
   colorOptions?: SmartColorOptions;
 };
 

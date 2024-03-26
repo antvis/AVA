@@ -1,6 +1,6 @@
-import type { RuleModule } from '../types';
+import type { ChartRuleModule } from '../types';
 
-export const aggregationSingleRow: RuleModule = {
+export const aggregationSingleRow: ChartRuleModule = {
   id: 'aggregation-single-row',
   type: 'HARD',
   docs: {

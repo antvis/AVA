@@ -1,7 +1,7 @@
 import { DataFrame } from '../../../src/data';
 import { Advisor } from '../../../src/advisor/index';
 import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../../../src/advisor/ruler';
-import { assembleDataProps } from '../../../src/advisor/advise-pipeline/advicesForChart';
+import { getDataProps } from '../../../src/advisor/advise-pipeline';
 
 import type { Specification } from '../../../src/common/types';
 
@@ -19,7 +19,7 @@ const myRule: RuleModule = {
   },
   trigger: (args) => {
     const { chartType } = args;
-    return ['pie_chart'].includes(chartType);
+    return !!chartType && ['pie_chart'].includes(chartType);
   },
   validator: (args) => {
     let result = 1;
@@ -72,13 +72,13 @@ describe('dataprops test', () => {
   });
 
   test('customized dataProps', () => {
-    const defaultProps = assembleDataProps(data, ['price', 'type']);
+    const defaultProps = getDataProps(data, ['price', 'type']);
     const defaultTypeOfPrice = defaultProps.find((item) => item.name === 'price')?.levelOfMeasurements;
 
     const userSpecifiedProps = [
       { name: 'price', levelOfMeasurements: ['Interval'] },
     ] as Partial<BasicDataPropertyForAdvice>[];
-    const customProps = assembleDataProps(data, ['price', 'type'], userSpecifiedProps);
+    const customProps = getDataProps(data, ['price', 'type'], userSpecifiedProps);
     const customTypeOfPrice = customProps.find((item) => item.name === 'price')?.levelOfMeasurements;
 
     expect(defaultTypeOfPrice).toEqual(['Interval', 'Discrete']);

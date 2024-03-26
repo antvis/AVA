@@ -1,5 +1,5 @@
 import { DataFrame } from '../../../../src/data';
-import { getChartTypeSpec } from '../../../../src/advisor/advise-pipeline/spec-mapping';
+import { getChartTypeSpec } from '../../../../src/advisor/advise-pipeline';
 import { BasicDataPropertyForAdvice } from '../../../../src/advisor/ruler';
 
 describe('chart mapping with 「nominal-numerical」 data', () => {
