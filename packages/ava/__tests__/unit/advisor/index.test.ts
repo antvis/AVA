@@ -2,8 +2,7 @@ import { Advisor } from '../../../src/advisor';
 import { BasicDataPropertyForAdvice, RuleConfig, RuleModule } from '../../../src/advisor/ruler';
 import { hasSubset } from '../../../src/advisor/utils';
 
-import type { CkbConfig } from '../../../src/ckb/ckb';
-import type { ChartKnowledge } from '../../../src/ckb/types';
+import type { ChartKnowledge, CkbConfig } from '../../../src/ckb/types';
 import type { Specification, Data } from '../../../src/common/types';
 
 const myRule: RuleModule = {
