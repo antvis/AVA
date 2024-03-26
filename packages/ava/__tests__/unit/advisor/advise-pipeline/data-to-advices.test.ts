@@ -38,12 +38,23 @@ describe('UNIT TEST: dataToAdvices', () => {
     const chartKnowledgeBase: any = ckb();
     chartKnowledgeBase.ironball_chart = ironBallChart;
 
-    const resultRequireSpecByDefault = dataToAdvices(testData, dataProps, chartKnowledgeBase, ruleBase);
+    const resultRequireSpecByDefault = dataToAdvices({
+      adviseParams: { data: testData, dataProps },
+      ckb: chartKnowledgeBase,
+      ruleBase,
+    });
     const customChartAdvice1 = resultRequireSpecByDefault.advices.find((advice) => advice.type === 'ironball_chart');
     expect(customChartAdvice1).toBe(undefined);
 
-    const resultNotRequireSpec = dataToAdvices(testData, dataProps, chartKnowledgeBase, ruleBase, false, {
-      requireSpec: false,
+    const resultNotRequireSpec = dataToAdvices({
+      adviseParams: {
+        data: testData,
+        dataProps,
+        options: { requireSpec: false },
+        smartColor: false,
+      },
+      ckb: chartKnowledgeBase,
+      ruleBase,
     });
 
     const customChartAdvice2 = resultNotRequireSpec.advices.find((advice) => advice.type === 'ironball_chart');

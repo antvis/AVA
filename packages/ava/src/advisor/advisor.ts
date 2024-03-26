@@ -1,28 +1,12 @@
 import { ckb } from '../ckb';
 
 import { processRuleCfg } from './ruler';
-import { advicesForChart } from './advise-pipeline';
+import { dataToAdvices } from './advise-pipeline';
 import { checkRules } from './lint-pipeline/check-rules';
 
 import type { ChartKnowledgeBase } from '../ckb';
 import type { RuleModule } from './ruler';
-import type {
-  AdvisorConfig,
-  Advice,
-  AdviseParams,
-  ChartAdviseParams,
-  AdviseResult,
-  LintResult,
-  LintParams,
-  Lint,
-} from './types';
-
-/*
- * 搬运计划
- * 0. 架构设计
- * 1. Advisor 搬运
- * 2. Linter 搬运
- */
+import type { AdvisorConfig, Advice, AdviseParams, AdviseResult, LintResult, LintParams, Lint } from './types';
 
 export class Advisor {
   /**
@@ -41,12 +25,12 @@ export class Advisor {
   }
 
   advise(params: AdviseParams): Advice[] {
-    const adviseResult = advicesForChart(params as ChartAdviseParams, this.ckb, this.ruleBase);
+    const adviseResult = dataToAdvices({ adviseParams: params, ckb: this.ckb, ruleBase: this.ruleBase });
     return adviseResult.advices;
   }
 
   adviseWithLog(params: AdviseParams): AdviseResult {
-    const adviseResult = advicesForChart(params as ChartAdviseParams, this.ckb, this.ruleBase);
+    const adviseResult = dataToAdvices({ adviseParams: params, ckb: this.ckb, ruleBase: this.ruleBase });
     return adviseResult;
   }
 

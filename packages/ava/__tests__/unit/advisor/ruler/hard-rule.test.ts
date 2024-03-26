@@ -7,7 +7,9 @@ describe('Test all hard rules', () => {
     expect(
       aggregationSingleRow.validator({
         chartType: 'anyChart',
-        dataProps: [{ count: 1, levelOfMeasurements: ['discrete'] }],
+        dataProps: [
+          { count: 1, levelOfMeasurements: ['Discrete'], rawData: [0.5], recommendation: 'float', type: 'float' },
+        ],
       })
     ).toBe(1);
   });
