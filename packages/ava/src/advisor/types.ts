@@ -23,7 +23,7 @@ export type AdvisorConfig = {
  */
 export type Advice = {
   /**
-   * Chart Type: should be standard CKB ChartID or any string id for customized chart.
+   * Chart Type: should be standard CKB ChartId or any string id for customized chart.
    */
   type: string;
   /**

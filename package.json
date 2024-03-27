@@ -4,6 +4,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/AVA"
+  },
   "scripts": {
     "boot": "lerna bootstrap --force-local",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
