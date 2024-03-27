@@ -1,8 +1,8 @@
-import { colorToHex } from '@antv/color-schema';
+import { type ColorSchemeType, colorToHex } from '@antv/color-schema';
 import { hexToColor, paletteGeneration } from '@antv/smart-color';
 
 import { BasicDataPropertyForAdvice, Specification, Theme } from '../../types';
-import { getSpecWithEncodeType } from '../../utils/inferDataType';
+import { getSpecWithEncodeType } from '../../utils/infer-data-type';
 import { DISCRETE_PALETTE_TYPES, CATEGORICAL_PALETTE_TYPES } from '../constants';
 
 export function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: Specification, theme: Theme) {
@@ -15,7 +15,7 @@ export function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: S
     // if color is specified
     if (layerEnc.color) {
       const { type, field } = layerEnc.color;
-      let colorScheme;
+      let colorScheme: ColorSchemeType;
       if (type === 'quantitative') {
         colorScheme = DISCRETE_PALETTE_TYPES[Math.floor(Math.random() * DISCRETE_PALETTE_TYPES.length)];
       } else {

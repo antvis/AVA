@@ -23,14 +23,13 @@ function isTransform(encode: Encode): encode is Callback {
   return typeof encode === 'function';
 }
 
-// @ts-ignore: constant - 常数比例尺 / identity - 恒等比例尺 对用户不透出，所以此处ts-ignore
 function scaleType2dataType(scaleType: ScaleTypes): DataType {
   switch (scaleType) {
     case 'linear':
     case 'log':
     case 'pow':
     case 'sqrt':
-    case 'qunatile':
+    case 'quantile':
     case 'threshold':
     case 'quantize':
     case 'sequential':

@@ -1,4 +1,4 @@
-import { getSpecWithEncodeType } from '../../utils/inferDataType';
+import { getSpecWithEncodeType } from '../../utils/infer-data-type';
 
 import { MAX_SOFT_RULE_COEFFICIENT } from './constants';
 

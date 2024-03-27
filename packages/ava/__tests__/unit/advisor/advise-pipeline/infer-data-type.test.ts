@@ -1,4 +1,4 @@
-import { inferDataType } from '../../../../src/advisor/utils/inferDataType';
+import { inferDataType } from '../../../../src/advisor/utils/infer-data-type';
 
 describe('chart mapping', () => {
   test('chart mapping from CKB', () => {

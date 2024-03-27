@@ -2,7 +2,7 @@ import { ColorSchemeType, colorToHex } from '@antv/color-schema';
 import { SimulationType, hexToColor, paletteGeneration, colorSimulation } from '@antv/smart-color';
 
 import { BasicDataPropertyForAdvice, Specification } from '../../types';
-import { getSpecWithEncodeType } from '../../utils/inferDataType';
+import { getSpecWithEncodeType } from '../../utils/infer-data-type';
 
 export function applySmartColor(
   dataProps: BasicDataPropertyForAdvice[],

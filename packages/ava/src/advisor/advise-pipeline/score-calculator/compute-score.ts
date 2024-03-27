@@ -1,16 +1,14 @@
-import { Info, RuleModule } from '../ruler';
-import { DEFAULT_RULE_WEIGHTS } from '../constants';
-import { CHART_IDS } from '../../ckb';
+import { Info, RuleModule } from '../../ruler';
+import { DEFAULT_RULE_WEIGHTS } from '../../constants';
 
-import type { ScoringResultForRule } from '../types';
-import type { ChartRuleModule } from '../ruler/types';
-import type { ChartKnowledgeBase } from '../../ckb';
+import type { ScoringResultForRule } from '../../types';
+import type { ChartRuleModule } from '../../ruler/types';
+import type { ChartId, ChartKnowledgeBase } from '../../../ckb';
 
 const defaultWeights = DEFAULT_RULE_WEIGHTS;
-declare type ChartID = (typeof CHART_IDS)[number];
 
-const computeScore = (
-  chartType: ChartID | string,
+export const computeScore = (
+  chartType: ChartId | string,
   chartWIKI: ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>,
   ruleType: 'HARD' | 'SOFT',
@@ -35,5 +33,3 @@ const computeScore = (
     });
   return computedScore;
 };
-
-export default computeScore;
