@@ -1,3 +1,5 @@
+import { isObject } from 'lodash';
+
 import type { EntityMetaData, EntityType } from '@antv/ava';
 import type { CSSProperties, ReactNode } from 'react';
 import type { TooltipProps } from 'antd';
@@ -89,13 +91,13 @@ export type AnyObject = Record<string, unknown>;
 export type PluginType = PhraseDescriptor<any> | BlockDescriptor<any>;
 
 export function isBlockDescriptor(plugin: PluginType): plugin is BlockDescriptor<any> {
-  return 'isBlock' in plugin && plugin.isBlock;
+  return isObject(plugin) && 'isBlock' in plugin && plugin.isBlock;
 }
 
 export function isEntityDescriptor(plugin: PluginType): plugin is PhraseDescriptor<any> {
-  return 'isEntity' in plugin && plugin.isEntity;
+  return isObject(plugin) && 'isEntity' in plugin && plugin.isEntity;
 }
 
 export function isCustomPhraseDescriptor(plugin: PluginType): plugin is PhraseDescriptor<any> {
-  return 'isEntity' in plugin && !plugin.isEntity;
+  return isObject(plugin) && 'isEntity' in plugin && !plugin.isEntity;
 }
