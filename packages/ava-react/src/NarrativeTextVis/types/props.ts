@@ -130,7 +130,7 @@ export type NarrativeTextVisProps = ThemeStylesProps &
     spec: NarrativeTextSpec;
     /**
      * @description the function to be called when copy event is listened. If it is undefined, the default behavior is to put the transformed html and plain text into user's clipboard
-     * @description.监听到 copy 事件时执行的函数，可用于控制复制的内容和复制行为，如果不传，默认将会把转换后的富文本和纯文本内容放入剪切板
+     * @description.监听到 copy 事件时执行的函数，可用于控制复制的内容和复制行为，如果不传，默认将会把转换后的富文本和纯文本内容放入剪切板；如果为 null 则执行浏览器默认行为
      */
-    copyNarrative?: (content: { spec: NarrativeTextSpec; plainText: string; html: string }) => void;
+    copyNarrative?: null | ((content: { spec: NarrativeTextSpec; plainText: string; html: string }) => void);
   };
