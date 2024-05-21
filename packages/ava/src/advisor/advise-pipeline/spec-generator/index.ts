@@ -25,6 +25,7 @@ import {
 import type { Data } from '../../../common/types';
 import type { ChartId, ChartKnowledge } from '../../../ckb';
 import type { BasicDataPropertyForAdvice } from '../../ruler';
+import type { Advice } from '../../types';
 
 /**
  * Convert chartType + data to antv-spec
@@ -36,12 +37,17 @@ import type { BasicDataPropertyForAdvice } from '../../ruler';
  * @param chartKnowledge chart knowledge of a singble chart
  * @returns spec or null
  */
-export function getChartTypeSpec(
-  chartType: string,
-  data: Data,
-  dataProps: BasicDataPropertyForAdvice[],
-  chartKnowledge?: ChartKnowledge
-) {
+export function getChartTypeSpec({
+  chartType,
+  data,
+  dataProps,
+  chartKnowledge,
+}: {
+  chartType: string;
+  data: Data;
+  dataProps: BasicDataPropertyForAdvice[];
+  chartKnowledge?: ChartKnowledge;
+}): Advice['spec'] {
   // step 0: check whether the chartType is default in `ChartId`
   // if not, use customized `toSpec` function
   if (!CHART_IDS.includes(chartType as ChartId) && chartKnowledge) {
