@@ -1,7 +1,7 @@
-import { compareAdvices, scoreRules } from './score-calculator';
+import { compareAdvices, scoreRules } from '../score-calculator';
 
-import type { ChartKnowledge } from '../../ckb';
-import type { ScoringResultForChartType, BasicDataPropertyForAdvice, RuleModule, AdvisorOptions } from '../types';
+import type { ChartKnowledge } from '../../../ckb';
+import type { ScoringResultForChartType, BasicDataPropertyForAdvice, RuleModule, AdvisorOptions } from '../../types';
 
 export const getChartTypeRecommendations = ({
   chartWIKI,

@@ -1,7 +1,7 @@
 import { Data } from '../../../../common/types';
 import { Advice, BasicDataPropertyForAdvice } from '../../../types';
 import { compare, hasSubset } from '../../../utils';
-import { splitColumnXYSeries } from '../splitFields';
+import { splitColumnXYSeries } from '../../visual-encoder/split-fields';
 
 export function columnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
