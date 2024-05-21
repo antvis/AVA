@@ -1,4 +1,4 @@
-import { splitLineXY } from '../splitFields';
+import { splitLineXY } from '../../visual-encoder/split-fields';
 
 import type { Data } from '../../../../common/types';
 import type { Advice, BasicDataPropertyForAdvice } from '../../../types';
