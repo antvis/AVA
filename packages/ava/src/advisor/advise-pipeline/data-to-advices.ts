@@ -2,7 +2,7 @@ import { cloneDeep, deepMix } from '../utils';
 
 import { getChartTypeSpec } from './spec-generator';
 import { DEFAULT_COLOR } from './constants';
-import { getChartTypeRecommendations } from './get-chart-Type';
+import { getChartTypeRecommendations } from './chart-type-recommend/get-chart-Type';
 import { applyTheme, applyDesignRules, applySmartColor } from './spec-processors';
 import { getDataProps, getSelectedData } from './data-processors';
 
@@ -46,7 +46,12 @@ export function dataToAdvices({
   const list: Advice[] = chartTypeRecommendations.map((result) => {
     // step 2: generate spec for each chart type
     const { score, chartType } = result;
-    const chartTypeSpec = getChartTypeSpec(chartType, filteredData, dataProps, ckb[chartType]);
+    const chartTypeSpec = getChartTypeSpec({
+      chartType,
+      data: filteredData,
+      dataProps,
+      chartKnowledge: ckb[chartType],
+    });
 
     // step 3: apply spec processors such as design rules, theme, color, to improve spec
     if (chartTypeSpec && refine) {
