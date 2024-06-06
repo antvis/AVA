@@ -1,7 +1,15 @@
 import { ScaleTypes } from '@antv/g2';
 import { mapValues } from 'lodash';
 
-import { Callback, ChartSpecWithEncodeType, DataType, Encode, G2ChartSpec, Primitive, TabularData } from '../types';
+import type {
+  Callback,
+  ChartSpecWithEncodeType,
+  DataType,
+  Encode,
+  G2ChartSpec,
+  Primitive,
+  TabularData,
+} from '../types';
 
 function isQuantitative(d: any): boolean {
   return typeof d === 'number';

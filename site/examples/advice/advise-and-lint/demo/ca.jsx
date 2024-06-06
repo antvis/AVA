@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import ReactDOM from 'react-dom';
 import { PagList, JSONView } from 'antv-site-demo-rc';
@@ -14,13 +14,29 @@ const defaultData = [
 
 // usage
 const myChartAdvisor = new Advisor();
-const results = myChartAdvisor.advise({ data: defaultData });
 
-const App = () => (
-  <PagList
-    data={results}
-    renderItem={(item) => <JSONView json={item} style={{ height: '100%' }} rjvConfigs={{ collapsed: 1 }} />}
-  />
-);
+const App = () => {
+  const [results, setResults] = useState();
+
+  useEffect(() => {
+    myChartAdvisor.adviseAsync({ data: defaultData }).then((results) => {
+      setResults(results);
+    });
+    const { dataProps, data: filteredData } = myChartAdvisor.dataAnalyzer.execute({ data: defaultData }) || {};
+    myChartAdvisor.specGenerator.execute({
+      dataProps,
+      data: filteredData,
+      chartTypeRecommendations: [{ chartType: 'pie_chart' }],
+    });
+    // console.log('advices', advices)
+  }, []);
+
+  return (
+    <PagList
+      data={results}
+      renderItem={(item) => <JSONView json={item} style={{ height: '100%' }} rjvConfigs={{ collapsed: 1 }} />}
+    />
+  );
+};
 
 ReactDOM.render(<App />, document.getElementById('container'));
