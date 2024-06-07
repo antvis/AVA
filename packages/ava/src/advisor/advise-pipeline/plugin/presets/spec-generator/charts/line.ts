@@ -1,6 +1,7 @@
 import { splitLineXY } from '../../visual-encoder/split-fields';
+import { getLineSize } from '../../visual-encoder/utils';
 
-import type { Data } from '../../../../../../common/types';
+import type { Data, Datum } from '../../../../../../common/types';
 import type { Advice, BasicDataPropertyForAdvice } from '../../../../../types';
 
 export function lineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
@@ -13,6 +14,10 @@ export function lineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): 
     encode: {
       x: field4X.name,
       y: field4Y.name,
+      size: (datum: Datum) => getLineSize(datum, data, { field4X }),
+    },
+    legend: {
+      size: false,
     },
   };
 
@@ -34,6 +39,10 @@ export function stepLineChart(data: Data, dataProps: BasicDataPropertyForAdvice[
       x: field4X.name,
       y: field4Y.name,
       shape: 'hvh',
+      size: (datum: Datum) => getLineSize(datum, data, { field4X }),
+    },
+    legend: {
+      size: false,
     },
   };
 

@@ -10,9 +10,13 @@ export function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [Retur
     dataProps.find((field) => intersects(field.levelOfMeasurements, ['Nominal'])) ??
     dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal'])) ??
     dataProps.find((field) => intersects(field.levelOfMeasurements, ['Interval']));
-  const field4Angle = dataProps
-    .filter((field) => field !== field4Color)
-    .find((field) => intersects(field.levelOfMeasurements, ['Interval', 'Nominal', 'Time', 'Ordinal']));
+  const field4Angle =
+    dataProps
+      .filter((field) => field !== field4Color)
+      .find((field) => intersects(field.levelOfMeasurements, ['Interval'])) ??
+    dataProps
+      .filter((field) => field !== field4Color)
+      .find((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Time', 'Ordinal']));
   return [field4Color, field4Angle];
 }
 
@@ -25,7 +29,7 @@ export function splitLineXY(dataProps: BasicDataPropertyForAdvice[]): [ReturnFie
     .find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
   const field4Color = dataProps
     .filter((field) => field !== field4X && field !== field4Y)
-    .find((field) => hasSubset(field.levelOfMeasurements, ['Nominal', 'Ordinal', 'Time']));
+    .find((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal', 'Time']));
   return [field4X, field4Y, field4Color];
 }
 
