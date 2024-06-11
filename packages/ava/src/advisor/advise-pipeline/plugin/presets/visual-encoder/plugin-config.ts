@@ -1,6 +1,6 @@
-import type { PluginType, VisualEncoderInput } from '../../../../types';
+import type { AdvisorPluginType, VisualEncoderInput } from '../../../../types';
 
-export const visualEncoderPlugin: PluginType<VisualEncoderInput, VisualEncoderInput> = {
+export const visualEncoderPlugin: AdvisorPluginType<VisualEncoderInput, VisualEncoderInput> = {
   name: 'defaultVisualEncoder',
   stage: ['encode'],
   execute: (input) => {

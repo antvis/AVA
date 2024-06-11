@@ -19,10 +19,10 @@ import type {
   Lint,
   AdvisorPipelineContext,
   PipelineStageType,
-  PluginType,
+  AdvisorPluginType,
   DataProcessorInput,
   DataProcessorOutput,
-  ChartTypeRecommendInputParams,
+  ChartTypeRecommendInput,
   ChartTypeRecommendOutput,
   VisualEncoderInput,
   VisualEncoderOutput,
@@ -43,7 +43,7 @@ export class Advisor {
 
   dataAnalyzer: BaseComponent<DataProcessorInput, DataProcessorOutput>;
 
-  chartTypeRecommender: BaseComponent<ChartTypeRecommendInputParams, ChartTypeRecommendOutput>;
+  chartTypeRecommender: BaseComponent<ChartTypeRecommendInput, ChartTypeRecommendOutput>;
 
   chartEncoder: BaseComponent<VisualEncoderInput, VisualEncoderOutput>;
 
@@ -51,24 +51,28 @@ export class Advisor {
 
   context: AdvisorPipelineContext;
 
-  plugins: PluginType[];
+  plugins: AdvisorPluginType[];
 
   pipeline: Pipeline;
 
   constructor(
     config: AdvisorConfig = {},
     custom: {
-      plugins?: PluginType[];
+      plugins?: AdvisorPluginType[];
       components?: BaseComponent[];
+      /** extra info to pass through the pipeline
+       * 额外透传到推荐 pipeline 中的业务信息
+       */
+      extra?: Record<string, any>;
     } = {}
   ) {
     // init
+    const { plugins, components, extra = {} } = custom;
     this.ckb = ckb(config.ckbCfg);
     this.ruleBase = processRuleCfg(config.ruleCfg);
-    this.context = { advisor: this };
+    this.context = { advisor: this, extra };
     this.initDefaultComponents();
     const defaultComponents = [this.dataAnalyzer, this.chartTypeRecommender, this.chartEncoder, this.specGenerator];
-    const { plugins, components } = custom;
     this.plugins = plugins;
     this.pipeline = new Pipeline({ components: components ?? defaultComponents });
   }
@@ -82,11 +86,6 @@ export class Advisor {
     // this.chartEncoder = new BaseComponent('chartEncode', { plugins: [visualEncoderPlugin], context: this.context });
     this.specGenerator = new BaseComponent('specGenerate', { plugins: [specGeneratorPlugin], context: this.context });
   }
-
-  // todo 定义多个链路串并联的方法
-  // private definePipeline(components: BaseComponent[]) {
-  //   this.pipeline.components = components;
-  // }
 
   // todo 暂时还在用旧链路，需要改造到新链路
   advise(params: AdviseParams): Advice[] {
@@ -119,7 +118,7 @@ export class Advisor {
     return lintResult;
   }
 
-  registerPlugins(plugins: PluginType[]) {
+  registerPlugins(plugins: AdvisorPluginType[]) {
     const stage2Components: Record<PipelineStageType, BaseComponent> = {
       dataAnalyze: this.dataAnalyzer,
       chartTypeRecommend: this.chartTypeRecommender,

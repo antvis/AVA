@@ -7,7 +7,7 @@ import type { MarkEncode } from './mark';
 export type PipelineStageType = 'dataAnalyze' | 'chartTypeRecommend' | 'encode' | 'specGenerate';
 
 /** 基础插件接口定义 */
-export interface PluginType<Input = any, Output = any> {
+export interface AdvisorPluginType<Input = any, Output = any> {
   /** 插件的唯一标识 */
   name: string;
   /** 插件运行的阶段，用于指定插件在 pipeline 的哪个环节运行 * */
@@ -30,7 +30,7 @@ export type DataProcessorOutput = {
   dataProps: BasicDataPropertyForAdvice[];
 };
 
-export type ChartTypeRecommendInputParams = {
+export type ChartTypeRecommendInput = {
   dataProps: BasicDataPropertyForAdvice[];
 };
 
@@ -43,7 +43,11 @@ export type SpecGeneratorInput = {
   // 单独调用 SpecGenerator 时，还要额外计算 dataProps 么
   dataProps: BasicDataPropertyForAdvice[];
 };
-export type SpecGeneratorOutput = { advices: Advice[] };
+export type SpecGeneratorOutput = {
+  advices: (Omit<Advice, 'spec'> & {
+    spec: Record<string, any> | null;
+  })[];
+};
 
 export type VisualEncoderInput = {
   chartType: ChartId;
