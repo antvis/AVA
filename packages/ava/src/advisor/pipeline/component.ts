@@ -1,7 +1,7 @@
 import { AsyncParallelHook, SyncHook } from 'tapable';
 import { last } from 'lodash';
 
-import type { PluginType, AdvisorPipelineContext } from '../types';
+import type { AdvisorPluginType, AdvisorPipelineContext } from '../types';
 
 /** 收集多个 plugin 的输出结果 */
 type PluginResultMap<Output = any> = Record<string, Output>;
@@ -9,7 +9,7 @@ type PluginResultMap<Output = any> = Record<string, Output>;
 export class BaseComponent<Input = any, Output = any> {
   name: string;
 
-  plugins: PluginType<Input, Output>[] = [];
+  plugins: AdvisorPluginType<Input, Output>[] = [];
 
   /** 是否存在异步插件 */
   private hasAsyncPlugin: boolean;
@@ -18,15 +18,15 @@ export class BaseComponent<Input = any, Output = any> {
 
   syncPluginManager: SyncHook<[Input, PluginResultMap<Output>], Output>;
 
-  afterPluginsExecute?: (params: PluginResultMap<Output>) => Output;
+  afterPluginsExecute?: (params: PluginResultMap<Output>, context?: AdvisorPipelineContext) => Output;
 
   context?: AdvisorPipelineContext;
 
   constructor(
     name,
     options?: {
-      plugins?: PluginType<Input, Output>[];
-      afterPluginsExecute?: (params: PluginResultMap<Output>) => Output;
+      plugins?: AdvisorPluginType<Input, Output>[];
+      afterPluginsExecute?: (params: PluginResultMap<Output>, context?: AdvisorPipelineContext) => Output;
       context?: AdvisorPipelineContext;
     }
   ) {
@@ -45,7 +45,7 @@ export class BaseComponent<Input = any, Output = any> {
     return last(Object.values(params));
   }
 
-  private isPluginAsync(plugin: PluginType) {
+  private isPluginAsync(plugin: AdvisorPluginType) {
     // 检测插件是否为异步的，并设置hasAsyncPlugin标志位
     if (plugin.execute.constructor.name === 'AsyncFunction') {
       return true;
@@ -54,7 +54,7 @@ export class BaseComponent<Input = any, Output = any> {
   }
 
   // 处理 之前都是同步的插件，新追加注册一个异步的插件 的情况 -- 需要执行的地方就不能用
-  registerPlugin(plugin: PluginType) {
+  registerPlugin(plugin: AdvisorPluginType) {
     plugin.onLoad?.(this.context);
     this.plugins.push(plugin);
     if (this.isPluginAsync(plugin)) {
@@ -94,22 +94,11 @@ export class BaseComponent<Input = any, Output = any> {
       // console.warn('存在异步执行的插件，建议使用 executeAsync')
       const pluginsOutput = {};
       return this.pluginManager.promise(params, pluginsOutput).then(async () => {
-        return this.afterPluginsExecute?.(pluginsOutput);
+        return this.afterPluginsExecute?.(pluginsOutput, this.context);
       });
     }
     const pluginsOutput = {};
     this.syncPluginManager.call(params, pluginsOutput);
-    return this.afterPluginsExecute?.(pluginsOutput);
+    return this.afterPluginsExecute?.(pluginsOutput, this.context);
   }
-
-  // todo 是否应该区分同步和异步接口
-  // executeAsync(params: Input): Promise<Output> {
-  //   if(!this.hasAsyncPlugin) {
-  //     console.warn('插件均同步执行，建议使用 execute')
-  //   }
-  //   const pluginsOutput = {};
-  //   return this.pluginManager.promise(params, pluginsOutput).then(async () => {
-  //     return this.afterPluginsExecute?.(pluginsOutput);
-  //   });
-  // }
 }

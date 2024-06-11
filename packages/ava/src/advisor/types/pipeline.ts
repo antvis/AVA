@@ -65,7 +65,9 @@ export type ChartAdviseParams = {
   data: Data;
   /** customized data props to advise */
   dataProps?: Partial<BasicDataPropertyForAdvice>[];
-  /**  @todo 确认下为啥这里和 options 里面都有 data fields to focus, apply in `data` and `dataProps` */
+  /** data fields to focus, apply in `data` and `dataProps`
+   * @todo 确认下为啥这里和 options 里面都有 是否应该废弃一处的
+   */
   fields?: string[];
   /** advising options such as purpose, layout preferences */
   options?: AdvisorOptions;
@@ -223,6 +225,4 @@ export type AdvisorPipelineContext = {
   extra?: {
     [key: string]: any;
   };
-  /** 过程中的日志信息，开发调试用, todo 明确类型 */
-  logs?: { [key: string]: any }[];
 };

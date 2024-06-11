@@ -2,15 +2,15 @@ import { getChartTypeRecommendations } from './get-chart-Type';
 
 import type {
   AdvisorPipelineContext,
-  ChartTypeRecommendInputParams,
+  ChartTypeRecommendInput,
   ChartTypeRecommendOutput,
-  PluginType,
+  AdvisorPluginType,
 } from '../../../../types';
 
-export const chartTypeRecommendPlugin: PluginType<ChartTypeRecommendInputParams, ChartTypeRecommendOutput> = {
+export const chartTypeRecommendPlugin: AdvisorPluginType<ChartTypeRecommendInput, ChartTypeRecommendOutput> = {
   name: 'defaultChartTypeRecommend',
   stage: ['chartTypeRecommend'],
-  execute(input: ChartTypeRecommendInputParams, context?: AdvisorPipelineContext): ChartTypeRecommendOutput {
+  execute(input: ChartTypeRecommendInput, context?: AdvisorPipelineContext): ChartTypeRecommendOutput {
     const { dataProps } = input;
     const { advisor, options } = context || {};
     const chartTypeRecommendations = getChartTypeRecommendations({

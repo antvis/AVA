@@ -4,12 +4,17 @@ import { DEFAULT_COLOR } from '../../../constants';
 import { applyDesignRules, applySmartColor, applyTheme } from './spec-processors';
 import { getChartTypeSpec } from './get-chart-spec';
 
-import type { AdvisorPipelineContext, SpecGeneratorInput, SpecGeneratorOutput, PluginType } from '../../../../types';
+import type {
+  AdvisorPipelineContext,
+  SpecGeneratorInput,
+  SpecGeneratorOutput,
+  AdvisorPluginType,
+} from '../../../../types';
 
-export const specGeneratorPlugin: PluginType<SpecGeneratorInput, SpecGeneratorOutput> = {
+// todo 内置的 visualEncode 和 spec generate 插件需要明确支持哪些图表类型
+export const specGeneratorPlugin: AdvisorPluginType<SpecGeneratorInput, SpecGeneratorOutput> = {
   name: 'defaultSpecGenerator',
   stage: ['specGenerate'],
-  // todo 目前上一步输出是一个图表列表数组，这里原子能力实际上应该是只生成 spec
   execute: (input: SpecGeneratorInput, context: AdvisorPipelineContext): SpecGeneratorOutput => {
     const { chartTypeRecommendations, dataProps, data } = input;
     const { options, advisor } = context || {};
@@ -18,12 +23,15 @@ export const specGeneratorPlugin: PluginType<SpecGeneratorInput, SpecGeneratorOu
     const advices = chartTypeRecommendations
       ?.map((chartTypeAdvice) => {
         const { chartType } = chartTypeAdvice;
-        const chartTypeSpec = getChartTypeSpec({
-          chartType,
-          data,
-          dataProps,
-          chartKnowledge: advisor.ckb[chartType],
-        });
+        const chartKnowledge = advisor.ckb[chartType];
+        const chartTypeSpec =
+          chartKnowledge?.toSpec(data, dataProps) ??
+          getChartTypeSpec({
+            chartType,
+            data,
+            dataProps,
+            chartKnowledge,
+          });
 
         // step 3: apply spec processors such as design rules, theme, color, to improve spec
         if (chartTypeSpec && refine) {
