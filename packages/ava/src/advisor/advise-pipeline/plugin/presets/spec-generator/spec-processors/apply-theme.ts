@@ -1,9 +1,9 @@
 import { type ColorSchemeType, colorToHex } from '@antv/color-schema';
 import { hexToColor, paletteGeneration } from '@antv/smart-color';
 
-import { BasicDataPropertyForAdvice, Specification, Theme } from '../../types';
-import { getSpecWithEncodeType } from '../../utils/infer-data-type';
-import { DISCRETE_PALETTE_TYPES, CATEGORICAL_PALETTE_TYPES } from '../constants';
+import { BasicDataPropertyForAdvice, Specification, Theme } from '../../../../../types';
+import { getSpecWithEncodeType } from '../../../../../utils/infer-data-type';
+import { DISCRETE_PALETTE_TYPES, CATEGORICAL_PALETTE_TYPES } from '../../../../constants';
 
 export function applyTheme(dataProps: BasicDataPropertyForAdvice[], chartSpec: Specification, theme: Theme) {
   const specWithEncodeType = getSpecWithEncodeType(chartSpec);

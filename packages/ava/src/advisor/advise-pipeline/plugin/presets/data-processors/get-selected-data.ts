@@ -1,4 +1,4 @@
-import { Data } from '../../../common/types';
+import { Data } from '../../../../../common/types';
 
 /** filter out fields that are not included for advising */
 export const getSelectedData = ({ data, fields }: { data: Data; fields?: string[] }) => {

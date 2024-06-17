@@ -1,7 +1,7 @@
-import { splitAngleColor } from '../splitFields';
+import { splitAngleColor } from '../../visual-encoder/split-fields';
 
-import type { Data } from '../../../../common/types';
-import type { Advice, BasicDataPropertyForAdvice } from '../../../types';
+import type { Data } from '../../../../../../common/types';
+import type { Advice, BasicDataPropertyForAdvice } from '../../../../../types';
 
 export function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4Color, field4Angle] = splitAngleColor(dataProps);

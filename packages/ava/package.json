@@ -1,6 +1,6 @@
 {
   "name": "@antv/ava",
-  "version": "3.4.1",
+  "version": "3.5.0-alpha.1",
   "description": "A framework for automated visual analytics.",
   "author": {
     "name": "AntV",
@@ -55,14 +55,15 @@
   },
   "dependencies": {
     "@antv/antv-spec": "^0.1.0-alpha.18",
+    "@antv/color-schema": "^0.2.3",
     "@antv/g2": "^5.0.8",
     "@antv/smart-color": "^0.2.1",
-    "@antv/color-schema": "^0.2.3",
     "bayesian-changepoint": "^1.0.1",
     "csstype": "^3.1.2",
     "heap-js": "^2.1.6",
     "lodash": "^4.17.21",
     "regression": "^2.0.1",
+    "tapable": "^2.2.1",
     "tslib": "^2.3.1"
   },
   "devDependencies": {

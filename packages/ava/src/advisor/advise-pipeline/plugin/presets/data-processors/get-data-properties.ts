@@ -1,7 +1,7 @@
-import { DataFrame } from '../../../data';
+import { DataFrame } from '../../../../../data';
 
-import type { Data } from '../../../common/types';
-import type { BasicDataPropertyForAdvice } from '../../types';
+import type { Data } from '../../../../../common/types';
+import type { BasicDataPropertyForAdvice } from '../../../../types';
 
 /**
  * A utility function that assemble dataProps with user input and DataFrame

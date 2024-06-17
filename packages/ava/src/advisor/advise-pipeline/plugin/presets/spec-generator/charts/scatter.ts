@@ -1,8 +1,8 @@
-import { pearson } from '../../../../data';
-import { hasSubset, compare, intersects } from '../../../utils';
+import { pearson } from '../../../../../../data';
+import { hasSubset, compare, intersects } from '../../../../../utils';
 
-import type { BasicDataPropertyForAdvice, Advice } from '../../../types';
-import type { Data } from '../../../../common/types';
+import type { BasicDataPropertyForAdvice, Advice } from '../../../../../types';
+import type { Data } from '../../../../../../common/types';
 
 export function scatterPlot(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));

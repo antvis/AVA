@@ -13,7 +13,7 @@ const myRule: RuleModule = {
   },
   trigger: (args) => {
     const { chartType } = args;
-    return ['pie_chart'].includes(chartType);
+    return ['pie_chart'].includes(chartType!);
   },
   validator: (args) => {
     let result = 1;
@@ -61,8 +61,8 @@ describe('init Advisor', () => {
 
   test('data to advices with ckb config custom chart', () => {
     const splitAngleColor = (dataProps: BasicDataPropertyForAdvice[]) => {
-      const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
-      const field4Angle = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+      const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements!, ['Nominal']));
+      const field4Angle = dataProps.find((field) => hasSubset(field.levelOfMeasurements!, ['Interval']));
       return [field4Color, field4Angle];
     };
 

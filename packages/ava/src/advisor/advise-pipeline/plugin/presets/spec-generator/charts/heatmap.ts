@@ -1,7 +1,7 @@
-import { intersects, compare, hasSubset } from '../../../utils';
+import { intersects, compare, hasSubset } from '../../../../../utils';
 
-import type { Data } from '../../../../common/types';
-import type { BasicDataPropertyForAdvice, Advice } from '../../../types';
+import type { Data } from '../../../../../../common/types';
+import type { BasicDataPropertyForAdvice, Advice } from '../../../../../types';
 
 export function heatmap(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const axisFields = dataProps.filter((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal']));

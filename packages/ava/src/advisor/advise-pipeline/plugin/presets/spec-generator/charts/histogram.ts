@@ -1,7 +1,7 @@
-import { hasSubset } from '../../../utils';
+import { hasSubset } from '../../../../../utils';
 
-import type { Data } from '../../../../common/types';
-import type { BasicDataPropertyForAdvice, Advice } from '../../../types';
+import type { Data } from '../../../../../../common/types';
+import type { BasicDataPropertyForAdvice, Advice } from '../../../../../types';
 
 export function histogram(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const field = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));

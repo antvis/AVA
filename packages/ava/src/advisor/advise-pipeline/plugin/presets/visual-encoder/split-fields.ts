@@ -1,19 +1,35 @@
-import { isParentChild } from '../../../data';
-import { BasicDataPropertyForAdvice } from '../../types';
-import { compare, hasSubset, intersects } from '../../utils';
+import { isParentChild } from '../../../../../data';
+import { compare, hasSubset, intersects } from '../../../../utils';
+
+import type { BasicDataPropertyForAdvice } from '../../../../types';
 
 type ReturnField = BasicDataPropertyForAdvice | undefined;
 
 export function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, ReturnField] {
-  const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
-  const field4Angle = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+  const field4Color =
+    dataProps.find((field) => intersects(field.levelOfMeasurements, ['Nominal'])) ??
+    dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal'])) ??
+    dataProps.find((field) => intersects(field.levelOfMeasurements, ['Interval']));
+  const field4Angle =
+    dataProps
+      .filter((field) => field !== field4Color)
+      .find((field) => intersects(field.levelOfMeasurements, ['Interval'])) ??
+    dataProps
+      .filter((field) => field !== field4Color)
+      .find((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Time', 'Ordinal']));
   return [field4Color, field4Angle];
 }
 
 export function splitLineXY(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, ReturnField, ReturnField] {
-  const field4X = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal']));
-  const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
-  const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+  const field4X =
+    dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal', 'Nominal'])) ??
+    dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+  const field4Y = dataProps
+    .filter((field) => field !== field4X)
+    .find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+  const field4Color = dataProps
+    .filter((field) => field !== field4X && field !== field4Y)
+    .find((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal', 'Time']));
   return [field4X, field4Y, field4Color];
 }
 

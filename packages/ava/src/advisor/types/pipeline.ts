@@ -1,12 +1,11 @@
-import { IntervalMark, RectMark, LineMark, PointMark, TextMark, CellMark, AreaMark } from '@antv/g2';
-
 import type { ColorSchemeType } from '@antv/color-schema';
 import type { SimulationType } from '@antv/smart-color';
 /** AVA 包内跨模块引用 */
-import type { Purpose, CkbConfig } from '../ckb';
-import type { Specification, Data } from '../common/types';
+import type { Purpose, CkbConfig } from '../../ckb';
+import type { Specification, Data } from '../../common/types';
 /** Advisor 模块内引用 */
-import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from './ruler/types';
+import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from '../ruler/types';
+import type { Advisor } from '../advisor';
 
 /**
  * Advisor config type
@@ -66,13 +65,15 @@ export type ChartAdviseParams = {
   data: Data;
   /** customized data props to advise */
   dataProps?: Partial<BasicDataPropertyForAdvice>[];
-  /** data fields to focus, apply in `data` and `dataProps` */
+  /** data fields to focus, apply in `data` and `dataProps`
+   * @todo 确认下为啥这里和 options 里面都有 是否应该废弃一处的
+   */
   fields?: string[];
   /** advising options such as purpose, layout preferences */
   options?: AdvisorOptions;
-  /** SmartColor mode on/off, optional props, default is off */
+  /** @deprecated 移动到 options.smartColor, SmartColor mode on/off, optional props, default is off */
   smartColor?: boolean;
-  /** smart color options,  @see {@link SmartColorOptions} */
+  /** @deprecated 移动到 options.colorOptions, smart color options,  @see {@link SmartColorOptions} */
   colorOptions?: SmartColorOptions;
 };
 
@@ -115,6 +116,10 @@ export type AdvisorOptions = {
    * only consider chart types with spec
    */
   requireSpec?: boolean;
+  /** SmartColor mode on/off, optional props, default is off */
+  smartColor?: boolean;
+  /** smart color options,  @see {@link SmartColorOptions} */
+  colorOptions?: SmartColorOptions;
 };
 
 export type Theme = {
@@ -196,7 +201,7 @@ export interface ScoringResultForChartType {
   log?: ScoringResultForRule[];
 }
 
-export * from './ruler/types';
+export * from '../ruler/types';
 
 export interface LinterOptions {
   purpose?: Purpose;
@@ -209,31 +214,15 @@ export interface LintParams {
   options?: LinterOptions;
 }
 
-/** g2-spec 相关types */
-
-export type Mark = IntervalMark | RectMark | LineMark | PointMark | TextMark | CellMark | AreaMark;
-
-export type Primitive = number | string | boolean | Date;
-
-export type TabularData = Record<string, Primitive>[];
-
-export type Callback = (datum: Record<string, Primitive>, index: number, data: TabularData) => Primitive;
-
-export type DataType = 'quantitative' | 'categorical' | 'temporal';
-
-/** Encode 的值 */
-export type Encode = Primitive | Callback;
-
-/** Encode 的对象 */
-export type MarkEncode = Record<string, Encode>;
-
-/** 带有字段类型的 Encode 对象 */
-export type MarkEncodeWithType = Record<string, { field: Encode; type: DataType }>;
-
-/** 原 G2 spec 去掉复杂 Encode 类型并添加简易版 Encode 类型 */
-export type G2ChartSpec = Omit<Mark, 'encode'> & { encode: MarkEncode };
-
-/** 原 G2 spec 去掉复杂 Encode 类型并添加简易版（带字段类型的） Encode 类型 */
-export type ChartSpecWithEncodeType = Omit<Mark, 'encode'> & { encode: MarkEncodeWithType };
-
-export type { Specification };
+/** 存储 pipeline 共用信息 */
+export type AdvisorPipelineContext = {
+  /** 原始数据 */
+  data?: Data;
+  advisor: Advisor;
+  /** 推荐配置项 */
+  options?: AdvisorOptions;
+  /** 业务自定义信息，上下文键/值存储 * */
+  extra?: {
+    [key: string]: any;
+  };
+};
