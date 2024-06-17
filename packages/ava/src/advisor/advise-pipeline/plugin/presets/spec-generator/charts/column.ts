@@ -1,84 +1,50 @@
-import { Data } from '../../../../../../common/types';
-import { Advice, BasicDataPropertyForAdvice } from '../../../../../types';
-import { compare, hasSubset } from '../../../../../utils';
-import { splitColumnXYSeries } from '../../visual-encoder/split-fields';
+import { columnEncodeRequirement } from '../../../../../../ckb/encode';
+import { mapFieldsToVisualEncode } from '../../visual-encoder/encode-mapping';
 
-export function columnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const nominalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
-  const sortedNominalFields = nominalFields.sort(compare);
-  const field4X = sortedNominalFields[0];
-  const field4Color = sortedNominalFields[1];
-  const field4Y = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+import type { Advice } from '../../../../../types';
+import type { GenerateChartSpecParams } from '../types';
 
+export function columnChart({ data, dataProps, encode: customEncode }: GenerateChartSpecParams): Advice['spec'] {
+  const encode =
+    customEncode ?? mapFieldsToVisualEncode({ fields: dataProps, encodeRequirements: columnEncodeRequirement });
+  const [field4X, field4Y, field4Color] = [encode.x?.[0], encode.y?.[0], encode.color?.[0]];
   if (!field4X || !field4Y) return null;
 
   const spec: Advice['spec'] = {
     type: 'interval',
     data,
     encode: {
-      x: field4X.name,
-      y: field4Y.name,
+      x: field4X,
+      y: field4Y,
     },
   };
 
   if (field4Color) {
-    spec.encode.color = field4Color.name;
+    spec.encode.color = field4Color;
     spec.transform = [{ type: 'stackY' }];
   }
 
   return spec;
 }
 
-export function groupedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4X, field4Y, field4Series] = splitColumnXYSeries(dataProps);
-  if (!field4X || !field4Y || !field4Series) return null;
-
-  const spec: Advice['spec'] = {
-    type: 'interval',
-    data,
-    encode: {
-      x: field4X.name,
-      y: field4Y.name,
-      color: field4Series.name,
-    },
-    transform: [{ type: 'dodgeX' }],
-  };
-
+export function groupedColumnChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
+  const spec = columnChart({ data, dataProps, encode });
+  if (spec?.encode?.color) {
+    spec.transform = [{ type: 'dodgeX' }];
+  }
   return spec;
 }
 
-export function stackedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
-  if (!field4X || !field4Y || !Field4Series) return null;
-
-  const spec: Advice['spec'] = {
-    type: 'interval',
-    data,
-    encode: {
-      x: field4X.name,
-      y: field4Y.name,
-      color: Field4Series.name,
-    },
-    transform: [{ type: 'stackY' }],
-  };
-
-  return spec;
+export function stackedColumnChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
+  return columnChart({ data, dataProps, encode });
 }
 
-export function percentStackedColumnChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4X, field4Y, Field4Series] = splitColumnXYSeries(dataProps);
-  if (!field4X || !field4Y || !Field4Series) return null;
-
-  const spec: Advice['spec'] = {
-    type: 'interval',
-    data,
-    encode: {
-      x: field4X.name,
-      y: field4Y.name,
-      color: Field4Series.name,
-    },
-    transform: [{ type: 'stackY' }, { type: 'normalizeY' }],
-  };
-
+export function percentStackedColumnChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
+  const spec = columnChart({ data, dataProps, encode });
+  if (spec?.transform) {
+    spec.transform.push({ type: 'normalizeY' });
+  } else {
+    spec.transform = [{ type: 'normalizeY' }];
+  }
   return spec;
 }

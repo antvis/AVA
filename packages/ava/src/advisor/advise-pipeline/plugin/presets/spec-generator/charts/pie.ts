@@ -1,18 +1,21 @@
-import { splitAngleColor } from '../../visual-encoder/split-fields';
+import { mapFieldsToVisualEncode } from '../../visual-encoder/encode-mapping';
+import { pieEncodeRequirement } from '../../../../../../ckb/encode';
 
-import type { Data } from '../../../../../../common/types';
-import type { Advice, BasicDataPropertyForAdvice } from '../../../../../types';
+import type { Advice } from '../../../../../types';
+import type { GenerateChartSpecParams } from '../types';
 
-export function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4Color, field4Angle] = splitAngleColor(dataProps);
+export function pieChart({ data, dataProps, encode: customEncode }: GenerateChartSpecParams): Advice['spec'] {
+  const encode =
+    customEncode ?? mapFieldsToVisualEncode({ fields: dataProps, encodeRequirements: pieEncodeRequirement });
+  const [field4Angle, field4Color] = [encode.y?.[0], encode.color?.[0]];
   if (!field4Angle || !field4Color) return null;
 
   const spec: Advice['spec'] = {
     type: 'interval',
     data,
     encode: {
-      color: field4Color.name,
-      y: field4Angle.name,
+      color: field4Color,
+      y: field4Angle,
     },
     transform: [{ type: 'stackY' }],
     coordinate: { type: 'theta' },
@@ -20,19 +23,10 @@ export function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): A
   return spec;
 }
 
-export function donutChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4Color, field4Angle] = splitAngleColor(dataProps);
-  if (!field4Angle || !field4Color) return null;
-
-  const spec: Advice['spec'] = {
-    type: 'interval',
-    data,
-    encode: {
-      color: field4Color.name,
-      y: field4Angle.name,
-    },
-    transform: [{ type: 'stackY' }],
-    coordinate: { type: 'theta', innerRadius: 0.6 },
-  };
+export function donutChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
+  const spec = pieChart({ data, dataProps, encode });
+  if (spec?.coordinate?.type === 'theta') {
+    spec.coordinate.innerRadius = 0.6;
+  }
   return spec;
 }

@@ -1,6 +1,7 @@
 import * as constants from './constants';
 
 import type { Data, Specification } from '../common/types';
+import type { AdvisorPipelineContext, BasicDataPropertyForAdvice, ChartEncodeMapping } from '../advisor';
 
 /**
  * TS type of standard IDs for each chart type.
@@ -99,6 +100,13 @@ export type DataPrerequisite = {
 };
 
 /**
+ *  TS type of A prerequisite for being able to mapping to a specific chart visual encode channel
+ *
+ * 图表视觉映射所需的字段类型，例如折线图 x 轴需要1个日期型字段，y 轴需要至少1个数值型字段
+ */
+export type EncodePrerequisite = DataPrerequisite;
+
+/**
  * TS type of channels.
  *
  * 所有通道的 TS 类型
@@ -135,6 +143,7 @@ export type PureChartKnowledge = {
   coord: CoordinateSystem[];
   category: GraphicCategory[];
   shape: Shape[];
+  encodePres?: Record<string, EncodePrerequisite>;
   dataPres: DataPrerequisite[];
   channel: Channel[];
   recRate: RecommendRating;
@@ -151,17 +160,32 @@ export type PureChartKnowledge = {
 export type ChartKnowledge = {
   id: string;
   name: string;
-  alias: string[];
-  family: string[];
-  def: string;
-  purpose: string[];
-  coord: string[];
-  category: string[];
-  shape: string[];
+  alias?: string[];
+  family?: string[];
+  def?: string;
+  purpose?: string[];
+  coord?: string[];
+  category?: string[];
+  shape?: string[];
+  encodePres?: Record<string, EncodePrerequisite>;
   dataPres: (Omit<DataPrerequisite, 'fieldConditions'> & { fieldConditions: string[] })[];
-  channel: string[];
-  recRate: string;
-  toSpec?: (data: Data, dataProps: any) => Specification | null;
+  channel?: string[];
+  recRate?: string;
+  toEncode?: ({
+    data,
+    dataProps,
+    context,
+  }: {
+    data?: Data;
+    dataProps?: BasicDataPropertyForAdvice[];
+    context?: AdvisorPipelineContext;
+  }) => Record<string, string[]>;
+  toSpec?: (
+    data: Data,
+    dataProps: any,
+    encode?: ChartEncodeMapping,
+    context?: AdvisorPipelineContext
+  ) => Specification | null;
 };
 
 /**

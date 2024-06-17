@@ -1,10 +1,14 @@
 import { splitBarXYSeries } from '../../visual-encoder/split-fields';
+import { mapFieldsToVisualEncode } from '../../visual-encoder/encode-mapping';
+import { barEncodeRequirement } from '../../../../../../ckb/encode';
 
-import type { Data } from '../../../../../../common/types';
-import type { Advice, BasicDataPropertyForAdvice } from '../../../../../types';
+import type { Advice } from '../../../../../types';
+import type { GenerateChartSpecParams } from '../types';
 
-export function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4X, field4Y, field4Color] = splitBarXYSeries(dataProps);
+export function barChart({ data, dataProps, encode: customEncode }: GenerateChartSpecParams): Advice['spec'] {
+  const encode =
+    customEncode ?? mapFieldsToVisualEncode({ fields: dataProps, encodeRequirements: barEncodeRequirement });
+  const [field4X, field4Y, field4Color] = [encode.x?.[0], encode.y?.[0], encode.color?.[0]];
 
   if (!field4X || !field4Y) return null;
 
@@ -14,8 +18,8 @@ export function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): A
     // G2's implementation converts column chart (vertical bar) and bar chart (horizontal bar) by transpose, so the x and y fields need to be swapped.
     // 由于g2的实现是通过transpose来转换 column chart（竖着的bar）和bar chart（横着的bar），所以x和y的字段需要做交换
     encode: {
-      x: field4Y.name,
-      y: field4X.name,
+      x: field4Y,
+      y: field4X,
     },
     coordinate: {
       transform: [{ type: 'transpose' }],
@@ -23,72 +27,34 @@ export function barChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): A
   };
 
   if (field4Color) {
-    spec.encode.color = field4Color.name;
+    spec.encode.color = field4Color;
     spec.transform = [{ type: 'stackY' }];
   }
 
   return spec;
 }
 
-export function groupedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
-  if (!field4X || !field4Y || !field4Series) return null;
+export function groupedBarChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
+  const spec = barChart({ data, dataProps, encode });
 
-  const spec: Advice['spec'] = {
-    type: 'interval',
-    data,
-    encode: {
-      x: field4Y.name,
-      y: field4X.name,
-      color: field4Series.name,
-    },
-    transform: [{ type: 'dodgeX' }],
-    coordinate: {
-      transform: [{ type: 'transpose' }],
-    },
-  };
-
+  if (spec?.encode?.color) {
+    spec.transform = [{ type: 'dodgeX' }];
+  }
   return spec;
 }
 
-export function stackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
-  if (!field4X || !field4Y || !field4Series) return null;
-
-  const spec: Advice['spec'] = {
-    type: 'interval',
-    data,
-    encode: {
-      x: field4Y.name,
-      y: field4X.name,
-      color: field4Series.name,
-    },
-    transform: [{ type: 'stackY' }],
-    coordinate: {
-      transform: [{ type: 'transpose' }],
-    },
-  };
-
-  return spec;
+export function stackedBarChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
+  return barChart({ data, dataProps, encode });
 }
 
-export function percentStackedBarChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
+export function percentStackedBarChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
   const [field4X, field4Y, field4Series] = splitBarXYSeries(dataProps);
   if (!field4X || !field4Y || !field4Series) return null;
-
-  const spec: Advice['spec'] = {
-    type: 'interval',
-    data,
-    encode: {
-      x: field4Y.name,
-      y: field4X.name,
-      color: field4Series.name,
-    },
-    transform: [{ type: 'stackY' }, { type: 'normalizeY' }],
-    coordinate: {
-      transform: [{ type: 'transpose' }],
-    },
-  };
-
+  const spec = barChart({ data, dataProps, encode });
+  if (spec?.transform) {
+    spec.transform.push({ type: 'normalizeY' });
+  } else {
+    spec.transform = [{ type: 'normalizeY' }];
+  }
   return spec;
 }

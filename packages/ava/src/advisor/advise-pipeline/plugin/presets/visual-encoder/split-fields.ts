@@ -1,22 +1,41 @@
 import { isParentChild } from '../../../../../data';
 import { compare, hasSubset, intersects } from '../../../../utils';
+import { LEVEL_OF_MEASUREMENTS, type LevelOfMeasurement } from '../../../../../ckb';
 
 import type { BasicDataPropertyForAdvice } from '../../../../types';
 
 type ReturnField = BasicDataPropertyForAdvice | undefined;
 
+export const getFieldByLoM = ({
+  dataProps = [],
+  levelOfMeasurements,
+  count = 1,
+}: {
+  dataProps: BasicDataPropertyForAdvice[];
+  levelOfMeasurements: LevelOfMeasurement[];
+  count?: number;
+}) => {
+  return dataProps.filter((field) => intersects(field.levelOfMeasurements, levelOfMeasurements)).slice(0, count);
+};
+
+export const splitFields = (dataProps: BasicDataPropertyForAdvice[] = [], filteredFieldNames: string[] = []) => {
+  const filteredFields = dataProps.filter((field) => !filteredFieldNames.includes(field.name));
+  const levelOfMeasurementFieldMap: Partial<Record<LevelOfMeasurement, BasicDataPropertyForAdvice>> = {};
+  LEVEL_OF_MEASUREMENTS.forEach((levelOfMeasurement) => {
+    const [field] = getFieldByLoM({ dataProps: filteredFields, levelOfMeasurements: ['Nominal'] });
+    levelOfMeasurementFieldMap[levelOfMeasurement] = field;
+  });
+  return levelOfMeasurementFieldMap;
+};
+
 export function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField, ReturnField] {
+  const splittedFields = splitFields(dataProps);
   const field4Color =
-    dataProps.find((field) => intersects(field.levelOfMeasurements, ['Nominal'])) ??
-    dataProps.find((field) => intersects(field.levelOfMeasurements, ['Time', 'Ordinal'])) ??
-    dataProps.find((field) => intersects(field.levelOfMeasurements, ['Interval']));
+    splittedFields.Nominal ?? splittedFields.Ordinal ?? splittedFields.Time ?? splittedFields.Interval;
+  const usedFieldKey = field4Color?.name ? [field4Color?.name] : [];
+  const filteredFieldsMap = splitFields(dataProps, usedFieldKey);
   const field4Angle =
-    dataProps
-      .filter((field) => field !== field4Color)
-      .find((field) => intersects(field.levelOfMeasurements, ['Interval'])) ??
-    dataProps
-      .filter((field) => field !== field4Color)
-      .find((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Time', 'Ordinal']));
+    filteredFieldsMap.Interval ?? filteredFieldsMap.Nominal ?? filteredFieldsMap.Ordinal ?? splittedFields.Time;
   return [field4Color, field4Angle];
 }
 

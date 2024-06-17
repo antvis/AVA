@@ -1,14 +1,15 @@
-import { intersects, compare, hasSubset } from '../../../../../utils';
+import { mapFieldsToVisualEncode } from '../../visual-encoder/encode-mapping';
+import { heatmapEncodeRequirement } from '../../../../../../ckb/encode';
 
-import type { Data } from '../../../../../../common/types';
-import type { BasicDataPropertyForAdvice, Advice } from '../../../../../types';
+import type { Advice } from '../../../../../types';
+import type { GenerateChartSpecParams } from '../types';
 
-export function heatmap(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const axisFields = dataProps.filter((field) => intersects(field.levelOfMeasurements, ['Nominal', 'Ordinal']));
-  const sortedFields = axisFields.sort(compare);
-  const field4X = sortedFields[0];
-  const field4Y = sortedFields[1];
-  const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+export function heatmap({ data, dataProps, encode: customEncode }: GenerateChartSpecParams): Advice['spec'] {
+  const encode =
+    customEncode ?? mapFieldsToVisualEncode({ fields: dataProps, encodeRequirements: heatmapEncodeRequirement });
+  const field4X = encode?.x?.[0];
+  const field4Y = encode?.y?.[0];
+  const field4Color = encode?.color?.[0];
 
   if (!field4X || !field4Y || !field4Color) return null;
 
@@ -16,9 +17,9 @@ export function heatmap(data: Data, dataProps: BasicDataPropertyForAdvice[]): Ad
     type: 'cell',
     data,
     encode: {
-      x: field4X.name,
-      y: field4Y.name,
-      color: field4Color.name,
+      x: field4X,
+      y: field4Y,
+      color: field4Color,
     },
   };
 

@@ -114,6 +114,9 @@ export class Advisor {
       options: params.options,
     };
     const adviseResult = await this.pipeline.execute(params);
+    if (params.options?.requireSpec !== false) {
+      return adviseResult.advices?.filter((advice) => advice.spec);
+    }
     return adviseResult.advices;
   }
 
