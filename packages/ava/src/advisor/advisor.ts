@@ -1,3 +1,5 @@
+import { forEach, size } from 'lodash';
+
 import { ckb } from '../ckb';
 
 import { processRuleCfg } from './ruler';
@@ -5,7 +7,12 @@ import { dataToAdvices } from './advise-pipeline';
 import { checkRules } from './lint-pipeline/check-rules';
 import { BaseComponent } from './pipeline/component';
 import { Pipeline } from './pipeline/pipeline';
-import { dataProcessorPlugin, specGeneratorPlugin, chartTypeRecommendPlugin } from './advise-pipeline/plugin';
+import {
+  dataProcessorPlugin,
+  specGeneratorPlugin,
+  chartTypeRecommendPlugin,
+  visualEncoderPlugin,
+} from './advise-pipeline/plugin';
 
 import type { ChartKnowledgeBase } from '../ckb';
 import type { RuleModule } from './ruler';
@@ -51,7 +58,7 @@ export class Advisor {
 
   context: AdvisorPipelineContext;
 
-  plugins: AdvisorPluginType[];
+  plugins: AdvisorPluginType[] = [];
 
   pipeline: Pipeline;
 
@@ -73,8 +80,10 @@ export class Advisor {
     this.context = { advisor: this, extra };
     this.initDefaultComponents();
     const defaultComponents = [this.dataAnalyzer, this.chartTypeRecommender, this.chartEncoder, this.specGenerator];
-    this.plugins = plugins;
-    this.pipeline = new Pipeline({ components: components ?? defaultComponents });
+    this.registerPlugins(plugins);
+    this.pipeline = new Pipeline<DataProcessorInput, SpecGeneratorOutput>({
+      components: components ?? defaultComponents,
+    });
   }
 
   private initDefaultComponents() {
@@ -83,7 +92,7 @@ export class Advisor {
       plugins: [chartTypeRecommendPlugin],
       context: this.context,
     });
-    // this.chartEncoder = new BaseComponent('chartEncode', { plugins: [visualEncoderPlugin], context: this.context });
+    this.chartEncoder = new BaseComponent('chartEncode', { plugins: [visualEncoderPlugin], context: this.context });
     this.specGenerator = new BaseComponent('specGenerate', { plugins: [specGeneratorPlugin], context: this.context });
   }
 
@@ -91,6 +100,11 @@ export class Advisor {
   advise(params: AdviseParams): Advice[] {
     const adviseResult = dataToAdvices({ adviseParams: params, ckb: this.ckb, ruleBase: this.ruleBase });
     return adviseResult.advices;
+  }
+
+  adviseWithLog(params: AdviseParams): AdviseResult {
+    const adviseResult = dataToAdvices({ adviseParams: params, ckb: this.ckb, ruleBase: this.ruleBase });
+    return adviseResult;
   }
 
   async adviseAsync(params: AdviseParams): Promise<Advice[]> {
@@ -103,10 +117,7 @@ export class Advisor {
     return adviseResult.advices;
   }
 
-  adviseWithLog(params: AdviseParams): AdviseResult {
-    const adviseResult = dataToAdvices({ adviseParams: params, ckb: this.ckb, ruleBase: this.ruleBase });
-    return adviseResult;
-  }
+  // todo 补充 adviseAsyncWithLog
 
   lint(params: LintParams): Lint[] {
     const lintResult = checkRules(params, this.ruleBase, this.ckb);
@@ -118,7 +129,7 @@ export class Advisor {
     return lintResult;
   }
 
-  registerPlugins(plugins: AdvisorPluginType[]) {
+  registerPlugins(plugins: AdvisorPluginType[] = []) {
     const stage2Components: Record<PipelineStageType, BaseComponent> = {
       dataAnalyze: this.dataAnalyzer,
       chartTypeRecommend: this.chartTypeRecommender,
@@ -126,9 +137,15 @@ export class Advisor {
       specGenerate: this.specGenerator,
     };
 
-    plugins.forEach((plugin) => {
+    forEach(plugins, (plugin) => {
+      this.plugins.push(plugin);
       if (typeof plugin.stage === 'string') {
         const pipelineComponent = stage2Components[plugin.stage];
+        pipelineComponent.registerPlugin(plugin);
+        return;
+      }
+      if (size(plugin.stage) === 1) {
+        const pipelineComponent = stage2Components[plugin.stage[0]];
         pipelineComponent.registerPlugin(plugin);
       }
     });

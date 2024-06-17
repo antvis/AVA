@@ -12,12 +12,13 @@ export const chartTypeRecommendPlugin: AdvisorPluginType<ChartTypeRecommendInput
   stage: ['chartTypeRecommend'],
   execute(input: ChartTypeRecommendInput, context?: AdvisorPipelineContext): ChartTypeRecommendOutput {
     const { dataProps } = input;
-    const { advisor, options } = context || {};
+    const { advisor, options, extra } = context || {};
     const chartTypeRecommendations = getChartTypeRecommendations({
       dataProps,
       chartWIKI: advisor.ckb,
       ruleBase: advisor.ruleBase,
       options,
+      advisorContext: { extra },
     });
     return { chartTypeRecommendations };
   },
