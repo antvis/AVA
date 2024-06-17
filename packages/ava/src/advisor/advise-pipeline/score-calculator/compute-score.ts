@@ -1,7 +1,7 @@
 import { Info, RuleModule } from '../../ruler';
 import { DEFAULT_RULE_WEIGHTS } from '../../constants';
 
-import type { ScoringResultForRule } from '../../types';
+import type { AdvisorPipelineContext, ScoringResultForRule } from '../../types';
 import type { ChartRuleModule } from '../../ruler/types';
 import type { ChartId, ChartKnowledgeBase } from '../../../ckb';
 
@@ -13,7 +13,8 @@ export const computeScore = (
   ruleBase: Record<string, RuleModule>,
   ruleType: 'HARD' | 'SOFT',
   info: Info,
-  log: ScoringResultForRule[]
+  log: ScoringResultForRule[],
+  advisorContext?: Pick<AdvisorPipelineContext, 'extra'>
 ) => {
   // initial score is 1 for HARD rules and 0 for SOFT rules
   let computedScore = 1;
@@ -21,12 +22,23 @@ export const computeScore = (
     .filter((r: RuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
       const extra = r.option?.extra;
-      return r.type === ruleType && r.trigger({ ...info, weight, ...extra, chartType, chartWIKI }) && !r.option?.off;
+      return (
+        r.type === ruleType &&
+        r.trigger({ ...info, weight, ...extra, chartType, chartWIKI, advisorContext }) &&
+        !r.option?.off
+      );
     })
     .forEach((r: RuleModule) => {
       const weight = r.option?.weight || defaultWeights[r.id] || 1;
       const extra = r.option?.extra;
-      const base = (r as ChartRuleModule).validator({ ...info, weight, ...extra, chartType, chartWIKI }) as number;
+      const base = (r as ChartRuleModule).validator({
+        ...info,
+        weight,
+        ...extra,
+        chartType,
+        chartWIKI,
+        advisorContext,
+      }) as number;
       const score = weight * base;
       computedScore *= score;
       log.push({ phase: 'ADVISE', ruleId: r.id, score, base, weight, ruleType });

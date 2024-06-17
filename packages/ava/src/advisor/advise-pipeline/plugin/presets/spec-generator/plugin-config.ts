@@ -25,7 +25,7 @@ export const specGeneratorPlugin: AdvisorPluginType<SpecGeneratorInput, SpecGene
         const { chartType } = chartTypeAdvice;
         const chartKnowledge = advisor.ckb[chartType];
         const chartTypeSpec =
-          chartKnowledge?.toSpec(data, dataProps) ??
+          chartKnowledge?.toSpec?.(data, dataProps) ??
           getChartTypeSpec({
             chartType,
             data,
@@ -35,7 +35,7 @@ export const specGeneratorPlugin: AdvisorPluginType<SpecGeneratorInput, SpecGene
 
         // step 3: apply spec processors such as design rules, theme, color, to improve spec
         if (chartTypeSpec && refine) {
-          const partEncSpec = applyDesignRules(chartType, dataProps, advisor.ruleBase, chartTypeSpec);
+          const partEncSpec = applyDesignRules(chartType, dataProps, advisor.ruleBase, chartTypeSpec, context);
           deepMix(chartTypeSpec, partEncSpec);
         }
 

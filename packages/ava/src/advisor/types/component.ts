@@ -12,7 +12,10 @@ export interface AdvisorPluginType<Input = any, Output = any> {
   name: string;
   /** 插件运行的阶段，用于指定插件在 pipeline 的哪个环节运行 * */
   stage?: PipelineStageType | PipelineStageType[];
+  type?: 'async' | 'sync';
   execute: (data: Input, context: AdvisorPipelineContext) => Output | Promise<Output>;
+  /** 判断插件运行的条件 */
+  condition?: (data?: Input, context?: AdvisorPipelineContext) => boolean | Promise<boolean>;
   // hooks
   onBeforeExecute?: (input: Input, context: AdvisorPipelineContext) => void | Promise<void>;
   onAfterExecute?: (output: Output, context: AdvisorPipelineContext) => void | Promise<void>;
@@ -42,6 +45,7 @@ export type SpecGeneratorInput = {
   data: Data;
   // 单独调用 SpecGenerator 时，还要额外计算 dataProps 么
   dataProps: BasicDataPropertyForAdvice[];
+  encode?: MarkEncode;
 };
 export type SpecGeneratorOutput = {
   advices: (Omit<Advice, 'spec'> & {
@@ -52,6 +56,10 @@ export type SpecGeneratorOutput = {
 export type VisualEncoderInput = {
   chartType: ChartId;
   dataProps: BasicDataPropertyForAdvice[];
+  chartTypeRecommendations: ScoringResultForChartType[];
 };
 
-export type VisualEncoderOutput = MarkEncode;
+export type VisualEncoderOutput = {
+  encode?: MarkEncode;
+  chartTypeRecommendations?: ScoringResultForChartType[];
+};

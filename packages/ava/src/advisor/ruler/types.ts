@@ -1,6 +1,7 @@
 import type { FieldInfo } from '../../data';
 import type { LevelOfMeasurement, ChartKnowledgeBase } from '../../ckb';
 import type { Specification } from '../../common/types';
+import type { AdvisorPipelineContext } from '../types';
 
 /**
  * Type of different rules.
@@ -51,6 +52,7 @@ export interface Info {
   purpose?: string;
   preferences?: Preferences;
   customWeight?: number;
+  advisorContext?: Pick<AdvisorPipelineContext, 'extra'>;
   [key: string]: any;
 }
 
@@ -62,7 +64,8 @@ export type Trigger = (args: Info) => boolean;
 
 export type Optimizer = (
   dataProps: BasicDataPropertyForAdvice[] | BasicDataPropertyForAdvice,
-  chartSpec: Specification
+  chartSpec: Specification,
+  advisorContext?: Pick<AdvisorPipelineContext, 'extra'>
 ) => object;
 
 /**
