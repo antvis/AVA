@@ -2,7 +2,7 @@ import { AsyncSeriesWaterfallHook } from 'tapable';
 
 import { BaseComponent } from './component';
 
-export class Pipeline {
+export class Pipeline<Input = any, Output = any> {
   components: BaseComponent<any, any>[];
 
   componentsManager: AsyncSeriesWaterfallHook<any, any>;
@@ -15,7 +15,7 @@ export class Pipeline {
       if (!component) return;
       this.componentsManager.tapPromise(component.name, async (previousResult) => {
         const input = previousResult;
-        const componentOutput = await component.execute(input || {});
+        const componentOutput = await component.executeAsync(input || {});
 
         return {
           ...input,
@@ -25,7 +25,7 @@ export class Pipeline {
     });
   }
 
-  async execute(initialParams: any) {
+  async execute(initialParams: Input): Promise<Output> {
     const result = await this.componentsManager.promise(initialParams);
     return result;
   }
