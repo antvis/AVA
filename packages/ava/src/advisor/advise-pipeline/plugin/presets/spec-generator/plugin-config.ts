@@ -9,53 +9,81 @@ import type {
   SpecGeneratorInput,
   SpecGeneratorOutput,
   AdvisorPluginType,
+  Specification,
 } from '../../../../types';
 
-// todo 内置的 visualEncode 和 spec generate 插件需要明确支持哪些图表类型
+const refineSpec = (
+  params: SpecGeneratorInput & {
+    chartType: string;
+    spec: Specification;
+  },
+  context: AdvisorPipelineContext
+) => {
+  const { chartType, dataProps, spec } = params;
+  const { options, advisor } = context;
+  const { refine = false, theme, colorOptions, smartColor } = options || {};
+  const { themeColor = DEFAULT_COLOR, colorSchemeType, simulationType } = colorOptions || {};
+  // apply spec processors such as design rules, theme, color, to improve spec
+  if (spec && refine) {
+    const partEncSpec = applyDesignRules(chartType, dataProps, advisor.ruleBase, spec, context);
+    deepMix(spec, partEncSpec);
+  }
+
+  // custom theme
+  if (spec) {
+    if (theme && !smartColor) {
+      const partEncSpec = applyTheme(dataProps, spec, theme);
+      deepMix(spec, partEncSpec);
+    } else if (smartColor) {
+      const partEncSpec = applySmartColor(dataProps, spec, themeColor, colorSchemeType, simulationType);
+      deepMix(spec, partEncSpec);
+    }
+  }
+};
+
+const generateSpecForChartType = (
+  input: SpecGeneratorInput & {
+    chartType: string;
+  },
+  context: AdvisorPipelineContext
+) => {
+  const { dataProps, data, chartType, encode } = input;
+  const chartKnowledge = context?.advisor?.ckb?.[chartType];
+  const spec = getChartTypeSpec({
+    chartType,
+    data,
+    dataProps,
+    encode,
+    chartKnowledge,
+  });
+
+  refineSpec({ ...input, spec, chartType }, context);
+  return spec;
+};
+
 export const specGeneratorPlugin: AdvisorPluginType<SpecGeneratorInput, SpecGeneratorOutput> = {
   name: 'defaultSpecGenerator',
   stage: ['specGenerate'],
   execute: (input: SpecGeneratorInput, context: AdvisorPipelineContext): SpecGeneratorOutput => {
-    const { chartTypeRecommendations, dataProps, data } = input;
-    const { options, advisor } = context || {};
-    const { refine = false, theme, colorOptions, smartColor } = options || {};
-    const { themeColor = DEFAULT_COLOR, colorSchemeType, simulationType } = colorOptions || {};
-    const advices = chartTypeRecommendations
-      ?.map((chartTypeAdvice) => {
-        const { chartType } = chartTypeAdvice;
-        const chartKnowledge = advisor.ckb[chartType];
-        const chartTypeSpec =
-          chartKnowledge?.toSpec?.(data, dataProps) ??
-          getChartTypeSpec({
-            chartType,
-            data,
-            dataProps,
-            chartKnowledge,
-          });
+    const chartTypeRecommendations =
+      input.chartTypeRecommendations ??
+      (input.chartType
+        ? [
+            {
+              chartType: input.chartType,
+              encode: input.encode,
+            },
+          ]
+        : []);
+    const advices = chartTypeRecommendations?.map((chartTypeAdvice) => {
+      const { chartType, encode } = chartTypeAdvice;
+      const spec = generateSpecForChartType({ ...input, chartType, encode }, context);
+      return {
+        ...chartTypeAdvice,
+        spec,
+      };
+    });
 
-        // step 3: apply spec processors such as design rules, theme, color, to improve spec
-        if (chartTypeSpec && refine) {
-          const partEncSpec = applyDesignRules(chartType, dataProps, advisor.ruleBase, chartTypeSpec, context);
-          deepMix(chartTypeSpec, partEncSpec);
-        }
-
-        // step 4: custom theme
-        if (chartTypeSpec) {
-          if (theme && !smartColor) {
-            const partEncSpec = applyTheme(dataProps, chartTypeSpec, theme);
-            deepMix(chartTypeSpec, partEncSpec);
-          } else if (smartColor) {
-            const partEncSpec = applySmartColor(dataProps, chartTypeSpec, themeColor, colorSchemeType, simulationType);
-            deepMix(chartTypeSpec, partEncSpec);
-          }
-        }
-        return {
-          type: chartTypeAdvice.chartType,
-          spec: chartTypeSpec,
-          score: chartTypeAdvice.score,
-        };
-      })
-      .filter((advices) => advices.spec);
     return { advices };
   },
 };

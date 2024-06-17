@@ -70,7 +70,7 @@ export class BaseComponent<Input = any, Output = any> {
   execute(params: Input): Output {
     if (this.hasAsyncPlugin) {
       // eslint-disable-next-line no-console
-      console.warn('存在异步执行的插件，请使用 executeAsync');
+      console.warn('async plugins detected, please use executeAsync');
     }
     const pluginsOutput = {};
     this.plugins.forEach((plugin) => {

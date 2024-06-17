@@ -1,15 +1,18 @@
-import { pearson } from '../../../../../../data';
-import { hasSubset, compare, intersects } from '../../../../../utils';
+import { mapFieldsToVisualEncode } from '../../visual-encoder/encode-mapping';
+import { scatterEncodeRequirement } from '../../../../../../ckb/encode';
 
-import type { BasicDataPropertyForAdvice, Advice } from '../../../../../types';
-import type { Data } from '../../../../../../common/types';
+import type { Advice } from '../../../../../types';
+import type { GenerateChartSpecParams } from '../types';
 
-export function scatterPlot(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
-  const sortedIntervalFields = intervalFields.sort(compare);
-  const field4X = sortedIntervalFields[0];
-  const field4Y = sortedIntervalFields[1];
-  const field4Color = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Nominal']));
+export function scatterPlot({ data, dataProps, encode: customEncode }: GenerateChartSpecParams): Advice['spec'] {
+  const encode =
+    customEncode ?? mapFieldsToVisualEncode({ fields: dataProps, encodeRequirements: scatterEncodeRequirement });
+  const [field4X, field4Y, field4Color, field4Size] = [
+    encode?.x?.[0],
+    encode?.y?.[0],
+    encode?.color?.[0],
+    encode?.size?.[0],
+  ];
 
   if (!field4X || !field4Y) return null;
 
@@ -17,61 +20,22 @@ export function scatterPlot(data: Data, dataProps: BasicDataPropertyForAdvice[])
     type: 'point',
     data,
     encode: {
-      x: field4X.name,
-      y: field4Y.name,
+      x: field4X,
+      y: field4Y,
     },
   };
 
   if (field4Color) {
-    spec.encode.color = field4Color.name;
+    spec.encode.color = field4Color;
+  }
+
+  if (field4Size) {
+    spec.encode.size = field4Size;
   }
 
   return spec;
 }
 
-export function bubbleChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const intervalFields = dataProps.filter((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
-
-  const triple = {
-    x: intervalFields[0],
-    y: intervalFields[1],
-    corr: 0,
-    size: intervalFields[2],
-  };
-  for (let i = 0; i < intervalFields.length; i += 1) {
-    for (let j = i + 1; j < intervalFields.length; j += 1) {
-      const p = pearson(intervalFields[i].rawData, intervalFields[j].rawData);
-      if (Math.abs(p) > triple.corr) {
-        triple.x = intervalFields[i];
-        triple.y = intervalFields[j];
-        triple.corr = p;
-        triple.size = intervalFields[[...Array(intervalFields.length).keys()].find((e) => e !== i && e !== j) || 0];
-      }
-    }
-  }
-
-  const field4X = triple.x;
-  const field4Y = triple.y;
-  const field4Size = triple.size;
-
-  const field4Color = dataProps.find((field) => intersects(field.levelOfMeasurements, ['Nominal']));
-
-  // require x,y,size,color at the same time
-  if (!field4X || !field4Y || !field4Size) return null;
-
-  const spec: Advice['spec'] = {
-    type: 'point',
-    data,
-    encode: {
-      x: field4X.name,
-      y: field4Y.name,
-      size: field4Size.name,
-    },
-  };
-
-  if (field4Color) {
-    spec.encode.color = field4Color.name;
-  }
-
-  return spec;
+export function bubbleChart({ data, dataProps, encode }: GenerateChartSpecParams): Advice['spec'] {
+  return scatterPlot({ data, dataProps, encode });
 }

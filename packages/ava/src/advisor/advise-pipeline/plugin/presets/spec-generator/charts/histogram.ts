@@ -1,17 +1,20 @@
-import { hasSubset } from '../../../../../utils';
+import { mapFieldsToVisualEncode } from '../../visual-encoder/encode-mapping';
+import { histogramEncodeRequirement } from '../../../../../../ckb/encode';
 
-import type { Data } from '../../../../../../common/types';
-import type { BasicDataPropertyForAdvice, Advice } from '../../../../../types';
+import type { Advice } from '../../../../../types';
+import type { GenerateChartSpecParams } from '../types';
 
-export function histogram(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
-  const field = dataProps.find((field) => hasSubset(field.levelOfMeasurements, ['Interval']));
+export function histogram({ data, dataProps, encode: customEncode }: GenerateChartSpecParams): Advice['spec'] {
+  const encode =
+    customEncode ?? mapFieldsToVisualEncode({ fields: dataProps, encodeRequirements: histogramEncodeRequirement });
+  const field = encode.x?.[0];
   if (!field) return null;
 
   const spec: Advice['spec'] = {
     type: 'rect',
     data,
     encode: {
-      x: field.name,
+      x: field,
     },
     transform: [{ type: 'binX', y: 'count' }],
   };

@@ -2,7 +2,6 @@ import type { Data } from '@antv/g2';
 import type { Advice, ScoringResultForChartType, AdvisorPipelineContext } from './pipeline';
 import type { BasicDataPropertyForAdvice } from '../ruler';
 import type { ChartId } from '../../ckb';
-import type { MarkEncode } from './mark';
 
 export type PipelineStageType = 'dataAnalyze' | 'chartTypeRecommend' | 'encode' | 'specGenerate';
 
@@ -39,27 +38,37 @@ export type ChartTypeRecommendInput = {
 
 export type ChartTypeRecommendOutput = { chartTypeRecommendations: ScoringResultForChartType[] };
 
-export type SpecGeneratorInput = {
-  // todo 实际上不应该需要 score 信息
-  chartTypeRecommendations: ScoringResultForChartType[];
+export type VisualEncoderInput = {
   data: Data;
-  // 单独调用 SpecGenerator 时，还要额外计算 dataProps 么
   dataProps: BasicDataPropertyForAdvice[];
-  encode?: MarkEncode;
+  chartType?: string;
+  chartTypeRecommendations?: ScoringResultForChartType[];
 };
+
+export type ChartEncodeMapping = {
+  x?: string[];
+  y?: string[];
+  color?: string[];
+  size?: string[];
+  [key: string]: string[];
+};
+
+export type VisualEncoderOutput = {
+  encode?: ChartEncodeMapping;
+  chartTypeRecommendations?: (ScoringResultForChartType & { encode?: ChartEncodeMapping })[];
+};
+
+export type SpecGeneratorInput = {
+  data: Data;
+  dataProps: BasicDataPropertyForAdvice[];
+  encode?: ChartEncodeMapping;
+  chartType?: ChartId;
+  // todo 实际上不应该需要 score 信息
+  chartTypeRecommendations: (ScoringResultForChartType & { encode?: ChartEncodeMapping })[];
+};
+
 export type SpecGeneratorOutput = {
   advices: (Omit<Advice, 'spec'> & {
     spec: Record<string, any> | null;
   })[];
-};
-
-export type VisualEncoderInput = {
-  chartType: ChartId;
-  dataProps: BasicDataPropertyForAdvice[];
-  chartTypeRecommendations: ScoringResultForChartType[];
-};
-
-export type VisualEncoderOutput = {
-  encode?: MarkEncode;
-  chartTypeRecommendations?: ScoringResultForChartType[];
 };
