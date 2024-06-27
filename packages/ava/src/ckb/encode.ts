@@ -106,10 +106,24 @@ export const heatmapEncodeRequirement: EncodeRequirements = {
   },
 };
 
+export const indicatorEncodeRequirement: EncodeRequirements = {
+  x: {
+    minQty: 0,
+    maxQty: 1,
+    fieldConditions: ['Time', 'Nominal'],
+  },
+  y: {
+    minQty: 0,
+    maxQty: '*',
+    fieldConditions: ['Interval'],
+  },
+};
+
 export const areaEncodeRequirement = lineEncodeRequirement;
 export const columnEncodeRequirement = barEncodeRequirement;
 
 export const chartType2EncodeRequirement: Partial<Record<ChartId, EncodeRequirements>> = {
+  indicator_chart: indicatorEncodeRequirement,
   line_chart: lineEncodeRequirement,
   pie_chart: pieEncodeRequirement,
   donut_chart: pieEncodeRequirement,

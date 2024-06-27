@@ -1,6 +1,25 @@
 import type { PureChartKnowledgeBase } from './types';
 
 export const base: PureChartKnowledgeBase = {
+  indicator_chart: {
+    id: 'indicator_chart',
+    name: 'Value Chart',
+    alias: ['Indicator'],
+    family: ['Indicators'],
+    def: 'A chart show indicator number, can',
+    purpose: ['Value'],
+    coord: ['Other'],
+    category: ['Statistic'],
+    shape: ['Other'],
+    encodePres: {},
+    dataPres: [
+      { minQty: 0, maxQty: 2, fieldConditions: ['Time', 'Ordinal', 'Nominal'] },
+      { minQty: 1, maxQty: '*', fieldConditions: ['Interval'] },
+    ],
+    channel: [],
+    recRate: 'Recommended',
+  },
+
   line_chart: {
     id: 'line_chart',
     name: 'Line Chart',
@@ -1333,23 +1352,69 @@ export const base: PureChartKnowledgeBase = {
   //   recRate: 'Recommended',
   // },
 
-  /*
-   * WIP: unavailable until completed
-   */
-  // liquid_chart: {
-  //   id: 'liquid_chart',
-  //   name: 'Liquid Chart',
-  //   alias: ['Liquid Ball', 'Progress Ball'],
-  //   family: ['Others'],
-  //   def: 'Liquid chart is a diagram to represent progress.',
-  //   purpose: ['Composition'],
-  //   coord: ['Other'],
-  //   category: ['Diagram'],
-  //   shape: ['Round'],
-  //   dataPres: [{ minQty: 2, maxQty: 2, fieldConditions: ['Interval'] }],
-  //   channel: ['Position'],
-  //   recRate: 'Not Recommended',
-  // },
+  liquid_chart: {
+    id: 'liquid_chart',
+    name: 'Liquid Chart',
+    alias: ['Liquid Ball', 'Progress Ball'],
+    family: ['ProgressCharts'],
+    def: 'Liquid chart is a diagram to represent progress.',
+    purpose: ['Progress', 'Value'],
+    coord: ['Other'],
+    category: ['Diagram'],
+    shape: ['Round'],
+    dataPres: [{ minQty: 1, maxQty: 2, fieldConditions: ['Interval'] }],
+    channel: ['Position'],
+    recRate: 'Not Recommended',
+  },
+
+  gauge_chart: {
+    id: 'gauge_chart',
+    name: 'Gauge Chart',
+    alias: [],
+    family: ['ProgressCharts'],
+    def: 'Gauge chart is a diagram to represent progress, different color with different progress.',
+    purpose: ['Progress', 'Value'],
+    coord: ['Other'],
+    category: ['Diagram'],
+    shape: ['Round'],
+    dataPres: [{ minQty: 1, maxQty: 2, fieldConditions: ['Interval'] }],
+    channel: ['Color', 'Position'],
+    recRate: 'Not Recommended',
+  },
+
+  progress_chart: {
+    id: 'progress_chart',
+    name: 'Progress Chart',
+    alias: [],
+    family: ['ProgressCharts'],
+    def: 'Progress Chart is a diagram to represent progress, display as bar.',
+    purpose: ['Progress'],
+    coord: ['Other'],
+    category: ['Diagram'],
+    shape: ['Bars'],
+    dataPres: [{ minQty: 1, maxQty: 2, fieldConditions: ['Interval'] }],
+    channel: ['Length'],
+    recRate: 'Not Recommended',
+  },
+
+  geo_area_map: {
+    id: 'geo_area_map',
+    name: 'Geo Area Map',
+    alias: [],
+    family: ['Others'],
+    def: 'Geo Area Map display data on a area map.',
+    purpose: ['Geo', 'Distribution'],
+    coord: ['Geo'],
+    category: ['Diagram'],
+    shape: ['Bars'],
+    dataPres: [
+      { minQty: 1, maxQty: 2, fieldConditions: ['Interval'] },
+      { minQty: 1, maxQty: 1, fieldConditions: ['Geo'] },
+      { minQty: 0, maxQty: 1, fieldConditions: ['Geo', 'Nominal', 'Time'] },
+    ],
+    channel: ['Size', 'Color', 'Position'],
+    recRate: 'Not Recommended',
+  },
 
   /**
    * WIP: unavailable until completed
