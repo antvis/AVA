@@ -6,6 +6,11 @@
  * @public
  */
 export const CHART_IDS = [
+  'indicator_chart',
+  'liquid_chart',
+  'gauge_chart',
+  'progress_chart',
+  'geo_area_map',
   'line_chart',
   'step_line_chart',
   'area_chart',
@@ -68,6 +73,7 @@ export const CHART_IDS = [
  * @public
  */
 export const FAMILIES = [
+  'Indicators',
   'LineCharts',
   'ColumnCharts',
   'BarCharts',
@@ -84,6 +90,7 @@ export const FAMILIES = [
   'PointLayer',
   'HeatmapLayer',
   'Table',
+  'ProgressCharts',
   'Others',
 ] as const;
 
@@ -107,6 +114,8 @@ export const PURPOSES = [
   'Spatial',
   'Anomaly',
   'Value',
+  'Progress',
+  'Geo',
 ] as const;
 
 /**
@@ -164,7 +173,15 @@ export const SHAPES = [
  *
  * @public
  */
-export const LEVEL_OF_MEASUREMENTS = ['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Continuous', 'Time'] as const;
+export const LEVEL_OF_MEASUREMENTS = [
+  'Nominal',
+  'Ordinal',
+  'Interval',
+  'Discrete',
+  'Continuous',
+  'Time',
+  'Geo',
+] as const;
 
 /**
  * Array of channels.
