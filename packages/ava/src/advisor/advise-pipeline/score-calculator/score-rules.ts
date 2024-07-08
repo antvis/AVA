@@ -22,7 +22,7 @@ import type { ChartId, ChartKnowledgeBase } from '../../../ckb';
  */
 export function scoreRules(
   chartType: ChartId | string,
-  chartWIKI: ChartKnowledgeBase,
+  chartWiki: ChartKnowledgeBase,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
   options?: AdvisorOptions,
@@ -36,7 +36,7 @@ export function scoreRules(
 
   const info = { dataProps, chartType, purpose, preferences };
 
-  const hardScore = computeScore(chartType, chartWIKI, ruleBase, 'HARD', info, log, advisorContext);
+  const hardScore = computeScore(chartType, chartWiki, ruleBase, 'HARD', info, log, advisorContext);
 
   // Hard-Rule pruning
   if (hardScore === 0) {
@@ -44,7 +44,7 @@ export function scoreRules(
     return result;
   }
 
-  const softScore = computeScore(chartType, chartWIKI, ruleBase, 'SOFT', info, log, advisorContext);
+  const softScore = computeScore(chartType, chartWiki, ruleBase, 'SOFT', info, log, advisorContext);
 
   const score = hardScore * softScore;
 

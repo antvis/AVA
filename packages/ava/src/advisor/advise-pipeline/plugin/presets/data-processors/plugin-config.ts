@@ -12,7 +12,6 @@ import type {
 
 export const dataProcessorPlugin: AdvisorPluginType<DataProcessorInput, DataProcessorOutput> = {
   name: 'defaultDataProcessor',
-  stage: ['dataAnalyze'],
   execute: (input: DataProcessorInput, context: AdvisorPipelineContext): DataProcessorOutput => {
     const { data, customDataProps } = input;
     const { fields } = context?.options || {};

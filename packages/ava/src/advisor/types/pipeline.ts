@@ -216,8 +216,6 @@ export interface LintParams {
 
 /** 存储 pipeline 共用信息 */
 export type AdvisorPipelineContext = {
-  /** 原始数据 */
-  data?: Data;
   advisor: Advisor;
   /** 推荐配置项 */
   options?: AdvisorOptions;

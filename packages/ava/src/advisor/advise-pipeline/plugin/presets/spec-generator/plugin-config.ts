@@ -14,7 +14,6 @@ import type {
 // todo 内置的 visualEncode 和 spec generate 插件需要明确支持哪些图表类型
 export const specGeneratorPlugin: AdvisorPluginType<SpecGeneratorInput, SpecGeneratorOutput> = {
   name: 'defaultSpecGenerator',
-  stage: ['specGenerate'],
   execute: (input: SpecGeneratorInput, context: AdvisorPipelineContext): SpecGeneratorOutput => {
     const { chartTypeRecommendations, dataProps, data } = input;
     const { options, advisor } = context || {};

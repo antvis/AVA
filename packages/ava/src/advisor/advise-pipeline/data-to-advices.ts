@@ -41,7 +41,7 @@ export function dataToAdvices({
   const chartTypeRecommendations: ScoringResultForChartType[] = getChartTypeRecommendations({
     dataProps,
     ruleBase,
-    chartWIKI: ckb,
+    chartWiki: ckb,
   });
 
   const list: Advice[] = chartTypeRecommendations.map((result) => {

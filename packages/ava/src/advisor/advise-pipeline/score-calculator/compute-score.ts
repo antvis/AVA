@@ -9,7 +9,7 @@ const defaultWeights = DEFAULT_RULE_WEIGHTS;
 
 export const computeScore = (
   chartType: ChartId | string,
-  chartWIKI: ChartKnowledgeBase,
+  chartWiki: ChartKnowledgeBase,
   ruleBase: Record<string, RuleModule>,
   ruleType: 'HARD' | 'SOFT',
   info: Info,
@@ -24,7 +24,7 @@ export const computeScore = (
       const extra = r.option?.extra;
       return (
         r.type === ruleType &&
-        r.trigger({ ...info, weight, ...extra, chartType, chartWIKI, advisorContext }) &&
+        r.trigger({ ...info, weight, ...extra, chartType, chartWIKI: chartWiki, advisorContext }) &&
         !r.option?.off
       );
     })
@@ -36,7 +36,7 @@ export const computeScore = (
         weight,
         ...extra,
         chartType,
-        chartWIKI,
+        chartWIKI: chartWiki,
         advisorContext,
       }) as number;
       const score = weight * base;

@@ -5,26 +5,46 @@ import type { AdvisorPluginType, AdvisorPipelineContext } from '../types';
 /** 收集多个 plugin 的输出结果 */
 type PluginResultMap<Output = any> = Record<string, Output>;
 
-export class BaseComponent<Input = any, Output = any> {
+interface BaseComponentType<Input = any, Output = any> {
+  name: string;
+  /** 内部 plugin 数组的执行方式，目前仅并行执行，后续可扩展串行、瀑布型等，适应更多的插件编排方式 */
+  executeType?: 'parallel';
+  registerPlugin: (plugin: AdvisorPluginType) => void;
+  unloadPlugin: (pluginName: string) => void;
+  afterPluginsExecute?: (params: PluginResultMap<Output>, context?: AdvisorPipelineContext) => Output;
+  execute: (input: Input) => Output;
+  executeAsync: (input: Input) => Promise<Output>;
+}
+
+export type ComponentOptions<Input = any, Output = any> = {
+  plugins?: AdvisorPluginType<Input, Output>[];
+  afterPluginsExecute?: (params: PluginResultMap<Output>, context?: AdvisorPipelineContext) => Output;
+  context?: AdvisorPipelineContext;
+};
+
+export class BaseComponent<Input = any, Output = any> implements BaseComponentType<Input, Output> {
   name: string;
 
-  plugins: AdvisorPluginType<Input, Output>[] = [];
+  executeType: 'parallel';
+
+  readonly context?: AdvisorPipelineContext;
+
+  private plugins: AdvisorPluginType<Input, Output>[] = [];
 
   /** 是否存在异步插件 */
   private hasAsyncPlugin: boolean = false;
 
   afterPluginsExecute?: (params: PluginResultMap<Output>, context?: AdvisorPipelineContext) => Output;
 
-  context?: AdvisorPipelineContext;
+  getPlugins() {
+    return this.plugins;
+  }
 
-  constructor(
-    name,
-    options?: {
-      plugins?: AdvisorPluginType<Input, Output>[];
-      afterPluginsExecute?: (params: PluginResultMap<Output>, context?: AdvisorPipelineContext) => Output;
-      context?: AdvisorPipelineContext;
-    }
-  ) {
+  get isAsync() {
+    return this.hasAsyncPlugin;
+  }
+
+  constructor(name, options?: ComponentOptions) {
     this.name = name;
     this.afterPluginsExecute = options?.afterPluginsExecute ?? this.defaultAfterPluginsExecute;
     this.context = options?.context;
@@ -55,7 +75,10 @@ export class BaseComponent<Input = any, Output = any> {
     if (this.isPluginAsync(plugin)) {
       this.hasAsyncPlugin = true;
     }
-
+    const existPlugin = this.plugins.find((item) => item.name === plugin.name);
+    if (existPlugin) {
+      this.unloadPlugin(existPlugin.name);
+    }
     this.plugins.push(plugin);
   }
 
@@ -67,6 +90,23 @@ export class BaseComponent<Input = any, Output = any> {
     }
   }
 
+  private executeSinglePlugin(plugin: AdvisorPluginType, params: Input, result?: PluginResultMap) {
+    plugin.onBeforeExecute?.(params, this.context);
+    if (isFunction(plugin.condition) && !plugin.condition(params, this.context)) return null;
+    if (this.isPluginAsync(plugin)) {
+      return plugin.execute(params, this.context).then((output: Output) => {
+        plugin.onAfterExecute?.(output, this.context);
+        // eslint-disable-next-line no-param-reassign
+        result[plugin.name] = output;
+      });
+    }
+    const output = plugin.execute(params, this.context) as Output;
+    plugin.onAfterExecute?.(output, this.context);
+    // eslint-disable-next-line no-param-reassign
+    result[plugin.name] = output;
+    return output;
+  }
+
   execute(params: Input): Output {
     if (this.hasAsyncPlugin) {
       // eslint-disable-next-line no-console
@@ -74,11 +114,7 @@ export class BaseComponent<Input = any, Output = any> {
     }
     const pluginsOutput = {};
     this.plugins.forEach((plugin) => {
-      plugin.onBeforeExecute?.(params, this.context);
-      if (isFunction(plugin.condition) && !plugin.condition(params, this.context)) return;
-      const output = plugin.execute(params, this.context) as Output;
-      plugin.onAfterExecute?.(output, this.context);
-      pluginsOutput[plugin.name] = output;
+      this.executeSinglePlugin(plugin, params, pluginsOutput);
     });
     return this.afterPluginsExecute?.(pluginsOutput, this.context);
   }
@@ -90,11 +126,7 @@ export class BaseComponent<Input = any, Output = any> {
     const pluginsOutput = {};
     return Promise.all(
       this.plugins.map(async (plugin) => {
-        plugin.onBeforeExecute?.(params, this.context);
-        if (isFunction(plugin.condition) && !plugin.condition(params, this.context)) return;
-        const output = (await plugin.execute(params, this.context)) as Output;
-        plugin.onAfterExecute?.(output, this.context);
-        pluginsOutput[plugin.name] = output;
+        await this.executeSinglePlugin(plugin, params, pluginsOutput);
       })
     ).then(async () => {
       return this.afterPluginsExecute?.(pluginsOutput, this.context);

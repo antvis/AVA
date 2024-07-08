@@ -10,21 +10,21 @@ import type {
 } from '../../../../types';
 
 export const getChartTypeRecommendations = ({
-  chartWIKI,
+  chartWiki,
   dataProps,
   ruleBase,
   options,
   advisorContext,
 }: {
   dataProps: BasicDataPropertyForAdvice[];
-  chartWIKI: Record<string, ChartKnowledge>;
+  chartWiki: Record<string, ChartKnowledge>;
   ruleBase: Record<string, RuleModule>;
   options?: AdvisorOptions;
   advisorContext?: Pick<AdvisorPipelineContext, 'extra'>;
 }) => {
-  const chatTypes = Object.keys(chartWIKI);
+  const chatTypes = Object.keys(chartWiki);
   const list: ScoringResultForChartType[] = chatTypes.map((chartType) => {
-    return scoreRules(chartType, chartWIKI, dataProps, ruleBase, options, advisorContext);
+    return scoreRules(chartType, chartWiki, dataProps, ruleBase, options, advisorContext);
   });
 
   // filter and sorter
