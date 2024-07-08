@@ -1,16 +1,17 @@
 import { cloneDeep, deepMix } from '../utils';
 
-import { getChartTypeSpec } from './spec-generator';
+import { getChartTypeSpec } from './plugin/presets/spec-generator';
 import { DEFAULT_COLOR } from './constants';
-import { getChartTypeRecommendations } from './get-chart-Type';
-import { applyTheme, applyDesignRules, applySmartColor } from './spec-processors';
-import { getDataProps, getSelectedData } from './data-processors';
+import { getChartTypeRecommendations } from './plugin/presets/chart-type-recommend/get-chart-Type';
+import { applyTheme, applyDesignRules, applySmartColor } from './plugin/presets/spec-generator/spec-processors';
+import { getDataProps, getSelectedData } from './plugin/presets/data-processors';
 
 import type { ScoringResultForChartType, Advice, AdviseResult, ChartAdviseParams } from '../types';
 import type { RuleModule } from '../ruler/types';
 import type { ChartKnowledgeBase } from '../../ckb';
 
 /**
+ * @deprecated 已改造为 plugin 插件形式，之前的硬编码形式函数后续清理掉
  * recommending charts given data and dataProps, based on CKB and RuleBase
  *
  * @param params input params for charts recommending
@@ -40,13 +41,18 @@ export function dataToAdvices({
   const chartTypeRecommendations: ScoringResultForChartType[] = getChartTypeRecommendations({
     dataProps,
     ruleBase,
-    chartWIKI: ckb,
+    chartWiki: ckb,
   });
 
   const list: Advice[] = chartTypeRecommendations.map((result) => {
     // step 2: generate spec for each chart type
     const { score, chartType } = result;
-    const chartTypeSpec = getChartTypeSpec(chartType, filteredData, dataProps, ckb[chartType]);
+    const chartTypeSpec = getChartTypeSpec({
+      chartType,
+      data: filteredData,
+      dataProps,
+      chartKnowledge: ckb[chartType],
+    });
 
     // step 3: apply spec processors such as design rules, theme, color, to improve spec
     if (chartTypeSpec && refine) {

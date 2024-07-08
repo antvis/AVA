@@ -11,3 +11,11 @@ export const DEFAULT_RULE_WEIGHTS: Record<string, number> = {
   'purpose-check': 1.0,
   'series-qty-limit': 0.8,
 };
+
+/** 内置默认模块名 */
+export enum PresetComponentName {
+  dataAnalyzer,
+  chartTypeRecommender,
+  chartEncoder,
+  specGenerator,
+}

@@ -4,6 +4,7 @@ import {
   AdvisorOptions,
   ScoringResultForChartType,
   ScoringResultForRule,
+  AdvisorPipelineContext,
 } from '../../types';
 
 import { computeScore } from './compute-score';
@@ -21,10 +22,11 @@ import type { ChartId, ChartKnowledgeBase } from '../../../ckb';
  */
 export function scoreRules(
   chartType: ChartId | string,
-  chartWIKI: ChartKnowledgeBase,
+  chartWiki: ChartKnowledgeBase,
   dataProps: BasicDataPropertyForAdvice[],
   ruleBase: Record<string, RuleModule>,
-  options?: AdvisorOptions
+  options?: AdvisorOptions,
+  advisorContext?: Pick<AdvisorPipelineContext, 'extra'>
 ): ScoringResultForChartType {
   const purpose = options ? options.purpose : '';
   const preferences = options ? options.preferences : undefined;
@@ -34,7 +36,7 @@ export function scoreRules(
 
   const info = { dataProps, chartType, purpose, preferences };
 
-  const hardScore = computeScore(chartType, chartWIKI, ruleBase, 'HARD', info, log);
+  const hardScore = computeScore(chartType, chartWiki, ruleBase, 'HARD', info, log, advisorContext);
 
   // Hard-Rule pruning
   if (hardScore === 0) {
@@ -42,7 +44,7 @@ export function scoreRules(
     return result;
   }
 
-  const softScore = computeScore(chartType, chartWIKI, ruleBase, 'SOFT', info, log);
+  const softScore = computeScore(chartType, chartWiki, ruleBase, 'SOFT', info, log, advisorContext);
 
   const score = hardScore * softScore;
 

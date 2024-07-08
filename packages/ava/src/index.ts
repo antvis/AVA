@@ -17,6 +17,14 @@ export type {
   LintParams,
   RuleModule,
   AdvisorConfig,
+  AdvisorPluginType,
+  AdvisorPipelineContext,
+  DataProcessorInput,
+  DataProcessorOutput,
+  ChartTypeRecommendInput,
+  ChartTypeRecommendOutput,
+  SpecGeneratorInput,
+  SpecGeneratorOutput,
 } from './advisor';
 
 /* CKB */
