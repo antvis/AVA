@@ -141,18 +141,18 @@ df.info();
 ### statistics
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { min, variance, pearson } from '@antv/ava';
 
 /** Calculate minimum */
-stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
+min([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1
 
 /** Calculate variance */
-stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
+variance([1, 2, 3, 201, 999, 4, 5, 10]);
 // 106372.359375
 
 /** Calculate Pearson correlation coefficient */
-stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
+pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
 // 0.8863724626851197
 ```
 
