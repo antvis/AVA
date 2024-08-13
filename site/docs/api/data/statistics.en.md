@@ -27,9 +27,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { min } from '@antv/ava';
 
-stats.min([1, 2, 3, 201, 999, 4, 5, 10]);
+min([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1
 ```
 
@@ -50,9 +50,32 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { max } from '@antv/ava';
 
-stats.max([1, 2, 3, 201, 999, 4, 5, 10]);
+max([1, 2, 3, 201, 999, 4, 5, 10]);
+// 999
+```
+
+## maxabs
+
+Calculate the maximum absolute value of array.
+
+***<font size=4>Parameters</font>***
+
+**array** Raw array data _required_
+
+Type `number[]`
+
+***<font size=4>Return value</font>***
+
+`number`
+
+***<font size=4>Usage</font>***
+
+```ts
+import { maxabs } from '@antv/ava';
+
+maxabs([1, 2, 3, -201, -999, 4, 5, 10]);
 // 999
 ```
 
@@ -73,9 +96,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { sum } from '@antv/ava';
 
-stats.sum([1, 2, 3, 201, 999, 4, 5, 10]);
+sum([1, 2, 3, 201, 999, 4, 5, 10]);
 // 1225
 ```
 
@@ -102,9 +125,9 @@ Default `false`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { median } from '@antv/ava';
 
-stats.median([1, 2, 3, 201, 999, 4, 5, 10]);
+median([1, 2, 3, 201, 999, 4, 5, 10]);
 // 4.5
 ```
 
@@ -131,9 +154,9 @@ Default `false`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { quartile } from '@antv/ava';
 
-stats.quartile([1, 2, 3, 201, 999, 4, 5, 10]);
+quartile([1, 2, 3, 201, 999, 4, 5, 10]);
 // [ 2.5, 4.5, 105.5 ]
 ```
 
@@ -164,9 +187,9 @@ Default `false`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { quantile } from '@antv/ava';
 
-stats.quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
+quantile([1, 2, 3, 201, 999, 4, 5, 10], 75);
 // 10
 ```
 
@@ -187,9 +210,9 @@ type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { mean } from '@antv/ava';
 
-stats.mean([1, 2, 3, 201, 999, 4, 5, 10]);
+mean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 153.125
 ```
 
@@ -210,9 +233,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { geometricMean } from '@antv/ava';
 
-stats.geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
+geometricMean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 11.162021352303842
 ```
 
@@ -233,9 +256,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { harmonicMean } from '@antv/ava';
 
-stats.harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
+harmonicMean([1, 2, 3, 201, 999, 4, 5, 10]);
 // 3.34824774196937
 ```
 
@@ -256,9 +279,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { variance } from '@antv/ava';
 
-stats.variance([1, 2, 3, 201, 999, 4, 5, 10]);
+variance([1, 2, 3, 201, 999, 4, 5, 10]);
 // 106372.359375
 ```
 
@@ -279,9 +302,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { standardDeviation } from '@antv/ava';
 
-stats.standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
+standardDeviation([1, 2, 3, 201, 999, 4, 5, 10]);
 // 326.1477569676051
 ```
 
@@ -302,9 +325,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { coefficientOfVariance } from '@antv/ava';
 
-stats.coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
+coefficientOfVariance([1, 2, 3, 201, 999, 4, 5, 10]);
 // 2.1299445352986455
 ```
 
@@ -329,9 +352,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { covariance } from '@antv/ava';
 
-stats.covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
+covariance([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
 // 324526.3125
 ```
 
@@ -356,9 +379,9 @@ Type `number[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { pearson } from '@antv/ava';
 
-stats.pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
+pearson([1, 2, 3, 201, 999, 4, 5, 10], [12, 22, 23, 2201, 2999, 24, 25, 210]);
 // 0.8863724626851197
 ```
 
@@ -379,9 +402,9 @@ Type `any[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { valid } from '@antv/ava';
 
-stats.valid([1, 2, NaN, 201, undefined, 4, 5, null]);
+valid([1, 2, NaN, 201, undefined, 4, 5, null]);
 // 5
 ```
 
@@ -402,9 +425,9 @@ Type `any[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { missing } from '@antv/ava';
 
-stats.missing([1, 2, NaN, 201, undefined, 4, 5, null]);
+missing([1, 2, NaN, 201, undefined, 4, 5, null]);
 // 3
 ```
 
@@ -425,9 +448,9 @@ type `any[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { valueMap } from '@antv/ava';
 
-stats.valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
+valueMap([1, 2, 3, 201, 999, 4, 5, 10]);
 // { '1': 1, '2': 1, '3': 1, '4': 1, '5': 1, '10': 1, '201': 1, '999': 1 }
 ```
 
@@ -448,293 +471,8 @@ type `any[]`
 ***<font size=4>Usage</font>***
 
 ```ts
-import { statistics as stats } from '@antv/ava';
+import { distinct } from '@antv/ava';
 
-stats.distinct([1, 2, 3, 201, 999, 4, 5, 10]);
+distinct([1, 2, 3, 201, 999, 4, 5, 10]);
 // 8
 ```
-
-## minBy
-
-Calculate the minimum value of the specified field of the array.
-
-***<font size=4>Parameters</font>***
-
-**array** Raw array data _required_
-
-Type `any[]`
-
-**measure** Calculate the specified field _required_
-
-Type `string`
-
-***<font size=4>Return value</font>***
-
-`number`
-
-***<font size=4>Usage</font>***
-
-```ts
-import { statistics as stats } from '@antv/ava';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.minBy(objects, 'n');
-// 1
-```
-
-## maxBy
-
-Calculate the maximum value of the specified field of the array.
-
-***<font size=4>Parameters</font>***
-
-**array** Raw array data _required_
-
-Type `any[]`
-
-**measure** Calculate the specified field _required_.
-
-Type `string`
-
-***<font size=4>Return value</font>***
-
-`number`
-
-***<font size=4>Usage</font>***
-
-```ts
-import { statistics as stats } from '@antv/ava';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.maxBy(objects, 'n');
-// 2
-```
-
-## sumBy
-
-Calculate the sum of the values of the specified fields of the array.
-
-***<font size=4>Parameters</font>***
-
-**array** Raw array data _required_
-
-Type `any[]`
-
-**measure** Calculate the sum of the specified fields _required_.
-
-Type `string`
-
-***<font size=4>Return value</font>***
-
-`number`
-
-***<font size=4>Usage</font>***
-
-```ts
-import { statistics as stats } from '@antv/ava';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.sumBy(objects, 'n');
-// 3
-```
-
-## meanBy
-
-Calculate the average number of the specified fields in the array.
-
-***<font size=4>Parameters</font>***
-
-**array** Raw array data _required_
-
-type `any[]`
-
-**measure** Calculate the specified field _required_
-
-Type `string`
-
-***<font size=4>Return value</font>***
-
-`number`
-
-
-***<font size=4>Usage</font>***
-
-```ts
-import { statistics as stats } from '@antv/ava';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.meanBy(objects, 'n');
-// 1.5
-```
-
-## countBy
-
-Calculate the total count of the specified field of the array.
-
-***<font size=4>Parameters</font>***
-
-**array** Raw array data _required_
-
-Type `any[]`
-
-**measure** Calculate the specified field _required_.
-
-Type `string`
-
-***<font size=4>Return value</font>***
-
-`number`
-
-***<font size=4>Usage</font>***
-
-```ts
-import { statistics as stats } from '@antv/ava';
-
-const objects = [{ 'n': 1 }, { 'n': 2 }];
-
-stats.countBy(objects, 'n');
-// 2
-```
-
-## groupBy
-
-Group the array objects by field.
-
-***<font size=4>Parameters</font>***
-
-**array** Raw array data _required_
-
-type `any[]`
-
-**measure** Grouping of specified fields _required_
-
-type `string`
-
-***<font size=4>Return value</font>***
-
-`any[]`
-
-***<font size=4>Usage</font>***
-
-```ts
-import { statistics as stats } from '@antv/ava';
-
-
-const objects = [
-  {
-   'dimension': 'color',
-   'measure': 'height'
-  }, {
-   'dimension': 'map',
-   'measure': 'height'
-  }, {
-   'dimension': 'data',
-   'measure': 'weight'
-  }
-];
-
-stats.groupBy(objects, 'measure');
-// {
-//   'height': [
-//     {
-//       'dimension': 'color',
-//       'measure': 'height'
-//     }, {
-//       'dimension': 'map',
-//       'measure': 'height'
-//     }
-//   ], 
-//   'weight': [
-//     {
-//       'dimension': 'data',
-//       'measure': 'weight'
-//     }
-//   ]
-// }
-```
-
-## aggregate
-
-Aggregate the array objects by the specified dimensions and fields.
-
-***<font size=4>Parameters</font>***
-
-**array** Raw array data _required_
-
-type `any[]`
-
-**dimension** Aggregates the specified dimension _required_
-
-Type `string`
-
-**measure** Aggregates the specified fields _required_
-
-Type `string`
-
-**aggregateMethod** Aggregate method _optional_
-
-Type ``AggregateMethod`, defaults to ``SUM`
-
-```sign
-type AggregateMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN';
-```
-
-**seriesField** Aggregate the specified sequence _optional_
-
-Type `string`
-
-***<font size=4>Return value</font>***
-
-`any[]`
-
-***<font size=4>Usage</font>***
-
-
-Type `string`
-
-***<font size=4>Return value</font>***
-
-`any[]`
-
-***<font size=4>Usage</font>***
-
-```ts
-import { statistics as stats } from '@antv/ava';
-
-const objects = [
-  {
-    'dim': 1,
-    'n': 1
-  }, {
-    'dim': 2,
-    'n': 2,
-    'm': 2
-  }, {
-    'dim': 1,
-    'n': 3,
-    'k': 3
-  }
-];
-
-const dimensionName = 'dim';
-
-const measureName = 'n';
-
-stats.aggregate(objects, dimensionName, measureName);
-// [
-//   {
-//     'dim': 1,
-//     'n': 1
-//   },
-//   {
-//     'dim': 2,
-//     'n': 5
-//   }
-// ]
-```
-
-
