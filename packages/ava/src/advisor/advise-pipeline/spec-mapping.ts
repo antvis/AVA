@@ -16,6 +16,21 @@ function splitAngleColor(dataProps: BasicDataPropertyForAdvice[]): [ReturnField,
   return [field4Color, field4Angle];
 }
 
+/**
+ * Process date column to new Date().
+ * @param field
+ * @param dataProps
+ * @returns
+ */
+function processDateEncode(field: string, dataProps: BasicDataPropertyForAdvice[]) {
+  const dp = dataProps.find((dataProp) => dataProp.name === field);
+
+  if (dp?.recommendation === 'date') {
+    return (d) => new Date(d[field]);
+  }
+  return field;
+}
+
 function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['spec'] {
   const [field4Color, field4Angle] = splitAngleColor(dataProps);
   if (!field4Angle || !field4Color) return null;
@@ -29,6 +44,9 @@ function pieChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice['
     },
     transform: [{ type: 'stackY' }],
     coordinate: { type: 'theta' },
+    animate: {
+      enter: { type: 'waveIn' },
+    },
   };
   return spec;
 }
@@ -46,6 +64,9 @@ function donutChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice
     },
     transform: [{ type: 'stackY' }],
     coordinate: { type: 'theta', innerRadius: 0.6 },
+    animate: {
+      enter: { type: 'waveIn' },
+    },
   };
   return spec;
 }
@@ -67,7 +88,7 @@ function lineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice[
     type: 'line',
     data,
     encode: {
-      x: field4X.name,
+      x: processDateEncode(field4X.name, dataProps),
       y: field4Y.name,
     },
   };
@@ -87,7 +108,7 @@ function stepLineChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Adv
     type: 'line',
     data,
     encode: {
-      x: field4X.name,
+      x: processDateEncode(field4X.name, dataProps),
       y: field4Y.name,
       shape: 'hvh',
     },
@@ -120,7 +141,7 @@ function areaChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): Advice[
     type: 'area',
     data,
     encode: {
-      x: field4X.name,
+      x: processDateEncode(field4X.name, dataProps),
       y: field4Y.name,
     },
   };
@@ -136,7 +157,7 @@ function stackedAreaChart(data: Data, dataProps: BasicDataPropertyForAdvice[]): 
     type: 'area',
     data,
     encode: {
-      x: field4X.name,
+      x: processDateEncode(field4X.name, dataProps),
       y: field4Y.name,
       color: field4Series.name,
     },
@@ -154,7 +175,7 @@ function percentStackedAreaChart(data: Data, dataProps: BasicDataPropertyForAdvi
     type: 'area',
     data,
     encode: {
-      x: field4X.name,
+      x: processDateEncode(field4X.name, dataProps),
       y: field4Y.name,
       color: field4Series.name,
     },
