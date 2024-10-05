@@ -1,17 +1,17 @@
 /* eslint-disable no-template-curly-in-string */
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Skeleton, Switch, Divider, Tooltip, Popover, Checkbox } from 'antd';
+import { Checkbox, Divider, Popover, Skeleton, Switch, Tooltip } from 'antd';
 // import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import numeral from 'numeral';
 
 import {
+  createCustomPhraseFactory,
   NarrativeTextVis,
   NtvPluginManager,
-  createCustomPhraseFactory,
   seedToken,
 } from '../../../../packages/ava-react/src';
-import { generateTextSpec, NarrativeTextSpec } from '../../../../packages/ava/lib';
+import { generateTextSpec, NarrativeTextSpec } from '../../../../packages/ava/src';
 
 import fluctuationData from './mock-data';
 
