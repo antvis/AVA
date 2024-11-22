@@ -1,10 +1,10 @@
 import { cloneDeep, deepMix } from '../utils';
 
-import { getChartTypeSpec } from './plugin/presets/spec-generator';
+import { getChartTypeSpec } from './plugin/presets/spec-generate';
 import { DEFAULT_COLOR } from './constants';
-import { getChartTypeRecommendations } from './plugin/presets/chart-type-recommend/get-chart-Type';
-import { applyTheme, applyDesignRules, applySmartColor } from './plugin/presets/spec-generator/spec-processors';
-import { getDataProps, getSelectedData } from './plugin/presets/data-processors';
+import { applyTheme, applyDesignRules, applySmartColor } from './plugin/presets/spec-generate/spec-processors';
+import { getDataProps, getSelectedData } from './plugin/presets/data-analyze';
+import { getEncodeMapping, getChartTypeRecommendations } from './plugin/presets/chart-recommend';
 
 import type { ScoringResultForChartType, Advice, AdviseResult, ChartAdviseParams } from '../types';
 import type { RuleModule } from '../ruler/types';
@@ -52,6 +52,10 @@ export function dataToAdvices({
       data: filteredData,
       dataProps,
       chartKnowledge: ckb[chartType],
+      encode: getEncodeMapping({
+        dataProps,
+        chartType,
+      }),
     });
 
     // step 3: apply spec processors such as design rules, theme, color, to improve spec

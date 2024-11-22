@@ -1,7 +1,7 @@
 import { uniq } from 'lodash';
 
-import type { Datum } from '../../../../../common/types';
-import type { FieldInfo } from '../../../../../data';
+import type { Datum } from '../../../../../../common/types';
+import type { FieldInfo } from '../../../../../../data';
 
 // 识别 x 轴是否只有一条数据（绘制的折线图是否只有一个点）
 export const isUniqueXValue = ({ data, xField }: { xField: string; data: Datum[] }): boolean => {

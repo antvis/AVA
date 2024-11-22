@@ -1,4 +1,3 @@
-export * from './chart-type-recommend';
-export * from './data-processors';
-export * from './spec-generator';
-export * from './visual-encoder';
+export * from './chart-recommend';
+export * from './data-analyze';
+export * from './spec-generate';

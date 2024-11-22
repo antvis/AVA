@@ -27,12 +27,4 @@ export type G2ChartSpec = Omit<Mark, 'encode'> & { encode: MarkEncode };
 /** 原 G2 spec 去掉复杂 Encode 类型并添加简易版（带字段类型的） Encode 类型 */
 export type ChartSpecWithEncodeType = Omit<Mark, 'encode'> & { encode: MarkEncodeWithType };
 
-export type ChartEncoding = {
-  x?: string;
-  y?: string;
-  color?: string;
-  theta?: string;
-  size?: string;
-};
-
 export type { Specification };

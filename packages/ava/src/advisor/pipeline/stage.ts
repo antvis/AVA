@@ -1,12 +1,12 @@
 import { isFunction, last } from 'lodash';
 
-import type { AdvisorPluginType, AdvisorPipelineContext } from '../types';
+import type { AdvisorPluginType, AdvisorPipelineContext, PipelineStage } from '../types';
 
 /** 收集多个 plugin 的输出结果 */
 type PluginResultMap<Output = any> = Record<string, Output>;
 
-export class BaseComponent<Input = any, Output = any> {
-  name: string;
+export class Stage<Input = any, Output = any> {
+  name: PipelineStage;
 
   plugins: AdvisorPluginType<Input, Output>[] = [];
 
@@ -70,7 +70,7 @@ export class BaseComponent<Input = any, Output = any> {
   execute(params: Input): Output {
     if (this.hasAsyncPlugin) {
       // eslint-disable-next-line no-console
-      console.warn('存在异步执行的插件，请使用 executeAsync');
+      console.warn('async plugins detected, please use executeAsync');
     }
     const pluginsOutput = {};
     this.plugins.forEach((plugin) => {

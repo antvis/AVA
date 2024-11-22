@@ -1,2 +1,2 @@
-export * from './component';
+export * from './stage';
 export * from './pipeline';
