@@ -1,3 +1,3 @@
 export * from './data-to-advices';
-export * from './plugin/presets/spec-generator';
-export * from './plugin/presets/data-processors';
+export * from './plugin/presets/spec-generate';
+export * from './plugin/presets/data-analyze';

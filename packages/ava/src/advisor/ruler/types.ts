@@ -35,11 +35,14 @@ export interface BasicDataPropertyForAdvice {
 }
 
 /**
- * 偏好选项：横向布局 - landscape | 纵向布局 - portrait
+ * 偏好选项：
+ * canvasLayout: 横向布局 - landscape | 纵向布局 - portrait
+ * chartType: 偏好的图表类型
  * @public
  */
 export interface Preferences {
-  canvasLayout: 'landscape' | 'portrait';
+  canvasLayout?: 'landscape' | 'portrait';
+  chartType?: string;
 }
 
 /**

@@ -19,12 +19,12 @@ export type {
   AdvisorConfig,
   AdvisorPluginType,
   AdvisorPipelineContext,
-  DataProcessorInput,
-  DataProcessorOutput,
-  ChartTypeRecommendInput,
-  ChartTypeRecommendOutput,
-  SpecGeneratorInput,
-  SpecGeneratorOutput,
+  DataAnalyzeInput,
+  DataAnalyzeOutput,
+  ChartRecommendInput,
+  ChartRecommendOutput,
+  SpecGenerateInput,
+  SpecGenerateOutput,
 } from './advisor';
 
 /* CKB */

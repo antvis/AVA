@@ -1,19 +1,37 @@
 import { AsyncSeriesWaterfallHook } from 'tapable';
 
-import { BaseComponent } from './component';
+import { AdviseParams, AdvisorPipelineContext, AdvisorPluginType, PipelineStage } from '../types';
+import { dataAnalyzePlugin, specGeneratePlugin } from '../advise-pipeline';
+import { chartRecommendPlugin } from '../advise-pipeline/plugin';
 
-export class Pipeline<Input = any, Output = any> {
-  components: BaseComponent<any, any>[];
+import { Stage } from './stage';
 
-  componentsManager: AsyncSeriesWaterfallHook<any, any>;
+export class Pipeline<Input = AdviseParams, Output = any> {
+  stages: Stage<any, any>[];
 
-  constructor({ components }: { components: BaseComponent<any, any>[] }) {
-    this.components = components;
-    this.componentsManager = new AsyncSeriesWaterfallHook(['initialParams']);
+  stageManager: AsyncSeriesWaterfallHook<any, any>;
 
-    components.forEach((component) => {
+  plugins: AdvisorPluginType[] = [];
+
+  context: AdvisorPipelineContext;
+
+  constructor({
+    plugins,
+    stages,
+    context,
+  }: {
+    plugins: AdvisorPluginType[];
+    stages?: Stage<any, any>[];
+    context?: AdvisorPipelineContext;
+  }) {
+    this.plugins = plugins;
+    this.context = context;
+    this.stages = stages ?? this.getDefaultStages();
+    this.stageManager = new AsyncSeriesWaterfallHook(['initialParams']);
+
+    this.stages.forEach((component) => {
       if (!component) return;
-      this.componentsManager.tapPromise(component.name, async (previousResult) => {
+      this.stageManager.tapPromise(component.name, async (previousResult) => {
         const input = previousResult;
         const componentOutput = await component.executeAsync(input || {});
 
@@ -25,8 +43,35 @@ export class Pipeline<Input = any, Output = any> {
     });
   }
 
-  async execute(initialParams: Input): Promise<Output> {
-    const result = await this.componentsManager.promise(initialParams);
+  getDefaultPlugins() {
+    return [dataAnalyzePlugin, chartRecommendPlugin, specGeneratePlugin];
+  }
+
+  private getDefaultStages() {
+    const defaultStageNames = [PipelineStage.dataAnalyze, PipelineStage.chartRecommend, PipelineStage.specGenerate];
+    return defaultStageNames.map((stageName) => {
+      const stagePlugins = this.plugins.filter((plugin) => plugin.stage === stageName);
+      const stage = new Stage(stageName, { plugins: stagePlugins, context: this.context });
+      return stage;
+    });
+  }
+
+  async execute(params: Input): Promise<Output> {
+    this.context = {
+      ...this.context,
+      ...params,
+    };
+    const result = await this.stageManager.promise(params);
     return result;
+  }
+
+  registerPlugins(plugins: AdvisorPluginType[] = []) {
+    plugins.forEach((plugin) => {
+      const stage = this.stages.find((stage) => stage.name === plugin.stage);
+      if (stage) {
+        this.plugins.push(plugin);
+        stage.registerPlugin(plugin);
+      }
+    });
   }
 }
