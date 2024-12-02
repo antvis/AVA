@@ -1,2 +1,2 @@
 export { getChartTypeSpec } from './get-chart-spec';
-export { specGeneratePlugin } from './plugin-config';
+export { specGeneratePlugin, SpecGeneratePlugin } from './plugin-config';

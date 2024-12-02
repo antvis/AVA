@@ -52,8 +52,8 @@ export function getChartTypeSpec({
   encode: ChartEncodeMapping;
   chartKnowledge?: ChartKnowledge;
 }): Advice['spec'] {
-  if (isFunction(chartKnowledge.toSpec)) {
-    const spec = chartKnowledge.toSpec(data, dataProps, encode);
+  if (isFunction(chartKnowledge?.toSpec)) {
+    const spec = chartKnowledge?.toSpec(data, dataProps, encode);
     return spec;
   }
 

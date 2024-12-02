@@ -4,6 +4,8 @@ import { processRuleCfg } from './ruler';
 import { dataToAdvices } from './advise-pipeline';
 import { checkRules } from './lint-pipeline/check-rules';
 import { Pipeline } from './pipeline/pipeline';
+import { HooksPipeline } from './pipeline/hooks-pipeline';
+import { Plugin } from './pipeline/plugin';
 
 import type { ChartKnowledgeBase } from '../ckb';
 import type { RuleModule } from './ruler';
@@ -33,10 +35,13 @@ export class Advisor {
 
   pipeline: Pipeline;
 
+  hooksPipeline: HooksPipeline;
+
   constructor(
     config: AdvisorConfig = {},
     custom: {
       plugins?: AdvisorPluginType[];
+      hooksPlugins?: Plugin<any[], any>[];
       /** extra info to pass through the pipeline
        * 额外透传到推荐 pipeline 中的业务信息
        */
@@ -44,11 +49,15 @@ export class Advisor {
     } = {}
   ) {
     // init
-    const { plugins, extra = {} } = custom;
+    const { plugins, hooksPlugins, extra = {} } = custom;
     this.ckb = ckb(config.ckbCfg);
     this.ruleBase = processRuleCfg(config.ruleCfg);
     this.pipeline = new Pipeline<DataAnalyzeInput, SpecGenerateOutput>({
       plugins,
+      context: { advisor: this, extra },
+    });
+    this.hooksPipeline = new HooksPipeline({
+      plugins: hooksPlugins,
       context: { advisor: this, extra },
     });
   }
@@ -71,6 +80,16 @@ export class Advisor {
     }
     return adviseResult.advices;
   }
+
+  /**
+   * 新 pipeline 执行
+   * @param params
+   * @returns
+   */
+  adviseAsync2 = async (params: AdviseParams): Promise<any> => {
+    const result = await this.hooksPipeline.execute(params);
+    return result;
+  };
 
   lint(params: LintParams): Lint[] {
     const lintResult = checkRules(params, this.ruleBase, this.ckb);

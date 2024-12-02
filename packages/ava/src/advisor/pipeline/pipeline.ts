@@ -24,7 +24,7 @@ export class Pipeline<Input = AdviseParams, Output = any> {
     stages?: Stage<any, any>[];
     context?: AdvisorPipelineContext;
   }) {
-    this.plugins = plugins;
+    this.plugins = plugins || [];
     this.context = context;
     this.stages = stages ?? this.getDefaultStages();
     this.stageManager = new AsyncSeriesWaterfallHook(['initialParams']);
