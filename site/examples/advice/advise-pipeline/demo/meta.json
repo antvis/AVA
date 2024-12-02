@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "base.jsx",
+      "title": {
+        "en": "Data to Advisor",
+        "zh": "使用异步 api 进行推荐"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    }
+  ]
+}

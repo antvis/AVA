@@ -5,5 +5,8 @@
     "declaration": true,
     "declarationDir": "./lib"
   },
-  "include": ["./src"]
+  "include": ["./src"],
+  "paths": {
+    "@/*": ["./src/*"]
+  }
 }

@@ -9,6 +9,8 @@ import {
   PipelineStage,
   ChartConfig,
 } from '../../../../types';
+import { Plugin } from '../../../../pipeline/plugin';
+import { type BasePipeline, PIPELINE_STAGE } from '../../../../pipeline/types';
 
 import { applyDesignRules, applySmartColor, applyTheme } from './spec-processors';
 import { getChartTypeSpec } from './get-chart-spec';
@@ -81,3 +83,22 @@ export const specGeneratePlugin: AdvisorPluginType<SpecGenerateInput, SpecGenera
     return { advices };
   },
 };
+
+// 这个插件会注册到内容生成这个 stage 上
+export class SpecGeneratePlugin extends Plugin<[SpecGenerateInput, any], void> {
+  constructor() {
+    super(DEFAULT_SPEC_GENERATE_PLUGIN_NAME);
+  }
+
+  executeAsync = async (input: SpecGenerateInput, pipeline: BasePipeline) => {
+    // todo: 这里增加扩展点，通过外部插件可获取自定义输出
+    // 默认输出 chart-recommend 插件的结果
+    const { chartConfigs } = input || {};
+    pipeline.dataStore.set(PIPELINE_STAGE.STAGE_GENERATE, { advices: chartConfigs });
+  };
+
+  // 注册插件到特定阶段
+  apply = (pipeline: BasePipeline) => {
+    pipeline.stages.generate.tapPromise(this.name, this.executeAsync);
+  };
+}
