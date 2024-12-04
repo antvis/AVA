@@ -4,23 +4,11 @@ import { processRuleCfg } from './ruler';
 import { dataToAdvices } from './advise-pipeline';
 import { checkRules } from './lint-pipeline/check-rules';
 import { Pipeline } from './pipeline/pipeline';
-import { HooksPipeline } from './pipeline/hooks-pipeline';
-import { Plugin } from './pipeline/plugin';
+import { AdvisorPlugin } from './pipeline/plugin';
 
 import type { ChartKnowledgeBase } from '../ckb';
 import type { RuleModule } from './ruler';
-import type {
-  AdvisorConfig,
-  Advice,
-  AdviseParams,
-  AdviseResult,
-  LintResult,
-  LintParams,
-  Lint,
-  AdvisorPluginType,
-  DataAnalyzeInput,
-  SpecGenerateOutput,
-} from './types';
+import type { AdvisorConfig, Advice, AdviseParams, AdviseResult, LintResult, LintParams, Lint } from './types';
 
 export class Advisor {
   /**
@@ -35,31 +23,17 @@ export class Advisor {
 
   pipeline: Pipeline;
 
-  hooksPipeline: HooksPipeline;
-
   constructor(
     config: AdvisorConfig = {},
     custom: {
-      plugins?: AdvisorPluginType[];
-      hooksPlugins?: Plugin<any[], any>[];
-      /** extra info to pass through the pipeline
-       * 额外透传到推荐 pipeline 中的业务信息
-       */
+      plugins?: AdvisorPlugin<any[], any>[];
       extra?: Record<string, any>;
     } = {}
   ) {
-    // init
-    const { plugins, hooksPlugins, extra = {} } = custom;
+    const { plugins = [], extra = {} } = custom;
     this.ckb = ckb(config.ckbCfg);
     this.ruleBase = processRuleCfg(config.ruleCfg);
-    this.pipeline = new Pipeline<DataAnalyzeInput, SpecGenerateOutput>({
-      plugins,
-      context: { advisor: this, extra },
-    });
-    this.hooksPipeline = new HooksPipeline({
-      plugins: hooksPlugins,
-      context: { advisor: this, extra },
-    });
+    this.pipeline = new Pipeline({ plugins, context: { advisor: this, extra } });
   }
 
   // 目前暂保留旧链路，还未改造到新链路
@@ -73,23 +47,37 @@ export class Advisor {
     return adviseResult;
   }
 
-  async adviseAsync(params: AdviseParams): Promise<Advice[]> {
-    const adviseResult = await this.pipeline.execute(params);
-    if (params.options?.requireSpec !== false) {
-      return adviseResult.advices?.filter((advice) => advice.spec);
-    }
-    return adviseResult.advices;
+  adviseSync(params: AdviseParams): Advice[] {
+    const adviseResult = this.pipeline.execute(params);
+    const advices = adviseResult.chartConfigs
+      .map((v) => {
+        return {
+          type: v.chartType,
+          score: v.score,
+          log: v.log,
+          encode: v.encode,
+          spec: null,
+        };
+      })
+      .sort((a, b) => (a.score < b.score ? 1 : -1));
+    return advices;
   }
 
-  /**
-   * 新 pipeline 执行
-   * @param params
-   * @returns
-   */
-  adviseAsync2 = async (params: AdviseParams): Promise<any> => {
-    const result = await this.hooksPipeline.execute(params);
-    return result;
-  };
+  async adviseAsync(params: AdviseParams): Promise<Advice[]> {
+    const adviseResult = await this.pipeline.executeAsync(params);
+    const advices = adviseResult.chartConfigs
+      .map((v) => {
+        return {
+          type: v.chartType,
+          score: v.score,
+          log: v.log,
+          spec: null,
+          encode: v.encode,
+        };
+      })
+      .sort((a, b) => (a.score < b.score ? 1 : -1));
+    return advices;
+  }
 
   lint(params: LintParams): Lint[] {
     const lintResult = checkRules(params, this.ruleBase, this.ckb);

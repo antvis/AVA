@@ -1,5 +1,13 @@
 /* advisor */
-export { Advisor } from './advisor';
+export {
+  Advisor,
+  AdvisorPlugin,
+  DataAnalyzePlugin,
+  SpecGeneratePlugin,
+  ChartRecommendPlugin,
+  ModelGeneratePlugin,
+  ModelRecommendPlugin,
+} from './advisor';
 export type {
   Advice,
   Lint,

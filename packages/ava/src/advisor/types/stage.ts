@@ -22,6 +22,7 @@ export type DataAnalyzeOutput = {
 };
 
 export type ChartRecommendInput = {
+  data?: Data;
   dataProps: BasicDataPropertyForAdvice[];
 };
 
