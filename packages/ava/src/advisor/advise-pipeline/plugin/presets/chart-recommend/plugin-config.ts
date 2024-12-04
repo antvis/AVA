@@ -1,85 +1,39 @@
 import { pullAt } from 'lodash';
-import { AsyncSeriesHook } from 'tapable';
+import { AsyncSeriesHook, SyncHook } from 'tapable';
 
-import {
-  type AdvisorPipelineContext,
-  type ChartRecommendInput,
-  type ChartRecommendOutput,
-  type AdvisorPluginType,
-  PipelineStage,
-} from '../../../../types';
-import { Plugin } from '../../../../pipeline/plugin';
-import { type BasePipeline, PIPELINE_STAGE } from '../../../../pipeline/types';
+import { type ChartRecommendInput, type ChartRecommendOutput } from '../../../../types';
+import { AdvisorPlugin } from '../../../../pipeline/plugin';
+import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions } from '../../../../pipeline/types';
 
 import { getChartTypeRecommendations } from './get-chart-Type';
 import { getEncodeMapping } from './encode/encode-mapping';
 
-const DEFAULT_CHART_RECOMMEND_PLUGIN_NAME = 'defaultChartRecommender';
-export const chartRecommendPlugin: AdvisorPluginType<ChartRecommendInput, ChartRecommendOutput> = {
-  name: DEFAULT_CHART_RECOMMEND_PLUGIN_NAME,
-  stage: PipelineStage.chartRecommend,
-  execute(input: ChartRecommendInput, context?: AdvisorPipelineContext): ChartRecommendOutput {
-    const { dataProps } = input;
-    const { advisor, options, extra } = context || {};
-    const preferChartType = options.preferences.chartType;
-    const chartConfigs = getChartTypeRecommendations({
-      dataProps,
-      chartWIKI: advisor.ckb,
-      ruleBase: advisor.ruleBase,
-      options,
-      advisorContext: { extra },
-    });
+type ArgType = ContextOptions<Map<string, ChartRecommendOutput>>;
 
-    // 处理有偏好图表的情况，将偏好图表作为最匹配推荐
-    const preferChartTypeIndex = chartConfigs.findIndex((config) => config.chartType === preferChartType);
-    if (preferChartTypeIndex !== -1) {
-      const element = pullAt(chartConfigs, preferChartTypeIndex);
-      chartConfigs.unshift(element[0]); // 将目标元素添加到数组的第一个位置
-    } else {
-      chartConfigs.unshift({
-        score: 1,
-        chartType: preferChartType,
-      });
-    }
-
-    const chartConfigsWithEncode = chartConfigs.map((chartTypeAdvice) => {
-      const encode = getEncodeMapping(
-        {
-          ...input,
-          chartType: chartTypeAdvice.chartType,
-        },
-        context
-      );
-      return {
-        ...chartTypeAdvice,
-        encode,
-      };
-    });
-
-    return { chartConfigs: chartConfigsWithEncode };
-  },
-};
-
-// 插件类
-export class ChartRecommendPlugin extends Plugin<[ChartRecommendInput, any], void> {
+export const DEFAULT_CHART_RECOMMEND_PLUGIN_NAME = 'defaultChartRecommender';
+export class ChartRecommendPlugin extends AdvisorPlugin<[ChartRecommendInput, ArgType], void> {
   hooks!: {
-    after: AsyncSeriesHook<[ChartRecommendOutput, any], ChartRecommendOutput>;
+    after: SyncHook<[ChartRecommendOutput, ArgType], ChartRecommendOutput>;
+    afterAsync: AsyncSeriesHook<[ChartRecommendOutput, ArgType], ChartRecommendOutput>;
   };
 
   constructor() {
     super(DEFAULT_CHART_RECOMMEND_PLUGIN_NAME);
     this.hooks = {
-      after: new AsyncSeriesHook(),
+      after: new SyncHook(['input', 'config']),
+      afterAsync: new AsyncSeriesHook(['input', 'config']),
     };
   }
 
   apply = (pipeline: BasePipeline) => {
-    pipeline.stages.recommend.tapPromise(this.name, this.executeAsync);
+    pipeline.stages.recommend.tap(this.name, this.execute);
+    pipeline.stages.recommendAsync.tapPromise(this.name, this.executeAsync);
   };
 
-  executeAsync = async (input: ChartRecommendInput, pipeline: BasePipeline) => {
+  run = (input: ChartRecommendInput, config: ArgType) => {
     const { dataProps } = input;
-    const { advisor, options, extra } = pipeline?.context || {};
+    const { context } = config;
+    const { advisor, options, extra } = context || {};
     const preferChartType = options?.preferences?.chartType;
     const chartConfigs = getChartTypeRecommendations({
       dataProps,
@@ -109,16 +63,30 @@ export class ChartRecommendPlugin extends Plugin<[ChartRecommendInput, any], voi
           ...input,
           chartType: chartTypeAdvice.chartType,
         },
-        pipeline?.context
+        context
       );
       return {
         ...chartTypeAdvice,
         encode,
       };
     });
-
     const result = { chartConfigs: chartConfigsWithEncode };
-    await this.hooks.after.promise(result, pipeline?.dataStore);
-    pipeline.dataStore.set(PIPELINE_STAGE.STAGE_RECOMMEND, result);
+    return result;
+  };
+
+  execute = (input: ChartRecommendInput, config: ArgType) => {
+    const result = this.run(input, config);
+    const { dataStore } = config;
+    this.hooks.after.call(result, config);
+    dataStore.set(DEFAULT_RES_KEY, result);
+    dataStore.set(this.name, result);
+  };
+
+  executeAsync = async (input: ChartRecommendInput, config: ArgType) => {
+    const result = this.run(input, config);
+    const { dataStore } = config;
+    await this.hooks.afterAsync.promise(result, config);
+    dataStore.set(DEFAULT_RES_KEY, result);
+    dataStore.set(this.name, result);
   };
 }

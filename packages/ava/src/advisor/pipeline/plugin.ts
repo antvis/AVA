@@ -1,21 +1,21 @@
-import type { HooksPipeline } from './hooks-pipeline.ts';
+import type { Pipeline } from './pipeline';
 
 type AsArray<T> = T extends any[] ? T : [T];
 
-export abstract class Plugin<I, O> {
+export abstract class AdvisorPlugin<I, O> {
   name: string;
 
   constructor(name: string) {
     this.name = name;
   }
 
-  apply: (pipeline: HooksPipeline) => void;
+  apply: (pipeline: Pipeline) => void;
 
-  execute: (...args: AsArray<I>) => O = () => {
+  execute?: (...args: AsArray<I>) => O = () => {
     throw new Error('method should be implement by sub class');
   };
 
-  executeAsync: (...args: AsArray<I>) => Promise<O> = async () => {
+  executeAsync?: (...args: AsArray<I>) => Promise<O> = async () => {
     return Promise.reject(new Error('method should be implement by sub class'));
   };
 }

@@ -1,35 +1,51 @@
 import { AsyncSeriesHook, SyncHook, AsyncParallelHook } from 'tapable';
 
-import { AdviseParams, AdvisorPipelineContext } from '../types';
+import {
+  AdviseParams,
+  AdvisorPipelineContext,
+  DataAnalyzeInput,
+  DataAnalyzeOutput,
+  ChartRecommendInput,
+  ChartRecommendOutput,
+} from '../types';
 
-import { Plugin } from './plugin';
+import { AdvisorPlugin } from './plugin';
 
-export enum PIPELINE_STAGE {
-  STAGE_BEFORE = 'STAGE_BEFORE',
-  STAGE_RECOMMEND = 'STATE_RECOMMEND',
-  STAGE_GENERATE = 'STAGE_GENERATE',
-}
+export const DEFAULT_RES_KEY = 'DEFAULT';
 
 export type DataStore = Map<string, any>;
 
-export class BasePipeline extends Plugin<[AdviseParams], any> {
-  dataStore!: DataStore;
+export type ContextOptions<T> = {
+  dataStore: T;
+  context: AdvisorPipelineContext;
+};
+
+export class BasePipeline extends AdvisorPlugin<[AdviseParams], any> {
+  dataStore!: {
+    before: Map<string, DataAnalyzeOutput>;
+    recommend: Map<string, ChartRecommendOutput>;
+    generate: Map<string, ChartRecommendOutput>;
+  };
 
   context?: AdvisorPipelineContext;
 
-  pluginMap!: Map<string, Plugin<any[], any>>;
+  pluginMap!: Map<string, AdvisorPlugin<any[], any>>;
 
   stages!: {
-    // 执行之前的预处理，内置的插件有数据统计特征计算
-    before: SyncHook<[AdviseParams, BasePipeline], any>;
-    // 执行推荐，内置插件有基于ckb、rule的规则推荐
-    recommend: AsyncParallelHook<[any, BasePipeline], any>;
-    // 生成，内置插件有生成推荐结果以及日志插件（只消费 ckb 的结果）
-    generate: AsyncSeriesHook<[any, BasePipeline], void>;
+    before: SyncHook<[DataAnalyzeInput, ContextOptions<Map<string, DataAnalyzeOutput>>], void>;
+    beforeAsync: AsyncSeriesHook<[DataAnalyzeInput, ContextOptions<Map<string, DataAnalyzeOutput>>], void>;
+    recommend: SyncHook<[ChartRecommendInput, ContextOptions<Map<string, ChartRecommendOutput>>], void>;
+    recommendAsync: AsyncParallelHook<[ChartRecommendInput, ContextOptions<Map<string, ChartRecommendOutput>>], void>;
+    generate: SyncHook<[Record<string, ChartRecommendOutput>, ContextOptions<Map<string, ChartRecommendOutput>>], void>;
+    generateAsync: AsyncSeriesHook<
+      [Record<string, ChartRecommendOutput>, ContextOptions<Map<string, ChartRecommendOutput>>],
+      void
+    >;
   };
 
-  getPlugin: (name: string) => Plugin<any, any> | undefined;
+  getPlugin: (name: string) => AdvisorPlugin<any, any> | undefined;
 
-  // 执行流程默认是异步的
-  execute: (params: AdviseParams) => Promise<any>;
+  execute?: (params: AdviseParams) => ChartRecommendOutput;
+
+  executeAsync?: (params: AdviseParams) => Promise<ChartRecommendOutput>;
 }

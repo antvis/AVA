@@ -40,6 +40,10 @@ export type Advice = {
    * lint array: problems that remain after the recommendation, with possible solutions accordingly.
    */
   lint?: Lint[];
+  /**
+   * adaptor output for pipeline spec
+   */
+  encode?: Record<string, any>;
 };
 
 /**
