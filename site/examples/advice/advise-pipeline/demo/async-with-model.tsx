@@ -16,7 +16,7 @@ const myChartAdvisor = new Advisor(
     plugins: [
       new ModelGeneratePlugin({
         select: (input) => {
-          return input?.[ModelGeneratePlugin.MODEL_RESULT_KEY];
+          return { advices: input?.[ModelGeneratePlugin.MODEL_RESULT_KEY]?.chartConfigs };
         },
       }),
       new ModelRecommendPlugin({
@@ -63,7 +63,7 @@ const App = () => {
   const [results, setResults] = useState();
   useEffect(() => {
     myChartAdvisor.adviseAsync({ data: defaultData }).then((results) => {
-      setResults(results);
+      setResults(results?.advices);
     });
   }, []);
 

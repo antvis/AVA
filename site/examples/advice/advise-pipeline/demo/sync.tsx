@@ -17,7 +17,7 @@ const App = () => {
 
   useEffect(() => {
     const results = myChartAdvisor.adviseSync({ data: defaultData });
-    setResults(results);
+    setResults(results?.advices || []);
   }, []);
 
   return <JSONView json={results?.[0]} style={{ height: '100%' }} rjvConfigs={{ collapsed: 1 }} />;

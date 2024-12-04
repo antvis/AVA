@@ -1,4 +1,4 @@
-import type { Pipeline } from './pipeline';
+import type { BasePipeline } from './types';
 
 type AsArray<T> = T extends any[] ? T : [T];
 
@@ -9,7 +9,7 @@ export abstract class AdvisorPlugin<I, O> {
     this.name = name;
   }
 
-  apply: (pipeline: Pipeline) => void;
+  apply: (pipeline: BasePipeline) => void;
 
   execute?: (...args: AsArray<I>) => O = () => {
     throw new Error('method should be implement by sub class');

@@ -24,18 +24,18 @@ export type Advice = {
   /**
    * Chart Type: should be standard CKB ChartId or any string id for customized chart.
    */
-  type: string;
+  type?: string;
   /**
    * for the recommended chart, the specification information needs to be declared,
    * which may be antv-spec or custom spec (for indicator cards and cross tabs)
    */
-  spec: Specification | null;
+  spec?: Specification | null;
   /**
    * A score summarized by rule scoring, which measures how well an individual chart
    * is recommended in a recommendation scenario.
    * The higher the score, the more recommended it is
    */
-  score: number;
+  score?: number;
   /**
    * lint array: problems that remain after the recommendation, with possible solutions accordingly.
    */
@@ -152,7 +152,7 @@ export type SmartColorOptions = {
 
 export type AdviseResult = {
   advices: Advice[];
-  log: ScoringResultForChartType[];
+  log?: ScoringResultForChartType[];
 };
 
 export type LintResult = {
@@ -203,6 +203,8 @@ export interface ScoringResultForChartType {
    * whole records of scoring
    */
   log?: ScoringResultForRule[];
+
+  spec?: Specification;
 }
 
 export * from '../ruler/types';

@@ -13,7 +13,7 @@ class MyPlugin extends AdvisorPlugin<any, any> {
     pipeline.stages.generateAsync.tapPromise('my-plugin-for-generate', async (input, config) => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          config.dataStore.set('DEFAULT', { chartConfigs: input.DEFAULT?.chartConfigs?.filter((v) => v.score < 1) });
+          config.dataStore.set('DEFAULT', { advices: input.DEFAULT?.chartConfigs?.filter((v) => v.score < 1) });
           resolve(null);
         }, 4000);
       });
@@ -38,7 +38,7 @@ const App = () => {
   const [results, setResults] = useState();
   useEffect(() => {
     myChartAdvisor.adviseAsync({ data: defaultData }).then((results) => {
-      setResults(results);
+      setResults(results?.advices);
     });
   }, []);
 

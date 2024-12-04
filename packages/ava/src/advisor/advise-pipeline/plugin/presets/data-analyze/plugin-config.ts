@@ -13,6 +13,8 @@ type ArgType = ContextOptions<Map<string, DataAnalyzeOutput>>;
 export const DEFAULT_DATA_PROCESSOR_PLUGIN_NAME = 'defaultDataProcessor';
 
 export class DataAnalyzePlugin extends AdvisorPlugin<[DataAnalyzeInput, ArgType], void> {
+  static DEFAULT_NAME = DEFAULT_DATA_PROCESSOR_PLUGIN_NAME;
+
   hooks!: {
     after: SyncHook<DataAnalyzeOutput, void>;
     afterAsync: AsyncSeriesHook<DataAnalyzeOutput, void>;
