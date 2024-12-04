@@ -41,7 +41,7 @@ export type ChartConfig = {
   encode: ChartEncodeMapping;
 };
 
-type ChartRecommendationResult = Partial<ScoringResultForChartType> & ChartConfig;
+export type ChartRecommendationResult = Partial<ScoringResultForChartType> & ChartConfig;
 
 export type ChartRecommendOutput = {
   chartConfigs: ChartRecommendationResult[];

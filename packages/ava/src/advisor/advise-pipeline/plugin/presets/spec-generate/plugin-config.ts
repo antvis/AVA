@@ -1,16 +1,78 @@
 import { AsyncSeriesHook, SyncHook } from 'tapable';
 
-import { type ChartRecommendOutput } from '../../../../types';
 import { AdvisorPlugin } from '../../../../pipeline/plugin';
 import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions } from '../../../../pipeline/types';
+import { deepMix } from '../../../../utils';
+import { DEFAULT_COLOR } from '../../../constants';
 
+import { applyDesignRules, applySmartColor, applyTheme } from './spec-processors';
+import { getChartTypeSpec } from './get-chart-spec';
+import { GenerateChartSpecParams } from './types';
+
+import type {
+  ChartRecommendOutput,
+  AdvisorPipelineContext,
+  AdviseResult,
+  Specification,
+  SpecGenerateInput,
+  ChartConfig,
+  ChartRecommendationResult,
+} from '../../../../types';
+
+type SingChartSpecGenerateParams = GenerateChartSpecParams & { chartType: string };
 type ArgType = ContextOptions<Map<string, ChartRecommendOutput>>;
 
+const refineSpec = (
+  params: SingChartSpecGenerateParams & {
+    spec: Specification;
+  },
+  context: AdvisorPipelineContext
+) => {
+  const { chartType, dataProps, spec } = params;
+  const { options, advisor } = context;
+  const { refine = false, theme, colorOptions, smartColor } = options || {};
+  const { themeColor = DEFAULT_COLOR, colorSchemeType, simulationType } = colorOptions || {};
+  // apply spec processors such as design rules, theme, color, to improve spec
+  if (spec && refine) {
+    const partEncSpec = applyDesignRules(chartType, dataProps, advisor.ruleBase, spec, context);
+    deepMix(spec, partEncSpec);
+  }
+  // custom theme
+  if (spec) {
+    if (theme && !smartColor) {
+      const partEncSpec = applyTheme(dataProps, spec, theme);
+      deepMix(spec, partEncSpec);
+    } else if (smartColor) {
+      const partEncSpec = applySmartColor(dataProps, spec, themeColor, colorSchemeType, simulationType);
+      deepMix(spec, partEncSpec);
+    }
+  }
+};
+
+const generateSpecForChartType = (
+  input: Omit<SpecGenerateInput, 'chartConfigs'> & ChartConfig,
+  context: AdvisorPipelineContext
+) => {
+  const { dataProps, data, chartType, encode } = input;
+  const chartKnowledge = context?.advisor?.ckb?.[chartType];
+  const spec = getChartTypeSpec({
+    chartType,
+    data,
+    dataProps,
+    encode,
+    chartKnowledge,
+  });
+  refineSpec({ ...input, spec, chartType }, context);
+  return spec;
+};
+
 export const DEFAULT_SPEC_GENERATE_PLUGIN_NAME = 'defaultSpecGenerator';
-export class SpecGeneratePlugin extends AdvisorPlugin<[Record<string, ChartRecommendOutput>, ArgType], void> {
+export class SpecGeneratePlugin extends AdvisorPlugin<[Record<string, ChartRecommendOutput | any>, ArgType], void> {
+  static DEFAULT_NAME = DEFAULT_SPEC_GENERATE_PLUGIN_NAME;
+
   hooks!: {
-    after: SyncHook<[ChartRecommendOutput, ArgType]>;
-    afterAsync: AsyncSeriesHook<[ChartRecommendOutput, ArgType]>;
+    after: SyncHook<[AdviseResult, ArgType]>;
+    afterAsync: AsyncSeriesHook<[AdviseResult, ArgType]>;
   };
 
   constructor() {
@@ -21,18 +83,46 @@ export class SpecGeneratePlugin extends AdvisorPlugin<[Record<string, ChartRecom
     };
   }
 
-  execute = (input: Record<string, ChartRecommendOutput>, config) => {
-    const { dataStore } = config;
-    const defaultOutput = input[DEFAULT_RES_KEY];
-    dataStore.set(DEFAULT_RES_KEY, defaultOutput);
-    this.hooks.after.call(defaultOutput, config);
+  generateSpec = (payload: {
+    input: { data: any[]; dataProps: any[] };
+    chartConfigs: ChartRecommendationResult[];
+    context: AdvisorPipelineContext;
+  }) => {
+    const { chartConfigs, context, input } = payload;
+    const advices = chartConfigs?.map((chartTypeAdvice) => {
+      const { chartType, encode } = chartTypeAdvice;
+      const spec = generateSpecForChartType({ ...input, chartType, encode }, context);
+      return {
+        ...chartTypeAdvice,
+        type: chartType,
+        spec,
+      };
+    });
+    return advices;
   };
 
-  executeAsync = async (input: Record<string, ChartRecommendOutput>, config) => {
+  execute = (input: Record<string, ChartRecommendOutput | any>, config) => {
     const { dataStore } = config;
-    const defaultOutput = input[DEFAULT_RES_KEY];
-    dataStore.set(DEFAULT_RES_KEY, defaultOutput);
-    await this.hooks.afterAsync.promise(defaultOutput, config);
+    const chartConfigs = input[DEFAULT_RES_KEY]?.chartConfigs;
+    const advices = this.generateSpec({
+      chartConfigs,
+      context: config.context,
+      input: { data: input?.data, dataProps: input?.dataProps },
+    });
+    dataStore.set(DEFAULT_RES_KEY, { advices });
+    this.hooks.after.call({ advices }, config);
+  };
+
+  executeAsync = async (input: Record<string, ChartRecommendOutput | any>, config) => {
+    const { dataStore } = config;
+    const chartConfigs = input[DEFAULT_RES_KEY]?.chartConfigs;
+    const advices = this.generateSpec({
+      chartConfigs,
+      context: config.context,
+      input: { data: input?.data, dataProps: input?.dataProps },
+    });
+    dataStore.set(DEFAULT_RES_KEY, { advices });
+    await this.hooks.afterAsync.promise({ advices }, config);
   };
 
   apply = (pipeline: BasePipeline) => {

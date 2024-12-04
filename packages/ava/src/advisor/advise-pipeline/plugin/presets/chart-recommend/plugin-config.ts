@@ -12,6 +12,8 @@ type ArgType = ContextOptions<Map<string, ChartRecommendOutput>>;
 
 export const DEFAULT_CHART_RECOMMEND_PLUGIN_NAME = 'defaultChartRecommender';
 export class ChartRecommendPlugin extends AdvisorPlugin<[ChartRecommendInput, ArgType], void> {
+  static DEFAULT_NAME = DEFAULT_CHART_RECOMMEND_PLUGIN_NAME;
+
   hooks!: {
     after: SyncHook<[ChartRecommendOutput, ArgType], ChartRecommendOutput>;
     afterAsync: AsyncSeriesHook<[ChartRecommendOutput, ArgType], ChartRecommendOutput>;
@@ -77,16 +79,16 @@ export class ChartRecommendPlugin extends AdvisorPlugin<[ChartRecommendInput, Ar
   execute = (input: ChartRecommendInput, config: ArgType) => {
     const result = this.run(input, config);
     const { dataStore } = config;
-    this.hooks.after.call(result, config);
     dataStore.set(DEFAULT_RES_KEY, result);
     dataStore.set(this.name, result);
+    this.hooks.after.call(result, config);
   };
 
   executeAsync = async (input: ChartRecommendInput, config: ArgType) => {
     const result = this.run(input, config);
     const { dataStore } = config;
-    await this.hooks.afterAsync.promise(result, config);
     dataStore.set(DEFAULT_RES_KEY, result);
     dataStore.set(this.name, result);
+    await this.hooks.afterAsync.promise(result, config);
   };
 }

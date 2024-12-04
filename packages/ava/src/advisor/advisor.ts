@@ -47,36 +47,14 @@ export class Advisor {
     return adviseResult;
   }
 
-  adviseSync(params: AdviseParams): Advice[] {
+  adviseSync(params: AdviseParams): AdviseResult {
     const adviseResult = this.pipeline.execute(params);
-    const advices = adviseResult.chartConfigs
-      .map((v) => {
-        return {
-          type: v.chartType,
-          score: v.score,
-          log: v.log,
-          encode: v.encode,
-          spec: null,
-        };
-      })
-      .sort((a, b) => (a.score < b.score ? 1 : -1));
-    return advices;
+    return adviseResult;
   }
 
-  async adviseAsync(params: AdviseParams): Promise<Advice[]> {
+  async adviseAsync(params: AdviseParams): Promise<AdviseResult> {
     const adviseResult = await this.pipeline.executeAsync(params);
-    const advices = adviseResult.chartConfigs
-      .map((v) => {
-        return {
-          type: v.chartType,
-          score: v.score,
-          log: v.log,
-          spec: null,
-          encode: v.encode,
-        };
-      })
-      .sort((a, b) => (a.score < b.score ? 1 : -1));
-    return advices;
+    return adviseResult;
   }
 
   lint(params: LintParams): Lint[] {

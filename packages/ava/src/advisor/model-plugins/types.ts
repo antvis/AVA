@@ -1,10 +1,10 @@
-import { type ChartRecommendInput, type ChartRecommendOutput } from '../types';
+import type { ChartRecommendInput, ChartRecommendOutput, AdviseResult } from '../types';
 
 export type ModelRequestFn = (input: ChartRecommendInput) => Promise<ChartRecommendOutput>;
 
 export type ModelRequestFn2 = (input: ChartRecommendInput & ChartRecommendOutput) => Promise<ChartRecommendOutput>;
 
-export type GenerateSelectFn = (input: Record<string, ChartRecommendOutput>) => ChartRecommendOutput;
+export type GenerateSelectFn = (input: Record<string, ChartRecommendOutput>) => AdviseResult;
 
 export interface ModelRecommendPluginOptions {
   request?: ModelRequestFn;
