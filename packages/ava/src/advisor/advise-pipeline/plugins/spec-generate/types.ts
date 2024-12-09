@@ -1,0 +1,8 @@
+import type { Data } from '@ava/common/types';
+import type { BasicDataPropertyForAdvice, ChartEncodeMapping } from '@advisor/types';
+
+export type GenerateChartSpecParams = {
+  data: Data;
+  dataProps: BasicDataPropertyForAdvice[];
+  encode: ChartEncodeMapping;
+};

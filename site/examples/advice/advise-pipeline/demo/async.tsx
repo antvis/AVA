@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import ReactDOM from 'react-dom';
 import { JSONView } from 'antv-site-demo-rc';
-import { Advisor, AdvisorPlugin } from '@antv/ava';
+import { Advisor, AdvisorPlugin, Advice } from '@antv/ava';
 
 class MyPlugin extends AdvisorPlugin<any, any> {
   constructor() {
@@ -35,10 +35,10 @@ const myChartAdvisor = new Advisor(
 );
 
 const App = () => {
-  const [results, setResults] = useState();
+  const [results, setResults] = useState<Advice[]>();
   useEffect(() => {
-    myChartAdvisor.adviseAsync({ data: defaultData }).then((results) => {
-      setResults(results?.advices);
+    myChartAdvisor.adviseAsync({ data: defaultData }).then((advices) => {
+      setResults(advices);
     });
   }, []);
 

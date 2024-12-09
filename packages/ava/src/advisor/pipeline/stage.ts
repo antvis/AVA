@@ -1,6 +1,6 @@
 import { isFunction, last } from 'lodash';
 
-import type { AdvisorPluginType, AdvisorPipelineContext, PipelineStage } from '../types';
+import type { AdvisorPluginType, AdvisorPipelineContext, PipelineStage } from '@advisor/types';
 
 /** 收集多个 plugin 的输出结果 */
 type PluginResultMap<Output = any> = Record<string, Output>;

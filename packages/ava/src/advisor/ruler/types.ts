@@ -1,7 +1,7 @@
-import type { FieldInfo } from '../../data';
-import type { LevelOfMeasurement, ChartKnowledgeBase } from '../../ckb';
-import type { Specification } from '../../common/types';
-import type { AdvisorPipelineContext } from '../types';
+import type { FieldInfo } from '@ava/data';
+import type { LevelOfMeasurement, ChartKnowledgeBase } from '@ava/ckb';
+import type { Specification } from '@ava/common/types';
+import type { AdvisorPipelineContext } from '@advisor/types';
 
 /**
  * Type of different rules.
