@@ -2,8 +2,7 @@ import { cloneDeep } from 'lodash';
 import { SyncHook, AsyncSeriesHook } from 'tapable';
 
 import { type DataAnalyzeInput, type DataAnalyzeOutput } from '@advisor/types';
-import { AdvisorPlugin } from '@advisor/pipeline/plugin';
-import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions } from '@advisor/pipeline/types';
+import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions, AdvisorPlugin } from '@ava/advisor/advise-pipeline/types';
 
 import { getDataProps } from './get-data-properties';
 import { getSelectedData } from './get-selected-data';

@@ -1,7 +1,6 @@
 import { AsyncSeriesHook, SyncHook } from 'tapable';
 
-import { AdvisorPlugin } from '@advisor/pipeline/plugin';
-import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions } from '@advisor/pipeline/types';
+import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions, AdvisorPlugin } from '@ava/advisor/advise-pipeline/types';
 import { deepMix } from '@advisor/utils';
 import { DEFAULT_COLOR } from '@advisor/advise-pipeline/constants';
 

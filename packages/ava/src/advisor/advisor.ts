@@ -2,8 +2,7 @@ import { ckb } from '@ava/ckb';
 
 import { processRuleCfg } from './ruler';
 import { checkRules } from './lint-pipeline/check-rules';
-import { Pipeline } from './pipeline/pipeline';
-import { AdvisorPlugin } from './pipeline/plugin';
+import { AdvisorPlugin, Pipeline } from './advise-pipeline';
 
 import type { ChartKnowledgeBase } from '@ava/ckb';
 import type { RuleModule } from './ruler';

@@ -10,8 +10,6 @@ import {
   ChartRecommendOutput,
 } from '../types';
 
-import { AdvisorPlugin } from './plugin';
-
 export const DEFAULT_RES_KEY = 'DEFAULT';
 
 export type DataStore = Map<string, any>;
@@ -20,6 +18,26 @@ export type ContextOptions<T> = {
   dataStore: T;
   context: AdvisorPipelineContext;
 };
+
+type AsArray<T> = T extends any[] ? T : [T];
+
+export class AdvisorPlugin<I = any, O = any> {
+  name!: string;
+
+  constructor(name: string) {
+    this.name = name;
+  }
+
+  apply: (pipeline: BasePipeline) => void;
+
+  execute?: (...args: AsArray<I>) => O = () => {
+    throw new Error('method should be implement by sub class');
+  };
+
+  executeAsync?: (...args: AsArray<I>) => Promise<O> = async () => {
+    return Promise.reject(new Error('method should be implement by sub class'));
+  };
+}
 
 export class BasePipeline extends AdvisorPlugin<[AdviseParams], any> {
   dataStore!: {

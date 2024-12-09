@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import ReactDOM from 'react-dom';
 import { JSONView } from 'antv-site-demo-rc';
-import { Advisor, ModelGeneratePlugin, ModelRecommendPlugin, Advice } from '@antv/ava';
+import { Advisor, ModelPlugin, Advice } from '@antv/ava';
 
 const defaultData = [
   { price: 100, type: 'A' },
@@ -14,16 +14,8 @@ const myChartAdvisor = new Advisor(
   {},
   {
     plugins: [
-      new ModelGeneratePlugin({
-        select: (input) => {
-          return {
-            advices: input?.[ModelGeneratePlugin.MODEL_RULE_RESULT_KEY]?.chartConfigs,
-            log: ['自定义日志输出'],
-          };
-        },
-      }),
-      new ModelRecommendPlugin({
-        type: ModelRecommendPlugin.TYPE.RULE_MODEL,
+      new ModelPlugin({
+        types: [ModelPlugin.TYPE.MODEL, ModelPlugin.TYPE.RULE_MODEL],
         request: async ({ input, output }) => {
           try {
             // 这里模拟模型调用
@@ -45,6 +37,12 @@ const myChartAdvisor = new Advisor(
             // console.error(e);
           }
           return { chartConfigs: output.chartConfigs };
+        },
+        select: (payload, keys) => {
+          return {
+            advices: payload?.[keys.RULE_MODEL].chartConfigs,
+            log: payload,
+          };
         },
       }),
     ],

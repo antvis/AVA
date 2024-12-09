@@ -1,11 +1,9 @@
 import { AsyncSeriesHook, SyncHook, AsyncParallelHook } from 'tapable';
 
-import { AdviseParams, AdvisorPipelineContext } from '../types';
-import { DataAnalyzePlugin, SpecGeneratePlugin } from '../advise-pipeline';
-import { ChartRecommendPlugin } from '../advise-pipeline/plugins';
+import { AdviseParams, AdvisorPipelineContext } from '@advisor/types';
 
-import { AdvisorPlugin } from './plugin';
-import { DEFAULT_RES_KEY, BasePipeline } from './types';
+import { ChartRecommendPlugin, DataAnalyzePlugin, SpecGeneratePlugin } from './plugins';
+import { DEFAULT_RES_KEY, BasePipeline, AdvisorPlugin } from './types';
 
 export class Pipeline extends BasePipeline {
   context?: AdvisorPipelineContext;
