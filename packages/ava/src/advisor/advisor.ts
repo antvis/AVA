@@ -1,12 +1,11 @@
-import { ckb } from '../ckb';
+import { ckb } from '@ava/ckb';
 
 import { processRuleCfg } from './ruler';
-import { dataToAdvices } from './advise-pipeline';
 import { checkRules } from './lint-pipeline/check-rules';
 import { Pipeline } from './pipeline/pipeline';
 import { AdvisorPlugin } from './pipeline/plugin';
 
-import type { ChartKnowledgeBase } from '../ckb';
+import type { ChartKnowledgeBase } from '@ava/ckb';
 import type { RuleModule } from './ruler';
 import type { AdvisorConfig, Advice, AdviseParams, AdviseResult, LintResult, LintParams, Lint } from './types';
 
@@ -36,23 +35,22 @@ export class Advisor {
     this.pipeline = new Pipeline({ plugins, context: { advisor: this, extra } });
   }
 
-  // 目前暂保留旧链路，还未改造到新链路
   advise(params: AdviseParams): Advice[] {
-    const adviseResult = dataToAdvices({ adviseParams: params, ckb: this.ckb, ruleBase: this.ruleBase });
+    const adviseResult = this.pipeline.execute(params);
     return adviseResult.advices;
   }
 
   adviseWithLog(params: AdviseParams): AdviseResult {
-    const adviseResult = dataToAdvices({ adviseParams: params, ckb: this.ckb, ruleBase: this.ruleBase });
-    return adviseResult;
-  }
-
-  adviseSync(params: AdviseParams): AdviseResult {
     const adviseResult = this.pipeline.execute(params);
     return adviseResult;
   }
 
-  async adviseAsync(params: AdviseParams): Promise<AdviseResult> {
+  async adviseAsync(params: AdviseParams): Promise<Advice[]> {
+    const adviseResult = await this.pipeline.executeAsync(params);
+    return adviseResult.advices;
+  }
+
+  async adviseAsyncWithLog(params: AdviseParams): Promise<AdviseResult> {
     const adviseResult = await this.pipeline.executeAsync(params);
     return adviseResult;
   }

@@ -15,27 +15,27 @@ const myChartAdvisor = new Advisor(
   {
     plugins: [
       new ModelGeneratePlugin({
-        name: ModelGeneratePlugin.DEFAULT_NAME,
         select: (input) => {
           return {
-            advices: input?.[ModelGeneratePlugin.MODEL_RESULT_KEY]?.chartConfigs,
+            advices: input?.[ModelGeneratePlugin.MODEL_RULE_RESULT_KEY]?.chartConfigs,
             log: ['自定义日志输出'],
           };
         },
       }),
       new ModelRecommendPlugin({
-        name: ModelRecommendPlugin.DEFAULT_NAME,
-        type: ModelRecommendPlugin.TYPE.MODEL,
-        request: async (input) => {
+        type: ModelRecommendPlugin.TYPE.RULE_MODEL,
+        request: async ({ input, output }) => {
           try {
             // 这里模拟模型调用
             const res = {
               chartConfigs: [
                 {
-                  chartType: '模型输出',
+                  chartType: '规则&模型输出',
                   encode: { x: {} },
                   log: {
+                    desc: '方法的参数如下',
                     input,
+                    output,
                   },
                 },
               ],
@@ -44,7 +44,7 @@ const myChartAdvisor = new Advisor(
           } catch (e) {
             // console.error(e);
           }
-          return { chartConfigs: [] };
+          return { chartConfigs: output.chartConfigs };
         },
       }),
     ],

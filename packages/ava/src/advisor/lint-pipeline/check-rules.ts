@@ -1,12 +1,12 @@
-import { DataFrame } from '../../data';
+import { DataFrame } from '@ava/data';
 
 import { getChartType } from './getChartType';
 import { lintRules } from './lintRules';
 
-import type { ChartKnowledgeBase } from '../../ckb';
-import type { LintResult, ScoringResultForRule, LintParams, Lint } from '../types';
-import type { BasicDataPropertyForAdvice, RuleModule } from '../ruler';
-import type { Datum } from '../../common/types';
+import type { ChartKnowledgeBase } from '@ava/ckb';
+import type { Datum } from '@ava/common/types';
+import type { LintResult, ScoringResultForRule, LintParams, Lint } from '@advisor/types';
+import type { BasicDataPropertyForAdvice, RuleModule } from '@advisor/ruler';
 
 export function checkRules(
   params: LintParams,

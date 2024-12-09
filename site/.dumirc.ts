@@ -352,7 +352,9 @@ export default defineConfig({
   mfsu: false,
   alias: {
     // 根据自己项目结构书写绝对路径
-    '@': __dirname
+    '@': __dirname,
+    '@ava': '@antv/ava/src',
+    '@advisor': '@antv/ava/src/advisor'
   },
   links: [
   ],

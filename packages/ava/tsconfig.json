@@ -1,12 +1,18 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "outDir": "./lib",
     "declaration": true,
-    "declarationDir": "./lib"
+    "declarationDir": "./lib",
+    "paths": {
+      "@ava/*": [
+        "./src/*"
+      ],
+      "@advisor/*": [
+        "./src/advisor/*"
+      ]
+    }
   },
   "include": ["./src"],
-  "paths": {
-    "@/*": ["./src/*"]
-  }
 }

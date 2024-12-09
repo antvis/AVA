@@ -1,11 +1,11 @@
 import type { ColorSchemeType } from '@antv/color-schema';
 import type { SimulationType } from '@antv/smart-color';
 /** AVA 包内跨模块引用 */
-import type { Purpose, CkbConfig } from '../../ckb';
-import type { Specification, Data } from '../../common/types';
+import type { Purpose, CkbConfig } from '@ava/ckb';
+import type { Specification, Data } from '@ava/common/types';
 /** Advisor 模块内引用 */
-import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from '../ruler/types';
-import type { Advisor } from '../advisor';
+import type { RuleConfig, BasicDataPropertyForAdvice, Preferences, RuleType } from '@advisor/ruler/types';
+import type { Advisor } from '@advisor/advisor';
 
 /**
  * Advisor config type

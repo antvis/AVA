@@ -1,14 +1,14 @@
 import { cloneDeep, deepMix } from '../utils';
 
-import { getChartTypeSpec } from './plugin/presets/spec-generate';
+import { getChartTypeSpec } from './plugins/spec-generate';
 import { DEFAULT_COLOR } from './constants';
-import { applyTheme, applyDesignRules, applySmartColor } from './plugin/presets/spec-generate/spec-processors';
-import { getDataProps, getSelectedData } from './plugin/presets/data-analyze';
-import { getEncodeMapping, getChartTypeRecommendations } from './plugin/presets/chart-recommend';
+import { applyTheme, applyDesignRules, applySmartColor } from './plugins/spec-generate/spec-processors';
+import { getDataProps, getSelectedData } from './plugins/data-analyze';
+import { getEncodeMapping, getChartTypeRecommendations } from './plugins/chart-recommend';
 
-import type { ScoringResultForChartType, Advice, AdviseResult, ChartAdviseParams } from '../types';
-import type { RuleModule } from '../ruler/types';
-import type { ChartKnowledgeBase } from '../../ckb';
+import type { ScoringResultForChartType, Advice, AdviseResult, ChartAdviseParams } from '@advisor/types';
+import type { RuleModule } from '@advisor/ruler/types';
+import type { ChartKnowledgeBase } from '@ava/ckb';
 
 /**
  * @deprecated 已改造为 plugin 插件形式，之前的硬编码形式函数后续清理掉

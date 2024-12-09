@@ -2,7 +2,7 @@ import { AsyncSeriesHook, SyncHook, AsyncParallelHook } from 'tapable';
 
 import { AdviseParams, AdvisorPipelineContext } from '../types';
 import { DataAnalyzePlugin, SpecGeneratePlugin } from '../advise-pipeline';
-import { ChartRecommendPlugin } from '../advise-pipeline/plugin';
+import { ChartRecommendPlugin } from '../advise-pipeline/plugins';
 
 import { AdvisorPlugin } from './plugin';
 import { DEFAULT_RES_KEY, BasePipeline } from './types';
@@ -76,12 +76,15 @@ export class Pipeline extends BasePipeline {
   };
 
   executeAsync = async (params: AdviseParams) => {
+    // before stage
     const input1 = params;
     await this.stages.beforeAsync.promise(input1, {
       dataStore: this.dataStore.before,
       context: this.context,
     });
     const output1 = this.dataStore.before.get(DEFAULT_RES_KEY) || {};
+
+    // recommend stage
     const input2 = { ...input1, ...output1 };
     await this.stages.recommendAsync.promise(input2 as any, {
       dataStore: this.dataStore.recommend,
@@ -91,6 +94,8 @@ export class Pipeline extends BasePipeline {
     this.dataStore.recommend.forEach((value, key) => {
       output2[key] = value;
     });
+
+    // generate stage
     const input3 = { ...input2, ...output2 };
     await this.stages.generateAsync.promise(input3 as any, {
       dataStore: this.dataStore.generate,

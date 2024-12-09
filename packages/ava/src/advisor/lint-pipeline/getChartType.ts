@@ -1,4 +1,4 @@
-import type { Specification, ChartSpec } from '../../common/types';
+import type { Specification, ChartSpec } from '@ava/common/types';
 
 const getPointChart = (spec: ChartSpec) => {
   if (spec.encode.size) {

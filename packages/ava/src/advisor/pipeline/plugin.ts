@@ -3,7 +3,7 @@ import type { BasePipeline } from './types';
 type AsArray<T> = T extends any[] ? T : [T];
 
 export abstract class AdvisorPlugin<I, O> {
-  name: string;
+  name!: string;
 
   constructor(name: string) {
     this.name = name;
