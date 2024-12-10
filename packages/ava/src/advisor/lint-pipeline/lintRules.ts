@@ -1,9 +1,9 @@
-import { Info, RuleModule } from '../ruler';
+import { Info, RuleModule } from '@advisor/ruler';
 
-import type { Specification } from '../../common/types';
-import type { ScoringResultForRule, Lint, AdvisorPipelineContext } from '../types';
-import type { ChartRuleModule, DesignRuleModule } from '../ruler';
-import type { ChartKnowledgeBase } from '../../ckb';
+import type { Specification } from '@ava/common/types';
+import type { ScoringResultForRule, Lint, AdvisorPipelineContext } from '@advisor/types';
+import type { ChartRuleModule, DesignRuleModule } from '@advisor/ruler';
+import type { ChartKnowledgeBase } from '@ava/ckb';
 
 export function lintRules(
   ruleBase: Record<string, RuleModule>,

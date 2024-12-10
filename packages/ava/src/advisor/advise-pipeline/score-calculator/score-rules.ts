@@ -5,11 +5,11 @@ import {
   ScoringResultForChartType,
   ScoringResultForRule,
   AdvisorPipelineContext,
-} from '../../types';
+} from '@advisor/types';
 
 import { computeScore } from './compute-score';
 
-import type { ChartId, ChartKnowledgeBase } from '../../../ckb';
+import type { ChartId, ChartKnowledgeBase } from '@ava/ckb';
 
 /**
  * Run all rules for a given chart type, get scoring result.

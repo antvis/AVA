@@ -1,7 +1,7 @@
-import { intersects } from '../utils';
+import { intersects } from '@advisor/utils';
 
-import type { ChartKnowledge, LevelOfMeasurement } from '../../ckb';
-import type { BasicDataPropertyForAdvice } from './types';
+import type { ChartKnowledge, LevelOfMeasurement } from '@ava/ckb';
+import type { BasicDataPropertyForAdvice } from '@advisor/types';
 
 export function compare(f1: any, f2: any) {
   if (f1.distinct < f2.distinct) {

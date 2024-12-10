@@ -1,9 +1,9 @@
-import { Info, RuleModule } from '../../ruler';
-import { DEFAULT_RULE_WEIGHTS } from '../../constants';
+import { Info, RuleModule } from '@advisor/ruler';
+import { DEFAULT_RULE_WEIGHTS } from '@advisor/constants';
 
-import type { AdvisorPipelineContext, ScoringResultForRule } from '../../types';
-import type { ChartRuleModule } from '../../ruler/types';
-import type { ChartId, ChartKnowledgeBase } from '../../../ckb';
+import type { AdvisorPipelineContext, ScoringResultForRule } from '@advisor/types';
+import type { ChartRuleModule } from '@advisor/ruler/types';
+import type { ChartId, ChartKnowledgeBase } from '@ava/ckb';
 
 const defaultWeights = DEFAULT_RULE_WEIGHTS;
 

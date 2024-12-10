@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import ReactDOM from 'react-dom';
 import { JSONView } from 'antv-site-demo-rc';
-import { Advisor, AdvisorPlugin } from '@antv/ava';
+import { Advisor, AdvisorPlugin, Advice, DEFAULT_RES_KEY } from '@antv/ava';
 
 class MyPlugin extends AdvisorPlugin<any, any> {
   constructor() {
@@ -13,7 +13,7 @@ class MyPlugin extends AdvisorPlugin<any, any> {
     pipeline.stages.generateAsync.tapPromise('my-plugin-for-generate', async (input, config) => {
       return new Promise((resolve) => {
         setTimeout(() => {
-          config.dataStore.set('DEFAULT', { advices: input.DEFAULT?.chartConfigs?.filter((v) => v.score < 1) });
+          config.dataStore.set(DEFAULT_RES_KEY, { advices: input.DEFAULT?.chartConfigs?.filter((v) => v.score < 1) });
           resolve(null);
         }, 4000);
       });
@@ -35,10 +35,10 @@ const myChartAdvisor = new Advisor(
 );
 
 const App = () => {
-  const [results, setResults] = useState();
+  const [results, setResults] = useState<Advice[]>();
   useEffect(() => {
-    myChartAdvisor.adviseAsync({ data: defaultData }).then((results) => {
-      setResults(results?.advices);
+    myChartAdvisor.adviseAsync({ data: defaultData }).then((advices) => {
+      setResults(advices);
     });
   }, []);
 

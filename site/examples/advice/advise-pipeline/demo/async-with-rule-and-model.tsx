@@ -15,23 +15,19 @@ const myChartAdvisor = new Advisor(
   {
     plugins: [
       new ModelPlugin({
-        types: [ModelPlugin.TYPE.MODEL],
-        select: (payload, keys) => {
-          return {
-            advices: payload?.[keys.MODEL]?.chartConfigs,
-            log: payload,
-          };
-        },
-        request: async ({ input }) => {
+        types: [ModelPlugin.TYPE.MODEL, ModelPlugin.TYPE.RULE_MODEL],
+        request: async ({ input, output }) => {
           try {
             // 这里模拟模型调用
             const res = {
               chartConfigs: [
                 {
-                  chartType: '模型输出',
+                  chartType: '规则&模型输出',
                   encode: { x: {} },
                   log: {
+                    desc: '方法的参数如下',
                     input,
+                    output,
                   },
                 },
               ],
@@ -40,7 +36,13 @@ const myChartAdvisor = new Advisor(
           } catch (e) {
             // console.error(e);
           }
-          return { chartConfigs: [] };
+          return { chartConfigs: output.chartConfigs };
+        },
+        select: (payload, keys) => {
+          return {
+            advices: payload?.[keys.RULE_MODEL].chartConfigs,
+            log: payload,
+          };
         },
       }),
     ],

@@ -1,6 +1,6 @@
 /** g2-spec 相关types */
 import type { IntervalMark, RectMark, LineMark, PointMark, TextMark, CellMark, AreaMark } from '@antv/g2';
-import type { Specification } from '../../common/types';
+import type { Specification } from '@ava/common/types';
 
 export type Mark = IntervalMark | RectMark | LineMark | PointMark | TextMark | CellMark | AreaMark;
 

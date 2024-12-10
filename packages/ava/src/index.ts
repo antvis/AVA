@@ -5,8 +5,7 @@ export {
   DataAnalyzePlugin,
   SpecGeneratePlugin,
   ChartRecommendPlugin,
-  ModelGeneratePlugin,
-  ModelRecommendPlugin,
+  ModelPlugin,
 } from './advisor';
 export type {
   Advice,
