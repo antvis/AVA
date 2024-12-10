@@ -10,8 +10,6 @@ import {
   ChartRecommendOutput,
 } from '../types';
 
-export const DEFAULT_RES_KEY = 'DEFAULT';
-
 export type DataStore = Map<string, any>;
 
 export type ContextOptions<T> = {

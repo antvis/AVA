@@ -1,8 +1,8 @@
 import { AsyncSeriesHook, SyncHook } from 'tapable';
 
-import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions, AdvisorPlugin } from '@ava/advisor/advise-pipeline/types';
+import { type BasePipeline, ContextOptions, AdvisorPlugin } from '@advisor/advise-pipeline/types';
 import { deepMix } from '@advisor/utils';
-import { DEFAULT_COLOR } from '@advisor/advise-pipeline/constants';
+import { DEFAULT_COLOR, DEFAULT_RES_KEY } from '@advisor/advise-pipeline/constants';
 
 import { applyDesignRules, applySmartColor, applyTheme } from './spec-processors';
 import { getChartTypeSpec } from './get-chart-spec';

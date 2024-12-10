@@ -1,5 +1,6 @@
 import { AdvisorPlugin } from '@ava/advisor/advise-pipeline/types';
 import { ChartRecommendPlugin } from '@advisor/advise-pipeline/plugins/chart-recommend';
+import { DEFAULT_RES_KEY } from '@advisor/advise-pipeline/constants';
 
 import {
   MODEL_RECOMMEND_PLUGIN_NAME,
@@ -83,9 +84,9 @@ export class ModelPlugin extends AdvisorPlugin {
     const { dataStore } = config;
     try {
       const result = this.select?.(input, TYPE_RESULT_CONST);
-      dataStore.set('DEFAULT', result);
+      dataStore.set(DEFAULT_RES_KEY, result);
     } catch (e) {
-      dataStore.set('DEFAULT', dataStore.get('DEFAULT'));
+      dataStore.set(DEFAULT_RES_KEY, dataStore.get(DEFAULT_RES_KEY));
     }
     return Promise.resolve();
   };

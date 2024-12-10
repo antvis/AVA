@@ -2,7 +2,8 @@ import { pullAt } from 'lodash';
 import { AsyncSeriesHook, SyncHook } from 'tapable';
 
 import { type ChartRecommendInput, type ChartRecommendOutput } from '@advisor/types';
-import { type BasePipeline, DEFAULT_RES_KEY, ContextOptions, AdvisorPlugin } from '@ava/advisor/advise-pipeline/types';
+import { type BasePipeline, ContextOptions, AdvisorPlugin } from '@advisor/advise-pipeline/types';
+import { DEFAULT_RES_KEY } from '@advisor/advise-pipeline/constants';
 
 import { getChartTypeRecommendations } from './get-chart-Type';
 import { getEncodeMapping } from './encode/encode-mapping';
