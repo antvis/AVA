@@ -1,6 +1,6 @@
 import { defineConfig } from 'father';
 
-export default (type, name) => {
+export default (type, name, extendConfig = {}) => {
   const commonConfig = {
     esm: {
       output: 'esm',
@@ -12,14 +12,15 @@ export default (type, name) => {
       name,
       output: 'dist',
     },
+    ...extendConfig,
   };
-
   if (type === 'ts') {
     return defineConfig({
       umd: {
         name,
         output: 'dist',
       },
+      ...extendConfig,
     });
   }
   if (type === 'react') {
