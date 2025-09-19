@@ -9,5 +9,5 @@
       "@advisor/*": ["src/advisor/*"]
     }
   },
-  "include": ["./src"]
+  "include": ["./src", "./__tests__"]
 }

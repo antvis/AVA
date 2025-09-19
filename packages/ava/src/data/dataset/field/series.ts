@@ -1,4 +1,4 @@
-import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '../../utils';
+import { isObject, isNumber, isString, isInteger, isBasicType, isArray, range, assert } from '@ava/utils';
 
 import { fillMissingValue, convertDataType } from './utils';
 import BaseFrame from './baseFrame';
@@ -7,7 +7,9 @@ import type { SeriesData, Extra, Axis } from './types';
 
 export type SeriesExtra = Pick<Extra, 'indexes' | 'fillValue' | 'columnTypes'>;
 
-/** 1D data structure */
+/**
+ * @deprecated
+ */
 export default class Series extends BaseFrame {
   constructor(data: SeriesData, extra?: SeriesExtra) {
     super(data, extra);

@@ -1,8 +1,7 @@
 import { RectMark } from '@antv/g2';
 
-import { PointPatternInfo } from '../../../types';
-import { INSIGHT_COLOR_PLATTE } from '../../constants';
-import { IntervalMarkConfig } from '../../types';
+import { PointPatternInfo, IntervalMarkConfig } from '@ava/types';
+import { INSIGHT_COLOR_PLATTE } from '@ava/constants';
 
 /** get mark for point patterns, the patterns should have same dimension and measure */
 export const intervalMarkStrategy = (patterns: PointPatternInfo[], config?: IntervalMarkConfig): RectMark => {

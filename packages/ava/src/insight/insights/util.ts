@@ -1,6 +1,6 @@
 import { isNil, mean } from 'lodash';
 
-import { standardDeviation, cdf, normalDistributionQuantile, max, min } from '../../data';
+import { standardDeviation, cdf, normalDistributionQuantile, max, min } from '@ava/utils/statistics';
 import {
   AlgorithmStandardInput,
   DataProperty,
@@ -10,9 +10,10 @@ import {
   PatternInfo,
   PreValidationProps,
   TimeSeriesOutlierInfo,
-} from '../types';
+} from '@ava/types';
+import { NO_PATTERN_INFO, VERIFICATION_FAILURE_INFO } from '@ava/constants';
+
 import { dataToDataProps } from '../pipeline/preprocess';
-import { NO_PATTERN_INFO, VERIFICATION_FAILURE_INFO } from '../constant';
 
 import { ExtractorCheckers } from './checkers';
 

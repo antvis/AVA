@@ -1,10 +1,11 @@
 import regression from 'regression';
 import { get, isNil, isString } from 'lodash';
 
-import { CommonParameter, GetPatternInfo, TrendInfo } from '../../types';
-import { trendDirection } from '../../algorithms';
+import { CommonParameter, GetPatternInfo, TrendInfo } from '@ava/types';
+import { trendDirection } from '@ava/insight/algorithms';
+import { SIGNIFICANCE_LEVEL } from '@ava/constants';
+
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
-import { SIGNIFICANCE_LEVEL } from '../../constant';
 
 type TrendResult = {
   significance: number;

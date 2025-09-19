@@ -1,9 +1,10 @@
 import { get, isNil, isString } from 'lodash';
 
-import { coefficientOfVariance, mean } from '../../../data';
+import { coefficientOfVariance, mean } from '@ava/utils/statistics';
+
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
-import type { GetPatternInfo, LowVarianceInfo, LowVarianceParameter } from '../../types';
+import type { GetPatternInfo, LowVarianceInfo, LowVarianceParameter } from '@ava/types';
 
 type LowVarianceItem = {
   significance: number;

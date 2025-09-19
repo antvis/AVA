@@ -1,9 +1,9 @@
 import { intersection } from 'lodash';
 
-import { DataFrame, Extra } from '../../data';
-import { AggregatorMap } from '../utils/aggregate';
+import { DataFrame, Extra } from '@ava/data';
+import { AggregatorMap } from '@ava/utils/aggregate';
 
-import type { Datum, ImpactMeasure, DataProperty } from '../types';
+import type { Datum, ImpactMeasure, DataProperty } from '@ava/types';
 
 export function dataToDataProps(data: Datum[], extra?: Extra): DataProperty[] {
   if (!data) {

@@ -1,12 +1,12 @@
 import { Mark } from '@antv/g2';
 import { size } from 'lodash';
 
-import { dataFormat } from '../../../../utils';
-import { InsightInfo, CategoryOutlierInfo } from '../../../types';
-import { BOLD_FONT_WEIGHT } from '../../constants';
+import { dataFormat } from '@ava/utils';
+import { InsightInfo, CategoryOutlierInfo, CategoryOutlierMark } from '@ava/types';
+import { BOLD_FONT_WEIGHT } from '@ava/constants';
+
 import { insight2ChartStrategy } from '../chart';
 import { textMarkStrategy, intervalMarkStrategy } from '../commonMarks';
-import { CategoryOutlierMark } from '../../types';
 import { augmentedMarks2Marks } from '../../utils';
 
 export const categoryOutlierAugmentedMarksStrategy = (

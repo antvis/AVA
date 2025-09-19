@@ -1,14 +1,14 @@
 import { groupBy, uniq, flatten, isString } from 'lodash';
 import Heap from 'heap-js';
 
-import { PATTERN_TYPES, INSIGHT_SCORE_BENCHMARK, IMPACT_SCORE_WEIGHT } from '../constant';
-import { insightPatternsExtractor, ExtractorCheckers } from '../insights';
-import { aggregate } from '../utils/aggregate';
+import { aggregate } from '@ava//utils';
+import { PATTERN_TYPES, INSIGHT_SCORE_BENCHMARK, IMPACT_SCORE_WEIGHT } from '@ava/constants';
+import { insightPatternsExtractor, ExtractorCheckers } from '@ava/insight/insights';
 import {
   extractHomogeneousPatternsForMeasures,
   extractHomogeneousPatternsForSiblingGroups,
   PatternCollection,
-} from '../insights/extractors/homogeneous';
+} from '@ava/insight/insights/extractors/homogeneous';
 
 import { calculateImpactValue } from './preprocess';
 import { addInsightsToHeap } from './util';
@@ -26,7 +26,7 @@ import type {
   HomogeneousPatternInfo,
   DataProperty,
   InsightExtractorOptions,
-} from '../types';
+} from '@ava/types';
 
 interface ReferenceInfo {
   fieldPropsMap: Record<string, DataProperty>;

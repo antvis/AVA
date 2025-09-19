@@ -1,7 +1,7 @@
 import { Mark } from '@antv/g2';
 
-import { InsightInfo, InsightType } from '../../types';
-import { PIE_RADIUS_STYLE } from '../constants';
+import { InsightInfo, InsightType } from '@ava/types';
+import { PIE_RADIUS_STYLE } from '@ava/constants';
 
 export const insight2ChartStrategy = (
   insight: Omit<InsightInfo, 'visualizationSpecs' | 'patterns'> & { patterns: { type: InsightType }[] }

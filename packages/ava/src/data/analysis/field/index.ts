@@ -9,7 +9,7 @@ import {
   sum,
   variance,
   valueMap as statsValueMap,
-} from '../../statistics';
+} from '@ava/utils/statistics';
 import {
   isBasicType,
   isBoolean,
@@ -23,9 +23,9 @@ import {
   isNumberString,
   isString,
   unique,
-} from '../../utils';
+} from '@ava/utils';
 
-import type { LevelOfMeasurement } from '../../../ckb';
+import type { LevelOfMeasurement } from '@ava/ckb';
 import type { DateFieldInfo, FieldInfo, FieldMeta, NumberFieldInfo, StringFieldInfo, FieldType } from './types';
 
 /**
@@ -297,7 +297,7 @@ export function analyzeField(
       recommendation = 'string';
   }
 
-  const uniqueArray = unique(nonNullArray);
+  const uniqueArray = unique(nonNullArray as string[]);
 
   const fieldInfo: FieldInfo = {
     count: value.length,

@@ -1,6 +1,7 @@
 import { Mark } from '@antv/g2';
 
-import { MajorityInfo, InsightInfo } from '../../../types';
+import { MajorityInfo, InsightInfo } from '@ava/types';
+
 import { insight2ChartStrategy } from '../chart';
 
 export const majorityStrategy = (insight: InsightInfo<MajorityInfo>): Mark[] => {

@@ -1,8 +1,7 @@
 import { PointMark } from '@antv/g2';
 import { isNil } from 'lodash';
 
-import { PointPatternInfo } from '../../../types';
-import { PointMarkConfig } from '../../types';
+import { PointPatternInfo, PointMarkConfig } from '@ava/types';
 
 /** get mark for point patterns, the patterns should have same dimension and measure */
 export const pointMarkStrategy = (patterns: PointPatternInfo[], config: PointMarkConfig): PointMark => {

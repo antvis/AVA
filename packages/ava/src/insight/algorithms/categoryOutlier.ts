@@ -1,4 +1,4 @@
-import { IQR } from '../../data/statistics/IQR';
+import { IQR } from '@ava/utils/statistics/IQR';
 
 export const categoryOutlier = {
   IQR,

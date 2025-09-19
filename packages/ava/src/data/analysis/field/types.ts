@@ -1,4 +1,4 @@
-import type { LevelOfMeasurement } from '../../../ckb';
+import type { LevelOfMeasurement } from '@ava/ckb';
 
 /**
  * Field Type

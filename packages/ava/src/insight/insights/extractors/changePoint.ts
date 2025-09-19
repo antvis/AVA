@@ -1,10 +1,11 @@
 import { get, isNil, isString } from 'lodash';
 
-import { changePoint } from '../../algorithms';
-import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
-import { CHANGE_POINT_SIGNIFICANCE_BENCHMARK } from '../../constant';
+import { changePoint } from '@ava/insight/algorithms';
+import { CHANGE_POINT_SIGNIFICANCE_BENCHMARK } from '@ava/constants';
 
-import type { ChangePointInfo, CommonParameter, GetPatternInfo } from '../../types';
+import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
+
+import type { ChangePointInfo, CommonParameter, GetPatternInfo } from '@ava/types';
 
 type ChangePointItem = {
   index: number;

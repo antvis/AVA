@@ -1,7 +1,8 @@
+import { assert, isArray, isObject, isBasicType } from '@ava/utils';
+
 import { analyzeField } from '../../analysis';
 import { getNodeFields, getLinkFields, getAllFieldsInfo, getAllStructFeats, clusterNodes } from '../../analysis/graph';
 import { isUnique } from '../../analysis/field';
-import { assert, isArray, isObject, isBasicType } from '../../utils';
 import DataFrame from '../field/dataFrame';
 
 import { flatObject } from './utils';

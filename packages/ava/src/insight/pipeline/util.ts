@@ -1,6 +1,6 @@
 import Heap from 'heap-js';
 
-import type { InsightInfo, PatternInfo, HomogeneousPatternInfo } from '../types';
+import type { InsightInfo, PatternInfo, HomogeneousPatternInfo } from '@ava/types';
 
 export const insightPriorityComparator = (a: InsightInfo<PatternInfo>, b: InsightInfo<PatternInfo>) =>
   a.score - b.score;
