@@ -79,6 +79,7 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
+    'import/no-cycle':0 // 临时屏蔽，重构完成后删除
   },
   settings: {
     react: {

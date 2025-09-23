@@ -6,7 +6,8 @@
     "declarationDir": "./lib",
     "paths": {
       "@ava/*": ["src/*"],
-      "@advisor/*": ["src/advisor/*"]
+      "@advisor/*": ["src/advisor/*"],
+      "@advisor-deprecated/*": ["src/advisor-deprecated/index.ts"] // 临时使用，重构完成后删除
     }
   },
   "include": ["./src", "./__tests__"]
