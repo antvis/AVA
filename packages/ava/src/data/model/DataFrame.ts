@@ -5,10 +5,10 @@ import { DataStore } from './DataStore';
 export class DataFrame {
   readonly dataStore: DataStore;
 
-  // 行切割的索引
+  // row clipping indexes
   private rowIndexes: number[];
 
-  // 列切割的索引
+  // column clipping indexes
   private colIndexes: number[];
 
   constructor(
