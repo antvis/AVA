@@ -38,6 +38,7 @@ module.exports = {
     'no-sparse-arrays': 0,
     'no-inner-declarations': 0,
     'no-use-before-define': 0,
+    'no-restricted-syntax': 1,
     '@typescript-eslint/no-use-before-define': 2,
     '@typescript-eslint/indent': 0,
     'no-constant-condition': 0,

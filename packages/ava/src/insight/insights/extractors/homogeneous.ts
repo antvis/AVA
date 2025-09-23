@@ -1,6 +1,6 @@
 import { groupBy, flatten } from 'lodash';
 
-import { PATTERN_TYPES } from '../../constant';
+import { PATTERN_TYPES } from '@ava/constants';
 
 import type {
   Measure,
@@ -9,7 +9,7 @@ import type {
   PatternInfo,
   PointPatternInfo,
   HomogeneousPatternInfo,
-} from '../../types';
+} from '@ava/types';
 
 export type PatternCollection = Partial<Record<InsightType, PatternInfo[]>>;
 type ScopePatternCollection = { key: string; patterns?: PatternInfo[] }[];

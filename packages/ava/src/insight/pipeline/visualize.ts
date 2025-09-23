@@ -1,22 +1,16 @@
-import { groupBy, omit } from 'lodash';
+import { groupBy } from 'lodash';
 
-import generateInsightNarrative from '../narrative';
-import {
+import { generateInsightChartSpec } from '@ava/insight/chart';
+
+import type {
   InsightType,
   HomogeneousPatternInfo,
   InsightInfo,
   PatternInfo,
-  InsightVisualizationOptions,
   InsightVisualizationSpec,
-} from '../types';
-import { generateInsightChartSpec } from '../chart';
+} from '@ava/types';
 
-export const generateInsightVisualizationSpec = (
-  insight: InsightInfo<PatternInfo>,
-  visualizationOptions: InsightVisualizationOptions = {
-    lang: 'en-US',
-  }
-): InsightVisualizationSpec[] => {
+export const generateInsightVisualizationSpec = (insight: InsightInfo<PatternInfo>): InsightVisualizationSpec[] => {
   const { patterns } = insight;
   const specs: InsightVisualizationSpec[] = [];
   if (!patterns.length) return [];
@@ -28,17 +22,15 @@ export const generateInsightVisualizationSpec = (
     specs.push({
       patternType: patternType as InsightType,
       chartSpec,
-      narrativeSpec: generateInsightNarrative({ ...insight, patterns: patternGroup }, visualizationOptions),
+      // todo: 后续直接引入 T8，需要重构
+      // narrativeSpec: generateInsightNarrative({ ...insight, patterns: patternGroup }, visualizationOptions),
     });
   });
   return specs;
 };
 
 export const generateHomogeneousInsightVisualizationSpec = (
-  insight: InsightInfo<HomogeneousPatternInfo>,
-  visualizationOptions: InsightVisualizationOptions = {
-    lang: 'en-US',
-  }
+  insight: InsightInfo<HomogeneousPatternInfo>
 ): InsightVisualizationSpec[] => {
   const { patterns } = insight;
   const schemas: InsightVisualizationSpec[] = [];
@@ -48,7 +40,7 @@ export const generateHomogeneousInsightVisualizationSpec = (
     schemas.push({
       patternType: insightType,
       chartSpec,
-      narrativeSpec: generateInsightNarrative({ ...omit(insight, ['patterns']), ...pattern }, visualizationOptions),
+      // narrativeSpec: generateInsightNarrative({ ...omit(insight, ['patterns']), ...pattern }, visualizationOptions),
     });
   });
   return schemas;

@@ -1,13 +1,13 @@
 import { Mark } from '@antv/g2';
 import { size } from 'lodash';
 
-import { ChangePointInfo, InsightInfo } from '../../../types';
-import { INSIGHT_COLOR_PLATTE } from '../../constants';
-import { dataFormat } from '../../../../utils';
+import { ChangePointInfo, InsightInfo, ChangePointMark } from '@ava/types';
+import { INSIGHT_COLOR_PLATTE } from '@ava/constants';
+import { dataFormat } from '@ava/utils';
+
 import { pointMarkStrategy } from '../commonMarks/pointMark';
 import { textMarkStrategy } from '../commonMarks/textMark';
 import { insight2ChartStrategy } from '../chart';
-import { ChangePointMark } from '../../types';
 import { augmentedMarks2Marks } from '../../utils';
 
 export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePointInfo>): ChangePointMark[] => {

@@ -1,5 +1,5 @@
-import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, InsightVisualizationSpec } from '../../types';
-import { INSIGHT_COLOR_PLATTE } from '../constants';
+import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, InsightVisualizationSpec } from '@ava/types';
+import { INSIGHT_COLOR_PLATTE } from '@ava/constants';
 
 export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPatternInfo) {
   const annotations: any[] = [];

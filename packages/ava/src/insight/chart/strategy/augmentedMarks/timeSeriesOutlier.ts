@@ -1,7 +1,7 @@
 import { Mark } from '@antv/g2';
 
-import { TimeSeriesOutlierInfo, InsightInfo } from '../../../types';
-import { AreaMarkData, LineMarkData, TimeSeriesOutlierMark } from '../../types';
+import { TimeSeriesOutlierInfo, InsightInfo, AreaMarkData, LineMarkData, TimeSeriesOutlierMark } from '@ava/types';
+
 import { insight2ChartStrategy } from '../chart';
 import { areaMarkStrategy, lineMarkStrategy, pointMarkStrategy } from '../commonMarks';
 

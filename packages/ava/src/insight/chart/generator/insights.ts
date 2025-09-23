@@ -1,6 +1,7 @@
 import { G2Spec, Mark } from '@antv/g2';
 
-import { InsightInfo, PatternInfo } from '../../types';
+import { InsightInfo, PatternInfo } from '@ava/types';
+
 import {
   categoryOutlierStrategy,
   changePointStrategy,

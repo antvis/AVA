@@ -1,7 +1,7 @@
-import { bayesian } from '../../data/statistics/bayesian';
-import { windowBasedMean } from '../../data/statistics/window';
-import { pettittTest } from '../../data/statistics/pettitt-test';
-import { buishandUTest } from '../../data/statistics/buishand-u';
+import { bayesian } from '@ava/utils/statistics/bayesian';
+import { windowBasedMean } from '@ava/utils/statistics/window';
+import { pettittTest } from '@ava/utils/statistics/pettitt-test';
+import { buishandUTest } from '@ava/utils/statistics/buishand-u';
 
 export const changePoint = {
   Bayesian: bayesian,

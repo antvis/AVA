@@ -1,6 +1,6 @@
 import { extractInsights, generateInsightsWithVisualizationSpec } from './insight';
 
-import type { Datum, InsightOptions, InsightsResult, InsightVisualizationOptions } from '../types';
+import type { Datum, InsightOptions, InsightsResult, InsightVisualizationOptions } from '@ava/types';
 
 export function getInsights(sourceData: Datum[], options?: InsightOptions): InsightsResult {
   const extractResult = extractInsights(sourceData, options);

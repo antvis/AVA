@@ -1,13 +1,14 @@
 import { get, isNil, isString } from 'lodash';
 
-import { distinct, lowess } from '../../../data';
-import { LowessOutput } from '../../../data/statistics/types';
-import { LOWESS_N_STEPS } from '../../constant';
+import { distinct, lowess } from '@ava/utils/statistics';
+import { LowessOutput } from '@ava/utils/statistics/types';
+import { LOWESS_N_STEPS } from '@ava/constants';
+
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
 import { findOutliers } from './categoryOutlier';
 
-import type { GetPatternInfo, OutlierParameter, TimeSeriesOutlierInfo } from '../../types';
+import type { GetPatternInfo, OutlierParameter, TimeSeriesOutlierInfo } from '@ava/types';
 
 type OutlierItem = {
   index: number;

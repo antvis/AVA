@@ -1,5 +1,6 @@
+import { isArray, isObject, isString, isInteger, isNumber, isBasicType, range, assert } from '@ava/utils';
+
 import { analyzeField } from '../../analysis';
-import { isArray, isObject, isString, isInteger, isNumber, isBasicType, range, assert } from '../../utils';
 
 import BaseFrame from './baseFrame';
 import Series from './series';
@@ -15,7 +16,9 @@ import {
 
 import type { FrameData, Axis, Extra, FieldsInfo, SeriesData } from './types';
 
-/* 2D data structure */
+/**
+ * @deprecated
+ */
 export default class DataFrame extends BaseFrame {
   constructor(data: FrameData, extra?: Extra) {
     super(data, extra);

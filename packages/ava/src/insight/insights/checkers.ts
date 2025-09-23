@@ -1,9 +1,9 @@
 import { intersection } from 'lodash';
 
-import { Datum, SubjectInfo, InsightType, DataProperty } from '../types';
-import { NumberFieldInfo } from '../../data';
+import { Datum, SubjectInfo, InsightType, DataProperty } from '@ava/types';
+import { NumberFieldInfo } from '@ava/data';
 
-import type { LevelOfMeasurement } from '../../ckb';
+import type { LevelOfMeasurement } from '@ava/ckb';
 
 export type ExtractorChecker = (props: {
   data: Datum[];

@@ -1,10 +1,11 @@
 import { isString } from 'lodash';
 
-import { pcorrtest } from '../../../data';
-import { PCorrTestParameter } from '../../../data/statistics/types';
-import { CorrelationInfo, GetPatternInfo } from '../../types';
+import { pcorrtest } from '@ava/utils/statistics';
+import { PCorrTestParameter } from '@ava/utils/statistics/types';
+import { CorrelationInfo, GetPatternInfo } from '@ava/types';
+import { DEFAULT_PCORRTEST_OPTIONS } from '@ava/utils/statistics/constants';
+
 import { getNonSignificantInsight, preValidation } from '../util';
-import { DEFAULT_PCORRTEST_OPTIONS } from '../../../data/statistics/constants';
 
 type CorrelationResult = {
   significance: number;

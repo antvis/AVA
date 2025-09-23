@@ -1,7 +1,7 @@
 import { LineMark } from '@antv/g2';
 
-import { INSIGHT_COLOR_PLATTE } from '../../constants';
-import { LineMarkConfig, LineMarkData } from '../../types';
+import { INSIGHT_COLOR_PLATTE } from '@ava/constants';
+import { LineMarkConfig, LineMarkData } from '@ava/types';
 
 export const lineMarkStrategy = (
   { points, x, y }: LineMarkData,

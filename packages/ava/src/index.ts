@@ -7,6 +7,7 @@ export {
   ChartRecommendPlugin,
   ModelPlugin,
 } from './advisor';
+
 export type {
   Advice,
   Lint,
@@ -48,6 +49,7 @@ export {
   RECOMMEND_RATINGS,
   SHAPES,
 } from './ckb';
+
 export type {
   ChartId,
   Family,
@@ -66,9 +68,6 @@ export type {
 
 /* data */
 export {
-  analyzeField,
-  Series,
-  DataFrame,
   min,
   max,
   sum,
@@ -92,7 +91,10 @@ export {
   pcorrtest,
   cdf,
   maxabs,
-} from './data';
+} from './utils/statistics';
+
+export { analyzeField, Series, DataFrame } from './data';
+
 export type {
   FieldType,
   FieldInfo,
@@ -142,26 +144,4 @@ export type {
   InsightExtractorProps,
   SpecificInsightProps,
   AugmentedMarks,
-} from './insight';
-
-/* NTV (Narrative Text Vis) */
-export {
-  generateTextSpec,
-  isCustomSection,
-  isStandardSection,
-  isCustomParagraph,
-  isTextParagraph,
-  isBulletParagraph,
-  getHeadingWeight,
-  isHeadingParagraph,
-  isDividerParagraph,
-  isEntityPhrase,
-  isImagePhrase,
-  isCustomPhrase,
-  isTextPhrase,
-  isEntityType,
-  isEscapePhrase,
-  isFormulaPhrase,
-  ENTITY_TYPES,
-} from './ntv';
-export * from './ntv/types';
+} from './types';

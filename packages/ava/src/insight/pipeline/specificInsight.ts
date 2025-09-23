@@ -6,11 +6,10 @@ import {
   changePointAugmentedMarksStrategy,
   trendAugmentedMarksStrategy,
   timeSeriesOutlierStrategyAugmentedMarksStrategy,
-  AugmentedMarks,
   lowVarianceAugmentedMarkStrategy,
   categoryOutlierAugmentedMarksStrategy,
-} from '../chart';
-import { insightPatternsExtractor } from '../insights';
+} from '@ava/insight/chart';
+import { insightPatternsExtractor } from '@ava/insight/insights';
 import {
   InsightInfo,
   InsightType,
@@ -19,10 +18,10 @@ import {
   SpecificInsightProps,
   SpecificInsightResult,
   TimeSeriesOutlierInfo,
-} from '../types';
-import generateInsightNarrative from '../narrative';
-import { pickValidPattern, pickValidTimeSeriesOutlierPatterns } from '../insights/util';
-import { insight2ChartStrategy, viewSpecStrategy } from '../chart/strategy';
+  AugmentedMarks,
+} from '@ava/types';
+import { pickValidPattern, pickValidTimeSeriesOutlierPatterns } from '@ava/insight/insights/util';
+import { insight2ChartStrategy, viewSpecStrategy } from '@ava/insight/chart/strategy';
 
 export const patternInfo2InsightInfo = (props: PatternInfo2InsightInfoProps): InsightInfo<PatternInfo> => {
   const { dimensions, measures, data, patternInfos } = props;
@@ -76,8 +75,7 @@ export const filterValidInsightInfoForAnnotationSpec = ({
 };
 
 export const getSpecificInsight = (props: SpecificInsightProps): SpecificInsightResult => {
-  const { options = {}, insightType } = props;
-  const { visualizationOptions = { lang: 'zh-CN' } } = options;
+  const { insightType } = props;
   const patternInfos = insightPatternsExtractor(props);
   const validPatternInfos = filterValidInsightInfoForAnnotationSpec({ patternInfos, insightType });
   const totalInsightInfo = patternInfo2InsightInfo({ ...props, patternInfos });
@@ -86,7 +84,7 @@ export const getSpecificInsight = (props: SpecificInsightProps): SpecificInsight
     const validInsightInfo = patternInfo2InsightInfo({ ...props, patternInfos: validPatternInfos });
     const annotationSpec = getAnnotationSpec(validInsightInfo);
     const chartSpec = generateInsightChartSpec(validInsightInfo);
-    const narrativeSpec = generateInsightNarrative(validInsightInfo, visualizationOptions);
+    // const narrativeSpec = generateInsightNarrative(validInsightInfo, visualizationOptions);
     return {
       ...totalInsightInfo,
       visualizationSpecs: [
@@ -94,7 +92,7 @@ export const getSpecificInsight = (props: SpecificInsightProps): SpecificInsight
           annotationSpec,
           chartSpec,
           patternType: insightType,
-          narrativeSpec,
+          // narrativeSpec,
         },
       ],
     };

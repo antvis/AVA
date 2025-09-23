@@ -1,7 +1,7 @@
 import Heap from 'heap-js';
 
-import { INSIGHT_DEFAULT_LIMIT } from '../constant';
-import { aggregateWithSeries, aggregateWithMeasures } from '../utils/aggregate';
+import { INSIGHT_DEFAULT_LIMIT } from '@ava/constants';
+import { aggregateWithSeries, aggregateWithMeasures } from '@ava/utils/aggregate';
 
 import { enumerateInsights } from './extract';
 import { dataToDataProps, calculateImpactMeasureReferenceValues } from './preprocess';

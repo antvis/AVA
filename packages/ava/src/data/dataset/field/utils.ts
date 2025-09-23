@@ -1,4 +1,4 @@
-import { isArray, isNumber, isString, range, assert, isBoolean, isNil, isDate } from '../../utils';
+import { isArray, isNumber, isString, range, assert, isBoolean, isNil, isDate } from '@ava/utils';
 
 import type { Axis, Extra } from './types';
 

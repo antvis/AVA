@@ -1,10 +1,12 @@
-import { assert, isArray, isObject, isBasicType } from '../../utils';
+import { assert, isArray, isObject, isBasicType } from '@ava/utils';
 
 import { generateArrayIndex, fillMissingValue, convertDataType } from './utils';
 
 import type { NDArray, SeriesData, FrameData, Axis, Extra } from './types';
 
-/* Base data structure */
+/**
+ * @deprecated
+ */
 export default abstract class BaseFrame {
   axes: [Axis[]] | [Axis[], Axis[]] = [[]];
 

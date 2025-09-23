@@ -1,5 +1,5 @@
 import type { G2Spec, Mark } from '@antv/g2';
-import type { InsightInfo, PatternInfo } from '../../types';
+import type { InsightInfo, PatternInfo } from '@ava/types';
 
 export const viewSpecStrategy = (marks: Mark[], insight?: InsightInfo<PatternInfo>): G2Spec => {
   // majority insight pattern visualizes as 'pie', should not use y nice (G2 handle it as rescale y, the pie chart will be less than 100%)

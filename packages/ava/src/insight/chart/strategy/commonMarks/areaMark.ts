@@ -1,6 +1,6 @@
 import { AreaMark } from '@antv/g2';
 
-import { AreaMarkData, AreaMarkConfig } from '../../types';
+import { AreaMarkData, AreaMarkConfig } from '@ava/types';
 
 export const areaMarkStrategy = (data: AreaMarkData, { encode, style, tooltip }: AreaMarkConfig): AreaMark => {
   const common: AreaMark = {

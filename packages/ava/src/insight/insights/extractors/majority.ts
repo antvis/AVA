@@ -2,7 +2,7 @@ import { get, isNil, isString } from 'lodash';
 
 import { getAlgorithmCommonInput, getNonSignificantInsight, preValidation } from '../util';
 
-import type { GetPatternInfo, MajorityInfo, MajorityParameter } from '../../types';
+import type { GetPatternInfo, MajorityInfo, MajorityParameter } from '@ava/types';
 
 type MajorityItem = {
   index: number;

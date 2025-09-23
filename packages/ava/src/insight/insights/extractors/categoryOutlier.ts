@@ -1,9 +1,10 @@
 import { get, isNil, isString, orderBy } from 'lodash';
 
-import { distinct, mean } from '../../../data';
-import { categoryOutlier } from '../../algorithms';
-import { IQR_K, SIGNIFICANCE_BENCHMARK } from '../../constant';
-import { CategoryOutlierInfo, GetPatternInfo, OutlierParameter } from '../../types';
+import { distinct, mean } from '@ava/utils';
+import { categoryOutlier } from '@ava/insight/algorithms';
+import { IQR_K, SIGNIFICANCE_BENCHMARK } from '@ava/constants';
+import { CategoryOutlierInfo, GetPatternInfo, OutlierParameter } from '@ava/types';
+
 import {
   calculatePValue,
   calculateOutlierThresholds,

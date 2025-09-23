@@ -1,9 +1,8 @@
 import { TextMark } from '@antv/g2';
 import { isFunction } from 'lodash';
 
-import { PointPatternInfo } from '../../../types';
-import { TEXT_STYLE } from '../../constants';
-import { TextMarkConfig } from '../../types';
+import { PointPatternInfo, TextMarkConfig } from '@ava/types';
+import { TEXT_STYLE } from '@ava/constants';
 
 /** get mark for point patterns, the patterns should have same dimension and measure */
 export const textMarkStrategy = (patterns: PointPatternInfo[], textConfig?: TextMarkConfig): TextMark => {
