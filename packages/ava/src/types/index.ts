@@ -1,3 +1,6 @@
+/**
+ * types 统一提升到根目录，如果有模块限定，加 namespace
+ */
 import { G2ChartSpec } from '@ava/advisor/types';
 
 export * from './insight';
