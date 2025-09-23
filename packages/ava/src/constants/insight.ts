@@ -33,7 +33,7 @@ export const NO_PATTERN_INFO = 'No insights were found at the specified signific
 
 export const CHANGE_POINT_SIGNIFICANCE_BENCHMARK = 0.15;
 
-export const INSIGHT_COLOR_PLATTE: Record<string, string> = {
+export const INSIGHT_COLOR_PALETTE: Record<string, string> = {
   highlight: '#E09322',
   outlier: '#CB5140',
   font: '#2C3542',
