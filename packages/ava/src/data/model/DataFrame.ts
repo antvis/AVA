@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { DataStore } from './DataStore';
 
 export class DataFrame {
-  dataStore!: DataStore;
+  readonly dataStore: DataStore;
 
   // 行切割的索引
   private rowIndexes: number[];
