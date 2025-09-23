@@ -21,7 +21,7 @@ export class DataFrame {
     const { rowIndexes, colIndexes } = options;
     this.dataStore = store;
     this.rowIndexes = rowIndexes ?? Array.from({ length: store.data.length }, (_, i) => i);
-    this.colIndexes = colIndexes ?? Array.from({ length: store.data[0].length }, (_, i) => i);
+    this.colIndexes = colIndexes ?? Array.from({ length: store.data[0]?.length ?? 0 }, (_, i) => i);
   }
 
   get data() {
