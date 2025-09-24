@@ -1,0 +1,73 @@
+import { AsyncSeriesHook } from 'tapable';
+
+import {
+  AdviseText,
+  AdviseTextParams,
+  AdviseTextPluginInput,
+  AdvisorConfig,
+  AdvisorPlugin,
+  BasePipeline,
+  DataStore,
+  Stages,
+} from '@advisor/types';
+
+export class AdviseTextPipeline implements BasePipeline<AdviseTextParams> {
+  config: AdvisorConfig;
+
+  pluginMap: Map<string, AdvisorPlugin<AdviseTextParams>>;
+
+  stages: Stages<AdviseTextParams>;
+
+  dataStore: DataStore;
+
+  constructor(params: { config: AdvisorConfig }) {
+    this.dataStore = {
+      extract: new Map(),
+      data: new Map(),
+      advise: new Map(),
+      generate: new Map(),
+    };
+    this.stages = {
+      extract: new AsyncSeriesHook(['input']),
+      data: new AsyncSeriesHook(['input']),
+      advise: new AsyncSeriesHook(['input']),
+      generate: new AsyncSeriesHook(['input']),
+    };
+    const allPlugins = [];
+    this.pluginMap = new Map();
+    allPlugins.forEach((plugin) => {
+      this.pluginMap.set(plugin.name, plugin);
+    });
+    this.config = params.config;
+    this.init();
+  }
+
+  private init = () => {
+    this.pluginMap.forEach((plugin) => {
+      plugin.apply(this);
+    });
+  };
+
+  getPlugin = (name: string) => {
+    return this.pluginMap.get(name);
+  };
+
+  execute = async (input: AdviseTextParams) => {
+    const pluginInput: AdviseTextPluginInput = {
+      dataStore: this.dataStore,
+      context: {
+        ...this.config,
+        ...input,
+      },
+    };
+    await this.stages.extract.promise(pluginInput);
+
+    await this.stages.data.promise(pluginInput);
+
+    await this.stages.advise.promise(pluginInput);
+
+    await this.stages.generate.promise(pluginInput);
+
+    return {} as AdviseText;
+  };
+}
