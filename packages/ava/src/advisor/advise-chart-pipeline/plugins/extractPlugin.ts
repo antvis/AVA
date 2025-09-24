@@ -1,9 +1,9 @@
-import { AdviseChartParams, AdviseChartPipeline, AdviseChartPluginInput, AdvisorPlugin } from '@advisor/types';
+import { AdviseChartParams, IAdviseChartPipeline, AdviseChartPluginInput, AdvisorPlugin } from '@advisor/types';
 
 export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
   name = 'extract';
 
-  apply = (pipeline: AdviseChartPipeline) => {
+  apply = (pipeline: IAdviseChartPipeline) => {
     pipeline.stages.extract.tapPromise(this.name, this.execute);
   };
 
