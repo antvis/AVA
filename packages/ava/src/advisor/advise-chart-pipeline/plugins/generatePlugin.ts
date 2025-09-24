@@ -1,7 +1,7 @@
 import { AdviseChartParams, IAdviseChartPipeline, AdviseChartPluginInput, AdvisorPlugin } from '@advisor/types';
 
 export class GeneratePlugin implements AdvisorPlugin<AdviseChartParams> {
-  name = 'generate';
+  name = 'generatePlugin';
 
   apply = (pipeline: IAdviseChartPipeline) => {
     pipeline.stages.generate.tapPromise(this.name, this.execute);
@@ -11,6 +11,6 @@ export class GeneratePlugin implements AdvisorPlugin<AdviseChartParams> {
     // TODO: Implement generate logic
     const { dataStore } = input;
     const result = {};
-    dataStore.generate.set('generate', result);
+    dataStore.generate = result;
   };
 }

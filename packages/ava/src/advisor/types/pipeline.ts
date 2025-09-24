@@ -26,11 +26,20 @@ export interface Stages<T extends AdviseParams> {
   generate: AsyncSeriesHook<[PluginInput<T>]>;
 }
 
+export type ExtractStageOutput = {};
+
+export type DataStageOutput = {};
+
+export type AdviseStageOutput = {};
+
+export type GenerateStageOutput = {};
+
 export type DataStore = {
-  extract: Map<string, unknown>;
-  data: Map<string, unknown>;
-  advise: Map<string, unknown>;
-  generate: Map<string, unknown>;
+  extract: ExtractStageOutput;
+  data: DataStageOutput;
+  advise: AdviseStageOutput;
+  generate: GenerateStageOutput;
+  [key: string]: any;
 };
 
 export abstract class BasePipeline<T extends AdviseParams = AdviseChartParams> {
