@@ -50,6 +50,6 @@ export type AdviseChartPluginInput = PluginInput<AdviseChartParams>;
 
 export type AdviseTextPluginInput = PluginInput<AdviseTextParams>;
 
-export type AdviseChartPipeline = BasePipeline<AdviseChartParams>;
+export type IAdviseChartPipeline = BasePipeline<AdviseChartParams>;
 
-export type AdviseTextPipeline = BasePipeline<AdviseTextParams>;
+export type IAdviseTextPipeline = BasePipeline<AdviseTextParams>;

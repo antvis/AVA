@@ -5,13 +5,13 @@ import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
 export class Advisor {
   adviseChartPipeline: BasePipeline<AdviseChartParams>;
 
-  adviseTextPipeLine: BasePipeline<AdviseTextParams>;
+  adviseTextPipeline: BasePipeline<AdviseTextParams>;
 
   constructor(config: AdvisorConfig = {}) {
     this.adviseChartPipeline = new AdviseChartPipeline({
       config,
     });
-    this.adviseTextPipeLine = new AdviseTextPipeline({
+    this.adviseTextPipeline = new AdviseTextPipeline({
       config,
     });
   }
@@ -33,7 +33,7 @@ export class Advisor {
     }
     // recommend text
     // TODO: implement text recommendation
-    await this.adviseTextPipeLine.execute(params as AdviseTextParams);
+    await this.adviseTextPipeline.execute(params as AdviseTextParams);
     return {} as AdviseText;
   }
 }
