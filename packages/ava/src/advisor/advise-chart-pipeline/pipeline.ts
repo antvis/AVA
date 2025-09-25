@@ -12,7 +12,7 @@ import {
 } from '@advisor/types';
 
 import { AdvisePlugin, DataPlugin, ExtractPlugin, GeneratePlugin } from './plugins';
-import { AdviseChartStageEnum } from './constant';
+import { AdviseChartPluginEnum, AdviseChartStageEnum } from './constant';
 
 export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   config: AdvisorConfig;
@@ -25,24 +25,24 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
 
   // centralized configuration of event subscription relationships
   private eventSubscription = {
-    extract: [AdviseChartStageEnum.ExtractPlugin],
-    data: [AdviseChartStageEnum.DataPlugin],
-    advise: [AdviseChartStageEnum.AdvisePlugin],
-    generate: [AdviseChartStageEnum.GeneratePlugin],
+    [AdviseChartStageEnum.Extract]: [AdviseChartPluginEnum.ExtractPlugin],
+    [AdviseChartStageEnum.Data]: [AdviseChartPluginEnum.DataPlugin],
+    [AdviseChartStageEnum.Advise]: [AdviseChartPluginEnum.AdvisePlugin],
+    [AdviseChartStageEnum.Generate]: [AdviseChartPluginEnum.GeneratePlugin],
   };
 
   constructor(params: { config: AdvisorConfig }) {
     this.dataStore = {
-      extract: {},
-      data: {},
-      advise: {},
-      generate: {},
+      [AdviseChartStageEnum.Extract]: {},
+      [AdviseChartStageEnum.Data]: {},
+      [AdviseChartStageEnum.Advise]: {},
+      [AdviseChartStageEnum.Generate]: {},
     };
     this.stages = {
-      extract: new AsyncSeriesHook(['input']),
-      data: new AsyncSeriesHook(['input']),
-      advise: new AsyncSeriesHook(['input']),
-      generate: new AsyncSeriesHook(['input']),
+      [AdviseChartStageEnum.Extract]: new AsyncSeriesHook(['input']),
+      [AdviseChartStageEnum.Data]: new AsyncSeriesHook(['input']),
+      [AdviseChartStageEnum.Advise]: new AsyncSeriesHook(['input']),
+      [AdviseChartStageEnum.Generate]: new AsyncSeriesHook(['input']),
     };
     const allPlugins = [new ExtractPlugin(), new DataPlugin(), new AdvisePlugin(), new GeneratePlugin()];
     this.pluginMap = new Map();
@@ -53,7 +53,7 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
     this.init();
   }
 
-  getPlugin = (name: AdviseChartStageEnum) => {
+  getPlugin = (name: AdviseChartPluginEnum) => {
     return this.pluginMap.get(name);
   };
 
@@ -74,14 +74,15 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
         ...this.config,
         ...input,
       },
+      curStage: '',
     };
-    await this.stages.extract.promise(pluginInput);
+    await this.stages.extract.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Extract });
 
-    await this.stages.data.promise(pluginInput);
+    await this.stages.data.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Data });
 
-    await this.stages.advise.promise(pluginInput);
+    await this.stages.advise.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Extract });
 
-    await this.stages.generate.promise(pluginInput);
+    await this.stages.generate.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Generate });
 
     return [] as AdviseChart[];
   };

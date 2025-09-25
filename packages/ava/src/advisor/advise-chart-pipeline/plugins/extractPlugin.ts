@@ -1,9 +1,9 @@
 import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, SubscribeFunction } from '@advisor/types';
 
-import { AdviseChartStageEnum } from '../constant';
+import { AdviseChartPluginEnum } from '../constant';
 
 export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
-  name = AdviseChartStageEnum.ExtractPlugin;
+  name = AdviseChartPluginEnum.ExtractPlugin;
 
   apply = (subscribe: SubscribeFunction) => {
     subscribe(this.name, this.execute);
