@@ -1,5 +1,5 @@
 import { HomogeneousPatternInfo, InsightInfo, PointPatternInfo, InsightVisualizationSpec } from '@ava/types';
-import { INSIGHT_COLOR_PLATTE } from '@ava/constants';
+import { INSIGHT_COLOR_PALETTE } from '@ava/constants';
 
 export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPatternInfo) {
   const annotations: any[] = [];
@@ -8,7 +8,7 @@ export function generateHomogeneousInsightAugmentedMarks(pattern: HomogeneousPat
   if (['change_point', 'time_series_outlier'].includes(insightType)) {
     const { x } = childPatterns[0] as PointPatternInfo;
     const text = insightType === 'change_point' ? 'Abrupt Change' : 'Outlier';
-    const color = insightType === 'change_point' ? INSIGHT_COLOR_PLATTE.highlight : INSIGHT_COLOR_PLATTE.outlier;
+    const color = insightType === 'change_point' ? INSIGHT_COLOR_PALETTE.highlight : INSIGHT_COLOR_PALETTE.outlier;
     // draw line
     const line = {
       type: 'line',

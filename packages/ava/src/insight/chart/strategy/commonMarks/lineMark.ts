@@ -1,6 +1,6 @@
 import { LineMark } from '@antv/g2';
 
-import { INSIGHT_COLOR_PLATTE } from '@ava/constants';
+import { INSIGHT_COLOR_PALETTE } from '@ava/constants';
 import { LineMarkConfig, LineMarkData } from '@ava/types';
 
 export const lineMarkStrategy = (
@@ -10,7 +10,7 @@ export const lineMarkStrategy = (
   const common: LineMark = {
     style: {
       lineDash: [2, 2],
-      stroke: INSIGHT_COLOR_PLATTE.highlight,
+      stroke: INSIGHT_COLOR_PALETTE.highlight,
       ...style,
     },
     labels: label

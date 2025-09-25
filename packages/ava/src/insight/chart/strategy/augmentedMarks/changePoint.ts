@@ -2,7 +2,7 @@ import { Mark } from '@antv/g2';
 import { size } from 'lodash';
 
 import { ChangePointInfo, InsightInfo, ChangePointMark } from '@ava/types';
-import { INSIGHT_COLOR_PLATTE } from '@ava/constants';
+import { INSIGHT_COLOR_PALETTE } from '@ava/constants';
 import { dataFormat } from '@ava/utils';
 
 import { pointMarkStrategy } from '../commonMarks/pointMark';
@@ -12,7 +12,7 @@ import { augmentedMarks2Marks } from '../../utils';
 
 export const changePointAugmentedMarksStrategy = (insight: InsightInfo<ChangePointInfo>): ChangePointMark[] => {
   const { patterns } = insight;
-  const color = INSIGHT_COLOR_PLATTE.highlight;
+  const color = INSIGHT_COLOR_PALETTE.highlight;
 
   if (!size(patterns)) return [];
 

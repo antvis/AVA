@@ -1,39 +1,5 @@
 /* advisor */
-export {
-  Advisor,
-  AdvisorPlugin,
-  DataAnalyzePlugin,
-  SpecGeneratePlugin,
-  ChartRecommendPlugin,
-  ModelPlugin,
-} from './advisor';
-
-export type {
-  Advice,
-  Lint,
-  AdviseParams,
-  ChartAdviseParams,
-  AdvisorOptions,
-  Theme,
-  SmartColorOptions,
-  AdviseResult,
-  LintResult,
-  ScoringResultForRule,
-  ScoringResultForChartType,
-  Preferences,
-  LinterOptions,
-  LintParams,
-  RuleModule,
-  AdvisorConfig,
-  AdvisorPluginType,
-  AdvisorPipelineContext,
-  DataAnalyzeInput,
-  DataAnalyzeOutput,
-  ChartRecommendInput,
-  ChartRecommendOutput,
-  SpecGenerateInput,
-  SpecGenerateOutput,
-} from './advisor';
+export { Advisor } from './advisor';
 
 /* CKB */
 export {

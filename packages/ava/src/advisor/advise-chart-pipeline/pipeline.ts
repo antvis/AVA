@@ -12,6 +12,7 @@ import {
 } from '@advisor/types';
 
 import { AdvisePlugin, DataPlugin, ExtractPlugin, GeneratePlugin } from './plugins';
+import { AdviseChartStageEnum } from './constant';
 
 export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   config: AdvisorConfig;
@@ -22,12 +23,20 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
 
   dataStore: DataStore;
 
+  // centralized configuration of event subscription relationships
+  private eventSubscription = {
+    extract: [AdviseChartStageEnum.ExtractPlugin],
+    data: [AdviseChartStageEnum.DataPlugin],
+    advise: [AdviseChartStageEnum.AdvisePlugin],
+    generate: [AdviseChartStageEnum.GeneratePlugin],
+  };
+
   constructor(params: { config: AdvisorConfig }) {
     this.dataStore = {
-      extract: new Map(),
-      data: new Map(),
-      advise: new Map(),
-      generate: new Map(),
+      extract: {},
+      data: {},
+      advise: {},
+      generate: {},
     };
     this.stages = {
       extract: new AsyncSeriesHook(['input']),
@@ -44,14 +53,18 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
     this.init();
   }
 
-  private init = () => {
-    this.pluginMap.forEach((plugin) => {
-      plugin.apply(this);
-    });
+  getPlugin = (name: AdviseChartStageEnum) => {
+    return this.pluginMap.get(name);
   };
 
-  getPlugin = (name: string) => {
-    return this.pluginMap.get(name);
+  private init = () => {
+    Object.entries(this.eventSubscription).forEach(([stage, pluginNames]) => {
+      const curStage = this.stages[stage] as AsyncSeriesHook<AdviseChartPluginInput>;
+      pluginNames.forEach((pluginName) => {
+        // subscribe event
+        this.getPlugin(pluginName).apply(curStage.tapPromise.bind(curStage));
+      });
+    });
   };
 
   execute = async (input: AdviseChartParams) => {
