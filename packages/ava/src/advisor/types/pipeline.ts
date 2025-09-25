@@ -9,6 +9,7 @@ export type AdviseResult<T extends AdviseParams> = T extends AdviseChartParams ?
 export type PluginInput<T extends AdviseParams> = {
   dataStore: DataStore;
   context: AdvisorConfig & T;
+  curStage: string;
 };
 
 export type SubscribeFunction<T extends AdviseParams = AdviseParams> = AsyncSeriesHook<[PluginInput<T>]>['tapPromise'];
