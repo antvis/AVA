@@ -16,7 +16,7 @@ export type SubscribeFunction<T extends AdviseParams = AdviseParams> = AsyncSeri
 export abstract class AdvisorPlugin<I extends AdviseParams> {
   abstract readonly name: string;
 
-  abstract apply(subscribe: SubscribeFunction<I>): void;
+  abstract apply(pipeline: BasePipeline<I>): void;
 
   abstract execute(args: PluginInput<I>): Promise<void>;
 }

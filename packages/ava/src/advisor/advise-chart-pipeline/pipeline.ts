@@ -23,14 +23,6 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
 
   dataStore: DataStore;
 
-  // centralized configuration of event subscription relationships
-  private eventSubscription = {
-    [AdviseChartStageEnum.Extract]: [AdviseChartPluginEnum.ExtractPlugin],
-    [AdviseChartStageEnum.Data]: [AdviseChartPluginEnum.DataPlugin],
-    [AdviseChartStageEnum.Advise]: [AdviseChartPluginEnum.AdvisePlugin],
-    [AdviseChartStageEnum.Generate]: [AdviseChartPluginEnum.GeneratePlugin],
-  };
-
   constructor(params: { config: AdvisorConfig }) {
     this.dataStore = {
       [AdviseChartStageEnum.Extract]: {},
@@ -58,12 +50,8 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   };
 
   private init = () => {
-    Object.entries(this.eventSubscription).forEach(([stage, pluginNames]) => {
-      const curStage = this.stages[stage] as AsyncSeriesHook<AdviseChartPluginInput>;
-      pluginNames.forEach((pluginName) => {
-        // subscribe event
-        this.getPlugin(pluginName).apply(curStage.tapPromise.bind(curStage));
-      });
+    this.pluginMap.forEach((plugin) => {
+      plugin.apply(this);
     });
   };
 
