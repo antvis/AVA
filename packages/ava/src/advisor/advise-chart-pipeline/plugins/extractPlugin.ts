@@ -1,10 +1,12 @@
-import { AdviseChartParams, IAdviseChartPipeline, AdviseChartPluginInput, AdvisorPlugin } from '@advisor/types';
+import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, SubscribeFunction } from '@advisor/types';
+
+import { AdviseChartStageEnum } from '../constant';
 
 export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
-  name = 'extractPlugin';
+  name = AdviseChartStageEnum.ExtractPlugin;
 
-  apply = (pipeline: IAdviseChartPipeline) => {
-    pipeline.stages.extract.tapPromise(this.name, this.execute);
+  apply = (subscribe: SubscribeFunction) => {
+    subscribe(this.name, this.execute);
   };
 
   execute = async (input: AdviseChartPluginInput) => {

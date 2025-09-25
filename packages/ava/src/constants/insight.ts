@@ -44,7 +44,7 @@ export const BOLD_FONT_WEIGHT = 500;
 
 export const TEXT_STYLE = {
   textAlign: 'center',
-  fill: INSIGHT_COLOR_PLATTE.font,
+  fill: INSIGHT_COLOR_PALETTE.font,
   opacity: 0.65,
 };
 
