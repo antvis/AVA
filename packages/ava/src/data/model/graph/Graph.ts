@@ -62,11 +62,11 @@ function parseArray(data: { [key: string]: any }[]) {
       const { nodes: subNodes, links: subLinks } = parseTreeNode(tree);
       for (let i = 0; i < subNodes.length; i += 1) {
         const node = subNodes[i];
-        let repeatNode = nodes.find((n) => n.id === node.id);
-        if (repeatNode) {
-          repeatNode = {
+        const repeatNodeIndex = nodes.findIndex((n) => n.id === node.id);
+        if (repeatNodeIndex > -1) {
+          nodes[repeatNodeIndex] = {
+            ...nodes[repeatNodeIndex],
             ...node,
-            ...repeatNode,
           };
         } else {
           nodes.push(node);
