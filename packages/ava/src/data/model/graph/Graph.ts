@@ -123,10 +123,10 @@ export class Graph {
 
     // if passed data tyoe is object
     if (isObject(data)) {
-      const nodeKey = 'nodes' in data && 'nodes';
-      const linkKey = ('links' in data && 'links') || ('edges' in data && 'edges');
-      nodes = data[nodeKey];
-      links = data[linkKey];
+      const nodeKey = 'nodes' in data ? 'nodes' : undefined;
+      const linkKey = 'links' in data ? 'links' : 'edges' in data ? 'edges' : undefined;
+      if (nodeKey) nodes = data[nodeKey];
+      if (linkKey) links = data[linkKey];
     }
 
     return { nodes, links };
