@@ -10,7 +10,7 @@ import type {
 
 type ColumnFeature = StringColumnFeature | NumberColumnFeature | DateColumnFeature | GeoColumnFeature;
 
-// 专注数据存储和特征计算
+// Focus on data storage and feature computation
 export class DataStore {
   readonly data: RawDataType[][];
 
