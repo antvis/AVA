@@ -1,6 +1,6 @@
 import { flow, isFunction } from 'lodash';
 
-import { InsightExtractorProps, PatternInfo } from '../types';
+import { InsightExtractorProps, PatternInfo } from '@ava/types';
 
 import { getCategoryOutlierInfo } from './extractors/categoryOutlier';
 import { getChangePointInfo } from './extractors/changePoint';

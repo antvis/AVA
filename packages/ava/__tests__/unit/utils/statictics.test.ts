@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import { isEqual } from 'lodash';
 
-import { isArray, isNumber, nOnes, range } from '../../../../src/data';
+import { isArray, isNumber, nOnes, range } from '@ava/utils';
 import {
   valid,
   missing,
@@ -39,7 +39,7 @@ import {
   weightedLinearRegression,
   lowess,
   pcorrtest,
-} from '../../../../src/data/statistics';
+} from '@ava/utils/statistics';
 
 const threshold = 1e-3;
 /** whether two arrays are the same within a certain precision  */

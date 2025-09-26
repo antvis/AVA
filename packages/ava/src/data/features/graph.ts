@@ -1,13 +1,16 @@
 // TODO @chenluli: move @antv/algorithm from devDep to dep after this file is complete
-// eslint-disable-next-line import/no-extraneous-dependencies
 import * as AlgorithmSync from '@antv/algorithm';
 
-import { analyzeField } from '../field';
+import { analyzeField } from './plainColumn';
 
-// TODO: Fix path
-import type { NodeData, LinkData } from '../../dataset/graph/types';
-import type { FieldInfo } from '../field/types';
-import type { GraphFeat, NodeStructFeat, LinkStructFeat } from './types';
+import type {
+  NodeData,
+  LinkData,
+  ColumnFeature,
+  GraphStatisticalFeature,
+  NodeStructFeat,
+  LinkStructFeat,
+} from '@ava/data/types';
 
 const GraphAlgorithms = {
   ...AlgorithmSync,
@@ -42,15 +45,15 @@ export function getLinkFields(links: LinkData[]) {
 }
 
 // Analyze fields
-function getFieldInfo(dataField: any[], fieldName: string): FieldInfo {
+function getFieldInfo(dataField: any[], fieldName: string): ColumnFeature {
   const fieldInfo = analyzeField(dataField);
   return {
     ...fieldInfo,
     name: fieldName,
   };
 }
-export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): FieldInfo[] {
-  const fields: FieldInfo[] = [];
+export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): ColumnFeature[] {
+  const fields: ColumnFeature[] = [];
   for (let i = 0; i < dataFields.length; i += 1) {
     const dataField = dataFields[i];
     fields.push(getFieldInfo(dataField, fieldNames[i]));
@@ -64,7 +67,7 @@ export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): Field
  * @param nodes
  * @param links
  */
-export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: FieldInfo[], links: LinkData[]): FieldInfo {
+export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: ColumnFeature[], links: LinkData[]): ColumnFeature {
   const MAX_CLUSTER_NUM = 10;
   let fieldForCluster;
   for (let i = 0; i < nodeFieldsInfo.length; i += 1) {
@@ -169,7 +172,7 @@ export function getAllStructFeats(nodes: NodeData[], links: LinkData[]) {
   const avgDegree = nodeDegrees.reduce((x, y) => x + y) / nodeDegrees.length;
   const degreeDev = nodeDegrees.map((x) => x - avgDegree);
   const degreeStd = Math.sqrt(degreeDev.map((x) => x ** 2).reduce((x, y) => x + y) / (nodeDegrees.length - 1));
-  const graphInfo: Partial<GraphFeat> = {
+  const graphInfo: Partial<GraphStatisticalFeature> = {
     isDirected,
     nodeCount: nodes.length,
     linkCount: links.length,

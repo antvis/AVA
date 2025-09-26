@@ -19,7 +19,6 @@ import {
 /*
  * Check whether the string is a date.
  */
-
 export function isUndefined(val: unknown) {
   return val === undefined;
 }
