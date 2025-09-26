@@ -1,6 +1,6 @@
 import { DataStore } from './DataStore';
 
-// 专注数据切割
+// Focus on data clipping
 export class DataFrame {
   readonly dataStore: DataStore;
 
