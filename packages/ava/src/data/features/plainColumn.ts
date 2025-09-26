@@ -26,34 +26,41 @@ import {
 } from '@ava/utils';
 
 import type { LevelOfMeasurement } from '@ava/ckb';
-import type { DateFieldInfo, FieldInfo, FieldMeta, NumberFieldInfo, StringFieldInfo, FieldType } from './types';
+import type {
+  DateColumnFeature,
+  ColumnFeature,
+  ColumnMeta,
+  NumberColumnFeature,
+  StringColumnFeature,
+  ColumnType,
+} from '@ava/data/types';
 
 /**
- * Check if it is StringFieldInfo.
+ * Check if it is StringColumnFeature.
  */
-export function isStringFieldInfo(x: FieldInfo): x is StringFieldInfo {
+export function isStringColumnFeature(x: ColumnFeature): x is StringColumnFeature {
   return x.recommendation === 'string';
 }
 
 /**
- * Check if it is NumberFieldInfo.
+ * Check if it is NumberColumnFeature.
  */
-export function isNumberFieldInfo(x: FieldInfo): x is NumberFieldInfo {
+export function isNumberColumnFeature(x: ColumnFeature): x is NumberColumnFeature {
   return x.recommendation === 'integer' || x.recommendation === 'float';
 }
 
 /**
- * Check if it is DateFieldInfo.
+ * Check if it is DateColumnFeature.
  */
-export function isDateFieldInfo(x: FieldInfo): x is DateFieldInfo {
+export function isDateColumnFeature(x: ColumnFeature): x is DateColumnFeature {
   return x.recommendation === 'date';
 }
 
 /**
  * Checks if field is constant
- * @param info - The {@link FieldInfo} to process
+ * @param info - The {@link ColumnFeature} to process
  */
-export function isConst(info: FieldInfo): boolean {
+export function isConst(info: ColumnFeature): boolean {
   return info.distinct === 1;
 }
 
@@ -61,7 +68,7 @@ export function isConst(info: FieldInfo): boolean {
  * Checks if field is an ordinal.
  * @param info - Field Info
  */
-export function isOrdinal(info: FieldInfo): boolean {
+export function isOrdinal(info: ColumnFeature): boolean {
   const { rawData, recommendation } = info;
   if (recommendation !== 'string') return false;
   if (isConst(info)) return false;
@@ -117,42 +124,42 @@ export function isOrdinal(info: FieldInfo): boolean {
 
 /**
  * Checks if field is an unique.
- * @param info - The {@link FieldInfo} to process
+ * @param info - The {@link ColumnFeature} to process
  */
-export function isUnique(info: FieldInfo): boolean {
+export function isUnique(info: ColumnFeature): boolean {
   return info.distinct === info.count;
 }
 
 /**
  * Checks if field is discrete.
  * @remarks
- * @param info - The {@link FieldInfo} to process
+ * @param info - The {@link ColumnFeature} to process
  */
-export function isDiscrete(info: FieldInfo): boolean {
+export function isDiscrete(info: ColumnFeature): boolean {
   return info.recommendation === 'integer';
 }
 
 /**
  * Checks if field is a continuous.
- * @param info - The {@link FieldInfo} to process
+ * @param info - The {@link ColumnFeature} to process
  */
-export function isContinuous(info: FieldInfo): boolean {
+export function isContinuous(info: ColumnFeature): boolean {
   return info.recommendation === 'float';
 }
 
 /**
  * Checks if field is an interval.
- * @param info - The {@link FieldInfo} to process
+ * @param info - The {@link ColumnFeature} to process
  */
-export function isInterval(info: FieldInfo): boolean {
+export function isInterval(info: ColumnFeature): boolean {
   return info.recommendation === 'integer' || info.recommendation === 'float';
 }
 
 /**
  * Checks if field is a nominal.
- * @param info - The {@link FieldInfo} to process
+ * @param info - The {@link ColumnFeature} to process
  */
-export function isNominal(info: FieldInfo): boolean {
+export function isNominal(info: ColumnFeature): boolean {
   if (info.recommendation === 'boolean') return true;
   if (info.recommendation === 'string') return !isOrdinal(info);
   return false;
@@ -162,7 +169,7 @@ export function isNominal(info: FieldInfo): boolean {
  * Checks if field is a time.
  * @param info - Field Info
  */
-export function isTime(info: FieldInfo): boolean {
+export function isTime(info: ColumnFeature): boolean {
   return info.recommendation === 'date';
 }
 
@@ -170,7 +177,7 @@ export function isTime(info: FieldInfo): boolean {
  * Analyze string field info.
  * @param value - data
  */
-export function analyzeString(value: string[]): Omit<StringFieldInfo, keyof FieldInfo> {
+export function analyzeString(value: string[]): Omit<StringColumnFeature, keyof ColumnFeature> {
   const lenArray = value.map((item) => item.length);
   return {
     maxLength: max(lenArray),
@@ -186,7 +193,7 @@ export function analyzeString(value: string[]): Omit<StringFieldInfo, keyof Fiel
  * Analyze number field info.
  * @param value - data
  */
-export function analyzeNumber(value: number[]): Omit<NumberFieldInfo, keyof FieldInfo> {
+export function analyzeNumber(value: number[]): Omit<NumberColumnFeature, keyof ColumnFeature> {
   return {
     minimum: min(value),
     maximum: max(value),
@@ -207,7 +214,7 @@ export function analyzeNumber(value: number[]): Omit<NumberFieldInfo, keyof Fiel
  * Analyze date field info.
  * @param value - data
  */
-export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<DateFieldInfo, keyof FieldInfo> {
+export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<DateColumnFeature, keyof ColumnFeature> {
   const list: number[] = value.map((item) => {
     if (isInteger) {
       const str = `${item}`;
@@ -253,13 +260,13 @@ export function analyzeType(
 export function analyzeField(
   value: unknown[],
   strictDatePattern?: boolean
-): StringFieldInfo | NumberFieldInfo | DateFieldInfo {
+): StringColumnFeature | NumberColumnFeature | DateColumnFeature {
   const list = value.map((item) => (isNil(item) ? null : item));
   const valueMap = statsValueMap(list);
-  let recommendation: FieldType;
+  let recommendation: ColumnType;
   const nonNullArray = valueMap.null ? list.filter((item) => item !== null) : list;
   const typeArray = list.map((item) => analyzeType(item, strictDatePattern));
-  const types = Object.keys(statsValueMap(typeArray)).filter((item) => item !== 'null') as FieldType[];
+  const types = Object.keys(statsValueMap(typeArray)).filter((item) => item !== 'null') as ColumnType[];
 
   // generate recommendation
   switch (types.length) {
@@ -267,7 +274,8 @@ export function analyzeField(
       recommendation = 'null';
       break;
     case 1:
-      recommendation = types[0] as FieldType;
+      // 单一类型
+      recommendation = types[0] as ColumnType;
       // an integer field may be a date field
       if (recommendation === 'integer') {
         const data = list.filter((item) => item !== null);
@@ -277,6 +285,7 @@ export function analyzeField(
       }
       break;
     case 2:
+      // 多种类型
       if ((types.includes('integer') || types.includes('date')) && types.includes('float')) {
         recommendation = 'float';
         break;
@@ -299,10 +308,10 @@ export function analyzeField(
 
   const uniqueArray = unique(nonNullArray as string[]);
 
-  const fieldInfo: FieldInfo = {
+  const columnFeature: ColumnFeature = {
     count: value.length,
-    distinct: uniqueArray.length,
-    type: types.length <= 1 ? types[0] || 'null' : 'mixed',
+    distinct: uniqueArray[1].length,
+    types,
     recommendation,
     missing: valueMap.null || 0,
     rawData: value,
@@ -310,66 +319,68 @@ export function analyzeField(
   };
 
   if (types.length > 1) {
-    const meta: FieldMeta = {};
+    const meta: ColumnMeta = {};
     let restNotNullArray = nonNullArray;
     types.forEach((item: string) => {
       if (item === 'date') {
         meta.date = analyzeField(
           restNotNullArray.filter((item) => isDateString(item)),
           strictDatePattern
-        ) as DateFieldInfo;
+        ) as DateColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isDateString(item));
       } else if (item === 'integer') {
         meta.integer = analyzeField(
           restNotNullArray.filter((item) => isIntegerString(item) && !isDateString(item)),
           strictDatePattern
-        ) as NumberFieldInfo;
+        ) as NumberColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isIntegerString(item));
       } else if (item === 'float') {
         meta.float = analyzeField(
           restNotNullArray.filter((item) => isFloatString(item) && !isDateString(item)),
           strictDatePattern
-        ) as NumberFieldInfo;
+        ) as NumberColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isFloatString(item));
       } else if (item === 'string') {
         meta.string = analyzeField(
           restNotNullArray.filter((item) => analyzeType(item, strictDatePattern) === 'string')
-        ) as StringFieldInfo;
+        ) as StringColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => analyzeType(item, strictDatePattern) !== 'string');
       }
     });
-    fieldInfo.meta = meta;
   }
 
-  if (fieldInfo.distinct === 2 && fieldInfo.recommendation !== 'date') {
+  if (columnFeature.distinct === 2 && columnFeature.recommendation !== 'date') {
     // temporarily threshold
     if (list.length >= 100) {
-      fieldInfo.recommendation = 'boolean';
+      columnFeature.recommendation = 'boolean';
     } else if (isBoolean(uniqueArray, true)) {
-      fieldInfo.recommendation = 'boolean';
+      columnFeature.recommendation = 'boolean';
     }
   }
 
   if (recommendation === 'string') {
-    Object.assign(fieldInfo, analyzeString(nonNullArray.map((item) => `${item}`)));
+    Object.assign(columnFeature, analyzeString(nonNullArray.map((item) => `${item}`)));
   }
   if (recommendation === 'integer' || recommendation === 'float') {
-    Object.assign(fieldInfo, analyzeNumber(nonNullArray.map((item) => (item as number) * 1)));
+    Object.assign(columnFeature, analyzeNumber(nonNullArray.map((item) => (item as number) * 1)));
   }
   if (recommendation === 'date') {
-    Object.assign(fieldInfo, analyzeDate(nonNullArray as (string | Date)[], fieldInfo.type === 'integer'));
+    Object.assign(
+      columnFeature,
+      analyzeDate(nonNullArray as (string | Date)[], columnFeature.types.includes('integer'))
+    );
   }
 
   const levelOfMeasurements: LevelOfMeasurement[] = [];
 
-  if (isNominal(fieldInfo)) levelOfMeasurements.push('Nominal');
-  if (isOrdinal(fieldInfo)) levelOfMeasurements.push('Ordinal');
-  if (isInterval(fieldInfo)) levelOfMeasurements.push('Interval');
-  if (isDiscrete(fieldInfo)) levelOfMeasurements.push('Discrete');
-  if (isContinuous(fieldInfo)) levelOfMeasurements.push('Continuous');
-  if (isTime(fieldInfo)) levelOfMeasurements.push('Time');
+  if (isNominal(columnFeature)) levelOfMeasurements.push('Nominal');
+  if (isOrdinal(columnFeature)) levelOfMeasurements.push('Ordinal');
+  if (isInterval(columnFeature)) levelOfMeasurements.push('Interval');
+  if (isDiscrete(columnFeature)) levelOfMeasurements.push('Discrete');
+  if (isContinuous(columnFeature)) levelOfMeasurements.push('Continuous');
+  if (isTime(columnFeature)) levelOfMeasurements.push('Time');
 
-  fieldInfo.levelOfMeasurements = levelOfMeasurements;
+  columnFeature.levelOfMeasurements = levelOfMeasurements;
 
-  return fieldInfo as StringFieldInfo | NumberFieldInfo | DateFieldInfo;
+  return columnFeature as StringColumnFeature | NumberColumnFeature | DateColumnFeature;
 }

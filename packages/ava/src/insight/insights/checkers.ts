@@ -1,7 +1,7 @@
 import { intersection } from 'lodash';
 
 import { Datum, SubjectInfo, InsightType, DataProperty } from '@ava/types';
-import { NumberFieldInfo } from '@ava/data';
+import { NumberColumnFeature } from '@ava/data';
 
 import type { LevelOfMeasurement } from '@ava/ckb';
 
@@ -74,7 +74,7 @@ export const lowVarianceChecker: ExtractorChecker = ({ data, subjectInfo, fieldP
   const { measures } = subjectInfo;
   // 低方差检验使用变异系数 sigma/mean 作为检验统计量，要求均值不能为0
   if (['float', 'integer'].includes(fieldPropsMap[measures[0].fieldName].recommendation)) {
-    if ((fieldPropsMap[measures[0].fieldName] as NumberFieldInfo).mean !== 0) return true;
+    if ((fieldPropsMap[measures[0].fieldName] as NumberColumnFeature).mean !== 0) return true;
     return 'The low variance test uses the coefficient of variation sigma/mean as the test statistic and requires that the mean cannot be 0. ';
   }
   return 'The recommended data type of measure is not float or integer. ';

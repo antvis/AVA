@@ -17,7 +17,7 @@ import type {
   HomogeneousPatternInfo,
   DataProperty,
   InsightVisualizationOptions,
-} from '../types';
+} from '@ava/types';
 
 interface ReferenceInfo {
   fieldPropsMap: Record<string, DataProperty>;

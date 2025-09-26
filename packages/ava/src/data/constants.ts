@@ -23,3 +23,10 @@ export const SECOND = `(?<second>${BASE_MINUTE})`;
 export const MILLISECOND = '(?<millisecond>\\d{1,4})';
 export const YEARDAY = '(?<yearDay>(([0-2]\\d|3[0-5])\\d)|36[0-6])';
 export const OFFSET = `(?<offset>Z|[+-]${BASE_HOUR}(:${BASE_MINUTE})?)`;
+
+export enum DATA_SHAPE {
+  PLAIN = 'plain',
+  TREE = 'tree',
+  GRAPH = 'graph',
+  LINK = 'link',
+}

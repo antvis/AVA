@@ -1,7 +1,7 @@
 import { PCorrTestParameter } from '@ava/utils/statistics/types';
 
 import type { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from '@ava/constants';
-import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo, Extra } from '@ava/data/types';
+import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo, Extra } from '@ava/types';
 import type { G2Spec, AreaMark, IntervalMark, LineMark, Mark, PointMark, TextMark } from '@antv/g2';
 
 type LabelType = string | ((d: Datum) => string);
