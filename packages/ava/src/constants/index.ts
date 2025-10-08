@@ -3,3 +3,6 @@
  * enum 属于 constants，不要放 types 里
  */
 export * from './insight';
+export * from './data';
+export * from './pipeline';
+export * from './advisor';

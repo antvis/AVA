@@ -38,7 +38,22 @@ module.exports = {
     'no-sparse-arrays': 0,
     'no-inner-declarations': 0,
     'no-use-before-define': 0,
-    'no-restricted-syntax': 1,
+    // Allow for..of, keep other Airbnb restrictions
+    'no-restricted-syntax': [
+      1,
+      {
+        selector: 'ForInStatement',
+        message: 'for..in is discouraged. Use Object.keys/entries instead.',
+      },
+      {
+        selector: 'LabeledStatement',
+        message: 'Labels are discouraged and can make code confusing.',
+      },
+      {
+        selector: 'WithStatement',
+        message: 'with is disallowed in strict mode and obscures scope.',
+      },
+    ],
     '@typescript-eslint/no-use-before-define': 2,
     '@typescript-eslint/indent': 0,
     'no-constant-condition': 0,
@@ -52,6 +67,8 @@ module.exports = {
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/type-annotation-spacing': 0,
+    'no-plusplus': 0,
+    'no-await-in-loop': 0,
     'import/order': [
       2,
       {

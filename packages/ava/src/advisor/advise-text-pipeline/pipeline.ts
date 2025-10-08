@@ -9,7 +9,7 @@ import {
   BasePipeline,
   DataStore,
   Stages,
-} from '@advisor/types';
+} from '@ava/types';
 
 export class AdviseTextPipeline implements BasePipeline<AdviseTextParams> {
   config: AdvisorConfig;
@@ -22,10 +22,13 @@ export class AdviseTextPipeline implements BasePipeline<AdviseTextParams> {
 
   constructor(params: { config: AdvisorConfig }) {
     this.dataStore = {
-      extract: new Map(),
-      data: new Map(),
-      advise: new Map(),
-      generate: new Map(),
+      extract: {},
+      data: {
+        data: [],
+        metas: [],
+      },
+      advise: {},
+      generate: {},
     };
     this.stages = {
       extract: new AsyncSeriesHook(['input']),
@@ -59,6 +62,7 @@ export class AdviseTextPipeline implements BasePipeline<AdviseTextParams> {
         ...this.config,
         ...input,
       },
+      curStage: '',
     };
     await this.stages.extract.promise(pluginInput);
 
