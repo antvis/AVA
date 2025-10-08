@@ -1,5 +1,4 @@
-import { scoreChartConfigsWithLLM } from '@ava/advisor/model';
-import { logError, logInDev } from '@ava/utils';
+import { logError, logInDev, requestTboxLLM, requestOpenAiLLM, isOpenAi, isTbox } from '@ava/utils';
 import {
   AdviseChartParams,
   AdviseChartPluginInput,
@@ -7,7 +6,6 @@ import {
   ChartConfig,
   FinalChartConfig,
   IAdviseChartPipeline,
-  TboxLLM,
 } from '@ava/types';
 import {
   generateAllChartConfigs,
@@ -28,11 +26,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   execute = async (input: AdviseChartPluginInput) => {
     const { dataStore, context } = input;
     const { excludes, includes, disableModel, forceType, purpose = '', llm } = context;
-
-    const { appId, authorization } = llm as TboxLLM;
-
     const { metas, data } = dataStore.data;
-
     let allChartConfigs: ChartConfig[] = [];
     // create all valid chart configs using field data
     allChartConfigs = generateAllChartConfigs(metas, excludes, includes);
@@ -51,11 +45,14 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
             data,
           });
           const startTime = performance.now();
-          const LLMRes = await scoreChartConfigsWithLLM({
-            input: prompt,
-            appId,
-            authorization,
-          });
+          let LLMRes = '';
+          if (isOpenAi(llm)) {
+            LLMRes = await requestOpenAiLLM({ config: llm, prompt });
+          } else if (isTbox(llm)) {
+            LLMRes = await requestTboxLLM({ config: llm, prompt });
+          } else {
+            logError('LLM config is missing or invalid');
+          }
           if (LLMRes) {
             logInDev.debug('chart configs after LLM scoring', LLMRes);
             allChartConfigs = sortChartConfigs(allChartConfigs, LLMRes);
