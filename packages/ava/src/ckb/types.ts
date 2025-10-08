@@ -1,7 +1,13 @@
-import * as constants from './constants';
+// eslint-disable-next-line import/no-cycle
+import {
+  AdvisorPipelineContext,
+  BasicDataPropertyForAdvice,
+  ChartEncodeMapping,
+  Specification,
+} from '@ava/advisor-deprecated';
+import { Data } from '@ava/common/types';
 
-import type { Data, Specification } from '../common/types';
-import type { AdvisorPipelineContext, BasicDataPropertyForAdvice, ChartEncodeMapping } from '../advisor';
+import * as constants from './constants';
 
 /**
  * TS type of standard IDs for each chart type.

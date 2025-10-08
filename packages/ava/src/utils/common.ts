@@ -136,3 +136,31 @@ export function descending(left: unknown, right: unknown) {
   }
   return (right as number) - (left as number);
 }
+
+export const logInDev = {
+  log(...args) {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log(...args);
+    }
+  },
+  warn(...args) {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.warn(...args);
+    }
+  },
+  debug(...args) {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.debug(...args);
+    }
+  },
+};
+
+export const logError = (...args) => {
+  // eslint-disable-next-line no-console
+  console.error(...args);
+};
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

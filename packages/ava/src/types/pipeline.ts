@@ -1,5 +1,7 @@
 import { AsyncSeriesHook } from 'tapable';
 
+import { FieldDataType, FieldMetaType } from '@ava/types/data';
+
 import { AdvisorConfig, AdviseChartParams, AdviseChart, AdviseText, AdviseTextParams } from './advisor';
 
 export type AdviseParams = AdviseChartParams | AdviseTextParams;
@@ -30,7 +32,10 @@ export interface Stages<T extends AdviseParams> {
 
 export type ExtractStageOutput = {};
 
-export type DataStageOutput = {};
+export type DataStageOutput = {
+  data: FieldDataType;
+  metas: FieldMetaType[];
+};
 
 export type AdviseStageOutput = {};
 

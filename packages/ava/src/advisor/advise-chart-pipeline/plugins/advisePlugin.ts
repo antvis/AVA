@@ -1,6 +1,22 @@
-import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, IAdviseChartPipeline } from '@advisor/types';
-
-import { AdviseChartPluginEnum } from '../constant';
+import { scoreChartConfigsWithLLM } from '@ava/advisor/model';
+import { logError, logInDev } from '@ava/utils';
+import {
+  AdviseChartParams,
+  AdviseChartPluginInput,
+  AdvisorPlugin,
+  ChartConfig,
+  FinalChartConfig,
+  IAdviseChartPipeline,
+  TboxLLM,
+} from '@ava/types';
+import {
+  generateAllChartConfigs,
+  getChartConfigScoringPrompt,
+  optimizeChartConfig,
+  sortChartConfigs,
+  transformChartEncode,
+} from '@ava/advisor/chartAdvise';
+import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 
 export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.AdvisePlugin;
@@ -10,9 +26,82 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   };
 
   execute = async (input: AdviseChartPluginInput) => {
-    // TODO: Implement advise logic
-    const { dataStore } = input;
-    const result = {};
-    dataStore.advise = result;
+    const { dataStore, context } = input;
+    const { excludes, includes, disableModel, forceType, purpose = '', llm } = context;
+
+    const { appId, authorization } = llm as TboxLLM;
+
+    const { metas, data } = dataStore.data;
+
+    let allChartConfigs: ChartConfig[] = [];
+    // create all valid chart configs using field data
+    allChartConfigs = generateAllChartConfigs(metas, excludes, includes);
+    logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
+
+    // Use LLM to score all chart configs based on user purpose/data/metas
+    let llmCompleted = false;
+    let llmCostTime = '';
+    if (!forceType) {
+      if (!disableModel) {
+        try {
+          const prompt = getChartConfigScoringPrompt({
+            userInput: purpose,
+            chartConfig: allChartConfigs,
+            metas,
+            data,
+          });
+          const startTime = performance.now();
+          const LLMRes = await scoreChartConfigsWithLLM({
+            input: prompt,
+            appId,
+            authorization,
+          });
+          if (LLMRes) {
+            logInDev.debug('chart configs after LLM scoring', LLMRes);
+            allChartConfigs = sortChartConfigs(allChartConfigs, LLMRes);
+            const endTime = performance.now();
+            llmCostTime = ((endTime - startTime) / 1000).toFixed(2);
+            llmCompleted = true;
+          } else {
+            logError('LLM scoring failed');
+          }
+        } catch (error) {
+          logError('LLM scoring failed', error);
+        }
+      }
+      // Optimize chart configuration based on rules
+      const finalRes = optimizeChartConfig({
+        chartConfigs: allChartConfigs,
+        metas,
+        data,
+      });
+      logInDev.debug('chart configs after optimization', JSON.stringify(finalRes));
+      const result = {
+        chartConfigs: finalRes,
+        metas,
+        data,
+        llmCostTime,
+        llmCompleted,
+      };
+
+      dataStore.advise = result;
+    } else {
+      // user specified chart type
+      const finalRes: FinalChartConfig[] = allChartConfigs
+        .filter((item) => item.type === forceType)
+        .map((item) => ({
+          type: item.type,
+          encode: transformChartEncode(item.encode),
+        }));
+
+      const result = {
+        chartConfigs: finalRes,
+        metas,
+        data,
+        llmCostTime,
+        llmCompleted,
+      };
+      dataStore.advise = result;
+    }
   };
 }

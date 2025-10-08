@@ -1,4 +1,5 @@
-import { AdviseChartParams, AdviseChart, AdviseText, AdvisorConfig, BasePipeline, AdviseTextParams } from './types';
+import { AdviseChart, AdviseChartParams, AdviseText, AdviseTextParams, AdvisorConfig, BasePipeline } from '@ava/types';
+
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
 
@@ -28,8 +29,8 @@ export class Advisor {
   async advise(params: AdviseChartParams | AdviseTextParams): Promise<AdviseChart[] | AdviseText> {
     if ('data' in params) {
       // recommend chart
-      await this.adviseChartPipeline.execute(params as AdviseChartParams);
-      return [] as AdviseChart[];
+      const result = await this.adviseChartPipeline.execute(params as AdviseChartParams);
+      return result;
     }
     // recommend text
     // TODO: implement text recommendation

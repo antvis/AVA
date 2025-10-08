@@ -1,3 +1,5 @@
+import { FieldDataType, FieldMetaType } from '@ava/types/data';
+
 /**
  * Common LLM configuration properties
  */
@@ -10,7 +12,7 @@ type BaseLLMConfig = {
   maxTokens?: number;
 };
 
-type OpenAiLLM = BaseLLMConfig & {
+export type OpenAiLLM = BaseLLMConfig & {
   /** LLM service url */
   url: string;
   /** model name */
@@ -22,7 +24,7 @@ type OpenAiLLM = BaseLLMConfig & {
 /**
  * Ant group tbox LLM config, https://www.tbox.cn/
  */
-type TboxLLM = BaseLLMConfig & {
+export type TboxLLM = BaseLLMConfig & {
   /** tbox AI agent id */
   appId: string;
   /** tbox AI agent authorization key */
@@ -39,16 +41,9 @@ export interface AdvisorConfig {
 
 export interface AdviseChartParams {
   /** raw data */
-  data: Array<Record<string, string | number>>;
+  data: FieldDataType;
   /** field Metadata */
-  metas?: Array<{
-    /** field id */
-    id: string;
-    /** field name */
-    name: string;
-    /** field data type */
-    dataType: string;
-  }>;
+  metas?: FieldMetaType[];
   /** the user's visualization purpose, such as viewing data trends */
   purpose?: string;
   /** avoid using LLM */
@@ -59,6 +54,8 @@ export interface AdviseChartParams {
   excludes?: string[];
   /** If true: outputs recommendation explanation (slower), If false: no explanation output (faster). */
   outputExplanation?: boolean;
+  /** force chart type, such as 'line', 'bar', 'pie' */
+  forceType?: string;
 }
 
 export interface AdviseChart {
