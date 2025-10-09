@@ -709,7 +709,7 @@ export const optimizeChartConfig = (params: {
         try {
           const timeFiedId = encode.x[0].id;
           const timeField = fieldsMap[timeFiedId];
-          if (timeField.statisticsFeature[StatisticsFeatureKey.distinctCount] === 1) {
+          if (timeField?.statisticsFeature?.[StatisticsFeatureKey.distinctCount] === 1) {
             reason = '单分类数据不适合用折线图、面积图、柱形图、条形图展示';
             isValid = false;
           }

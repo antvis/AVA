@@ -61,6 +61,7 @@ export const requestOpenAiLLM = async (params: { config: OpenAiLLM; prompt: stri
   const { config, prompt } = params;
   const { url, model, apiKey, maxRetryCount = DEFAULT_MAX_RETRY_COUNT, timeout = DEFAULT_TIMEOUT, maxTokens } = config;
 
+  // TODO: 考虑dangerouslyAllowBrowser如何处理
   const client = new OpenAI({ apiKey, baseURL: url, dangerouslyAllowBrowser: true });
 
   let attempt = 0;

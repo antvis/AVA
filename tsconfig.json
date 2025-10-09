@@ -21,7 +21,7 @@
     "baseUrl": "./",
     "paths": {
       "@ava/*": ["packages/ava/src/*"],
-      "@advisor/*": ["/packages/ava/src/advisor/*"]
+      "@advisor/*": ["packages/ava/src/advisor/*"]
     }
   },
   "exclude": ["node_modules", "**/esm", "**/lib", "**/dist", "**/build"]
