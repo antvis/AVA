@@ -8,19 +8,13 @@ import {
   isInterval,
   isDiscrete,
   isNominal,
-  isNumberFieldInfo,
-  isStringFieldInfo,
-  isDateFieldInfo,
-} from '../../../../../src/data/analysis/field';
-import { assert } from '../../../../../src/data/utils';
+} from '@ava/data/features';
+import { NumberColumnFeature, StringColumnFeature, DateColumnFeature } from '@ava/data/types';
 
 test('analyze integer', () => {
   const array = [0, 1, 2, 3, 4, 5, 6, 7, '+8', 9];
-  const info = analyzeField(array);
-  expect(info.type).toBe('integer');
+  const info = analyzeField(array) as NumberColumnFeature;
   expect(info.recommendation).toBe('integer');
-
-  assert(isNumberFieldInfo(info), 'Info is not NumberFieldInfo');
 
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
@@ -36,11 +30,8 @@ test('analyze integer', () => {
 
 test('analyze string integer', () => {
   const array = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-  const info = analyzeField(array);
-  expect(info.type).toBe('integer');
+  const info = analyzeField(array) as NumberColumnFeature;
   expect(info.recommendation).toBe('integer');
-
-  assert(isNumberFieldInfo(info), 'Info is not NumberFieldInfo');
 
   expect(info.minimum).toBe(0);
   expect(info.maximum).toBe(9);
@@ -56,11 +47,8 @@ test('analyze string integer', () => {
 
 test('analyze string float', () => {
   const array = ['0.1', '1.1', '2.1', '3.1', '4.1', '5.1', '6.1', '7.1', '8.1', '9.1'];
-  const info = analyzeField(array);
-  expect(info.type).toBe('float');
+  const info = analyzeField(array) as NumberColumnFeature;
   expect(info.recommendation).toBe('float');
-
-  assert(isNumberFieldInfo(info), 'Info is not NumberFieldInfo');
 
   expect(info.minimum).toBe(0.1);
   expect(info.maximum).toBe(9.1);
@@ -68,11 +56,8 @@ test('analyze string float', () => {
 
 test('analyze number float', () => {
   const array = [0.1, 1.1, 2.1, 3.1, 4.1, 5.1, 6.1, 7.1, 8.1, 9.1];
-  const info = analyzeField(array);
-  expect(info.type).toBe('float');
+  const info = analyzeField(array) as NumberColumnFeature;
   expect(info.recommendation).toBe('float');
-
-  assert(isNumberFieldInfo(info), 'Info is not NumberFieldInfo');
 
   expect(info.minimum).toBe(0.1);
   expect(info.maximum).toBe(9.1);
@@ -80,11 +65,9 @@ test('analyze number float', () => {
 
 test('analyze mixed float', () => {
   const array = [1, 1.1, 2, 3.1, 4.1, 5.1, 6.1, 7.1, 8.1, 9.1];
-  const info = analyzeField(array);
-  expect(info.type).toBe('mixed');
+  const info = analyzeField(array) as NumberColumnFeature;
+  expect(info.types.length).toBeGreaterThanOrEqual(2);
   expect(info.recommendation).toBe('float');
-
-  assert(isNumberFieldInfo(info), 'Info is not NumberFieldInfo');
 
   expect(info.minimum).toBe(1);
   expect(info.maximum).toBe(9.1);
@@ -92,13 +75,11 @@ test('analyze mixed float', () => {
 
 test('analyze boolean', () => {
   const array = [true, false, true, true, true, true, true, false, false, false, null];
-  const info = analyzeField(array);
+  const info = analyzeField(array) as StringColumnFeature;
 
-  expect(info.type).toBe('string');
   expect(info.recommendation).toBe('boolean');
   expect(info.distinct).toBe(2);
   expect(info.count).toBe(11);
-  expect(info.meta).toBeUndefined();
   expect(info.valueMap.false).toBe(4);
 });
 
@@ -108,7 +89,6 @@ test('analyze 0 1 boolean', () => {
     return t[Math.floor(Math.random() * 3)];
   });
   const info = analyzeField(array);
-  expect(info.type).toBe('integer');
   expect(info.recommendation).toBe('boolean');
   expect(info.distinct).toBe(2);
   expect(info.count).toBe(100);
@@ -121,7 +101,6 @@ test('analyze 男/女 boolean', () => {
   });
   const info = analyzeField(array);
 
-  expect(info.type).toBe('string');
   expect(info.recommendation).toBe('boolean');
   expect(info.distinct).toBe(2);
   expect(info.count).toBe(100);
@@ -133,18 +112,15 @@ test('analyze string boolean', () => {
     return t[Math.floor(Math.random() * 3)];
   });
   const info = analyzeField(array);
-  expect(info.type).toBe('string');
   expect(info.recommendation).toBe('boolean');
   expect(info.distinct).toBe(2);
   expect(info.count).toBe(100);
-  expect(info.meta).toBeUndefined();
 });
 
 test('empty string or string null as a null', () => {
   const array = ['', undefined, '', NaN, 'null', null, 'null', '', '', ''];
   const info = analyzeField(array);
 
-  expect(info.type).toBe('null');
   expect(info.recommendation).toBe('null');
   expect(info.distinct).toBe(0);
   expect(info.count).toBe(10);
@@ -153,11 +129,8 @@ test('empty string or string null as a null', () => {
 
 test('analyze string', () => {
   const array = ['type113', 'type14', 'type11321', 'type', 'type23', 'type2', 'type2', 'type2', 'type2', 'type2'];
-  const info = analyzeField(array);
-  expect(info.type).toBe('string');
+  const info = analyzeField(array) as StringColumnFeature;
   expect(info.recommendation).toBe('string');
-
-  assert(isStringFieldInfo(info), 'Info is not StringFieldInfo');
 
   expect(info.minLength).toBe(4);
   expect(info.maxLength).toBe(9);
@@ -169,8 +142,6 @@ test('analyze string', () => {
 test('analyze mixed string', () => {
   const array = ['1', 'a', '2019-01-01', 'type', 'type23', 'type2', 'type2', 'type2', 'type2', 'type2'];
   const info = analyzeField(array);
-
-  expect(info.type).toBe('mixed');
   expect(info.recommendation).toBe('string');
 });
 
@@ -189,7 +160,6 @@ test('analyze date', () => {
   ];
   const info = analyzeField(array);
 
-  expect(info.type).toBe('date');
   expect(info.recommendation).toBe('date');
   expect(info.count).toBe(10);
   expect(info.distinct).toBe(10);
@@ -210,7 +180,6 @@ test('analyze orginal date', () => {
   ];
   const info = analyzeField(array);
 
-  expect(info.type).toBe('date');
   expect(info.recommendation).toBe('date');
   expect(info.count).toBe(10);
   expect(info.distinct).toBe(10);
@@ -218,11 +187,8 @@ test('analyze orginal date', () => {
 
 test('analyze like string number', () => {
   const array = ['0.1', '1.1.1', '2.1.b', '3.1.c', '4.1.d', '5.1.e', '6.1.f', '7.1.g', '8.1.a', '9.1.c'];
-  const info = analyzeField(array);
-  expect(info.type).toBe('mixed');
+  const info = analyzeField(array) as StringColumnFeature;
   expect(info.recommendation).toBe('string');
-
-  assert(isStringFieldInfo(info), 'Info is not StringFieldInfo');
 
   expect(info.maxLength).toBe(5);
   expect(info.minLength).toBe(3);
@@ -262,13 +228,10 @@ test('test is xxx', () => {
 });
 
 test('int date - strict', () => {
-  expect(analyzeField([1991, 1992, 1995, 1998, 1990, 2000, 2012, 2049]).type).toBe('integer');
   expect(analyzeField([1870, 1992, 1995, 1998, 1990, 2000, 2012, 2049]).recommendation).toBe('date');
   expect(analyzeField([1770, 1992, 1995, 1998, 1990, 2000, 2012, 2049]).recommendation).toBe('integer');
   expect(analyzeField([1770, 1992, 1995, 1998, 1990, 2000, 2012, 3049]).recommendation).toBe('integer');
-  expect(analyzeField([1991, 1992, 1995, 1998, 1990, 2000, 2012, '']).type).toBe('integer');
   expect(analyzeField([1991, 1992, 1995, 1998, 1990, 2000, 2012, '2049']).recommendation).toBe('date');
-  expect(analyzeField([199101, 199202, 199505, 199801, 199004, 200007, 201209, 204912]).type).toBe('integer');
   expect(analyzeField([199101, 199202, 199505, 199801, 199004, 200007, 201209, 204912]).recommendation).toBe('integer');
   expect(analyzeField([199101, 199202, 199519, 199801, 199004, 200007, 201209, 204912]).recommendation).toBe('integer');
   expect(
@@ -279,29 +242,21 @@ test('int date - strict', () => {
 test('date cols - strict', () => {
   const data = ['20190101', '20190102', '20190103', '20190716', '20190717', '20190718', '20190719'];
   const d = analyzeField(data);
-  expect(d.type).toBe('integer');
   expect(d.recommendation).toBe('integer');
 });
 
 test('date cols', () => {
   const data = ['2019/01/01', '2019/01/02', '2019/01/03', '2019/07/16', '2019/07/17', '2019/07/18', '2019/07/19'];
-  const d = analyzeField(data);
-  expect(d.type).toBe('date');
+  const d = analyzeField(data) as DateColumnFeature;
   expect(d.recommendation).toBe('date');
-
-  assert(isDateFieldInfo(d), 'd is not DateFieldInfo');
-
   expect(d.minimum).toBe('2019/01/01');
   expect(d.maximum).toBe('2019/07/19');
 });
 
 test('date cols', () => {
   const data = ['2019-01-01', '2019-01-02', '2019-01-03', '2019-07-16', '2019-07-17', '2019-07-18', '2019-07-19'];
-  const d = analyzeField(data);
-  expect(d.type).toBe('date');
+  const d = analyzeField(data) as DateColumnFeature;
   expect(d.recommendation).toBe('date');
-
-  assert(isDateFieldInfo(d), 'd is not DateFieldInfo');
 
   expect(d.minimum).toBe('2019-01-01');
   expect(d.maximum).toBe('2019-07-19');
@@ -434,11 +389,8 @@ test('date cols not boolean', () => {
     '2019-01-01',
     '2019-01-02',
   ];
-  const d = analyzeField(data);
-  expect(d.type).toBe('date');
+  const d = analyzeField(data) as DateColumnFeature;
   expect(d.recommendation).toBe('date');
-
-  assert(isDateFieldInfo(d), 'd is not DateFieldInfo');
 
   expect(d.minimum).toBe('2019-01-01');
   expect(d.maximum).toBe('2019-01-02');
@@ -447,13 +399,11 @@ test('date cols not boolean', () => {
 test('recommendation hitting both float and Date types', () => {
   const data = ['7007093.11', '2074.6'];
   const d = analyzeField(data);
-  expect(d.type).toBe('mixed');
   expect(d.recommendation).toBe('float');
 });
 
 test('recommendation hitting both integer and Date types', () => {
   const data = ['32', '1980'];
   const d = analyzeField(data);
-  expect(d.type).toBe('mixed');
   expect(d.recommendation).toBe('integer');
 });

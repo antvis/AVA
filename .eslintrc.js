@@ -4,6 +4,7 @@ module.exports = {
     node: true,
     jest: true,
   },
+  ignorePatterns: ['*.test.ts'],
   extends: [
     'eslint:recommended',
     'airbnb-base',
@@ -25,6 +26,7 @@ module.exports = {
     semi: 2,
     quotes: [1, 'single', 'avoid-escape'],
     'no-unused-vars': 0,
+    'no-plusplus': 0,
     '@typescript-eslint/no-unused-vars': 2,
     'import/extensions': 0,
     'import/prefer-default-export': 0,

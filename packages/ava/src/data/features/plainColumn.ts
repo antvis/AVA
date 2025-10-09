@@ -267,7 +267,6 @@ export function analyzeField(
   const nonNullArray = valueMap.null ? list.filter((item) => item !== null) : list;
   const typeArray = list.map((item) => analyzeType(item, strictDatePattern));
   const types = Object.keys(statsValueMap(typeArray)).filter((item) => item !== 'null') as ColumnType[];
-
   // generate recommendation
   switch (types.length) {
     case 0:
