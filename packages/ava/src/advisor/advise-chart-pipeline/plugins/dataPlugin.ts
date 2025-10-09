@@ -1,6 +1,6 @@
-import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, IAdviseChartPipeline } from '@advisor/types';
-
-import { AdviseChartPluginEnum } from '../constant';
+import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, IAdviseChartPipeline } from '@ava/types';
+import { processFieldMetas } from '@ava/data/features/statistics';
+import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 
 export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.DataPlugin;
@@ -10,11 +10,15 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
   };
 
   execute = async (input: AdviseChartPluginInput) => {
-    // TODO: Implement data logic
     const { dataStore, context } = input;
+    const { data, metas } = context;
+    const finalMetas = processFieldMetas({
+      metas,
+      data,
+    });
     const result = {
       data: context.data,
-      metas: context.metas,
+      metas: finalMetas,
     };
     dataStore.data = result;
   };

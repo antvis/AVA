@@ -1,6 +1,5 @@
-import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, IAdviseChartPipeline } from '@advisor/types';
-
-import { AdviseChartPluginEnum } from '../constant';
+import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, IAdviseChartPipeline } from '@ava/types';
+import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 
 export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.ExtractPlugin;

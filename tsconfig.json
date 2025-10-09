@@ -17,7 +17,12 @@
     "noImplicitReturns": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "@ava/*": ["packages/ava/src/*"],
+      "@advisor/*": ["packages/ava/src/advisor/*"]
+    }
   },
   "exclude": ["node_modules", "**/esm", "**/lib", "**/dist", "**/build"]
 }

@@ -9,10 +9,10 @@ import {
   DataStore,
   Stages,
   AdviseChartPluginInput,
-} from '@advisor/types';
+} from '@ava/types';
+import { AdviseChartPluginEnum, AdviseChartStageEnum } from '@ava/constants';
 
 import { AdvisePlugin, DataPlugin, ExtractPlugin, GeneratePlugin } from './plugins';
-import { AdviseChartPluginEnum, AdviseChartStageEnum } from './constant';
 
 export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   config: AdvisorConfig;
@@ -26,7 +26,10 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   constructor(params: { config: AdvisorConfig }) {
     this.dataStore = {
       [AdviseChartStageEnum.Extract]: {},
-      [AdviseChartStageEnum.Data]: {},
+      [AdviseChartStageEnum.Data]: {
+        data: [],
+        metas: [],
+      },
       [AdviseChartStageEnum.Advise]: {},
       [AdviseChartStageEnum.Generate]: {},
     };
@@ -70,8 +73,11 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
 
     await this.stages.advise.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Extract });
 
-    await this.stages.generate.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Generate });
+    // TODO: 最后一个阶段改成优化图表配置
+    // await this.stages.generate.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Generate });
 
-    return [] as AdviseChart[];
+    const result = this.dataStore.generate;
+
+    return result as AdviseChart[];
   };
 }
