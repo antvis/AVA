@@ -72,8 +72,6 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
     await this.stages.data.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Data });
 
     await this.stages.advise.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Extract });
-    // 输入：data, metas, purpose
-    // 干几个事：1、规则生成  2、模型生成
 
     // TODO: 最后一个阶段改成优化图表配置
     // await this.stages.generate.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Generate });
