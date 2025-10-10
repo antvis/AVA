@@ -1,7 +1,7 @@
 /**
  * One row(record) of data in JSON.
  */
-export type Datum = Record<string, any>;
+export type Datum = Record<string, string | number>;
 
 /**
  * Rows(records) of data.
@@ -17,11 +17,6 @@ export enum COMMON_DATA_TYPE {
   GEO = 'geo', // geography
   DATE = 'date',
 }
-
-/**
- * Rows(records) of data.
- */
-export type FieldDataType = Array<Record<string, string | number>>;
 
 /**
  * statistical properties
@@ -64,7 +59,7 @@ export type StatisticsFeatureType = {
 /**
  * field meta info
  */
-export type FieldMetaType<T extends COMMON_DATA_TYPE = COMMON_DATA_TYPE> = {
+export type Meta<T extends COMMON_DATA_TYPE = COMMON_DATA_TYPE> = {
   id: string;
   name: string;
   dataType: T;

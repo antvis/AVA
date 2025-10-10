@@ -1,4 +1,4 @@
-import { FieldDataType, FieldMetaType } from '@ava/types/data';
+import { Data, Meta } from '@ava/types/data';
 
 /**
  * Common LLM configuration properties
@@ -41,9 +41,9 @@ export interface AdvisorConfig {
 
 export interface AdviseChartParams {
   /** raw data */
-  data: FieldDataType;
+  data: Data;
   /** field Metadata */
-  metas?: FieldMetaType[];
+  metas?: Meta[];
   /** the user's visualization purpose, such as viewing data trends */
   purpose?: string;
   /** avoid using LLM */
@@ -60,7 +60,7 @@ export interface AdviseChartParams {
 
 export interface AdviseChart {
   /** chart type */
-  chartType: string;
+  type: string;
   /** encode represents the mapping between visual channels and data fields. */
   encode: {
     [property: string]: string[];
@@ -83,4 +83,20 @@ export interface AdviseText {
   content?: string;
   /** text type */
   type?: string;
+}
+
+export interface RenderParams {
+  /** render DOM container */
+  container: HTMLElement;
+  chartConfig: AdviseChart;
+  data: Data;
+  metas: Meta[];
+  uiConfig?: {
+    /** chart color palette */
+    palette?: string[];
+    /** chart width */
+    width?: number;
+    /** chart height */
+    height?: number;
+  };
 }

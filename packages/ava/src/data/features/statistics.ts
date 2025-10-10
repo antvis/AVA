@@ -9,7 +9,7 @@ import {
   variance as varianceSS,
 } from '@ava/utils/statistics';
 import { ALL_SUPPORT_TIME_FORMAT } from '@ava/constants';
-import { COMMON_DATA_TYPE, FieldDataType, FieldMetaType } from '@ava/types/data';
+import { COMMON_DATA_TYPE, Data, Meta } from '@ava/types/data';
 import { logError } from '@ava/utils';
 
 export const isArrayEmpty = (arr: any[] | undefined | null) => {
@@ -36,7 +36,7 @@ function determineDataType(value: string | number | null | undefined): COMMON_DA
   return COMMON_DATA_TYPE.STRING;
 }
 
-export function extractFieldMetadata(data: FieldDataType): FieldMetaType[] {
+export function extractFieldMetadata(data: Data): Meta[] {
   if (!Array.isArray(data) || data.length === 0) {
     throw new Error('The input data must be a non-empty array.');
   }
@@ -142,8 +142,8 @@ export const countDistinctCount = (dimension: string[]) => {
   return uniq(dimension).length;
 };
 
-export const computeStatistics = (data: FieldDataType, fieldMeta: FieldMetaType[]): FieldMetaType[] => {
-  const fieldMetaMap = new Map<string, FieldMetaType>();
+export const computeStatistics = (data: Data, fieldMeta: Meta[]): Meta[] => {
+  const fieldMetaMap = new Map<string, Meta>();
   fieldMeta.forEach((field) => {
     fieldMetaMap.set(field.id, { ...field, allData: [] });
   });
@@ -200,7 +200,7 @@ export const computeStatistics = (data: FieldDataType, fieldMeta: FieldMetaType[
   return Array.from(fieldMetaMap.values());
 };
 
-export const modifyFieldDataType = (params: { metas: FieldMetaType[]; data: FieldDataType }) => {
+export const modifyFieldDataType = (params: { metas: Meta[]; data: Data }) => {
   const { data, metas } = params;
   return metas.map((item) => {
     const { dataType, id } = item;
@@ -222,7 +222,7 @@ export const modifyFieldDataType = (params: { metas: FieldMetaType[]; data: Fiel
   });
 };
 
-export const processFieldMetas = (params: { data: FieldDataType; metas: FieldMetaType[] }) => {
+export const processFieldMetas = (params: { data: Data; metas: Meta[] }) => {
   const { data, metas } = params;
   let finalMetas = metas;
   if (!isArrayEmpty(data) && isArrayEmpty(finalMetas)) {

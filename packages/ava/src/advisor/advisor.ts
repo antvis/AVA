@@ -1,4 +1,13 @@
-import { AdviseChart, AdviseChartParams, AdviseText, AdviseTextParams, AdvisorConfig, BasePipeline } from '@ava/types';
+import {
+  AdviseChartParams,
+  AdviseStageOutput,
+  AdviseText,
+  AdviseTextParams,
+  AdvisorConfig,
+  BasePipeline,
+  RenderParams,
+} from '@ava/types';
+import { renderChart } from '@ava/render/render';
 
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
@@ -19,14 +28,14 @@ export class Advisor {
 
   // Function overload declarations
   // eslint-disable-next-line no-dupe-class-members
-  advise(params: AdviseChartParams): Promise<AdviseChart[]>;
+  advise(params: AdviseChartParams): Promise<AdviseStageOutput>;
 
   // eslint-disable-next-line no-dupe-class-members
   advise(params: AdviseTextParams): Promise<AdviseText>;
 
   // Actual implementation
   // eslint-disable-next-line no-dupe-class-members
-  async advise(params: AdviseChartParams | AdviseTextParams): Promise<AdviseChart[] | AdviseText> {
+  async advise(params: AdviseChartParams | AdviseTextParams): Promise<AdviseStageOutput | AdviseText> {
     if ('data' in params) {
       // recommend chart
       const result = await this.adviseChartPipeline.execute(params as AdviseChartParams);
@@ -36,5 +45,9 @@ export class Advisor {
     // TODO: implement text recommendation
     await this.adviseTextPipeline.execute(params as AdviseTextParams);
     return {} as AdviseText;
+  }
+
+  render(params: RenderParams) {
+    return renderChart(params);
   }
 }
