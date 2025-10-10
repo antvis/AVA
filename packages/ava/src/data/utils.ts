@@ -124,8 +124,8 @@ export const categoricalAssociationScore = (cat1: string[], cat2: string[]) => {
 
   _.each(count1, (_value, key) => {
     const p1 = count1[key] / n;
-    const p2 = count2[key] || 0 / n;
-    pExpected += p1 * (count2[key] ? count2[key] / n : 0) + p2 * (count1[key] ? count1[key] / n : 0);
+    const p2 = (count2[key] || 0) / n;
+    pExpected += p1 * p2;
   });
 
   const maxPossible = 1 - pExpected;
