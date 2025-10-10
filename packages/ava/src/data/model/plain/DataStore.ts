@@ -41,7 +41,7 @@ export class DataStore {
 
   getColumnData(column: string) {
     const index = this.columnIndexMap.get(column);
-    if (index !== -1) {
+    if (index !== undefined) {
       return this.data.map((row) => row[index]);
     }
     return [];
