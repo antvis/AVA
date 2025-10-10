@@ -3,10 +3,10 @@ import { DataStore } from '@ava/data/model/plain/DataStore';
 describe('DataStore', () => {
   const data = [
     ['2332332ade3', '2000-09-08', 10, 2],
-    ['1234332ade3', '2000-09-08', 20, 22],
-    ['dfl2332ade3', '2000-09-08', 40, 1],
-    ['128j3jn4844', '2000-09-08', 10, 3],
-    ['1303044k599', '2000-09-08', 60, 7],
+    ['1234332ade3', '2000-09-09', 20, 22],
+    ['dfl2332ade3', '2000-09-10', 40, 1],
+    ['128j3jn4844', '2000-09-11', 10, 3],
+    ['1303044k599', '2000-09-12', 60, 7],
   ];
 
   const ds = new DataStore({
@@ -54,5 +54,53 @@ describe('DataStore', () => {
       levelOfMeasurements: ['Nominal'],
     });
     expect(ds.getColumnFeature('数量')).toBe(undefined);
+  });
+
+  const ds2 = new DataStore({
+    data: [
+      ['a', 'Hello World', 2234, '0908'],
+      ['b', 'The Pig', 2311, '0909'],
+      ['c', 'Tony', 112, '0910'],
+      ['a', '233A', 1123, '0908'],
+      ['b', 'The Cat', 1565, '0909'],
+      ['c', 'Lucy', 234, '0910'],
+      ['a', 'Lucky', 2345, '0908'],
+      ['b', 'Dog', 1234, '0909'],
+      ['c', 'Nice', 345, '0910'],
+    ],
+    columns: ['category', 'name', 'value', 'date'],
+  });
+
+  test('getSample by string', async () => {
+    const sampleData1 = await ds2.getSample('category', 1 / 3);
+    expect(sampleData1.length).toBe(3);
+    const sampleData2 = await ds2.getSample('category', 2 / 3);
+    expect(sampleData2.length).toBe(6);
+  });
+
+  test('getSample by number', async () => {
+    const sampleData1 = await ds2.getSample('value', 1 / 3);
+    expect(sampleData1.length).toBeGreaterThanOrEqual(2);
+    expect(sampleData1.length).toBeLessThanOrEqual(4);
+    const sampleData2 = await ds2.getSample('value', 2 / 3);
+    expect(sampleData2.length).toBeGreaterThanOrEqual(5);
+    expect(sampleData2.length).toBeLessThanOrEqual(7);
+  });
+
+  test('getAssociationScore', async () => {
+    const score1 = await ds2.getAssociationScore('category', 'value');
+    expect(score1).toBeGreaterThanOrEqual(0.5);
+    expect(score1).toBeLessThanOrEqual(1);
+
+    const score2 = await ds2.getAssociationScore('category', 'date');
+    expect(score2).toBeLessThanOrEqual(0.5);
+
+    // name and value is strongly associated
+    const score3 = await ds2.getAssociationScore('name', 'value');
+    expect(score3).toBe(1);
+
+    // name and date is not associated
+    const score4 = await ds2.getAssociationScore('name', 'date');
+    expect(score4).toBe(0);
   });
 });

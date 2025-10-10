@@ -1,13 +1,13 @@
 import moment from 'moment';
 import { uniq } from 'lodash';
+
 import {
   mean as meanSS,
   median as medianSS,
   quantile as quantileSS,
   standardDeviation as standardDeviationSS,
   variance as varianceSS,
-} from 'simple-statistics';
-
+} from '@ava/utils/statistics';
 import { ALL_SUPPORT_TIME_FORMAT } from '@ava/constants';
 import { COMMON_DATA_TYPE, FieldDataType, FieldMetaType } from '@ava/types/data';
 import { logError } from '@ava/utils';
