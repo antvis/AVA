@@ -1,7 +1,6 @@
 import { AsyncSeriesHook } from 'tapable';
 
 import {
-  AdviseChart,
   AdviseChartParams,
   AdvisorConfig,
   AdvisorPlugin,
@@ -9,6 +8,8 @@ import {
   DataStore,
   Stages,
   AdviseChartPluginInput,
+  AdviseStageOutput,
+  DataStageOutput,
 } from '@ava/types';
 import { AdviseChartPluginEnum, AdviseChartStageEnum } from '@ava/constants';
 
@@ -26,11 +27,8 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   constructor(params: { config: AdvisorConfig }) {
     this.dataStore = {
       [AdviseChartStageEnum.Extract]: {},
-      [AdviseChartStageEnum.Data]: {
-        data: [],
-        metas: [],
-      },
-      [AdviseChartStageEnum.Advise]: {},
+      [AdviseChartStageEnum.Data]: {} as DataStageOutput,
+      [AdviseChartStageEnum.Advise]: {} as AdviseStageOutput,
       [AdviseChartStageEnum.Generate]: {},
     };
     this.stages = {
@@ -76,8 +74,8 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
     // TODO: 最后一个阶段改成优化图表配置
     // await this.stages.generate.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Generate });
 
-    const result = this.dataStore.generate;
+    const result = this.dataStore.advise;
 
-    return result as AdviseChart[];
+    return result;
   };
 }

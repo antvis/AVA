@@ -2,19 +2,19 @@ import { set } from 'lodash';
 
 import {
   COMMON_DATA_TYPE,
-  FieldDataType,
-  FieldMetaType,
+  Data,
+  Meta,
   StatisticsFeatureKey,
   StatisticsFeatureType,
   ChartLibrary,
   ChartPropertyRequirement,
   Operator,
   ChartConfig,
-  FinalChartConfig,
+  AdviseChart,
 } from '@ava/types';
 import { CKB } from '@ava/ckb/ckb-v2';
 import { logError } from '@ava/utils';
-import { MODEL_ENCODEED_CHART_NAME_MAP } from '@ava/constants';
+import { CHART_NAME, MODEL_ENCODEED_CHART_NAME_MAP } from '@ava/constants';
 
 export const MODEL_ENCODEED_CHART_NAME_REVERSE_MAP = Object.keys(MODEL_ENCODEED_CHART_NAME_MAP).reduce((acc, cur) => {
   acc[MODEL_ENCODEED_CHART_NAME_MAP[cur]] = cur;
@@ -26,7 +26,7 @@ export const MODEL_ENCODEED_CHART_NAME_REVERSE_MAP = Object.keys(MODEL_ENCODEED_
  * @param metas
  * @returns
  */
-export const sortTableRowsOrder = (metas: FieldMetaType[]): FieldMetaType[] => {
+export const sortTableRowsOrder = (metas: Meta[]): Meta[] => {
   const order = { date: 0, geo: 1, string: 2, number: 3 };
   const simpleMetas = metas.map((item) => {
     const { id, name, dataType } = item;
@@ -45,7 +45,7 @@ export const sortTableRowsOrder = (metas: FieldMetaType[]): FieldMetaType[] => {
  * @desc 字段原信息转换为map
  * @param metas
  */
-export const transMetasToMap = (metas: FieldMetaType[]): Record<string, FieldMetaType> => {
+export const transMetasToMap = (metas: Meta[]): Record<string, Meta> => {
   return metas.reduce((acc, cur) => {
     acc[cur.id] = cur;
     return acc;
@@ -56,7 +56,7 @@ export const transformChartEncode = (encode: ChartConfig['encode']) => {
   return Object.entries(encode).reduce((acc, [key, value]) => {
     acc[key] = value.map((field) => field.id);
     return acc;
-  }, {} as FinalChartConfig['encode']);
+  }, {} as AdviseChart['encode']);
 };
 
 /**
@@ -64,8 +64,8 @@ export const transformChartEncode = (encode: ChartConfig['encode']) => {
  */
 function getCompatibleChartIds(
   chartLibrary: ChartLibrary,
-  fields: FieldMetaType[],
-  fieldsByType: Record<string, FieldMetaType[]>
+  fields: Meta[],
+  fieldsByType: Record<string, Meta[]>
 ): string[] {
   const totalFields = fields.length;
   const dataTypes = Object.keys(fieldsByType);
@@ -107,7 +107,7 @@ function getCompatibleChartIds(
         }
       }
 
-      if (chartId === 'table') {
+      if (chartId === CHART_NAME.table) {
         // table的配置简单不用参与计算，最后手动添加即可
         return false;
       }
@@ -214,7 +214,7 @@ function scoreConfiguration(
  * @returns 是否能满足剩余必选属性的要求
  */
 function canSatisfyRemainingRequirements(
-  remainingFields: FieldMetaType[],
+  remainingFields: Meta[],
   remainingProperties: string[],
   chartInfo: { fields: Record<string, ChartPropertyRequirement> }
 ): boolean {
@@ -311,7 +311,7 @@ function generateTopConfigsForChart(
     chartName: string;
     fields: Record<string, ChartPropertyRequirement>;
   },
-  allFields: FieldMetaType[]
+  allFields: Meta[]
 ): ChartConfig[] {
   const configs: ChartConfig[] = [];
   const configSignatures = new Set<string>(); // 用于检测重复配置
@@ -321,7 +321,7 @@ function generateTopConfigsForChart(
   let timeoutReached = false;
 
   // 创建字段ID到字段对象的映射
-  const fieldMap = new Map<string, FieldMetaType>();
+  const fieldMap = new Map<string, Meta>();
   allFields.forEach((field) => {
     fieldMap.set(field.id, field);
   });
@@ -339,7 +339,7 @@ function generateTopConfigsForChart(
     .map(([key]) => key);
 
   // 预计算每个属性的兼容字段
-  const compatibleFieldsByProperty: Record<string, FieldMetaType[]> = {};
+  const compatibleFieldsByProperty: Record<string, Meta[]> = {};
   for (const property of chartProperties) {
     const requirement = chartInfo.fields[property];
     compatibleFieldsByProperty[property] = allFields.filter((field) => requirement.dataType.includes(field.dataType));
@@ -351,7 +351,7 @@ function generateTopConfigsForChart(
    * @param remainingFields 剩余未分配的字段
    * @param currentConfig 当前配置状态
    */
-  function backtrack(index: number, remainingFields: FieldMetaType[], currentConfig: Record<string, string[]>) {
+  function backtrack(index: number, remainingFields: Meta[], currentConfig: Record<string, string[]>) {
     // 检查时间限制
     if (performance.now() - startTime > timeLimit) {
       timeoutReached = true;
@@ -373,7 +373,7 @@ function generateTopConfigsForChart(
         // 检查是否已存在相同的配置
         if (!configSignatures.has(signature)) {
           // 创建完整的字段对象
-          const encode: Record<string, Array<FieldMetaType>> = {};
+          const encode: Record<string, Array<Meta>> = {};
 
           for (const [property, fieldIds] of Object.entries(currentConfig)) {
             encode[property] = fieldIds.map((id) => fieldMap.get(id)!).filter(Boolean);
@@ -456,7 +456,7 @@ function generateTopConfigsForChart(
  * @desc Generate all possible chart configurations based on candidate fields
  */
 export function generateAllChartConfigs(
-  fields: FieldMetaType[],
+  fields: Meta[],
   disabledCharts: string[] = [],
   enableCharts: string[] | null = null
 ): ChartConfig[] {
@@ -468,7 +468,7 @@ export function generateAllChartConfigs(
     statisticsFeature: item.statisticsFeature,
   }));
 
-  const fieldsByType = finalFields.reduce<Record<string, FieldMetaType[]>>((acc, field) => {
+  const fieldsByType = finalFields.reduce<Record<string, Meta[]>>((acc, field) => {
     (acc[field.dataType] ||= []).push(field);
     return acc;
   }, {});
@@ -498,7 +498,7 @@ export function generateAllChartConfigs(
   if (shouldShowTable) {
     // table适配所有图表，默认添加
     results.push({
-      type: 'table',
+      type: CHART_NAME.table,
       encode: {
         row: sortTableRowsOrder(finalFields),
       },
@@ -556,10 +556,7 @@ const validateWithOperator = (value: number, limit: number, operator: Operator):
  * @param maxSpan - 组内最大允许跨度倍数 (默认10)
  * @returns 分组后的二维数组(保留原始对象)
  */
-function groupByMagnitude(
-  arr: { field: FieldMetaType; number: number }[],
-  maxSpan: number = 100
-): FieldMetaType[][] | false {
+function groupByMagnitude(arr: { field: Meta; number: number }[], maxSpan: number = 100): Meta[][] | false {
   if (!Array.isArray(arr) || arr.length === 0) return [];
 
   // 先对数组按number值进行排序
@@ -569,8 +566,8 @@ function groupByMagnitude(
       number: Math.abs(item.number),
     }))
     .sort((a, b) => a.number - b.number);
-  const result: FieldMetaType[][] = [];
-  let currentGroup: FieldMetaType[] = [sorted[0].field];
+  const result: Meta[][] = [];
+  let currentGroup: Meta[] = [sorted[0].field];
   let groupMin: number = sorted[0].number;
 
   for (let i = 1; i < sorted.length; i++) {
@@ -608,9 +605,9 @@ function groupByMagnitude(
  */
 export const optimizeChartConfig = (params: {
   chartConfigs: ChartConfig[];
-  metas: FieldMetaType[];
-  data: FieldDataType;
-}): FinalChartConfig[] => {
+  metas: Meta[];
+  data: Data;
+}): AdviseChart[] => {
   const { chartConfigs, metas, data } = params;
   const fieldsMap = transMetasToMap(metas);
   const processedConfigs = chartConfigs.map((config) => {
@@ -761,7 +758,7 @@ export const sortChartConfigs = (chartConfig: ChartConfig[], LLMChartListStr: st
   return LLMChartList.sort((a, b) => b.score - a.score);
 };
 
-export const getStatisticsFeature = (meta: FieldMetaType) => {
+export const getStatisticsFeature = (meta: Meta) => {
   const { dataType, statisticsFeature } = meta;
   if (!statisticsFeature) {
     return undefined;
@@ -785,11 +782,11 @@ export const getStatisticsFeature = (meta: FieldMetaType) => {
 export const getChartConfigScoringPrompt = (params: {
   userInput: string;
   chartConfig: ChartConfig[];
-  metas: FieldMetaType[];
-  data: FieldDataType;
+  metas: Meta[];
+  data: Data;
 }) => {
   const { userInput, chartConfig, metas, data } = params;
-  const finalChartConfig = chartConfig.map((item) => ({
+  const AdviseChart = chartConfig.map((item) => ({
     type: MODEL_ENCODEED_CHART_NAME_REVERSE_MAP[item.type],
     chartName: CKB[item.type].chartName,
     encode: item.encode,
@@ -811,7 +808,7 @@ export const getChartConfigScoringPrompt = (params: {
 
   const basePrompt = `前10条采样数据为：${JSON.stringify(sampledData)}；字段信息为：${JSON.stringify(finalMetas)}；${
     isDataSorted ? '数据有显著排序特征；' : ''
-  }候选图表列表为：${JSON.stringify(finalChartConfig)}`;
+  }候选图表列表为：${JSON.stringify(AdviseChart)}`;
 
   return `${basePrompt}；${
     userInput
