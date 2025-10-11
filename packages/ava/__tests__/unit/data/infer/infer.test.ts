@@ -87,23 +87,23 @@ describe('isGraphLike', () => {
   };
 
   test('returns true for a array shape graph-like input', () => {
-    expect(matchGraph(graphLikeData1)).toBe(true);
+    expect(matchGraph(graphLikeData1).is).toBe(true);
   });
 
   test('return true for a object shape graph-like input', () => {
-    expect(matchGraph(graphLikeData2)).toBe(true);
+    expect(matchGraph(graphLikeData2).is).toBe(true);
   });
 
   test('return true for a object shape graph-like input with extra properties', () => {
-    expect(matchGraph(graphLikeData3)).toBe(true);
+    expect(matchGraph(graphLikeData3).is).toBe(true);
   });
 
   test('return true for a object shape graph-like input with extra properties and some extra key', () => {
-    expect(matchGraph(graphLikeData4)).toBe(true);
+    expect(matchGraph(graphLikeData4).is).toBe(true);
   });
 
   test('return false for a object shape graph-like input with extra properties', () => {
-    expect(matchGraph(notGraphLikeData1)).toBe(false);
+    expect(matchGraph(notGraphLikeData1).is).toBe(false);
   });
 });
 
