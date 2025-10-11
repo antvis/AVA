@@ -101,4 +101,22 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
       dataStore.advise = result;
     }
   };
+
+  advisePlain = async () => {
+    // todo: 原来的推荐逻辑
+  };
+
+  adviseTree = () => {
+    // 定向到树图的集合
+    // todo: 确定哪些具体图表类型和参数结构，prompt & 知识库 里需要构建
+  };
+
+  adviseGraph = () => {
+    // 定向到图集合
+    // todo: 确定哪些图表类型和参数结构，prompt & 知识库 里需要构建
+  };
+
+  adviseFlow = () => {
+    // todo: 定向到流向图的集合
+  };
 }

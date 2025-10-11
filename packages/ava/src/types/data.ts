@@ -1,3 +1,5 @@
+import type { DATA_SHAPE } from '@ava/data';
+
 /**
  * One row(record) of data in JSON.
  */
@@ -18,10 +20,52 @@ export enum COMMON_DATA_TYPE {
   DATE = 'date',
 }
 
+export type PlainDataType = Array<Record<string, string | number>> | Array<Array<string | number>>;
+
+export type TreeDataType = Array<{
+  id: string;
+  name?: string;
+  children?: TreeDataType;
+  [key: string]: any;
+}>;
+
+export type GraphDataType = {
+  nodes: Array<{
+    id: string;
+    name?: string;
+    [key: string]: any;
+  }>;
+  edges: Array<{
+    source: string;
+    target: string;
+    [key: string]: any;
+  }>;
+};
+
+export type FlowDataType = {
+  nodes: Array<{
+    id: string;
+    name?: string;
+    [key: string]: any;
+  }>;
+  edges: Array<{
+    source: string;
+    target: string;
+    value: number;
+    [key: string]: any;
+  }>;
+};
+
 /**
  * Rows(records) of data.
  */
-export type FieldDataType = Array<Record<string, string | number>>;
+export type FieldDataType<T extends DATA_SHAPE = DATA_SHAPE.PLAIN> = T extends DATA_SHAPE.TREE
+  ? TreeDataType
+  : T extends DATA_SHAPE.FLOW
+  ? FlowDataType
+  : T extends DATA_SHAPE.GRAPH
+  ? GraphDataType
+  : PlainDataType;
 
 /**
  * statistical properties
@@ -71,4 +115,19 @@ export type FieldMetaType<T extends COMMON_DATA_TYPE = COMMON_DATA_TYPE> = {
   allData?: T extends COMMON_DATA_TYPE.STRING ? string[] : number[];
   statisticsFeature?: StatisticsFeatureType[T];
   format?: string;
+};
+
+export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DISTINCT';
+
+// impact measures must satisfies anti-monotonic condition and is bounded between 0 and 1.
+export type ImpactMeasureMethod = 'SUM' | 'COUNT';
+
+export type Aggregator = (data: Datum[], measure: string) => number;
+
+export type DomainType = 'measure' | 'dimension';
+
+export type Measure = {
+  /** use the field name as uniq key */
+  fieldName: string;
+  method: MeasureMethod;
 };

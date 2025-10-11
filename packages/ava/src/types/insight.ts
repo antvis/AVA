@@ -1,7 +1,7 @@
 import { PCorrTestParameter } from '@ava/utils/statistics/types';
 
 import type { PATTERN_TYPES, HOMOGENEOUS_PATTERN_TYPES } from '@ava/constants';
-import type { NumberFieldInfo, DateFieldInfo, StringFieldInfo, Extra } from '@ava/types';
+import type { NumberColumnFeature, DateColumnFeature, StringColumnFeature } from '@ava/data/types';
 import type { G2Spec, AreaMark, IntervalMark, LineMark, Mark, PointMark, TextMark } from '@antv/g2';
 
 type LabelType = string | ((d: Datum) => string);
@@ -90,7 +90,7 @@ export type ImpactMeasureMethod = 'SUM' | 'COUNT';
 export type Aggregator = (data: Datum[], measure: string) => number;
 
 /** output of data module, plus the field name and its domain type  */
-export type DataProperty = (NumberFieldInfo | DateFieldInfo | StringFieldInfo) & {
+export type DataProperty = (NumberColumnFeature | DateColumnFeature | StringColumnFeature) & {
   /** field name */
   name: string;
   /** whether this field is used as a dimension or measure */
@@ -273,7 +273,7 @@ export interface InsightOptions {
   /** Whether to close the search for subspaces */
   ignoreSubspace?: boolean;
   /** Parameter passed through to the data frame during data pre-processing */
-  dataProcessInfo?: Extra;
+  dataProcessInfo?: any;
   /** Key parameters in the algorithm for extracting insights */
   algorithmParameter?: AlgorithmParameter;
 }

@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { assert, isArray, isObject, isBasicType } from '@ava/utils';
 import { getAllStructFeats, getNodeFields, getLinkFields, getAllFieldsInfo, clusterNodes } from '@ava/data/features';
 
@@ -123,8 +125,9 @@ export class Graph {
 
     // if passed data tyoe is object
     if (isObject(data)) {
-      const nodeKey = 'nodes' in data ? 'nodes' : undefined;
-      const linkKey = 'links' in data ? 'links' : 'edges' in data ? 'edges' : undefined;
+      const keys = _.keys(data);
+      const nodeKey = keys.includes('nodes') ? 'nodes' : undefined;
+      const linkKey = keys.includes('edges') ? 'edges' : undefined;
       if (nodeKey) nodes = data[nodeKey];
       if (linkKey) links = data[linkKey];
     }
@@ -132,7 +135,7 @@ export class Graph {
     return { nodes, links };
   }
 
-  info(): GraphFeature {
+  getFeatures(): GraphFeature {
     const { nodes, links } = this.data;
     const graphStructFeats = getAllStructFeats(nodes, links);
     const { nodeFields, nodeFieldNames } = getNodeFields(nodes);

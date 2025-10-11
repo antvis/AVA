@@ -59,55 +59,8 @@ export {
   maxabs,
 } from './utils/statistics';
 
-export { analyzeField, Series, DataFrame } from './data';
-
-export type {
-  FieldType,
-  FieldInfo,
-  StringFieldInfo,
-  NumberFieldInfo,
-  DateFieldInfo,
-  NDArray,
-  SeriesData,
-  FrameData,
-  Axis,
-  Extra,
-  FieldsInfo,
-} from './data';
+export * from './data';
 
 /* insight */
 export { getInsights, generateInsightVisualizationSpec, insightPatternsExtractor, getSpecificInsight } from './insight';
-export type {
-  Datum,
-  DomainType,
-  MeasureMethod,
-  ImpactMeasureMethod,
-  Aggregator,
-  DataProperty,
-  Measure,
-  Dimension,
-  Subspace,
-  ImpactMeasure,
-  SubjectInfo,
-  InsightType,
-  HomogeneousInsightType,
-  PatternInfo,
-  InsightVisualizationSpec,
-  InsightInfo,
-  InsightVisualizationOptions,
-  InsightOptions,
-  BasePatternInfo,
-  HomogeneousPatternInfo,
-  PointPatternInfo,
-  CategoryOutlierInfo,
-  TimeSeriesOutlierInfo,
-  ChangePointInfo,
-  MajorityInfo,
-  LinearRegressionResult,
-  LowVarianceInfo,
-  CorrelationInfo,
-  InsightsResult,
-  InsightExtractorProps,
-  SpecificInsightProps,
-  AugmentedMarks,
-} from './types';
+export type { Datum } from './types';

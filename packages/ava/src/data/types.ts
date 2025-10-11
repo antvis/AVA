@@ -102,7 +102,7 @@ export interface DateColumnFeature extends ColumnFeature {
   /** maximum date */
   maximum: string | number | Date;
   /** interval of date or time */
-  interval?: 'second' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
+  interval?: 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
 }
 
 export interface GeoColumnFeature extends ColumnFeature {

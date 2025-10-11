@@ -9,8 +9,6 @@ import {
   sum,
   variance,
   valueMap as statsValueMap,
-} from '@ava/utils/statistics';
-import {
   isBasicType,
   isBoolean,
   isDate,
@@ -223,10 +221,16 @@ export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<D
     }
     return new Date(item).getTime();
   });
-  return {
-    minimum: value[minIndex(list)],
-    maximum: value[maxIndex(list)],
-  };
+  const imin = minIndex(list);
+  const imax = maxIndex(list);
+  const minimum = value[imin];
+  const maximum = value[imax];
+  const total = list[imin] + list[imax];
+  let interval = 'year';
+  if (total % (1000 * 60) === 0) {
+    interval = 'minute';
+  }
+  return { minimum, maximum, interval };
 }
 
 /**

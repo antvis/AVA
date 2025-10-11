@@ -4,6 +4,9 @@ import { FieldDataType, FieldMetaType } from '@ava/types/data';
 
 import { AdvisorConfig, AdviseChartParams, AdviseChart, AdviseText, AdviseTextParams } from './advisor';
 
+import type { PURPOSE } from '@ava/constants';
+import type { DATA_SHAPE } from '@ava/data';
+
 export type AdviseParams = AdviseChartParams | AdviseTextParams;
 
 export type AdviseResult<T extends AdviseParams> = T extends AdviseChartParams ? AdviseChart[] : AdviseText;
@@ -30,11 +33,27 @@ export interface Stages<T extends AdviseParams> {
   generate: AsyncSeriesHook<[PluginInput<T>]>;
 }
 
-export type ExtractStageOutput = {};
+export type PurposeObject = {
+  name: string;
+  key: string;
+  purpose: PURPOSE;
+  purposeDesc?: string;
+};
+
+export type DataShard = {
+  shape: DATA_SHAPE;
+  data: FieldDataType<DATA_SHAPE>;
+  metas: Array<FieldMetaType>;
+  purpose?: PurposeObject;
+};
+
+export type ExtractStageOutput = {
+  data: FieldDataType;
+  dataShards: Array<DataShard>;
+};
 
 export type DataStageOutput = {
-  data: FieldDataType;
-  metas: FieldMetaType[];
+  dataShards: Array<DataShard>;
 };
 
 export type AdviseStageOutput = {};

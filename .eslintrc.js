@@ -69,7 +69,6 @@ module.exports = {
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/type-annotation-spacing': 0,
-    'no-plusplus': 0,
     'no-await-in-loop': 0,
     'import/order': [
       2,
@@ -98,6 +97,7 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
+    'no-param-reassign': 1,
   },
   settings: {
     react: {
