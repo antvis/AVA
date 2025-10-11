@@ -4,7 +4,7 @@ import {
   AdviseChartPluginInput,
   AdvisorPlugin,
   ChartConfig,
-  FinalChartConfig,
+  AdviseChart,
   IAdviseChartPipeline,
 } from '@ava/types';
 import {
@@ -33,8 +33,8 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
     logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
 
     // Use LLM to score all chart configs based on user purpose/data/metas
-    let llmCompleted = false;
-    let llmCostTime = '';
+    let _llmCompleted = false;
+    let _llmCostTime = '';
     if (!forceType) {
       if (!disableModel) {
         try {
@@ -57,8 +57,8 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
             logInDev.debug('chart configs after LLM scoring', LLMRes);
             allChartConfigs = sortChartConfigs(allChartConfigs, LLMRes);
             const endTime = performance.now();
-            llmCostTime = ((endTime - startTime) / 1000).toFixed(2);
-            llmCompleted = true;
+            _llmCostTime = ((endTime - startTime) / 1000).toFixed(2);
+            _llmCompleted = true;
           } else {
             logError('LLM scoring failed');
           }
@@ -74,17 +74,15 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
       });
       logInDev.debug('chart configs after optimization', JSON.stringify(finalRes));
       const result = {
-        chartConfigs: finalRes,
+        adviseCharts: finalRes,
         metas,
         data,
-        llmCostTime,
-        llmCompleted,
       };
 
       dataStore.advise = result;
     } else {
       // user specified chart type
-      const finalRes: FinalChartConfig[] = allChartConfigs
+      const finalRes: AdviseChart[] = allChartConfigs
         .filter((item) => item.type === forceType)
         .map((item) => ({
           type: item.type,
@@ -92,11 +90,9 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         }));
 
       const result = {
-        chartConfigs: finalRes,
+        adviseCharts: finalRes,
         metas,
         data,
-        llmCostTime,
-        llmCompleted,
       };
       dataStore.advise = result;
     }

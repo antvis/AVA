@@ -3,7 +3,7 @@ import type { DATA_SHAPE } from '@ava/data';
 /**
  * One row(record) of data in JSON.
  */
-export type Datum = Record<string, any>;
+export type Datum = Record<string, string | number>;
 
 /**
  * Rows(records) of data.
@@ -108,7 +108,7 @@ export type StatisticsFeatureType = {
 /**
  * field meta info
  */
-export type FieldMetaType<T extends COMMON_DATA_TYPE = COMMON_DATA_TYPE> = {
+export type Meta<T extends COMMON_DATA_TYPE = COMMON_DATA_TYPE> = {
   id: string;
   name: string;
   dataType: T;

@@ -62,5 +62,5 @@ export {
 export * from './data';
 
 /* insight */
-export { getInsights, generateInsightVisualizationSpec, insightPatternsExtractor, getSpecificInsight } from './insight';
 export type { Datum } from './types';
+export { getInsights, generateInsightVisualizationSpec, insightPatternsExtractor, getSpecificInsight } from './insight';

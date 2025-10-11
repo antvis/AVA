@@ -27,7 +27,15 @@ module.exports = {
     quotes: [1, 'single', 'avoid-escape'],
     'no-unused-vars': 0,
     'no-plusplus': 0,
-    '@typescript-eslint/no-unused-vars': 2,
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
+    'no-underscore-dangle':0,
     'import/extensions': 0,
     'import/prefer-default-export': 0,
     'object-curly-newline': 0,
