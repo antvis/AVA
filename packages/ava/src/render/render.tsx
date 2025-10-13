@@ -13,7 +13,7 @@ type RenderChartParams = {
   uiConfig?: RenderParams['uiConfig'];
 };
 
-const getCommonStyle = (uiConfig: RenderParams['uiConfig']) => {
+const getCommonStyle = (uiConfig: RenderParams['uiConfig'] = {}) => {
   return {
     backgroundColor: uiConfig.backgroundColor || DEFAULT_UI_CONFIG.backgroundColor,
     ...(uiConfig.palette
@@ -66,7 +66,7 @@ export const CHART_RENDER_MAP = {
         theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
         containerStyle={{ height: 300 }}
         style={{
-          lineWidth: uiConfig.lineWidth || 2,
+          lineWidth: uiConfig.lineWidth || DEFAULT_UI_CONFIG.lineWidth,
           ...getCommonStyle(uiConfig),
         }}
       />
@@ -81,7 +81,7 @@ export const CHART_RENDER_MAP = {
         axisYTitle={axisYTitle}
         theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
         style={{
-          lineWidth: uiConfig.lineWidth || 2,
+          lineWidth: uiConfig.lineWidth || DEFAULT_UI_CONFIG.lineWidth,
           ...getCommonStyle(uiConfig),
         }}
       />
