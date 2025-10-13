@@ -1,5 +1,3 @@
-import { CHART_NAME } from './advisor';
-
 // 按图表类型，将通用encode映射到GPT_VIS的encode
 export const ENCODE_TO_GPT_VIS_ENCODE = {
   // 趋势类，包含：line、area
@@ -14,12 +12,16 @@ export const ENCODE_TO_GPT_VIS_ENCODE = {
     y: 'value',
     s: 'group',
   },
+  // 对比类：包含：radar
+  COMPARISON: {
+    x: 'name',
+    y: 'value',
+    s: 'group',
+  },
 };
 
-// 每种图表类型GPT_VIS encode 映射
-export const CHART_TO_GPT_VIS_ENCODE_MAP = {
-  [CHART_NAME.line]: ENCODE_TO_GPT_VIS_ENCODE.TREND,
-  [CHART_NAME.column]: ENCODE_TO_GPT_VIS_ENCODE.DISTRIBUTION,
-  [CHART_NAME.area]: ENCODE_TO_GPT_VIS_ENCODE.TREND,
-  [CHART_NAME.bar]: ENCODE_TO_GPT_VIS_ENCODE.DISTRIBUTION,
+export const DEFAULT_UI_CONFIG = {
+  backgroundColor: '#fff',
+  lineWidth: 2,
+  theme: 'default' as const,
 };

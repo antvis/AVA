@@ -1,14 +1,30 @@
 import React from 'react';
 
-import { Line, Area, Column, Bar } from '@antv/gpt-vis';
+import { Line, Area, Column, Bar, Pie, DualAxes, Radar } from '@antv/gpt-vis';
 
 import { transMetasToMap } from '@ava/advisor/chartAdvise';
 import { AdviseChart, Data, Meta, DataTypeMap, RenderParams } from '@ava/types';
-import { CHART_NAME, ENCODE_TO_GPT_VIS_ENCODE } from '@ava/constants';
+import { CHART_NAME, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@ava/constants';
 
-type RenderChartParams = { encode: AdviseChart['encode']; data: Data; metasMap: Record<string, Meta> };
+type RenderChartParams = {
+  encode: AdviseChart['encode'];
+  data: Data;
+  metasMap: Record<string, Meta>;
+  uiConfig?: RenderParams['uiConfig'];
+};
 
-const getTrendOrDistributionSpec = <T extends keyof DataTypeMap>(
+const getCommonStyle = (uiConfig: RenderParams['uiConfig']) => {
+  return {
+    backgroundColor: uiConfig.backgroundColor || DEFAULT_UI_CONFIG.backgroundColor,
+    ...(uiConfig.palette
+      ? {
+          palette: uiConfig.palette,
+        }
+      : {}),
+  };
+};
+
+const getCommonConfig = <T extends keyof DataTypeMap>(
   params: RenderChartParams & {
     category: T;
   }
@@ -35,44 +51,44 @@ const getTrendOrDistributionSpec = <T extends keyof DataTypeMap>(
     data: newData,
     axisXTitle,
     axisYTitle,
+    uiConfig: params.uiConfig || {},
   };
 };
 
 export const CHART_RENDER_MAP = {
   [CHART_NAME.line]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle } = getTrendOrDistributionSpec<'TREND'>({ ...params, category: 'TREND' });
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'TREND'>({ ...params, category: 'TREND' });
     return (
       <Line
         data={data}
         axisXTitle={axisXTitle}
         axisYTitle={axisYTitle}
-        theme="default"
+        theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
         containerStyle={{ height: 300 }}
         style={{
-          lineWidth: 2,
-          backgroundColor: '#fff',
+          lineWidth: uiConfig.lineWidth || 2,
+          ...getCommonStyle(uiConfig),
         }}
       />
     );
   },
   [CHART_NAME.area]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle } = getTrendOrDistributionSpec<'TREND'>({ ...params, category: 'TREND' });
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'TREND'>({ ...params, category: 'TREND' });
     return (
       <Area
         data={data}
         axisXTitle={axisXTitle}
         axisYTitle={axisYTitle}
-        theme="default"
-        containerStyle={{ height: 300 }}
+        theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
         style={{
-          lineWidth: 2,
-          backgroundColor: '#fff',
+          lineWidth: uiConfig.lineWidth || 2,
+          ...getCommonStyle(uiConfig),
         }}
       />
     );
   },
   [CHART_NAME.column]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle } = getTrendOrDistributionSpec<'DISTRIBUTION'>({
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'DISTRIBUTION'>({
       ...params,
       category: 'DISTRIBUTION',
     });
@@ -83,16 +99,13 @@ export const CHART_RENDER_MAP = {
         group
         axisXTitle={axisXTitle}
         axisYTitle={axisYTitle}
-        theme="default"
-        containerStyle={{ height: 300 }}
-        style={{
-          backgroundColor: '#fff',
-        }}
+        theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
+        style={getCommonStyle(uiConfig)}
       />
     );
   },
   [CHART_NAME.bar]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle } = getTrendOrDistributionSpec<'DISTRIBUTION'>({
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'DISTRIBUTION'>({
       ...params,
       category: 'DISTRIBUTION',
     });
@@ -103,10 +116,76 @@ export const CHART_RENDER_MAP = {
         group
         axisXTitle={axisXTitle}
         axisYTitle={axisYTitle}
-        theme="default"
-        containerStyle={{ height: 300 }}
+        theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
+        style={getCommonStyle(uiConfig)}
+      />
+    );
+  },
+  [CHART_NAME.pie]: (params: RenderChartParams) => {
+    const { encode, data, uiConfig = {} } = params;
+    const xFieldKey = encode.x[0];
+    const yFieldKey = encode.y[0];
+    const newXFieldKey = 'category';
+    const newYFieldKey = 'value';
+    const newData = data.map((item) => {
+      return {
+        [newXFieldKey]: item[xFieldKey],
+        [newYFieldKey]: item[yFieldKey],
+      };
+    });
+
+    return <Pie data={newData} theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme} style={getCommonStyle(uiConfig)} />;
+  },
+  [CHART_NAME.multiple]: (params: RenderChartParams) => {
+    const { encode, data, metasMap, uiConfig = {} } = params;
+    const xFieldKey = encode.x[0];
+    const y1FieldKey = encode.y[0];
+    const y2FieldKey = encode.y2[0];
+    const axisXTitle = metasMap[xFieldKey]?.name;
+    const lineAxisYTitle = metasMap[y1FieldKey]?.name;
+    const columnAxisYTitle = metasMap[y2FieldKey]?.name;
+    const categories = [];
+    const columnData = [];
+    const lineData = [];
+    data.forEach((item) => {
+      categories.push(item[xFieldKey]);
+      lineData.push(item[y1FieldKey] || 0);
+      columnData.push(item[y2FieldKey] || 0);
+    });
+
+    return (
+      <DualAxes
+        categories={categories}
+        series={[
+          {
+            type: 'line',
+            data: lineData,
+            axisYTitle: lineAxisYTitle,
+          },
+          {
+            type: 'column',
+            data: columnData,
+            axisYTitle: columnAxisYTitle,
+          },
+        ]}
+        axisXTitle={axisXTitle}
+        theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
+        style={getCommonStyle(uiConfig)}
+      />
+    );
+  },
+  [CHART_NAME.radar]: (params: RenderChartParams) => {
+    const { data, uiConfig } = getCommonConfig<'COMPARISON'>({
+      ...params,
+      category: 'COMPARISON',
+    });
+    return (
+      <Radar
+        data={data}
+        theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme}
         style={{
-          backgroundColor: '#fff',
+          lineWidth: uiConfig.lineWidth || DEFAULT_UI_CONFIG.lineWidth,
+          ...getCommonStyle(uiConfig),
         }}
       />
     );
@@ -114,7 +193,7 @@ export const CHART_RENDER_MAP = {
 };
 
 export const renderChart = (params: RenderParams) => {
-  const { chartConfig, data, metas } = params;
+  const { chartConfig, data, metas, uiConfig = {} } = params;
   const { type, encode } = chartConfig;
   const metasMap = transMetasToMap(metas);
   const render = CHART_RENDER_MAP[type];
@@ -122,5 +201,6 @@ export const renderChart = (params: RenderParams) => {
     encode,
     data,
     metasMap,
+    uiConfig,
   });
 };

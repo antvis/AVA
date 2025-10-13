@@ -98,5 +98,10 @@ export interface RenderParams {
     width?: number;
     /** chart height */
     height?: number;
+    /** Overall chart style */
+    theme?: 'default' | 'dark' | 'academy';
+    backgroundColor?: string;
+    /** Applicable charts: line, area, radar */
+    lineWidth?: number;
   };
 }
