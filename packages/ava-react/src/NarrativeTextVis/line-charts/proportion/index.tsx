@@ -1,1 +1,0 @@
-export { ProportionChart } from './ProportionChart';
