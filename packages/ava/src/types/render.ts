@@ -10,7 +10,14 @@ export type DistributionData = Array<{
   group?: string;
 }>;
 
+export type ComparisonData = Array<{
+  name: string;
+  value: number;
+  group: number;
+}>;
+
 export type DataTypeMap = {
   TREND: TrendData;
   DISTRIBUTION: DistributionData;
+  COMPARISON: ComparisonData;
 };
