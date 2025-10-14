@@ -1,6 +1,6 @@
 import { CKB } from '@ava/ckb/ckb-v2';
 import { CHART_NAME, CHART_PURPOSE_NAME_MAP, FULL_AND_ABBR_CHART_NAME_MAP } from '@ava/constants';
-import { ChartConfig, COMMON_DATA_TYPE, Data, Meta, StatisticsFeatureKey } from '@ava/types';
+import { ChartConfig, Data, Meta } from '@ava/types';
 
 import { getStatisticsFeature } from '..';
 
@@ -19,24 +19,21 @@ export const getChartConfigPrompt = (params: {
     chartName: CKB[item.type].chartName,
     encode: item.encode,
   }));
-  let isDataSorted = false;
   const finalMetas = metas.map((item) => {
     const statisticsFeature = getStatisticsFeature(item);
-    if (item.dataType === COMMON_DATA_TYPE.NUMBER) {
-      isDataSorted = statisticsFeature?.[StatisticsFeatureKey.sorted] ?? false;
-    }
     return {
       id: item.id,
       dataType: item.dataType,
       name: item.name,
-      statisticsFeature: getStatisticsFeature(item),
+      statisticsFeature,
     };
   });
+
   const sampledData = data.slice(0, 10);
 
-  const basePrompt = `前10条采样数据为：${JSON.stringify(sampledData)}；字段信息为：${JSON.stringify(finalMetas)}；${
-    isDataSorted ? '数据有显著排序特征；' : ''
-  }候选图表列表为：${JSON.stringify(AdviseChart)}`;
+  const basePrompt = `前10条采样数据为：${JSON.stringify(sampledData)}；字段信息为：${JSON.stringify(
+    finalMetas
+  )}；候选图表列表为：${JSON.stringify(AdviseChart)}`;
 
   return `${basePrompt}；${
     userInput
