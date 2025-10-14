@@ -319,11 +319,8 @@ const App = () => {
   const [chart, setChart] = useState(null);
   const advisor = new Advisor({
     llm: {
-      appId: '202510APxPmo00551539',
-      authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
-      // url: 'https://open.bigmodel.cn/api/paas/v4/',
-      // model: 'glm-4.5-air',
-      // apiKey: '888d0cac003d46f38802431f554a1a7c.lVTzJpyDla9qI1aU',
+      appId: process.env.TBOX_APP_ID,
+      authorization: process.env.TBOX_AUTHORIZATION,
     },
   });
 
