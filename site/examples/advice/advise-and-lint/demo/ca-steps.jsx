@@ -352,5 +352,5 @@ const App = () => {
   );
 };
 
-const root = ReactDOM.createRoot(document.getElementById('container'));
-root.render(<App />);
+// eslint-disable-next-line react/no-deprecated
+ReactDOM.render(<App />, document.getElementById('container'));
