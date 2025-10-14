@@ -6,4 +6,5 @@ export * from './insight';
 export * from './data';
 export * from './pipeline';
 export * from './advisor';
+export * from './purpose';
 export * from './render';

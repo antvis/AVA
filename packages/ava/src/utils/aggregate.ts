@@ -1,6 +1,6 @@
 import { groupBy, sumBy, minBy, maxBy, meanBy, sortBy, flatten, uniq } from 'lodash';
 
-import { Aggregator, Datum, Measure, MeasureMethod } from '@ava/types';
+import type { Aggregator, Datum, Measure, MeasureMethod } from '@ava/types';
 
 const sum = (data: Datum[], measure: string) => {
   return sumBy(data, measure);

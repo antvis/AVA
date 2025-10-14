@@ -72,7 +72,15 @@ export class DataStore {
     const colIndex = this.columnIndexMap.get(column);
     const res = [];
     if (feature.recommendation === 'date') {
-      // todo pick with interval
+      const sortedData = _.sortBy(this.data, (row) => row[colIndex]);
+      let sum = 1;
+      _.each(sortedData, (row) => {
+        if (sum >= 1) {
+          sum -= 1;
+          res.push(row);
+        }
+        sum += ratio;
+      });
     } else if (feature.recommendation === 'integer') {
       // pick with quantile
       const q1 = [];
@@ -150,5 +158,18 @@ export class DataStore {
       const data = this.getColumnData(column);
       this.columnsFeatureMap.set(column, analyzeField(data, false));
     }
+  }
+
+  async getColumnFeatures() {
+    const features = await Promise.all(
+      this.columns.map(async (column) => {
+        const res = await this.getColumnFeature(column);
+        return {
+          name: column,
+          ...res,
+        };
+      })
+    );
+    return features;
   }
 }

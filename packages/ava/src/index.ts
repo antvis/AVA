@@ -59,7 +59,8 @@ export {
   maxabs,
 } from './utils/statistics';
 
-export { DataFrame } from './data';
+export * from './data';
 
 /* insight */
+export type { Datum } from './types';
 export { getInsights, generateInsightVisualizationSpec, insightPatternsExtractor, getSpecificInsight } from './insight';

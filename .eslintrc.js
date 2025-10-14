@@ -105,6 +105,7 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
+    'no-param-reassign': 1,
   },
   settings: {
     react: {

@@ -1,4 +1,4 @@
-import { DataStore } from './DataStore';
+import type { DataStore } from './DataStore';
 
 // Focus on data clipping
 export class DataFrame {

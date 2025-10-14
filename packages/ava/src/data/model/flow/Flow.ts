@@ -1,3 +1,3 @@
-export class Tree {
+export class Flow {
   getFeatures() {}
 }

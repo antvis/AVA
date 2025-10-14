@@ -1,48 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import ReactDOM from 'react-dom';
-import { JSONView } from 'antv-site-demo-rc';
-import { Advisor, AdvisorPlugin, Advice, DEFAULT_RES_KEY } from '@antv/ava';
-
-class MyPlugin extends AdvisorPlugin<any, any> {
-  constructor() {
-    super('my-plugin');
-  }
-
-  apply = (pipeline) => {
-    pipeline.stages.generateAsync.tapPromise('my-plugin-for-generate', async (input, config) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          config.dataStore.set(DEFAULT_RES_KEY, { advices: input.DEFAULT?.chartConfigs?.filter((v) => v.score < 1) });
-          resolve(null);
-        }, 4000);
-      });
-    });
-  };
-}
-
-const defaultData = [
-  { price: 100, type: 'A' },
-  { price: 120, type: 'B' },
-  { price: 150, type: 'C' },
-];
-
-const myChartAdvisor = new Advisor(
-  {},
-  {
-    plugins: [new MyPlugin()],
-  }
-);
+import { Advisor } from '@antv/ava';
 
 const App = () => {
-  const [results, setResults] = useState<Advice[]>();
-  useEffect(() => {
-    myChartAdvisor.adviseAsync({ data: defaultData }).then((advices) => {
-      setResults(advices);
+  const [chart, setChart] = useState<React.ReactElement>(null);
+  const advise = async () => {
+    const advisor = new Advisor({
+      llm: {
+        appId: '202508APgb7V00506760',
+        authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
+        // url: 'https://open.bigmodel.cn/api/paas/v4/',
+        // model: 'glm-4.5-air',
+        // apiKey: '888d0cac003d46f38802431f554a1a7c.lVTzJpyDla9qI1aU',
+      },
     });
-  }, []);
 
-  return <JSONView json={results?.[0]} style={{ height: '100%' }} rjvConfigs={{ collapsed: 1 }} />;
+    const res = await advisor.advise({
+      data: [
+        { date: '1999', value: 9 },
+        { date: '2000', value: 2 },
+        { date: '2001', value: 3 },
+        { date: '2002', value: 5 },
+        { date: '2003', value: 9 },
+      ],
+    });
+
+    const newChart = advisor.render({
+      chartConfig: res.adviseCharts[0],
+      data: res.data,
+      metas: res.metas,
+      uiConfig: {
+        theme: 'academy',
+        backgroundColor: '#eee',
+        lineWidth: 5,
+      },
+    });
+
+    setChart(newChart);
+  };
+
+  return (
+    <div>
+      <button onClick={advise}>advise</button>
+      <div>{chart}</div>
+    </div>
+  );
 };
 
 ReactDOM.render(<App />, document.getElementById('container'));

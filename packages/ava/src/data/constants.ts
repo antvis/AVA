@@ -26,7 +26,7 @@ export const OFFSET = `(?<offset>Z|[+-]${BASE_HOUR}(:${BASE_MINUTE})?)`;
 
 export enum DATA_SHAPE {
   PLAIN = 'plain',
-  TREE = 'tree',
   GRAPH = 'graph',
-  LINK = 'link',
+  TREE = 'tree',
+  FLOW = 'flow',
 }

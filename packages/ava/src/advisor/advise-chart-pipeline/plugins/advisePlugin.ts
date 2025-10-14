@@ -6,6 +6,7 @@ import {
   ChartConfig,
   AdviseChart,
   IAdviseChartPipeline,
+  FieldDataType,
 } from '@ava/types';
 import {
   generateAllChartConfigs,
@@ -15,6 +16,7 @@ import {
   transformChartEncode,
 } from '@ava/advisor/chartAdvise';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
+import { DATA_SHAPE } from '@ava/data';
 
 export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.AdvisePlugin;
@@ -26,15 +28,18 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   execute = async (input: AdviseChartPluginInput) => {
     const { dataStore, context } = input;
     const { excludes, includes, disableModel, forceType, purpose = '', llm } = context;
-    const { metas, data } = dataStore.data;
+    const { dataShards } = dataStore.data;
     let allChartConfigs: ChartConfig[] = [];
     // create all valid chart configs using field data
-    allChartConfigs = generateAllChartConfigs(metas, excludes, includes);
+    const shard = dataShards[0];
+    allChartConfigs = generateAllChartConfigs(shard.metas, excludes, includes);
     logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
 
     // Use LLM to score all chart configs based on user purpose/data/metas
     let _llmCompleted = false;
     let _llmCostTime = '';
+    const { metas } = shard;
+    const data = shard.data as FieldDataType<DATA_SHAPE.PLAIN>;
     if (!forceType) {
       if (!disableModel) {
         try {
@@ -96,5 +101,23 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
       };
       dataStore.advise = result;
     }
+  };
+
+  advisePlain = async () => {
+    // todo: 原来的推荐逻辑
+  };
+
+  adviseTree = () => {
+    // 定向到树图的集合
+    // todo: 确定哪些具体图表类型和参数结构，prompt & 知识库 里需要构建
+  };
+
+  adviseGraph = () => {
+    // 定向到图集合
+    // todo: 确定哪些图表类型和参数结构，prompt & 知识库 里需要构建
+  };
+
+  adviseFlow = () => {
+    // todo: 定向到流向图的集合
   };
 }

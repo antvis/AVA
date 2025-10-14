@@ -87,6 +87,11 @@ describe('DataStore', () => {
     expect(sampleData2.length).toBeLessThanOrEqual(7);
   });
 
+  // todo: test sample by date column
+
+  // todo: test sample with more data
+
+  // todo: should ref to some paper
   test('getAssociationScore', async () => {
     const score1 = await ds2.getAssociationScore('category', 'value');
     expect(score1).toBeGreaterThanOrEqual(0.5);

@@ -5,14 +5,13 @@ export type RawDataType = string | boolean | number;
 /**
  * Field Type
  */
-export type ColumnType = 'null' | 'boolean' | 'integer' | 'float' | 'date' | 'string' | 'geo';
+export type ColumnType = 'null' | 'boolean' | 'number' | 'date' | 'string' | 'geo';
 
 /**
  * The field meta which be existed only the Field type is mixed
  */
 export type ColumnMeta = {
-  integer?: NumberColumnFeature;
-  float?: NumberColumnFeature;
+  number?: NumberColumnFeature;
   date?: DateColumnFeature;
   string?: StringColumnFeature;
 };
@@ -102,7 +101,7 @@ export interface DateColumnFeature extends ColumnFeature {
   /** maximum date */
   maximum: string | number | Date;
   /** interval of date or time */
-  interval?: 'second' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
+  interval?: 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
 }
 
 export interface GeoColumnFeature extends ColumnFeature {
