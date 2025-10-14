@@ -1,3 +1,5 @@
+import { CHART_PURPOSE } from '../constants/advisor';
+
 export type TrendData = Array<{
   time: string;
   value: number;
@@ -17,7 +19,7 @@ export type ComparisonData = Array<{
 }>;
 
 export type DataTypeMap = {
-  TREND: TrendData;
-  DISTRIBUTION: DistributionData;
-  COMPARISON: ComparisonData;
+  [CHART_PURPOSE.Trend]: TrendData;
+  [CHART_PURPOSE.Distribution]: DistributionData;
+  [CHART_PURPOSE.Comparison]: ComparisonData;
 };

@@ -14,12 +14,7 @@ import {
 } from '@ava/types';
 import { CKB } from '@ava/ckb/ckb-v2';
 import { logError } from '@ava/utils';
-import { CHART_NAME, MODEL_ENCODEED_CHART_NAME_MAP } from '@ava/constants';
-
-export const MODEL_ENCODEED_CHART_NAME_REVERSE_MAP = Object.keys(MODEL_ENCODEED_CHART_NAME_MAP).reduce((acc, cur) => {
-  acc[MODEL_ENCODEED_CHART_NAME_MAP[cur]] = cur;
-  return acc;
-}, {});
+import { CHART_NAME, ABBR_AND_FULL_CHART_NAME_MAP } from '@ava/constants';
 
 /**
  * @desc 对table组件的字段重新排序
@@ -645,7 +640,7 @@ export const optimizeChartConfig = (params: {
     }
 
     switch (type) {
-      case 'multiple':
+      case CHART_NAME.dualAxes:
         try {
           // 双轴图重新分配字段, 将不同数量级的数据分到左右两个轴
           const allYFields = [...encode.y, ...encode.y2].map((field) => {
@@ -673,19 +668,20 @@ export const optimizeChartConfig = (params: {
           logError('双轴图重新分配字段失败', error);
         }
         break;
-      case 'kpiChart':
+      case CHART_NAME.kpiChart:
         if (data.length > 1) {
           reason = '指标卡只能展示单行数据';
           isValid = false;
         }
         break;
-      case 'progress':
+      case CHART_NAME.liquid:
         if (data.length > 1) {
           reason = '进度条只能展示单行数据';
           isValid = false;
         }
         break;
-      case 'pie': {
+      case CHART_NAME.pie:
+      case CHART_NAME.wordCloud: {
         const hasNegatives = metas.some((field) => {
           if (field.dataType === COMMON_DATA_TYPE.NUMBER) {
             return field.statisticsFeature?.[StatisticsFeatureKey.min] < 0;
@@ -699,10 +695,10 @@ export const optimizeChartConfig = (params: {
         }
         break;
       }
-      case 'line':
-      case 'area':
-      case 'column':
-      case 'bar': {
+      case CHART_NAME.line:
+      case CHART_NAME.area:
+      case CHART_NAME.column:
+      case CHART_NAME.bar: {
         try {
           const timeFiedId = encode.x[0].id;
           const timeField = fieldsMap[timeFiedId];
@@ -744,7 +740,7 @@ export const sortChartConfigs = (chartConfig: ChartConfig[], LLMChartListStr: st
     return acc;
   }, {});
   const LLMChartList = LLMChartListStr.split(',').reduce((acc, chartId, index) => {
-    const finalChartId = MODEL_ENCODEED_CHART_NAME_MAP[chartId];
+    const finalChartId = ABBR_AND_FULL_CHART_NAME_MAP[chartId];
     const chartConfig = allChartConfigMap[finalChartId];
     if (chartConfig) {
       acc.push({
@@ -774,45 +770,4 @@ export const getStatisticsFeature = (meta: Meta) => {
     [StatisticsFeatureKey.median]: (statisticsFeature as StatisticsFeatureType[COMMON_DATA_TYPE.NUMBER]).median,
     [StatisticsFeatureKey.sorted]: (statisticsFeature as StatisticsFeatureType[COMMON_DATA_TYPE.NUMBER]).sorted,
   };
-};
-
-/**
- * @desc 根据候选图表列表生成 prompt
- */
-export const getChartConfigScoringPrompt = (params: {
-  userInput: string;
-  chartConfig: ChartConfig[];
-  metas: Meta[];
-  data: Data;
-}) => {
-  const { userInput, chartConfig, metas, data } = params;
-  const AdviseChart = chartConfig.map((item) => ({
-    type: MODEL_ENCODEED_CHART_NAME_REVERSE_MAP[item.type],
-    chartName: CKB[item.type].chartName,
-    encode: item.encode,
-  }));
-  let isDataSorted = false;
-  const finalMetas = metas.map((item) => {
-    const statisticsFeature = getStatisticsFeature(item);
-    if (item.dataType === COMMON_DATA_TYPE.NUMBER) {
-      isDataSorted = statisticsFeature?.[StatisticsFeatureKey.sorted] ?? false;
-    }
-    return {
-      id: item.id,
-      dataType: item.dataType,
-      name: item.name,
-      statisticsFeature: getStatisticsFeature(item),
-    };
-  });
-  const sampledData = data.slice(0, 10);
-
-  const basePrompt = `前10条采样数据为：${JSON.stringify(sampledData)}；字段信息为：${JSON.stringify(finalMetas)}；${
-    isDataSorted ? '数据有显著排序特征；' : ''
-  }候选图表列表为：${JSON.stringify(AdviseChart)}`;
-
-  return `${basePrompt}；${
-    userInput
-      ? `用户可视化意图为：${userInput}；请结合用户可视化意图、采样数据、字段信息、候选图表列表、图表知识库等信息进行打分排序`
-      : '用户未提供明确可视化意图，请结合采样数据、字段信息、候选图表列表、图表知识库等信息进行打分排序'
-  }`;
 };
