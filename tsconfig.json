@@ -20,6 +20,7 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
+      "@antv/ava": ["packages/ava/src/*"],
       "@ava/*": ["packages/ava/src/*"],
       "@advisor/*": ["packages/ava/src/advisor/*"]
     }

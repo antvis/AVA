@@ -410,7 +410,7 @@ export const autoKMeans = (data, maxK = 10) => {
 
   // 尝试 k = 2 到 kRange
   for (let k = 2; k <= kRange; k++) {
-    const result = kmeans(data, k); // 使用之前实现的 kmeans 函数
+    const result = kmeans(data, k);
     const score = silhouetteScore(data, result.labels);
 
     if (score > bestScore) {
@@ -425,6 +425,7 @@ export const autoKMeans = (data, maxK = 10) => {
       labels: data.map(() => 0),
       centroids: [meanVector(data)],
       optimalK: 1,
+      variances: [0],
       meanIntraDistances: [0],
     };
   }

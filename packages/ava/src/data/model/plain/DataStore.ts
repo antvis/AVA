@@ -160,7 +160,16 @@ export class DataStore {
     }
   }
 
-  async computeAllColumnFeature() {
-    await Promise.all(this.columns.map((column) => this.computeColumnFeature(column)));
+  async getColumnFeatures() {
+    const features = await Promise.all(
+      this.columns.map(async (column) => {
+        const res = await this.getColumnFeature(column);
+        return {
+          name: column,
+          ...res,
+        };
+      })
+    );
+    return features;
   }
 }

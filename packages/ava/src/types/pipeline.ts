@@ -48,8 +48,8 @@ export type DataShard = {
 };
 
 export type ExtractStageOutput = {
-  data: FieldDataType;
-  dataShards: Array<DataShard>;
+  data?: FieldDataType;
+  dataShards?: Array<DataShard>;
 };
 
 export type DataStageOutput = {

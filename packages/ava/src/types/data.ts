@@ -3,12 +3,12 @@ import type { DATA_SHAPE } from '@ava/data';
 /**
  * One row(record) of data in JSON.
  */
-export type Datum = Record<string, string | number>;
+// export type Datum = Record<string, string | number>;
 
 /**
  * Rows(records) of data.
  */
-export type Data = Datum[];
+export type Data = FieldDataType;
 
 /**
  * field type enum
@@ -122,7 +122,7 @@ export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DI
 // impact measures must satisfies anti-monotonic condition and is bounded between 0 and 1.
 export type ImpactMeasureMethod = 'SUM' | 'COUNT';
 
-export type Aggregator = (data: Datum[], measure: string) => number;
+export type Aggregator = (data: FieldDataType<DATA_SHAPE.PLAIN>, measure: string) => number;
 
 export type DomainType = 'measure' | 'dimension';
 

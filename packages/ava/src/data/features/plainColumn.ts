@@ -44,7 +44,7 @@ export function isStringColumnFeature(x: ColumnFeature): x is StringColumnFeatur
  * Check if it is NumberColumnFeature.
  */
 export function isNumberColumnFeature(x: ColumnFeature): x is NumberColumnFeature {
-  return x.recommendation === 'integer' || x.recommendation === 'float';
+  return x.recommendation === 'number';
 }
 
 /**
@@ -134,7 +134,7 @@ export function isUnique(info: ColumnFeature): boolean {
  * @param info - The {@link ColumnFeature} to process
  */
 export function isDiscrete(info: ColumnFeature): boolean {
-  return info.recommendation === 'integer';
+  return info.recommendation === 'number';
 }
 
 /**
@@ -142,7 +142,7 @@ export function isDiscrete(info: ColumnFeature): boolean {
  * @param info - The {@link ColumnFeature} to process
  */
 export function isContinuous(info: ColumnFeature): boolean {
-  return info.recommendation === 'float';
+  return info.recommendation === 'number';
 }
 
 /**
@@ -150,7 +150,7 @@ export function isContinuous(info: ColumnFeature): boolean {
  * @param info - The {@link ColumnFeature} to process
  */
 export function isInterval(info: ColumnFeature): boolean {
-  return info.recommendation === 'integer' || info.recommendation === 'float';
+  return info.recommendation === 'number';
 }
 
 /**
@@ -234,23 +234,23 @@ export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<D
 }
 
 /**
- * Determine what type a value is, may be one of [integer float date string null].
+ * Determine what type a value is, may be one of [number number date string null].
  */
 export function analyzeType(
   value: unknown,
   strictDatePattern?: boolean
-): 'null' | 'integer' | 'float' | 'date' | 'string' {
+): 'null' | 'number' | 'number' | 'date' | 'string' {
   if (isNil(value)) return 'null';
   if (isNumber(value)) {
-    if (isInteger(value)) return 'integer';
-    return 'float';
+    if (isInteger(value)) return 'number';
+    return 'number';
   }
   // 优先识别日期类型，避免字符型日期被判断成字符
   if (isDate(value) || isDateString(value, strictDatePattern)) return 'date';
   if (isString(value)) {
     if (isNumberString(value)) {
-      if ((value as string).includes('.')) return 'float';
-      return 'integer';
+      if ((value as string).includes('.')) return 'number';
+      return 'number';
     }
   }
   return 'string';
@@ -279,8 +279,8 @@ export function analyzeField(
     case 1:
       // 单一类型
       recommendation = types[0] as ColumnType;
-      // an integer field may be a date field
-      if (recommendation === 'integer') {
+      // an number field may be a date field
+      if (recommendation === 'number') {
         const data = list.filter((item) => item !== null);
         if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
           recommendation = 'date';
@@ -289,17 +289,17 @@ export function analyzeField(
       break;
     case 2:
       // 多种类型
-      if ((types.includes('integer') || types.includes('date')) && types.includes('float')) {
-        recommendation = 'float';
+      if ((types.includes('number') || types.includes('date')) && types.includes('number')) {
+        recommendation = 'number';
         break;
       }
-      if (types.includes('integer') && types.includes('date')) {
-        // an integer field may be a date field
+      if (types.includes('number') && types.includes('date')) {
+        // an number field may be a date field
         const data = list.filter((item) => item !== null);
         if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
           recommendation = 'date';
         } else {
-          recommendation = 'integer';
+          recommendation = 'number';
         }
         break;
       }
@@ -331,14 +331,14 @@ export function analyzeField(
           strictDatePattern
         ) as DateColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isDateString(item));
-      } else if (item === 'integer') {
-        meta.integer = analyzeField(
+      } else if (item === 'number') {
+        meta.number = analyzeField(
           restNotNullArray.filter((item) => isIntegerString(item) && !isDateString(item)),
           strictDatePattern
         ) as NumberColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isIntegerString(item));
-      } else if (item === 'float') {
-        meta.float = analyzeField(
+      } else if (item === 'number') {
+        meta.number = analyzeField(
           restNotNullArray.filter((item) => isFloatString(item) && !isDateString(item)),
           strictDatePattern
         ) as NumberColumnFeature;
@@ -364,13 +364,13 @@ export function analyzeField(
   if (recommendation === 'string') {
     Object.assign(columnFeature, analyzeString(nonNullArray.map((item) => `${item}`)));
   }
-  if (recommendation === 'integer' || recommendation === 'float') {
+  if (recommendation === 'number') {
     Object.assign(columnFeature, analyzeNumber(nonNullArray.map((item) => (item as number) * 1)));
   }
   if (recommendation === 'date') {
     Object.assign(
       columnFeature,
-      analyzeDate(nonNullArray as (string | Date)[], columnFeature.types.includes('integer'))
+      analyzeDate(nonNullArray as (string | Date)[], columnFeature.types.includes('number'))
     );
   }
 

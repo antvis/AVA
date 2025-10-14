@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { DATA_SHAPE } from '@ava/data/constants';
-import { kmeans, normalizedVectorVariance } from '@ava/data/utils';
+import { autoKMeans, normalizedVectorVariance } from '@ava/data/utils';
 
 type MatchFuntion = (input: Record<string, any> | Record<string, any>[]) => { is: boolean; format: any };
 
@@ -39,11 +39,10 @@ const oneHotEncodeKeys = (arr: Record<string, any>[]) => {
 export const matchTree: MatchFuntion = (input) => {
   let isTree = false;
   const roots = [];
-  // let childKey = 'children';
   if (_.isArray(input)) {
-    // array like, todo
     isTree = _.some(input, (record) => {
-      return matchTree(record);
+      const isTree = matchTree(record).is;
+      return isTree;
     });
     if (!isTree) {
       // 判断是否是多元素关联的树,todo
@@ -80,8 +79,8 @@ export const matchGraph: MatchFuntion = (input) => {
   let is = false;
   if (_.isArray(input)) {
     const encodes = oneHotEncodeKeys(input);
-    const cluster = kmeans(encodes, 2);
-    is = _.every(cluster.variances, (v) => v < 0.1);
+    const cluster = autoKMeans(encodes, 2);
+    is = cluster.centroids.length === 2 && _.every(cluster.variances, (v) => v < 0.1);
   } else {
     let arrayCount = 0;
     const arrs = [];
@@ -140,34 +139,55 @@ export const inferDataShape = (
   shape: DATA_SHAPE;
   format: any;
 } => {
-  let shape = DATA_SHAPE.PLAIN;
-  let format: any = {};
   const is2DimArray = Array.isArray(input) && _.every(input, (item) => Array.isArray(item));
   if (is2DimArray) {
-    shape = DATA_SHAPE.PLAIN;
-    // todo: 将 input 转化成二维数组，并且抽取 columns
-    format = { data: input, columns: [] };
-  } else {
-    const matchTreeRes = matchTree(input);
-    if (matchTreeRes.is) {
-      shape = DATA_SHAPE.TREE;
-      format = matchTreeRes.format;
-    } else {
-      const matchGraphRes = matchGraph(input);
-      if (matchGraphRes.is) {
-        shape = DATA_SHAPE.GRAPH;
-        format = matchGraphRes.format;
-      } else {
-        const matchFlowRes = matchFlow(input);
-        if (matchFlowRes.is) {
-          shape = DATA_SHAPE.FLOW;
-          format = matchFlowRes.format;
-        }
-      }
-    }
+    return {
+      shape: DATA_SHAPE.PLAIN,
+      format: { data: input, columns: _.times(input[0]?.lenght).map((i) => `column_${i}`) },
+    };
   }
+  const matchTreeRes = matchTree(input);
+  if (matchTreeRes.is) {
+    return {
+      shape: DATA_SHAPE.TREE,
+      format: matchTreeRes.format,
+    };
+  }
+  const matchGraphRes = matchGraph(input);
+  if (matchGraphRes.is) {
+    return {
+      shape: DATA_SHAPE.GRAPH,
+      format: matchGraphRes.format,
+    };
+  }
+  const matchFlowRes = matchFlow(input);
+  if (matchFlowRes.is) {
+    return {
+      shape: DATA_SHAPE.FLOW,
+      format: matchFlowRes.format,
+    };
+  }
+
+  let columnIndex = 0;
+  const rows = [];
+  const columnsSet = new Set();
+  const columnsIndexMap = new Map<string, number>();
+  _.each(input, (record) => {
+    const row = [];
+    _.each(record, (value, key) => {
+      let index = columnsIndexMap.get(key);
+      columnsSet.add(key);
+      if (_.isNil(index)) {
+        index = columnIndex++;
+        columnsIndexMap.set(key, index);
+      }
+      row[index] = value;
+    });
+    rows.push(row);
+  });
+  // todo: 需要按长度补齐
   return {
-    shape,
-    format,
+    shape: DATA_SHAPE.PLAIN,
+    format: { data: rows, columns: Array.from(columnsSet) },
   };
 };
