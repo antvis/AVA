@@ -317,10 +317,11 @@ const _radar = {
 
 const App = () => {
   const [chart, setChart] = useState(null);
+  // TODO: 后续改成调用faas服务，避免暴露apikey
   const advisor = new Advisor({
     llm: {
-      appId: process.env.TBOX_APP_ID,
-      authorization: process.env.TBOX_AUTHORIZATION,
+      appId: '202510APxPmo00551539',
+      authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
     },
   });
 
