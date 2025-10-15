@@ -133,13 +133,9 @@ $ git push origin branch-name
 * global: 根目录的变革
 * ava
 * ava/advisor
-* ava/ckb
 * ava/data
-* ava/insight
-* ava/ntv
-* ava-react
-* ava-react/ntv
-* ava-react/insight-card
+* ava/parser
+* site
 
 （3）subject
 

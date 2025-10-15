@@ -31,87 +31,38 @@ export default defineConfig({
     showChinaMirror: false,  
     navs: [
         {
-        slug: 'docs/guide',
-        title: {
-            zh: '教程',
-            en: 'Guide',
-        },
-        order: 0,
-        },
-        {
-        slug: 'docs/api',
-        title: {
-            zh: 'API 文档',
-            en: 'API',
-        },
-        order: 1,
-        },
-        {
-        slug: 'examples',
-        title: {
-            zh: '图表示例',
-            en: 'Examples',
-        },
-        order: 2,
-        },
-    ],
-    docs: [
-        // v3 暂时不透出 AutoChart
-        // {
-        //     slug: 'guide/auto-chart',
-        //     title: {
-        //         zh: 'AutoChart 组件',
-        //         en: 'AutoChart Component',
-        //     },
-        //     order: 1,
-        // },
-        {
-            slug: 'guide/ckb',
+            slug: 'docs/guide',
             title: {
-                zh: '图表知识库(ckb)',
-                en: 'Chart Knowledge Base (ckb)',
+                zh: '教程',
+                en: 'Guide',
+            },
+            order: 0,
+        },
+        {
+            slug: 'docs/api',
+            title: {
+                zh: 'API 文档',
+                en: 'API',
+            },
+            order: 1,
+        },
+        {
+            slug: 'examples',
+            title: {
+                zh: '图表示例',
+                en: 'Examples',
             },
             order: 2,
         },
-        {
-            slug: 'guide/data',
-            title: {
-                zh: '数据处理(data)',
-                en: 'Data Processing (data)',
-            },
-            order: 3,
-        },
+    ],
+    docs: [
         {
             slug: 'guide/advice',
             title: {
                 zh: '图表推荐(advisor)',
                 en: 'Chart Recommendation (advisor)',
             },
-            order: 4,
-        },
-        {
-            slug: 'guide/insight',
-            title: {
-                zh: '自动洞察(insight)',
-                en: 'Auto Insight (insight)',
-            },
-            order: 5,
-        },
-        {
-            slug: 'guide/ntv',
-            title: {
-                zh: '解读文本可视化(ntv)',
-                en: 'Narrative Text Vis (ntv)',
-            },
-            order: 6,
-        },
-        {
-            slug: 'guide/insight-card',
-            title: {
-                zh: '洞察卡片(InsightCard)',
-                en: 'Insight Visualization (InsightCard)',
-            },
-            order: 7,
+            order: 1,
         },
         {
           slug: 'guide/migrate',
@@ -119,94 +70,10 @@ export default defineConfig({
               zh: '版本升级指引',
               en: 'Migrate',
           },
-          order: 8,
-        },
-        // v3 暂时不透出 AutoChart
-        // {
-        //     slug: 'api/auto-chart',
-        //     title: {
-        //         zh: 'AutoChart',
-        //         en: 'AutoChart',
-        //     },
-        //     order: 1,
-        // },
-        {
-            slug: 'api/ckb',
-            title: {
-                zh: '图表知识库(ckb)',
-                en: 'Chart Knowledge Base (ckb)',
-            },
-            order: 2,
-        },
-        {
-            slug: 'api/data',
-            title: {
-              zh: '数据处理(data)',
-              en: 'Data Processing (data)',
-            },
-            order: 3,
-        },
-        {
-            slug: 'api/advice',
-            title: {
-              zh: '图表推荐(advisor)',
-              en: 'Chart Recommendation (advisor)',
-            },
-            order: 4,
-        },
-        {
-            slug: 'api/insight',
-            title: {
-              zh: '自动洞察(insight)',
-              en: 'Auto Insight (insight)',
-            },
-            order: 5,
-        },
-        {
-            slug: 'api/ntv',
-            title: {
-                zh: '解读文本可视化(ntv)',
-                en: 'NarrativeTextVis (ntv)',
-            },
-            order: 6,
-        },
-        {
-            slug: 'api/insight-card',
-            title: {
-                zh: '洞察卡片(InsightCard)',
-                en: 'Insight Visualization (InsightCard)',
-            },
-            order: 7,
-        },
-        {
-            slug: 'api/types',
-            title: {
-                zh: '类型 Types',
-                en: 'Types',
-            },
-            order: 8,
-        }
-    ],
-    examples: [
-        {
-          slug: 'ckb',
-          icon: 'block',
-          title: {
-              zh: '图表知识库(ckb)',
-              en: 'Chart Knowledge Base (ckb)',
-          },
           order: 2,
         },
-        {
-            slug: 'data',
-            icon: 'facet',
-            title: {
-              zh: '数据处理(data)',
-              en: 'Data Processing (data)',
-            },
-            order: 1,
-            includes: [],
-        },
+    ],
+    examples: [
         {
             slug: 'advice',
             icon: 'star-single-line',
@@ -214,43 +81,7 @@ export default defineConfig({
               zh: '图表推荐(advisor)',
               en: 'Chart Recommendation (advisor)',
             },
-            order: 3,
-        },
-        {
-            slug: 'insight',
-            icon: 'bulb',
-            title: {
-              zh: '自动洞察(insight)',
-              en: 'Auto Insight (insight)',
-            },
-            order: 4,
-        },
-        {
-          slug: 'ntv',
-          icon: 'build',
-          title: {
-              zh: '解读文本可视化(ntv)',
-              en: 'Narrative Text Vis (ntv)',
-          },
-          order: 5,
-        },
-        {
-            slug: 'insight-card',
-            icon: 'star-single-line',
-            title: {
-                zh: '洞察卡片(InsightCard)',
-                en: 'Insight Visualization (InsightCard)',
-            },
-            order: 6,
-        },
-        {
-            slug: 'others',
-            icon: 'other',
-            title: {
-                zh: '其他',
-                en: 'Others',
-            },
-            order: 7,
+            order: 1,
         },
     ],
     // 编辑器配置
@@ -310,7 +141,7 @@ export default defineConfig({
               zh: '开始使用',
               en: 'Getting Started',
             },
-            link: `/guide/intro`,
+            link: `/guide/index`,
           },
           {
             text: {

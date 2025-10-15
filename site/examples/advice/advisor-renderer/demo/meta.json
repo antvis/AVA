@@ -1,0 +1,16 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "renderer.jsx",
+      "title": {
+        "en": "Existing Chart to Lint",
+        "zh": "给定图表到 Advisor.lint() 进行优化"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/Gu8zDCffu/linter-steps.gif"
+    }
+  ]
+}

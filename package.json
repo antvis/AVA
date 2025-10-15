@@ -2,7 +2,7 @@
   "name": "ava",
   "private": true,
   "workspaces": [
-    "packages/ava"
+    "packages/*"
   ],
   "repository": {
     "type": "git",
