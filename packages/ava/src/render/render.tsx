@@ -4,7 +4,7 @@ import { Line, Area, Column, Bar, Pie, DualAxes, Radar } from '@antv/gpt-vis';
 
 import { transMetasToMap } from '@ava/advisor/chartAdvise';
 import { AdviseChart, Data, Meta, DataTypeMap, RenderParams } from '@ava/types';
-import { CHART_NAME, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@ava/constants';
+import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@ava/constants';
 
 type RenderChartParams = {
   encode: AdviseChart['encode'];
@@ -57,7 +57,10 @@ const getCommonConfig = <T extends keyof DataTypeMap>(
 
 export const CHART_RENDER_MAP = {
   [CHART_NAME.line]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'TREND'>({ ...params, category: 'TREND' });
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Trend>({
+      ...params,
+      category: CHART_PURPOSE.Trend,
+    });
     return (
       <Line
         data={data}
@@ -73,7 +76,10 @@ export const CHART_RENDER_MAP = {
     );
   },
   [CHART_NAME.area]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'TREND'>({ ...params, category: 'TREND' });
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Trend>({
+      ...params,
+      category: CHART_PURPOSE.Trend,
+    });
     return (
       <Area
         data={data}
@@ -88,9 +94,9 @@ export const CHART_RENDER_MAP = {
     );
   },
   [CHART_NAME.column]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'DISTRIBUTION'>({
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Distribution>({
       ...params,
-      category: 'DISTRIBUTION',
+      category: CHART_PURPOSE.Distribution,
     });
     return (
       <Column
@@ -105,9 +111,9 @@ export const CHART_RENDER_MAP = {
     );
   },
   [CHART_NAME.bar]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<'DISTRIBUTION'>({
+    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Distribution>({
       ...params,
-      category: 'DISTRIBUTION',
+      category: CHART_PURPOSE.Distribution,
     });
     return (
       <Bar
@@ -136,7 +142,7 @@ export const CHART_RENDER_MAP = {
 
     return <Pie data={newData} theme={uiConfig.theme || DEFAULT_UI_CONFIG.theme} style={getCommonStyle(uiConfig)} />;
   },
-  [CHART_NAME.multiple]: (params: RenderChartParams) => {
+  [CHART_NAME.dualAxes]: (params: RenderChartParams) => {
     const { encode, data, metasMap, uiConfig = {} } = params;
     const xFieldKey = encode.x[0];
     const y1FieldKey = encode.y[0];
@@ -175,9 +181,9 @@ export const CHART_RENDER_MAP = {
     );
   },
   [CHART_NAME.radar]: (params: RenderChartParams) => {
-    const { data, uiConfig } = getCommonConfig<'COMPARISON'>({
+    const { data, uiConfig } = getCommonConfig<CHART_PURPOSE.Comparison>({
       ...params,
-      category: 'COMPARISON',
+      category: CHART_PURPOSE.Comparison,
     });
     return (
       <Radar

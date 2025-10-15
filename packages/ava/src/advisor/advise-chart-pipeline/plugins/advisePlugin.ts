@@ -10,11 +10,11 @@ import {
 } from '@ava/types';
 import {
   generateAllChartConfigs,
-  getChartConfigScoringPrompt,
   optimizeChartConfig,
   sortChartConfigs,
   transformChartEncode,
 } from '@ava/advisor/chartAdvise';
+import { getChartAdvisePrompt } from '@ava/advisor/chartAdvise/prompt';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 import { DATA_SHAPE } from '@ava/data';
 
@@ -43,7 +43,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
     if (!forceType) {
       if (!disableModel) {
         try {
-          const prompt = getChartConfigScoringPrompt({
+          const prompt = getChartAdvisePrompt({
             userInput: purpose,
             chartConfig: allChartConfigs,
             metas,
