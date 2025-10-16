@@ -386,7 +386,7 @@ export const matchGraph: MatchFunction = (data: any) => {
     );
 
   // 如果有节点，至少需要有一些有效的边引用，或者边可以为空
-  const isValidGraph = hasValidNodes && nodes.length === 0 && hasValidEdges;
+  const isValidGraph = hasValidNodes && hasValidEdges;
 
   if (isValidGraph) {
     return {
