@@ -1,3 +1,13 @@
+import { TreeDataType } from '@ava/types';
+
 export class Tree {
-  getFeatures() {}
+  root!: TreeDataType;
+
+  constructor(data: TreeDataType) {
+    this.root = data;
+  }
+
+  getFeatures() {
+    return [];
+  }
 }

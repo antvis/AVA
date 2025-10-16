@@ -182,7 +182,7 @@ export type NodeData = {
   [key: string]: unknown;
 };
 
-export type LinkData = {
+export type EdgeData = {
   source: string;
   target: string;
   [key: string]: unknown;
@@ -205,7 +205,7 @@ export type GraphExtra = {
 
 export type GraphData = {
   nodes: NodeData[];
-  links: LinkData[];
+  edges: EdgeData[];
 };
 
 /** ---------------  end of graph ---------------  */

@@ -36,15 +36,12 @@ export class Advisor {
   // Actual implementation
   // eslint-disable-next-line no-dupe-class-members
   async advise(params: AdviseChartParams | AdviseTextParams): Promise<AdviseStageOutput | AdviseText> {
-    if ('data' in params) {
-      // recommend chart
-      const result = await this.adviseChartPipeline.execute(params as AdviseChartParams);
-      return result;
-    }
+    const result = await this.adviseChartPipeline.execute(params as AdviseChartParams);
+    return result;
     // recommend text
     // TODO: implement text recommendation
-    await this.adviseTextPipeline.execute(params as AdviseTextParams);
-    return {} as AdviseText;
+    // await this.adviseTextPipeline.execute(params as AdviseTextParams);
+    // return {} as AdviseText;
   }
 
   render(params: RenderParams) {

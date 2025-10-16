@@ -1,7 +1,15 @@
-import { AdviseChartParams, AdviseChartPluginInput, AdvisorPlugin, IAdviseChartPipeline } from '@ava/types';
-// import { processFieldMetas } from '@ava/data/features/statistics';
+import _ from 'lodash';
+
+import {
+  AdviseChartParams,
+  AdviseChartPluginInput,
+  AdvisorPlugin,
+  DataShard,
+  IAdviseChartPipeline,
+  TreeDataType,
+} from '@ava/types';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
-import { inferDataShape, DATA_SHAPE, DataStore, Tree, Graph, Flow } from '@ava/data';
+import { matchDataShape, DATA_SHAPE, DataStore, Tree, Graph, Flow } from '@ava/data';
 
 export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.DataPlugin;
@@ -14,53 +22,64 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
     const { data } = input.dataStore.extract;
     const { dataShards } = input.dataStore.extract;
     if (!dataShards) {
-      // 1. 先判定 input 的 shape，
-      const inferRes = inferDataShape(data);
-      let metas = [];
+      const inferRes = matchDataShape(data);
+
       if (inferRes.shape === DATA_SHAPE.PLAIN) {
-        // todo: 将
         const ds = new DataStore({
           data: inferRes.format.data,
           columns: inferRes.format.columns,
         });
         const features = await ds.getColumnFeatures();
-        metas = features.map((feature) => ({
+        const metas = features.map((feature) => ({
           id: feature.name,
           dataType: feature.types[0],
           allData: feature.rawData,
           ...feature,
         }));
+        const dataShards: DataShard[] = [
+          {
+            shape: DATA_SHAPE.TREE,
+            data,
+            metas,
+          },
+        ];
+        input.dataStore.data = { dataShards };
       } else if (inferRes.shape === DATA_SHAPE.TREE) {
-        const tree = new Tree();
+        const tree = new Tree(data as TreeDataType);
+        const metas = tree.getFeatures();
         tree.getFeatures();
+        const dataShards: DataShard[] = [
+          {
+            shape: DATA_SHAPE.TREE,
+            data: tree.root as TreeDataType,
+            metas,
+          },
+        ];
+        input.dataStore.data = { dataShards };
       } else if (inferRes.shape === DATA_SHAPE.FLOW) {
         const flow = new Flow();
         flow.getFeatures();
       } else if (inferRes.shape === DATA_SHAPE.GRAPH) {
-        // todo: 需要改造 Graph，来传入 infer 过程中已经计算过的 feature
         const graph = new Graph(inferRes.format.data);
-        graph.getFeatures();
+        const features = graph.getFeatures();
+        const dataShards: DataShard[] = [
+          {
+            shape: DATA_SHAPE.GRAPH,
+            data: inferRes.format.data,
+            metas: [features],
+          },
+        ];
+        input.dataStore.data = { dataShards };
       }
-      input.dataStore.data = {
-        dataShards: [
-          {
-            shape: inferRes.shape,
-            data,
-            metas,
-          },
-        ],
-      };
     } else {
-      // todo: 遍历通过模型生成的 datashards，补齐 feature 和 metas 等
       input.dataStore.data = {
-        dataShards: [
-          {
-            shape: DATA_SHAPE.PLAIN,
-            data,
-            // todo: 从 data 中抽取 metas
-            metas: [],
-          },
-        ],
+        dataShards: dataShards.map((dataShard) => ({
+          ...dataShard,
+          metas: dataShard.metas.map((v) => ({
+            ...v,
+            id: v.name,
+          })),
+        })),
       };
     }
   };
