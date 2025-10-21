@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
     "jsx": "react",
     "target": "ES5",
     "module": "commonjs",
     "lib": ["dom", "es2017"],
+    "ignoreDeprecations": "6.0",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
@@ -18,9 +20,9 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "baseUrl": "./",
     "paths": {
-      "@antv/ava": ["packages/ava/src/*"],
+      "@antv/ava": ["packages/ava/src/index.ts"],
+      "@antv/ava-renderer": ["packages/ava-renderer/src/index.ts"],
       "@ava/*": ["packages/ava/src/*"],
       "@advisor/*": ["packages/ava/src/advisor/*"]
     }

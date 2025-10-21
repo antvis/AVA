@@ -6,10 +6,11 @@ import {
   AdvisorPlugin,
   DataShard,
   IAdviseChartPipeline,
+  TboxLLM,
   TreeDataType,
 } from '@ava/types';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
-import { matchDataShape, DATA_SHAPE, DataStore, Tree, Graph, Flow } from '@ava/data';
+import { matchDataShape, DATA_SHAPE, DataStore, Tree, Graph, getPlainShard } from '@ava/data';
 
 export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.DataPlugin;
@@ -36,13 +37,17 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
           allData: feature.rawData,
           ...feature,
         }));
-        const dataShards: DataShard[] = [
+        let dataShards: DataShard[] = [
           {
             shape: DATA_SHAPE.PLAIN,
             data,
             metas,
           },
         ];
+        if (ds.columns.length >= 4) {
+          dataShards = (await getPlainShard(ds, input.context.llm as TboxLLM)) as DataShard[];
+        }
+        console.debug('shards finnaly result: ', dataShards);
         input.dataStore.data = { dataShards };
       } else if (inferRes.shape === DATA_SHAPE.TREE) {
         const tree = new Tree(data as TreeDataType);
@@ -56,9 +61,6 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
           },
         ];
         input.dataStore.data = { dataShards };
-      } else if (inferRes.shape === DATA_SHAPE.FLOW) {
-        const flow = new Flow();
-        flow.getFeatures();
       } else if (inferRes.shape === DATA_SHAPE.GRAPH) {
         const graph = new Graph(inferRes.format.data);
         const features = graph.getFeatures();

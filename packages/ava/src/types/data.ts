@@ -61,8 +61,6 @@ export type FlowDataType = {
  */
 export type FieldDataType<T extends DATA_SHAPE = DATA_SHAPE.PLAIN> = T extends DATA_SHAPE.TREE
   ? TreeDataType
-  : T extends DATA_SHAPE.FLOW
-  ? FlowDataType
   : T extends DATA_SHAPE.GRAPH
   ? GraphDataType
   : PlainDataType;

@@ -180,16 +180,6 @@ export const getTreeChartAdvisePrompt = (params: {
   return params.userInput;
 };
 
-export const getFlowChartAdvisePrompt = (params: {
-  userInput: string;
-  chartConfig: ChartConfig[];
-  metas: Meta[];
-  data: Data;
-}) => {
-  // todo: 完善 prompt
-  return params.userInput;
-};
-
 export const getGraphAdvisePrompt = (params: {
   userInput: string;
   chartConfig: ChartConfig[];

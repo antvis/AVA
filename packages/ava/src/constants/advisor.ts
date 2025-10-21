@@ -16,6 +16,7 @@ export enum CHART_NAME {
   wordCloud = 'wordCloud',
   treemap = 'treemap',
   histogram = 'histogram',
+  graph = 'graph',
 }
 
 // 图表缩写和全称映射
@@ -37,6 +38,7 @@ export const ABBR_AND_FULL_CHART_NAME_MAP = {
   w: CHART_NAME.wordCloud,
   tr: CHART_NAME.treemap,
   h: CHART_NAME.histogram,
+  gr: CHART_NAME.graph,
 };
 
 // 图表全称和缩写映射

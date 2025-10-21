@@ -81,7 +81,7 @@ export class DataStore {
         }
         sum += ratio;
       });
-    } else if (feature.recommendation === 'integer') {
+    } else if (feature.recommendation === 'number') {
       // pick with quantile
       const q1 = [];
       const q2 = [];
@@ -171,5 +171,9 @@ export class DataStore {
       })
     );
     return features;
+  }
+
+  getColumnIndex(col: string) {
+    return this.columnIndexMap.get(col) ?? -1;
   }
 }

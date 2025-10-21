@@ -1,14 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "baseUrl": "./",
-    "declaration": true,
-    "declarationDir": "./lib",
-    "paths": {
-      "@ava/*": ["src/*"],
-      "@advisor/*": ["src/advisor/*"],
-      "@advisor-deprecated/*": ["src/advisor-deprecated/*"]
-    }
-  },
   "include": ["./src", "./__tests__"]
 }

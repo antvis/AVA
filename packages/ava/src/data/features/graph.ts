@@ -5,7 +5,7 @@ import { analyzeField } from './plainColumn';
 
 import type {
   NodeData,
-  LinkData,
+  EdgeData,
   ColumnFeature,
   GraphStatisticalFeature,
   NodeStructFeat,
@@ -37,7 +37,7 @@ export function getNodeFields(nodes: NodeData[]) {
   const nodeFields = generateColDataFromArray(nodes, nodeFieldNames);
   return { nodeFields, nodeFieldNames };
 }
-export function getLinkFields(links: LinkData[]) {
+export function getLinkFields(links: EdgeData[]) {
   const [link0] = links;
   const linkFieldNames = link0 ? Object.keys(link0) : [];
   const linkFields = generateColDataFromArray(links, linkFieldNames);
@@ -67,7 +67,7 @@ export function getAllFieldsInfo(dataFields: any[], fieldNames: string[]): Colum
  * @param nodes
  * @param links
  */
-export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: ColumnFeature[], links: LinkData[]): ColumnFeature {
+export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: ColumnFeature[], links: EdgeData[]): ColumnFeature {
   const MAX_CLUSTER_NUM = 10;
   let fieldForCluster;
   for (let i = 0; i < nodeFieldsInfo.length; i += 1) {
@@ -112,7 +112,7 @@ export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: ColumnFeature[],
  * @param nodes
  * @param links
  */
-export function getAllStructFeats(nodes: NodeData[], links: LinkData[]) {
+export function getAllStructFeats(nodes: NodeData[], links: EdgeData[]) {
   const nodeStructFeats: Partial<NodeStructFeat>[] = [];
   const linkStructFeats: Partial<LinkStructFeat>[] = [];
   // TODO: whether the graph is directed need to be passed in

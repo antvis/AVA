@@ -1,6 +1,6 @@
 {
-  "name": "@antv/ava",
-  "version": "4.0.0-alpha.0",
+  "name": "@antv/ava-renderer",
+  "version": "0.0.1",
   "description": "A framework for automated visual analytics.",
   "author": {
     "name": "AntV",
@@ -21,10 +21,9 @@
   "publishConfig": {
     "access": "public"
   },
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "unpkg": "dist/ava.min.js",
-  "module": "esm/index.js",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "module": "src/index.ts",
   "files": [
     "esm",
     "dist",
@@ -40,12 +39,7 @@
     "clean": "rimraf lib esm dist",
     "build:umd": "father build",
     "build:cjs": "rimraf ./lib && tsc -p tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
-    "build:esm": "rimraf ./esm && tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
-    "build:ntv-schema": "mkdir -p build && ts-json-schema-generator -f tsconfig.json -p src/text/index.ts -t NarrativeTextSpec --no-type-check --no-ref-encode > build/ntv-schema.json",
-    "build": "run-p build:*",
-    "test": "jest",
-    "coverage": "jest --coverage",
-    "watch": "yarn module && yarn build --w"
+    "build:esm": "rimraf ./esm && tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -54,23 +48,18 @@
     ]
   },
   "dependencies": {
-    "@antv/color-schema": "^0.2.3",
-    "@antv/smart-color": "^0.2.1",
-    "@antv/algorithm": "^0.1.26",
-    "bayesian-changepoint": "^1.0.1",
-    "csstype": "^3.1.2",
-    "heap-js": "^2.1.6",
-    "lodash": "^4.17.21",
-    "regression": "^2.0.1",
-    "tapable": "^2.2.1",
-    "tslib": "^2.3.1",
-    "moment": "^2.29.4",
-    "axios": "^1.12.2",
-    "openai": "^6.2.0"
+    "@antv/g2": "^5.0.8",
+    "@antv/gpt-vis": "^0.5.7",
+    "@antv/g6": "^5.0.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "peerDependencies": {
+    "@antv/ava": "^4.0.0-alpha.0"
   },
   "devDependencies": {
     "@antv/data-samples": "^1.0.1",
-    "@antv/ava-renderer": "0.0.1",
+    "@antv/ava": "^4.0.0-alpha.0",
     "@stdlib/types": "^0.0.12",
     "@testing-library/jest-dom": "^4.2.4",
     "@types/d3-array": "^3.0.1",
