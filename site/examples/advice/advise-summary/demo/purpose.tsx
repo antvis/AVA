@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 
-import { JSONView } from 'antv-site-demo-rc';
+import { Input } from 'antd';
 import ReactDOM from 'react-dom';
 import { Advisor } from '@antv/ava';
 
@@ -13,15 +13,18 @@ const advisor = new Advisor({
 
 const App = () => {
   const [chart, setChart] = useState<React.ReactElement>(null);
-  const [data] = useState([
-    { date: '1999', value: 9 },
-    { date: '2000', value: 2 },
-    { date: '2001', value: 3 },
-    { date: '2002', value: 5 },
-    { date: '2003', value: 9 },
-  ]);
+  const [purpose] = useState(`
+    看不同年份的贡献占比:
+    ${JSON.stringify([
+      { date: '1999', value: 9 },
+      { date: '2000', value: 2 },
+      { date: '2001', value: 3 },
+      { date: '2002', value: 5 },
+      { date: '2003', value: 9 },
+    ])}
+  `);
   const advise = useCallback(async () => {
-    const res = await advisor.advise({ data });
+    const res = await advisor.advise({ purpose });
     const newChart = advisor.render({
       chartConfig: res.adviseCharts[0],
       data: res.data,
@@ -34,11 +37,11 @@ const App = () => {
     });
 
     setChart(newChart);
-  }, [data]);
+  }, [purpose]);
 
   return (
     <div>
-      <JSONView json={data} />
+      <Input value={purpose} type="textarea" />
       <button onClick={advise}>advise</button>
       <div>{chart}</div>
     </div>

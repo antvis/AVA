@@ -1,6 +1,29 @@
-import { matchGraph, matchTree } from '@ava/data/infer';
+import { matchDataShape } from '@ava/data/infer';
+import { DATA_SHAPE } from '@ava/data/constants';
 
-describe('isGraphLike', () => {
+describe('test matchDataShape', () => {
+  const listData1 = [
+    ['A', 'B', 'C', 9],
+    ['D', 'E', 'F', 2],
+    ['G', 'H', 'I', 63],
+  ];
+
+  test('returns true for a list-data input', () => {
+    const matchRes = matchDataShape(listData1);
+    expect(matchRes.shape).toBe(DATA_SHAPE.PLAIN);
+  });
+
+  const listData2 = [
+    { id: 'A', label: '用户中心', type: 'service', group: 'backend', size: 20 },
+    { id: 'B', label: '订单系统', type: 'service', group: 'backend', size: 18 },
+    { id: 'C', label: '支付网关', type: 'service', group: 'payment', size: 16 },
+  ];
+
+  test('returns true for a list-data input', () => {
+    const matchRes = matchDataShape(listData2);
+    expect(matchRes.shape).toBe(DATA_SHAPE.PLAIN);
+  });
+
   const graphLikeData1 = [
     { id: 'A', label: '用户中心', type: 'service', group: 'backend', size: 20 },
     { id: 'B', label: '订单系统', type: 'service', group: 'backend', size: 18 },
@@ -33,6 +56,11 @@ describe('isGraphLike', () => {
     { source: 'E', target: 'K', type: 'push', weight: 0.5 },
   ];
 
+  test('returns true for a array shape graph-like input', () => {
+    const matchRes = matchDataShape(graphLikeData1);
+    expect(matchRes.shape).toBe(DATA_SHAPE.GRAPH);
+  });
+
   const graphLikeData2 = {
     nodes: [
       { id: 'H', label: '数据库', type: 'database', group: 'storage', size: 19 },
@@ -46,24 +74,33 @@ describe('isGraphLike', () => {
     ],
   };
 
+  test('returns true for a object shape graph-like input', () => {
+    const matchRes = matchDataShape(graphLikeData2);
+    expect(matchRes.shape).toBe(DATA_SHAPE.GRAPH);
+  });
+
   const graphLikeData3 = {
     nodes: [
-      { id: 'H', label: '数据库', type: 'database', group: 'storage', size: 19 },
-      { id: 'I', label: '缓存 Redis', type: 'cache', group: 'storage', size: 12 },
-      { id: 'J', label: '前端 Web', type: 'frontend', group: 'client', size: 10 },
+      { level: 'H', label: '数据库', type: 'database', group: 'storage', size: 19 },
+      { level: 'I', label: '缓存 Redis', type: 'cache', group: 'storage', size: 12 },
+      { level: 'J', label: '前端 Web', type: 'frontend', group: 'client', size: 10 },
     ],
     links: [
-      { source: 'C', target: 'G', type: 'verify', weight: 0.8 },
-      { source: 'G', target: 'C', type: 'approve', weight: 0.78 },
-      { source: 'A', target: 'I', type: 'cache-get', weight: 0.65 },
+      { s: 'C', t: 'G', type: 'verify', weight: 0.8 },
+      { s: 'G', t: 'C', type: 'approve', weight: 0.78 },
+      { s: 'A', t: 'I', type: 'cache-get', weight: 0.65 },
     ],
-    helloe: {},
   };
+
+  test('returns true for a object shape graph-like input with other keys', () => {
+    const matchRes = matchDataShape(graphLikeData3);
+    expect(matchRes.shape).toBe(DATA_SHAPE.GRAPH);
+  });
 
   const graphLikeData4 = {
     nodes: [
       { id: 'H', label: '数据库', type: 'database', group: 'storage', size: 19 },
-      { id: 'I', label: '缓存 Redis', type: 'cache', group: 'storage', size: 12 },
+      { id: 'I', label: '缓存 Redis', type: 'cache', group: 'storage', size: 12, fas: '23409' },
       { id: 'J', label: '前端 Web', type: 'frontend', group: 'client', size: 10, value: 233, ii23: '24049' },
     ],
     links: [
@@ -71,8 +108,12 @@ describe('isGraphLike', () => {
       { source: 'G', target: 'C', type: 'approve', weight: 0.78 },
       { source: 'A', target: 'I', type: 'cache-get', weight: 0.65 },
     ],
-    helloe: {},
   };
+
+  test('returns true for a object shape graph-like input with redundant keys', () => {
+    const matchRes = matchDataShape(graphLikeData4);
+    expect(matchRes.shape).toBe(DATA_SHAPE.GRAPH);
+  });
 
   const notGraphLikeData1 = {
     nodes: [
@@ -86,82 +127,9 @@ describe('isGraphLike', () => {
     ],
   };
 
-  test('returns true for a array shape graph-like input', () => {
-    expect(matchGraph(graphLikeData1).is).toBe(true);
-  });
-
-  test('return true for a object shape graph-like input', () => {
-    expect(matchGraph(graphLikeData2).is).toBe(true);
-  });
-
-  test('return true for a object shape graph-like input with extra properties', () => {
-    expect(matchGraph(graphLikeData3).is).toBe(true);
-  });
-
-  test('return true for a object shape graph-like input with extra properties and some extra key', () => {
-    expect(matchGraph(graphLikeData4).is).toBe(true);
-  });
-
-  test('return false for a object shape graph-like input with extra properties', () => {
-    expect(matchGraph(notGraphLikeData1).is).toBe(false);
-  });
-});
-
-describe('matchTree', () => {
-  const treeLikeData1 = {
-    id: '1',
-    value: 2323,
-    children: [
-      {
-        id: '2',
-        value: 343,
-      },
-      {
-        id: '3',
-        value: 233,
-      },
-    ],
-  };
-
-  const treeLikeData2 = [
-    {
-      id: '1',
-      value: 2323,
-      children: [
-        {
-          id: '2',
-          value: 343,
-        },
-        {
-          id: '3',
-          value: 233,
-        },
-      ],
-    },
-  ];
-
-  const treeLikeData3 = [
-    { id: '1', children: ['2', '3', '4'] },
-    { id: '2', children: ['5'] },
-    { id: '3', children: ['6'] },
-    { id: '4', children: ['7'] },
-    { id: '5', value: 2332 },
-    { id: '6', value: 2332 },
-    { id: '7', value: 2332 },
-  ];
-
-  it('returns true for a tree-like object', () => {
-    expect(matchTree(treeLikeData1).is).toBe(true);
-  });
-
-  it('returns true for a tree-like array with mutiple root', () => {
-    expect(matchTree(treeLikeData2).is).toBe(true);
-  });
-
-  /**
-   * the key all element contain maybe is id,
-   */
-  it('returns true for a tree-like array with children linked', () => {
-    expect(matchTree(treeLikeData3).is).toBe(true);
+  test('returns false for a object shape not graph-like input', () => {
+    const matchRes = matchDataShape(notGraphLikeData1);
+    console.debug(JSON.stringify(matchRes));
+    expect(matchRes.shape).not.toBe(DATA_SHAPE.GRAPH);
   });
 });

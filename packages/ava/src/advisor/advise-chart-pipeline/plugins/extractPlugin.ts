@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { Parser } from '@ava/parser';
-import { AdviseChartParams, AdvisorPlugin, AdviseChartPluginInput } from '@ava/types';
+import { AdviseChartParams, AdvisorPlugin, AdviseChartPluginInput, TboxLLM } from '@ava/types';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 
 export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
@@ -14,7 +14,7 @@ export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
   }
 
   apply(pipeline) {
-    pipeline.stages.data.tapPromise('TextParserPlugin', this.execute.bind(this));
+    pipeline.stages.extract.tapPromise('ExtractPlugin', this.execute.bind(this));
   }
 
   async execute(ctx: AdviseChartPluginInput) {
@@ -29,12 +29,12 @@ export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
         const data = JSON.parse(purpose);
         ctx.dataStore.extract.data = data;
       } catch (e) {
-        // 解析出数据形状、结构和意图以及拆分，输出给 dataplugin 进行分片
-        // const result = this.parser.parse();
-        // 原始数据
-        // ctx.dataStore.extract.data = result.data;
-        // 通过 LLM 解析的分片结构
-        // ctx.dataStore.extract.dataFrames = result.dataFrames;
+        let res = await this.parser.parse(purpose, ctx.context.llm as TboxLLM);
+        if (!Array.isArray(res)) {
+          res = [res];
+        }
+        ctx.dataStore.extract.data = res.map((v) => v.data);
+        ctx.dataStore.extract.dataShards = res;
       }
     }
   }

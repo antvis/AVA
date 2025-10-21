@@ -11,15 +11,43 @@ const advisor = new Advisor({
   },
 });
 
+const TREE_DATA = {
+  id: 1,
+  name: '公司总部',
+  departments: [
+    {
+      id: 2,
+      name: '技术部',
+      departments: [
+        { id: 5, name: '前端组' },
+        { id: 6, name: '后端组' },
+        { id: 7, name: '测试组' },
+      ],
+    },
+    {
+      id: 3,
+      name: '产品部',
+      departments: [
+        { id: 8, name: '产品经理' },
+        { id: 9, name: 'UX 设计' },
+        { id: 10, name: '数据分析' },
+      ],
+    },
+    {
+      id: 4,
+      name: '运营部',
+      departments: [
+        { id: 11, name: '市场推广' },
+        { id: 12, name: '用户运营' },
+        { id: 13, name: '客服支持' },
+      ],
+    },
+  ],
+};
+
 const App = () => {
   const [chart, setChart] = useState<React.ReactElement>(null);
-  const [data] = useState([
-    { date: '1999', value: 9 },
-    { date: '2000', value: 2 },
-    { date: '2001', value: 3 },
-    { date: '2002', value: 5 },
-    { date: '2003', value: 9 },
-  ]);
+  const [data] = useState(TREE_DATA);
   const advise = useCallback(async () => {
     const res = await advisor.advise({ data });
     const newChart = advisor.render({
@@ -32,7 +60,6 @@ const App = () => {
         lineWidth: 5,
       },
     });
-
     setChart(newChart);
   }, [data]);
 

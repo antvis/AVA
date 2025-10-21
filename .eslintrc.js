@@ -106,6 +106,8 @@ module.exports = {
       },
     ],
     'no-param-reassign': 1,
+    'no-continue': 1,
+    'no-bitwise': 1,
   },
   settings: {
     react: {

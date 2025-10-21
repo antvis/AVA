@@ -14,7 +14,12 @@ import {
   sortChartConfigs,
   transformChartEncode,
 } from '@ava/advisor/chartAdvise';
-import { getChartAdvisePrompt } from '@ava/advisor/chartAdvise/prompt';
+import {
+  getPlainChartAdvisePrompt,
+  getTreeChartAdvisePrompt,
+  getGraphAdvisePrompt,
+  getFlowChartAdvisePrompt,
+} from '@ava/advisor/chartAdvise/prompt';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 import { DATA_SHAPE } from '@ava/data';
 
@@ -26,29 +31,53 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   };
 
   execute = async (input: AdviseChartPluginInput) => {
-    const { dataStore, context } = input;
-    const { excludes, includes, disableModel, forceType, purpose = '', llm } = context;
+    const { dataStore } = input;
     const { dataShards } = dataStore.data;
-    let allChartConfigs: ChartConfig[] = [];
     // create all valid chart configs using field data
     const shard = dataShards[0];
-    allChartConfigs = generateAllChartConfigs(shard.metas, excludes, includes);
-    logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
+    if (shard.shape === DATA_SHAPE.PLAIN) {
+      await this.advisePlain(dataShards, input);
+    } else if (shard.shape === DATA_SHAPE.TREE) {
+      await this.adviseTree(dataShards, input);
+    } else if (shard.shape === DATA_SHAPE.GRAPH) {
+      await this.adviseGraph(dataShards, input);
+    }
+  };
 
+  advisePlain = async (dataShards, input: AdviseChartPluginInput) => {
     // Use LLM to score all chart configs based on user purpose/data/metas
+    let allChartConfigs: ChartConfig[] = [];
     let _llmCompleted = false;
     let _llmCostTime = '';
+    const shard = dataShards[0];
+    const { excludes, includes, disableModel, forceType, purpose = '', llm } = input.context;
+    allChartConfigs = generateAllChartConfigs(shard.metas, excludes, includes);
+    logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
     const { metas } = shard;
     const data = shard.data as FieldDataType<DATA_SHAPE.PLAIN>;
     if (!forceType) {
       if (!disableModel) {
         try {
-          const prompt = getChartAdvisePrompt({
+          // todo: system
+          let prompt = '';
+          const params = {
             userInput: purpose,
             chartConfig: allChartConfigs,
             metas,
             data,
-          });
+          };
+          if (shard.shape === DATA_SHAPE.PLAIN) {
+            prompt = getPlainChartAdvisePrompt(params);
+          } else if (shard.shape === DATA_SHAPE.TREE) {
+            // tree chart
+            prompt = getTreeChartAdvisePrompt(params);
+          } else if (shard.shape === DATA_SHAPE.GRAPH) {
+            // graph chart
+            prompt = getGraphAdvisePrompt(params);
+          } else {
+            // flow
+            prompt = getFlowChartAdvisePrompt(params);
+          }
           const startTime = performance.now();
           let LLMRes = '';
           if (isOpenAi(llm)) {
@@ -84,7 +113,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         data,
       };
 
-      dataStore.advise = result;
+      input.dataStore.advise = result;
     } else {
       // user specified chart type
       const finalRes: AdviseChart[] = allChartConfigs
@@ -99,25 +128,17 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         metas,
         data,
       };
-      dataStore.advise = result;
+      input.dataStore.advise = result;
     }
   };
 
-  advisePlain = async () => {
-    // todo: 原来的推荐逻辑
+  adviseTree = (dataShards, input: AdviseChartPluginInput) => {
+    // todo: push tree chart
+    input.dataStore.advise = dataShards.map((v) => v);
   };
 
-  adviseTree = () => {
-    // 定向到树图的集合
-    // todo: 确定哪些具体图表类型和参数结构，prompt & 知识库 里需要构建
-  };
-
-  adviseGraph = () => {
-    // 定向到图集合
-    // todo: 确定哪些图表类型和参数结构，prompt & 知识库 里需要构建
-  };
-
-  adviseFlow = () => {
-    // todo: 定向到流向图的集合
+  adviseGraph = (dataShards, input: AdviseChartPluginInput) => {
+    // todo: push graph chart
+    input.dataStore.advise = dataShards.map((v) => v);
   };
 }

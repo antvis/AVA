@@ -4,6 +4,20 @@ import { ChartConfig, Data, Meta } from '@ava/types';
 
 import { getStatisticsFeature } from '..';
 
+const ROLE_CONTEXT = `
+# 角色设定
+## 身份
+资深数据可视化顾问（10+年经验）
+- 行业覆盖：金融、医疗、教育等跨领域
+- 技术专长：多维数据分析与可视化表达
+## 核心能力
+- 需求洞察：能精准解析用户可视化意图
+- 图表评估：掌握 100+图表类型的适用场景
+- 决策支持：建立科学的图表推荐体系，对用户给定的候选图表列表进行适配度打分排序
+# 限制（严格遵守）:
+1. **严禁修改数据**：仅针对用户提供的候选图表列表进行适配度打分排序，**只能打分排序，严禁新增图表类型、删除图表类型**
+`;
+
 /**
  * @desc 生成候选图表prompt
  */
@@ -71,7 +85,7 @@ ${getUseCasePrompt(ckb.nonUseCase)}
   `;
 };
 
-export const getChartAdvisePrompt = (params: {
+export const getPlainChartAdvisePrompt = (params: {
   userInput: string;
   chartConfig: ChartConfig[];
   metas: Meta[];
@@ -88,17 +102,7 @@ export const getChartAdvisePrompt = (params: {
   }));
 
   return `
-# 角色设定
-## 身份
-资深数据可视化顾问（10+年经验）
-- 行业覆盖：金融、医疗、教育等跨领域
-- 技术专长：多维数据分析与可视化表达
-## 核心能力
-- 需求洞察：能精准解析用户可视化意图
-- 图表评估：掌握 100+图表类型的适用场景
-- 决策支持：建立科学的图表推荐体系，对用户给定的候选图表列表进行适配度打分排序
-# 限制（严格遵守）:
-1. **严禁修改数据**：仅针对用户提供的候选图表列表进行适配度打分排序，**只能打分排序，严禁新增图表类型、删除图表类型**
+${ROLE_CONTEXT}
 # 任务流程
 ## 输入要求
 用户会提供：
@@ -164,4 +168,34 @@ ${selectedCkbPrompt}
 # 用户的问题为：
 ${chartConfigPrompt}
   `;
+};
+
+export const getTreeChartAdvisePrompt = (params: {
+  userInput: string;
+  chartConfig: ChartConfig[];
+  metas: Meta[];
+  data: Data;
+}) => {
+  // todo: 完善 prompt
+  return params.userInput;
+};
+
+export const getFlowChartAdvisePrompt = (params: {
+  userInput: string;
+  chartConfig: ChartConfig[];
+  metas: Meta[];
+  data: Data;
+}) => {
+  // todo: 完善 prompt
+  return params.userInput;
+};
+
+export const getGraphAdvisePrompt = (params: {
+  userInput: string;
+  chartConfig: ChartConfig[];
+  metas: Meta[];
+  data: Data;
+}) => {
+  // todo: 完善 prompt
+  return params.userInput;
 };
