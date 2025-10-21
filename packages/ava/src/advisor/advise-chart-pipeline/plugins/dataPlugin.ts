@@ -38,7 +38,7 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
         }));
         const dataShards: DataShard[] = [
           {
-            shape: DATA_SHAPE.TREE,
+            shape: DATA_SHAPE.PLAIN,
             data,
             metas,
           },
