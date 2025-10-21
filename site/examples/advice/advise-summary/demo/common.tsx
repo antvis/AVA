@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 
-import { JSONView } from 'antv-site-demo-rc';
 import ReactDOM from 'react-dom';
+import { Input } from 'antd';
 import { Advisor } from '@antv/ava';
+import { renderChart } from '@antv/ava-renderer';
 
 const advisor = new Advisor({
   llm: {
@@ -22,7 +23,7 @@ const App = () => {
   ]);
   const advise = useCallback(async () => {
     const res = await advisor.advise({ data });
-    const newChart = advisor.render({
+    const newChart = renderChart({
       chartConfig: res.adviseCharts[0],
       data: res.data,
       metas: res.metas,
@@ -38,7 +39,7 @@ const App = () => {
 
   return (
     <div>
-      <JSONView json={data} />
+      <Input.TextArea value={JSON.stringify(data)} />
       <button onClick={advise}>advise</button>
       <div>{chart}</div>
     </div>

@@ -1,17 +1,12 @@
 import React from 'react';
 
 import { Line, Area, Column, Bar, Pie, DualAxes, Radar } from '@antv/gpt-vis';
+import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@antv/ava';
 
-import { transMetasToMap } from '@ava/advisor/chartAdvise';
-import { AdviseChart, Data, Meta, DataTypeMap, RenderParams } from '@ava/types';
-import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@ava/constants';
+import { transMetasToMap } from './utils';
 
-type RenderChartParams = {
-  encode: AdviseChart['encode'];
-  data: Data;
-  metasMap: Record<string, Meta>;
-  uiConfig?: RenderParams['uiConfig'];
-};
+import type { DataTypeMap, RenderParams } from '@antv/ava';
+import type { RenderChartParams } from './types';
 
 const getCommonStyle = (uiConfig: RenderParams['uiConfig'] = {}) => {
   return {
@@ -196,17 +191,32 @@ export const CHART_RENDER_MAP = {
       />
     );
   },
+  [CHART_NAME.spreadsheetPro]: (params: RenderChartParams) => {
+    return <div>spreadsheetPro: unimplement: {JSON.stringify(params.metasMap)}</div>;
+  },
+  [CHART_NAME.treemap]: (_params: RenderChartParams) => {
+    return <div>treemap</div>;
+  },
+
+  [CHART_NAME.graph]: (_params: RenderChartParams) => {
+    return <div>graph</div>;
+  },
 };
 
 export const renderChart = (params: RenderParams) => {
   const { chartConfig, data, metas, uiConfig = {} } = params;
+  console.debug('render chart: ', params);
   const { type, encode } = chartConfig;
   const metasMap = transMetasToMap(metas);
   const render = CHART_RENDER_MAP[type];
-  return render({
-    encode,
-    data,
-    metasMap,
-    uiConfig,
-  });
+  if (render) {
+    return render({
+      encode,
+      data,
+      metasMap,
+      uiConfig,
+    });
+  }
+
+  return <div>无可渲染图表：{type}</div>;
 };

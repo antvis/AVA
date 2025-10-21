@@ -183,11 +183,16 @@ export default defineConfig({
   mfsu: false,
   alias: {
     '@': __dirname,
+    // 解决源码引入的问题
     '@ava': '@antv/ava/src',
-    '@advisor': '@antv/ava/src/advisor',
+    '@advisor': '@antv/ava/src/advisor'
   },
   links: [
   ],
   scripts: [
   ],
+  externals: {
+    '@antv/ava': 'ava',
+    '@antv/ava-renderer': 'avaRenderer',
+  }
 });

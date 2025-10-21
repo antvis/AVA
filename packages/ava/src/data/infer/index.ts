@@ -4,7 +4,6 @@ import { DATA_SHAPE } from '@ava/data/constants';
 
 import { matchGraph } from './graph';
 import { matchTree } from './tree';
-import { matchFlow } from './flow';
 
 /**
  * 推断数据的基础结构
@@ -35,13 +34,6 @@ export const matchDataShape = (
     return {
       shape: DATA_SHAPE.GRAPH,
       format: matchGraphRes.format,
-    };
-  }
-  const matchFlowRes = matchFlow(input);
-  if (matchFlowRes.is) {
-    return {
-      shape: DATA_SHAPE.FLOW,
-      format: matchFlowRes.format,
     };
   }
 

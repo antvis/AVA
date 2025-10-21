@@ -28,5 +28,5 @@ export enum DATA_SHAPE {
   PLAIN = 'plain',
   GRAPH = 'graph',
   TREE = 'tree',
-  FLOW = 'flow',
+  GEO = 'geo',
 }

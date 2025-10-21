@@ -16,22 +16,6 @@ export {
   SHAPES,
 } from './ckb';
 
-export type {
-  ChartId,
-  Family,
-  Purpose,
-  CoordinateSystem,
-  GraphicCategory,
-  Shape,
-  LevelOfMeasurement,
-  DataPrerequisite,
-  Channel,
-  RecommendRating,
-  PureChartKnowledge,
-  ChartKnowledgeBase,
-  CkbConfig,
-} from './ckb';
-
 /* data */
 export {
   min,
@@ -61,6 +45,25 @@ export {
 
 export * from './data';
 
+export { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from './constants';
+
 /* insight */
-export type { Datum } from './types';
-export { getInsights, generateInsightVisualizationSpec, insightPatternsExtractor, getSpecificInsight } from './insight';
+// export { getInsights, generateInsightVisualizationSpec, insightPatternsExtractor, getSpecificInsight } from './insight';
+
+export type {
+  ChartId,
+  Family,
+  Purpose,
+  CoordinateSystem,
+  GraphicCategory,
+  Shape,
+  LevelOfMeasurement,
+  DataPrerequisite,
+  Channel,
+  RecommendRating,
+  PureChartKnowledge,
+  ChartKnowledgeBase,
+  CkbConfig,
+} from './ckb';
+
+export type { AdviseChart, Data, Meta, DataTypeMap, RenderParams } from './types';

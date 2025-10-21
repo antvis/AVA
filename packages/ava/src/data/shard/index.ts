@@ -1,5 +1,11 @@
+import _ from 'lodash';
+
 import { DataStore } from '@ava/data/model/plain/DataStore';
 import { DataFrame } from '@ava/data/model/plain/DataFrame';
+import { requestTboxLLM } from '@ava/utils/llm';
+import { TboxLLM } from '@ava/types';
+
+import { getShardPrompt, type Output } from './prompt';
 
 /**
  * 根据字段特征进行分片，返回 DataFrame 数组
@@ -7,14 +13,41 @@ import { DataFrame } from '@ava/data/model/plain/DataFrame';
  *
  * @param ds
  */
-export const toShardPlain = (ds: DataStore) => {
-  return [new DataFrame(ds, { colIndexes: [0, 1] })];
-};
-
-/**
- * 通过数据特征来构建 prompt，用大模型来分片
- * @param ds
- */
-export const getShardPlainPrompt = (ds: DataStore) => {
-  return `${ds.data.length}`;
+export const getPlainShard = async (ds: DataStore, config: TboxLLM) => {
+  const features = (await ds.getColumnFeatures()).map((v) => _.omit(v, ['rawData']));
+  const prompt = getShardPrompt({
+    columns: ds.columns,
+    features,
+  });
+  console.debug('data shard prompt: ', prompt);
+  const modelResult = await requestTboxLLM({
+    prompt,
+    config,
+  });
+  try {
+    const res = JSON.parse(modelResult as string) as Output;
+    console.debug(res.analysis);
+    const dataShards = await Promise.all(
+      res.analysis.map(async (v) => {
+        const df = new DataFrame(ds, {
+          colIndexes: v.columns.map((v) => {
+            console.debug(v, ds.getColumnIndex(v));
+            return ds.getColumnIndex(v);
+          }),
+        });
+        const shardData = await df.toShard();
+        return {
+          ...shardData,
+          purpose: [
+            {
+              purposeDesc: v.desc,
+            },
+          ],
+        };
+      })
+    );
+    return dataShards;
+  } catch (e) {
+    return [];
+  }
 };

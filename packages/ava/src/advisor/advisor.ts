@@ -5,9 +5,7 @@ import {
   AdviseTextParams,
   AdvisorConfig,
   BasePipeline,
-  RenderParams,
 } from '@ava/types';
-import { renderChart } from '@ava/render/render';
 
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
@@ -42,9 +40,5 @@ export class Advisor {
     // TODO: implement text recommendation
     // await this.adviseTextPipeline.execute(params as AdviseTextParams);
     // return {} as AdviseText;
-  }
-
-  render(params: RenderParams) {
-    return renderChart(params);
   }
 }
