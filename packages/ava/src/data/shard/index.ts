@@ -2,8 +2,9 @@ import _ from 'lodash';
 
 import { DataStore } from '@ava/data/model/plain/DataStore';
 import { DataFrame } from '@ava/data/model/plain/DataFrame';
-import { requestTboxLLM } from '@ava/utils/llm';
-import { TboxLLM } from '@ava/types';
+import { requestLLM } from '@ava/utils/llm';
+import { OpenAiLLM, TboxLLM } from '@ava/types';
+import { logInDev } from '@ava/utils';
 
 import { getShardPrompt, type Output } from './prompt';
 
@@ -13,25 +14,25 @@ import { getShardPrompt, type Output } from './prompt';
  *
  * @param ds
  */
-export const getPlainShard = async (ds: DataStore, config: TboxLLM) => {
+export const getPlainShard = async (ds: DataStore, config: TboxLLM | OpenAiLLM) => {
   const features = (await ds.getColumnFeatures()).map((v) => _.omit(v, ['rawData']));
   const prompt = getShardPrompt({
     columns: ds.columns,
     features,
   });
-  console.debug('data shard prompt: ', prompt);
-  const modelResult = await requestTboxLLM({
+  logInDev.debug('data shard prompt: ', prompt);
+  const modelResult = await requestLLM({
     prompt,
     config,
   });
   try {
     const res = JSON.parse(modelResult as string) as Output;
-    console.debug(res.analysis);
+    logInDev.debug(res.analysis);
     const dataShards = await Promise.all(
       res.analysis.map(async (v) => {
         const df = new DataFrame(ds, {
           colIndexes: v.columns.map((v) => {
-            console.debug(v, ds.getColumnIndex(v));
+            logInDev.debug(v, ds.getColumnIndex(v));
             return ds.getColumnIndex(v);
           }),
         });

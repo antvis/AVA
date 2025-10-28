@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { assert, isArray, isObject, isBasicType } from '@ava/utils';
 import { getAllStructFeats, getNodeFields, getLinkFields, getAllFieldsInfo, clusterNodes } from '@ava/data/features';
 
-import type { GraphData, GraphFeature } from '@ava/data/types';
+import type { GraphData, GraphFeature } from '@ava/types/data';
 
 /* eslint-disable no-param-reassign */
 function parseTreeNode(data: any) {

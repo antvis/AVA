@@ -35,7 +35,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      [StatisticsFeatureKey.distinctCount]: {
+      [StatisticsFeatureKey.distinct]: {
         number: LINE_MAX_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {
@@ -74,7 +74,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      distinctCount: {
+      [StatisticsFeatureKey.distinct]: {
         number: BAR_MAX_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {
@@ -114,7 +114,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      distinctCount: {
+      [StatisticsFeatureKey.distinct]: {
         number: PIE_MAX_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {
@@ -156,7 +156,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      distinctCount: {
+      [StatisticsFeatureKey.distinct]: {
         number: BAR_MAX_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {
@@ -196,7 +196,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      distinctCount: {
+      [StatisticsFeatureKey.distinct]: {
         number: LINE_MAX_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {
@@ -338,7 +338,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      distinctCount: {
+      [StatisticsFeatureKey.distinct]: {
         number: SPREAD_SHEET_PRO_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {
@@ -378,7 +378,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      distinctCount: {
+      [StatisticsFeatureKey.distinct]: {
         number: FUNNEL_CHART_MAX_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {
@@ -460,7 +460,7 @@ export const CKB: ChartLibrary = {
       },
     },
     limits: {
-      distinctCount: {
+      [StatisticsFeatureKey.distinct]: {
         number: RADAR_CHART_MAX_SPLIT_COUNT,
         operator: Operator.LessThan,
         params: {

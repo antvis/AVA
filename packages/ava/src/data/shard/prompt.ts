@@ -16,9 +16,9 @@ export const getShardPrompt = (input: any) => `
     /** field name */
     name?: string;
     /** field type */
-    types: ColumnType[]; // float integer bool date null string mixed
+    types: COLUMN_TYPE[]; // float integer bool date null string mixed
     /** recommendation type */
-    recommendation: ColumnType;
+    recommendation: COLUMN_TYPE;
     /** number of empty includes null undefined or empty string */
     missing?: number;
     /** distinct count */
@@ -30,7 +30,7 @@ export const getShardPrompt = (input: any) => `
     /** level of measurements */
     levelOfMeasurements?: LevelOfMeasurement[];
   };
-  
+
   /**
    * String Field
    * @public
@@ -49,7 +49,7 @@ export const getShardPrompt = (input: any) => `
     /** is contain white space */
     containsSpace: boolean;
   };
-  
+
   /**
    * Number Field
    * @public
@@ -80,7 +80,7 @@ export const getShardPrompt = (input: any) => `
     /** variance */
     variance: number;
   };
-  
+
   /**
    * Date Field
    * @public
@@ -93,7 +93,7 @@ export const getShardPrompt = (input: any) => `
     /** interval of date or time */
     interval?: 'second' | 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year';
   }
-  
+
   export interface GeoColumnFeature extends ColumnFeature {
     /** geo type */
     geoType: 'name' | 'code' | 'coordinates';

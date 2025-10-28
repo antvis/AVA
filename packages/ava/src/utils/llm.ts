@@ -106,3 +106,11 @@ export const isOpenAi = (l: OpenAiLLM | TboxLLM | undefined): l is OpenAiLLM =>
   !!l && 'apiKey' in l && 'model' in l && 'url' in l;
 
 export const isTbox = (l: OpenAiLLM | TboxLLM | undefined): l is TboxLLM => !!l && 'appId' in l && 'authorization' in l;
+
+export const requestLLM = async (params: { config: OpenAiLLM | TboxLLM; prompt: string }): Promise<string> => {
+  const { config, prompt } = params;
+  if (isOpenAi(params.config)) {
+    return requestOpenAiLLM({ config: config as OpenAiLLM, prompt });
+  }
+  return requestTboxLLM({ config: config as TboxLLM, prompt });
+};

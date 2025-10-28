@@ -6,11 +6,12 @@ import {
   AdvisorPlugin,
   DataShard,
   IAdviseChartPipeline,
-  TboxLLM,
+  Meta,
   TreeDataType,
 } from '@ava/types';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 import { matchDataShape, DATA_SHAPE, DataStore, Tree, Graph, getPlainShard } from '@ava/data';
+import { logInDev } from '@ava/utils';
 
 export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.DataPlugin;
@@ -20,8 +21,8 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
   };
 
   execute = async (input: AdviseChartPluginInput) => {
-    const { data } = input.dataStore.extract;
-    const { dataShards } = input.dataStore.extract;
+    const { dataStore } = input;
+    const { data, dataShards } = dataStore.extract;
     if (!dataShards) {
       const inferRes = matchDataShape(data);
 
@@ -31,11 +32,12 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
           columns: inferRes.format.columns,
         });
         const features = await ds.getColumnFeatures();
-        const metas = features.map((feature) => ({
+        const metas: Meta[] = features.map((feature) => ({
           id: feature.name,
+          name: feature.name,
           dataType: feature.types[0],
           allData: feature.rawData,
-          ...feature,
+          statisticsFeature: feature,
         }));
         let dataShards: DataShard[] = [
           {
@@ -45,10 +47,12 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
           },
         ];
         if (ds.columns.length >= 4) {
-          dataShards = (await getPlainShard(ds, input.context.llm as TboxLLM)) as DataShard[];
+          // 满足条件就进行数据切片
+          // @思莫
+          dataShards = (await getPlainShard(ds, input.context.llm)) as DataShard[];
         }
-        console.debug('shards finnaly result: ', dataShards);
-        input.dataStore.data = { dataShards };
+        logInDev.debug('shards finnaly result: ', dataShards);
+        dataStore.data = { dataShards };
       } else if (inferRes.shape === DATA_SHAPE.TREE) {
         const tree = new Tree(data as TreeDataType);
         const metas = tree.getFeatures();
@@ -60,7 +64,7 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
             metas,
           },
         ];
-        input.dataStore.data = { dataShards };
+        dataStore.data = { dataShards };
       } else if (inferRes.shape === DATA_SHAPE.GRAPH) {
         const graph = new Graph(inferRes.format.data);
         const features = graph.getFeatures();
@@ -71,10 +75,10 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
             metas: [features],
           },
         ];
-        input.dataStore.data = { dataShards };
+        dataStore.data = { dataShards };
       }
     } else {
-      input.dataStore.data = {
+      dataStore.data = {
         dataShards: dataShards.map((dataShard) => ({
           ...dataShard,
           metas: dataShard.metas.map((v) => ({

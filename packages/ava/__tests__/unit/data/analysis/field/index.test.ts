@@ -9,7 +9,7 @@ import {
   isDiscrete,
   isNominal,
 } from '@ava/data/features';
-import { NumberColumnFeature, StringColumnFeature, DateColumnFeature } from '@ava/data/types';
+import { NumberColumnFeature, StringColumnFeature, DateColumnFeature } from '@ava/types/data';
 
 test('analyze integer', () => {
   const array = [0, 1, 2, 3, 4, 5, 6, 7, '+8', 9];

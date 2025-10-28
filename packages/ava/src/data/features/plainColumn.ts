@@ -22,6 +22,7 @@ import {
   isString,
   unique,
 } from '@ava/utils';
+import { COLUMN_TYPE } from '@ava/types/data';
 
 import type { LevelOfMeasurement } from '@ava/ckb';
 import type {
@@ -30,28 +31,27 @@ import type {
   ColumnMeta,
   NumberColumnFeature,
   StringColumnFeature,
-  ColumnType,
-} from '@ava/data/types';
+} from '@ava/types/data';
 
 /**
  * Check if it is StringColumnFeature.
  */
 export function isStringColumnFeature(x: ColumnFeature): x is StringColumnFeature {
-  return x.recommendation === 'string';
+  return x.recommendation === COLUMN_TYPE.string;
 }
 
 /**
  * Check if it is NumberColumnFeature.
  */
 export function isNumberColumnFeature(x: ColumnFeature): x is NumberColumnFeature {
-  return x.recommendation === 'number';
+  return x.recommendation === COLUMN_TYPE.number;
 }
 
 /**
  * Check if it is DateColumnFeature.
  */
 export function isDateColumnFeature(x: ColumnFeature): x is DateColumnFeature {
-  return x.recommendation === 'date';
+  return x.recommendation === COLUMN_TYPE.date;
 }
 
 /**
@@ -68,7 +68,7 @@ export function isConst(info: ColumnFeature): boolean {
  */
 export function isOrdinal(info: ColumnFeature): boolean {
   const { rawData, recommendation } = info;
-  if (recommendation !== 'string') return false;
+  if (recommendation !== COLUMN_TYPE.string) return false;
   if (isConst(info)) return false;
   const list = rawData.filter((item) => !isNil(item) && isBasicType(item));
   if (list.length === 0) return false;
@@ -134,7 +134,7 @@ export function isUnique(info: ColumnFeature): boolean {
  * @param info - The {@link ColumnFeature} to process
  */
 export function isDiscrete(info: ColumnFeature): boolean {
-  return info.recommendation === 'number';
+  return info.recommendation === COLUMN_TYPE.number;
 }
 
 /**
@@ -142,7 +142,7 @@ export function isDiscrete(info: ColumnFeature): boolean {
  * @param info - The {@link ColumnFeature} to process
  */
 export function isContinuous(info: ColumnFeature): boolean {
-  return info.recommendation === 'number';
+  return info.recommendation === COLUMN_TYPE.number;
 }
 
 /**
@@ -150,7 +150,7 @@ export function isContinuous(info: ColumnFeature): boolean {
  * @param info - The {@link ColumnFeature} to process
  */
 export function isInterval(info: ColumnFeature): boolean {
-  return info.recommendation === 'number';
+  return info.recommendation === COLUMN_TYPE.number;
 }
 
 /**
@@ -158,8 +158,8 @@ export function isInterval(info: ColumnFeature): boolean {
  * @param info - The {@link ColumnFeature} to process
  */
 export function isNominal(info: ColumnFeature): boolean {
-  if (info.recommendation === 'boolean') return true;
-  if (info.recommendation === 'string') return !isOrdinal(info);
+  if (info.recommendation === COLUMN_TYPE.boolean) return true;
+  if (info.recommendation === COLUMN_TYPE.string) return !isOrdinal(info);
   return false;
 }
 
@@ -168,7 +168,7 @@ export function isNominal(info: ColumnFeature): boolean {
  * @param info - Field Info
  */
 export function isTime(info: ColumnFeature): boolean {
-  return info.recommendation === 'date';
+  return info.recommendation === COLUMN_TYPE.date;
 }
 
 /**
@@ -236,24 +236,21 @@ export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<D
 /**
  * Determine what type a value is, may be one of [number number date string null].
  */
-export function analyzeType(
-  value: unknown,
-  strictDatePattern?: boolean
-): 'null' | 'number' | 'number' | 'date' | 'string' {
-  if (isNil(value)) return 'null';
+export function analyzeType(value: unknown, strictDatePattern?: boolean): COLUMN_TYPE {
+  if (isNil(value)) return COLUMN_TYPE.null;
   if (isNumber(value)) {
-    if (isInteger(value)) return 'number';
-    return 'number';
+    if (isInteger(value)) return COLUMN_TYPE.number;
+    return COLUMN_TYPE.number;
   }
   // 优先识别日期类型，避免字符型日期被判断成字符
-  if (isDate(value) || isDateString(value, strictDatePattern)) return 'date';
+  if (isDate(value) || isDateString(value, strictDatePattern)) return COLUMN_TYPE.date;
   if (isString(value)) {
     if (isNumberString(value)) {
-      if ((value as string).includes('.')) return 'number';
-      return 'number';
+      if ((value as string).includes('.')) return COLUMN_TYPE.number;
+      return COLUMN_TYPE.number;
     }
   }
-  return 'string';
+  return COLUMN_TYPE.string;
 }
 
 /**
@@ -267,46 +264,49 @@ export function analyzeField(
 ): StringColumnFeature | NumberColumnFeature | DateColumnFeature {
   const list = value.map((item) => (isNil(item) ? null : item));
   const valueMap = statsValueMap(list);
-  let recommendation: ColumnType;
+  let recommendation: COLUMN_TYPE;
   const nonNullArray = valueMap.null ? list.filter((item) => item !== null) : list;
   const typeArray = list.map((item) => analyzeType(item, strictDatePattern));
-  const types = Object.keys(statsValueMap(typeArray)).filter((item) => item !== 'null') as ColumnType[];
+  const types = Object.keys(statsValueMap(typeArray)).filter((item) => item !== 'null') as COLUMN_TYPE[];
   // generate recommendation
   switch (types.length) {
     case 0:
-      recommendation = 'null';
+      recommendation = COLUMN_TYPE.null;
       break;
     case 1:
       // 单一类型
-      recommendation = types[0] as ColumnType;
+      recommendation = types[0] as COLUMN_TYPE;
       // an number field may be a date field
-      if (recommendation === 'number') {
+      if (recommendation === COLUMN_TYPE.number) {
         const data = list.filter((item) => item !== null);
         if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
-          recommendation = 'date';
+          recommendation = COLUMN_TYPE.date;
         }
       }
       break;
     case 2:
       // 多种类型
-      if ((types.includes('number') || types.includes('date')) && types.includes('number')) {
-        recommendation = 'number';
+      if (
+        (types.includes(COLUMN_TYPE.number) || types.includes(COLUMN_TYPE.date)) &&
+        types.includes(COLUMN_TYPE.number)
+      ) {
+        recommendation = COLUMN_TYPE.number;
         break;
       }
-      if (types.includes('number') && types.includes('date')) {
+      if (types.includes(COLUMN_TYPE.number) && types.includes(COLUMN_TYPE.date)) {
         // an number field may be a date field
         const data = list.filter((item) => item !== null);
         if (data.map((num) => `${num}`).every((str) => isDateString(str))) {
-          recommendation = 'date';
+          recommendation = COLUMN_TYPE.date;
         } else {
-          recommendation = 'number';
+          recommendation = COLUMN_TYPE.number;
         }
         break;
       }
-      recommendation = 'string';
+      recommendation = COLUMN_TYPE.string;
       break;
     default:
-      recommendation = 'string';
+      recommendation = COLUMN_TYPE.string;
   }
 
   const uniqueArray = unique(nonNullArray as string[]);
@@ -325,29 +325,32 @@ export function analyzeField(
     const meta: ColumnMeta = {};
     let restNotNullArray = nonNullArray;
     types.forEach((item: string) => {
-      if (item === 'date') {
+      if (item === COLUMN_TYPE.date) {
         meta.date = analyzeField(
           restNotNullArray.filter((item) => isDateString(item)),
           strictDatePattern
         ) as DateColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isDateString(item));
-      } else if (item === 'number') {
+      } else if (item === COLUMN_TYPE.number) {
+        // TODO: 跟下面的一个是小数一个是整数？
         meta.number = analyzeField(
           restNotNullArray.filter((item) => isIntegerString(item) && !isDateString(item)),
           strictDatePattern
         ) as NumberColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isIntegerString(item));
-      } else if (item === 'number') {
+      } else if (item === COLUMN_TYPE.number) {
         meta.number = analyzeField(
           restNotNullArray.filter((item) => isFloatString(item) && !isDateString(item)),
           strictDatePattern
         ) as NumberColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isFloatString(item));
-      } else if (item === 'string') {
+      } else if (item === COLUMN_TYPE.string) {
         meta.string = analyzeField(
-          restNotNullArray.filter((item) => analyzeType(item, strictDatePattern) === 'string')
+          restNotNullArray.filter((item) => analyzeType(item, strictDatePattern) === COLUMN_TYPE.string)
         ) as StringColumnFeature;
-        restNotNullArray = restNotNullArray.filter((item) => analyzeType(item, strictDatePattern) !== 'string');
+        restNotNullArray = restNotNullArray.filter(
+          (item) => analyzeType(item, strictDatePattern) !== COLUMN_TYPE.string
+        );
       }
     });
   }
@@ -355,22 +358,22 @@ export function analyzeField(
   if (columnFeature.distinct === 2 && columnFeature.recommendation !== 'date') {
     // temporarily threshold
     if (list.length >= 100) {
-      columnFeature.recommendation = 'boolean';
+      columnFeature.recommendation = COLUMN_TYPE.boolean;
     } else if (isBoolean(uniqueArray, true)) {
-      columnFeature.recommendation = 'boolean';
+      columnFeature.recommendation = COLUMN_TYPE.boolean;
     }
   }
 
-  if (recommendation === 'string') {
+  if (recommendation === COLUMN_TYPE.string) {
     Object.assign(columnFeature, analyzeString(nonNullArray.map((item) => `${item}`)));
   }
-  if (recommendation === 'number') {
+  if (recommendation === COLUMN_TYPE.number) {
     Object.assign(columnFeature, analyzeNumber(nonNullArray.map((item) => (item as number) * 1)));
   }
-  if (recommendation === 'date') {
+  if (recommendation === COLUMN_TYPE.date) {
     Object.assign(
       columnFeature,
-      analyzeDate(nonNullArray as (string | Date)[], columnFeature.types.includes('number'))
+      analyzeDate(nonNullArray as (string | Date)[], columnFeature.types.includes(COLUMN_TYPE.number))
     );
   }
 

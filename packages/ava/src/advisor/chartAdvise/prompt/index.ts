@@ -117,7 +117,7 @@ ${ROLE_CONTEXT}
       name: string; // 字段名
       dataType: string; // 字段类型
       statisticsFeature: {
-        distinctCount?: number; // 字段数据去重数量
+        distinct?: number; // 字段数据去重数量
         median?: number; // 字段数据中位数
       }; // 字段数据统计特征
     }

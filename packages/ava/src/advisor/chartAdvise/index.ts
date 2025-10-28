@@ -1,16 +1,16 @@
 import { set } from 'lodash';
 
 import {
-  COMMON_DATA_TYPE,
+  COLUMN_TYPE,
   Data,
   Meta,
   StatisticsFeatureKey,
-  StatisticsFeatureType,
   ChartLibrary,
   ChartPropertyRequirement,
   Operator,
   ChartConfig,
   AdviseChart,
+  NumberColumnFeature,
 } from '@ava/types';
 import { CKB } from '@ava/ckb/ckb-v2';
 import { logError } from '@ava/utils';
@@ -306,7 +306,7 @@ function generateTopConfigsForChart(
     chartName: string;
     fields: Record<string, ChartPropertyRequirement>;
   },
-  allFields: Meta[]
+  fields: Meta[]
 ): ChartConfig[] {
   const configs: ChartConfig[] = [];
   const configSignatures = new Set<string>(); // 用于检测重复配置
@@ -314,7 +314,11 @@ function generateTopConfigsForChart(
   const timeLimit = 1000; // 设置1秒的时间限制
   const startTime = performance.now();
   let timeoutReached = false;
-
+  const allFields = fields.map((item) => ({
+    id: item.id,
+    name: item.name,
+    dataType: item.dataType,
+  }));
   // 创建字段ID到字段对象的映射
   const fieldMap = new Map<string, Meta>();
   allFields.forEach((field) => {
@@ -507,11 +511,7 @@ export function generateAllChartConfigs(
       const x = encode.x[0];
       const s = encode.s?.[0];
       const metaMap = transMetasToMap(finalFields);
-      if (
-        s &&
-        metaMap[x.id]?.statisticsFeature?.[StatisticsFeatureKey.distinctCount] <
-          metaMap[s.id]?.statisticsFeature?.[StatisticsFeatureKey.distinctCount]
-      ) {
+      if (s && metaMap[x.id]?.statisticsFeature?.distinct < metaMap[s.id]?.statisticsFeature?.distinct) {
         // eslint-disable-next-line no-param-reassign
         chart.encode = {
           ...encode,
@@ -617,7 +617,7 @@ export const optimizeChartConfig = (params: {
         const { number: expected, operator, params, reason: curReason } = value;
         let curTotalValue = 0;
         // 2.根据限制条件，计算出当前配置的特征值
-        if (limitKey === StatisticsFeatureKey.distinctCount) {
+        if (limitKey === StatisticsFeatureKey.distinct) {
           // 拆分数量约束，计算方式为所有分类字段的distinctCount乘积，再乘上指标字段数量
           const curCategoryCount =
             params?.category?.reduce((total, fieldKey) => {
@@ -649,7 +649,7 @@ export const optimizeChartConfig = (params: {
           });
           const params = allYFields.map((item) => {
             const { statisticsFeature } = item;
-            const median = (statisticsFeature as StatisticsFeatureType['number'])?.median || 0;
+            const median = (statisticsFeature as NumberColumnFeature)?.percentile50 || 0;
             return {
               field: item,
               number: median,
@@ -683,8 +683,8 @@ export const optimizeChartConfig = (params: {
       case CHART_NAME.pie:
       case CHART_NAME.wordCloud: {
         const hasNegatives = metas.some((field) => {
-          if (field.dataType === COMMON_DATA_TYPE.NUMBER) {
-            return field.statisticsFeature?.[StatisticsFeatureKey.min] < 0;
+          if (field.dataType === COLUMN_TYPE.number) {
+            return (field.statisticsFeature as NumberColumnFeature).minimum < 0;
           }
           return false;
         });
@@ -702,7 +702,7 @@ export const optimizeChartConfig = (params: {
         try {
           const timeFiedId = encode.x[0].id;
           const timeField = fieldsMap[timeFiedId];
-          if (timeField?.statisticsFeature?.[StatisticsFeatureKey.distinctCount] === 1) {
+          if (timeField?.statisticsFeature?.distinct === 1) {
             reason = '单分类数据不适合用折线图、面积图、柱形图、条形图展示';
             isValid = false;
           }
@@ -759,15 +759,13 @@ export const getStatisticsFeature = (meta: Meta) => {
   if (!statisticsFeature) {
     return undefined;
   }
-  if ([COMMON_DATA_TYPE.DATE, COMMON_DATA_TYPE.STRING, COMMON_DATA_TYPE.GEO].includes(dataType)) {
+  if ([COLUMN_TYPE.date, COLUMN_TYPE.string, COLUMN_TYPE.geo].includes(dataType)) {
     return {
-      [StatisticsFeatureKey.distinctCount]: (statisticsFeature as StatisticsFeatureType[COMMON_DATA_TYPE.STRING])
-        .distinctCount,
+      [StatisticsFeatureKey.distinct]: statisticsFeature?.distinct,
     };
   }
 
   return {
-    [StatisticsFeatureKey.median]: (statisticsFeature as StatisticsFeatureType[COMMON_DATA_TYPE.NUMBER]).median,
-    [StatisticsFeatureKey.sorted]: (statisticsFeature as StatisticsFeatureType[COMMON_DATA_TYPE.NUMBER]).sorted,
+    [StatisticsFeatureKey.median]: (statisticsFeature as NumberColumnFeature).percentile50,
   };
 };
