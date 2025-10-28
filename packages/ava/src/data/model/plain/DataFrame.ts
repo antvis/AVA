@@ -1,5 +1,5 @@
 import { DATA_SHAPE } from '@ava/data/constants';
-import { ColumnFeature } from '@ava/data/types';
+import { ColumnFeature } from '@ava/types/data';
 
 import type { DataShard } from '@ava/types';
 import type { DataStore } from './DataStore';

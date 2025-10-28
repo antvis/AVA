@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import type { RawDataType, ColumnType } from '@ava/data/types';
+import type { RawDataType, COLUMN_TYPE } from '@ava/types/data';
 
 export const randomPick = (n: number, m: number) => {
   if (m < 0 || m > n) throw new Error('m must be between 0 and n');
@@ -152,8 +152,8 @@ export const categoricalAssociationScore = (cat1: string[], cat2: string[]) => {
 };
 
 export const calculateCorrelation = (
-  col1: { type: ColumnType; data: RawDataType[] },
-  col2: { type: ColumnType; data: RawDataType[] }
+  col1: { type: COLUMN_TYPE; data: RawDataType[] },
+  col2: { type: COLUMN_TYPE; data: RawDataType[] }
 ) => {
   const isNumeric1 = ['integer', 'float'].includes(col1.type);
   const isNumeric2 = ['integer', 'float'].includes(col2.type);

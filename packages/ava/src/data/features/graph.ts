@@ -10,7 +10,7 @@ import type {
   GraphStatisticalFeature,
   NodeStructFeat,
   LinkStructFeat,
-} from '@ava/data/types';
+} from '@ava/types/data';
 
 const GraphAlgorithms = {
   ...AlgorithmSync,

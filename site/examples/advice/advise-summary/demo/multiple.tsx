@@ -6,7 +6,7 @@ import { Advisor } from '@antv/ava';
 
 const advisor = new Advisor({
   llm: {
-    appId: '202508APgb7V00506760',
+    appId: '202510APxPmo00551539',
     authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
   },
 });
@@ -116,7 +116,14 @@ const App = () => {
     { 商品类别: '办公用品', 销售渠道: '世纪联华', 单价: 7.33, 折扣: 0.75 },
   ]);
   const advise = useCallback(async () => {
-    const res = await advisor.advise({ data });
+    const res = await advisor.advise({ data }, () => {
+      // 1. 先做转换，转成 gptvis 配置，这里是 AVA 做
+      // 2. 渲染 import {renderChart} from gptvis
+      // renderChart({
+      //   type: 'line',
+      //   config,
+      // });
+    });
     const newChart = advisor.render({
       chartConfig: res.adviseCharts[0],
       data: res.data,

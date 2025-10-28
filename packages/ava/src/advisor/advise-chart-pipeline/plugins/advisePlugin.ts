@@ -1,4 +1,4 @@
-import { logError, logInDev, requestTboxLLM, requestOpenAiLLM, isOpenAi, isTbox } from '@ava/utils';
+import { logError, logInDev, isOpenAi, isTbox, requestLLM } from '@ava/utils';
 import {
   AdviseChartParams,
   AdviseChartPluginInput,
@@ -40,12 +40,13 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   };
 
   advisePlain = async (dataShards, input: AdviseChartPluginInput) => {
-    // Use LLM to score all chart configs based on user purpose/data/metas
     let allChartConfigs: ChartConfig[] = [];
     let _llmCompleted = false;
     let _llmCostTime = '';
     const shard = dataShards[0];
-    const { excludes, includes, disableModel, forceType, llm } = input.context;
+    const { context, dataStore } = input;
+    const { excludes, includes, disableModel, forceType, llm } = context;
+    // create all valid chart configs using field data
     allChartConfigs = generateAllChartConfigs(shard.metas, excludes, includes);
     logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
     const { metas } = shard;
@@ -54,22 +55,20 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
     if (!forceType) {
       if (!disableModel) {
         try {
-          // todo: system
           const params = {
-            userInput: shard.purpose.purposeDesc ?? '',
+            userInput: shard.purpose?.purposeDesc ?? '',
             chartConfig: allChartConfigs,
             metas,
             data,
           };
+          // Use LLM to score all chart configs based on user purpose/data/metas
           const prompt = getPlainChartAdvisePrompt(params);
           const startTime = performance.now();
           let LLMRes = '';
-          if (isOpenAi(llm)) {
-            LLMRes = await requestOpenAiLLM({ config: llm, prompt });
-          } else if (isTbox(llm)) {
-            LLMRes = await requestTboxLLM({ config: llm, prompt });
-          } else {
+          if (!isOpenAi(llm) && !isTbox(llm)) {
             logError('LLM config is missing or invalid');
+          } else {
+            LLMRes = await requestLLM({ config: llm, prompt });
           }
           if (LLMRes) {
             logInDev.debug('chart configs after LLM scoring', LLMRes);
@@ -97,7 +96,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         data,
       };
 
-      input.dataStore.advise = result;
+      dataStore.advise = result;
     } else {
       // user specified chart type
       const finalRes: AdviseChart[] = allChartConfigs
@@ -112,7 +111,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         metas,
         data,
       };
-      input.dataStore.advise = result;
+      dataStore.advise = result;
     }
   };
 

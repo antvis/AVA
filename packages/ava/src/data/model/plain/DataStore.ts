@@ -9,7 +9,7 @@ import type {
   DateColumnFeature,
   GeoColumnFeature,
   RawDataType,
-} from '@ava/data/types';
+} from '@ava/types/data';
 
 type ColumnFeature = StringColumnFeature | NumberColumnFeature | DateColumnFeature | GeoColumnFeature;
 

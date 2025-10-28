@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Line, Area, Column, Bar, Pie, DualAxes, Radar } from '@antv/gpt-vis';
 import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@antv/ava';
+import { logInDev } from '@ava/utils';
 
 import { transMetasToMap } from './utils';
 
@@ -205,7 +206,7 @@ export const CHART_RENDER_MAP = {
 
 export const renderChart = (params: RenderParams) => {
   const { chartConfig, data, metas, uiConfig = {} } = params;
-  console.debug('render chart: ', params);
+  logInDev.debug('render chart: ', params);
   const { type, encode } = chartConfig;
   const metasMap = transMetasToMap(metas);
   const render = CHART_RENDER_MAP[type];

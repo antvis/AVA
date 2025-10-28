@@ -7,7 +7,7 @@ import { renderChart } from '@antv/ava-renderer';
 
 const advisor = new Advisor({
   llm: {
-    appId: '202508APgb7V00506760',
+    appId: '202510APxPmo00551539',
     authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
   },
 });
