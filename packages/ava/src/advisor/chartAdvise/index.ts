@@ -306,7 +306,7 @@ function generateTopConfigsForChart(
     chartName: string;
     fields: Record<string, ChartPropertyRequirement>;
   },
-  allFields: Meta[]
+  fields: Meta[]
 ): ChartConfig[] {
   const configs: ChartConfig[] = [];
   const configSignatures = new Set<string>(); // 用于检测重复配置
@@ -314,7 +314,11 @@ function generateTopConfigsForChart(
   const timeLimit = 1000; // 设置1秒的时间限制
   const startTime = performance.now();
   let timeoutReached = false;
-
+  const allFields = fields.map((item) => ({
+    id: item.id,
+    name: item.name,
+    dataType: item.dataType,
+  }));
   // 创建字段ID到字段对象的映射
   const fieldMap = new Map<string, Meta>();
   allFields.forEach((field) => {
@@ -460,6 +464,7 @@ export function generateAllChartConfigs(
     id: item.id,
     name: item.name,
     dataType: item.dataType,
+    statisticsFeature: item.statisticsFeature,
   }));
 
   const fieldsByType = finalFields.reduce<Record<string, Meta[]>>((acc, field) => {
