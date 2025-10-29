@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { Line, Area, Column, Bar, Pie, DualAxes, Radar } from '@antv/gpt-vis';
+import { Line, Area, Column, Bar, Pie, DualAxes, Radar, DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
 import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@antv/ava';
-import { logInDev } from '@ava/utils';
+// import { logInDev } from '@ava/utils';
 
-import { transMetasToMap } from './utils';
+// import { transMetasToMap } from './utils';
 
 import type { DataTypeMap, RenderParams } from '@antv/ava';
 import type { RenderChartParams } from './types';
@@ -204,20 +204,38 @@ export const CHART_RENDER_MAP = {
   },
 };
 
-export const renderChart = (params: RenderParams) => {
-  const { chartConfig, data, metas, uiConfig = {} } = params;
-  logInDev.debug('render chart: ', params);
-  const { type, encode } = chartConfig;
-  const metasMap = transMetasToMap(metas);
-  const render = CHART_RENDER_MAP[type];
-  if (render) {
-    return render({
-      encode,
-      data,
-      metasMap,
-      uiConfig,
-    });
-  }
+// export const renderChart = (params: RenderParams) => {
+//   const { chartConfig, data, metas, uiConfig = {} } = params;
+//   logInDev.debug('render chart: ', params);
+//   const { type, encode } = chartConfig;
+//   const metasMap = transMetasToMap(metas);
+//   const render = CHART_RENDER_MAP[type];
+//   if (render) {
+//     return render({
+//       encode,
+//       data,
+//       metasMap,
+//       uiConfig,
+//     });
+//   }
+//   return <div>无可渲染图表：{type}</div>;
 
-  return <div>无可渲染图表：{type}</div>;
+type ChartRegistry = Record<string, React.ComponentType<any>>;
+const DEFAULT_REGISTRY: ChartRegistry = { ...DEFAULT_CHART_COMPONENTS };
+
+export type RenderChartOptions = {
+  components?: Partial<ChartRegistry>;
+  defaultRenderer?: (params: RenderParams) => React.ReactNode;
+};
+
+export const renderChart = (params: RenderParams, options: RenderChartOptions = {}) => {
+  const { type, ...chartProps } = params as any;
+  const registry: ChartRegistry = { ...DEFAULT_REGISTRY, ...(options.components || {}) };
+  const ChartComponent = registry[type];
+
+  // 调用渲染（如需调试可在上层记录参数）
+  if (ChartComponent) return <ChartComponent {...(chartProps as any)} />;
+
+  // 若提供了基于内置映射的渲染器（如需数据转换），尝试使用
+  return options.defaultRenderer ? options.defaultRenderer(params) : <div>无可渲染图表：{type}</div>;
 };
