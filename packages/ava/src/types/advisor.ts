@@ -86,22 +86,15 @@ export interface AdviseText {
 }
 
 export interface RenderParams {
-  /** render DOM container */
-  container: HTMLElement;
-  chartConfig: AdviseChart;
   data: Data;
-  metas: Meta[];
-  uiConfig?: {
-    /** chart color palette */
-    palette?: string[];
-    /** chart width */
-    width?: number;
-    /** chart height */
-    height?: number;
-    /** Overall chart style */
-    theme?: 'default' | 'dark' | 'academy';
+  type: string;
+  title?: string;
+  axisXTitle?: string;
+  axisYTitle?: string;
+  theme?: 'default' | 'dark' | 'academy';
+  style?: {
     backgroundColor?: string;
-    /** Applicable charts: line, area, radar */
     lineWidth?: number;
+    palette?: string[];
   };
 }
