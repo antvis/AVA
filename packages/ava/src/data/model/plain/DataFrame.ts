@@ -34,7 +34,10 @@ export class DataFrame {
   getData(): any[] {
     return this.rowIndexes.map((rowIndex) => {
       const row = this.dataStore.data[rowIndex];
-      return this.colIndexes.map((colIndex) => row[colIndex]);
+      return this.colIndexes.reduce((acc, colIndex) => {
+        acc[this.dataStore.columns[colIndex]] = row[colIndex];
+        return acc;
+      }, {});
     });
   }
 

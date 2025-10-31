@@ -1,4 +1,4 @@
-import { logError, logInDev, isOpenAi, isTbox, requestLLM } from '@ava/utils';
+import { logError, logInDev, isOpenAi, isTbox, requestLLM, safeJsonParse } from '@ava/utils';
 import {
   AdviseChartParams,
   AdviseChartPluginInput,
@@ -6,7 +6,8 @@ import {
   ChartConfig,
   AdviseChart,
   IAdviseChartPipeline,
-  FieldDataType,
+  DataShard,
+  PlainDataType,
 } from '@ava/types';
 import {
   generateAllChartConfigs,
@@ -39,30 +40,47 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
     }
   };
 
-  advisePlain = async (dataShards, input: AdviseChartPluginInput) => {
-    let allChartConfigs: ChartConfig[] = [];
+  advisePlain = async (dataShards: DataShard[], input: AdviseChartPluginInput) => {
+    let allChartConfigs: Array<ChartConfig[]> = [];
     let _llmCompleted = false;
     let _llmCostTime = '';
-    const shard = dataShards[0];
     const { context, dataStore } = input;
     const { excludes, includes, disableModel, forceType, llm } = context;
-    // create all valid chart configs using field data
-    allChartConfigs = generateAllChartConfigs(shard.metas, excludes, includes);
-    logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
-    const { metas } = shard;
-    const data = shard.data as FieldDataType<DATA_SHAPE.PLAIN>;
-    logInDev.debug('selected shard:', shard);
-    if (!forceType) {
+    const paramList = dataShards.map((shard) => {
+      const { data, metas, purpose } = shard;
+      // generate all valid chart configs using field data
+      const curConfigs = generateAllChartConfigs(metas, excludes, includes);
+      allChartConfigs.push(curConfigs);
+      return {
+        userInput: purpose?.purposeDesc ?? '',
+        chartConfig: curConfigs,
+        metas,
+        data: data as PlainDataType,
+      };
+    });
+    if (forceType && dataShards.length === 1) {
+      // user specified chart type
+      const finalRes: AdviseChart[] = allChartConfigs[0]
+        .filter((item) => item.type === forceType)
+        .map((item) => ({
+          type: item.type,
+          encode: transformChartEncode(item.encode),
+        }));
+
+      const result = [
+        {
+          adviseCharts: finalRes,
+          metas: dataShards[0].metas,
+          data: dataShards[0].data as PlainDataType,
+        },
+      ];
+      dataStore.advise = result;
+    } else {
       if (!disableModel) {
         try {
-          const params = {
-            userInput: shard.purpose?.purposeDesc ?? '',
-            chartConfig: allChartConfigs,
-            metas,
-            data,
-          };
+          logInDev.debug('All possible chart configs', JSON.stringify(allChartConfigs));
           // Use LLM to score all chart configs based on user purpose/data/metas
-          const prompt = getPlainChartAdvisePrompt(params);
+          const prompt = getPlainChartAdvisePrompt(paramList);
           const startTime = performance.now();
           let LLMRes = '';
           if (!isOpenAi(llm) && !isTbox(llm)) {
@@ -72,7 +90,10 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
           }
           if (LLMRes) {
             logInDev.debug('chart configs after LLM scoring', LLMRes);
-            allChartConfigs = sortChartConfigs(allChartConfigs, LLMRes);
+            const LLMResArr = safeJsonParse(LLMRes, []);
+            if (LLMResArr.length === allChartConfigs.length) {
+              allChartConfigs = allChartConfigs.map((configs, index) => sortChartConfigs(configs, LLMResArr[index]));
+            }
             const endTime = performance.now();
             _llmCostTime = ((endTime - startTime) / 1000).toFixed(2);
             _llmCompleted = true;
@@ -84,34 +105,21 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         }
       }
       // Optimize chart configuration based on rules
-      const finalRes = optimizeChartConfig({
-        chartConfigs: allChartConfigs,
-        metas,
-        data,
+      const finalRes = allChartConfigs.map((configs, index) => {
+        const { data, metas } = dataShards[index];
+        const adviseCharts = optimizeChartConfig({
+          chartConfigs: configs,
+          metas,
+          data: data as PlainDataType,
+        });
+        return {
+          adviseCharts,
+          metas,
+          data: data as PlainDataType,
+        };
       });
       logInDev.debug('chart configs after optimization', JSON.stringify(finalRes));
-      const result = {
-        adviseCharts: finalRes,
-        metas,
-        data,
-      };
-
-      dataStore.advise = result;
-    } else {
-      // user specified chart type
-      const finalRes: AdviseChart[] = allChartConfigs
-        .filter((item) => item.type === forceType)
-        .map((item) => ({
-          type: item.type,
-          encode: transformChartEncode(item.encode),
-        }));
-
-      const result = {
-        adviseCharts: finalRes,
-        metas,
-        data,
-      };
-      dataStore.advise = result;
+      dataStore.advise = finalRes;
     }
   };
 

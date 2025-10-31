@@ -48,7 +48,7 @@ export class DataPlugin implements AdvisorPlugin<AdviseChartParams> {
         ];
         if (ds.columns.length >= 4) {
           // 满足条件就进行数据切片
-          // @思莫
+          // TODO: @思莫
           dataShards = (await getPlainShard(ds, input.context.llm)) as DataShard[];
         }
         logInDev.debug('shards finnaly result: ', dataShards);
