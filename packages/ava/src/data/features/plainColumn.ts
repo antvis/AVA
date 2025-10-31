@@ -332,7 +332,7 @@ export function analyzeField(
         ) as DateColumnFeature;
         restNotNullArray = restNotNullArray.filter((item) => !isDateString(item));
       } else if (item === COLUMN_TYPE.number) {
-        // TODO: 跟下面的一个是小数一个是整数？
+        // TODO: @思莫 跟下面的一个是小数一个是整数？
         meta.number = analyzeField(
           restNotNullArray.filter((item) => isIntegerString(item) && !isDateString(item)),
           strictDatePattern

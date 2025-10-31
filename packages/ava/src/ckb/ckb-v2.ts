@@ -8,6 +8,20 @@ const FUNNEL_CHART_MAX_SPLIT_COUNT = 10;
 const RADAR_CHART_MAX_SPLIT_COUNT = 10;
 const SPREAD_SHEET_PRO_SPLIT_COUNT = 100;
 
+export const VISUAL_CHANNEL_DESCRIPTION = {
+  x: 'x轴 - 横向坐标轴，通常用于展示分类变量、时间序列或连续型变量',
+  y: 'y轴 - 纵向坐标轴，通常用于展示数值型变量，表示数据的大小或数量',
+  y2: '右y轴 - 右侧纵向坐标轴，用于映射第二组数值型变量，支持不同量级数据的对比展示',
+  s: '分组 - 用于数据分组，将数据按类别进行拆分展示，支持多系列对比',
+  color: '颜色 - 通过不同颜色区分数据类别，增强数据的可识别性和对比性',
+  size: '大小 - 通过图形大小差异表示数值大小，常用于散点图中表示第三个维度',
+  x2: '列头 - 交叉表中的列维度，用于数据的列向分组和聚合',
+  source: '源节点 - 表示关系数据中的起始实体或来源位置',
+  target: '目标节点 - 表示关系数据中的目标实体或终点位置',
+  value: '数值 - 表示数据的数值大小，用于确定视觉元素的大小、宽度或强度',
+  row: '行 - 表格中的行数据，用于展示原始数据记录',
+};
+
 export const CKB: ChartLibrary = {
   [CHART_NAME.line]: {
     chartName: '折线图',
@@ -98,14 +112,14 @@ export const CKB: ChartLibrary = {
       '如果变量之间相互独立，并不构成一个整体，那么不可以使用饼图。饼图也不能用来表现趋势。此外，当类别过多时，不建议使用饼图，否则阅读会将很差。可行的办法，一是将一些不重要的变量合并为“其他”，避免扇区超过 5 个；二是改用条形图。',
     ],
     fields: {
-      x: {
+      s: {
         min: 1,
         max: 1,
         dataType: ['string', 'geo'],
         desc: '切片',
         optional: false,
       },
-      y: {
+      value: {
         min: 1,
         max: 1,
         dataType: ['number'],
@@ -291,7 +305,7 @@ export const CKB: ChartLibrary = {
     useCase: ['展示关键业务指标(KPI)的当前状态、数据为简单数值型指标、展示指标达成情况(如完成率)'],
     nonUseCase: ['需要展示复杂数据关系时、需要展示数据趋势变化时、需要展示数据分布或占比时'],
     fields: {
-      y: {
+      value: {
         min: 1,
         max: 20,
         dataType: ['number'],
@@ -362,14 +376,14 @@ export const CKB: ChartLibrary = {
     ],
     nonUseCase: ['非流程型数据展示、阶段数量过多（超过 10 个阶段）、需要精确数值对比的场景（建议配合表格使用）'],
     fields: {
-      x: {
+      s: {
         min: 1,
         max: 1,
         dataType: ['string', 'geo'],
         desc: '分段',
         optional: false,
       },
-      y: {
+      value: {
         min: 1,
         max: 1,
         dataType: ['number'],
@@ -485,7 +499,7 @@ export const CKB: ChartLibrary = {
       '需展示多维数据关系：进度条仅能反映单一维度的完成度，无法呈现数据间的交互关系和多指标对比分析（如销售额、成本、利润的关联性）',
     ],
     fields: {
-      y: {
+      value: {
         min: 1,
         max: 1,
         dataType: ['number'],
@@ -540,14 +554,14 @@ export const CKB: ChartLibrary = {
     ],
     nonUseCase: ['数据主要为数值型，不涉及文本。', '需要精确数值对比的场合。', '文本数据量过小，无法形成有效对比。'],
     fields: {
-      x: {
+      s: {
         min: 1,
         max: 1,
         dataType: ['string', 'geo'],
         desc: '名词',
         optional: false,
       },
-      y: {
+      value: {
         min: 1,
         max: 1,
         dataType: ['number'],

@@ -84,17 +84,3 @@ export interface AdviseText {
   /** text type */
   type?: string;
 }
-
-export interface RenderParams {
-  data: Data;
-  type: string;
-  title?: string;
-  axisXTitle?: string;
-  axisYTitle?: string;
-  theme?: 'default' | 'dark' | 'academy';
-  style?: {
-    backgroundColor?: string;
-    lineWidth?: number;
-    palette?: string[];
-  };
-}

@@ -1,3 +1,4 @@
+import { logError } from '@ava/utils';
 import {
   AdviseChartParams,
   AdviseStageOutput,
@@ -5,12 +6,20 @@ import {
   AdviseTextParams,
   AdvisorConfig,
   BasePipeline,
+  Renderer,
+  RenderParams,
 } from '@ava/types';
 
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
 
 export class Advisor {
+  static RENDERER: Renderer;
+
+  static bindRenderer(renderer: Renderer) {
+    Advisor.RENDERER = renderer;
+  }
+
   adviseChartPipeline: BasePipeline<AdviseChartParams>;
 
   adviseTextPipeline: BasePipeline<AdviseTextParams>;
@@ -24,7 +33,6 @@ export class Advisor {
     });
   }
 
-  // Function overload declarations
   // eslint-disable-next-line no-dupe-class-members
   advise(params: AdviseChartParams): Promise<AdviseStageOutput>;
 
@@ -40,5 +48,13 @@ export class Advisor {
     // TODO: implement text recommendation
     // await this.adviseTextPipeline.execute(params as AdviseTextParams);
     // return {} as AdviseText;
+  }
+
+  render(params: RenderParams) {
+    if (Advisor.RENDERER) {
+      return Advisor.RENDERER(params);
+    }
+    logError('Chart render not configured');
+    return null;
   }
 }

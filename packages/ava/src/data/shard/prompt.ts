@@ -109,7 +109,9 @@ export const getShardPrompt = (input: any) => `
       columns: string[]; // 分析思路涉及的字段
     }>; // 分析思路
   };
-  ### 输出要求：需要严格按照 Output ts 类型输出 JSON 字符串；
+  ### 输出要求：
+  - 需要严格按照 Output ts 类型输出 JSON 字符串，**不要用\`\`\`json 等代码块包裹**
+  - **只输出 JSON 字符串，严禁输出其他分析结果**
   ## 我给出的输入如下：
   ${JSON.stringify(input)}
 `;

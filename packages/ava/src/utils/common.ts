@@ -164,3 +164,11 @@ export const logError = (...args) => {
 };
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+export const safeJsonParse = (str: string, defaultVal = {}) => {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return defaultVal;
+  }
+};

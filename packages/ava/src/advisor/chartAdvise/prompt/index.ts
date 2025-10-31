@@ -1,8 +1,6 @@
-import { CKB } from '@ava/ckb/ckb-v2';
+import { CKB, VISUAL_CHANNEL_DESCRIPTION } from '@ava/ckb/ckb-v2';
 import { CHART_NAME, CHART_PURPOSE_NAME_MAP, FULL_AND_ABBR_CHART_NAME_MAP } from '@ava/constants';
 import { ChartConfig, Data, Meta } from '@ava/types';
-
-import { getStatisticsFeature } from '..';
 
 const ROLE_CONTEXT = `
 # 角色设定
@@ -21,39 +19,45 @@ const ROLE_CONTEXT = `
 /**
  * @desc 生成候选图表prompt
  */
-export const getChartConfigPrompt = (params: {
-  userInput: string;
-  chartConfig: ChartConfig[];
-  metas: Meta[];
-  data: Data;
-}) => {
-  const { userInput, chartConfig, metas, data } = params;
-  const AdviseChart = chartConfig.map((item) => ({
-    type: FULL_AND_ABBR_CHART_NAME_MAP[item.type],
-    chartName: CKB[item.type].chartName,
-    encode: item.encode,
-  }));
-  const finalMetas = metas.map((item) => {
-    const statisticsFeature = getStatisticsFeature(item);
-    return {
-      id: item.id,
-      dataType: item.dataType,
-      name: item.name,
-      statisticsFeature,
-    };
-  });
+export const getChartConfigPrompt = (
+  paramList: {
+    userInput: string;
+    chartConfig: ChartConfig[];
+    metas: Meta[];
+    data: Data;
+  }[]
+) => {
+  return paramList
+    .map((params, index) => {
+      const { userInput, chartConfig, metas, data } = params;
+      const AdviseChart = chartConfig.map((item) => ({
+        type: FULL_AND_ABBR_CHART_NAME_MAP[item.type],
+        chartName: CKB[item.type].chartName,
+        encode: item.encode,
+      }));
+      const finalMetas = metas.map((item) => {
+        return {
+          id: item.id,
+          dataType: item.dataType,
+          name: item.name,
+        };
+      });
 
-  const sampledData = data.slice(0, 10);
+      const sampledData = data.slice(0, 10);
 
-  const basePrompt = `前10条采样数据为：${JSON.stringify(sampledData)}；字段信息为：${JSON.stringify(
-    finalMetas
-  )}；候选图表列表为：${JSON.stringify(AdviseChart)}`;
+      const basePrompt = `前10条采样数据为：${JSON.stringify(sampledData)}；字段信息为：${JSON.stringify(
+        finalMetas
+      )}；候选图表列表为：${JSON.stringify(AdviseChart)}`;
 
-  return `${basePrompt}；${
-    userInput
-      ? `用户可视化意图为：${userInput}；请结合用户可视化意图、采样数据、字段信息、候选图表列表、图表知识库等信息进行打分排序`
-      : '用户未提供明确可视化意图，请结合采样数据、字段信息、候选图表列表、图表知识库等信息进行打分排序'
-  }`;
+      const curPrompt = `第${index + 1}张图表信息：${basePrompt}；${
+        userInput
+          ? `用户可视化意图为：${userInput}；请结合用户可视化意图、采样数据、字段信息、候选图表列表、图表知识等信息进行打分排序`
+          : '用户未提供明确可视化意图，请结合采样数据、字段信息、候选图表列表、图表知识等信息进行打分排序'
+      }`;
+
+      return curPrompt;
+    })
+    .join('\n\n');
 };
 
 const getUseCasePrompt = (useCase: string[]) => {
@@ -62,7 +66,7 @@ const getUseCasePrompt = (useCase: string[]) => {
   }, '');
 };
 
-const getCkbPrompt = (type: CHART_NAME) => {
+const _getCkbPrompt = (type: CHART_NAME) => {
   const ckb = CKB[type];
   const purposeNames = ckb.category.map((item) => CHART_PURPOSE_NAME_MAP[item]).join('、');
   return `
@@ -85,17 +89,15 @@ ${getUseCasePrompt(ckb.nonUseCase)}
   `;
 };
 
-export const getPlainChartAdvisePrompt = (params: {
-  userInput: string;
-  chartConfig: ChartConfig[];
-  metas: Meta[];
-  data: Data;
-}) => {
-  const selectedCkbPrompt = params.chartConfig.reduce((acc, item) => {
-    const ckb = getCkbPrompt(item.type as CHART_NAME);
-    return `${acc}\n${ckb}`;
-  }, '');
-  const chartConfigPrompt = getChartConfigPrompt(params);
+export const getPlainChartAdvisePrompt = (
+  paramList: {
+    userInput: string;
+    chartConfig: ChartConfig[];
+    metas: Meta[];
+    data: Data;
+  }[]
+) => {
+  const chartConfigPrompt = getChartConfigPrompt(paramList);
   const candidateCharts = Object.values(CKB).map((item) => ({
     type: item.abbrType,
     chartName: item.chartName,
@@ -105,7 +107,7 @@ export const getPlainChartAdvisePrompt = (params: {
 ${ROLE_CONTEXT}
 # 任务流程
 ## 输入要求
-用户会提供：
+用户会输入多个可视化问题，每一个问题包含如下信息：
 - 采样数据：提供部分数据样本，数据的类型定义如下：
   \`\`\`TypeScript
     type Data = Array<Record<string, string | number>>;
@@ -116,10 +118,6 @@ ${ROLE_CONTEXT}
       id: string; // 字段id
       name: string; // 字段名
       dataType: string; // 字段类型
-      statisticsFeature: {
-        distinct?: number; // 字段数据去重数量
-        median?: number; // 字段数据中位数
-      }; // 字段数据统计特征
     }
   \`\`\`
 - 核心分析目标（可选）：比较趋势/展示分布/揭示关系等
@@ -141,30 +139,20 @@ ${ROLE_CONTEXT}
   - 折线图、面积图相较于柱状图、条形图，更适合展示时间序列数据
   - 柱形图和条形图的优先级：二者的配置通用，但条形图更偏向于排行的意图，用户无明确意图时，优先推荐柱形图
   - 雷达图的优先级：如果用户输入信息有明显多维度的能力对比、特性对比等意图（比如球员各项能力对比、手机各项功能对比等），优先使用雷达图
-  - 数值量级差异规则（适用于折线图、双轴图、面积图、柱形图、条形图）：当存在多个数值字段，且它们的中位数（median）量级差异大时，需遵循以下规则
-    - 取最大中位数的数值字段(Max-Median)和最小中位数的数值字段(Min-Median)。计算比值：量级比值 = Max-Median / Min-Median
-      - 若比值 ≥ 100：优先推荐双轴图,以避免小数值指标在单一坐标轴下被压缩导致可视化失真（如：任务接通率被拨打任务数压缩）；不推荐单轴图表（如折线图、柱状图、面积图等），因其无法清晰展示小数值变化。
-      - 若比值 < 100：优先推荐单轴图表（如折线图、柱形图等），避免双轴图引入不必要的视觉复杂度；不推荐双轴图，除非业务明确需要对比不同量级的趋势。
 ## 输出规范
 - 输出要求：
-  - 按得分从高到低排序，输出图表\`type\`字符串列表，用英文逗号间隔，不要输出其他信息，示例："l,c,p,b"
-# 可视化知识库：
-可选图表类型列表如下：
+  - 针对每一个可视化问题，按得分从高到低排序，输出图表类型\`type\`字符串，用英文逗号间隔
+  - 所有可视化问题的输出结果按顺序放到数组中统一输出，例如：["l,c,p,b", "b,k"]
+  - **不要输出任何说明文字，仅输出数组即可**
+# 可视化知识
+- 可选图表类型
 \`\`\`JSON
 ${JSON.stringify(candidateCharts)}
 \`\`\`
-图表字段的类型定义如下：
-\`\`\`TypeScript
-  type ChartFields = {
-    [fieldKey: string]: {
-      dataType: ('date' | 'number' | 'string' | 'geo')[]; // 字段数据类型
-      desc: string;   // 字段说明
-      optional: boolean; // 是否可选
-    }
-  }
-\`\`\`
-## 图表类型概览
-${selectedCkbPrompt}
+- 图表视觉通道描述
+\`\`\`JSON
+${JSON.stringify(VISUAL_CHANNEL_DESCRIPTION)}
+\`\`\`JSON
 # 用户的问题为：
 ${chartConfigPrompt}
   `;
