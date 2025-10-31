@@ -120,14 +120,14 @@ export const CHART_CONFIG_GENERATOR_MAP = {
   },
   [CHART_NAME.pie]: (params: RenderChartParams) => {
     const { encode, data, uiConfig = {} } = params;
-    const xFieldKey = encode.x[0];
-    const yFieldKey = encode.y[0];
+    const sFieldKey = encode.s[0];
+    const valueFieldKey = encode.value[0];
     const newXFieldKey = 'category';
     const newYFieldKey = 'value';
     const newData = data.map((item) => {
       return {
-        [newXFieldKey]: item[xFieldKey],
-        [newYFieldKey]: item[yFieldKey],
+        [newXFieldKey]: item[sFieldKey],
+        [newYFieldKey]: item[valueFieldKey],
       };
     });
     return {
