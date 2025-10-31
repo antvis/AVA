@@ -1,4 +1,4 @@
-import { categoryOutlier } from '../../../../src/insight/algorithms';
+import { categoryOutlier } from '@ava/insight/algorithms';
 
 const data = [38, 52, 61, 145, 48, 38, 38, 38];
 
