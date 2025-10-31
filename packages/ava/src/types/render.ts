@@ -1,6 +1,7 @@
-import { CHART_PURPOSE } from '../constants/advisor';
+import { Spec } from '@antv/gpt-vis';
 
-import { AdviseChart } from './advisor';
+import { CHART_NAME, CHART_PURPOSE } from '../constants/advisor';
+
 import { Data, Meta } from './data';
 
 export type TrendData = Array<{
@@ -28,24 +29,26 @@ export type DataTypeMap = {
 };
 
 export interface RenderParams {
-  /** render DOM container */
-  container: HTMLElement;
-  chartConfig: AdviseChart;
+  container: string;
+  type: CHART_NAME;
+  encode: {
+    [property: string]: string[];
+  };
+  /** AntV-spec */
+  spec: Spec;
   data: Data;
   metas: Meta[];
-  uiConfig?: {
-    /** chart color palette */
-    palette?: string[];
-    /** chart width */
-    width?: number;
-    /** chart height */
-    height?: number;
-    /** Overall chart style */
-    theme?: 'default' | 'dark' | 'academy';
-    backgroundColor?: string;
-    /** Applicable charts: line, area, radar */
-    lineWidth?: number;
-  };
 }
 
-export type Renderer = (params: RenderParams) => any;
+export type Renderer = (params: RenderParams) => void;
+
+export type UiConfig = {
+  palette?: string[];
+  width?: number;
+  height?: number;
+  /** Overall chart style */
+  theme?: 'default' | 'dark' | 'academy';
+  backgroundColor?: string;
+  /** Applicable charts: line, area, radar */
+  lineWidth?: number;
+};

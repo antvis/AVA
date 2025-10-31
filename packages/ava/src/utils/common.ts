@@ -1,5 +1,7 @@
 import { lastIndexOf } from 'lodash';
 
+import { Meta } from '@ava/types';
+
 import { isArray } from './isType';
 
 // sign
@@ -171,4 +173,11 @@ export const safeJsonParse = (str: string, defaultVal = {}) => {
   } catch (e) {
     return defaultVal;
   }
+};
+
+export const metasToMap = (metas: Meta[]): Record<string, Meta> => {
+  return metas.reduce((acc, cur) => {
+    acc[cur.id] = cur;
+    return acc;
+  }, {});
 };

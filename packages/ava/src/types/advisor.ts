@@ -1,5 +1,7 @@
 import { Data, Meta } from '@ava/types/data';
 
+import { UiConfig } from './render';
+
 /**
  * Common LLM configuration properties
  */
@@ -56,6 +58,7 @@ export interface AdviseChartParams {
   outputExplanation?: boolean;
   /** force chart type, such as 'line', 'bar', 'pie' */
   forceType?: string;
+  uiConfig?: UiConfig;
 }
 
 export interface AdviseChart {
