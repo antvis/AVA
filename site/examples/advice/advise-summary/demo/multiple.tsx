@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Advisor } from '@antv/ava';
 import { Button } from 'antd';
-import { renderChart } from '@antv/ava-renderer';
+import { render } from '@antv/gpt-vis';
 
-Advisor.bindRenderer(renderChart);
+Advisor.bindRenderer(render);
 const advisor = new Advisor({
   llm: {
     appId: '202510APxPmo00551539',
@@ -14,7 +14,6 @@ const advisor = new Advisor({
 });
 
 const App = () => {
-  const [chart, setChart] = useState<React.ReactElement>(null);
   const [data] = useState([
     { 商品类别: '家具', 销售渠道: '物美', 单价: 56.71, 折扣: 0.27 },
     { 商品类别: '办公用品', 销售渠道: '其他', 单价: 1.36, 折扣: 0.87 },
@@ -32,35 +31,19 @@ const App = () => {
   ]);
   const advise = async () => {
     const res = await advisor.advise({ data });
-    const charts = res.map((item) => {
-      const { adviseCharts, metas, data } = item;
-      return advisor.render({
-        chartConfig: adviseCharts[0],
-        data,
-        metas,
-        uiConfig: {
-          theme: 'academy',
-          backgroundColor: '#eee',
-          lineWidth: 5,
-        },
+    res.forEach((item) => {
+      const { adviseCharts } = item;
+      advisor.render({
+        container: '#chart',
+        spec: adviseCharts[0].spec,
       });
     });
-
-    const chartsDom = (
-      <div>
-        {charts.map((chart, index) => (
-          <div key={index}>{chart}</div>
-        ))}
-      </div>
-    );
-
-    setChart(chartsDom);
   };
 
   return (
     <div>
       <Button onClick={advise}>advise</Button>
-      <div>{chart}</div>
+      <div id={'chart'} />
     </div>
   );
 };

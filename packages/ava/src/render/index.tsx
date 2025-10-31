@@ -1,19 +1,15 @@
-import React from 'react';
+import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@ava/constants';
+import { AdviseChart, Data, DataTypeMap, Meta, UiConfig } from '@ava/types';
+import { metasToMap } from '@ava/utils';
 
-import { DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
-import {
-  CHART_NAME,
-  CHART_PURPOSE,
-  DataTypeMap,
-  DEFAULT_UI_CONFIG,
-  ENCODE_TO_GPT_VIS_ENCODE,
-  type RenderParams,
-} from '@antv/ava';
+type Params = {
+  encode: AdviseChart['encode'];
+  data: Data;
+  metasMap: Record<string, Meta>;
+  uiConfig?: UiConfig;
+};
 
-import { transMetasToMap } from './utils';
-import { RenderChartParams } from './types';
-
-const getCommonStyle = (uiConfig: RenderParams['uiConfig'] = {}) => {
+const getChartStyle = (uiConfig: UiConfig = {}) => {
   return {
     backgroundColor: uiConfig.backgroundColor || DEFAULT_UI_CONFIG.backgroundColor,
     ...(uiConfig.palette
@@ -24,8 +20,8 @@ const getCommonStyle = (uiConfig: RenderParams['uiConfig'] = {}) => {
   };
 };
 
-const getCommonConfig = <T extends keyof DataTypeMap>(
-  params: RenderChartParams & {
+const getChartSpec = <T extends keyof DataTypeMap>(
+  params: Params & {
     category: T;
   }
 ) => {
@@ -55,9 +51,9 @@ const getCommonConfig = <T extends keyof DataTypeMap>(
   };
 };
 
-export const CHART_CONFIG_GENERATOR_MAP = {
-  [CHART_NAME.line]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Trend>({
+export const SPEC_GENERATOR_MAP = {
+  [CHART_NAME.line]: (params: Params) => {
+    const { data, axisXTitle, axisYTitle, uiConfig } = getChartSpec<CHART_PURPOSE.Trend>({
       ...params,
       category: CHART_PURPOSE.Trend,
     });
@@ -68,12 +64,12 @@ export const CHART_CONFIG_GENERATOR_MAP = {
       theme: uiConfig.theme || DEFAULT_UI_CONFIG.theme,
       style: {
         lineWidth: uiConfig.lineWidth || DEFAULT_UI_CONFIG.lineWidth,
-        ...getCommonStyle(uiConfig),
+        ...getChartStyle(uiConfig),
       },
     };
   },
-  [CHART_NAME.area]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Trend>({
+  [CHART_NAME.area]: (params: Params) => {
+    const { data, axisXTitle, axisYTitle, uiConfig } = getChartSpec<CHART_PURPOSE.Trend>({
       ...params,
       category: CHART_PURPOSE.Trend,
     });
@@ -84,12 +80,12 @@ export const CHART_CONFIG_GENERATOR_MAP = {
       theme: uiConfig.theme || DEFAULT_UI_CONFIG.theme,
       style: {
         lineWidth: uiConfig.lineWidth || DEFAULT_UI_CONFIG.lineWidth,
-        ...getCommonStyle(uiConfig),
+        ...getChartStyle(uiConfig),
       },
     };
   },
-  [CHART_NAME.column]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Distribution>({
+  [CHART_NAME.column]: (params: Params) => {
+    const { data, axisXTitle, axisYTitle, uiConfig } = getChartSpec<CHART_PURPOSE.Distribution>({
       ...params,
       category: CHART_PURPOSE.Distribution,
     });
@@ -100,11 +96,11 @@ export const CHART_CONFIG_GENERATOR_MAP = {
       axisXTitle,
       axisYTitle,
       theme: uiConfig.theme || DEFAULT_UI_CONFIG.theme,
-      style: getCommonStyle(uiConfig),
+      style: getChartStyle(uiConfig),
     };
   },
-  [CHART_NAME.bar]: (params: RenderChartParams) => {
-    const { data, axisXTitle, axisYTitle, uiConfig } = getCommonConfig<CHART_PURPOSE.Distribution>({
+  [CHART_NAME.bar]: (params: Params) => {
+    const { data, axisXTitle, axisYTitle, uiConfig } = getChartSpec<CHART_PURPOSE.Distribution>({
       ...params,
       category: CHART_PURPOSE.Distribution,
     });
@@ -115,10 +111,10 @@ export const CHART_CONFIG_GENERATOR_MAP = {
       axisXTitle,
       axisYTitle,
       theme: uiConfig.theme || DEFAULT_UI_CONFIG.theme,
-      style: getCommonStyle(uiConfig),
+      style: getChartStyle(uiConfig),
     };
   },
-  [CHART_NAME.pie]: (params: RenderChartParams) => {
+  [CHART_NAME.pie]: (params: Params) => {
     const { encode, data, uiConfig = {} } = params;
     const sFieldKey = encode.s[0];
     const valueFieldKey = encode.value[0];
@@ -133,10 +129,10 @@ export const CHART_CONFIG_GENERATOR_MAP = {
     return {
       data: newData,
       theme: uiConfig.theme || DEFAULT_UI_CONFIG.theme,
-      style: getCommonStyle(uiConfig),
+      style: getChartStyle(uiConfig),
     };
   },
-  [CHART_NAME.dualAxes]: (params: RenderChartParams) => {
+  [CHART_NAME.dualAxes]: (params: Params) => {
     const { encode, data, metasMap, uiConfig = {} } = params;
     const xFieldKey = encode.x[0];
     const y1FieldKey = encode.y[0];
@@ -168,11 +164,11 @@ export const CHART_CONFIG_GENERATOR_MAP = {
       ],
       axisXTitle,
       theme: uiConfig.theme || DEFAULT_UI_CONFIG.theme,
-      style: getCommonStyle(uiConfig),
+      style: getChartStyle(uiConfig),
     };
   },
-  [CHART_NAME.radar]: (params: RenderChartParams) => {
-    const { data, uiConfig } = getCommonConfig<CHART_PURPOSE.Comparison>({
+  [CHART_NAME.radar]: (params: Params) => {
+    const { data, uiConfig } = getChartSpec<CHART_PURPOSE.Comparison>({
       ...params,
       category: CHART_PURPOSE.Comparison,
     });
@@ -181,38 +177,35 @@ export const CHART_CONFIG_GENERATOR_MAP = {
       theme: uiConfig.theme || DEFAULT_UI_CONFIG.theme,
       style: {
         lineWidth: uiConfig.lineWidth || DEFAULT_UI_CONFIG.lineWidth,
-        ...getCommonStyle(uiConfig),
+        ...getChartStyle(uiConfig),
       },
     };
   },
-  [CHART_NAME.spreadsheetPro]: (_params: RenderChartParams) => {
+  [CHART_NAME.spreadsheetPro]: (_params: Params) => {
     return null;
   },
-  [CHART_NAME.treemap]: (_params: RenderChartParams) => {
+  [CHART_NAME.treemap]: (_params: Params) => {
     return null;
   },
-
-  [CHART_NAME.graph]: (_params: RenderChartParams) => {
+  [CHART_NAME.graph]: (_params: Params) => {
     return null;
   },
 };
 
-export const renderChart = (params: RenderParams) => {
-  const { chartConfig, data, metas, uiConfig = {} } = params;
-  const { type, encode } = chartConfig;
-  const metasMap = transMetasToMap(metas);
-  const configGen = CHART_CONFIG_GENERATOR_MAP[type];
-
-  if (configGen) {
-    const config = configGen({
-      encode,
-      data,
-      metasMap,
-      uiConfig,
-    });
-    const ChartComponent = DEFAULT_CHART_COMPONENTS[type];
-    return <ChartComponent {...config} />;
-  }
-
-  return <div>无可渲染图表：{type}</div>;
+export const metaToSpec = (params: {
+  encode: AdviseChart['encode'];
+  type: CHART_NAME;
+  metas: Meta[];
+  data: Data;
+  uiConfig?: UiConfig;
+}) => {
+  const { encode, type, data, metas, uiConfig = {} } = params;
+  const metasMap = metasToMap(metas);
+  const specGenerator = SPEC_GENERATOR_MAP[type];
+  return specGenerator({
+    encode,
+    data,
+    metasMap,
+    uiConfig,
+  });
 };

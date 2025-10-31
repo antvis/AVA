@@ -22,7 +22,6 @@
     "skipLibCheck": true,
     "paths": {
       "@antv/ava": ["packages/ava/src/index.ts"],
-      "@antv/ava-renderer": ["packages/ava-renderer/src/index.ts"],
       "@ava/*": ["packages/ava/src/*"],
       "@advisor/*": ["packages/ava/src/advisor/*"]
     }

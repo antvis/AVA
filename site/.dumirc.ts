@@ -27,8 +27,8 @@ export default defineConfig({
     showChartResize: true,
     // 是否在 demo 页展示API文档
     showAPIDoc: true,
-    // 是否展示国内镜像链接     
-    showChinaMirror: false,  
+    // 是否展示国内镜像链接
+    showChinaMirror: false,
     navs: [
         {
             slug: 'docs/guide',
@@ -193,6 +193,5 @@ export default defineConfig({
   ],
   externals: {
     '@antv/ava': 'ava',
-    '@antv/ava-renderer': 'avaRenderer',
   }
 });
