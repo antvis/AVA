@@ -1,3 +1,5 @@
+import { ChartType } from '@antv/gpt-vis';
+
 /**
  * Array of standard IDs for each chart type.
  *
@@ -203,3 +205,40 @@ export const CHANNELS = [
  * @name RECOMMEND_RATINGS
  */
 export const RECOMMEND_RATINGS = ['Recommended', 'Use with Caution', 'Not Recommended'] as const;
+
+export const CHART_ID_LIST = [
+  { chartId: ChartType.Area, code: 'a' },
+  { chartId: ChartType.Bar, code: 'b' },
+  { chartId: ChartType.Boxplot, code: 'bp' },
+  { chartId: ChartType.Column, code: 'c' },
+  { chartId: ChartType.DualAxes, code: 'da' },
+  { chartId: ChartType.FishboneDiagram, code: 'fd' },
+  { chartId: ChartType.FlowDiagram, code: 'fl' },
+  { chartId: ChartType.Funnel, code: 'fn' },
+  { chartId: ChartType.Histogram, code: 'h' },
+  { chartId: ChartType.Line, code: 'l' },
+  { chartId: ChartType.Liquid, code: 'li' },
+  { chartId: ChartType.MindMap, code: 'mm' },
+  { chartId: ChartType.NetworkGraph, code: 'ng' },
+  { chartId: ChartType.OrganizationChart, code: 'oc' },
+  { chartId: ChartType.PathMap, code: 'pa' },
+  { chartId: ChartType.Pie, code: 'p' },
+  { chartId: ChartType.PinMap, code: 'pi' },
+  { chartId: ChartType.Radar, code: 'r' },
+  { chartId: ChartType.Sankey, code: 's' },
+  { chartId: ChartType.Scatter, code: 'sc' },
+  { chartId: ChartType.Treemap, code: 't' },
+  { chartId: ChartType.Venn, code: 'v' },
+  { chartId: ChartType.Violin, code: 'vi' },
+  { chartId: ChartType.WordCloud, code: 'wc' },
+];
+
+export const CHART_CODE_MAP = CHART_ID_LIST.reduce((acc, item) => {
+  acc[item.chartId] = item.code;
+  return acc;
+}, {} as Record<string, string>);
+
+export const CHART_ID_MAP = CHART_ID_LIST.reduce((acc, item) => {
+  acc[item.code] = item.chartId;
+  return acc;
+}, {} as Record<string, string>);

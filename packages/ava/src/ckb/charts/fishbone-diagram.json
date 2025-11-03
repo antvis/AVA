@@ -1,0 +1,85 @@
+{
+  "name": "generate_fishbone_diagram",
+  "description": "Generate a fishbone diagram chart to uses a fish skeleton, like structure to display the causes or effects of a core problem, with the problem as the fish head and the causes/effects as the fish bones. It suits problems that can be split into multiple related factors.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "data": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "children": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "children": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": ["name"]
+                        }
+                      }
+                    },
+                    "required": ["name"]
+                  }
+                }
+              },
+              "required": ["name"]
+            }
+          }
+        },
+        "required": ["name"],
+        "description": "Data for fishbone diagram chart which is a hierarchical structure, such as, { name: 'main topic', children: [{ name: 'topic 1', children: [{ name: 'subtopic 1-1' }] }] }, and the maximum depth is 3."
+      },
+      "style": {
+        "type": "object",
+        "properties": {
+          "texture": {
+            "type": "string",
+            "enum": ["default", "rough"],
+            "default": "default",
+            "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style."
+          }
+        },
+        "description": "Custom style configuration for the chart."
+      },
+      "theme": {
+        "type": "string",
+        "default": "default",
+        "description": "Set the theme for the chart, optional, default is 'default'.",
+        "enum": ["default", "academy", "dark"]
+      },
+      "width": {
+        "type": "number",
+        "default": 600,
+        "description": "Set the width of chart, default is 600."
+      },
+      "height": {
+        "type": "number",
+        "default": 400,
+        "description": "Set the height of chart, default is 400."
+      }
+    },
+    "required": ["data"],
+    "$schema": "http://json-schema.org/draft-07/schema#"
+  }
+}
