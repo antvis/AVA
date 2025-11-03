@@ -11,10 +11,12 @@ import {
   ChartConfig,
   AdviseChart,
   NumberColumnFeature,
+  UiConfig,
 } from '@ava/types';
 import { CKB } from '@ava/ckb/ckb-v2';
-import { logError } from '@ava/utils';
+import { logError, metasToMap } from '@ava/utils';
 import { CHART_NAME, ABBR_AND_FULL_CHART_NAME_MAP } from '@ava/constants';
+import { metaToSpec } from '@ava/render';
 
 /**
  * @desc 对table组件的字段重新排序
@@ -34,17 +36,6 @@ export const sortTableRowsOrder = (metas: Meta[]): Meta[] => {
   return simpleMetas.sort((a, b) => {
     return order[a.dataType] - order[b.dataType];
   });
-};
-
-/**
- * @desc 字段原信息转换为map
- * @param metas
- */
-export const transMetasToMap = (metas: Meta[]): Record<string, Meta> => {
-  return metas.reduce((acc, cur) => {
-    acc[cur.id] = cur;
-    return acc;
-  }, {});
 };
 
 export const transformChartEncode = (encode: ChartConfig['encode']) => {
@@ -510,7 +501,7 @@ export function generateAllChartConfigs(
       const { encode } = chart;
       const x = encode.x[0];
       const s = encode.s?.[0];
-      const metaMap = transMetasToMap(finalFields);
+      const metaMap = metasToMap(finalFields);
       if (s && metaMap[x.id]?.statisticsFeature?.distinct < metaMap[s.id]?.statisticsFeature?.distinct) {
         // eslint-disable-next-line no-param-reassign
         chart.encode = {
@@ -602,9 +593,10 @@ export const optimizeChartConfig = (params: {
   chartConfigs: ChartConfig[];
   metas: Meta[];
   data: Data;
+  uiConfig?: UiConfig;
 }): AdviseChart[] => {
-  const { chartConfigs, metas, data } = params;
-  const fieldsMap = transMetasToMap(metas);
+  const { chartConfigs, metas, data, uiConfig = {} } = params;
+  const fieldsMap = metasToMap(metas);
   const processedConfigs = chartConfigs.map((config) => {
     const { type, encode, score } = config;
     let finalScore = score;
@@ -725,7 +717,22 @@ export const optimizeChartConfig = (params: {
     };
   });
 
-  return processedConfigs.sort((a, b) => b.score - a.score);
+  return processedConfigs
+    .map((item) => {
+      const { type, encode } = item;
+      const spec = metaToSpec({
+        type: type as CHART_NAME,
+        encode,
+        data,
+        metas,
+        uiConfig,
+      });
+      return {
+        spec,
+        ...item,
+      };
+    })
+    .sort((a, b) => b.score - a.score);
 };
 
 /**
