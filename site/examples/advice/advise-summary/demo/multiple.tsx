@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 import ReactDOM from 'react-dom';
 import { Advisor } from '@antv/ava';
-import { Button } from 'antd';
-import { render } from '@antv/gpt-vis';
+import { Button, Input } from 'antd';
+import { renderChart } from '@antv/ava-renderer';
 
 Advisor.bindRenderer(render);
 const advisor = new Advisor({
@@ -14,6 +14,8 @@ const advisor = new Advisor({
 });
 
 const App = () => {
+  const [chart, setChart] = useState<React.ReactElement>(null);
+  const [loading, setLoading] = useState(false);
   const [data] = useState([
     { 商品类别: '家具', 销售渠道: '物美', 单价: 56.71, 折扣: 0.27 },
     { 商品类别: '办公用品', 销售渠道: '其他', 单价: 1.36, 折扣: 0.87 },
@@ -30,6 +32,7 @@ const App = () => {
     { 商品类别: '设备', 销售渠道: '物美', 单价: 19531.88, 折扣: 0.32 },
   ]);
   const advise = async () => {
+    setLoading(true);
     const res = await advisor.advise({ data });
     res.forEach((item) => {
       const { adviseCharts } = item;
@@ -38,12 +41,26 @@ const App = () => {
         spec: adviseCharts[0].spec,
       });
     });
+
+    const chartsDom = (
+      <div>
+        {charts.map((chart, index) => (
+          <div key={index}>{chart}</div>
+        ))}
+      </div>
+    );
+
+    setChart(chartsDom);
+    setLoading(false);
   };
 
   return (
     <div>
-      <Button onClick={advise}>advise</Button>
-      <div id={'chart'} />
+      <Input.TextArea style={{ height: '300px' }} value={JSON.stringify(data, null, 2)} />
+      <Button loading={loading} onClick={advise}>
+        运行推荐
+      </Button>
+      <div>{chart}</div>
     </div>
   );
 };

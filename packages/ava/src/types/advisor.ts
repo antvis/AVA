@@ -1,4 +1,4 @@
-import { Data, Meta } from '@ava/types/data';
+import { FieldDataType, Meta } from '@ava/types/data';
 
 import { UiConfig } from './render';
 
@@ -43,7 +43,7 @@ export interface AdvisorConfig {
 
 export interface AdviseChartParams {
   /** raw data */
-  data: Data;
+  data: FieldDataType;
   /** field Metadata */
   metas?: Meta[];
   /** the user's visualization purpose, such as viewing data trends */

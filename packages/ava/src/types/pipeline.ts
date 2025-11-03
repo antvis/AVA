@@ -1,11 +1,8 @@
 import { AsyncSeriesHook } from 'tapable';
 
-import { Meta, FieldDataType, PlainDataType } from '@ava/types/data';
+import { Meta, FieldDataType, PlainLikeDataType, DataShard } from '@ava/types/data';
 
 import { AdvisorConfig, AdviseChartParams, AdviseChart, AdviseText, AdviseTextParams } from './advisor';
-
-import type { PURPOSE } from '@ava/constants';
-import type { DATA_SHAPE } from '@ava/data';
 
 export type AdviseParams = AdviseChartParams | AdviseTextParams;
 
@@ -28,24 +25,9 @@ export abstract class AdvisorPlugin<I extends AdviseParams> {
 
 export interface Stages<T extends AdviseParams> {
   extract: AsyncSeriesHook<[PluginInput<T>]>;
-  data: AsyncSeriesHook<[PluginInput<T>]>;
   advise: AsyncSeriesHook<[PluginInput<T>]>;
   generate: AsyncSeriesHook<[PluginInput<T>]>;
 }
-
-export type PurposeObject = {
-  name: string;
-  key: string;
-  purpose: PURPOSE;
-  purposeDesc?: string;
-};
-
-export type DataShard = {
-  shape: DATA_SHAPE;
-  data: FieldDataType<DATA_SHAPE>;
-  metas: Array<any>;
-  purpose?: PurposeObject;
-};
 
 export type ExtractStageOutput = {
   data?: FieldDataType;
@@ -59,14 +41,13 @@ export type DataStageOutput = {
 export type AdviseStageOutput = {
   adviseCharts: AdviseChart[];
   metas: Meta[];
-  data: PlainDataType;
+  data: PlainLikeDataType;
 }[];
 
 export type GenerateStageOutput = {};
 
 export type DataStore = {
   extract: ExtractStageOutput;
-  data: DataStageOutput;
   advise: AdviseStageOutput;
   generate: GenerateStageOutput;
   [key: string]: any;

@@ -9,6 +9,7 @@ import {
   Renderer,
   RenderParams,
 } from '@ava/types';
+import { extractData } from '@ava/data';
 
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
@@ -20,17 +21,27 @@ export class Advisor {
     Advisor.RENDERER = renderer;
   }
 
+  config!: AdvisorConfig;
+
   adviseChartPipeline: BasePipeline<AdviseChartParams>;
 
   adviseTextPipeline: BasePipeline<AdviseTextParams>;
 
   constructor(config: AdvisorConfig = {}) {
+    this.config = config;
     this.adviseChartPipeline = new AdviseChartPipeline({
       config,
     });
     this.adviseTextPipeline = new AdviseTextPipeline({
       config,
     });
+  }
+
+  async extract(params: AdviseChartParams) {
+    const { purpose, data } = params;
+    const input = purpose ?? data;
+    const dataShards = await extractData(input, { llmConfig: this.config.llm });
+    return dataShards;
   }
 
   // eslint-disable-next-line no-dupe-class-members

@@ -9,7 +9,6 @@ import {
   Stages,
   AdviseChartPluginInput,
   AdviseStageOutput,
-  DataStageOutput,
 } from '@ava/types';
 import { AdviseChartPluginEnum, AdviseChartStageEnum } from '@ava/constants';
 
@@ -27,13 +26,11 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   constructor(params: { config: AdvisorConfig }) {
     this.dataStore = {
       [AdviseChartStageEnum.Extract]: {},
-      [AdviseChartStageEnum.Data]: {} as DataStageOutput,
       [AdviseChartStageEnum.Advise]: {} as AdviseStageOutput,
       [AdviseChartStageEnum.Generate]: {},
     };
     this.stages = {
       [AdviseChartStageEnum.Extract]: new AsyncSeriesHook(['input']),
-      [AdviseChartStageEnum.Data]: new AsyncSeriesHook(['input']),
       [AdviseChartStageEnum.Advise]: new AsyncSeriesHook(['input']),
       [AdviseChartStageEnum.Generate]: new AsyncSeriesHook(['input']),
     };
@@ -65,10 +62,8 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
       },
       curStage: '',
     };
+
     await this.stages.extract.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Extract });
-
-    await this.stages.data.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Data });
-
     await this.stages.advise.promise({ ...pluginInput, curStage: AdviseChartStageEnum.Extract });
 
     // TODO: 最后一个阶段改成优化图表配置
