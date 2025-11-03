@@ -1,4 +1,4 @@
-import { insightPatternsExtractor } from '../../../../src/insight/insights';
+import { insightPatternsExtractor } from '@ava/insight/insights';
 
 const data = [
   {
@@ -23,7 +23,7 @@ const data = [
   },
   {
     type: 'F',
-    sales: 473,
+    sales: 38,
   },
   {
     type: 'G',
@@ -35,17 +35,17 @@ const data = [
   },
 ];
 
-describe('extract majority insight', () => {
-  test('check majority result', () => {
+describe('extract low-variance insight', () => {
+  test('check low-variance result', () => {
     const result = insightPatternsExtractor({
       data,
       dimensions: [{ fieldName: 'type' }],
       measures: [{ fieldName: 'sales', method: 'SUM' }],
-      insightType: 'majority',
+      insightType: 'low_variance',
       options: {
         filterInsight: true,
       },
     });
-    expect(result[0]?.index).toEqual(5);
+    expect(result[0]?.significance).toBeGreaterThan(0.85);
   });
 });

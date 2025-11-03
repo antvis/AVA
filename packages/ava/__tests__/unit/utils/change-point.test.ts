@@ -1,4 +1,4 @@
-import { insightPatternsExtractor } from '../../../../src/insight/insights';
+import { insightPatternsExtractor } from '@ava/insight/insights';
 
 const data = [
   { year: '1991', value: 0.3 },

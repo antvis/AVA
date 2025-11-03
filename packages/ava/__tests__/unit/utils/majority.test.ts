@@ -1,4 +1,4 @@
-import { insightPatternsExtractor } from '../../../../src/insight/insights';
+import { insightPatternsExtractor } from '@ava/insight/insights';
 
 const data = [
   {
@@ -11,11 +11,11 @@ const data = [
   },
   {
     type: 'C',
-    sales: 61,
+    sales: 48,
   },
   {
     type: 'D',
-    sales: 145,
+    sales: 45,
   },
   {
     type: 'E',
@@ -23,7 +23,7 @@ const data = [
   },
   {
     type: 'F',
-    sales: 38,
+    sales: 473,
   },
   {
     type: 'G',
@@ -35,18 +35,17 @@ const data = [
   },
 ];
 
-describe('extract category-outlier insight', () => {
-  test('check outliers result', () => {
+describe('extract majority insight', () => {
+  test('check majority result', () => {
     const result = insightPatternsExtractor({
       data,
       dimensions: [{ fieldName: 'type' }],
       measures: [{ fieldName: 'sales', method: 'SUM' }],
-      insightType: 'category_outlier',
+      insightType: 'majority',
       options: {
         filterInsight: true,
       },
     });
-    const outlierIndexes = result?.map((item) => item.index);
-    expect(outlierIndexes).toStrictEqual([3]);
+    expect(result[0]?.index).toEqual(5);
   });
 });

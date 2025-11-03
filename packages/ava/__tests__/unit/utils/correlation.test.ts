@@ -1,4 +1,4 @@
-import { insightPatternsExtractor } from '../../../../src/insight/insights';
+import { insightPatternsExtractor } from '@ava/insight/insights';
 
 const data = [
   { x: 1, y: 4.181 },
