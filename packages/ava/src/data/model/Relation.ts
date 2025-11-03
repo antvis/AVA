@@ -1,11 +1,10 @@
 import _ from 'lodash';
 
 import { assert, isArray, isObject, isBasicType } from '@ava/utils';
-import { getAllStructFeats, getNodeFields, getLinkFields, getAllFieldsInfo, clusterNodes } from '@ava/data/features';
+import { getAllRelationFeatures } from '@ava/data/features';
 
-import type { GraphData, GraphFeature } from '@ava/types/data';
+import type { RelationLikeDataType, RelationFeature } from '@ava/types/data';
 
-/* eslint-disable no-param-reassign */
 function parseTreeNode(data: any) {
   const nodes = [];
   const edges = [];
@@ -58,7 +57,6 @@ function parseArray(data: { [key: string]: any }[]) {
       edges.push(formatLink);
     }
   } else if (isArray(children)) {
-    // try to parse the array as multiple trees
     for (let i = 0; i < data.length; i += 1) {
       const tree = data[i];
       const { nodes: subNodes, edges: subLinks } = parseTreeNode(tree);
@@ -101,10 +99,10 @@ export function flatObject(obj, concatenator = '.') {
   }, {});
 }
 
-export class Graph {
-  data!: GraphData;
+export class Relation {
+  data!: RelationLikeDataType;
 
-  constructor(data: GraphData) {
+  constructor(data: RelationLikeDataType) {
     const { nodes, edges } = this.autoParse(data);
     this.data = {
       nodes: nodes.map((node) => flatObject(node)),
@@ -112,18 +110,16 @@ export class Graph {
     };
   }
 
-  private autoParse(data: GraphData) {
+  private autoParse(data: RelationLikeDataType) {
     let nodes;
     let edges;
 
-    // try parse data as link array or multiple trees
     if (isArray(data)) {
       const parsedData = parseArray(data);
       nodes = parsedData.nodes;
       edges = parsedData.edges;
     }
 
-    // if passed data tyoe is object
     if (isObject(data)) {
       const keys = _.keys(data);
       const nodeKey = keys.includes('nodes') ? 'nodes' : undefined;
@@ -135,20 +131,9 @@ export class Graph {
     return { nodes, edges };
   }
 
-  getFeatures(): GraphFeature {
+  getFeatures(): RelationFeature {
     const { nodes, edges } = this.data;
-    const graphStructFeats = getAllStructFeats(nodes, edges);
-    const { nodeFields, nodeFieldNames } = getNodeFields(nodes);
-    const { linkFields, linkFieldNames } = getLinkFields(edges);
-    const nodeFeature = getAllFieldsInfo(nodeFields, nodeFieldNames);
-    const linkFeature = getAllFieldsInfo(linkFields, linkFieldNames);
-    const getClusterField = clusterNodes(nodes, nodeFeature, edges);
-    nodeFeature.push(getClusterField);
-    const graphProps = {
-      nodeFeature,
-      linkFeature,
-      ...graphStructFeats,
-    };
-    return graphProps;
+    const features = getAllRelationFeatures(nodes, edges);
+    return features;
   }
 }

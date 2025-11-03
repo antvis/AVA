@@ -1,10 +1,8 @@
 import type { LevelOfMeasurement } from '@ava/ckb';
-import type { DATA_SHAPE } from '@ava/data';
+import type { DATA_SHAPE } from '@ava/data/constants';
+import type { PURPOSE } from '@ava/constants';
 
-/**
- * Rows(records) of data.
- */
-export type Data = FieldDataType;
+export type MatchFunction = (input: Record<string, any> | Record<string, any>[]) => { is: boolean; format: any };
 
 /**
  * Field Type
@@ -18,50 +16,40 @@ export enum COLUMN_TYPE {
   geo = 'geo',
 }
 
-export type PlainDataType = Array<Record<string, string | number>> | Array<Array<string | number>>;
+export type PlainLikeDataType = Array<Record<string, string | number>> | Array<Array<string | number>>;
 
-export type TreeDataType = Array<{
+export type HierarchyLikeDataType = Array<{
   id: string;
   name?: string;
-  children?: TreeDataType;
+  children?: HierarchyLikeDataType;
   [key: string]: any;
 }>;
 
-export type GraphDataType = {
-  nodes: Array<{
-    id: string;
-    name?: string;
-    [key: string]: any;
-  }>;
-  edges: Array<{
-    source: string;
-    target: string;
-    [key: string]: any;
-  }>;
+export type NodeData = {
+  id: string;
+  name?: string;
+  [key: string]: unknown;
 };
 
-export type FlowDataType = {
-  nodes: Array<{
-    id: string;
-    name?: string;
-    [key: string]: any;
-  }>;
-  edges: Array<{
-    source: string;
-    target: string;
-    value: number;
-    [key: string]: any;
-  }>;
+export type EdgeData = {
+  source: string;
+  target: string;
+  [key: string]: unknown;
+};
+
+export type RelationLikeDataType = {
+  nodes: NodeData[];
+  edges: EdgeData[];
 };
 
 /**
  * Rows(records) of data.
  */
-export type FieldDataType<T extends DATA_SHAPE = DATA_SHAPE.PLAIN> = T extends DATA_SHAPE.TREE
-  ? TreeDataType
-  : T extends DATA_SHAPE.GRAPH
-  ? GraphDataType
-  : PlainDataType;
+export type FieldDataType<T extends DATA_SHAPE = DATA_SHAPE.PLAIN> = T extends DATA_SHAPE.HIERARCHY
+  ? HierarchyLikeDataType
+  : T extends DATA_SHAPE.RELATION
+  ? RelationLikeDataType
+  : PlainLikeDataType;
 
 /**
  * statistical properties
@@ -209,7 +197,7 @@ export interface GeoColumnFeature extends ColumnFeature {
   geoType: 'name' | 'code' | 'coordinates';
 }
 
-export type NodeStructFeat = {
+export type NodeStructFeature = {
   degree: number;
   inDegree: number;
   outDegree: number;
@@ -223,7 +211,7 @@ export type NodeStructFeat = {
   clusterCoeff: number;
 };
 
-export type LinkStructFeat = {
+export type EdgeStructFeature = {
   isDirected: Boolean;
   centrality: number;
   cycleCount: number;
@@ -232,77 +220,56 @@ export type LinkStructFeat = {
   cliqueCount: number;
 };
 
-// Statistical features of graph
-export type GraphStatisticalFeature = {
-  nodeCount: number;
-  linkCount: number;
-  direction: number;
-  isDirected: Boolean;
-  isDAG: Boolean;
-  isCycle: Boolean;
-  isConnected: Boolean;
-  ratio: number; // ratio of breadth to depth
-  breadth: number;
-  depth: number;
-  maxDegree: number;
-  minDegree: number;
-  avgDegree: number;
-  degreeStd: number;
-  maxPageRank: number;
-  minPageRank: number;
-  avgPageRank: number;
-  components: any[];
-  componentCount: number;
-  strongConnectedComponents: any[];
-  strongConnectedComponentCount: number;
-  cycleCount: number;
-  directedCycleCount: number;
-  starCount: number;
-  cliqueCount: number;
-  cycleParticipate: number;
-  triangleCount: number;
-  localClusterCoeff: number;
-  globalClusterCoeff: number;
-  maxKCore: number;
-};
-
-export type GraphFeature = {
-  nodeFeats: ColumnFeature[];
-  linkFeats: ColumnFeature[];
-  graphInfo: Partial<GraphStatisticalFeature>;
-  nodeFeature: ColumnFeature[];
-  linkFeature: ColumnFeature[];
+export type RelationFeature = {
+  rootFeatures: Partial<{
+    nodeCount: number;
+    edgeCount: number;
+    direction: number;
+    isDirected: Boolean;
+    isDAG: Boolean;
+    isCycle: Boolean;
+    isConnected: Boolean;
+    ratio: number; // ratio of breadth to depth
+    breadth: number;
+    depth: number;
+    maxDegree: number;
+    minDegree: number;
+    avgDegree: number;
+    degreeStd: number;
+    maxPageRank: number;
+    minPageRank: number;
+    avgPageRank: number;
+    components: any[];
+    componentCount: number;
+    strongConnectedComponents: any[];
+    strongConnectedComponentCount: number;
+    cycleCount: number;
+    directedCycleCount: number;
+    starCount: number;
+    cliqueCount: number;
+    cycleParticipate: number;
+    triangleCount: number;
+    localClusterCoeff: number;
+    globalClusterCoeff: number;
+    maxKCore: number;
+  }>;
+  nodeFeatures: ColumnFeature[];
+  edgeFeatures: ColumnFeature[];
+  nodeStructFeatures: Partial<NodeStructFeature>[];
+  linkStructFeatures: Partial<EdgeStructFeature>[];
   [key: string]: any;
 };
 
-export type NodeData = {
-  id: string;
-  name?: string;
-  [key: string]: unknown;
+export type PurposeObject = {
+  name: string;
+  key: string;
+  purpose: PURPOSE;
+  purposeDesc?: string;
 };
 
-export type EdgeData = {
-  source: string;
-  target: string;
-  [key: string]: unknown;
-};
-
-/**
- * Graph extra info.
- */
-export type GraphExtra = {
-  nodeKey?: string; // key for node array in data object
-  linkKey?: string; // key for link array in data object
-  sourceKey?: string; // key for link source in link object
-  targetKey?: string;
-  childrenKey?: string;
-  nodeIndexes?: string[];
-  nodeColumns?: string[];
-  linkIndexes?: string[];
-  linkColumns?: string[];
-};
-
-export type GraphData = {
-  nodes: NodeData[];
-  edges: EdgeData[];
+export type DataShard = {
+  shape: DATA_SHAPE;
+  data: FieldDataType<DATA_SHAPE>;
+  metas: Array<any>;
+  purpose?: PurposeObject;
 };

@@ -1,15 +1,14 @@
-// TODO @chenluli: move @antv/algorithm from devDep to dep after this file is complete
 import * as AlgorithmSync from '@antv/algorithm';
 
-import { analyzeField } from './plainColumn';
+import { analyzeField } from './plain';
 
 import type {
   NodeData,
   EdgeData,
   ColumnFeature,
-  GraphStatisticalFeature,
-  NodeStructFeat,
-  LinkStructFeat,
+  RelationFeature,
+  NodeStructFeature,
+  EdgeStructFeature,
 } from '@ava/types/data';
 
 const GraphAlgorithms = {
@@ -112,10 +111,9 @@ export function clusterNodes(nodes: NodeData[], nodeFieldsInfo: ColumnFeature[],
  * @param nodes
  * @param links
  */
-export function getAllStructFeats(nodes: NodeData[], links: EdgeData[]) {
-  const nodeStructFeats: Partial<NodeStructFeat>[] = [];
-  const linkStructFeats: Partial<LinkStructFeat>[] = [];
-  // TODO: whether the graph is directed need to be passed in
+export function getAllRelationFeatures(nodes: NodeData[], links: EdgeData[]) {
+  const nodeStructFeats: Partial<NodeStructFeature>[] = [];
+  const linkStructFeats: Partial<EdgeStructFeature>[] = [];
   const isDirected: boolean = false;
   const degrees = GraphAlgorithms.getDegree({ nodes, edges: links });
   const pageRanks = GraphAlgorithms.pageRank({ nodes, edges: links });
@@ -164,18 +162,18 @@ export function getAllStructFeats(nodes: NodeData[], links: EdgeData[]) {
   }
   const nodeFeatNames = Object.keys(nodeStructFeats[0]);
   const linkFeatNames = Object.keys(linkStructFeats[0]);
-  const nodeFeats = getAllFieldsInfo(generateColDataFromArray(nodeStructFeats, nodeFeatNames), nodeFeatNames);
-  const linkFeats = getAllFieldsInfo(generateColDataFromArray(linkStructFeats, linkFeatNames), linkFeatNames);
+  const nodeFeatures = getAllFieldsInfo(generateColDataFromArray(nodeStructFeats, nodeFeatNames), nodeFeatNames);
+  const edgeFeatures = getAllFieldsInfo(generateColDataFromArray(linkStructFeats, linkFeatNames), linkFeatNames);
 
   // Calculate the structural features and statistics of all nodes and links
   const nodeDegrees = nodes.map((node) => Number(node.degree));
   const avgDegree = nodeDegrees.reduce((x, y) => x + y) / nodeDegrees.length;
   const degreeDev = nodeDegrees.map((x) => x - avgDegree);
   const degreeStd = Math.sqrt(degreeDev.map((x) => x ** 2).reduce((x, y) => x + y) / (nodeDegrees.length - 1));
-  const graphInfo: Partial<GraphStatisticalFeature> = {
+  const rootFeatures: Partial<RelationFeature['rootFeatures']> = {
     isDirected,
     nodeCount: nodes.length,
-    linkCount: links.length,
+    edgeCount: links.length,
     isConnected: components && components.length === 1,
     isDAG: isDirected && directedCycles.length === 0,
     maxDegree: Math.max(...nodeDegrees),
@@ -184,7 +182,6 @@ export function getAllStructFeats(nodes: NodeData[], links: EdgeData[]) {
     cycleParticipate,
     cycleCount: cycles.length,
     directedCycleCount: directedCycles.length,
-    // triangleCount: triangleMatches.length,
     componentCount: components.length,
     components,
     strongConnectedComponents,
@@ -192,8 +189,10 @@ export function getAllStructFeats(nodes: NodeData[], links: EdgeData[]) {
   };
 
   return {
-    nodeFeats,
-    linkFeats,
-    graphInfo,
+    nodeStructFeatures: nodeStructFeats,
+    linkStructFeatures: linkStructFeats,
+    nodeFeatures,
+    edgeFeatures,
+    rootFeatures,
   };
 }

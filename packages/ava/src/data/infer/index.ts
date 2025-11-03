@@ -2,11 +2,10 @@ import _ from 'lodash';
 
 import { DATA_SHAPE } from '@ava/data/constants';
 
-import { matchGraph } from './graph';
-import { matchTree } from './tree';
+import { matchRelation } from './relation';
+import { matchHierarchy } from './hierarchy';
 
 /**
- * 推断数据的基础结构
  * @returns
  */
 export const matchDataShape = (
@@ -22,18 +21,18 @@ export const matchDataShape = (
       format: { data: input, columns: _.times(input[0]?.lenght).map((i) => `column_${i}`) },
     };
   }
-  const matchTreeRes = matchTree(input);
-  if (matchTreeRes.is) {
+  let matchResult = matchHierarchy(input);
+  if (matchResult.is) {
     return {
-      shape: DATA_SHAPE.TREE,
-      format: matchTreeRes.format,
+      shape: DATA_SHAPE.HIERARCHY,
+      format: matchResult.format,
     };
   }
-  const matchGraphRes = matchGraph(input);
-  if (matchGraphRes.is) {
+  matchResult = matchRelation(input);
+  if (matchResult.is) {
     return {
-      shape: DATA_SHAPE.GRAPH,
-      format: matchGraphRes.format,
+      shape: DATA_SHAPE.RELATION,
+      format: matchResult.format,
     };
   }
 
@@ -54,7 +53,6 @@ export const matchDataShape = (
     });
     rows.push(row);
   });
-  // todo: 需要按长度补齐
   return {
     shape: DATA_SHAPE.PLAIN,
     format: { data: rows, columns: Array.from(columnsSet) },
