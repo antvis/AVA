@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Input, Button, Space, Card, message } from 'antd';
-import { Advisor } from '@antv/ava';
+import { Advisor, bindRenderer } from '@antv/ava';
+import { render } from '../../utils';
 
-// 渲染器已在 App.tsx 中全局绑定，这里直接使用
+// 创建 advisor 实例并为该实例绑定渲染器
 const advisor = new Advisor({
   llm: {
     appId: '202510APxPmo00551539',
     authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
   },
 });
+
+// 为当前实例绑定渲染器
+bindRenderer(render as any);
 
 const sampleData = [
   { date: '1999', value: 9 },
@@ -21,6 +25,10 @@ const sampleData = [
 
 const AdviseSummary: React.FC = () => {
   const [data, setData] = useState(JSON.stringify(sampleData, null, 2));
+
+  useEffect(() => {
+    bindRenderer(render as any);
+  }, []);
 
   const advise = async () => {
     // 安全解析数据，失败不抛错

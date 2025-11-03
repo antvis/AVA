@@ -13,13 +13,13 @@ import {
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
 
+let RENDERER: Renderer | null = null;
+
+export function bindRenderer(fn: Renderer) {
+  RENDERER = fn;
+}
+
 export class Advisor {
-  static RENDERER: Renderer;
-
-  static bindRenderer(renderer: Renderer) {
-    Advisor.RENDERER = renderer;
-  }
-
   adviseChartPipeline: BasePipeline<AdviseChartParams>;
 
   adviseTextPipeline: BasePipeline<AdviseTextParams>;
@@ -51,8 +51,8 @@ export class Advisor {
   }
 
   render(params: RenderParams) {
-    if (Advisor.RENDERER) {
-      return Advisor.RENDERER(params);
+    if (RENDERER) {
+      return RENDERER(params);
     }
     logError('Chart render not configured');
     return null;
