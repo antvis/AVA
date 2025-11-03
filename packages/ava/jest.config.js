@@ -1,12 +1,11 @@
-const { pathsToModuleNameMapper } = require('ts-jest/utils');
-const base = require('../../jest.config.base.js');
+const baseConfig = require('../../jest.config');
 
-const { compilerOptions } = require('./tsconfig');
 module.exports = {
-  ...base,
+  ...baseConfig,
   name: 'ava',
   displayName: 'ava',
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths || {}, {
-    prefix: '<rootDir>/',
-  }),
+  moduleNameMapper: {
+    '^@antv/ava': ['<rootDir>/src/index.ts'],
+    '^@ava/(.*)$': '<rootDir>/src/$1',
+  },
 };
