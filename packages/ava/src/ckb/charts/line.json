@@ -1,0 +1,89 @@
+{
+  "name": "generate_line_chart",
+  "description": "Generate a line chart to show trends over time, such as, the ratio of Apple computer sales to Apple's profits changed from 2000 to 2016.",
+  "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "data": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "properties": {
+            "time": {
+              "type": "string"
+            },
+            "value": {
+              "type": "number"
+            },
+            "group": {
+              "type": "string"
+            }
+          },
+          "required": ["time", "value"]
+        },
+        "description": "Data for line chart, it should be an array of objects, each object contains a `time` field and a `value` field, such as, [{ time: '2015', value: 23 }, { time: '2016', value: 32 }]."
+      },
+      "theme": {
+        "default": "default",
+        "description": "Set the theme for the chart, optional, default is 'default'.",
+        "enum": ["default", "academy", "dark"],
+        "type": "string"
+      },
+      "style": {
+        "description": "Custom style configuration for the chart.",
+        "properties": {
+          "lineWidth": {
+            "description": "Line width for the lines of chart, such as 4.",
+            "type": "number"
+          },
+          "backgroundColor": {
+            "description": "Background color of the chart, such as, '#fff'.",
+            "type": "string"
+          },
+          "palette": {
+            "description": "Color palette for the chart, it is a collection of colors.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "texture": {
+            "default": "default",
+            "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
+            "enum": ["default", "rough"],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "width": {
+        "type": "number",
+        "description": "Set the width of chart, default is 600.",
+        "default": 600
+      },
+      "height": {
+        "type": "number",
+        "description": "Set the height of chart, default is 400.",
+        "default": 400
+      },
+      "title": {
+        "type": "string",
+        "default": "",
+        "description": "Set the title of chart."
+      },
+      "axisXTitle": {
+        "type": "string",
+        "default": "",
+        "description": "Set the x-axis title of chart."
+      },
+      "axisYTitle": {
+        "type": "string",
+        "default": "",
+        "description": "Set the y-axis title of chart."
+      }
+    },
+    "required": ["data"]
+  }
+}

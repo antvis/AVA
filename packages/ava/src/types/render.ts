@@ -1,3 +1,5 @@
+import { Spec } from '@antv/gpt-vis';
+
 import { CHART_PURPOSE } from '../constants/advisor';
 
 export type TrendData = Array<{
@@ -24,6 +26,14 @@ export type DataTypeMap = {
   [CHART_PURPOSE.Comparison]: ComparisonData;
 };
 
+export interface RenderParams {
+  container: string;
+  /** AntV-spec */
+  spec: Spec;
+}
+
+export type Renderer = (params: RenderParams) => void;
+
 export type UiConfig = {
   palette?: string[];
   width?: number;
@@ -34,6 +44,3 @@ export type UiConfig = {
   /** Applicable charts: line, area, radar */
   lineWidth?: number;
 };
-
-// todo: to declare
-export type Renderer = any;
