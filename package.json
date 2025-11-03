@@ -31,7 +31,7 @@
     "build": "npm run build:ava && npm run build:ava-react",
     "clean": "git clean -dfx",
     "setup:playground": "cd playground && npm install",
-    "start:playground": "cd playground && npm start",
+    "start:playground": "cd playground && npm run dev",
     "setup:site": "cd site && npm install",
     "start:site": "cd site && npm start",
     "build:site": "cd site && npm run build",

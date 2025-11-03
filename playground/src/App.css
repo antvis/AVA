@@ -1,0 +1,9 @@
+.App {
+  text-align: center;
+}
+
+.ant-layout-header {
+  display: flex;
+  align-items: center;
+  padding: 0 50px;
+}
