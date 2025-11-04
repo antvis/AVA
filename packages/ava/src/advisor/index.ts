@@ -1,1 +1,1 @@
-export { Advisor, bindRenderer } from './advisor';
+export { Advisor } from './advisor';
