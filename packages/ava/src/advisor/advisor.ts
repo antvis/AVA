@@ -51,7 +51,7 @@ export class Advisor {
         深圳 体育 C  180  95
       `);
    * 
-   * Case 2 - User provides raw data, extract data shards directly:
+   * Case 3 - User provides raw data, extract data shards directly:
    * 
       advisor.extract({ type: 'A', value: 2 });
    */
