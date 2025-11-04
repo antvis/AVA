@@ -45,7 +45,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
     let _llmCompleted = false;
     let _llmCostTime = '';
     const { context, dataStore } = input;
-    const { excludes, includes, disableModel, forceType, llm } = context;
+    const { excludes, includes, disableModel, forceType, llm, uiConfig = {} } = context;
     const paramList = dataShards.map((shard) => {
       const { data, metas, purpose } = shard;
       // generate all valid chart configs using field data
@@ -111,6 +111,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
           chartConfigs: configs,
           metas,
           data: data as PlainDataType,
+          uiConfig,
         });
         return {
           adviseCharts,

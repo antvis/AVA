@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Input, Button } from 'antd';
 import { Advisor } from '@antv/ava';
-import { renderChart } from '@antv/ava-renderer';
+import { render } from '@antv/gpt-vis';
 
-Advisor.bindRenderer(renderChart);
+Advisor.bindRenderer(render);
 const advisor = new Advisor({
   llm: {
     appId: '202510APxPmo00551539',
@@ -22,23 +22,15 @@ const sampleData = [
 ];
 
 const App = () => {
-  const [chart, setChart] = useState<React.ReactElement>(null);
   const [data, setData] = useState(sampleData);
 
   const advise = async () => {
     const res = await advisor.advise({ data });
     const finalRes = res[0];
-    const newChart = advisor.render({
-      chartConfig: finalRes.adviseCharts[0],
-      data: finalRes.data,
-      metas: finalRes.metas,
-      uiConfig: {
-        theme: 'academy',
-        backgroundColor: '#eee',
-        lineWidth: 5,
-      },
+    advisor.render({
+      container: '#chart',
+      spec: finalRes.adviseCharts[0].spec,
     });
-    setChart(newChart);
   };
 
   return (
@@ -51,7 +43,7 @@ const App = () => {
         placeholder="请输入图表数据"
       />
       <Button onClick={advise}>advise</Button>
-      <div>{chart}</div>
+      <div id="chart" />
     </div>
   );
 };

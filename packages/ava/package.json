@@ -57,6 +57,7 @@
     "@antv/color-schema": "^0.2.3",
     "@antv/smart-color": "^0.2.1",
     "@antv/algorithm": "^0.1.26",
+    "@antv/gpt-vis": "^0.5.9",
     "bayesian-changepoint": "^1.0.1",
     "csstype": "^3.1.2",
     "heap-js": "^2.1.6",
@@ -70,7 +71,6 @@
   },
   "devDependencies": {
     "@antv/data-samples": "^1.0.1",
-    "@antv/ava-renderer": "0.0.1",
     "@stdlib/types": "^0.0.12",
     "@testing-library/jest-dom": "^4.2.4",
     "@types/d3-array": "^3.0.1",

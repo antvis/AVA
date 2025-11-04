@@ -1,7 +1,5 @@
 import type { MatchFunction } from '@ava/types';
 
-// todo: 数据推测逻辑需要修改
-
 /**
  * 计算单个对象作为节点的相似度得分
  */
