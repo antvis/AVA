@@ -12,9 +12,6 @@ const advisor = new Advisor({
   },
 });
 
-// 为当前实例绑定渲染器
-bindRenderer(render as any);
-
 const sampleData = [
   { date: '1999', value: 9 },
   { date: '2000', value: 2 },
