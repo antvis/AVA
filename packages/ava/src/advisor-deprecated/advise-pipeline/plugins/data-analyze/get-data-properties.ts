@@ -1,4 +1,4 @@
-import { DataFrame } from '@ava/data';
+import { DataFrame } from '@ava/extract';
 
 import type { Data } from '@ava/common/types';
 import type { BasicDataPropertyForAdvice } from '@advisor-deprecated/types';

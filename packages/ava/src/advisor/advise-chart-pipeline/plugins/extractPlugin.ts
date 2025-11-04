@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { extractData } from '@ava/data';
+import { extractData } from '@ava/extract';
 import { AdviseChartParams, AdvisorPlugin, AdviseChartPluginInput } from '@ava/types';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
 

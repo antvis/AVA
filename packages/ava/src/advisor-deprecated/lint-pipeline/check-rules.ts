@@ -1,4 +1,4 @@
-import { DataFrame } from '@ava/data';
+import { DataFrame } from '@ava/extract';
 
 import { getChartType } from './getChartType';
 import { lintRules } from './lintRules';

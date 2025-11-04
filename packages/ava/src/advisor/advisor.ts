@@ -9,7 +9,7 @@ import {
   Renderer,
   RenderParams,
 } from '@ava/types';
-import { extractData } from '@ava/data';
+import { extractData } from '@ava/extract';
 
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';

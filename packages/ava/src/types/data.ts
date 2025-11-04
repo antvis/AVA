@@ -1,5 +1,5 @@
 import type { LevelOfMeasurement } from '@ava/ckb';
-import type { DATA_SHAPE } from '@ava/data/constants';
+import type { DATA_SHAPE } from '@ava/extract/constants';
 import type { PURPOSE } from '@ava/constants';
 
 export type MatchFunction = (input: Record<string, any> | Record<string, any>[]) => { is: boolean; format: any };
@@ -270,6 +270,6 @@ export type PurposeObject = {
 export type DataShard = {
   shape: DATA_SHAPE;
   data: FieldDataType<DATA_SHAPE>;
-  metas: Array<any>;
+  metas: Array<Meta>;
   purpose?: PurposeObject;
 };
