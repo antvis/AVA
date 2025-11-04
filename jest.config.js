@@ -1,5 +1,3 @@
-const baseConfig = require('./jest.config');
-
 module.exports = {
   testRegex: '(/__tests__/.*.(test|spec)).(js?|jsx?|tsx?|ts?)$',
   collectCoverage: false,
