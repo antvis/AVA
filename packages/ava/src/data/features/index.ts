@@ -1,2 +1,2 @@
-export * from './plainColumn';
-export * from './graph';
+export * from './plain';
+export * from './relation';

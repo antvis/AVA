@@ -1,4 +1,4 @@
-import type { MatchFunction } from './types';
+import type { MatchFunction } from '@ava/types';
 
 /**
  * 计算单个对象作为节点的相似度得分
@@ -284,7 +284,7 @@ function generateFallbackId(obj: Record<string, any>): string {
  * @param data - 待检测的数据
  * @returns 标准化的图结构数据或判断结果
  */
-export const matchGraph: MatchFunction = (data: any) => {
+export const matchRelation: MatchFunction = (data: any) => {
   // 处理 null 或 undefined
   if (data == null) {
     return { is: false, format: { data: {} } };

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { DataStore } from '@ava/data/model/plain/DataStore';
-import { DataFrame } from '@ava/data/model/plain/DataFrame';
+import { DataStore } from '@ava/data/model/DataStore';
+import { DataFrame } from '@ava/data/model/DataFrame';
 import { requestLLM } from '@ava/utils/llm';
 import { OpenAiLLM, TboxLLM } from '@ava/types';
 import { logInDev } from '@ava/utils';
@@ -37,14 +37,7 @@ export const getPlainShard = async (ds: DataStore, config: TboxLLM | OpenAiLLM) 
           }),
         });
         const shardData = await df.toShard();
-        return {
-          ...shardData,
-          purpose: [
-            {
-              purposeDesc: v.desc,
-            },
-          ],
-        };
+        return shardData;
       })
     );
     return dataShards;

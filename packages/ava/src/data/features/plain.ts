@@ -225,12 +225,7 @@ export function analyzeDate(value: (string | Date)[], isInteger = false): Omit<D
   const imax = maxIndex(list);
   const minimum = value[imin];
   const maximum = value[imax];
-  const total = list[imin] + list[imax];
-  let interval = 'year';
-  if (total % (1000 * 60) === 0) {
-    interval = 'minute';
-  }
-  return { minimum, maximum, interval };
+  return { minimum, maximum };
 }
 
 /**

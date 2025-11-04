@@ -1,4 +1,4 @@
-import { logError } from '@ava/utils';
+import { logError } from '../utils';
 import {
   AdviseChartParams,
   AdviseStageOutput,
@@ -6,31 +6,35 @@ import {
   AdviseTextParams,
   AdvisorConfig,
   BasePipeline,
-  Renderer,
-  RenderParams,
-} from '@ava/types';
-
+} from '../types';
+import { extractData } from '../data';
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
-
-let RENDERER: Renderer | null = null;
-
-export function bindRenderer(fn: Renderer) {
-  RENDERER = fn;
-}
+import { RENDERER, type Spec } from '../bind';
 
 export class Advisor {
+
+  config!: AdvisorConfig;
+
   adviseChartPipeline: BasePipeline<AdviseChartParams>;
 
   adviseTextPipeline: BasePipeline<AdviseTextParams>;
 
   constructor(config: AdvisorConfig = {}) {
+    this.config = config;
     this.adviseChartPipeline = new AdviseChartPipeline({
       config,
     });
     this.adviseTextPipeline = new AdviseTextPipeline({
       config,
     });
+  }
+
+  async extract(params: AdviseChartParams) {
+    const { purpose, data } = params;
+    const input = purpose ?? data;
+    const dataShards = await extractData(input, { llmConfig: this.config.llm });
+    return dataShards;
   }
 
   // eslint-disable-next-line no-dupe-class-members
@@ -50,9 +54,10 @@ export class Advisor {
     // return {} as AdviseText;
   }
 
-  render(params: RenderParams) {
+  render(params: { container: string; spec: Spec }) {
     if (RENDERER) {
-      return RENDERER(params);
+      const { container, spec } = params;
+      return RENDERER(container, spec);
     }
     logError('Chart render not configured');
     return null;

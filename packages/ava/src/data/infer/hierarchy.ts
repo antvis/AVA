@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import type { MatchFunction } from './types';
+import type { MatchFunction } from '@ava/types';
 
 const standardizeNode = (data: any, childKey: string): any[] => {
   const standardizeNodeObject = (obj: any): any => {
@@ -45,7 +45,7 @@ const standardizeNode = (data: any, childKey: string): any[] => {
 /**
  * 检测输入是否为树结构，自动识别 childKey 并标准化为 children
  */
-export const matchTreeRoot: MatchFunction = (input) => {
+export const matchRoot: MatchFunction = (input) => {
   if (!_.isObjectLike(input) || _.isArray(input)) {
     return { is: false, format: { data: [] } };
   }
@@ -97,11 +97,11 @@ export const matchTreeRoot: MatchFunction = (input) => {
  * @param input
  * @returns
  */
-export const matchTree: MatchFunction = (input) => {
+export const matchHierarchy: MatchFunction = (input) => {
   if (_.isArray(input)) {
     const roots = [];
     _.each(input, (record) => {
-      const res = matchTreeRoot(record);
+      const res = matchRoot(record);
       if (res.is) {
         roots.push(...res.format.data);
       }
@@ -113,5 +113,5 @@ export const matchTree: MatchFunction = (input) => {
       },
     };
   }
-  return matchTreeRoot(input);
+  return matchRoot(input);
 };

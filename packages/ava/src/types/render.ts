@@ -1,8 +1,5 @@
-import { Spec } from '@antv/gpt-vis';
 
-import { CHART_NAME, CHART_PURPOSE } from '../constants/advisor';
-
-import { Data, Meta } from './data';
+import { CHART_PURPOSE } from '../constants/advisor';
 
 export type TrendData = Array<{
   time: string;
@@ -27,20 +24,6 @@ export type DataTypeMap = {
   [CHART_PURPOSE.Distribution]: DistributionData;
   [CHART_PURPOSE.Comparison]: ComparisonData;
 };
-
-export interface RenderParams {
-  container: string;
-  type: CHART_NAME;
-  encode: {
-    [property: string]: string[];
-  };
-  /** AntV-spec */
-  spec: Spec;
-  data: Data;
-  metas: Meta[];
-}
-
-export type Renderer = (params: RenderParams) => void;
 
 export type UiConfig = {
   palette?: string[];
