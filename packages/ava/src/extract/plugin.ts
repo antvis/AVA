@@ -6,6 +6,7 @@ export class DataProcessPlugin {
   dataStore!: DataStore;
 
   apply(pipeline: AdviseChartPipeline) {
+    // @ts-ignore
     pipeline.stages.data.tapPromise('DataProcessPlugin', this.excute.bind(this));
   }
 

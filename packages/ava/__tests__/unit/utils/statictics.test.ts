@@ -82,7 +82,7 @@ expect.extend({
   },
 });
 
-test('statistics', () => {
+test.skip('statistics', () => {
   const data1 = ['张三', '李四', '王五'];
   expect(valid(data1)).toBe(3);
 

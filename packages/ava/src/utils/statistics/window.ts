@@ -1,11 +1,22 @@
 import { mean } from 'lodash';
-
-import { SIGNIFICANCE_BENCHMARK } from '@ava/constants';
-import { calculatePValue } from '@ava/insight/insights/util';
-
+import { standardDeviation, cdf } from '@ava/utils/statistics';
 import { ChangePointItem } from './types';
 
 const DEFAULT_WINDOW_SIZE = 4;
+export const SIGNIFICANCE_BENCHMARK = 0.95;
+
+export const calculatePValue = (
+  values: number[],
+  target: number,
+  alternative: 'two-sided' | 'less' | 'greater' = 'two-sided'
+) => {
+  const meanValue = mean(values);
+  const std = standardDeviation(values);
+  const cdfValue = cdf(target, meanValue, std);
+  if (alternative === 'two-sided') return cdfValue < 0.5 ? 2 * cdfValue : 2 * (1 - cdfValue);
+  if (alternative === 'less') return cdfValue;
+  return 1 - cdfValue;
+};
 
 /**
  * Window-based change point detection

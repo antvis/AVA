@@ -2,9 +2,9 @@ import { bindRenderer, getRenderer } from '../../src/bind';
 
 describe('bindRenderer', () => {
   it('bindRenderer', async () => {
-    expect(RENDERER).toBeNull();
+    expect(getRenderer()).toBeNull();
     const mockRenderer = jest.fn();
     bindRenderer(mockRenderer);
-    expect(RENDERER).toBe(mockRenderer);
+    expect(getRenderer()).toBe(mockRenderer);
   });
 });

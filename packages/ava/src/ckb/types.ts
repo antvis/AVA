@@ -1,10 +1,3 @@
-// eslint-disable-next-line import/no-cycle
-import {
-  AdvisorPipelineContext,
-  BasicDataPropertyForAdvice,
-  ChartEncodeMapping,
-  Specification,
-} from '@ava/advisor-deprecated';
 import { Data } from '@ava/common/types';
 
 import * as constants from './constants';
@@ -181,15 +174,15 @@ export type ChartKnowledge = {
     dataProps,
     context,
   }: {
-    dataProps?: BasicDataPropertyForAdvice[];
-    context?: AdvisorPipelineContext;
+    dataProps?: any[];
+    context?: any;
   }) => Record<string, string[]>;
   toSpec?: (
     data: Data,
     dataProps: any,
-    encode?: ChartEncodeMapping,
-    context?: AdvisorPipelineContext
-  ) => Specification | null;
+    encode?: any,
+    context?: any
+  ) => any | null;
 };
 
 /**

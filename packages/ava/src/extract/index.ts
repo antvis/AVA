@@ -66,6 +66,7 @@ export const extractData: (
     shards.push({
       shape: DATA_SHAPE.RELATION,
       data: inferRes.format.data,
+      // @ts-ignore
       metas: [
         ...features.edgeFeatures.map((v) => {
           return {

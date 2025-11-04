@@ -12,7 +12,7 @@ import {
 } from '@ava/types';
 import { AdviseChartPluginEnum, AdviseChartStageEnum } from '@ava/constants';
 
-import { AdvisePlugin, DataPlugin, ExtractPlugin, GeneratePlugin } from './plugins';
+import { AdvisePlugin, ExtractPlugin, GeneratePlugin } from './plugins';
 
 export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
   config: AdvisorConfig;
@@ -34,7 +34,7 @@ export class AdviseChartPipeline implements BasePipeline<AdviseChartParams> {
       [AdviseChartStageEnum.Advise]: new AsyncSeriesHook(['input']),
       [AdviseChartStageEnum.Generate]: new AsyncSeriesHook(['input']),
     };
-    const allPlugins = [new ExtractPlugin(), new DataPlugin(), new AdvisePlugin(), new GeneratePlugin()];
+    const allPlugins = [new ExtractPlugin(), new AdvisePlugin(), new GeneratePlugin()];
     this.pluginMap = new Map();
     allPlugins.forEach((plugin) => {
       this.pluginMap.set(plugin.name, plugin);

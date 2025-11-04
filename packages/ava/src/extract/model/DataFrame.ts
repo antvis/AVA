@@ -57,6 +57,7 @@ export class DataFrame {
     return {
       shape: DATA_SHAPE.PLAIN,
       data: this.getData(),
+      // @ts-ignore
       metas: features.map((feature) => {
         return {
           id: feature.name,

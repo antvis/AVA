@@ -7,7 +7,7 @@ import {
   AdviseChart,
   IAdviseChartPipeline,
   DataShard,
-  PlainDataType,
+  PlainLikeDataType,
 } from '@ava/types';
 import {
   generateAllChartConfigs,
@@ -17,7 +17,7 @@ import {
 } from '@ava/advisor/chartAdvise';
 import { getPlainChartAdvisePrompt } from '@ava/advisor/chartAdvise/prompt';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
-import { DATA_SHAPE } from '@ava/extract';
+import { DATA_SHAPE } from '@ava/extract/constants';
 
 export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.AdvisePlugin;
@@ -33,9 +33,9 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
     const shard = dataShards[0];
     if (shard.shape === DATA_SHAPE.PLAIN) {
       await this.advisePlain(dataShards, input);
-    } else if (shard.shape === DATA_SHAPE.TREE) {
+    } else if (shard.shape === DATA_SHAPE.HIERARCHY) {
       await this.adviseTree(dataShards, input);
-    } else if (shard.shape === DATA_SHAPE.GRAPH) {
+    } else if (shard.shape === DATA_SHAPE.RELATION) {
       await this.adviseGraph(dataShards, input);
     }
   };
@@ -55,7 +55,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         userInput: purpose?.purposeDesc ?? '',
         chartConfig: curConfigs,
         metas,
-        data: data as PlainDataType,
+        data: data as PlainLikeDataType,
       };
     });
     if (forceType && dataShards.length === 1) {
@@ -71,7 +71,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         {
           adviseCharts: finalRes,
           metas: dataShards[0].metas,
-          data: dataShards[0].data as PlainDataType,
+          data: dataShards[0].data as PlainLikeDataType,
         },
       ];
       dataStore.advise = result;
@@ -110,13 +110,13 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         const adviseCharts = optimizeChartConfig({
           chartConfigs: configs,
           metas,
-          data: data as PlainDataType,
+          data: data as PlainLikeDataType,
           uiConfig,
         });
         return {
           adviseCharts,
           metas,
-          data: data as PlainDataType,
+          data: data as PlainLikeDataType,
         };
       });
       logInDev.debug('chart configs after optimization', JSON.stringify(finalRes));
@@ -126,6 +126,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
 
   adviseTree = (dataShards, input: AdviseChartPluginInput) => {
     input.dataStore.advise = {
+      // @ts-ignore
       adviseCharts: [
         {
           type: 'tree',
@@ -139,6 +140,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
 
   adviseGraph = (dataShards, input: AdviseChartPluginInput) => {
     input.dataStore.advise = {
+      // @ts-ignore
       adviseCharts: [
         {
           type: 'graph',
