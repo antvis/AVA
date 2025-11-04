@@ -10,9 +10,7 @@ import { extractData } from '@ava/extract';
 
 import { logError } from '../utils';
 import { getRenderer, type Spec } from '../bind';
-
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
-import { RENDERER, type Spec } from '../bind';
 
 /**
  * The 1st level advisor class.

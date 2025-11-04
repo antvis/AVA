@@ -27,11 +27,13 @@ export class AdviseTextPipeline implements BasePipeline<AdviseTextParams> {
         data: [],
         metas: [],
       },
+      // @ts-ignore
       advise: {},
       generate: {},
     };
     this.stages = {
       extract: new AsyncSeriesHook(['input']),
+      // @ts-ignore
       data: new AsyncSeriesHook(['input']),
       advise: new AsyncSeriesHook(['input']),
       generate: new AsyncSeriesHook(['input']),
@@ -66,6 +68,7 @@ export class AdviseTextPipeline implements BasePipeline<AdviseTextParams> {
     };
     await this.stages.extract.promise(pluginInput);
 
+    // @ts-ignore
     await this.stages.data.promise(pluginInput);
 
     await this.stages.advise.promise(pluginInput);

@@ -4,6 +4,12 @@ import type { PURPOSE } from '@ava/constants';
 
 export type MatchFunction = (input: Record<string, any> | Record<string, any>[]) => { is: boolean; format: any };
 
+export type Datum = Record<string, any>;
+
+export type Data = Datum[];
+
+export type TrendType = 'decreasing' | 'increasing' | 'no trend';
+
 /**
  * Field Type
  */
