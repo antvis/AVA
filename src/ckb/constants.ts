@@ -1,4 +1,4 @@
-import type { ChartType } from '@antv/gpt-vis';
+import { ChartType } from '@antv/gpt-vis';
 
 /**
  * Array of standard IDs for each chart type.
