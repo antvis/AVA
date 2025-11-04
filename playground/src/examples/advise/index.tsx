@@ -39,12 +39,8 @@ const AdviseSummary: React.FC = () => {
     message.loading('正在生成图表建议...', 0);
     try {
       if (parsedData) {
-        await advisor.advise({ data: parsedData });
-        // const finalRes = res[0];
-        // advisor.render({
-        //   container: '#chart',
-        //   spec: finalRes.adviseCharts[0].spec,
-        // } as any);
+        const advises = await advisor.advise({ data: parsedData });
+        advisor.render('#chart', advises[0].charts[0].spec);
       }
     } catch (_e) {
       // 忽略错误，仅用于验证 advisor.render
@@ -53,24 +49,6 @@ const AdviseSummary: React.FC = () => {
     } finally {
       message.destroy();
     }
-    // 兜底渲染一个图表
-    advisor.render({
-      container: '#chart',
-      spec: {
-        type: 'area',
-        data: [
-          { time: '1991', value: 3 },
-          { time: '1992', value: 4 },
-          { time: '1993', value: 3.5 },
-          { time: '1994', value: 5 },
-          { time: '1995', value: 4.9 },
-          { time: '1996', value: 6 },
-          { time: '1997', value: 7 },
-          { time: '1998', value: 9 },
-          { time: '1999', value: 13 },
-        ],
-      },
-    } as any);
   };
 
   return (

@@ -2,7 +2,9 @@ import { AsyncSeriesHook } from 'tapable';
 
 import { Meta, FieldDataType, PlainLikeDataType, DataShard } from '@ava/types/data';
 
-import { AdvisorConfig, AdviseChartParams, AdviseChart, AdviseText, AdviseTextParams } from './advisor';
+import { Spec } from '../bind';
+
+import { AdvisorConfig, AdviseChartParams, AdviseText, AdviseTextParams } from './advisor';
 
 export type AdviseParams = AdviseChartParams | AdviseTextParams;
 
@@ -39,9 +41,11 @@ export type DataStageOutput = {
 };
 
 export type AdviseStageOutput = {
-  adviseCharts: AdviseChart[];
   metas: Meta[];
   data: PlainLikeDataType;
+  charts: {
+    spec: Spec;
+  }[];
 }[];
 
 export type GenerateStageOutput = {};

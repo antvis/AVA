@@ -1,6 +1,8 @@
 import { FieldDataType, Meta } from '@ava/types/data';
 
-import { UiConfig, Renderer } from './render';
+import { Renderer } from '../bind';
+
+import { UiConfig } from './render';
 
 /**
  * Common LLM configuration properties
