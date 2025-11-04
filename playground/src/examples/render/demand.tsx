@@ -69,7 +69,7 @@ const RenderDemand: React.FC = () => {
       const parsedData = JSON.parse(cleaned);
       advisor.render('#img-chart', parsedData);
     } catch (error) {
-      message.error(`请输入有效的 JSON 格式数据: ${(error as Error).message}`);
+      message.error(`请输入有效的 JSON 格式数据: ${error}`);
     }
   };
 
