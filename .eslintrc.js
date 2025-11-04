@@ -120,7 +120,7 @@ module.exports = {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: ['./packages/ava/tsconfig.json']
+        project: ['./tsconfig.json']
       },
     },
   },

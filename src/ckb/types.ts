@@ -170,19 +170,8 @@ export type ChartKnowledge = {
   dataPres: (Omit<DataPrerequisite, 'fieldConditions'> & { fieldConditions: string[] })[];
   channel?: string[];
   recRate?: string;
-  toEncode?: ({
-    dataProps,
-    context,
-  }: {
-    dataProps?: any[];
-    context?: any;
-  }) => Record<string, string[]>;
-  toSpec?: (
-    data: Data,
-    dataProps: any,
-    encode?: any,
-    context?: any
-  ) => any | null;
+  toEncode?: ({ dataProps, context }: { dataProps?: any[]; context?: any }) => Record<string, string[]>;
+  toSpec?: (data: Data, dataProps: any, encode?: any, context?: any) => any | null;
 };
 
 /**

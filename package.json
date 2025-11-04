@@ -1,69 +1,70 @@
 {
-  "name": "ava",
-  "private": true,
-  "workspaces": [
-    "packages/*"
+  "name": "@antv/ava",
+  "version": "4.0.0-alpha.0",
+  "description": "A framework for AI driven Visual Analytics.",
+  "sideEffects": false,
+  "keywords": [
+    "antv",
+    "ava",
+    "ai",
+    "visual-analytics",
+    "visualization",
+    "augmented-analytics",
+    "insight"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/antvis/AVA"
-  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "unpkg": "dist/ava.min.js",
+  "module": "esm/index.js",
+  "files": [
+    "esm",
+    "dist",
+    "lib"
+  ],
   "scripts": {
-    "boot": "lerna bootstrap --force-local",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
-    "lint-fix": "npm run lint -- --fix",
+    "clean": "rimraf lib esm dist",
+    "build:umd": "father build",
+    "build:esm": "rimraf esm && tsc --module esnext --target es6 --outDir ./esm",
+    "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib",
+    "build": "run-p build:*",
+    "test": "jest",
     "lint-staged": "lint-staged",
-    "prettier": "prettier -c \"**/*\"",
-    "prettier:ava": "cd ./packages/ava && npm run prettier",
-    "prettier:ava-react": "cd ./packages/ava-react && npm run prettier",
-    "prettier-fix": "npm run prettier -- --write",
-    "format": "npm run prettier-fix && npm run lint-fix",
-    "format:ava": "cd ./packages/ava && npm run format",
-    "format:ava-react": "cd ./packages/ava-react && npm run format",
-    "test": "cd ./packages/ava && npm run test",
-    "coverage": "jest --coverage",
-    "coverage:ava": "cd ./packages/ava && npm run coverage",
-    "coverage:ava-react": "cd ./packages/ava-react && npm run coverage",
-    "build": "cd ./packages/ava && npm run build",
-    "clean": "git clean -dfx",
-    "setup:playground": "cd playground && npm install",
-    "start:playground": "cd playground && npm run dev",
-    "setup:site": "cd site && npm install",
-    "start:site": "cd site && npm start",
-    "build:site": "cd site && npm run build",
     "prepare": "husky install",
-    "ci": "run-s format lint-staged build",
-    "release": "lerna exec --no-private --concurrency 1 -- npx --no-install semantic-release",
-    "release-manual": "npm run ci && lerna publish",
-    "prerelease-manual": "npm run ci && lerna publish prerelease",
-    "prerelease-manual-beta": "npm run ci && lerna publish prerelease --preid beta",
-    "one-stop-setup": "npm install && npm run build && npm run setup:playground && npm run setup:site"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "coverage": "jest --coverage"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
+    "*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write"
-    ],
-    "packages/*.{js,jsx,ts,tsx}": [
-      "jest --bail --findRelatedTests"
     ]
   },
-  "author": {
-    "name": "AntV",
-    "url": "https://antv.vision/"
+  "dependencies": {
+    "@antv/color-schema": "^0.2.3",
+    "@antv/smart-color": "^0.2.1",
+    "@antv/algorithm": "^0.1.26",
+    "@antv/gpt-vis": "^0.5.9",
+    "bayesian-changepoint": "^1.0.1",
+    "csstype": "^3.1.2",
+    "heap-js": "^2.1.6",
+    "lodash": "^4.17.21",
+    "regression": "^2.0.1",
+    "tapable": "^2.2.1",
+    "tslib": "^2.3.1",
+    "moment": "^2.29.4",
+    "axios": "^1.12.2",
+    "openai": "^6.2.0"
   },
   "devDependencies": {
+    "@antv/data-samples": "^1.0.1",
     "@commitlint/cli": "^13.1.0",
     "@commitlint/config-conventional": "^13.1.0",
-    "@semantic-release/changelog": "^6.0.1",
-    "@semantic-release/git": "^10.0.1",
+    "@stdlib/types": "^0.0.12",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@types/d3-array": "^3.0.1",
+    "@types/d3-dispatch": "3.0.2",
     "@types/jest": "^30.0.0",
-    "@types/lodash": "^4.14.180",
+    "@types/lodash": "^4.14.171",
+    "@types/numeral": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
@@ -73,18 +74,27 @@
     "eslint-plugin-import": "^2.24.1",
     "eslint-plugin-react": "^7.24.0",
     "husky": "^7.0.1",
+    "father": "^4.1.0",
     "jest": "^30.0.0",
-    "jest-extended": "^0.11.5",
-    "lerna": "^3.15.0",
-    "lint-staged": "^11.0.0",
+    "lint-staged": "^11.0.1",
     "npm-run-all": "^4.1.5",
+    "numeral": "^2.0.6",
     "prettier": "^2.4.1",
-    "rimraf": "^3.0.2",
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5",
+    "rimraf": "^6.1.0",
     "ts-jest": "^29.4.5",
-    "ts-node": "^10.9.2",
-    "tslib": "^2.3.1",
-    "typescript": "^5.9.2"
+    "typescript": "^4.9.3"
+  },
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.antgroup.com/"
+  },
+  "homepage": "https://ava.antv.antgroup.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/AVA"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
   }
 }

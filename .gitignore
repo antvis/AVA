@@ -65,6 +65,7 @@ packages/*/**/stats.html
 
 # lock
 package-lock.json
+pnpm-lock.yaml
 
 # test
 packages/torch/renderer/index.html
