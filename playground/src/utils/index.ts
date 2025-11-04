@@ -2,8 +2,9 @@ import React from 'react';
 
 import ReactDOM from 'react-dom/client';
 import { DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
+import { Spec } from '../../../packages/ava/src/bind';
 
-export const render = (params: any) => {
+export const render = (params: { container: string; spec: Spec }) => {
   const { container, spec } = params || {};
   const mount =
     typeof container === 'string' ? (document.querySelector(container) as HTMLElement) : (container as HTMLElement);

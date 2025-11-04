@@ -236,6 +236,7 @@ Output the “best chart type (chartId)” with the rationale for selection, and
 
 # Response Format (JSON)
 - Only output a JSON two-dimensional array of “short codes”. Each item is a string array (up to 3, ordered from highest to lowest match). Do not output any extra text, e.g., [["l", "a", "c"], ["b", "c"]].
+- Output MUST be a plain JSON string; do not use Markdown code fences (e.g., \`\`\`JSON).
 
 # Chart Knowledge Base (CKB)
 ## Chart Types and Codes (object array)
@@ -341,6 +342,7 @@ export const getSpecGeneratePrompt = (params: { chartId: string; data: PlainLike
 - Single input: return only the JSON configuration object.
 - Batch input: return only the JSON array of configuration objects in the same order as input.
 - In all cases, do not include extra text, explanations, or code fences.
+ - Output MUST be a plain JSON string; do not use Markdown code fences (e.g., \`\`\`JSON).
 
 # Chart InputSchema
 ${inputSchema}
