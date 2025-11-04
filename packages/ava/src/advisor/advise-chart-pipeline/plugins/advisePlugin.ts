@@ -17,7 +17,7 @@ import {
 } from '@ava/advisor/chartAdvise';
 import { getPlainChartAdvisePrompt } from '@ava/advisor/chartAdvise/prompt';
 import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
-import { DATA_SHAPE } from '@ava/data';
+import { DATA_SHAPE } from '@ava/extract';
 
 export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.AdvisePlugin;

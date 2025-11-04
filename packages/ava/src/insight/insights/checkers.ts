@@ -1,7 +1,7 @@
 import { intersection } from 'lodash';
 
 import { Datum, SubjectInfo, InsightType, DataProperty } from '@ava/types';
-import { NumberColumnFeature } from '@ava/data';
+import { NumberColumnFeature } from '@ava/extract';
 
 import type { LevelOfMeasurement } from '@ava/ckb';
 

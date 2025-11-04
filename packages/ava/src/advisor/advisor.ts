@@ -1,4 +1,3 @@
-import { logError } from '../utils';
 import {
   AdviseChartParams,
   AdviseStageOutput,
@@ -6,8 +5,12 @@ import {
   AdviseTextParams,
   AdvisorConfig,
   BasePipeline,
-} from '../types';
-import { extractData } from '../data';
+} from '@ava/types';
+import { extractData } from '@ava/extract';
+
+import { logError } from '../utils';
+import { getRenderer, type Spec } from '../bind';
+
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { RENDERER, type Spec } from '../bind';
 
@@ -96,9 +99,10 @@ export class Advisor {
    * 
    */
   render(params: { container: string; spec: Spec }) {
-    if (RENDERER) {
+    const renderer = getRenderer();
+    if (renderer) {
       const { container, spec } = params;
-      return RENDERER(container, spec);
+      return renderer(container, spec);
     }
     logError('Chart render not configured, please bind a renderer first, GPT-Vis is recommended.');
     return null;

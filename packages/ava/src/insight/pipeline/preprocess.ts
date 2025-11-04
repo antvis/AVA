@@ -1,6 +1,6 @@
 import { intersection } from 'lodash';
 
-import { DataFrame, Extra } from '@ava/data';
+import { DataFrame, Extra } from '@ava/extract';
 import { AggregatorMap } from '@ava/utils/aggregate';
 
 import type { Datum, ImpactMeasure, DataProperty } from '@ava/types';

@@ -1,5 +1,5 @@
 import { LEVEL_OF_MEASUREMENTS, type LevelOfMeasurement } from '@ava/ckb';
-import { isParentChild } from '@ava/data';
+import { isParentChild } from '@ava/extract';
 import { compare, hasSubset, intersects } from '@advisor-deprecated/utils';
 
 import type { BasicDataPropertyForAdvice } from '@advisor-deprecated/types';

@@ -1,7 +1,7 @@
 import { isFunction, map, mapValues, size } from 'lodash';
 
 import { chartType2EncodeRequirement, type EncodeRequirements } from '@ava/ckb/encode';
-import { isParentChild } from '@ava/data';
+import { isParentChild } from '@ava/extract';
 import { compare, intersects } from '@advisor-deprecated/utils';
 import { findTopCorrFields } from '@advisor-deprecated/utils/top-corr-fields';
 

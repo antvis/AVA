@@ -1,11 +1,11 @@
-import { Advisor, bindRenderer } from "../../src/";
+import { Advisor, bindRenderer } from '../../src';
 
 describe('index', () => {
-  it('Advisor', async () => { 
+  it('Advisor', async () => {
     expect(Advisor).toBeDefined();
   });
 
-  it('bindRenderer', async () => { 
+  it('bindRenderer', async () => {
     expect(bindRenderer).toBeInstanceOf(Function);
   });
 });

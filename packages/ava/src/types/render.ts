@@ -1,4 +1,3 @@
-
 import { CHART_PURPOSE } from '../constants/advisor';
 
 export type TrendData = Array<{
@@ -35,3 +34,6 @@ export type UiConfig = {
   /** Applicable charts: line, area, radar */
   lineWidth?: number;
 };
+
+// todo: to declare
+export type Renderer = any;

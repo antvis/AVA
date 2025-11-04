@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Advisor } from '@antv/ava';
 import { Button, Input } from 'antd';
-import { renderChart } from '@antv/ava-renderer';
 
-Advisor.bindRenderer(render);
+// todo
+// import { renderer } from '@ava/gpt-vis';
+// Advisor.bindRenderer(render);
+
 const advisor = new Advisor({
   llm: {
     appId: '202510APxPmo00551539',
@@ -44,9 +46,9 @@ const App = () => {
 
     const chartsDom = (
       <div>
-        {charts.map((chart, index) => (
+        {/* {charts.map((chart, index) => (
           <div key={index}>{chart}</div>
-        ))}
+        ))} */}
       </div>
     );
 

@@ -44,7 +44,7 @@ export {
   maxabs,
 } from './utils/statistics';
 
-export * from './data';
+export * from './extract';
 
 export { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from './constants';
 

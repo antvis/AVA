@@ -14,7 +14,7 @@ import {
   WEEKDAY,
   YEAR,
   YEARDAY,
-} from '@ava/data/constants';
+} from '@ava/extract/constants';
 
 /*
  * Check whether the string is a date.

@@ -2,6 +2,7 @@
 **/*.min.js
 
 .DS_Store
+advisor-deprecated
 node_modules/
 lib/
 coverage/

@@ -1,8 +1,7 @@
-import { bindRenderer } from "../../src/";
-import { RENDERER } from "../../src/bind";
+import { bindRenderer, getRenderer } from '../../src/bind';
 
 describe('bindRenderer', () => {
-  it('bindRenderer', async () => { 
+  it('bindRenderer', async () => {
     expect(RENDERER).toBeNull();
     const mockRenderer = jest.fn();
     bindRenderer(mockRenderer);

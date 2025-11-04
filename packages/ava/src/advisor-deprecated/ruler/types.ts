@@ -1,4 +1,4 @@
-import type { FieldInfo } from '@ava/data';
+import type { FieldInfo } from '@ava/extract';
 import type { LevelOfMeasurement, ChartKnowledgeBase } from '@ava/ckb';
 import type { Specification } from '@ava/common/types';
 import type { AdvisorPipelineContext } from '@advisor-deprecated/types';
