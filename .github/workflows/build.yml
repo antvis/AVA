@@ -1,0 +1,35 @@
+name: build
+on:
+  push:
+    branches: [master, main, v4]
+  pull_request:
+    branches: [master, main, v4]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️　Checkout
+        uses: actions/checkout@v5
+
+      - name: 🎉　Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: 📦　Install dependencies
+        run: npm install
+
+      - name: 🚀　Build
+        run: npm run build
+
+      - name: ✅　Test
+        run: npm run test
+
+      - name: 💡 Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/coverage-final.json
+          flags: ava
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
