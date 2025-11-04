@@ -676,7 +676,7 @@ export const optimizeChartConfig = (params: {
       case CHART_NAME.wordCloud: {
         const hasNegatives = metas.some((field) => {
           if (field.dataType === COLUMN_TYPE.number) {
-            return (field.statisticsFeature as NumberColumnFeature).minimum < 0;
+            return (field.statisticsFeature as NumberColumnFeature)?.minimum < 0;
           }
           return false;
         });

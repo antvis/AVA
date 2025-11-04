@@ -13,10 +13,9 @@ export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
 
   async execute(ctx: AdviseChartPluginInput) {
     try {
-      const { purpose } = ctx.context;
-      const { data } = ctx.context;
+      const { data, llm, purpose } = ctx.context;
       const input = `${purpose}\n${JSON.stringify(data)}`;
-      const dataShards = await extractData(input);
+      const dataShards = await extractData(input, { llmConfig: llm });
       ctx.dataStore.extract.dataShards = dataShards;
     } catch (e) {
       ctx.dataStore.extract.dataShards = [];

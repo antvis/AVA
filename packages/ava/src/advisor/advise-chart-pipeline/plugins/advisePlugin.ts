@@ -28,7 +28,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
 
   execute = async (input: AdviseChartPluginInput) => {
     const { dataStore } = input;
-    const { dataShards } = dataStore.data;
+    const { dataShards } = dataStore.extract;
     // create all valid chart configs using field data
     const shard = dataShards[0];
     if (shard.shape === DATA_SHAPE.PLAIN) {

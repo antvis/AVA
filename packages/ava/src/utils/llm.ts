@@ -7,7 +7,7 @@ import { logError, sleep } from './common';
 import type { OpenAiLLM, TboxLLM } from '@ava/types';
 
 const DEFAULT_MAX_RETRY_COUNT = 3;
-const DEFAULT_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT = 60000;
 const DEFAULT_DELAY = 500;
 
 /**
