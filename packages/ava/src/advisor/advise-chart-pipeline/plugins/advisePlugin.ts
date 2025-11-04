@@ -1,5 +1,3 @@
-import { Spec } from '@antv/gpt-vis';
-
 import { logError, isOpenAi, isTbox, requestLLM, safeJsonParse } from '@ava/utils';
 import {
   AdviseChartParams,
@@ -14,6 +12,7 @@ import { DATA_SHAPE } from '@ava/extract/constants';
 
 import { getChartAdvisePrompt, getSpecGeneratePrompt } from '../../chartAdvise/prompt';
 import { CHART_ID_MAP } from '../../../ckb';
+import { Spec } from '../../../bind';
 
 export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.AdvisePlugin;

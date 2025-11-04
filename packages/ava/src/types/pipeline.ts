@@ -1,7 +1,8 @@
 import { AsyncSeriesHook } from 'tapable';
-import { Spec } from '@antv/gpt-vis';
 
 import { Meta, FieldDataType, PlainLikeDataType, DataShard } from '@ava/types/data';
+
+import { Spec } from '../bind';
 
 import { AdvisorConfig, AdviseChartParams, AdviseText, AdviseTextParams } from './advisor';
 
