@@ -42,12 +42,9 @@ const RenderDefault: React.FC = () => {
       const cleaned = cleanAndFormatJSON(data);
       // 将 JSON 字符串解析为对象
       const parsedData = JSON.parse(cleaned);
-      advisor.render({
-        container: '#chart',
-        spec: parsedData,
-      } as any);
+      advisor.render('#chart', parsedData);
     } catch (error) {
-      message.error('请输入有效的 JSON 格式数据');
+      message.error(`请输入有效的 JSON 格式数据: ${error}`);
     }
   };
 
