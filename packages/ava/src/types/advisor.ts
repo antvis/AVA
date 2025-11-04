@@ -1,6 +1,6 @@
 import { FieldDataType, Meta } from '@ava/types/data';
 
-import { UiConfig } from './render';
+import { UiConfig, Renderer } from './render';
 
 /**
  * Common LLM configuration properties
@@ -39,6 +39,8 @@ export interface AdvisorConfig {
   includes?: string[];
   /** Excluded charts from recommendation */
   excludes?: string[];
+  /** Custom renderer for this advisor instance */
+  renderer?: Renderer;
 }
 
 export interface AdviseChartParams {

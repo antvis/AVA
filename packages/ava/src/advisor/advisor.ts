@@ -1,4 +1,4 @@
-import { logError } from '@ava/utils';
+import { logError } from '../utils';
 import {
   AdviseChartParams,
   AdviseStageOutput,
@@ -6,20 +6,13 @@ import {
   AdviseTextParams,
   AdvisorConfig,
   BasePipeline,
-  Renderer,
-  RenderParams,
-} from '@ava/types';
-import { extractData } from '@ava/data';
-
+} from '../types';
+import { extractData } from '../data';
 import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
 import { AdviseTextPipeline } from './advise-text-pipeline/pipeline';
+import { RENDERER, type Spec } from '../bind';
 
 export class Advisor {
-  static RENDERER: Renderer;
-
-  static bindRenderer(renderer: Renderer) {
-    Advisor.RENDERER = renderer;
-  }
 
   config!: AdvisorConfig;
 
@@ -61,9 +54,10 @@ export class Advisor {
     // return {} as AdviseText;
   }
 
-  render(params: RenderParams) {
-    if (Advisor.RENDERER) {
-      return Advisor.RENDERER(params);
+  render(params: { container: string; spec: Spec }) {
+    if (RENDERER) {
+      const { container, spec } = params;
+      return RENDERER(container, spec);
     }
     logError('Chart render not configured');
     return null;

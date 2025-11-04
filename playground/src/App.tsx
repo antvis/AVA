@@ -2,24 +2,120 @@ import React from 'react';
 
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import { Advisor } from '@antv/ava';
+import type { MenuProps } from 'antd';
 
-import AdviseSummary from './examples/advise-summary';
-import MultipleChartsDemo from './examples/advise-summary/multiple';
-import { chartRenderer } from './utils/renderer';
+import AdviseSummary from './examples/advise';
+import MultipleChartsDemo from './examples/advise/multiple';
 
 import './App.css';
+import RenderCustom from './examples/render/custom';
+import RenderDefault from './examples/render/default';
+import RenderDemand from './examples/render/demand';
 
 const { Header, Content, Sider } = Layout;
 
-// 全局只绑定一次渲染器
-Advisor.bindRenderer(chartRenderer as any);
+// 菜单项配置类型
+interface MenuItemConfig {
+  key: string;
+  label: string;
+  path: string;
+  component: React.ComponentType;
+}
 
-// 路由到菜单项的映射
-const routeToMenuKey: Record<string, string> = {
-  '/': 'advise-summary-basic',
-  '/advise-summary': 'advise-summary-basic',
-  '/advise-summary-multiple': 'advise-summary-multiple',
+interface SubMenuConfig {
+  key: string;
+  label: string;
+  children: MenuItemConfig[];
+}
+
+interface MenuConfig {
+  key: string;
+  label: string;
+  children: SubMenuConfig[];
+}
+
+// 菜单配置
+const menuConfig: MenuConfig[] = [
+  {
+    key: 'advice',
+    label: '图表示例',
+    children: [
+      {
+        key: 'advise-summary',
+        label: '图表推荐',
+        children: [
+          {
+            key: 'advise-summary-basic',
+            label: '基础示例',
+            path: '/advise-summary',
+            component: AdviseSummary,
+          },
+          {
+            key: 'advise-summary-multiple',
+            label: '多图表示例',
+            path: '/advise-summary-multiple',
+            component: MultipleChartsDemo,
+          },
+        ],
+      },
+      {
+        key: 'render-summary',
+        label: '图表渲染',
+        children: [
+          {
+            key: 'render-summary-basic',
+            label: '基础示例',
+            path: '/render-summary',
+            component: RenderDefault,
+          },
+          {
+            key: 'render-summary-demand',
+            label: 'GPT-Vis 按需引用',
+            path: '/render-demand',
+            component: RenderDemand,
+          },
+          {
+            key: 'render-summary-custom',
+            label: '自定义示例',
+            path: '/render-custom',
+            component: RenderCustom,
+          },
+        ],
+      },
+    ],
+  },
+];
+
+// 从配置生成路由映射
+const routeToMenuKey: Record<string, string> = {};
+const routeComponents: Array<{ path: string; component: React.ComponentType }> = [];
+
+menuConfig.forEach((topMenu) => {
+  topMenu.children.forEach((subMenu) => {
+    subMenu.children.forEach((item) => {
+      routeToMenuKey[item.path] = item.key;
+      routeComponents.push({ path: item.path, component: item.component });
+    });
+  });
+});
+
+// 设置默认路由
+routeToMenuKey['/'] = 'advise-summary-basic';
+
+// 从配置生成菜单项
+const generateMenuItems = (config: MenuConfig[]): MenuProps['items'] => {
+  return config.map((topMenu) => ({
+    key: topMenu.key,
+    label: topMenu.label,
+    children: topMenu.children.map((subMenu) => ({
+      key: subMenu.key,
+      label: subMenu.label,
+      children: subMenu.children.map((item) => ({
+        key: item.key,
+        label: <Link to={item.path}>{item.label}</Link>,
+      })),
+    })),
+  }));
 };
 
 const AppContent: React.FC = () => {
@@ -30,38 +126,28 @@ const AppContent: React.FC = () => {
     <Layout style={{ minHeight: '100vh' }}>
       <Header style={{ color: 'white', fontSize: '24px', fontWeight: 'bold' }}>AVA Playground</Header>
       <Layout>
-        <Sider width={220} style={{ background: '#fff' }}>
+        <Sider width={220}>
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
-            defaultOpenKeys={['advice', 'advise-summary']}
+            defaultOpenKeys={['advice', 'advise-summary', 'render-summary']}
             style={{ height: '100%', borderRight: 0 }}
-          >
-            <Menu.SubMenu key="advice" title="Advice Examples">
-              <Menu.SubMenu key="advise-summary" title="Advise Summary">
-                <Menu.Item key="advise-summary-basic">
-                  <Link to="/advise-summary">基础示例</Link>
-                </Menu.Item>
-                <Menu.Item key="advise-summary-multiple">
-                  <Link to="/advise-summary-multiple">多图表示例</Link>
-                </Menu.Item>
-              </Menu.SubMenu>
-            </Menu.SubMenu>
-          </Menu>
+            items={generateMenuItems(menuConfig)}
+          />
         </Sider>
-        <Layout style={{ padding: '24px' }}>
+        <Layout>
           <Content
             style={{
               background: '#fff',
-              padding: 24,
               margin: 0,
               minHeight: 280,
             }}
           >
             <Routes>
               <Route path="/" element={<AdviseSummary />} />
-              <Route path="/advise-summary" element={<AdviseSummary />} />
-              <Route path="/advise-summary-multiple" element={<MultipleChartsDemo />} />
+              {routeComponents.map(({ path, component: Component }) => (
+                <Route key={path} path={path} element={<Component />} />
+              ))}
             </Routes>
           </Content>
         </Layout>

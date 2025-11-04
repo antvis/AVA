@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, Space, Card } from 'antd';
-import { Advisor } from '@antv/ava';
+import { Advisor, bindRenderer } from '@antv/ava';
+import { render } from '../../utils';
 
-// 渲染器已在 App.tsx 中全局绑定，这里直接使用
+// 创建 advisor 实例并为该实例绑定渲染器
 const advisor = new Advisor({
   llm: {
     appId: '202510APxPmo00551539',
@@ -27,6 +28,10 @@ const MultipleChartsDemo: React.FC = () => {
     { 商品类别: '办公用品', 销售渠道: '大润发', 单价: 4.85, 折扣: 0.3 },
     { 商品类别: '设备', 销售渠道: '物美', 单价: 19531.88, 折扣: 0.32 },
   ]);
+
+  useEffect(() => {
+    bindRenderer(render as any);
+  }, []);
 
   const advise = async () => {
     const res = await advisor.advise({ data });

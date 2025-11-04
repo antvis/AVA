@@ -1,5 +1,6 @@
 /* advisor */
 export { Advisor } from './advisor';
+export { bindRenderer, type Spec } from './bind';
 
 /* CKB */
 export {
@@ -66,4 +67,4 @@ export type {
   CkbConfig,
 } from './ckb';
 
-export type { AdviseChart, Data, Meta, DataTypeMap, RenderParams } from './types';
+export type { AdviseChart, Meta, DataTypeMap } from './types';
