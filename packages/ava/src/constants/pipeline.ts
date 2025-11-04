@@ -1,6 +1,5 @@
 export enum AdviseChartPluginEnum {
   ExtractPlugin = 'extractPlugin',
-  DataPlugin = 'dataPlugin',
   AdvisePlugin = 'advisePlugin',
   GeneratePlugin = 'generatePlugin',
 }

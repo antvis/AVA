@@ -1,12 +1,12 @@
-import { requestTboxLLM } from '@ava/utils/llm';
+import { requestLLM } from '../../utils';
 
 import { getExtractPrompt } from './prompt';
 
-import type { TboxLLM } from '@ava/types';
+import type { AdvisorConfig } from '../../types';
 
-export const extract = async (input: string, config: TboxLLM) => {
+export const extract = async (input: string, config: AdvisorConfig['llm']) => {
   try {
-    const res = await requestTboxLLM({
+    const res = await requestLLM({
       config,
       prompt: getExtractPrompt(input),
     });

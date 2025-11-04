@@ -320,8 +320,8 @@ const App = () => {
   // TODO: 后续改成调用faas服务，避免暴露apikey
   const advisor = new Advisor({
     llm: {
-      appId: '202510APxPmo00551539',
-      authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
+      appId: '202511APkFwG00560135',
+      authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
     },
   });
 

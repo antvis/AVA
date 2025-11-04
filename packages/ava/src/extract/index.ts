@@ -9,23 +9,22 @@ import { extract } from '@ava/extract/extract';
 import type {
   DataShard,
   Meta,
-  TboxLLM,
-  OpenAiLLM,
   PlainLikeDataType,
   HierarchyLikeDataType,
   RelationLikeDataType,
-} from '@ava/types';
+  AdvisorConfig,
+} from '../types';
 
 export const extractData: (
   input: string | Record<string, any> | Record<string, any>[],
   config?: {
-    llmConfig?: TboxLLM | OpenAiLLM;
+    llmConfig?: AdvisorConfig['llm'];
   }
 ) => Promise<DataShard[]> = async (input, config) => {
   const shards: DataShard[] = [];
   if (typeof input === 'string') {
-    const res = await extract(input, config?.llmConfig as TboxLLM);
-    return res;
+    const res = await extract(input, config?.llmConfig);
+    return [res];
   }
   const inferRes = matchDataShape(input);
   if (inferRes.shape === DATA_SHAPE.PLAIN) {
