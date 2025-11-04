@@ -70,42 +70,23 @@ export function isOrdinal(info: ColumnFeature): boolean {
   const { rawData, recommendation } = info;
   if (recommendation !== COLUMN_TYPE.string) return false;
   if (isConst(info)) return false;
-  const list = rawData.filter((item) => !isNil(item) && isBasicType(item));
+  const list = rawData.filter((item) => !isNil(item) && isBasicType(item)).map((item) => `${item}`);
   if (list.length === 0) return false;
-  let start: null | string = null;
-  let end: null | string = null;
+  // Compute common prefix and suffix lengths safely to avoid infinite loops
+  const minLen = Math.min(...list.map((s) => s.length));
   let startIndex = -1;
-  let endIndex = -1;
-
-  let through = true;
-  while (through) {
-    let through = true;
-    for (let i = 0; i < list.length; i += 1) {
-      const item = list[i];
-      const char = item[startIndex + 1];
-      if (start === null || i === 0) start = char;
-      if (char !== start) {
-        through = false;
-        break;
-      }
-    }
-    if (!through) break;
-    startIndex += 1;
+  for (let idx = 0; idx < minLen; idx += 1) {
+    const c0 = list[0][idx];
+    const allSame = list.every((s) => s[idx] === c0);
+    if (!allSame) break;
+    startIndex = idx;
   }
-  through = true;
-  while (through) {
-    let through = true;
-    for (let i = 0; i < list.length; i += 1) {
-      const item = list[i];
-      const char = item[item.length - 1 - (endIndex + 1)];
-      if (end === null || i === 0) end = char;
-      if (char !== end) {
-        through = false;
-        break;
-      }
-    }
-    if (!through) break;
-    endIndex += 1;
+  let endIndex = -1;
+  for (let idx = 0; idx < minLen; idx += 1) {
+    const c0 = list[0][list[0].length - 1 - idx];
+    const allSame = list.every((s) => s[s.length - 1 - idx] === c0);
+    if (!allSame) break;
+    endIndex = idx;
   }
   const patterns = [/\d+/, /(零|一|二|三|四|五|六|七|八|九|十)+/, /(一|二|三|四|五|六|日)/, /^[a-z]$/, /^[A-Z]$/];
   if (startIndex === -1 && endIndex === -1) return false;
