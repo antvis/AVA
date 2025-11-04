@@ -40,10 +40,7 @@ const AdviseSummary: React.FC = () => {
     try {
       if (parsedData) {
         const advises = await advisor.advise({ data: parsedData });
-        advisor.render({
-          container: '#chart',
-          spec: advises[0].charts[0].spec,
-        });
+        advisor.render('#chart', advises[0].charts[0].spec);
       }
     } catch (_e) {
       // 忽略错误，仅用于验证 advisor.render

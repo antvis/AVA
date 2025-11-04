@@ -99,10 +99,10 @@ export class Advisor {
       });
    *
    */
-  render(params: { container: string; spec: Spec }) {
+  render(container: string, spec: Spec) {
     const renderer = getRenderer();
     if (renderer) {
-      return renderer(params);
+      return renderer(container, spec);
     }
     logError('Chart render not configured, please bind a renderer first, GPT-Vis is recommended.');
     return null;

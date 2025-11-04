@@ -36,10 +36,7 @@ const MultipleChartsDemo: React.FC = () => {
   const advise = async () => {
     const advises = await advisor.advise({ data });
     advises.forEach((item) => {
-      advisor.render({
-        container: '#charts',
-        spec: item.charts[0].spec,
-      });
+      advisor.render('#charts', item.charts[0].spec);
     });
   };
 

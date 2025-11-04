@@ -2,7 +2,7 @@
 // import type { Spec } from '@antv/gpt-vis';
 export type Spec = any;
 
-export type Renderer = (params: { container: string; spec: Spec }) => void;
+export type Renderer = (container: string, spec: Spec) => void;
 
 // The renderer function bound from outside.
 // Default is null.
