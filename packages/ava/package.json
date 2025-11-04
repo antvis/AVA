@@ -1,26 +1,17 @@
 {
   "name": "@antv/ava",
   "version": "4.0.0-alpha.0",
-  "description": "A framework for automated visual analytics.",
-  "author": {
-    "name": "AntV",
-    "url": "https://antv.antgroup.com/"
-  },
-  "homepage": "https://ava.antv.antgroup.com",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/antvis/AVA/tree/master/packages/ava"
-  },
+  "description": "A framework for AI driven Visual Analytics.",
   "sideEffects": false,
   "keywords": [
+    "antv",
+    "ava",
+    "ai",
+    "visual-analytics",
     "visualization",
     "augmented-analytics",
     "insight"
   ],
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "unpkg": "dist/ava.min.js",
@@ -31,21 +22,13 @@
     "lib"
   ],
   "scripts": {
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
-    "lint-fix": "npm run lint -- --fix",
-    "prettier": " prettier --check '**/*' --ignore-path=../../.prettierignore",
-    "prettier-fix": "npm run prettier -- --write",
-    "format": "npm run prettier-fix && npm run lint-fix",
-    "lint-staged": "lint-staged",
     "clean": "rimraf lib esm dist",
     "build:umd": "father build",
-    "build:cjs": "rimraf ./lib && tsc -p tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
-    "build:esm": "rimraf ./esm && tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
-    "build:ntv-schema": "mkdir -p build && ts-json-schema-generator -f tsconfig.json -p src/text/index.ts -t NarrativeTextSpec --no-type-check --no-ref-encode > build/ntv-schema.json",
+    "build:esm": "rimraf esm && tsc --module esnext --target es6 --outDir ./esm",
+    "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib",
     "build": "run-p build:*",
     "test": "jest",
-    "coverage": "jest --coverage",
-    "watch": "yarn module && yarn build --w"
+    "coverage": "jest --coverage"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -74,6 +57,7 @@
     "@stdlib/types": "^0.0.12",
     "@testing-library/jest-dom": "^4.2.4",
     "@types/d3-array": "^3.0.1",
+    "@types/d3-dispatch": "3.0.2",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.14.171",
     "@types/numeral": "^2.0.2",
@@ -84,9 +68,22 @@
     "npm-run-all": "^4.1.5",
     "numeral": "^2.0.6",
     "prettier": "^2.4.1",
-    "rimraf": "^3.0.2",
+    "rimraf": "^6.1.0",
     "ts-json-schema-generator": "^1.1.2",
     "tsc-alias": "^1.8.10",
     "typescript": "^4.9.3"
+  },
+  "author": {
+    "name": "AntV",
+    "url": "https://antv.antgroup.com/"
+  },
+  "homepage": "https://ava.antv.antgroup.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/AVA"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
   }
 }
