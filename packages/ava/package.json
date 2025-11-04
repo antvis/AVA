@@ -24,7 +24,7 @@
   "scripts": {
     "clean": "rimraf lib esm dist",
     "build:umd": "father build",
-    "build:esm": "rimraf es && tsc --module esnext --target es6 --outDir ./esm",
+    "build:esm": "rimraf esm && tsc --module esnext --target es6 --outDir ./esm",
     "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib",
     "build": "run-p build:*",
     "test": "jest",
