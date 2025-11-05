@@ -1,4 +1,4 @@
-import { DataStore } from '@ava/extract/model/DataStore';
+import { DataStore } from '../../../../src/extract/model/DataStore';
 
 describe('DataStore', () => {
   const data = [
@@ -30,8 +30,8 @@ describe('DataStore', () => {
   });
 
   test('computeColumnFeature & getColumnFeature', async () => {
-    await ds.computeColumnFeature('id');
-    expect(ds.getColumnFeature('id')).toEqual({
+    const featureForId = await ds.getColumnFeature('id');
+    expect(featureForId).toEqual({
       count: 5,
       distinct: 5,
       types: ['string'],
@@ -53,7 +53,6 @@ describe('DataStore', () => {
       containsSpace: false,
       levelOfMeasurements: ['Nominal'],
     });
-    expect(ds.getColumnFeature('数量')).toBe(undefined);
   });
 
   const ds2 = new DataStore({

@@ -12,11 +12,11 @@ import {
   AdviseChart,
   NumberColumnFeature,
   UiConfig,
-} from '@ava/types';
-import { CKB } from '@ava/ckb/ckb-v2';
-import { logError, metasToMap } from '@ava/utils';
-import { CHART_NAME, ABBR_AND_FULL_CHART_NAME_MAP } from '@ava/constants';
-import { metaToSpec } from '@ava/render';
+} from '../../types';
+import { CKB } from '../../ckb/ckb-v2';
+import { logError, metasToMap } from '../../utils';
+import { CHART_NAME, ABBR_AND_FULL_CHART_NAME_MAP } from '../../constants';
+import { metaToSpec } from '../../render';
 
 /**
  * @desc 对table组件的字段重新排序

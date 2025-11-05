@@ -1,5 +1,3 @@
-import { ChartType } from '@antv/gpt-vis';
-
 /**
  * Array of standard IDs for each chart type.
  *
@@ -205,6 +203,36 @@ export const CHANNELS = [
  * @name RECOMMEND_RATINGS
  */
 export const RECOMMEND_RATINGS = ['Recommended', 'Use with Caution', 'Not Recommended'] as const;
+
+export enum ChartType {
+  Pie = 'pie',
+  Column = 'column',
+  Line = 'line',
+  Area = 'area',
+  Scatter = 'scatter',
+  Histogram = 'histogram',
+  Treemap = 'treemap',
+  Bar = 'bar',
+  WordCloud = 'word-cloud',
+  DualAxes = 'dual-axes',
+  Radar = 'radar',
+  Liquid = 'liquid',
+  Boxplot = 'boxplot',
+  Violin = 'violin',
+  Venn = 'venn',
+  Funnel = 'funnel',
+  Sankey = 'sankey',
+  PinMap = 'pin-map',
+  PathMap = 'path-map',
+  HeatMap = 'heat-map',
+  MindMap = 'mind-map',
+  FishboneDiagram = 'fishbone-diagram',
+  FlowDiagram = 'flow-diagram',
+  IndentedTree = 'indented-tree',
+  NetworkGraph = 'network-graph',
+  OrganizationChart = 'organization-chart',
+  VisText = 'vis-text',
+}
 
 export const CHART_ID_LIST = [
   { chartId: ChartType.Area, code: 'a' },

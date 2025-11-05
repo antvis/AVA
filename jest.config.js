@@ -1,12 +1,8 @@
 module.exports = {
-  testRegex: '(/__tests__/.*.(test|spec)).(js?|jsx?|tsx?|ts?)$',
+  setupFiles: ['<rootDir>/jest.setup.js'],
   collectCoverage: false,
+  testRegex: '(/__tests__/.*.(test|spec)).(js?|jsx?|tsx?|ts?)$',
   coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$'],
-  globals: {
-    'ts-jest': {
-      diagnostics: false,
-    },
-  },
   transform: {
     '^.+\\.m?[tj]sx?$': [
       'ts-jest',

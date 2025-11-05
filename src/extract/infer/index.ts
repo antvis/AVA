@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { DATA_SHAPE } from '@ava/extract/constants';
+import { DATA_SHAPE } from '../constants';
 
 import { matchRelation } from './relation';
 import { matchHierarchy } from './hierarchy';

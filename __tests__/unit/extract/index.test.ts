@@ -1,28 +1,12 @@
 import _ from 'lodash';
-import { extractData } from '@ava/extract';
+import { extractData } from '../../../src/extract';
+import { extract } from './mock-extract';
 
-const EXTRACT_MOCK_RESULT = [
-  {
-    shape: 'plain',
-    data: [
-      { id: 1001, name: '张三', age: 25 },
-      { id: 1002, name: '李四', age: 30 },
-      { id: 1003, name: '王五', age: 28 },
-      { id: 1004, name: '赵六', age: 35 },
-    ],
-    meta: [
-      { id: 'id', name: '用户ID', dataType: 'number' },
-      { id: 'name', name: '姓名', dataType: 'string' },
-      { id: 'age', name: '年龄', dataType: 'number' },
-    ],
-  },
-];
-
-jest.mock('@ava/extract/extract', () => ({
+jest.mock('../../../src/extract/extract', () => ({
   __esModule: true,
-  extract: async () => {
-    return EXTRACT_MOCK_RESULT;
-  },
+  extract: jest.fn().mockImplementation(async (value: string) => {
+    return await extract(value);
+  }),
 }));
 
 describe('extractData', () => {
@@ -38,10 +22,21 @@ describe('extractData', () => {
       3. 用户ID: 1003, 姓名: 王五, 年龄: 28
       4. 用户ID: 1004, 姓名: 赵六, 年龄: 35
     `;
-    const expectResult = EXTRACT_MOCK_RESULT;
 
     const result = await extractData(input);
-    expect(result).toEqual(expectResult);
+    const shard = result?.[0];
+    expect(shard.shape).toBe('plain');
+    expect(shard.data).toEqual([
+      { 用户ID: 1001, 姓名: '张三', 年龄: 25 },
+      { 用户ID: 1002, 姓名: '李四', 年龄: 30 },
+      { 用户ID: 1003, 姓名: '王五', 年龄: 28 },
+      { 用户ID: 1004, 姓名: '赵六', 年龄: 35 },
+    ]);
+    expect(shard.metas).toEqual([
+      { id: '用户ID', name: '用户ID', dataType: 'number' },
+      { id: '姓名', name: '姓名', dataType: 'string' },
+      { id: '年龄', name: '年龄', dataType: 'number' },
+    ]);
   });
 
   it('should return plain dataType if input is plain data', async () => {

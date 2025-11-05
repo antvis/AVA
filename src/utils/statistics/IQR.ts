@@ -1,4 +1,4 @@
-import { ascending } from '@ava/utils/common';
+import { ascending } from '../common';
 
 export interface IQRParams {
   k: number;

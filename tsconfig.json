@@ -16,14 +16,7 @@
     "lib": ["dom", "esnext"],
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@antv/ava": ["src/index.ts"],
-      "@ava/*": ["src/*"],
-      "@advisor/*": ["src/advisor/*"],
-      "@ava/advisor-deprecated/*": ["src/advisor-deprecated/*"],
-      "@ava/insight/*": ["src/insight/*"]
-    }
+    "baseUrl": "."
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "__tests__/**/*"]
 }

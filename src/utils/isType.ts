@@ -109,7 +109,7 @@ export function isBoolean(value: unknown, checkSpecialBoolean?: boolean) {
 }
 
 export function isObject(value: unknown): value is object {
-  return value && Object.getPrototypeOf(value) === Object.prototype;
+  return !!value && Object.getPrototypeOf(value) === Object.prototype;
 }
 
 export function isArray(value: unknown): value is any[] {
@@ -194,9 +194,9 @@ export function parseIsoDateString(value: string, strictDatePattern: boolean = f
     const reg = isoDateAndTimeRegs[i];
     if (reg.test(value.trim())) {
       const matches = value.trim().match(reg);
-      if (matches.groups) {
+      if (matches!.groups) {
         const { year, month, day, week, weekday, hour, minute, second, millisecond, yearDay, offset } =
-          matches.groups || {};
+          matches!.groups || {};
         const yearNum = parseInt(year, 10);
         if (yearDay) {
           return new Date(yearNum, 0, parseInt(yearDay, 10));

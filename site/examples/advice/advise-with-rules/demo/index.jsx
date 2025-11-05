@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-// import
-import { Advisor } from '@ava';
 import ReactDOM from 'react-dom';
 import { Button } from 'antd';
+
+import { Advisor } from '../../../../../src';
 
 export const PALETTE_1 = ['#8459fc', '#ff89bd', '#1677ff', '#00c2ff', '#ff9a00'];
 export const PALETTE_2 = ['#1B9E77', '#D95F02', '#7570B3', '#E7298A', '#66A61E'];

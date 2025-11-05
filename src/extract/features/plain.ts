@@ -21,17 +21,17 @@ import {
   isNumberString,
   isString,
   unique,
-} from '@ava/utils';
-import { COLUMN_TYPE } from '@ava/types/data';
+} from '../../utils';
+import { COLUMN_TYPE } from '../../types/data';
 
-import type { LevelOfMeasurement } from '@ava/ckb';
+import type { LevelOfMeasurement } from '../../ckb';
 import type {
   DateColumnFeature,
   ColumnFeature,
   ColumnMeta,
   NumberColumnFeature,
   StringColumnFeature,
-} from '@ava/types/data';
+} from '../../types/data';
 
 /**
  * Check if it is StringColumnFeature.
@@ -68,7 +68,7 @@ export function isConst(info: ColumnFeature): boolean {
  */
 export function isOrdinal(info: ColumnFeature): boolean {
   const { rawData, recommendation } = info;
-  if (recommendation !== COLUMN_TYPE.string) return false;
+  if (recommendation === COLUMN_TYPE.number) return false;
   if (isConst(info)) return false;
   const list = rawData.filter((item) => !isNil(item) && isBasicType(item)).map((item) => `${item}`);
   if (list.length === 0) return false;
@@ -226,6 +226,9 @@ export function analyzeType(value: unknown, strictDatePattern?: boolean): COLUMN
       return COLUMN_TYPE.number;
     }
   }
+  if (isBoolean(value)) {
+    return COLUMN_TYPE.boolean;
+  }
   return COLUMN_TYPE.string;
 }
 
@@ -261,14 +264,6 @@ export function analyzeField(
       }
       break;
     case 2:
-      // 多种类型
-      if (
-        (types.includes(COLUMN_TYPE.number) || types.includes(COLUMN_TYPE.date)) &&
-        types.includes(COLUMN_TYPE.number)
-      ) {
-        recommendation = COLUMN_TYPE.number;
-        break;
-      }
       if (types.includes(COLUMN_TYPE.number) && types.includes(COLUMN_TYPE.date)) {
         // an number field may be a date field
         const data = list.filter((item) => item !== null);

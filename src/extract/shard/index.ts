@@ -1,10 +1,10 @@
 import _ from 'lodash';
 
-import { DataStore } from '@ava/extract/model/DataStore';
-import { DataFrame } from '@ava/extract/model/DataFrame';
-import { requestLLM } from '@ava/utils/llm';
-import { OpenAiLLM, TboxLLM } from '@ava/types';
-import { logInDev } from '@ava/utils';
+import { DataStore } from '../model/DataStore';
+import { DataFrame } from '../model/DataFrame';
+import { requestLLM } from '../../utils/llm';
+import { OpenAiLLM, TboxLLM } from '../../types';
+import { logInDev } from '../../utils';
 
 import { getShardPrompt, type Output } from './prompt';
 

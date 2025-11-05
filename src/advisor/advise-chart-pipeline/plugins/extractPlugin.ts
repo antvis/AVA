@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
-import { extractData } from '@ava/extract';
-import { AdviseChartParams, AdvisorPlugin, AdviseChartPluginInput } from '@ava/types';
-import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
+import { extractData } from '../../../extract';
+import { AdviseChartParams, AdvisorPlugin, AdviseChartPluginInput } from '../../../types';
+import { AdviseChartPluginEnum } from '../../../constants/pipeline';
 
 export class ExtractPlugin implements AdvisorPlugin<AdviseChartParams> {
   name = AdviseChartPluginEnum.ExtractPlugin;
