@@ -99,7 +99,7 @@ test.skip('statistics', () => {
   expect(valueMap([1, null])).toEqual({ 1: 1, null: 1 });
   expect(median([1, 3, 2, 4, 5])).toBe(3);
   expect(median([1, 2, 3, 4])).toBe(2.5);
-  expect(() => quartile([1])).toThrowError('The length of value cannot be less than 3.');
+  expect(() => quartile([1])).toThrow('The length of value cannot be less than 3.');
   expect(quartile([1, 2, 3, 4, 5, 6, 7, 8, 9])).toEqual([2.5, 5, 7.5]);
   expect(quartile([1, 2, 3, 4, 5, 6, 7, 8, 9], true)).toEqual([2.5, 5, 7.5]);
   expect(quartile([1, 2, 3, 4, 5, 6, 7, 8])).toEqual([2.5, 4.5, 6.5]);

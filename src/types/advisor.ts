@@ -1,5 +1,4 @@
 import { Renderer } from '../bind';
-
 import { FieldDataType, Meta } from './data';
 import { UiConfig } from './render';
 

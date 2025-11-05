@@ -23,14 +23,13 @@ import {
   unique,
 } from '../../utils';
 import { COLUMN_TYPE } from '../../types/data';
-
-import type { LevelOfMeasurement } from '../../ckb';
 import type {
   DateColumnFeature,
   ColumnFeature,
   ColumnMeta,
   NumberColumnFeature,
   StringColumnFeature,
+  LevelOfMeasurement,
 } from '../../types/data';
 
 /**
