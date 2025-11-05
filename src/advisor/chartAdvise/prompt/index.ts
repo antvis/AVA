@@ -1,8 +1,7 @@
 import { CKB, VISUAL_CHANNEL_DESCRIPTION } from '../../../ckb/ckb-v2';
 import { CHART_NAME, CHART_PURPOSE_NAME_MAP, FULL_AND_ABBR_CHART_NAME_MAP } from '../../../constants';
-import { ChartConfig, ChartKnowledgeMap, Data, Meta, PlainLikeDataType } from '../../../types';
-import { CHART_ID_LIST } from '../../../ckb';
-import * as CHARTS from '../../../ckb/charts';
+import { ChartConfig, Data, Meta, PlainLikeDataType } from '../../../types';
+import { CHARTS } from '../../../ckb';
 
 const ROLE_CONTEXT = `
 # 角色设定
@@ -181,31 +180,34 @@ export const getGraphAdvisePrompt = (params: {
 };
 
 export const getChartAdvisePrompt = (params: { metas: Meta[]; data: PlainLikeDataType; purpose: string }[]) => {
-  const chartDescriptions = Object.entries(CHARTS as ChartKnowledgeMap)
-    .map(([chartId, item]) => `${chartId}: ${item.description}`)
-    .join('\n\n');
+  const chartDescriptions = [];
+  const chartIds = [];
+  Object.entries(CHARTS).forEach(([chartId, item]) => {
+    chartIds.push(chartId);
+    chartDescriptions.push(`${chartId}: ${item.tool.description}`);
+  });
   return `
 # Role
-You are a chart recommendation and configuration generation expert, capable of selecting the most suitable chart type from the given Chart Knowledge Base (CKB) based on data and requirements.
+You are a chart recommendation and configuration generation expert, capable of selecting the most suitable chart type from the given Chart Knowledge Base based on data and requirements.
 
 # Objective
-Output the “best chart type (chartId)” with the rationale for selection, and provide 1–2 alternative chart types with reasons why they are not chosen as the primary chart. Only choose types from the provided CKB.
+Output the “best chart type (chartId)” with the rationale for selection, and provide 1–2 alternative chart types with reasons why they are not chosen as the primary chart. Only choose types from the provided Chart Knowledge Base.
 
 # Inputs
 - data: raw data (array) used to draw charts.
 - meta: field metadata (array), each item includes id, name, dataType (number/string/date/geo).
 - purpose: visualization intent (a sentence or several bullet points).
-- CKB: the collection of knowledge definitions for all available charts (including chart names, usage descriptions, etc.).
+- Chart Knowledge Base: the collection of knowledge definitions for all available charts (including chart names, usage descriptions, etc.).
 - Batch input support: The input may be an array containing multiple items, each with data, meta, and purpose. When the input is an array, you must make a recommendation for each item independently and output results in the same order as the input.
 
 # Output
-- chartCodesList: a two-dimensional array. Each item is a string array whose elements are chart “short codes” (see “Chart Types and Codes”), ordered from best to worst match, up to 3 items.
+- chartIdsList: a two-dimensional array. Each item is a string array whose elements are chartId (from the provided CKB list), ordered from best to worst match, up to 3 items.
 - If candidates are fewer than 3, output the actual number; do not exceed 3.
-- When the input is a single item, still output a two-dimensional array (e.g., [["l", "a", "c"]]).
+- When the input is a single item, still output a two-dimensional array (e.g., [["line", "area", "column"]]).
 - Only output a JSON two-dimensional array, without any explanatory text, object keys, or code block markers.
 
 # Strict Constraints (Must Follow)
-- Only select chart types from the provided CKB; do not add or remove types.
+- Only select chart types from the provided Chart Knowledge Base; do not add or remove types.
 - The output must be a strict JSON string; do not include any extra text, explanations, prefixes/suffixes, or code block markers.
 - Determine fitness based on data and meta; avoid subjective guessing; do not fabricate fields or change data.
 - If multiple chart types satisfy the needs, prefer the one that “clearly expresses the core intent with lower cognitive load”.
@@ -235,15 +237,15 @@ Output the “best chart type (chartId)” with the rationale for selection, and
 4. Selection and ranking: sort by evaluation dimensions, determine the primary chart and alternatives, and explain trade-offs (readability, order preservation, intent alignment, data match).
 
 # Response Format (JSON)
-- Only output a JSON two-dimensional array of “short codes”. Each item is a string array (up to 3, ordered from highest to lowest match). Do not output any extra text, e.g., [["l", "a", "c"], ["b", "c"]].
+- Only output a JSON two-dimensional array of chartId. Each item is a string array (up to 3, ordered from highest to lowest match). Do not output any extra text, e.g., [["line", "area", "column"], ["bar", "scatter"]].
 - Output MUST be a plain JSON string; do not use Markdown code fences (e.g., \`\`\`JSON).
 
-# Chart Knowledge Base (CKB)
-## Chart Types and Codes (object array)
-${JSON.stringify(CHART_ID_LIST)}
+# Chart Knowledge Base
+## Chart Types (chartId list)
+${JSON.stringify(chartIds)}
 
 ## Chart Function Descriptions
-${chartDescriptions}
+${chartDescriptions.join('\n\n')}
 
 Please complete the chart recommendation based on the following input, strictly following the above “Constraints & Rules”, “Thinking Process”, and “Response Format”:
 ${JSON.stringify(params)}
@@ -253,9 +255,7 @@ ${JSON.stringify(params)}
 export const getSpecGeneratePrompt = (params: { chartId: string; data: PlainLikeDataType }[]) => {
   const inputSchema = params
     .map((item) => {
-      return `ChartId: ${item.chartId}\nInputSchema: ${JSON.stringify(
-        (CHARTS as ChartKnowledgeMap)[item.chartId].inputSchema
-      )}`;
+      return `ChartId: ${item.chartId}\nInputSchema: ${JSON.stringify(CHARTS[item.chartId].tool.inputSchema)}`;
     })
     .join('\n\n');
   return `

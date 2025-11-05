@@ -1,4 +1,3 @@
-import type { LevelOfMeasurement } from '../ckb';
 import type { DATA_SHAPE } from '../extract/constants';
 import type { PURPOSE } from '../constants';
 
@@ -279,3 +278,6 @@ export type DataShard = {
   metas: Array<Meta>;
   purpose?: PurposeObject;
 };
+
+export const LEVEL_OF_MEASUREMENTS = ['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Continuous', 'Time'] as const;
+export type LevelOfMeasurement = (typeof LEVEL_OF_MEASUREMENTS)[number];

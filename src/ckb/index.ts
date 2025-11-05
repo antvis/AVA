@@ -1,15 +1,29 @@
-// TODO @neoddish: todo list for ckb
-// 2. ckb 结构中增加 encode 相关的表达，把原来 ckb - spec 那一层手写的映射包掉 (v3.1 or v4)
-//    重新考虑 mark,channel,encode,shape 的关系和表述
-// 3. 完善文档，重点透出：
-//  a. 结构，并用几个简单图表类型做示例。并提供推荐最常用的图表类型 id（比如最常用的 10 个）
-//  c. 图表类型分割的具体逻辑（比如 单色柱状图、多色柱状图 是否是两个id？条形图、柱状图呢？为什么）
+import * as MCP_SERVER_CHART from '@antv/mcp-server-chart/sdk';
 
-// the main CKB API - ckb
-export { ckb } from './ckb';
-// CKB i18n functions
-export { ckbDict } from './i18n';
-// CKB constants
-export * from './constants';
-// CKB types
-export * from './types';
+export const CHARTS = {
+  area: MCP_SERVER_CHART.area,
+  bar: MCP_SERVER_CHART.bar,
+  boxplot: MCP_SERVER_CHART.boxplot,
+  column: MCP_SERVER_CHART.column,
+  funnel: MCP_SERVER_CHART.funnel,
+  histogram: MCP_SERVER_CHART.histogram,
+  line: MCP_SERVER_CHART.line,
+  liquid: MCP_SERVER_CHART.liquid,
+  pie: MCP_SERVER_CHART.pie,
+  radar: MCP_SERVER_CHART.radar,
+  sankey: MCP_SERVER_CHART.sankey,
+  scatter: MCP_SERVER_CHART.scatter,
+  treemap: MCP_SERVER_CHART.treemap,
+  venn: MCP_SERVER_CHART.venn,
+  violin: MCP_SERVER_CHART.violin,
+  districtMap: MCP_SERVER_CHART['district-map'],
+  dualAxes: MCP_SERVER_CHART['dual-axes'],
+  fishboneDiagram: MCP_SERVER_CHART['fishbone-diagram'],
+  flowDiagram: MCP_SERVER_CHART['flow-diagram'],
+  mindMap: MCP_SERVER_CHART['mind-map'],
+  networkGraph: MCP_SERVER_CHART['network-graph'],
+  organizationChart: MCP_SERVER_CHART['organization-chart'],
+  pathMap: MCP_SERVER_CHART['path-map'],
+  pinMap: MCP_SERVER_CHART['pin-map'],
+  wordCloud: MCP_SERVER_CHART['word-cloud'],
+};

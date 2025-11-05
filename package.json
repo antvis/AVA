@@ -24,8 +24,8 @@
   "scripts": {
     "clean": "rimraf lib esm dist",
     "build:umd": "father build",
-    "build:esm": "rimraf esm && tsc --module esnext --target es6 --outDir ./esm",
-    "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib",
+    "build:esm": "rimraf esm && tsc --module esnext --target es6 --outDir ./esm --rootDir src -p tsconfig.build.json",
+    "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib --rootDir src -p tsconfig.build.json",
     "build": "run-p build:*",
     "test": "jest",
     "lint-staged": "lint-staged",
@@ -41,6 +41,7 @@
     "@antv/algorithm": "^0.1.26",
     "@antv/color-schema": "^0.2.3",
     "@antv/gpt-vis": "^0.5.9",
+    "@antv/mcp-server-chart": "^0.9.3",
     "@antv/smart-color": "^0.2.1",
     "axios": "^1.12.2",
     "bayesian-changepoint": "^1.0.1",

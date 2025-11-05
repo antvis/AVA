@@ -5,9 +5,14 @@ export default defineConfig({
   umd: {
     name: 'AVA',
     output: 'dist',
+    externals: {
+      '@antv/mcp-server-chart/sdk': '@antv/mcp-server-chart/sdk',
+    },
   },
   alias: {
-    '@ava': path.resolve(__dirname, 'src'),
-    '@advisor': path.resolve(__dirname, 'src/advisor'),
+    '@antv/mcp-server-chart/sdk': path.resolve(
+      __dirname,
+      'node_modules/@antv/mcp-server-chart/build/sdk.js'
+    ),
   }
 });
