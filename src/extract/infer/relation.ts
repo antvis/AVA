@@ -191,6 +191,7 @@ function findBestSourceField(obj: Record<string, any>): string | null {
     { key: 'origin', weight: 0.7 },
     { key: 'src', weight: 0.8 },
     { key: 'parent', weight: 0.6 },
+    { key: 's', weight: 0.6 },
   ];
 
   let bestField: string | null = null;
@@ -294,7 +295,6 @@ export const matchRelation: MatchFunction = (data: any) => {
     const arrayFields = Object.entries(data).filter(([_, value]) => Array.isArray(value));
 
     if (arrayFields.length === 2) {
-      // 使用向量相似度判断哪个是节点数组，哪个是边数组
       const [field1, field2] = arrayFields;
       const [score1, score2] = [
         calculateNodeLikelihood(field1[1] as any[]),
@@ -325,18 +325,15 @@ export const matchRelation: MatchFunction = (data: any) => {
     return { is: false, format: { data: {} } };
   }
 
-  // 验证是否为有效的图结构
   if (nodes.length === 0 || edges.length === 0) {
     return { is: false, format: { data: {} } };
   }
 
-  // 标准化节点：确保每个节点都有 id 字段
   const standardizedNodes = nodes.map((node) => {
     if (typeof node !== 'object' || node === null) {
       return { id: node };
     }
 
-    // 使用向量相似度找到最可能的 ID 字段
     const idField = findBestIdField(node);
     const id = idField ? node[idField] : generateFallbackId(node);
 
