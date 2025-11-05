@@ -180,12 +180,12 @@ export const getGraphAdvisePrompt = (params: {
 };
 
 export const getChartAdvisePrompt = (params: { metas: Meta[]; data: PlainLikeDataType; purpose: string }[]) => {
-  const chartDescriptions = [];
-  const chartIds = [];
-  Object.entries(CHARTS).forEach(([chartId, item]) => {
-    chartIds.push(chartId);
-    chartDescriptions.push(`${chartId}: ${item.tool.description}`);
-  });
+  const chartIds = Object.keys(CHARTS);
+  const chartDescriptions = Object.entries(CHARTS)
+    .map(([chartId, item]) => {
+      return `${chartId}: ${item.tool.description}`;
+    })
+    .join('\n\n');
   return `
 # Role
 You are a chart recommendation and configuration generation expert, capable of selecting the most suitable chart type from the given Chart Knowledge Base based on data and requirements.
@@ -245,7 +245,7 @@ Output the “best chart type (chartId)” with the rationale for selection, and
 ${JSON.stringify(chartIds)}
 
 ## Chart Function Descriptions
-${chartDescriptions.join('\n\n')}
+${chartDescriptions}
 
 Please complete the chart recommendation based on the following input, strictly following the above “Constraints & Rules”, “Thinking Process”, and “Response Format”:
 ${JSON.stringify(params)}
