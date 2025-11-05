@@ -1,5 +1,5 @@
-import { requestTboxLLM } from '@ava/utils/llm';
-import { getExtractPrompt } from '@ava/extract/extract/prompt';
+import { requestTboxLLM } from '../../../src/utils/llm';
+import { getExtractPrompt } from '../../../src/extract/extract/prompt';
 
 export const extract = async (value: string) => {
   const llmAuth = process.env.LLM_AUTH;

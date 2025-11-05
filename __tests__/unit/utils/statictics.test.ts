@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom/extend-expect';
 import { isEqual } from 'lodash';
-
 import { isArray, isNumber, nOnes, range } from '../../../src/utils';
 import {
   valid,
