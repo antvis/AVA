@@ -1,6 +1,6 @@
 import { lastIndexOf } from 'lodash';
 
-import { Meta } from '@ava/types';
+import { Meta } from '../types';
 
 import { isArray } from './isType';
 

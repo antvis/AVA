@@ -1,4 +1,4 @@
-import { PURPOSE } from '@ava/constants';
+import { PURPOSE } from '../../constants';
 
 export interface Output {
   analysis: Array<{

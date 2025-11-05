@@ -1,5 +1,5 @@
-import { CHART_NAME, CHART_PURPOSE, FULL_AND_ABBR_CHART_NAME_MAP } from '@ava/constants';
-import { StatisticsFeatureKey, ChartLibrary, Operator } from '@ava/types';
+import { CHART_NAME, CHART_PURPOSE, FULL_AND_ABBR_CHART_NAME_MAP } from '../constants';
+import { StatisticsFeatureKey, ChartLibrary, Operator } from '../types';
 
 const LINE_MAX_SPLIT_COUNT = 40;
 const BAR_MAX_SPLIT_COUNT = 100;

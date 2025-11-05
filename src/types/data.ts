@@ -1,6 +1,6 @@
-import type { LevelOfMeasurement } from '@ava/ckb';
-import type { DATA_SHAPE } from '@ava/extract/constants';
-import type { PURPOSE } from '@ava/constants';
+import type { LevelOfMeasurement } from '../ckb';
+import type { DATA_SHAPE } from '../extract/constants';
+import type { PURPOSE } from '../constants';
 
 export type MatchFunction = (input: Record<string, any> | Record<string, any>[]) => { is: boolean; format: any };
 

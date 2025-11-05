@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import type { RawDataType, COLUMN_TYPE } from '@ava/types/data';
+import type { RawDataType, COLUMN_TYPE } from '../types/data';
 
 export const randomPick = (n: number, m: number) => {
   if (m < 0 || m > n) throw new Error('m must be between 0 and n');

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import type { MatchFunction } from '@ava/types';
+import type { MatchFunction } from '../../types';
 
 const standardizeNode = (data: any, childKey: string): any[] => {
   const standardizeNodeObject = (obj: any): any => {

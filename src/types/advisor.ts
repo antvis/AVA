@@ -1,7 +1,6 @@
-import { FieldDataType, Meta } from '@ava/types/data';
-
 import { Renderer } from '../bind';
 
+import { FieldDataType, Meta } from './data';
 import { UiConfig } from './render';
 
 /**

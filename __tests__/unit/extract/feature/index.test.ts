@@ -8,8 +8,8 @@ import {
   isInterval,
   isDiscrete,
   isNominal,
-} from '@ava/extract/features';
-import { NumberColumnFeature, StringColumnFeature, DateColumnFeature } from '@ava/types/data';
+} from '../../../../src/extract/features';
+import { NumberColumnFeature, StringColumnFeature, DateColumnFeature } from '../../../../src/types/data';
 
 describe('test analyze field', () => {
   test('analyze integer number', () => {
