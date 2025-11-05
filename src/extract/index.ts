@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { DATA_SHAPE } from '@ava/extract/constants';
 import { matchDataShape } from '@ava/extract/infer';
 import { getPlainShard } from '@ava/extract/shard';
@@ -24,7 +26,10 @@ export const extractData: (
   const shards: DataShard[] = [];
   if (typeof input === 'string') {
     const res = await extract(input, config?.llmConfig);
-    return [res];
+    if (!_.isArray(res)) {
+      return [res];
+    }
+    return res;
   }
   const inferRes = matchDataShape(input);
   if (inferRes.shape === DATA_SHAPE.PLAIN) {

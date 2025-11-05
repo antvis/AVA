@@ -25,5 +25,5 @@
       "@ava/insight/*": ["src/insight/*"]
     }
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "__tests__/**/*"]
 }
