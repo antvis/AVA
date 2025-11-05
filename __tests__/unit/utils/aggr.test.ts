@@ -1,4 +1,4 @@
-import { AggregatorMap, aggregate, aggregateWithMeasures, aggregateWithSeries } from '@ava/utils/aggregate';
+import { AGGREGATOR_MAP, aggregate, aggregateWithMeasures, aggregateWithSeries } from '../../../src/utils/aggregate';
 
 const data = [
   { gender: 'M', count: 40, class: 'class1', grade: 'grade1', score: 7 },
@@ -14,24 +14,25 @@ const data = [
   { gender: 'M', count: 28, class: 'class3', grade: 'grade2', score: 10 },
   { gender: 'F', count: 36, class: 'class3', grade: 'grade2', score: 9 },
 ];
+
 describe('Aggregation', () => {
   test('SUM aggregation', () => {
-    expect(AggregatorMap.SUM(data, 'count')).toStrictEqual(396);
+    expect(AGGREGATOR_MAP.SUM(data, 'count')).toStrictEqual(396);
   });
   test('MEAN aggregation', () => {
-    expect(AggregatorMap.MEAN(data, 'count')).toStrictEqual(33);
+    expect(AGGREGATOR_MAP.MEAN(data, 'count')).toStrictEqual(33);
   });
   test('MAX aggregation', () => {
-    expect(AggregatorMap.MAX(data, 'count')).toStrictEqual(45);
+    expect(AGGREGATOR_MAP.MAX(data, 'count')).toStrictEqual(45);
   });
   test('MIN aggregation', () => {
-    expect(AggregatorMap.MIN(data, 'count')).toStrictEqual(20);
+    expect(AGGREGATOR_MAP.MIN(data, 'count')).toStrictEqual(20);
   });
   test('COUNT aggregation', () => {
-    expect(AggregatorMap.COUNT(data, 'gender')).toStrictEqual(12);
+    expect(AGGREGATOR_MAP.COUNT(data, 'gender')).toStrictEqual(12);
   });
   test('COUNT_DISTINCT aggregation', () => {
-    expect(AggregatorMap.COUNT_DISTINCT(data, 'gender')).toStrictEqual(2);
+    expect(AGGREGATOR_MAP.COUNT_DISTINCT(data, 'gender')).toStrictEqual(2);
   });
 
   test('aggregation', () => {
