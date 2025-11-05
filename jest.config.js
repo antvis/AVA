@@ -18,6 +18,5 @@ module.exports = {
   moduleNameMapper: {
     '^@antv/ava': ['<rootDir>/src/index.ts'],
     '^@ava/(.*)$': '<rootDir>/src/$1',
-    '^@antv/gpt-vis$': '<rootDir>/__tests__/mocks/gpt-vis.ts',
   },
 };
