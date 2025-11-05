@@ -50,8 +50,8 @@ export const getExtractPrompt = (input: string) => {
       shape: DATA_SHAPE;
       data: FieldDataType<DATA_SHAPE>;
       metas: Array<{
+        id: string; // 字段在数据中的 id
         name: string; // 字段的名称
-        key: string; // 字段在数据中的 key
         dataType: 'number' | 'string' | 'date' | 'geo'; // 字段的类型
       }>; // 字段元信息
       purpose?: {
