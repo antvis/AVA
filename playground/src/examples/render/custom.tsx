@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import ReactDOM from 'react-dom/client';
 import { Input, Button, Space, Card, message } from 'antd';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { Advisor, bindRenderer } from '../../../../src';
 import { cleanAndFormatJSON, formatJSON } from '../../utils';
 
 // 自定义图片渲染器

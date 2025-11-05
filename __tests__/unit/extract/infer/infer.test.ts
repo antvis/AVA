@@ -1,5 +1,5 @@
-import { matchDataShape } from '@ava/extract/infer';
-import { DATA_SHAPE } from '@ava/extract/constants';
+import { matchDataShape } from '../../../../src/extract/infer';
+import { DATA_SHAPE } from '../../../../src/extract/constants';
 
 describe('test matchDataShape', () => {
   const listData1 = [

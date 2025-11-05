@@ -1,4 +1,4 @@
-import { HierarchyLikeDataType } from '@ava/types';
+import { HierarchyLikeDataType } from '../../types';
 
 export class Hierarchy {
   roots!: HierarchyLikeDataType;

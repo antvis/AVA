@@ -1,4 +1,4 @@
-import { assert } from '@ava/utils/common';
+import { assert } from '../common';
 
 import * as cache from './caches';
 

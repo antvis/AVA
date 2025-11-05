@@ -1,7 +1,7 @@
-import { DATA_SHAPE } from '@ava/extract/constants';
-import { ColumnFeature } from '@ava/types/data';
+import { DATA_SHAPE } from '../constants';
+import { ColumnFeature } from '../../types/data';
 
-import type { DataShard } from '@ava/types';
+import type { DataShard } from '../../types';
 import type { DataStore } from './DataStore';
 
 // Focus on data clipping

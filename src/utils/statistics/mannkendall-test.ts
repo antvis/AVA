@@ -1,7 +1,7 @@
 import { sumBy } from 'lodash';
 
-import { sign, unique } from '@ava/utils';
-import { TrendType } from '@ava/types';
+import { sign, unique } from '../common';
+import { TrendType } from '../../types';
 
 import { cdf } from './cdf';
 

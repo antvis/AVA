@@ -9,7 +9,7 @@ import {
   BasePipeline,
   DataStore,
   Stages,
-} from '@ava/types';
+} from '../../types';
 
 export class AdviseTextPipeline implements BasePipeline<AdviseTextParams> {
   config: AdvisorConfig;

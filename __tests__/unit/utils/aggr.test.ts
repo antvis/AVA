@@ -1,4 +1,4 @@
-import { AggregatorMap, aggregate, aggregateWithMeasures, aggregateWithSeries } from '@ava/utils/aggregate';
+import { AggregatorMap, aggregate, aggregateWithMeasures, aggregateWithSeries } from '../../../src/utils/aggregate';
 
 const data = [
   { gender: 'M', count: 40, class: 'class1', grade: 'grade1', score: 7 },

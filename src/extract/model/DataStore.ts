@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
-import { analyzeField } from '@ava/extract/features';
-import { randomPick, calculateCorrelation } from '@ava/extract/utils';
+import { analyzeField } from '../features';
+import { randomPick, calculateCorrelation } from '../utils';
 
 import type {
   StringColumnFeature,
@@ -9,7 +9,7 @@ import type {
   DateColumnFeature,
   GeoColumnFeature,
   RawDataType,
-} from '@ava/types/data';
+} from '../../types/data';
 
 type ColumnFeature = StringColumnFeature | NumberColumnFeature | DateColumnFeature | GeoColumnFeature;
 

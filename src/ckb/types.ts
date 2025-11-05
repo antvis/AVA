@@ -1,4 +1,4 @@
-import { Data } from '@ava/common/types';
+import { Data } from '../common/types';
 
 import * as constants from './constants';
 

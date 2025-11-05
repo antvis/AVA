@@ -21,17 +21,17 @@ import {
   isNumberString,
   isString,
   unique,
-} from '@ava/utils';
-import { COLUMN_TYPE } from '@ava/types/data';
+} from '../../utils';
+import { COLUMN_TYPE } from '../../types/data';
 
-import type { LevelOfMeasurement } from '@ava/ckb';
+import type { LevelOfMeasurement } from '../../ckb';
 import type {
   DateColumnFeature,
   ColumnFeature,
   ColumnMeta,
   NumberColumnFeature,
   StringColumnFeature,
-} from '@ava/types/data';
+} from '../../types/data';
 
 /**
  * Check if it is StringColumnFeature.

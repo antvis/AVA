@@ -1,6 +1,6 @@
 import { sumBy } from 'lodash';
 
-import { rank } from '@ava/utils';
+import { rank } from '../common';
 
 import { ChangePointItem } from './types';
 

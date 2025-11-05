@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { extractData } from '@ava/extract';
+import { extractData } from '../../../src/extract';
 
 const EXTRACT_MOCK_RESULT = [
   {
@@ -18,7 +18,7 @@ const EXTRACT_MOCK_RESULT = [
   },
 ];
 
-jest.mock('@ava/extract/extract', () => ({
+jest.mock('../../../src/extract/extract', () => ({
   __esModule: true,
   extract: async () => {
     return EXTRACT_MOCK_RESULT;
