@@ -1,5 +1,7 @@
 import { mean } from 'lodash';
+
 import { standardDeviation, cdf } from '@ava/utils/statistics';
+
 import { ChangePointItem } from './types';
 
 const DEFAULT_WINDOW_SIZE = 4;

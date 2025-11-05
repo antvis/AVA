@@ -1,41 +1,13 @@
+import path from 'path';
 import { defineConfig } from 'father';
 
-export default (type, name, extendConfig = {}) => {
-  const commonConfig = {
-    esm: {
-      output: 'esm',
-    },
-    cjs: {
-      output: 'lib',
-    },
-    umd: {
-      name,
-      output: 'dist',
-    },
-    ...extendConfig,
-  };
-  if (type === 'ts') {
-    return defineConfig({
-      umd: {
-        name,
-        output: 'dist',
-      },
-      ...extendConfig,
-    });
+export default defineConfig({
+  umd: {
+    name: 'AVA',
+    output: 'dist',
+  },
+  alias: {
+    '@ava': path.resolve(__dirname, 'src'),
+    '@advisor': path.resolve(__dirname, 'src/advisor'),
   }
-  if (type === 'react') {
-    return defineConfig({
-      ...commonConfig,
-      umd: {
-        name,
-        output: 'dist',
-        externals: {
-          antd: 'antd',
-          react: 'react',
-          'react-dom': 'ReactDom',
-        },
-      },
-    });
-  }
-  return defineConfig(commonConfig);
-};
+});

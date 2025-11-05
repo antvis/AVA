@@ -1,4 +1,3 @@
-
 /**
  * One row(record) of data in JSON.
  */

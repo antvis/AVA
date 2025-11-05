@@ -1,30 +1,29 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
-    "jsx": "react",
-    "target": "ES5",
-    "module": "commonjs",
-    "lib": ["dom", "es2017"],
-    "ignoreDeprecations": "6.0",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "declaration": true,
+    "module": "ESNext",
+    "target": "es6",
+    "jsx": "preserve",
     "importHelpers": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true,
-    "outDir": "./lib",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
     "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noEmitOnError": false,
+    "pretty": true,
+    "lib": ["dom", "esnext"],
     "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
     "paths": {
-      "@antv/ava": ["packages/ava/src/index.ts"],
-      "@ava/*": ["packages/ava/src/*"],
-      "@advisor/*": ["packages/ava/src/advisor/*"]
+      "@antv/ava": ["src/index.ts"],
+      "@ava/*": ["src/*"],
+      "@advisor/*": ["src/advisor/*"],
+      "@ava/advisor-deprecated/*": ["src/advisor-deprecated/*"],
+      "@ava/insight/*": ["src/insight/*"]
     }
   },
-  "exclude": ["node_modules", "**/esm", "**/lib", "**/dist", "**/build"]
+  "include": ["src/**/*"]
 }
