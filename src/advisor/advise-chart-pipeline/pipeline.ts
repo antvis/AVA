@@ -9,8 +9,8 @@ import {
   Stages,
   AdviseChartPluginInput,
   AdviseStageOutput,
-} from '@ava/types';
-import { AdviseChartPluginEnum, AdviseChartStageEnum } from '@ava/constants';
+} from '../../types';
+import { AdviseChartPluginEnum, AdviseChartStageEnum } from '../../constants';
 
 import { AdvisePlugin, ExtractPlugin, GeneratePlugin } from './plugins';
 

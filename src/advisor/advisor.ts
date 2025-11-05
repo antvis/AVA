@@ -6,9 +6,8 @@ import {
   AdviseTextParams,
   AdvisorConfig,
   BasePipeline,
-} from '@ava/types';
-import { extractData } from '@ava/extract';
-
+} from '../types';
+import { extractData } from '../extract';
 import { logError } from '../utils';
 import { getRenderer, type Spec } from '../bind';
 

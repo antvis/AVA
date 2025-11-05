@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 
 import { logError, sleep } from './common';
 
-import type { OpenAiLLM, TboxLLM } from '@ava/types';
+import type { OpenAiLLM, TboxLLM } from '../types';
 
 const DEFAULT_MAX_RETRY_COUNT = 3;
 const DEFAULT_TIMEOUT = 60000;

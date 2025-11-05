@@ -1,12 +1,12 @@
 import _ from 'lodash';
 
-import { DATA_SHAPE } from '@ava/extract/constants';
-import { matchDataShape } from '@ava/extract/infer';
-import { getPlainShard } from '@ava/extract/shard';
-import { DataStore } from '@ava/extract/model/DataStore';
-import { Hierarchy } from '@ava/extract/model/Hierarchy';
-import { Relation } from '@ava/extract/model/Relation';
-import { extract } from '@ava/extract/extract';
+import { DATA_SHAPE } from './constants';
+import { matchDataShape } from './infer';
+import { getPlainShard } from './shard';
+import { DataStore } from './model/DataStore';
+import { Hierarchy } from './model/Hierarchy';
+import { Relation } from './model/Relation';
+import { extract } from './extract';
 
 import type {
   DataShard,

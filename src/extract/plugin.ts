@@ -1,6 +1,6 @@
 import { DataStore } from './model';
 
-import type { AdviseChartPipeline } from '@ava/advisor/advise-chart-pipeline/pipeline';
+import type { AdviseChartPipeline } from '../advisor/advise-chart-pipeline/pipeline';
 
 export class DataProcessPlugin {
   dataStore!: DataStore;

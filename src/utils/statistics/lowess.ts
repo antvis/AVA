@@ -1,6 +1,6 @@
 import { isNumber, mergeWith } from 'lodash';
 
-import { nOnes, nZeros } from '@ava/utils/common';
+import { nOnes, nZeros } from '../common';
 
 import { median } from './base';
 import { DEFAULT_LOWESS_OPTIONS } from './constants';

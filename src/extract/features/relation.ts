@@ -9,7 +9,7 @@ import type {
   RelationFeature,
   NodeStructFeature,
   EdgeStructFeature,
-} from '@ava/types/data';
+} from '../../types/data';
 
 const GraphAlgorithms = {
   ...AlgorithmSync,

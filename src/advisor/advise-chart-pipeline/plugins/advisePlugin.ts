@@ -1,4 +1,4 @@
-import { logError, isOpenAi, isTbox, requestLLM, safeJsonParse } from '@ava/utils';
+import { logError, isOpenAi, isTbox, requestLLM, safeJsonParse } from '../../../utils';
 import {
   AdviseChartParams,
   AdviseChartPluginInput,
@@ -6,10 +6,9 @@ import {
   IAdviseChartPipeline,
   DataShard,
   PlainLikeDataType,
-} from '@ava/types';
-import { AdviseChartPluginEnum } from '@ava/constants/pipeline';
-import { DATA_SHAPE } from '@ava/extract/constants';
-
+} from '../../../types';
+import { AdviseChartPluginEnum } from '../../../constants/pipeline';
+import { DATA_SHAPE } from '../../../extract/constants';
 import { getChartAdvisePrompt, getSpecGeneratePrompt } from '../../chartAdvise/prompt';
 import { CHART_ID_MAP } from '../../../ckb';
 import { Spec } from '../../../bind';

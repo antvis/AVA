@@ -1,6 +1,6 @@
-import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '@ava/constants';
-import { AdviseChart, Data, DataTypeMap, Meta, UiConfig } from '@ava/types';
-import { metasToMap } from '@ava/utils';
+import { CHART_NAME, CHART_PURPOSE, DEFAULT_UI_CONFIG, ENCODE_TO_GPT_VIS_ENCODE } from '../constants';
+import { AdviseChart, Data, DataTypeMap, Meta, UiConfig } from '../types';
+import { metasToMap } from '../utils';
 
 type Params = {
   encode: AdviseChart['encode'];

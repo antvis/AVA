@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
-import { assert, isArray, isObject, isBasicType } from '@ava/utils';
-import { getAllRelationFeatures } from '@ava/extract/features';
+import { assert, isArray, isObject, isBasicType } from '../../utils';
+import { getAllRelationFeatures } from '../features';
 
-import type { RelationLikeDataType, RelationFeature } from '@ava/types/data';
+import type { RelationLikeDataType, RelationFeature } from '../../types/data';
 
 function parseTreeNode(data: any) {
   const nodes = [];

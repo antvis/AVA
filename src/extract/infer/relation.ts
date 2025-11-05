@@ -1,4 +1,4 @@
-import type { MatchFunction } from '@ava/types';
+import type { MatchFunction } from '../../types';
 
 /**
  * 计算单个对象作为节点的相似度得分

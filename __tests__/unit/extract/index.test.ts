@@ -1,8 +1,8 @@
 import _ from 'lodash';
-import { extractData } from '@ava/extract';
+import { extractData } from '../../../src/extract';
 import { extract } from './mock-extract';
 
-jest.mock('@ava/extract/extract', () => ({
+jest.mock('../../../src/extract/extract', () => ({
   __esModule: true,
   extract: jest.fn().mockImplementation(async (value: string) => {
     return await extract(value);

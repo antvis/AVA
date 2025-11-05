@@ -16,7 +16,7 @@ import {
   getIsoDatePatterns,
   getIsoTimePatterns,
   parseIsoDateString,
-} from '@ava/utils/isType';
+} from '../../../src/utils/isType';
 
 test('isNull', () => {
   const data = 'null';

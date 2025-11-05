@@ -1,4 +1,4 @@
-import { DataStore } from '@ava/extract/model/DataStore';
+import { DataStore } from '../../../../src/extract/model/DataStore';
 
 describe('DataStore', () => {
   const data = [

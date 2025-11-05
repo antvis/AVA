@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Button, Space, Card } from 'antd';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { Advisor, bindRenderer } from '../../../../src';
 import { render } from '../../utils';
 
 // 创建 advisor 实例并为该实例绑定渲染器
