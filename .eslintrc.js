@@ -79,33 +79,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/type-annotation-spacing': 0,
     'no-await-in-loop': 0,
-    'import/order': [
-      2,
-      {
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type', 'unknown'],
-        pathGroups: [
-          {
-            pattern: 'react',
-            group: 'external',
-            position: 'before',
-          },
-          {
-            pattern: '@/**',
-            group: 'internal',
-            position: 'before',
-          },
-          {
-            pattern: '*.{less,css}',
-            patternOptions: { matchBase: true },
-            group: 'unknown',
-            position: 'after',
-          },
-        ],
-        pathGroupsExcludedImportTypes: ['builtin', 'type'],
-        warnOnUnassignedImports: true,
-        'newlines-between': 'always',
-      },
-    ],
+    'import/order': 0,
     'no-param-reassign': 1,
     'no-continue': 1,
     'no-bitwise': 1,
@@ -123,5 +97,7 @@ module.exports = {
         project: ['./tsconfig.json']
       },
     },
+    // 兼容 exports 子路径导入，避免旧版插件误报为非依赖
+    'import/core-modules': ['@antv/mcp-server-chart/sdk'],
   },
 };

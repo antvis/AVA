@@ -61,12 +61,3 @@ export interface ChartLibrary {
     >;
   };
 }
-
-// TODO: 后续从 GPT-vis 引入
-export type ChartKnowledge = {
-  name: string;
-  description: string;
-  inputSchema: Object;
-};
-
-export type ChartKnowledgeMap = Record<string, ChartKnowledge>;

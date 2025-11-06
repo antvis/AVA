@@ -10,7 +10,6 @@ import {
 import { AdviseChartPluginEnum } from '../../../constants/pipeline';
 import { DATA_SHAPE } from '../../../extract/constants';
 import { getChartAdvisePrompt, getSpecGeneratePrompt } from '../../chartAdvise/prompt';
-import { CHART_ID_MAP } from '../../../ckb';
 import { Spec } from '../../../bind';
 
 export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
@@ -53,7 +52,7 @@ export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {
         const adviseInputs = getChartAdvisePrompt(params);
         const recommendationStr = await requestLLM({ config: llm, prompt: adviseInputs });
         const recommendation = safeJsonParse(recommendationStr, []);
-        const bestCharts = recommendation.map((item) => CHART_ID_MAP[item[0]]) as string[];
+        const bestCharts = recommendation.map((item) => item[0]) as string[];
         const specGenerateInputs = dataShards.map((shard, index) => {
           const { data } = shard;
           return {
