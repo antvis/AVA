@@ -23,6 +23,6 @@ jobs:
 
       - name: Run tests
         env:
-          LLM_APP_ID: ${{ secrets.LLM_APP_ID }}
-          LLM_AUTH: ${{ secrets.LLM_AUTH }}
+          TBOX_LLM_APP_ID: ${{ secrets.TBOX_LLM_APP_ID }}
+          TBOX_LLM_AUTH: ${{ secrets.TBOX_LLM_AUTH }}
         run: npm run test
