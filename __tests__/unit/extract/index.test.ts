@@ -15,8 +15,8 @@ describe('extractData', () => {
       4. 用户ID: 1004, 姓名: 赵六, 年龄: 35
     `;
 
-    const llmAuth = process.env.TBOX_LLM_AUTH;
-    const llmAppId = process.env.TBOX_LLM_APP_ID;
+    const llmAuth = process.env.TBOX_LLM_AUTH || '';
+    const llmAppId = process.env.TBOX_LLM_APP_ID || '';
     const result = await extractData(input, {
       llmConfig: {
         authorization: llmAuth,
