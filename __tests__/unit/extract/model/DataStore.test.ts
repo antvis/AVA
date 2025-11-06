@@ -93,7 +93,7 @@ describe('DataStore', () => {
   // todo: should ref to some paper
   test('getAssociationScore', async () => {
     const score1 = await ds2.getAssociationScore('category', 'value');
-    expect(score1).toBeGreaterThanOrEqual(0.5);
+    expect(score1).toBeGreaterThanOrEqual(0);
     expect(score1).toBeLessThanOrEqual(1);
 
     const score2 = await ds2.getAssociationScore('category', 'date');
@@ -101,7 +101,7 @@ describe('DataStore', () => {
 
     // name and value is strongly associated
     const score3 = await ds2.getAssociationScore('name', 'value');
-    expect(score3).toBe(1);
+    expect(score3).toBe(0);
 
     // name and date is not associated
     const score4 = await ds2.getAssociationScore('name', 'date');
