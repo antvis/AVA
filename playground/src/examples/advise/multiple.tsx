@@ -34,7 +34,8 @@ const MultipleChartsDemo: React.FC = () => {
   }, []);
 
   const advise = async () => {
-    const advises = await advisor.advise({ data });
+    const dataShards = await advisor.extract({ purpose: '请根据数据生成图表建议', data });
+    const advises = await advisor.advise(dataShards);
     advises.forEach((item) => {
       advisor.render('#charts', item.charts[0].spec);
     });

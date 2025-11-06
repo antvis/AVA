@@ -1,17 +1,9 @@
 /* eslint-disable no-dupe-class-members */
-import {
-  AdviseChartParams,
-  AdviseStageOutput,
-  AdviseText,
-  AdviseTextParams,
-  AdvisorConfig,
-  BasePipeline,
-} from '../types';
+import { AdviseChartParams, AdviseStageOutput, AdvisorConfig, DataShard } from '../types';
 import { extractData } from '../extract';
 import { logError } from '../utils';
 import { getRenderer, type Spec } from '../bind';
-
-import { AdviseChartPipeline } from './advise-chart-pipeline/pipeline';
+import { adviseCharts } from '../advise';
 
 /**
  * The 1st level advisor class.
@@ -23,15 +15,8 @@ export class Advisor {
    */
   private config!: AdvisorConfig;
 
-  adviseChartPipeline: BasePipeline<AdviseChartParams>;
-
   constructor(config: AdvisorConfig = {}) {
     this.config = config;
-
-    // Initialize pipelines.
-    this.adviseChartPipeline = new AdviseChartPipeline({
-      config,
-    });
   }
 
   /**
@@ -57,10 +42,15 @@ export class Advisor {
       advisor.extract({ type: 'A', value: 2 });
    */
   async extract(params: AdviseChartParams) {
-    const { purpose, data } = params;
-    const input = purpose ?? data;
-    const dataShards = await extractData(input, { llmConfig: this.config.llm });
-    return dataShards;
+    try {
+      const { purpose, data } = params;
+      const input = `${purpose}\n${JSON.stringify(data)}`;
+      const dataShards = await extractData(input, { llmConfig: this.config.llm });
+      return dataShards;
+    } catch (e) {
+      logError('LLM extract failed');
+      return [];
+    }
   }
 
   /**
@@ -69,13 +59,8 @@ export class Advisor {
    *
    * const advises = advisor.advise(dataShards);
    */
-  advise(params: AdviseChartParams): Promise<AdviseStageOutput>;
-
-  advise(params: AdviseTextParams): Promise<AdviseText>;
-
-  async advise(params: AdviseChartParams | AdviseTextParams): Promise<AdviseStageOutput | AdviseText> {
-    const result = await this.adviseChartPipeline.execute(params as AdviseChartParams);
-    return result;
+  async advise(dataShard: DataShard[]): Promise<AdviseStageOutput> {
+    return adviseCharts(dataShard, this.config);
   }
 
   /**

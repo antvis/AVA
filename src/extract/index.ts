@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { DATA_SHAPE } from './constants';
+import { DATA_SHAPE } from '../types';
 import { matchDataShape } from './infer';
 import { getPlainShard } from './shard';
 import { DataStore } from './model/DataStore';
