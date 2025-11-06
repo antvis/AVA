@@ -3,7 +3,7 @@ import { AdviseChartParams, AdviseStageOutput, AdvisorConfig, DataShard } from '
 import { extractData } from '../extract';
 import { logError } from '../utils';
 import { getRenderer, type Spec } from '../bind';
-import { adviseCharts } from './advise';
+import { adviseCharts } from '../advise';
 
 /**
  * The 1st level advisor class.
