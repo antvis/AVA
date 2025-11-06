@@ -1,5 +1,5 @@
 
 require('dotenv').config({
-  path: ['.env.local']
+  path: ['.env']
 });
 jest.setTimeout(30000);
