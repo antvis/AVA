@@ -1,4 +1,3 @@
-import type { DATA_SHAPE } from '../extract/constants';
 import type { PURPOSE } from '../constants';
 
 export type MatchFunction = (input: Record<string, any> | Record<string, any>[]) => { is: boolean; format: any };
@@ -281,3 +280,10 @@ export type DataShard = {
 
 export const LEVEL_OF_MEASUREMENTS = ['Nominal', 'Ordinal', 'Interval', 'Discrete', 'Continuous', 'Time'] as const;
 export type LevelOfMeasurement = (typeof LEVEL_OF_MEASUREMENTS)[number];
+
+export enum DATA_SHAPE {
+  PLAIN = 'plain',
+  HIERARCHY = 'hierarchy',
+  RELATION = 'relation',
+  GEO = 'geo',
+}

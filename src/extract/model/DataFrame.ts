@@ -1,5 +1,4 @@
-import { DATA_SHAPE } from '../constants';
-import { ColumnFeature } from '../../types/data';
+import { ColumnFeature, DATA_SHAPE } from '../../types/data';
 
 import type { DataShard } from '../../types';
 import type { DataStore } from './DataStore';

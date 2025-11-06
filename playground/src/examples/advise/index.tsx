@@ -39,7 +39,8 @@ const AdviseSummary: React.FC = () => {
     message.loading('正在生成图表建议...', 0);
     try {
       if (parsedData) {
-        const advises = await advisor.advise({ data: parsedData });
+        const dataShards = await advisor.extract({ purpose: '请根据数据生成图表建议', data: parsedData });
+        const advises = await advisor.advise(dataShards);
         advisor.render('#chart', advises[0].charts[0].spec);
       }
     } catch (_e) {

@@ -1,5 +1,5 @@
 import { CHARTS } from '../ckb';
-import { ChartConfig, Meta, Data, PlainLikeDataType } from 'src/types';
+import { ChartConfig, Meta, Data, PlainLikeDataType } from '../types';
 
 export const getTreeChartAdvisePrompt = (params: {
   userInput: string;
@@ -21,8 +21,11 @@ export const getGraphAdvisePrompt = (params: {
   return params.userInput;
 };
 
-export const getChartAdvisePrompt = (params: { metas: Meta[]; data: PlainLikeDataType; purpose: string }[]) => {
-  const chartIds = Object.keys(CHARTS);
+export const getChartAdvisePrompt = (
+  params: { metas: Meta[]; data: PlainLikeDataType; purpose: string }[],
+  allowedChartIds?: string[]
+) => {
+  const chartIds = Array.isArray(allowedChartIds) && allowedChartIds.length > 0 ? allowedChartIds : Object.keys(CHARTS);
   const chartDescriptions = Object.entries(CHARTS)
     .map(([chartId, item]) => {
       return `${chartId}: ${item.tool.description}`;
