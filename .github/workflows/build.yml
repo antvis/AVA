@@ -23,7 +23,10 @@ jobs:
       - name: 🚀　Build
         run: npm run build
 
-      - name: ✅　Test
+      - name: ✅　Test & Evaluate
+        env:
+          TBOX_LLM_APP_ID: ${{ secrets.TBOX_LLM_APP_ID }}
+          TBOX_LLM_AUTH: ${{ secrets.TBOX_LLM_AUTH }}
         run: npm run test
 
       - name: 💡 Upload coverage to Codecov
