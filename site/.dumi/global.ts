@@ -25,8 +25,6 @@ if (window) {
   (window as any).g2plot = require('@antv/g2plot');
   (window as any).g2 = require('@antv/g2');
 
-  (window as any).ava = require('../../packages/ava/src');
-
   require('antd/lib/alert/style/index.css');
   require('katex/dist/katex.min.css');
 }
