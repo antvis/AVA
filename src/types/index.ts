@@ -5,5 +5,4 @@ export * from './chartAdvise';
 export * from './advisor';
 export * from './pipeline';
 export * from './data';
-export * from './ckb';
 export * from './render';
