@@ -8,11 +8,5 @@ export default defineConfig({
     externals: {
       '@antv/mcp-server-chart/sdk': '@antv/mcp-server-chart/sdk',
     },
-  },
-  alias: {
-    '@antv/mcp-server-chart/sdk': path.resolve(
-      __dirname,
-      'node_modules/@antv/mcp-server-chart/build/sdk.js'
-    ),
   }
 });
