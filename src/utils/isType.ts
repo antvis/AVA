@@ -1,20 +1,29 @@
 import { toNumber, isNaN } from 'lodash';
 
-import {
-  SPECIAL_BOOLEANS,
-  DAY,
-  DELIMITER,
-  HOUR,
-  MILLISECOND,
-  MINUTE,
-  MONTH,
-  OFFSET,
-  SECOND,
-  WEEK,
-  WEEKDAY,
-  YEAR,
-  YEARDAY,
-} from '../extract/constants';
+const SPECIAL_BOOLEANS = [
+  [true, false],
+  [0, 1],
+  ['true', 'false'],
+  ['Yes', 'No'],
+  ['True', 'False'],
+  ['0', '1'],
+  ['是', '否'],
+];
+
+const DELIMITER = '([-_./\\s])';
+const YEAR = '(?<year>(18|19|20)\\d{2})';
+const MONTH = '(?<month>0?[1-9]|1[012])';
+const DAY = '(?<day>0?[1-9]|[12]\\d|3[01])';
+const WEEK = '(?<week>[0-4]\\d|5[0-2])';
+const WEEKDAY = '(?<weekday>[1-7])';
+const BASE_HOUR = '(0?\\d|1\\d|2[0-4])';
+const BASE_MINUTE = '(0?\\d|[012345]\\d)';
+const HOUR = `(?<hour>${BASE_MINUTE})`;
+const MINUTE = `(?<minute>${BASE_MINUTE})`;
+const SECOND = `(?<second>${BASE_MINUTE})`;
+const MILLISECOND = '(?<millisecond>\\d{1,4})';
+const YEARDAY = '(?<yearDay>(([0-2]\\d|3[0-5])\\d)|36[0-6])';
+const OFFSET = `(?<offset>Z|[+-]${BASE_HOUR}(:${BASE_MINUTE})?)`;
 
 /*
  * Check whether the string is a date.
@@ -100,7 +109,7 @@ export function isBoolean(value: unknown, checkSpecialBoolean?: boolean) {
 }
 
 export function isObject(value: unknown): value is object {
-  return value && Object.getPrototypeOf(value) === Object.prototype;
+  return !!value && Object.getPrototypeOf(value) === Object.prototype;
 }
 
 export function isArray(value: unknown): value is any[] {
@@ -185,9 +194,9 @@ export function parseIsoDateString(value: string, strictDatePattern: boolean = f
     const reg = isoDateAndTimeRegs[i];
     if (reg.test(value.trim())) {
       const matches = value.trim().match(reg);
-      if (matches.groups) {
+      if (matches!.groups) {
         const { year, month, day, week, weekday, hour, minute, second, millisecond, yearDay, offset } =
-          matches.groups || {};
+          matches!.groups || {};
         const yearNum = parseInt(year, 10);
         if (yearDay) {
           return new Date(yearNum, 0, parseInt(yearDay, 10));

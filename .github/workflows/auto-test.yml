@@ -13,13 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Use Node.js 16.x
+      - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
-          node-version: '16.x'
+          node-version: '18.x'
 
       - name: Install dependencies
         run: npm install --no-package-lock
 
       - name: Run tests
+        env:
+          LLM_APP_ID: ${{ secrets.LLM_APP_ID }}
+          LLM_AUTH: ${{ secrets.LLM_AUTH }}
         run: npm run test

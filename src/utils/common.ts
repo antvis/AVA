@@ -4,13 +4,16 @@ import { Meta } from '../types';
 
 import { isArray } from './isType';
 
-// sign
+/**
+ * Returns the sign of the x, indicating whether x is positive, negative or zero.
+ */
 export function sign(value: number) {
-  if (value > 0) return 1;
-  return value < 0 ? -1 : 0;
+  return Math.sign(value);
 }
 
-// unique
+/**
+ * Returns the unique elements in the array and their counts.
+ */
 export function unique(arr: string[] | number[]): [(string | number)[], number[]] {
   const sorted = arr.slice().sort();
 
@@ -28,7 +31,9 @@ export function unique(arr: string[] | number[]): [(string | number)[], number[]
   return [uniqArr, countArr];
 }
 
-// rank
+/**
+ * Returns the rank of each element in the array.
+ */
 export function rank(arr: (string | number)[]): number[] {
   const sorted = arr.slice().sort();
   const rank: number[] = [];
