@@ -9,7 +9,7 @@ import {
 } from '../../../types';
 import { AdviseChartPluginEnum } from '../../../constants/pipeline';
 import { DATA_SHAPE } from '../../../extract/constants';
-import { getChartAdvisePrompt, getSpecGeneratePrompt } from '../../chartAdvise/prompt';
+import { getChartAdvisePrompt, getSpecGeneratePrompt } from '../../../prompt';
 import { Spec } from '../../../bind';
 
 export class AdvisePlugin implements AdvisorPlugin<AdviseChartParams> {

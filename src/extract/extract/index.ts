@@ -1,7 +1,5 @@
 import { requestLLM } from '../../utils';
-
-import { getExtractPrompt } from './prompt';
-
+import { getExtractPrompt } from '../../prompt';
 import type { AdvisorConfig } from '../../types';
 
 export const extract = async (input: string, config: AdvisorConfig['llm']) => {
