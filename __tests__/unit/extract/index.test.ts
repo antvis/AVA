@@ -1,13 +1,5 @@
 import _ from 'lodash';
 import { extractData } from '../../../src/extract';
-import { extract } from './mock-extract';
-
-jest.mock('../../../src/extract/extract', () => ({
-  __esModule: true,
-  extract: jest.fn().mockImplementation(async (value: string) => {
-    return await extract(value);
-  }),
-}));
 
 describe('extractData', () => {
   afterEach(() => {
@@ -23,7 +15,14 @@ describe('extractData', () => {
       4. 用户ID: 1004, 姓名: 赵六, 年龄: 35
     `;
 
-    const result = await extractData(input);
+    const llmAuth = process.env.TBOX_LLM_AUTH;
+    const llmAppId = process.env.TBOX_LLM_APP_ID;
+    const result = await extractData(input, {
+      llmConfig: {
+        authorization: llmAuth,
+        appId: llmAppId,
+      },
+    });
     const shard = result?.[0];
     expect(shard.shape).toBe('plain');
     expect(shard.data).toEqual([
