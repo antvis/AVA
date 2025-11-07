@@ -1,25 +1,5 @@
 import { CHARTS } from '../ckb';
-import { ChartConfig, Meta, Data, PlainLikeDataType } from '../types';
-
-export const getTreeChartAdvisePrompt = (params: {
-  userInput: string;
-  chartConfig: ChartConfig[];
-  metas: Meta[];
-  data: Data;
-}) => {
-  // todo: 完善 prompt
-  return params.userInput;
-};
-
-export const getGraphAdvisePrompt = (params: {
-  userInput: string;
-  chartConfig: ChartConfig[];
-  metas: Meta[];
-  data: Data;
-}) => {
-  // todo: 完善 prompt
-  return params.userInput;
-};
+import { Meta, PlainLikeDataType } from '../types';
 
 export const getChartAdvisePrompt = (
   params: { metas: Meta[]; data: PlainLikeDataType; purpose: string }[],
