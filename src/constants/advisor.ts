@@ -19,34 +19,6 @@ export enum CHART_NAME {
   graph = 'graph',
 }
 
-// 图表缩写和全称映射
-export const ABBR_AND_FULL_CHART_NAME_MAP = {
-  l: CHART_NAME.line,
-  c: CHART_NAME.column,
-  p: CHART_NAME.pie,
-  b: CHART_NAME.bar,
-  a: CHART_NAME.area,
-  s: CHART_NAME.scatter,
-  d: CHART_NAME.dualAxes,
-  k: CHART_NAME.kpiChart,
-  sp: CHART_NAME.spreadsheetPro,
-  f: CHART_NAME.funnel,
-  sa: CHART_NAME.sankey,
-  r: CHART_NAME.radar,
-  li: CHART_NAME.liquid,
-  t: CHART_NAME.table,
-  w: CHART_NAME.wordCloud,
-  tr: CHART_NAME.treemap,
-  h: CHART_NAME.histogram,
-  gr: CHART_NAME.graph,
-};
-
-// 图表全称和缩写映射
-export const FULL_AND_ABBR_CHART_NAME_MAP = Object.keys(ABBR_AND_FULL_CHART_NAME_MAP).reduce(
-  (acc, key) => ({ ...acc, [ABBR_AND_FULL_CHART_NAME_MAP[key]]: key }),
-  {}
-);
-
 export enum CHART_PURPOSE {
   Comparison = 'Comparison', // 对比
   Trend = 'Trend', // 趋势
