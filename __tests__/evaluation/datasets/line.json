@@ -1,0 +1,125 @@
+[
+  {
+    "input": {
+      "type": "text",
+      "value": "某市的平均气温在2018年为15度，2019年上升至17度，2020年又下降到16度。"
+    },
+    "dataShard": [],
+    "chardIds": [],
+    "specs": []
+  },
+  {
+    "input": "一个城市过去五年来的年度降雨量分别是：2016年800毫米，2017年900毫米，2018年700毫米，2019年1000毫米，2020年1100毫米。"
+  },
+  {
+    "input": "某公司的股价在过去一年中经历了波动：年初时每股价格为50元，年中跌至40元，年底回升到55元。"
+  },
+  {
+    "input": "记录显示某地区每年新增就业人数如下：2017年增加了5000人，2018年增加了7000人，2019年增加了6000人。"
+  },
+  {
+    "input": "某产品的销量随季节变化明显：春季销售了10万台，夏季销售了15万台，秋季销售了12万台，冬季销售了8万台。"
+  },
+  {
+    "input": "一项研究表明，随着年龄的增长，人们对社交媒体的兴趣逐渐减少：18岁时有90%的人经常使用社交媒体；到了25岁这个比例降至80%；而到了30岁则进一步降到70%。"
+  },
+  {
+    "input": "某电商平台每月订单数量统计结果如下：一月份订单数为10万单，二月份为12万单，三月份回落至11万单。"
+  },
+  {
+    "input": "近年来我国智能手机用户数量持续增长：2018年底达到7亿户，2019年底增至7.5亿户，2020年底更是突破了8亿大关。"
+  },
+  {
+    "input": "根据最新的健康调查报告，成年人每日平均步行步数有所下降：2017年的平均水平是7000步，2018年降到了6500步，到了2019年进一步减少至6000步。"
+  },
+  {
+    "input": "过去五年内，某城市的平均气温分别为：2018 年 15°C，2019 年 16°C，2020 年 15°C，2021 年 17°C，2022 年 18°C。"
+  },
+  {
+    "input": "从 2017 年到 2021 年，某大学的在校学生人数变化为：2017 年 3000 人，2018 年 3200 人，2019 年 3100 人，2020 年 3300 人，2021 年 3400 人。"
+  },
+  {
+    "input": "某公司员工人数在近四年内的变化为：2019 年 150 人，2020 年 160 人，2021 年 155 人，2022 年 170 人。"
+  },
+  {
+    "input": "某产品的季度销售量如下：Q1 为 2000 件，Q2 为 2500 件，Q3 为 2300 件，Q4 为 2600 件。"
+  },
+  {
+    "input": "在最近三年内，某国的年通货膨胀率分别为：2020 年 2.5%，2021 年 3.0%，2022 年 2.8%。"
+  },
+  {
+    "input": "某项目在 2021 年的月度花费如下：一月 100 万，二月 120 万，三月 110 万，四月 130 万。"
+  },
+  {
+    "input": "某城市从 2018 年至 2020 年的空气质量指数（AQI）年平均值分别为：2018 年 75，2019 年 72，2020 年 68。"
+  },
+  {
+    "input": "一项研究跟踪了五个国家在过去十年里每年森林覆盖率的变化，其中中国从2010年的20%增长到了2020年的25%，印度从20%增长至23%，巴西从60%降至55%，俄罗斯从45%增至50%，加拿大保持在30%不变。"
+  },
+  {
+    "input": "在某项研究中，过去五年中三个城市的空气污染指数变化如下：城市A分别为150，160，145，155，165；城市B分别为100，110，105，115，120；城市C分别为90，85，80，75，70。"
+  },
+  {
+    "input": "在某项研究中，过去五年中三个城市的空气污染指数变化如下：城市A分别为150，160，145，155，165；城市B分别为100，110，105，115，120；城市C分别为90，85，80，75，70。"
+  },
+  {
+    "input": "我的数据 [{ \"month\": \"Jan\",\"value\": 150 },{ \"month\": \"Feb\", \"value\": 200 },{ \"month\": \"Mar\" ,\"value\": 180 }]"
+  },
+  {
+    "input": "我的数据 [{\"day\":\"Mon\",\"value\":500},{\"day\":\"Tue\",\"value\":700},{\"day\":\"Wed\",\"value\":600},{\"day\":\"Thu\",\"value\":900},{\"day\":\"Fri\",\"value\":800}]"
+  },
+  {
+    "input": "我的数据 [{\"week\":\"1\",\"value\":1000},{\"week\":\"2\",\"value\":1500},{\"week\":\"3\",\"value\":1200},{\"week\":\"4\",\"value\":1800}]"
+  },
+  {
+    "input": "我的数据 [{\"quarter\":\"Q1\",\"sales\":2000},{\"quarter\":\"Q2\",\"sales\":3000},{\"quarter\":\"Q3\",\"sales\":2500},{\"quarter\":\"Q4\",\"sales\":3500}]"
+  },
+  {
+    "input": "我的数据 [{\"year\":2018,\"revenue\":5000},{\"year\":2019,\"revenue\":7000},{\"year\":2020,\"revenue\":6000},{\"year\":2021,\"revenue\":8000}]"
+  },
+  {
+    "input": "我的数据 [{\"month\":\"Jan\",\"sales\":3000},{\"month\":\"Feb\",\"sales\":4500},{\"month\":\"Mar\",\"sales\":4000}]"
+  },
+  {
+    "input": "我的数据 [{\"hour\":1,\"temperature\":30},{\"hour\":2,\"temperature\":35},{\"hour\":3,\"temperature\":32},{\"hour\":4,\"temperature\":38}]"
+  },
+  {
+    "input": "我的数据 [{\"day\":\"Monday\",\"sales\":2000},{\"day\":\"Tuesday\",\"sales\":2500},{\"day\":\"Wednesday\",\"sales\":2200},{\"day\":\"Thursday\",\"sales\":2800},{\"day\":\"Friday\",\"sales\":3000}]"
+  },
+  {
+    "input": "我的数据 [{\"quarter\":\"Q1\",\"profit\":800},{\"quarter\":\"Q2\",\"profit\":1200},{\"quarter\":\"Q3\",\"profit\":1000},{\"quarter\":\"Q4\",\"profit\":1500}]"
+  },
+  {
+    "input": "我的数据 [{\"year\":2016,\"growth\":12},{\"year\":2017,\"growth\":15},{\"year\":2018,\"growth\":10},{\"year\":2019,\"growth\":18}]"
+  },
+  {
+    "input": "我的数据 [{\"month\":\"Jan\",\"value\":300,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":500,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":200,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":400,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":600,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":300,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":700,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":800,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":400,\"category\":\"C\"}]"
+  },
+  {
+    "input": "我的数据 [{\"year\":\"2020\",\"value\":1000,\"category\":\"X\"},{\"year\":\"2020\",\"value\":1500,\"category\":\"Y\"},{\"year\":\"2020\",\"value\":900,\"category\":\"Z\"},{\"year\":\"2021\",\"value\":1300,\"category\":\"X\"},{\"year\":\"2021\",\"value\":1900,\"category\":\"Y\"},{\"year\":\"2021\",\"value\":1100,\"category\":\"Z\"},{\"year\":\"2022\",\"value\":1800,\"category\":\"X\"},{\"year\":\"2022\",\"value\":2200,\"category\":\"Y\"},{\"year\":\"2022\",\"value\":1500,\"category\":\"Z\"}]"
+  },
+  {
+    "input": "我的数据 [{\"date\":\"202101\",\"value\":200,\"product\":\"A\"},{\"date\":\"202101\",\"value\":300,\"product\":\"B\"},{\"date\":\"202101\",\"value\":100,\"product\":\"C\"},{\"date\":\"202102\",\"value\":400,\"product\":\"A\"},{\"date\":\"202102\",\"value\":500,\"product\":\"B\"},{\"date\":\"202102\",\"value\":300,\"product\":\"C\"},{\"date\":\"202103\",\"value\":600,\"product\":\"A\"},{\"date\":\"202103\",\"value\":700,\"product\":\"B\"},{\"date\":\"202103\",\"value\":400,\"product\":\"C\"}]"
+  },
+  {
+    "input": "我的数据 [{\"quarter\":\"Q1\",\"sales\":2000,\"product\":\"X\"},{\"quarter\":\"Q1\",\"sales\":3000,\"product\":\"Y\"},{\"quarter\":\"Q1\",\"sales\":1000,\"product\":\"Z\"},{\"quarter\":\"Q2\",\"sales\":4000,\"product\":\"X\"},{\"quarter\":\"Q2\",\"sales\":5000,\"product\":\"Y\"},{\"quarter\":\"Q2\",\"sales\":3000,\"product\":\"Z\"},{\"quarter\":\"Q3\",\"sales\":6000,\"product\":\"X\"},{\"quarter\":\"Q3\",\"sales\":7000,\"product\":\"Y\"},{\"quarter\":\"Q3\",\"sales\":4000,\"product\":\"Z\"}]"
+  },
+  {
+    "input": "我的数据 [{\"year\":\"2019\",\"value\":800,\"category\":\"A\"},{\"year\":\"2019\",\"value\":1200,\"category\":\"B\"},{\"year\":\"2019\",\"value\":700,\"category\":\"C\"},{\"year\":\"2020\",\"value\":1100,\"category\":\"A\"},{\"year\":\"2020\",\"value\":1600,\"category\":\"B\"},{\"year\":\"2020\",\"value\":900,\"category\":\"C\"},{\"year\":\"2021\",\"value\":1500,\"category\":\"A\"},{\"year\":\"2021\",\"value\":1800,\"category\":\"B\"},{\"year\":\"2021\",\"value\":1300,\"category\":\"C\"}]"
+  },
+  {
+    "input": "我的数据 [{\"date\":\"202101\",\"value\":600,\"product\":\"A\"},{\"date\":\"202101\",\"value\":800,\"product\":\"B\"},{\"date\":\"202101\",\"value\":400,\"product\":\"C\"},{\"date\":\"202102\",\"value\":1000,\"product\":\"A\"},{\"date\":\"202102\",\"value\":1200,\"product\":\"B\"},{\"date\":\"202102\",\"value\":700,\"product\":\"C\"},{\"date\":\"202103\",\"value\":1500,\"product\":\"A\"},{\"date\":\"202103\",\"value\":1800,\"product\":\"B\"},{\"date\":\"202103\",\"value\":1300,\"product\":\"C\"}]"
+  },
+  {
+    "input": "我的数据 [{\"month\":\"Jan\",\"value\":400,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":600,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":300,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":700,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":800,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":400,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":900,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":1100,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":600,\"category\":\"C\"}]"
+  },
+  {
+    "input": "我的数据 [{\"quarter\":\"Q1\",\"sales\":500,\"product\":\"X\"},{\"quarter\":\"Q1\",\"sales\":800,\"product\":\"Y\"},{\"quarter\":\"Q1\",\"sales\":300,\"product\":\"Z\"},{\"quarter\":\"Q2\",\"sales\":1200,\"product\":\"X\"},{\"quarter\":\"Q2\",\"sales\":1500,\"product\":\"Y\"},{\"quarter\":\"Q2\",\"sales\":900,\"product\":\"Z\"},{\"quarter\":\"Q3\",\"sales\":1800,\"product\":\"X\"},{\"quarter\":\"Q3\",\"sales\":2200,\"product\":\"Y\"},{\"quarter\":\"Q3\",\"sales\":1500,\"product\":\"Z\"}]"
+  },
+  {
+    "input": "我的数据 [{\"date\":\"202101\",\"value\":500,\"product\":\"A\"},{\"date\":\"202101\",\"value\":700,\"product\":\"B\"},{\"date\":\"202101\",\"value\":300,\"product\":\"C\"},{\"date\":\"202102\",\"value\":900,\"product\":\"A\"},{\"date\":\"202102\",\"value\":1100,\"product\":\"B\"},{\"date\":\"202102\",\"value\":600,\"product\":\"C\"},{\"date\":\"202103\",\"value\":1300,\"product\":\"A\"},{\"date\":\"202103\",\"value\":1600,\"product\":\"B\"},{\"date\":\"202103\",\"value\":1100,\"product\":\"C\"}]"
+  },
+  {
+    "input": "我的数据 [{\"month\":\"Jan\",\"value\":700,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":900,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":400,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":1000,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":1200,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":700,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":1500,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":1800,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":1300,\"category\":\"C\"}]"
+  }
+]
