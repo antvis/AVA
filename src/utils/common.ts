@@ -1,7 +1,5 @@
 import { lastIndexOf } from 'lodash';
-
 import { Meta } from '../types';
-
 import { isArray } from './isType';
 
 /**
