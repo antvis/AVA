@@ -96,8 +96,6 @@ module.exports = {
         alwaysTryTypes: true,
         project: ['./tsconfig.json']
       },
-    },
-    // 兼容 exports 子路径导入，避免旧版插件误报为非依赖
-    'import/core-modules': ['@antv/mcp-server-chart/sdk'],
+    }
   },
 };

@@ -1,29 +1,47 @@
-import * as MCP_SERVER_CHART from '@antv/mcp-server-chart/sdk';
+import area from './area.json';
+import bar from './bar.json';
+import boxplot from './boxplot.json';
+import column from './column.json';
+import dualAxes from './dual-axes.json';
+import fishboneDiagram from './fishbone-diagram.json';
+import flowDiagram from './flow-diagram.json';
+import funnel from './funnel.json';
+import histogram from './histogram.json';
+import line from './line.json';
+import liquid from './liquid.json';
+import mindMap from './mind-map.json';
+import networkGraph from './network-graph.json';
+import pie from './pie.json';
+import pinMap from './pin-map.json';
+import radar from './radar.json';
+import sankey from './sankey.json';
+import scatter from './scatter.json';
+import treemap from './treemap.json';
+import venn from './venn.json';
+import violin from './violin.json';
+import wordCloud from './word-cloud.json';
 
 export const CHARTS = {
-  area: MCP_SERVER_CHART.area,
-  bar: MCP_SERVER_CHART.bar,
-  boxplot: MCP_SERVER_CHART.boxplot,
-  column: MCP_SERVER_CHART.column,
-  funnel: MCP_SERVER_CHART.funnel,
-  histogram: MCP_SERVER_CHART.histogram,
-  line: MCP_SERVER_CHART.line,
-  liquid: MCP_SERVER_CHART.liquid,
-  pie: MCP_SERVER_CHART.pie,
-  radar: MCP_SERVER_CHART.radar,
-  sankey: MCP_SERVER_CHART.sankey,
-  scatter: MCP_SERVER_CHART.scatter,
-  treemap: MCP_SERVER_CHART.treemap,
-  venn: MCP_SERVER_CHART.venn,
-  violin: MCP_SERVER_CHART.violin,
-  districtMap: MCP_SERVER_CHART['district-map'],
-  dualAxes: MCP_SERVER_CHART['dual-axes'],
-  fishboneDiagram: MCP_SERVER_CHART['fishbone-diagram'],
-  flowDiagram: MCP_SERVER_CHART['flow-diagram'],
-  mindMap: MCP_SERVER_CHART['mind-map'],
-  networkGraph: MCP_SERVER_CHART['network-graph'],
-  organizationChart: MCP_SERVER_CHART['organization-chart'],
-  pathMap: MCP_SERVER_CHART['path-map'],
-  pinMap: MCP_SERVER_CHART['pin-map'],
-  wordCloud: MCP_SERVER_CHART['word-cloud'],
+  area,
+  bar,
+  boxplot,
+  column,
+  funnel,
+  histogram,
+  line,
+  liquid,
+  pie,
+  radar,
+  sankey,
+  scatter,
+  treemap,
+  venn,
+  violin,
+  dualAxes,
+  fishboneDiagram,
+  flowDiagram,
+  mindMap,
+  networkGraph,
+  pinMap,
+  wordCloud,
 };

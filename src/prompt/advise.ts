@@ -8,7 +8,7 @@ export const getChartAdvisePrompt = (
   const chartIds = Array.isArray(allowedChartIds) && allowedChartIds.length > 0 ? allowedChartIds : Object.keys(CHARTS);
   const chartDescriptions = Object.entries(CHARTS)
     .map(([chartId, item]) => {
-      return `${chartId}: ${item.tool.description}`;
+      return `${chartId}: ${item.description}`;
     })
     .join('\n\n');
   return `
@@ -80,7 +80,7 @@ ${JSON.stringify(params)}
 export const getSpecGeneratePrompt = (params: { chartId: string; data: PlainLikeDataType }[]) => {
   const inputSchema = params
     .map((item) => {
-      return `ChartId: ${item.chartId}\nInputSchema: ${JSON.stringify(CHARTS[item.chartId].tool.inputSchema)}`;
+      return `ChartId: ${item.chartId}\nInputSchema: ${JSON.stringify(CHARTS[item.chartId].inputSchema)}`;
     })
     .join('\n\n');
   return `

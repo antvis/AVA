@@ -16,10 +16,7 @@
     "lib": ["dom", "esnext"],
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
-    "paths": {
-      "@antv/mcp-server-chart/sdk": ["node_modules/@antv/mcp-server-chart/build/sdk"]
-    }
+    "baseUrl": "."
   },
   "include": ["src/**/*", "__tests__/**/*"]
 }
