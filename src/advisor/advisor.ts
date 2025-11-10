@@ -1,8 +1,8 @@
 /* eslint-disable no-dupe-class-members */
-import { AdviseChartParams, AdviseStageOutput, AdvisorConfig, DataShard } from '../types';
+import { AdviseChartParams, AdviseStageOutput, AdvisorConfig, DataShard, Spec } from '../types';
 import { extractData } from '../extract';
 import { logError } from '../utils';
-import { getRenderer, type Spec } from '../bind';
+import { getRenderer } from '../bind';
 import { adviseCharts } from '../advise';
 
 /**
