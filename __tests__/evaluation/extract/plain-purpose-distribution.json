@@ -1,0 +1,45 @@
+{
+  "name": "测试抽取带意图的明细数据",
+  "input": "我想看看某公司员工年龄的分布情况。该公司共有员工500人，其中20-29岁有180人，30-39岁有200人，40-49岁有80人，50岁以上有40人。",
+  "expect": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "age_group": "20-29岁",
+          "count": 180
+        },
+        {
+          "age_group": "30-39岁",
+          "count": 200
+        },
+        {
+          "age_group": "40-49岁",
+          "count": 80
+        },
+        {
+          "age_group": "50岁以上",
+          "count": 40
+        }
+      ],
+      "metas": [
+        {
+          "id": "age_group",
+          "name": "年龄段",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "人数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "员工年龄分布分析",
+        "key": "employee_age_distribution",
+        "purpose": "Distribution",
+        "purposeDesc": "展示公司员工在不同年龄段的分布情况"
+      }
+    }
+  ]
+}

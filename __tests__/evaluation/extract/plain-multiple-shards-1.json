@@ -1,0 +1,17 @@
+{
+  "input": "todo: 宽表数据，自动切片",
+  "expect": [
+    {
+      "shape": "plain",
+      "data": [],
+      "metas": [],
+      "purpose": []
+    },
+    {
+      "shape": "plain",
+      "data": [],
+      "metas": [],
+      "purpose": []
+    }
+  ]
+}

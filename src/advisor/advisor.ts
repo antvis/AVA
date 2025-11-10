@@ -43,9 +43,10 @@ export class Advisor {
    */
   async extract(params: AdviseChartParams) {
     try {
-      const { purpose, data } = params;
-      const input = `${purpose}\n${JSON.stringify(data)}`;
+      const { purpose } = params;
+      const input = `${purpose}`;
       const dataShards = await extractData(input, { llmConfig: this.config.llm });
+      console.debug(dataShards, this.config.llm);
       return dataShards;
     } catch (e) {
       logError('LLM extract failed');
