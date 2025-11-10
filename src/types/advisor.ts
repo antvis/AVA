@@ -1,6 +1,5 @@
-import { Renderer } from '../bind';
+import { Renderer, UiConfig } from './render';
 import { FieldDataType, Meta } from './data';
-import { UiConfig } from './render';
 
 /**
  * Common LLM configuration properties

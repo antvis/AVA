@@ -1,8 +1,4 @@
-// We should export Spec and Renderer type here to avoid circular dependency between ava and gpt-vis.
-// import type { Spec } from '@antv/gpt-vis';
-export type Spec = any;
-
-export type Renderer = (container: string, spec: Spec) => void;
+import { Renderer } from './types/render';
 
 // The renderer function bound from outside.
 // Default is null.
