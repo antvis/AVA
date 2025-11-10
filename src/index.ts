@@ -1,2 +1,3 @@
 export { Advisor } from './advisor';
-export { bindRenderer, type Spec } from './bind';
+export { bindRenderer } from './bind';
+export { type Spec } from './types';
