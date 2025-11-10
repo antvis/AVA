@@ -1,5 +1,5 @@
 import { AdviseStageOutput, AdvisorConfig, DATA_SHAPE, DataShard } from '../types';
-import { advisePlainCharts } from './plain-chart';
+import { advisePlainCharts } from './plain';
 import { adviseTree } from './tree';
 import { adviseGraph } from './graph';
 
@@ -19,6 +19,6 @@ export async function adviseCharts(dataShards: DataShard[], config: AdvisorConfi
       return [];
   }
 }
-export { recommendChartIds, generateSpecs, advisePlainCharts } from './plain-chart';
+export { recommendChartIds, generateSpecs, advisePlainCharts } from './plain';
 export { adviseTree } from './tree';
 export { adviseGraph } from './graph';
