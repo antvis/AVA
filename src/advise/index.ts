@@ -19,6 +19,3 @@ export async function adviseCharts(dataShards: DataShard[], config: AdvisorConfi
       return [];
   }
 }
-export { recommendChartIds, generateSpecs, advisePlainCharts } from './plain';
-export { adviseTree } from './tree';
-export { adviseGraph } from './graph';

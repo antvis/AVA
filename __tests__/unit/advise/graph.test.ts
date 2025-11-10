@@ -1,4 +1,4 @@
-import { adviseGraph } from '../../../src/advise';
+import { adviseGraph } from '../../../src/advise/graph';
 import { OPENAI_LLM, SINGLE_DATA_SHARD, MULTI_DATA_SHARDS } from '../constant';
 
 describe('Graph Advise', () => {

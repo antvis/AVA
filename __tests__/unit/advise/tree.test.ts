@@ -1,4 +1,4 @@
-import { adviseTree } from '../../../src/advise';
+import { adviseTree } from '../../../src/advise/tree';
 import { OPENAI_LLM, SINGLE_DATA_SHARD, MULTI_DATA_SHARDS } from '../constant';
 
 describe('Tree Advise', () => {

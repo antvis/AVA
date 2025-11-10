@@ -1,4 +1,4 @@
-import { generateSpecs, recommendChartIds, advisePlainCharts } from '../../../src/advise';
+import { generateSpecs, recommendChartIds, advisePlainCharts } from '../../../src/advise/plain';
 import * as utils from '../../../src/utils';
 import { COMPARISON_DATA, MULTI_DATA_SHARDS, OPENAI_LLM, SINGLE_DATA_SHARD, TREND_DATA } from '../constant';
 
