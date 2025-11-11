@@ -1,5 +1,4 @@
 import { defineConfig } from 'dumi';
-import { repository, homepage } from './package.json';
 
 export default defineConfig({
   locales: [{ id: 'zh', name: '中文' }, { id: 'en', name: 'English' }],
@@ -7,9 +6,11 @@ export default defineConfig({
     title: 'AVA',
     description: 'A framework and solution for more convenient visual analytics.',
     defaultLanguage: 'zh',
-    siteUrl: 'https://antv.antgroup.com/', // AntV 主站首页地址
+    siteUrl: 'https://antv.antgroup.com/', 
     isAntVSite: false,
-    githubUrl: repository.url,
+    githubUrl: 'https://github.com/antvis/AVA',
+   // disable feedback feature to avoid runtime hooks that expect repo info
+    feedback: false,
     footerTheme: 'light', // 白色 底部主题
     // 是否显示搜索框
     showSearch: false,
@@ -29,98 +30,132 @@ export default defineConfig({
     showAPIDoc: true,
     // 是否展示国内镜像链接
     showChinaMirror: false,
+    // `metas` is expected by the theme Index component
+    metas: {
+      title: 'AVA',
+    },
+    companies: [],
+    features: [],
+    cases: [],
+    // ensure playground config exists so CodeEditor destructuring won't fail
+    playground: {
+      container: '<div id="container" />',
+      extraLib: '',
+      playgroundBeforeExecute: '',
+      playgroundDidMount: '',
+      playgroundWillUnmount: '',
+    },
     navs: [
-        {
-            slug: 'docs/guide',
-            title: {
-                zh: '教程',
-                en: 'Guide',
-            },
-            order: 0,
+      {
+        slug: 'docs/guide',
+        title: {
+          zh: '教程',
+          en: 'Guide',
         },
-        {
-            slug: 'docs/api',
-            title: {
-                zh: 'API 文档',
-                en: 'API',
-            },
-            order: 1,
+      },
+      {
+        slug: 'docs/api',
+        title: {
+          zh: 'API 文档',
+          en: 'API',
         },
-        {
-            slug: 'examples',
-            title: {
-                zh: '图表示例',
-                en: 'Examples',
-            },
-            order: 2,
+      },
+      {
+        slug: 'examples',
+        title: {
+          zh: '图表示例',
+          en: 'Examples',
         },
+      },
     ],
     docs: [
-        {
-            slug: 'guide/advice',
-            title: {
-                zh: '图表推荐(advisor)',
-                en: 'Chart Recommendation (advisor)',
-            },
-            order: 1,
+      {
+        slug: 'guide',
+        title: {
+          zh: '教程', 
+          en: 'Guide',
         },
-        {
-          slug: 'guide/migrate',
-          title: {
-              zh: '版本升级指引',
-              en: 'Migrate',
-          },
-          order: 2,
+      },
+      {
+        slug: 'guide/scene',
+        title: {
+          zh: '场景案例', 
+          en: 'Scene Cases',
         },
+        order: 3,
+      },
+      {
+        slug: 'api/antv-spec',
+        title: {
+          zh: '图表知识库（AntV Spec）',
+          en: 'Chart Knowledge Base (AntV Spec)',
+        },
+        order: 1,
+      },
+      {
+        slug: 'api/extract',
+        title: {
+          zh: '数据处理 (Extract)',
+          en: 'Data Processing (Extract)',
+        },
+        order: 2,
+      },
+      {
+        slug: 'api/advise',
+        title: {
+          zh: '图表推荐（Advise）',
+          en: 'Chart Recommendation (Advise)',
+        },
+        order: 3,
+      },
+      {
+        slug: 'api/render',
+        title: {
+          zh: '图表渲染（Render）',
+          en: 'Chart Rendering (Render)',
+        },
+        order: 3,
+      },
+      {
+        slug: 'api/insight',
+        title: {
+          zh: '图表洞察（Insight）',
+          en: 'Chart Insight (Insight)',
+        },
+        order: 4,
+      }
     ],
     examples: [
-        {
-            slug: 'advice',
-            icon: 'star-single-line',
-            title: {
-              zh: '图表推荐(advisor)',
-              en: 'Chart Recommendation (advisor)',
-            },
-            order: 1,
+      {
+        slug: 'advisor',
+        icon: 'star-single-line',
+        title: {
+          zh: '图表推荐(advisor)',
+          en: 'Chart Recommendation (advisor)',
         },
-    ],
-    // 编辑器配置
-    playground: {
-        container: '<div id="container" />',
-        devDependencies: {
-            typescript: 'latest',
+        order: 2,
+      },
+      {
+        slug: 'extract',
+        icon: 'facet',
+        title: {
+          zh: '数据提取(extract)',
+          en: 'Data Extraction (extract)',
         },
-    },
-    docsearchOptions: {
-        apiKey: '2af93b002b40c8e1ef51fd6577c888d1',
-        indexName: 'antv_ava',
-    },
-    redirects: [],
-    companies: [
-        { name: '阿里云', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*V_xMRIvw2iwAAAAAAAAAAABkARQnAQ' },
-        { name: '支付宝', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*lYDrRZvcvD4AAAAAAAAAAABkARQnAQ' },
-        { name: '天猫', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*BQrxRK6oemMAAAAAAAAAAABkARQnAQ' },
-        { name: '淘宝网', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*1l8-TqUr7UcAAAAAAAAAAABkARQnAQ' },
-        { name: '网上银行', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*ZAKFQJ5Bz4MAAAAAAAAAAABkARQnAQ' },
-        { name: '京东', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*yh-HRr3hCpgAAAAAAAAAAABkARQnAQ' },
-        { name: 'yunos', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*_js7SaNosUwAAAAAAAAAAABkARQnAQ' },
-        { name: '菜鸟', img: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*TgV-RZDODJIAAAAAAAAAAABkARQnAQ' },
+        order: 1,
+      },
+      {
+        slug: 'render',
+        icon: 'block',
+        title: {
+          zh: '图表渲染(render)',
+          en: 'Chart Rendering (render)',
+        },
+        order: 3,
+      },
     ],
-    cases: [
-        {
-            logo: 'https://gw.alipayobjects.com/mdn/rms_2274c3/afts/img/A*-dLnTIexOxwAAAAAAAAAAABkARQnAQ',
-            title: {
-                zh: '智能可视化',
-                en: 'AVA',
-            },
-            description: {
-                zh: '链接人和数据，联通数据分析链条上的“最后一公里”',
-                en: 'Link people and data, connect the last kilometer of the data analysis chain'
-            },
-            image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*tSRFR6-peecAAAAAAAAAAAAADmJ7AQ/original',
-        }
-    ],
-    /** 首页技术栈介绍 */
+
+     /** 首页技术栈介绍 */
     detail: {
         title: {
           zh: 'AVA',
@@ -179,19 +214,17 @@ export default defineConfig({
             link: 'https://www.yuque.com/antv/blog/ava2022',
         },
     ],
+    
   },
-  mfsu: false,
-  alias: {
-    '@': __dirname,
-    // 解决源码引入的问题
-    '@ava': '@antv/ava/src',
-    '@advisor': '@antv/ava/src/advisor'
-  },
-  links: [
-  ],
-  scripts: [
-  ],
-  externals: {
-    '@antv/ava': 'ava',
+  chainWebpack(memo: any) {
+    try {
+      // remove critters plugin added by @antv/dumi-theme-antv to avoid
+      // "Could not find HTML asset" errors in some envs
+      memo.plugins.delete('critters');
+
+    } catch (e) {
+      // ignore
+    }
+    return memo;
   }
 });

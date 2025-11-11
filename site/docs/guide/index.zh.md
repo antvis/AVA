@@ -17,70 +17,42 @@ redirect_from:
 
 ----
 
-<a href="https://ava.antv.antgroup.com"><img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*rXVYRJ0EMDsAAAAAAAAAAAAADmJ7AQ/original" align="left" hspace="10" vspace="6" width="160"></a>
+AVA 的整体架构与介绍已在主项目文档中说明。
 
+## 技术介绍
 
-**AVA** (A Visual Analytics) 是为了更简便的可视分析而生的技术框架。 其名称中的第一个 **A** 具有多重涵义：它说明了这是一个出自阿里巴巴集团（*Alibaba*）技术框架，其目标是成为一个自动化（*Automated*）、智能驱动（*AI driven*）、支持增强分析（*Augmented*）的可视分析解决方案。
+AVA 是一个以 TypeScript 编写的智能可视分析框架，设计目标是将数据特征抽取、可视化建议与渲染流水线结合，简化从原始数据到可视化方案的生成过程。
 
-<br />
+- 技术栈：TypeScript、Node/Browser（支持 ESM 与 CJS 输出）、工程化工具链（构建与测试由仓库根目录配置）。
+- 核心思想：把数据特征抽取、意图推断与可视化建议解耦为独立模块，便于组合与扩展。
+- 关键模块：
+  - `extract`：从数据中提取特征与类型信息（字段类型、分布、缺失等）。
+  - `advise` / `advisor`：基于规则与模型生成可视化建议与渲染参数。
+  - `render`：渲染流水线与适配器，将建议转为具体图表配置。
+  - `ckb`：内置图表知识库（Chart Knowledge Base），包含常用图表模板与最佳实践。
 
-AVA 的整体架构如下：
+这些模块协同工作，可用于交互式仪表盘、自动化图表推荐与数据探索场景。
 
-> todo: 介绍 v4 的架构
+## 场景案例
 
-<div align="center">
-<img src='https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*ZINwQ6ubADQAAAAAAAAAAAAADmJ7AQ/original' width="100%" alt='AVA framework' />
-</div>
+下面列出若干典型使用场景，帮助理解 AVA 在实际项目中的应用方式。
 
-<br />
+1. 自动化图表推荐（数据上手即得可视化）
 
-## 演示案例
+  - 场景：用户上传一张包含若干字段的数据表，希望快速看到合适的可视化展示。
+  - 过程：通过 `extract` 提取字段特征，交由 `advisor` 生成若干候选图表及映射建议，最后由 `render` 输出可渲染配置。
+  - 价值：降低可视化门槛，快速产出可交互的图表候选，便于用户迭代选择。
 
-```html
-<div id="mountNode"></div>
-```
+2. 仪表盘推荐与布局优化
 
-```js
-// todo: 演示案例需要重写
+  - 场景：在 BI 仪表盘中为同一数据集生成多种可视化视图，并按空间与语义优化布局。
+  - 过程：利用 AVA 的建议能力生成语义相似的图表组合，结合业务约束筛选最优集合。
+  - 价值：提高仪表盘构建效率，保证图表之间的表达一致性与可读性。
 
-ReactDOM.render(
-  <>
-    <InsightCard insightInfo={firstInsight} visualizationOptions={{ lang: 'zh-CN' }} />
-  </>,
-  mountNode,
-);
-```
+3. 数据探索与洞察提示
 
-<br>
+  - 场景：分析师在探索数据时，希望工具能主动提示可能的异常、分组趋势或有价值的维度/度量组合。
+  - 过程：在提取的数据特征上运行规则或轻量模型，从而产生洞察提示（如异常分布、重要维度、建议的聚合方式）。
+  - 价值：缩短分析链路，发现隐藏模式并提供可操作的可视化建议。
 
-<!-- <Playground path="components/auto-chart/demo/basic.jsx"></playground> -->
-<!-- FIXME: 关联 insightcard 一类的 demo -->
-
-
-## [@antv/ava](https://www.npmjs.com/package/@antv/ava)
-
-AVA 的核心 JS 包是`@antv/ava`。以下介绍其主要模块。
-
-### advisor (图表推荐和自动生成)
-
-`advisor` 是 AVA 的核心部分。它是你的图表建议官，基于数据和分析需求来推荐图表类型和具体的图表细节设置，也可以对既有的图表进行图表优化。
-
-它的核心方法包括：
-
-```js
-Advisor.advise() // 图表推荐
-```
-
-基本用法举例：
-
-```js
-import { Advisor } from '@antv/ava';
-
-const myAdvisor = new Advisor();
-
-// 图表推荐
-const data = [{ tax: 100, tag: 'A' }, { tax: 200, tag: 'B' }];
-const results = myAdvisor.advise({ data });
-
-```
-
+如需示例代码或接入说明，请查看仓库 `src` 下各模块（`extract`, `advise`, `render`）的使用示例与单元测试。
