@@ -1,0 +1,316 @@
+[
+  {
+    "type": "text2chart",
+    "question": "展示过去一周每天的平均温度，周一温度为15°C，周二温度为16°C，周三温度为15.5°C，周四温度为17°C，周五温度为18°C，周六温度为19°C，周日温度为20°C。用面积图可视化",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "周一", "value": 15 },
+        { "time": "周二", "value": 16 },
+        { "time": "周三", "value": 15.5 },
+        { "time": "周四", "value": 17 },
+        { "time": "周五", "value": 18 },
+        { "time": "周六", "value": 19 },
+        { "time": "周日", "value": 20 }
+      ],
+      "title": "过去一周每日平均温度",
+      "axisXTitle": "星期",
+      "axisYTitle": "温度 (°C)"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "某产品每季度的销售额变化，Q1 销售额为 100,000，Q2 销售额为 110,000，Q3 销售额为 105,000，Q4 销售额为 115,000。用面积图可视化",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "Q1", "value": 100000 },
+        { "time": "Q2", "value": 110000 },
+        { "time": "Q3", "value": 105000 },
+        { "time": "Q4", "value": 115000 }
+      ],
+      "title": "季度销售额变化",
+      "axisXTitle": "季度",
+      "axisYTitle": "销售额 (元)"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "年度降水量变化情况，1月份降水量为78mm，2月份降水量为65mm，3月份降水量为80mm，4月份降水量为120mm，5月份降水量为90mm。用面积图可视化",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "1月", "value": 78 },
+        { "time": "2月", "value": 65 },
+        { "time": "3月", "value": 80 },
+        { "time": "4月", "value": 120 },
+        { "time": "5月", "value": 90 }
+      ],
+      "title": "年度降水量变化",
+      "axisXTitle": "月份",
+      "axisYTitle": "降水量 (mm)"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "展示某网站每天的访客数，星期一有2500访客，星期二有3000访客，星期三有2800访客，星期四有3200访客，星期五有3500访客。用面积图可视化",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "星期一", "value": 2500 },
+        { "time": "星期二", "value": 3000 },
+        { "time": "星期三", "value": 2800 },
+        { "time": "星期四", "value": 3200 },
+        { "time": "星期五", "value": 3500 }
+      ],
+      "title": "网站日均访客量",
+      "axisXTitle": "星期",
+      "axisYTitle": "访客数"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "比较两个品牌的季度市场份额，品牌A在Q1占20%，Q2占25%，Q3占30%，Q4占35%，品牌B在Q1占80%，Q2占75%，Q3占70%，Q4占65%。用堆叠面积图可视化",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "Q1", "value": 20, "group": "品牌A" },
+        { "time": "Q2", "value": 25, "group": "品牌A" },
+        { "time": "Q3", "value": 30, "group": "品牌A" },
+        { "time": "Q4", "value": 35, "group": "品牌A" },
+        { "time": "Q1", "value": 80, "group": "品牌B" },
+        { "time": "Q2", "value": 75, "group": "品牌B" },
+        { "time": "Q3", "value": 70, "group": "品牌B" },
+        { "time": "Q4", "value": 65, "group": "品牌B" }
+      ],
+      "stack": true,
+      "title": "品牌市场份额季度比较",
+      "axisXTitle": "季度",
+      "axisYTitle": "市场份额 (%)"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "某公司从 2020 年到 2024 年在不同市场的销售数据如下：美国市场分别为 200、220、240、260、280；欧洲市场分别为 150、160、170、180、190。请绘制堆叠面积图展示销售数据。",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "2020年", "value": 200, "group": "美国" },
+        { "time": "2021年", "value": 220, "group": "美国" },
+        { "time": "2022年", "value": 240, "group": "美国" },
+        { "time": "2023年", "value": 260, "group": "美国" },
+        { "time": "2024年", "value": 280, "group": "美国" },
+        { "time": "2020年", "value": 150, "group": "欧洲" },
+        { "time": "2021年", "value": 160, "group": "欧洲" },
+        { "time": "2022年", "value": 170, "group": "欧洲" },
+        { "time": "2023年", "value": 180, "group": "欧洲" },
+        { "time": "2024年", "value": 190, "group": "欧洲" }
+      ],
+      "stack": true,
+      "title": "不同市场销售数据",
+      "axisXTitle": "年份",
+      "axisYTitle": "销售额"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "在过去的三年中，某公司线上和线下销售的收入变化如下：线上收入分别为 1000、1100、1200，线下收入分别为 800、850、900。用堆叠面积图展示这些数据。",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "第一年", "value": 1000, "group": "线上" },
+        { "time": "第二年", "value": 1100, "group": "线上" },
+        { "time": "第三年", "value": 1200, "group": "线上" },
+        { "time": "第一年", "value": 800, "group": "线下" },
+        { "time": "第二年", "value": 850, "group": "线下" },
+        { "time": "第三年", "value": 900, "group": "线下" }
+      ],
+      "stack": true,
+      "title": "线上与线下销售收入变化",
+      "axisXTitle": "年度",
+      "axisYTitle": "收入"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "比较品牌A与品牌B在季度市场份额，品牌A在Q1占20%，Q2占25%，Q3占30%，Q4占35%，品牌B在Q1占80%，Q2占75%，Q3占70%，Q4占65%。用面积图可视化",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "Q1", "value": 20, "group": "品牌A" },
+        { "time": "Q2", "value": 25, "group": "品牌A" },
+        { "time": "Q3", "value": 30, "group": "品牌A" },
+        { "time": "Q4", "value": 35, "group": "品牌A" },
+        { "time": "Q1", "value": 80, "group": "品牌B" },
+        { "time": "Q2", "value": 75, "group": "品牌B" },
+        { "time": "Q3", "value": 70, "group": "品牌B" },
+        { "time": "Q4", "value": 65, "group": "品牌B" }
+      ],
+      "stack": true,
+      "title": "品牌A与品牌B市场份额季度比较",
+      "axisXTitle": "季度",
+      "axisYTitle": "市场份额 (%)"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用面积图可视化我的数据 [{ \"month\": \"Jan\", \"value\": 300 }, { \"month\": \"Feb\", \"value\": 450 }, { \"month\": \"Mar\", \"value\": 700 }]",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "Jan", "value": 300 },
+        { "time": "Feb", "value": 450 },
+        { "time": "Mar", "value": 700 }
+      ],
+      "axisXTitle": "month",
+      "axisYTitle": "value",
+      "title": "Monthly Data"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "使用面积图展示我的数据 [{ \"quarter\": 1, \"value\": 1200 }, { \"quarter\": 2, \"value\": 1100 }, { \"quarter\": 3, \"value\": 1400 }, { \"quarter\": 4, \"value\": 900 }]",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": 1, "value": 1200 },
+        { "time": 2, "value": 1100 },
+        { "time": 3, "value": 1400 },
+        { "time": 4, "value": 900 }
+      ],
+      "axisXTitle": "quarter",
+      "axisYTitle": "value"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "创建一个面积图显示每日用户活跃度变化情况，数据如下：[{\"day\": 1, \"value\": 1200}, {\"day\": 2, \"value\": 1300}, {\"day\": 3, \"value\": 1400}]。请将x轴命名为'日期', y轴命名为'活跃用户数'",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": 1, "value": 1200 },
+        { "time": 2, "value": 1300 },
+        { "time": 3, "value": 1400 }
+      ],
+      "axisXTitle": "日期",
+      "axisYTitle": "活跃用户数"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "请用面积图可视化 [{ \"year\": 2020, \"value\": 5000 }, { \"year\": 2021, \"value\": 7500 }, { \"year\": 2022, \"value\": 6200 }]",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": 2020, "value": 5000 },
+        { "time": 2021, "value": 7500 },
+        { "time": 2022, "value": 6200 }
+      ],
+      "axisXTitle": "year",
+      "axisYTitle": "value",
+      "title": "Yearly Overview"
+    }
+  },
+
+  {
+    "type": "data2chart",
+    "question": "用堆叠面积图展示 [{\"year\": \"2020\",\"value\": 200,\"department\": \"Sales\"}, {\"year\": \"2020\",\"value\": 150,\"department\": \"HR\"}, {\"year\": \"2021\",\"value\": 300,\"department\": \"Sales\"}, {\"year\": \"2021\",\"value\": 180,\"department\": \"HR\"}]",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": 2020, "value": 200, "group": "Sales" },
+        { "time": 2020, "value": 150, "group": "HR" },
+        { "time": 2021, "value": 300, "group": "Sales" },
+        { "time": 2021, "value": 180, "group": "HR" }
+      ],
+      "stack": true,
+      "axisXTitle": "year",
+      "axisYTitle": "value"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用堆叠面积图展示数据 [{ \"month\": \"Apr\", \"value\": 200, \"group\": \"A\" }, { \"month\": \"Apr\", \"value\": 400, \"group\": \"B\" }, { \"month\": \"May\", \"value\": 350, \"group\": \"A\" }, { \"month\": \"May\", \"value\": 450, \"group\": \"B\" }]",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "Apr", "value": 200, "group": "A" },
+        { "time": "Apr", "value": 400, "group": "B" },
+        { "time": "May", "value": 350, "group": "A" },
+        { "time": "May", "value": 450, "group": "B" }
+      ],
+      "stack": true,
+      "axisXTitle": "month",
+      "axisYTitle": "value",
+      "title": "Stacked Monthly Data"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "我有一组关于不同产品线年度利润的数据，希望能通过面积图展现出来：产品线A: [{\"year\": 2015, \"profit\": 1000}, {\"year\": 2016, \"profit\": 1200}], 产品线B: [{\"year\": 2015, \"profit\": 800}, {\"year\": 2016, \"profit\": 900}]. 同时我希望开启堆叠效果。",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": 2015, "value": 1000, "group": "A" },
+        { "time": 2016, "value": 1200, "group": "A" },
+        { "time": 2015, "value": 800, "group": "B" },
+        { "time": 2016, "value": 900, "group": "B" }
+      ],
+      "stack": true,
+      "axisXTitle": "年份",
+      "axisYTitle": "利润"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "使用堆叠面积图来展示以下两个系列的数据：series A: [{\"month\": 1, \"value\": 200}, {\"month\": 2, \"value\": 300}], series B: [{\"month\": 1, \"value\": 150}, {\"month\": 2, \"value\": 250}]. 并给图表加上标题'月度销售趋势'",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": 1, "value": 200, "group": "A" },
+        { "time": 2, "value": 300, "group": "A" },
+        { "time": 1, "value": 150, "group": "B" },
+        { "time": 2, "value": 250, "group": "B" }
+      ],
+      "stack": true,
+      "title": "月度销售趋势",
+      "axisXTitle": "月份",
+      "axisYTitle": "销售额"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用面积图可视化我的数据 [{\"month\": \"Jan\", \"value\": 120, \"category\": \"A\"}, {\"month\": \"Jan\", \"value\": 80, \"category\": \"B\"}, {\"month\": \"Feb\", \"value\": 150, \"category\": \"A\"}, {\"month\": \"Feb\", \"value\": 90, \"category\": \"B\"}, {\"month\": \"Mar\", \"value\": 180, \"category\": \"A\"}, {\"month\": \"Mar\", \"value\": 110, \"category\": \"B\"}]",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": "Jan", "value": 120, "group": "A" },
+        { "time": "Jan", "value": 80, "group": "B" },
+        { "time": "Feb", "value": 150, "group": "A" },
+        { "time": "Feb", "value": 90, "group": "B" },
+        { "time": "Mar", "value": 180, "group": "A" },
+        { "time": "Mar", "value": 110, "group": "B" }
+      ],
+      "stack": true,
+      "title": "每月销售类别对比",
+      "axisXTitle": "月份",
+      "axisYTitle": "销售额"
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "我有一组关于不同产品线年度利润的数据，希望能通过面积图展现出来：产品线A: [{\"year\": 2015, \"profit\": 1000}, {\"year\": 2016, \"profit\": 1200}], 产品线B: [{\"year\": 2015, \"profit\": 800}, {\"year\": 2016, \"profit\": 900}]",
+    "answer": {
+      "type": "area",
+      "data": [
+        { "time": 2015, "value": 1000, "group": "A" },
+        { "time": 2016, "value": 1200, "group": "A" },
+        { "time": 2015, "value": 800, "group": "B" },
+        { "time": 2016, "value": 900, "group": "B" }
+      ],
+      "stack": true,
+      "axisXTitle": "年份",
+      "axisYTitle": "利润"
+    }
+  }
+]

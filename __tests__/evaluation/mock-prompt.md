@@ -4,7 +4,7 @@
 ## 任务三：通过我提供的输入，需要你生成一个测试用例的名称，为ts声明中 MockData 类型的 name。
 ## 输出格式，由 typescript 定义如下:
 ```ts
-type DATA_SHAPE = 'plain' | 'hierarchy' | 'relation' ｜ 'geo';
+type DATA_SHAPE = 'plain' | 'hierarchy' | 'relation' | 'geo';
 
 type PlainLikeDataType = Array<Record<string, string | number>> | Array<Array<string | number>>;
 

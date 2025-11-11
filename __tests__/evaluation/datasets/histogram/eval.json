@@ -1,0 +1,154 @@
+[
+  {
+    "type": "text2chart",
+    "question": "用直方图展示某学校学生每周阅读时间（单位：小时），阅读时间在 0-10 小时之间，将其划分为 5 个区间，数据如下：`[3, 7, 2, 8, 5]`。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":3},{\"value\":7},{\"value\":2},{\"value\":8},{\"value\":5}],\"binNumber\":5}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":3},{\"value\":7},{\"value\":2},{\"value\":8},{\"value\":5}],\"binNumber\":5}",
+    "reference": [
+      "矩阵树图 -Treemap Chart 不适用场景",
+      "[WIP]双轴图 - DualAxes Chart 图表用法 图表 spec",
+      "直方图 - Histogram Chart 图表用法 数据要求"
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示某城市一个月内的日平均气温（单位：摄氏度），气温在 -5 到 25 度之间，将其划分为 6 个区间，数据如下：`[-2, 5, 10, 15, 20, 25, 0, 12]`。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":-2},{\"value\":5},{\"value\":10},{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":0},{\"value\":12}],\"binNumber\":6}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":-2},{\"value\":5},{\"value\":10},{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":0},{\"value\":12}],\"binNumber\":6}",
+    "reference": ["热力地图 - HeatMap 使用示例", "直方图 - Histogram Chart 图表用法 数据要求"]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示某公司员工的年终奖金（单位：万元），奖金范围在 0-10 万元之间，将其划分为 4 个区间，数据如下：`[2, 4, 6, 8, 10, 3, 7]`。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":2},{\"value\":4},{\"value\":6},{\"value\":8},{\"value\":10},{\"value\":3},{\"value\":7}],\"binNumber\":4}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":2},{\"value\":4},{\"value\":6},{\"value\":8},{\"value\":10},{\"value\":3},{\"value\":7}],\"binNumber\":4}",
+    "reference": [
+      "散点图 - Scatter Chart 使用示例",
+      "[WIP]双轴图 - DualAxes Chart 图表用法 图表 spec",
+      "直方图 - Histogram Chart 图表用法 数据要求"
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示某电商平台一周内每天的订单数量，订单数量在 0-1000 之间，将其划分为 7 个区间，数据如下：`[100, 300, 500, 700, 900, 200, 400]`。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":100},{\"value\":300},{\"value\":500},{\"value\":700},{\"value\":900},{\"value\":200},{\"value\":400}],\"binNumber\":7}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":100},{\"value\":300},{\"value\":500},{\"value\":700},{\"value\":900},{\"value\":200},{\"value\":400}],\"binNumber\":7}",
+    "reference": [
+      "矩阵树图 -Treemap Chart 使用示例",
+      "流程图 - Flow Diagram 使用示例",
+      "直方图 - Histogram Chart 基础概念"
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示某健身房会员每月的锻炼次数，锻炼次数在 0-30 次之间，将其划分为 6 个区间，数据如下：`[5, 10, 15, 20, 25, 30, 7, 13]`。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":5},{\"value\":10},{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":30},{\"value\":7},{\"value\":13}],\"binNumber\":6}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":5},{\"value\":10},{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":30},{\"value\":7},{\"value\":13}],\"binNumber\":6}",
+    "reference": ["散点图 - Scatter Chart 使用示例", "直方图 - Histogram Chart 图表用法 数据要求"]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示员工年龄的分布，年龄在 20-60 之间,数据如下：`[25, 30, 45, 50, 55, 28, 35, 40]`：",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":25},{\"value\":30},{\"value\":45},{\"value\":50},{\"value\":55},{\"value\":28},{\"value\":35},{\"value\":40}],\"binNumber\":8}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":25},{\"value\":30},{\"value\":45},{\"value\":50},{\"value\":55},{\"value\":28},{\"value\":35},{\"value\":40}]}",
+    "reference": [
+      "组织架构图 - Organization Chart 适用场景",
+      "矩阵树图 -Treemap Chart 使用示例",
+      "直方图 - Histogram Chart 基础概念"
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示产品销售量的分布，销售量在 0-1000 之间,数据如下：`[200, 300, 400, 500, 600, 700, 800, 900]`：",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":200},{\"value\":300},{\"value\":400},{\"value\":500},{\"value\":600},{\"value\":700},{\"value\":800},{\"value\":900}],\"binNumber\":10}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":200},{\"value\":300},{\"value\":400},{\"value\":500},{\"value\":600},{\"value\":700},{\"value\":800},{\"value\":900}]}",
+    "reference": [
+      "散点图 - Scatter Chart 使用示例",
+      "矩阵树图 -Treemap Chart 使用示例",
+      "直方图 - Histogram Chart 基础概念"
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示网站访问次数的分布，访问次数在 0-100 之间,数据如下：`[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]`：",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":10},{\"value\":20},{\"value\":30},{\"value\":40},{\"value\":50},{\"value\":60},{\"value\":70},{\"value\":80},{\"value\":90},{\"value\":100}],\"binNumber\":10}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":10},{\"value\":20},{\"value\":30},{\"value\":40},{\"value\":50},{\"value\":60},{\"value\":70},{\"value\":80},{\"value\":90},{\"value\":100}]}",
+    "reference": ["直方图 - Histogram Chart 基础概念"]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示用户评分的分布，评分在 0-5 之间,数据如下：`[1.5, 2.5, 3.5, 4.5, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0]`：",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":1.5},{\"value\":2.5},{\"value\":3.5},{\"value\":4.5},{\"value\":0.5},{\"value\":1.0},{\"value\":2.0},{\"value\":3.0},{\"value\":4.0},{\"value\":5.0}],\"binNumber\":5}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":1.5},{\"value\":2.5},{\"value\":3.5},{\"value\":4.5},{\"value\":0.5},{\"value\":1},{\"value\":2},{\"value\":3},{\"value\":4},{\"value\":5}]}",
+    "reference": ["知识库总览.txt", "直方图 - Histogram Chart 使用示例"]
+  },
+  {
+    "type": "text2chart",
+    "question": "用直方图展示商品价格的分布，价格在 0-1000 之间,数据如下：`[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]`：",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":100},{\"value\":200},{\"value\":300},{\"value\":400},{\"value\":500},{\"value\":600},{\"value\":700},{\"value\":800},{\"value\":900},{\"value\":1000}],\"binNumber\":10}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":100},{\"value\":200},{\"value\":300},{\"value\":400},{\"value\":500},{\"value\":600},{\"value\":700},{\"value\":800},{\"value\":900},{\"value\":1000}]}",
+    "reference": ["矩阵树图 -Treemap Chart 使用示例", "直方图 - Histogram Chart 基础概念"]
+  },
+  {
+    "type": "data2chart",
+    "question": "用直方图可视化我的数据：`[{ \"value\": 15 }, { \"value\": 20 }, { \"value\": 25 }, { \"value\": 30 }]`",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":30}]}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":30}],\"binNumber\":4}",
+    "reference": [
+      "折线图 - Line Chart 使用示例",
+      "面积图 - Area Chart 使用示例",
+      "直方图 - Histogram Chart 使用示例"
+    ]
+  },
+  {
+    "type": "data2chart",
+    "question": "请帮我把这组数据用直方图展示出来：`[{ \"value\": 10 }, { \"value\": 15 }, { \"value\": 20 }, { \"value\": 25 }, { \"value\": 30 }]`，并且我希望有5个区间。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":10},{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":30}],\"binNumber\":5}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":10},{\"value\":15},{\"value\":20},{\"value\":25},{\"value\":30}],\"binNumber\":5}",
+    "reference": [
+      "词云图 - WordCloud Chart 使用示例",
+      "条形图 - Bar Chart 图表用法 数据要求",
+      "直方图 - Histogram Chart 使用示例"
+    ]
+  },
+  {
+    "type": "data2chart",
+    "question": "我有一系列的数值：`[{ \"value\": 5 }, { \"value\": 7 }, { \"value\": 9 }, { \"value\": 11 }, { \"value\": 13 }, { \"value\": 15 }]`，我想看看它们在直方图上的分布情况。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":5},{\"value\":7},{\"value\":9},{\"value\":11},{\"value\":13},{\"value\":15}]}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":5},{\"value\":7},{\"value\":9},{\"value\":11},{\"value\":13},{\"value\":15}]}",
+    "reference": [
+      "雷达图 - Radar Chart 使用示例",
+      "条形图 - Bar Chart 图表用法 数据要求",
+      "直方图 - Histogram Chart 使用示例"
+    ]
+  },
+  {
+    "type": "data2chart",
+    "question": "对于这些分数`[{ \"value\": 80 }, { \"value\": 85 }, { \"value\": 90 }, { \"value\": 95 }, { \"value\": 100 }]`，请使用直方图来表示，并设置为5个分段。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":80},{\"value\":85},{\"value\":90},{\"value\":95},{\"value\":100}],\"binNumber\":5}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":80},{\"value\":85},{\"value\":90},{\"value\":95},{\"value\":100}],\"binNumber\":5}",
+    "reference": [
+      "雷达图 - Radar Chart 使用示例",
+      "[WIP]双轴图 - DualAxes Chart 图表用法 图表 spec",
+      "直方图 - Histogram Chart 使用示例"
+    ]
+  },
+  {
+    "type": "data2chart",
+    "question": "我希望将这个数据集`[{ \"value\": 100 }, { \"value\": 120 }, { \"value\": 140 }, { \"value\": 160 }, { \"value\": 180 }]`通过直方图的方式展现出来。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"value\":100},{\"value\":120},{\"value\":140},{\"value\":160},{\"value\":180}]}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":100},{\"value\":120},{\"value\":140},{\"value\":160},{\"value\":180}]}",
+    "reference": [
+      "词云图 - WordCloud Chart 图表用法 数据要求",
+      "条形图 - Bar Chart 图表用法 数据要求",
+      "直方图 - Histogram Chart 图表用法 数据要求"
+    ]
+  },
+  {
+    "type": "data2chart",
+    "question": "我希望将这个数据集`[{\"score\": 85}, {\"score\": 90}, {\"score\": 78}, {\"score\": 92}, {\"score\": 88}, {\"score\": 95}, {\"score\": 80}, {\"score\": 83}, {\"score\": 87}, {\"score\": 91}, {\"score\": 79}, {\"score\": 93}, {\"score\": 89}, {\"score\": 96}, {\"score\": 81}, {\"score\": 84}, {\"score\": 86}, {\"score\": 94}, {\"score\": 82}, {\"score\": 97}, {\"score\": 77}, {\"score\": 98}, {\"score\": 83}, {\"score\": 90}, {\"score\": 78}, {\"score\": 92}, {\"score\": 88}, {\"score\": 95}, {\"score\": 80}, {\"score\": 83}, {\"score\": 87}, {\"score\": 91}, {\"score\": 79}, {\"score\": 93}, {\"score\": 89}, {\"score\": 96}, {\"score\": 81}, {\"score\": 84}, {\"score\": 86}, {\"score\": 94}, {\"score\": 82}, {\"score\": 97}, {\"score\": 77}, {\"score\": 98}, {\"score\": 83}, {\"score\": 90}, {\"score\": 78}, {\"score\": 92}, {\"score\": 88}, {\"score\": 95}, {\"score\": 80}, {\"score\": 83}, {\"score\": 87}, {\"score\": 91}, {\"score\": 79}, {\"score\": 93}, {\"score\": 89}, {\"score\": 96}, {\"score\": 81}, {\"score\": 84}, {\"score\": 86}, {\"score\": 94}, {\"score\": 82}, {\"score\": 97}, {\"score\": 77}, {\"score\": 98}]`通过直方图的方式展现出来。",
+    "response": "{\"type\":\"histogram\",\"data\":[{\"score\":85},{\"score\":90},{\"score\":78},{\"score\":92},{\"score\":88},{\"score\":95},{\"score\":80},{\"score\":83},{\"score\":87},{\"score\":91},{\"score\":79},{\"score\":93},{\"score\":89},{\"score\":96},{\"score\":81},{\"score\":84},{\"score\":86},{\"score\":94},{\"score\":82},{\"score\":97},{\"score\":77},{\"score\":98},{\"score\":83},{\"score\":90},{\"score\":78},{\"score\":92},{\"score\":88},{\"score\":95},{\"score\":80},{\"score\":83},{\"score\":87},{\"score\":91},{\"score\":79},{\"score\":93},{\"score\":89},{\"score\":96},{\"score\":81},{\"score\":84},{\"score\":86},{\"score\":94},{\"score\":82},{\"score\":97},{\"score\":77},{\"score\":98},{\"score\":83},{\"score\":90},{\"score\":78},{\"score\":92},{\"score\":88},{\"score\":95},{\"score\":80},{\"score\":83},{\"score\":87},{\"score\":91},{\"score\":79},{\"score\":93},{\"score\":89},{\"score\":96},{\"score\":81},{\"score\":84},{\"score\":86},{\"score\":94},{\"score\":82},{\"score\":97},{\"score\":77},{\"score\":98}],\"title\":\"分数分布\",\"axisXTitle\":\"分数\",\"axisYTitle\":\"频数\"}",
+    "answer": "{\"type\":\"histogram\",\"data\":[{\"value\":85},{\"value\":90},{\"value\":78},{\"value\":92},{\"value\":88},{\"value\":95},{\"value\":80},{\"value\":83},{\"value\":87},{\"value\":91},{\"value\":79},{\"value\":93},{\"value\":89},{\"value\":96},{\"value\":81},{\"value\":84},{\"value\":86},{\"value\":94},{\"value\":82},{\"value\":97},{\"value\":77},{\"value\":98},{\"value\":83},{\"value\":90},{\"value\":78},{\"value\":92},{\"value\":88},{\"value\":95},{\"value\":80},{\"value\":83},{\"value\":87},{\"value\":91},{\"value\":79},{\"value\":93},{\"value\":89},{\"value\":96},{\"value\":81},{\"value\":84},{\"value\":86},{\"value\":94},{\"value\":82},{\"value\":97},{\"value\":77},{\"value\":98},{\"value\":83},{\"value\":90},{\"value\":78},{\"value\":92},{\"value\":88},{\"value\":95},{\"value\":80},{\"value\":83},{\"value\":87},{\"value\":91},{\"value\":79},{\"value\":93},{\"value\":89},{\"value\":96},{\"value\":81},{\"value\":84},{\"value\":86},{\"value\":94},{\"value\":82},{\"value\":97},{\"value\":77},{\"value\":98}]}",
+    "reference": []
+  }
+]

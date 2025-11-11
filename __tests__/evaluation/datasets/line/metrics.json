@@ -1,0 +1,470 @@
+[
+  {
+    "type": "text2chart",
+    "question": "某市的平均气温在2018年为15度，2019年上升至17度，2020年又下降到16度。请使用折线图来展示这一变化趋势。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2018年\",\"value\":15},{\"time\":\"2019年\",\"value\":17},{\"time\":\"2020年\",\"value\":16}],\"title\": \"某市平均气温变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"平均气温（度）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2018年\",\"value\":15},{\"time\":\"2019年\",\"value\":17},{\"time\":\"2020年\",\"value\":16}],\"title\":\"某市平均气温变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"平均气温（摄氏度）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 基础概念",
+      "折线图 - Line Chart 基础概念",
+      "面积图 - Area Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "一个城市过去五年来的年度降雨量分别是：2016年800毫米，2017年900毫米，2018年700毫米，2019年1000毫米，2020年1100毫米。使用折线图描绘这些数据。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2016年\",\"value\":800},{\"time\":\"2017年\",\"value\":900},{\"time\":\"2018年\",\"value\":700},{\"time\":\"2019年\",\"value\":1000},{\"time\":\"2020年\",\"value\":1100}],\"title\": \"年度降雨量变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"降雨量（毫米）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2016年\",\"value\":800},{\"time\":\"2017年\",\"value\":900},{\"time\":\"2018年\",\"value\":700},{\"time\":\"2019年\",\"value\":1000},{\"time\":\"2020年\",\"value\":1100}],\"title\":\"城市年度降雨量变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"降雨量（毫米）\"}",
+    "reference": ["折线图 - Line Chart 基础概念", "面积图 - Area Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某公司的股价在过去一年中经历了波动：年初时每股价格为50元，年中跌至40元，年底回升到55元。通过折线图来展示该公司股价的变化。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"年初\",\"value\":50},{\"time\":\"年中\",\"value\":40},{\"time\":\"年底\",\"value\":55}],\"title\":\"公司股价变化\",\"axisXTitle\":\"时间点\",\"axisYTitle\":\"股价（元）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"年初\",\"value\":50},{\"time\":\"年中\",\"value\":40},{\"time\":\"年底\",\"value\":55}],\"title\":\"公司股价变动\",\"axisXTitle\":\"时间\",\"axisYTitle\":\"股价（元/股）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 基础概念",
+      "面积图 - Area Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "记录显示某地区每年新增就业人数如下：2017年增加了5000人，2018年增加了7000人，2019年增加了6000人。请利用折线图展示这一信息。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2017年\",\"value\":5000},{\"time\":\"2018年\",\"value\":7000},{\"time\":\"2019年\",\"value\":6000}],\"title\":\"某地区新增就业人数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"新增就业人数（人）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2017年\",\"value\":5000},{\"time\":\"2018年\",\"value\":7000},{\"time\":\"2019年\",\"value\":6000}],\"title\":\"新增就业人数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"新增就业人数（人）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某产品的销量随季节变化明显：春季销售了10万台，夏季销售了15万台，秋季销售了12万台，冬季销售了8万台。请以折线图形式展现该产品各季节销量情况。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"春季\",\"value\":10},{\"time\":\"夏季\",\"value\":15},{\"time\":\"秋季\",\"value\":12},{\"time\":\"冬季\",\"value\":8}],\"title\": \"产品各季节销量变化\",\"axisXTitle\": \"季节\",\"axisYTitle\": \"销量（万台）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"春季\",\"value\":100000},{\"time\":\"夏季\",\"value\":150000},{\"time\":\"秋季\",\"value\":120000},{\"time\":\"冬季\",\"value\":80000}],\"title\":\"产品季节性销量\",\"axisXTitle\":\"季节\",\"axisYTitle\":\"销量（台）\"}",
+    "reference": [
+      "矩阵树图 -Treemap Chart 使用示例",
+      "折线图 - Line Chart 基础概念",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "一项研究表明，随着年龄的增长，人们对社交媒体的兴趣逐渐减少：18岁时有90%的人经常使用社交媒体；到了25岁这个比例降至80%；而到了30岁则进一步降到70%。请绘制一条折线图来表示这种趋势。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":18,\"value\":90},{\"time\":25,\"value\":80},{\"time\":30,\"value\":70}],\"title\":\"年龄与社交媒体使用率\",\"axisXTitle\":\"年龄\",\"axisYTitle\":\"社交媒体使用率(%)\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"18岁\",\"value\":90},{\"time\":\"25岁\",\"value\":80},{\"time\":\"30岁\",\"value\":70}],\"title\":\"社交媒体使用兴趣随年龄变化\",\"axisXTitle\":\"年龄\",\"axisYTitle\":\"经常使用比例（%）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 基础概念",
+      "散点图 - Scatter Chart 使用示例",
+      "折线图 - Line Chart 基础概念"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某电商平台每月订单数量统计结果如下：一月份订单数为10万单，二月份为12万单，三月份回落至11万单。请采用折线图方式呈现该电商平台前三个月订单数量的变化。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"一月份\",\"value\":10},{\"time\":\"二月份\",\"value\":12},{\"time\":\"三月份\",\"value\":11}],\"title\": \"电商平台订单数量变化\",\"axisXTitle\": \"月份\",\"axisYTitle\": \"订单数量（万单）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"一月份\",\"value\":100000},{\"time\":\"二月份\",\"value\":120000},{\"time\":\"三月份\",\"value\":110000}],\"title\":\"电商平台订单数量变化\",\"axisXTitle\":\"月份\",\"axisYTitle\":\"订单数量（单）\"}",
+    "reference": [
+      "折线图 - Line Chart 基础概念",
+      "鱼骨图 - Fishbone Diagram 使用示例",
+      "数据文本 - Text 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "近年来我国智能手机用户数量持续增长：2018年底达到7亿户，2019年底增至7.5亿户，2020年底更是突破了8亿大关。请构建一张折线图来反映这一增长态势。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2018年底\",\"value\":700000000},{\"time\":\"2019年底\",\"value\":750000000},{\"time\":\"2020年底\",\"value\":800000000}],\"title\": \"我国智能手机用户数量增长\",\"axisXTitle\": \"时间\",\"axisYTitle\": \"用户数量（户）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2018年底\",\"value\":70000},{\"time\":\"2019年底\",\"value\":75000},{\"time\":\"2020年底\",\"value\":80000}],\"title\":\"智能手机用户数量增长\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"用户数量（万户）\"}",
+    "reference": ["饼图 - Pie Chart 使用示例", "折线图 - Line Chart"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "根据最新的健康调查报告，成年人每日平均步行步数有所下降：2017年的平均水平是7000步，2018年降到了6500步，到了2019年进一步减少至6000步。请用折线图来表示这种趋势。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2017年\",\"value\":7000},{\"time\":\"2018年\",\"value\":6500},{\"time\":\"2019年\",\"value\":6000}],\"title\": \"成年人每日平均步行步数变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"平均步数\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2017年\",\"value\":7000},{\"time\":\"2018年\",\"value\":6500},{\"time\":\"2019年\",\"value\":6000}],\"title\":\"成年人每日平均步行步数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"平均步数（步）\"}",
+    "reference": ["[WIP]双轴图 - DualAxes Chart 基础概念", "折线图 - Line Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "过去五年内，某城市的平均气温分别为：2018 年 15°C，2019 年 16°C，2020 年 15°C，2021 年 17°C，2022 年 18°C。用折线图可视化这些数据。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2018 年\",\"value\":15},{\"time\":\"2019 年\",\"value\":16},{\"time\":\"2020 年\",\"value\":15},{\"time\":\"2021 年\",\"value\":17},{\"time\":\"2022 年\",\"value\":18}],\"title\": \"过去五年平均气温变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"平均气温（°C）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2018 年\",\"value\":15},{\"time\":\"2019 年\",\"value\":16},{\"time\":\"2020 年\",\"value\":15},{\"time\":\"2021 年\",\"value\":17},{\"time\":\"2022 年\",\"value\":18}],\"title\":\"某城市平均气温变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"平均气温（°C）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "点标注地图 - PinMap 适用场景"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "从 2017 年到 2021 年，某大学的在校学生人数变化为：2017 年 3000 人，2018 年 3200 人，2019 年 3100 人，2020 年 3300 人，2021 年 3400 人。用折线图展示。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2017 年\",\"value\":3000},{\"time\":\"2018 年\",\"value\":3200},{\"time\":\"2019 年\",\"value\":3100},{\"time\":\"2020 年\",\"value\":3300},{\"time\":\"2021 年\",\"value\":3400}],\"title\": \"在校学生人数变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"人数\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2017 年\",\"value\":3000},{\"time\":\"2018 年\",\"value\":3200},{\"time\":\"2019 年\",\"value\":3100},{\"time\":\"2020 年\",\"value\":3300},{\"time\":\"2021 年\",\"value\":3400}],\"title\":\"大学在校学生人数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"在校学生人数\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某公司员工人数在近四年内的变化为：2019 年 150 人，2020 年 160 人，2021 年 155 人，2022 年 170 人。请用折线图表示。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2019 年\",\"value\":150},{\"time\":\"2020 年\",\"value\":160},{\"time\":\"2021 年\",\"value\":155},{\"time\":\"2022 年\",\"value\":170}],\"title\": \"公司员工人数变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"员工人数（人）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2019 年\",\"value\":150},{\"time\":\"2020 年\",\"value\":160},{\"time\":\"2021 年\",\"value\":155},{\"time\":\"2022 年\",\"value\":170}],\"title\":\"公司员工人数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"员工人数\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "矩阵树图 -Treemap Chart 使用示例",
+      "折线图 - Line Chart 基础概念"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某产品的季度销售量如下：Q1 为 2000 件，Q2 为 2500 件，Q3 为 2300 件，Q4 为 2600 件。用折线图展示这些数据。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":2000},{\"time\":\"Q2\",\"value\":2500},{\"time\":\"Q3\",\"value\":2300},{\"time\":\"Q4\",\"value\":2600}],\"title\": \"产品季度销售量变化\",\"axisXTitle\": \"季度\",\"axisYTitle\": \"销售量（件）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":2000},{\"time\":\"Q2\",\"value\":2500},{\"time\":\"Q3\",\"value\":2300},{\"time\":\"Q4\",\"value\":2600}],\"title\":\"产品季度销售量\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售量（件）\"}",
+    "reference": [
+      "矩阵树图 -Treemap Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "在最近三年内，某国的年通货膨胀率分别为：2020 年 2.5%，2021 年 3.0%，2022 年 2.8%。使用折线图展示这些数据。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2020 年\",\"value\":2.5},{\"time\":\"2021 年\",\"value\":3.0},{\"time\":\"2022 年\",\"value\":2.8}],\"title\": \"通货膨胀率变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"通货膨胀率（%）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2020 年\",\"value\":2.5},{\"time\":\"2021 年\",\"value\":3},{\"time\":\"2022 年\",\"value\":2.8}],\"title\":\"年度通货膨胀率\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"通货膨胀率（%）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 基础概念",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某项目在 2021 年的月度花费如下：一月 100 万，二月 120 万，三月 110 万，四月 130 万。用折线图展示这些数据。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"一月\",\"value\":100},{\"time\":\"二月\",\"value\":120},{\"time\":\"三月\",\"value\":110},{\"time\":\"四月\",\"value\":130}],\"title\": \"2021年月度花费变化\",\"axisXTitle\": \"月份\",\"axisYTitle\": \"花费（万元）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"一月\",\"value\":100},{\"time\":\"二月\",\"value\":120},{\"time\":\"三月\",\"value\":110},{\"time\":\"四月\",\"value\":130}],\"title\":\"项目月度花费\",\"axisXTitle\":\"月份\",\"axisYTitle\":\"花费（万元）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 基础概念",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某城市从 2018 年至 2020 年的空气质量指数（AQI）年平均值分别为：2018 年 75，2019 年 72，2020 年 68。使用折线图进行可视化。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2018 年\",\"value\":75},{\"time\":\"2019 年\",\"value\":72},{\"time\":\"2020 年\",\"value\":68}],\"title\": \"某城市空气质量指数变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"空气质量指数（AQI）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2018 年\",\"value\":75},{\"time\":\"2019 年\",\"value\":72},{\"time\":\"2020 年\",\"value\":68}],\"title\":\"空气质量指数年平均值\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"AQI\"}",
+    "reference": [
+      "折线图 - Line Chart 使用示例",
+      "词云图 - WordCloud Chart 使用示例",
+      "面积图 - Area Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "一项研究跟踪了五个国家在过去十年里每年森林覆盖率的变化，其中中国从2010年的20%增长到了2020年的25%，印度从20%增长至23%，巴西从60%降至55%，俄罗斯从45%增至50%，加拿大保持在30%不变。请用多条折线图展示各国森林覆盖率的变化。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2010\",\"value\":20,\"group\":\"中国\"},{\"time\":\"2020\",\"value\":25,\"group\":\"中国\"},{\"time\":\"2010\",\"value\":20,\"group\":\"印度\"},{\"time\":\"2020\",\"value\":23,\"group\":\"印度\"},{\"time\":\"2010\",\"value\":60,\"group\":\"巴西\"},{\"time\":\"2020\",\"value\":55,\"group\":\"巴西\"},{\"time\":\"2010\",\"value\":45,\"group\":\"俄罗斯\"},{\"time\":\"2020\",\"value\":50,\"group\":\"俄罗斯\"},{\"time\":\"2010\",\"value\":30,\"group\":\"加拿大\"},{\"time\":\"2020\",\"value\":30,\"group\":\"加拿大\"}],\"title\":\"过去十年森林覆盖率变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"森林覆盖率（%）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2010年\",\"value\":20,\"group\":\"中国\"},{\"time\":\"2020年\",\"value\":25,\"group\":\"中国\"},{\"time\":\"2010年\",\"value\":20,\"group\":\"印度\"},{\"time\":\"2020年\",\"value\":23,\"group\":\"印度\"},{\"time\":\"2010年\",\"value\":60,\"group\":\"巴西\"},{\"time\":\"2020年\",\"value\":55,\"group\":\"巴西\"},{\"time\":\"2010年\",\"value\":45,\"group\":\"俄罗斯\"},{\"time\":\"2020年\",\"value\":50,\"group\":\"俄罗斯\"},{\"time\":\"2010年\",\"value\":30,\"group\":\"加拿大\"},{\"time\":\"2020年\",\"value\":30,\"group\":\"加拿大\"}],\"title\":\"各国森林覆盖率变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"森林覆盖率（%）\"}",
+    "reference": [
+      "折线图 - Line Chart 基础概念",
+      "词云图 - WordCloud Chart 使用示例",
+      "面积图 - Area Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "一项研究跟踪了五个国家在过去十年里每年森林覆盖率的变化，其中中国从2010年的20%增长到了2020年的25%，印度从20%增长至23%，巴西从60%降至55%，俄罗斯从45%增至50%，加拿大保持在30%不变。请用折线图展示各国森林覆盖率的变化。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2010\",\"value\":20,\"group\":\"中国\"},{\"time\":\"2020\",\"value\":25,\"group\":\"中国\"},{\"time\":\"2010\",\"value\":20,\"group\":\"印度\"},{\"time\":\"2020\",\"value\":23,\"group\":\"印度\"},{\"time\":\"2010\",\"value\":60,\"group\":\"巴西\"},{\"time\":\"2020\",\"value\":55,\"group\":\"巴西\"},{\"time\":\"2010\",\"value\":45,\"group\":\"俄罗斯\"},{\"time\":\"2020\",\"value\":50,\"group\":\"俄罗斯\"},{\"time\":\"2010\",\"value\":30,\"group\":\"加拿大\"},{\"time\":\"2020\",\"value\":30,\"group\":\"加拿大\"}],\"title\":\"2010-2020年森林覆盖率变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"森林覆盖率(%)\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2010年\",\"value\":20,\"group\":\"中国\"},{\"time\":\"2020年\",\"value\":25,\"group\":\"中国\"},{\"time\":\"2010年\",\"value\":20,\"group\":\"印度\"},{\"time\":\"2020年\",\"value\":23,\"group\":\"印度\"},{\"time\":\"2010年\",\"value\":60,\"group\":\"巴西\"},{\"time\":\"2020年\",\"value\":55,\"group\":\"巴西\"},{\"time\":\"2010年\",\"value\":45,\"group\":\"俄罗斯\"},{\"time\":\"2020年\",\"value\":50,\"group\":\"俄罗斯\"},{\"time\":\"2010年\",\"value\":30,\"group\":\"加拿大\"},{\"time\":\"2020年\",\"value\":30,\"group\":\"加拿大\"}],\"title\":\"各国森林覆盖率变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"森林覆盖率（%）\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 基础概念",
+      "面积图 - Area Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "在某项研究中，过去五年中三个城市的空气污染指数变化如下：城市A分别为150，160，145，155，165；城市B分别为100，110，105，115，120；城市C分别为90，85，80，75，70。用多条折线图展示这些数据。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2018年\",\"value\":150,\"group\":\"城市A\"},{\"time\":\"2019年\",\"value\":160,\"group\":\"城市A\"},{\"time\":\"2020年\",\"value\":145,\"group\":\"城市A\"},{\"time\":\"2021年\",\"value\":155,\"group\":\"城市A\"},{\"time\":\"2022年\",\"value\":165,\"group\":\"城市A\"},{\"time\":\"2018年\",\"value\":100,\"group\":\"城市B\"},{\"time\":\"2019年\",\"value\":110,\"group\":\"城市B\"},{\"time\":\"2020年\",\"value\":105,\"group\":\"城市B\"},{\"time\":\"2021年\",\"value\":115,\"group\":\"城市B\"},{\"time\":\"2022年\",\"value\":120,\"group\":\"城市B\"},{\"time\":\"2018年\",\"value\":90,\"group\":\"城市C\"},{\"time\":\"2019年\",\"value\":85,\"group\":\"城市C\"},{\"time\":\"2020年\",\"value\":80,\"group\":\"城市C\"},{\"time\":\"2021年\",\"value\":75,\"group\":\"城市C\"},{\"time\":\"2022年\",\"value\":70,\"group\":\"城市C\"}],\"title\":\"过去五年中三个城市的空气污染指数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"空气污染指数\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"第一年\",\"value\":150,\"group\":\"城市A\"},{\"time\":\"第二年\",\"value\":160,\"group\":\"城市A\"},{\"time\":\"第三年\",\"value\":145,\"group\":\"城市A\"},{\"time\":\"第四年\",\"value\":155,\"group\":\"城市A\"},{\"time\":\"第五年\",\"value\":165,\"group\":\"城市A\"},{\"time\":\"第一年\",\"value\":100,\"group\":\"城市B\"},{\"time\":\"第二年\",\"value\":110,\"group\":\"城市B\"},{\"time\":\"第三年\",\"value\":105,\"group\":\"城市B\"},{\"time\":\"第四年\",\"value\":115,\"group\":\"城市B\"},{\"time\":\"第五年\",\"value\":120,\"group\":\"城市B\"},{\"time\":\"第一年\",\"value\":90,\"group\":\"城市C\"},{\"time\":\"第二年\",\"value\":85,\"group\":\"城市C\"},{\"time\":\"第三年\",\"value\":80,\"group\":\"城市C\"},{\"time\":\"第四年\",\"value\":75,\"group\":\"城市C\"},{\"time\":\"第五年\",\"value\":70,\"group\":\"城市C\"}],\"title\":\"城市空气污染指数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"空气污染指数\"}",
+    "reference": [
+      "折线图 - Line Chart 基础概念",
+      "点标注地图 - PinMap 不适用场景",
+      "面积图 - Area Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "在某项研究中，过去五年中三个城市的空气污染指数变化如下：城市A分别为150，160，145，155，165；城市B分别为100，110，105，115，120；城市C分别为90，85，80，75，70。用折线图展示这些数据。",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2018年\",\"value\":150,\"group\":\"城市A\"},{\"time\":\"2019年\",\"value\":160,\"group\":\"城市A\"},{\"time\":\"2020年\",\"value\":145,\"group\":\"城市A\"},{\"time\":\"2021年\",\"value\":155,\"group\":\"城市A\"},{\"time\":\"2022年\",\"value\":165,\"group\":\"城市A\"},{\"time\":\"2018年\",\"value\":100,\"group\":\"城市B\"},{\"time\":\"2019年\",\"value\":110,\"group\":\"城市B\"},{\"time\":\"2020年\",\"value\":105,\"group\":\"城市B\"},{\"time\":\"2021年\",\"value\":115,\"group\":\"城市B\"},{\"time\":\"2022年\",\"value\":120,\"group\":\"城市B\"},{\"time\":\"2018年\",\"value\":90,\"group\":\"城市C\"},{\"time\":\"2019年\",\"value\":85,\"group\":\"城市C\"},{\"time\":\"2020年\",\"value\":80,\"group\":\"城市C\"},{\"time\":\"2021年\",\"value\":75,\"group\":\"城市C\"},{\"time\":\"2022年\",\"value\":70,\"group\":\"城市C\"}],\"title\":\"过去五年中三个城市的空气污染指数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"空气污染指数\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"第一年\",\"value\":150,\"group\":\"城市A\"},{\"time\":\"第二年\",\"value\":160,\"group\":\"城市A\"},{\"time\":\"第三年\",\"value\":145,\"group\":\"城市A\"},{\"time\":\"第四年\",\"value\":155,\"group\":\"城市A\"},{\"time\":\"第五年\",\"value\":165,\"group\":\"城市A\"},{\"time\":\"第一年\",\"value\":100,\"group\":\"城市B\"},{\"time\":\"第二年\",\"value\":110,\"group\":\"城市B\"},{\"time\":\"第三年\",\"value\":105,\"group\":\"城市B\"},{\"time\":\"第四年\",\"value\":115,\"group\":\"城市B\"},{\"time\":\"第五年\",\"value\":120,\"group\":\"城市B\"},{\"time\":\"第一年\",\"value\":90,\"group\":\"城市C\"},{\"time\":\"第二年\",\"value\":85,\"group\":\"城市C\"},{\"time\":\"第三年\",\"value\":80,\"group\":\"城市C\"},{\"time\":\"第四年\",\"value\":75,\"group\":\"城市C\"},{\"time\":\"第五年\",\"value\":70,\"group\":\"城市C\"}],\"title\":\"城市空气污染指数变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"空气污染指数\"}",
+    "reference": [
+      "折线图 - Line Chart 基础概念",
+      "点标注地图 - PinMap 不适用场景",
+      "面积图 - Area Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{ \"month\": \"Jan\",\"value\": 150 },{ \"month\": \"Feb\", \"value\": 200 },{ \"month\": \"Mar\" ,\"value\": 180 }]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":150},{\"time\":\"Feb\",\"value\":200},{\"time\":\"Mar\",\"value\":180}],\"axisXTitle\": \"month\",\"axisYTitle\": \"value\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":150},{\"time\":\"Feb\",\"value\":200},{\"time\":\"Mar\",\"value\":180}],\"axisXTitle\":\"month\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"day\":\"Mon\",\"value\":500},{\"day\":\"Tue\",\"value\":700},{\"day\":\"Wed\",\"value\":600},{\"day\":\"Thu\",\"value\":900},{\"day\":\"Fri\",\"value\":800}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Mon\",\"value\":500},{\"time\":\"Tue\",\"value\":700},{\"time\":\"Wed\",\"value\":600},{\"time\":\"Thu\",\"value\":900},{\"time\":\"Fri\",\"value\":800}],\"axisXTitle\": \"day\",\"axisYTitle\": \"value\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Mon\",\"value\":500},{\"time\":\"Tue\",\"value\":700},{\"time\":\"Wed\",\"value\":600},{\"time\":\"Thu\",\"value\":900},{\"time\":\"Fri\",\"value\":800}],\"axisXTitle\":\"day\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"week\":\"1\",\"value\":1000},{\"week\":\"2\",\"value\":1500},{\"week\":\"3\",\"value\":1200},{\"week\":\"4\",\"value\":1800}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"1\",\"value\":1000},{\"time\":\"2\",\"value\":1500},{\"time\":\"3\",\"value\":1200},{\"time\":\"4\",\"value\":1800}],\"axisXTitle\": \"周数\",\"axisYTitle\": \"value\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"1\",\"value\":1000},{\"time\":\"2\",\"value\":1500},{\"time\":\"3\",\"value\":1200},{\"time\":\"4\",\"value\":1800}],\"axisXTitle\":\"week\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"quarter\":\"Q1\",\"sales\":2000},{\"quarter\":\"Q2\",\"sales\":3000},{\"quarter\":\"Q3\",\"sales\":2500},{\"quarter\":\"Q4\",\"sales\":3500}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":2000},{\"time\":\"Q2\",\"value\":3000},{\"time\":\"Q3\",\"value\":2500},{\"time\":\"Q4\",\"value\":3500}],\"title\": \"季度销售额变化\",\"axisXTitle\": \"季度\",\"axisYTitle\": \"销售额\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":2000},{\"time\":\"Q2\",\"value\":3000},{\"time\":\"Q3\",\"value\":2500},{\"time\":\"Q4\",\"value\":3500}],\"axisXTitle\":\"quarter\",\"axisYTitle\":\"sales\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"year\":2018,\"revenue\":5000},{\"year\":2019,\"revenue\":7000},{\"year\":2020,\"revenue\":6000},{\"year\":2021,\"revenue\":8000}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":2018,\"value\":5000},{\"time\":2019,\"value\":7000},{\"time\":2020,\"value\":6000},{\"time\":2021,\"value\":8000}],\"axisXTitle\": \"year\",\"axisYTitle\": \"revenue\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":2018,\"value\":5000},{\"time\":2019,\"value\":7000},{\"time\":2020,\"value\":6000},{\"time\":2021,\"value\":8000}],\"axisXTitle\":\"year\",\"axisYTitle\":\"revenue\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"month\":\"Jan\",\"sales\":3000},{\"month\":\"Feb\",\"sales\":4500},{\"month\":\"Mar\",\"sales\":4000}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":3000},{\"time\":\"Feb\",\"value\":4500},{\"time\":\"Mar\",\"value\":4000}],\"axisXTitle\": \"month\",\"axisYTitle\": \"sales\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":3000},{\"time\":\"Feb\",\"value\":4500},{\"time\":\"Mar\",\"value\":4000}],\"axisXTitle\":\"month\",\"axisYTitle\":\"sales\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"hour\":1,\"temperature\":30},{\"hour\":2,\"temperature\":35},{\"hour\":3,\"temperature\":32},{\"hour\":4,\"temperature\":38}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":1,\"value\":30},{\"time\":2,\"value\":35},{\"time\":3,\"value\":32},{\"time\":4,\"value\":38}],\"axisXTitle\": \"hour\",\"axisYTitle\": \"temperature\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":1,\"value\":30},{\"time\":2,\"value\":35},{\"time\":3,\"value\":32},{\"time\":4,\"value\":38}],\"axisXTitle\":\"hour\",\"axisYTitle\":\"temperature\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"day\":\"Monday\",\"sales\":2000},{\"day\":\"Tuesday\",\"sales\":2500},{\"day\":\"Wednesday\",\"sales\":2200},{\"day\":\"Thursday\",\"sales\":2800},{\"day\":\"Friday\",\"sales\":3000}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Monday\",\"value\":2000},{\"time\":\"Tuesday\",\"value\":2500},{\"time\":\"Wednesday\",\"value\":2200},{\"time\":\"Thursday\",\"value\":2800},{\"time\":\"Friday\",\"value\":3000}],\"axisXTitle\": \"day\",\"axisYTitle\": \"sales\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Monday\",\"value\":2000},{\"time\":\"Tuesday\",\"value\":2500},{\"time\":\"Wednesday\",\"value\":2200},{\"time\":\"Thursday\",\"value\":2800},{\"time\":\"Friday\",\"value\":3000}],\"axisXTitle\":\"day\",\"axisYTitle\":\"sales\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"quarter\":\"Q1\",\"profit\":800},{\"quarter\":\"Q2\",\"profit\":1200},{\"quarter\":\"Q3\",\"profit\":1000},{\"quarter\":\"Q4\",\"profit\":1500}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":800},{\"time\":\"Q2\",\"value\":1200},{\"time\":\"Q3\",\"value\":1000},{\"time\":\"Q4\",\"value\":1500}],\"axisXTitle\": \"季度\",\"axisYTitle\": \"利润（万元）\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":800},{\"time\":\"Q2\",\"value\":1200},{\"time\":\"Q3\",\"value\":1000},{\"time\":\"Q4\",\"value\":1500}],\"axisXTitle\":\"quarter\",\"axisYTitle\":\"profit\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"year\":2016,\"growth\":12},{\"year\":2017,\"growth\":15},{\"year\":2018,\"growth\":10},{\"year\":2019,\"growth\":18}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":2016,\"value\":12},{\"time\":2017,\"value\":15},{\"time\":2018,\"value\":10},{\"time\":2019,\"value\":18}],\"axisXTitle\": \"year\",\"axisYTitle\": \"growth\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":2016,\"value\":12},{\"time\":2017,\"value\":15},{\"time\":2018,\"value\":10},{\"time\":2019,\"value\":18}],\"axisXTitle\":\"year\",\"axisYTitle\":\"growth\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"month\":\"Jan\",\"value\":300,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":500,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":200,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":400,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":600,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":300,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":700,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":800,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":400,\"category\":\"C\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":300,\"group\":\"A\"},{\"time\":\"Jan\",\"value\":500,\"group\":\"B\"},{\"time\":\"Jan\",\"value\":200,\"group\":\"C\"},{\"time\":\"Feb\",\"value\":400,\"group\":\"A\"},{\"time\":\"Feb\",\"value\":600,\"group\":\"B\"},{\"time\":\"Feb\",\"value\":300,\"group\":\"C\"},{\"time\":\"Mar\",\"value\":700,\"group\":\"A\"},{\"time\":\"Mar\",\"value\":800,\"group\":\"B\"},{\"time\":\"Mar\",\"value\":400,\"group\":\"C\"}],\"title\": \"Monthly Value by Category\",\"axisXTitle\": \"Month\",\"axisYTitle\": \"Value\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":300,\"group\":\"A\"},{\"time\":\"Jan\",\"value\":500,\"group\":\"B\"},{\"time\":\"Jan\",\"value\":200,\"group\":\"C\"},{\"time\":\"Feb\",\"value\":400,\"group\":\"A\"},{\"time\":\"Feb\",\"value\":600,\"group\":\"B\"},{\"time\":\"Feb\",\"value\":300,\"group\":\"C\"},{\"time\":\"Mar\",\"value\":700,\"group\":\"A\"},{\"time\":\"Mar\",\"value\":800,\"group\":\"B\"},{\"time\":\"Mar\",\"value\":400,\"group\":\"C\"}],\"axisXTitle\":\"month\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"year\":\"2020\",\"value\":1000,\"category\":\"X\"},{\"year\":\"2020\",\"value\":1500,\"category\":\"Y\"},{\"year\":\"2020\",\"value\":900,\"category\":\"Z\"},{\"year\":\"2021\",\"value\":1300,\"category\":\"X\"},{\"year\":\"2021\",\"value\":1900,\"category\":\"Y\"},{\"year\":\"2021\",\"value\":1100,\"category\":\"Z\"},{\"year\":\"2022\",\"value\":1800,\"category\":\"X\"},{\"year\":\"2022\",\"value\":2200,\"category\":\"Y\"},{\"year\":\"2022\",\"value\":1500,\"category\":\"Z\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2020\",\"value\":1000,\"group\":\"X\"},{\"time\":\"2020\",\"value\":1500,\"group\":\"Y\"},{\"time\":\"2020\",\"value\":900,\"group\":\"Z\"},{\"time\":\"2021\",\"value\":1300,\"group\":\"X\"},{\"time\":\"2021\",\"value\":1900,\"group\":\"Y\"},{\"time\":\"2021\",\"value\":1100,\"group\":\"Z\"},{\"time\":\"2022\",\"value\":1800,\"group\":\"X\"},{\"time\":\"2022\",\"value\":2200,\"group\":\"Y\"},{\"time\":\"2022\",\"value\":1500,\"group\":\"Z\"}],\"title\":\"Category Values Over Years\",\"axisXTitle\":\"Year\",\"axisYTitle\":\"Value\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2020\",\"value\":1000,\"group\":\"X\"},{\"time\":\"2020\",\"value\":1500,\"group\":\"Y\"},{\"time\":\"2020\",\"value\":900,\"group\":\"Z\"},{\"time\":\"2021\",\"value\":1300,\"group\":\"X\"},{\"time\":\"2021\",\"value\":1900,\"group\":\"Y\"},{\"time\":\"2021\",\"value\":1100,\"group\":\"Z\"},{\"time\":\"2022\",\"value\":1800,\"group\":\"X\"},{\"time\":\"2022\",\"value\":2200,\"group\":\"Y\"},{\"time\":\"2022\",\"value\":1500,\"group\":\"Z\"}],\"axisXTitle\":\"year\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "散点图 - Scatter Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"date\":\"202101\",\"value\":200,\"product\":\"A\"},{\"date\":\"202101\",\"value\":300,\"product\":\"B\"},{\"date\":\"202101\",\"value\":100,\"product\":\"C\"},{\"date\":\"202102\",\"value\":400,\"product\":\"A\"},{\"date\":\"202102\",\"value\":500,\"product\":\"B\"},{\"date\":\"202102\",\"value\":300,\"product\":\"C\"},{\"date\":\"202103\",\"value\":600,\"product\":\"A\"},{\"date\":\"202103\",\"value\":700,\"product\":\"B\"},{\"date\":\"202103\",\"value\":400,\"product\":\"C\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"202101\",\"value\":200,\"group\":\"A\"},{\"time\":\"202101\",\"value\":300,\"group\":\"B\"},{\"time\":\"202101\",\"value\":100,\"group\":\"C\"},{\"time\":\"202102\",\"value\":400,\"group\":\"A\"},{\"time\":\"202102\",\"value\":500,\"group\":\"B\"},{\"time\":\"202102\",\"value\":300,\"group\":\"C\"},{\"time\":\"202103\",\"value\":600,\"group\":\"A\"},{\"time\":\"202103\",\"value\":700,\"group\":\"B\"},{\"time\":\"202103\",\"value\":400,\"group\":\"C\"}],\"title\": \"产品销售额变化\",\"axisXTitle\": \"日期\",\"axisYTitle\": \"销售额\",\"groupTitle\": \"产品\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"202101\",\"value\":200,\"group\":\"A\"},{\"time\":\"202101\",\"value\":300,\"group\":\"B\"},{\"time\":\"202101\",\"value\":100,\"group\":\"C\"},{\"time\":\"202102\",\"value\":400,\"group\":\"A\"},{\"time\":\"202102\",\"value\":500,\"group\":\"B\"},{\"time\":\"202102\",\"value\":300,\"group\":\"C\"},{\"time\":\"202103\",\"value\":600,\"group\":\"A\"},{\"time\":\"202103\",\"value\":700,\"group\":\"B\"},{\"time\":\"202103\",\"value\":400,\"group\":\"C\"}],\"axisXTitle\":\"date\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"quarter\":\"Q1\",\"sales\":2000,\"product\":\"X\"},{\"quarter\":\"Q1\",\"sales\":3000,\"product\":\"Y\"},{\"quarter\":\"Q1\",\"sales\":1000,\"product\":\"Z\"},{\"quarter\":\"Q2\",\"sales\":4000,\"product\":\"X\"},{\"quarter\":\"Q2\",\"sales\":5000,\"product\":\"Y\"},{\"quarter\":\"Q2\",\"sales\":3000,\"product\":\"Z\"},{\"quarter\":\"Q3\",\"sales\":6000,\"product\":\"X\"},{\"quarter\":\"Q3\",\"sales\":7000,\"product\":\"Y\"},{\"quarter\":\"Q3\",\"sales\":4000,\"product\":\"Z\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":2000,\"group\":\"X\"},{\"time\":\"Q1\",\"value\":3000,\"group\":\"Y\"},{\"time\":\"Q1\",\"value\":1000,\"group\":\"Z\"},{\"time\":\"Q2\",\"value\":4000,\"group\":\"X\"},{\"time\":\"Q2\",\"value\":5000,\"group\":\"Y\"},{\"time\":\"Q2\",\"value\":3000,\"group\":\"Z\"},{\"time\":\"Q3\",\"value\":6000,\"group\":\"X\"},{\"time\":\"Q3\",\"value\":7000,\"group\":\"Y\"},{\"time\":\"Q3\",\"value\":4000,\"group\":\"Z\"}],\"title\":\"Sales by Quarter and Product\",\"axisXTitle\":\"Quarter\",\"axisYTitle\":\"Sales\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":2000,\"group\":\"X\"},{\"time\":\"Q1\",\"value\":3000,\"group\":\"Y\"},{\"time\":\"Q1\",\"value\":1000,\"group\":\"Z\"},{\"time\":\"Q2\",\"value\":4000,\"group\":\"X\"},{\"time\":\"Q2\",\"value\":5000,\"group\":\"Y\"},{\"time\":\"Q2\",\"value\":3000,\"group\":\"Z\"},{\"time\":\"Q3\",\"value\":6000,\"group\":\"X\"},{\"time\":\"Q3\",\"value\":7000,\"group\":\"Y\"},{\"time\":\"Q3\",\"value\":4000,\"group\":\"Z\"}],\"axisXTitle\":\"quarter\",\"axisYTitle\":\"sales\"}",
+    "reference": [
+      "流程图 - Flow Diagram 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"year\":\"2019\",\"value\":800,\"category\":\"A\"},{\"year\":\"2019\",\"value\":1200,\"category\":\"B\"},{\"year\":\"2019\",\"value\":700,\"category\":\"C\"},{\"year\":\"2020\",\"value\":1100,\"category\":\"A\"},{\"year\":\"2020\",\"value\":1600,\"category\":\"B\"},{\"year\":\"2020\",\"value\":900,\"category\":\"C\"},{\"year\":\"2021\",\"value\":1500,\"category\":\"A\"},{\"year\":\"2021\",\"value\":1800,\"category\":\"B\"},{\"year\":\"2021\",\"value\":1300,\"category\":\"C\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"2019\",\"value\":800,\"group\":\"A\"},{\"time\":\"2019\",\"value\":1200,\"group\":\"B\"},{\"time\":\"2019\",\"value\":700,\"group\":\"C\"},{\"time\":\"2020\",\"value\":1100,\"group\":\"A\"},{\"time\":\"2020\",\"value\":1600,\"group\":\"B\"},{\"time\":\"2020\",\"value\":900,\"group\":\"C\"},{\"time\":\"2021\",\"value\":1500,\"group\":\"A\"},{\"time\":\"2021\",\"value\":1800,\"group\":\"B\"},{\"time\":\"2021\",\"value\":1300,\"group\":\"C\"}],\"title\": \"各年份不同类别价值变化\",\"axisXTitle\": \"年份\",\"axisYTitle\": \"价值\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"2019\",\"value\":800,\"group\":\"A\"},{\"time\":\"2019\",\"value\":1200,\"group\":\"B\"},{\"time\":\"2019\",\"value\":700,\"group\":\"C\"},{\"time\":\"2020\",\"value\":1100,\"group\":\"A\"},{\"time\":\"2020\",\"value\":1600,\"group\":\"B\"},{\"time\":\"2020\",\"value\":900,\"group\":\"C\"},{\"time\":\"2021\",\"value\":1500,\"group\":\"A\"},{\"time\":\"2021\",\"value\":1800,\"group\":\"B\"},{\"time\":\"2021\",\"value\":1300,\"group\":\"C\"}],\"axisXTitle\":\"year\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "散点图 - Scatter Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"date\":\"202101\",\"value\":600,\"product\":\"A\"},{\"date\":\"202101\",\"value\":800,\"product\":\"B\"},{\"date\":\"202101\",\"value\":400,\"product\":\"C\"},{\"date\":\"202102\",\"value\":1000,\"product\":\"A\"},{\"date\":\"202102\",\"value\":1200,\"product\":\"B\"},{\"date\":\"202102\",\"value\":700,\"product\":\"C\"},{\"date\":\"202103\",\"value\":1500,\"product\":\"A\"},{\"date\":\"202103\",\"value\":1800,\"product\":\"B\"},{\"date\":\"202103\",\"value\":1300,\"product\":\"C\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"202101\",\"value\":600,\"group\":\"A\"},{\"time\":\"202101\",\"value\":800,\"group\":\"B\"},{\"time\":\"202101\",\"value\":400,\"group\":\"C\"},{\"time\":\"202102\",\"value\":1000,\"group\":\"A\"},{\"time\":\"202102\",\"value\":1200,\"group\":\"B\"},{\"time\":\"202102\",\"value\":700,\"group\":\"C\"},{\"time\":\"202103\",\"value\":1500,\"group\":\"A\"},{\"time\":\"202103\",\"value\":1800,\"group\":\"B\"},{\"time\":\"202103\",\"value\":1300,\"group\":\"C\"}],\"title\":\"产品销售额随时间变化\",\"axisXTitle\":\"日期\",\"axisYTitle\":\"销售额\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"202101\",\"value\":600,\"group\":\"A\"},{\"time\":\"202101\",\"value\":800,\"group\":\"B\"},{\"time\":\"202101\",\"value\":400,\"group\":\"C\"},{\"time\":\"202102\",\"value\":1000,\"group\":\"A\"},{\"time\":\"202102\",\"value\":1200,\"group\":\"B\"},{\"time\":\"202102\",\"value\":700,\"group\":\"C\"},{\"time\":\"202103\",\"value\":1500,\"group\":\"A\"},{\"time\":\"202103\",\"value\":1800,\"group\":\"B\"},{\"time\":\"202103\",\"value\":1300,\"group\":\"C\"}],\"axisXTitle\":\"date\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "散点图 - Scatter Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"month\":\"Jan\",\"value\":400,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":600,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":300,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":700,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":800,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":400,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":900,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":1100,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":600,\"category\":\"C\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":400,\"group\":\"A\"},{\"time\":\"Jan\",\"value\":600,\"group\":\"B\"},{\"time\":\"Jan\",\"value\":300,\"group\":\"C\"},{\"time\":\"Feb\",\"value\":700,\"group\":\"A\"},{\"time\":\"Feb\",\"value\":800,\"group\":\"B\"},{\"time\":\"Feb\",\"value\":400,\"group\":\"C\"},{\"time\":\"Mar\",\"value\":900,\"group\":\"A\"},{\"time\":\"Mar\",\"value\":1100,\"group\":\"B\"},{\"time\":\"Mar\",\"value\":600,\"group\":\"C\"}],\"title\": \"Monthly Value Changes by Category\",\"axisXTitle\": \"Month\",\"axisYTitle\": \"Value\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":400,\"group\":\"A\"},{\"time\":\"Jan\",\"value\":600,\"group\":\"B\"},{\"time\":\"Jan\",\"value\":300,\"group\":\"C\"},{\"time\":\"Feb\",\"value\":700,\"group\":\"A\"},{\"time\":\"Feb\",\"value\":800,\"group\":\"B\"},{\"time\":\"Feb\",\"value\":400,\"group\":\"C\"},{\"time\":\"Mar\",\"value\":900,\"group\":\"A\"},{\"time\":\"Mar\",\"value\":1100,\"group\":\"B\"},{\"time\":\"Mar\",\"value\":600,\"group\":\"C\"}],\"axisXTitle\":\"month\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"quarter\":\"Q1\",\"sales\":500,\"product\":\"X\"},{\"quarter\":\"Q1\",\"sales\":800,\"product\":\"Y\"},{\"quarter\":\"Q1\",\"sales\":300,\"product\":\"Z\"},{\"quarter\":\"Q2\",\"sales\":1200,\"product\":\"X\"},{\"quarter\":\"Q2\",\"sales\":1500,\"product\":\"Y\"},{\"quarter\":\"Q2\",\"sales\":900,\"product\":\"Z\"},{\"quarter\":\"Q3\",\"sales\":1800,\"product\":\"X\"},{\"quarter\":\"Q3\",\"sales\":2200,\"product\":\"Y\"},{\"quarter\":\"Q3\",\"sales\":1500,\"product\":\"Z\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":500,\"group\":\"X\"},{\"time\":\"Q1\",\"value\":800,\"group\":\"Y\"},{\"time\":\"Q1\",\"value\":300,\"group\":\"Z\"},{\"time\":\"Q2\",\"value\":1200,\"group\":\"X\"},{\"time\":\"Q2\",\"value\":1500,\"group\":\"Y\"},{\"time\":\"Q2\",\"value\":900,\"group\":\"Z\"},{\"time\":\"Q3\",\"value\":1800,\"group\":\"X\"},{\"time\":\"Q3\",\"value\":2200,\"group\":\"Y\"},{\"time\":\"Q3\",\"value\":1500,\"group\":\"Z\"}],\"title\":\"产品销售额随季度变化\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Q1\",\"value\":500,\"group\":\"X\"},{\"time\":\"Q1\",\"value\":800,\"group\":\"Y\"},{\"time\":\"Q1\",\"value\":300,\"group\":\"Z\"},{\"time\":\"Q2\",\"value\":1200,\"group\":\"X\"},{\"time\":\"Q2\",\"value\":1500,\"group\":\"Y\"},{\"time\":\"Q2\",\"value\":900,\"group\":\"Z\"},{\"time\":\"Q3\",\"value\":1800,\"group\":\"X\"},{\"time\":\"Q3\",\"value\":2200,\"group\":\"Y\"},{\"time\":\"Q3\",\"value\":1500,\"group\":\"Z\"}],\"axisXTitle\":\"quarter\",\"axisYTitle\":\"sales\"}",
+    "reference": [
+      "散点图 - Scatter Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"date\":\"202101\",\"value\":500,\"product\":\"A\"},{\"date\":\"202101\",\"value\":700,\"product\":\"B\"},{\"date\":\"202101\",\"value\":300,\"product\":\"C\"},{\"date\":\"202102\",\"value\":900,\"product\":\"A\"},{\"date\":\"202102\",\"value\":1100,\"product\":\"B\"},{\"date\":\"202102\",\"value\":600,\"product\":\"C\"},{\"date\":\"202103\",\"value\":1300,\"product\":\"A\"},{\"date\":\"202103\",\"value\":1600,\"product\":\"B\"},{\"date\":\"202103\",\"value\":1100,\"product\":\"C\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"202101\",\"value\":500,\"group\":\"A\"},{\"time\":\"202101\",\"value\":700,\"group\":\"B\"},{\"time\":\"202101\",\"value\":300,\"group\":\"C\"},{\"time\":\"202102\",\"value\":900,\"group\":\"A\"},{\"time\":\"202102\",\"value\":1100,\"group\":\"B\"},{\"time\":\"202102\",\"value\":600,\"group\":\"C\"},{\"time\":\"202103\",\"value\":1300,\"group\":\"A\"},{\"time\":\"202103\",\"value\":1600,\"group\":\"B\"},{\"time\":\"202103\",\"value\":1100,\"group\":\"C\"}],\"title\": \"产品销售额随时间变化\",\"axisXTitle\": \"日期\",\"axisYTitle\": \"销售额\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"202101\",\"value\":500,\"group\":\"A\"},{\"time\":\"202101\",\"value\":700,\"group\":\"B\"},{\"time\":\"202101\",\"value\":300,\"group\":\"C\"},{\"time\":\"202102\",\"value\":900,\"group\":\"A\"},{\"time\":\"202102\",\"value\":1100,\"group\":\"B\"},{\"time\":\"202102\",\"value\":600,\"group\":\"C\"},{\"time\":\"202103\",\"value\":1300,\"group\":\"A\"},{\"time\":\"202103\",\"value\":1600,\"group\":\"B\"},{\"time\":\"202103\",\"value\":1100,\"group\":\"C\"}],\"axisXTitle\":\"date\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "饼图 - Pie Chart 使用示例",
+      "折线图 - Line Chart 使用示例"
+    ],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用折线图可视化我的数据 [{\"month\":\"Jan\",\"value\":700,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":900,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":400,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":1000,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":1200,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":700,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":1500,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":1800,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":1300,\"category\":\"C\"}]",
+    "response": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":700,\"group\":\"A\"},{\"time\":\"Jan\",\"value\":900,\"group\":\"B\"},{\"time\":\"Jan\",\"value\":400,\"group\":\"C\"},{\"time\":\"Feb\",\"value\":1000,\"group\":\"A\"},{\"time\":\"Feb\",\"value\":1200,\"group\":\"B\"},{\"time\":\"Feb\",\"value\":700,\"group\":\"C\"},{\"time\":\"Mar\",\"value\":1500,\"group\":\"A\"},{\"time\":\"Mar\",\"value\":1800,\"group\":\"B\"},{\"time\":\"Mar\",\"value\":1300,\"group\":\"C\"}],\"title\": \"Monthly Value Changes by Category\",\"axisXTitle\": \"Month\",\"axisYTitle\": \"Value\"}",
+    "answer": "{\"type\":\"line\",\"data\":[{\"time\":\"Jan\",\"value\":700,\"group\":\"A\"},{\"time\":\"Jan\",\"value\":900,\"group\":\"B\"},{\"time\":\"Jan\",\"value\":400,\"group\":\"C\"},{\"time\":\"Feb\",\"value\":1000,\"group\":\"A\"},{\"time\":\"Feb\",\"value\":1200,\"group\":\"B\"},{\"time\":\"Feb\",\"value\":700,\"group\":\"C\"},{\"time\":\"Mar\",\"value\":1500,\"group\":\"A\"},{\"time\":\"Mar\",\"value\":1800,\"group\":\"B\"},{\"time\":\"Mar\",\"value\":1300,\"group\":\"C\"}],\"axisXTitle\":\"month\",\"axisYTitle\":\"value\"}",
+    "reference": [
+      "[WIP]双轴图 - DualAxes Chart 使用示例",
+      "折线图 - Line Chart 使用示例",
+      "条形图 - Bar Chart 使用示例"
+    ],
+    "correctness": 1
+  }
+]

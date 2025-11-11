@@ -1,0 +1,193 @@
+[
+  {
+    "type": "text2chart",
+    "question": "某公司 2022 年的收入来源分布为：产品销售收入 55%，服务收入 30%，其他收入 15%。请用饼图可视化这些数据。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "产品销售收入", "value": 55 },
+        { "category": "服务收入", "value": 30 },
+        { "category": "其他收入", "value": 15 }
+      ],
+      "title": "公司收入来源分布"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "某大学学生专业分布为：计算机科学 25%，经济学 20%，心理学 15%，文学 10%，其他 30%。使用饼图展示学生专业分布。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "计算机科学", "value": 25 },
+        { "category": "经济学", "value": 20 },
+        { "category": "心理学", "value": 15 },
+        { "category": "文学", "value": 10 },
+        { "category": "其他", "value": 30 }
+      ],
+      "title": "大学学生专业分布"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "一家咖啡店的饮品销售比例为：咖啡 60%，茶 25%，果汁 15%。请用环图可视化这些饮品销售数据。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "咖啡", "value": 60 },
+        { "category": "茶", "value": 25 },
+        { "category": "果汁", "value": 15 }
+      ],
+      "innerRadius": 0.6,
+      "title": "咖啡店饮品销售比例"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "某城市交通出行方式的分布为：公交车 40%，地铁 30%，自行车 20%，其他 10%。请用饼图展示这些交通方式的使用比例。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "公交车", "value": 40 },
+        { "category": "地铁", "value": 30 },
+        { "category": "自行车", "value": 20 },
+        { "category": "其他", "value": 10 }
+      ],
+      "title": "城市交通出行方式"
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "某公司员工的学历构成为：本科 50%，硕士 30%，博士 10%，其他 10%。请用环图可视化员工学历构成。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "本科", "value": 50 },
+        { "category": "硕士", "value": 30 },
+        { "category": "博士", "value": 10 },
+        { "category": "其他", "value": 10 }
+      ],
+      "innerRadius": 0.6,
+      "title": "公司员工学历构成"
+    }
+  },
+  {
+    "question": "根据教育部门的报告，某大学各个学院的毕业生就业率如下：工程学院 85%，文学院 75%，理学院 80%，商学院 90%，农学院 70%。用环图展示这些就业数据。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "工程学院", "value": 85 },
+        { "category": "文学院", "value": 75 },
+        { "category": "理学院", "value": 80 },
+        { "category": "商学院", "value": 90 },
+        { "category": "农学院", "value": 70 }
+      ],
+      "innerRadius": 0.6,
+      "title": "各学院毕业生就业率"
+    }
+  },
+  {
+    "question": "根据环保组织的调查，全球温室气体排放的主要来源分布如下：能源生产与使用占 70%，农业活动占 12%，工业过程占 11%，废物处理占 5%，其他占 2%。用饼图展示这些排放数据。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "能源生产与使用", "value": 70 },
+        { "category": "农业活动", "value": 12 },
+        { "category": "工业过程", "value": 11 },
+        { "category": "废物处理", "value": 5 },
+        { "category": "其他", "value": 2 }
+      ],
+      "title": "全球温室气体排放来源分布"
+    }
+  },
+  {
+    "question": "根据旅游部门的统计，某城市游客的来源地分布如下：国内游客占 60%，亚洲游客占 20%，欧洲游客占 10%，美洲游客占 5%，其他占 5%。用饼图展示这些游客数据。",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "国内游客", "value": 60 },
+        { "category": "亚洲游客", "value": 20 },
+        { "category": "欧洲游客", "value": 10 },
+        { "category": "美洲游客", "value": 5 },
+        { "category": "其他", "value": 5 }
+      ],
+      "title": "某城市游客来源地分布"
+    }
+  },
+
+  {
+    "type": "data2chart",
+    "question": "用饼图可视化我的数据 [{ \"name\": \"苹果\", \"sales\": 5000 },{ \"name\": \"香蕉\", \"sales\": 3000 },{ \"name\": \"橙子\", \"sales\": 2000 }]",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "苹果", "value": 5000 },
+        { "category": "香蕉", "value": 3000 },
+        { "category": "橙子", "value": 2000 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用饼图可视化我的数据 [{ \"product\": \"电子产品\", \"revenue\": 100000 },{ \"product\": \"家具\", \"revenue\": 40000 },{ \"product\": \"服装\", \"revenue\": 60000 }]",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "电子产品", "value": 100000 },
+        { "category": "家具", "value": 40000 },
+        { "category": "服装", "value": 60000 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用饼图可视化我的数据 [{ \"name\": \"手机用户\", \"count\": 70000 },{ \"name\": \"电脑用户\", \"count\": 20000 },{ \"name\": \"平板用户\", \"count\": 10000 }]",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "手机用户", "value": 70000 },
+        { "category": "电脑用户", "value": 20000 },
+        { "category": "平板用户", "value": 10000 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用环图可视化我的数据 [{ \"project\": \"A 类项目\", \"investment\": 150000 },{ \"project\": \"B 类项目\", \"investment\": 50000 },{ \"project\": \"C 类项目\", \"investment\": 100000 }]",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "A 类项目", "value": 150000 },
+        { "category": "B 类项目", "value": 50000 },
+        { "category": "C 类项目", "value": 100000 }
+      ],
+      "innerRadius": 0.6
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用环图可视化我的数据 [{ \"area\": \"北美\", \"population\": 580000000 },{ \"area\": \"欧洲\", \"population\": 750000000 },{ \"area\": \"亚洲\", \"population\": 4500000000 }]",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "北美", "value": 580000000 },
+        { "category": "欧洲", "value": 750000000 },
+        { "category": "亚洲", "value": 4500000000 }
+      ],
+      "innerRadius": 0.6
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用环图可视化我的数据 [{ \"title\": \"步行\",\"count\": 120.0 },{ \"title\": \"骑自行车\", \"count\": 80.0 },{ \"title\": \"开车\" ,\"count\": 200.0 },{ \"title\": \"公共交通\" ,\"count\": 150.0 }]",
+    "answer": {
+      "type": "pie",
+      "data": [
+        { "category": "步行", "value": 120 },
+        { "category": "骑自行车", "value": 80 },
+        { "category": "开车", "value": 200 },
+        { "category": "公共交通", "value": 150 }
+      ],
+      "innerRadius": 0.6
+    }
+  }
+]

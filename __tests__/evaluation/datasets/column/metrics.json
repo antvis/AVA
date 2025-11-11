@@ -1,0 +1,210 @@
+[
+  {
+    "type": "text2chart",
+    "question": "不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%。用柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"Facebook\",\"value\":8},{\"category\":\"Twitter\",\"value\":12},{\"category\":\"Instagram\",\"value\":22}],\"title\":\"不同社交媒体平台的用户增长情况\",\"axisXTitle\":\"平台\",\"axisYTitle\":\"用户增长率（%）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"Facebook\",\"value\":8},{\"category\":\"Twitter\",\"value\":12},{\"category\":\"Instagram\",\"value\":22}],\"title\":\"2018 年社交媒体用户增长\",\"axisXTitle\":\"平台\",\"axisYTitle\":\"增长率 (%)\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "各部门月度支出情况，市场部支出 30 万，人力资源部支出 20 万，技术部支出 50 万，财务部支出 40 万。用柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"市场部\",\"value\":30},{\"category\":\"人力资源部\",\"value\":20},{\"category\":\"技术部\",\"value\":50},{\"category\":\"财务部\",\"value\":40}],\"title\":\"各部门月度支出情况\",\"axisXTitle\":\"部门\",\"axisYTitle\":\"支出（万元）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"市场部\",\"value\":30},{\"category\":\"人力资源部\",\"value\":20},{\"category\":\"技术部\",\"value\":50},{\"category\":\"财务部\",\"value\":40}],\"title\":\"部门月度支出\",\"axisXTitle\":\"部门\",\"axisYTitle\":\"支出 (万)\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "各城市垃圾分类回收量，北京 200 吨，上海 180 吨，深圳 150 吨，杭州 170 吨。用柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":200},{\"category\":\"上海\",\"value\":180},{\"category\":\"深圳\",\"value\":150},{\"category\":\"杭州\",\"value\":170}],\"title\":\"各城市垃圾分类回收量\",\"axisXTitle\":\"城市\",\"axisYTitle\":\"回收量（吨）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":200},{\"category\":\"上海\",\"value\":180},{\"category\":\"深圳\",\"value\":150},{\"category\":\"杭州\",\"value\":170}],\"title\":\"城市垃圾分类回收量\",\"axisXTitle\":\"城市\",\"axisYTitle\":\"回收量 (吨)\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "2023 年汽车销量，各汽车品牌销量情况，丰田销量 300 万辆，本田销量 250 万辆，特斯拉销量 150 万辆，福特销量 180 万辆。用柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"丰田\",\"value\":300},{\"category\":\"本田\",\"value\":250},{\"category\":\"特斯拉\",\"value\":150},{\"category\":\"福特\",\"value\":180}],\"title\":\"2023年汽车销量\",\"axisXTitle\":\"汽车品牌\",\"axisYTitle\":\"销量（万辆）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"丰田\",\"value\":300},{\"category\":\"本田\",\"value\":250},{\"category\":\"特斯拉\",\"value\":150},{\"category\":\"福特\",\"value\":180}],\"title\":\"2023 年汽车销量\",\"axisXTitle\":\"品牌\",\"axisYTitle\":\"销量 (万辆)\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "统计某学校不同年级学生的数量，一年级有 200 人，二年级有 250 人，三年级有 300 人，四年级有 350 人。用柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"一年级\",\"value\":200},{\"category\":\"二年级\",\"value\":250},{\"category\":\"三年级\",\"value\":300},{\"category\":\"四年级\",\"value\":350}],\"title\":\"各年级学生数量\",\"axisXTitle\":\"年级\",\"axisYTitle\":\"学生数量\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"一年级\",\"value\":200},{\"category\":\"二年级\",\"value\":250},{\"category\":\"三年级\",\"value\":300},{\"category\":\"四年级\",\"value\":350}],\"title\":\"某学校各年级学生数量\",\"axisXTitle\":\"年级\",\"axisYTitle\":\"学生数量\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "不同年龄段人群在社交媒体上的活跃度对比，18-24岁为60%，25-34岁为70%，35-44岁为65%，45-54岁为55%，55岁以上为40%。用柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"18-24岁\",\"value\":60},{\"category\":\"25-34岁\",\"value\":70},{\"category\":\"35-44岁\",\"value\":65},{\"category\":\"45-54岁\",\"value\":55},{\"category\":\"55岁以上\",\"value\":40}],\"title\":\"不同年龄段社交媒体活跃度对比\",\"axisXTitle\":\"年龄段\",\"axisYTitle\":\"活跃度(%)\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"18-24\",\"value\":60},{\"category\":\"25-34\",\"value\":70},{\"category\":\"35-44\",\"value\":65},{\"category\":\"45-54\",\"value\":55},{\"category\":\"55岁以上\",\"value\":40}],\"title\":\"不同年龄段人群在社交媒体上的活跃度\",\"axisXTitle\":\"年龄\",\"axisYTitle\":\"活跃度（%）\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "不同品牌手机的市场份额对比，苹果为30%，三星为25%，华为为20%，小米为15%，OPPO为10%。用柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"苹果\",\"value\":30},{\"category\":\"三星\",\"value\":25},{\"category\":\"华为\",\"value\":20},{\"category\":\"小米\",\"value\":15},{\"category\":\"OPPO\",\"value\":10}],\"title\":\"不同品牌手机市场份额\",\"axisXTitle\":\"品牌\",\"axisYTitle\":\"市场份额（%）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"苹果\",\"value\":30},{\"category\":\"三星\",\"value\":25},{\"category\":\"华为\",\"value\":20},{\"category\":\"小米\",\"value\":15},{\"category\":\"OPPO\",\"value\":10}],\"title\":\"不同品牌手机的市场份额\",\"axisXTitle\":\"品牌\",\"axisYTitle\":\"市场份额（%）\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "2023年上半年每月用户增长率变化，一月增长率为5%，二月为7%，三月为10%，四月为8%，五月为6%，六月为9%。采用柱形图来展示整体的增长趋势。",
+    "response": "{\"type\":\"bar\",\"data\":[{\"time\":\"一月\",\"value\":5},{\"time\":\"二月\",\"value\":7},{\"time\":\"三月\",\"value\":10},{\"time\":\"四月\",\"value\":8},{\"time\":\"五月\",\"value\":6},{\"time\":\"六月\",\"value\":9}],\"title\": \"2023年上半年每月用户增长率\",\"axisXTitle\": \"月份\",\"axisYTitle\": \"增长率（%）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"一月\",\"value\":5},{\"category\":\"二月\",\"value\":7},{\"category\":\"三月\",\"value\":10},{\"category\":\"四月\",\"value\":8},{\"category\":\"五月\",\"value\":6},{\"category\":\"六月\",\"value\":9}],\"title\":\"2023上半年用户增长率\",\"axisXTitle\":\"月份\",\"axisYTitle\":\"增长率 (%)\"}",
+    "reference": [],
+    "correctness": 0
+  },
+  {
+    "type": "text2chart",
+    "question": "各地区水果和蔬菜的年度销量情况，其中北京水果为 230 吨，蔬菜为 180 吨；上海水果为 210 吨，蔬菜为 170 吨；广州水果为 195 吨，蔬菜为 160 吨。使用分组柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":230,\"group\":\"水果\"},{\"category\":\"北京\",\"value\":180,\"group\":\"蔬菜\"},{\"category\":\"上海\",\"value\":210,\"group\":\"水果\"},{\"category\":\"上海\",\"value\":170,\"group\":\"蔬菜\"},{\"category\":\"广州\",\"value\":195,\"group\":\"水果\"},{\"category\":\"广州\",\"value\":160,\"group\":\"蔬菜\"}],\"group\":true,\"title\":\"各地区水果和蔬菜的年度销量情况\",\"axisXTitle\":\"地区\",\"axisYTitle\":\"销量（吨）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":230,\"group\":\"水果\"},{\"category\":\"北京\",\"value\":180,\"group\":\"蔬菜\"},{\"category\":\"上海\",\"value\":210,\"group\":\"水果\"},{\"category\":\"上海\",\"value\":170,\"group\":\"蔬菜\"},{\"category\":\"广州\",\"value\":195,\"group\":\"水果\"},{\"category\":\"广州\",\"value\":160,\"group\":\"蔬菜\"}],\"group\":true,\"title\":\"各地区水果和蔬菜年度销量\",\"axisXTitle\":\"地区\",\"axisYTitle\":\"销量（吨）\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "2019年和2020年某公司各季度的利润对比，其中2019年Q1为 12 万元，Q2为 15 万元，Q3为 20 万元，Q4为 18 万元；2020年Q1为 14 万元，Q2为 16 万元，Q3为 22 万元，Q4为 19 万元。使用分组柱形图可视化",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"2019Q1\",\"value\":12,\"group\":\"2019\"},{\"category\":\"2019Q2\",\"value\":15,\"group\":\"2019\"},{\"category\":\"2019Q3\",\"value\":20,\"group\":\"2019\"},{\"category\":\"2019Q4\",\"value\":18,\"group\":\"2019\"},{\"category\":\"2020Q1\",\"value\":14,\"group\":\"2020\"},{\"category\":\"2020Q2\",\"value\":16,\"group\":\"2020\"},{\"category\":\"2020Q3\",\"value\":22,\"group\":\"2020\"},{\"category\":\"2020Q4\",\"value\":19,\"group\":\"2020\"}],\"group\":true,\"title\":\"2019年和2020年各季度利润对比\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"利润（万元）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"Q1\",\"value\":12,\"group\":\"2019\"},{\"category\":\"Q2\",\"value\":15,\"group\":\"2019\"},{\"category\":\"Q3\",\"value\":20,\"group\":\"2019\"},{\"category\":\"Q4\",\"value\":18,\"group\":\"2019\"},{\"category\":\"Q1\",\"value\":14,\"group\":\"2020\"},{\"category\":\"Q2\",\"value\":16,\"group\":\"2020\"},{\"category\":\"Q3\",\"value\":22,\"group\":\"2020\"},{\"category\":\"Q4\",\"value\":19,\"group\":\"2020\"}],\"group\":true,\"title\":\"2019年和2020年公司季度利润对比\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"利润（万元）\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "不同年龄段人群对于阅读纸质书和电子书的偏好对比，18-25岁分别是30%与70%，26-35岁分别是45%与55%，36-45岁分别是50%与50%，46-55岁分别是60%与40%，56岁以上分别是70%与30%。用分组柱形图可视化。",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"18-25岁\",\"value\":30,\"group\":\"纸质书\"},{\"category\":\"18-25岁\",\"value\":70,\"group\":\"电子书\"},{\"category\":\"26-35岁\",\"value\":45,\"group\":\"纸质书\"},{\"category\":\"26-35岁\",\"value\":55,\"group\":\"电子书\"},{\"category\":\"36-45岁\",\"value\":50,\"group\":\"纸质书\"},{\"category\":\"36-45岁\",\"value\":50,\"group\":\"电子书\"},{\"category\":\"46-55岁\",\"value\":60,\"group\":\"纸质书\"},{\"category\":\"46-55岁\",\"value\":40,\"group\":\"电子书\"},{\"category\":\"56岁以上\",\"value\":70,\"group\":\"纸质书\"},{\"category\":\"56岁以上\",\"value\":30,\"group\":\"电子书\"}],\"group\":true,\"title\":\"不同年龄段人群阅读偏好\",\"axisXTitle\":\"年龄段\",\"axisYTitle\":\"偏好比例(%)\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"18-25\",\"value\":30,\"group\":\"纸质书\"},{\"category\":\"18-25\",\"value\":70,\"group\":\"电子书\"},{\"category\":\"26-35\",\"value\":45,\"group\":\"纸质书\"},{\"category\":\"26-35\",\"value\":55,\"group\":\"电子书\"},{\"category\":\"36-45\",\"value\":50,\"group\":\"纸质书\"},{\"category\":\"36-45\",\"value\":50,\"group\":\"电子书\"},{\"category\":\"46-55\",\"value\":60,\"group\":\"纸质书\"},{\"category\":\"46-55\",\"value\":40,\"group\":\"电子书\"},{\"category\":\"56以上\",\"value\":70,\"group\":\"纸质书\"},{\"category\":\"56以上\",\"value\":30,\"group\":\"电子书\"}],\"group\":true,\"title\":\"各年龄段对纸质书和电子书的偏好\",\"axisXTitle\":\"年龄段\",\"axisYTitle\":\"百分比 (%)\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "不同年龄段人群对于阅读纸质书和电子书的偏好对比，18-25岁分别是30%与70%，26-35岁分别是45%与55%，36-45岁分别是50%与50%，46-55岁分别是60%与40%，56岁以上分别是70%与30%。用柱形图可视化。",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"18-25岁\",\"value\":30,\"group\":\"纸质书\"},{\"category\":\"18-25岁\",\"value\":70,\"group\":\"电子书\"},{\"category\":\"26-35岁\",\"value\":45,\"group\":\"纸质书\"},{\"category\":\"26-35岁\",\"value\":55,\"group\":\"电子书\"},{\"category\":\"36-45岁\",\"value\":50,\"group\":\"纸质书\"},{\"category\":\"36-45岁\",\"value\":50,\"group\":\"电子书\"},{\"category\":\"46-55岁\",\"value\":60,\"group\":\"纸质书\"},{\"category\":\"46-55岁\",\"value\":40,\"group\":\"电子书\"},{\"category\":\"56岁以上\",\"value\":70,\"group\":\"纸质书\"},{\"category\":\"56岁以上\",\"value\":30,\"group\":\"电子书\"}],\"group\":true,\"title\":\"不同年龄段阅读偏好\",\"axisXTitle\":\"年龄段\",\"axisYTitle\":\"偏好比例(%)\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"18-25\",\"value\":30,\"group\":\"纸质书\"},{\"category\":\"18-25\",\"value\":70,\"group\":\"电子书\"},{\"category\":\"26-35\",\"value\":45,\"group\":\"纸质书\"},{\"category\":\"26-35\",\"value\":55,\"group\":\"电子书\"},{\"category\":\"36-45\",\"value\":50,\"group\":\"纸质书\"},{\"category\":\"36-45\",\"value\":50,\"group\":\"电子书\"},{\"category\":\"46-55\",\"value\":60,\"group\":\"纸质书\"},{\"category\":\"46-55\",\"value\":40,\"group\":\"电子书\"},{\"category\":\"56以上\",\"value\":70,\"group\":\"纸质书\"},{\"category\":\"56以上\",\"value\":30,\"group\":\"电子书\"}],\"group\":true,\"title\":\"各年龄段对纸质书和电子书的偏好\",\"axisXTitle\":\"年龄段\",\"axisYTitle\":\"百分比 (%)\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "四个季度中A、B两家公司的销售额比较，第一季度A公司为120万元，B公司为90万元；第二季度A公司为150万元，B公司为100万元；第三季度A公司为180万元，B公司为110万元；第四季度A公司为200万元，B公司为120万元。用堆叠柱形图展示。",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"第一季度\",\"value\":120,\"group\":\"A公司\"},{\"category\":\"第一季度\",\"value\":90,\"group\":\"B公司\"},{\"category\":\"第二季度\",\"value\":150,\"group\":\"A公司\"},{\"category\":\"第二季度\",\"value\":100,\"group\":\"B公司\"},{\"category\":\"第三季度\",\"value\":180,\"group\":\"A公司\"},{\"category\":\"第三季度\",\"value\":110,\"group\":\"B公司\"},{\"category\":\"第四季度\",\"value\":200,\"group\":\"A公司\"},{\"category\":\"第四季度\",\"value\":120,\"group\":\"B公司\"}],\"stack\":true,\"title\":\"A、B两家公司销售额比较\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额（万元）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"第一季度\",\"value\":120,\"group\":\"A公司\"},{\"category\":\"第一季度\",\"value\":90,\"group\":\"B公司\"},{\"category\":\"第二季度\",\"value\":150,\"group\":\"A公司\"},{\"category\":\"第二季度\",\"value\":100,\"group\":\"B公司\"},{\"category\":\"第三季度\",\"value\":180,\"group\":\"A公司\"},{\"category\":\"第三季度\",\"value\":110,\"group\":\"B公司\"},{\"category\":\"第四季度\",\"value\":200,\"group\":\"A公司\"},{\"category\":\"第四季度\",\"value\":120,\"group\":\"B公司\"}],\"stack\":true,\"title\":\"AB两公司季度销售额比较\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额 (万元)\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用柱形图可视化我公司的季度销售数据 [{ \"title\": \"Q1\", \"sales\": 15000 },{ \"title\": \"Q2\", \"sales\": 20000 },{ \"title\": \"Q3\", \"sales\": 18000 },{ \"title\": \"Q4\", \"sales\": 22000 }]",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"Q1\",\"value\":15000},{\"category\":\"Q2\",\"value\":20000},{\"category\":\"Q3\",\"value\":18000},{\"category\":\"Q4\",\"value\":22000}],\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"Q1\",\"value\":15000},{\"category\":\"Q2\",\"value\":20000},{\"category\":\"Q3\",\"value\":18000},{\"category\":\"Q4\",\"value\":22000}],\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用柱形图展示各部门的员工人数 [{ \"title\": \"人事部\", \"employees\": 10 },{ \"title\": \"技术部\", \"employees\": 30 },{ \"title\": \"销售部\", \"employees\": 20 },{ \"title\": \"财务部\", \"employees\": 5 }]",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"人事部\",\"value\":10},{\"category\":\"技术部\",\"value\":30},{\"category\":\"销售部\",\"value\":20},{\"category\":\"财务部\",\"value\":5}],\"axisXTitle\":\"部门\",\"axisYTitle\":\"员工人数\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"人事部\",\"value\":10},{\"category\":\"技术部\",\"value\":30},{\"category\":\"销售部\",\"value\":20},{\"category\":\"财务部\",\"value\":5}],\"axisXTitle\":\"部门\",\"axisYTitle\":\"员工数\"}",
+    "reference": ["柱形图 - Column Chart 图表属性"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用柱形图展示产品类别销售数据 [{ \"title\": \"电子产品\", \"sales\": 50000 },{ \"title\": \"服装\", \"sales\": 30000 },{ \"title\": \"家具\", \"sales\": 15000 }]",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"电子产品\",\"value\":50000},{\"category\":\"服装\",\"value\":30000},{\"category\":\"家具\",\"value\":15000}],\"axisXTitle\":\"产品类别\",\"axisYTitle\":\"销售数据\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"电子产品\",\"value\":50000},{\"category\":\"服装\",\"value\":30000},{\"category\":\"家具\",\"value\":15000}],\"axisXTitle\":\"产品\",\"axisYTitle\":\"销售\"}",
+    "reference": ["柱形图 - Column Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用柱形图展示不同城市的平均气温 [{ \"title\": \"北京\", \"temperature\": 15 },{ \"title\": \"上海\", \"temperature\": 18 },{ \"title\": \"广州\", \"temperature\": 22 }]",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":15},{\"category\":\"上海\",\"value\":18},{\"category\":\"广州\",\"value\":22}],\"axisXTitle\":\"城市\",\"axisYTitle\":\"平均气温(℃)\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":15},{\"category\":\"上海\",\"value\":18},{\"category\":\"广州\",\"value\":22}],\"axisXTitle\":\"城市\",\"axisYTitle\":\"平均气温\"}",
+    "reference": ["柱形图 - Column Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "我想要一个柱状图来展示不同城市的游客数量，数据如下：[{ \"city\": \"北京\",\"visitors\": 89000.0 },{ \"city\": \"上海\", \"visitors\": 105000.0 },{ \"city\": \"广州\" ,\"visitors\": 72000.0 }, {\"city\": \"深圳\", \"visitors\": 68000.0 }]. 图表标题设为'主要城市游客量比较'.",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":89000.0},{\"category\":\"上海\",\"value\":105000.0},{\"category\":\"广州\",\"value\":72000.0},{\"category\":\"深圳\",\"value\":68000.0}],\"title\":\"主要城市游客量比较\",\"axisXTitle\":\"城市\",\"axisYTitle\":\"游客数量\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"北京\",\"value\":89000},{\"category\":\"上海\",\"value\":105000},{\"category\":\"广州\",\"value\":72000},{\"category\":\"深圳\",\"value\":68000}],\"title\":\"主要城市游客量比较\"}",
+    "reference": ["柱形图 - Column Chart 适用场景"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "使用柱形图来表示不同年龄段的人口比例，具体数据是这样的: [{ \"ageGroup\": \"<18岁\",\"percentage\": 25.0 },{ \"ageGroup\": \"18-30岁\", \"percentage\": 30.0 },{ \"ageGroup\": \"31-50岁\" ,\"percentage\": 20.0 }, {\"ageGroup\": \">50岁\", \"percentage\": 25.0 }]. 请确保x轴显示的是年龄组别.",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"<18岁\",\"value\":25.0},{\"category\":\"18-30岁\",\"value\":30.0},{\"category\":\"31-50岁\",\"value\":20.0},{\"category\":\">50岁\",\"value\":25.0}],\"axisXTitle\":\"年龄组别\",\"axisYTitle\":\"人口比例(%)\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"<18岁\",\"value\":25},{\"category\":\"18-30岁\",\"value\":30},{\"category\":\"31-50岁\",\"value\":20},{\"category\":\">50岁\",\"value\":25}],\"axisXTitle\":\"年龄组别\"}",
+    "reference": ["柱形图 - Column Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "我希望以柱形图的形式展现公司过去五年每年的总收入。数据如下：[{ \"year\": 2017, \"revenue\": 5000000.0 }, {\"year\": 2018, \"revenue\": 6000000.0}, {\"year\": 2019, \"revenue\": 7000000.0}, {\"year\": 2020, \"revenue\": 8000000.0}, {\"year\": 2021, \"revenue\": 9000000.0}]. 给图表加个标题叫'公司年度收入增长'.",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"2017\",\"value\":5000000.0},{\"category\":\"2018\",\"value\":6000000.0},{\"category\":\"2019\",\"value\":7000000.0},{\"category\":\"2020\",\"value\":8000000.0},{\"category\":\"2021\",\"value\":9000000.0}],\"title\":\"公司年度收入增长\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"收入（元）\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"2017\",\"value\":5000000},{\"category\":\"2018\",\"value\":6000000},{\"category\":\"2019\",\"value\":7000000},{\"category\":\"2020\",\"value\":8000000},{\"category\":\"2021\",\"value\":9000000}],\"title\":\"公司年度收入增长\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用分组柱形图可视化我的公司不同部门的员工数，数据如下：{ 'Sales': { '2020': 50, '2021': 55 }, 'Engineering': { '2020': 100, '2021': 110 }, 'Marketing': { '2020': 30, '2021': 35 } }",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"2020\",\"value\":50,\"group\":\"Sales\"},{\"category\":\"2021\",\"value\":55,\"group\":\"Sales\"},{\"category\":\"2020\",\"value\":100,\"group\":\"Engineering\"},{\"category\":\"2021\",\"value\":110,\"group\":\"Engineering\"},{\"category\":\"2020\",\"value\":30,\"group\":\"Marketing\"},{\"category\":\"2021\",\"value\":35,\"group\":\"Marketing\"}],\"group\":true,\"title\":\"不同部门员工数对比\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"员工数\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"2020\",\"value\":50,\"group\":\"Sales\"},{\"category\":\"2021\",\"value\":55,\"group\":\"Sales\"},{\"category\":\"2020\",\"value\":100,\"group\":\"Engineering\"},{\"category\":\"2021\",\"value\":110,\"group\":\"Engineering\"},{\"category\":\"2020\",\"value\":30,\"group\":\"Marketing\"},{\"category\":\"2021\",\"value\":35,\"group\":\"Marketing\"}],\"group\":true,\"axisXTitle\":\"年份\",\"axisYTitle\":\"员工数\"}",
+    "reference": ["柱形图 - Column Chart 图表用法 数据要求"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用堆叠柱形图可视化我的公司不同产品线的销售数据，数据如下：{ 'Product A': { '2020': 20000, '2021': 25000 }, 'Product B': { '2020': 30000, '2021': 35000 }, 'Product C': { '2020': 15000, '2021': 20000 } }",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"2020\",\"value\":20000,\"group\":\"Product A\"},{\"category\":\"2021\",\"value\":25000,\"group\":\"Product A\"},{\"category\":\"2020\",\"value\":30000,\"group\":\"Product B\"},{\"category\":\"2021\",\"value\":35000,\"group\":\"Product B\"},{\"category\":\"2020\",\"value\":15000,\"group\":\"Product C\"},{\"category\":\"2021\",\"value\":20000,\"group\":\"Product C\"}],\"stack\":true,\"title\":\"不同产品线的销售数据\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"销售额\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"2020\",\"value\":20000,\"group\":\"Product A\"},{\"category\":\"2021\",\"value\":25000,\"group\":\"Product A\"},{\"category\":\"2020\",\"value\":30000,\"group\":\"Product B\"},{\"category\":\"2021\",\"value\":35000,\"group\":\"Product B\"},{\"category\":\"2020\",\"value\":15000,\"group\":\"Product C\"},{\"category\":\"2021\",\"value\":20000,\"group\":\"Product C\"}],\"stack\":true,\"axisXTitle\":\"年份\",\"axisYTitle\":\"售量\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用柱形图可视化我不同城市的客户数量，数据如下：{ 'City A': { '2020': 1000, '2021': 1200 }, 'City B': { '2020': 1500, '2021': 1800 }, 'City C': { '2020': 2000, '2021': 2500 } }",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"City A 2020\",\"value\":1000},{\"category\":\"City A 2021\",\"value\":1200},{\"category\":\"City B 2020\",\"value\":1500},{\"category\":\"City B 2021\",\"value\":1800},{\"category\":\"City C 2020\",\"value\":2000},{\"category\":\"City C 2021\",\"value\":2500}],\"title\":\"不同城市的客户数量变化\",\"axisXTitle\":\"城市与年份\",\"axisYTitle\":\"客户数量\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"2020\",\"value\":1000,\"group\":\"City A\"},{\"category\":\"2021\",\"value\":1200,\"group\":\"City A\"},{\"category\":\"2020\",\"value\":1500,\"group\":\"City B\"},{\"category\":\"2021\",\"value\":1800,\"group\":\"City B\"},{\"category\":\"2020\",\"value\":2000,\"group\":\"City C\"},{\"category\":\"2021\",\"value\":2500,\"group\":\"City C\"}],\"stack\":true,\"axisXTitle\":\"年份\",\"axisYTitle\":\"客户数量\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 0
+  },
+  {
+    "type": "data2chart",
+    "question": "用柱形图可视化我不同季度的销售数据，数据如下：{ 'Q1': { '2020': 10000, '2021': 12000 }, 'Q2': { '2020': 15000, '2021': 18000 }, 'Q3': { '2020': 20000, '2021': 25000 }, 'Q4': { '2020': 25000, '2021': 30000 } }",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"Q1 2020\",\"value\":10000,\"group\":\"2020\"},{\"category\":\"Q1 2021\",\"value\":12000,\"group\":\"2021\"},{\"category\":\"Q2 2020\",\"value\":15000,\"group\":\"2020\"},{\"category\":\"Q2 2021\",\"value\":18000,\"group\":\"2021\"},{\"category\":\"Q3 2020\",\"value\":20000,\"group\":\"2020\"},{\"category\":\"Q3 2021\",\"value\":25000,\"group\":\"2021\"},{\"category\":\"Q4 2020\",\"value\":25000,\"group\":\"2020\"},{\"category\":\"Q4 2021\",\"value\":30000,\"group\":\"2021\"}],\"group\":true,\"title\":\"不同季度的销售数据\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"2020\",\"value\":10000,\"group\":\"Q1\"},{\"category\":\"2021\",\"value\":12000,\"group\":\"Q1\"},{\"category\":\"2020\",\"value\":15000,\"group\":\"Q2\"},{\"category\":\"2021\",\"value\":18000,\"group\":\"Q2\"},{\"category\":\"2020\",\"value\":20000,\"group\":\"Q3\"},{\"category\":\"2021\",\"value\":25000,\"group\":\"Q3\"},{\"category\":\"2020\",\"value\":25000,\"group\":\"Q4\"},{\"category\":\"2021\",\"value\":30000,\"group\":\"Q4\"}],\"group\":true,\"axisXTitle\":\"年份\",\"axisYTitle\":\"售量\"}",
+    "reference": ["柱形图 - Column Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用分组柱形图可视化各类产品的月销售额，数据如下：{ 'Product A': { 'Jan': 1200, 'Feb': 1400 }, 'Product B': { 'Jan': 1500, 'Feb': 1700 }, 'Product C': { 'Jan': 1800, 'Feb': 2000 } }",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"Jan\",\"value\":1200,\"group\":\"Product A\"},{\"category\":\"Jan\",\"value\":1500,\"group\":\"Product B\"},{\"category\":\"Jan\",\"value\":1800,\"group\":\"Product C\"},{\"category\":\"Feb\",\"value\":1400,\"group\":\"Product A\"},{\"category\":\"Feb\",\"value\":1700,\"group\":\"Product B\"},{\"category\":\"Feb\",\"value\":2000,\"group\":\"Product C\"}],\"group\":true,\"title\":\"各类产品的月销售额\",\"axisXTitle\":\"月份\",\"axisYTitle\":\"销售额\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"Jan\",\"value\":1200,\"group\":\"Product A\"},{\"category\":\"Feb\",\"value\":1400,\"group\":\"Product A\"},{\"category\":\"Jan\",\"value\":1500,\"group\":\"Product B\"},{\"category\":\"Feb\",\"value\":1700,\"group\":\"Product B\"},{\"category\":\"Jan\",\"value\":1800,\"group\":\"Product C\"},{\"category\":\"Feb\",\"value\":2000,\"group\":\"Product C\"}],\"group\":true,\"axisXTitle\":\"Month\",\"axisYTitle\":\"Sales\"}",
+    "reference": ["柱形图 - Column Chart 图表用法 数据要求"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用堆叠柱形图显示不同店铺的日均访客量，数据如下：{ 'Store X': { 'Monday': 100, 'Tuesday': 120 }, 'Store Y': { 'Monday': 150, 'Tuesday': 130 }, 'Store Z': { 'Monday': 200, 'Tuesday': 220 } }",
+    "response": "{\"type\":\"column\",\"data\":[{\"category\":\"Monday\",\"value\":100,\"group\":\"Store X\"},{\"category\":\"Monday\",\"value\":150,\"group\":\"Store Y\"},{\"category\":\"Monday\",\"value\":200,\"group\":\"Store Z\"},{\"category\":\"Tuesday\",\"value\":120,\"group\":\"Store X\"},{\"category\":\"Tuesday\",\"value\":130,\"group\":\"Store Y\"},{\"category\":\"Tuesday\",\"value\":220,\"group\":\"Store Z\"}],\"stack\":true,\"title\":\"不同店铺的日均访客量\",\"axisXTitle\":\"星期\",\"axisYTitle\":\"访客量\"}",
+    "answer": "{\"type\":\"column\",\"data\":[{\"category\":\"Monday\",\"value\":100,\"group\":\"Store X\"},{\"category\":\"Tuesday\",\"value\":120,\"group\":\"Store X\"},{\"category\":\"Monday\",\"value\":150,\"group\":\"Store Y\"},{\"category\":\"Tuesday\",\"value\":130,\"group\":\"Store Y\"},{\"category\":\"Monday\",\"value\":200,\"group\":\"Store Z\"},{\"category\":\"Tuesday\",\"value\":220,\"group\":\"Store Z\"}],\"stack\":true,\"axisXTitle\":\"Day\",\"axisYTitle\":\"Visitors\"}",
+    "reference": ["柱形图 - Column Chart 图表用法 数据要求"],
+    "correctness": 1
+  }
+]

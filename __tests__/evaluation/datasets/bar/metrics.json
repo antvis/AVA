@@ -1,0 +1,162 @@
+[
+  {
+    "type": "text2chart",
+    "question": "某品牌手机销量的年度变化，2018 年销量为 500 万台，2019 年销量为 750 万台，2020 年销量为 900 万台。用条形图可视化。",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"2018 年\",\"value\":500},{\"category\":\"2019 年\",\"value\":750},{\"category\":\"2020 年\",\"value\":900}],\"title\":\"某品牌手机销量年度变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"销量（万台）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"2018 年\",\"value\":500},{\"category\":\"2019 年\",\"value\":750},{\"category\":\"2020 年\",\"value\":900}],\"title\":\"某品牌手机年度销量\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"销量 （万台）\"}",
+    "reference": ["条形图 - Bar Chart 不适用场景"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "2021 年公司不同部门的预算分配，研发部 50 百万美元，市场部 40 百万美元，销售部 60 百万美元，行政部 20 百万美元。用条形图可视化。",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"研发部\",\"value\":50},{\"category\":\"市场部\",\"value\":40},{\"category\":\"销售部\",\"value\":60},{\"category\":\"行政部\",\"value\":20}],\"title\":\"2021年公司部门预算分配\",\"axisXTitle\":\"部门\",\"axisYTitle\":\"预算（百万元）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"研发部\",\"value\":50},{\"category\":\"市场部\",\"value\":40},{\"category\":\"销售部\",\"value\":60},{\"category\":\"行政部\",\"value\":20}],\"title\":\"2021 年部门预算分配\",\"axisXTitle\":\"部门\",\"axisYTitle\":\"预算 （百万美元）\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "某超市不同水果的月销售量，苹果 2000 千克，香蕉 1500 千克，橙子 1800 千克，葡萄 1200 千克。用条形图显示。",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"苹果\",\"value\":2000},{\"category\":\"香蕉\",\"value\":1500},{\"category\":\"橙子\",\"value\":1800},{\"category\":\"葡萄\",\"value\":1200}],\"title\":\"超市水果月销售量\",\"axisXTitle\":\"水果类型\",\"axisYTitle\":\"销售量（千克）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"苹果\",\"value\":2000},{\"category\":\"香蕉\",\"value\":1500},{\"category\":\"橙子\",\"value\":1800},{\"category\":\"葡萄\",\"value\":1200}],\"title\":\"不同水果月销售量\",\"axisXTitle\":\"水果\",\"axisYTitle\":\"销售量 （千克）\"}",
+    "reference": ["条形图 - Bar Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "2022 年四个季度公司 A 和公司 B 的销售额对比，公司 A 分别为 200 万元，250 万元，300 万元 和 350 万元，公司 B 分别为 180 万元，230 万元，280 万元 和 330 万元。用分组条形图可视化",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"2022 Q1\",\"value\":200,\"group\":\"公司 A\"},{\"category\":\"2022 Q1\",\"value\":180,\"group\":\"公司 B\"},{\"category\":\"2022 Q2\",\"value\":250,\"group\":\"公司 A\"},{\"category\":\"2022 Q2\",\"value\":230,\"group\":\"公司 B\"},{\"category\":\"2022 Q3\",\"value\":300,\"group\":\"公司 A\"},{\"category\":\"2022 Q3\",\"value\":280,\"group\":\"公司 B\"},{\"category\":\"2022 Q4\",\"value\":350,\"group\":\"公司 A\"},{\"category\":\"2022 Q4\",\"value\":330,\"group\":\"公司 B\"}],\"group\":true,\"title\":\"2022 年四个季度公司 A 和公司 B 销售额对比\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额（万元）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"Q1\",\"value\":200,\"group\":\"公司 A\"},{\"category\":\"Q1\",\"value\":180,\"group\":\"公司 B\"},{\"category\":\"Q2\",\"value\":250,\"group\":\"公司 A\"},{\"category\":\"Q2\",\"value\":230,\"group\":\"公司 B\"},{\"category\":\"Q3\",\"value\":300,\"group\":\"公司 A\"},{\"category\":\"Q3\",\"value\":280,\"group\":\"公司 B\"},{\"category\":\"Q4\",\"value\":350,\"group\":\"公司 A\"},{\"category\":\"Q4\",\"value\":330,\"group\":\"公司 B\"}],\"group\":true,\"title\":\"2022 年公司 A 和公司 B 的季度销售额对比\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额 (万元)\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "城市公共交通使用量变化情况，2021 年的地铁和公交车使用量对比，地铁分别为 120 万人次，公交车分别为 80 万人次；2022 年地铁分别为 130 万人次，公交车分别为 85 万人次。用分组条形图可视化",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"2021 年\",\"value\":120,\"group\":\"地铁\"},{\"category\":\"2021 年\",\"value\":80,\"group\":\"公交车\"},{\"category\":\"2022 年\",\"value\":130,\"group\":\"地铁\"},{\"category\":\"2022 年\",\"value\":85,\"group\":\"公交车\"}],\"group\":true,\"title\":\"城市公共交通使用量变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"使用量（万人次）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"2021 年\",\"value\":120,\"group\":\"地铁\"},{\"category\":\"2021 年\",\"value\":80,\"group\":\"公交车\"},{\"category\":\"2022 年\",\"value\":130,\"group\":\"地铁\"},{\"category\":\"2022 年\",\"value\":85,\"group\":\"公交车\"}],\"group\":true,\"title\":\"城市公共交通使用量变化\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"使用量 (万人次)\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "五大科技公司 2023 年的季度营收增长情况，Apple 分别为 500 亿美元，520 亿美元，550 亿美元 和 600 亿美元，Google 分别为 450 亿美元，480 亿美元，500 亿美元 和 530 亿美元。用堆叠条形图可视化",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"Q1\",\"value\":500,\"group\":\"Apple\"},{\"category\":\"Q2\",\"value\":520,\"group\":\"Apple\"},{\"category\":\"Q3\",\"value\":550,\"group\":\"Apple\"},{\"category\":\"Q4\",\"value\":600,\"group\":\"Apple\"},{\"category\":\"Q1\",\"value\":450,\"group\":\"Google\"},{\"category\":\"Q2\",\"value\":480,\"group\":\"Google\"},{\"category\":\"Q3\",\"value\":500,\"group\":\"Google\"},{\"category\":\"Q4\",\"value\":530,\"group\":\"Google\"}],\"stack\":true,\"title\":\"五大科技公司 2023 年季度营收增长\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"营收（亿美元）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"Q1\",\"value\":500,\"group\":\"Apple\"},{\"category\":\"Q1\",\"value\":450,\"group\":\"Google\"},{\"category\":\"Q2\",\"value\":520,\"group\":\"Apple\"},{\"category\":\"Q2\",\"value\":480,\"group\":\"Google\"},{\"category\":\"Q3\",\"value\":550,\"group\":\"Apple\"},{\"category\":\"Q3\",\"value\":500,\"group\":\"Google\"},{\"category\":\"Q4\",\"value\":600,\"group\":\"Apple\"},{\"category\":\"Q4\",\"value\":530,\"group\":\"Google\"}],\"stack\":true,\"title\":\"2023 年五大科技公司季度营收增长\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"营收 (亿美元)\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "2019 年与 2023 年各大洲旅游收入对比，亚洲分别是 400 亿美元 与 550 亿美元，欧洲分别是 380 亿美元 与 520 亿美元，美洲分别是 350 亿美元 与 480 亿美元。用堆叠条形图可视化",
+    "response": "{\"type\":\"bar-stacked\",\"data\":[{\"year\":\"2019\",\"Asia\":400,\"Europe\":380,\"America\":350},{\"year\":\"2023\",\"Asia\":550,\"Europe\":520,\"America\":480}],\"title\":\"各大洲旅游收入对比\",\"axisXTitle\":\"年份\",\"axisYTitle\":\"旅游收入（亿美元）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"亚洲\",\"value\":400,\"group\":\"2019 年\"},{\"category\":\"亚洲\",\"value\":550,\"group\":\"2023 年\"},{\"category\":\"欧洲\",\"value\":380,\"group\":\"2019 年\"},{\"category\":\"欧洲\",\"value\":520,\"group\":\"2023 年\"},{\"category\":\"美洲\",\"value\":350,\"group\":\"2019 年\"},{\"category\":\"美洲\",\"value\":480,\"group\":\"2023 年\"}],\"stack\":true,\"title\":\"2019 年与 2023 年各大洲旅游收入对比\",\"axisXTitle\":\"大洲\",\"axisYTitle\":\"收入 (亿美元)\"}",
+    "reference": [],
+    "correctness": 0
+  },
+  {
+    "type": "text2chart",
+    "question": "各大洲不同年份的农业生产总值对比，2018 年亚洲为 2560 亿美元，欧洲为 1980 亿美元，非洲为 1370 亿美元，美洲为 2290 亿美元，澳洲为 850 亿美元；2022 年亚洲为 2890 亿美元，欧洲为 2050 亿美元，非洲为 1580 亿美元，美洲为 2450 亿美元，澳洲为 910 亿美元。用条形图可视化",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"2018 年亚洲\",\"value\":2560},{\"category\":\"2018 年欧洲\",\"value\":1980},{\"category\":\"2018 年非洲\",\"value\":1370},{\"category\":\"2018 年美洲\",\"value\":2290},{\"category\":\"2018 年澳洲\",\"value\":850},{\"category\":\"2022 年亚洲\",\"value\":2890},{\"category\":\"2022 年欧洲\",\"value\":2050},{\"category\":\"2022 年非洲\",\"value\":1580},{\"category\":\"2022 年美洲\",\"value\":2450},{\"category\":\"2022 年澳洲\",\"value\":910}],\"title\":\"各大洲不同年份的农业生产总值对比\",\"axisXTitle\":\"年份与大洲\",\"axisYTitle\":\"农业生产总值（亿美元）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"亚洲\",\"value\":2560,\"group\":\"2018\"},{\"category\":\"亚洲\",\"value\":2890,\"group\":\"2022\"},{\"category\":\"欧洲\",\"value\":1980,\"group\":\"2018\"},{\"category\":\"欧洲\",\"value\":2050,\"group\":\"2022\"},{\"category\":\"非洲\",\"value\":1370,\"group\":\"2018\"},{\"category\":\"非洲\",\"value\":1580,\"group\":\"2022\"},{\"category\":\"美洲\",\"value\":2290,\"group\":\"2018\"},{\"category\":\"美洲\",\"value\":2450,\"group\":\"2022\"},{\"category\":\"澳洲\",\"value\":850,\"group\":\"2018\"},{\"category\":\"澳洲\",\"value\":910,\"group\":\"2022\"}],\"group\":true,\"title\":\"各大洲农业生产总值对比\",\"axisXTitle\":\"大洲\",\"axisYTitle\":\"农业生产总值 (亿美元)\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 0
+  },
+  {
+    "type": "text2chart",
+    "question": "不同学科的平均成绩对比，数学为 82.5 分，物理为 78.9 分，化学为 85.2 分，生物为 79.5 分，历史为 88.0 分。用简单条形图可视化",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"数学\",\"value\":82.5},{\"category\":\"物理\",\"value\":78.9},{\"category\":\"化学\",\"value\":85.2},{\"category\":\"生物\",\"value\":79.5},{\"category\":\"历史\",\"value\":88.0}],\"title\":\"各学科平均成绩对比\",\"axisXTitle\":\"学科\",\"axisYTitle\":\"平均成绩（分）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"数学\",\"value\":82.5},{\"category\":\"物理\",\"value\":78.9},{\"category\":\"化学\",\"value\":85.2},{\"category\":\"生物\",\"value\":79.5},{\"category\":\"历史\",\"value\":88}],\"title\":\"不同学科平均成绩\",\"axisXTitle\":\"学科\",\"axisYTitle\":\"平均成绩 (分)\"}",
+    "reference": ["条形图 - Bar Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用条形图可视化我的数据 [{ \"region\": \"北美\", \"sales\": 5000 }, { \"region\": \"欧洲\", \"sales\": 7000 }, { \"region\": \"亚洲\", \"sales\": 8000 }]",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"北美\",\"value\":5000},{\"category\":\"欧洲\",\"value\":7000},{\"category\":\"亚洲\",\"value\":8000}],\"axisXTitle\": \"region\",\"axisYTitle\": \"sales\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"北美\",\"value\":5000},{\"category\":\"欧洲\",\"value\":7000},{\"category\":\"亚洲\",\"value\":8000}],\"axisXTitle\":\"region\",\"axisYTitle\":\"sales\"}",
+    "reference": ["条形图 - Bar Chart 不适用场景"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "使用条形图可视化 [{ \"department\": \"研发\", \"budget\": 30000 }, { \"department\": \"市场\", \"budget\": 15000 }, { \"department\": \"销售\", \"budget\": 20000 }]",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"研发\",\"value\":30000},{\"category\":\"市场\",\"value\":15000},{\"category\":\"销售\",\"value\":20000}],\"axisXTitle\":\"department\",\"axisYTitle\":\"budget\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"研发\",\"value\":30000},{\"category\":\"市场\",\"value\":15000},{\"category\":\"销售\",\"value\":20000}],\"axisXTitle\":\"department\",\"axisYTitle\":\"budget\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "使用条形图来表示 [{ \"product\": \"手机\", \"revenue\": 32000 }, { \"product\": \"电脑\", \"revenue\": 45000 }, { \"product\": \"平板\", \"revenue\": 15000 }]",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"手机\",\"value\":32000},{\"category\":\"电脑\",\"value\":45000},{\"category\":\"平板\",\"value\":15000}],\"axisXTitle\":\"产品\",\"axisYTitle\":\"收入\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"手机\",\"value\":32000},{\"category\":\"电脑\",\"value\":45000},{\"category\":\"平板\",\"value\":15000}],\"axisXTitle\":\"product\",\"axisYTitle\":\"revenue\"}",
+    "reference": ["条形图 - Bar Chart 适用场景"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用分组条形图可视化我不同产品的季度销售额，数据如下：{ '产品A': { 'Q1': 5000, 'Q2': 7000, 'Q3': 8000, 'Q4': 6000 }, '产品B': { 'Q1': 3000, 'Q2': 4000, 'Q3': 5000, 'Q4': 4500 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"Q1\",\"value\":5000,\"group\":\"产品A\"},{\"category\":\"Q2\",\"value\":7000,\"group\":\"产品A\"},{\"category\":\"Q3\",\"value\":8000,\"group\":\"产品A\"},{\"category\":\"Q4\",\"value\":6000,\"group\":\"产品A\"},{\"category\":\"Q1\",\"value\":3000,\"group\":\"产品B\"},{\"category\":\"Q2\",\"value\":4000,\"group\":\"产品B\"},{\"category\":\"Q3\",\"value\":5000,\"group\":\"产品B\"},{\"category\":\"Q4\",\"value\":4500,\"group\":\"产品B\"}],\"group\":true,\"title\":\"不同产品的季度销售额\",\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"Q1\",\"value\":5000,\"group\":\"产品A\"},{\"category\":\"Q2\",\"value\":7000,\"group\":\"产品A\"},{\"category\":\"Q3\",\"value\":8000,\"group\":\"产品A\"},{\"category\":\"Q4\",\"value\":6000,\"group\":\"产品A\"},{\"category\":\"Q1\",\"value\":3000,\"group\":\"产品B\"},{\"category\":\"Q2\",\"value\":4000,\"group\":\"产品B\"},{\"category\":\"Q3\",\"value\":5000,\"group\":\"产品B\"},{\"category\":\"Q4\",\"value\":4500,\"group\":\"产品B\"}],\"group\":true,\"axisXTitle\":\"季度\",\"axisYTitle\":\"销售额\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用分组条形图表示我公司在不同地区的能源消耗，数据如下：{ '北美': { '电力': 200, '天然气': 150 }, '欧洲': { '电力': 180, '天然气': 170 }, '亚洲': { '电力': 250, '天然气': 130 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"北美\",\"value\":200,\"group\":\"电力\"},{\"category\":\"北美\",\"value\":150,\"group\":\"天然气\"},{\"category\":\"欧洲\",\"value\":180,\"group\":\"电力\"},{\"category\":\"欧洲\",\"value\":170,\"group\":\"天然气\"},{\"category\":\"亚洲\",\"value\":250,\"group\":\"电力\"},{\"category\":\"亚洲\",\"value\":130,\"group\":\"天然气\"}],\"group\":true,\"title\":\"不同地区能源消耗对比\",\"axisXTitle\":\"地区\",\"axisYTitle\":\"消耗量\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"电力\",\"value\":200,\"group\":\"北美\"},{\"category\":\"天然气\",\"value\":150,\"group\":\"北美\"},{\"category\":\"电力\",\"value\":180,\"group\":\"欧洲\"},{\"category\":\"天然气\",\"value\":170,\"group\":\"欧洲\"},{\"category\":\"电力\",\"value\":250,\"group\":\"亚洲\"},{\"category\":\"天然气\",\"value\":130,\"group\":\"亚洲\"}],\"group\":true,\"axisXTitle\":\"能源类型\",\"axisYTitle\":\"消耗 (单位)\"}",
+    "reference": ["条形图 - Bar Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用分组条形图展示不同年级学生的人数，数据如下：{ '年级1': { '男生': 150, '女生': 130 }, '年级2': { '男生': 160, '女生': 140 }, '年级3': { '男生': 170, '女生': 150 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"年级1\",\"value\":150,\"group\":\"男生\"},{\"category\":\"年级1\",\"value\":130,\"group\":\"女生\"},{\"category\":\"年级2\",\"value\":160,\"group\":\"男生\"},{\"category\":\"年级2\",\"value\":140,\"group\":\"女生\"},{\"category\":\"年级3\",\"value\":170,\"group\":\"男生\"},{\"category\":\"年级3\",\"value\":150,\"group\":\"女生\"}],\"group\":true,\"title\":\"不同年级学生的人数\",\"axisXTitle\":\"年级\",\"axisYTitle\":\"人数\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"男生\",\"value\":150,\"group\":\"年级1\"},{\"category\":\"女生\",\"value\":130,\"group\":\"年级1\"},{\"category\":\"男生\",\"value\":160,\"group\":\"年级2\"},{\"category\":\"女生\",\"value\":140,\"group\":\"年级2\"},{\"category\":\"男生\",\"value\":170,\"group\":\"年级3\"},{\"category\":\"女生\",\"value\":150,\"group\":\"年级3\"}],\"group\":true,\"axisXTitle\":\"性别\",\"axisYTitle\":\"人数\"}",
+    "reference": ["条形图 - Bar Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用堆叠条形图展示不同年级学生的人数，数据如下：{ '年级1': { '男生': 150, '女生': 130 }, '年级2': { '男生': 160, '女生': 140 }, '年级3': { '男生': 170, '女生': 150 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"年级1\",\"value\":150,\"group\":\"男生\"},{\"category\":\"年级1\",\"value\":130,\"group\":\"女生\"},{\"category\":\"年级2\",\"value\":160,\"group\":\"男生\"},{\"category\":\"年级2\",\"value\":140,\"group\":\"女生\"},{\"category\":\"年级3\",\"value\":170,\"group\":\"男生\"},{\"category\":\"年级3\",\"value\":150,\"group\":\"女生\"}],\"stack\":true,\"title\":\"不同年级学生的人数\",\"axisXTitle\":\"年级\",\"axisYTitle\":\"人数\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"男生\",\"value\":150,\"group\":\"年级1\"},{\"category\":\"女生\",\"value\":130,\"group\":\"年级1\"},{\"category\":\"男生\",\"value\":160,\"group\":\"年级2\"},{\"category\":\"女生\",\"value\":140,\"group\":\"年级2\"},{\"category\":\"男生\",\"value\":170,\"group\":\"年级3\"},{\"category\":\"女生\",\"value\":150,\"group\":\"年级3\"}],\"stack\":true,\"axisXTitle\":\"性别\",\"axisYTitle\":\"人数\"}",
+    "reference": ["条形图 - Bar Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用堆叠条形图表示我公司在不同地区的能源消耗，数据如下：{ '北美': { '电力': 200, '天然气': 150 }, '欧洲': { '电力': 180, '天然气': 170 }, '亚洲': { '电力': 250, '天然气': 130 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"北美\",\"value\":200,\"group\":\"电力\"},{\"category\":\"北美\",\"value\":150,\"group\":\"天然气\"},{\"category\":\"欧洲\",\"value\":180,\"group\":\"电力\"},{\"category\":\"欧洲\",\"value\":170,\"group\":\"天然气\"},{\"category\":\"亚洲\",\"value\":250,\"group\":\"电力\"},{\"category\":\"亚洲\",\"value\":130,\"group\":\"天然气\"}],\"stack\":true,\"title\":\"不同地区能源消耗\",\"axisXTitle\":\"地区\",\"axisYTitle\":\"消耗量\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"电力\",\"value\":200,\"group\":\"北美\"},{\"category\":\"天然气\",\"value\":150,\"group\":\"北美\"},{\"category\":\"电力\",\"value\":180,\"group\":\"欧洲\"},{\"category\":\"天然气\",\"value\":170,\"group\":\"欧洲\"},{\"category\":\"电力\",\"value\":250,\"group\":\"亚洲\"},{\"category\":\"天然气\",\"value\":130,\"group\":\"亚洲\"}],\"stack\":true,\"axisXTitle\":\"能源类型\",\"axisYTitle\":\"消耗 (单位)\"}",
+    "reference": ["条形图 - Bar Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "使用堆叠条形图来展示我公司不同部门每个月的开支情况，数据如下：{ 'Marketing': { 'January': 3000, 'February': 4000, 'March': 3500 }, 'Sales': { 'January': 2000, 'February': 3000, 'March': 2800 }, 'R&D': { 'January': 4000, 'February': 4500, 'March': 4200 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"January\",\"value\":3000,\"group\":\"Marketing\"},{\"category\":\"January\",\"value\":2000,\"group\":\"Sales\"},{\"category\":\"January\",\"value\":4000,\"group\":\"R&D\"},{\"category\":\"February\",\"value\":4000,\"group\":\"Marketing\"},{\"category\":\"February\",\"value\":3000,\"group\":\"Sales\"},{\"category\":\"February\",\"value\":4500,\"group\":\"R&D\"},{\"category\":\"March\",\"value\":3500,\"group\":\"Marketing\"},{\"category\":\"March\",\"value\":2800,\"group\":\"Sales\"},{\"category\":\"March\",\"value\":4200,\"group\":\"R&D\"}],\"stack\":true,\"title\":\"公司不同部门每月开支\",\"axisXTitle\":\"月份\",\"axisYTitle\":\"开支（元）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"January\",\"value\":3000,\"group\":\"Marketing\"},{\"category\":\"February\",\"value\":4000,\"group\":\"Marketing\"},{\"category\":\"March\",\"value\":3500,\"group\":\"Marketing\"},{\"category\":\"January\",\"value\":2000,\"group\":\"Sales\"},{\"category\":\"February\",\"value\":3000,\"group\":\"Sales\"},{\"category\":\"March\",\"value\":2800,\"group\":\"Sales\"},{\"category\":\"January\",\"value\":4000,\"group\":\"R&D\"},{\"category\":\"February\",\"value\":4500,\"group\":\"R&D\"},{\"category\":\"March\",\"value\":4200,\"group\":\"R&D\"}],\"stack\":true,\"axisXTitle\":\"月份\",\"axisYTitle\":\"开支\"}",
+    "reference": ["条形图 - Bar Chart 适用场景"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "使用条形图来展示我公司不同部门每个月的开支情况，数据如下：{ 'Marketing': { 'January': 3000, 'February': 4000, 'March': 3500 }, 'Sales': { 'January': 2000, 'February': 3000, 'March': 2800 }, 'R&D': { 'January': 4000, 'February': 4500, 'March': 4200 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"January\",\"value\":3000,\"group\":\"Marketing\"},{\"category\":\"February\",\"value\":4000,\"group\":\"Marketing\"},{\"category\":\"March\",\"value\":3500,\"group\":\"Marketing\"},{\"category\":\"January\",\"value\":2000,\"group\":\"Sales\"},{\"category\":\"February\",\"value\":3000,\"group\":\"Sales\"},{\"category\":\"March\",\"value\":2800,\"group\":\"Sales\"},{\"category\":\"January\",\"value\":4000,\"group\":\"R&D\"},{\"category\":\"February\",\"value\":4500,\"group\":\"R&D\"},{\"category\":\"March\",\"value\":4200,\"group\":\"R&D\"}],\"group\":true,\"title\":\"各部门每月开支\",\"axisXTitle\":\"月份\",\"axisYTitle\":\"开支（元）\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"January\",\"value\":3000,\"group\":\"Marketing\"},{\"category\":\"February\",\"value\":4000,\"group\":\"Marketing\"},{\"category\":\"March\",\"value\":3500,\"group\":\"Marketing\"},{\"category\":\"January\",\"value\":2000,\"group\":\"Sales\"},{\"category\":\"February\",\"value\":3000,\"group\":\"Sales\"},{\"category\":\"March\",\"value\":2800,\"group\":\"Sales\"},{\"category\":\"January\",\"value\":4000,\"group\":\"R&D\"},{\"category\":\"February\",\"value\":4500,\"group\":\"R&D\"},{\"category\":\"March\",\"value\":4200,\"group\":\"R&D\"}],\"group\":true,\"axisXTitle\":\"月份\",\"axisYTitle\":\"开支\"}",
+    "reference": ["条形图 - Bar Chart 适用场景"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用条形图展示不同地区两个季度的市场份额，数据如下：{ 'North': { 'Q1': 40, 'Q2': 45 }, 'South': { 'Q1': 30, 'Q2': 35 }, 'East': { 'Q1': 20, 'Q2': 25 }, 'West': { 'Q1': 10, 'Q2': 15 } }",
+    "response": "{\"type\":\"bar\",\"data\":[{\"category\":\"North\",\"value\":40,\"group\":\"Q1\"},{\"category\":\"North\",\"value\":45,\"group\":\"Q2\"},{\"category\":\"South\",\"value\":30,\"group\":\"Q1\"},{\"category\":\"South\",\"value\":35,\"group\":\"Q2\"},{\"category\":\"East\",\"value\":20,\"group\":\"Q1\"},{\"category\":\"East\",\"value\":25,\"group\":\"Q2\"},{\"category\":\"West\",\"value\":10,\"group\":\"Q1\"},{\"category\":\"West\",\"value\":15,\"group\":\"Q2\"}],\"group\":true,\"title\":\"不同地区季度市场份额\",\"axisXTitle\":\"地区\",\"axisYTitle\":\"市场份额\"}",
+    "answer": "{\"type\":\"bar\",\"data\":[{\"category\":\"Q1\",\"value\":40,\"group\":\"North\"},{\"category\":\"Q2\",\"value\":45,\"group\":\"North\"},{\"category\":\"Q1\",\"value\":30,\"group\":\"South\"},{\"category\":\"Q2\",\"value\":35,\"group\":\"South\"},{\"category\":\"Q1\",\"value\":20,\"group\":\"East\"},{\"category\":\"Q2\",\"value\":25,\"group\":\"East\"},{\"category\":\"Q1\",\"value\":10,\"group\":\"West\"},{\"category\":\"Q2\",\"value\":15,\"group\":\"West\"}],\"group\":true,\"axisXTitle\":\"季度\",\"axisYTitle\":\"市场份额\"}",
+    "reference": ["条形图 - Bar Chart 使用示例"],
+    "correctness": 1
+  }
+]

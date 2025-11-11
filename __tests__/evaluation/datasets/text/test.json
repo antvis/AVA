@@ -1,0 +1,52 @@
+[
+  {
+    "type": "text2chart",
+    "question": "2023年，全球气温平均值14.8°C，对比上个世纪末+1.2°C，变化率+8%。近年来，气候变化成为全球关注焦点，2023年的全球气温平均值达到了历史高点，与上个世纪末相比上升了8%，这一现象再次提醒我们加强环境保护的重要性。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "<vis-text type=\"time_desc\">2023年</vis-text>，<vis-text type=metric_name>全球气温平均值</vis-text><vis-text type=metric_value>14.8°C</vis-text>，对比<vis-text type=time_desc>上个世纪末</vis-text><vis-text type=\"delta_value_pos\" origin=\"1.2\">1.2°C</vis-text>，变化率<vis-text type=ratio_value_pos origin=\"0.08\">8%</vis-text>。近年来，气候变化成为全球关注焦点，2023年的全球气温平均值达到了历史高点，与上个世纪末相比上升了<vis-text type=\"ratio_value_pos\">8%</vis-text>，这一现象再次提醒我们加强环境保护的重要性。"
+  },
+  {
+    "type": "text2chart",
+    "question": "原文为：过去一年，网站访问量120万次，对比前一年+30万次，变化率+33%。在过去的一年里，我们的网站访问量有了显著的增长，与前一年相比增加了33%，这归功于新营销活动的成功执行和用户体验的持续改进。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "<vis-text type=\"time_desc\">过去一年</vis-text>，<vis-text type=metric_name>网站访问量</vis-text><vis-text type=metric_value>120万次</vis-text>，对比<vis-text type=time_desc>前一年</vis-text><vis-text type=\"delta_value_pos\" origin=\"30万\">30万次</vis-text>，变化率<vis-text type=ratio_value_pos origin=\"0.33\">33%</vis-text>。在过去的一年里，我们的网站访问量有了显著的增长，与前一年相比增加了<vis-text type=\"delta_value_pos\">33%</vis-text>，这归功于新营销活动的成功执行和用户体验的持续改进。"
+  },
+  {
+    "type": "text2chart",
+    "question": "用订单状态对产品回收率拆分后，根据皮尔逊相关系数分析指标相关性，已发货趋势分布与指标总趋势相似性最大，相似性系数为88.9%；已付款趋势分布与指标总趋势相似性最小，相似性系数为-53.0%。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "用<vis-text type='dim_name'>订单状态</vis-text>对<vis-text type='metric_name'>产品回收率</vis-text>拆分后，根据皮尔逊相关系数分析指标相关性，<vis-text type='dim_value'>已发货</vis-text>趋势分布与指标总趋势相似性最大，相似性系数为<vis-text type='metric_value' origin='0.889026234579'>88.9%</vis-text>；<vis-text type=dim_value>已付款</vis-text>趋势分布与指标总趋势相似性最小，相似性系数为<vis-text type='metric_value' origin='-0.529969015182'>-53.0%</vis-text>。"
+  },
+  {
+    "type": "text2chart",
+    "question": "通过文本实体识别增强，将下面内容输出为增强 markdown 内容：用订单商品折扣、订单金额、商品尺寸对移动端访问量进行组合下钻： 1. 订单商品折扣组合中订单商品折扣=0.2指标值为8.95千亿，具有主导性，值得关注。该组合中最大值为53.5，最小值为26.26，均值为49.23，中位数为27.72，75分位数为31.92，25分位数为51.56。 2. 订单商品折扣、订单金额&商品尺寸，各维度组合下的指标未发现异常。",
+    "answer": "用<vis-text type='dim_name'>订单商品折扣</vis-text>、<vis-text type='dim_name'>订单金额</vis-text>、<vis-text type='dim_name'>商品尺寸</vis-text>对<vis-text type='metric_name'>移动端访问量</vis-text>进行组合下钻：\n1. <vis-text type='dim_name'>订单商品折扣</vis-text>组合中<vis-text type='dim_name'>订单商品折扣</vis-text>=<vis-text type='dim_value'>0.2</vis-text>指标值为<vis-text type='metric_value'>8.95千亿</vis-text>，具有主导性，值得关注。该组合中最大值为<vis-text type='metric_value'>53.5</vis-text>，最小值为<vis-text type='metric_value'>26.26</vis-text>，均值为<vis-text type='metric_value'>49.23</vis-text>，中位数为<vis-text type='metric_value'>27.72</vis-text>，75分位数为<vis-text type='metric_value'>31.92</vis-text>，25分位数为<vis-text type='metric_value'>51.56</vis-text>。 \n2. <vis-text type='dim_name'>订单商品折扣</vis-text>、<vis-text type='dim_name'>订单金额</vis-text>&<vis-text type='dim_name'>商品尺寸</vis-text>，各维度组合下的指标<vis-text type='phenomenon'>未发现异常</vis-text>。"
+  },
+  {
+    "type": "text2chart",
+    "question": "基于PROPHET算法预测，未来预计截止至2020-05-13，所有商品颜色数量的预测值保持快速上升，分别是：蓝色-预测值为0.88%，红色-预测值为-90.02%。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "基于PROPHET算法预测，未来预计截止至<vis-text type='time_desc'>2020-05-13</vis-text>，所有<vis-text type='dim_name'>商品颜色</vis-text><vis-text type='metric_name'>数量</vis-text>的预测值<vis-text type='phenomenon'>保持快速上升</vis-text>，分别是：<vis-text type='dim_value'>蓝色</vis-text>-预测值为<vis-text type='metric_value' origin='0.008775585299'>0.88%</vis-text>，<vis-text type='dim_value'>红色</vis-text>-预测值为<vis-text type='metric_value' origin='-0.900171200013'>-90.02%</vis-text>。"
+  },
+  {
+    "type": "text2chart",
+    "question": "原文为：客户净推荐值根据等距分桶策略，桶数为57，步长为9.99百万。该样本最大值为151.56，最小值为1.07，均值为3.46，中位数为8.84，75分位数为6.89，25分位数为69.88，标准差为18。通过箱线图检测，趋势向好。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "<vis-text type='metric_name'>客户净推荐值</vis-text>根据等距分桶策略，桶数为<vis-text type='other_metric_value'>57</vis-text>，步长为<vis-text type='other_metric_value'>9.99百万</vis-text>。该样本最大值为<vis-text type='metric_value'>151.56</vis-text>，最小值为<vis-text type='metric_value'>1.07</vis-text>，均值为<vis-text type='metric_value'>3.46</vis-text>，中位数为<vis-text type='metric_value'>8.84</vis-text>，75分位数为<vis-text type='metric_value'>6.89</vis-text>，25分位数为<vis-text type='metric_value'>69.88</vis-text>，标准差为<vis-text type='other_metric_value'>18</vis-text>。通过箱线图检测，<vis-text type='phenomenon'>趋势向好</vis-text>。"
+  },
+  {
+    "type": "text2chart",
+    "question": "在2023财年的财务报告中，我们注意到业务单元=B部门的运营成本显著上升，具体表现为+15%的增长幅度。这种增长不仅对运营成本的整体波动产生了25%的影响，而且直接拉动了运营成本的增幅达到3.7%。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "在<vis-text type=\"time_desc\">2023财年</vis-text>的财务报告中，我们注意到业务单元=B部门的<vis-text type=\"metric_name\">运营成本</vis-text>显著上升，具体表现为<vis-text type=\"delta_value_pos\">15%</vis-text>的增长幅度。这种增长不仅对<vis-text type=\"metric_name\">运营成本</vis-text>的整体波动产生了<vis-text type=\"contribute_ratio\">25%</vis-text>的影响，而且直接拉动了<vis-text type=\"metric_name\">运营成本</vis-text>的增幅达到<vis-text type=\"ratio_value_pos\">3.7%</vis-text>。"
+  },
+  {
+    "type": "text2chart",
+    "question": "今年第一季度，亚洲地区的在线教育平台用户数量已经突破至150,000,000人，与去年同期相比，增长率高达30%，显示出了远程学习的巨大潜力。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "<vis-text type=\"time_desc\">今年第一季度</vis-text>，亚洲地区的<vis-text type=\"metric_name\">在线教育平台用户数量</vis-text>已经突破至<vis-text type=\"metric_value\">150,000,000</vis-text>人，与去年同期相比，增长率高达<vis-text type=\"ratio_value_pos\">30%</vis-text>，显示出了远程学习的巨大潜力。"
+  },
+  {
+    "type": "text2chart",
+    "question": "本月整体决策准确率为87.6%，环比下降1.2个百分点，但仍高于年度目标2.6个百分点。财务部门表现最佳，准确率达94.3%；人力资源部门表现欠佳，准确率为76.8%，建议加强培训。数据驱动型决策的准确率（91.2%）显著高于经验驱动型决策（82.4%），凸显了数据分析的重要性。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "<vis-text type=\"time_desc\">本月</vis-text>整体<vis-text type=\"metric_name\">决策准确率</vis-text>为<vis-text type=\"metric_value\">87.6%</vis-text>，环比下降<vis-text type=\"ratio_value_neg\">1.2个百分点</vis-text>，但仍高于年度目标<vis-text type=\"ratio_value_pos\">2.6个百分点</vis-text>。<vis-text type=\"dim_value\">财务部门</vis-text>表现最佳，<vis-text type=\"metric_name\">准确率</vis-text>达<vis-text type=\"metric_value\">94.3%</vis-text>；<vis-text type=\"dim_value\">人力资源部门</vis-text>表现欠佳，<vis-text type=\"metric_name\">准确率</vis-text>为<vis-text type=\"metric_value\">76.8%</vis-text>，<vis-text type='phenomenon'>建议加强培训</vis-text>。<vis-text type=\"dim_value\">数据驱动型决策</vis-text>的<vis-text type=\"metric_name\">准确率</vis-text>（<vis-text type=\"metric_value\">91.2%</vis-text>）显著高于<vis-text type=\"dim_value\">经验驱动型决策</vis-text>（<vis-text type=\"metric_value\">82.4%</vis-text>），凸显了数据分析的重要性。"
+  },
+  {
+    "type": "text2chart",
+    "question": "本季度的整体客户满意度评分为 4.2（满分 5 分），较上季度提升了 0.3 分。按客户生命周期阶段划分，新客户、成长期客户和成熟期客户的满意度评分分别为 3.9、4.3 和 4.5。服务类型方面，技术支持获得了最高的满意度评分 4.6，而产品培训的评分相对较低，为 3.8。通过分析，我们发现客户满意度与问题解决时间呈现负相关，平均问题解决时间从上季度的 48 小时缩短到了 36 小时，这可能是满意度提升的主要原因之一。此外，我们注意到通过在线聊天渠道解决问题的客户满意度普遍高于电话渠道，建议进一步优化在线支持系统。通过文本实体识别增强，输出增强 markdown 内容为：",
+    "answer": "本季度的<vis-text type=\"metric_name\">整体客户满意度评分</vis-text>为 <vis-text type=\"metric_value\">4.2</vis-text>（满分 <vis-text type=\"metric_value\">5分</vis-text>），较上季度提升了 <vis-text type=\"delta_value_pos\">0.3分</vis-text>。按<vis-text type=\"dim_name\">客户生命周期阶段</vis-text>划分，<vis-text type=\"dim_value\">新客户</vis-text>、<vis-text type=\"dim_value\">成长期客户</vis-text>和<vis-text type=\"dim_value\">成熟期客户</vis-text>的<vis-text type=\"metric_name\">满意度评分</vis-text>分别为 <vis-text type=\"metric_value\">3.9</vis-text>、<vis-text type=\"metric_value\">4.3</vis-text> 和 <vis-text type=\"metric_value\">4.5</vis-text>。<vis-text type=\"dim_name\">服务类型</vis-text>方面，<vis-text type=\"dim_value\">技术支持</vis-text>获得了最高的<vis-text type=\"metric_name\">满意度评分</vis-text> <vis-text type=\"metric_value\">4.6</vis-text>，而<vis-text type=\"dim_value\">产品培训</vis-text>的评分相对较低，为 <vis-text type=\"metric_value\">3.8</vis-text>。通过分析，我们发现<vis-text type=\"metric_name\">客户满意度</vis-text>与<vis-text type=\"metric_name\">问题解决时间</vis-text><vis-text type='phenomenon'>呈现负相关</vis-text>，<vis-text type=\"metric_name\">平均问题解决时间</vis-text>从上季度的<vis-text type=\"metric_value\">48小时</vis-text>缩短到了 <vis-text type=\"metric_value\">36小时</vis-text>，这可能是<vis-text type=\"metric_name\">满意度提升</vis-text>的主要原因之一。此外，我们注意到通过<vis-text type=\"dim_value\">在线聊天渠道</vis-text>解决问题的<vis-text type=\"metric_name\">客户满意度</vis-text>普遍高于<vis-text type=\"dim_value\">电话渠道</vis-text>，<vis-text type='phenomenon'>建议进一步优化在线支持系统。</vis-text>"
+  }
+]

@@ -1,0 +1,382 @@
+[
+  {
+    "type": "text2chart",
+    "question": "公司年度员工满意度调查：工作环境4分、薪资待遇3分、职业发展5分、管理层沟通2分、团队协作5分，用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "工作环境", "value": 4 },
+        { "name": "薪资待遇", "value": 3 },
+        { "name": "职业发展", "value": 5 },
+        { "name": "管理层沟通", "value": 2 },
+        { "name": "团队协作", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "产品A的市场表现评估：质量5分、创新3分、客户满意度4分、市场份额4分、品牌认知度5分，用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "质量", "value": 5 },
+        { "name": "创新", "value": 3 },
+        { "name": "客户满意度", "value": 4 },
+        { "name": "市场份额", "value": 4 },
+        { "name": "品牌认知度", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "李华的综合素质评价：责任感4分、创造力5分、适应能力3分、沟通技巧4分、团队合作5分，用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "责任感", "value": 4 },
+        { "name": "创造力", "value": 5 },
+        { "name": "适应能力", "value": 3 },
+        { "name": "沟通技巧", "value": 4 },
+        { "name": "团队合作", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "手机品牌X的用户评价：操作便捷性4分、电池续航5分、相机性能4分、性价比3分、售后服务3分，用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "操作便捷性", "value": 4 },
+        { "name": "电池续航", "value": 5 },
+        { "name": "相机性能", "value": 4 },
+        { "name": "性价比", "value": 3 },
+        { "name": "售后服务", "value": 3 }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "学生在科学实验课程中的表现：动手能力5分、观察力4分、分析能力3分、实验设计4分、团队协作5分，用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "动手能力", "value": 5 },
+        { "name": "观察力", "value": 4 },
+        { "name": "分析能力", "value": 3 },
+        { "name": "实验设计", "value": 4 },
+        { "name": "团队协作", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "在国际会议中，五个国家的代表对合作的五个维度进行了评分。美国：经济合作8分、技术合作7分、文化交流6分、教育合作9分、环保合作5分。中国：经济合作9分、技术合作8分、文化交流7分、教育合作6分、环保合作7分。德国：经济合作6分、技术合作8分、文化交流7分、教育合作7分、环保合作9分。用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "经济合作", "value": 8, "group": "美国" },
+        { "name": "技术合作", "value": 7, "group": "美国" },
+        { "name": "文化交流", "value": 6, "group": "美国" },
+        { "name": "教育合作", "value": 9, "group": "美国" },
+        { "name": "环保合作", "value": 5, "group": "美国" },
+        { "name": "经济合作", "value": 9, "group": "中国" },
+        { "name": "技术合作", "value": 8, "group": "中国" },
+        { "name": "文化交流", "value": 7, "group": "中国" },
+        { "name": "教育合作", "value": 6, "group": "中国" },
+        { "name": "环保合作", "value": 7, "group": "中国" },
+        { "name": "经济合作", "value": 6, "group": "德国" },
+        { "name": "技术合作", "value": 8, "group": "德国" },
+        { "name": "文化交流", "value": 7, "group": "德国" },
+        { "name": "教育合作", "value": 7, "group": "德国" },
+        { "name": "环保合作", "value": 9, "group": "德国" }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "在年度游戏大赛中，三名选手对五个游戏类型进行了评分。选手A：动作游戏8分、策略游戏9分、冒险游戏7分、角色扮演游戏6分、模拟游戏5分。选手B：动作游戏7分、策略游戏6分、冒险游戏8分、角色扮演游戏9分、模拟游戏6分。选手C：动作游戏6分、策略游戏8分、冒险游戏9分、角色扮演游戏7分、模拟游戏8分。用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "动作游戏", "value": 8, "group": "选手A" },
+        { "name": "策略游戏", "value": 9, "group": "选手A" },
+        { "name": "冒险游戏", "value": 7, "group": "选手A" },
+        { "name": "角色扮演游戏", "value": 6, "group": "选手A" },
+        { "name": "模拟游戏", "value": 5, "group": "选手A" },
+        { "name": "动作游戏", "value": 7, "group": "选手B" },
+        { "name": "策略游戏", "value": 6, "group": "选手B" },
+        { "name": "冒险游戏", "value": 8, "group": "选手B" },
+        { "name": "角色扮演游戏", "value": 9, "group": "选手B" },
+        { "name": "模拟游戏", "value": 6, "group": "选手B" },
+        { "name": "动作游戏", "value": 6, "group": "选手C" },
+        { "name": "策略游戏", "value": 8, "group": "选手C" },
+        { "name": "冒险游戏", "value": 9, "group": "选手C" },
+        { "name": "角色扮演游戏", "value": 7, "group": "选手C" },
+        { "name": "模拟游戏", "value": 8, "group": "选手C" }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "公司举办了一次内部评审，三位员工对团队的工作效率、创新能力、沟通能力、客户满意度、项目完成度进行了评分。员工X：工作效率9分、创新能力8分、沟通能力7分、客户满意度8分、项目完成度6分。员工Y：工作效率7分、创新能力9分、沟通能力8分、客户满意度7分、项目完成度8分。员工Z：工作效率8分、创新能力7分、沟通能力9分、客户满意度6分、项目完成度9分。用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "工作效率", "value": 9, "group": "员工X" },
+        { "name": "创新能力", "value": 8, "group": "员工X" },
+        { "name": "沟通能力", "value": 7, "group": "员工X" },
+        { "name": "客户满意度", "value": 8, "group": "员工X" },
+        { "name": "项目完成度", "value": 6, "group": "员工X" },
+        { "name": "工作效率", "value": 7, "group": "员工Y" },
+        { "name": "创新能力", "value": 9, "group": "员工Y" },
+        { "name": "沟通能力", "value": 8, "group": "员工Y" },
+        { "name": "客户满意度", "value": 7, "group": "员工Y" },
+        { "name": "项目完成度", "value": 8, "group": "员工Y" },
+        { "name": "工作效率", "value": 8, "group": "员工Z" },
+        { "name": "创新能力", "value": 7, "group": "员工Z" },
+        { "name": "沟通能力", "value": 9, "group": "员工Z" },
+        { "name": "客户满意度", "value": 6, "group": "员工Z" },
+        { "name": "项目完成度", "value": 9, "group": "员工Z" }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "一项关于家用电器使用情况的调查显示，三类用户对五种电器的使用频率进行了打分。普通用户：电视7分、冰箱8分、洗衣机9分、空调6分、微波炉5分。学生用户：电视8分、冰箱6分、洗衣机7分、空调5分、微波炉9分。专业用户：电视6分、冰箱9分、洗衣机8分、空调7分、微波炉6分。用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "电视", "value": 7, "group": "普通用户" },
+        { "name": "冰箱", "value": 8, "group": "普通用户" },
+        { "name": "洗衣机", "value": 9, "group": "普通用户" },
+        { "name": "空调", "value": 6, "group": "普通用户" },
+        { "name": "微波炉", "value": 5, "group": "普通用户" },
+        { "name": "电视", "value": 8, "group": "学生用户" },
+        { "name": "冰箱", "value": 6, "group": "学生用户" },
+        { "name": "洗衣机", "value": 7, "group": "学生用户" },
+        { "name": "空调", "value": 5, "group": "学生用户" },
+        { "name": "微波炉", "value": 9, "group": "学生用户" },
+        { "name": "电视", "value": 6, "group": "专业用户" },
+        { "name": "冰箱", "value": 9, "group": "专业用户" },
+        { "name": "洗衣机", "value": 8, "group": "专业用户" },
+        { "name": "空调", "value": 7, "group": "专业用户" },
+        { "name": "微波炉", "value": 6, "group": "专业用户" }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "在一次职业培训中，三个组的学员对培训课程的五个方面进行了评分。组1：内容质量9分、讲师水平8分、互动性7分、实用性8分、难易度6分。组2：内容质量7分、讲师水平9分、互动性8分、实用性7分、难易度8分。组3：内容质量8分、讲师水平7分、互动性9分、实用性6分、难易度9分。用雷达图可视化：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "内容质量", "value": 9, "group": "组1" },
+        { "name": "讲师水平", "value": 8, "group": "组1" },
+        { "name": "互动性", "value": 7, "group": "组1" },
+        { "name": "实用性", "value": 8, "group": "组1" },
+        { "name": "难易度", "value": 6, "group": "组1" },
+        { "name": "内容质量", "value": 7, "group": "组2" },
+        { "name": "讲师水平", "value": 9, "group": "组2" },
+        { "name": "互动性", "value": 8, "group": "组2" },
+        { "name": "实用性", "value": 7, "group": "组2" },
+        { "name": "难易度", "value": 8, "group": "组2" },
+        { "name": "内容质量", "value": 8, "group": "组3" },
+        { "name": "讲师水平", "value": 7, "group": "组3" },
+        { "name": "互动性", "value": 9, "group": "组3" },
+        { "name": "实用性", "value": 6, "group": "组3" },
+        { "name": "难易度", "value": 9, "group": "组3" }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"skill\": \"Communication\", \"score\": 8 }, { \"skill\": \"Leadership\", \"score\": 9 }, { \"skill\": \"Technical\", \"score\": 7 }, { \"skill\": \"Creativity\", \"score\": 6 }, { \"skill\": \"Adaptability\", \"score\": 5 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "Communication", "value": 8 },
+        { "name": "Leadership", "value": 9 },
+        { "name": "Technical", "value": 7 },
+        { "name": "Creativity", "value": 6 },
+        { "name": "Adaptability", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"dimension\": \"Speed\", \"score\": 4 }, { \"dimension\": \"Power\", \"score\": 6 }, { \"dimension\": \"Endurance\", \"score\": 8 }, { \"dimension\": \"Agility\", \"score\": 7 }, { \"dimension\": \"Balance\", \"score\": 5 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "Speed", "value": 4 },
+        { "name": "Power", "value": 6 },
+        { "name": "Endurance", "value": 8 },
+        { "name": "Agility", "value": 7 },
+        { "name": "Balance", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"aspect\": \"Quality\", \"score\": 7 }, { \"aspect\": \"Efficiency\", \"score\": 5 }, { \"aspect\": \"Innovation\", \"score\": 6 }, { \"aspect\": \"Reliability\", \"score\": 8 }, { \"aspect\": \"Sustainability\", \"score\": 4 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "Quality", "value": 7 },
+        { "name": "Efficiency", "value": 5 },
+        { "name": "Innovation", "value": 6 },
+        { "name": "Reliability", "value": 8 },
+        { "name": "Sustainability", "value": 4 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"metric\": \"Accuracy\", \"score\": 9 }, { \"metric\": \"Precision\", \"score\": 7 }, { \"metric\": \"Recall\", \"score\": 6 }, { \"metric\": \"F1-Score\", \"score\": 8 }, { \"metric\": \"Sensitivity\", \"score\": 5 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "Accuracy", "value": 9 },
+        { "name": "Precision", "value": 7 },
+        { "name": "Recall", "value": 6 },
+        { "name": "F1-Score", "value": 8 },
+        { "name": "Sensitivity", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"attribute\": \"Taste\", \"score\": 7 }, { \"attribute\": \"Smell\", \"score\": 8 }, { \"attribute\": \"Texture\", \"score\": 6 }, { \"attribute\": \"Color\", \"score\": 5 }, { \"attribute\": \"Freshness\", \"score\": 9 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "name": "Taste", "value": 7 },
+        { "name": "Smell", "value": 8 },
+        { "name": "Texture", "value": 6 },
+        { "name": "Color", "value": 5 },
+        { "name": "Freshness", "value": 9 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"car\": \"Sedan\", \"feature\": \"Safety\", \"score\": 8 }, { \"car\": \"Sedan\", \"feature\": \"Comfort\", \"score\": 6 }, { \"car\": \"Sedan\", \"feature\": \"Fuel Efficiency\", \"score\": 7 }, { \"car\": \"SUV\", \"feature\": \"Safety\", \"score\": 9 }, { \"car\": \"SUV\", \"feature\": \"Comfort\", \"score\": 8 }, { \"car\": \"SUV\", \"feature\": \"Fuel Efficiency\", \"score\": 5 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "Sedan", "name": "Safety", "value": 8 },
+        { "group": "Sedan", "name": "Comfort", "value": 6 },
+        { "group": "Sedan", "name": "Fuel Efficiency", "value": 7 },
+        { "group": "SUV", "name": "Safety", "value": 9 },
+        { "group": "SUV", "name": "Comfort", "value": 8 },
+        { "group": "SUV", "name": "Fuel Efficiency", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"team\": \"Team A\", \"skill\": \"Offense\", \"score\": 7 }, { \"team\": \"Team A\", \"skill\": \"Defense\", \"score\": 6 }, { \"team\": \"Team A\", \"skill\": \"Teamwork\", \"score\": 8 }, { \"team\": \"Team B\", \"skill\": \"Offense\", \"score\": 6 }, { \"team\": \"Team B\", \"skill\": \"Defense\", \"score\": 8 }, { \"team\": \"Team B\", \"skill\": \"Teamwork\", \"score\": 7 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "Team A", "name": "Offense", "value": 7 },
+        { "group": "Team A", "name": "Defense", "value": 6 },
+        { "group": "Team A", "name": "Teamwork", "value": 8 },
+        { "group": "Team B", "name": "Offense", "value": 6 },
+        { "group": "Team B", "name": "Defense", "value": 8 },
+        { "group": "Team B", "name": "Teamwork", "value": 7 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"city\": \"New York\", \"aspect\": \"Cost of Living\", \"score\": 6 }, { \"city\": \"New York\", \"aspect\": \"Safety\", \"score\": 5 }, { \"city\": \"New York\", \"aspect\": \"Public Transport\", \"score\": 8 }, { \"city\": \"Los Angeles\", \"aspect\": \"Cost of Living\", \"score\": 7 }, { \"city\": \"Los Angeles\", \"aspect\": \"Safety\", \"score\": 6 }, { \"city\": \"Los Angeles\", \"aspect\": \"Public Transport\", \"score\": 7 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "New York", "name": "Cost of Living", "value": 6 },
+        { "group": "New York", "name": "Safety", "value": 5 },
+        { "group": "New York", "name": "Public Transport", "value": 8 },
+        { "group": "Los Angeles", "name": "Cost of Living", "value": 7 },
+        { "group": "Los Angeles", "name": "Safety", "value": 6 },
+        { "group": "Los Angeles", "name": "Public Transport", "value": 7 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"gadget\": \"Smartphone\", \"attribute\": \"Battery Life\", \"score\": 6 }, { \"gadget\": \"Smartphone\", \"attribute\": \"Camera Quality\", \"score\": 8 }, { \"gadget\": \"Smartphone\", \"attribute\": \"User Interface\", \"score\": 7 }, { \"gadget\": \"Laptop\", \"attribute\": \"Battery Life\", \"score\": 8 }, { \"gadget\": \"Laptop\", \"attribute\": \"Camera Quality\", \"score\": 5 }, { \"gadget\": \"Laptop\", \"attribute\": \"User Interface\", \"score\": 9 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "Smartphone", "name": "Battery Life", "value": 6 },
+        { "group": "Smartphone", "name": "Camera Quality", "value": 8 },
+        { "group": "Smartphone", "name": "User Interface", "value": 7 },
+        { "group": "Laptop", "name": "Battery Life", "value": 8 },
+        { "group": "Laptop", "name": "Camera Quality", "value": 5 },
+        { "group": "Laptop", "name": "User Interface", "value": 9 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据 `[ { \"animal\": \"Lion\", \"trait\": \"Strength\", \"score\": 9 }, { \"animal\": \"Lion\", \"trait\": \"Speed\", \"score\": 8 }, { \"animal\": \"Lion\", \"trait\": \"Intelligence\", \"score\": 6 }, { \"animal\": \"Elephant\", \"trait\": \"Strength\", \"score\": 10 }, { \"animal\": \"Elephant\", \"trait\": \"Speed\", \"score\": 4 }, { \"animal\": \"Elephant\", \"trait\": \"Intelligence\", \"score\": 7 } ]`：",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "Lion", "name": "Strength", "value": 9 },
+        { "group": "Lion", "name": "Speed", "value": 8 },
+        { "group": "Lion", "name": "Intelligence", "value": 6 },
+        { "group": "Elephant", "name": "Strength", "value": 10 },
+        { "group": "Elephant", "name": "Speed", "value": 4 },
+        { "group": "Elephant", "name": "Intelligence", "value": 7 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据，{ 'Tiger': {'Strength': 8, 'Speed': 9, 'Intelligence': 5}, 'Giraffe': {'Strength': 6, 'Speed': 7, 'Intelligence': 8}}",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "Tiger", "name": "Strength", "value": 8 },
+        { "group": "Tiger", "name": "Speed", "value": 9 },
+        { "group": "Tiger", "name": "Intelligence", "value": 5 },
+        { "group": "Giraffe", "name": "Strength", "value": 6 },
+        { "group": "Giraffe", "name": "Speed", "value": 7 },
+        { "group": "Giraffe", "name": "Intelligence", "value": 8 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据，{'Smartphone': {'Battery': 7, 'Performance': 8, 'Camera': 9}, 'Laptop': {'Battery': 6, 'Performance': 9, 'Camera': 5}}",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "Smartphone", "name": "Battery", "value": 7 },
+        { "group": "Smartphone", "name": "Performance", "value": 8 },
+        { "group": "Smartphone", "name": "Camera", "value": 9 },
+        { "group": "Laptop", "name": "Battery", "value": 6 },
+        { "group": "Laptop", "name": "Performance", "value": 9 },
+        { "group": "Laptop", "name": "Camera", "value": 5 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用雷达图可视化我的数据，{'CityA': {'Infrastructure': 8, 'Education': 7, 'Healthcare': 9}, 'CityB': {'Infrastructure': 7, 'Education': 9, 'Healthcare': 8}}",
+    "answer": {
+      "type": "radar",
+      "data": [
+        { "group": "CityA", "name": "Infrastructure", "value": 8 },
+        { "group": "CityA", "name": "Education", "value": 7 },
+        { "group": "CityA", "name": "Healthcare", "value": 9 },
+        { "group": "CityB", "name": "Infrastructure", "value": 7 },
+        { "group": "CityB", "name": "Education", "value": 9 },
+        { "group": "CityB", "name": "Healthcare", "value": 8 }
+      ]
+    }
+  }
+]

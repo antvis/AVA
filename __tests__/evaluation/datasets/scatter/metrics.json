@@ -1,0 +1,82 @@
+[
+  {
+    "type": "text2chart",
+    "question": "研究学习时间与考试成绩之间的关系，学习时间（单位：小时）为 5, 10, 15, 20，考试成绩（单位：分）分别为 60, 70, 80, 90。用散点图可视化我的数据：",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":5,\"y\":60},{\"x\":10,\"y\":70},{\"x\":15,\"y\":80},{\"x\":20,\"y\":90}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":5,\"y\":60},{\"x\":10,\"y\":70},{\"x\":15,\"y\":80},{\"x\":20,\"y\":90}]}",
+    "reference": ["散点图 - Scatter Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "分析温度对冰淇淋销量的影响，温度（单位：摄氏度）为 20, 25, 30, 35，冰淇淋销量（单位：个）分别为 100, 150, 200, 250。用散点图可视化我的数据：",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":20,\"y\":100},{\"x\":25,\"y\":150},{\"x\":30,\"y\":200},{\"x\":35,\"y\":250}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":20,\"y\":100},{\"x\":25,\"y\":150},{\"x\":30,\"y\":200},{\"x\":35,\"y\":250}]}",
+    "reference": ["散点图 - Scatter Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "探索年龄与血压水平的关系，年龄（单位：岁）为 20, 30, 40, 50，血压水平（单位：mmHg）分别为 110, 120, 130, 140。用散点图可视化我的数据：",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":20,\"y\":110},{\"x\":30,\"y\":120},{\"x\":40,\"y\":130},{\"x\":50,\"y\":140}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":20,\"y\":110},{\"x\":30,\"y\":120},{\"x\":40,\"y\":130},{\"x\":50,\"y\":140}]}",
+    "reference": ["散点图 - Scatter Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "考察网站访问量与销售额的关系，网站访问量（单位：千次）为 1, 2, 3, 4，销售额（单位：万元）分别为 5, 10, 15, 20。用散点图可视化我的数据：",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":1,\"y\":5},{\"x\":2,\"y\":10},{\"x\":3,\"y\":15},{\"x\":4,\"y\":20}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":1,\"y\":5},{\"x\":2,\"y\":10},{\"x\":3,\"y\":15},{\"x\":4,\"y\":20}]}",
+    "reference": ["散点图 - Scatter Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "text2chart",
+    "question": "研究锻炼频率与体重变化的关系，锻炼频率（单位：次/周）为 1, 2, 3, 4，体重变化（单位：公斤）分别为 -1, -2, -3, -4。用散点图可视化我的数据：",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":1,\"y\":-1},{\"x\":2,\"y\":-2},{\"x\":3,\"y\":-3},{\"x\":4,\"y\":-4}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":1,\"y\":-1},{\"x\":2,\"y\":-2},{\"x\":3,\"y\":-3},{\"x\":4,\"y\":-4}]}",
+    "reference": ["散点图 - Scatter Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用散点图可视化我的数据 `[{ \"hours\": 5, \"score\": 70 }, { \"hours\": 10, \"score\": 85 }, { \"hours\": 15, \"score\": 90 }]`",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":5,\"y\":70},{\"x\":10,\"y\":85},{\"x\":15,\"y\":90}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":5,\"y\":70},{\"x\":10,\"y\":85},{\"x\":15,\"y\":90}]}",
+    "reference": ["散点图 - Scatter Chart 使用示例"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用散点图展示这些温度与湿度的数据 `[{ \"temperature\": 20, \"humidity\": 60 }, { \"temperature\": 25, \"humidity\": 50 }, { \"temperature\": 30, \"humidity\": 40 }]`",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":20,\"y\":60},{\"x\":25,\"y\":50},{\"x\":30,\"y\":40}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":20,\"y\":60},{\"x\":25,\"y\":50},{\"x\":30,\"y\":40}]}",
+    "reference": ["散点图 - Scatter Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "请使用散点图来表示以下身高与体重的关系 `[{ \"height\": 160, \"weight\": 55 }, { \"height\": 170, \"weight\": 65 }, { \"height\": 180, \"weight\": 75 }]`",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":160,\"y\":55},{\"x\":170,\"y\":65},{\"x\":180,\"y\":75}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":160,\"y\":55},{\"x\":170,\"y\":65},{\"x\":180,\"y\":75}]}",
+    "reference": ["散点图 - Scatter Chart 基础概念"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "我想通过散点图看下年龄与血压之间的关系 `[{ \"age\": 30, \"blood_pressure\": 120 }, { \"age\": 40, \"blood_pressure\": 130 }, { \"age\": 50, \"blood_pressure\": 140 }]`",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":30,\"y\":120},{\"x\":40,\"y\":130},{\"x\":50,\"y\":140}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":30,\"y\":120},{\"x\":40,\"y\":130},{\"x\":50,\"y\":140}]}",
+    "reference": ["散点图 - Scatter Chart 适用场景"],
+    "correctness": 1
+  },
+  {
+    "type": "data2chart",
+    "question": "用散点图帮我分析一下销售额与广告投入的关系 `[{ \"ad_spend\": 1000, \"sales\": 5000 }, { \"ad_spend\": 2000, \"sales\": 8000 }, { \"ad_spend\": 3000, \"sales\": 12000 }]`",
+    "response": "{\"type\":\"scatter\",\"data\":[{\"x\":1000,\"y\":5000},{\"x\":2000,\"y\":8000},{\"x\":3000,\"y\":12000}]}",
+    "answer": "{\"type\":\"scatter\",\"data\":[{\"x\":1000,\"y\":5000},{\"x\":2000,\"y\":8000},{\"x\":3000,\"y\":12000}]}",
+    "reference": ["散点图 - Scatter Chart 使用示例"],
+    "correctness": 1
+  }
+]

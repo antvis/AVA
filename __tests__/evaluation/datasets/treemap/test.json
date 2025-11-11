@@ -1,0 +1,467 @@
+[
+  {
+    "type": "text2chart",
+    "question": "用矩阵树图展示一个超市的商品分类及其库存数量，如有三个主分类：食品、饮料和日用品。食品类有 300 件，饮料类有 200 件，日用品类有 500 件。食品类分为新鲜食品 150 件、罐头食品 100 件和零食 50 件；饮料类分为碳酸饮料 100 件和果汁 100 件；日用品类分为清洁用品 300 件和个人护理 200 件：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "食品",
+          "value": 300,
+          "children": [
+            { "name": "新鲜食品", "value": 150 },
+            { "name": "罐头食品", "value": 100 },
+            { "name": "零食", "value": 50 }
+          ]
+        },
+        {
+          "name": "饮料",
+          "value": 200,
+          "children": [
+            { "name": "碳酸饮料", "value": 100 },
+            { "name": "果汁", "value": 100 }
+          ]
+        },
+        {
+          "name": "日用品",
+          "value": 500,
+          "children": [
+            { "name": "清洁用品", "value": 300 },
+            { "name": "个人护理", "value": 200 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "用矩阵树图展示一个大学的学院及其学生人数，如有三个学院：理学院、文学院和工学院。理学院有 1200 人，文学院有 800 人，工学院有 1500 人。理学院分为数学系 400 人、物理系 500 人和化学系 300 人；文学院分为中文系 300 人、外文系 300 人和历史系 200 人；工学院分为机械系 600 人、土木系 500 人和电气系 400 人：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "理学院",
+          "value": 1200,
+          "children": [
+            { "name": "数学系", "value": 400 },
+            { "name": "物理系", "value": 500 },
+            { "name": "化学系", "value": 300 }
+          ]
+        },
+        {
+          "name": "文学院",
+          "value": 800,
+          "children": [
+            { "name": "中文系", "value": 300 },
+            { "name": "外文系", "value": 300 },
+            { "name": "历史系", "value": 200 }
+          ]
+        },
+        {
+          "name": "工学院",
+          "value": 1500,
+          "children": [
+            { "name": "机械系", "value": 600 },
+            { "name": "土木系", "value": 500 },
+            { "name": "电气系", "value": 400 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "用矩阵树图展示一个公司的销售情况，如公司有四个区域：北区、南区、东区和西区。北区销售额为 500 万元，南区为 700 万元，东区为 600 万元，西区为 400 万元。北区分为产品 A 和 B 销售额分别为 300 万元和 200 万元；南区分为产品 A 和 B 销售额分别为 400 万元和 300 万元；东区分为产品 A 和 B 销售额分别为 350 万元和 250 万元；西区分为产品 A 和 B 销售额分别为 200 万元和 200 万元：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "北区",
+          "value": 500,
+          "children": [
+            { "name": "产品 A", "value": 300 },
+            { "name": "产品 B", "value": 200 }
+          ]
+        },
+        {
+          "name": "南区",
+          "value": 700,
+          "children": [
+            { "name": "产品 A", "value": 400 },
+            { "name": "产品 B", "value": 300 }
+          ]
+        },
+        {
+          "name": "东区",
+          "value": 600,
+          "children": [
+            { "name": "产品 A", "value": 350 },
+            { "name": "产品 B", "value": 250 }
+          ]
+        },
+        {
+          "name": "西区",
+          "value": 400,
+          "children": [
+            { "name": "产品 A", "value": 200 },
+            { "name": "产品 B", "value": 200 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "用矩阵树图展示一个科技公司项目的投资情况，如公司有四个大项目：AI、区块链、物联网和大数据。AI 投资 1000 万元，区块链投资 800 万元，物联网投资 600 万元，大数据投资 900 万元。AI 项目下有三个子项目：NLP 400 万元、CV 300 万元和智能机器人 300 万元；区块链项目下有两个子项目：智能合约 500 万元和去中心化应用 300 万元；物联网项目下有两个子项目：智能家居 400 万元和工业物联网 200 万元；大数据项目下有两个子项目：数据分析 500 万元和数据挖掘 400 万元：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "AI",
+          "value": 1000,
+          "children": [
+            { "name": "NLP", "value": 400 },
+            { "name": "CV", "value": 300 },
+            { "name": "智能机器人", "value": 300 }
+          ]
+        },
+        {
+          "name": "区块链",
+          "value": 800,
+          "children": [
+            { "name": "智能合约", "value": 500 },
+            { "name": "去中心化应用", "value": 300 }
+          ]
+        },
+        {
+          "name": "物联网",
+          "value": 600,
+          "children": [
+            { "name": "智能家居", "value": 400 },
+            { "name": "工业物联网", "value": 200 }
+          ]
+        },
+        {
+          "name": "大数据",
+          "value": 900,
+          "children": [
+            { "name": "数据分析", "value": 500 },
+            { "name": "数据挖掘", "value": 400 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "用矩阵树图展示一个软件开发公司的项目情况及其投入的开发人员数量，如公司有三个主要项目：移动应用开发、Web 开发和嵌入式系统开发。移动应用开发有 150 人，Web 开发有 100 人，嵌入式系统开发有 200 人。移动应用开发分为 Android 开发 80 人和 iOS 开发 70 人；Web 开发分为前端开发 60 人和后端开发 40 人；嵌入式系统开发分为驱动开发 120 人和应用开发 80 人：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "移动应用开发",
+          "value": 150,
+          "children": [
+            { "name": "Android 开发", "value": 80 },
+            { "name": "iOS 开发", "value": 70 }
+          ]
+        },
+        {
+          "name": "Web 开发",
+          "value": 100,
+          "children": [
+            { "name": "前端开发", "value": 60 },
+            { "name": "后端开发", "value": 40 }
+          ]
+        },
+        {
+          "name": "嵌入式系统开发",
+          "value": 200,
+          "children": [
+            { "name": "驱动开发", "value": 120 },
+            { "name": "应用开发", "value": 80 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用矩阵树图展示不同地区能源消耗情况的数据 `[{ \"name\": \"北美洲\", \"consumption\": 3000, \"children\": [{ \"name\": \"美国\", \"consumption\": 2500 }, { \"name\": \"加拿大\", \"consumption\": 500 }]}, { \"name\": \"亚洲\", \"consumption\": 4000 }]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "北美洲",
+          "value": 3000,
+          "children": [
+            {
+              "name": "美国",
+              "value": 2500
+            },
+            {
+              "name": "加拿大",
+              "value": 500
+            }
+          ]
+        },
+        {
+          "name": "亚洲",
+          "value": 4000
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用矩阵树图来表示公司各部门的预算分配情况 `[{ \"name\": \"研发部\", \"budget\": 6000, \"children\": [{ \"name\": \"软件开发\", \"budget\": 4000 }, { \"name\": \"硬件开发\", \"budget\": 2000 }]}, { \"name\": \"市场部\", \"budget\": 3000 }]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "研发部",
+          "value": 6000,
+          "children": [
+            {
+              "name": "软件开发",
+              "value": 4000
+            },
+            {
+              "name": "硬件开发",
+              "value": 2000
+            }
+          ]
+        },
+        {
+          "name": "市场部",
+          "value": 3000
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "使用矩阵树图来显示全球主要国家的人口分布 `[{ \"name\": \"中国\", \"population\": 1400000000, \"children\": [{ \"name\": \"北京\", \"population\": 21500000 }, { \"name\": \"上海\", \"population\": 24200000 }]}, { \"name\": \"印度\", \"population\": 1380000000 }]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "中国",
+          "value": 1400000000,
+          "children": [
+            {
+              "name": "北京",
+              "value": 21500000
+            },
+            {
+              "name": "上海",
+              "value": 24200000
+            }
+          ]
+        },
+        {
+          "name": "印度",
+          "value": 1380000000
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "通过矩阵树图展现一家书店各类书籍的销量数据 `[{ \"name\": \"小说类\", \"sales\": 700, \"children\": [{ \"name\": \"科幻小说\", \"sales\": 300 }, { \"name\": \"言情小说\", \"sales\": 400 }]}, { \"name\": \"教育类\", \"sales\": 500 }]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "小说类",
+          "value": 700,
+          "children": [
+            {
+              "name": "科幻小说",
+              "value": 300
+            },
+            {
+              "name": "言情小说",
+              "value": 400
+            }
+          ]
+        },
+        {
+          "name": "教育类",
+          "value": 500
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "利用矩阵树图可视化一个电商平台上的商品种类及其销售额 `[{ \"name\": \"电子产品\", \"sales\": 8000, \"children\": [{ \"name\": \"手机\", \"sales\": 5000 }, { \"name\": \"电脑\", \"sales\": 3000 }]}, { \"name\": \"家居用品\", \"sales\": 6000 }]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "电子产品",
+          "value": 8000,
+          "children": [
+            {
+              "name": "手机",
+              "value": 5000
+            },
+            {
+              "name": "电脑",
+              "value": 3000
+            }
+          ]
+        },
+        {
+          "name": "家居用品",
+          "value": 6000
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用矩阵树图展示不同地区能源消耗情况的数据 `[{ \"亚洲\": 1500, \"children\": [{ \"中国\": 800 }, { \"印度\": 700 }]}, { \"欧洲\": 1200, \"children\": [{ \"德国\": 400 }, { \"法国\": 300 }, { \"英国\": 500 }]}]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "亚洲",
+          "value": 1500,
+          "children": [
+            { "name": "中国", "value": 800 },
+            { "name": "印度", "value": 700 }
+          ]
+        },
+        {
+          "name": "欧洲",
+          "value": 1200,
+          "children": [
+            { "name": "德国", "value": 400 },
+            { "name": "法国", "value": 300 },
+            { "name": "英国", "value": 500 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用矩阵树图来表示各年龄段人口分布数据 `[{ \"0-18岁\": 3000 }, { \"19-60岁\": 12000 }, { \"60岁以上\": 5000 }]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        { "name": "0-18岁", "value": 3000 },
+        { "name": "19-60岁", "value": 12000 },
+        { "name": "60岁以上", "value": 5000 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "使用矩阵树图显示各类别图书销售量 `[{ \"小说\": 700, \"children\": [{ \"科幻小说\": 300 }, { \"爱情小说\": 400 }]}, { \"非小说类\": 600, \"children\": [{ \"历史书籍\": 200 }, { \"科学书籍\": 400 }]}]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "小说",
+          "value": 700,
+          "children": [
+            { "name": "科幻小说", "value": 300 },
+            { "name": "爱情小说", "value": 400 }
+          ]
+        },
+        {
+          "name": "非小说类",
+          "value": 600,
+          "children": [
+            { "name": "历史书籍", "value": 200 },
+            { "name": "科学书籍", "value": 400 }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "以矩阵树图形式呈现各个部门的预算分配 `[{ \"研发部\": 20000, \"children\": [{ \"硬件组\": 10000 }, { \"软件组\": 10000 }]}, { \"市场部\": 15000 }, { \"行政部\": 5000 }]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "研发部",
+          "value": 20000,
+          "children": [
+            { "name": "硬件组", "value": 10000 },
+            { "name": "软件组", "value": 10000 }
+          ]
+        },
+        { "name": "市场部", "value": 15000 },
+        { "name": "行政部", "value": 5000 }
+      ]
+    }
+  },
+  {
+    "type": "data2chart",
+    "question": "用矩阵树图展示产品销售情况的数据 `[{\"name\":\"电子产品\",\"sales\":1000,\"children\":[{\"name\":\"手机\",\"sales\":400,\"children\":[{\"name\":\"品牌X\",\"sales\":200},{\"name\":\"品牌Y\",\"sales\":100},{\"name\":\"品牌Z\",\"sales\":100}]},{\"name\":\"电脑\",\"sales\":300,\"children\":[{\"name\":\"笔记本\",\"sales\":150},{\"name\":\"台式机\",\"sales\":150}]},{\"name\":\"平板\",\"sales\":300}]},{\"name\":\"家电\",\"sales\":800,\"children\":[{\"name\":\"冰箱\",\"sales\":200},{\"name\":\"洗衣机\",\"sales\":200},{\"name\":\"空调\",\"sales\":200},{\"name\":\"电视\",\"sales\":200}]},{\"name\":\"服装\",\"sales\":600,\"children\":[{\"name\":\"男装\",\"sales\":200},{\"name\":\"女装\",\"sales\":200},{\"name\":\"童装\",\"sales\":200}]},{\"name\":\"食品\",\"sales\":400,\"children\":[{\"name\":\"饮料\",\"sales\":100},{\"name\":\"零食\",\"sales\":100},{\"name\":\"调味品\",\"sales\":100},{\"name\":\"米面粮油\",\"sales\":100}]}]`：",
+    "answer": {
+      "type": "treemap",
+      "data": [
+        {
+          "name": "电子产品",
+          "value": 1000,
+          "children": [
+            {
+              "name": "手机",
+              "value": 400,
+              "children": [
+                { "name": "品牌X", "value": 200 },
+                { "name": "品牌Y", "value": 100 },
+                { "name": "品牌Z", "value": 100 }
+              ]
+            },
+            {
+              "name": "电脑",
+              "value": 300,
+              "children": [
+                { "name": "笔记本", "value": 150 },
+                { "name": "台式机", "value": 150 }
+              ]
+            },
+            { "name": "平板", "value": 300 }
+          ]
+        },
+        {
+          "name": "家电",
+          "value": 800,
+          "children": [
+            { "name": "冰箱", "value": 200 },
+            { "name": "洗衣机", "value": 200 },
+            { "name": "空调", "value": 200 },
+            { "name": "电视", "value": 200 }
+          ]
+        },
+        {
+          "name": "服装",
+          "value": 600,
+          "children": [
+            { "name": "男装", "value": 200 },
+            { "name": "女装", "value": 200 },
+            { "name": "童装", "value": 200 }
+          ]
+        },
+        {
+          "name": "食品",
+          "value": 400,
+          "children": [
+            { "name": "饮料", "value": 100 },
+            { "name": "零食", "value": 100 },
+            { "name": "调味品", "value": 100 },
+            { "name": "米面粮油", "value": 100 }
+          ]
+        }
+      ]
+    }
+  }
+]
