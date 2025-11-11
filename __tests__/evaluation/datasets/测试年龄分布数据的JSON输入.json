@@ -1,0 +1,83 @@
+{
+  "name": "测试年龄分布数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"0-18岁\": 3000 }, { \"19-60岁\": 12000 }, { \"60岁以上\": 5000 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "0-18岁": 3000
+        },
+        {
+          "19-60岁": 12000
+        },
+        {
+          "60岁以上": 5000
+        }
+      ],
+      "metas": [
+        {
+          "id": "0-18岁",
+          "name": "0-18岁",
+          "dataType": "number"
+        },
+        {
+          "id": "19-60岁",
+          "name": "19-60岁",
+          "dataType": "number"
+        },
+        {
+          "id": "60岁以上",
+          "name": "60岁以上",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年龄分布比例分析",
+        "key": "age_distribution",
+        "purpose": "Proportion",
+        "purposeDesc": "分析不同年龄段人口占总人口的比例"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "age_group": "0-18岁",
+          "population": 3000
+        },
+        {
+          "age_group": "19-60岁",
+          "population": 12000
+        },
+        {
+          "age_group": "60岁以上",
+          "population": 5000
+        }
+      ],
+      "metas": [
+        {
+          "id": "age_group",
+          "name": "age_group",
+          "dataType": "string"
+        },
+        {
+          "id": "population",
+          "name": "population",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年龄结构对比",
+        "key": "age_comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同年龄段人口的绝对数量"
+      }
+    }
+  ]
+}

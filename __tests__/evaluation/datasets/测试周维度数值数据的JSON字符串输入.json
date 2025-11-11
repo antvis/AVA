@@ -1,0 +1,161 @@
+{
+  "name": "测试周维度数值数据的JSON字符串输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"week\":\"1\",\"value\":1000},{\"week\":\"2\",\"value\":1500},{\"week\":\"3\",\"value\":1200},{\"week\":\"4\",\"value\":1800}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "week": "1",
+          "value": 1000
+        },
+        {
+          "week": "2",
+          "value": 1500
+        },
+        {
+          "week": "3",
+          "value": 1200
+        },
+        {
+          "week": "4",
+          "value": 1800
+        }
+      ],
+      "metas": [
+        {
+          "id": "week",
+          "name": "week",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "week": "1",
+          "value": 1000
+        },
+        {
+          "week": "2",
+          "value": 1500
+        },
+        {
+          "week": "3",
+          "value": 1200
+        },
+        {
+          "week": "4",
+          "value": 1800
+        }
+      ],
+      "metas": [
+        {
+          "id": "week",
+          "name": "week",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "周趋势分析",
+        "key": "week",
+        "purpose": "Trend",
+        "purposeDesc": "分析每周数值的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "week": "1",
+          "value": 1000
+        },
+        {
+          "week": "2",
+          "value": 1500
+        },
+        {
+          "week": "3",
+          "value": 1200
+        },
+        {
+          "week": "4",
+          "value": 1800
+        }
+      ],
+      "metas": [
+        {
+          "id": "week",
+          "name": "week",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "数值比较",
+        "key": "value",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同周之间的数值差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "week": "1",
+          "value": 1000
+        },
+        {
+          "week": "2",
+          "value": 1500
+        },
+        {
+          "week": "3",
+          "value": 1200
+        },
+        {
+          "week": "4",
+          "value": 1800
+        }
+      ],
+      "metas": [
+        {
+          "id": "week",
+          "name": "week",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "异常值检测",
+        "key": "value",
+        "purpose": "Anomaly",
+        "purposeDesc": "检测数值是否存在异常波动"
+      }
+    }
+  ]
+}

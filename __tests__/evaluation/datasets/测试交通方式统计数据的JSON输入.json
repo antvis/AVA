@@ -1,0 +1,122 @@
+{
+  "name": "测试交通方式统计数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"title\": \"步行\",\"count\": 120.0 },{ \"title\": \"骑自行车\", \"count\": 80.0 },{ \"title\": \"开车\" ,\"count\": 200.0 },{ \"title\": \"公共交通\" ,\"count\": 150.0 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "title": "步行",
+          "count": 120
+        },
+        {
+          "title": "骑自行车",
+          "count": 80
+        },
+        {
+          "title": "开车",
+          "count": 200
+        },
+        {
+          "title": "公共交通",
+          "count": 150
+        }
+      ],
+      "metas": [
+        {
+          "id": "title",
+          "name": "title",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "title": "步行",
+          "count": 120
+        },
+        {
+          "title": "骑自行车",
+          "count": 80
+        },
+        {
+          "title": "开车",
+          "count": 200
+        },
+        {
+          "title": "公共交通",
+          "count": 150
+        }
+      ],
+      "metas": [
+        {
+          "id": "title",
+          "name": "title",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "交通方式占比分析",
+        "key": "count",
+        "purpose": "Proportion",
+        "purposeDesc": "分析不同交通方式在总量中的占比情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "title": "步行",
+          "count": 120
+        },
+        {
+          "title": "骑自行车",
+          "count": 80
+        },
+        {
+          "title": "开车",
+          "count": 200
+        },
+        {
+          "title": "公共交通",
+          "count": 150
+        }
+      ],
+      "metas": [
+        {
+          "id": "title",
+          "name": "title",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "交通方式排名分析",
+        "key": "count",
+        "purpose": "Rank",
+        "purposeDesc": "分析不同交通方式的使用量排名"
+      }
+    }
+  ]
+}

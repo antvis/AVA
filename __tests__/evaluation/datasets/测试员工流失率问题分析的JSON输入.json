@@ -1,0 +1,129 @@
+{
+  "name": "测试员工流失率问题分析的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{\"problem\":\"员工流失率高\",\"bones\":[{\"category\":\"薪酬福利\",\"factors\":[\"工资低\",\"福利差\"]},{\"category\":\"工作环境\",\"factors\":[\"工作压力大\",\"缺乏发展空间\"]},{\"category\":\"管理问题\",\"factors\":[\"领导能力差\",\"决策失误\"]}]}"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "root",
+          "name": "员工流失率高",
+          "children": [
+            {
+              "id": "薪酬福利",
+              "name": "薪酬福利",
+              "children": [
+                {
+                  "id": "工资低",
+                  "name": "工资低"
+                },
+                {
+                  "id": "福利差",
+                  "name": "福利差"
+                }
+              ]
+            },
+            {
+              "id": "工作环境",
+              "name": "工作环境",
+              "children": [
+                {
+                  "id": "工作压力大",
+                  "name": "工作压力大"
+                },
+                {
+                  "id": "缺乏发展空间",
+                  "name": "缺乏发展空间"
+                }
+              ]
+            },
+            {
+              "id": "管理问题",
+              "name": "管理问题",
+              "children": [
+                {
+                  "id": "领导能力差",
+                  "name": "领导能力差"
+                },
+                {
+                  "id": "决策失误",
+                  "name": "决策失误"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "问题分类分析",
+        "key": "category",
+        "purpose": "Composition",
+        "purposeDesc": "分析员工流失问题的构成因素"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "category": "薪酬福利",
+          "factor": "工资低"
+        },
+        {
+          "category": "薪酬福利",
+          "factor": "福利差"
+        },
+        {
+          "category": "工作环境",
+          "factor": "工作压力大"
+        },
+        {
+          "category": "工作环境",
+          "factor": "缺乏发展空间"
+        },
+        {
+          "category": "管理问题",
+          "factor": "领导能力差"
+        },
+        {
+          "category": "管理问题",
+          "factor": "决策失误"
+        }
+      ],
+      "metas": [
+        {
+          "id": "category",
+          "name": "问题类别",
+          "dataType": "string"
+        },
+        {
+          "id": "factor",
+          "name": "具体因素",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "因素明细分析",
+        "key": "factor",
+        "purpose": "Rank",
+        "purposeDesc": "对导致员工流失的具体因素进行排序分析"
+      }
+    }
+  ]
+}

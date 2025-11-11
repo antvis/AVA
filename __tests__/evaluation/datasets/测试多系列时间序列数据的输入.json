@@ -1,0 +1,121 @@
+{
+  "name": "测试多系列时间序列数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"month\": 1, \"value\": 200}, {\"month\": 2, \"value\": 300}], series B: [{\"month\": 1, \"value\": 150}, {\"month\": 2, \"value\": 250}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": 1,
+          "value": 200,
+          "series": "A"
+        },
+        {
+          "month": 2,
+          "value": 300,
+          "series": "A"
+        },
+        {
+          "month": 1,
+          "value": 150,
+          "series": "B"
+        },
+        {
+          "month": 2,
+          "value": 250,
+          "series": "B"
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "number"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "series",
+          "name": "series",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "多系列趋势对比",
+        "key": "series",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同系列在同一时间点的数值差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": 1,
+          "value": 200
+        },
+        {
+          "month": 2,
+          "value": 300
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "number"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "单系列趋势分析",
+        "key": "month",
+        "purpose": "Trend",
+        "purposeDesc": "分析系列A随时间变化的趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": 1,
+          "value": 150
+        },
+        {
+          "month": 2,
+          "value": 250
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "number"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "单系列趋势分析",
+        "key": "month",
+        "purpose": "Trend",
+        "purposeDesc": "分析系列B随时间变化的趋势"
+      }
+    }
+  ]
+}

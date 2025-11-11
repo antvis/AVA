@@ -1,0 +1,83 @@
+{
+  "name": "测试JSON字符串格式的关系型数据",
+  "input": [
+    {
+      "type": "jsonString",
+      "value": "{\"nodes\":[{\"id\":\"A\",\"name\":\"Alice\",\"role\":\"Engineer\"},{\"id\":\"B\",\"name\":\"Bob\",\"role\":\"Manager\"},{\"id\":\"C\",\"name\":\"Carol\",\"role\":\"Designer\"},{\"id\":\"D\",\"name\":\"David\",\"role\":\"Analyst\"}],\"edges\":[{\"source\":\"B\",\"target\":\"A\",\"relation\":\"manages\"},{\"source\":\"B\",\"target\":\"C\",\"relation\":\"manages\"},{\"source\":\"A\",\"target\":\"D\",\"relation\":\"collaborates_with\"}]}"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "A",
+            "name": "Alice",
+            "role": "Engineer"
+          },
+          {
+            "id": "B",
+            "name": "Bob",
+            "role": "Manager"
+          },
+          {
+            "id": "C",
+            "name": "Carol",
+            "role": "Designer"
+          },
+          {
+            "id": "D",
+            "name": "David",
+            "role": "Analyst"
+          }
+        ],
+        "edges": [
+          {
+            "source": "B",
+            "target": "A",
+            "relation": "manages"
+          },
+          {
+            "source": "B",
+            "target": "C",
+            "relation": "manages"
+          },
+          {
+            "source": "A",
+            "target": "D",
+            "relation": "collaborates_with"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "role",
+          "name": "角色",
+          "dataType": "string"
+        },
+        {
+          "id": "relation",
+          "name": "关系类型",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "团队协作关系分析",
+        "key": "team_collaboration",
+        "purpose": "Relationship",
+        "purposeDesc": "展示团队成员之间的管理与协作关系"
+      }
+    }
+  ]
+}

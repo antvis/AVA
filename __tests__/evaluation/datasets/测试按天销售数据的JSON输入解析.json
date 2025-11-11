@@ -1,0 +1,177 @@
+{
+  "name": "测试按天销售数据的JSON输入解析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"day\":\"Monday\",\"sales\":2000},{\"day\":\"Tuesday\",\"sales\":2500},{\"day\":\"Wednesday\",\"sales\":2200},{\"day\":\"Thursday\",\"sales\":2800},{\"day\":\"Friday\",\"sales\":3000}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "Monday",
+          "sales": 2000
+        },
+        {
+          "day": "Tuesday",
+          "sales": 2500
+        },
+        {
+          "day": "Wednesday",
+          "sales": 2200
+        },
+        {
+          "day": "Thursday",
+          "sales": 2800
+        },
+        {
+          "day": "Friday",
+          "sales": 3000
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "Monday",
+          "sales": 2000
+        },
+        {
+          "day": "Tuesday",
+          "sales": 2500
+        },
+        {
+          "day": "Wednesday",
+          "sales": 2200
+        },
+        {
+          "day": "Thursday",
+          "sales": 2800
+        },
+        {
+          "day": "Friday",
+          "sales": 3000
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销售趋势分析",
+        "key": "sales_trend",
+        "purpose": "Trend",
+        "purposeDesc": "分析一周内每日销售额的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "Monday",
+          "sales": 2000
+        },
+        {
+          "day": "Tuesday",
+          "sales": 2500
+        },
+        {
+          "day": "Wednesday",
+          "sales": 2200
+        },
+        {
+          "day": "Thursday",
+          "sales": 2800
+        },
+        {
+          "day": "Friday",
+          "sales": 3000
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销售排名分析",
+        "key": "sales_rank",
+        "purpose": "Rank",
+        "purposeDesc": "按销售额对工作日进行排名"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "Monday",
+          "sales": 2000
+        },
+        {
+          "day": "Tuesday",
+          "sales": 2500
+        },
+        {
+          "day": "Wednesday",
+          "sales": 2200
+        },
+        {
+          "day": "Thursday",
+          "sales": 2800
+        },
+        {
+          "day": "Friday",
+          "sales": 3000
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销售异常检测",
+        "key": "sales_anomaly",
+        "purpose": "Anomaly",
+        "purposeDesc": "检测销售额是否存在异常波动"
+      }
+    }
+  ]
+}

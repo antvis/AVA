@@ -1,0 +1,177 @@
+{
+  "name": "测试产品销售量与退货率数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"product\": \"A\", \"sales_volume\": 200, \"return_rate\": 5 }, { \"product\": \"B\", \"sales_volume\": 300, \"return_rate\": 7 }, { \"product\": \"C\", \"sales_volume\": 400, \"return_rate\": 9 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "A",
+          "sales_volume": 200,
+          "return_rate": 5
+        },
+        {
+          "product": "B",
+          "sales_volume": 300,
+          "return_rate": 7
+        },
+        {
+          "product": "C",
+          "sales_volume": 400,
+          "return_rate": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "sales_volume",
+          "name": "sales_volume",
+          "dataType": "number"
+        },
+        {
+          "id": "return_rate",
+          "name": "return_rate",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "A",
+          "sales_volume": 200,
+          "return_rate": 5
+        },
+        {
+          "product": "B",
+          "sales_volume": 300,
+          "return_rate": 7
+        },
+        {
+          "product": "C",
+          "sales_volume": 400,
+          "return_rate": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "sales_volume",
+          "name": "sales_volume",
+          "dataType": "number"
+        },
+        {
+          "id": "return_rate",
+          "name": "return_rate",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品销量与退货率对比",
+        "key": "product",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同产品的销售量和退货率"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "A",
+          "sales_volume": 200,
+          "return_rate": 5
+        },
+        {
+          "product": "B",
+          "sales_volume": 300,
+          "return_rate": 7
+        },
+        {
+          "product": "C",
+          "sales_volume": 400,
+          "return_rate": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "sales_volume",
+          "name": "sales_volume",
+          "dataType": "number"
+        },
+        {
+          "id": "return_rate",
+          "name": "return_rate",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品退货率排名",
+        "key": "return_rate",
+        "purpose": "Rank",
+        "purposeDesc": "根据退货率对产品进行排名"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "A",
+          "sales_volume": 200,
+          "return_rate": 5
+        },
+        {
+          "product": "B",
+          "sales_volume": 300,
+          "return_rate": 7
+        },
+        {
+          "product": "C",
+          "sales_volume": 400,
+          "return_rate": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "sales_volume",
+          "name": "sales_volume",
+          "dataType": "number"
+        },
+        {
+          "id": "return_rate",
+          "name": "return_rate",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销量与退货率关系分析",
+        "key": "sales_volume",
+        "purpose": "Relationship",
+        "purposeDesc": "分析销量与退货率之间的关系"
+      }
+    }
+  ]
+}

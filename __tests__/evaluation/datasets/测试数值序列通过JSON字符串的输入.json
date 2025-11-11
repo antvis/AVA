@@ -1,0 +1,149 @@
+{
+  "name": "测试数值序列通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"value\": 5 }, { \"value\": 7 }, { \"value\": 9 }, { \"value\": 11 }, { \"value\": 13 }, { \"value\": 15 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 5
+        },
+        {
+          "value": 7
+        },
+        {
+          "value": 9
+        },
+        {
+          "value": 11
+        },
+        {
+          "value": 13
+        },
+        {
+          "value": 15
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 5
+        },
+        {
+          "value": 7
+        },
+        {
+          "value": 9
+        },
+        {
+          "value": 11
+        },
+        {
+          "value": 13
+        },
+        {
+          "value": 15
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "数值趋势分析",
+        "key": "value",
+        "purpose": "Trend",
+        "purposeDesc": "分析数值序列的增长趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 5
+        },
+        {
+          "value": 7
+        },
+        {
+          "value": 9
+        },
+        {
+          "value": 11
+        },
+        {
+          "value": 13
+        },
+        {
+          "value": 15
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "数值分布分析",
+        "key": "value",
+        "purpose": "Distribution",
+        "purposeDesc": "分析数值的分布情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 5
+        },
+        {
+          "value": 7
+        },
+        {
+          "value": 9
+        },
+        {
+          "value": 11
+        },
+        {
+          "value": 13
+        },
+        {
+          "value": 15
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "数值排名分析",
+        "key": "value",
+        "purpose": "Rank",
+        "purposeDesc": "分析数值的排名情况"
+      }
+    }
+  ]
+}

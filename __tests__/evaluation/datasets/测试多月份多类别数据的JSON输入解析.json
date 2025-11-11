@@ -1,0 +1,207 @@
+{
+  "name": "测试多月份多类别数据的JSON输入解析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"month\":\"Jan\",\"value\":400,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":600,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":300,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":700,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":800,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":400,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":900,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":1100,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":600,\"category\":\"C\"}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 400,
+          "category": "A"
+        },
+        {
+          "month": "Jan",
+          "value": 600,
+          "category": "B"
+        },
+        {
+          "month": "Jan",
+          "value": 300,
+          "category": "C"
+        },
+        {
+          "month": "Feb",
+          "value": 700,
+          "category": "A"
+        },
+        {
+          "month": "Feb",
+          "value": 800,
+          "category": "B"
+        },
+        {
+          "month": "Feb",
+          "value": 400,
+          "category": "C"
+        },
+        {
+          "month": "Mar",
+          "value": 900,
+          "category": "A"
+        },
+        {
+          "month": "Mar",
+          "value": 1100,
+          "category": "B"
+        },
+        {
+          "month": "Mar",
+          "value": 600,
+          "category": "C"
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 400,
+          "category": "A"
+        },
+        {
+          "month": "Jan",
+          "value": 600,
+          "category": "B"
+        },
+        {
+          "month": "Jan",
+          "value": 300,
+          "category": "C"
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "一月数据对比",
+        "key": "Jan",
+        "purpose": "Comparison",
+        "purposeDesc": "对比一月份不同类别的数值"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 400,
+          "category": "A"
+        },
+        {
+          "month": "Feb",
+          "value": 700,
+          "category": "A"
+        },
+        {
+          "month": "Mar",
+          "value": 900,
+          "category": "A"
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "A类数据趋势",
+        "key": "A",
+        "purpose": "Trend",
+        "purposeDesc": "分析A类数据随月份变化的趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Mar",
+          "value": 900,
+          "category": "A"
+        },
+        {
+          "month": "Mar",
+          "value": 1100,
+          "category": "B"
+        },
+        {
+          "month": "Mar",
+          "value": 600,
+          "category": "C"
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "三月数据构成",
+        "key": "Mar",
+        "purpose": "Composition",
+        "purposeDesc": "分析三月份各类别数据的构成比例"
+      }
+    }
+  ]
+}

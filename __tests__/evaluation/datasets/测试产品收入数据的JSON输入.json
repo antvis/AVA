@@ -1,0 +1,116 @@
+{
+  "name": "测试产品收入数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"product\": \"电子产品\", \"revenue\": 100000 },{ \"product\": \"家具\", \"revenue\": 40000 },{ \"product\": \"服装\", \"revenue\": 60000 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "电子产品",
+          "revenue": 100000
+        },
+        {
+          "product": "家具",
+          "revenue": 40000
+        },
+        {
+          "product": "服装",
+          "revenue": 60000
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "revenue",
+          "name": "revenue",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品收入对比",
+        "key": "product",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同产品类别的收入情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "电子产品",
+          "revenue": 100000
+        },
+        {
+          "product": "家具",
+          "revenue": 40000
+        },
+        {
+          "product": "服装",
+          "revenue": 60000
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "revenue",
+          "name": "revenue",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品收入构成",
+        "key": "product",
+        "purpose": "Composition",
+        "purposeDesc": "分析各产品类别在总收入中的占比"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "电子产品",
+          "revenue": 100000
+        },
+        {
+          "product": "家具",
+          "revenue": 40000
+        },
+        {
+          "product": "服装",
+          "revenue": 60000
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "revenue",
+          "name": "revenue",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品收入排名",
+        "key": "product",
+        "purpose": "Rank",
+        "purposeDesc": "按收入高低对产品类别进行排序"
+      }
+    }
+  ]
+}

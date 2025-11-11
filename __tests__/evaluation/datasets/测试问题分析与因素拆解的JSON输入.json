@@ -1,0 +1,117 @@
+{
+  "name": "测试问题分析与因素拆解的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{\"problem\":\"网站流量减少\",\"bones\":[{\"category\":\"内容质量\",\"factors\":[\"内容更新慢\",\"质量不高\"]},{\"category\":\"SEO策略\",\"factors\":[\"关键词选择错误\",\"外链不足\"]},{\"category\":\"用户体验\",\"factors\":[\"页面加载慢\",\"界面不友好\"]}]}"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "root",
+          "name": "网站流量减少",
+          "children": [
+            {
+              "id": "content_quality",
+              "name": "内容质量",
+              "children": [
+                {
+                  "id": "factor_1",
+                  "name": "内容更新慢"
+                },
+                {
+                  "id": "factor_2",
+                  "name": "质量不高"
+                }
+              ]
+            },
+            {
+              "id": "seo_strategy",
+              "name": "SEO策略",
+              "children": [
+                {
+                  "id": "factor_3",
+                  "name": "关键词选择错误"
+                },
+                {
+                  "id": "factor_4",
+                  "name": "外链不足"
+                }
+              ]
+            },
+            {
+              "id": "user_experience",
+              "name": "用户体验",
+              "children": [
+                {
+                  "id": "factor_5",
+                  "name": "页面加载慢"
+                },
+                {
+                  "id": "factor_6",
+                  "name": "界面不友好"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "问题因素拆解",
+        "key": "problem_analysis",
+        "purpose": "Composition",
+        "purposeDesc": "拆解网站流量减少问题的构成因素"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "category": "内容质量",
+          "factors": "内容更新慢,质量不高"
+        },
+        {
+          "category": "SEO策略",
+          "factors": "关键词选择错误,外链不足"
+        },
+        {
+          "category": "用户体验",
+          "factors": "页面加载慢,界面不友好"
+        }
+      ],
+      "metas": [
+        {
+          "id": "category",
+          "name": "问题类别",
+          "dataType": "string"
+        },
+        {
+          "id": "factors",
+          "name": "影响因素",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "问题分类统计",
+        "key": "category_stats",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同类别下的影响因素数量"
+      }
+    }
+  ]
+}

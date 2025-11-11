@@ -1,0 +1,146 @@
+{
+  "name": "测试社交媒体平台用户增长数据的文本输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "platform": "Facebook",
+          "growthRate": 8,
+          "year": 2018
+        },
+        {
+          "platform": "Twitter",
+          "growthRate": 12,
+          "year": 2018
+        },
+        {
+          "platform": "Instagram",
+          "growthRate": 22,
+          "year": 2018
+        }
+      ],
+      "metas": [
+        {
+          "id": "platform",
+          "name": "平台名称",
+          "dataType": "string"
+        },
+        {
+          "id": "growthRate",
+          "name": "增长率",
+          "dataType": "number"
+        },
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "平台增长率对比",
+        "key": "growthRate",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同社交媒体平台的用户增长率"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "Facebook",
+          8,
+          2018
+        ],
+        [
+          "Twitter",
+          12,
+          2018
+        ],
+        [
+          "Instagram",
+          22,
+          2018
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "平台名称",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "增长率",
+          "dataType": "number"
+        },
+        {
+          "id": "2",
+          "name": "年份",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "增长率趋势分析",
+        "key": "1",
+        "purpose": "Trend",
+        "purposeDesc": "分析各平台增长率的趋势"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "2018",
+          "name": "2018年",
+          "children": [
+            {
+              "id": "Facebook_2018",
+              "name": "Facebook",
+              "growthRate": 8
+            },
+            {
+              "id": "Twitter_2018",
+              "name": "Twitter",
+              "growthRate": 12
+            },
+            {
+              "id": "Instagram_2018",
+              "name": "Instagram",
+              "growthRate": 22
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        },
+        {
+          "id": "growthRate",
+          "name": "增长率",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "平台增长结构分析",
+        "key": "growthRate",
+        "purpose": "Composition",
+        "purposeDesc": "分析各平台在整体增长中的占比结构"
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "name": "测试嵌套结构数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"name\": \"北美洲\", \"consumption\": 3000, \"children\": [{ \"name\": \"美国\", \"consumption\": 2500 }, { \"name\": \"加拿大\", \"consumption\": 500 }]}, { \"name\": \"亚洲\", \"consumption\": 4000 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "name": "北美洲",
+          "consumption": 3000,
+          "children": [
+            {
+              "name": "美国",
+              "consumption": 2500
+            },
+            {
+              "name": "加拿大",
+              "consumption": 500
+            }
+          ]
+        },
+        {
+          "name": "亚洲",
+          "consumption": 4000
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "consumption",
+          "name": "consumption",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "区域消费构成分析",
+        "key": "consumption",
+        "purpose": "Composition",
+        "purposeDesc": "分析各区域及其子区域的消费构成"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "name": "北美洲",
+          "consumption": 3000
+        },
+        {
+          "name": "美国",
+          "consumption": 2500
+        },
+        {
+          "name": "加拿大",
+          "consumption": 500
+        },
+        {
+          "name": "亚洲",
+          "consumption": 4000
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "consumption",
+          "name": "consumption",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "区域消费排名分析",
+        "key": "consumption",
+        "purpose": "Rank",
+        "purposeDesc": "分析各区域的消费排名"
+      }
+    }
+  ]
+}

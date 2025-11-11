@@ -1,0 +1,242 @@
+{
+  "name": "测试城市年度数据通过嵌套JSON对象的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{ 'City A': { '2020': 1000, '2021': 1200 }, 'City B': { '2020': 1500, '2021': 1800 }, 'City C': { '2020': 2000, '2021': 2500 } }"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "city": "City A",
+          "year": "2020",
+          "value": 1000
+        },
+        {
+          "city": "City A",
+          "year": "2021",
+          "value": 1200
+        },
+        {
+          "city": "City B",
+          "year": "2020",
+          "value": 1500
+        },
+        {
+          "city": "City B",
+          "year": "2021",
+          "value": 1800
+        },
+        {
+          "city": "City C",
+          "year": "2020",
+          "value": 2000
+        },
+        {
+          "city": "City C",
+          "year": "2021",
+          "value": 2500
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "string"
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市年度数据对比",
+        "key": "city-year",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同城市在不同年份的数据变化"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "City A",
+          "name": "City A",
+          "children": [
+            {
+              "id": "City A-2020",
+              "year": "2020",
+              "value": 1000
+            },
+            {
+              "id": "City A-2021",
+              "year": "2021",
+              "value": 1200
+            }
+          ]
+        },
+        {
+          "id": "City B",
+          "name": "City B",
+          "children": [
+            {
+              "id": "City B-2020",
+              "year": "2020",
+              "value": 1500
+            },
+            {
+              "id": "City B-2021",
+              "year": "2021",
+              "value": 1800
+            }
+          ]
+        },
+        {
+          "id": "City C",
+          "name": "City C",
+          "children": [
+            {
+              "id": "City C-2020",
+              "year": "2020",
+              "value": 2000
+            },
+            {
+              "id": "City C-2021",
+              "year": "2021",
+              "value": 2500
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市年度数据层级结构",
+        "key": "city-hierarchy",
+        "purpose": "Composition",
+        "purposeDesc": "展示城市数据的层级结构，便于理解整体与部分的关系"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "City A",
+            "name": "City A",
+            "type": "city"
+          },
+          {
+            "id": "City B",
+            "name": "City B",
+            "type": "city"
+          },
+          {
+            "id": "City C",
+            "name": "City C",
+            "type": "city"
+          },
+          {
+            "id": "2020",
+            "name": "2020",
+            "type": "year"
+          },
+          {
+            "id": "2021",
+            "name": "2021",
+            "type": "year"
+          }
+        ],
+        "edges": [
+          {
+            "source": "City A",
+            "target": "2020",
+            "value": 1000
+          },
+          {
+            "source": "City A",
+            "target": "2021",
+            "value": 1200
+          },
+          {
+            "source": "City B",
+            "target": "2020",
+            "value": 1500
+          },
+          {
+            "source": "City B",
+            "target": "2021",
+            "value": 1800
+          },
+          {
+            "source": "City C",
+            "target": "2020",
+            "value": 2000
+          },
+          {
+            "source": "City C",
+            "target": "2021",
+            "value": 2500
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "type",
+          "name": "type",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市与年份的关系网络",
+        "key": "city-year-relation",
+        "purpose": "Relationship",
+        "purposeDesc": "展示城市与年份之间的关系，以及对应的数值"
+      }
+    }
+  ]
+}

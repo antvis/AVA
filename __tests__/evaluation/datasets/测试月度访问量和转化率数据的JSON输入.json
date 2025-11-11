@@ -1,0 +1,140 @@
+{
+  "name": "测试月度访问量和转化率数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"month\": \"Apr\", \"visits\": 10000, \"conversion_rate\": 2.5 }, { \"month\": \"May\", \"visits\": 12000, \"conversion_rate\": 3.0 }, { \"month\": \"Jun\", \"visits\": 15000, \"conversion_rate\": 3.5 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Apr",
+          "visits": 10000,
+          "conversion_rate": 2.5
+        },
+        {
+          "month": "May",
+          "visits": 12000,
+          "conversion_rate": 3
+        },
+        {
+          "month": "Jun",
+          "visits": 15000,
+          "conversion_rate": 3.5
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "visits",
+          "name": "visits",
+          "dataType": "number"
+        },
+        {
+          "id": "conversion_rate",
+          "name": "conversion_rate",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "月度趋势分析",
+        "key": "month",
+        "purpose": "Trend",
+        "purposeDesc": "分析访问量和转化率随时间的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Apr",
+          "visits": 10000,
+          "conversion_rate": 2.5
+        },
+        {
+          "month": "May",
+          "visits": 12000,
+          "conversion_rate": 3
+        },
+        {
+          "month": "Jun",
+          "visits": 15000,
+          "conversion_rate": 3.5
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "visits",
+          "name": "visits",
+          "dataType": "number"
+        },
+        {
+          "id": "conversion_rate",
+          "name": "conversion_rate",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "访问量与转化率关系",
+        "key": "visits",
+        "purpose": "Relationship",
+        "purposeDesc": "探索访问量与转化率之间的相关性"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Apr",
+          "visits": 10000,
+          "conversion_rate": 2.5
+        },
+        {
+          "month": "May",
+          "visits": 12000,
+          "conversion_rate": 3
+        },
+        {
+          "month": "Jun",
+          "visits": 15000,
+          "conversion_rate": 3.5
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "visits",
+          "name": "visits",
+          "dataType": "number"
+        },
+        {
+          "id": "conversion_rate",
+          "name": "conversion_rate",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "转化率排名",
+        "key": "conversion_rate",
+        "purpose": "Rank",
+        "purposeDesc": "比较各月转化率的排名情况"
+      }
+    }
+  ]
+}

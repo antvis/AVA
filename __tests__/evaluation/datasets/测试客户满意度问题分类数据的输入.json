@@ -1,0 +1,129 @@
+{
+  "name": "测试客户满意度问题分类数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{\"problem\":\"客户满意度低\",\"bones\":[{\"category\":\"产品质量\",\"factors\":[\"缺陷产品多\",\"材料质量差\"]},{\"category\":\"服务质量\",\"factors\":[\"响应速度慢\",\"服务态度差\"]},{\"category\":\"交付问题\",\"factors\":[\"交付延迟\",\"包装不良\"]}]}"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "root",
+          "name": "客户满意度低",
+          "children": [
+            {
+              "id": "category_1",
+              "name": "产品质量",
+              "children": [
+                {
+                  "id": "factor_1_1",
+                  "name": "缺陷产品多"
+                },
+                {
+                  "id": "factor_1_2",
+                  "name": "材料质量差"
+                }
+              ]
+            },
+            {
+              "id": "category_2",
+              "name": "服务质量",
+              "children": [
+                {
+                  "id": "factor_2_1",
+                  "name": "响应速度慢"
+                },
+                {
+                  "id": "factor_2_2",
+                  "name": "服务态度差"
+                }
+              ]
+            },
+            {
+              "id": "category_3",
+              "name": "交付问题",
+              "children": [
+                {
+                  "id": "factor_3_1",
+                  "name": "交付延迟"
+                },
+                {
+                  "id": "factor_3_2",
+                  "name": "包装不良"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "问题分类分析",
+        "key": "category_analysis",
+        "purpose": "Composition",
+        "purposeDesc": "分析客户满意度问题的构成比例"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "category": "产品质量",
+          "factor": "缺陷产品多"
+        },
+        {
+          "category": "产品质量",
+          "factor": "材料质量差"
+        },
+        {
+          "category": "服务质量",
+          "factor": "响应速度慢"
+        },
+        {
+          "category": "服务质量",
+          "factor": "服务态度差"
+        },
+        {
+          "category": "交付问题",
+          "factor": "交付延迟"
+        },
+        {
+          "category": "交付问题",
+          "factor": "包装不良"
+        }
+      ],
+      "metas": [
+        {
+          "id": "category",
+          "name": "问题类别",
+          "dataType": "string"
+        },
+        {
+          "id": "factor",
+          "name": "具体因素",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "问题因素统计",
+        "key": "factor_statistics",
+        "purpose": "Rank",
+        "purposeDesc": "统计各类问题中具体因素的分布情况"
+      }
+    }
+  ]
+}

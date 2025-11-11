@@ -1,0 +1,226 @@
+{
+  "name": "测试汽车特征评分数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[ { \"car\": \"Sedan\", \"feature\": \"Safety\", \"score\": 8 }, { \"car\": \"Sedan\", \"feature\": \"Comfort\", \"score\": 6 }, { \"car\": \"Sedan\", \"feature\": \"Fuel Efficiency\", \"score\": 7 }, { \"car\": \"SUV\", \"feature\": \"Safety\", \"score\": 9 }, { \"car\": \"SUV\", \"feature\": \"Comfort\", \"score\": 8 }, { \"car\": \"SUV\", \"feature\": \"Fuel Efficiency\", \"score\": 5 } ]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "car": "Sedan",
+          "feature": "Safety",
+          "score": 8
+        },
+        {
+          "car": "Sedan",
+          "feature": "Comfort",
+          "score": 6
+        },
+        {
+          "car": "Sedan",
+          "feature": "Fuel Efficiency",
+          "score": 7
+        },
+        {
+          "car": "SUV",
+          "feature": "Safety",
+          "score": 9
+        },
+        {
+          "car": "SUV",
+          "feature": "Comfort",
+          "score": 8
+        },
+        {
+          "car": "SUV",
+          "feature": "Fuel Efficiency",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "car",
+          "name": "car",
+          "dataType": "string"
+        },
+        {
+          "id": "feature",
+          "name": "feature",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "car": "Sedan",
+          "Safety": 8,
+          "Comfort": 6,
+          "Fuel Efficiency": 7
+        },
+        {
+          "car": "SUV",
+          "Safety": 9,
+          "Comfort": 8,
+          "Fuel Efficiency": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "car",
+          "name": "car",
+          "dataType": "string"
+        },
+        {
+          "id": "Safety",
+          "name": "Safety",
+          "dataType": "number"
+        },
+        {
+          "id": "Comfort",
+          "name": "Comfort",
+          "dataType": "number"
+        },
+        {
+          "id": "Fuel Efficiency",
+          "name": "Fuel Efficiency",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "车型特征对比",
+        "key": "car",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同车型在各特征上的评分差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "feature": "Safety",
+          "Sedan": 8,
+          "SUV": 9
+        },
+        {
+          "feature": "Comfort",
+          "Sedan": 6,
+          "SUV": 8
+        },
+        {
+          "feature": "Fuel Efficiency",
+          "Sedan": 7,
+          "SUV": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "feature",
+          "name": "feature",
+          "dataType": "string"
+        },
+        {
+          "id": "Sedan",
+          "name": "Sedan",
+          "dataType": "number"
+        },
+        {
+          "id": "SUV",
+          "name": "SUV",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "特征车型对比",
+        "key": "feature",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同特征在各车型上的评分差异"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Sedan",
+          "name": "Sedan",
+          "children": [
+            {
+              "id": "Sedan-Safety",
+              "feature": "Safety",
+              "score": 8
+            },
+            {
+              "id": "Sedan-Comfort",
+              "feature": "Comfort",
+              "score": 6
+            },
+            {
+              "id": "Sedan-Fuel Efficiency",
+              "feature": "Fuel Efficiency",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "SUV",
+          "name": "SUV",
+          "children": [
+            {
+              "id": "SUV-Safety",
+              "feature": "Safety",
+              "score": 9
+            },
+            {
+              "id": "SUV-Comfort",
+              "feature": "Comfort",
+              "score": 8
+            },
+            {
+              "id": "SUV-Fuel Efficiency",
+              "feature": "Fuel Efficiency",
+              "score": 5
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "feature",
+          "name": "feature",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "车型特征分布",
+        "key": "car",
+        "purpose": "Distribution",
+        "purposeDesc": "展示各车型下不同特征的评分分布情况"
+      }
+    }
+  ]
+}

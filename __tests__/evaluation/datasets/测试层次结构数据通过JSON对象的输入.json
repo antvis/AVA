@@ -1,0 +1,145 @@
+{
+  "name": "测试层次结构数据通过JSON对象的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{ \"项目管理\": [\"任务分配\", \"时间规划\", \"资源调配\", \"风险管理\"], \"时间规划\": [\"短期目标\", \"长期目标\"] }"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "项目管理",
+          "name": "项目管理",
+          "children": [
+            {
+              "id": "任务分配",
+              "name": "任务分配"
+            },
+            {
+              "id": "时间规划",
+              "name": "时间规划",
+              "children": [
+                {
+                  "id": "短期目标",
+                  "name": "短期目标"
+                },
+                {
+                  "id": "长期目标",
+                  "name": "长期目标"
+                }
+              ]
+            },
+            {
+              "id": "资源调配",
+              "name": "资源调配"
+            },
+            {
+              "id": "风险管理",
+              "name": "风险管理"
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "项目管理结构分析",
+        "key": "项目管理",
+        "purpose": "Composition",
+        "purposeDesc": "分析项目管理中各子项的组成结构"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "项目管理",
+            "name": "项目管理"
+          },
+          {
+            "id": "任务分配",
+            "name": "任务分配"
+          },
+          {
+            "id": "时间规划",
+            "name": "时间规划"
+          },
+          {
+            "id": "资源调配",
+            "name": "资源调配"
+          },
+          {
+            "id": "风险管理",
+            "name": "风险管理"
+          },
+          {
+            "id": "短期目标",
+            "name": "短期目标"
+          },
+          {
+            "id": "长期目标",
+            "name": "长期目标"
+          }
+        ],
+        "edges": [
+          {
+            "source": "项目管理",
+            "target": "任务分配"
+          },
+          {
+            "source": "项目管理",
+            "target": "时间规划"
+          },
+          {
+            "source": "项目管理",
+            "target": "资源调配"
+          },
+          {
+            "source": "项目管理",
+            "target": "风险管理"
+          },
+          {
+            "source": "时间规划",
+            "target": "短期目标"
+          },
+          {
+            "source": "时间规划",
+            "target": "长期目标"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "项目管理关系分析",
+        "key": "项目管理",
+        "purpose": "Relationship",
+        "purposeDesc": "分析项目管理中各元素间的关联关系"
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "测试抽取JSON字符的层级数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"id\":\"1\",\"name\":\"总部\",\"region\":\"华北\",\"children\":[{\"id\":\"1-1\",\"name\":\"北京分公司\",\"region\":\"北京\",\"employees\":200,\"children\":[{\"id\":\"1-1-1\",\"name\":\"朝阳办公区\",\"region\":\"朝阳\",\"employees\":120},{\"id\":\"1-1-2\",\"name\":\"海淀办公区\",\"region\":\"海淀\",\"employees\":80}]},{\"id\":\"1-2\",\"name\":\"天津分公司\",\"region\":\"天津\",\"employees\":150}]}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "1",
+          "name": "总部",
+          "region": "华北",
+          "children": [
+            {
+              "id": "1-1",
+              "name": "北京分公司",
+              "region": "北京",
+              "employees": 200,
+              "children": [
+                {
+                  "id": "1-1-1",
+                  "name": "朝阳办公区",
+                  "region": "朝阳",
+                  "employees": 120
+                },
+                {
+                  "id": "1-1-2",
+                  "name": "海淀办公区",
+                  "region": "海淀",
+                  "employees": 80
+                }
+              ]
+            },
+            {
+              "id": "1-2",
+              "name": "天津分公司",
+              "region": "天津",
+              "employees": 150
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        },
+        {
+          "id": "region",
+          "name": "区域",
+          "dataType": "string"
+        },
+        {
+          "id": "employees",
+          "name": "员工人数",
+          "dataType": "number"
+        }
+      ]
+    }
+  ]
+}

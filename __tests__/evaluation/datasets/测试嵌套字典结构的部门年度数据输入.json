@@ -1,0 +1,144 @@
+{
+  "name": "测试嵌套字典结构的部门年度数据输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{ 'Sales': { '2020': 50, '2021': 55 }, 'Engineering': { '2020': 100, '2021': 110 }, 'Marketing': { '2020': 30, '2021': 35 } }"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "department": "Sales",
+          "year": "2020",
+          "value": 50
+        },
+        {
+          "department": "Sales",
+          "year": "2021",
+          "value": 55
+        },
+        {
+          "department": "Engineering",
+          "year": "2020",
+          "value": 100
+        },
+        {
+          "department": "Engineering",
+          "year": "2021",
+          "value": 110
+        },
+        {
+          "department": "Marketing",
+          "year": "2020",
+          "value": 30
+        },
+        {
+          "department": "Marketing",
+          "year": "2021",
+          "value": 35
+        }
+      ],
+      "metas": [
+        {
+          "id": "department",
+          "name": "department",
+          "dataType": "string"
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Sales",
+          "name": "Sales",
+          "children": [
+            {
+              "id": "Sales_2020",
+              "year": "2020",
+              "value": 50
+            },
+            {
+              "id": "Sales_2021",
+              "year": "2021",
+              "value": 55
+            }
+          ]
+        },
+        {
+          "id": "Engineering",
+          "name": "Engineering",
+          "children": [
+            {
+              "id": "Engineering_2020",
+              "year": "2020",
+              "value": 100
+            },
+            {
+              "id": "Engineering_2021",
+              "year": "2021",
+              "value": 110
+            }
+          ]
+        },
+        {
+          "id": "Marketing",
+          "name": "Marketing",
+          "children": [
+            {
+              "id": "Marketing_2020",
+              "year": "2020",
+              "value": 30
+            },
+            {
+              "id": "Marketing_2021",
+              "year": "2021",
+              "value": 35
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "部门年度数据对比",
+        "key": "department_year_comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同部门在不同年份的数值变化"
+      }
+    }
+  ]
+}

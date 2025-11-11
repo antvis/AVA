@@ -1,0 +1,130 @@
+{
+  "name": "测试综合素质评价文本输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "李华的综合素质评价：责任感4分、创造力5分、适应能力3分、沟通技巧4分、团队合作5分"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "姓名": "李华",
+          "责任感": 4,
+          "创造力": 5,
+          "适应能力": 3,
+          "沟通技巧": 4,
+          "团队合作": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "姓名",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "责任感",
+          "name": "责任感",
+          "dataType": "number"
+        },
+        {
+          "id": "创造力",
+          "name": "创造力",
+          "dataType": "number"
+        },
+        {
+          "id": "适应能力",
+          "name": "适应能力",
+          "dataType": "number"
+        },
+        {
+          "id": "沟通技巧",
+          "name": "沟通技巧",
+          "dataType": "number"
+        },
+        {
+          "id": "团队合作",
+          "name": "团队合作",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "责任感",
+          4
+        ],
+        [
+          "创造力",
+          5
+        ],
+        [
+          "适应能力",
+          3
+        ],
+        [
+          "沟通技巧",
+          4
+        ],
+        [
+          "团队合作",
+          5
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "评价项",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "分数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "各项能力对比",
+        "key": "0",
+        "purpose": "Comparison",
+        "purposeDesc": "比较李华各项能力的评分差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "能力类型": "优势能力",
+          "数量": 3
+        },
+        {
+          "能力类型": "待提升能力",
+          "数量": 2
+        }
+      ],
+      "metas": [
+        {
+          "id": "能力类型",
+          "name": "能力类型",
+          "dataType": "string"
+        },
+        {
+          "id": "数量",
+          "name": "数量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "能力分布概况",
+        "key": "能力类型",
+        "purpose": "Proportion",
+        "purposeDesc": "分析优势能力和待提升能力的占比情况"
+      }
+    }
+  ]
+}

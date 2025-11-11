@@ -1,0 +1,232 @@
+{
+  "name": "测试问题分析数据的结构化抽取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{\"problem\":\"销售额下降\",\"bones\":[{\"category\":\"市场变化\",\"factors\":[\"新竞争者\",\"市场需求减少\"]},{\"category\":\"定价策略\",\"factors\":[\"价格过高\",\"折扣不足\"]},{\"category\":\"销售渠道\",\"factors\":[\"渠道单一\",\"推广力度不够\"]}]}"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "problem",
+          "name": "销售额下降",
+          "children": [
+            {
+              "id": "category_0",
+              "name": "市场变化",
+              "children": [
+                {
+                  "id": "factor_0_0",
+                  "name": "新竞争者"
+                },
+                {
+                  "id": "factor_0_1",
+                  "name": "市场需求减少"
+                }
+              ]
+            },
+            {
+              "id": "category_1",
+              "name": "定价策略",
+              "children": [
+                {
+                  "id": "factor_1_0",
+                  "name": "价格过高"
+                },
+                {
+                  "id": "factor_1_1",
+                  "name": "折扣不足"
+                }
+              ]
+            },
+            {
+              "id": "category_2",
+              "name": "销售渠道",
+              "children": [
+                {
+                  "id": "factor_2_0",
+                  "name": "渠道单一"
+                },
+                {
+                  "id": "factor_2_1",
+                  "name": "推广力度不够"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "问题根因分析",
+        "key": "problem_analysis",
+        "purpose": "Composition",
+        "purposeDesc": "分解销售额下降问题的组成结构"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "category": "市场变化",
+          "factor": "新竞争者"
+        },
+        {
+          "category": "市场变化",
+          "factor": "市场需求减少"
+        },
+        {
+          "category": "定价策略",
+          "factor": "价格过高"
+        },
+        {
+          "category": "定价策略",
+          "factor": "折扣不足"
+        },
+        {
+          "category": "销售渠道",
+          "factor": "渠道单一"
+        },
+        {
+          "category": "销售渠道",
+          "factor": "推广力度不够"
+        }
+      ],
+      "metas": [
+        {
+          "id": "category",
+          "name": "问题类别",
+          "dataType": "string"
+        },
+        {
+          "id": "factor",
+          "name": "影响因素",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "影响因素列表",
+        "key": "factor_list",
+        "purpose": "Rank",
+        "purposeDesc": "列出所有影响因素用于优先级排序"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "problem",
+            "name": "销售额下降"
+          },
+          {
+            "id": "市场变化",
+            "name": "市场变化"
+          },
+          {
+            "id": "新竞争者",
+            "name": "新竞争者"
+          },
+          {
+            "id": "市场需求减少",
+            "name": "市场需求减少"
+          },
+          {
+            "id": "定价策略",
+            "name": "定价策略"
+          },
+          {
+            "id": "价格过高",
+            "name": "价格过高"
+          },
+          {
+            "id": "折扣不足",
+            "name": "折扣不足"
+          },
+          {
+            "id": "销售渠道",
+            "name": "销售渠道"
+          },
+          {
+            "id": "渠道单一",
+            "name": "渠道单一"
+          },
+          {
+            "id": "推广力度不够",
+            "name": "推广力度不够"
+          }
+        ],
+        "edges": [
+          {
+            "source": "problem",
+            "target": "市场变化"
+          },
+          {
+            "source": "problem",
+            "target": "定价策略"
+          },
+          {
+            "source": "problem",
+            "target": "销售渠道"
+          },
+          {
+            "source": "市场变化",
+            "target": "新竞争者"
+          },
+          {
+            "source": "市场变化",
+            "target": "市场需求减少"
+          },
+          {
+            "source": "定价策略",
+            "target": "价格过高"
+          },
+          {
+            "source": "定价策略",
+            "target": "折扣不足"
+          },
+          {
+            "source": "销售渠道",
+            "target": "渠道单一"
+          },
+          {
+            "source": "销售渠道",
+            "target": "推广力度不够"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "因果关系网络",
+        "key": "causal_network",
+        "purpose": "Relationship",
+        "purposeDesc": "展示问题与因素间的因果关系网络"
+      }
+    }
+  ]
+}

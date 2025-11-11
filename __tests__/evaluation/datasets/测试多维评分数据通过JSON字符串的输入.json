@@ -1,0 +1,177 @@
+{
+  "name": "测试多维评分数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[ { \"dimension\": \"Speed\", \"score\": 4 }, { \"dimension\": \"Power\", \"score\": 6 }, { \"dimension\": \"Endurance\", \"score\": 8 }, { \"dimension\": \"Agility\", \"score\": 7 }, { \"dimension\": \"Balance\", \"score\": 5 } ]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "dimension": "Speed",
+          "score": 4
+        },
+        {
+          "dimension": "Power",
+          "score": 6
+        },
+        {
+          "dimension": "Endurance",
+          "score": 8
+        },
+        {
+          "dimension": "Agility",
+          "score": 7
+        },
+        {
+          "dimension": "Balance",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "dimension",
+          "name": "dimension",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "dimension": "Speed",
+          "score": 4
+        },
+        {
+          "dimension": "Power",
+          "score": 6
+        },
+        {
+          "dimension": "Endurance",
+          "score": 8
+        },
+        {
+          "dimension": "Agility",
+          "score": 7
+        },
+        {
+          "dimension": "Balance",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "dimension",
+          "name": "dimension",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "能力维度对比",
+        "key": "dimension-score",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同能力维度的评分差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "dimension": "Speed",
+          "score": 4
+        },
+        {
+          "dimension": "Power",
+          "score": 6
+        },
+        {
+          "dimension": "Endurance",
+          "score": 8
+        },
+        {
+          "dimension": "Agility",
+          "score": 7
+        },
+        {
+          "dimension": "Balance",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "dimension",
+          "name": "dimension",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "能力维度排名",
+        "key": "dimension-rank",
+        "purpose": "Rank",
+        "purposeDesc": "按评分对能力维度进行排序"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "dimension": "Speed",
+          "score": 4
+        },
+        {
+          "dimension": "Power",
+          "score": 6
+        },
+        {
+          "dimension": "Endurance",
+          "score": 8
+        },
+        {
+          "dimension": "Agility",
+          "score": 7
+        },
+        {
+          "dimension": "Balance",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "dimension",
+          "name": "dimension",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "能力维度构成",
+        "key": "dimension-composition",
+        "purpose": "Composition",
+        "purposeDesc": "分析各能力维度在整体评估中的构成比例"
+      }
+    }
+  ]
+}

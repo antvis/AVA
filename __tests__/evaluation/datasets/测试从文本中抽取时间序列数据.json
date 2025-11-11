@@ -1,0 +1,92 @@
+{
+  "name": "测试从文本中抽取时间序列数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "近年来我国智能手机用户数量持续增长：2018年底达到7亿户，2019年底增至7.5亿户，2020年底更是突破了8亿大关"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2018",
+          "value": 7,
+          "unit": "亿户"
+        },
+        {
+          "year": "2019",
+          "value": 7.5,
+          "unit": "亿户"
+        },
+        {
+          "year": "2020",
+          "value": 8,
+          "unit": "亿户"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "用户数量",
+          "dataType": "number"
+        },
+        {
+          "id": "unit",
+          "name": "单位",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "年度增长趋势分析",
+        "key": "year-value",
+        "purpose": "Trend",
+        "purposeDesc": "分析智能手机用户数量的年度增长趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2018-2019",
+          "growth": 0.5,
+          "growthRate": "7.14%"
+        },
+        {
+          "year": "2019-2020",
+          "growth": 0.5,
+          "growthRate": "6.67%"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份区间",
+          "dataType": "string"
+        },
+        {
+          "id": "growth",
+          "name": "增长量",
+          "dataType": "number"
+        },
+        {
+          "id": "growthRate",
+          "name": "增长率",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "同比增长分析",
+        "key": "year-growth",
+        "purpose": "Comparison",
+        "purposeDesc": "比较相邻年份的增长量和增长率"
+      }
+    }
+  ]
+}

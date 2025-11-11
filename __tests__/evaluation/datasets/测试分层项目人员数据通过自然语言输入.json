@@ -1,0 +1,172 @@
+{
+  "name": "测试分层项目人员数据通过自然语言输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "有三个主要项目：移动应用开发、Web 开发和嵌入式系统开发。移动应用开发有 150 人，Web 开发有 100 人，嵌入式系统开发有 200 人。移动应用开发分为 Android 开发 80 人和 iOS 开发 70 人；Web 开发分为前端开发 60 人和后端开发 40 人；嵌入式系统开发分为驱动开发 120 人和应用开发 80 人："
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "mobile",
+          "name": "移动应用开发",
+          "count": 150,
+          "children": [
+            {
+              "id": "android",
+              "name": "Android 开发",
+              "count": 80
+            },
+            {
+              "id": "ios",
+              "name": "iOS 开发",
+              "count": 70
+            }
+          ]
+        },
+        {
+          "id": "web",
+          "name": "Web 开发",
+          "count": 100,
+          "children": [
+            {
+              "id": "frontend",
+              "name": "前端开发",
+              "count": 60
+            },
+            {
+              "id": "backend",
+              "name": "后端开发",
+              "count": 40
+            }
+          ]
+        },
+        {
+          "id": "embedded",
+          "name": "嵌入式系统开发",
+          "count": 200,
+          "children": [
+            {
+              "id": "driver",
+              "name": "驱动开发",
+              "count": 120
+            },
+            {
+              "id": "application",
+              "name": "应用开发",
+              "count": 80
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "项目ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "项目名称",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "人员数量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "项目人员构成分析",
+        "key": "composition",
+        "purpose": "Composition",
+        "purposeDesc": "分析各项目组的人员构成比例"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "project": "移动应用开发",
+          "count": 150
+        },
+        {
+          "project": "Web 开发",
+          "count": 100
+        },
+        {
+          "project": "嵌入式系统开发",
+          "count": 200
+        }
+      ],
+      "metas": [
+        {
+          "id": "project",
+          "name": "项目名称",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "总人数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "项目规模对比",
+        "key": "comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较三个主要项目的人员规模差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "subproject": "Android 开发",
+          "count": 80
+        },
+        {
+          "subproject": "iOS 开发",
+          "count": 70
+        },
+        {
+          "subproject": "前端开发",
+          "count": 60
+        },
+        {
+          "subproject": "后端开发",
+          "count": 40
+        },
+        {
+          "subproject": "驱动开发",
+          "count": 120
+        },
+        {
+          "subproject": "应用开发",
+          "count": 80
+        }
+      ],
+      "metas": [
+        {
+          "id": "subproject",
+          "name": "子项目名称",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "人员数量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "子项目人员排名",
+        "key": "rank",
+        "purpose": "Rank",
+        "purposeDesc": "展示所有子项目的人员数量排名"
+      }
+    }
+  ]
+}

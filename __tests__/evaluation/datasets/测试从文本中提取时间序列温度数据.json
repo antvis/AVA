@@ -1,0 +1,150 @@
+{
+  "name": "测试从文本中提取时间序列温度数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "过去五年内，某城市的平均气温分别为：2018 年 15°C，2019 年 16°C，2020 年 15°C，2021 年 17°C，2022 年 18°C"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2018,
+          "temperature": 15
+        },
+        {
+          "year": 2019,
+          "temperature": 16
+        },
+        {
+          "year": 2020,
+          "temperature": 15
+        },
+        {
+          "year": 2021,
+          "temperature": 17
+        },
+        {
+          "year": 2022,
+          "temperature": 18
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "number"
+        },
+        {
+          "id": "temperature",
+          "name": "平均气温(°C)",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "2018",
+          15
+        ],
+        [
+          "2019",
+          16
+        ],
+        [
+          "2020",
+          15
+        ],
+        [
+          "2021",
+          17
+        ],
+        [
+          "2022",
+          18
+        ]
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "temperature",
+          "name": "平均气温",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "气温变化趋势分析",
+        "key": "trend",
+        "purpose": "Trend",
+        "purposeDesc": "分析五年间平均气温的变化趋势"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "root",
+          "name": "气温数据",
+          "children": [
+            {
+              "id": "2018",
+              "name": "2018年",
+              "value": 15
+            },
+            {
+              "id": "2019",
+              "name": "2019年",
+              "value": 16
+            },
+            {
+              "id": "2020",
+              "name": "2020年",
+              "value": 15
+            },
+            {
+              "id": "2021",
+              "name": "2021年",
+              "value": 17
+            },
+            {
+              "id": "2022",
+              "name": "2022年",
+              "value": 18
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "温度值",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "气温数据层级展示",
+        "key": "composition",
+        "purpose": "Composition",
+        "purposeDesc": "展示各年份气温数据的层级结构"
+      }
+    }
+  ]
+}

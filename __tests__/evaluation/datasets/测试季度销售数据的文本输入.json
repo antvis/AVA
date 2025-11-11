@@ -1,0 +1,155 @@
+{
+  "name": "测试季度销售数据的文本输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "某产品的季度销售量如下：Q1 为 2000 件，Q2 为 2500 件，Q3 为 2300 件，Q4 为 2600 件"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "sales": 2000,
+          "unit": "件"
+        },
+        {
+          "quarter": "Q2",
+          "sales": 2500,
+          "unit": "件"
+        },
+        {
+          "quarter": "Q3",
+          "sales": 2300,
+          "unit": "件"
+        },
+        {
+          "quarter": "Q4",
+          "sales": 2600,
+          "unit": "件"
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "销售量",
+          "dataType": "number"
+        },
+        {
+          "id": "unit",
+          "name": "单位",
+          "dataType": "string"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "Q1",
+          2000,
+          "件"
+        ],
+        [
+          "Q2",
+          2500,
+          "件"
+        ],
+        [
+          "Q3",
+          2300,
+          "件"
+        ],
+        [
+          "Q4",
+          2600,
+          "件"
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "销售量",
+          "dataType": "number"
+        },
+        {
+          "id": "2",
+          "name": "单位",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "季度销售趋势分析",
+        "key": "sales",
+        "purpose": "Trend",
+        "purposeDesc": "分析各季度销售量的变化趋势"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "year",
+          "name": "年度销售数据",
+          "children": [
+            {
+              "id": "Q1",
+              "sales": 2000,
+              "unit": "件"
+            },
+            {
+              "id": "Q2",
+              "sales": 2500,
+              "unit": "件"
+            },
+            {
+              "id": "Q3",
+              "sales": 2300,
+              "unit": "件"
+            },
+            {
+              "id": "Q4",
+              "sales": 2600,
+              "unit": "件"
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "销售量",
+          "dataType": "number"
+        },
+        {
+          "id": "unit",
+          "name": "单位",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "销售数据层级分析",
+        "key": "sales",
+        "purpose": "Composition",
+        "purposeDesc": "分析各季度销售在年度中的占比"
+      }
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "name": "测试工作日数据趋势的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"day\":\"Mon\",\"value\":500},{\"day\":\"Tue\",\"value\":700},{\"day\":\"Wed\",\"value\":600},{\"day\":\"Thu\",\"value\":900},{\"day\":\"Fri\",\"value\":800}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "Mon",
+          "value": 500
+        },
+        {
+          "day": "Tue",
+          "value": 700
+        },
+        {
+          "day": "Wed",
+          "value": 600
+        },
+        {
+          "day": "Thu",
+          "value": 900
+        },
+        {
+          "day": "Fri",
+          "value": 800
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "工作日趋势分析",
+        "key": "day",
+        "purpose": "Trend",
+        "purposeDesc": "分析一周工作日的数据变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "Mon",
+          "value": 500
+        },
+        {
+          "day": "Tue",
+          "value": 700
+        },
+        {
+          "day": "Wed",
+          "value": 600
+        },
+        {
+          "day": "Thu",
+          "value": 900
+        },
+        {
+          "day": "Fri",
+          "value": 800
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "工作日数据排名",
+        "key": "value",
+        "purpose": "Rank",
+        "purposeDesc": "按数值大小对工作日进行排名"
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "name": "测试组织架构数据的层级关系抽取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "能帮我可视化出部门的组织架构吗 `[{\"name\":\"Nancy Harris\",\"description\":\"Chief Operations Officer\"}, {\"name\":\"George Taylor\",\"description\":\"Logistics Manager\", supervisor: \"Nancy Harris\"}, {\"name\":\"Karen Clark\",\"description\":\"Operations Analyst\", supervisor: \"Nancy Harris\"}]`。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Nancy Harris",
+          "name": "Nancy Harris",
+          "description": "Chief Operations Officer",
+          "children": [
+            {
+              "id": "George Taylor",
+              "name": "George Taylor",
+              "description": "Logistics Manager",
+              "supervisor": "Nancy Harris"
+            },
+            {
+              "id": "Karen Clark",
+              "name": "Karen Clark",
+              "description": "Operations Analyst",
+              "supervisor": "Nancy Harris"
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "description",
+          "name": "职位描述",
+          "dataType": "string"
+        },
+        {
+          "id": "supervisor",
+          "name": "上级主管",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "组织架构分析",
+        "key": "organization",
+        "purpose": "Composition",
+        "purposeDesc": "分析组织内部的层级结构和汇报关系"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "Nancy Harris",
+            "name": "Nancy Harris",
+            "description": "Chief Operations Officer"
+          },
+          {
+            "id": "George Taylor",
+            "name": "George Taylor",
+            "description": "Logistics Manager"
+          },
+          {
+            "id": "Karen Clark",
+            "name": "Karen Clark",
+            "description": "Operations Analyst"
+          }
+        ],
+        "edges": [
+          {
+            "source": "George Taylor",
+            "target": "Nancy Harris"
+          },
+          {
+            "source": "Karen Clark",
+            "target": "Nancy Harris"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "name",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "description",
+          "name": "职位描述",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "汇报关系分析",
+        "key": "supervision",
+        "purpose": "Relationship",
+        "purposeDesc": "分析员工之间的直接汇报关系"
+      }
+    }
+  ]
+}

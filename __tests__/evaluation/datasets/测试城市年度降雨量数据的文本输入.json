@@ -1,0 +1,144 @@
+{
+  "name": "测试城市年度降雨量数据的文本输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "一个城市过去五年来的年度降雨量分别是：2016年800毫米，2017年900毫米，2018年700毫米，2019年1000毫米，2020年1100毫米"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2016,
+          "rainfall": 800,
+          "unit": "毫米"
+        },
+        {
+          "year": 2017,
+          "rainfall": 900,
+          "unit": "毫米"
+        },
+        {
+          "year": 2018,
+          "rainfall": 700,
+          "unit": "毫米"
+        },
+        {
+          "year": 2019,
+          "rainfall": 1000,
+          "unit": "毫米"
+        },
+        {
+          "year": 2020,
+          "rainfall": 1100,
+          "unit": "毫米"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "number"
+        },
+        {
+          "id": "rainfall",
+          "name": "降雨量",
+          "dataType": "number"
+        },
+        {
+          "id": "unit",
+          "name": "单位",
+          "dataType": "string"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "2016",
+          800
+        ],
+        [
+          "2017",
+          900
+        ],
+        [
+          "2018",
+          700
+        ],
+        [
+          "2019",
+          1000
+        ],
+        [
+          "2020",
+          1100
+        ]
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "rainfall",
+          "name": "降雨量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "降雨量趋势分析",
+        "key": "trend",
+        "purpose": "Trend",
+        "purposeDesc": "分析城市降雨量随时间的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2016,
+          "rainfall": 800
+        },
+        {
+          "year": 2017,
+          "rainfall": 900
+        },
+        {
+          "year": 2018,
+          "rainfall": 700
+        },
+        {
+          "year": 2019,
+          "rainfall": 1000
+        },
+        {
+          "year": 2020,
+          "rainfall": 1100
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "number"
+        },
+        {
+          "id": "rainfall",
+          "name": "降雨量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "降雨量异常检测",
+        "key": "anomaly",
+        "purpose": "Anomaly",
+        "purposeDesc": "检测是否存在异常的降雨量数据"
+      }
+    }
+  ]
+}

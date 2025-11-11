@@ -1,0 +1,126 @@
+{
+  "name": "测试产品评估数据的文本输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "产品A的市场表现评估：质量5分、创新3分、客户满意度4分、市场份额4分、品牌认知度5分"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "产品": "产品A",
+          "质量": 5,
+          "创新": 3,
+          "客户满意度": 4,
+          "市场份额": 4,
+          "品牌认知度": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "产品",
+          "name": "产品",
+          "dataType": "string"
+        },
+        {
+          "id": "质量",
+          "name": "质量",
+          "dataType": "number"
+        },
+        {
+          "id": "创新",
+          "name": "创新",
+          "dataType": "number"
+        },
+        {
+          "id": "客户满意度",
+          "name": "客户满意度",
+          "dataType": "number"
+        },
+        {
+          "id": "市场份额",
+          "name": "市场份额",
+          "dataType": "number"
+        },
+        {
+          "id": "品牌认知度",
+          "name": "品牌认知度",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "指标": "质量",
+          "得分": 5
+        },
+        {
+          "指标": "创新",
+          "得分": 3
+        },
+        {
+          "指标": "客户满意度",
+          "得分": 4
+        },
+        {
+          "指标": "市场份额",
+          "得分": 4
+        },
+        {
+          "指标": "品牌认知度",
+          "得分": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "指标",
+          "name": "指标",
+          "dataType": "string"
+        },
+        {
+          "id": "得分",
+          "name": "得分",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "指标对比分析",
+        "key": "指标",
+        "purpose": "Comparison",
+        "purposeDesc": "比较产品A各评估指标的得分情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "分类": "产品表现",
+          "平均分": 4.2
+        }
+      ],
+      "metas": [
+        {
+          "id": "分类",
+          "name": "分类",
+          "dataType": "string"
+        },
+        {
+          "id": "平均分",
+          "name": "平均分",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "整体表现评估",
+        "key": "分类",
+        "purpose": "Composition",
+        "purposeDesc": "评估产品A的整体市场表现水平"
+      }
+    }
+  ]
+}

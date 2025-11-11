@@ -1,0 +1,151 @@
+{
+  "name": "测试年度财务数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"year\": 2017, \"revenue\": 800, \"profit_margin\": 15 }, { \"year\": 2018, \"revenue\": 900, \"profit_margin\": 18 }, { \"year\": 2019, \"revenue\": 1000, \"profit_margin\": 20 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2017,
+          "revenue": 800,
+          "profit_margin": 15
+        },
+        {
+          "year": 2018,
+          "revenue": 900,
+          "profit_margin": 18
+        },
+        {
+          "year": 2019,
+          "revenue": 1000,
+          "profit_margin": 20
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "revenue",
+          "name": "revenue",
+          "dataType": "number"
+        },
+        {
+          "id": "profit_margin",
+          "name": "profit_margin",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2017,
+          "revenue": 800
+        },
+        {
+          "year": 2018,
+          "revenue": 900
+        },
+        {
+          "year": 2019,
+          "revenue": 1000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "revenue",
+          "name": "revenue",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年度营收趋势分析",
+        "key": "revenue",
+        "purpose": "Trend",
+        "purposeDesc": "分析2017-2019年营收变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2017,
+          "profit_margin": 15
+        },
+        {
+          "year": 2018,
+          "profit_margin": 18
+        },
+        {
+          "year": 2019,
+          "profit_margin": 20
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "profit_margin",
+          "name": "profit_margin",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "利润率对比分析",
+        "key": "profit_margin",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同年份的利润率表现"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2019,
+          "revenue": 1000,
+          "profit_margin": 20
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "revenue",
+          "name": "revenue",
+          "dataType": "number"
+        },
+        {
+          "id": "profit_margin",
+          "name": "profit_margin",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "最新年份财务快照",
+        "key": "year",
+        "purpose": "Anomaly",
+        "purposeDesc": "检查最新年份数据是否存在异常"
+      }
+    }
+  ]
+}

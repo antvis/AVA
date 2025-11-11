@@ -1,0 +1,110 @@
+{
+  "name": "测试从文本中抽取年度新增就业人数数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "记录显示某地区每年新增就业人数如下：2017年增加了5000人，2018年增加了7000人，2019年增加了6000人"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2017",
+          "new_employment": 5000
+        },
+        {
+          "year": "2018",
+          "new_employment": 7000
+        },
+        {
+          "year": "2019",
+          "new_employment": 6000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "new_employment",
+          "name": "新增就业人数",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "2017",
+          5000
+        ],
+        [
+          "2018",
+          7000
+        ],
+        [
+          "2019",
+          6000
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "新增就业人数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年度趋势分析",
+        "key": "year",
+        "purpose": "Trend",
+        "purposeDesc": "分析该地区新增就业人数的年度变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2017",
+          "value": 5000
+        },
+        {
+          "year": "2018",
+          "value": 7000
+        },
+        {
+          "year": "2019",
+          "value": 6000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "数值",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年度对比分析",
+        "key": "year",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同年份间新增就业人数的差异"
+      }
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "name": "测试数值序列数据的输入与解析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"value\": 100 }, { \"value\": 120 }, { \"value\": 140 }, { \"value\": 160 }, { \"value\": 180 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 100
+        },
+        {
+          "value": 120
+        },
+        {
+          "value": 140
+        },
+        {
+          "value": 160
+        },
+        {
+          "value": 180
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 100
+        },
+        {
+          "value": 120
+        },
+        {
+          "value": 140
+        },
+        {
+          "value": 160
+        },
+        {
+          "value": 180
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "趋势分析",
+        "key": "value",
+        "purpose": "Trend",
+        "purposeDesc": "分析数值随时间或序列的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 100
+        },
+        {
+          "value": 120
+        },
+        {
+          "value": 140
+        },
+        {
+          "value": 160
+        },
+        {
+          "value": 180
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "异常检测",
+        "key": "value",
+        "purpose": "Anomaly",
+        "purposeDesc": "检测数值序列中的异常点"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 100
+        },
+        {
+          "value": 120
+        },
+        {
+          "value": 140
+        },
+        {
+          "value": 160
+        },
+        {
+          "value": 180
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "排名分析",
+        "key": "value",
+        "purpose": "Rank",
+        "purposeDesc": "对数值进行排序分析"
+      }
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "name": "测试商品价格分布数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "price": 100
+        },
+        {
+          "price": 200
+        },
+        {
+          "price": 300
+        },
+        {
+          "price": 400
+        },
+        {
+          "price": 500
+        },
+        {
+          "price": 600
+        },
+        {
+          "price": 700
+        },
+        {
+          "price": 800
+        },
+        {
+          "price": 900
+        },
+        {
+          "price": 1000
+        }
+      ],
+      "metas": [
+        {
+          "id": "price",
+          "name": "price",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "价格分布分析",
+        "key": "price",
+        "purpose": "Distribution",
+        "purposeDesc": "分析商品价格的分布情况"
+      }
+    }
+  ]
+}

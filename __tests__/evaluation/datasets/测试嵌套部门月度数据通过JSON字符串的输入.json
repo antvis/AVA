@@ -1,0 +1,175 @@
+{
+  "name": "测试嵌套部门月度数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{ 'Marketing': { 'January': 3000, 'February': 4000, 'March': 3500 }, 'Sales': { 'January': 2000, 'February': 3000, 'March': 2800 }, 'R&D': { 'January': 4000, 'February': 4500, 'March': 4200 } }"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Marketing",
+          "name": "Marketing",
+          "children": [
+            {
+              "id": "Marketing_January",
+              "name": "January",
+              "value": 3000
+            },
+            {
+              "id": "Marketing_February",
+              "name": "February",
+              "value": 4000
+            },
+            {
+              "id": "Marketing_March",
+              "name": "March",
+              "value": 3500
+            }
+          ]
+        },
+        {
+          "id": "Sales",
+          "name": "Sales",
+          "children": [
+            {
+              "id": "Sales_January",
+              "name": "January",
+              "value": 2000
+            },
+            {
+              "id": "Sales_February",
+              "name": "February",
+              "value": 3000
+            },
+            {
+              "id": "Sales_March",
+              "name": "March",
+              "value": 2800
+            }
+          ]
+        },
+        {
+          "id": "R&D",
+          "name": "R&D",
+          "children": [
+            {
+              "id": "R&D_January",
+              "name": "January",
+              "value": 4000
+            },
+            {
+              "id": "R&D_February",
+              "name": "February",
+              "value": 4500
+            },
+            {
+              "id": "R&D_March",
+              "name": "March",
+              "value": 4200
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "Name",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "Value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "部门月度数据对比",
+        "key": "department_monthly_comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同部门在各个月份的数值表现"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "department": "Marketing",
+          "month": "January",
+          "value": 3000
+        },
+        {
+          "department": "Marketing",
+          "month": "February",
+          "value": 4000
+        },
+        {
+          "department": "Marketing",
+          "month": "March",
+          "value": 3500
+        },
+        {
+          "department": "Sales",
+          "month": "January",
+          "value": 2000
+        },
+        {
+          "department": "Sales",
+          "month": "February",
+          "value": 3000
+        },
+        {
+          "department": "Sales",
+          "month": "March",
+          "value": 2800
+        },
+        {
+          "department": "R&D",
+          "month": "January",
+          "value": 4000
+        },
+        {
+          "department": "R&D",
+          "month": "February",
+          "value": 4500
+        },
+        {
+          "department": "R&D",
+          "month": "March",
+          "value": 4200
+        }
+      ],
+      "metas": [
+        {
+          "id": "department",
+          "name": "Department",
+          "dataType": "string"
+        },
+        {
+          "id": "month",
+          "name": "Month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "Value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "月度趋势分析",
+        "key": "monthly_trend_analysis",
+        "purpose": "Trend",
+        "purposeDesc": "分析各部门在不同月份的数据变化趋势"
+      }
+    }
+  ]
+}

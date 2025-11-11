@@ -1,0 +1,195 @@
+{
+  "name": "测试畅销小说读者反馈数据的抽取与分析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "对一本畅销小说的读者反馈进行分析后。“情节吸引人”收到了 50 条正面评论，“角色塑造生动”得到了 40 条好评，“结局意外”则被提到了 20 次。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "aspect": "情节吸引人",
+          "count": 50,
+          "sentiment": "正面"
+        },
+        {
+          "aspect": "角色塑造生动",
+          "count": 40,
+          "sentiment": "正面"
+        },
+        {
+          "aspect": "结局意外",
+          "count": 20,
+          "sentiment": "正面"
+        }
+      ],
+      "metas": [
+        {
+          "id": "aspect",
+          "name": "aspect",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        },
+        {
+          "id": "sentiment",
+          "name": "sentiment",
+          "dataType": "string"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "情节吸引人",
+          50
+        ],
+        [
+          "角色塑造生动",
+          40
+        ],
+        [
+          "结局意外",
+          20
+        ]
+      ],
+      "metas": [
+        {
+          "id": "aspect",
+          "name": "aspect",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "读者反馈各维度对比",
+        "key": "aspect",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同小说维度的读者反馈数量"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "root",
+          "name": "读者反馈",
+          "children": [
+            {
+              "id": "情节吸引人",
+              "name": "情节吸引人",
+              "count": 50
+            },
+            {
+              "id": "角色塑造生动",
+              "name": "角色塑造生动",
+              "count": 40
+            },
+            {
+              "id": "结局意外",
+              "name": "结局意外",
+              "count": 20
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "读者反馈结构分析",
+        "key": "id",
+        "purpose": "Composition",
+        "purposeDesc": "分析读者反馈的组成结构"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "情节吸引人",
+            "name": "情节吸引人",
+            "count": 50
+          },
+          {
+            "id": "角色塑造生动",
+            "name": "角色塑造生动",
+            "count": 40
+          },
+          {
+            "id": "结局意外",
+            "name": "结局意外",
+            "count": 20
+          },
+          {
+            "id": "读者反馈",
+            "name": "读者反馈"
+          }
+        ],
+        "edges": [
+          {
+            "source": "读者反馈",
+            "target": "情节吸引人"
+          },
+          {
+            "source": "读者反馈",
+            "target": "角色塑造生动"
+          },
+          {
+            "source": "读者反馈",
+            "target": "结局意外"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "读者反馈关系网络",
+        "key": "id",
+        "purpose": "Relationship",
+        "purposeDesc": "展示读者反馈各维度之间的关系"
+      }
+    }
+  ]
+}

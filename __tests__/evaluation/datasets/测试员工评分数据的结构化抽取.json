@@ -1,0 +1,260 @@
+{
+  "name": "测试员工评分数据的结构化抽取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "公司举办了一次内部评审，三位员工对团队的工作效率、创新能力、沟通能力、客户满意度、项目完成度进行了评分。员工X：工作效率9分、创新能力8分、沟通能力7分、客户满意度8分、项目完成度6分。员工Y：工作效率7分、创新能力9分、沟通能力8分、客户满意度7分、项目完成度8分。员工Z：工作效率8分、创新能力7分、沟通能力9分、客户满意度6分、项目完成度9分。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "员工": "X",
+          "工作效率": 9,
+          "创新能力": 8,
+          "沟通能力": 7,
+          "客户满意度": 8,
+          "项目完成度": 6
+        },
+        {
+          "员工": "Y",
+          "工作效率": 7,
+          "创新能力": 9,
+          "沟通能力": 8,
+          "客户满意度": 7,
+          "项目完成度": 8
+        },
+        {
+          "员工": "Z",
+          "工作效率": 8,
+          "创新能力": 7,
+          "沟通能力": 9,
+          "客户满意度": 6,
+          "项目完成度": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "员工",
+          "name": "员工",
+          "dataType": "string"
+        },
+        {
+          "id": "工作效率",
+          "name": "工作效率",
+          "dataType": "number"
+        },
+        {
+          "id": "创新能力",
+          "name": "创新能力",
+          "dataType": "number"
+        },
+        {
+          "id": "沟通能力",
+          "name": "沟通能力",
+          "dataType": "number"
+        },
+        {
+          "id": "客户满意度",
+          "name": "客户满意度",
+          "dataType": "number"
+        },
+        {
+          "id": "项目完成度",
+          "name": "项目完成度",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "员工评分对比",
+        "key": "员工",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同员工在各维度上的评分差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "维度": "工作效率",
+          "平均分": 8
+        },
+        {
+          "维度": "创新能力",
+          "平均分": 8
+        },
+        {
+          "维度": "沟通能力",
+          "平均分": 8
+        },
+        {
+          "维度": "客户满意度",
+          "平均分": 7
+        },
+        {
+          "维度": "项目完成度",
+          "平均分": 7.67
+        }
+      ],
+      "metas": [
+        {
+          "id": "维度",
+          "name": "维度",
+          "dataType": "string"
+        },
+        {
+          "id": "平均分",
+          "name": "平均分",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "维度平均分分析",
+        "key": "维度",
+        "purpose": "Proportion",
+        "purposeDesc": "分析各维度的平均分占比情况"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "X",
+            "name": "员工X"
+          },
+          {
+            "id": "Y",
+            "name": "员工Y"
+          },
+          {
+            "id": "Z",
+            "name": "员工Z"
+          },
+          {
+            "id": "工作效率",
+            "name": "工作效率"
+          },
+          {
+            "id": "创新能力",
+            "name": "创新能力"
+          },
+          {
+            "id": "沟通能力",
+            "name": "沟通能力"
+          },
+          {
+            "id": "客户满意度",
+            "name": "客户满意度"
+          },
+          {
+            "id": "项目完成度",
+            "name": "项目完成度"
+          }
+        ],
+        "edges": [
+          {
+            "source": "X",
+            "target": "工作效率",
+            "value": 9
+          },
+          {
+            "source": "X",
+            "target": "创新能力",
+            "value": 8
+          },
+          {
+            "source": "X",
+            "target": "沟通能力",
+            "value": 7
+          },
+          {
+            "source": "X",
+            "target": "客户满意度",
+            "value": 8
+          },
+          {
+            "source": "X",
+            "target": "项目完成度",
+            "value": 6
+          },
+          {
+            "source": "Y",
+            "target": "工作效率",
+            "value": 7
+          },
+          {
+            "source": "Y",
+            "target": "创新能力",
+            "value": 9
+          },
+          {
+            "source": "Y",
+            "target": "沟通能力",
+            "value": 8
+          },
+          {
+            "source": "Y",
+            "target": "客户满意度",
+            "value": 7
+          },
+          {
+            "source": "Y",
+            "target": "项目完成度",
+            "value": 8
+          },
+          {
+            "source": "Z",
+            "target": "工作效率",
+            "value": 8
+          },
+          {
+            "source": "Z",
+            "target": "创新能力",
+            "value": 7
+          },
+          {
+            "source": "Z",
+            "target": "沟通能力",
+            "value": 9
+          },
+          {
+            "source": "Z",
+            "target": "客户满意度",
+            "value": 6
+          },
+          {
+            "source": "Z",
+            "target": "项目完成度",
+            "value": 9
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "评分值",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "员工-维度关系网络",
+        "key": "id",
+        "purpose": "Relationship",
+        "purposeDesc": "展示员工与评分维度之间的关联关系"
+      }
+    }
+  ]
+}

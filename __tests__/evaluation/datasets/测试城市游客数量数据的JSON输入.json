@@ -1,0 +1,161 @@
+{
+  "name": "测试城市游客数量数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"city\": \"北京\",\"visitors\": 89000.0 },{ \"city\": \"上海\", \"visitors\": 105000.0 },{ \"city\": \"广州\" ,\"visitors\": 72000.0 }, {\"city\": \"深圳\", \"visitors\": 68000.0 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "city": "北京",
+          "visitors": 89000
+        },
+        {
+          "city": "上海",
+          "visitors": 105000
+        },
+        {
+          "city": "广州",
+          "visitors": 72000
+        },
+        {
+          "city": "深圳",
+          "visitors": 68000
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "string"
+        },
+        {
+          "id": "visitors",
+          "name": "visitors",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "geo",
+      "data": [
+        {
+          "city": "北京",
+          "visitors": 89000
+        },
+        {
+          "city": "上海",
+          "visitors": 105000
+        },
+        {
+          "city": "广州",
+          "visitors": 72000
+        },
+        {
+          "city": "深圳",
+          "visitors": 68000
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "geo"
+        },
+        {
+          "id": "visitors",
+          "name": "visitors",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市游客数量分布",
+        "key": "visitors",
+        "purpose": "Distribution",
+        "purposeDesc": "分析不同城市游客数量的分布情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "city": "上海",
+          "visitors": 105000
+        },
+        {
+          "city": "北京",
+          "visitors": 89000
+        },
+        {
+          "city": "广州",
+          "visitors": 72000
+        },
+        {
+          "city": "深圳",
+          "visitors": 68000
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "string"
+        },
+        {
+          "id": "visitors",
+          "name": "visitors",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市游客数量排名",
+        "key": "visitors",
+        "purpose": "Rank",
+        "purposeDesc": "按照游客数量对城市进行排名"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "city": "北京",
+          "visitors": 89000
+        },
+        {
+          "city": "上海",
+          "visitors": 105000
+        },
+        {
+          "city": "广州",
+          "visitors": 72000
+        },
+        {
+          "city": "深圳",
+          "visitors": 68000
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "string"
+        },
+        {
+          "id": "visitors",
+          "name": "visitors",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市游客数量对比",
+        "key": "visitors",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同城市之间的游客数量差异"
+      }
+    }
+  ]
+}

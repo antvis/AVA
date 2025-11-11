@@ -1,0 +1,44 @@
+{
+  "name": "测试数值数组通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"value\": 10 }, { \"value\": 15 }, { \"value\": 20 }, { \"value\": 25 }, { \"value\": 30 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 10
+        },
+        {
+          "value": 15
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": 25
+        },
+        {
+          "value": 30
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "数值趋势分析",
+        "key": "value",
+        "purpose": "Trend",
+        "purposeDesc": "分析数值随时间或序列变化的趋势"
+      }
+    }
+  ]
+}

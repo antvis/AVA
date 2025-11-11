@@ -1,0 +1,91 @@
+{
+  "name": "测试分层数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"name\": \"电子产品\", \"sales\": 8000, \"children\": [{ \"name\": \"手机\", \"sales\": 5000 }, { \"name\": \"电脑\", \"sales\": 3000 }]}, { \"name\": \"家居用品\", \"sales\": 6000 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "name": "电子产品",
+          "sales": 8000,
+          "children": [
+            {
+              "name": "手机",
+              "sales": 5000
+            },
+            {
+              "name": "电脑",
+              "sales": 3000
+            }
+          ]
+        },
+        {
+          "name": "家居用品",
+          "sales": 6000
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "销售额",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销售额构成分析",
+        "key": "sales",
+        "purpose": "Composition",
+        "purposeDesc": "分析不同产品类别的销售额构成"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "name": "电子产品",
+          "sales": 8000
+        },
+        {
+          "name": "手机",
+          "sales": 5000
+        },
+        {
+          "name": "电脑",
+          "sales": 3000
+        },
+        {
+          "name": "家居用品",
+          "sales": 6000
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "销售额",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销售额排名分析",
+        "key": "sales",
+        "purpose": "Rank",
+        "purposeDesc": "分析各产品的销售额排名"
+      }
+    }
+  ]
+}

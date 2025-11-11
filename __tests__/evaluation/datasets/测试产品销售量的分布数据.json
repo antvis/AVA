@@ -1,0 +1,37 @@
+{
+  "name": "测试产品销售量的分布数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "展示产品销售量的分布，销售量在 0-1000 之间,数据如下：`[200, 300, 400, 500, 600, 700, 800, 900]`"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900
+      ],
+      "metas": [
+        {
+          "id": "sales",
+          "name": "销售量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销售量分布分析",
+        "key": "sales",
+        "purpose": "Distribution",
+        "purposeDesc": "分析产品销售量的分布情况"
+      }
+    }
+  ]
+}

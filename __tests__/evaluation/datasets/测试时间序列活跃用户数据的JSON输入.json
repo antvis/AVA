@@ -1,0 +1,46 @@
+{
+  "name": "测试时间序列活跃用户数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"day\": 1, \"value\": 1200}, {\"day\": 2, \"value\": 1300}, {\"day\": 3, \"value\": 1400}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": 1,
+          "value": 1200
+        },
+        {
+          "day": 2,
+          "value": 1300
+        },
+        {
+          "day": 3,
+          "value": 1400
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "日期",
+          "dataType": "number"
+        },
+        {
+          "id": "value",
+          "name": "活跃用户数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "活跃用户趋势分析",
+        "key": "day-value",
+        "purpose": "Trend",
+        "purposeDesc": "分析活跃用户数随时间的变化趋势"
+      }
+    }
+  ]
+}

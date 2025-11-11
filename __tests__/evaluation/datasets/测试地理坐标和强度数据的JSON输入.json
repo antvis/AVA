@@ -1,0 +1,75 @@
+{
+  "name": "测试地理坐标和强度数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"longLat\":\"139.691711,35.689487\",\"intensity\":450},{\"longLat\":\"139.700464,35.689499\",\"intensity\":750},{\"longLat\":\"139.751599,35.673343\",\"intensity\":200}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "longLat": "139.691711,35.689487",
+          "intensity": 450
+        },
+        {
+          "longLat": "139.700464,35.689499",
+          "intensity": 750
+        },
+        {
+          "longLat": "139.751599,35.673343",
+          "intensity": 200
+        }
+      ],
+      "metas": [
+        {
+          "id": "longLat",
+          "name": "longLat",
+          "dataType": "geo"
+        },
+        {
+          "id": "intensity",
+          "name": "intensity",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "geo",
+      "data": [
+        {
+          "longLat": "139.691711,35.689487",
+          "intensity": 450
+        },
+        {
+          "longLat": "139.700464,35.689499",
+          "intensity": 750
+        },
+        {
+          "longLat": "139.751599,35.673343",
+          "intensity": 200
+        }
+      ],
+      "metas": [
+        {
+          "id": "longLat",
+          "name": "longLat",
+          "dataType": "geo"
+        },
+        {
+          "id": "intensity",
+          "name": "intensity",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "地理分布分析",
+        "key": "geo_distribution",
+        "purpose": "Distribution",
+        "purposeDesc": "分析不同地理位置的强度分布情况"
+      }
+    }
+  ]
+}

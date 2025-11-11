@@ -1,0 +1,193 @@
+{
+  "name": "测试公司年收入与员工满意度数据的抽取与分析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "展示某公司的年收入与员工满意度，2017年至2021年的收入分别为85.4亿、93.2亿、100.1亿、108.6亿、115.5亿，员工满意度（满分10分）分别为7.2、7.5、7.8、8.0、8.2。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2017",
+          "revenue": 85.4,
+          "satisfaction": 7.2
+        },
+        {
+          "year": "2018",
+          "revenue": 93.2,
+          "satisfaction": 7.5
+        },
+        {
+          "year": "2019",
+          "revenue": 100.1,
+          "satisfaction": 7.8
+        },
+        {
+          "year": "2020",
+          "revenue": 108.6,
+          "satisfaction": 8
+        },
+        {
+          "year": "2021",
+          "revenue": 115.5,
+          "satisfaction": 8.2
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "revenue",
+          "name": "收入（亿）",
+          "dataType": "number"
+        },
+        {
+          "id": "satisfaction",
+          "name": "满意度（10分制）",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "2017",
+          85.4,
+          7.2
+        ],
+        [
+          "2018",
+          93.2,
+          7.5
+        ],
+        [
+          "2019",
+          100.1,
+          7.8
+        ],
+        [
+          "2020",
+          108.6,
+          8
+        ],
+        [
+          "2021",
+          115.5,
+          8.2
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "收入（亿）",
+          "dataType": "number"
+        },
+        {
+          "id": "2",
+          "name": "满意度（10分制）",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "收入与满意度趋势分析",
+        "key": "year",
+        "purpose": "Trend",
+        "purposeDesc": "分析收入和满意度随时间的变化趋势"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "2017",
+            "name": "2017",
+            "revenue": 85.4,
+            "satisfaction": 7.2
+          },
+          {
+            "id": "2018",
+            "name": "2018",
+            "revenue": 93.2,
+            "satisfaction": 7.5
+          },
+          {
+            "id": "2019",
+            "name": "2019",
+            "revenue": 100.1,
+            "satisfaction": 7.8
+          },
+          {
+            "id": "2020",
+            "name": "2020",
+            "revenue": 108.6,
+            "satisfaction": 8
+          },
+          {
+            "id": "2021",
+            "name": "2021",
+            "revenue": 115.5,
+            "satisfaction": 8.2
+          }
+        ],
+        "edges": [
+          {
+            "source": "2017",
+            "target": "2018",
+            "relation": "next"
+          },
+          {
+            "source": "2018",
+            "target": "2019",
+            "relation": "next"
+          },
+          {
+            "source": "2019",
+            "target": "2020",
+            "relation": "next"
+          },
+          {
+            "source": "2020",
+            "target": "2021",
+            "relation": "next"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "revenue",
+          "name": "收入（亿）",
+          "dataType": "number"
+        },
+        {
+          "id": "satisfaction",
+          "name": "满意度（10分制）",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "收入与满意度相关性分析",
+        "key": "revenue",
+        "purpose": "Relationship",
+        "purposeDesc": "分析收入增长与员工满意度之间的关系"
+      }
+    }
+  ]
+}

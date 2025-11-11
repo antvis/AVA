@@ -1,0 +1,81 @@
+{
+  "name": "测试社会调查报告关键词频次统计",
+  "input": [
+    {
+      "type": "nl",
+      "value": "根据一次社会调查报告，“就业”被提到 28 次，“教育”被提到 20 次，“医疗”被提及了 15 次。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "关键词": "就业",
+          "频次": 28
+        },
+        {
+          "关键词": "教育",
+          "频次": 20
+        },
+        {
+          "关键词": "医疗",
+          "频次": 15
+        }
+      ],
+      "metas": [
+        {
+          "id": "关键词",
+          "name": "关键词",
+          "dataType": "string"
+        },
+        {
+          "id": "频次",
+          "name": "频次",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "关键词频次对比",
+        "key": "频次",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同社会议题的关注度差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "就业",
+          28
+        ],
+        [
+          "教育",
+          20
+        ],
+        [
+          "医疗",
+          15
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "关键词",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "频次",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "关注度排名分析",
+        "key": "1",
+        "purpose": "Rank",
+        "purposeDesc": "按提及次数对社会议题进行排序"
+      }
+    }
+  ]
+}

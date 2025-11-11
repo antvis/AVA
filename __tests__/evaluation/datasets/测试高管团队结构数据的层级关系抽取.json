@@ -1,0 +1,192 @@
+{
+  "name": "测试高管团队结构数据的层级关系抽取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "你能帮我生成一个图表来展示公司的高管团队结构吗？比如 CEO 是 John  Doe，他手下有  COO Jane  Smith  和 CFO Robert  Brown 。Jane  Smith  负责运营部门，团队成员有运营经理 Alice  Johnson  和运营分析师 Bob  Black 。Robert  Brown  负责财务部门，团队成员有财务经理 Charlie  White  和财务分析师 Diana  Green 。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "ceo",
+          "name": "John Doe",
+          "title": "CEO",
+          "children": [
+            {
+              "id": "coo",
+              "name": "Jane Smith",
+              "title": "COO",
+              "children": [
+                {
+                  "id": "ops_manager",
+                  "name": "Alice Johnson",
+                  "title": "运营经理"
+                },
+                {
+                  "id": "ops_analyst",
+                  "name": "Bob Black",
+                  "title": "运营分析师"
+                }
+              ]
+            },
+            {
+              "id": "cfo",
+              "name": "Robert Brown",
+              "title": "CFO",
+              "children": [
+                {
+                  "id": "finance_manager",
+                  "name": "Charlie White",
+                  "title": "财务经理"
+                },
+                {
+                  "id": "finance_analyst",
+                  "name": "Diana Green",
+                  "title": "财务分析师"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "唯一标识",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "title",
+          "name": "职位",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "组织结构分析",
+        "key": "org_structure",
+        "purpose": "Composition",
+        "purposeDesc": "展示公司高管团队的层级组成关系"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "ceo",
+            "name": "John Doe",
+            "title": "CEO"
+          },
+          {
+            "id": "coo",
+            "name": "Jane Smith",
+            "title": "COO"
+          },
+          {
+            "id": "cfo",
+            "name": "Robert Brown",
+            "title": "CFO"
+          },
+          {
+            "id": "ops_manager",
+            "name": "Alice Johnson",
+            "title": "运营经理"
+          },
+          {
+            "id": "ops_analyst",
+            "name": "Bob Black",
+            "title": "运营分析师"
+          },
+          {
+            "id": "finance_manager",
+            "name": "Charlie White",
+            "title": "财务经理"
+          },
+          {
+            "id": "finance_analyst",
+            "name": "Diana Green",
+            "title": "财务分析师"
+          }
+        ],
+        "edges": [
+          {
+            "source": "ceo",
+            "target": "coo",
+            "relation": "下属"
+          },
+          {
+            "source": "ceo",
+            "target": "cfo",
+            "relation": "下属"
+          },
+          {
+            "source": "coo",
+            "target": "ops_manager",
+            "relation": "下属"
+          },
+          {
+            "source": "coo",
+            "target": "ops_analyst",
+            "relation": "下属"
+          },
+          {
+            "source": "cfo",
+            "target": "finance_manager",
+            "relation": "下属"
+          },
+          {
+            "source": "cfo",
+            "target": "finance_analyst",
+            "relation": "下属"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "title",
+          "name": "职位",
+          "dataType": "string"
+        },
+        {
+          "id": "source",
+          "name": "来源节点",
+          "dataType": "string"
+        },
+        {
+          "id": "target",
+          "name": "目标节点",
+          "dataType": "string"
+        },
+        {
+          "id": "relation",
+          "name": "关系类型",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "汇报关系分析",
+        "key": "report_relation",
+        "purpose": "Relationship",
+        "purposeDesc": "分析高管团队之间的汇报关系网络"
+      }
+    }
+  ]
+}

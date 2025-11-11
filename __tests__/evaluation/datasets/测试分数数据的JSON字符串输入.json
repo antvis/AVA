@@ -1,0 +1,137 @@
+{
+  "name": "测试分数数据的JSON字符串输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"value\": 80 }, { \"value\": 85 }, { \"value\": 90 }, { \"value\": 95 }, { \"value\": 100 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 80
+        },
+        {
+          "value": 85
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 100
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 80
+        },
+        {
+          "value": 85
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 100
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "分数趋势分析",
+        "key": "value",
+        "purpose": "Trend",
+        "purposeDesc": "分析分数随时间或序列的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 80
+        },
+        {
+          "value": 85
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 100
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "分数分布分析",
+        "key": "value",
+        "purpose": "Distribution",
+        "purposeDesc": "分析分数的分布情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "value": 80
+        },
+        {
+          "value": 85
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 100
+        }
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "分数排名分析",
+        "key": "value",
+        "purpose": "Rank",
+        "purposeDesc": "对分数进行排名分析"
+      }
+    }
+  ]
+}

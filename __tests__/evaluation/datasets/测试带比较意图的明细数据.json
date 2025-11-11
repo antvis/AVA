@@ -1,0 +1,50 @@
+{
+  "name": "测试带比较意图的明细数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "比较2023年四个季度的销售额：Q1为1200万元，Q2为1500万元，Q3为1350万元，Q4为1800万元。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "sales": 1200
+        },
+        {
+          "quarter": "Q2",
+          "sales": 1500
+        },
+        {
+          "quarter": "Q3",
+          "sales": 1350
+        },
+        {
+          "quarter": "Q4",
+          "sales": 1800
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "销售额（万元）",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度销售额对比",
+        "key": "quarterly_sales_comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较2023年各季度销售额的差异"
+      }
+    }
+  ]
+}

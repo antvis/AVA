@@ -1,0 +1,166 @@
+{
+  "name": "测试能源消费总量及可再生能源占比趋势数据提取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "描绘一国能源消费总量及其可再生能源占比的变化趋势。从2013到2017年，该国总能源消费量分别为50亿吨标准煤、52亿吨标准煤、54亿吨标准煤、56亿吨标准煤、58亿吨标准煤；可再生能源比例依次为10%、12%、14%、16%、18%。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2013",
+          "totalConsumption": 50,
+          "renewableRatio": 10
+        },
+        {
+          "year": "2014",
+          "totalConsumption": 52,
+          "renewableRatio": 12
+        },
+        {
+          "year": "2015",
+          "totalConsumption": 54,
+          "renewableRatio": 14
+        },
+        {
+          "year": "2016",
+          "totalConsumption": 56,
+          "renewableRatio": 16
+        },
+        {
+          "year": "2017",
+          "totalConsumption": 58,
+          "renewableRatio": 18
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "totalConsumption",
+          "name": "总消费量(亿吨标准煤)",
+          "dataType": "number"
+        },
+        {
+          "id": "renewableRatio",
+          "name": "可再生能源占比(%)",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "能源消费趋势分析",
+        "key": "year",
+        "purpose": "Trend",
+        "purposeDesc": "分析总消费量和可再生能源占比的年际变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2013",
+          "renewableConsumption": 5
+        },
+        {
+          "year": "2014",
+          "renewableConsumption": 6.24
+        },
+        {
+          "year": "2015",
+          "renewableConsumption": 7.56
+        },
+        {
+          "year": "2016",
+          "renewableConsumption": 8.96
+        },
+        {
+          "year": "2017",
+          "renewableConsumption": 10.44
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "renewableConsumption",
+          "name": "可再生能源消费量(亿吨标准煤)",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "可再生能源绝对量分析",
+        "key": "year",
+        "purpose": "Trend",
+        "purposeDesc": "计算并展示可再生能源消费量的实际增长情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "2013": 50,
+          "2014": 52,
+          "2015": 54,
+          "2016": 56,
+          "2017": 58,
+          "type": "总消费量"
+        },
+        {
+          "2013": 5,
+          "2014": 6.24,
+          "2015": 7.56,
+          "2016": 8.96,
+          "2017": 10.44,
+          "type": "可再生能源"
+        }
+      ],
+      "metas": [
+        {
+          "id": "type",
+          "name": "能源类型",
+          "dataType": "string"
+        },
+        {
+          "id": "2013",
+          "name": "2013年",
+          "dataType": "number"
+        },
+        {
+          "id": "2014",
+          "name": "2014年",
+          "dataType": "number"
+        },
+        {
+          "id": "2015",
+          "name": "2015年",
+          "dataType": "number"
+        },
+        {
+          "id": "2016",
+          "name": "2016年",
+          "dataType": "number"
+        },
+        {
+          "id": "2017",
+          "name": "2017年",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "能源消费对比分析",
+        "key": "type",
+        "purpose": "Comparison",
+        "purposeDesc": "对比总消费量与可再生能源消费量的绝对数值差异"
+      }
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "name": "测试城市年度气候数据提取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "表示一个城市的年度平均气温和降水量。从2016到2020年，平均气温分别是15°C、16°C、17°C、18°C、19°C；同期的年降水量为800mm、850mm、900mm、950mm、1000mm。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2016,
+          "avgTemp": 15,
+          "precipitation": 800
+        },
+        {
+          "year": 2017,
+          "avgTemp": 16,
+          "precipitation": 850
+        },
+        {
+          "year": 2018,
+          "avgTemp": 17,
+          "precipitation": 900
+        },
+        {
+          "year": 2019,
+          "avgTemp": 18,
+          "precipitation": 950
+        },
+        {
+          "year": 2020,
+          "avgTemp": 19,
+          "precipitation": 1000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "number"
+        },
+        {
+          "id": "avgTemp",
+          "name": "平均气温(°C)",
+          "dataType": "number"
+        },
+        {
+          "id": "precipitation",
+          "name": "降水量(mm)",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "年份",
+          "平均气温(°C)",
+          "降水量(mm)"
+        ],
+        [
+          2016,
+          15,
+          800
+        ],
+        [
+          2017,
+          16,
+          850
+        ],
+        [
+          2018,
+          17,
+          900
+        ],
+        [
+          2019,
+          18,
+          950
+        ],
+        [
+          2020,
+          19,
+          1000
+        ]
+      ],
+      "metas": [
+        {
+          "id": "col0",
+          "name": "年份",
+          "dataType": "number"
+        },
+        {
+          "id": "col1",
+          "name": "平均气温(°C)",
+          "dataType": "number"
+        },
+        {
+          "id": "col2",
+          "name": "降水量(mm)",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "气候趋势分析",
+        "key": "trend",
+        "purpose": "Trend",
+        "purposeDesc": "分析气温和降水量的年度变化趋势"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "2016",
+            "name": "2016年",
+            "avgTemp": 15,
+            "precipitation": 800
+          },
+          {
+            "id": "2017",
+            "name": "2017年",
+            "avgTemp": 16,
+            "precipitation": 850
+          },
+          {
+            "id": "2018",
+            "name": "2018年",
+            "avgTemp": 17,
+            "precipitation": 900
+          },
+          {
+            "id": "2019",
+            "name": "2019年",
+            "avgTemp": 18,
+            "precipitation": 950
+          },
+          {
+            "id": "2020",
+            "name": "2020年",
+            "avgTemp": 19,
+            "precipitation": 1000
+          }
+        ],
+        "edges": [
+          {
+            "source": "2016",
+            "target": "2017",
+            "relation": "next"
+          },
+          {
+            "source": "2017",
+            "target": "2018",
+            "relation": "next"
+          },
+          {
+            "source": "2018",
+            "target": "2019",
+            "relation": "next"
+          },
+          {
+            "source": "2019",
+            "target": "2020",
+            "relation": "next"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "年份ID",
+          "dataType": "string"
+        },
+        {
+          "id": "avgTemp",
+          "name": "平均气温(°C)",
+          "dataType": "number"
+        },
+        {
+          "id": "precipitation",
+          "name": "降水量(mm)",
+          "dataType": "number"
+        },
+        {
+          "id": "relation",
+          "name": "时间关系",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "气候相关性分析",
+        "key": "relationship",
+        "purpose": "Relationship",
+        "purposeDesc": "分析气温和降水量之间的相关性"
+      }
+    }
+  ]
+}

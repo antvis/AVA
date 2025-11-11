@@ -1,0 +1,39 @@
+{
+  "name": "测试网站访问次数分布数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ],
+      "metas": [
+        {
+          "id": "value",
+          "name": "访问次数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "访问次数分布分析",
+        "key": "value",
+        "purpose": "Distribution",
+        "purposeDesc": "分析网站访问次数的分布情况"
+      }
+    }
+  ]
+}

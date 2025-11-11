@@ -1,0 +1,145 @@
+{
+  "name": "测试嵌套JSON结构的产品销售数据输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{ 'Product A': { 'Jan': 1200, 'Feb': 1400 }, 'Product B': { 'Jan': 1500, 'Feb': 1700 }, 'Product C': { 'Jan': 1800, 'Feb': 2000 } }"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "product": "Product A",
+          "month": "Jan",
+          "sales": 1200
+        },
+        {
+          "product": "Product A",
+          "month": "Feb",
+          "sales": 1400
+        },
+        {
+          "product": "Product B",
+          "month": "Jan",
+          "sales": 1500
+        },
+        {
+          "product": "Product B",
+          "month": "Feb",
+          "sales": 1700
+        },
+        {
+          "product": "Product C",
+          "month": "Jan",
+          "sales": 1800
+        },
+        {
+          "product": "Product C",
+          "month": "Feb",
+          "sales": 2000
+        }
+      ],
+      "metas": [
+        {
+          "id": "product",
+          "name": "product",
+          "dataType": "string"
+        },
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品销售趋势分析",
+        "key": "product",
+        "purpose": "Trend",
+        "purposeDesc": "分析不同产品在不同月份的销售趋势"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Product A",
+          "name": "Product A",
+          "children": [
+            {
+              "id": "Jan",
+              "name": "Jan",
+              "sales": 1200
+            },
+            {
+              "id": "Feb",
+              "name": "Feb",
+              "sales": 1400
+            }
+          ]
+        },
+        {
+          "id": "Product B",
+          "name": "Product B",
+          "children": [
+            {
+              "id": "Jan",
+              "name": "Jan",
+              "sales": 1500
+            },
+            {
+              "id": "Feb",
+              "name": "Feb",
+              "sales": 1700
+            }
+          ]
+        },
+        {
+          "id": "Product C",
+          "name": "Product C",
+          "children": [
+            {
+              "id": "Jan",
+              "name": "Jan",
+              "sales": 1800
+            },
+            {
+              "id": "Feb",
+              "name": "Feb",
+              "sales": 2000
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品销售结构分析",
+        "key": "product",
+        "purpose": "Composition",
+        "purposeDesc": "分析各产品在不同月份的销售构成"
+      }
+    }
+  ]
+}

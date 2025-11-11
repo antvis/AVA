@@ -1,0 +1,182 @@
+{
+  "name": "测试财务部组织架构信息的抽取与可视化",
+  "input": [
+    {
+      "type": "nl",
+      "value": "我想了解一下财务部的组织架构。首席财务官是 Jerry Brown，他的直属下属包括会计经理 Sara Hill 和财务分析师 Mark Ray 。Sara Hill 带领会计团队，团队成员有资深会计师 Olivia Tan 和助理会计师 Kevin Lee 。Mark Ray 负责财务分析，团队成员有财务分析师 Chris Green 和经济学家 Emily Stone 。请将上述信息可视化出来。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "1",
+          "name": "Jerry Brown",
+          "title": "首席财务官",
+          "children": [
+            {
+              "id": "2",
+              "name": "Sara Hill",
+              "title": "会计经理",
+              "children": [
+                {
+                  "id": "4",
+                  "name": "Olivia Tan",
+                  "title": "资深会计师"
+                },
+                {
+                  "id": "5",
+                  "name": "Kevin Lee",
+                  "title": "助理会计师"
+                }
+              ]
+            },
+            {
+              "id": "3",
+              "name": "Mark Ray",
+              "title": "财务分析师",
+              "children": [
+                {
+                  "id": "6",
+                  "name": "Chris Green",
+                  "title": "财务分析师"
+                },
+                {
+                  "id": "7",
+                  "name": "Emily Stone",
+                  "title": "经济学家"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "员工ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "title",
+          "name": "职位",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "组织架构分析",
+        "key": "org_structure",
+        "purpose": "Composition",
+        "purposeDesc": "分析财务部门的组织架构组成"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "1",
+            "name": "Jerry Brown",
+            "title": "首席财务官"
+          },
+          {
+            "id": "2",
+            "name": "Sara Hill",
+            "title": "会计经理"
+          },
+          {
+            "id": "3",
+            "name": "Mark Ray",
+            "title": "财务分析师"
+          },
+          {
+            "id": "4",
+            "name": "Olivia Tan",
+            "title": "资深会计师"
+          },
+          {
+            "id": "5",
+            "name": "Kevin Lee",
+            "title": "助理会计师"
+          },
+          {
+            "id": "6",
+            "name": "Chris Green",
+            "title": "财务分析师"
+          },
+          {
+            "id": "7",
+            "name": "Emily Stone",
+            "title": "经济学家"
+          }
+        ],
+        "edges": [
+          {
+            "source": "1",
+            "target": "2",
+            "relation": "直属下属"
+          },
+          {
+            "source": "1",
+            "target": "3",
+            "relation": "直属下属"
+          },
+          {
+            "source": "2",
+            "target": "4",
+            "relation": "团队成员"
+          },
+          {
+            "source": "2",
+            "target": "5",
+            "relation": "团队成员"
+          },
+          {
+            "source": "3",
+            "target": "6",
+            "relation": "团队成员"
+          },
+          {
+            "source": "3",
+            "target": "7",
+            "relation": "团队成员"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "员工ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "姓名",
+          "dataType": "string"
+        },
+        {
+          "id": "title",
+          "name": "职位",
+          "dataType": "string"
+        },
+        {
+          "id": "relation",
+          "name": "关系",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "汇报关系分析",
+        "key": "reporting_relation",
+        "purpose": "Relationship",
+        "purposeDesc": "分析财务部门的汇报关系网络"
+      }
+    }
+  ]
+}

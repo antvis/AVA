@@ -1,0 +1,185 @@
+{
+  "name": "测试公司收入与支出数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "绘制公司收入与支出情况 [{ \"year\": 2018, \"income\": 1000, \"expenses\": 800 }, { \"year\": 2019, \"income\": 1200, \"expenses\": 900 }, { \"year\": 2020, \"income\": 1500, \"expenses\": 1000 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2018,
+          "income": 1000,
+          "expenses": 800
+        },
+        {
+          "year": 2019,
+          "income": 1200,
+          "expenses": 900
+        },
+        {
+          "year": 2020,
+          "income": 1500,
+          "expenses": 1000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "income",
+          "name": "income",
+          "dataType": "number"
+        },
+        {
+          "id": "expenses",
+          "name": "expenses",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2018,
+          "income": 1000,
+          "expenses": 800
+        },
+        {
+          "year": 2019,
+          "income": 1200,
+          "expenses": 900
+        },
+        {
+          "year": 2020,
+          "income": 1500,
+          "expenses": 1000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "income",
+          "name": "income",
+          "dataType": "number"
+        },
+        {
+          "id": "expenses",
+          "name": "expenses",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "收入与支出趋势分析",
+        "key": "year",
+        "purpose": "Trend",
+        "purposeDesc": "分析公司收入和支出随时间的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2018,
+          "income": 1000,
+          "expenses": 800,
+          "profit": 200
+        },
+        {
+          "year": 2019,
+          "income": 1200,
+          "expenses": 900,
+          "profit": 300
+        },
+        {
+          "year": 2020,
+          "income": 1500,
+          "expenses": 1000,
+          "profit": 500
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "income",
+          "name": "income",
+          "dataType": "number"
+        },
+        {
+          "id": "expenses",
+          "name": "expenses",
+          "dataType": "number"
+        },
+        {
+          "id": "profit",
+          "name": "profit",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "利润率分析",
+        "key": "year",
+        "purpose": "Proportion",
+        "purposeDesc": "分析公司利润率随时间的变化情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 2018,
+          "income": 1000,
+          "expenses": 800
+        },
+        {
+          "year": 2019,
+          "income": 1200,
+          "expenses": 900
+        },
+        {
+          "year": 2020,
+          "income": 1500,
+          "expenses": 1000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "number"
+        },
+        {
+          "id": "income",
+          "name": "income",
+          "dataType": "number"
+        },
+        {
+          "id": "expenses",
+          "name": "expenses",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "收入与支出关系分析",
+        "key": "year",
+        "purpose": "Relationship",
+        "purposeDesc": "分析公司收入和支出之间的关系"
+      }
+    }
+  ]
+}

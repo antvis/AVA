@@ -1,0 +1,207 @@
+{
+  "name": "测试电子产品评分数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[ { \"gadget\": \"Smartphone\", \"attribute\": \"Battery Life\", \"score\": 6 }, { \"gadget\": \"Smartphone\", \"attribute\": \"Camera Quality\", \"score\": 8 }, { \"gadget\": \"Smartphone\", \"attribute\": \"User Interface\", \"score\": 7 }, { \"gadget\": \"Laptop\", \"attribute\": \"Battery Life\", \"score\": 8 }, { \"gadget\": \"Laptop\", \"attribute\": \"Camera Quality\", \"score\": 5 }, { \"gadget\": \"Laptop\", \"attribute\": \"User Interface\", \"score\": 9 } ]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "gadget": "Smartphone",
+          "attribute": "Battery Life",
+          "score": 6
+        },
+        {
+          "gadget": "Smartphone",
+          "attribute": "Camera Quality",
+          "score": 8
+        },
+        {
+          "gadget": "Smartphone",
+          "attribute": "User Interface",
+          "score": 7
+        },
+        {
+          "gadget": "Laptop",
+          "attribute": "Battery Life",
+          "score": 8
+        },
+        {
+          "gadget": "Laptop",
+          "attribute": "Camera Quality",
+          "score": 5
+        },
+        {
+          "gadget": "Laptop",
+          "attribute": "User Interface",
+          "score": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "gadget",
+          "name": "gadget",
+          "dataType": "string"
+        },
+        {
+          "id": "attribute",
+          "name": "attribute",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Smartphone",
+          "name": "Smartphone",
+          "children": [
+            {
+              "id": "Battery Life",
+              "name": "Battery Life",
+              "score": 6
+            },
+            {
+              "id": "Camera Quality",
+              "name": "Camera Quality",
+              "score": 8
+            },
+            {
+              "id": "User Interface",
+              "name": "User Interface",
+              "score": 7
+            }
+          ]
+        },
+        {
+          "id": "Laptop",
+          "name": "Laptop",
+          "children": [
+            {
+              "id": "Battery Life",
+              "name": "Battery Life",
+              "score": 8
+            },
+            {
+              "id": "Camera Quality",
+              "name": "Camera Quality",
+              "score": 5
+            },
+            {
+              "id": "User Interface",
+              "name": "User Interface",
+              "score": 9
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品属性评分对比",
+        "key": "gadget",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同产品在各属性上的评分差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "attribute": "Battery Life",
+          "Smartphone": 6,
+          "Laptop": 8
+        },
+        {
+          "attribute": "Camera Quality",
+          "Smartphone": 8,
+          "Laptop": 5
+        },
+        {
+          "attribute": "User Interface",
+          "Smartphone": 7,
+          "Laptop": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "attribute",
+          "name": "attribute",
+          "dataType": "string"
+        },
+        {
+          "id": "Smartphone",
+          "name": "Smartphone",
+          "dataType": "number"
+        },
+        {
+          "id": "Laptop",
+          "name": "Laptop",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "属性评分横向对比",
+        "key": "attribute",
+        "purpose": "Comparison",
+        "purposeDesc": "横向对比不同产品在同一属性上的评分"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "gadget": "Smartphone",
+          "avg_score": 7
+        },
+        {
+          "gadget": "Laptop",
+          "avg_score": 7.333333333333333
+        }
+      ],
+      "metas": [
+        {
+          "id": "gadget",
+          "name": "gadget",
+          "dataType": "string"
+        },
+        {
+          "id": "avg_score",
+          "name": "avg_score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品综合评分对比",
+        "key": "gadget",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同产品的综合评分表现"
+      }
+    }
+  ]
+}

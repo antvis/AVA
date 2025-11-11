@@ -1,0 +1,158 @@
+{
+  "name": "测试年度季度利润对比数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "2019年和2020年某公司各季度的利润对比，其中2019年Q1为 12 万元，Q2为 15 万元，Q3为 20 万元，Q4为 18 万元；2020年Q1为 14 万元，Q2为 16 万元，Q3为 22 万元，Q4为 19 万元"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2019",
+          "quarter": "Q1",
+          "profit": 12
+        },
+        {
+          "year": "2019",
+          "quarter": "Q2",
+          "profit": 15
+        },
+        {
+          "year": "2019",
+          "quarter": "Q3",
+          "profit": 20
+        },
+        {
+          "year": "2019",
+          "quarter": "Q4",
+          "profit": 18
+        },
+        {
+          "year": "2020",
+          "quarter": "Q1",
+          "profit": 14
+        },
+        {
+          "year": "2020",
+          "quarter": "Q2",
+          "profit": 16
+        },
+        {
+          "year": "2020",
+          "quarter": "Q3",
+          "profit": 22
+        },
+        {
+          "year": "2020",
+          "quarter": "Q4",
+          "profit": 19
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "profit",
+          "name": "利润（万元）",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年度利润对比",
+        "key": "year",
+        "purpose": "Comparison",
+        "purposeDesc": "比较2019年和2020年各季度的利润变化情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "profit_2019": 12,
+          "profit_2020": 14
+        },
+        {
+          "quarter": "Q2",
+          "profit_2019": 15,
+          "profit_2020": 16
+        },
+        {
+          "quarter": "Q3",
+          "profit_2019": 20,
+          "profit_2020": 22
+        },
+        {
+          "quarter": "Q4",
+          "profit_2019": 18,
+          "profit_2020": 19
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "profit_2019",
+          "name": "2019年利润（万元）",
+          "dataType": "number"
+        },
+        {
+          "id": "profit_2020",
+          "name": "2020年利润（万元）",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度利润同比分析",
+        "key": "quarter",
+        "purpose": "Trend",
+        "purposeDesc": "分析同季度在不同年份的利润增长趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2019",
+          "total_profit": 65
+        },
+        {
+          "year": "2020",
+          "total_profit": 71
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "total_profit",
+          "name": "年度总利润（万元）",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年度总利润对比",
+        "key": "year",
+        "purpose": "Comparison",
+        "purposeDesc": "比较2019年和2020年的总利润差异"
+      }
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "name": "测试地理数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"location\": [116.3974, 39.9087], \"label\": \"北京\", \"information\": \"中国的首都\" },{ \"location\": [113.2644, 23.1291], \"label\": \"广州\", \"information\": \"华南重要城市\" },{ \"location\": [114.057868, 22.543079], \"label\": \"深圳\", \"information\": \"中国改革开放的窗口\" }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "geo",
+      "data": [
+        {
+          "location": [
+            116.3974,
+            39.9087
+          ],
+          "label": "北京",
+          "information": "中国的首都"
+        },
+        {
+          "location": [
+            113.2644,
+            23.1291
+          ],
+          "label": "广州",
+          "information": "华南重要城市"
+        },
+        {
+          "location": [
+            114.057868,
+            22.543079
+          ],
+          "label": "深圳",
+          "information": "中国改革开放的窗口"
+        }
+      ],
+      "metas": [
+        {
+          "id": "location",
+          "name": "location",
+          "dataType": "geo"
+        },
+        {
+          "id": "label",
+          "name": "label",
+          "dataType": "string"
+        },
+        {
+          "id": "information",
+          "name": "information",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "城市地理分布分析",
+        "key": "location",
+        "purpose": "Distribution",
+        "purposeDesc": "分析中国主要城市的地理分布情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "label": "北京",
+          "information": "中国的首都"
+        },
+        {
+          "label": "广州",
+          "information": "华南重要城市"
+        },
+        {
+          "label": "深圳",
+          "information": "中国改革开放的窗口"
+        }
+      ],
+      "metas": [
+        {
+          "id": "label",
+          "name": "label",
+          "dataType": "string"
+        },
+        {
+          "id": "information",
+          "name": "information",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "城市信息对比",
+        "key": "label",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同城市的基本信息"
+      }
+    }
+  ]
+}

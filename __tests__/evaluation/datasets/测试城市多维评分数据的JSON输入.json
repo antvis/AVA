@@ -1,0 +1,182 @@
+{
+  "name": "测试城市多维评分数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[ { \"city\": \"New York\", \"aspect\": \"Cost of Living\", \"score\": 6 }, { \"city\": \"New York\", \"aspect\": \"Safety\", \"score\": 5 }, { \"city\": \"New York\", \"aspect\": \"Public Transport\", \"score\": 8 }, { \"city\": \"Los Angeles\", \"aspect\": \"Cost of Living\", \"score\": 7 }, { \"city\": \"Los Angeles\", \"aspect\": \"Safety\", \"score\": 6 }, { \"city\": \"Los Angeles\", \"aspect\": \"Public Transport\", \"score\": 7 } ]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "city": "New York",
+          "aspect": "Cost of Living",
+          "score": 6
+        },
+        {
+          "city": "New York",
+          "aspect": "Safety",
+          "score": 5
+        },
+        {
+          "city": "New York",
+          "aspect": "Public Transport",
+          "score": 8
+        },
+        {
+          "city": "Los Angeles",
+          "aspect": "Cost of Living",
+          "score": 7
+        },
+        {
+          "city": "Los Angeles",
+          "aspect": "Safety",
+          "score": 6
+        },
+        {
+          "city": "Los Angeles",
+          "aspect": "Public Transport",
+          "score": 7
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "string"
+        },
+        {
+          "id": "aspect",
+          "name": "aspect",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "city": "New York",
+          "Cost of Living": 6,
+          "Safety": 5,
+          "Public Transport": 8
+        },
+        {
+          "city": "Los Angeles",
+          "Cost of Living": 7,
+          "Safety": 6,
+          "Public Transport": 7
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "string"
+        },
+        {
+          "id": "Cost of Living",
+          "name": "Cost of Living",
+          "dataType": "number"
+        },
+        {
+          "id": "Safety",
+          "name": "Safety",
+          "dataType": "number"
+        },
+        {
+          "id": "Public Transport",
+          "name": "Public Transport",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市维度对比",
+        "key": "city",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同城市在各维度上的评分差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "aspect": "Cost of Living",
+          "New York": 6,
+          "Los Angeles": 7
+        },
+        {
+          "aspect": "Safety",
+          "New York": 5,
+          "Los Angeles": 6
+        },
+        {
+          "aspect": "Public Transport",
+          "New York": 8,
+          "Los Angeles": 7
+        }
+      ],
+      "metas": [
+        {
+          "id": "aspect",
+          "name": "aspect",
+          "dataType": "string"
+        },
+        {
+          "id": "New York",
+          "name": "New York",
+          "dataType": "number"
+        },
+        {
+          "id": "Los Angeles",
+          "name": "Los Angeles",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "维度横向对比",
+        "key": "aspect",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同维度下各城市的评分表现"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "city": "New York",
+          "total": 19
+        },
+        {
+          "city": "Los Angeles",
+          "total": 20
+        }
+      ],
+      "metas": [
+        {
+          "id": "city",
+          "name": "city",
+          "dataType": "string"
+        },
+        {
+          "id": "total",
+          "name": "total",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "城市总分排名",
+        "key": "city",
+        "purpose": "Rank",
+        "purposeDesc": "计算各城市总分并进行排名"
+      }
+    }
+  ]
+}

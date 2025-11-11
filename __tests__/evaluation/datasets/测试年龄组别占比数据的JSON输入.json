@@ -1,0 +1,50 @@
+{
+  "name": "测试年龄组别占比数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"ageGroup\": \"<18岁\",\"percentage\": 25.0 },{ \"ageGroup\": \"18-30岁\", \"percentage\": 30.0 },{ \"ageGroup\": \"31-50岁\" ,\"percentage\": 20.0 }, {\"ageGroup\": \">50岁\", \"percentage\": 25.0 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "ageGroup": "<18岁",
+          "percentage": 25
+        },
+        {
+          "ageGroup": "18-30岁",
+          "percentage": 30
+        },
+        {
+          "ageGroup": "31-50岁",
+          "percentage": 20
+        },
+        {
+          "ageGroup": ">50岁",
+          "percentage": 25
+        }
+      ],
+      "metas": [
+        {
+          "id": "ageGroup",
+          "name": "年龄组别",
+          "dataType": "string"
+        },
+        {
+          "id": "percentage",
+          "name": "占比",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年龄组别占比分析",
+        "key": "ageGroup",
+        "purpose": "Proportion",
+        "purposeDesc": "分析各年龄组别在整体中的占比情况"
+      }
+    }
+  ]
+}

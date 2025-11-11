@@ -1,0 +1,89 @@
+{
+  "name": "测试时间序列温度数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"hour\":1,\"temperature\":30},{\"hour\":2,\"temperature\":35},{\"hour\":3,\"temperature\":32},{\"hour\":4,\"temperature\":38}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "hour": 1,
+          "temperature": 30
+        },
+        {
+          "hour": 2,
+          "temperature": 35
+        },
+        {
+          "hour": 3,
+          "temperature": 32
+        },
+        {
+          "hour": 4,
+          "temperature": 38
+        }
+      ],
+      "metas": [
+        {
+          "id": "hour",
+          "name": "hour",
+          "dataType": "number"
+        },
+        {
+          "id": "temperature",
+          "name": "temperature",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "温度趋势分析",
+        "key": "hour-temperature",
+        "purpose": "Trend",
+        "purposeDesc": "分析每小时温度变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "hour": 1,
+          "temperature": 30
+        },
+        {
+          "hour": 2,
+          "temperature": 35
+        },
+        {
+          "hour": 3,
+          "temperature": 32
+        },
+        {
+          "hour": 4,
+          "temperature": 38
+        }
+      ],
+      "metas": [
+        {
+          "id": "hour",
+          "name": "hour",
+          "dataType": "number"
+        },
+        {
+          "id": "temperature",
+          "name": "temperature",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "温度异常检测",
+        "key": "temperature",
+        "purpose": "Anomaly",
+        "purposeDesc": "检测异常温度值"
+      }
+    }
+  ]
+}

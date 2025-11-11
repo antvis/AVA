@@ -1,0 +1,212 @@
+{
+  "name": "测试嵌套字典结构的产品评分数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{'Smartphone': {'Battery': 7, 'Performance': 8, 'Camera': 9}, 'Laptop': {'Battery': 6, 'Performance': 9, 'Camera': 5}}"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Smartphone",
+          "name": "Smartphone",
+          "children": [
+            {
+              "id": "Smartphone_Battery",
+              "name": "Battery",
+              "value": 7
+            },
+            {
+              "id": "Smartphone_Performance",
+              "name": "Performance",
+              "value": 8
+            },
+            {
+              "id": "Smartphone_Camera",
+              "name": "Camera",
+              "value": 9
+            }
+          ]
+        },
+        {
+          "id": "Laptop",
+          "name": "Laptop",
+          "children": [
+            {
+              "id": "Laptop_Battery",
+              "name": "Battery",
+              "value": 6
+            },
+            {
+              "id": "Laptop_Performance",
+              "name": "Performance",
+              "value": 9
+            },
+            {
+              "id": "Laptop_Camera",
+              "name": "Camera",
+              "value": 5
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "Name",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "Value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "Product": "Smartphone",
+          "Battery": 7,
+          "Performance": 8,
+          "Camera": 9
+        },
+        {
+          "Product": "Laptop",
+          "Battery": 6,
+          "Performance": 9,
+          "Camera": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "Product",
+          "name": "Product",
+          "dataType": "string"
+        },
+        {
+          "id": "Battery",
+          "name": "Battery",
+          "dataType": "number"
+        },
+        {
+          "id": "Performance",
+          "name": "Performance",
+          "dataType": "number"
+        },
+        {
+          "id": "Camera",
+          "name": "Camera",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品评分对比",
+        "key": "Product",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同产品在各维度的评分差异"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "Smartphone",
+            "name": "Smartphone",
+            "type": "product"
+          },
+          {
+            "id": "Laptop",
+            "name": "Laptop",
+            "type": "product"
+          },
+          {
+            "id": "Battery",
+            "name": "Battery",
+            "type": "metric"
+          },
+          {
+            "id": "Performance",
+            "name": "Performance",
+            "type": "metric"
+          },
+          {
+            "id": "Camera",
+            "name": "Camera",
+            "type": "metric"
+          }
+        ],
+        "edges": [
+          {
+            "source": "Smartphone",
+            "target": "Battery",
+            "value": 7
+          },
+          {
+            "source": "Smartphone",
+            "target": "Performance",
+            "value": 8
+          },
+          {
+            "source": "Smartphone",
+            "target": "Camera",
+            "value": 9
+          },
+          {
+            "source": "Laptop",
+            "target": "Battery",
+            "value": 6
+          },
+          {
+            "source": "Laptop",
+            "target": "Performance",
+            "value": 9
+          },
+          {
+            "source": "Laptop",
+            "target": "Camera",
+            "value": 5
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "Name",
+          "dataType": "string"
+        },
+        {
+          "id": "type",
+          "name": "Type",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "Value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品-指标关系网络",
+        "key": "id",
+        "purpose": "Relationship",
+        "purposeDesc": "展示产品与评分指标之间的关联强度"
+      }
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "name": "测试月度数据趋势分析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"month\": \"Jan\", \"value\": 300 }, { \"month\": \"Feb\", \"value\": 450 }, { \"month\": \"Mar\", \"value\": 700 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 300
+        },
+        {
+          "month": "Feb",
+          "value": 450
+        },
+        {
+          "month": "Mar",
+          "value": 700
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 300
+        },
+        {
+          "month": "Feb",
+          "value": 450
+        },
+        {
+          "month": "Mar",
+          "value": 700
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "月度趋势分析",
+        "key": "value",
+        "purpose": "Trend",
+        "purposeDesc": "分析月度数据的增长趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "value": 300
+        },
+        {
+          "month": "Feb",
+          "value": 450
+        },
+        {
+          "month": "Mar",
+          "value": 700
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "月度数据排名",
+        "key": "value",
+        "purpose": "Rank",
+        "purposeDesc": "按数值大小对月度数据进行排名"
+      }
+    }
+  ]
+}

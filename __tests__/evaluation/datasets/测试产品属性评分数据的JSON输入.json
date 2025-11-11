@@ -1,0 +1,177 @@
+{
+  "name": "测试产品属性评分数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[ { \"attribute\": \"Taste\", \"score\": 7 }, { \"attribute\": \"Smell\", \"score\": 8 }, { \"attribute\": \"Texture\", \"score\": 6 }, { \"attribute\": \"Color\", \"score\": 5 }, { \"attribute\": \"Freshness\", \"score\": 9 } ]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "attribute": "Taste",
+          "score": 7
+        },
+        {
+          "attribute": "Smell",
+          "score": 8
+        },
+        {
+          "attribute": "Texture",
+          "score": 6
+        },
+        {
+          "attribute": "Color",
+          "score": 5
+        },
+        {
+          "attribute": "Freshness",
+          "score": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "attribute",
+          "name": "attribute",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "attribute": "Taste",
+          "score": 7
+        },
+        {
+          "attribute": "Smell",
+          "score": 8
+        },
+        {
+          "attribute": "Texture",
+          "score": 6
+        },
+        {
+          "attribute": "Color",
+          "score": 5
+        },
+        {
+          "attribute": "Freshness",
+          "score": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "attribute",
+          "name": "attribute",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品属性评分对比",
+        "key": "attribute",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同产品属性的评分高低"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "attribute": "Taste",
+          "score": 7
+        },
+        {
+          "attribute": "Smell",
+          "score": 8
+        },
+        {
+          "attribute": "Texture",
+          "score": 6
+        },
+        {
+          "attribute": "Color",
+          "score": 5
+        },
+        {
+          "attribute": "Freshness",
+          "score": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "attribute",
+          "name": "attribute",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品属性评分排名",
+        "key": "score",
+        "purpose": "Rank",
+        "purposeDesc": "对各产品属性的评分进行排名"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "attribute": "Taste",
+          "score": 7
+        },
+        {
+          "attribute": "Smell",
+          "score": 8
+        },
+        {
+          "attribute": "Texture",
+          "score": 6
+        },
+        {
+          "attribute": "Color",
+          "score": 5
+        },
+        {
+          "attribute": "Freshness",
+          "score": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "attribute",
+          "name": "attribute",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "产品属性评分分布",
+        "key": "score",
+        "purpose": "Distribution",
+        "purposeDesc": "分析产品属性评分的分布情况"
+      }
+    }
+  ]
+}

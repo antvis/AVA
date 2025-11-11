@@ -1,0 +1,230 @@
+{
+  "name": "测试品牌季度市场份额比较数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "比较品牌A与品牌B在季度市场份额，品牌A在Q1占20%，Q2占25%，Q3占30%，Q4占35%，品牌B在Q1占80%，Q2占75%，Q3占70%，Q4占65%"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "brand": "品牌A",
+          "quarter": "Q1",
+          "share": 20
+        },
+        {
+          "brand": "品牌A",
+          "quarter": "Q2",
+          "share": 25
+        },
+        {
+          "brand": "品牌A",
+          "quarter": "Q3",
+          "share": 30
+        },
+        {
+          "brand": "品牌A",
+          "quarter": "Q4",
+          "share": 35
+        },
+        {
+          "brand": "品牌B",
+          "quarter": "Q1",
+          "share": 80
+        },
+        {
+          "brand": "品牌B",
+          "quarter": "Q2",
+          "share": 75
+        },
+        {
+          "brand": "品牌B",
+          "quarter": "Q3",
+          "share": 70
+        },
+        {
+          "brand": "品牌B",
+          "quarter": "Q4",
+          "share": 65
+        }
+      ],
+      "metas": [
+        {
+          "id": "brand",
+          "name": "品牌",
+          "dataType": "string"
+        },
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "share",
+          "name": "市场份额",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "brandA_share": 20,
+          "brandB_share": 80
+        },
+        {
+          "quarter": "Q2",
+          "brandA_share": 25,
+          "brandB_share": 75
+        },
+        {
+          "quarter": "Q3",
+          "brandA_share": 30,
+          "brandB_share": 70
+        },
+        {
+          "quarter": "Q4",
+          "brandA_share": 35,
+          "brandB_share": 65
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "brandA_share",
+          "name": "品牌A市场份额",
+          "dataType": "number"
+        },
+        {
+          "id": "brandB_share",
+          "name": "品牌B市场份额",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌市场份额对比",
+        "key": "quarter",
+        "purpose": "Comparison",
+        "purposeDesc": "比较品牌A与品牌B在各季度的市场份额变化"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "brand": "品牌A",
+          "Q1": 20,
+          "Q2": 25,
+          "Q3": 30,
+          "Q4": 35
+        },
+        {
+          "brand": "品牌B",
+          "Q1": 80,
+          "Q2": 75,
+          "Q3": 70,
+          "Q4": 65
+        }
+      ],
+      "metas": [
+        {
+          "id": "brand",
+          "name": "品牌",
+          "dataType": "string"
+        },
+        {
+          "id": "Q1",
+          "name": "第一季度",
+          "dataType": "number"
+        },
+        {
+          "id": "Q2",
+          "name": "第二季度",
+          "dataType": "number"
+        },
+        {
+          "id": "Q3",
+          "name": "第三季度",
+          "dataType": "number"
+        },
+        {
+          "id": "Q4",
+          "name": "第四季度",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌季度趋势",
+        "key": "brand",
+        "purpose": "Trend",
+        "purposeDesc": "分析各品牌在不同季度的市场份额变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "brandA_share": 20,
+          "brandB_share": 80,
+          "total": 100
+        },
+        {
+          "quarter": "Q2",
+          "brandA_share": 25,
+          "brandB_share": 75,
+          "total": 100
+        },
+        {
+          "quarter": "Q3",
+          "brandA_share": 30,
+          "brandB_share": 70,
+          "total": 100
+        },
+        {
+          "quarter": "Q4",
+          "brandA_share": 35,
+          "brandB_share": 65,
+          "total": 100
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "brandA_share",
+          "name": "品牌A市场份额",
+          "dataType": "number"
+        },
+        {
+          "id": "brandB_share",
+          "name": "品牌B市场份额",
+          "dataType": "number"
+        },
+        {
+          "id": "total",
+          "name": "总份额",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度市场份额构成",
+        "key": "quarter",
+        "purpose": "Composition",
+        "purposeDesc": "分析各季度中两个品牌的市场份额构成比例"
+      }
+    }
+  ]
+}

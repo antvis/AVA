@@ -1,0 +1,217 @@
+{
+  "name": "测试从文本中提取汽车销量数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "2023 年汽车销量，各汽车品牌销量情况，丰田销量 300 万辆，本田销量 250 万辆，特斯拉销量 150 万辆，福特销量 180 万辆"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "品牌": "丰田",
+          "销量(万辆)": 300,
+          "年份": 2023
+        },
+        {
+          "品牌": "本田",
+          "销量(万辆)": 250,
+          "年份": 2023
+        },
+        {
+          "品牌": "特斯拉",
+          "销量(万辆)": 150,
+          "年份": 2023
+        },
+        {
+          "品牌": "福特",
+          "销量(万辆)": 180,
+          "年份": 2023
+        }
+      ],
+      "metas": [
+        {
+          "id": "品牌",
+          "name": "品牌",
+          "dataType": "string"
+        },
+        {
+          "id": "销量(万辆)",
+          "name": "销量(万辆)",
+          "dataType": "number"
+        },
+        {
+          "id": "年份",
+          "name": "年份",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "丰田",
+          300,
+          2023
+        ],
+        [
+          "本田",
+          250,
+          2023
+        ],
+        [
+          "特斯拉",
+          150,
+          2023
+        ],
+        [
+          "福特",
+          180,
+          2023
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "品牌",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "销量(万辆)",
+          "dataType": "number"
+        },
+        {
+          "id": "2",
+          "name": "年份",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌销量对比",
+        "key": "brand_comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同汽车品牌在2023年的销量情况"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "2023",
+          "name": "2023年",
+          "children": [
+            {
+              "id": "丰田",
+              "name": "丰田",
+              "value": 300
+            },
+            {
+              "id": "本田",
+              "name": "本田",
+              "value": 250
+            },
+            {
+              "id": "特斯拉",
+              "name": "特斯拉",
+              "value": 150
+            },
+            {
+              "id": "福特",
+              "name": "福特",
+              "value": 180
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "销量(万辆)",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌销量构成",
+        "key": "brand_composition",
+        "purpose": "Composition",
+        "purposeDesc": "分析2023年各品牌在总销量中的构成比例"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "2023",
+            "name": "2023年"
+          },
+          {
+            "id": "丰田",
+            "name": "丰田"
+          },
+          {
+            "id": "本田",
+            "name": "本田"
+          },
+          {
+            "id": "特斯拉",
+            "name": "特斯拉"
+          },
+          {
+            "id": "福特",
+            "name": "福特"
+          }
+        ],
+        "edges": [
+          {
+            "source": "2023",
+            "target": "丰田",
+            "value": 300
+          },
+          {
+            "source": "2023",
+            "target": "本田",
+            "value": 250
+          },
+          {
+            "source": "2023",
+            "target": "特斯拉",
+            "value": 150
+          },
+          {
+            "source": "2023",
+            "target": "福特",
+            "value": 180
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "销量(万辆)",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌与年份关联",
+        "key": "brand_year_relationship",
+        "purpose": "Relationship",
+        "purposeDesc": "展示各品牌销量与年份的关联关系"
+      }
+    }
+  ]
+}

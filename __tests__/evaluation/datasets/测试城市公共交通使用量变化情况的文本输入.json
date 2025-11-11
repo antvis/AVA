@@ -1,0 +1,190 @@
+{
+  "name": "测试城市公共交通使用量变化情况的文本输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "城市公共交通使用量变化情况，2021 年的地铁和公交车使用量对比，地铁分别为 120 万人次，公交车分别为 80 万人次；2022 年地铁分别为 130 万人次，公交车分别为 85 万人次"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "年份": "2021",
+          "交通类型": "地铁",
+          "使用量(万人次)": 120
+        },
+        {
+          "年份": "2021",
+          "交通类型": "公交车",
+          "使用量(万人次)": 80
+        },
+        {
+          "年份": "2022",
+          "交通类型": "地铁",
+          "使用量(万人次)": 130
+        },
+        {
+          "年份": "2022",
+          "交通类型": "公交车",
+          "使用量(万人次)": 85
+        }
+      ],
+      "metas": [
+        {
+          "id": "年份",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "交通类型",
+          "name": "交通类型",
+          "dataType": "string"
+        },
+        {
+          "id": "使用量(万人次)",
+          "name": "使用量(万人次)",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年度对比分析",
+        "key": "年份",
+        "purpose": "Comparison",
+        "purposeDesc": "对比2021年和2022年地铁和公交车的使用量变化"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "交通类型": "地铁",
+          "2021年使用量(万人次)": 120,
+          "2022年使用量(万人次)": 130,
+          "增长率(%)": 8.33
+        },
+        {
+          "交通类型": "公交车",
+          "2021年使用量(万人次)": 80,
+          "2022年使用量(万人次)": 85,
+          "增长率(%)": 6.25
+        }
+      ],
+      "metas": [
+        {
+          "id": "交通类型",
+          "name": "交通类型",
+          "dataType": "string"
+        },
+        {
+          "id": "2021年使用量(万人次)",
+          "name": "2021年使用量(万人次)",
+          "dataType": "number"
+        },
+        {
+          "id": "2022年使用量(万人次)",
+          "name": "2022年使用量(万人次)",
+          "dataType": "number"
+        },
+        {
+          "id": "增长率(%)",
+          "name": "增长率(%)",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "交通类型增长分析",
+        "key": "交通类型",
+        "purpose": "Trend",
+        "purposeDesc": "分析不同类型交通工具的年增长率"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "2021",
+            "name": "2021年",
+            "type": "year"
+          },
+          {
+            "id": "2022",
+            "name": "2022年",
+            "type": "year"
+          },
+          {
+            "id": "地铁",
+            "name": "地铁",
+            "type": "transport"
+          },
+          {
+            "id": "公交车",
+            "name": "公交车",
+            "type": "transport"
+          }
+        ],
+        "edges": [
+          {
+            "source": "2021",
+            "target": "地铁",
+            "value": 120,
+            "unit": "万人次"
+          },
+          {
+            "source": "2021",
+            "target": "公交车",
+            "value": 80,
+            "unit": "万人次"
+          },
+          {
+            "source": "2022",
+            "target": "地铁",
+            "value": 130,
+            "unit": "万人次"
+          },
+          {
+            "source": "2022",
+            "target": "公交车",
+            "value": 85,
+            "unit": "万人次"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        },
+        {
+          "id": "type",
+          "name": "节点类型",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "关联值",
+          "dataType": "number"
+        },
+        {
+          "id": "unit",
+          "name": "单位",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "交通网络关系",
+        "key": "type",
+        "purpose": "Relationship",
+        "purposeDesc": "展示年份与交通类型之间的使用量关系网络"
+      }
+    }
+  ]
+}

@@ -1,0 +1,256 @@
+{
+  "name": "测试电商平台商品销量和退货率数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "展示一家电商平台的商品销量和退货率。在2019至2023年间，商品销量依次是120万件、130万件、140万件、150万件、160万件；相应的退货率则为2%、2.5%、3%、3.5%、4%。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2019",
+          "sales": 120,
+          "returnRate": 2
+        },
+        {
+          "year": "2020",
+          "sales": 130,
+          "returnRate": 2.5
+        },
+        {
+          "year": "2021",
+          "sales": 140,
+          "returnRate": 3
+        },
+        {
+          "year": "2022",
+          "sales": 150,
+          "returnRate": 3.5
+        },
+        {
+          "year": "2023",
+          "sales": 160,
+          "returnRate": 4
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "销量（万件）",
+          "dataType": "number"
+        },
+        {
+          "id": "returnRate",
+          "name": "退货率（%）",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "2019",
+          120,
+          2
+        ],
+        [
+          "2020",
+          130,
+          2.5
+        ],
+        [
+          "2021",
+          140,
+          3
+        ],
+        [
+          "2022",
+          150,
+          3.5
+        ],
+        [
+          "2023",
+          160,
+          4
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "销量（万件）",
+          "dataType": "number"
+        },
+        {
+          "id": "2",
+          "name": "退货率（%）",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "销量趋势分析",
+        "key": "sales",
+        "purpose": "Trend",
+        "purposeDesc": "分析2019-2023年销量变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2019",
+          "value": 2,
+          "type": "returnRate"
+        },
+        {
+          "year": "2020",
+          "value": 2.5,
+          "type": "returnRate"
+        },
+        {
+          "year": "2021",
+          "value": 3,
+          "type": "returnRate"
+        },
+        {
+          "year": "2022",
+          "value": 3.5,
+          "type": "returnRate"
+        },
+        {
+          "year": "2023",
+          "value": 4,
+          "type": "returnRate"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "值",
+          "dataType": "number"
+        },
+        {
+          "id": "type",
+          "name": "指标类型",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "退货率异常检测",
+        "key": "value",
+        "purpose": "Anomaly",
+        "purposeDesc": "检测退货率是否存在异常波动"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "2019",
+            "name": "2019年",
+            "sales": 120,
+            "returnRate": 2
+          },
+          {
+            "id": "2020",
+            "name": "2020年",
+            "sales": 130,
+            "returnRate": 2.5
+          },
+          {
+            "id": "2021",
+            "name": "2021年",
+            "sales": 140,
+            "returnRate": 3
+          },
+          {
+            "id": "2022",
+            "name": "2022年",
+            "sales": 150,
+            "returnRate": 3.5
+          },
+          {
+            "id": "2023",
+            "name": "2023年",
+            "sales": 160,
+            "returnRate": 4
+          }
+        ],
+        "edges": [
+          {
+            "source": "2019",
+            "target": "2020",
+            "relation": "yearly"
+          },
+          {
+            "source": "2020",
+            "target": "2021",
+            "relation": "yearly"
+          },
+          {
+            "source": "2021",
+            "target": "2022",
+            "relation": "yearly"
+          },
+          {
+            "source": "2022",
+            "target": "2023",
+            "relation": "yearly"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "年份ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "年份名称",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "销量（万件）",
+          "dataType": "number"
+        },
+        {
+          "id": "returnRate",
+          "name": "退货率（%）",
+          "dataType": "number"
+        },
+        {
+          "id": "relation",
+          "name": "关系类型",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "销量与退货率关联分析",
+        "key": "returnRate",
+        "purpose": "Relationship",
+        "purposeDesc": "分析销量增长与退货率变化的关系"
+      }
+    }
+  ]
+}

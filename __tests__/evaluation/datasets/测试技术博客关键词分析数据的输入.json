@@ -1,0 +1,134 @@
+{
+  "name": "测试技术博客关键词分析数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"label\": \"编程\", \"value\": 30 }, { \"label\": \"算法\", \"value\": 25 }, { \"label\": \"数据库\", \"value\": 20 }, { \"label\": \"前端\", \"value\": 15 }, { \"label\": \"后端\", \"value\": 10 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "label": "编程",
+          "value": 30
+        },
+        {
+          "label": "算法",
+          "value": 25
+        },
+        {
+          "label": "数据库",
+          "value": 20
+        },
+        {
+          "label": "前端",
+          "value": 15
+        },
+        {
+          "label": "后端",
+          "value": 10
+        }
+      ],
+      "metas": [
+        {
+          "id": "label",
+          "name": "label",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "label": "编程",
+          "value": 30
+        },
+        {
+          "label": "算法",
+          "value": 25
+        },
+        {
+          "label": "数据库",
+          "value": 20
+        },
+        {
+          "label": "前端",
+          "value": 15
+        },
+        {
+          "label": "后端",
+          "value": 10
+        }
+      ],
+      "metas": [
+        {
+          "id": "label",
+          "name": "label",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "关键词占比分析",
+        "key": "value",
+        "purpose": "Proportion",
+        "purposeDesc": "分析各关键词在技术博客中的占比情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "label": "编程",
+          "value": 30
+        },
+        {
+          "label": "算法",
+          "value": 25
+        },
+        {
+          "label": "数据库",
+          "value": 20
+        },
+        {
+          "label": "前端",
+          "value": 15
+        },
+        {
+          "label": "后端",
+          "value": 10
+        }
+      ],
+      "metas": [
+        {
+          "id": "label",
+          "name": "label",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "关键词排名分析",
+        "key": "value",
+        "purpose": "Rank",
+        "purposeDesc": "分析技术博客中各关键词的热度排名"
+      }
+    }
+  ]
+}

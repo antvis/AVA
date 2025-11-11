@@ -1,0 +1,117 @@
+{
+  "name": "测试地理坐标和密度数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"longitude\":139.691711,\"latitude\":35.689487,\"density\":700},{\"longitude\":139.691486,\"latitude\":35.682042,\"density\":900},{\"longitude\":139.681826,\"latitude\":35.674638,\"density\":800},{\"longitude\":139.698453,\"latitude\":35.682341,\"intensity\":600}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "geo",
+      "data": [
+        {
+          "longitude": 139.691711,
+          "latitude": 35.689487,
+          "density": 700
+        },
+        {
+          "longitude": 139.691486,
+          "latitude": 35.682042,
+          "density": 900
+        },
+        {
+          "longitude": 139.681826,
+          "latitude": 35.674638,
+          "density": 800
+        },
+        {
+          "longitude": 139.698453,
+          "latitude": 35.682341,
+          "intensity": 600
+        }
+      ],
+      "metas": [
+        {
+          "id": "longitude",
+          "name": "longitude",
+          "dataType": "number"
+        },
+        {
+          "id": "latitude",
+          "name": "latitude",
+          "dataType": "number"
+        },
+        {
+          "id": "density",
+          "name": "density",
+          "dataType": "number"
+        },
+        {
+          "id": "intensity",
+          "name": "intensity",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "地理分布分析",
+        "key": "density",
+        "purpose": "Distribution",
+        "purposeDesc": "分析密度在地理位置上的分布情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "longitude": 139.691711,
+          "latitude": 35.689487,
+          "density": 700
+        },
+        {
+          "longitude": 139.691486,
+          "latitude": 35.682042,
+          "density": 900
+        },
+        {
+          "longitude": 139.681826,
+          "latitude": 35.674638,
+          "density": 800
+        },
+        {
+          "longitude": 139.698453,
+          "latitude": 35.682341,
+          "intensity": 600
+        }
+      ],
+      "metas": [
+        {
+          "id": "longitude",
+          "name": "longitude",
+          "dataType": "number"
+        },
+        {
+          "id": "latitude",
+          "name": "latitude",
+          "dataType": "number"
+        },
+        {
+          "id": "density",
+          "name": "density",
+          "dataType": "number"
+        },
+        {
+          "id": "intensity",
+          "name": "intensity",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "数据完整性检查",
+        "key": "intensity",
+        "purpose": "Anomaly",
+        "purposeDesc": "检查数据中是否存在缺失或异常值"
+      }
+    }
+  ]
+}

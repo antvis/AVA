@@ -1,0 +1,228 @@
+{
+  "name": "测试季度销售额比较数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "四个季度中A、B两家公司的销售额比较，第一季度A公司为120万元，B公司为90万元；第二季度A公司为150万元，B公司为100万元；第三季度A公司为180万元，B公司为110万元；第四季度A公司为200万元，B公司为120万元"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "季度": "第一季度",
+          "A公司销售额": 120,
+          "B公司销售额": 90
+        },
+        {
+          "季度": "第二季度",
+          "A公司销售额": 150,
+          "B公司销售额": 100
+        },
+        {
+          "季度": "第三季度",
+          "A公司销售额": 180,
+          "B公司销售额": 110
+        },
+        {
+          "季度": "第四季度",
+          "A公司销售额": 200,
+          "B公司销售额": 120
+        }
+      ],
+      "metas": [
+        {
+          "id": "季度",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "A公司销售额",
+          "name": "A公司销售额",
+          "dataType": "number"
+        },
+        {
+          "id": "B公司销售额",
+          "name": "B公司销售额",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度销售额对比",
+        "key": "季度",
+        "purpose": "Comparison",
+        "purposeDesc": "比较A、B两家公司在四个季度的销售额变化"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "公司": "A公司",
+          "第一季度": 120,
+          "第二季度": 150,
+          "第三季度": 180,
+          "第四季度": 200
+        },
+        {
+          "公司": "B公司",
+          "第一季度": 90,
+          "第二季度": 100,
+          "第三季度": 110,
+          "第四季度": 120
+        }
+      ],
+      "metas": [
+        {
+          "id": "公司",
+          "name": "公司",
+          "dataType": "string"
+        },
+        {
+          "id": "第一季度",
+          "name": "第一季度",
+          "dataType": "number"
+        },
+        {
+          "id": "第二季度",
+          "name": "第二季度",
+          "dataType": "number"
+        },
+        {
+          "id": "第三季度",
+          "name": "第三季度",
+          "dataType": "number"
+        },
+        {
+          "id": "第四季度",
+          "name": "第四季度",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "公司季度销售额趋势",
+        "key": "公司",
+        "purpose": "Trend",
+        "purposeDesc": "分析A、B两家公司四个季度的销售额增长趋势"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "A公司",
+            "name": "A公司",
+            "type": "company"
+          },
+          {
+            "id": "B公司",
+            "name": "B公司",
+            "type": "company"
+          },
+          {
+            "id": "第一季度",
+            "name": "第一季度",
+            "type": "quarter"
+          },
+          {
+            "id": "第二季度",
+            "name": "第二季度",
+            "type": "quarter"
+          },
+          {
+            "id": "第三季度",
+            "name": "第三季度",
+            "type": "quarter"
+          },
+          {
+            "id": "第四季度",
+            "name": "第四季度",
+            "type": "quarter"
+          }
+        ],
+        "edges": [
+          {
+            "source": "A公司",
+            "target": "第一季度",
+            "value": 120
+          },
+          {
+            "source": "B公司",
+            "target": "第一季度",
+            "value": 90
+          },
+          {
+            "source": "A公司",
+            "target": "第二季度",
+            "value": 150
+          },
+          {
+            "source": "B公司",
+            "target": "第二季度",
+            "value": 100
+          },
+          {
+            "source": "A公司",
+            "target": "第三季度",
+            "value": 180
+          },
+          {
+            "source": "B公司",
+            "target": "第三季度",
+            "value": 110
+          },
+          {
+            "source": "A公司",
+            "target": "第四季度",
+            "value": 200
+          },
+          {
+            "source": "B公司",
+            "target": "第四季度",
+            "value": 120
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        },
+        {
+          "id": "type",
+          "name": "节点类型",
+          "dataType": "string"
+        },
+        {
+          "id": "source",
+          "name": "边起点",
+          "dataType": "string"
+        },
+        {
+          "id": "target",
+          "name": "边终点",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "边值",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "公司与季度销售额关系",
+        "key": "id",
+        "purpose": "Relationship",
+        "purposeDesc": "展示公司与季度销售额之间的关联关系"
+      }
+    }
+  ]
+}

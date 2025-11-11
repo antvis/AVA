@@ -1,0 +1,95 @@
+{
+  "name": "测试层级结构数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"name\": \"中国\", \"population\": 1400000000, \"children\": [{ \"name\": \"北京\", \"population\": 21500000 }, { \"name\": \"上海\", \"population\": 24200000 }]}, { \"name\": \"印度\", \"population\": 1380000000 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "中国",
+          "name": "中国",
+          "population": 1400000000,
+          "children": [
+            {
+              "id": "北京",
+              "name": "北京",
+              "population": 21500000
+            },
+            {
+              "id": "上海",
+              "name": "上海",
+              "population": 24200000
+            }
+          ]
+        },
+        {
+          "id": "印度",
+          "name": "印度",
+          "population": 1380000000
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "国家/城市名称",
+          "dataType": "string"
+        },
+        {
+          "id": "population",
+          "name": "人口数量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "国家人口构成分析",
+        "key": "population",
+        "purpose": "Composition",
+        "purposeDesc": "分析各国人口构成及主要城市人口占比"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "name": "中国",
+          "population": 1400000000
+        },
+        {
+          "name": "北京",
+          "population": 21500000
+        },
+        {
+          "name": "上海",
+          "population": 24200000
+        },
+        {
+          "name": "印度",
+          "population": 1380000000
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "国家/城市名称",
+          "dataType": "string"
+        },
+        {
+          "id": "population",
+          "name": "人口数量",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "人口排名分析",
+        "key": "population",
+        "purpose": "Rank",
+        "purposeDesc": "对比不同国家/城市的人口数量排名"
+      }
+    }
+  ]
+}

@@ -1,0 +1,288 @@
+{
+  "name": "测试职业培训评分数据的结构化抽取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "在一次职业培训中，三个组的学员对培训课程的五个方面进行了评分。组1：内容质量9分、讲师水平8分、互动性7分、实用性8分、难易度6分。组2：内容质量7分、讲师水平9分、互动性8分、实用性7分、难易度8分。组3：内容质量8分、讲师水平7分、互动性9分、实用性6分、难易度9分。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "组别": "组1",
+          "内容质量": 9,
+          "讲师水平": 8,
+          "互动性": 7,
+          "实用性": 8,
+          "难易度": 6
+        },
+        {
+          "组别": "组2",
+          "内容质量": 7,
+          "讲师水平": 9,
+          "互动性": 8,
+          "实用性": 7,
+          "难易度": 8
+        },
+        {
+          "组别": "组3",
+          "内容质量": 8,
+          "讲师水平": 7,
+          "互动性": 9,
+          "实用性": 6,
+          "难易度": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "组别",
+          "name": "组别",
+          "dataType": "string"
+        },
+        {
+          "id": "内容质量",
+          "name": "内容质量",
+          "dataType": "number"
+        },
+        {
+          "id": "讲师水平",
+          "name": "讲师水平",
+          "dataType": "number"
+        },
+        {
+          "id": "互动性",
+          "name": "互动性",
+          "dataType": "number"
+        },
+        {
+          "id": "实用性",
+          "name": "实用性",
+          "dataType": "number"
+        },
+        {
+          "id": "难易度",
+          "name": "难易度",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "组间评分对比",
+        "key": "组别",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同组别在各维度的评分差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "内容质量",
+          9,
+          7,
+          8
+        ],
+        [
+          "讲师水平",
+          8,
+          9,
+          7
+        ],
+        [
+          "互动性",
+          7,
+          8,
+          9
+        ],
+        [
+          "实用性",
+          8,
+          7,
+          6
+        ],
+        [
+          "难易度",
+          6,
+          8,
+          9
+        ]
+      ],
+      "metas": [
+        {
+          "id": "维度",
+          "name": "维度",
+          "dataType": "string"
+        },
+        {
+          "id": "组1",
+          "name": "组1",
+          "dataType": "number"
+        },
+        {
+          "id": "组2",
+          "name": "组2",
+          "dataType": "number"
+        },
+        {
+          "id": "组3",
+          "name": "组3",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "维度评分趋势",
+        "key": "维度",
+        "purpose": "Trend",
+        "purposeDesc": "分析各维度在不同组别的评分趋势"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "组1",
+            "name": "组1",
+            "type": "group"
+          },
+          {
+            "id": "组2",
+            "name": "组2",
+            "type": "group"
+          },
+          {
+            "id": "组3",
+            "name": "组3",
+            "type": "group"
+          },
+          {
+            "id": "内容质量",
+            "name": "内容质量",
+            "type": "dimension"
+          },
+          {
+            "id": "讲师水平",
+            "name": "讲师水平",
+            "type": "dimension"
+          },
+          {
+            "id": "互动性",
+            "name": "互动性",
+            "type": "dimension"
+          },
+          {
+            "id": "实用性",
+            "name": "实用性",
+            "type": "dimension"
+          },
+          {
+            "id": "难易度",
+            "name": "难易度",
+            "type": "dimension"
+          }
+        ],
+        "edges": [
+          {
+            "source": "组1",
+            "target": "内容质量",
+            "value": 9
+          },
+          {
+            "source": "组1",
+            "target": "讲师水平",
+            "value": 8
+          },
+          {
+            "source": "组1",
+            "target": "互动性",
+            "value": 7
+          },
+          {
+            "source": "组1",
+            "target": "实用性",
+            "value": 8
+          },
+          {
+            "source": "组1",
+            "target": "难易度",
+            "value": 6
+          },
+          {
+            "source": "组2",
+            "target": "内容质量",
+            "value": 7
+          },
+          {
+            "source": "组2",
+            "target": "讲师水平",
+            "value": 9
+          },
+          {
+            "source": "组2",
+            "target": "互动性",
+            "value": 8
+          },
+          {
+            "source": "组2",
+            "target": "实用性",
+            "value": 7
+          },
+          {
+            "source": "组2",
+            "target": "难易度",
+            "value": 8
+          },
+          {
+            "source": "组3",
+            "target": "内容质量",
+            "value": 8
+          },
+          {
+            "source": "组3",
+            "target": "讲师水平",
+            "value": 7
+          },
+          {
+            "source": "组3",
+            "target": "互动性",
+            "value": 9
+          },
+          {
+            "source": "组3",
+            "target": "实用性",
+            "value": 6
+          },
+          {
+            "source": "组3",
+            "target": "难易度",
+            "value": 9
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "source",
+          "name": "源节点",
+          "dataType": "string"
+        },
+        {
+          "id": "target",
+          "name": "目标节点",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "评分值",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "组别-维度关系网络",
+        "key": "source-target",
+        "purpose": "Relationship",
+        "purposeDesc": "展示组别与评分维度的关联强度"
+      }
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "name": "测试不同品牌手机市场份额数据的抽取与解析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "不同品牌手机的市场份额对比，苹果为30%，三星为25%，华为为20%，小米为15%，OPPO为10%"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "brand": "苹果",
+          "share": 30
+        },
+        {
+          "brand": "三星",
+          "share": 25
+        },
+        {
+          "brand": "华为",
+          "share": 20
+        },
+        {
+          "brand": "小米",
+          "share": 15
+        },
+        {
+          "brand": "OPPO",
+          "share": 10
+        }
+      ],
+      "metas": [
+        {
+          "id": "brand",
+          "name": "品牌",
+          "dataType": "string"
+        },
+        {
+          "id": "share",
+          "name": "市场份额",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌份额对比",
+        "key": "brand-share-comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同品牌手机市场份额的差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "brand": "苹果",
+          "share": 30,
+          "rank": 1
+        },
+        {
+          "brand": "三星",
+          "share": 25,
+          "rank": 2
+        },
+        {
+          "brand": "华为",
+          "share": 20,
+          "rank": 3
+        },
+        {
+          "brand": "小米",
+          "share": 15,
+          "rank": 4
+        },
+        {
+          "brand": "OPPO",
+          "share": 10,
+          "rank": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "brand",
+          "name": "品牌",
+          "dataType": "string"
+        },
+        {
+          "id": "share",
+          "name": "市场份额",
+          "dataType": "number"
+        },
+        {
+          "id": "rank",
+          "name": "排名",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌份额排名",
+        "key": "brand-share-rank",
+        "purpose": "Rank",
+        "purposeDesc": "展示各品牌手机市场份额的排名情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "brand": "苹果",
+          "share": 30,
+          "proportion": 0.3
+        },
+        {
+          "brand": "三星",
+          "share": 25,
+          "proportion": 0.25
+        },
+        {
+          "brand": "华为",
+          "share": 20,
+          "proportion": 0.2
+        },
+        {
+          "brand": "小米",
+          "share": 15,
+          "proportion": 0.15
+        },
+        {
+          "brand": "OPPO",
+          "share": 10,
+          "proportion": 0.1
+        }
+      ],
+      "metas": [
+        {
+          "id": "brand",
+          "name": "品牌",
+          "dataType": "string"
+        },
+        {
+          "id": "share",
+          "name": "市场份额",
+          "dataType": "number"
+        },
+        {
+          "id": "proportion",
+          "name": "比例",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "品牌份额比例",
+        "key": "brand-share-proportion",
+        "purpose": "Proportion",
+        "purposeDesc": "分析各品牌手机市场份额的比例构成"
+      }
+    }
+  ]
+}

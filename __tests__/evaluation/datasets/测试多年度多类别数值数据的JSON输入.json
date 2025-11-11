@@ -1,0 +1,207 @@
+{
+  "name": "测试多年度多类别数值数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"year\":\"2020\",\"value\":1000,\"category\":\"X\"},{\"year\":\"2020\",\"value\":1500,\"category\":\"Y\"},{\"year\":\"2020\",\"value\":900,\"category\":\"Z\"},{\"year\":\"2021\",\"value\":1300,\"category\":\"X\"},{\"year\":\"2021\",\"value\":1900,\"category\":\"Y\"},{\"year\":\"2021\",\"value\":1100,\"category\":\"Z\"},{\"year\":\"2022\",\"value\":1800,\"category\":\"X\"},{\"year\":\"2022\",\"value\":2200,\"category\":\"Y\"},{\"year\":\"2022\",\"value\":1500,\"category\":\"Z\"}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2020",
+          "value": 1000,
+          "category": "X"
+        },
+        {
+          "year": "2020",
+          "value": 1500,
+          "category": "Y"
+        },
+        {
+          "year": "2020",
+          "value": 900,
+          "category": "Z"
+        },
+        {
+          "year": "2021",
+          "value": 1300,
+          "category": "X"
+        },
+        {
+          "year": "2021",
+          "value": 1900,
+          "category": "Y"
+        },
+        {
+          "year": "2021",
+          "value": 1100,
+          "category": "Z"
+        },
+        {
+          "year": "2022",
+          "value": 1800,
+          "category": "X"
+        },
+        {
+          "year": "2022",
+          "value": 2200,
+          "category": "Y"
+        },
+        {
+          "year": "2022",
+          "value": 1500,
+          "category": "Z"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2020",
+          "value": 1000,
+          "category": "X"
+        },
+        {
+          "year": "2020",
+          "value": 1500,
+          "category": "Y"
+        },
+        {
+          "year": "2020",
+          "value": 900,
+          "category": "Z"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "2020年各类别数值对比",
+        "key": "year=2020",
+        "purpose": "Comparison",
+        "purposeDesc": "比较2020年不同类别的数值差异"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2020",
+          "value": 1000,
+          "category": "X"
+        },
+        {
+          "year": "2021",
+          "value": 1300,
+          "category": "X"
+        },
+        {
+          "year": "2022",
+          "value": 1800,
+          "category": "X"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "X类别年度趋势分析",
+        "key": "category=X",
+        "purpose": "Trend",
+        "purposeDesc": "分析X类别在2020-2022年的数值变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2022",
+          "value": 1800,
+          "category": "X"
+        },
+        {
+          "year": "2022",
+          "value": 2200,
+          "category": "Y"
+        },
+        {
+          "year": "2022",
+          "value": 1500,
+          "category": "Z"
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "value",
+          "dataType": "number"
+        },
+        {
+          "id": "category",
+          "name": "category",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "2022年各类别占比分析",
+        "key": "year=2022",
+        "purpose": "Proportion",
+        "purposeDesc": "计算2022年各分类在总量中的占比情况"
+      }
+    }
+  ]
+}

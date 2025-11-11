@@ -1,0 +1,109 @@
+{
+  "name": "测试电商平台一周订单数量区间划分",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[100, 300, 500, 700, 900, 200, 400]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "Monday",
+          "orders": 100
+        },
+        {
+          "day": "Tuesday",
+          "orders": 300
+        },
+        {
+          "day": "Wednesday",
+          "orders": 500
+        },
+        {
+          "day": "Thursday",
+          "orders": 700
+        },
+        {
+          "day": "Friday",
+          "orders": 900
+        },
+        {
+          "day": "Saturday",
+          "orders": 200
+        },
+        {
+          "day": "Sunday",
+          "orders": 400
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "orders",
+          "name": "orders",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "订单趋势分析",
+        "key": "orders",
+        "purpose": "Trend",
+        "purposeDesc": "分析一周内订单数量的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "interval": "0-100",
+          "count": 0
+        },
+        {
+          "interval": "101-300",
+          "count": 2
+        },
+        {
+          "interval": "301-500",
+          "count": 1
+        },
+        {
+          "interval": "501-700",
+          "count": 1
+        },
+        {
+          "interval": "701-900",
+          "count": 2
+        },
+        {
+          "interval": "901-1000",
+          "count": 1
+        }
+      ],
+      "metas": [
+        {
+          "id": "interval",
+          "name": "interval",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "count",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "订单分布分析",
+        "key": "count",
+        "purpose": "Distribution",
+        "purposeDesc": "分析订单数量在不同区间的分布情况"
+      }
+    }
+  ]
+}

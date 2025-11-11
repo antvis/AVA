@@ -1,0 +1,169 @@
+{
+  "name": "测试公司线上线下收入变化数据的文本输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "在过去的三年中，某公司线上和线下销售的收入变化如下：线上收入分别为 1000、1100、1200，线下收入分别为 800、850、900"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": 1,
+          "online": 1000,
+          "offline": 800
+        },
+        {
+          "year": 2,
+          "online": 1100,
+          "offline": 850
+        },
+        {
+          "year": 3,
+          "online": 1200,
+          "offline": 900
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份序号",
+          "dataType": "number"
+        },
+        {
+          "id": "online",
+          "name": "线上收入",
+          "dataType": "number"
+        },
+        {
+          "id": "offline",
+          "name": "线下收入",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "收入趋势对比",
+        "key": "year",
+        "purpose": "Trend",
+        "purposeDesc": "分析线上线下收入随时间的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "channel": "online",
+          "year1": 1000,
+          "year2": 1100,
+          "year3": 1200
+        },
+        {
+          "channel": "offline",
+          "year1": 800,
+          "year2": 850,
+          "year3": 900
+        }
+      ],
+      "metas": [
+        {
+          "id": "channel",
+          "name": "销售渠道",
+          "dataType": "string"
+        },
+        {
+          "id": "year1",
+          "name": "第一年收入",
+          "dataType": "number"
+        },
+        {
+          "id": "year2",
+          "name": "第二年收入",
+          "dataType": "number"
+        },
+        {
+          "id": "year3",
+          "name": "第三年收入",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "渠道收入对比",
+        "key": "channel",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同销售渠道的收入表现"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "root",
+          "name": "总收入",
+          "children": [
+            {
+              "id": "online",
+              "name": "线上收入",
+              "children": [
+                {
+                  "id": "online_year1",
+                  "value": 1000
+                },
+                {
+                  "id": "online_year2",
+                  "value": 1100
+                },
+                {
+                  "id": "online_year3",
+                  "value": 1200
+                }
+              ]
+            },
+            {
+              "id": "offline",
+              "name": "线下收入",
+              "children": [
+                {
+                  "id": "offline_year1",
+                  "value": 800
+                },
+                {
+                  "id": "offline_year2",
+                  "value": 850
+                },
+                {
+                  "id": "offline_year3",
+                  "value": 900
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "节点ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "节点名称",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "收入值",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "收入构成分析",
+        "key": "id",
+        "purpose": "Composition",
+        "purposeDesc": "分析不同渠道收入在总收入中的构成情况"
+      }
+    }
+  ]
+}

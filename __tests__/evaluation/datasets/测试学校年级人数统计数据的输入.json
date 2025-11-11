@@ -1,0 +1,132 @@
+{
+  "name": "测试学校年级人数统计数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "统计某学校不同年级学生的数量，一年级有 200 人，二年级有 250 人，三年级有 300 人，四年级有 350 人"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "grade": "一年级",
+          "count": 200
+        },
+        {
+          "grade": "二年级",
+          "count": 250
+        },
+        {
+          "grade": "三年级",
+          "count": 300
+        },
+        {
+          "grade": "四年级",
+          "count": 350
+        }
+      ],
+      "metas": [
+        {
+          "id": "grade",
+          "name": "年级",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "人数",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "一年级",
+          200
+        ],
+        [
+          "二年级",
+          250
+        ],
+        [
+          "三年级",
+          300
+        ],
+        [
+          "四年级",
+          350
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "年级",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "人数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年级人数对比",
+        "key": "grade-comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同年级学生数量的差异"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "school",
+          "name": "某学校",
+          "children": [
+            {
+              "id": "grade1",
+              "name": "一年级",
+              "count": 200
+            },
+            {
+              "id": "grade2",
+              "name": "二年级",
+              "count": 250
+            },
+            {
+              "id": "grade3",
+              "name": "三年级",
+              "count": 300
+            },
+            {
+              "id": "grade4",
+              "name": "四年级",
+              "count": 350
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "年级名称",
+          "dataType": "string"
+        },
+        {
+          "id": "count",
+          "name": "学生人数",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "年级人数构成",
+        "key": "grade-composition",
+        "purpose": "Composition",
+        "purposeDesc": "分析各年级学生在全校中的构成比例"
+      }
+    }
+  ]
+}

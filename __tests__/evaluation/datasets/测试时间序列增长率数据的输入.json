@@ -1,0 +1,89 @@
+{
+  "name": "测试时间序列增长率数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "2023年上半年每月用户增长率变化，一月增长率为5%，二月为7%，三月为10%，四月为8%，五月为6%，六月为9%"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "一月",
+          "growthRate": 5
+        },
+        {
+          "month": "二月",
+          "growthRate": 7
+        },
+        {
+          "month": "三月",
+          "growthRate": 10
+        },
+        {
+          "month": "四月",
+          "growthRate": 8
+        },
+        {
+          "month": "五月",
+          "growthRate": 6
+        },
+        {
+          "month": "六月",
+          "growthRate": 9
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "月份",
+          "dataType": "string"
+        },
+        {
+          "id": "growthRate",
+          "name": "增长率",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "月度增长率趋势分析",
+        "key": "growthRate",
+        "purpose": "Trend",
+        "purposeDesc": "分析2023年上半年用户增长率的月度变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "avgGrowthRate": 7.33
+        },
+        {
+          "quarter": "Q2",
+          "avgGrowthRate": 7.67
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "季度",
+          "dataType": "string"
+        },
+        {
+          "id": "avgGrowthRate",
+          "name": "平均增长率",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度增长率对比分析",
+        "key": "avgGrowthRate",
+        "purpose": "Comparison",
+        "purposeDesc": "比较2023年Q1和Q2的平均用户增长率差异"
+      }
+    }
+  ]
+}

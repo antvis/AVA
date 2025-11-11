@@ -1,0 +1,134 @@
+{
+  "name": "测试模型评估指标数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[ { \"metric\": \"Accuracy\", \"score\": 9 }, { \"metric\": \"Precision\", \"score\": 7 }, { \"metric\": \"Recall\", \"score\": 6 }, { \"metric\": \"F1-Score\", \"score\": 8 }, { \"metric\": \"Sensitivity\", \"score\": 5 } ]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "metric": "Accuracy",
+          "score": 9
+        },
+        {
+          "metric": "Precision",
+          "score": 7
+        },
+        {
+          "metric": "Recall",
+          "score": 6
+        },
+        {
+          "metric": "F1-Score",
+          "score": 8
+        },
+        {
+          "metric": "Sensitivity",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "metric",
+          "name": "metric",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "metric": "Accuracy",
+          "score": 9
+        },
+        {
+          "metric": "Precision",
+          "score": 7
+        },
+        {
+          "metric": "Recall",
+          "score": 6
+        },
+        {
+          "metric": "F1-Score",
+          "score": 8
+        },
+        {
+          "metric": "Sensitivity",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "metric",
+          "name": "metric",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "模型指标对比",
+        "key": "metric",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同模型评估指标的得分情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "metric": "Accuracy",
+          "score": 9
+        },
+        {
+          "metric": "Precision",
+          "score": 7
+        },
+        {
+          "metric": "Recall",
+          "score": 6
+        },
+        {
+          "metric": "F1-Score",
+          "score": 8
+        },
+        {
+          "metric": "Sensitivity",
+          "score": 5
+        }
+      ],
+      "metas": [
+        {
+          "id": "metric",
+          "name": "metric",
+          "dataType": "string"
+        },
+        {
+          "id": "score",
+          "name": "score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "模型指标排名",
+        "key": "score",
+        "purpose": "Rank",
+        "purposeDesc": "根据得分对模型评估指标进行排名"
+      }
+    }
+  ]
+}

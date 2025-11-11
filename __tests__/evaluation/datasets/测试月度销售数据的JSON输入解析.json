@@ -1,0 +1,81 @@
+{
+  "name": "测试月度销售数据的JSON输入解析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"month\":\"Jan\",\"sales\":3000},{\"month\":\"Feb\",\"sales\":4500},{\"month\":\"Mar\",\"sales\":4000}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "sales": 3000
+        },
+        {
+          "month": "Feb",
+          "sales": 4500
+        },
+        {
+          "month": "Mar",
+          "sales": 4000
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "月度销售趋势分析",
+        "key": "sales",
+        "purpose": "Trend",
+        "purposeDesc": "分析各月销售额的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "month": "Jan",
+          "sales": 3000
+        },
+        {
+          "month": "Feb",
+          "sales": 4500
+        },
+        {
+          "month": "Mar",
+          "sales": 4000
+        }
+      ],
+      "metas": [
+        {
+          "id": "month",
+          "name": "month",
+          "dataType": "string"
+        },
+        {
+          "id": "sales",
+          "name": "sales",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "月度销售排名",
+        "key": "sales",
+        "purpose": "Rank",
+        "purposeDesc": "对各月销售额进行排名"
+      }
+    }
+  ]
+}

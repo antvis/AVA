@@ -1,0 +1,121 @@
+{
+  "name": "测试嵌套对象数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{ 'Tiger': {'Strength': 8, 'Speed': 9, 'Intelligence': 5}, 'Giraffe': {'Strength': 6, 'Speed': 7, 'Intelligence': 8}}"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "Animal": "Tiger",
+          "Strength": 8,
+          "Speed": 9,
+          "Intelligence": 5
+        },
+        {
+          "Animal": "Giraffe",
+          "Strength": 6,
+          "Speed": 7,
+          "Intelligence": 8
+        }
+      ],
+      "metas": [
+        {
+          "id": "Animal",
+          "name": "Animal",
+          "dataType": "string"
+        },
+        {
+          "id": "Strength",
+          "name": "Strength",
+          "dataType": "number"
+        },
+        {
+          "id": "Speed",
+          "name": "Speed",
+          "dataType": "number"
+        },
+        {
+          "id": "Intelligence",
+          "name": "Intelligence",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "动物能力对比",
+        "key": "Animal",
+        "purpose": "Comparison",
+        "purposeDesc": "比较不同动物的各项能力指标"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "Tiger",
+          "name": "Tiger",
+          "children": [
+            {
+              "id": "Tiger-Strength",
+              "name": "Strength",
+              "value": 8
+            },
+            {
+              "id": "Tiger-Speed",
+              "name": "Speed",
+              "value": 9
+            },
+            {
+              "id": "Tiger-Intelligence",
+              "name": "Intelligence",
+              "value": 5
+            }
+          ]
+        },
+        {
+          "id": "Giraffe",
+          "name": "Giraffe",
+          "children": [
+            {
+              "id": "Giraffe-Strength",
+              "name": "Strength",
+              "value": 6
+            },
+            {
+              "id": "Giraffe-Speed",
+              "name": "Speed",
+              "value": 7
+            },
+            {
+              "id": "Giraffe-Intelligence",
+              "name": "Intelligence",
+              "value": 8
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "Animal",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "Ability Score",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "动物能力构成",
+        "key": "id",
+        "purpose": "Composition",
+        "purposeDesc": "展示每种动物各项能力的构成情况"
+      }
+    }
+  ]
+}

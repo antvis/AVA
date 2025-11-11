@@ -1,0 +1,128 @@
+{
+  "name": "测试在线教育满意度研究数据的抽取",
+  "input": [
+    {
+      "type": "nl",
+      "value": "根据一项针对在线教育满意度的研究结果在研究中，“互动性”得到了 40 分的评价，“教师素质”获得了 35 分，“技术问题”影响得分为 10 分。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "指标": "互动性",
+          "得分": 40
+        },
+        {
+          "指标": "教师素质",
+          "得分": 35
+        },
+        {
+          "指标": "技术问题",
+          "得分": 10
+        }
+      ],
+      "metas": [
+        {
+          "id": "指标",
+          "name": "指标",
+          "dataType": "string"
+        },
+        {
+          "id": "得分",
+          "name": "得分",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "指标": "互动性",
+          "得分": 40,
+          "占比": 47.06
+        },
+        {
+          "指标": "教师素质",
+          "得分": 35,
+          "占比": 41.18
+        },
+        {
+          "指标": "技术问题",
+          "得分": 10,
+          "占比": 11.76
+        }
+      ],
+      "metas": [
+        {
+          "id": "指标",
+          "name": "指标",
+          "dataType": "string"
+        },
+        {
+          "id": "得分",
+          "name": "得分",
+          "dataType": "number"
+        },
+        {
+          "id": "占比",
+          "name": "占比",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "满意度指标占比分析",
+        "key": "占比",
+        "purpose": "Proportion",
+        "purposeDesc": "分析各满意度指标在总分中的占比情况"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "满意度总分",
+          "name": "满意度总分",
+          "value": 85,
+          "children": [
+            {
+              "id": "互动性",
+              "name": "互动性",
+              "value": 40
+            },
+            {
+              "id": "教师素质",
+              "name": "教师素质",
+              "value": 35
+            },
+            {
+              "id": "技术问题",
+              "name": "技术问题",
+              "value": 10
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        },
+        {
+          "id": "value",
+          "name": "数值",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "满意度总分构成分析",
+        "key": "value",
+        "purpose": "Composition",
+        "purposeDesc": "分析满意度总分的构成情况"
+      }
+    }
+  ]
+}

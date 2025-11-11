@@ -1,0 +1,89 @@
+{
+  "name": "测试时间序列健康数据趋势分析",
+  "input": [
+    {
+      "type": "nl",
+      "value": "根据最新的健康调查报告，成年人每日平均步行步数有所下降：2017年的平均水平是7000步，2018年降到了6500步，到了2019年进一步减少至6000步"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2017",
+          "steps": 7000
+        },
+        {
+          "year": "2018",
+          "steps": 6500
+        },
+        {
+          "year": "2019",
+          "steps": 6000
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "steps",
+          "name": "steps",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "步行步数年度趋势",
+        "key": "steps",
+        "purpose": "Trend",
+        "purposeDesc": "分析成年人每日步行步数的年度变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2017",
+          "steps": 7000,
+          "change": 0
+        },
+        {
+          "year": "2018",
+          "steps": 6500,
+          "change": -500
+        },
+        {
+          "year": "2019",
+          "steps": 6000,
+          "change": -500
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "year",
+          "dataType": "string"
+        },
+        {
+          "id": "steps",
+          "name": "steps",
+          "dataType": "number"
+        },
+        {
+          "id": "change",
+          "name": "change",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "步行步数年度变化量",
+        "key": "change",
+        "purpose": "Anomaly",
+        "purposeDesc": "检测步行步数年度变化的异常情况"
+      }
+    }
+  ]
+}

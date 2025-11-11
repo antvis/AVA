@@ -1,0 +1,176 @@
+{
+  "name": "测试一周平均温度数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "展示过去一周每天的平均温度，周一温度为15°C，周二温度为16°C，周三温度为15.5°C，周四温度为17°C，周五温度为18°C，周六温度为19°C，周日温度为20°C"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "day": "周一",
+          "temperature": 15
+        },
+        {
+          "day": "周二",
+          "temperature": 16
+        },
+        {
+          "day": "周三",
+          "temperature": 15.5
+        },
+        {
+          "day": "周四",
+          "temperature": 17
+        },
+        {
+          "day": "周五",
+          "temperature": 18
+        },
+        {
+          "day": "周六",
+          "temperature": 19
+        },
+        {
+          "day": "周日",
+          "temperature": 20
+        }
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "temperature",
+          "name": "temperature",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "周一",
+          15
+        ],
+        [
+          "周二",
+          16
+        ],
+        [
+          "周三",
+          15.5
+        ],
+        [
+          "周四",
+          17
+        ],
+        [
+          "周五",
+          18
+        ],
+        [
+          "周六",
+          19
+        ],
+        [
+          "周日",
+          20
+        ]
+      ],
+      "metas": [
+        {
+          "id": "day",
+          "name": "day",
+          "dataType": "string"
+        },
+        {
+          "id": "temperature",
+          "name": "temperature",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "temperature_trend",
+        "key": "temperature",
+        "purpose": "Trend",
+        "purposeDesc": "分析一周内温度的变化趋势"
+      }
+    },
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "week",
+          "name": "过去一周",
+          "children": [
+            {
+              "id": "mon",
+              "name": "周一",
+              "temperature": 15
+            },
+            {
+              "id": "tue",
+              "name": "周二",
+              "temperature": 16
+            },
+            {
+              "id": "wed",
+              "name": "周三",
+              "temperature": 15.5
+            },
+            {
+              "id": "thu",
+              "name": "周四",
+              "temperature": 17
+            },
+            {
+              "id": "fri",
+              "name": "周五",
+              "temperature": 18
+            },
+            {
+              "id": "sat",
+              "name": "周六",
+              "temperature": 19
+            },
+            {
+              "id": "sun",
+              "name": "周日",
+              "temperature": 20
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "id",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "name",
+          "dataType": "string"
+        },
+        {
+          "id": "temperature",
+          "name": "temperature",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "temperature_composition",
+        "key": "temperature",
+        "purpose": "Composition",
+        "purposeDesc": "分析一周内温度的组成情况"
+      }
+    }
+  ]
+}

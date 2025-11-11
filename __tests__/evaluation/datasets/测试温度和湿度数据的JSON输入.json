@@ -1,0 +1,81 @@
+{
+  "name": "测试温度和湿度数据的JSON输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{ \"temperature\": 20, \"humidity\": 60 }, { \"temperature\": 25, \"humidity\": 50 }, { \"temperature\": 30, \"humidity\": 40 }]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "temperature": 20,
+          "humidity": 60
+        },
+        {
+          "temperature": 25,
+          "humidity": 50
+        },
+        {
+          "temperature": 30,
+          "humidity": 40
+        }
+      ],
+      "metas": [
+        {
+          "id": "temperature",
+          "name": "temperature",
+          "dataType": "number"
+        },
+        {
+          "id": "humidity",
+          "name": "humidity",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "温度和湿度趋势分析",
+        "key": "temperature_humidity_trend",
+        "purpose": "Trend",
+        "purposeDesc": "分析温度和湿度的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "temperature": 20,
+          "humidity": 60
+        },
+        {
+          "temperature": 25,
+          "humidity": 50
+        },
+        {
+          "temperature": 30,
+          "humidity": 40
+        }
+      ],
+      "metas": [
+        {
+          "id": "temperature",
+          "name": "temperature",
+          "dataType": "number"
+        },
+        {
+          "id": "humidity",
+          "name": "humidity",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "温度和湿度关系分析",
+        "key": "temperature_humidity_relationship",
+        "purpose": "Relationship",
+        "purposeDesc": "分析温度和湿度之间的相关性"
+      }
+    }
+  ]
+}

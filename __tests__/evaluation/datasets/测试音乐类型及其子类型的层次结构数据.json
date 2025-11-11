@@ -1,0 +1,171 @@
+{
+  "name": "测试音乐类型及其子类型的层次结构数据",
+  "input": [
+    {
+      "type": "nl",
+      "value": "{ \"音乐类型\": [\"摇滚\", \"流行\", \"古典\", \"爵士\"], \"摇滚\": [\"硬摇滚\", \"金属\"], \"爵士\": [\"布鲁斯\", \"融合爵士\"] }"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "hierarchy",
+      "data": [
+        {
+          "id": "音乐类型",
+          "name": "音乐类型",
+          "children": [
+            {
+              "id": "摇滚",
+              "name": "摇滚",
+              "children": [
+                {
+                  "id": "硬摇滚",
+                  "name": "硬摇滚"
+                },
+                {
+                  "id": "金属",
+                  "name": "金属"
+                }
+              ]
+            },
+            {
+              "id": "流行",
+              "name": "流行"
+            },
+            {
+              "id": "古典",
+              "name": "古典"
+            },
+            {
+              "id": "爵士",
+              "name": "爵士",
+              "children": [
+                {
+                  "id": "布鲁斯",
+                  "name": "布鲁斯"
+                },
+                {
+                  "id": "融合爵士",
+                  "name": "融合爵士"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metas": [
+        {
+          "id": "id",
+          "name": "ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "音乐类型层次分析",
+        "key": "music_hierarchy",
+        "purpose": "Composition",
+        "purposeDesc": "分析音乐类型的层次结构及其子类型的组成关系"
+      }
+    },
+    {
+      "shape": "relation",
+      "data": {
+        "nodes": [
+          {
+            "id": "音乐类型",
+            "name": "音乐类型"
+          },
+          {
+            "id": "摇滚",
+            "name": "摇滚"
+          },
+          {
+            "id": "硬摇滚",
+            "name": "硬摇滚"
+          },
+          {
+            "id": "金属",
+            "name": "金属"
+          },
+          {
+            "id": "流行",
+            "name": "流行"
+          },
+          {
+            "id": "古典",
+            "name": "古典"
+          },
+          {
+            "id": "爵士",
+            "name": "爵士"
+          },
+          {
+            "id": "布鲁斯",
+            "name": "布鲁斯"
+          },
+          {
+            "id": "融合爵士",
+            "name": "融合爵士"
+          }
+        ],
+        "edges": [
+          {
+            "source": "音乐类型",
+            "target": "摇滚"
+          },
+          {
+            "source": "摇滚",
+            "target": "硬摇滚"
+          },
+          {
+            "source": "摇滚",
+            "target": "金属"
+          },
+          {
+            "source": "音乐类型",
+            "target": "流行"
+          },
+          {
+            "source": "音乐类型",
+            "target": "古典"
+          },
+          {
+            "source": "音乐类型",
+            "target": "爵士"
+          },
+          {
+            "source": "爵士",
+            "target": "布鲁斯"
+          },
+          {
+            "source": "爵士",
+            "target": "融合爵士"
+          }
+        ]
+      },
+      "metas": [
+        {
+          "id": "id",
+          "name": "ID",
+          "dataType": "string"
+        },
+        {
+          "id": "name",
+          "name": "名称",
+          "dataType": "string"
+        }
+      ],
+      "purpose": {
+        "name": "音乐类型关系分析",
+        "key": "music_relation",
+        "purpose": "Relationship",
+        "purposeDesc": "分析音乐类型及其子类型之间的关系网络"
+      }
+    }
+  ]
+}

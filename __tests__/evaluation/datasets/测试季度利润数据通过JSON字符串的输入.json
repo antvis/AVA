@@ -1,0 +1,161 @@
+{
+  "name": "测试季度利润数据通过JSON字符串的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "[{\"quarter\":\"Q1\",\"profit\":800},{\"quarter\":\"Q2\",\"profit\":1200},{\"quarter\":\"Q3\",\"profit\":1000},{\"quarter\":\"Q4\",\"profit\":1500}]"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "profit": 800
+        },
+        {
+          "quarter": "Q2",
+          "profit": 1200
+        },
+        {
+          "quarter": "Q3",
+          "profit": 1000
+        },
+        {
+          "quarter": "Q4",
+          "profit": 1500
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "quarter",
+          "dataType": "string"
+        },
+        {
+          "id": "profit",
+          "name": "profit",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "profit": 800
+        },
+        {
+          "quarter": "Q2",
+          "profit": 1200
+        },
+        {
+          "quarter": "Q3",
+          "profit": 1000
+        },
+        {
+          "quarter": "Q4",
+          "profit": 1500
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "quarter",
+          "dataType": "string"
+        },
+        {
+          "id": "profit",
+          "name": "profit",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度利润趋势分析",
+        "key": "quarter-profit-trend",
+        "purpose": "Trend",
+        "purposeDesc": "分析季度利润的变化趋势"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "profit": 800
+        },
+        {
+          "quarter": "Q2",
+          "profit": 1200
+        },
+        {
+          "quarter": "Q3",
+          "profit": 1000
+        },
+        {
+          "quarter": "Q4",
+          "profit": 1500
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "quarter",
+          "dataType": "string"
+        },
+        {
+          "id": "profit",
+          "name": "profit",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度利润对比分析",
+        "key": "quarter-profit-comparison",
+        "purpose": "Comparison",
+        "purposeDesc": "对比不同季度的利润情况"
+      }
+    },
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "quarter": "Q1",
+          "profit": 800
+        },
+        {
+          "quarter": "Q2",
+          "profit": 1200
+        },
+        {
+          "quarter": "Q3",
+          "profit": 1000
+        },
+        {
+          "quarter": "Q4",
+          "profit": 1500
+        }
+      ],
+      "metas": [
+        {
+          "id": "quarter",
+          "name": "quarter",
+          "dataType": "string"
+        },
+        {
+          "id": "profit",
+          "name": "profit",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "季度利润构成分析",
+        "key": "quarter-profit-composition",
+        "purpose": "Composition",
+        "purposeDesc": "分析全年利润的季度构成"
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "name": "测试时间序列气温数据的输入",
+  "input": [
+    {
+      "type": "nl",
+      "value": "某市的平均气温在2018年为15度，2019年上升至17度，2020年又下降到16度。"
+    }
+  ],
+  "dataShards": [
+    {
+      "shape": "plain",
+      "data": [
+        {
+          "year": "2018",
+          "temperature": 15
+        },
+        {
+          "year": "2019",
+          "temperature": 17
+        },
+        {
+          "year": "2020",
+          "temperature": 16
+        }
+      ],
+      "metas": [
+        {
+          "id": "year",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "temperature",
+          "name": "平均气温",
+          "dataType": "number"
+        }
+      ]
+    },
+    {
+      "shape": "plain",
+      "data": [
+        [
+          "2018",
+          15
+        ],
+        [
+          "2019",
+          17
+        ],
+        [
+          "2020",
+          16
+        ]
+      ],
+      "metas": [
+        {
+          "id": "0",
+          "name": "年份",
+          "dataType": "string"
+        },
+        {
+          "id": "1",
+          "name": "平均气温",
+          "dataType": "number"
+        }
+      ],
+      "purpose": {
+        "name": "气温变化趋势分析",
+        "key": "year",
+        "purpose": "Trend",
+        "purposeDesc": "分析某市2018-2020年平均气温的变化趋势"
+      }
+    }
+  ]
+}
