@@ -5,12 +5,65 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 5, "y": 60 },
-        { "x": 10, "y": 70 },
-        { "x": 15, "y": 80 },
-        { "x": 20, "y": 90 }
+        {
+          "x": 5,
+          "y": 60
+        },
+        {
+          "x": 10,
+          "y": 70
+        },
+        {
+          "x": 15,
+          "y": 80
+        },
+        {
+          "x": 20,
+          "y": 90
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 5,
+            "y": 60
+          },
+          {
+            "x": 10,
+            "y": 70
+          },
+          {
+            "x": 15,
+            "y": 80
+          },
+          {
+            "x": 20,
+            "y": 90
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "学习时间",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "考试成绩",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "考试成绩",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "研究学习时间与考试成绩之间的关系"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -18,12 +71,65 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 20, "y": 100 },
-        { "x": 25, "y": 150 },
-        { "x": 30, "y": 200 },
-        { "x": 35, "y": 250 }
+        {
+          "x": 20,
+          "y": 100
+        },
+        {
+          "x": 25,
+          "y": 150
+        },
+        {
+          "x": 30,
+          "y": 200
+        },
+        {
+          "x": 35,
+          "y": 250
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 20,
+            "y": 100
+          },
+          {
+            "x": 25,
+            "y": 150
+          },
+          {
+            "x": 30,
+            "y": 200
+          },
+          {
+            "x": 35,
+            "y": 250
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "温度",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "冰淇淋销量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "冰淇淋销量",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "分析温度对冰淇淋销量的影响"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -31,12 +137,65 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 20, "y": 110 },
-        { "x": 30, "y": 120 },
-        { "x": 40, "y": 130 },
-        { "x": 50, "y": 140 }
+        {
+          "x": 20,
+          "y": 110
+        },
+        {
+          "x": 30,
+          "y": 120
+        },
+        {
+          "x": 40,
+          "y": 130
+        },
+        {
+          "x": 50,
+          "y": 140
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 20,
+            "y": 110
+          },
+          {
+            "x": 30,
+            "y": 120
+          },
+          {
+            "x": 40,
+            "y": 130
+          },
+          {
+            "x": 50,
+            "y": 140
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "年龄",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "血压水平 (mmHg)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "血压水平 (mmHg)",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "探索年龄与血压水平的关系"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -44,12 +203,65 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 1, "y": 5 },
-        { "x": 2, "y": 10 },
-        { "x": 3, "y": 15 },
-        { "x": 4, "y": 20 }
+        {
+          "x": 1,
+          "y": 5
+        },
+        {
+          "x": 2,
+          "y": 10
+        },
+        {
+          "x": 3,
+          "y": 15
+        },
+        {
+          "x": 4,
+          "y": 20
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 10
+          },
+          {
+            "x": 3,
+            "y": 15
+          },
+          {
+            "x": 4,
+            "y": 20
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "网站访问量（千次）",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "销售额（万元）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "网站访问量与销售额关系",
+          "key": "x,y",
+          "purpose": "Relationship",
+          "purposeDesc": "考察网站访问量与销售额的关系"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -57,12 +269,65 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 1, "y": -1 },
-        { "x": 2, "y": -2 },
-        { "x": 3, "y": -3 },
-        { "x": 4, "y": -4 }
+        {
+          "x": 1,
+          "y": -1
+        },
+        {
+          "x": 2,
+          "y": -2
+        },
+        {
+          "x": 3,
+          "y": -3
+        },
+        {
+          "x": 4,
+          "y": -4
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 1,
+            "y": -1
+          },
+          {
+            "x": 2,
+            "y": -2
+          },
+          {
+            "x": 3,
+            "y": -3
+          },
+          {
+            "x": 4,
+            "y": -4
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "锻炼频率 (次/周)",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "体重变化 (公斤)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "体重变化 (公斤)",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "研究锻炼频率与体重变化的关系"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -70,11 +335,57 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 5, "y": 70 },
-        { "x": 10, "y": 85 },
-        { "x": 15, "y": 90 }
+        {
+          "x": 5,
+          "y": 70
+        },
+        {
+          "x": 10,
+          "y": 85
+        },
+        {
+          "x": 15,
+          "y": 90
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 5,
+            "y": 70
+          },
+          {
+            "x": 10,
+            "y": 85
+          },
+          {
+            "x": 15,
+            "y": 90
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "hours",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "score",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "score",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "hours与score的关系"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -82,11 +393,57 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 20, "y": 60 },
-        { "x": 25, "y": 50 },
-        { "x": 30, "y": 40 }
+        {
+          "x": 20,
+          "y": 60
+        },
+        {
+          "x": 25,
+          "y": 50
+        },
+        {
+          "x": 30,
+          "y": 40
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 20,
+            "y": 60
+          },
+          {
+            "x": 25,
+            "y": 50
+          },
+          {
+            "x": 30,
+            "y": 40
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "temperature",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "humidity",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "humidity",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "温度与湿度的关系"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -94,11 +451,57 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 160, "y": 55 },
-        { "x": 170, "y": 65 },
-        { "x": 180, "y": 75 }
+        {
+          "x": 160,
+          "y": 55
+        },
+        {
+          "x": 170,
+          "y": 65
+        },
+        {
+          "x": 180,
+          "y": 75
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 160,
+            "y": 55
+          },
+          {
+            "x": 170,
+            "y": 65
+          },
+          {
+            "x": 180,
+            "y": 75
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "身高",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "体重",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "身高与体重关系",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "使用散点图表示身高与体重的关系"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -106,9 +509,18 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 30, "y": 120 },
-        { "x": 40, "y": 130 },
-        { "x": 50, "y": 140 }
+        {
+          "x": 30,
+          "y": 120
+        },
+        {
+          "x": 40,
+          "y": 130
+        },
+        {
+          "x": 50,
+          "y": 140
+        }
       ]
     }
   },
@@ -118,10 +530,56 @@
     "answer": {
       "type": "scatter",
       "data": [
-        { "x": 1000, "y": 5000 },
-        { "x": 2000, "y": 8000 },
-        { "x": 3000, "y": 12000 }
+        {
+          "x": 1000,
+          "y": 5000
+        },
+        {
+          "x": 2000,
+          "y": 8000
+        },
+        {
+          "x": 3000,
+          "y": 12000
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "x": 1000,
+            "y": 5000
+          },
+          {
+            "x": 2000,
+            "y": 8000
+          },
+          {
+            "x": 3000,
+            "y": 12000
+          }
+        ],
+        "metas": [
+          {
+            "id": "x",
+            "name": "广告投入",
+            "dataType": "number"
+          },
+          {
+            "id": "y",
+            "name": "销售额",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售额与广告投入关系",
+          "key": "y",
+          "purpose": "Relationship",
+          "purposeDesc": "分析销售额与广告投入的关系"
+        }
+      }
+    ]
   }
 ]

@@ -4,9 +4,60 @@
     "question": "用直方图展示某学校学生每周阅读时间（单位：小时），阅读时间在 0-10 小时之间，将其划分为 5 个区间，数据如下：`[3, 7, 2, 8, 5]`。",
     "answer": {
       "type": "histogram",
-      "data": [{ "value": 3 }, { "value": 7 }, { "value": 2 }, { "value": 8 }, { "value": 5 }],
+      "data": [
+        {
+          "value": 3
+        },
+        {
+          "value": 7
+        },
+        {
+          "value": 2
+        },
+        {
+          "value": 8
+        },
+        {
+          "value": 5
+        }
+      ],
       "binNumber": 5
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 3
+          },
+          {
+            "value": 7
+          },
+          {
+            "value": 2
+          },
+          {
+            "value": 8
+          },
+          {
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "阅读时间（小时）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "阅读时间（小时）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "某学校学生每周阅读时间分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -14,17 +65,77 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": -2 },
-        { "value": 5 },
-        { "value": 10 },
-        { "value": 15 },
-        { "value": 20 },
-        { "value": 25 },
-        { "value": 0 },
-        { "value": 12 }
+        {
+          "value": -2
+        },
+        {
+          "value": 5
+        },
+        {
+          "value": 10
+        },
+        {
+          "value": 15
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": 25
+        },
+        {
+          "value": 0
+        },
+        {
+          "value": 12
+        }
       ],
       "binNumber": 6
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": -2
+          },
+          {
+            "value": 5
+          },
+          {
+            "value": 10
+          },
+          {
+            "value": 15
+          },
+          {
+            "value": 20
+          },
+          {
+            "value": 25
+          },
+          {
+            "value": 0
+          },
+          {
+            "value": 12
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "气温 (摄氏度)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "气温 (摄氏度)",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "某城市一个月内的日平均气温分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -32,16 +143,71 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 2 },
-        { "value": 4 },
-        { "value": 6 },
-        { "value": 8 },
-        { "value": 10 },
-        { "value": 3 },
-        { "value": 7 }
+        {
+          "value": 2
+        },
+        {
+          "value": 4
+        },
+        {
+          "value": 6
+        },
+        {
+          "value": 8
+        },
+        {
+          "value": 10
+        },
+        {
+          "value": 3
+        },
+        {
+          "value": 7
+        }
       ],
       "binNumber": 4
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 2
+          },
+          {
+            "value": 4
+          },
+          {
+            "value": 6
+          },
+          {
+            "value": 8
+          },
+          {
+            "value": 10
+          },
+          {
+            "value": 3
+          },
+          {
+            "value": 7
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "年终奖金（万元）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "年终奖金（万元）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "展示某公司员工的年终奖金分布情况"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -49,16 +215,71 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 100 },
-        { "value": 300 },
-        { "value": 500 },
-        { "value": 700 },
-        { "value": 900 },
-        { "value": 200 },
-        { "value": 400 }
+        {
+          "value": 100
+        },
+        {
+          "value": 300
+        },
+        {
+          "value": 500
+        },
+        {
+          "value": 700
+        },
+        {
+          "value": 900
+        },
+        {
+          "value": 200
+        },
+        {
+          "value": 400
+        }
       ],
       "binNumber": 7
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 100
+          },
+          {
+            "value": 300
+          },
+          {
+            "value": 500
+          },
+          {
+            "value": 700
+          },
+          {
+            "value": 900
+          },
+          {
+            "value": 200
+          },
+          {
+            "value": 400
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "订单数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "订单数量",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "某电商平台一周内每天的订单数量分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -66,17 +287,77 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 5 },
-        { "value": 10 },
-        { "value": 15 },
-        { "value": 20 },
-        { "value": 25 },
-        { "value": 30 },
-        { "value": 7 },
-        { "value": 13 }
+        {
+          "value": 5
+        },
+        {
+          "value": 10
+        },
+        {
+          "value": 15
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": 25
+        },
+        {
+          "value": 30
+        },
+        {
+          "value": 7
+        },
+        {
+          "value": 13
+        }
       ],
       "binNumber": 6
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 5
+          },
+          {
+            "value": 10
+          },
+          {
+            "value": 15
+          },
+          {
+            "value": 20
+          },
+          {
+            "value": 25
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 7
+          },
+          {
+            "value": 13
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "锻炼次数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "锻炼次数",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "健身房会员每月的锻炼次数分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -84,16 +365,76 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 25 },
-        { "value": 30 },
-        { "value": 45 },
-        { "value": 50 },
-        { "value": 55 },
-        { "value": 28 },
-        { "value": 35 },
-        { "value": 40 }
+        {
+          "value": 25
+        },
+        {
+          "value": 30
+        },
+        {
+          "value": 45
+        },
+        {
+          "value": 50
+        },
+        {
+          "value": 55
+        },
+        {
+          "value": 28
+        },
+        {
+          "value": 35
+        },
+        {
+          "value": 40
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 25
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 45
+          },
+          {
+            "value": 50
+          },
+          {
+            "value": 55
+          },
+          {
+            "value": 28
+          },
+          {
+            "value": 35
+          },
+          {
+            "value": 40
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "年龄",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "年龄",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "员工年龄的分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -101,16 +442,76 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 200 },
-        { "value": 300 },
-        { "value": 400 },
-        { "value": 500 },
-        { "value": 600 },
-        { "value": 700 },
-        { "value": 800 },
-        { "value": 900 }
+        {
+          "value": 200
+        },
+        {
+          "value": 300
+        },
+        {
+          "value": 400
+        },
+        {
+          "value": 500
+        },
+        {
+          "value": 600
+        },
+        {
+          "value": 700
+        },
+        {
+          "value": 800
+        },
+        {
+          "value": 900
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 200
+          },
+          {
+            "value": 300
+          },
+          {
+            "value": 400
+          },
+          {
+            "value": 500
+          },
+          {
+            "value": 600
+          },
+          {
+            "value": 700
+          },
+          {
+            "value": 800
+          },
+          {
+            "value": 900
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "销售量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售量",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "产品销售量的分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -118,18 +519,88 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 10 },
-        { "value": 20 },
-        { "value": 30 },
-        { "value": 40 },
-        { "value": 50 },
-        { "value": 60 },
-        { "value": 70 },
-        { "value": 80 },
-        { "value": 90 },
-        { "value": 100 }
+        {
+          "value": 10
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": 30
+        },
+        {
+          "value": 40
+        },
+        {
+          "value": 50
+        },
+        {
+          "value": 60
+        },
+        {
+          "value": 70
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 100
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 10
+          },
+          {
+            "value": 20
+          },
+          {
+            "value": 30
+          },
+          {
+            "value": 40
+          },
+          {
+            "value": 50
+          },
+          {
+            "value": 60
+          },
+          {
+            "value": 70
+          },
+          {
+            "value": 80
+          },
+          {
+            "value": 90
+          },
+          {
+            "value": 100
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "访问次数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "访问次数",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "网站访问次数的分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -137,18 +608,88 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 1.5 },
-        { "value": 2.5 },
-        { "value": 3.5 },
-        { "value": 4.5 },
-        { "value": 0.5 },
-        { "value": 1.0 },
-        { "value": 2.0 },
-        { "value": 3.0 },
-        { "value": 4.0 },
-        { "value": 5.0 }
+        {
+          "value": 1.5
+        },
+        {
+          "value": 2.5
+        },
+        {
+          "value": 3.5
+        },
+        {
+          "value": 4.5
+        },
+        {
+          "value": 0.5
+        },
+        {
+          "value": 1
+        },
+        {
+          "value": 2
+        },
+        {
+          "value": 3
+        },
+        {
+          "value": 4
+        },
+        {
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 1.5
+          },
+          {
+            "value": 2.5
+          },
+          {
+            "value": 3.5
+          },
+          {
+            "value": 4.5
+          },
+          {
+            "value": 0.5
+          },
+          {
+            "value": 1
+          },
+          {
+            "value": 2
+          },
+          {
+            "value": 3
+          },
+          {
+            "value": 4
+          },
+          {
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "用户评分的分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -156,36 +697,202 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 100 },
-        { "value": 200 },
-        { "value": 300 },
-        { "value": 400 },
-        { "value": 500 },
-        { "value": 600 },
-        { "value": 700 },
-        { "value": 800 },
-        { "value": 900 },
-        { "value": 1000 }
+        {
+          "value": 100
+        },
+        {
+          "value": 200
+        },
+        {
+          "value": 300
+        },
+        {
+          "value": 400
+        },
+        {
+          "value": 500
+        },
+        {
+          "value": 600
+        },
+        {
+          "value": 700
+        },
+        {
+          "value": 800
+        },
+        {
+          "value": 900
+        },
+        {
+          "value": 1000
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 100
+          },
+          {
+            "value": 200
+          },
+          {
+            "value": 300
+          },
+          {
+            "value": 400
+          },
+          {
+            "value": 500
+          },
+          {
+            "value": 600
+          },
+          {
+            "value": 700
+          },
+          {
+            "value": 800
+          },
+          {
+            "value": 900
+          },
+          {
+            "value": 1000
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "价格",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "价格",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "商品价格的分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用直方图可视化我的数据：`[{ \"value\": 15 }, { \"value\": 20 }, { \"value\": 25 }, { \"value\": 30 }]`",
     "answer": {
       "type": "histogram",
-      "data": [{ "value": 15 }, { "value": 20 }, { "value": 25 }, { "value": 30 }],
+      "data": [
+        {
+          "value": 15
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": 25
+        },
+        {
+          "value": 30
+        }
+      ],
       "binNumber": 4
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 15
+          },
+          {
+            "value": 20
+          },
+          {
+            "value": 25
+          },
+          {
+            "value": 30
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "用直方图可视化数据分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "请帮我把这组数据用直方图展示出来：`[{ \"value\": 10 }, { \"value\": 15 }, { \"value\": 20 }, { \"value\": 25 }, { \"value\": 30 }]`，并且我希望有5个区间。",
     "answer": {
       "type": "histogram",
-      "data": [{ "value": 10 }, { "value": 15 }, { "value": 20 }, { "value": 25 }, { "value": 30 }],
+      "data": [
+        {
+          "value": 10
+        },
+        {
+          "value": 15
+        },
+        {
+          "value": 20
+        },
+        {
+          "value": 25
+        },
+        {
+          "value": 30
+        }
+      ],
       "binNumber": 5
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 10
+          },
+          {
+            "value": 15
+          },
+          {
+            "value": 20
+          },
+          {
+            "value": 25
+          },
+          {
+            "value": 30
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "展示数据分布情况"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -193,14 +900,64 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 5 },
-        { "value": 7 },
-        { "value": 9 },
-        { "value": 11 },
-        { "value": 13 },
-        { "value": 15 }
+        {
+          "value": 5
+        },
+        {
+          "value": 7
+        },
+        {
+          "value": 9
+        },
+        {
+          "value": 11
+        },
+        {
+          "value": 13
+        },
+        {
+          "value": 15
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 5
+          },
+          {
+            "value": 7
+          },
+          {
+            "value": 9
+          },
+          {
+            "value": 11
+          },
+          {
+            "value": 13
+          },
+          {
+            "value": 15
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "数值",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "数值",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "查看数值在直方图上的分布情况"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -208,14 +965,59 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 80 },
-        { "value": 85 },
-        { "value": 90 },
-        { "value": 95 },
-        { "value": 100 }
+        {
+          "value": 80
+        },
+        {
+          "value": 85
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 100
+        }
       ],
       "binNumber": 5
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 80
+          },
+          {
+            "value": 85
+          },
+          {
+            "value": 90
+          },
+          {
+            "value": 95
+          },
+          {
+            "value": 100
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "分数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "分数",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "分数分布直方图"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -223,13 +1025,58 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 100 },
-        { "value": 120 },
-        { "value": 140 },
-        { "value": 160 },
-        { "value": 180 }
+        {
+          "value": 100
+        },
+        {
+          "value": 120
+        },
+        {
+          "value": 140
+        },
+        {
+          "value": 160
+        },
+        {
+          "value": 180
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 100
+          },
+          {
+            "value": 120
+          },
+          {
+            "value": 140
+          },
+          {
+            "value": 160
+          },
+          {
+            "value": 180
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "通过直方图的方式展现数据分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -237,73 +1084,423 @@
     "answer": {
       "type": "histogram",
       "data": [
-        { "value": 85 },
-        { "value": 90 },
-        { "value": 78 },
-        { "value": 92 },
-        { "value": 88 },
-        { "value": 95 },
-        { "value": 80 },
-        { "value": 83 },
-        { "value": 87 },
-        { "value": 91 },
-        { "value": 79 },
-        { "value": 93 },
-        { "value": 89 },
-        { "value": 96 },
-        { "value": 81 },
-        { "value": 84 },
-        { "value": 86 },
-        { "value": 94 },
-        { "value": 82 },
-        { "value": 97 },
-        { "value": 77 },
-        { "value": 98 },
-        { "value": 83 },
-        { "value": 90 },
-        { "value": 78 },
-        { "value": 92 },
-        { "value": 88 },
-        { "value": 95 },
-        { "value": 80 },
-        { "value": 83 },
-        { "value": 87 },
-        { "value": 91 },
-        { "value": 79 },
-        { "value": 93 },
-        { "value": 89 },
-        { "value": 96 },
-        { "value": 81 },
-        { "value": 84 },
-        { "value": 86 },
-        { "value": 94 },
-        { "value": 82 },
-        { "value": 97 },
-        { "value": 77 },
-        { "value": 98 },
-        { "value": 83 },
-        { "value": 90 },
-        { "value": 78 },
-        { "value": 92 },
-        { "value": 88 },
-        { "value": 95 },
-        { "value": 80 },
-        { "value": 83 },
-        { "value": 87 },
-        { "value": 91 },
-        { "value": 79 },
-        { "value": 93 },
-        { "value": 89 },
-        { "value": 96 },
-        { "value": 81 },
-        { "value": 84 },
-        { "value": 86 },
-        { "value": 94 },
-        { "value": 82 },
-        { "value": 97 },
-        { "value": 77 },
-        { "value": 98 }
+        {
+          "value": 85
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 92
+        },
+        {
+          "value": 88
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 83
+        },
+        {
+          "value": 87
+        },
+        {
+          "value": 91
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 93
+        },
+        {
+          "value": 89
+        },
+        {
+          "value": 96
+        },
+        {
+          "value": 81
+        },
+        {
+          "value": 84
+        },
+        {
+          "value": 86
+        },
+        {
+          "value": 94
+        },
+        {
+          "value": 82
+        },
+        {
+          "value": 97
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 98
+        },
+        {
+          "value": 83
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 92
+        },
+        {
+          "value": 88
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 83
+        },
+        {
+          "value": 87
+        },
+        {
+          "value": 91
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 93
+        },
+        {
+          "value": 89
+        },
+        {
+          "value": 96
+        },
+        {
+          "value": 81
+        },
+        {
+          "value": 84
+        },
+        {
+          "value": 86
+        },
+        {
+          "value": 94
+        },
+        {
+          "value": 82
+        },
+        {
+          "value": 97
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 98
+        },
+        {
+          "value": 83
+        },
+        {
+          "value": 90
+        },
+        {
+          "value": 78
+        },
+        {
+          "value": 92
+        },
+        {
+          "value": 88
+        },
+        {
+          "value": 95
+        },
+        {
+          "value": 80
+        },
+        {
+          "value": 83
+        },
+        {
+          "value": 87
+        },
+        {
+          "value": 91
+        },
+        {
+          "value": 79
+        },
+        {
+          "value": 93
+        },
+        {
+          "value": 89
+        },
+        {
+          "value": 96
+        },
+        {
+          "value": 81
+        },
+        {
+          "value": 84
+        },
+        {
+          "value": 86
+        },
+        {
+          "value": 94
+        },
+        {
+          "value": 82
+        },
+        {
+          "value": 97
+        },
+        {
+          "value": 77
+        },
+        {
+          "value": 98
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "value": 85
+          },
+          {
+            "value": 90
+          },
+          {
+            "value": 78
+          },
+          {
+            "value": 92
+          },
+          {
+            "value": 88
+          },
+          {
+            "value": 95
+          },
+          {
+            "value": 80
+          },
+          {
+            "value": 83
+          },
+          {
+            "value": 87
+          },
+          {
+            "value": 91
+          },
+          {
+            "value": 79
+          },
+          {
+            "value": 93
+          },
+          {
+            "value": 89
+          },
+          {
+            "value": 96
+          },
+          {
+            "value": 81
+          },
+          {
+            "value": 84
+          },
+          {
+            "value": 86
+          },
+          {
+            "value": 94
+          },
+          {
+            "value": 82
+          },
+          {
+            "value": 97
+          },
+          {
+            "value": 77
+          },
+          {
+            "value": 98
+          },
+          {
+            "value": 83
+          },
+          {
+            "value": 90
+          },
+          {
+            "value": 78
+          },
+          {
+            "value": 92
+          },
+          {
+            "value": 88
+          },
+          {
+            "value": 95
+          },
+          {
+            "value": 80
+          },
+          {
+            "value": 83
+          },
+          {
+            "value": 87
+          },
+          {
+            "value": 91
+          },
+          {
+            "value": 79
+          },
+          {
+            "value": 93
+          },
+          {
+            "value": 89
+          },
+          {
+            "value": 96
+          },
+          {
+            "value": 81
+          },
+          {
+            "value": 84
+          },
+          {
+            "value": 86
+          },
+          {
+            "value": 94
+          },
+          {
+            "value": 82
+          },
+          {
+            "value": 97
+          },
+          {
+            "value": 77
+          },
+          {
+            "value": 98
+          },
+          {
+            "value": 83
+          },
+          {
+            "value": 90
+          },
+          {
+            "value": 78
+          },
+          {
+            "value": 92
+          },
+          {
+            "value": 88
+          },
+          {
+            "value": 95
+          },
+          {
+            "value": 80
+          },
+          {
+            "value": 83
+          },
+          {
+            "value": 87
+          },
+          {
+            "value": 91
+          },
+          {
+            "value": 79
+          },
+          {
+            "value": 93
+          },
+          {
+            "value": 89
+          },
+          {
+            "value": 96
+          },
+          {
+            "value": 81
+          },
+          {
+            "value": 84
+          },
+          {
+            "value": 86
+          },
+          {
+            "value": 94
+          },
+          {
+            "value": 82
+          },
+          {
+            "value": 97
+          },
+          {
+            "value": 77
+          },
+          {
+            "value": 98
+          }
+        ],
+        "metas": [
+          {
+            "id": "value",
+            "name": "分数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "分数",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "分数分布直方图"
+        }
+      }
+    ]
   }
 ]

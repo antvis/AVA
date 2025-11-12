@@ -9,27 +9,163 @@
         "children": [
           {
             "name": "需求分析阶段",
-            "children": [{ "name": "收集用户需求" }, { "name": "市场调研" }]
+            "children": [
+              {
+                "name": "收集用户需求"
+              },
+              {
+                "name": "市场调研"
+              }
+            ]
           },
           {
             "name": "设计阶段",
-            "children": [{ "name": "确定产品功能" }, { "name": "界面设计" }]
+            "children": [
+              {
+                "name": "确定产品功能"
+              },
+              {
+                "name": "界面设计"
+              }
+            ]
           },
           {
             "name": "开发阶段",
-            "children": [{ "name": "编写代码" }, { "name": "代码审查" }]
+            "children": [
+              {
+                "name": "编写代码"
+              },
+              {
+                "name": "代码审查"
+              }
+            ]
           },
           {
             "name": "测试阶段",
-            "children": [{ "name": "功能测试" }, { "name": "性能测试" }]
+            "children": [
+              {
+                "name": "功能测试"
+              },
+              {
+                "name": "性能测试"
+              }
+            ]
           },
           {
             "name": "上线阶段",
-            "children": [{ "name": "部署到生产环境" }, { "name": "监控" }]
+            "children": [
+              {
+                "name": "部署到生产环境"
+              },
+              {
+                "name": "监控"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "新产品开发流程",
+            "children": [
+              {
+                "id": "node1",
+                "name": "需求分析阶段",
+                "children": [
+                  {
+                    "id": "node1-1",
+                    "name": "收集用户需求"
+                  },
+                  {
+                    "id": "node1-2",
+                    "name": "市场调研"
+                  }
+                ]
+              },
+              {
+                "id": "node2",
+                "name": "设计阶段",
+                "children": [
+                  {
+                    "id": "node2-1",
+                    "name": "确定产品功能"
+                  },
+                  {
+                    "id": "node2-2",
+                    "name": "界面设计"
+                  }
+                ]
+              },
+              {
+                "id": "node3",
+                "name": "开发阶段",
+                "children": [
+                  {
+                    "id": "node3-1",
+                    "name": "编写代码"
+                  },
+                  {
+                    "id": "node3-2",
+                    "name": "代码审查"
+                  }
+                ]
+              },
+              {
+                "id": "node4",
+                "name": "测试阶段",
+                "children": [
+                  {
+                    "id": "node4-1",
+                    "name": "功能测试"
+                  },
+                  {
+                    "id": "node4-2",
+                    "name": "性能测试"
+                  }
+                ]
+              },
+              {
+                "id": "node5",
+                "name": "上线阶段",
+                "children": [
+                  {
+                    "id": "node5-1",
+                    "name": "部署到生产环境"
+                  },
+                  {
+                    "id": "node5-2",
+                    "name": "监控"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "新产品开发流程",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示新产品开发流程的层次结构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -41,27 +177,177 @@
         "children": [
           {
             "name": "需求分析",
-            "children": [{ "name": "收集用户需求" }, { "name": "编写需求文档" }]
+            "children": [
+              {
+                "name": "收集用户需求"
+              },
+              {
+                "name": "编写需求文档"
+              }
+            ]
           },
           {
             "name": "系统设计",
-            "children": [{ "name": "架构设计" }, { "name": "数据库设计" }]
+            "children": [
+              {
+                "name": "架构设计"
+              },
+              {
+                "name": "数据库设计"
+              }
+            ]
           },
           {
             "name": "开发",
-            "children": [{ "name": "前端开发" }, { "name": "后端开发" }]
+            "children": [
+              {
+                "name": "前端开发"
+              },
+              {
+                "name": "后端开发"
+              }
+            ]
           },
           {
             "name": "测试",
-            "children": [{ "name": "功能测试" }, { "name": "性能测试" }, { "name": "安全测试" }]
+            "children": [
+              {
+                "name": "功能测试"
+              },
+              {
+                "name": "性能测试"
+              },
+              {
+                "name": "安全测试"
+              }
+            ]
           },
           {
             "name": "部署",
-            "children": [{ "name": "环境准备" }, { "name": "上线部署" }, { "name": "后期维护" }]
+            "children": [
+              {
+                "name": "环境准备"
+              },
+              {
+                "name": "上线部署"
+              },
+              {
+                "name": "后期维护"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "IT项目管理结构",
+            "children": [
+              {
+                "id": "需求分析",
+                "name": "需求分析",
+                "children": [
+                  {
+                    "id": "收集用户需求",
+                    "name": "收集用户需求"
+                  },
+                  {
+                    "id": "编写需求文档",
+                    "name": "编写需求文档"
+                  }
+                ]
+              },
+              {
+                "id": "系统设计",
+                "name": "系统设计",
+                "children": [
+                  {
+                    "id": "架构设计",
+                    "name": "架构设计"
+                  },
+                  {
+                    "id": "数据库设计",
+                    "name": "数据库设计"
+                  }
+                ]
+              },
+              {
+                "id": "开发",
+                "name": "开发",
+                "children": [
+                  {
+                    "id": "前端开发",
+                    "name": "前端开发"
+                  },
+                  {
+                    "id": "后端开发",
+                    "name": "后端开发"
+                  }
+                ]
+              },
+              {
+                "id": "测试",
+                "name": "测试",
+                "children": [
+                  {
+                    "id": "功能测试",
+                    "name": "功能测试"
+                  },
+                  {
+                    "id": "性能测试",
+                    "name": "性能测试"
+                  },
+                  {
+                    "id": "安全测试",
+                    "name": "安全测试"
+                  }
+                ]
+              },
+              {
+                "id": "部署",
+                "name": "部署",
+                "children": [
+                  {
+                    "id": "环境准备",
+                    "name": "环境准备"
+                  },
+                  {
+                    "id": "上线部署",
+                    "name": "上线部署"
+                  },
+                  {
+                    "id": "后期维护",
+                    "name": "后期维护"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "IT项目管理结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示IT项目管理的层级结构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -73,19 +359,98 @@
         "children": [
           {
             "name": "亚洲",
-            "children": [{ "name": "日本" }, { "name": "韩国" }]
+            "children": [
+              {
+                "name": "日本"
+              },
+              {
+                "name": "韩国"
+              }
+            ]
           },
           {
             "name": "欧洲",
-            "children": [{ "name": "法国" }, { "name": "德国" }]
+            "children": [
+              {
+                "name": "法国"
+              },
+              {
+                "name": "德国"
+              }
+            ]
           },
           {
             "name": "美洲",
-            "children": [{ "name": "美国" }, { "name": "加拿大" }]
+            "children": [
+              {
+                "name": "美国"
+              },
+              {
+                "name": "加拿大"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "旅游计划",
+            "children": [
+              {
+                "name": "亚洲",
+                "children": [
+                  {
+                    "name": "日本"
+                  },
+                  {
+                    "name": "韩国"
+                  }
+                ]
+              },
+              {
+                "name": "欧洲",
+                "children": [
+                  {
+                    "name": "法国"
+                  },
+                  {
+                    "name": "德国"
+                  }
+                ]
+              },
+              {
+                "name": "美洲",
+                "children": [
+                  {
+                    "name": "美国"
+                  },
+                  {
+                    "name": "加拿大"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "旅游计划",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "旅游计划思维导图"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -98,8 +463,17 @@
           {
             "name": "市场分析",
             "children": [
-              { "name": "目标市场" },
-              { "name": "竞争对手分析", "children": [{ "name": "优劣势对比" }] }
+              {
+                "name": "目标市场"
+              },
+              {
+                "name": "竞争对手分析",
+                "children": [
+                  {
+                    "name": "优劣势对比"
+                  }
+                ]
+              }
             ]
           },
           {
@@ -107,28 +481,173 @@
             "children": [
               {
                 "name": "预算",
-                "children": [{ "name": "收入预测" }, { "name": "成本控制" }]
+                "children": [
+                  {
+                    "name": "收入预测"
+                  },
+                  {
+                    "name": "成本控制"
+                  }
+                ]
               },
-              { "name": "投资回报分析" }
+              {
+                "name": "投资回报分析"
+              }
             ]
           },
           {
             "name": "运营计划",
-            "children": [{ "name": "生产流程" }, { "name": "供应链管理" }, { "name": "质量控制" }]
+            "children": [
+              {
+                "name": "生产流程"
+              },
+              {
+                "name": "供应链管理"
+              },
+              {
+                "name": "质量控制"
+              }
+            ]
           },
           {
             "name": "营销策略",
             "children": [
-              { "name": "品牌定位" },
+              {
+                "name": "品牌定位"
+              },
               {
                 "name": "推广活动",
-                "children": [{ "name": "社交媒体" }, { "name": "广告投放" }]
+                "children": [
+                  {
+                    "name": "社交媒体"
+                  },
+                  {
+                    "name": "广告投放"
+                  }
+                ]
               }
             ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "业务计划",
+            "children": [
+              {
+                "id": "market-analysis",
+                "name": "市场分析",
+                "children": [
+                  {
+                    "id": "target-market",
+                    "name": "目标市场"
+                  },
+                  {
+                    "id": "competitor-analysis",
+                    "name": "竞争对手分析",
+                    "children": [
+                      {
+                        "id": "strengths-weaknesses",
+                        "name": "优劣势对比"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "financial-plan",
+                "name": "财务计划",
+                "children": [
+                  {
+                    "id": "budget",
+                    "name": "预算",
+                    "children": [
+                      {
+                        "id": "revenue-forecast",
+                        "name": "收入预测"
+                      },
+                      {
+                        "id": "cost-control",
+                        "name": "成本控制"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "roi-analysis",
+                    "name": "投资回报分析"
+                  }
+                ]
+              },
+              {
+                "id": "operational-plan",
+                "name": "运营计划",
+                "children": [
+                  {
+                    "id": "production-process",
+                    "name": "生产流程"
+                  },
+                  {
+                    "id": "supply-chain",
+                    "name": "供应链管理"
+                  },
+                  {
+                    "id": "quality-control",
+                    "name": "质量控制"
+                  }
+                ]
+              },
+              {
+                "id": "marketing-strategy",
+                "name": "营销策略",
+                "children": [
+                  {
+                    "id": "brand-positioning",
+                    "name": "品牌定位"
+                  },
+                  {
+                    "id": "promotion-activities",
+                    "name": "推广活动",
+                    "children": [
+                      {
+                        "id": "social-media",
+                        "name": "社交媒体"
+                      },
+                      {
+                        "id": "advertising",
+                        "name": "广告投放"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "业务计划",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示复杂业务计划的层次结构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -140,31 +659,230 @@
         "children": [
           {
             "name": "项目管理",
-            "children": [{ "name": "任务分解" }, { "name": "时间规划" }, { "name": "资源分配" }]
+            "children": [
+              {
+                "name": "任务分解"
+              },
+              {
+                "name": "时间规划"
+              },
+              {
+                "name": "资源分配"
+              }
+            ]
           },
           {
             "name": "学习与教育",
-            "children": [{ "name": "笔记整理" }, { "name": "知识点归纳" }, { "name": "复习备考" }]
+            "children": [
+              {
+                "name": "笔记整理"
+              },
+              {
+                "name": "知识点归纳"
+              },
+              {
+                "name": "复习备考"
+              }
+            ]
           },
           {
             "name": "创意与策划",
-            "children": [{ "name": "头脑风暴" }, { "name": "概念设计" }, { "name": "活动策划" }]
+            "children": [
+              {
+                "name": "头脑风暴"
+              },
+              {
+                "name": "概念设计"
+              },
+              {
+                "name": "活动策划"
+              }
+            ]
           },
           {
             "name": "决策支持",
-            "children": [{ "name": "问题分析" }, { "name": "方案比较" }, { "name": "风险评估" }]
+            "children": [
+              {
+                "name": "问题分析"
+              },
+              {
+                "name": "方案比较"
+              },
+              {
+                "name": "风险评估"
+              }
+            ]
           },
           {
             "name": "信息组织",
-            "children": [{ "name": "知识库构建" }, { "name": "文档分类" }, { "name": "数据整理" }]
+            "children": [
+              {
+                "name": "知识库构建"
+              },
+              {
+                "name": "文档分类"
+              },
+              {
+                "name": "数据整理"
+              }
+            ]
           },
           {
             "name": "沟通与协作",
-            "children": [{ "name": "团队会议" }, { "name": "信息共享" }, { "name": "协同工作" }]
+            "children": [
+              {
+                "name": "团队会议"
+              },
+              {
+                "name": "信息共享"
+              },
+              {
+                "name": "协同工作"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "思维导图的用途",
+            "children": [
+              {
+                "id": "node1",
+                "name": "项目管理",
+                "children": [
+                  {
+                    "id": "node1-1",
+                    "name": "任务分解"
+                  },
+                  {
+                    "id": "node1-2",
+                    "name": "时间规划"
+                  },
+                  {
+                    "id": "node1-3",
+                    "name": "资源分配"
+                  }
+                ]
+              },
+              {
+                "id": "node2",
+                "name": "学习与教育",
+                "children": [
+                  {
+                    "id": "node2-1",
+                    "name": "笔记整理"
+                  },
+                  {
+                    "id": "node2-2",
+                    "name": "知识点归纳"
+                  },
+                  {
+                    "id": "node2-3",
+                    "name": "复习备考"
+                  }
+                ]
+              },
+              {
+                "id": "node3",
+                "name": "创意与策划",
+                "children": [
+                  {
+                    "id": "node3-1",
+                    "name": "头脑风暴"
+                  },
+                  {
+                    "id": "node3-2",
+                    "name": "概念设计"
+                  },
+                  {
+                    "id": "node3-3",
+                    "name": "活动策划"
+                  }
+                ]
+              },
+              {
+                "id": "node4",
+                "name": "决策支持",
+                "children": [
+                  {
+                    "id": "node4-1",
+                    "name": "问题分析"
+                  },
+                  {
+                    "id": "node4-2",
+                    "name": "方案比较"
+                  },
+                  {
+                    "id": "node4-3",
+                    "name": "风险评估"
+                  }
+                ]
+              },
+              {
+                "id": "node5",
+                "name": "信息组织",
+                "children": [
+                  {
+                    "id": "node5-1",
+                    "name": "知识库构建"
+                  },
+                  {
+                    "id": "node5-2",
+                    "name": "文档分类"
+                  },
+                  {
+                    "id": "node5-3",
+                    "name": "数据整理"
+                  }
+                ]
+              },
+              {
+                "id": "node6",
+                "name": "沟通与协作",
+                "children": [
+                  {
+                    "id": "node6-1",
+                    "name": "团队会议"
+                  },
+                  {
+                    "id": "node6-2",
+                    "name": "信息共享"
+                  },
+                  {
+                    "id": "node6-3",
+                    "name": "协同工作"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "思维导图结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示思维导图的层次结构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -191,7 +909,14 @@
                             "children": [
                               {
                                 "name": "章节",
-                                "children": [{ "name": "概述" }, { "name": "细节" }]
+                                "children": [
+                                  {
+                                    "name": "概述"
+                                  },
+                                  {
+                                    "name": "细节"
+                                  }
+                                ]
                               }
                             ]
                           }
@@ -205,7 +930,73 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "大学课程结构",
+            "children": [
+              {
+                "name": "学院",
+                "children": [
+                  {
+                    "name": "系",
+                    "children": [
+                      {
+                        "name": "专业",
+                        "children": [
+                          {
+                            "name": "年级",
+                            "children": [
+                              {
+                                "name": "课程",
+                                "children": [
+                                  {
+                                    "name": "章节",
+                                    "children": [
+                                      {
+                                        "name": "概述"
+                                      },
+                                      {
+                                        "name": "细节"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "名称",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "子节点",
+            "dataType": "hierarchy"
+          }
+        ],
+        "purpose": {
+          "name": "大学课程结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示从学院到章节的课程层次结构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -275,7 +1066,90 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "国家",
+            "children": [
+              {
+                "name": "地区",
+                "children": [
+                  {
+                    "name": "省",
+                    "children": [
+                      {
+                        "name": "市",
+                        "children": [
+                          {
+                            "name": "区",
+                            "children": [
+                              {
+                                "name": "街道",
+                                "children": [
+                                  {
+                                    "name": "社区",
+                                    "children": [
+                                      {
+                                        "name": "小区",
+                                        "children": [
+                                          {
+                                            "name": "楼栋",
+                                            "children": [
+                                              {
+                                                "name": "单元",
+                                                "children": [
+                                                  {
+                                                    "name": "楼层",
+                                                    "children": [
+                                                      {
+                                                        "name": "房间",
+                                                        "children": [
+                                                          {
+                                                            "name": "房间详情"
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "行政级别名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "行政结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "国家行政结构规划"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -287,27 +1161,166 @@
         "children": [
           {
             "name": "财务目标",
-            "children": [{ "name": "收入增长" }, { "name": "成本控制" }, { "name": "利润最大化" }]
+            "children": [
+              {
+                "name": "收入增长"
+              },
+              {
+                "name": "成本控制"
+              },
+              {
+                "name": "利润最大化"
+              }
+            ]
           },
           {
             "name": "市场营销目标",
             "children": [
-              { "name": "品牌知名度提升" },
-              { "name": "市场份额增加" },
-              { "name": "客户满意度" }
+              {
+                "name": "品牌知名度提升"
+              },
+              {
+                "name": "市场份额增加"
+              },
+              {
+                "name": "客户满意度"
+              }
             ]
           },
           {
             "name": "产品开发目标",
-            "children": [{ "name": "新产品设计" }, { "name": "产品测试" }, { "name": "市场发布" }]
+            "children": [
+              {
+                "name": "新产品设计"
+              },
+              {
+                "name": "产品测试"
+              },
+              {
+                "name": "市场发布"
+              }
+            ]
           },
           {
             "name": "人力资源目标",
-            "children": [{ "name": "员工培训" }, { "name": "人才引进" }, { "name": "团队建设" }]
+            "children": [
+              {
+                "name": "员工培训"
+              },
+              {
+                "name": "人才引进"
+              },
+              {
+                "name": "团队建设"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "公司年度目标",
+            "children": [
+              {
+                "id": "财务目标",
+                "name": "财务目标",
+                "children": [
+                  {
+                    "id": "收入增长",
+                    "name": "收入增长"
+                  },
+                  {
+                    "id": "成本控制",
+                    "name": "成本控制"
+                  },
+                  {
+                    "id": "利润最大化",
+                    "name": "利润最大化"
+                  }
+                ]
+              },
+              {
+                "id": "市场营销目标",
+                "name": "市场营销目标",
+                "children": [
+                  {
+                    "id": "品牌知名度提升",
+                    "name": "品牌知名度提升"
+                  },
+                  {
+                    "id": "市场份额增加",
+                    "name": "市场份额增加"
+                  },
+                  {
+                    "id": "客户满意度",
+                    "name": "客户满意度"
+                  }
+                ]
+              },
+              {
+                "id": "产品开发目标",
+                "name": "产品开发目标",
+                "children": [
+                  {
+                    "id": "新产品设计",
+                    "name": "新产品设计"
+                  },
+                  {
+                    "id": "产品测试",
+                    "name": "产品测试"
+                  },
+                  {
+                    "id": "市场发布",
+                    "name": "市场发布"
+                  }
+                ]
+              },
+              {
+                "id": "人力资源目标",
+                "name": "人力资源目标",
+                "children": [
+                  {
+                    "id": "员工培训",
+                    "name": "员工培训"
+                  },
+                  {
+                    "id": "人才引进",
+                    "name": "人才引进"
+                  },
+                  {
+                    "id": "团队建设",
+                    "name": "团队建设"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "公司年度目标",
+          "key": "name",
+          "purpose": "Composition",
+          "purposeDesc": "展示公司年度目标的组成结构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -322,11 +1335,19 @@
             "children": [
               {
                 "name": "收入增长",
-                "children": ["拓展新市场", "增加销售渠道", "提升产品附加值"]
+                "children": [
+                  "拓展新市场",
+                  "增加销售渠道",
+                  "提升产品附加值"
+                ]
               },
               {
                 "name": "成本控制",
-                "children": ["优化供应链", "提高生产效率", "实施精细化管理"]
+                "children": [
+                  "优化供应链",
+                  "提高生产效率",
+                  "实施精细化管理"
+                ]
               },
               {
                 "name": "利润最大化",
@@ -339,7 +1360,11 @@
             "children": [
               {
                 "name": "提升品牌知名度",
-                "children": ["利用多种营销渠道", "精准市场定位", "定制化营销活动"]
+                "children": [
+                  "利用多种营销渠道",
+                  "精准市场定位",
+                  "定制化营销活动"
+                ]
               },
               {
                 "name": "增加市场份额",
@@ -347,7 +1372,10 @@
               },
               {
                 "name": "提升客户满意度",
-                "children": ["优化客户服务流程", "推出忠诚度计划"]
+                "children": [
+                  "优化客户服务流程",
+                  "推出忠诚度计划"
+                ]
               }
             ]
           },
@@ -360,11 +1388,17 @@
               },
               {
                 "name": "产品测试",
-                "children": ["实验室测试", "用户测试", "市场测试"]
+                "children": [
+                  "实验室测试",
+                  "用户测试",
+                  "市场测试"
+                ]
               },
               {
                 "name": "市场发布",
-                "children": ["制定详细的市场推广计划"]
+                "children": [
+                  "制定详细的市场推广计划"
+                ]
               }
             ]
           },
@@ -377,17 +1411,237 @@
               },
               {
                 "name": "人才引进",
-                "children": ["招聘会", "校招", "猎头服务"]
+                "children": [
+                  "招聘会",
+                  "校招",
+                  "猎头服务"
+                ]
               },
               {
                 "name": "团队建设",
-                "children": ["团队建设活动", "员工关怀项目", "合理的绩效考核机制"]
+                "children": [
+                  "团队建设活动",
+                  "员工关怀项目",
+                  "合理的绩效考核机制"
+                ]
               }
             ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "公司年度目标",
+            "children": [
+              {
+                "id": "node1",
+                "name": "财务目标",
+                "children": [
+                  {
+                    "id": "node1-1",
+                    "name": "收入增长",
+                    "children": [
+                      {
+                        "id": "node1-1-1",
+                        "name": "拓展新市场"
+                      },
+                      {
+                        "id": "node1-1-2",
+                        "name": "增加销售渠道"
+                      },
+                      {
+                        "id": "node1-1-3",
+                        "name": "提升产品附加值"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "node1-2",
+                    "name": "成本控制",
+                    "children": [
+                      {
+                        "id": "node1-2-1",
+                        "name": "优化供应链"
+                      },
+                      {
+                        "id": "node1-2-2",
+                        "name": "提高生产效率"
+                      },
+                      {
+                        "id": "node1-2-3",
+                        "name": "实施精细化管理"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "node1-3",
+                    "name": "利润最大化",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "node2",
+                "name": "市场营销目标",
+                "children": [
+                  {
+                    "id": "node2-1",
+                    "name": "提升品牌知名度",
+                    "children": [
+                      {
+                        "id": "node2-1-1",
+                        "name": "利用多种营销渠道"
+                      },
+                      {
+                        "id": "node2-1-2",
+                        "name": "精准市场定位"
+                      },
+                      {
+                        "id": "node2-1-3",
+                        "name": "定制化营销活动"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "node2-2",
+                    "name": "增加市场份额",
+                    "children": []
+                  },
+                  {
+                    "id": "node2-3",
+                    "name": "提升客户满意度",
+                    "children": [
+                      {
+                        "id": "node2-3-1",
+                        "name": "优化客户服务流程"
+                      },
+                      {
+                        "id": "node2-3-2",
+                        "name": "推出忠诚度计划"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "node3",
+                "name": "产品开发目标",
+                "children": [
+                  {
+                    "id": "node3-1",
+                    "name": "新产品设计",
+                    "children": []
+                  },
+                  {
+                    "id": "node3-2",
+                    "name": "产品测试",
+                    "children": [
+                      {
+                        "id": "node3-2-1",
+                        "name": "实验室测试"
+                      },
+                      {
+                        "id": "node3-2-2",
+                        "name": "用户测试"
+                      },
+                      {
+                        "id": "node3-2-3",
+                        "name": "市场测试"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "node3-3",
+                    "name": "市场发布",
+                    "children": [
+                      {
+                        "id": "node3-3-1",
+                        "name": "制定详细的市场推广计划"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "node4",
+                "name": "人力资源目标",
+                "children": [
+                  {
+                    "id": "node4-1",
+                    "name": "员工培训",
+                    "children": []
+                  },
+                  {
+                    "id": "node4-2",
+                    "name": "人才引进",
+                    "children": [
+                      {
+                        "id": "node4-2-1",
+                        "name": "招聘会"
+                      },
+                      {
+                        "id": "node4-2-2",
+                        "name": "校招"
+                      },
+                      {
+                        "id": "node4-2-3",
+                        "name": "猎头服务"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "node4-3",
+                    "name": "团队建设",
+                    "children": [
+                      {
+                        "id": "node4-3-1",
+                        "name": "团队建设活动"
+                      },
+                      {
+                        "id": "node4-3-2",
+                        "name": "员工关怀项目"
+                      },
+                      {
+                        "id": "node4-3-3",
+                        "name": "合理的绩效考核机制"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "子节点",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "公司年度目标",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示公司年度目标的层次结构"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -397,16 +1651,98 @@
       "data": {
         "name": "旅游计划",
         "children": [
-          { "name": "目的地选择" },
-          { "name": "预算规划" },
+          {
+            "name": "目的地选择"
+          },
+          {
+            "name": "预算规划"
+          },
           {
             "name": "行程安排",
-            "children": [{ "name": "景点游览" }, { "name": "餐饮选择" }, { "name": "住宿预订" }]
+            "children": [
+              {
+                "name": "景点游览"
+              },
+              {
+                "name": "餐饮选择"
+              },
+              {
+                "name": "住宿预订"
+              }
+            ]
           },
-          { "name": "行前准备" }
+          {
+            "name": "行前准备"
+          }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "1",
+            "name": "旅游计划",
+            "children": [
+              {
+                "id": "2",
+                "name": "目的地选择"
+              },
+              {
+                "id": "3",
+                "name": "预算规划"
+              },
+              {
+                "id": "4",
+                "name": "行程安排",
+                "children": [
+                  {
+                    "id": "5",
+                    "name": "景点游览"
+                  },
+                  {
+                    "id": "6",
+                    "name": "餐饮选择"
+                  },
+                  {
+                    "id": "7",
+                    "name": "住宿预订"
+                  }
+                ]
+              },
+              {
+                "id": "8",
+                "name": "行前准备"
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "子节点",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "节点名称",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "旅游计划思维导图"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -439,7 +1775,11 @@
                                     "children": [
                                       {
                                         "name": "文件扫描",
-                                        "children": [{ "name": "图像处理" }]
+                                        "children": [
+                                          {
+                                            "name": "图像处理"
+                                          }
+                                        ]
                                       }
                                     ]
                                   }
@@ -457,7 +1797,90 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "1",
+            "name": "企业",
+            "children": [
+              {
+                "id": "2",
+                "name": "总部",
+                "children": [
+                  {
+                    "id": "3",
+                    "name": "董事会",
+                    "children": [
+                      {
+                        "id": "4",
+                        "name": "董事长",
+                        "children": [
+                          {
+                            "id": "5",
+                            "name": "秘书处",
+                            "children": [
+                              {
+                                "id": "6",
+                                "name": "行政助理",
+                                "children": [
+                                  {
+                                    "id": "7",
+                                    "name": "档案管理",
+                                    "children": [
+                                      {
+                                        "id": "8",
+                                        "name": "档案录入",
+                                        "children": [
+                                          {
+                                            "id": "9",
+                                            "name": "文件扫描",
+                                            "children": [
+                                              {
+                                                "id": "10",
+                                                "name": "图像处理"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "企业组织结构层次关系"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -553,7 +1976,121 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "集团",
+            "children": [
+              {
+                "name": "子公司A",
+                "children": [
+                  {
+                    "name": "研发部",
+                    "children": [
+                      {
+                        "name": "研发一组",
+                        "children": [
+                          {
+                            "name": "项目经理A",
+                            "children": [
+                              {
+                                "name": "工程师A1"
+                              },
+                              {
+                                "name": "工程师A2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "研发二组",
+                        "children": [
+                          {
+                            "name": "项目经理B",
+                            "children": [
+                              {
+                                "name": "工程师B1"
+                              },
+                              {
+                                "name": "工程师B2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "子公司B",
+                "children": [
+                  {
+                    "name": "市场部",
+                    "children": [
+                      {
+                        "name": "销售一部",
+                        "children": [
+                          {
+                            "name": "销售经理A",
+                            "children": [
+                              {
+                                "name": "销售助理A1"
+                              },
+                              {
+                                "name": "销售助理A2"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "name": "销售二部",
+                        "children": [
+                          {
+                            "name": "销售经理B",
+                            "children": [
+                              {
+                                "name": "销售助理B1"
+                              },
+                              {
+                                "name": "销售助理B2"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "子节点",
+            "dataType": "hierarchy"
+          }
+        ],
+        "purpose": {
+          "name": "组织结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示公司层级结构"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -565,17 +2102,102 @@
         "children": [
           {
             "name": "摇滚",
-            "children": [{ "name": "硬摇滚" }, { "name": "金属" }]
+            "children": [
+              {
+                "name": "硬摇滚"
+              },
+              {
+                "name": "金属"
+              }
+            ]
           },
-          { "name": "流行" },
-          { "name": "古典" },
+          {
+            "name": "流行"
+          },
+          {
+            "name": "古典"
+          },
           {
             "name": "爵士",
-            "children": [{ "name": "布鲁斯" }, { "name": "融合爵士" }]
+            "children": [
+              {
+                "name": "布鲁斯"
+              },
+              {
+                "name": "融合爵士"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "音乐类型",
+            "name": "音乐类型",
+            "children": [
+              {
+                "id": "摇滚",
+                "name": "摇滚",
+                "children": [
+                  {
+                    "id": "硬摇滚",
+                    "name": "硬摇滚"
+                  },
+                  {
+                    "id": "金属",
+                    "name": "金属"
+                  }
+                ]
+              },
+              {
+                "id": "流行",
+                "name": "流行"
+              },
+              {
+                "id": "古典",
+                "name": "古典"
+              },
+              {
+                "id": "爵士",
+                "name": "爵士",
+                "children": [
+                  {
+                    "id": "布鲁斯",
+                    "name": "布鲁斯"
+                  },
+                  {
+                    "id": "融合爵士",
+                    "name": "融合爵士"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "音乐类型",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "音乐类型及其子类型的层次结构"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -585,15 +2207,90 @@
       "data": {
         "name": "项目管理",
         "children": [
-          { "name": "任务分配" },
+          {
+            "name": "任务分配"
+          },
           {
             "name": "时间规划",
-            "children": [{ "name": "短期目标" }, { "name": "长期目标" }]
+            "children": [
+              {
+                "name": "短期目标"
+              },
+              {
+                "name": "长期目标"
+              }
+            ]
           },
-          { "name": "资源调配" },
-          { "name": "风险管理" }
+          {
+            "name": "资源调配"
+          },
+          {
+            "name": "风险管理"
+          }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "项目管理",
+            "name": "项目管理",
+            "children": [
+              {
+                "id": "任务分配",
+                "name": "任务分配"
+              },
+              {
+                "id": "时间规划",
+                "name": "时间规划",
+                "children": [
+                  {
+                    "id": "短期目标",
+                    "name": "短期目标"
+                  },
+                  {
+                    "id": "长期目标",
+                    "name": "长期目标"
+                  }
+                ]
+              },
+              {
+                "id": "资源调配",
+                "name": "资源调配"
+              },
+              {
+                "id": "风险管理",
+                "name": "风险管理"
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "子节点",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "项目管理",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "用思维导图展示项目管理结构"
+        }
+      }
+    ]
   }
 ]

@@ -8,23 +8,138 @@
         "children": [
           {
             "name": "时间管理",
-            "children": [{ "name": "规划不当" }, { "name": "进度跟踪不足" }]
+            "children": [
+              {
+                "name": "规划不当"
+              },
+              {
+                "name": "进度跟踪不足"
+              }
+            ]
           },
           {
             "name": "资源分配",
-            "children": [{ "name": "人力不足" }, { "name": "设备短缺" }]
+            "children": [
+              {
+                "name": "人力不足"
+              },
+              {
+                "name": "设备短缺"
+              }
+            ]
           },
           {
             "name": "团队合作",
-            "children": [{ "name": "沟通不畅" }, { "name": "责任不清" }]
+            "children": [
+              {
+                "name": "沟通不畅"
+              },
+              {
+                "name": "责任不清"
+              }
+            ]
           },
           {
             "name": "技术问题",
-            "children": [{ "name": "技术难题" }, { "name": "系统故障" }]
+            "children": [
+              {
+                "name": "技术难题"
+              },
+              {
+                "name": "系统故障"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "项目延期",
+            "children": [
+              {
+                "id": "time-management",
+                "name": "时间管理",
+                "children": [
+                  {
+                    "id": "poor-planning",
+                    "name": "规划不当"
+                  },
+                  {
+                    "id": "insufficient-tracking",
+                    "name": "进度跟踪不足"
+                  }
+                ]
+              },
+              {
+                "id": "resource-allocation",
+                "name": "资源分配",
+                "children": [
+                  {
+                    "id": "manpower-shortage",
+                    "name": "人力不足"
+                  },
+                  {
+                    "id": "equipment-shortage",
+                    "name": "设备短缺"
+                  }
+                ]
+              },
+              {
+                "id": "team-collaboration",
+                "name": "团队合作",
+                "children": [
+                  {
+                    "id": "poor-communication",
+                    "name": "沟通不畅"
+                  },
+                  {
+                    "id": "unclear-responsibilities",
+                    "name": "责任不清"
+                  }
+                ]
+              },
+              {
+                "id": "technical-issues",
+                "name": "技术问题",
+                "children": [
+                  {
+                    "id": "technical-challenges",
+                    "name": "技术难题"
+                  },
+                  {
+                    "id": "system-failures",
+                    "name": "系统故障"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "项目延期原因分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "分析项目延期的因果关系"
+        }
+      }
+    ]
   },
   {
     "question": "我想分析客户满意度下降的原因，可能涉及产品质量、服务态度、售后服务和价格四个方面。产品质量方面，可能是功能缺失和稳定性差；服务态度方面，可能是客服不友好和响应慢；售后服务方面，可能是维修时间长和解决方案不到位；价格方面，可能是定价过高和优惠少。用石川图可视化。",
@@ -35,23 +150,138 @@
         "children": [
           {
             "name": "产品质量",
-            "children": [{ "name": "功能缺失" }, { "name": "稳定性差" }]
+            "children": [
+              {
+                "name": "功能缺失"
+              },
+              {
+                "name": "稳定性差"
+              }
+            ]
           },
           {
             "name": "服务态度",
-            "children": [{ "name": "客服不友好" }, { "name": "响应慢" }]
+            "children": [
+              {
+                "name": "客服不友好"
+              },
+              {
+                "name": "响应慢"
+              }
+            ]
           },
           {
             "name": "售后服务",
-            "children": [{ "name": "维修时间长" }, { "name": "解决方案不到位" }]
+            "children": [
+              {
+                "name": "维修时间长"
+              },
+              {
+                "name": "解决方案不到位"
+              }
+            ]
           },
           {
             "name": "价格",
-            "children": [{ "name": "定价过高" }, { "name": "优惠少" }]
+            "children": [
+              {
+                "name": "定价过高"
+              },
+              {
+                "name": "优惠少"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "客户满意度下降",
+            "children": [
+              {
+                "id": "产品质量",
+                "name": "产品质量",
+                "children": [
+                  {
+                    "id": "功能缺失",
+                    "name": "功能缺失"
+                  },
+                  {
+                    "id": "稳定性差",
+                    "name": "稳定性差"
+                  }
+                ]
+              },
+              {
+                "id": "服务态度",
+                "name": "服务态度",
+                "children": [
+                  {
+                    "id": "客服不友好",
+                    "name": "客服不友好"
+                  },
+                  {
+                    "id": "响应慢",
+                    "name": "响应慢"
+                  }
+                ]
+              },
+              {
+                "id": "售后服务",
+                "name": "售后服务",
+                "children": [
+                  {
+                    "id": "维修时间长",
+                    "name": "维修时间长"
+                  },
+                  {
+                    "id": "解决方案不到位",
+                    "name": "解决方案不到位"
+                  }
+                ]
+              },
+              {
+                "id": "价格",
+                "name": "价格",
+                "children": [
+                  {
+                    "id": "定价过高",
+                    "name": "定价过高"
+                  },
+                  {
+                    "id": "优惠少",
+                    "name": "优惠少"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "客户满意度分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "分析客户满意度下降的原因"
+        }
+      }
+    ]
   },
   {
     "question": "我想分析员工离职率上升的原因，可能涉及薪资待遇、工作压力、职业发展和企业文化四个方面。薪资待遇方面，可能是工资低和奖金少；工作压力方面，可能是工作量大和工作时间长；职业发展方面，可能是晋升机会少和培训不足；企业文化方面，可能是领导风格强势和同事关系紧张。用因果型鱼骨图可视化。",
@@ -62,23 +292,138 @@
         "children": [
           {
             "name": "薪资待遇",
-            "children": [{ "name": "工资低" }, { "name": "奖金少" }]
+            "children": [
+              {
+                "name": "工资低"
+              },
+              {
+                "name": "奖金少"
+              }
+            ]
           },
           {
             "name": "工作压力",
-            "children": [{ "name": "工作量大" }, { "name": "工作时间长" }]
+            "children": [
+              {
+                "name": "工作量大"
+              },
+              {
+                "name": "工作时间长"
+              }
+            ]
           },
           {
             "name": "职业发展",
-            "children": [{ "name": "晋升机会少" }, { "name": "培训不足" }]
+            "children": [
+              {
+                "name": "晋升机会少"
+              },
+              {
+                "name": "培训不足"
+              }
+            ]
           },
           {
             "name": "企业文化",
-            "children": [{ "name": "领导风格强势" }, { "name": "同事关系紧张" }]
+            "children": [
+              {
+                "name": "领导风格强势"
+              },
+              {
+                "name": "同事关系紧张"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "员工离职率上升",
+            "children": [
+              {
+                "id": "薪资待遇",
+                "name": "薪资待遇",
+                "children": [
+                  {
+                    "id": "工资低",
+                    "name": "工资低"
+                  },
+                  {
+                    "id": "奖金少",
+                    "name": "奖金少"
+                  }
+                ]
+              },
+              {
+                "id": "工作压力",
+                "name": "工作压力",
+                "children": [
+                  {
+                    "id": "工作量大",
+                    "name": "工作量大"
+                  },
+                  {
+                    "id": "工作时间长",
+                    "name": "工作时间长"
+                  }
+                ]
+              },
+              {
+                "id": "职业发展",
+                "name": "职业发展",
+                "children": [
+                  {
+                    "id": "晋升机会少",
+                    "name": "晋升机会少"
+                  },
+                  {
+                    "id": "培训不足",
+                    "name": "培训不足"
+                  }
+                ]
+              },
+              {
+                "id": "企业文化",
+                "name": "企业文化",
+                "children": [
+                  {
+                    "id": "领导风格强势",
+                    "name": "领导风格强势"
+                  },
+                  {
+                    "id": "同事关系紧张",
+                    "name": "同事关系紧张"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "员工离职率分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "分析员工离职率上升的原因"
+        }
+      }
+    ]
   },
   {
     "question": "我想分析产品退货率高的原因，可能涉及产品设计、生产工艺、包装运输和售后服务四个方面。产品设计方面，可能是功能不实用和外观不美观；生产工艺方面，可能是工艺落后和检测不严格；包装运输方面，可能是包装不牢固和运输损坏；售后服务方面，可能是退货处理慢和服务态度差。分析要因并可视化。",
@@ -89,23 +434,138 @@
         "children": [
           {
             "name": "产品设计",
-            "children": [{ "name": "功能不实用" }, { "name": "外观不美观" }]
+            "children": [
+              {
+                "name": "功能不实用"
+              },
+              {
+                "name": "外观不美观"
+              }
+            ]
           },
           {
             "name": "生产工艺",
-            "children": [{ "name": "工艺落后" }, { "name": "检测不严格" }]
+            "children": [
+              {
+                "name": "工艺落后"
+              },
+              {
+                "name": "检测不严格"
+              }
+            ]
           },
           {
             "name": "包装运输",
-            "children": [{ "name": "包装不牢固" }, { "name": "运输损坏" }]
+            "children": [
+              {
+                "name": "包装不牢固"
+              },
+              {
+                "name": "运输损坏"
+              }
+            ]
           },
           {
             "name": "售后服务",
-            "children": [{ "name": "退货处理慢" }, { "name": "服务态度差" }]
+            "children": [
+              {
+                "name": "退货处理慢"
+              },
+              {
+                "name": "服务态度差"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "产品退货率高",
+            "children": [
+              {
+                "id": "product-design",
+                "name": "产品设计",
+                "children": [
+                  {
+                    "id": "unpractical-function",
+                    "name": "功能不实用"
+                  },
+                  {
+                    "id": "unattractive-appearance",
+                    "name": "外观不美观"
+                  }
+                ]
+              },
+              {
+                "id": "production-process",
+                "name": "生产工艺",
+                "children": [
+                  {
+                    "id": "backward-technology",
+                    "name": "工艺落后"
+                  },
+                  {
+                    "id": "loose-inspection",
+                    "name": "检测不严格"
+                  }
+                ]
+              },
+              {
+                "id": "packaging-transport",
+                "name": "包装运输",
+                "children": [
+                  {
+                    "id": "weak-packaging",
+                    "name": "包装不牢固"
+                  },
+                  {
+                    "id": "transport-damage",
+                    "name": "运输损坏"
+                  }
+                ]
+              },
+              {
+                "id": "after-sales",
+                "name": "售后服务",
+                "children": [
+                  {
+                    "id": "slow-processing",
+                    "name": "退货处理慢"
+                  },
+                  {
+                    "id": "bad-service",
+                    "name": "服务态度差"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "产品退货率高",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "分析产品退货率高的原因"
+        }
+      }
+    ]
   },
   {
     "question": "我想分析软件项目失败的原因，可能涉及需求分析、项目管理、开发过程和测试过程四个方面。需求分析方面，可能是需求不明确、需求变更频繁和需求调研不足；项目管理方面，可能是项目规划不合理、进度控制不力和资源分配不均；开发过程方面，可能是代码质量差、开发工具不合适和技术栈选型错误；测试过程方面，可能是测试用例覆盖不足、测试环境不完善和测试人员经验不足。需求不明确可能导致项目目标混乱，需求变更频繁可能导致反复返工，需求调研不足可能导致对实际需求把握不准确；项目规划不合理可能导致项目超预算，进度控制不力可能导致项目延期，资源分配不均可能导致部分环节效率低下；代码质量差可能导致系统故障频发，开发工具不合适可能导致开发效率低下，技术栈选型错误可能导致后续维护困难；测试用例覆盖不足可能导致问题漏检，测试环境不完善可能导致测试结果不可靠，测试人员经验不足可能导致测试深度不够。用鱼骨图可视化。",
@@ -117,38 +577,170 @@
           {
             "name": "需求分析",
             "children": [
-              { "name": "需求不明确" },
-              { "name": "需求变更频繁" },
-              { "name": "需求调研不足" }
+              {
+                "name": "需求不明确"
+              },
+              {
+                "name": "需求变更频繁"
+              },
+              {
+                "name": "需求调研不足"
+              }
             ]
           },
           {
             "name": "项目管理",
             "children": [
-              { "name": "项目规划不合理" },
-              { "name": "进度控制不力" },
-              { "name": "资源分配不均" }
+              {
+                "name": "项目规划不合理"
+              },
+              {
+                "name": "进度控制不力"
+              },
+              {
+                "name": "资源分配不均"
+              }
             ]
           },
           {
             "name": "开发过程",
             "children": [
-              { "name": "代码质量差" },
-              { "name": "开发工具不合适" },
-              { "name": "技术栈选型错误" }
+              {
+                "name": "代码质量差"
+              },
+              {
+                "name": "开发工具不合适"
+              },
+              {
+                "name": "技术栈选型错误"
+              }
             ]
           },
           {
             "name": "测试过程",
             "children": [
-              { "name": "测试用例覆盖不足" },
-              { "name": "测试环境不完善" },
-              { "name": "测试人员经验不足" }
+              {
+                "name": "测试用例覆盖不足"
+              },
+              {
+                "name": "测试环境不完善"
+              },
+              {
+                "name": "测试人员经验不足"
+              }
             ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "软件项目失败",
+            "children": [
+              {
+                "id": "demand-analysis",
+                "name": "需求分析",
+                "children": [
+                  {
+                    "id": "unclear-requirements",
+                    "name": "需求不明确"
+                  },
+                  {
+                    "id": "frequent-changes",
+                    "name": "需求变更频繁"
+                  },
+                  {
+                    "id": "insufficient-research",
+                    "name": "需求调研不足"
+                  }
+                ]
+              },
+              {
+                "id": "project-management",
+                "name": "项目管理",
+                "children": [
+                  {
+                    "id": "unreasonable-planning",
+                    "name": "项目规划不合理"
+                  },
+                  {
+                    "id": "poor-schedule-control",
+                    "name": "进度控制不力"
+                  },
+                  {
+                    "id": "uneven-resource-allocation",
+                    "name": "资源分配不均"
+                  }
+                ]
+              },
+              {
+                "id": "development-process",
+                "name": "开发过程",
+                "children": [
+                  {
+                    "id": "poor-code-quality",
+                    "name": "代码质量差"
+                  },
+                  {
+                    "id": "inappropriate-tools",
+                    "name": "开发工具不合适"
+                  },
+                  {
+                    "id": "wrong-tech-stack",
+                    "name": "技术栈选型错误"
+                  }
+                ]
+              },
+              {
+                "id": "testing-process",
+                "name": "测试过程",
+                "children": [
+                  {
+                    "id": "inadequate-test-cases",
+                    "name": "测试用例覆盖不足"
+                  },
+                  {
+                    "id": "poor-test-environment",
+                    "name": "测试环境不完善"
+                  },
+                  {
+                    "id": "inexperienced-testers",
+                    "name": "测试人员经验不足"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "子节点",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "软件项目失败原因",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "分析软件项目失败的原因及其关联关系"
+        }
+      }
+    ]
   },
   {
     "question": "请用鱼骨图来展示出导致软件项目失败可能原因。",
@@ -160,38 +752,170 @@
           {
             "name": "需求分析",
             "children": [
-              { "name": "需求不明确" },
-              { "name": "需求变更频繁" },
-              { "name": "需求调研不足" }
+              {
+                "name": "需求不明确"
+              },
+              {
+                "name": "需求变更频繁"
+              },
+              {
+                "name": "需求调研不足"
+              }
             ]
           },
           {
             "name": "项目管理",
             "children": [
-              { "name": "项目规划不合理" },
-              { "name": "进度控制不力" },
-              { "name": "资源分配不均" }
+              {
+                "name": "项目规划不合理"
+              },
+              {
+                "name": "进度控制不力"
+              },
+              {
+                "name": "资源分配不均"
+              }
             ]
           },
           {
             "name": "开发过程",
             "children": [
-              { "name": "代码质量差" },
-              { "name": "开发工具不合适" },
-              { "name": "技术栈选型错误" }
+              {
+                "name": "代码质量差"
+              },
+              {
+                "name": "开发工具不合适"
+              },
+              {
+                "name": "技术栈选型错误"
+              }
             ]
           },
           {
             "name": "测试过程",
             "children": [
-              { "name": "测试用例覆盖不足" },
-              { "name": "测试环境不完善" },
-              { "name": "测试人员经验不足" }
+              {
+                "name": "测试用例覆盖不足"
+              },
+              {
+                "name": "测试环境不完善"
+              },
+              {
+                "name": "测试人员经验不足"
+              }
             ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "软件项目失败",
+            "children": [
+              {
+                "id": "node1",
+                "name": "需求分析",
+                "children": [
+                  {
+                    "id": "node1-1",
+                    "name": "需求不明确"
+                  },
+                  {
+                    "id": "node1-2",
+                    "name": "需求变更频繁"
+                  },
+                  {
+                    "id": "node1-3",
+                    "name": "需求调研不足"
+                  }
+                ]
+              },
+              {
+                "id": "node2",
+                "name": "项目管理",
+                "children": [
+                  {
+                    "id": "node2-1",
+                    "name": "项目规划不合理"
+                  },
+                  {
+                    "id": "node2-2",
+                    "name": "进度控制不力"
+                  },
+                  {
+                    "id": "node2-3",
+                    "name": "资源分配不均"
+                  }
+                ]
+              },
+              {
+                "id": "node3",
+                "name": "开发过程",
+                "children": [
+                  {
+                    "id": "node3-1",
+                    "name": "代码质量差"
+                  },
+                  {
+                    "id": "node3-2",
+                    "name": "开发工具不合适"
+                  },
+                  {
+                    "id": "node3-3",
+                    "name": "技术栈选型错误"
+                  }
+                ]
+              },
+              {
+                "id": "node4",
+                "name": "测试过程",
+                "children": [
+                  {
+                    "id": "node4-1",
+                    "name": "测试用例覆盖不足"
+                  },
+                  {
+                    "id": "node4-2",
+                    "name": "测试环境不完善"
+                  },
+                  {
+                    "id": "node4-3",
+                    "name": "测试人员经验不足"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "子节点",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "软件项目失败原因",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "展示导致软件项目失败的可能原因及其层次关系"
+        }
+      }
+    ]
   },
   {
     "question": "分析产品退货率高的原因并可视化出来",
@@ -202,23 +926,138 @@
         "children": [
           {
             "name": "产品设计",
-            "children": [{ "name": "功能不实用" }, { "name": "外观不美观" }]
+            "children": [
+              {
+                "name": "功能不实用"
+              },
+              {
+                "name": "外观不美观"
+              }
+            ]
           },
           {
             "name": "生产工艺",
-            "children": [{ "name": "工艺落后" }, { "name": "检测不严格" }]
+            "children": [
+              {
+                "name": "工艺落后"
+              },
+              {
+                "name": "检测不严格"
+              }
+            ]
           },
           {
             "name": "包装运输",
-            "children": [{ "name": "包装不牢固" }, { "name": "运输损坏" }]
+            "children": [
+              {
+                "name": "包装不牢固"
+              },
+              {
+                "name": "运输损坏"
+              }
+            ]
           },
           {
             "name": "售后服务",
-            "children": [{ "name": "退货处理慢" }, { "name": "服务态度差" }]
+            "children": [
+              {
+                "name": "退货处理慢"
+              },
+              {
+                "name": "服务态度差"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "产品退货率高",
+            "children": [
+              {
+                "id": "product-design",
+                "name": "产品设计",
+                "children": [
+                  {
+                    "id": "unpractical-features",
+                    "name": "功能不实用"
+                  },
+                  {
+                    "id": "unattractive-appearance",
+                    "name": "外观不美观"
+                  }
+                ]
+              },
+              {
+                "id": "production-process",
+                "name": "生产工艺",
+                "children": [
+                  {
+                    "id": "outdated-technology",
+                    "name": "工艺落后"
+                  },
+                  {
+                    "id": "inadequate-inspection",
+                    "name": "检测不严格"
+                  }
+                ]
+              },
+              {
+                "id": "packaging-transport",
+                "name": "包装运输",
+                "children": [
+                  {
+                    "id": "weak-packaging",
+                    "name": "包装不牢固"
+                  },
+                  {
+                    "id": "transport-damage",
+                    "name": "运输损坏"
+                  }
+                ]
+              },
+              {
+                "id": "after-sales",
+                "name": "售后服务",
+                "children": [
+                  {
+                    "id": "slow-return-processing",
+                    "name": "退货处理慢"
+                  },
+                  {
+                    "id": "poor-service-attitude",
+                    "name": "服务态度差"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "产品退货原因分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "分析产品退货率高的原因"
+        }
+      }
+    ]
   },
   {
     "question": "用鱼骨图来可视化一下我的数据：{\"problem\":\"客户满意度低\",\"bones\":[{\"category\":\"产品质量\",\"factors\":[\"缺陷产品多\",\"材料质量差\"]},{\"category\":\"服务质量\",\"factors\":[\"响应速度慢\",\"服务态度差\"]},{\"category\":\"交付问题\",\"factors\":[\"交付延迟\",\"包装不良\"]}]}。",
@@ -229,19 +1068,113 @@
         "children": [
           {
             "name": "产品质量",
-            "children": [{ "name": "缺陷产品多" }, { "name": "材料质量差" }]
+            "children": [
+              {
+                "name": "缺陷产品多"
+              },
+              {
+                "name": "材料质量差"
+              }
+            ]
           },
           {
             "name": "服务质量",
-            "children": [{ "name": "响应速度慢" }, { "name": "服务态度差" }]
+            "children": [
+              {
+                "name": "响应速度慢"
+              },
+              {
+                "name": "服务态度差"
+              }
+            ]
           },
           {
             "name": "交付问题",
-            "children": [{ "name": "交付延迟" }, { "name": "包装不良" }]
+            "children": [
+              {
+                "name": "交付延迟"
+              },
+              {
+                "name": "包装不良"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "客户满意度低",
+            "children": [
+              {
+                "id": "产品质量",
+                "name": "产品质量",
+                "children": [
+                  {
+                    "id": "缺陷产品多",
+                    "name": "缺陷产品多"
+                  },
+                  {
+                    "id": "材料质量差",
+                    "name": "材料质量差"
+                  }
+                ]
+              },
+              {
+                "id": "服务质量",
+                "name": "服务质量",
+                "children": [
+                  {
+                    "id": "响应速度慢",
+                    "name": "响应速度慢"
+                  },
+                  {
+                    "id": "服务态度差",
+                    "name": "服务态度差"
+                  }
+                ]
+              },
+              {
+                "id": "交付问题",
+                "name": "交付问题",
+                "children": [
+                  {
+                    "id": "交付延迟",
+                    "name": "交付延迟"
+                  },
+                  {
+                    "id": "包装不良",
+                    "name": "包装不良"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "客户满意度低",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "鱼骨图分析客户满意度低的原因"
+        }
+      }
+    ]
   },
   {
     "question": "用鱼骨图来展示我的数据：{\"problem\":\"销售额下降\",\"bones\":[{\"category\":\"市场变化\",\"factors\":[\"新竞争者\",\"市场需求减少\"]},{\"category\":\"定价策略\",\"factors\":[\"价格过高\",\"折扣不足\"]},{\"category\":\"销售渠道\",\"factors\":[\"渠道单一\",\"推广力度不够\"]}]}",
@@ -252,19 +1185,113 @@
         "children": [
           {
             "name": "市场变化",
-            "children": [{ "name": "新竞争者" }, { "name": "市场需求减少" }]
+            "children": [
+              {
+                "name": "新竞争者"
+              },
+              {
+                "name": "市场需求减少"
+              }
+            ]
           },
           {
             "name": "定价策略",
-            "children": [{ "name": "价格过高" }, { "name": "折扣不足" }]
+            "children": [
+              {
+                "name": "价格过高"
+              },
+              {
+                "name": "折扣不足"
+              }
+            ]
           },
           {
             "name": "销售渠道",
-            "children": [{ "name": "渠道单一" }, { "name": "推广力度不够" }]
+            "children": [
+              {
+                "name": "渠道单一"
+              },
+              {
+                "name": "推广力度不够"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "销售额下降",
+            "children": [
+              {
+                "id": "market",
+                "name": "市场变化",
+                "children": [
+                  {
+                    "id": "competitor",
+                    "name": "新竞争者"
+                  },
+                  {
+                    "id": "demand",
+                    "name": "市场需求减少"
+                  }
+                ]
+              },
+              {
+                "id": "pricing",
+                "name": "定价策略",
+                "children": [
+                  {
+                    "id": "price",
+                    "name": "价格过高"
+                  },
+                  {
+                    "id": "discount",
+                    "name": "折扣不足"
+                  }
+                ]
+              },
+              {
+                "id": "channel",
+                "name": "销售渠道",
+                "children": [
+                  {
+                    "id": "single",
+                    "name": "渠道单一"
+                  },
+                  {
+                    "id": "promotion",
+                    "name": "推广力度不够"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "鱼骨图分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "销售额下降原因分析"
+        }
+      }
+    ]
   },
   {
     "question": "用石川图来可视化一下我的数据：{\"problem\":\"网站流量减少\",\"bones\":[{\"category\":\"内容质量\",\"factors\":[\"内容更新慢\",\"质量不高\"]},{\"category\":\"SEO策略\",\"factors\":[\"关键词选择错误\",\"外链不足\"]},{\"category\":\"用户体验\",\"factors\":[\"页面加载慢\",\"界面不友好\"]}]}。",
@@ -275,19 +1302,113 @@
         "children": [
           {
             "name": "内容质量",
-            "children": [{ "name": "内容更新慢" }, { "name": "质量不高" }]
+            "children": [
+              {
+                "name": "内容更新慢"
+              },
+              {
+                "name": "质量不高"
+              }
+            ]
           },
           {
             "name": "SEO策略",
-            "children": [{ "name": "关键词选择错误" }, { "name": "外链不足" }]
+            "children": [
+              {
+                "name": "关键词选择错误"
+              },
+              {
+                "name": "外链不足"
+              }
+            ]
           },
           {
             "name": "用户体验",
-            "children": [{ "name": "页面加载慢" }, { "name": "界面不友好" }]
+            "children": [
+              {
+                "name": "页面加载慢"
+              },
+              {
+                "name": "界面不友好"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "网站流量减少",
+            "children": [
+              {
+                "id": "content-quality",
+                "name": "内容质量",
+                "children": [
+                  {
+                    "id": "slow-updates",
+                    "name": "内容更新慢"
+                  },
+                  {
+                    "id": "low-quality",
+                    "name": "质量不高"
+                  }
+                ]
+              },
+              {
+                "id": "seo-strategy",
+                "name": "SEO策略",
+                "children": [
+                  {
+                    "id": "wrong-keywords",
+                    "name": "关键词选择错误"
+                  },
+                  {
+                    "id": "lack-backlinks",
+                    "name": "外链不足"
+                  }
+                ]
+              },
+              {
+                "id": "user-experience",
+                "name": "用户体验",
+                "children": [
+                  {
+                    "id": "slow-loading",
+                    "name": "页面加载慢"
+                  },
+                  {
+                    "id": "unfriendly-ui",
+                    "name": "界面不友好"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "鱼骨图分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "网站流量减少的原因分析"
+        }
+      }
+    ]
   },
   {
     "question": "用要因分析图来可视化一下我的数据：{\"problem\":\"员工流失率高\",\"bones\":[{\"category\":\"薪酬福利\",\"factors\":[\"工资低\",\"福利差\"]},{\"category\":\"工作环境\",\"factors\":[\"工作压力大\",\"缺乏发展空间\"]},{\"category\":\"管理问题\",\"factors\":[\"领导能力差\",\"决策失误\"]}]}。",
@@ -298,19 +1419,113 @@
         "children": [
           {
             "name": "薪酬福利",
-            "children": [{ "name": "工资低" }, { "name": "福利差" }]
+            "children": [
+              {
+                "name": "工资低"
+              },
+              {
+                "name": "福利差"
+              }
+            ]
           },
           {
             "name": "工作环境",
-            "children": [{ "name": "工作压力大" }, { "name": "缺乏发展空间" }]
+            "children": [
+              {
+                "name": "工作压力大"
+              },
+              {
+                "name": "缺乏发展空间"
+              }
+            ]
           },
           {
             "name": "管理问题",
-            "children": [{ "name": "领导能力差" }, { "name": "决策失误" }]
+            "children": [
+              {
+                "name": "领导能力差"
+              },
+              {
+                "name": "决策失误"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "员工流失率高",
+            "children": [
+              {
+                "id": "category1",
+                "name": "薪酬福利",
+                "children": [
+                  {
+                    "id": "factor1",
+                    "name": "工资低"
+                  },
+                  {
+                    "id": "factor2",
+                    "name": "福利差"
+                  }
+                ]
+              },
+              {
+                "id": "category2",
+                "name": "工作环境",
+                "children": [
+                  {
+                    "id": "factor3",
+                    "name": "工作压力大"
+                  },
+                  {
+                    "id": "factor4",
+                    "name": "缺乏发展空间"
+                  }
+                ]
+              },
+              {
+                "id": "category3",
+                "name": "管理问题",
+                "children": [
+                  {
+                    "id": "factor5",
+                    "name": "领导能力差"
+                  },
+                  {
+                    "id": "factor6",
+                    "name": "决策失误"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "员工流失率分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "员工流失率要因分析"
+        }
+      }
+    ]
   },
   {
     "question": "请用鱼骨图来展示我的成本分析：{\"problem\":\"成本上升\",\"bones\":[{\"category\":\"原材料成本\",\"factors\":[\"价格波动\",\"供应紧张\"]},{\"category\":\"人工成本\",\"factors\":[\"工资上涨\",\"员工福利增加\"]},{\"category\":\"运营成本\",\"factors\":[\"租金上涨\",\"能源费用增加\"]},{\"category\":\"设备成本\",\"factors\":[\"设备折旧\",\"维护费用增加\"]},{\"category\":\"物流成本\",\"factors\":[\"运输费用上涨\",\"仓储费用增加\"]},{\"category\":\"其他成本\",\"factors\":[\"税费增加\",\"管理费用上涨\"]}]}。",
@@ -321,30 +1536,187 @@
         "children": [
           {
             "name": "原材料成本",
-            "children": [{ "name": "价格波动" }, { "name": "供应紧张" }]
+            "children": [
+              {
+                "name": "价格波动"
+              },
+              {
+                "name": "供应紧张"
+              }
+            ]
           },
           {
             "name": "人工成本",
-            "children": [{ "name": "工资上涨" }, { "name": "员工福利增加" }]
+            "children": [
+              {
+                "name": "工资上涨"
+              },
+              {
+                "name": "员工福利增加"
+              }
+            ]
           },
           {
             "name": "运营成本",
-            "children": [{ "name": "租金上涨" }, { "name": "能源费用增加" }]
+            "children": [
+              {
+                "name": "租金上涨"
+              },
+              {
+                "name": "能源费用增加"
+              }
+            ]
           },
           {
             "name": "设备成本",
-            "children": [{ "name": "设备折旧" }, { "name": "维护费用增加" }]
+            "children": [
+              {
+                "name": "设备折旧"
+              },
+              {
+                "name": "维护费用增加"
+              }
+            ]
           },
           {
             "name": "物流成本",
-            "children": [{ "name": "运输费用上涨" }, { "name": "仓储费用增加" }]
+            "children": [
+              {
+                "name": "运输费用上涨"
+              },
+              {
+                "name": "仓储费用增加"
+              }
+            ]
           },
           {
             "name": "其他成本",
-            "children": [{ "name": "税费增加" }, { "name": "管理费用上涨" }]
+            "children": [
+              {
+                "name": "税费增加"
+              },
+              {
+                "name": "管理费用上涨"
+              }
+            ]
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "root",
+            "name": "成本上升",
+            "children": [
+              {
+                "id": "原材料成本",
+                "name": "原材料成本",
+                "children": [
+                  {
+                    "id": "价格波动",
+                    "name": "价格波动"
+                  },
+                  {
+                    "id": "供应紧张",
+                    "name": "供应紧张"
+                  }
+                ]
+              },
+              {
+                "id": "人工成本",
+                "name": "人工成本",
+                "children": [
+                  {
+                    "id": "工资上涨",
+                    "name": "工资上涨"
+                  },
+                  {
+                    "id": "员工福利增加",
+                    "name": "员工福利增加"
+                  }
+                ]
+              },
+              {
+                "id": "运营成本",
+                "name": "运营成本",
+                "children": [
+                  {
+                    "id": "租金上涨",
+                    "name": "租金上涨"
+                  },
+                  {
+                    "id": "能源费用增加",
+                    "name": "能源费用增加"
+                  }
+                ]
+              },
+              {
+                "id": "设备成本",
+                "name": "设备成本",
+                "children": [
+                  {
+                    "id": "设备折旧",
+                    "name": "设备折旧"
+                  },
+                  {
+                    "id": "维护费用增加",
+                    "name": "维护费用增加"
+                  }
+                ]
+              },
+              {
+                "id": "物流成本",
+                "name": "物流成本",
+                "children": [
+                  {
+                    "id": "运输费用上涨",
+                    "name": "运输费用上涨"
+                  },
+                  {
+                    "id": "仓储费用增加",
+                    "name": "仓储费用增加"
+                  }
+                ]
+              },
+              {
+                "id": "其他成本",
+                "name": "其他成本",
+                "children": [
+                  {
+                    "id": "税费增加",
+                    "name": "税费增加"
+                  },
+                  {
+                    "id": "管理费用上涨",
+                    "name": "管理费用上涨"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "节点ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "节点名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "成本分析",
+          "key": "name",
+          "purpose": "Relationship",
+          "purposeDesc": "成本上升原因分析"
+        }
+      }
+    ]
   }
 ]

@@ -4,286 +4,1180 @@
     "question": "用双轴图展示某公司的年收入与员工满意度，2017年至2021年的收入分别为85.4亿、93.2亿、100.1亿、108.6亿、115.5亿，员工满意度（满分10分）分别为7.2、7.5、7.8、8.0、8.2。",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2017", "2018", "2019", "2020", "2021"],
+      "categories": [
+        "2017",
+        "2018",
+        "2019",
+        "2020",
+        "2021"
+      ],
       "title": "2017-2021年收入与员工满意度",
       "axisXTitle": "年份",
       "series": [
         {
           "type": "column",
-          "data": [85.4, 93.2, 100.1, 108.6, 115.5],
+          "data": [
+            85.4,
+            93.2,
+            100.1,
+            108.6,
+            115.5
+          ],
           "axisYTitle": "年收入 (亿)"
         },
         {
           "type": "line",
-          "data": [7.2, 7.5, 7.8, 8.0, 8.2],
+          "data": [
+            7.2,
+            7.5,
+            7.8,
+            8,
+            8.2
+          ],
           "axisYTitle": "员工满意度"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": "2017",
+            "income": 85.4,
+            "satisfaction": 7.2
+          },
+          {
+            "year": "2018",
+            "income": 93.2,
+            "satisfaction": 7.5
+          },
+          {
+            "year": "2019",
+            "income": 100.1,
+            "satisfaction": 7.8
+          },
+          {
+            "year": "2020",
+            "income": 108.6,
+            "satisfaction": 8
+          },
+          {
+            "year": "2021",
+            "income": 115.5,
+            "satisfaction": 8.2
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "income",
+            "name": "年收入 (亿)",
+            "dataType": "number"
+          },
+          {
+            "id": "satisfaction",
+            "name": "员工满意度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "年收入 (亿)",
+          "key": "income",
+          "purpose": "Trend",
+          "purposeDesc": "2017-2021年收入变化趋势"
+        }
+      },
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": "2017",
+            "income": 85.4,
+            "satisfaction": 7.2
+          },
+          {
+            "year": "2018",
+            "income": 93.2,
+            "satisfaction": 7.5
+          },
+          {
+            "year": "2019",
+            "income": 100.1,
+            "satisfaction": 7.8
+          },
+          {
+            "year": "2020",
+            "income": 108.6,
+            "satisfaction": 8
+          },
+          {
+            "year": "2021",
+            "income": 115.5,
+            "satisfaction": 8.2
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "income",
+            "name": "年收入 (亿)",
+            "dataType": "number"
+          },
+          {
+            "id": "satisfaction",
+            "name": "员工满意度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "员工满意度",
+          "key": "satisfaction",
+          "purpose": "Trend",
+          "purposeDesc": "2017-2021年员工满意度变化趋势"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
     "question": "用双轴图来表示一个城市的年度平均气温和降水量。从2016到2020年，平均气温分别是15°C、16°C、17°C、18°C、19°C；同期的年降水量为800mm、850mm、900mm、950mm、1000mm。",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2016", "2017", "2018", "2019", "2020"],
+      "categories": [
+        "2016",
+        "2017",
+        "2018",
+        "2019",
+        "2020"
+      ],
       "title": "2016-2020年城市气候数据",
       "axisXTitle": "年份",
       "series": [
         {
           "type": "line",
-          "data": [15, 16, 17, 18, 19],
+          "data": [
+            15,
+            16,
+            17,
+            18,
+            19
+          ],
           "axisYTitle": "平均气温 (°C)"
         },
         {
           "type": "column",
-          "data": [800, 850, 900, 950, 1000],
+          "data": [
+            800,
+            850,
+            900,
+            950,
+            1000
+          ],
           "axisYTitle": "降水量 (mm)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": "2016",
+            "temperature": 15,
+            "precipitation": 800
+          },
+          {
+            "year": "2017",
+            "temperature": 16,
+            "precipitation": 850
+          },
+          {
+            "year": "2018",
+            "temperature": 17,
+            "precipitation": 900
+          },
+          {
+            "year": "2019",
+            "temperature": 18,
+            "precipitation": 950
+          },
+          {
+            "year": "2020",
+            "temperature": 19,
+            "precipitation": 1000
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "temperature",
+            "name": "平均气温 (°C)",
+            "dataType": "number"
+          },
+          {
+            "id": "precipitation",
+            "name": "降水量 (mm)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "气候数据",
+          "key": [
+            "temperature",
+            "precipitation"
+          ],
+          "purpose": "Comparison",
+          "purposeDesc": "2016-2020年城市气候数据对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
     "question": "利用双轴图展示一家电商平台的商品销量和退货率。在2019至2023年间，商品销量依次是120万件、130万件、140万件、150万件、160万件；相应的退货率则为2%、2.5%、3%、3.5%、4%。",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2019", "2020", "2021", "2022", "2023"],
+      "categories": [
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023"
+      ],
       "title": "2019-2023电商平台销量及退货情况",
       "axisXTitle": "年份",
       "series": [
         {
           "type": "column",
-          "data": [120, 130, 140, 150, 160],
+          "data": [
+            120,
+            130,
+            140,
+            150,
+            160
+          ],
           "axisYTitle": "销量 (万件)"
         },
         {
           "type": "line",
-          "data": [0.02, 0.025, 0.03, 0.035, 0.04],
+          "data": [
+            0.02,
+            0.025,
+            0.03,
+            0.035,
+            0.04
+          ],
           "axisYTitle": "退货率 (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": "2019",
+            "sales": 120,
+            "returnRate": 0.02
+          },
+          {
+            "year": "2020",
+            "sales": 130,
+            "returnRate": 0.025
+          },
+          {
+            "year": "2021",
+            "sales": 140,
+            "returnRate": 0.03
+          },
+          {
+            "year": "2022",
+            "sales": 150,
+            "returnRate": 0.035
+          },
+          {
+            "year": "2023",
+            "sales": 160,
+            "returnRate": 0.04
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "sales",
+            "name": "销量 (万件)",
+            "dataType": "number"
+          },
+          {
+            "id": "returnRate",
+            "name": "退货率 (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销量与退货率",
+          "key": [
+            "sales",
+            "returnRate"
+          ],
+          "purpose": "Comparison",
+          "purposeDesc": "2019-2023电商平台销量及退货情况对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
     "question": "通过双轴图呈现某地区每年的人口增长数量以及经济增长率。2015年至2019年间，人口增量分别是12万、14万、16万、18万、20万；同期GDP增长率分别为3.5%、4.0%、4.5%、5.0%、5.5%。",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2015", "2016", "2017", "2018", "2019"],
+      "categories": [
+        "2015",
+        "2016",
+        "2017",
+        "2018",
+        "2019"
+      ],
       "title": "2015-2019人口增长与经济增长",
       "axisXTitle": "年份",
       "series": [
         {
           "type": "column",
-          "data": [12, 14, 16, 18, 20],
+          "data": [
+            12,
+            14,
+            16,
+            18,
+            20
+          ],
           "axisYTitle": "人口增长 (万人)"
         },
         {
           "type": "line",
-          "data": [0.035, 0.04, 0.045, 0.05, 0.055],
+          "data": [
+            0.035,
+            0.04,
+            0.045,
+            0.05,
+            0.055
+          ],
           "axisYTitle": "GDP增长率 (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": "2015",
+            "population": 12,
+            "gdpRate": 0.035
+          },
+          {
+            "year": "2016",
+            "population": 14,
+            "gdpRate": 0.04
+          },
+          {
+            "year": "2017",
+            "population": 16,
+            "gdpRate": 0.045
+          },
+          {
+            "year": "2018",
+            "population": 18,
+            "gdpRate": 0.05
+          },
+          {
+            "year": "2019",
+            "population": 20,
+            "gdpRate": 0.055
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "population",
+            "name": "人口增长 (万人)",
+            "dataType": "number"
+          },
+          {
+            "id": "gdpRate",
+            "name": "GDP增长率 (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": [
+          {
+            "name": "人口增长 (万人)",
+            "key": "population",
+            "purpose": "Trend",
+            "purposeDesc": "2015-2019年人口增长趋势"
+          },
+          {
+            "name": "GDP增长率 (%)",
+            "key": "gdpRate",
+            "purpose": "Trend",
+            "purposeDesc": "2015-2019年GDP增长趋势"
+          }
+        ]
+      }
+    ]
   },
   {
     "type": "text2chart",
     "question": "采用双轴图形式描绘一国能源消费总量及其可再生能源占比的变化趋势。从2013到2017年，该国总能源消费量分别为50亿吨标准煤、52亿吨标准煤、54亿吨标准煤、56亿吨标准煤、58亿吨标准煤；可再生能源比例依次为10%、12%、14%、16%、18%。",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2013", "2014", "2015", "2016", "2017"],
+      "categories": [
+        "2013",
+        "2014",
+        "2015",
+        "2016",
+        "2017"
+      ],
       "title": "2013-2017能源消费与可再生能源占比",
       "axisXTitle": "年份",
       "series": [
         {
           "type": "column",
-          "data": [50, 52, 54, 56, 58],
+          "data": [
+            50,
+            52,
+            54,
+            56,
+            58
+          ],
           "axisYTitle": "能源消费 (亿吨标准煤)"
         },
         {
           "type": "line",
-          "data": [0.1, 0.12, 0.14, 0.16, 0.18],
+          "data": [
+            0.1,
+            0.12,
+            0.14,
+            0.16,
+            0.18
+          ],
           "axisYTitle": "可再生能源占比 (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": "2013",
+            "energy": 50,
+            "renewable": 0.1
+          },
+          {
+            "year": "2014",
+            "energy": 52,
+            "renewable": 0.12
+          },
+          {
+            "year": "2015",
+            "energy": 54,
+            "renewable": 0.14
+          },
+          {
+            "year": "2016",
+            "energy": 56,
+            "renewable": 0.16
+          },
+          {
+            "year": "2017",
+            "energy": 58,
+            "renewable": 0.18
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "energy",
+            "name": "能源消费 (亿吨标准煤)",
+            "dataType": "number"
+          },
+          {
+            "id": "renewable",
+            "name": "可再生能源占比",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "能源消费与可再生能源占比",
+          "key": [
+            "energy",
+            "renewable"
+          ],
+          "purpose": "Trend",
+          "purposeDesc": "2013-2017能源消费总量及其可再生能源占比的变化趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用双轴图可视化我的数据 [{ \"year\": 2019, \"sales\": 300, \"profit_margin\": 20 }, { \"year\": 2020, \"sales\": 400, \"profit_margin\": 22 }, { \"year\": 2021, \"sales\": 500, \"profit_margin\": 25 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2019", "2020", "2021"],
+      "categories": [
+        "2019",
+        "2020",
+        "2021"
+      ],
       "title": "2019-2021 Sales and Profit Margin",
       "axisXTitle": "Year",
       "series": [
         {
           "type": "column",
-          "data": [300, 400, 500],
+          "data": [
+            300,
+            400,
+            500
+          ],
           "axisYTitle": "Sales"
         },
         {
           "type": "line",
-          "data": [20, 22, 25],
+          "data": [
+            20,
+            22,
+            25
+          ],
           "axisYTitle": "Profit Margin (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": 2019,
+            "sales": 300,
+            "profit_margin": 20
+          },
+          {
+            "year": 2020,
+            "sales": 400,
+            "profit_margin": 22
+          },
+          {
+            "year": 2021,
+            "sales": 500,
+            "profit_margin": 25
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "Year",
+            "dataType": "number"
+          },
+          {
+            "id": "sales",
+            "name": "Sales",
+            "dataType": "number"
+          },
+          {
+            "id": "profit_margin",
+            "name": "Profit Margin (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Sales and Profit Margin",
+          "key": "sales,profit_margin",
+          "purpose": "Comparison",
+          "purposeDesc": "2019-2021 Sales and Profit Margin comparison"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用双轴图展示过去三年的气温和降水量数据 [{ \"month\": \"Jan\", \"temperature\": 5, \"rainfall\": 50 }, { \"month\": \"Feb\", \"temperature\": 7, \"rainfall\": 60 }, { \"month\": \"Mar\", \"temperature\": 10, \"rainfall\": 80 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["Jan", "Feb", "Mar"],
+      "categories": [
+        "Jan",
+        "Feb",
+        "Mar"
+      ],
       "title": "Monthly Temperature and Rainfall (Q1)",
       "axisXTitle": "Month",
       "series": [
         {
           "type": "line",
-          "data": [5, 7, 10],
+          "data": [
+            5,
+            7,
+            10
+          ],
           "axisYTitle": "Temperature (°C)"
         },
         {
           "type": "column",
-          "data": [50, 60, 80],
+          "data": [
+            50,
+            60,
+            80
+          ],
           "axisYTitle": "Rainfall (mm)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "month": "Jan",
+            "temperature": 5,
+            "rainfall": 50
+          },
+          {
+            "month": "Feb",
+            "temperature": 7,
+            "rainfall": 60
+          },
+          {
+            "month": "Mar",
+            "temperature": 10,
+            "rainfall": 80
+          }
+        ],
+        "metas": [
+          {
+            "id": "month",
+            "name": "Month",
+            "dataType": "string"
+          },
+          {
+            "id": "temperature",
+            "name": "Temperature (°C)",
+            "dataType": "number"
+          },
+          {
+            "id": "rainfall",
+            "name": "Rainfall (mm)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Temperature and Rainfall",
+          "key": [
+            "temperature",
+            "rainfall"
+          ],
+          "purpose": "Comparison",
+          "purposeDesc": "Monthly Temperature and Rainfall (Q1)"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用双轴图显示用户增长与活跃度 [{ \"quarter\": \"Q1\", \"user_growth\": 500, \"activity_rate\": 60 }, { \"quarter\": \"Q2\", \"user_growth\": 700, \"activity_rate\": 65 }, { \"quarter\": \"Q3\", \"user_growth\": 900, \"activity_rate\": 70 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["Q1", "Q2", "Q3"],
+      "categories": [
+        "Q1",
+        "Q2",
+        "Q3"
+      ],
       "title": "User Growth and Activity Rate by Quarter",
       "axisXTitle": "Quarter",
       "series": [
         {
           "type": "column",
-          "data": [500, 700, 900],
+          "data": [
+            500,
+            700,
+            900
+          ],
           "axisYTitle": "User Growth"
         },
         {
           "type": "line",
-          "data": [60, 65, 70],
+          "data": [
+            60,
+            65,
+            70
+          ],
           "axisYTitle": "Activity Rate (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "quarter": "Q1",
+            "user_growth": 500,
+            "activity_rate": 60
+          },
+          {
+            "quarter": "Q2",
+            "user_growth": 700,
+            "activity_rate": 65
+          },
+          {
+            "quarter": "Q3",
+            "user_growth": 900,
+            "activity_rate": 70
+          }
+        ],
+        "metas": [
+          {
+            "id": "quarter",
+            "name": "Quarter",
+            "dataType": "string"
+          },
+          {
+            "id": "user_growth",
+            "name": "User Growth",
+            "dataType": "number"
+          },
+          {
+            "id": "activity_rate",
+            "name": "Activity Rate (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "User Growth and Activity Rate",
+          "key": "user_growth,activity_rate",
+          "purpose": "Comparison",
+          "purposeDesc": "User Growth and Activity Rate by Quarter"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用双轴图表示产品销售量与退货率 [{ \"product\": \"A\", \"sales_volume\": 200, \"return_rate\": 5 }, { \"product\": \"B\", \"sales_volume\": 300, \"return_rate\": 7 }, { \"product\": \"C\", \"sales_volume\": 400, \"return_rate\": 9 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["A", "B", "C"],
+      "categories": [
+        "A",
+        "B",
+        "C"
+      ],
       "title": "Product Sales Volume and Return Rate",
       "axisXTitle": "Product",
       "series": [
         {
           "type": "column",
-          "data": [200, 300, 400],
+          "data": [
+            200,
+            300,
+            400
+          ],
           "axisYTitle": "Sales Volume"
         },
         {
           "type": "line",
-          "data": [5, 7, 9],
+          "data": [
+            5,
+            7,
+            9
+          ],
           "axisYTitle": "Return Rate (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "product": "A",
+            "sales_volume": 200,
+            "return_rate": 5
+          },
+          {
+            "product": "B",
+            "sales_volume": 300,
+            "return_rate": 7
+          },
+          {
+            "product": "C",
+            "sales_volume": 400,
+            "return_rate": 9
+          }
+        ],
+        "metas": [
+          {
+            "id": "product",
+            "name": "Product",
+            "dataType": "string"
+          },
+          {
+            "id": "sales_volume",
+            "name": "Sales Volume",
+            "dataType": "number"
+          },
+          {
+            "id": "return_rate",
+            "name": "Return Rate (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Sales Volume and Return Rate",
+          "key": "sales_volume,return_rate",
+          "purpose": "Comparison",
+          "purposeDesc": "Product Sales Volume and Return Rate"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用双轴图绘制公司收入与支出情况 [{ \"year\": 2018, \"income\": 1000, \"expenses\": 800 }, { \"year\": 2019, \"income\": 1200, \"expenses\": 900 }, { \"year\": 2020, \"income\": 1500, \"expenses\": 1000 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2018", "2019", "2020"],
+      "categories": [
+        "2018",
+        "2019",
+        "2020"
+      ],
       "title": "Annual Income and Expenses",
       "axisXTitle": "Year",
       "series": [
         {
           "type": "column",
-          "data": [1000, 1200, 1500],
+          "data": [
+            1000,
+            1200,
+            1500
+          ],
           "axisYTitle": "Income"
         },
         {
           "type": "line",
-          "data": [800, 900, 1000],
+          "data": [
+            800,
+            900,
+            1000
+          ],
           "axisYTitle": "Expenses"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": 2018,
+            "income": 1000,
+            "expenses": 800
+          },
+          {
+            "year": 2019,
+            "income": 1200,
+            "expenses": 900
+          },
+          {
+            "year": 2020,
+            "income": 1500,
+            "expenses": 1000
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "Year",
+            "dataType": "number"
+          },
+          {
+            "id": "income",
+            "name": "Income",
+            "dataType": "number"
+          },
+          {
+            "id": "expenses",
+            "name": "Expenses",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Income and Expenses",
+          "key": "income,expenses",
+          "purpose": "Comparison",
+          "purposeDesc": "Annual Income and Expenses"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用组合图可视化我的数据 [{ \"year\": 2017, \"revenue\": 800, \"profit_margin\": 15 }, { \"year\": 2018, \"revenue\": 900, \"profit_margin\": 18 }, { \"year\": 2019, \"revenue\": 1000, \"profit_margin\": 20 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["2017", "2018", "2019"],
+      "categories": [
+        "2017",
+        "2018",
+        "2019"
+      ],
       "title": "2017-2019 Revenue and Profit Margin",
       "axisXTitle": "Year",
       "series": [
         {
           "type": "column",
-          "data": [800, 900, 1000],
+          "data": [
+            800,
+            900,
+            1000
+          ],
           "axisYTitle": "Revenue"
         },
         {
           "type": "line",
-          "data": [15, 18, 20],
+          "data": [
+            15,
+            18,
+            20
+          ],
           "axisYTitle": "Profit Margin (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "year": 2017,
+            "revenue": 800,
+            "profit_margin": 15
+          },
+          {
+            "year": 2018,
+            "revenue": 900,
+            "profit_margin": 18
+          },
+          {
+            "year": 2019,
+            "revenue": 1000,
+            "profit_margin": 20
+          }
+        ],
+        "metas": [
+          {
+            "id": "year",
+            "name": "Year",
+            "dataType": "number"
+          },
+          {
+            "id": "revenue",
+            "name": "Revenue",
+            "dataType": "number"
+          },
+          {
+            "id": "profit_margin",
+            "name": "Profit Margin (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Revenue and Profit Margin",
+          "key": "revenue,profit_margin",
+          "purpose": "Comparison",
+          "purposeDesc": "2017-2019 Revenue and Profit Margin"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用组合图展示过去三年的网站访问量和转化率 [{ \"month\": \"Apr\", \"visits\": 10000, \"conversion_rate\": 2.5 }, { \"month\": \"May\", \"visits\": 12000, \"conversion_rate\": 3.0 }, { \"month\": \"Jun\", \"visits\": 15000, \"conversion_rate\": 3.5 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["Apr", "May", "Jun"],
+      "categories": [
+        "Apr",
+        "May",
+        "Jun"
+      ],
       "title": "Monthly Website Visits and Conversion Rate (Q2)",
       "axisXTitle": "Month",
       "series": [
         {
           "type": "column",
-          "data": [10000, 12000, 15000],
+          "data": [
+            10000,
+            12000,
+            15000
+          ],
           "axisYTitle": "Visits"
         },
         {
           "type": "line",
-          "data": [2.5, 3.0, 3.5],
+          "data": [
+            2.5,
+            3,
+            3.5
+          ],
           "axisYTitle": "Conversion Rate (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "month": "Apr",
+            "visits": 10000,
+            "conversion_rate": 2.5
+          },
+          {
+            "month": "May",
+            "visits": 12000,
+            "conversion_rate": 3
+          },
+          {
+            "month": "Jun",
+            "visits": 15000,
+            "conversion_rate": 3.5
+          }
+        ],
+        "metas": [
+          {
+            "id": "month",
+            "name": "Month",
+            "dataType": "string"
+          },
+          {
+            "id": "visits",
+            "name": "Visits",
+            "dataType": "number"
+          },
+          {
+            "id": "conversion_rate",
+            "name": "Conversion Rate (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Website Metrics",
+          "key": "visits,conversion_rate",
+          "purpose": "Comparison",
+          "purposeDesc": "展示过去三年的网站访问量和转化率"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
     "question": "用组合图表示不同地区的销售额和市场份额 [{ \"region\": \"North\", \"sales\": 5000, \"market_share\": 20 }, { \"region\": \"South\", \"sales\": 7000, \"market_share\": 25 }, { \"region\": \"East\", \"sales\": 6000, \"market_share\": 22 }]",
     "answer": {
       "type": "dual-axes",
-      "categories": ["North", "South", "East"],
+      "categories": [
+        "North",
+        "South",
+        "East"
+      ],
       "title": "Regional Sales and Market Share",
       "axisXTitle": "Region",
       "series": [
         {
           "type": "column",
-          "data": [5000, 7000, 6000],
+          "data": [
+            5000,
+            7000,
+            6000
+          ],
           "axisYTitle": "Sales"
         },
         {
           "type": "line",
-          "data": [20, 25, 22],
+          "data": [
+            20,
+            25,
+            22
+          ],
           "axisYTitle": "Market Share (%)"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "region": "North",
+            "sales": 5000,
+            "market_share": 20
+          },
+          {
+            "region": "South",
+            "sales": 7000,
+            "market_share": 25
+          },
+          {
+            "region": "East",
+            "sales": 6000,
+            "market_share": 22
+          }
+        ],
+        "metas": [
+          {
+            "id": "region",
+            "name": "Region",
+            "dataType": "string"
+          },
+          {
+            "id": "sales",
+            "name": "Sales",
+            "dataType": "number"
+          },
+          {
+            "id": "market_share",
+            "name": "Market Share (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Regional Sales and Market Share",
+          "key": "sales,market_share",
+          "purpose": "Comparison",
+          "purposeDesc": "不同地区的销售额和市场份额"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -348,24 +1242,396 @@
         {
           "type": "line",
           "data": [
-            100, 102, 101, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
-            117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133,
-            134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149
+            100,
+            102,
+            101,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132,
+            133,
+            134,
+            135,
+            136,
+            137,
+            138,
+            139,
+            140,
+            141,
+            142,
+            143,
+            144,
+            145,
+            146,
+            147,
+            148,
+            149
           ],
           "axisYTitle": "Stock Price"
         },
         {
           "type": "column",
           "data": [
-            10000, 12000, 11000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000, 21000,
-            22000, 23000, 24000, 25000, 26000, 27000, 28000, 29000, 30000, 31000, 32000, 33000,
-            34000, 35000, 36000, 37000, 38000, 39000, 40000, 41000, 42000, 43000, 44000, 45000,
-            46000, 47000, 48000, 49000, 50000, 51000, 52000, 53000, 54000, 55000, 56000, 57000,
-            58000, 59000
+            10000,
+            12000,
+            11000,
+            13000,
+            14000,
+            15000,
+            16000,
+            17000,
+            18000,
+            19000,
+            20000,
+            21000,
+            22000,
+            23000,
+            24000,
+            25000,
+            26000,
+            27000,
+            28000,
+            29000,
+            30000,
+            31000,
+            32000,
+            33000,
+            34000,
+            35000,
+            36000,
+            37000,
+            38000,
+            39000,
+            40000,
+            41000,
+            42000,
+            43000,
+            44000,
+            45000,
+            46000,
+            47000,
+            48000,
+            49000,
+            50000,
+            51000,
+            52000,
+            53000,
+            54000,
+            55000,
+            56000,
+            57000,
+            58000,
+            59000
           ],
           "axisYTitle": "Trading Volume"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "day": 1,
+            "price": 100,
+            "volume": 10000
+          },
+          {
+            "day": 2,
+            "price": 102,
+            "volume": 12000
+          },
+          {
+            "day": 3,
+            "price": 101,
+            "volume": 11000
+          },
+          {
+            "day": 4,
+            "price": 103,
+            "volume": 13000
+          },
+          {
+            "day": 5,
+            "price": 104,
+            "volume": 14000
+          },
+          {
+            "day": 6,
+            "price": 105,
+            "volume": 15000
+          },
+          {
+            "day": 7,
+            "price": 106,
+            "volume": 16000
+          },
+          {
+            "day": 8,
+            "price": 107,
+            "volume": 17000
+          },
+          {
+            "day": 9,
+            "price": 108,
+            "volume": 18000
+          },
+          {
+            "day": 10,
+            "price": 109,
+            "volume": 19000
+          },
+          {
+            "day": 11,
+            "price": 110,
+            "volume": 20000
+          },
+          {
+            "day": 12,
+            "price": 111,
+            "volume": 21000
+          },
+          {
+            "day": 13,
+            "price": 112,
+            "volume": 22000
+          },
+          {
+            "day": 14,
+            "price": 113,
+            "volume": 23000
+          },
+          {
+            "day": 15,
+            "price": 114,
+            "volume": 24000
+          },
+          {
+            "day": 16,
+            "price": 115,
+            "volume": 25000
+          },
+          {
+            "day": 17,
+            "price": 116,
+            "volume": 26000
+          },
+          {
+            "day": 18,
+            "price": 117,
+            "volume": 27000
+          },
+          {
+            "day": 19,
+            "price": 118,
+            "volume": 28000
+          },
+          {
+            "day": 20,
+            "price": 119,
+            "volume": 29000
+          },
+          {
+            "day": 21,
+            "price": 120,
+            "volume": 30000
+          },
+          {
+            "day": 22,
+            "price": 121,
+            "volume": 31000
+          },
+          {
+            "day": 23,
+            "price": 122,
+            "volume": 32000
+          },
+          {
+            "day": 24,
+            "price": 123,
+            "volume": 33000
+          },
+          {
+            "day": 25,
+            "price": 124,
+            "volume": 34000
+          },
+          {
+            "day": 26,
+            "price": 125,
+            "volume": 35000
+          },
+          {
+            "day": 27,
+            "price": 126,
+            "volume": 36000
+          },
+          {
+            "day": 28,
+            "price": 127,
+            "volume": 37000
+          },
+          {
+            "day": 29,
+            "price": 128,
+            "volume": 38000
+          },
+          {
+            "day": 30,
+            "price": 129,
+            "volume": 39000
+          },
+          {
+            "day": 31,
+            "price": 130,
+            "volume": 40000
+          },
+          {
+            "day": 32,
+            "price": 131,
+            "volume": 41000
+          },
+          {
+            "day": 33,
+            "price": 132,
+            "volume": 42000
+          },
+          {
+            "day": 34,
+            "price": 133,
+            "volume": 43000
+          },
+          {
+            "day": 35,
+            "price": 134,
+            "volume": 44000
+          },
+          {
+            "day": 36,
+            "price": 135,
+            "volume": 45000
+          },
+          {
+            "day": 37,
+            "price": 136,
+            "volume": 46000
+          },
+          {
+            "day": 38,
+            "price": 137,
+            "volume": 47000
+          },
+          {
+            "day": 39,
+            "price": 138,
+            "volume": 48000
+          },
+          {
+            "day": 40,
+            "price": 139,
+            "volume": 49000
+          },
+          {
+            "day": 41,
+            "price": 140,
+            "volume": 50000
+          },
+          {
+            "day": 42,
+            "price": 141,
+            "volume": 51000
+          },
+          {
+            "day": 43,
+            "price": 142,
+            "volume": 52000
+          },
+          {
+            "day": 44,
+            "price": 143,
+            "volume": 53000
+          },
+          {
+            "day": 45,
+            "price": 144,
+            "volume": 54000
+          },
+          {
+            "day": 46,
+            "price": 145,
+            "volume": 55000
+          },
+          {
+            "day": 47,
+            "price": 146,
+            "volume": 56000
+          },
+          {
+            "day": 48,
+            "price": 147,
+            "volume": 57000
+          },
+          {
+            "day": 49,
+            "price": 148,
+            "volume": 58000
+          },
+          {
+            "day": 50,
+            "price": 149,
+            "volume": 59000
+          }
+        ],
+        "metas": [
+          {
+            "id": "day",
+            "name": "Day",
+            "dataType": "number"
+          },
+          {
+            "id": "price",
+            "name": "Stock Price",
+            "dataType": "number"
+          },
+          {
+            "id": "volume",
+            "name": "Trading Volume",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Stock Price and Trading Volume",
+          "key": "price,volume",
+          "purpose": "Trend",
+          "purposeDesc": "Stock Price and Trading Volume Over 50 Days"
+        }
+      }
+    ]
   }
 ]

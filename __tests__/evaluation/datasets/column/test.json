@@ -5,14 +5,60 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "Facebook", "value": 8 },
-        { "category": "Twitter", "value": 12 },
-        { "category": "Instagram", "value": 22 }
+        {
+          "category": "Facebook",
+          "value": 8
+        },
+        {
+          "category": "Twitter",
+          "value": 12
+        },
+        {
+          "category": "Instagram",
+          "value": 22
+        }
       ],
       "title": "2018 年社交媒体用户增长",
       "axisXTitle": "平台",
       "axisYTitle": "增长率 (%)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Facebook",
+            "value": 8
+          },
+          {
+            "category": "Twitter",
+            "value": 12
+          },
+          {
+            "category": "Instagram",
+            "value": 22
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "平台",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "增长率 (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "增长率 (%)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "2018 年社交媒体用户增长"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -20,15 +66,68 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "市场部", "value": 30 },
-        { "category": "人力资源部", "value": 20 },
-        { "category": "技术部", "value": 50 },
-        { "category": "财务部", "value": 40 }
+        {
+          "category": "市场部",
+          "value": 30
+        },
+        {
+          "category": "人力资源部",
+          "value": 20
+        },
+        {
+          "category": "技术部",
+          "value": 50
+        },
+        {
+          "category": "财务部",
+          "value": 40
+        }
       ],
       "title": "部门月度支出",
       "axisXTitle": "部门",
       "axisYTitle": "支出 (万)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "市场部",
+            "value": 30
+          },
+          {
+            "category": "人力资源部",
+            "value": 20
+          },
+          {
+            "category": "技术部",
+            "value": 50
+          },
+          {
+            "category": "财务部",
+            "value": 40
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "部门",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "支出 (万)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "支出 (万)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各部门月度支出情况"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -36,15 +135,68 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "北京", "value": 200 },
-        { "category": "上海", "value": 180 },
-        { "category": "深圳", "value": 150 },
-        { "category": "杭州", "value": 170 }
+        {
+          "category": "北京",
+          "value": 200
+        },
+        {
+          "category": "上海",
+          "value": 180
+        },
+        {
+          "category": "深圳",
+          "value": 150
+        },
+        {
+          "category": "杭州",
+          "value": 170
+        }
       ],
       "title": "城市垃圾分类回收量",
       "axisXTitle": "城市",
       "axisYTitle": "回收量 (吨)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "北京",
+            "value": 200
+          },
+          {
+            "category": "上海",
+            "value": 180
+          },
+          {
+            "category": "深圳",
+            "value": 150
+          },
+          {
+            "category": "杭州",
+            "value": 170
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "城市",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "回收量 (吨)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "回收量 (吨)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各城市垃圾分类回收量对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -52,15 +204,68 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "丰田", "value": 300 },
-        { "category": "本田", "value": 250 },
-        { "category": "特斯拉", "value": 150 },
-        { "category": "福特", "value": 180 }
+        {
+          "category": "丰田",
+          "value": 300
+        },
+        {
+          "category": "本田",
+          "value": 250
+        },
+        {
+          "category": "特斯拉",
+          "value": 150
+        },
+        {
+          "category": "福特",
+          "value": 180
+        }
       ],
       "title": "2023 年汽车销量",
       "axisXTitle": "品牌",
       "axisYTitle": "销量 (万辆)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "丰田",
+            "value": 300
+          },
+          {
+            "category": "本田",
+            "value": 250
+          },
+          {
+            "category": "特斯拉",
+            "value": 150
+          },
+          {
+            "category": "福特",
+            "value": 180
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "品牌",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销量 (万辆)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销量 (万辆)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "2023 年汽车销量"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -68,15 +273,68 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "一年级", "value": 200 },
-        { "category": "二年级", "value": 250 },
-        { "category": "三年级", "value": 300 },
-        { "category": "四年级", "value": 350 }
+        {
+          "category": "一年级",
+          "value": 200
+        },
+        {
+          "category": "二年级",
+          "value": 250
+        },
+        {
+          "category": "三年级",
+          "value": 300
+        },
+        {
+          "category": "四年级",
+          "value": 350
+        }
       ],
       "title": "某学校各年级学生数量",
       "axisXTitle": "年级",
       "axisYTitle": "学生数量"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "一年级",
+            "value": 200
+          },
+          {
+            "category": "二年级",
+            "value": 250
+          },
+          {
+            "category": "三年级",
+            "value": 300
+          },
+          {
+            "category": "四年级",
+            "value": 350
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年级",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "学生数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "学生数量",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "某学校各年级学生数量"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -108,7 +366,52 @@
       "title": "不同年龄段人群在社交媒体上的活跃度",
       "axisXTitle": "年龄",
       "axisYTitle": "活跃度（%）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "18-24",
+            "value": 60
+          },
+          {
+            "category": "25-34",
+            "value": 70
+          },
+          {
+            "category": "35-44",
+            "value": 65
+          },
+          {
+            "category": "45-54",
+            "value": 55
+          },
+          {
+            "category": "55岁以上",
+            "value": 40
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年龄",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "活跃度（%）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "活跃度（%）",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同年龄段人群在社交媒体上的活跃度对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -140,7 +443,52 @@
       "title": "不同品牌手机的市场份额",
       "axisXTitle": "品牌",
       "axisYTitle": "市场份额（%）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "苹果",
+            "value": 30
+          },
+          {
+            "category": "三星",
+            "value": 25
+          },
+          {
+            "category": "华为",
+            "value": 20
+          },
+          {
+            "category": "小米",
+            "value": 15
+          },
+          {
+            "category": "OPPO",
+            "value": 10
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "品牌",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "市场份额（%）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "市场份额（%）",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同品牌手机的市场份额对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -148,17 +496,84 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "一月", "value": 5 },
-        { "category": "二月", "value": 7 },
-        { "category": "三月", "value": 10 },
-        { "category": "四月", "value": 8 },
-        { "category": "五月", "value": 6 },
-        { "category": "六月", "value": 9 }
+        {
+          "category": "一月",
+          "value": 5
+        },
+        {
+          "category": "二月",
+          "value": 7
+        },
+        {
+          "category": "三月",
+          "value": 10
+        },
+        {
+          "category": "四月",
+          "value": 8
+        },
+        {
+          "category": "五月",
+          "value": 6
+        },
+        {
+          "category": "六月",
+          "value": 9
+        }
       ],
       "title": "2023上半年用户增长率",
       "axisXTitle": "月份",
       "axisYTitle": "增长率 (%)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "一月",
+            "value": 5
+          },
+          {
+            "category": "二月",
+            "value": 7
+          },
+          {
+            "category": "三月",
+            "value": 10
+          },
+          {
+            "category": "四月",
+            "value": 8
+          },
+          {
+            "category": "五月",
+            "value": 6
+          },
+          {
+            "category": "六月",
+            "value": 9
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "月份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "增长率 (%)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "增长率 (%)",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "2023上半年用户增长率"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -166,18 +581,102 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "北京", "value": 230, "group": "水果" },
-        { "category": "北京", "value": 180, "group": "蔬菜" },
-        { "category": "上海", "value": 210, "group": "水果" },
-        { "category": "上海", "value": 170, "group": "蔬菜" },
-        { "category": "广州", "value": 195, "group": "水果" },
-        { "category": "广州", "value": 160, "group": "蔬菜" }
+        {
+          "category": "北京",
+          "value": 230,
+          "group": "水果"
+        },
+        {
+          "category": "北京",
+          "value": 180,
+          "group": "蔬菜"
+        },
+        {
+          "category": "上海",
+          "value": 210,
+          "group": "水果"
+        },
+        {
+          "category": "上海",
+          "value": 170,
+          "group": "蔬菜"
+        },
+        {
+          "category": "广州",
+          "value": 195,
+          "group": "水果"
+        },
+        {
+          "category": "广州",
+          "value": 160,
+          "group": "蔬菜"
+        }
       ],
       "group": true,
       "title": "各地区水果和蔬菜年度销量",
       "axisXTitle": "地区",
       "axisYTitle": "销量（吨）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "北京",
+            "value": 230,
+            "group": "水果"
+          },
+          {
+            "category": "北京",
+            "value": 180,
+            "group": "蔬菜"
+          },
+          {
+            "category": "上海",
+            "value": 210,
+            "group": "水果"
+          },
+          {
+            "category": "上海",
+            "value": 170,
+            "group": "蔬菜"
+          },
+          {
+            "category": "广州",
+            "value": 195,
+            "group": "水果"
+          },
+          {
+            "category": "广州",
+            "value": 160,
+            "group": "蔬菜"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "地区",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销量（吨）",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "类别",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "销量（吨）",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各地区水果和蔬菜年度销量对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -185,44 +684,265 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "Q1", "value": 12, "group": "2019" },
-        { "category": "Q2", "value": 15, "group": "2019" },
-        { "category": "Q3", "value": 20, "group": "2019" },
-        { "category": "Q4", "value": 18, "group": "2019" },
-        { "category": "Q1", "value": 14, "group": "2020" },
-        { "category": "Q2", "value": 16, "group": "2020" },
-        { "category": "Q3", "value": 22, "group": "2020" },
-        { "category": "Q4", "value": 19, "group": "2020" }
+        {
+          "category": "Q1",
+          "value": 12,
+          "group": "2019"
+        },
+        {
+          "category": "Q2",
+          "value": 15,
+          "group": "2019"
+        },
+        {
+          "category": "Q3",
+          "value": 20,
+          "group": "2019"
+        },
+        {
+          "category": "Q4",
+          "value": 18,
+          "group": "2019"
+        },
+        {
+          "category": "Q1",
+          "value": 14,
+          "group": "2020"
+        },
+        {
+          "category": "Q2",
+          "value": 16,
+          "group": "2020"
+        },
+        {
+          "category": "Q3",
+          "value": 22,
+          "group": "2020"
+        },
+        {
+          "category": "Q4",
+          "value": 19,
+          "group": "2020"
+        }
       ],
       "group": true,
       "title": "2019年和2020年公司季度利润对比",
       "axisXTitle": "季度",
       "axisYTitle": "利润（万元）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Q1",
+            "value": 12,
+            "group": "2019"
+          },
+          {
+            "category": "Q2",
+            "value": 15,
+            "group": "2019"
+          },
+          {
+            "category": "Q3",
+            "value": 20,
+            "group": "2019"
+          },
+          {
+            "category": "Q4",
+            "value": 18,
+            "group": "2019"
+          },
+          {
+            "category": "Q1",
+            "value": 14,
+            "group": "2020"
+          },
+          {
+            "category": "Q2",
+            "value": 16,
+            "group": "2020"
+          },
+          {
+            "category": "Q3",
+            "value": 22,
+            "group": "2020"
+          },
+          {
+            "category": "Q4",
+            "value": 19,
+            "group": "2020"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "利润（万元）",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "年份",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "利润（万元）",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "2019年和2020年公司季度利润对比"
+        }
+      }
+    ]
   },
-
   {
     "type": "text2chart",
     "question": "不同年龄段人群对于阅读纸质书和电子书的偏好对比，18-25岁分别是30%与70%，26-35岁分别是45%与55%，36-45岁分别是50%与50%，46-55岁分别是60%与40%，56岁以上分别是70%与30%。用分组柱形图可视化。",
     "answer": {
       "type": "column",
       "data": [
-        { "category": "18-25", "value": 30, "group": "纸质书" },
-        { "category": "18-25", "value": 70, "group": "电子书" },
-        { "category": "26-35", "value": 45, "group": "纸质书" },
-        { "category": "26-35", "value": 55, "group": "电子书" },
-        { "category": "36-45", "value": 50, "group": "纸质书" },
-        { "category": "36-45", "value": 50, "group": "电子书" },
-        { "category": "46-55", "value": 60, "group": "纸质书" },
-        { "category": "46-55", "value": 40, "group": "电子书" },
-        { "category": "56以上", "value": 70, "group": "纸质书" },
-        { "category": "56以上", "value": 30, "group": "电子书" }
+        {
+          "category": "18-25",
+          "value": 30,
+          "group": "纸质书"
+        },
+        {
+          "category": "18-25",
+          "value": 70,
+          "group": "电子书"
+        },
+        {
+          "category": "26-35",
+          "value": 45,
+          "group": "纸质书"
+        },
+        {
+          "category": "26-35",
+          "value": 55,
+          "group": "电子书"
+        },
+        {
+          "category": "36-45",
+          "value": 50,
+          "group": "纸质书"
+        },
+        {
+          "category": "36-45",
+          "value": 50,
+          "group": "电子书"
+        },
+        {
+          "category": "46-55",
+          "value": 60,
+          "group": "纸质书"
+        },
+        {
+          "category": "46-55",
+          "value": 40,
+          "group": "电子书"
+        },
+        {
+          "category": "56以上",
+          "value": 70,
+          "group": "纸质书"
+        },
+        {
+          "category": "56以上",
+          "value": 30,
+          "group": "电子书"
+        }
       ],
       "group": true,
       "title": "各年龄段对纸质书和电子书的偏好",
       "axisXTitle": "年龄段",
       "axisYTitle": "百分比 (%)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "18-25",
+            "value": 30,
+            "group": "纸质书"
+          },
+          {
+            "category": "18-25",
+            "value": 70,
+            "group": "电子书"
+          },
+          {
+            "category": "26-35",
+            "value": 45,
+            "group": "纸质书"
+          },
+          {
+            "category": "26-35",
+            "value": 55,
+            "group": "电子书"
+          },
+          {
+            "category": "36-45",
+            "value": 50,
+            "group": "纸质书"
+          },
+          {
+            "category": "36-45",
+            "value": 50,
+            "group": "电子书"
+          },
+          {
+            "category": "46-55",
+            "value": 60,
+            "group": "纸质书"
+          },
+          {
+            "category": "46-55",
+            "value": 40,
+            "group": "电子书"
+          },
+          {
+            "category": "56以上",
+            "value": 70,
+            "group": "纸质书"
+          },
+          {
+            "category": "56以上",
+            "value": 30,
+            "group": "电子书"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年龄段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "百分比 (%)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "书籍类型",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "百分比 (%)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各年龄段对纸质书和电子书的偏好对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -230,22 +950,142 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "18-25", "value": 30, "group": "纸质书" },
-        { "category": "18-25", "value": 70, "group": "电子书" },
-        { "category": "26-35", "value": 45, "group": "纸质书" },
-        { "category": "26-35", "value": 55, "group": "电子书" },
-        { "category": "36-45", "value": 50, "group": "纸质书" },
-        { "category": "36-45", "value": 50, "group": "电子书" },
-        { "category": "46-55", "value": 60, "group": "纸质书" },
-        { "category": "46-55", "value": 40, "group": "电子书" },
-        { "category": "56以上", "value": 70, "group": "纸质书" },
-        { "category": "56以上", "value": 30, "group": "电子书" }
+        {
+          "category": "18-25",
+          "value": 30,
+          "group": "纸质书"
+        },
+        {
+          "category": "18-25",
+          "value": 70,
+          "group": "电子书"
+        },
+        {
+          "category": "26-35",
+          "value": 45,
+          "group": "纸质书"
+        },
+        {
+          "category": "26-35",
+          "value": 55,
+          "group": "电子书"
+        },
+        {
+          "category": "36-45",
+          "value": 50,
+          "group": "纸质书"
+        },
+        {
+          "category": "36-45",
+          "value": 50,
+          "group": "电子书"
+        },
+        {
+          "category": "46-55",
+          "value": 60,
+          "group": "纸质书"
+        },
+        {
+          "category": "46-55",
+          "value": 40,
+          "group": "电子书"
+        },
+        {
+          "category": "56以上",
+          "value": 70,
+          "group": "纸质书"
+        },
+        {
+          "category": "56以上",
+          "value": 30,
+          "group": "电子书"
+        }
       ],
       "group": true,
       "title": "各年龄段对纸质书和电子书的偏好",
       "axisXTitle": "年龄段",
       "axisYTitle": "百分比 (%)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "18-25",
+            "value": 30,
+            "group": "纸质书"
+          },
+          {
+            "category": "18-25",
+            "value": 70,
+            "group": "电子书"
+          },
+          {
+            "category": "26-35",
+            "value": 45,
+            "group": "纸质书"
+          },
+          {
+            "category": "26-35",
+            "value": 55,
+            "group": "电子书"
+          },
+          {
+            "category": "36-45",
+            "value": 50,
+            "group": "纸质书"
+          },
+          {
+            "category": "36-45",
+            "value": 50,
+            "group": "电子书"
+          },
+          {
+            "category": "46-55",
+            "value": 60,
+            "group": "纸质书"
+          },
+          {
+            "category": "46-55",
+            "value": 40,
+            "group": "电子书"
+          },
+          {
+            "category": "56以上",
+            "value": 70,
+            "group": "纸质书"
+          },
+          {
+            "category": "56以上",
+            "value": 30,
+            "group": "电子书"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年龄段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "百分比 (%)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "书籍类型",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "百分比 (%)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各年龄段对纸质书和电子书的偏好对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -253,36 +1093,190 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "第一季度", "value": 120, "group": "A公司" },
-        { "category": "第一季度", "value": 90, "group": "B公司" },
-        { "category": "第二季度", "value": 150, "group": "A公司" },
-        { "category": "第二季度", "value": 100, "group": "B公司" },
-        { "category": "第三季度", "value": 180, "group": "A公司" },
-        { "category": "第三季度", "value": 110, "group": "B公司" },
-        { "category": "第四季度", "value": 200, "group": "A公司" },
-        { "category": "第四季度", "value": 120, "group": "B公司" }
+        {
+          "category": "第一季度",
+          "value": 120,
+          "group": "A公司"
+        },
+        {
+          "category": "第一季度",
+          "value": 90,
+          "group": "B公司"
+        },
+        {
+          "category": "第二季度",
+          "value": 150,
+          "group": "A公司"
+        },
+        {
+          "category": "第二季度",
+          "value": 100,
+          "group": "B公司"
+        },
+        {
+          "category": "第三季度",
+          "value": 180,
+          "group": "A公司"
+        },
+        {
+          "category": "第三季度",
+          "value": 110,
+          "group": "B公司"
+        },
+        {
+          "category": "第四季度",
+          "value": 200,
+          "group": "A公司"
+        },
+        {
+          "category": "第四季度",
+          "value": 120,
+          "group": "B公司"
+        }
       ],
       "stack": true,
       "title": "AB两公司季度销售额比较",
       "axisXTitle": "季度",
       "axisYTitle": "销售额 (万元)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "第一季度",
+            "value": 120,
+            "group": "A公司"
+          },
+          {
+            "category": "第一季度",
+            "value": 90,
+            "group": "B公司"
+          },
+          {
+            "category": "第二季度",
+            "value": 150,
+            "group": "A公司"
+          },
+          {
+            "category": "第二季度",
+            "value": 100,
+            "group": "B公司"
+          },
+          {
+            "category": "第三季度",
+            "value": 180,
+            "group": "A公司"
+          },
+          {
+            "category": "第三季度",
+            "value": 110,
+            "group": "B公司"
+          },
+          {
+            "category": "第四季度",
+            "value": 200,
+            "group": "A公司"
+          },
+          {
+            "category": "第四季度",
+            "value": 120,
+            "group": "B公司"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售额 (万元)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "公司",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "销售额 (万元)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "AB两公司季度销售额比较"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "用柱形图可视化我公司的季度销售数据 [{ \"title\": \"Q1\", \"sales\": 15000 },{ \"title\": \"Q2\", \"sales\": 20000 },{ \"title\": \"Q3\", \"sales\": 18000 },{ \"title\": \"Q4\", \"sales\": 22000 }]",
     "answer": {
       "type": "column",
       "data": [
-        { "category": "Q1", "value": 15000 },
-        { "category": "Q2", "value": 20000 },
-        { "category": "Q3", "value": 18000 },
-        { "category": "Q4", "value": 22000 }
+        {
+          "category": "Q1",
+          "value": 15000
+        },
+        {
+          "category": "Q2",
+          "value": 20000
+        },
+        {
+          "category": "Q3",
+          "value": 18000
+        },
+        {
+          "category": "Q4",
+          "value": 22000
+        }
       ],
       "axisXTitle": "季度",
       "axisYTitle": "销售"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Q1",
+            "value": 15000
+          },
+          {
+            "category": "Q2",
+            "value": 20000
+          },
+          {
+            "category": "Q3",
+            "value": 18000
+          },
+          {
+            "category": "Q4",
+            "value": 22000
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "公司季度销售数据对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -290,14 +1284,67 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "人事部", "value": 10 },
-        { "category": "技术部", "value": 30 },
-        { "category": "销售部", "value": 20 },
-        { "category": "财务部", "value": 5 }
+        {
+          "category": "人事部",
+          "value": 10
+        },
+        {
+          "category": "技术部",
+          "value": 30
+        },
+        {
+          "category": "销售部",
+          "value": 20
+        },
+        {
+          "category": "财务部",
+          "value": 5
+        }
       ],
       "axisXTitle": "部门",
       "axisYTitle": "员工数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "人事部",
+            "value": 10
+          },
+          {
+            "category": "技术部",
+            "value": 30
+          },
+          {
+            "category": "销售部",
+            "value": 20
+          },
+          {
+            "category": "财务部",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "部门",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "员工数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "员工数",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各部门的员工人数"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -305,13 +1352,59 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "电子产品", "value": 50000 },
-        { "category": "服装", "value": 30000 },
-        { "category": "家具", "value": 15000 }
+        {
+          "category": "电子产品",
+          "value": 50000
+        },
+        {
+          "category": "服装",
+          "value": 30000
+        },
+        {
+          "category": "家具",
+          "value": 15000
+        }
       ],
       "axisXTitle": "产品",
       "axisYTitle": "销售"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "电子产品",
+            "value": 50000
+          },
+          {
+            "category": "服装",
+            "value": 30000
+          },
+          {
+            "category": "家具",
+            "value": 15000
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "产品",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "产品类别销售数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -319,28 +1412,126 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "北京", "value": 15 },
-        { "category": "上海", "value": 18 },
-        { "category": "广州", "value": 22 }
+        {
+          "category": "北京",
+          "value": 15
+        },
+        {
+          "category": "上海",
+          "value": 18
+        },
+        {
+          "category": "广州",
+          "value": 22
+        }
       ],
       "axisXTitle": "城市",
       "axisYTitle": "平均气温"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "北京",
+            "value": 15
+          },
+          {
+            "category": "上海",
+            "value": 18
+          },
+          {
+            "category": "广州",
+            "value": 22
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "城市",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "平均气温",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "平均气温",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同城市的平均气温"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "我想要一个柱状图来展示不同城市的游客数量，数据如下：[{ \"city\": \"北京\",\"visitors\": 89000.0 },{ \"city\": \"上海\", \"visitors\": 105000.0 },{ \"city\": \"广州\" ,\"visitors\": 72000.0 }, {\"city\": \"深圳\", \"visitors\": 68000.0 }]. 图表标题设为'主要城市游客量比较'.",
     "answer": {
       "type": "column",
       "data": [
-        { "category": "北京", "value": 89000 },
-        { "category": "上海", "value": 105000 },
-        { "category": "广州", "value": 72000 },
-        { "category": "深圳", "value": 68000 }
+        {
+          "category": "北京",
+          "value": 89000
+        },
+        {
+          "category": "上海",
+          "value": 105000
+        },
+        {
+          "category": "广州",
+          "value": 72000
+        },
+        {
+          "category": "深圳",
+          "value": 68000
+        }
       ],
       "title": "主要城市游客量比较"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "北京",
+            "value": 89000
+          },
+          {
+            "category": "上海",
+            "value": 105000
+          },
+          {
+            "category": "广州",
+            "value": 72000
+          },
+          {
+            "category": "深圳",
+            "value": 68000
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "城市",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "游客数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "游客数量",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "主要城市游客量比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -348,13 +1539,66 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "<18岁", "value": 25 },
-        { "category": "18-30岁", "value": 30 },
-        { "category": "31-50岁", "value": 20 },
-        { "category": ">50岁", "value": 25 }
+        {
+          "category": "<18岁",
+          "value": 25
+        },
+        {
+          "category": "18-30岁",
+          "value": 30
+        },
+        {
+          "category": "31-50岁",
+          "value": 20
+        },
+        {
+          "category": ">50岁",
+          "value": 25
+        }
       ],
       "axisXTitle": "年龄组别"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "<18岁",
+            "value": 25
+          },
+          {
+            "category": "18-30岁",
+            "value": 30
+          },
+          {
+            "category": "31-50岁",
+            "value": 20
+          },
+          {
+            "category": ">50岁",
+            "value": 25
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年龄组别",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "百分比",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "百分比",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "不同年龄段的人口比例"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -362,14 +1606,74 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "2017", "value": 5000000 },
-        { "category": "2018", "value": 6000000 },
-        { "category": "2019", "value": 7000000 },
-        { "category": "2020", "value": 8000000 },
-        { "category": "2021", "value": 9000000 }
+        {
+          "category": "2017",
+          "value": 5000000
+        },
+        {
+          "category": "2018",
+          "value": 6000000
+        },
+        {
+          "category": "2019",
+          "value": 7000000
+        },
+        {
+          "category": "2020",
+          "value": 8000000
+        },
+        {
+          "category": "2021",
+          "value": 9000000
+        }
       ],
       "title": "公司年度收入增长"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "2017",
+            "value": 5000000
+          },
+          {
+            "category": "2018",
+            "value": 6000000
+          },
+          {
+            "category": "2019",
+            "value": 7000000
+          },
+          {
+            "category": "2020",
+            "value": 8000000
+          },
+          {
+            "category": "2021",
+            "value": 9000000
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "收入",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "收入",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "公司年度收入增长"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -377,17 +1681,101 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "2020", "value": 50, "group": "Sales" },
-        { "category": "2021", "value": 55, "group": "Sales" },
-        { "category": "2020", "value": 100, "group": "Engineering" },
-        { "category": "2021", "value": 110, "group": "Engineering" },
-        { "category": "2020", "value": 30, "group": "Marketing" },
-        { "category": "2021", "value": 35, "group": "Marketing" }
+        {
+          "category": "2020",
+          "value": 50,
+          "group": "Sales"
+        },
+        {
+          "category": "2021",
+          "value": 55,
+          "group": "Sales"
+        },
+        {
+          "category": "2020",
+          "value": 100,
+          "group": "Engineering"
+        },
+        {
+          "category": "2021",
+          "value": 110,
+          "group": "Engineering"
+        },
+        {
+          "category": "2020",
+          "value": 30,
+          "group": "Marketing"
+        },
+        {
+          "category": "2021",
+          "value": 35,
+          "group": "Marketing"
+        }
       ],
       "group": true,
       "axisXTitle": "年份",
       "axisYTitle": "员工数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "2020",
+            "value": 50,
+            "group": "Sales"
+          },
+          {
+            "category": "2021",
+            "value": 55,
+            "group": "Sales"
+          },
+          {
+            "category": "2020",
+            "value": 100,
+            "group": "Engineering"
+          },
+          {
+            "category": "2021",
+            "value": 110,
+            "group": "Engineering"
+          },
+          {
+            "category": "2020",
+            "value": 30,
+            "group": "Marketing"
+          },
+          {
+            "category": "2021",
+            "value": 35,
+            "group": "Marketing"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "员工数",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "部门",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "员工数",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同部门的员工数对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -395,17 +1783,101 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "2020", "value": 20000, "group": "Product A" },
-        { "category": "2021", "value": 25000, "group": "Product A" },
-        { "category": "2020", "value": 30000, "group": "Product B" },
-        { "category": "2021", "value": 35000, "group": "Product B" },
-        { "category": "2020", "value": 15000, "group": "Product C" },
-        { "category": "2021", "value": 20000, "group": "Product C" }
+        {
+          "category": "2020",
+          "value": 20000,
+          "group": "Product A"
+        },
+        {
+          "category": "2021",
+          "value": 25000,
+          "group": "Product A"
+        },
+        {
+          "category": "2020",
+          "value": 30000,
+          "group": "Product B"
+        },
+        {
+          "category": "2021",
+          "value": 35000,
+          "group": "Product B"
+        },
+        {
+          "category": "2020",
+          "value": 15000,
+          "group": "Product C"
+        },
+        {
+          "category": "2021",
+          "value": 20000,
+          "group": "Product C"
+        }
       ],
       "stack": true,
       "axisXTitle": "年份",
       "axisYTitle": "售量"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "2020",
+            "value": 20000,
+            "group": "Product A"
+          },
+          {
+            "category": "2021",
+            "value": 25000,
+            "group": "Product A"
+          },
+          {
+            "category": "2020",
+            "value": 30000,
+            "group": "Product B"
+          },
+          {
+            "category": "2021",
+            "value": 35000,
+            "group": "Product B"
+          },
+          {
+            "category": "2020",
+            "value": 15000,
+            "group": "Product C"
+          },
+          {
+            "category": "2021",
+            "value": 20000,
+            "group": "Product C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "售量",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "产品线",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "售量",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "不同产品线的销售数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -413,17 +1885,101 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "2020", "value": 1000, "group": "City A" },
-        { "category": "2021", "value": 1200, "group": "City A" },
-        { "category": "2020", "value": 1500, "group": "City B" },
-        { "category": "2021", "value": 1800, "group": "City B" },
-        { "category": "2020", "value": 2000, "group": "City C" },
-        { "category": "2021", "value": 2500, "group": "City C" }
+        {
+          "category": "2020",
+          "value": 1000,
+          "group": "City A"
+        },
+        {
+          "category": "2021",
+          "value": 1200,
+          "group": "City A"
+        },
+        {
+          "category": "2020",
+          "value": 1500,
+          "group": "City B"
+        },
+        {
+          "category": "2021",
+          "value": 1800,
+          "group": "City B"
+        },
+        {
+          "category": "2020",
+          "value": 2000,
+          "group": "City C"
+        },
+        {
+          "category": "2021",
+          "value": 2500,
+          "group": "City C"
+        }
       ],
       "stack": true,
       "axisXTitle": "年份",
       "axisYTitle": "客户数量"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "2020",
+            "value": 1000,
+            "group": "City A"
+          },
+          {
+            "category": "2021",
+            "value": 1200,
+            "group": "City A"
+          },
+          {
+            "category": "2020",
+            "value": 1500,
+            "group": "City B"
+          },
+          {
+            "category": "2021",
+            "value": 1800,
+            "group": "City B"
+          },
+          {
+            "category": "2020",
+            "value": 2000,
+            "group": "City C"
+          },
+          {
+            "category": "2021",
+            "value": 2500,
+            "group": "City C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "客户数量",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "城市",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "客户数量",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同城市的客户数量对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -431,19 +1987,121 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "2020", "value": 10000, "group": "Q1" },
-        { "category": "2021", "value": 12000, "group": "Q1" },
-        { "category": "2020", "value": 15000, "group": "Q2" },
-        { "category": "2021", "value": 18000, "group": "Q2" },
-        { "category": "2020", "value": 20000, "group": "Q3" },
-        { "category": "2021", "value": 25000, "group": "Q3" },
-        { "category": "2020", "value": 25000, "group": "Q4" },
-        { "category": "2021", "value": 30000, "group": "Q4" }
+        {
+          "category": "2020",
+          "value": 10000,
+          "group": "Q1"
+        },
+        {
+          "category": "2021",
+          "value": 12000,
+          "group": "Q1"
+        },
+        {
+          "category": "2020",
+          "value": 15000,
+          "group": "Q2"
+        },
+        {
+          "category": "2021",
+          "value": 18000,
+          "group": "Q2"
+        },
+        {
+          "category": "2020",
+          "value": 20000,
+          "group": "Q3"
+        },
+        {
+          "category": "2021",
+          "value": 25000,
+          "group": "Q3"
+        },
+        {
+          "category": "2020",
+          "value": 25000,
+          "group": "Q4"
+        },
+        {
+          "category": "2021",
+          "value": 30000,
+          "group": "Q4"
+        }
       ],
       "group": true,
       "axisXTitle": "年份",
       "axisYTitle": "售量"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "2020",
+            "value": 10000,
+            "group": "Q1"
+          },
+          {
+            "category": "2021",
+            "value": 12000,
+            "group": "Q1"
+          },
+          {
+            "category": "2020",
+            "value": 15000,
+            "group": "Q2"
+          },
+          {
+            "category": "2021",
+            "value": 18000,
+            "group": "Q2"
+          },
+          {
+            "category": "2020",
+            "value": 20000,
+            "group": "Q3"
+          },
+          {
+            "category": "2021",
+            "value": 25000,
+            "group": "Q3"
+          },
+          {
+            "category": "2020",
+            "value": 25000,
+            "group": "Q4"
+          },
+          {
+            "category": "2021",
+            "value": 30000,
+            "group": "Q4"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "售量",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "季度",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "售量",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同季度的销售数据对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -451,17 +2109,101 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "Jan", "value": 1200, "group": "Product A" },
-        { "category": "Feb", "value": 1400, "group": "Product A" },
-        { "category": "Jan", "value": 1500, "group": "Product B" },
-        { "category": "Feb", "value": 1700, "group": "Product B" },
-        { "category": "Jan", "value": 1800, "group": "Product C" },
-        { "category": "Feb", "value": 2000, "group": "Product C" }
+        {
+          "category": "Jan",
+          "value": 1200,
+          "group": "Product A"
+        },
+        {
+          "category": "Feb",
+          "value": 1400,
+          "group": "Product A"
+        },
+        {
+          "category": "Jan",
+          "value": 1500,
+          "group": "Product B"
+        },
+        {
+          "category": "Feb",
+          "value": 1700,
+          "group": "Product B"
+        },
+        {
+          "category": "Jan",
+          "value": 1800,
+          "group": "Product C"
+        },
+        {
+          "category": "Feb",
+          "value": 2000,
+          "group": "Product C"
+        }
       ],
       "group": true,
       "axisXTitle": "Month",
       "axisYTitle": "Sales"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Jan",
+            "value": 1200,
+            "group": "Product A"
+          },
+          {
+            "category": "Feb",
+            "value": 1400,
+            "group": "Product A"
+          },
+          {
+            "category": "Jan",
+            "value": 1500,
+            "group": "Product B"
+          },
+          {
+            "category": "Feb",
+            "value": 1700,
+            "group": "Product B"
+          },
+          {
+            "category": "Jan",
+            "value": 1800,
+            "group": "Product C"
+          },
+          {
+            "category": "Feb",
+            "value": 2000,
+            "group": "Product C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "Month",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "Sales",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "Product",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "Sales",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各类产品的月销售额对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -469,16 +2211,100 @@
     "answer": {
       "type": "column",
       "data": [
-        { "category": "Monday", "value": 100, "group": "Store X" },
-        { "category": "Tuesday", "value": 120, "group": "Store X" },
-        { "category": "Monday", "value": 150, "group": "Store Y" },
-        { "category": "Tuesday", "value": 130, "group": "Store Y" },
-        { "category": "Monday", "value": 200, "group": "Store Z" },
-        { "category": "Tuesday", "value": 220, "group": "Store Z" }
+        {
+          "category": "Monday",
+          "value": 100,
+          "group": "Store X"
+        },
+        {
+          "category": "Tuesday",
+          "value": 120,
+          "group": "Store X"
+        },
+        {
+          "category": "Monday",
+          "value": 150,
+          "group": "Store Y"
+        },
+        {
+          "category": "Tuesday",
+          "value": 130,
+          "group": "Store Y"
+        },
+        {
+          "category": "Monday",
+          "value": 200,
+          "group": "Store Z"
+        },
+        {
+          "category": "Tuesday",
+          "value": 220,
+          "group": "Store Z"
+        }
       ],
       "stack": true,
       "axisXTitle": "Day",
       "axisYTitle": "Visitors"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Monday",
+            "value": 100,
+            "group": "Store X"
+          },
+          {
+            "category": "Tuesday",
+            "value": 120,
+            "group": "Store X"
+          },
+          {
+            "category": "Monday",
+            "value": 150,
+            "group": "Store Y"
+          },
+          {
+            "category": "Tuesday",
+            "value": 130,
+            "group": "Store Y"
+          },
+          {
+            "category": "Monday",
+            "value": 200,
+            "group": "Store Z"
+          },
+          {
+            "category": "Tuesday",
+            "value": 220,
+            "group": "Store Z"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "Day",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "Visitors",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "Store",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "Visitors",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同店铺的日均访客量"
+        }
+      }
+    ]
   }
 ]

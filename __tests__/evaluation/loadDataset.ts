@@ -8,7 +8,7 @@ const DIR_PATH = path.resolve(dirname, './datasets');
 
 export const loadDataset = (dirname: string) => {
   if (!dirname) return [];
-  const testJsonPath = path.resolve(DIR_PATH, dirname, 'test.copy.json');
+  const testJsonPath = path.resolve(DIR_PATH, dirname, 'test.json');
   try {
     const jsonString = fs.readFileSync(testJsonPath, 'utf-8');
     return JSON.parse(jsonString);

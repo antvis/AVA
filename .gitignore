@@ -45,7 +45,6 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
 .env.local
 
 # parcel-bundler cache (https://parceljs.org/)
@@ -92,13 +91,3 @@ temp.diff
 **/*/src/.umi-test
 **/*/.env.local
 
-# local script and data
-**/*/*.local.sh
-**/*/*.local.md
-**/*/*.local.cjs
-**/*/*.local.test.cjs
-**/*/*.local.js
-**/*/*.local.test.js
-**/*/*.local.ts
-**/*/*.local.test.ts
-**/*/*.local.json

@@ -5,11 +5,71 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 116.4074, "latitude": 39.9042, "label": "北京" },
-        { "longitude": 108.9482, "latitude": 34.2625, "label": "西安" },
-        { "longitude": 104.0665, "latitude": 30.6589, "label": "成都" }
+        {
+          "longitude": 116.4074,
+          "latitude": 39.9042,
+          "label": "北京"
+        },
+        {
+          "longitude": 108.9482,
+          "latitude": 34.2625,
+          "label": "西安"
+        },
+        {
+          "longitude": 104.0665,
+          "latitude": 30.6589,
+          "label": "成都"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 116.4074,
+              "latitude": 39.9042,
+              "label": "北京"
+            },
+            {
+              "longitude": 108.9482,
+              "latitude": 34.2625,
+              "label": "西安"
+            },
+            {
+              "longitude": 104.0665,
+              "latitude": 30.6589,
+              "label": "成都"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "地点",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "旅游目的地",
+          "key": "label",
+          "purpose": "Distribution",
+          "purposeDesc": "在地图上标注最喜欢的旅游目的地"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -17,12 +77,81 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 117.4829, "latitude": 35.7132, "label": "泰山" },
-        { "longitude": 110.4757, "latitude": 29.5132, "label": "衡山" },
-        { "longitude": 103.7533, "latitude": 34.3877, "label": "华山" },
-        { "longitude": 103.7234, "latitude": 30.661, "label": "峨眉山" }
+        {
+          "longitude": 117.4829,
+          "latitude": 35.7132,
+          "label": "泰山"
+        },
+        {
+          "longitude": 110.4757,
+          "latitude": 29.5132,
+          "label": "衡山"
+        },
+        {
+          "longitude": 103.7533,
+          "latitude": 34.3877,
+          "label": "华山"
+        },
+        {
+          "longitude": 103.7234,
+          "latitude": 30.661,
+          "label": "峨眉山"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 117.4829,
+              "latitude": 35.7132,
+              "label": "泰山"
+            },
+            {
+              "longitude": 110.4757,
+              "latitude": 29.5132,
+              "label": "衡山"
+            },
+            {
+              "longitude": 103.7533,
+              "latitude": 34.3877,
+              "label": "华山"
+            },
+            {
+              "longitude": 103.7234,
+              "latitude": 30.661,
+              "label": "峨眉山"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "中国四大名山",
+          "key": "label",
+          "purpose": "Distribution",
+          "purposeDesc": "中国四大名山的地理位置分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -30,13 +159,91 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 121.4737, "latitude": 31.2304, "label": "上海港" },
-        { "longitude": 113.2308, "latitude": 23.1305, "label": "广州港" },
-        { "longitude": 119.2942, "latitude": 26.075, "label": "厦门港" },
-        { "longitude": 120.1535, "latitude": 30.2875, "label": "宁波舟山港" },
-        { "longitude": 114.1717, "latitude": 22.2855, "label": "深圳港" }
+        {
+          "longitude": 121.4737,
+          "latitude": 31.2304,
+          "label": "上海港"
+        },
+        {
+          "longitude": 113.2308,
+          "latitude": 23.1305,
+          "label": "广州港"
+        },
+        {
+          "longitude": 119.2942,
+          "latitude": 26.075,
+          "label": "厦门港"
+        },
+        {
+          "longitude": 120.1535,
+          "latitude": 30.2875,
+          "label": "宁波舟山港"
+        },
+        {
+          "longitude": 114.1717,
+          "latitude": 22.2855,
+          "label": "深圳港"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 121.4737,
+              "latitude": 31.2304,
+              "label": "上海港"
+            },
+            {
+              "longitude": 113.2308,
+              "latitude": 23.1305,
+              "label": "广州港"
+            },
+            {
+              "longitude": 119.2942,
+              "latitude": 26.075,
+              "label": "厦门港"
+            },
+            {
+              "longitude": 120.1535,
+              "latitude": 30.2875,
+              "label": "宁波舟山港"
+            },
+            {
+              "longitude": 114.1717,
+              "latitude": 22.2855,
+              "label": "深圳港"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "港口名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "港口位置",
+          "key": "label",
+          "purpose": "Distribution",
+          "purposeDesc": "我国五个重要的港口城市地理位置分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -44,12 +251,81 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 106.5428, "latitude": 29.563, "label": "重庆" },
-        { "longitude": 114.3055, "latitude": 30.5167, "label": "武汉" },
-        { "longitude": 118.7968, "latitude": 32.0617, "label": "南京" },
-        { "longitude": 121.4737, "latitude": 31.2304, "label": "上海" }
+        {
+          "longitude": 106.5428,
+          "latitude": 29.563,
+          "label": "重庆"
+        },
+        {
+          "longitude": 114.3055,
+          "latitude": 30.5167,
+          "label": "武汉"
+        },
+        {
+          "longitude": 118.7968,
+          "latitude": 32.0617,
+          "label": "南京"
+        },
+        {
+          "longitude": 121.4737,
+          "latitude": 31.2304,
+          "label": "上海"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 106.5428,
+              "latitude": 29.563,
+              "label": "重庆"
+            },
+            {
+              "longitude": 114.3055,
+              "latitude": 30.5167,
+              "label": "武汉"
+            },
+            {
+              "longitude": 118.7968,
+              "latitude": 32.0617,
+              "label": "南京"
+            },
+            {
+              "longitude": 121.4737,
+              "latitude": 31.2304,
+              "label": "上海"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "城市",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "城市分布",
+          "key": "label",
+          "purpose": "Distribution",
+          "purposeDesc": "长江沿岸主要城市分布情况"
+        }
+      }
+    ]
   },
   {
     "question": "展示中国四大古都的地理位置。",
@@ -77,19 +353,122 @@
           "label": "南京"
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 114.3087,
+              "latitude": 33.6272,
+              "label": "西安"
+            },
+            {
+              "longitude": 113.2644,
+              "latitude": 34.7519,
+              "label": "洛阳"
+            },
+            {
+              "longitude": 116.4074,
+              "latitude": 39.9042,
+              "label": "北京"
+            },
+            {
+              "longitude": 108.9503,
+              "latitude": 34.2658,
+              "label": "南京"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "城市名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "地理位置",
+          "key": "label",
+          "purpose": "Distribution",
+          "purposeDesc": "中国四大古都的地理位置"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "用点标注地图可视化我的数据 [{ \"location\": [40.712776, -74.005974], \"label\": \"纽约\", \"information\": \"美国人口最多的城市\" },{ \"location\": [34.052235, -118.243683], \"label\": \"洛杉矶\", \"information\": \"以好莱坞闻名\" }]",
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": -74.005974, "latitude": 40.712776, "label": "纽约" },
-        { "longitude": -118.243683, "latitude": 34.052235, "label": "洛杉矶" }
+        {
+          "longitude": -74.005974,
+          "latitude": 40.712776,
+          "label": "纽约"
+        },
+        {
+          "longitude": -118.243683,
+          "latitude": 34.052235,
+          "label": "洛杉矶"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": -74.005974,
+              "latitude": 40.712776,
+              "label": "纽约"
+            },
+            {
+              "longitude": -118.243683,
+              "latitude": 34.052235,
+              "label": "洛杉矶"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "标签",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "地理位置",
+          "key": "location",
+          "purpose": "Distribution",
+          "purposeDesc": "用点标注地图可视化地理位置数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -97,10 +476,61 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 139.691711, "latitude": 35.689487, "label": "东京" },
-        { "longitude": 135.502167, "latitude": 34.693737, "label": "大阪" }
+        {
+          "longitude": 139.691711,
+          "latitude": 35.689487,
+          "label": "东京"
+        },
+        {
+          "longitude": 135.502167,
+          "latitude": 34.693737,
+          "label": "大阪"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 139.691711,
+              "latitude": 35.689487,
+              "label": "东京"
+            },
+            {
+              "longitude": 135.502167,
+              "latitude": 34.693737,
+              "label": "大阪"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "标签",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "地理位置",
+          "key": "location",
+          "purpose": "Distribution",
+          "purposeDesc": "用点标注地图可视化地理位置数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -108,11 +538,71 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 116.3974, "latitude": 39.9087, "label": "北京" },
-        { "longitude": 121.4737, "latitude": 31.2304, "label": "上海" },
-        { "longitude": 113.2644, "latitude": 23.1291, "label": "广州" }
+        {
+          "longitude": 116.3974,
+          "latitude": 39.9087,
+          "label": "北京"
+        },
+        {
+          "longitude": 121.4737,
+          "latitude": 31.2304,
+          "label": "上海"
+        },
+        {
+          "longitude": 113.2644,
+          "latitude": 23.1291,
+          "label": "广州"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 116.3974,
+              "latitude": 39.9087,
+              "label": "北京"
+            },
+            {
+              "longitude": 121.4737,
+              "latitude": 31.2304,
+              "label": "上海"
+            },
+            {
+              "longitude": 113.2644,
+              "latitude": 23.1291,
+              "label": "广州"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "城市",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "城市",
+          "key": "label",
+          "purpose": "Distribution",
+          "purposeDesc": "用点标注地图可视化城市分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -120,11 +610,71 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 118.784767, "latitude": 32.044283, "label": "南京" },
-        { "longitude": 120.153576, "latitude": 30.287459, "label": "杭州" },
-        { "longitude": 121.4737, "latitude": 31.2304, "label": "上海" }
+        {
+          "longitude": 118.784767,
+          "latitude": 32.044283,
+          "label": "南京"
+        },
+        {
+          "longitude": 120.153576,
+          "latitude": 30.287459,
+          "label": "杭州"
+        },
+        {
+          "longitude": 121.4737,
+          "latitude": 31.2304,
+          "label": "上海"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 118.784767,
+              "latitude": 32.044283,
+              "label": "南京"
+            },
+            {
+              "longitude": 120.153576,
+              "latitude": 30.287459,
+              "label": "杭州"
+            },
+            {
+              "longitude": 121.4737,
+              "latitude": 31.2304,
+              "label": "上海"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "城市",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "城市位置",
+          "key": "label",
+          "purpose": "Distribution",
+          "purposeDesc": "用点标注地图可视化城市位置"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -132,11 +682,71 @@
     "answer": {
       "type": "pin-map",
       "data": [
-        { "longitude": 116.3974, "latitude": 39.9087, "label": "北京" },
-        { "longitude": 113.2644, "latitude": 23.1291, "label": "广州" },
-        { "longitude": 114.057868, "latitude": 22.543079, "label": "深圳" }
+        {
+          "longitude": 116.3974,
+          "latitude": 39.9087,
+          "label": "北京"
+        },
+        {
+          "longitude": 113.2644,
+          "latitude": 23.1291,
+          "label": "广州"
+        },
+        {
+          "longitude": 114.057868,
+          "latitude": 22.543079,
+          "label": "深圳"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 116.3974,
+              "latitude": 39.9087,
+              "label": "北京"
+            },
+            {
+              "longitude": 113.2644,
+              "latitude": 23.1291,
+              "label": "广州"
+            },
+            {
+              "longitude": 114.057868,
+              "latitude": 22.543079,
+              "label": "深圳"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "label",
+            "name": "城市名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "城市位置",
+          "key": "location",
+          "purpose": "Distribution",
+          "purposeDesc": "用点标注地图可视化城市位置信息"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",

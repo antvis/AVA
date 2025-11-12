@@ -38,7 +38,78 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "1",
+            "name": "David  Wright",
+            "description": "Chief  Research  Officer",
+            "children": [
+              {
+                "id": "2",
+                "name": "Patrick  Young",
+                "description": "Research  and  Development  Manager",
+                "children": [
+                  {
+                    "id": "3",
+                    "name": "Natalie  Fox",
+                    "description": "R&D Engineer"
+                  },
+                  {
+                    "id": "4",
+                    "name": "Ian  Clark",
+                    "description": "Project  Manager"
+                  }
+                ]
+              },
+              {
+                "id": "5",
+                "name": "Judy  Grey",
+                "description": "Lab  Supervisor",
+                "children": [
+                  {
+                    "id": "6",
+                    "name": "Nancy  Brown",
+                    "description": "Lab  Technician"
+                  },
+                  {
+                    "id": "7",
+                    "name": "Alan  White",
+                    "description": "Lab  Assistant"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "研发部门的组织架构可视化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -79,7 +150,78 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "Emily Davis",
+            "name": "Emily Davis",
+            "description": "Chief Operating Officer",
+            "children": [
+              {
+                "id": "James Miller",
+                "name": "James Miller",
+                "description": "Operations Manager",
+                "children": [
+                  {
+                    "id": "Kevin Brown",
+                    "name": "Kevin Brown",
+                    "description": "Operations Analyst"
+                  },
+                  {
+                    "id": "Rachel Green",
+                    "name": "Rachel Green",
+                    "description": "Process Optimization Specialist"
+                  }
+                ]
+              },
+              {
+                "id": "Sarah Wilson",
+                "name": "Sarah Wilson",
+                "description": "Project Manager",
+                "children": [
+                  {
+                    "id": "Amy White",
+                    "name": "Amy White",
+                    "description": "Project Coordinator"
+                  },
+                  {
+                    "id": "David Black",
+                    "name": "David Black",
+                    "description": "Project Assistant"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "Name",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "Description",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "Organization Structure",
+          "key": "children",
+          "purpose": "Hierarchy",
+          "purposeDesc": "Company organizational structure visualization"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -120,7 +262,78 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "1",
+            "name": "Jerry  Brown",
+            "description": "Chief  Financial  Officer",
+            "children": [
+              {
+                "id": "2",
+                "name": "Sara  Hill",
+                "description": "Accounting  Manager",
+                "children": [
+                  {
+                    "id": "3",
+                    "name": "Olivia  Tan",
+                    "description": "Senior  Accountant"
+                  },
+                  {
+                    "id": "4",
+                    "name": "Kevin  Lee",
+                    "description": "Assistant  Accountant"
+                  }
+                ]
+              },
+              {
+                "id": "5",
+                "name": "Mark  Ray",
+                "description": "Financial  Analyst",
+                "children": [
+                  {
+                    "id": "6",
+                    "name": "Chris  Green",
+                    "description": "Financial  Analyst"
+                  },
+                  {
+                    "id": "7",
+                    "name": "Emily  Stone",
+                    "description": "Economist"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "children",
+          "purpose": "Hierarchy",
+          "purposeDesc": "财务部的组织架构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -161,7 +374,78 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "1",
+            "name": "John  Doe",
+            "description": "Chief  Executive  Officer",
+            "children": [
+              {
+                "id": "2",
+                "name": "Jane  Smith",
+                "description": "Chief  Operating  Officer",
+                "children": [
+                  {
+                    "id": "3",
+                    "name": "Alice  Johnson",
+                    "description": "Operations  Manager"
+                  },
+                  {
+                    "id": "4",
+                    "name": "Bob  Black",
+                    "description": "Operations  Analyst"
+                  }
+                ]
+              },
+              {
+                "id": "5",
+                "name": "Robert  Brown",
+                "description": "Chief  Financial  Officer",
+                "children": [
+                  {
+                    "id": "6",
+                    "name": "Charlie  White",
+                    "description": "Finance  Manager"
+                  },
+                  {
+                    "id": "7",
+                    "name": "Diana  Green",
+                    "description": "Finance  Analyst"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "高管团队结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示公司的高管团队结构"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -287,7 +571,180 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "Mark  Johnson",
+            "name": "Mark  Johnson",
+            "description": "Chief  Executive  Officer",
+            "children": [
+              {
+                "id": "Emma  Carter",
+                "name": "Emma  Carter",
+                "description": "Chief  Technology  Officer",
+                "children": [
+                  {
+                    "id": "Daniel  Lee",
+                    "name": "Daniel  Lee",
+                    "description": "Senior  Development  Manager",
+                    "children": [
+                      {
+                        "id": "Sarah  Walker",
+                        "name": "Sarah  Walker",
+                        "description": "Frontend  Development  Team  Leader"
+                      },
+                      {
+                        "id": "James  Smith",
+                        "name": "James  Smith",
+                        "description": "Backend  Development  Team  Leader"
+                      },
+                      {
+                        "id": "Lisa  Turner",
+                        "name": "Lisa  Turner",
+                        "description": "Testing  Team  Leader"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "Kevin  Brown",
+                    "name": "Kevin  Brown",
+                    "description": "Hardware  Architect",
+                    "children": [
+                      {
+                        "id": "Rachel  Green",
+                        "name": "Rachel  Green",
+                        "description": "Device  Design  Expert"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "Laura  Williams",
+                "name": "Laura  Williams",
+                "description": "Chief  Operating  Officer",
+                "children": [
+                  {
+                    "id": "John  Clark",
+                    "name": "John  Clark",
+                    "description": "Operations  Manager",
+                    "children": [
+                      {
+                        "id": "物流协调员",
+                        "name": "物流协调员",
+                        "description": "Logistics  Coordinator"
+                      },
+                      {
+                        "id": "采购专员",
+                        "name": "采购专员",
+                        "description": "Procurement  Specialist"
+                      },
+                      {
+                        "id": "库存管理员",
+                        "name": "库存管理员",
+                        "description": "Inventory  Administrator"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "Nancy  Davis",
+                    "name": "Nancy  Davis",
+                    "description": "Support  Manager",
+                    "children": [
+                      {
+                        "id": "客户服务代表",
+                        "name": "客户服务代表",
+                        "description": "Customer  Service  Representative"
+                      },
+                      {
+                        "id": "技术支持专家",
+                        "name": "技术支持专家",
+                        "description": "Technical  Support  Specialist"
+                      },
+                      {
+                        "id": "客户满意度分析员",
+                        "name": "客户满意度分析员",
+                        "description": "Customer  Satisfaction  Analyst"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "Michael  Martin",
+                "name": "Michael  Martin",
+                "description": "Chief  Financial  Officer",
+                "children": [
+                  {
+                    "id": "Anthony  Scott",
+                    "name": "Anthony  Scott",
+                    "description": "Budget  Analyst",
+                    "children": []
+                  },
+                  {
+                    "id": "Jennifer  Adams",
+                    "name": "Jennifer  Adams",
+                    "description": "Financial  Consultant",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": "Angela  Reed",
+                "name": "Angela  Reed",
+                "description": "Chief  Human  Resources  Officer",
+                "children": [
+                  {
+                    "id": "Robert  Gray",
+                    "name": "Robert  Gray",
+                    "description": "Recruitment  Manager",
+                    "children": []
+                  },
+                  {
+                    "id": "Emily  White",
+                    "name": "Emily  White",
+                    "description": "Training  and  Development  Manager",
+                    "children": []
+                  },
+                  {
+                    "id": "Paul  Harris",
+                    "name": "Paul  Harris",
+                    "description": "Compensation  and  Benefits  Manager",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "Name",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "Description",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "Organization Structure",
+          "key": "children",
+          "purpose": "Hierarchy",
+          "purposeDesc": "高管团队组织结构图"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -328,7 +785,78 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "Sophia  Johnson",
+            "name": "Sophia  Johnson",
+            "description": "Chief  Human  Resources  Officer",
+            "children": [
+              {
+                "id": "Tom  White",
+                "name": "Tom  White",
+                "description": "Human  Resources  Manager",
+                "children": [
+                  {
+                    "id": "Michael  Green",
+                    "name": "Michael  Green",
+                    "description": "Recruitment  Specialist"
+                  },
+                  {
+                    "id": "Anna  Brown",
+                    "name": "Anna  Brown",
+                    "description": "Recruitment  Assistant"
+                  }
+                ]
+              },
+              {
+                "id": "Lisa  Black",
+                "name": "Lisa  Black",
+                "description": "Human  Resources  Specialist",
+                "children": [
+                  {
+                    "id": "Bob  Green",
+                    "name": "Bob  Green",
+                    "description": "Training  Specialist"
+                  },
+                  {
+                    "id": "Diana  White",
+                    "name": "Diana  White",
+                    "description": "Training  Assistant"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "id",
+            "name": "员工ID",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "员工姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "children",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示公司人力资源部门的组织架构"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -349,7 +877,51 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "Michael Brown",
+            "description": "Chief Marketing Officer",
+            "children": [
+              {
+                "name": "Sarah Johnson",
+                "description": "Content Marketing Manager"
+              },
+              {
+                "name": "Robert Wilson",
+                "description": "SEO Specialist"
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "下属",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织机构图",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示公司组织架构"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -366,7 +938,47 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "James Walker",
+            "description": "Chief Financial Officer",
+            "children": [
+              {
+                "name": "Anna Black",
+                "description": "Financial Analyst"
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "下属",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织机构图",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "展示公司组织结构和人员关系"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -387,7 +999,51 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "Nancy Harris",
+            "description": "Chief Operations Officer",
+            "children": [
+              {
+                "name": "George Taylor",
+                "description": "Logistics Manager"
+              },
+              {
+                "name": "Karen Clark",
+                "description": "Operations Analyst"
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "下属",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "部门的组织架构可视化"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -410,7 +1066,53 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "Charlie  Brown",
+            "description": "Chief  Technology  Officer",
+            "children": [
+              {
+                "name": "Lucy  Van  Pelt",
+                "description": "Software  Engineer",
+                "children": [
+                  {
+                    "name": "Linus  Van  Pelt",
+                    "description": "Junior  Developer"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          },
+          {
+            "id": "children",
+            "name": "下属",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "显示部门的组织架构"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -433,7 +1135,48 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "David  Green",
+            "description": "Chief  Marketing  Officer",
+            "children": [
+              {
+                "name": "Eva  White",
+                "description": "Marketing  Manager",
+                "children": [
+                  {
+                    "name": "Frank  Black",
+                    "description": "Marketing  Specialist"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "children",
+          "purpose": "Hierarchy",
+          "purposeDesc": "用组织架构图显示数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -536,6 +1279,127 @@
           }
         ]
       }
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "Alice  Smith",
+            "description": "Chief  Financial  Officer",
+            "children": [
+              {
+                "name": "Bob  Johnson",
+                "description": "Financial  Analyst",
+                "children": [
+                  {
+                    "name": "Hannah  Thompson",
+                    "description": "Financial  Analyst  Intern"
+                  }
+                ]
+              },
+              {
+                "name": "Carol  Williams",
+                "description": "Accountant",
+                "children": [
+                  {
+                    "name": "Ian  Clark",
+                    "description": "Junior  Accountant"
+                  }
+                ]
+              },
+              {
+                "name": "David  Brown",
+                "description": "Financial  Planner",
+                "children": [
+                  {
+                    "name": "Jack  Lewis",
+                    "description": "Financial  Planning  Assistant"
+                  }
+                ]
+              },
+              {
+                "name": "Eva  Davis",
+                "description": "Tax  Consultant",
+                "children": [
+                  {
+                    "name": "Kathy  White",
+                    "description": "Tax  Consultant  Intern"
+                  }
+                ]
+              },
+              {
+                "name": "Frank  Wilson",
+                "description": "Investment  Analyst",
+                "children": [
+                  {
+                    "name": "Larry  Walker",
+                    "description": "Investment  Analyst  Intern"
+                  }
+                ]
+              },
+              {
+                "name": "Grace  Martin",
+                "description": "Budget  Analyst",
+                "children": [
+                  {
+                    "name": "Mary  Hall",
+                    "description": "Budget  Analyst  Intern"
+                  }
+                ]
+              },
+              {
+                "name": "Nancy  Young",
+                "description": "Financial  Analyst",
+                "children": [
+                  {
+                    "name": "Tina  Wright",
+                    "description": "Financial  Analyst  Intern"
+                  }
+                ]
+              },
+              {
+                "name": "Oscar  Green",
+                "description": "Accountant"
+              },
+              {
+                "name": "Patricia  Adams",
+                "description": "Financial  Planner"
+              },
+              {
+                "name": "Quincy  Nelson",
+                "description": "Tax  Consultant"
+              },
+              {
+                "name": "Rachel  Scott",
+                "description": "Investment  Analyst"
+              },
+              {
+                "name": "Samuel  Taylor",
+                "description": "Budget  Analyst"
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "姓名",
+            "dataType": "string"
+          },
+          {
+            "id": "description",
+            "name": "职位描述",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "children",
+          "purpose": "Hierarchy",
+          "purposeDesc": "公司财务部门组织架构图"
+        }
+      }
+    ]
   }
 ]

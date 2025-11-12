@@ -5,14 +5,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2018年", "value": 15 },
-        { "time": "2019年", "value": 17 },
-        { "time": "2020年", "value": 16 }
+        {
+          "time": "2018年",
+          "value": 15
+        },
+        {
+          "time": "2019年",
+          "value": 17
+        },
+        {
+          "time": "2020年",
+          "value": 16
+        }
       ],
       "title": "某市平均气温变化",
       "axisXTitle": "年份",
       "axisYTitle": "平均气温（摄氏度）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2018年",
+            "value": 15
+          },
+          {
+            "time": "2019年",
+            "value": 17
+          },
+          {
+            "time": "2020年",
+            "value": 16
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "平均气温（摄氏度）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "平均气温（摄氏度）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "某市平均气温变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -20,16 +66,76 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2016年", "value": 800 },
-        { "time": "2017年", "value": 900 },
-        { "time": "2018年", "value": 700 },
-        { "time": "2019年", "value": 1000 },
-        { "time": "2020年", "value": 1100 }
+        {
+          "time": "2016年",
+          "value": 800
+        },
+        {
+          "time": "2017年",
+          "value": 900
+        },
+        {
+          "time": "2018年",
+          "value": 700
+        },
+        {
+          "time": "2019年",
+          "value": 1000
+        },
+        {
+          "time": "2020年",
+          "value": 1100
+        }
       ],
       "title": "城市年度降雨量变化",
       "axisXTitle": "年份",
       "axisYTitle": "降雨量（毫米）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2016年",
+            "value": 800
+          },
+          {
+            "time": "2017年",
+            "value": 900
+          },
+          {
+            "time": "2018年",
+            "value": 700
+          },
+          {
+            "time": "2019年",
+            "value": 1000
+          },
+          {
+            "time": "2020年",
+            "value": 1100
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "降雨量（毫米）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "降雨量（毫米）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "城市年度降雨量变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -37,14 +143,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "年初", "value": 50 },
-        { "time": "年中", "value": 40 },
-        { "time": "年底", "value": 55 }
+        {
+          "time": "年初",
+          "value": 50
+        },
+        {
+          "time": "年中",
+          "value": 40
+        },
+        {
+          "time": "年底",
+          "value": 55
+        }
       ],
       "title": "公司股价变动",
       "axisXTitle": "时间",
       "axisYTitle": "股价（元/股）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "年初",
+            "value": 50
+          },
+          {
+            "time": "年中",
+            "value": 40
+          },
+          {
+            "time": "年底",
+            "value": 55
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "时间",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "股价（元/股）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "股价（元/股）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "公司股价变动"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -52,14 +204,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2017年", "value": 5000 },
-        { "time": "2018年", "value": 7000 },
-        { "time": "2019年", "value": 6000 }
+        {
+          "time": "2017年",
+          "value": 5000
+        },
+        {
+          "time": "2018年",
+          "value": 7000
+        },
+        {
+          "time": "2019年",
+          "value": 6000
+        }
       ],
       "title": "新增就业人数变化",
       "axisXTitle": "年份",
       "axisYTitle": "新增就业人数（人）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2017年",
+            "value": 5000
+          },
+          {
+            "time": "2018年",
+            "value": 7000
+          },
+          {
+            "time": "2019年",
+            "value": 6000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "新增就业人数（人）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "新增就业人数（人）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "新增就业人数变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -67,15 +265,68 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "春季", "value": 100000 },
-        { "time": "夏季", "value": 150000 },
-        { "time": "秋季", "value": 120000 },
-        { "time": "冬季", "value": 80000 }
+        {
+          "time": "春季",
+          "value": 100000
+        },
+        {
+          "time": "夏季",
+          "value": 150000
+        },
+        {
+          "time": "秋季",
+          "value": 120000
+        },
+        {
+          "time": "冬季",
+          "value": 80000
+        }
       ],
       "title": "产品季节性销量",
       "axisXTitle": "季节",
       "axisYTitle": "销量（台）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "春季",
+            "value": 100000
+          },
+          {
+            "time": "夏季",
+            "value": 150000
+          },
+          {
+            "time": "秋季",
+            "value": 120000
+          },
+          {
+            "time": "冬季",
+            "value": 80000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "季节",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销量（台）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销量（台）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "产品季节性销量"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -83,14 +334,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "18岁", "value": 90 },
-        { "time": "25岁", "value": 80 },
-        { "time": "30岁", "value": 70 }
+        {
+          "time": "18岁",
+          "value": 90
+        },
+        {
+          "time": "25岁",
+          "value": 80
+        },
+        {
+          "time": "30岁",
+          "value": 70
+        }
       ],
       "title": "社交媒体使用兴趣随年龄变化",
       "axisXTitle": "年龄",
       "axisYTitle": "经常使用比例（%）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "18岁",
+            "value": 90
+          },
+          {
+            "time": "25岁",
+            "value": 80
+          },
+          {
+            "time": "30岁",
+            "value": 70
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年龄",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "经常使用比例（%）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "经常使用比例（%）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "社交媒体使用兴趣随年龄变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -98,14 +395,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "一月份", "value": 100000 },
-        { "time": "二月份", "value": 120000 },
-        { "time": "三月份", "value": 110000 }
+        {
+          "time": "一月份",
+          "value": 100000
+        },
+        {
+          "time": "二月份",
+          "value": 120000
+        },
+        {
+          "time": "三月份",
+          "value": 110000
+        }
       ],
       "title": "电商平台订单数量变化",
       "axisXTitle": "月份",
       "axisYTitle": "订单数量（单）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "一月份",
+            "value": 100000
+          },
+          {
+            "time": "二月份",
+            "value": 120000
+          },
+          {
+            "time": "三月份",
+            "value": 110000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "月份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "订单数量（单）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "订单数量（单）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "电商平台订单数量变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -113,14 +456,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2018年底", "value": 70000 },
-        { "time": "2019年底", "value": 75000 },
-        { "time": "2020年底", "value": 80000 }
+        {
+          "time": "2018年底",
+          "value": 70000
+        },
+        {
+          "time": "2019年底",
+          "value": 75000
+        },
+        {
+          "time": "2020年底",
+          "value": 80000
+        }
       ],
       "title": "智能手机用户数量增长",
       "axisXTitle": "年份",
       "axisYTitle": "用户数量（万户）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2018年底",
+            "value": 70000
+          },
+          {
+            "time": "2019年底",
+            "value": 75000
+          },
+          {
+            "time": "2020年底",
+            "value": 80000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "用户数量（万户）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "用户数量（万户）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "智能手机用户数量增长"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -128,32 +517,137 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2017年", "value": 7000 },
-        { "time": "2018年", "value": 6500 },
-        { "time": "2019年", "value": 6000 }
+        {
+          "time": "2017年",
+          "value": 7000
+        },
+        {
+          "time": "2018年",
+          "value": 6500
+        },
+        {
+          "time": "2019年",
+          "value": 6000
+        }
       ],
       "title": "成年人每日平均步行步数变化",
       "axisXTitle": "年份",
       "axisYTitle": "平均步数（步）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2017年",
+            "value": 7000
+          },
+          {
+            "time": "2018年",
+            "value": 6500
+          },
+          {
+            "time": "2019年",
+            "value": 6000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "平均步数（步）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "平均步数（步）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "成年人每日平均步行步数变化"
+        }
+      }
+    ]
   },
-
   {
     "type": "text2chart",
     "question": "过去五年内，某城市的平均气温分别为：2018 年 15°C，2019 年 16°C，2020 年 15°C，2021 年 17°C，2022 年 18°C。用折线图可视化这些数据。",
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2018 年", "value": 15 },
-        { "time": "2019 年", "value": 16 },
-        { "time": "2020 年", "value": 15 },
-        { "time": "2021 年", "value": 17 },
-        { "time": "2022 年", "value": 18 }
+        {
+          "time": "2018 年",
+          "value": 15
+        },
+        {
+          "time": "2019 年",
+          "value": 16
+        },
+        {
+          "time": "2020 年",
+          "value": 15
+        },
+        {
+          "time": "2021 年",
+          "value": 17
+        },
+        {
+          "time": "2022 年",
+          "value": 18
+        }
       ],
       "title": "某城市平均气温变化",
       "axisXTitle": "年份",
       "axisYTitle": "平均气温（°C）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2018 年",
+            "value": 15
+          },
+          {
+            "time": "2019 年",
+            "value": 16
+          },
+          {
+            "time": "2020 年",
+            "value": 15
+          },
+          {
+            "time": "2021 年",
+            "value": 17
+          },
+          {
+            "time": "2022 年",
+            "value": 18
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "平均气温（°C）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "平均气温（°C）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "某城市平均气温变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -161,16 +655,76 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2017 年", "value": 3000 },
-        { "time": "2018 年", "value": 3200 },
-        { "time": "2019 年", "value": 3100 },
-        { "time": "2020 年", "value": 3300 },
-        { "time": "2021 年", "value": 3400 }
+        {
+          "time": "2017 年",
+          "value": 3000
+        },
+        {
+          "time": "2018 年",
+          "value": 3200
+        },
+        {
+          "time": "2019 年",
+          "value": 3100
+        },
+        {
+          "time": "2020 年",
+          "value": 3300
+        },
+        {
+          "time": "2021 年",
+          "value": 3400
+        }
       ],
       "title": "大学在校学生人数变化",
       "axisXTitle": "年份",
       "axisYTitle": "在校学生人数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2017 年",
+            "value": 3000
+          },
+          {
+            "time": "2018 年",
+            "value": 3200
+          },
+          {
+            "time": "2019 年",
+            "value": 3100
+          },
+          {
+            "time": "2020 年",
+            "value": 3300
+          },
+          {
+            "time": "2021 年",
+            "value": 3400
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "在校学生人数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "在校学生人数",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "大学在校学生人数变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -178,15 +732,68 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2019 年", "value": 150 },
-        { "time": "2020 年", "value": 160 },
-        { "time": "2021 年", "value": 155 },
-        { "time": "2022 年", "value": 170 }
+        {
+          "time": "2019 年",
+          "value": 150
+        },
+        {
+          "time": "2020 年",
+          "value": 160
+        },
+        {
+          "time": "2021 年",
+          "value": 155
+        },
+        {
+          "time": "2022 年",
+          "value": 170
+        }
       ],
       "title": "公司员工人数变化",
       "axisXTitle": "年份",
       "axisYTitle": "员工人数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2019 年",
+            "value": 150
+          },
+          {
+            "time": "2020 年",
+            "value": 160
+          },
+          {
+            "time": "2021 年",
+            "value": 155
+          },
+          {
+            "time": "2022 年",
+            "value": 170
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "员工人数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "员工人数",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "公司员工人数变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -194,15 +801,68 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Q1", "value": 2000 },
-        { "time": "Q2", "value": 2500 },
-        { "time": "Q3", "value": 2300 },
-        { "time": "Q4", "value": 2600 }
+        {
+          "time": "Q1",
+          "value": 2000
+        },
+        {
+          "time": "Q2",
+          "value": 2500
+        },
+        {
+          "time": "Q3",
+          "value": 2300
+        },
+        {
+          "time": "Q4",
+          "value": 2600
+        }
       ],
       "title": "产品季度销售量",
       "axisXTitle": "季度",
       "axisYTitle": "销售量（件）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Q1",
+            "value": 2000
+          },
+          {
+            "time": "Q2",
+            "value": 2500
+          },
+          {
+            "time": "Q3",
+            "value": 2300
+          },
+          {
+            "time": "Q4",
+            "value": 2600
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售量（件）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售量（件）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "产品季度销售量"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -210,14 +870,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2020 年", "value": 2.5 },
-        { "time": "2021 年", "value": 3.0 },
-        { "time": "2022 年", "value": 2.8 }
+        {
+          "time": "2020 年",
+          "value": 2.5
+        },
+        {
+          "time": "2021 年",
+          "value": 3
+        },
+        {
+          "time": "2022 年",
+          "value": 2.8
+        }
       ],
       "title": "年度通货膨胀率",
       "axisXTitle": "年份",
       "axisYTitle": "通货膨胀率（%）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2020 年",
+            "value": 2.5
+          },
+          {
+            "time": "2021 年",
+            "value": 3
+          },
+          {
+            "time": "2022 年",
+            "value": 2.8
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "通货膨胀率（%）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "通货膨胀率（%）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "年度通货膨胀率"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -225,15 +931,68 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "一月", "value": 100 },
-        { "time": "二月", "value": 120 },
-        { "time": "三月", "value": 110 },
-        { "time": "四月", "value": 130 }
+        {
+          "time": "一月",
+          "value": 100
+        },
+        {
+          "time": "二月",
+          "value": 120
+        },
+        {
+          "time": "三月",
+          "value": 110
+        },
+        {
+          "time": "四月",
+          "value": 130
+        }
       ],
       "title": "项目月度花费",
       "axisXTitle": "月份",
       "axisYTitle": "花费（万元）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "一月",
+            "value": 100
+          },
+          {
+            "time": "二月",
+            "value": 120
+          },
+          {
+            "time": "三月",
+            "value": 110
+          },
+          {
+            "time": "四月",
+            "value": 130
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "月份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "花费（万元）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "花费（万元）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "项目月度花费"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -241,14 +1000,60 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2018 年", "value": 75 },
-        { "time": "2019 年", "value": 72 },
-        { "time": "2020 年", "value": 68 }
+        {
+          "time": "2018 年",
+          "value": 75
+        },
+        {
+          "time": "2019 年",
+          "value": 72
+        },
+        {
+          "time": "2020 年",
+          "value": 68
+        }
       ],
       "title": "空气质量指数年平均值",
       "axisXTitle": "年份",
       "axisYTitle": "AQI"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2018 年",
+            "value": 75
+          },
+          {
+            "time": "2019 年",
+            "value": 72
+          },
+          {
+            "time": "2020 年",
+            "value": 68
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "AQI",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "AQI",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "空气质量指数年平均值"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -256,21 +1061,141 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2010年", "value": 20, "group": "中国" },
-        { "time": "2020年", "value": 25, "group": "中国" },
-        { "time": "2010年", "value": 20, "group": "印度" },
-        { "time": "2020年", "value": 23, "group": "印度" },
-        { "time": "2010年", "value": 60, "group": "巴西" },
-        { "time": "2020年", "value": 55, "group": "巴西" },
-        { "time": "2010年", "value": 45, "group": "俄罗斯" },
-        { "time": "2020年", "value": 50, "group": "俄罗斯" },
-        { "time": "2010年", "value": 30, "group": "加拿大" },
-        { "time": "2020年", "value": 30, "group": "加拿大" }
+        {
+          "time": "2010年",
+          "value": 20,
+          "group": "中国"
+        },
+        {
+          "time": "2020年",
+          "value": 25,
+          "group": "中国"
+        },
+        {
+          "time": "2010年",
+          "value": 20,
+          "group": "印度"
+        },
+        {
+          "time": "2020年",
+          "value": 23,
+          "group": "印度"
+        },
+        {
+          "time": "2010年",
+          "value": 60,
+          "group": "巴西"
+        },
+        {
+          "time": "2020年",
+          "value": 55,
+          "group": "巴西"
+        },
+        {
+          "time": "2010年",
+          "value": 45,
+          "group": "俄罗斯"
+        },
+        {
+          "time": "2020年",
+          "value": 50,
+          "group": "俄罗斯"
+        },
+        {
+          "time": "2010年",
+          "value": 30,
+          "group": "加拿大"
+        },
+        {
+          "time": "2020年",
+          "value": 30,
+          "group": "加拿大"
+        }
       ],
       "title": "各国森林覆盖率变化",
       "axisXTitle": "年份",
       "axisYTitle": "森林覆盖率（%）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2010年",
+            "value": 20,
+            "group": "中国"
+          },
+          {
+            "time": "2020年",
+            "value": 25,
+            "group": "中国"
+          },
+          {
+            "time": "2010年",
+            "value": 20,
+            "group": "印度"
+          },
+          {
+            "time": "2020年",
+            "value": 23,
+            "group": "印度"
+          },
+          {
+            "time": "2010年",
+            "value": 60,
+            "group": "巴西"
+          },
+          {
+            "time": "2020年",
+            "value": 55,
+            "group": "巴西"
+          },
+          {
+            "time": "2010年",
+            "value": 45,
+            "group": "俄罗斯"
+          },
+          {
+            "time": "2020年",
+            "value": 50,
+            "group": "俄罗斯"
+          },
+          {
+            "time": "2010年",
+            "value": 30,
+            "group": "加拿大"
+          },
+          {
+            "time": "2020年",
+            "value": 30,
+            "group": "加拿大"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "森林覆盖率（%）",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "国家",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "森林覆盖率（%）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "各国森林覆盖率变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -278,21 +1203,141 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2010年", "value": 20, "group": "中国" },
-        { "time": "2020年", "value": 25, "group": "中国" },
-        { "time": "2010年", "value": 20, "group": "印度" },
-        { "time": "2020年", "value": 23, "group": "印度" },
-        { "time": "2010年", "value": 60, "group": "巴西" },
-        { "time": "2020年", "value": 55, "group": "巴西" },
-        { "time": "2010年", "value": 45, "group": "俄罗斯" },
-        { "time": "2020年", "value": 50, "group": "俄罗斯" },
-        { "time": "2010年", "value": 30, "group": "加拿大" },
-        { "time": "2020年", "value": 30, "group": "加拿大" }
+        {
+          "time": "2010年",
+          "value": 20,
+          "group": "中国"
+        },
+        {
+          "time": "2020年",
+          "value": 25,
+          "group": "中国"
+        },
+        {
+          "time": "2010年",
+          "value": 20,
+          "group": "印度"
+        },
+        {
+          "time": "2020年",
+          "value": 23,
+          "group": "印度"
+        },
+        {
+          "time": "2010年",
+          "value": 60,
+          "group": "巴西"
+        },
+        {
+          "time": "2020年",
+          "value": 55,
+          "group": "巴西"
+        },
+        {
+          "time": "2010年",
+          "value": 45,
+          "group": "俄罗斯"
+        },
+        {
+          "time": "2020年",
+          "value": 50,
+          "group": "俄罗斯"
+        },
+        {
+          "time": "2010年",
+          "value": 30,
+          "group": "加拿大"
+        },
+        {
+          "time": "2020年",
+          "value": 30,
+          "group": "加拿大"
+        }
       ],
       "title": "各国森林覆盖率变化",
       "axisXTitle": "年份",
       "axisYTitle": "森林覆盖率（%）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2010年",
+            "value": 20,
+            "group": "中国"
+          },
+          {
+            "time": "2020年",
+            "value": 25,
+            "group": "中国"
+          },
+          {
+            "time": "2010年",
+            "value": 20,
+            "group": "印度"
+          },
+          {
+            "time": "2020年",
+            "value": 23,
+            "group": "印度"
+          },
+          {
+            "time": "2010年",
+            "value": 60,
+            "group": "巴西"
+          },
+          {
+            "time": "2020年",
+            "value": 55,
+            "group": "巴西"
+          },
+          {
+            "time": "2010年",
+            "value": 45,
+            "group": "俄罗斯"
+          },
+          {
+            "time": "2020年",
+            "value": 50,
+            "group": "俄罗斯"
+          },
+          {
+            "time": "2010年",
+            "value": 30,
+            "group": "加拿大"
+          },
+          {
+            "time": "2020年",
+            "value": 30,
+            "group": "加拿大"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "森林覆盖率（%）",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "国家",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "森林覆盖率（%）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "各国森林覆盖率变化"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -300,26 +1345,191 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "第一年", "value": 150, "group": "城市A" },
-        { "time": "第二年", "value": 160, "group": "城市A" },
-        { "time": "第三年", "value": 145, "group": "城市A" },
-        { "time": "第四年", "value": 155, "group": "城市A" },
-        { "time": "第五年", "value": 165, "group": "城市A" },
-        { "time": "第一年", "value": 100, "group": "城市B" },
-        { "time": "第二年", "value": 110, "group": "城市B" },
-        { "time": "第三年", "value": 105, "group": "城市B" },
-        { "time": "第四年", "value": 115, "group": "城市B" },
-        { "time": "第五年", "value": 120, "group": "城市B" },
-        { "time": "第一年", "value": 90, "group": "城市C" },
-        { "time": "第二年", "value": 85, "group": "城市C" },
-        { "time": "第三年", "value": 80, "group": "城市C" },
-        { "time": "第四年", "value": 75, "group": "城市C" },
-        { "time": "第五年", "value": 70, "group": "城市C" }
+        {
+          "time": "第一年",
+          "value": 150,
+          "group": "城市A"
+        },
+        {
+          "time": "第二年",
+          "value": 160,
+          "group": "城市A"
+        },
+        {
+          "time": "第三年",
+          "value": 145,
+          "group": "城市A"
+        },
+        {
+          "time": "第四年",
+          "value": 155,
+          "group": "城市A"
+        },
+        {
+          "time": "第五年",
+          "value": 165,
+          "group": "城市A"
+        },
+        {
+          "time": "第一年",
+          "value": 100,
+          "group": "城市B"
+        },
+        {
+          "time": "第二年",
+          "value": 110,
+          "group": "城市B"
+        },
+        {
+          "time": "第三年",
+          "value": 105,
+          "group": "城市B"
+        },
+        {
+          "time": "第四年",
+          "value": 115,
+          "group": "城市B"
+        },
+        {
+          "time": "第五年",
+          "value": 120,
+          "group": "城市B"
+        },
+        {
+          "time": "第一年",
+          "value": 90,
+          "group": "城市C"
+        },
+        {
+          "time": "第二年",
+          "value": 85,
+          "group": "城市C"
+        },
+        {
+          "time": "第三年",
+          "value": 80,
+          "group": "城市C"
+        },
+        {
+          "time": "第四年",
+          "value": 75,
+          "group": "城市C"
+        },
+        {
+          "time": "第五年",
+          "value": 70,
+          "group": "城市C"
+        }
       ],
       "title": "城市空气污染指数变化",
       "axisXTitle": "年份",
       "axisYTitle": "空气污染指数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "第一年",
+            "value": 150,
+            "group": "城市A"
+          },
+          {
+            "time": "第二年",
+            "value": 160,
+            "group": "城市A"
+          },
+          {
+            "time": "第三年",
+            "value": 145,
+            "group": "城市A"
+          },
+          {
+            "time": "第四年",
+            "value": 155,
+            "group": "城市A"
+          },
+          {
+            "time": "第五年",
+            "value": 165,
+            "group": "城市A"
+          },
+          {
+            "time": "第一年",
+            "value": 100,
+            "group": "城市B"
+          },
+          {
+            "time": "第二年",
+            "value": 110,
+            "group": "城市B"
+          },
+          {
+            "time": "第三年",
+            "value": 105,
+            "group": "城市B"
+          },
+          {
+            "time": "第四年",
+            "value": 115,
+            "group": "城市B"
+          },
+          {
+            "time": "第五年",
+            "value": 120,
+            "group": "城市B"
+          },
+          {
+            "time": "第一年",
+            "value": 90,
+            "group": "城市C"
+          },
+          {
+            "time": "第二年",
+            "value": 85,
+            "group": "城市C"
+          },
+          {
+            "time": "第三年",
+            "value": 80,
+            "group": "城市C"
+          },
+          {
+            "time": "第四年",
+            "value": 75,
+            "group": "城市C"
+          },
+          {
+            "time": "第五年",
+            "value": 70,
+            "group": "城市C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "空气污染指数",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "城市",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "空气污染指数",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "三个城市过去五年空气污染指数变化对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -327,41 +1537,251 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "第一年", "value": 150, "group": "城市A" },
-        { "time": "第二年", "value": 160, "group": "城市A" },
-        { "time": "第三年", "value": 145, "group": "城市A" },
-        { "time": "第四年", "value": 155, "group": "城市A" },
-        { "time": "第五年", "value": 165, "group": "城市A" },
-        { "time": "第一年", "value": 100, "group": "城市B" },
-        { "time": "第二年", "value": 110, "group": "城市B" },
-        { "time": "第三年", "value": 105, "group": "城市B" },
-        { "time": "第四年", "value": 115, "group": "城市B" },
-        { "time": "第五年", "value": 120, "group": "城市B" },
-        { "time": "第一年", "value": 90, "group": "城市C" },
-        { "time": "第二年", "value": 85, "group": "城市C" },
-        { "time": "第三年", "value": 80, "group": "城市C" },
-        { "time": "第四年", "value": 75, "group": "城市C" },
-        { "time": "第五年", "value": 70, "group": "城市C" }
+        {
+          "time": "第一年",
+          "value": 150,
+          "group": "城市A"
+        },
+        {
+          "time": "第二年",
+          "value": 160,
+          "group": "城市A"
+        },
+        {
+          "time": "第三年",
+          "value": 145,
+          "group": "城市A"
+        },
+        {
+          "time": "第四年",
+          "value": 155,
+          "group": "城市A"
+        },
+        {
+          "time": "第五年",
+          "value": 165,
+          "group": "城市A"
+        },
+        {
+          "time": "第一年",
+          "value": 100,
+          "group": "城市B"
+        },
+        {
+          "time": "第二年",
+          "value": 110,
+          "group": "城市B"
+        },
+        {
+          "time": "第三年",
+          "value": 105,
+          "group": "城市B"
+        },
+        {
+          "time": "第四年",
+          "value": 115,
+          "group": "城市B"
+        },
+        {
+          "time": "第五年",
+          "value": 120,
+          "group": "城市B"
+        },
+        {
+          "time": "第一年",
+          "value": 90,
+          "group": "城市C"
+        },
+        {
+          "time": "第二年",
+          "value": 85,
+          "group": "城市C"
+        },
+        {
+          "time": "第三年",
+          "value": 80,
+          "group": "城市C"
+        },
+        {
+          "time": "第四年",
+          "value": 75,
+          "group": "城市C"
+        },
+        {
+          "time": "第五年",
+          "value": 70,
+          "group": "城市C"
+        }
       ],
       "title": "城市空气污染指数变化",
       "axisXTitle": "年份",
       "axisYTitle": "空气污染指数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "第一年",
+            "value": 150,
+            "group": "城市A"
+          },
+          {
+            "time": "第二年",
+            "value": 160,
+            "group": "城市A"
+          },
+          {
+            "time": "第三年",
+            "value": 145,
+            "group": "城市A"
+          },
+          {
+            "time": "第四年",
+            "value": 155,
+            "group": "城市A"
+          },
+          {
+            "time": "第五年",
+            "value": 165,
+            "group": "城市A"
+          },
+          {
+            "time": "第一年",
+            "value": 100,
+            "group": "城市B"
+          },
+          {
+            "time": "第二年",
+            "value": 110,
+            "group": "城市B"
+          },
+          {
+            "time": "第三年",
+            "value": 105,
+            "group": "城市B"
+          },
+          {
+            "time": "第四年",
+            "value": 115,
+            "group": "城市B"
+          },
+          {
+            "time": "第五年",
+            "value": 120,
+            "group": "城市B"
+          },
+          {
+            "time": "第一年",
+            "value": 90,
+            "group": "城市C"
+          },
+          {
+            "time": "第二年",
+            "value": 85,
+            "group": "城市C"
+          },
+          {
+            "time": "第三年",
+            "value": 80,
+            "group": "城市C"
+          },
+          {
+            "time": "第四年",
+            "value": 75,
+            "group": "城市C"
+          },
+          {
+            "time": "第五年",
+            "value": 70,
+            "group": "城市C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "空气污染指数",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "城市",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "空气污染指数",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "三个城市过去五年空气污染指数变化对比"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "用折线图可视化我的数据 [{ \"month\": \"Jan\",\"value\": 150 },{ \"month\": \"Feb\", \"value\": 200 },{ \"month\": \"Mar\" ,\"value\": 180 }]",
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Jan", "value": 150 },
-        { "time": "Feb", "value": 200 },
-        { "time": "Mar", "value": 180 }
+        {
+          "time": "Jan",
+          "value": 150
+        },
+        {
+          "time": "Feb",
+          "value": 200
+        },
+        {
+          "time": "Mar",
+          "value": 180
+        }
       ],
       "axisXTitle": "month",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Jan",
+            "value": 150
+          },
+          {
+            "time": "Feb",
+            "value": 200
+          },
+          {
+            "time": "Mar",
+            "value": 180
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "month",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -369,15 +1789,75 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Mon", "value": 500 },
-        { "time": "Tue", "value": 700 },
-        { "time": "Wed", "value": 600 },
-        { "time": "Thu", "value": 900 },
-        { "time": "Fri", "value": 800 }
+        {
+          "time": "Mon",
+          "value": 500
+        },
+        {
+          "time": "Tue",
+          "value": 700
+        },
+        {
+          "time": "Wed",
+          "value": 600
+        },
+        {
+          "time": "Thu",
+          "value": 900
+        },
+        {
+          "time": "Fri",
+          "value": 800
+        }
       ],
       "axisXTitle": "day",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Mon",
+            "value": 500
+          },
+          {
+            "time": "Tue",
+            "value": 700
+          },
+          {
+            "time": "Wed",
+            "value": 600
+          },
+          {
+            "time": "Thu",
+            "value": 900
+          },
+          {
+            "time": "Fri",
+            "value": 800
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "day",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -385,14 +1865,67 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "1", "value": 1000 },
-        { "time": "2", "value": 1500 },
-        { "time": "3", "value": 1200 },
-        { "time": "4", "value": 1800 }
+        {
+          "time": "1",
+          "value": 1000
+        },
+        {
+          "time": "2",
+          "value": 1500
+        },
+        {
+          "time": "3",
+          "value": 1200
+        },
+        {
+          "time": "4",
+          "value": 1800
+        }
       ],
       "axisXTitle": "week",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "1",
+            "value": 1000
+          },
+          {
+            "time": "2",
+            "value": 1500
+          },
+          {
+            "time": "3",
+            "value": 1200
+          },
+          {
+            "time": "4",
+            "value": 1800
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "week",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -400,14 +1933,67 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Q1", "value": 2000 },
-        { "time": "Q2", "value": 3000 },
-        { "time": "Q3", "value": 2500 },
-        { "time": "Q4", "value": 3500 }
+        {
+          "time": "Q1",
+          "value": 2000
+        },
+        {
+          "time": "Q2",
+          "value": 3000
+        },
+        {
+          "time": "Q3",
+          "value": 2500
+        },
+        {
+          "time": "Q4",
+          "value": 3500
+        }
       ],
       "axisXTitle": "quarter",
       "axisYTitle": "sales"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Q1",
+            "value": 2000
+          },
+          {
+            "time": "Q2",
+            "value": 3000
+          },
+          {
+            "time": "Q3",
+            "value": 2500
+          },
+          {
+            "time": "Q4",
+            "value": 3500
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "quarter",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "sales",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "sales",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化季度销售数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -415,14 +2001,67 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": 2018, "value": 5000 },
-        { "time": 2019, "value": 7000 },
-        { "time": 2020, "value": 6000 },
-        { "time": 2021, "value": 8000 }
+        {
+          "time": 2018,
+          "value": 5000
+        },
+        {
+          "time": 2019,
+          "value": 7000
+        },
+        {
+          "time": 2020,
+          "value": 6000
+        },
+        {
+          "time": 2021,
+          "value": 8000
+        }
       ],
       "axisXTitle": "year",
       "axisYTitle": "revenue"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": 2018,
+            "value": 5000
+          },
+          {
+            "time": 2019,
+            "value": 7000
+          },
+          {
+            "time": 2020,
+            "value": 6000
+          },
+          {
+            "time": 2021,
+            "value": 8000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "year",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "revenue",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "revenue",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化我的数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -430,13 +2069,59 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Jan", "value": 3000 },
-        { "time": "Feb", "value": 4500 },
-        { "time": "Mar", "value": 4000 }
+        {
+          "time": "Jan",
+          "value": 3000
+        },
+        {
+          "time": "Feb",
+          "value": 4500
+        },
+        {
+          "time": "Mar",
+          "value": 4000
+        }
       ],
       "axisXTitle": "month",
       "axisYTitle": "sales"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Jan",
+            "value": 3000
+          },
+          {
+            "time": "Feb",
+            "value": 4500
+          },
+          {
+            "time": "Mar",
+            "value": 4000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "month",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "sales",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "sales",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化我的数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -444,14 +2129,67 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": 1, "value": 30 },
-        { "time": 2, "value": 35 },
-        { "time": 3, "value": 32 },
-        { "time": 4, "value": 38 }
+        {
+          "time": 1,
+          "value": 30
+        },
+        {
+          "time": 2,
+          "value": 35
+        },
+        {
+          "time": 3,
+          "value": 32
+        },
+        {
+          "time": 4,
+          "value": 38
+        }
       ],
       "axisXTitle": "hour",
       "axisYTitle": "temperature"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": 1,
+            "value": 30
+          },
+          {
+            "time": 2,
+            "value": 35
+          },
+          {
+            "time": 3,
+            "value": 32
+          },
+          {
+            "time": 4,
+            "value": 38
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "hour",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "temperature",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "temperature",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化温度随时间变化"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -459,15 +2197,75 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Monday", "value": 2000 },
-        { "time": "Tuesday", "value": 2500 },
-        { "time": "Wednesday", "value": 2200 },
-        { "time": "Thursday", "value": 2800 },
-        { "time": "Friday", "value": 3000 }
+        {
+          "time": "Monday",
+          "value": 2000
+        },
+        {
+          "time": "Tuesday",
+          "value": 2500
+        },
+        {
+          "time": "Wednesday",
+          "value": 2200
+        },
+        {
+          "time": "Thursday",
+          "value": 2800
+        },
+        {
+          "time": "Friday",
+          "value": 3000
+        }
       ],
       "axisXTitle": "day",
       "axisYTitle": "sales"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Monday",
+            "value": 2000
+          },
+          {
+            "time": "Tuesday",
+            "value": 2500
+          },
+          {
+            "time": "Wednesday",
+            "value": 2200
+          },
+          {
+            "time": "Thursday",
+            "value": 2800
+          },
+          {
+            "time": "Friday",
+            "value": 3000
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "day",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "sales",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "sales",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化我的数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -475,14 +2273,67 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Q1", "value": 800 },
-        { "time": "Q2", "value": 1200 },
-        { "time": "Q3", "value": 1000 },
-        { "time": "Q4", "value": 1500 }
+        {
+          "time": "Q1",
+          "value": 800
+        },
+        {
+          "time": "Q2",
+          "value": 1200
+        },
+        {
+          "time": "Q3",
+          "value": 1000
+        },
+        {
+          "time": "Q4",
+          "value": 1500
+        }
       ],
       "axisXTitle": "quarter",
       "axisYTitle": "profit"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Q1",
+            "value": 800
+          },
+          {
+            "time": "Q2",
+            "value": 1200
+          },
+          {
+            "time": "Q3",
+            "value": 1000
+          },
+          {
+            "time": "Q4",
+            "value": 1500
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "quarter",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "profit",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "profit",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "季度利润变化趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -490,35 +2341,198 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": 2016, "value": 12 },
-        { "time": 2017, "value": 15 },
-        { "time": 2018, "value": 10 },
-        { "time": 2019, "value": 18 }
+        {
+          "time": 2016,
+          "value": 12
+        },
+        {
+          "time": 2017,
+          "value": 15
+        },
+        {
+          "time": 2018,
+          "value": 10
+        },
+        {
+          "time": 2019,
+          "value": 18
+        }
       ],
       "axisXTitle": "year",
       "axisYTitle": "growth"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": 2016,
+            "value": 12
+          },
+          {
+            "time": 2017,
+            "value": 15
+          },
+          {
+            "time": 2018,
+            "value": 10
+          },
+          {
+            "time": 2019,
+            "value": 18
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "year",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "growth",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "growth",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化我的数据"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "用折线图可视化我的数据 [{\"month\":\"Jan\",\"value\":300,\"category\":\"A\"},{\"month\":\"Jan\",\"value\":500,\"category\":\"B\"},{\"month\":\"Jan\",\"value\":200,\"category\":\"C\"},{\"month\":\"Feb\",\"value\":400,\"category\":\"A\"},{\"month\":\"Feb\",\"value\":600,\"category\":\"B\"},{\"month\":\"Feb\",\"value\":300,\"category\":\"C\"},{\"month\":\"Mar\",\"value\":700,\"category\":\"A\"},{\"month\":\"Mar\",\"value\":800,\"category\":\"B\"},{\"month\":\"Mar\",\"value\":400,\"category\":\"C\"}]",
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Jan", "value": 300, "group": "A" },
-        { "time": "Jan", "value": 500, "group": "B" },
-        { "time": "Jan", "value": 200, "group": "C" },
-        { "time": "Feb", "value": 400, "group": "A" },
-        { "time": "Feb", "value": 600, "group": "B" },
-        { "time": "Feb", "value": 300, "group": "C" },
-        { "time": "Mar", "value": 700, "group": "A" },
-        { "time": "Mar", "value": 800, "group": "B" },
-        { "time": "Mar", "value": 400, "group": "C" }
+        {
+          "time": "Jan",
+          "value": 300,
+          "group": "A"
+        },
+        {
+          "time": "Jan",
+          "value": 500,
+          "group": "B"
+        },
+        {
+          "time": "Jan",
+          "value": 200,
+          "group": "C"
+        },
+        {
+          "time": "Feb",
+          "value": 400,
+          "group": "A"
+        },
+        {
+          "time": "Feb",
+          "value": 600,
+          "group": "B"
+        },
+        {
+          "time": "Feb",
+          "value": 300,
+          "group": "C"
+        },
+        {
+          "time": "Mar",
+          "value": 700,
+          "group": "A"
+        },
+        {
+          "time": "Mar",
+          "value": 800,
+          "group": "B"
+        },
+        {
+          "time": "Mar",
+          "value": 400,
+          "group": "C"
+        }
       ],
       "axisXTitle": "month",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Jan",
+            "value": 300,
+            "group": "A"
+          },
+          {
+            "time": "Jan",
+            "value": 500,
+            "group": "B"
+          },
+          {
+            "time": "Jan",
+            "value": 200,
+            "group": "C"
+          },
+          {
+            "time": "Feb",
+            "value": 400,
+            "group": "A"
+          },
+          {
+            "time": "Feb",
+            "value": 600,
+            "group": "B"
+          },
+          {
+            "time": "Feb",
+            "value": 300,
+            "group": "C"
+          },
+          {
+            "time": "Mar",
+            "value": 700,
+            "group": "A"
+          },
+          {
+            "time": "Mar",
+            "value": 800,
+            "group": "B"
+          },
+          {
+            "time": "Mar",
+            "value": 400,
+            "group": "C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "month",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "category",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "展示不同类别随时间变化的趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -526,19 +2540,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2020", "value": 1000, "group": "X" },
-        { "time": "2020", "value": 1500, "group": "Y" },
-        { "time": "2020", "value": 900, "group": "Z" },
-        { "time": "2021", "value": 1300, "group": "X" },
-        { "time": "2021", "value": 1900, "group": "Y" },
-        { "time": "2021", "value": 1100, "group": "Z" },
-        { "time": "2022", "value": 1800, "group": "X" },
-        { "time": "2022", "value": 2200, "group": "Y" },
-        { "time": "2022", "value": 1500, "group": "Z" }
+        {
+          "time": "2020",
+          "value": 1000,
+          "group": "X"
+        },
+        {
+          "time": "2020",
+          "value": 1500,
+          "group": "Y"
+        },
+        {
+          "time": "2020",
+          "value": 900,
+          "group": "Z"
+        },
+        {
+          "time": "2021",
+          "value": 1300,
+          "group": "X"
+        },
+        {
+          "time": "2021",
+          "value": 1900,
+          "group": "Y"
+        },
+        {
+          "time": "2021",
+          "value": 1100,
+          "group": "Z"
+        },
+        {
+          "time": "2022",
+          "value": 1800,
+          "group": "X"
+        },
+        {
+          "time": "2022",
+          "value": 2200,
+          "group": "Y"
+        },
+        {
+          "time": "2022",
+          "value": 1500,
+          "group": "Z"
+        }
       ],
       "axisXTitle": "year",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2020",
+            "value": 1000,
+            "group": "X"
+          },
+          {
+            "time": "2020",
+            "value": 1500,
+            "group": "Y"
+          },
+          {
+            "time": "2020",
+            "value": 900,
+            "group": "Z"
+          },
+          {
+            "time": "2021",
+            "value": 1300,
+            "group": "X"
+          },
+          {
+            "time": "2021",
+            "value": 1900,
+            "group": "Y"
+          },
+          {
+            "time": "2021",
+            "value": 1100,
+            "group": "Z"
+          },
+          {
+            "time": "2022",
+            "value": 1800,
+            "group": "X"
+          },
+          {
+            "time": "2022",
+            "value": 2200,
+            "group": "Y"
+          },
+          {
+            "time": "2022",
+            "value": 1500,
+            "group": "Z"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "year",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "category",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "展示不同年份和类别的数值变化趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -546,19 +2671,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "202101", "value": 200, "group": "A" },
-        { "time": "202101", "value": 300, "group": "B" },
-        { "time": "202101", "value": 100, "group": "C" },
-        { "time": "202102", "value": 400, "group": "A" },
-        { "time": "202102", "value": 500, "group": "B" },
-        { "time": "202102", "value": 300, "group": "C" },
-        { "time": "202103", "value": 600, "group": "A" },
-        { "time": "202103", "value": 700, "group": "B" },
-        { "time": "202103", "value": 400, "group": "C" }
+        {
+          "time": "202101",
+          "value": 200,
+          "group": "A"
+        },
+        {
+          "time": "202101",
+          "value": 300,
+          "group": "B"
+        },
+        {
+          "time": "202101",
+          "value": 100,
+          "group": "C"
+        },
+        {
+          "time": "202102",
+          "value": 400,
+          "group": "A"
+        },
+        {
+          "time": "202102",
+          "value": 500,
+          "group": "B"
+        },
+        {
+          "time": "202102",
+          "value": 300,
+          "group": "C"
+        },
+        {
+          "time": "202103",
+          "value": 600,
+          "group": "A"
+        },
+        {
+          "time": "202103",
+          "value": 700,
+          "group": "B"
+        },
+        {
+          "time": "202103",
+          "value": 400,
+          "group": "C"
+        }
       ],
       "axisXTitle": "date",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "202101",
+            "value": 200,
+            "group": "A"
+          },
+          {
+            "time": "202101",
+            "value": 300,
+            "group": "B"
+          },
+          {
+            "time": "202101",
+            "value": 100,
+            "group": "C"
+          },
+          {
+            "time": "202102",
+            "value": 400,
+            "group": "A"
+          },
+          {
+            "time": "202102",
+            "value": 500,
+            "group": "B"
+          },
+          {
+            "time": "202102",
+            "value": 300,
+            "group": "C"
+          },
+          {
+            "time": "202103",
+            "value": 600,
+            "group": "A"
+          },
+          {
+            "time": "202103",
+            "value": 700,
+            "group": "B"
+          },
+          {
+            "time": "202103",
+            "value": 400,
+            "group": "C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "date",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "product",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -566,19 +2802,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Q1", "value": 2000, "group": "X" },
-        { "time": "Q1", "value": 3000, "group": "Y" },
-        { "time": "Q1", "value": 1000, "group": "Z" },
-        { "time": "Q2", "value": 4000, "group": "X" },
-        { "time": "Q2", "value": 5000, "group": "Y" },
-        { "time": "Q2", "value": 3000, "group": "Z" },
-        { "time": "Q3", "value": 6000, "group": "X" },
-        { "time": "Q3", "value": 7000, "group": "Y" },
-        { "time": "Q3", "value": 4000, "group": "Z" }
+        {
+          "time": "Q1",
+          "value": 2000,
+          "group": "X"
+        },
+        {
+          "time": "Q1",
+          "value": 3000,
+          "group": "Y"
+        },
+        {
+          "time": "Q1",
+          "value": 1000,
+          "group": "Z"
+        },
+        {
+          "time": "Q2",
+          "value": 4000,
+          "group": "X"
+        },
+        {
+          "time": "Q2",
+          "value": 5000,
+          "group": "Y"
+        },
+        {
+          "time": "Q2",
+          "value": 3000,
+          "group": "Z"
+        },
+        {
+          "time": "Q3",
+          "value": 6000,
+          "group": "X"
+        },
+        {
+          "time": "Q3",
+          "value": 7000,
+          "group": "Y"
+        },
+        {
+          "time": "Q3",
+          "value": 4000,
+          "group": "Z"
+        }
       ],
       "axisXTitle": "quarter",
       "axisYTitle": "sales"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Q1",
+            "value": 2000,
+            "group": "X"
+          },
+          {
+            "time": "Q1",
+            "value": 3000,
+            "group": "Y"
+          },
+          {
+            "time": "Q1",
+            "value": 1000,
+            "group": "Z"
+          },
+          {
+            "time": "Q2",
+            "value": 4000,
+            "group": "X"
+          },
+          {
+            "time": "Q2",
+            "value": 5000,
+            "group": "Y"
+          },
+          {
+            "time": "Q2",
+            "value": 3000,
+            "group": "Z"
+          },
+          {
+            "time": "Q3",
+            "value": 6000,
+            "group": "X"
+          },
+          {
+            "time": "Q3",
+            "value": 7000,
+            "group": "Y"
+          },
+          {
+            "time": "Q3",
+            "value": 4000,
+            "group": "Z"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "quarter",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "sales",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "product",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "sales",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "按季度和产品展示销售趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -586,19 +2933,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "2019", "value": 800, "group": "A" },
-        { "time": "2019", "value": 1200, "group": "B" },
-        { "time": "2019", "value": 700, "group": "C" },
-        { "time": "2020", "value": 1100, "group": "A" },
-        { "time": "2020", "value": 1600, "group": "B" },
-        { "time": "2020", "value": 900, "group": "C" },
-        { "time": "2021", "value": 1500, "group": "A" },
-        { "time": "2021", "value": 1800, "group": "B" },
-        { "time": "2021", "value": 1300, "group": "C" }
+        {
+          "time": "2019",
+          "value": 800,
+          "group": "A"
+        },
+        {
+          "time": "2019",
+          "value": 1200,
+          "group": "B"
+        },
+        {
+          "time": "2019",
+          "value": 700,
+          "group": "C"
+        },
+        {
+          "time": "2020",
+          "value": 1100,
+          "group": "A"
+        },
+        {
+          "time": "2020",
+          "value": 1600,
+          "group": "B"
+        },
+        {
+          "time": "2020",
+          "value": 900,
+          "group": "C"
+        },
+        {
+          "time": "2021",
+          "value": 1500,
+          "group": "A"
+        },
+        {
+          "time": "2021",
+          "value": 1800,
+          "group": "B"
+        },
+        {
+          "time": "2021",
+          "value": 1300,
+          "group": "C"
+        }
       ],
       "axisXTitle": "year",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "2019",
+            "value": 800,
+            "group": "A"
+          },
+          {
+            "time": "2019",
+            "value": 1200,
+            "group": "B"
+          },
+          {
+            "time": "2019",
+            "value": 700,
+            "group": "C"
+          },
+          {
+            "time": "2020",
+            "value": 1100,
+            "group": "A"
+          },
+          {
+            "time": "2020",
+            "value": 1600,
+            "group": "B"
+          },
+          {
+            "time": "2020",
+            "value": 900,
+            "group": "C"
+          },
+          {
+            "time": "2021",
+            "value": 1500,
+            "group": "A"
+          },
+          {
+            "time": "2021",
+            "value": 1800,
+            "group": "B"
+          },
+          {
+            "time": "2021",
+            "value": 1300,
+            "group": "C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "year",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "category",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "展示不同年份和分类下的数值变化趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -606,19 +3064,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "202101", "value": 600, "group": "A" },
-        { "time": "202101", "value": 800, "group": "B" },
-        { "time": "202101", "value": 400, "group": "C" },
-        { "time": "202102", "value": 1000, "group": "A" },
-        { "time": "202102", "value": 1200, "group": "B" },
-        { "time": "202102", "value": 700, "group": "C" },
-        { "time": "202103", "value": 1500, "group": "A" },
-        { "time": "202103", "value": 1800, "group": "B" },
-        { "time": "202103", "value": 1300, "group": "C" }
+        {
+          "time": "202101",
+          "value": 600,
+          "group": "A"
+        },
+        {
+          "time": "202101",
+          "value": 800,
+          "group": "B"
+        },
+        {
+          "time": "202101",
+          "value": 400,
+          "group": "C"
+        },
+        {
+          "time": "202102",
+          "value": 1000,
+          "group": "A"
+        },
+        {
+          "time": "202102",
+          "value": 1200,
+          "group": "B"
+        },
+        {
+          "time": "202102",
+          "value": 700,
+          "group": "C"
+        },
+        {
+          "time": "202103",
+          "value": 1500,
+          "group": "A"
+        },
+        {
+          "time": "202103",
+          "value": 1800,
+          "group": "B"
+        },
+        {
+          "time": "202103",
+          "value": 1300,
+          "group": "C"
+        }
       ],
       "axisXTitle": "date",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "202101",
+            "value": 600,
+            "group": "A"
+          },
+          {
+            "time": "202101",
+            "value": 800,
+            "group": "B"
+          },
+          {
+            "time": "202101",
+            "value": 400,
+            "group": "C"
+          },
+          {
+            "time": "202102",
+            "value": 1000,
+            "group": "A"
+          },
+          {
+            "time": "202102",
+            "value": 1200,
+            "group": "B"
+          },
+          {
+            "time": "202102",
+            "value": 700,
+            "group": "C"
+          },
+          {
+            "time": "202103",
+            "value": 1500,
+            "group": "A"
+          },
+          {
+            "time": "202103",
+            "value": 1800,
+            "group": "B"
+          },
+          {
+            "time": "202103",
+            "value": 1300,
+            "group": "C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "date",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "product",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "用折线图可视化数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -626,19 +3195,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Jan", "value": 400, "group": "A" },
-        { "time": "Jan", "value": 600, "group": "B" },
-        { "time": "Jan", "value": 300, "group": "C" },
-        { "time": "Feb", "value": 700, "group": "A" },
-        { "time": "Feb", "value": 800, "group": "B" },
-        { "time": "Feb", "value": 400, "group": "C" },
-        { "time": "Mar", "value": 900, "group": "A" },
-        { "time": "Mar", "value": 1100, "group": "B" },
-        { "time": "Mar", "value": 600, "group": "C" }
+        {
+          "time": "Jan",
+          "value": 400,
+          "group": "A"
+        },
+        {
+          "time": "Jan",
+          "value": 600,
+          "group": "B"
+        },
+        {
+          "time": "Jan",
+          "value": 300,
+          "group": "C"
+        },
+        {
+          "time": "Feb",
+          "value": 700,
+          "group": "A"
+        },
+        {
+          "time": "Feb",
+          "value": 800,
+          "group": "B"
+        },
+        {
+          "time": "Feb",
+          "value": 400,
+          "group": "C"
+        },
+        {
+          "time": "Mar",
+          "value": 900,
+          "group": "A"
+        },
+        {
+          "time": "Mar",
+          "value": 1100,
+          "group": "B"
+        },
+        {
+          "time": "Mar",
+          "value": 600,
+          "group": "C"
+        }
       ],
       "axisXTitle": "month",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Jan",
+            "value": 400,
+            "group": "A"
+          },
+          {
+            "time": "Jan",
+            "value": 600,
+            "group": "B"
+          },
+          {
+            "time": "Jan",
+            "value": 300,
+            "group": "C"
+          },
+          {
+            "time": "Feb",
+            "value": 700,
+            "group": "A"
+          },
+          {
+            "time": "Feb",
+            "value": 800,
+            "group": "B"
+          },
+          {
+            "time": "Feb",
+            "value": 400,
+            "group": "C"
+          },
+          {
+            "time": "Mar",
+            "value": 900,
+            "group": "A"
+          },
+          {
+            "time": "Mar",
+            "value": 1100,
+            "group": "B"
+          },
+          {
+            "time": "Mar",
+            "value": 600,
+            "group": "C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "month",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "category",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "Comparison of values across different groups and months"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -646,19 +3326,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Q1", "value": 500, "group": "X" },
-        { "time": "Q1", "value": 800, "group": "Y" },
-        { "time": "Q1", "value": 300, "group": "Z" },
-        { "time": "Q2", "value": 1200, "group": "X" },
-        { "time": "Q2", "value": 1500, "group": "Y" },
-        { "time": "Q2", "value": 900, "group": "Z" },
-        { "time": "Q3", "value": 1800, "group": "X" },
-        { "time": "Q3", "value": 2200, "group": "Y" },
-        { "time": "Q3", "value": 1500, "group": "Z" }
+        {
+          "time": "Q1",
+          "value": 500,
+          "group": "X"
+        },
+        {
+          "time": "Q1",
+          "value": 800,
+          "group": "Y"
+        },
+        {
+          "time": "Q1",
+          "value": 300,
+          "group": "Z"
+        },
+        {
+          "time": "Q2",
+          "value": 1200,
+          "group": "X"
+        },
+        {
+          "time": "Q2",
+          "value": 1500,
+          "group": "Y"
+        },
+        {
+          "time": "Q2",
+          "value": 900,
+          "group": "Z"
+        },
+        {
+          "time": "Q3",
+          "value": 1800,
+          "group": "X"
+        },
+        {
+          "time": "Q3",
+          "value": 2200,
+          "group": "Y"
+        },
+        {
+          "time": "Q3",
+          "value": 1500,
+          "group": "Z"
+        }
       ],
       "axisXTitle": "quarter",
       "axisYTitle": "sales"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Q1",
+            "value": 500,
+            "group": "X"
+          },
+          {
+            "time": "Q1",
+            "value": 800,
+            "group": "Y"
+          },
+          {
+            "time": "Q1",
+            "value": 300,
+            "group": "Z"
+          },
+          {
+            "time": "Q2",
+            "value": 1200,
+            "group": "X"
+          },
+          {
+            "time": "Q2",
+            "value": 1500,
+            "group": "Y"
+          },
+          {
+            "time": "Q2",
+            "value": 900,
+            "group": "Z"
+          },
+          {
+            "time": "Q3",
+            "value": 1800,
+            "group": "X"
+          },
+          {
+            "time": "Q3",
+            "value": 2200,
+            "group": "Y"
+          },
+          {
+            "time": "Q3",
+            "value": 1500,
+            "group": "Z"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "quarter",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "sales",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "product",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "sales",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "按季度和产品展示销售趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -666,19 +3457,130 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "202101", "value": 500, "group": "A" },
-        { "time": "202101", "value": 700, "group": "B" },
-        { "time": "202101", "value": 300, "group": "C" },
-        { "time": "202102", "value": 900, "group": "A" },
-        { "time": "202102", "value": 1100, "group": "B" },
-        { "time": "202102", "value": 600, "group": "C" },
-        { "time": "202103", "value": 1300, "group": "A" },
-        { "time": "202103", "value": 1600, "group": "B" },
-        { "time": "202103", "value": 1100, "group": "C" }
+        {
+          "time": "202101",
+          "value": 500,
+          "group": "A"
+        },
+        {
+          "time": "202101",
+          "value": 700,
+          "group": "B"
+        },
+        {
+          "time": "202101",
+          "value": 300,
+          "group": "C"
+        },
+        {
+          "time": "202102",
+          "value": 900,
+          "group": "A"
+        },
+        {
+          "time": "202102",
+          "value": 1100,
+          "group": "B"
+        },
+        {
+          "time": "202102",
+          "value": 600,
+          "group": "C"
+        },
+        {
+          "time": "202103",
+          "value": 1300,
+          "group": "A"
+        },
+        {
+          "time": "202103",
+          "value": 1600,
+          "group": "B"
+        },
+        {
+          "time": "202103",
+          "value": 1100,
+          "group": "C"
+        }
       ],
       "axisXTitle": "date",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "202101",
+            "value": 500,
+            "group": "A"
+          },
+          {
+            "time": "202101",
+            "value": 700,
+            "group": "B"
+          },
+          {
+            "time": "202101",
+            "value": 300,
+            "group": "C"
+          },
+          {
+            "time": "202102",
+            "value": 900,
+            "group": "A"
+          },
+          {
+            "time": "202102",
+            "value": 1100,
+            "group": "B"
+          },
+          {
+            "time": "202102",
+            "value": 600,
+            "group": "C"
+          },
+          {
+            "time": "202103",
+            "value": 1300,
+            "group": "A"
+          },
+          {
+            "time": "202103",
+            "value": 1600,
+            "group": "B"
+          },
+          {
+            "time": "202103",
+            "value": 1100,
+            "group": "C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "date",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "product",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "展示不同产品随时间变化的趋势"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -686,18 +3588,129 @@
     "answer": {
       "type": "line",
       "data": [
-        { "time": "Jan", "value": 700, "group": "A" },
-        { "time": "Jan", "value": 900, "group": "B" },
-        { "time": "Jan", "value": 400, "group": "C" },
-        { "time": "Feb", "value": 1000, "group": "A" },
-        { "time": "Feb", "value": 1200, "group": "B" },
-        { "time": "Feb", "value": 700, "group": "C" },
-        { "time": "Mar", "value": 1500, "group": "A" },
-        { "time": "Mar", "value": 1800, "group": "B" },
-        { "time": "Mar", "value": 1300, "group": "C" }
+        {
+          "time": "Jan",
+          "value": 700,
+          "group": "A"
+        },
+        {
+          "time": "Jan",
+          "value": 900,
+          "group": "B"
+        },
+        {
+          "time": "Jan",
+          "value": 400,
+          "group": "C"
+        },
+        {
+          "time": "Feb",
+          "value": 1000,
+          "group": "A"
+        },
+        {
+          "time": "Feb",
+          "value": 1200,
+          "group": "B"
+        },
+        {
+          "time": "Feb",
+          "value": 700,
+          "group": "C"
+        },
+        {
+          "time": "Mar",
+          "value": 1500,
+          "group": "A"
+        },
+        {
+          "time": "Mar",
+          "value": 1800,
+          "group": "B"
+        },
+        {
+          "time": "Mar",
+          "value": 1300,
+          "group": "C"
+        }
       ],
       "axisXTitle": "month",
       "axisYTitle": "value"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "time": "Jan",
+            "value": 700,
+            "group": "A"
+          },
+          {
+            "time": "Jan",
+            "value": 900,
+            "group": "B"
+          },
+          {
+            "time": "Jan",
+            "value": 400,
+            "group": "C"
+          },
+          {
+            "time": "Feb",
+            "value": 1000,
+            "group": "A"
+          },
+          {
+            "time": "Feb",
+            "value": 1200,
+            "group": "B"
+          },
+          {
+            "time": "Feb",
+            "value": 700,
+            "group": "C"
+          },
+          {
+            "time": "Mar",
+            "value": 1500,
+            "group": "A"
+          },
+          {
+            "time": "Mar",
+            "value": 1800,
+            "group": "B"
+          },
+          {
+            "time": "Mar",
+            "value": 1300,
+            "group": "C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "time",
+            "name": "month",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "value",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "category",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "value",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "展示不同月份和分类下的数值变化趋势"
+        }
+      }
+    ]
   }
 ]

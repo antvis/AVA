@@ -5,11 +5,71 @@
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 116.407395, "latitude": 39.904211, "value": 150 },
-        { "longitude": 117.200983, "latitude": 39.084158, "value": 180 },
-        { "longitude": 120.382639, "latitude": 36.067082, "value": 130 }
+        {
+          "longitude": 116.407395,
+          "latitude": 39.904211,
+          "value": 150
+        },
+        {
+          "longitude": 117.200983,
+          "latitude": 39.084158,
+          "value": 180
+        },
+        {
+          "longitude": 120.382639,
+          "latitude": 36.067082,
+          "value": 130
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 116.407395,
+              "latitude": 39.904211,
+              "value": 150
+            },
+            {
+              "longitude": 117.200983,
+              "latitude": 39.084158,
+              "value": 180
+            },
+            {
+              "longitude": 120.382639,
+              "latitude": 36.067082,
+              "value": 130
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "空气质量指数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "空气质量指数",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "北京、天津、青岛的空气质量指数"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -17,11 +77,71 @@
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 113.264435, "latitude": 23.129163, "value": 35 },
-        { "longitude": 114.057868, "latitude": 22.543099, "value": 34 },
-        { "longitude": 113.122717, "latitude": 23.028762, "value": 36 }
+        {
+          "longitude": 113.264435,
+          "latitude": 23.129163,
+          "value": 35
+        },
+        {
+          "longitude": 114.057868,
+          "latitude": 22.543099,
+          "value": 34
+        },
+        {
+          "longitude": 113.122717,
+          "latitude": 23.028762,
+          "value": 36
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 113.264435,
+              "latitude": 23.129163,
+              "value": 35
+            },
+            {
+              "longitude": 114.057868,
+              "latitude": 22.543099,
+              "value": 34
+            },
+            {
+              "longitude": 113.122717,
+              "latitude": 23.028762,
+              "value": 36
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "夏季平均气温",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "夏季平均气温",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "广州、深圳、佛山的夏季平均气温分布"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -29,11 +149,71 @@
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 118.796877, "latitude": 32.060255, "value": 200 },
-        { "longitude": 120.31237, "latitude": 31.49099, "value": 180 },
-        { "longitude": 119.973987, "latitude": 31.810689, "value": 220 }
+        {
+          "longitude": 118.796877,
+          "latitude": 32.060255,
+          "value": 200
+        },
+        {
+          "longitude": 120.31237,
+          "latitude": 31.49099,
+          "value": 180
+        },
+        {
+          "longitude": 119.973987,
+          "latitude": 31.810689,
+          "value": 220
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 118.796877,
+              "latitude": 32.060255,
+              "value": 200
+            },
+            {
+              "longitude": 120.31237,
+              "latitude": 31.49099,
+              "value": 180
+            },
+            {
+              "longitude": 119.973987,
+              "latitude": 31.810689,
+              "value": 220
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "降水量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "降水量",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "南京、无锡、常州的夏季降水量"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -41,25 +221,153 @@
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 106.551557, "latitude": 29.56301, "value": 250 },
-        { "longitude": 104.066541, "latitude": 30.572269, "value": 300 },
-        { "longitude": 106.713478, "latitude": 26.578343, "value": 200 }
+        {
+          "longitude": 106.551557,
+          "latitude": 29.56301,
+          "value": 250
+        },
+        {
+          "longitude": 104.066541,
+          "latitude": 30.572269,
+          "value": 300
+        },
+        {
+          "longitude": 106.713478,
+          "latitude": 26.578343,
+          "value": 200
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 106.551557,
+              "latitude": 29.56301,
+              "value": 250
+            },
+            {
+              "longitude": 104.066541,
+              "latitude": 30.572269,
+              "value": 300
+            },
+            {
+              "longitude": 106.713478,
+              "latitude": 26.578343,
+              "value": 200
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "火锅餐馆密集度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "火锅餐馆密集度",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "重庆、成都、贵阳的火锅餐馆密集度"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "用热力地图显示我的数据 [{\"longitude\":139.691711,\"latitude\":35.689487,\"intensity\":450},{\"longitude\":139.700464,\"latitude\":35.689499,\"intensity\":750},{\"longitude\":139.751599,\"latitude\":35.673343,\"intensity\":200},{\"longitude\":139.709432,\"latitude\":35.673261,\"intensity\":600}]",
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 139.691711, "latitude": 35.689487, "value": 450 },
-        { "longitude": 139.700464, "latitude": 35.689499, "value": 750 },
-        { "longitude": 139.751599, "latitude": 35.673343, "value": 200 },
-        { "longitude": 139.709432, "latitude": 35.673261, "value": 600 }
+        {
+          "longitude": 139.691711,
+          "latitude": 35.689487,
+          "value": 450
+        },
+        {
+          "longitude": 139.700464,
+          "latitude": 35.689499,
+          "value": 750
+        },
+        {
+          "longitude": 139.751599,
+          "latitude": 35.673343,
+          "value": 200
+        },
+        {
+          "longitude": 139.709432,
+          "latitude": 35.673261,
+          "value": 600
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 139.691711,
+              "latitude": 35.689487,
+              "value": 450
+            },
+            {
+              "longitude": 139.700464,
+              "latitude": 35.689499,
+              "value": 750
+            },
+            {
+              "longitude": 139.751599,
+              "latitude": 35.673343,
+              "value": 200
+            },
+            {
+              "longitude": 139.709432,
+              "latitude": 35.673261,
+              "value": 600
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "强度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "强度",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "热力地图数据分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -67,12 +375,81 @@
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 139.691711, "latitude": 35.689487, "value": 450 },
-        { "longitude": 139.700464, "latitude": 35.689499, "value": 750 },
-        { "longitude": 139.751599, "latitude": 35.673343, "value": 200 },
-        { "longitude": 139.709432, "latitude": 35.673261, "value": 600 }
+        {
+          "longitude": 139.691711,
+          "latitude": 35.689487,
+          "value": 450
+        },
+        {
+          "longitude": 139.700464,
+          "latitude": 35.689499,
+          "value": 750
+        },
+        {
+          "longitude": 139.751599,
+          "latitude": 35.673343,
+          "value": 200
+        },
+        {
+          "longitude": 139.709432,
+          "latitude": 35.673261,
+          "value": 600
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 139.691711,
+              "latitude": 35.689487,
+              "value": 450
+            },
+            {
+              "longitude": 139.700464,
+              "latitude": 35.689499,
+              "value": 750
+            },
+            {
+              "longitude": 139.751599,
+              "latitude": 35.673343,
+              "value": 200
+            },
+            {
+              "longitude": 139.709432,
+              "latitude": 35.673261,
+              "value": 600
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "强度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "强度",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "热力地图数据分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -80,25 +457,153 @@
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 139.691711, "latitude": 35.689487, "value": 450 },
-        { "longitude": 139.700464, "latitude": 35.689499, "value": 750 },
-        { "longitude": 139.751599, "latitude": 35.673343, "value": 200 }
+        {
+          "longitude": 139.691711,
+          "latitude": 35.689487,
+          "value": 450
+        },
+        {
+          "longitude": 139.700464,
+          "latitude": 35.689499,
+          "value": 750
+        },
+        {
+          "longitude": 139.751599,
+          "latitude": 35.673343,
+          "value": 200
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 139.691711,
+              "latitude": 35.689487,
+              "value": 450
+            },
+            {
+              "longitude": 139.700464,
+              "latitude": 35.689499,
+              "value": 750
+            },
+            {
+              "longitude": 139.751599,
+              "latitude": 35.673343,
+              "value": 200
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "强度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "强度",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "热力地图显示数据分布"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "请使用热力地图显示下面的数据集 [{\"longitude\":139.691711,\"latitude\":35.689487,\"density\":700},{\"longitude\":139.691486,\"latitude\":35.682042,\"density\":900},{\"longitude\":139.681826,\"latitude\":35.674638,\"density\":800},{\"longitude\":139.698453,\"latitude\":35.682341,\"intensity\":600}]",
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": 139.691711, "latitude": 35.689487, "value": 700 },
-        { "longitude": 139.691486, "latitude": 35.682042, "value": 900 },
-        { "longitude": 139.681826, "latitude": 35.674638, "value": 800 },
-        { "longitude": 139.698453, "latitude": 35.682341, "value": 600 }
+        {
+          "longitude": 139.691711,
+          "latitude": 35.689487,
+          "value": 700
+        },
+        {
+          "longitude": 139.691486,
+          "latitude": 35.682042,
+          "value": 900
+        },
+        {
+          "longitude": 139.681826,
+          "latitude": 35.674638,
+          "value": 800
+        },
+        {
+          "longitude": 139.698453,
+          "latitude": 35.682341,
+          "value": 600
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": 139.691711,
+              "latitude": 35.689487,
+              "value": 700
+            },
+            {
+              "longitude": 139.691486,
+              "latitude": 35.682042,
+              "value": 900
+            },
+            {
+              "longitude": 139.681826,
+              "latitude": 35.674638,
+              "value": 800
+            },
+            {
+              "longitude": 139.698453,
+              "latitude": 35.682341,
+              "value": 600
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "密度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "密度",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "地理坐标点上的密度分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -106,12 +611,81 @@
     "answer": {
       "type": "heat-map",
       "data": [
-        { "longitude": -73.935242, "latitude": 40.73061, "value": 1200 },
-        { "longitude": -73.935486, "latitude": 40.722042, "value": 1500 },
-        { "longitude": -73.921826, "latitude": 40.714638, "value": 1000 },
-        { "longitude": -73.938453, "latitude": 40.722341, "value": 1300 }
+        {
+          "longitude": -73.935242,
+          "latitude": 40.73061,
+          "value": 1200
+        },
+        {
+          "longitude": -73.935486,
+          "latitude": 40.722042,
+          "value": 1500
+        },
+        {
+          "longitude": -73.921826,
+          "latitude": 40.714638,
+          "value": 1000
+        },
+        {
+          "longitude": -73.938453,
+          "latitude": 40.722341,
+          "value": 1300
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "geo",
+        "data": {
+          "type": "lon&lat",
+          "data": [
+            {
+              "longitude": -73.935242,
+              "latitude": 40.73061,
+              "value": 1200
+            },
+            {
+              "longitude": -73.935486,
+              "latitude": 40.722042,
+              "value": 1500
+            },
+            {
+              "longitude": -73.921826,
+              "latitude": 40.714638,
+              "value": 1000
+            },
+            {
+              "longitude": -73.938453,
+              "latitude": 40.722341,
+              "value": 1300
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "longitude",
+            "name": "经度",
+            "dataType": "number"
+          },
+          {
+            "id": "latitude",
+            "name": "纬度",
+            "dataType": "number"
+          },
+          {
+            "id": "value",
+            "name": "交通流量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "交通流量",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "城市交通流量热力地图"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",

@@ -5,13 +5,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "工作环境", "value": 4 },
-        { "name": "薪资待遇", "value": 3 },
-        { "name": "职业发展", "value": 5 },
-        { "name": "管理层沟通", "value": 2 },
-        { "name": "团队协作", "value": 5 }
+        {
+          "name": "工作环境",
+          "value": 4
+        },
+        {
+          "name": "薪资待遇",
+          "value": 3
+        },
+        {
+          "name": "职业发展",
+          "value": 5
+        },
+        {
+          "name": "管理层沟通",
+          "value": 2
+        },
+        {
+          "name": "团队协作",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "工作环境",
+            "value": 4
+          },
+          {
+            "name": "薪资待遇",
+            "value": 3
+          },
+          {
+            "name": "职业发展",
+            "value": 5
+          },
+          {
+            "name": "管理层沟通",
+            "value": 2
+          },
+          {
+            "name": "团队协作",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "调查项目",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "公司年度员工满意度调查"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -19,13 +79,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "质量", "value": 5 },
-        { "name": "创新", "value": 3 },
-        { "name": "客户满意度", "value": 4 },
-        { "name": "市场份额", "value": 4 },
-        { "name": "品牌认知度", "value": 5 }
+        {
+          "name": "质量",
+          "value": 5
+        },
+        {
+          "name": "创新",
+          "value": 3
+        },
+        {
+          "name": "客户满意度",
+          "value": 4
+        },
+        {
+          "name": "市场份额",
+          "value": 4
+        },
+        {
+          "name": "品牌认知度",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "质量",
+            "value": 5
+          },
+          {
+            "name": "创新",
+            "value": 3
+          },
+          {
+            "name": "客户满意度",
+            "value": 4
+          },
+          {
+            "name": "市场份额",
+            "value": 4
+          },
+          {
+            "name": "品牌认知度",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "评估维度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "产品A的市场表现评估"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -33,13 +153,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "责任感", "value": 4 },
-        { "name": "创造力", "value": 5 },
-        { "name": "适应能力", "value": 3 },
-        { "name": "沟通技巧", "value": 4 },
-        { "name": "团队合作", "value": 5 }
+        {
+          "name": "责任感",
+          "value": 4
+        },
+        {
+          "name": "创造力",
+          "value": 5
+        },
+        {
+          "name": "适应能力",
+          "value": 3
+        },
+        {
+          "name": "沟通技巧",
+          "value": 4
+        },
+        {
+          "name": "团队合作",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "责任感",
+            "value": 4
+          },
+          {
+            "name": "创造力",
+            "value": 5
+          },
+          {
+            "name": "适应能力",
+            "value": 3
+          },
+          {
+            "name": "沟通技巧",
+            "value": 4
+          },
+          {
+            "name": "团队合作",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "评价维度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "李华的综合素质评价"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -47,13 +227,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "操作便捷性", "value": 4 },
-        { "name": "电池续航", "value": 5 },
-        { "name": "相机性能", "value": 4 },
-        { "name": "性价比", "value": 3 },
-        { "name": "售后服务", "value": 3 }
+        {
+          "name": "操作便捷性",
+          "value": 4
+        },
+        {
+          "name": "电池续航",
+          "value": 5
+        },
+        {
+          "name": "相机性能",
+          "value": 4
+        },
+        {
+          "name": "性价比",
+          "value": 3
+        },
+        {
+          "name": "售后服务",
+          "value": 3
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "操作便捷性",
+            "value": 4
+          },
+          {
+            "name": "电池续航",
+            "value": 5
+          },
+          {
+            "name": "相机性能",
+            "value": 4
+          },
+          {
+            "name": "性价比",
+            "value": 3
+          },
+          {
+            "name": "售后服务",
+            "value": 3
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "评价维度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "手机品牌X各维度的用户评价对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -61,13 +301,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "动手能力", "value": 5 },
-        { "name": "观察力", "value": 4 },
-        { "name": "分析能力", "value": 3 },
-        { "name": "实验设计", "value": 4 },
-        { "name": "团队协作", "value": 5 }
+        {
+          "name": "动手能力",
+          "value": 5
+        },
+        {
+          "name": "观察力",
+          "value": 4
+        },
+        {
+          "name": "分析能力",
+          "value": 3
+        },
+        {
+          "name": "实验设计",
+          "value": 4
+        },
+        {
+          "name": "团队协作",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "动手能力",
+            "value": 5
+          },
+          {
+            "name": "观察力",
+            "value": 4
+          },
+          {
+            "name": "分析能力",
+            "value": 3
+          },
+          {
+            "name": "实验设计",
+            "value": 4
+          },
+          {
+            "name": "团队协作",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "能力名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "学生在科学实验课程中的各项能力表现对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -75,23 +375,188 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "经济合作", "value": 8, "group": "美国" },
-        { "name": "技术合作", "value": 7, "group": "美国" },
-        { "name": "文化交流", "value": 6, "group": "美国" },
-        { "name": "教育合作", "value": 9, "group": "美国" },
-        { "name": "环保合作", "value": 5, "group": "美国" },
-        { "name": "经济合作", "value": 9, "group": "中国" },
-        { "name": "技术合作", "value": 8, "group": "中国" },
-        { "name": "文化交流", "value": 7, "group": "中国" },
-        { "name": "教育合作", "value": 6, "group": "中国" },
-        { "name": "环保合作", "value": 7, "group": "中国" },
-        { "name": "经济合作", "value": 6, "group": "德国" },
-        { "name": "技术合作", "value": 8, "group": "德国" },
-        { "name": "文化交流", "value": 7, "group": "德国" },
-        { "name": "教育合作", "value": 7, "group": "德国" },
-        { "name": "环保合作", "value": 9, "group": "德国" }
+        {
+          "name": "经济合作",
+          "value": 8,
+          "group": "美国"
+        },
+        {
+          "name": "技术合作",
+          "value": 7,
+          "group": "美国"
+        },
+        {
+          "name": "文化交流",
+          "value": 6,
+          "group": "美国"
+        },
+        {
+          "name": "教育合作",
+          "value": 9,
+          "group": "美国"
+        },
+        {
+          "name": "环保合作",
+          "value": 5,
+          "group": "美国"
+        },
+        {
+          "name": "经济合作",
+          "value": 9,
+          "group": "中国"
+        },
+        {
+          "name": "技术合作",
+          "value": 8,
+          "group": "中国"
+        },
+        {
+          "name": "文化交流",
+          "value": 7,
+          "group": "中国"
+        },
+        {
+          "name": "教育合作",
+          "value": 6,
+          "group": "中国"
+        },
+        {
+          "name": "环保合作",
+          "value": 7,
+          "group": "中国"
+        },
+        {
+          "name": "经济合作",
+          "value": 6,
+          "group": "德国"
+        },
+        {
+          "name": "技术合作",
+          "value": 8,
+          "group": "德国"
+        },
+        {
+          "name": "文化交流",
+          "value": 7,
+          "group": "德国"
+        },
+        {
+          "name": "教育合作",
+          "value": 7,
+          "group": "德国"
+        },
+        {
+          "name": "环保合作",
+          "value": 9,
+          "group": "德国"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "经济合作",
+            "value": 8,
+            "group": "美国"
+          },
+          {
+            "name": "技术合作",
+            "value": 7,
+            "group": "美国"
+          },
+          {
+            "name": "文化交流",
+            "value": 6,
+            "group": "美国"
+          },
+          {
+            "name": "教育合作",
+            "value": 9,
+            "group": "美国"
+          },
+          {
+            "name": "环保合作",
+            "value": 5,
+            "group": "美国"
+          },
+          {
+            "name": "经济合作",
+            "value": 9,
+            "group": "中国"
+          },
+          {
+            "name": "技术合作",
+            "value": 8,
+            "group": "中国"
+          },
+          {
+            "name": "文化交流",
+            "value": 7,
+            "group": "中国"
+          },
+          {
+            "name": "教育合作",
+            "value": 6,
+            "group": "中国"
+          },
+          {
+            "name": "环保合作",
+            "value": 7,
+            "group": "中国"
+          },
+          {
+            "name": "经济合作",
+            "value": 6,
+            "group": "德国"
+          },
+          {
+            "name": "技术合作",
+            "value": 8,
+            "group": "德国"
+          },
+          {
+            "name": "文化交流",
+            "value": 7,
+            "group": "德国"
+          },
+          {
+            "name": "教育合作",
+            "value": 7,
+            "group": "德国"
+          },
+          {
+            "name": "环保合作",
+            "value": 9,
+            "group": "德国"
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "合作维度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "国家",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "五个国家在五个合作维度上的评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -99,23 +564,188 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "动作游戏", "value": 8, "group": "选手A" },
-        { "name": "策略游戏", "value": 9, "group": "选手A" },
-        { "name": "冒险游戏", "value": 7, "group": "选手A" },
-        { "name": "角色扮演游戏", "value": 6, "group": "选手A" },
-        { "name": "模拟游戏", "value": 5, "group": "选手A" },
-        { "name": "动作游戏", "value": 7, "group": "选手B" },
-        { "name": "策略游戏", "value": 6, "group": "选手B" },
-        { "name": "冒险游戏", "value": 8, "group": "选手B" },
-        { "name": "角色扮演游戏", "value": 9, "group": "选手B" },
-        { "name": "模拟游戏", "value": 6, "group": "选手B" },
-        { "name": "动作游戏", "value": 6, "group": "选手C" },
-        { "name": "策略游戏", "value": 8, "group": "选手C" },
-        { "name": "冒险游戏", "value": 9, "group": "选手C" },
-        { "name": "角色扮演游戏", "value": 7, "group": "选手C" },
-        { "name": "模拟游戏", "value": 8, "group": "选手C" }
+        {
+          "name": "动作游戏",
+          "value": 8,
+          "group": "选手A"
+        },
+        {
+          "name": "策略游戏",
+          "value": 9,
+          "group": "选手A"
+        },
+        {
+          "name": "冒险游戏",
+          "value": 7,
+          "group": "选手A"
+        },
+        {
+          "name": "角色扮演游戏",
+          "value": 6,
+          "group": "选手A"
+        },
+        {
+          "name": "模拟游戏",
+          "value": 5,
+          "group": "选手A"
+        },
+        {
+          "name": "动作游戏",
+          "value": 7,
+          "group": "选手B"
+        },
+        {
+          "name": "策略游戏",
+          "value": 6,
+          "group": "选手B"
+        },
+        {
+          "name": "冒险游戏",
+          "value": 8,
+          "group": "选手B"
+        },
+        {
+          "name": "角色扮演游戏",
+          "value": 9,
+          "group": "选手B"
+        },
+        {
+          "name": "模拟游戏",
+          "value": 6,
+          "group": "选手B"
+        },
+        {
+          "name": "动作游戏",
+          "value": 6,
+          "group": "选手C"
+        },
+        {
+          "name": "策略游戏",
+          "value": 8,
+          "group": "选手C"
+        },
+        {
+          "name": "冒险游戏",
+          "value": 9,
+          "group": "选手C"
+        },
+        {
+          "name": "角色扮演游戏",
+          "value": 7,
+          "group": "选手C"
+        },
+        {
+          "name": "模拟游戏",
+          "value": 8,
+          "group": "选手C"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "动作游戏",
+            "value": 8,
+            "group": "选手A"
+          },
+          {
+            "name": "策略游戏",
+            "value": 9,
+            "group": "选手A"
+          },
+          {
+            "name": "冒险游戏",
+            "value": 7,
+            "group": "选手A"
+          },
+          {
+            "name": "角色扮演游戏",
+            "value": 6,
+            "group": "选手A"
+          },
+          {
+            "name": "模拟游戏",
+            "value": 5,
+            "group": "选手A"
+          },
+          {
+            "name": "动作游戏",
+            "value": 7,
+            "group": "选手B"
+          },
+          {
+            "name": "策略游戏",
+            "value": 6,
+            "group": "选手B"
+          },
+          {
+            "name": "冒险游戏",
+            "value": 8,
+            "group": "选手B"
+          },
+          {
+            "name": "角色扮演游戏",
+            "value": 9,
+            "group": "选手B"
+          },
+          {
+            "name": "模拟游戏",
+            "value": 6,
+            "group": "选手B"
+          },
+          {
+            "name": "动作游戏",
+            "value": 6,
+            "group": "选手C"
+          },
+          {
+            "name": "策略游戏",
+            "value": 8,
+            "group": "选手C"
+          },
+          {
+            "name": "冒险游戏",
+            "value": 9,
+            "group": "选手C"
+          },
+          {
+            "name": "角色扮演游戏",
+            "value": 7,
+            "group": "选手C"
+          },
+          {
+            "name": "模拟游戏",
+            "value": 8,
+            "group": "选手C"
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "游戏类型",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "选手",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "三名选手对不同游戏类型的评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -123,23 +753,188 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "工作效率", "value": 9, "group": "员工X" },
-        { "name": "创新能力", "value": 8, "group": "员工X" },
-        { "name": "沟通能力", "value": 7, "group": "员工X" },
-        { "name": "客户满意度", "value": 8, "group": "员工X" },
-        { "name": "项目完成度", "value": 6, "group": "员工X" },
-        { "name": "工作效率", "value": 7, "group": "员工Y" },
-        { "name": "创新能力", "value": 9, "group": "员工Y" },
-        { "name": "沟通能力", "value": 8, "group": "员工Y" },
-        { "name": "客户满意度", "value": 7, "group": "员工Y" },
-        { "name": "项目完成度", "value": 8, "group": "员工Y" },
-        { "name": "工作效率", "value": 8, "group": "员工Z" },
-        { "name": "创新能力", "value": 7, "group": "员工Z" },
-        { "name": "沟通能力", "value": 9, "group": "员工Z" },
-        { "name": "客户满意度", "value": 6, "group": "员工Z" },
-        { "name": "项目完成度", "value": 9, "group": "员工Z" }
+        {
+          "name": "工作效率",
+          "value": 9,
+          "group": "员工X"
+        },
+        {
+          "name": "创新能力",
+          "value": 8,
+          "group": "员工X"
+        },
+        {
+          "name": "沟通能力",
+          "value": 7,
+          "group": "员工X"
+        },
+        {
+          "name": "客户满意度",
+          "value": 8,
+          "group": "员工X"
+        },
+        {
+          "name": "项目完成度",
+          "value": 6,
+          "group": "员工X"
+        },
+        {
+          "name": "工作效率",
+          "value": 7,
+          "group": "员工Y"
+        },
+        {
+          "name": "创新能力",
+          "value": 9,
+          "group": "员工Y"
+        },
+        {
+          "name": "沟通能力",
+          "value": 8,
+          "group": "员工Y"
+        },
+        {
+          "name": "客户满意度",
+          "value": 7,
+          "group": "员工Y"
+        },
+        {
+          "name": "项目完成度",
+          "value": 8,
+          "group": "员工Y"
+        },
+        {
+          "name": "工作效率",
+          "value": 8,
+          "group": "员工Z"
+        },
+        {
+          "name": "创新能力",
+          "value": 7,
+          "group": "员工Z"
+        },
+        {
+          "name": "沟通能力",
+          "value": 9,
+          "group": "员工Z"
+        },
+        {
+          "name": "客户满意度",
+          "value": 6,
+          "group": "员工Z"
+        },
+        {
+          "name": "项目完成度",
+          "value": 9,
+          "group": "员工Z"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "工作效率",
+            "value": 9,
+            "group": "员工X"
+          },
+          {
+            "name": "创新能力",
+            "value": 8,
+            "group": "员工X"
+          },
+          {
+            "name": "沟通能力",
+            "value": 7,
+            "group": "员工X"
+          },
+          {
+            "name": "客户满意度",
+            "value": 8,
+            "group": "员工X"
+          },
+          {
+            "name": "项目完成度",
+            "value": 6,
+            "group": "员工X"
+          },
+          {
+            "name": "工作效率",
+            "value": 7,
+            "group": "员工Y"
+          },
+          {
+            "name": "创新能力",
+            "value": 9,
+            "group": "员工Y"
+          },
+          {
+            "name": "沟通能力",
+            "value": 8,
+            "group": "员工Y"
+          },
+          {
+            "name": "客户满意度",
+            "value": 7,
+            "group": "员工Y"
+          },
+          {
+            "name": "项目完成度",
+            "value": 8,
+            "group": "员工Y"
+          },
+          {
+            "name": "工作效率",
+            "value": 8,
+            "group": "员工Z"
+          },
+          {
+            "name": "创新能力",
+            "value": 7,
+            "group": "员工Z"
+          },
+          {
+            "name": "沟通能力",
+            "value": 9,
+            "group": "员工Z"
+          },
+          {
+            "name": "客户满意度",
+            "value": 6,
+            "group": "员工Z"
+          },
+          {
+            "name": "项目完成度",
+            "value": 9,
+            "group": "员工Z"
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "评估项",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "员工",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "三位员工对团队各项能力的评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -147,23 +942,188 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "电视", "value": 7, "group": "普通用户" },
-        { "name": "冰箱", "value": 8, "group": "普通用户" },
-        { "name": "洗衣机", "value": 9, "group": "普通用户" },
-        { "name": "空调", "value": 6, "group": "普通用户" },
-        { "name": "微波炉", "value": 5, "group": "普通用户" },
-        { "name": "电视", "value": 8, "group": "学生用户" },
-        { "name": "冰箱", "value": 6, "group": "学生用户" },
-        { "name": "洗衣机", "value": 7, "group": "学生用户" },
-        { "name": "空调", "value": 5, "group": "学生用户" },
-        { "name": "微波炉", "value": 9, "group": "学生用户" },
-        { "name": "电视", "value": 6, "group": "专业用户" },
-        { "name": "冰箱", "value": 9, "group": "专业用户" },
-        { "name": "洗衣机", "value": 8, "group": "专业用户" },
-        { "name": "空调", "value": 7, "group": "专业用户" },
-        { "name": "微波炉", "value": 6, "group": "专业用户" }
+        {
+          "name": "电视",
+          "value": 7,
+          "group": "普通用户"
+        },
+        {
+          "name": "冰箱",
+          "value": 8,
+          "group": "普通用户"
+        },
+        {
+          "name": "洗衣机",
+          "value": 9,
+          "group": "普通用户"
+        },
+        {
+          "name": "空调",
+          "value": 6,
+          "group": "普通用户"
+        },
+        {
+          "name": "微波炉",
+          "value": 5,
+          "group": "普通用户"
+        },
+        {
+          "name": "电视",
+          "value": 8,
+          "group": "学生用户"
+        },
+        {
+          "name": "冰箱",
+          "value": 6,
+          "group": "学生用户"
+        },
+        {
+          "name": "洗衣机",
+          "value": 7,
+          "group": "学生用户"
+        },
+        {
+          "name": "空调",
+          "value": 5,
+          "group": "学生用户"
+        },
+        {
+          "name": "微波炉",
+          "value": 9,
+          "group": "学生用户"
+        },
+        {
+          "name": "电视",
+          "value": 6,
+          "group": "专业用户"
+        },
+        {
+          "name": "冰箱",
+          "value": 9,
+          "group": "专业用户"
+        },
+        {
+          "name": "洗衣机",
+          "value": 8,
+          "group": "专业用户"
+        },
+        {
+          "name": "空调",
+          "value": 7,
+          "group": "专业用户"
+        },
+        {
+          "name": "微波炉",
+          "value": 6,
+          "group": "专业用户"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "电视",
+            "value": 7,
+            "group": "普通用户"
+          },
+          {
+            "name": "冰箱",
+            "value": 8,
+            "group": "普通用户"
+          },
+          {
+            "name": "洗衣机",
+            "value": 9,
+            "group": "普通用户"
+          },
+          {
+            "name": "空调",
+            "value": 6,
+            "group": "普通用户"
+          },
+          {
+            "name": "微波炉",
+            "value": 5,
+            "group": "普通用户"
+          },
+          {
+            "name": "电视",
+            "value": 8,
+            "group": "学生用户"
+          },
+          {
+            "name": "冰箱",
+            "value": 6,
+            "group": "学生用户"
+          },
+          {
+            "name": "洗衣机",
+            "value": 7,
+            "group": "学生用户"
+          },
+          {
+            "name": "空调",
+            "value": 5,
+            "group": "学生用户"
+          },
+          {
+            "name": "微波炉",
+            "value": 9,
+            "group": "学生用户"
+          },
+          {
+            "name": "电视",
+            "value": 6,
+            "group": "专业用户"
+          },
+          {
+            "name": "冰箱",
+            "value": 9,
+            "group": "专业用户"
+          },
+          {
+            "name": "洗衣机",
+            "value": 8,
+            "group": "专业用户"
+          },
+          {
+            "name": "空调",
+            "value": 7,
+            "group": "专业用户"
+          },
+          {
+            "name": "微波炉",
+            "value": 6,
+            "group": "专业用户"
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "电器名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "使用频率评分",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "用户类型",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "使用频率评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "三类用户对五种电器的使用频率评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -171,23 +1131,188 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "内容质量", "value": 9, "group": "组1" },
-        { "name": "讲师水平", "value": 8, "group": "组1" },
-        { "name": "互动性", "value": 7, "group": "组1" },
-        { "name": "实用性", "value": 8, "group": "组1" },
-        { "name": "难易度", "value": 6, "group": "组1" },
-        { "name": "内容质量", "value": 7, "group": "组2" },
-        { "name": "讲师水平", "value": 9, "group": "组2" },
-        { "name": "互动性", "value": 8, "group": "组2" },
-        { "name": "实用性", "value": 7, "group": "组2" },
-        { "name": "难易度", "value": 8, "group": "组2" },
-        { "name": "内容质量", "value": 8, "group": "组3" },
-        { "name": "讲师水平", "value": 7, "group": "组3" },
-        { "name": "互动性", "value": 9, "group": "组3" },
-        { "name": "实用性", "value": 6, "group": "组3" },
-        { "name": "难易度", "value": 9, "group": "组3" }
+        {
+          "name": "内容质量",
+          "value": 9,
+          "group": "组1"
+        },
+        {
+          "name": "讲师水平",
+          "value": 8,
+          "group": "组1"
+        },
+        {
+          "name": "互动性",
+          "value": 7,
+          "group": "组1"
+        },
+        {
+          "name": "实用性",
+          "value": 8,
+          "group": "组1"
+        },
+        {
+          "name": "难易度",
+          "value": 6,
+          "group": "组1"
+        },
+        {
+          "name": "内容质量",
+          "value": 7,
+          "group": "组2"
+        },
+        {
+          "name": "讲师水平",
+          "value": 9,
+          "group": "组2"
+        },
+        {
+          "name": "互动性",
+          "value": 8,
+          "group": "组2"
+        },
+        {
+          "name": "实用性",
+          "value": 7,
+          "group": "组2"
+        },
+        {
+          "name": "难易度",
+          "value": 8,
+          "group": "组2"
+        },
+        {
+          "name": "内容质量",
+          "value": 8,
+          "group": "组3"
+        },
+        {
+          "name": "讲师水平",
+          "value": 7,
+          "group": "组3"
+        },
+        {
+          "name": "互动性",
+          "value": 9,
+          "group": "组3"
+        },
+        {
+          "name": "实用性",
+          "value": 6,
+          "group": "组3"
+        },
+        {
+          "name": "难易度",
+          "value": 9,
+          "group": "组3"
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "内容质量",
+            "value": 9,
+            "group": "组1"
+          },
+          {
+            "name": "讲师水平",
+            "value": 8,
+            "group": "组1"
+          },
+          {
+            "name": "互动性",
+            "value": 7,
+            "group": "组1"
+          },
+          {
+            "name": "实用性",
+            "value": 8,
+            "group": "组1"
+          },
+          {
+            "name": "难易度",
+            "value": 6,
+            "group": "组1"
+          },
+          {
+            "name": "内容质量",
+            "value": 7,
+            "group": "组2"
+          },
+          {
+            "name": "讲师水平",
+            "value": 9,
+            "group": "组2"
+          },
+          {
+            "name": "互动性",
+            "value": 8,
+            "group": "组2"
+          },
+          {
+            "name": "实用性",
+            "value": 7,
+            "group": "组2"
+          },
+          {
+            "name": "难易度",
+            "value": 8,
+            "group": "组2"
+          },
+          {
+            "name": "内容质量",
+            "value": 8,
+            "group": "组3"
+          },
+          {
+            "name": "讲师水平",
+            "value": 7,
+            "group": "组3"
+          },
+          {
+            "name": "互动性",
+            "value": 9,
+            "group": "组3"
+          },
+          {
+            "name": "实用性",
+            "value": 6,
+            "group": "组3"
+          },
+          {
+            "name": "难易度",
+            "value": 9,
+            "group": "组3"
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "评分项",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "组别",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "三个组对培训课程五个方面的评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -195,13 +1320,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "Communication", "value": 8 },
-        { "name": "Leadership", "value": 9 },
-        { "name": "Technical", "value": 7 },
-        { "name": "Creativity", "value": 6 },
-        { "name": "Adaptability", "value": 5 }
+        {
+          "name": "Communication",
+          "value": 8
+        },
+        {
+          "name": "Leadership",
+          "value": 9
+        },
+        {
+          "name": "Technical",
+          "value": 7
+        },
+        {
+          "name": "Creativity",
+          "value": 6
+        },
+        {
+          "name": "Adaptability",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "Communication",
+            "value": 8
+          },
+          {
+            "name": "Leadership",
+            "value": 9
+          },
+          {
+            "name": "Technical",
+            "value": 7
+          },
+          {
+            "name": "Creativity",
+            "value": 6
+          },
+          {
+            "name": "Adaptability",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "skill",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "score",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "score",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "技能评分对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -209,13 +1394,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "Speed", "value": 4 },
-        { "name": "Power", "value": 6 },
-        { "name": "Endurance", "value": 8 },
-        { "name": "Agility", "value": 7 },
-        { "name": "Balance", "value": 5 }
+        {
+          "name": "Speed",
+          "value": 4
+        },
+        {
+          "name": "Power",
+          "value": 6
+        },
+        {
+          "name": "Endurance",
+          "value": 8
+        },
+        {
+          "name": "Agility",
+          "value": 7
+        },
+        {
+          "name": "Balance",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "Speed",
+            "value": 4
+          },
+          {
+            "name": "Power",
+            "value": 6
+          },
+          {
+            "name": "Endurance",
+            "value": 8
+          },
+          {
+            "name": "Agility",
+            "value": 7
+          },
+          {
+            "name": "Balance",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "dimension",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "score",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "score",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各维度评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -223,13 +1468,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "Quality", "value": 7 },
-        { "name": "Efficiency", "value": 5 },
-        { "name": "Innovation", "value": 6 },
-        { "name": "Reliability", "value": 8 },
-        { "name": "Sustainability", "value": 4 }
+        {
+          "name": "Quality",
+          "value": 7
+        },
+        {
+          "name": "Efficiency",
+          "value": 5
+        },
+        {
+          "name": "Innovation",
+          "value": 6
+        },
+        {
+          "name": "Reliability",
+          "value": 8
+        },
+        {
+          "name": "Sustainability",
+          "value": 4
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "Quality",
+            "value": 7
+          },
+          {
+            "name": "Efficiency",
+            "value": 5
+          },
+          {
+            "name": "Innovation",
+            "value": 6
+          },
+          {
+            "name": "Reliability",
+            "value": 8
+          },
+          {
+            "name": "Sustainability",
+            "value": 4
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "aspect",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "score",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "score",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "用雷达图可视化不同方面的评分"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -237,13 +1542,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "Accuracy", "value": 9 },
-        { "name": "Precision", "value": 7 },
-        { "name": "Recall", "value": 6 },
-        { "name": "F1-Score", "value": 8 },
-        { "name": "Sensitivity", "value": 5 }
+        {
+          "name": "Accuracy",
+          "value": 9
+        },
+        {
+          "name": "Precision",
+          "value": 7
+        },
+        {
+          "name": "Recall",
+          "value": 6
+        },
+        {
+          "name": "F1-Score",
+          "value": 8
+        },
+        {
+          "name": "Sensitivity",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "Accuracy",
+            "value": 9
+          },
+          {
+            "name": "Precision",
+            "value": 7
+          },
+          {
+            "name": "Recall",
+            "value": 6
+          },
+          {
+            "name": "F1-Score",
+            "value": 8
+          },
+          {
+            "name": "Sensitivity",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "metric",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "score",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "score",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同指标的评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -251,13 +1616,73 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "name": "Taste", "value": 7 },
-        { "name": "Smell", "value": 8 },
-        { "name": "Texture", "value": 6 },
-        { "name": "Color", "value": 5 },
-        { "name": "Freshness", "value": 9 }
+        {
+          "name": "Taste",
+          "value": 7
+        },
+        {
+          "name": "Smell",
+          "value": 8
+        },
+        {
+          "name": "Texture",
+          "value": 6
+        },
+        {
+          "name": "Color",
+          "value": 5
+        },
+        {
+          "name": "Freshness",
+          "value": 9
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "Taste",
+            "value": 7
+          },
+          {
+            "name": "Smell",
+            "value": 8
+          },
+          {
+            "name": "Texture",
+            "value": 6
+          },
+          {
+            "name": "Color",
+            "value": 5
+          },
+          {
+            "name": "Freshness",
+            "value": 9
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "attribute",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "score",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "score",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "用雷达图可视化不同属性的评分"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -265,14 +1690,98 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "Sedan", "name": "Safety", "value": 8 },
-        { "group": "Sedan", "name": "Comfort", "value": 6 },
-        { "group": "Sedan", "name": "Fuel Efficiency", "value": 7 },
-        { "group": "SUV", "name": "Safety", "value": 9 },
-        { "group": "SUV", "name": "Comfort", "value": 8 },
-        { "group": "SUV", "name": "Fuel Efficiency", "value": 5 }
+        {
+          "group": "Sedan",
+          "name": "Safety",
+          "value": 8
+        },
+        {
+          "group": "Sedan",
+          "name": "Comfort",
+          "value": 6
+        },
+        {
+          "group": "Sedan",
+          "name": "Fuel Efficiency",
+          "value": 7
+        },
+        {
+          "group": "SUV",
+          "name": "Safety",
+          "value": 9
+        },
+        {
+          "group": "SUV",
+          "name": "Comfort",
+          "value": 8
+        },
+        {
+          "group": "SUV",
+          "name": "Fuel Efficiency",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "Sedan",
+            "name": "Safety",
+            "value": 8
+          },
+          {
+            "group": "Sedan",
+            "name": "Comfort",
+            "value": 6
+          },
+          {
+            "group": "Sedan",
+            "name": "Fuel Efficiency",
+            "value": 7
+          },
+          {
+            "group": "SUV",
+            "name": "Safety",
+            "value": 9
+          },
+          {
+            "group": "SUV",
+            "name": "Comfort",
+            "value": 8
+          },
+          {
+            "group": "SUV",
+            "name": "Fuel Efficiency",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "车型",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "特征",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同车型在各特征上的评分对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -280,14 +1789,98 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "Team A", "name": "Offense", "value": 7 },
-        { "group": "Team A", "name": "Defense", "value": 6 },
-        { "group": "Team A", "name": "Teamwork", "value": 8 },
-        { "group": "Team B", "name": "Offense", "value": 6 },
-        { "group": "Team B", "name": "Defense", "value": 8 },
-        { "group": "Team B", "name": "Teamwork", "value": 7 }
+        {
+          "group": "Team A",
+          "name": "Offense",
+          "value": 7
+        },
+        {
+          "group": "Team A",
+          "name": "Defense",
+          "value": 6
+        },
+        {
+          "group": "Team A",
+          "name": "Teamwork",
+          "value": 8
+        },
+        {
+          "group": "Team B",
+          "name": "Offense",
+          "value": 6
+        },
+        {
+          "group": "Team B",
+          "name": "Defense",
+          "value": 8
+        },
+        {
+          "group": "Team B",
+          "name": "Teamwork",
+          "value": 7
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "Team A",
+            "name": "Offense",
+            "value": 7
+          },
+          {
+            "group": "Team A",
+            "name": "Defense",
+            "value": 6
+          },
+          {
+            "group": "Team A",
+            "name": "Teamwork",
+            "value": 8
+          },
+          {
+            "group": "Team B",
+            "name": "Offense",
+            "value": 6
+          },
+          {
+            "group": "Team B",
+            "name": "Defense",
+            "value": 8
+          },
+          {
+            "group": "Team B",
+            "name": "Teamwork",
+            "value": 7
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "Team",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "Skill",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "Score",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "Score",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "Compare team skills across different categories"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -295,14 +1888,98 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "New York", "name": "Cost of Living", "value": 6 },
-        { "group": "New York", "name": "Safety", "value": 5 },
-        { "group": "New York", "name": "Public Transport", "value": 8 },
-        { "group": "Los Angeles", "name": "Cost of Living", "value": 7 },
-        { "group": "Los Angeles", "name": "Safety", "value": 6 },
-        { "group": "Los Angeles", "name": "Public Transport", "value": 7 }
+        {
+          "group": "New York",
+          "name": "Cost of Living",
+          "value": 6
+        },
+        {
+          "group": "New York",
+          "name": "Safety",
+          "value": 5
+        },
+        {
+          "group": "New York",
+          "name": "Public Transport",
+          "value": 8
+        },
+        {
+          "group": "Los Angeles",
+          "name": "Cost of Living",
+          "value": 7
+        },
+        {
+          "group": "Los Angeles",
+          "name": "Safety",
+          "value": 6
+        },
+        {
+          "group": "Los Angeles",
+          "name": "Public Transport",
+          "value": 7
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "New York",
+            "name": "Cost of Living",
+            "value": 6
+          },
+          {
+            "group": "New York",
+            "name": "Safety",
+            "value": 5
+          },
+          {
+            "group": "New York",
+            "name": "Public Transport",
+            "value": 8
+          },
+          {
+            "group": "Los Angeles",
+            "name": "Cost of Living",
+            "value": 7
+          },
+          {
+            "group": "Los Angeles",
+            "name": "Safety",
+            "value": 6
+          },
+          {
+            "group": "Los Angeles",
+            "name": "Public Transport",
+            "value": 7
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "城市",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "方面",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "分数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "分数",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同城市在不同方面的分数比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -310,14 +1987,98 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "Smartphone", "name": "Battery Life", "value": 6 },
-        { "group": "Smartphone", "name": "Camera Quality", "value": 8 },
-        { "group": "Smartphone", "name": "User Interface", "value": 7 },
-        { "group": "Laptop", "name": "Battery Life", "value": 8 },
-        { "group": "Laptop", "name": "Camera Quality", "value": 5 },
-        { "group": "Laptop", "name": "User Interface", "value": 9 }
+        {
+          "group": "Smartphone",
+          "name": "Battery Life",
+          "value": 6
+        },
+        {
+          "group": "Smartphone",
+          "name": "Camera Quality",
+          "value": 8
+        },
+        {
+          "group": "Smartphone",
+          "name": "User Interface",
+          "value": 7
+        },
+        {
+          "group": "Laptop",
+          "name": "Battery Life",
+          "value": 8
+        },
+        {
+          "group": "Laptop",
+          "name": "Camera Quality",
+          "value": 5
+        },
+        {
+          "group": "Laptop",
+          "name": "User Interface",
+          "value": 9
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "Smartphone",
+            "name": "Battery Life",
+            "value": 6
+          },
+          {
+            "group": "Smartphone",
+            "name": "Camera Quality",
+            "value": 8
+          },
+          {
+            "group": "Smartphone",
+            "name": "User Interface",
+            "value": 7
+          },
+          {
+            "group": "Laptop",
+            "name": "Battery Life",
+            "value": 8
+          },
+          {
+            "group": "Laptop",
+            "name": "Camera Quality",
+            "value": 5
+          },
+          {
+            "group": "Laptop",
+            "name": "User Interface",
+            "value": 9
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "设备类型",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "属性名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同设备类型在各属性上的评分比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -325,14 +2086,98 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "Lion", "name": "Strength", "value": 9 },
-        { "group": "Lion", "name": "Speed", "value": 8 },
-        { "group": "Lion", "name": "Intelligence", "value": 6 },
-        { "group": "Elephant", "name": "Strength", "value": 10 },
-        { "group": "Elephant", "name": "Speed", "value": 4 },
-        { "group": "Elephant", "name": "Intelligence", "value": 7 }
+        {
+          "group": "Lion",
+          "name": "Strength",
+          "value": 9
+        },
+        {
+          "group": "Lion",
+          "name": "Speed",
+          "value": 8
+        },
+        {
+          "group": "Lion",
+          "name": "Intelligence",
+          "value": 6
+        },
+        {
+          "group": "Elephant",
+          "name": "Strength",
+          "value": 10
+        },
+        {
+          "group": "Elephant",
+          "name": "Speed",
+          "value": 4
+        },
+        {
+          "group": "Elephant",
+          "name": "Intelligence",
+          "value": 7
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "Lion",
+            "name": "Strength",
+            "value": 9
+          },
+          {
+            "group": "Lion",
+            "name": "Speed",
+            "value": 8
+          },
+          {
+            "group": "Lion",
+            "name": "Intelligence",
+            "value": 6
+          },
+          {
+            "group": "Elephant",
+            "name": "Strength",
+            "value": 10
+          },
+          {
+            "group": "Elephant",
+            "name": "Speed",
+            "value": 4
+          },
+          {
+            "group": "Elephant",
+            "name": "Intelligence",
+            "value": 7
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "动物",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "特征",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "分数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "分数",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同动物在不同特征上的分数比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -340,14 +2185,98 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "Tiger", "name": "Strength", "value": 8 },
-        { "group": "Tiger", "name": "Speed", "value": 9 },
-        { "group": "Tiger", "name": "Intelligence", "value": 5 },
-        { "group": "Giraffe", "name": "Strength", "value": 6 },
-        { "group": "Giraffe", "name": "Speed", "value": 7 },
-        { "group": "Giraffe", "name": "Intelligence", "value": 8 }
+        {
+          "group": "Tiger",
+          "name": "Strength",
+          "value": 8
+        },
+        {
+          "group": "Tiger",
+          "name": "Speed",
+          "value": 9
+        },
+        {
+          "group": "Tiger",
+          "name": "Intelligence",
+          "value": 5
+        },
+        {
+          "group": "Giraffe",
+          "name": "Strength",
+          "value": 6
+        },
+        {
+          "group": "Giraffe",
+          "name": "Speed",
+          "value": 7
+        },
+        {
+          "group": "Giraffe",
+          "name": "Intelligence",
+          "value": 8
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "Tiger",
+            "name": "Strength",
+            "value": 8
+          },
+          {
+            "group": "Tiger",
+            "name": "Speed",
+            "value": 9
+          },
+          {
+            "group": "Tiger",
+            "name": "Intelligence",
+            "value": 5
+          },
+          {
+            "group": "Giraffe",
+            "name": "Strength",
+            "value": 6
+          },
+          {
+            "group": "Giraffe",
+            "name": "Speed",
+            "value": 7
+          },
+          {
+            "group": "Giraffe",
+            "name": "Intelligence",
+            "value": 8
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "动物种类",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "能力指标",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "能力值",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "能力值",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "比较不同动物的各项能力指标"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -355,14 +2284,98 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "Smartphone", "name": "Battery", "value": 7 },
-        { "group": "Smartphone", "name": "Performance", "value": 8 },
-        { "group": "Smartphone", "name": "Camera", "value": 9 },
-        { "group": "Laptop", "name": "Battery", "value": 6 },
-        { "group": "Laptop", "name": "Performance", "value": 9 },
-        { "group": "Laptop", "name": "Camera", "value": 5 }
+        {
+          "group": "Smartphone",
+          "name": "Battery",
+          "value": 7
+        },
+        {
+          "group": "Smartphone",
+          "name": "Performance",
+          "value": 8
+        },
+        {
+          "group": "Smartphone",
+          "name": "Camera",
+          "value": 9
+        },
+        {
+          "group": "Laptop",
+          "name": "Battery",
+          "value": 6
+        },
+        {
+          "group": "Laptop",
+          "name": "Performance",
+          "value": 9
+        },
+        {
+          "group": "Laptop",
+          "name": "Camera",
+          "value": 5
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "Smartphone",
+            "name": "Battery",
+            "value": 7
+          },
+          {
+            "group": "Smartphone",
+            "name": "Performance",
+            "value": 8
+          },
+          {
+            "group": "Smartphone",
+            "name": "Camera",
+            "value": 9
+          },
+          {
+            "group": "Laptop",
+            "name": "Battery",
+            "value": 6
+          },
+          {
+            "group": "Laptop",
+            "name": "Performance",
+            "value": 9
+          },
+          {
+            "group": "Laptop",
+            "name": "Camera",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "设备类型",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "指标名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同设备类型在各指标上的评分对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -370,13 +2383,97 @@
     "answer": {
       "type": "radar",
       "data": [
-        { "group": "CityA", "name": "Infrastructure", "value": 8 },
-        { "group": "CityA", "name": "Education", "value": 7 },
-        { "group": "CityA", "name": "Healthcare", "value": 9 },
-        { "group": "CityB", "name": "Infrastructure", "value": 7 },
-        { "group": "CityB", "name": "Education", "value": 9 },
-        { "group": "CityB", "name": "Healthcare", "value": 8 }
+        {
+          "group": "CityA",
+          "name": "Infrastructure",
+          "value": 8
+        },
+        {
+          "group": "CityA",
+          "name": "Education",
+          "value": 7
+        },
+        {
+          "group": "CityA",
+          "name": "Healthcare",
+          "value": 9
+        },
+        {
+          "group": "CityB",
+          "name": "Infrastructure",
+          "value": 7
+        },
+        {
+          "group": "CityB",
+          "name": "Education",
+          "value": 9
+        },
+        {
+          "group": "CityB",
+          "name": "Healthcare",
+          "value": 8
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "group": "CityA",
+            "name": "Infrastructure",
+            "value": 8
+          },
+          {
+            "group": "CityA",
+            "name": "Education",
+            "value": 7
+          },
+          {
+            "group": "CityA",
+            "name": "Healthcare",
+            "value": 9
+          },
+          {
+            "group": "CityB",
+            "name": "Infrastructure",
+            "value": 7
+          },
+          {
+            "group": "CityB",
+            "name": "Education",
+            "value": 9
+          },
+          {
+            "group": "CityB",
+            "name": "Healthcare",
+            "value": 8
+          }
+        ],
+        "metas": [
+          {
+            "id": "group",
+            "name": "城市",
+            "dataType": "string"
+          },
+          {
+            "id": "name",
+            "name": "指标",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "评分",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "评分",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "城市间各项指标对比"
+        }
+      }
+    ]
   }
 ]

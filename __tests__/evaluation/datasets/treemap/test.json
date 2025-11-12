@@ -9,29 +9,131 @@
           "name": "食品",
           "value": 300,
           "children": [
-            { "name": "新鲜食品", "value": 150 },
-            { "name": "罐头食品", "value": 100 },
-            { "name": "零食", "value": 50 }
+            {
+              "name": "新鲜食品",
+              "value": 150
+            },
+            {
+              "name": "罐头食品",
+              "value": 100
+            },
+            {
+              "name": "零食",
+              "value": 50
+            }
           ]
         },
         {
           "name": "饮料",
           "value": 200,
           "children": [
-            { "name": "碳酸饮料", "value": 100 },
-            { "name": "果汁", "value": 100 }
+            {
+              "name": "碳酸饮料",
+              "value": 100
+            },
+            {
+              "name": "果汁",
+              "value": 100
+            }
           ]
         },
         {
           "name": "日用品",
           "value": 500,
           "children": [
-            { "name": "清洁用品", "value": 300 },
-            { "name": "个人护理", "value": 200 }
+            {
+              "name": "清洁用品",
+              "value": 300
+            },
+            {
+              "name": "个人护理",
+              "value": 200
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "食品",
+            "name": "食品",
+            "value": 300,
+            "children": [
+              {
+                "id": "新鲜食品",
+                "name": "新鲜食品",
+                "value": 150
+              },
+              {
+                "id": "罐头食品",
+                "name": "罐头食品",
+                "value": 100
+              },
+              {
+                "id": "零食",
+                "name": "零食",
+                "value": 50
+              }
+            ]
+          },
+          {
+            "id": "饮料",
+            "name": "饮料",
+            "value": 200,
+            "children": [
+              {
+                "id": "碳酸饮料",
+                "name": "碳酸饮料",
+                "value": 100
+              },
+              {
+                "id": "果汁",
+                "name": "果汁",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "id": "日用品",
+            "name": "日用品",
+            "value": 500,
+            "children": [
+              {
+                "id": "清洁用品",
+                "name": "清洁用品",
+                "value": 300
+              },
+              {
+                "id": "个人护理",
+                "name": "个人护理",
+                "value": 200
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "分类名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "库存数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "库存数量",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "超市商品分类及其库存数量"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -43,31 +145,149 @@
           "name": "理学院",
           "value": 1200,
           "children": [
-            { "name": "数学系", "value": 400 },
-            { "name": "物理系", "value": 500 },
-            { "name": "化学系", "value": 300 }
+            {
+              "name": "数学系",
+              "value": 400
+            },
+            {
+              "name": "物理系",
+              "value": 500
+            },
+            {
+              "name": "化学系",
+              "value": 300
+            }
           ]
         },
         {
           "name": "文学院",
           "value": 800,
           "children": [
-            { "name": "中文系", "value": 300 },
-            { "name": "外文系", "value": 300 },
-            { "name": "历史系", "value": 200 }
+            {
+              "name": "中文系",
+              "value": 300
+            },
+            {
+              "name": "外文系",
+              "value": 300
+            },
+            {
+              "name": "历史系",
+              "value": 200
+            }
           ]
         },
         {
           "name": "工学院",
           "value": 1500,
           "children": [
-            { "name": "机械系", "value": 600 },
-            { "name": "土木系", "value": 500 },
-            { "name": "电气系", "value": 400 }
+            {
+              "name": "机械系",
+              "value": 600
+            },
+            {
+              "name": "土木系",
+              "value": 500
+            },
+            {
+              "name": "电气系",
+              "value": 400
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "理学院",
+            "name": "理学院",
+            "value": 1200,
+            "children": [
+              {
+                "id": "数学系",
+                "name": "数学系",
+                "value": 400
+              },
+              {
+                "id": "物理系",
+                "name": "物理系",
+                "value": 500
+              },
+              {
+                "id": "化学系",
+                "name": "化学系",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "id": "文学院",
+            "name": "文学院",
+            "value": 800,
+            "children": [
+              {
+                "id": "中文系",
+                "name": "中文系",
+                "value": 300
+              },
+              {
+                "id": "外文系",
+                "name": "外文系",
+                "value": 300
+              },
+              {
+                "id": "历史系",
+                "name": "历史系",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "id": "工学院",
+            "name": "工学院",
+            "value": 1500,
+            "children": [
+              {
+                "id": "机械系",
+                "name": "机械系",
+                "value": 600
+              },
+              {
+                "id": "土木系",
+                "name": "土木系",
+                "value": 500
+              },
+              {
+                "id": "电气系",
+                "name": "电气系",
+                "value": 400
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "学院/系名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "学生人数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "学生人数",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "展示大学各学院及其下属系的学生人数构成"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -79,36 +299,141 @@
           "name": "北区",
           "value": 500,
           "children": [
-            { "name": "产品 A", "value": 300 },
-            { "name": "产品 B", "value": 200 }
+            {
+              "name": "产品 A",
+              "value": 300
+            },
+            {
+              "name": "产品 B",
+              "value": 200
+            }
           ]
         },
         {
           "name": "南区",
           "value": 700,
           "children": [
-            { "name": "产品 A", "value": 400 },
-            { "name": "产品 B", "value": 300 }
+            {
+              "name": "产品 A",
+              "value": 400
+            },
+            {
+              "name": "产品 B",
+              "value": 300
+            }
           ]
         },
         {
           "name": "东区",
           "value": 600,
           "children": [
-            { "name": "产品 A", "value": 350 },
-            { "name": "产品 B", "value": 250 }
+            {
+              "name": "产品 A",
+              "value": 350
+            },
+            {
+              "name": "产品 B",
+              "value": 250
+            }
           ]
         },
         {
           "name": "西区",
           "value": 400,
           "children": [
-            { "name": "产品 A", "value": 200 },
-            { "name": "产品 B", "value": 200 }
+            {
+              "name": "产品 A",
+              "value": 200
+            },
+            {
+              "name": "产品 B",
+              "value": 200
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "北区",
+            "value": 500,
+            "children": [
+              {
+                "name": "产品 A",
+                "value": 300
+              },
+              {
+                "name": "产品 B",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "name": "南区",
+            "value": 700,
+            "children": [
+              {
+                "name": "产品 A",
+                "value": 400
+              },
+              {
+                "name": "产品 B",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "name": "东区",
+            "value": 600,
+            "children": [
+              {
+                "name": "产品 A",
+                "value": 350
+              },
+              {
+                "name": "产品 B",
+                "value": 250
+              }
+            ]
+          },
+          {
+            "name": "西区",
+            "value": 400,
+            "children": [
+              {
+                "name": "产品 A",
+                "value": 200
+              },
+              {
+                "name": "产品 B",
+                "value": 200
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "区域/产品名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售额(万元)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售额(万元)",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "公司各区域及各产品的销售情况"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -120,37 +445,149 @@
           "name": "AI",
           "value": 1000,
           "children": [
-            { "name": "NLP", "value": 400 },
-            { "name": "CV", "value": 300 },
-            { "name": "智能机器人", "value": 300 }
+            {
+              "name": "NLP",
+              "value": 400
+            },
+            {
+              "name": "CV",
+              "value": 300
+            },
+            {
+              "name": "智能机器人",
+              "value": 300
+            }
           ]
         },
         {
           "name": "区块链",
           "value": 800,
           "children": [
-            { "name": "智能合约", "value": 500 },
-            { "name": "去中心化应用", "value": 300 }
+            {
+              "name": "智能合约",
+              "value": 500
+            },
+            {
+              "name": "去中心化应用",
+              "value": 300
+            }
           ]
         },
         {
           "name": "物联网",
           "value": 600,
           "children": [
-            { "name": "智能家居", "value": 400 },
-            { "name": "工业物联网", "value": 200 }
+            {
+              "name": "智能家居",
+              "value": 400
+            },
+            {
+              "name": "工业物联网",
+              "value": 200
+            }
           ]
         },
         {
           "name": "大数据",
           "value": 900,
           "children": [
-            { "name": "数据分析", "value": 500 },
-            { "name": "数据挖掘", "value": 400 }
+            {
+              "name": "数据分析",
+              "value": 500
+            },
+            {
+              "name": "数据挖掘",
+              "value": 400
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "AI",
+            "value": 1000,
+            "children": [
+              {
+                "name": "NLP",
+                "value": 400
+              },
+              {
+                "name": "CV",
+                "value": 300
+              },
+              {
+                "name": "智能机器人",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "name": "区块链",
+            "value": 800,
+            "children": [
+              {
+                "name": "智能合约",
+                "value": 500
+              },
+              {
+                "name": "去中心化应用",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "name": "物联网",
+            "value": 600,
+            "children": [
+              {
+                "name": "智能家居",
+                "value": 400
+              },
+              {
+                "name": "工业物联网",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "name": "大数据",
+            "value": 900,
+            "children": [
+              {
+                "name": "数据分析",
+                "value": 500
+              },
+              {
+                "name": "数据挖掘",
+                "value": 400
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "项目名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "投资金额",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "投资金额",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "科技公司项目的投资情况"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -162,28 +599,113 @@
           "name": "移动应用开发",
           "value": 150,
           "children": [
-            { "name": "Android 开发", "value": 80 },
-            { "name": "iOS 开发", "value": 70 }
+            {
+              "name": "Android 开发",
+              "value": 80
+            },
+            {
+              "name": "iOS 开发",
+              "value": 70
+            }
           ]
         },
         {
           "name": "Web 开发",
           "value": 100,
           "children": [
-            { "name": "前端开发", "value": 60 },
-            { "name": "后端开发", "value": 40 }
+            {
+              "name": "前端开发",
+              "value": 60
+            },
+            {
+              "name": "后端开发",
+              "value": 40
+            }
           ]
         },
         {
           "name": "嵌入式系统开发",
           "value": 200,
           "children": [
-            { "name": "驱动开发", "value": 120 },
-            { "name": "应用开发", "value": 80 }
+            {
+              "name": "驱动开发",
+              "value": 120
+            },
+            {
+              "name": "应用开发",
+              "value": 80
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "移动应用开发",
+            "value": 150,
+            "children": [
+              {
+                "name": "Android 开发",
+                "value": 80
+              },
+              {
+                "name": "iOS 开发",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "name": "Web 开发",
+            "value": 100,
+            "children": [
+              {
+                "name": "前端开发",
+                "value": 60
+              },
+              {
+                "name": "后端开发",
+                "value": 40
+              }
+            ]
+          },
+          {
+            "name": "嵌入式系统开发",
+            "value": 200,
+            "children": [
+              {
+                "name": "驱动开发",
+                "value": 120
+              },
+              {
+                "name": "应用开发",
+                "value": 80
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "项目名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "开发人员数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "开发人员数量",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "软件开发公司的项目情况及其投入的开发人员数量"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -210,7 +732,54 @@
           "value": 4000
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "北美洲",
+            "value": 3000,
+            "id": "北美洲",
+            "children": [
+              {
+                "name": "美国",
+                "value": 2500,
+                "id": "美国"
+              },
+              {
+                "name": "加拿大",
+                "value": 500,
+                "id": "加拿大"
+              }
+            ]
+          },
+          {
+            "name": "亚洲",
+            "value": 4000,
+            "id": "亚洲"
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "地区名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "能源消耗量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "能源消耗量",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "不同地区能源消耗情况"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -237,7 +806,50 @@
           "value": 3000
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "研发部",
+            "value": 6000,
+            "children": [
+              {
+                "name": "软件开发",
+                "value": 4000
+              },
+              {
+                "name": "硬件开发",
+                "value": 2000
+              }
+            ]
+          },
+          {
+            "name": "市场部",
+            "value": 3000
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "部门名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "预算",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "预算",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "公司各部门的预算分配情况"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -264,7 +876,50 @@
           "value": 1380000000
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "中国",
+            "value": 1400000000,
+            "children": [
+              {
+                "name": "北京",
+                "value": 21500000
+              },
+              {
+                "name": "上海",
+                "value": 24200000
+              }
+            ]
+          },
+          {
+            "name": "印度",
+            "value": 1380000000
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "国家/城市名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "人口数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "人口数量",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "全球主要国家的人口分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -291,7 +946,54 @@
           "value": 500
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "小说类",
+            "value": 700,
+            "id": "小说类",
+            "children": [
+              {
+                "name": "科幻小说",
+                "value": 300,
+                "id": "科幻小说"
+              },
+              {
+                "name": "言情小说",
+                "value": 400,
+                "id": "言情小说"
+              }
+            ]
+          },
+          {
+            "name": "教育类",
+            "value": 500,
+            "id": "教育类"
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "书籍类别",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销量",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "一家书店各类书籍的销量数据"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -318,7 +1020,50 @@
           "value": 6000
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "电子产品",
+            "value": 8000,
+            "children": [
+              {
+                "name": "手机",
+                "value": 5000
+              },
+              {
+                "name": "电脑",
+                "value": 3000
+              }
+            ]
+          },
+          {
+            "name": "家居用品",
+            "value": 6000
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "商品种类",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售额",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售额",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "商品种类及其销售额"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -330,21 +1075,100 @@
           "name": "亚洲",
           "value": 1500,
           "children": [
-            { "name": "中国", "value": 800 },
-            { "name": "印度", "value": 700 }
+            {
+              "name": "中国",
+              "value": 800
+            },
+            {
+              "name": "印度",
+              "value": 700
+            }
           ]
         },
         {
           "name": "欧洲",
           "value": 1200,
           "children": [
-            { "name": "德国", "value": 400 },
-            { "name": "法国", "value": 300 },
-            { "name": "英国", "value": 500 }
+            {
+              "name": "德国",
+              "value": 400
+            },
+            {
+              "name": "法国",
+              "value": 300
+            },
+            {
+              "name": "英国",
+              "value": 500
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "亚洲",
+            "name": "亚洲",
+            "value": 1500,
+            "children": [
+              {
+                "id": "中国",
+                "name": "中国",
+                "value": 800
+              },
+              {
+                "id": "印度",
+                "name": "印度",
+                "value": 700
+              }
+            ]
+          },
+          {
+            "id": "欧洲",
+            "name": "欧洲",
+            "value": 1200,
+            "children": [
+              {
+                "id": "德国",
+                "name": "德国",
+                "value": 400
+              },
+              {
+                "id": "法国",
+                "name": "法国",
+                "value": 300
+              },
+              {
+                "id": "英国",
+                "name": "英国",
+                "value": 500
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "地区名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "能源消耗量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "能源消耗量",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "不同地区能源消耗情况"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -352,11 +1176,57 @@
     "answer": {
       "type": "treemap",
       "data": [
-        { "name": "0-18岁", "value": 3000 },
-        { "name": "19-60岁", "value": 12000 },
-        { "name": "60岁以上", "value": 5000 }
+        {
+          "name": "0-18岁",
+          "value": 3000
+        },
+        {
+          "name": "19-60岁",
+          "value": 12000
+        },
+        {
+          "name": "60岁以上",
+          "value": 5000
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "name": "0-18岁",
+            "value": 3000
+          },
+          {
+            "name": "19-60岁",
+            "value": 12000
+          },
+          {
+            "name": "60岁以上",
+            "value": 5000
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "年龄段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "人口数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "人口数量",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "各年龄段人口分布"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -368,20 +1238,91 @@
           "name": "小说",
           "value": 700,
           "children": [
-            { "name": "科幻小说", "value": 300 },
-            { "name": "爱情小说", "value": 400 }
+            {
+              "name": "科幻小说",
+              "value": 300
+            },
+            {
+              "name": "爱情小说",
+              "value": 400
+            }
           ]
         },
         {
           "name": "非小说类",
           "value": 600,
           "children": [
-            { "name": "历史书籍", "value": 200 },
-            { "name": "科学书籍", "value": 400 }
+            {
+              "name": "历史书籍",
+              "value": 200
+            },
+            {
+              "name": "科学书籍",
+              "value": 400
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "小说",
+            "name": "小说",
+            "value": 700,
+            "children": [
+              {
+                "id": "科幻小说",
+                "name": "科幻小说",
+                "value": 300
+              },
+              {
+                "id": "爱情小说",
+                "name": "爱情小说",
+                "value": 400
+              }
+            ]
+          },
+          {
+            "id": "非小说类",
+            "name": "非小说类",
+            "value": 600,
+            "children": [
+              {
+                "id": "历史书籍",
+                "name": "历史书籍",
+                "value": 200
+              },
+              {
+                "id": "科学书籍",
+                "name": "科学书籍",
+                "value": 400
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "类别名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售量",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "各类别图书销售量"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -393,14 +1334,78 @@
           "name": "研发部",
           "value": 20000,
           "children": [
-            { "name": "硬件组", "value": 10000 },
-            { "name": "软件组", "value": 10000 }
+            {
+              "name": "硬件组",
+              "value": 10000
+            },
+            {
+              "name": "软件组",
+              "value": 10000
+            }
           ]
         },
-        { "name": "市场部", "value": 15000 },
-        { "name": "行政部", "value": 5000 }
+        {
+          "name": "市场部",
+          "value": 15000
+        },
+        {
+          "name": "行政部",
+          "value": 5000
+        }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "id": "研发部",
+            "name": "研发部",
+            "value": 20000,
+            "children": [
+              {
+                "id": "硬件组",
+                "name": "硬件组",
+                "value": 10000
+              },
+              {
+                "id": "软件组",
+                "name": "软件组",
+                "value": 10000
+              }
+            ]
+          },
+          {
+            "id": "市场部",
+            "name": "市场部",
+            "value": 15000
+          },
+          {
+            "id": "行政部",
+            "name": "行政部",
+            "value": 5000
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "部门名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "预算金额",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "预算金额",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "各个部门的预算分配"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -416,52 +1421,232 @@
               "name": "手机",
               "value": 400,
               "children": [
-                { "name": "品牌X", "value": 200 },
-                { "name": "品牌Y", "value": 100 },
-                { "name": "品牌Z", "value": 100 }
+                {
+                  "name": "品牌X",
+                  "value": 200
+                },
+                {
+                  "name": "品牌Y",
+                  "value": 100
+                },
+                {
+                  "name": "品牌Z",
+                  "value": 100
+                }
               ]
             },
             {
               "name": "电脑",
               "value": 300,
               "children": [
-                { "name": "笔记本", "value": 150 },
-                { "name": "台式机", "value": 150 }
+                {
+                  "name": "笔记本",
+                  "value": 150
+                },
+                {
+                  "name": "台式机",
+                  "value": 150
+                }
               ]
             },
-            { "name": "平板", "value": 300 }
+            {
+              "name": "平板",
+              "value": 300
+            }
           ]
         },
         {
           "name": "家电",
           "value": 800,
           "children": [
-            { "name": "冰箱", "value": 200 },
-            { "name": "洗衣机", "value": 200 },
-            { "name": "空调", "value": 200 },
-            { "name": "电视", "value": 200 }
+            {
+              "name": "冰箱",
+              "value": 200
+            },
+            {
+              "name": "洗衣机",
+              "value": 200
+            },
+            {
+              "name": "空调",
+              "value": 200
+            },
+            {
+              "name": "电视",
+              "value": 200
+            }
           ]
         },
         {
           "name": "服装",
           "value": 600,
           "children": [
-            { "name": "男装", "value": 200 },
-            { "name": "女装", "value": 200 },
-            { "name": "童装", "value": 200 }
+            {
+              "name": "男装",
+              "value": 200
+            },
+            {
+              "name": "女装",
+              "value": 200
+            },
+            {
+              "name": "童装",
+              "value": 200
+            }
           ]
         },
         {
           "name": "食品",
           "value": 400,
           "children": [
-            { "name": "饮料", "value": 100 },
-            { "name": "零食", "value": 100 },
-            { "name": "调味品", "value": 100 },
-            { "name": "米面粮油", "value": 100 }
+            {
+              "name": "饮料",
+              "value": 100
+            },
+            {
+              "name": "零食",
+              "value": 100
+            },
+            {
+              "name": "调味品",
+              "value": 100
+            },
+            {
+              "name": "米面粮油",
+              "value": 100
+            }
           ]
         }
       ]
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "hierarchy",
+        "data": [
+          {
+            "name": "电子产品",
+            "value": 1000,
+            "children": [
+              {
+                "name": "手机",
+                "value": 400,
+                "children": [
+                  {
+                    "name": "品牌X",
+                    "value": 200
+                  },
+                  {
+                    "name": "品牌Y",
+                    "value": 100
+                  },
+                  {
+                    "name": "品牌Z",
+                    "value": 100
+                  }
+                ]
+              },
+              {
+                "name": "电脑",
+                "value": 300,
+                "children": [
+                  {
+                    "name": "笔记本",
+                    "value": 150
+                  },
+                  {
+                    "name": "台式机",
+                    "value": 150
+                  }
+                ]
+              },
+              {
+                "name": "平板",
+                "value": 300
+              }
+            ]
+          },
+          {
+            "name": "家电",
+            "value": 800,
+            "children": [
+              {
+                "name": "冰箱",
+                "value": 200
+              },
+              {
+                "name": "洗衣机",
+                "value": 200
+              },
+              {
+                "name": "空调",
+                "value": 200
+              },
+              {
+                "name": "电视",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "name": "服装",
+            "value": 600,
+            "children": [
+              {
+                "name": "男装",
+                "value": 200
+              },
+              {
+                "name": "女装",
+                "value": 200
+              },
+              {
+                "name": "童装",
+                "value": 200
+              }
+            ]
+          },
+          {
+            "name": "食品",
+            "value": 400,
+            "children": [
+              {
+                "name": "饮料",
+                "value": 100
+              },
+              {
+                "name": "零食",
+                "value": 100
+              },
+              {
+                "name": "调味品",
+                "value": 100
+              },
+              {
+                "name": "米面粮油",
+                "value": 100
+              }
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "name",
+            "name": "产品名称",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售额",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售额",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "产品销售情况的组成分析"
+        }
+      }
+    ]
   }
 ]

@@ -5,14 +5,60 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "2018 年", "value": 500 },
-        { "category": "2019 年", "value": 750 },
-        { "category": "2020 年", "value": 900 }
+        {
+          "category": "2018 年",
+          "value": 500
+        },
+        {
+          "category": "2019 年",
+          "value": 750
+        },
+        {
+          "category": "2020 年",
+          "value": 900
+        }
       ],
       "title": "某品牌手机年度销量",
       "axisXTitle": "年份",
       "axisYTitle": "销量 （万台）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "2018 年",
+            "value": 500
+          },
+          {
+            "category": "2019 年",
+            "value": 750
+          },
+          {
+            "category": "2020 年",
+            "value": 900
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销量 （万台）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销量 （万台）",
+          "key": "value",
+          "purpose": "Trend",
+          "purposeDesc": "某品牌手机年度销量"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -20,15 +66,68 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "研发部", "value": 50 },
-        { "category": "市场部", "value": 40 },
-        { "category": "销售部", "value": 60 },
-        { "category": "行政部", "value": 20 }
+        {
+          "category": "研发部",
+          "value": 50
+        },
+        {
+          "category": "市场部",
+          "value": 40
+        },
+        {
+          "category": "销售部",
+          "value": 60
+        },
+        {
+          "category": "行政部",
+          "value": 20
+        }
       ],
       "title": "2021 年部门预算分配",
       "axisXTitle": "部门",
       "axisYTitle": "预算 （百万美元）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "研发部",
+            "value": 50
+          },
+          {
+            "category": "市场部",
+            "value": 40
+          },
+          {
+            "category": "销售部",
+            "value": 60
+          },
+          {
+            "category": "行政部",
+            "value": 20
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "部门",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "预算 （百万美元）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "预算 （百万美元）",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "2021 年部门预算分配"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -36,37 +135,191 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "苹果", "value": 2000 },
-        { "category": "香蕉", "value": 1500 },
-        { "category": "橙子", "value": 1800 },
-        { "category": "葡萄", "value": 1200 }
+        {
+          "category": "苹果",
+          "value": 2000
+        },
+        {
+          "category": "香蕉",
+          "value": 1500
+        },
+        {
+          "category": "橙子",
+          "value": 1800
+        },
+        {
+          "category": "葡萄",
+          "value": 1200
+        }
       ],
       "title": "不同水果月销售量",
       "axisXTitle": "水果",
       "axisYTitle": "销售量 （千克）"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "苹果",
+            "value": 2000
+          },
+          {
+            "category": "香蕉",
+            "value": 1500
+          },
+          {
+            "category": "橙子",
+            "value": 1800
+          },
+          {
+            "category": "葡萄",
+            "value": 1200
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "水果",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售量 （千克）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "销售量 （千克）",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同水果月销售量"
+        }
+      }
+    ]
   },
-
   {
     "type": "text2chart",
     "question": "2022 年四个季度公司 A 和公司 B 的销售额对比，公司 A 分别为 200 万元，250 万元，300 万元 和 350 万元，公司 B 分别为 180 万元，230 万元，280 万元 和 330 万元。用分组条形图可视化",
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "Q1", "value": 200, "group": "公司 A" },
-        { "category": "Q1", "value": 180, "group": "公司 B" },
-        { "category": "Q2", "value": 250, "group": "公司 A" },
-        { "category": "Q2", "value": 230, "group": "公司 B" },
-        { "category": "Q3", "value": 300, "group": "公司 A" },
-        { "category": "Q3", "value": 280, "group": "公司 B" },
-        { "category": "Q4", "value": 350, "group": "公司 A" },
-        { "category": "Q4", "value": 330, "group": "公司 B" }
+        {
+          "category": "Q1",
+          "value": 200,
+          "group": "公司 A"
+        },
+        {
+          "category": "Q1",
+          "value": 180,
+          "group": "公司 B"
+        },
+        {
+          "category": "Q2",
+          "value": 250,
+          "group": "公司 A"
+        },
+        {
+          "category": "Q2",
+          "value": 230,
+          "group": "公司 B"
+        },
+        {
+          "category": "Q3",
+          "value": 300,
+          "group": "公司 A"
+        },
+        {
+          "category": "Q3",
+          "value": 280,
+          "group": "公司 B"
+        },
+        {
+          "category": "Q4",
+          "value": 350,
+          "group": "公司 A"
+        },
+        {
+          "category": "Q4",
+          "value": 330,
+          "group": "公司 B"
+        }
       ],
       "group": true,
       "title": "2022 年公司 A 和公司 B 的季度销售额对比",
       "axisXTitle": "季度",
       "axisYTitle": "销售额 (万元)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Q1",
+            "value": 200,
+            "group": "公司 A"
+          },
+          {
+            "category": "Q1",
+            "value": 180,
+            "group": "公司 B"
+          },
+          {
+            "category": "Q2",
+            "value": 250,
+            "group": "公司 A"
+          },
+          {
+            "category": "Q2",
+            "value": 230,
+            "group": "公司 B"
+          },
+          {
+            "category": "Q3",
+            "value": 300,
+            "group": "公司 A"
+          },
+          {
+            "category": "Q3",
+            "value": 280,
+            "group": "公司 B"
+          },
+          {
+            "category": "Q4",
+            "value": 350,
+            "group": "公司 A"
+          },
+          {
+            "category": "Q4",
+            "value": 330,
+            "group": "公司 B"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售额 (万元)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "公司",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "销售额 (万元)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "2022 年公司 A 和公司 B 的季度销售额对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -74,16 +327,82 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "2021 年", "value": 120, "group": "地铁" },
-        { "category": "2021 年", "value": 80, "group": "公交车" },
-        { "category": "2022 年", "value": 130, "group": "地铁" },
-        { "category": "2022 年", "value": 85, "group": "公交车" }
+        {
+          "category": "2021 年",
+          "value": 120,
+          "group": "地铁"
+        },
+        {
+          "category": "2021 年",
+          "value": 80,
+          "group": "公交车"
+        },
+        {
+          "category": "2022 年",
+          "value": 130,
+          "group": "地铁"
+        },
+        {
+          "category": "2022 年",
+          "value": 85,
+          "group": "公交车"
+        }
       ],
       "group": true,
       "title": "城市公共交通使用量变化",
       "axisXTitle": "年份",
       "axisYTitle": "使用量 (万人次)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "2021 年",
+            "value": 120,
+            "group": "地铁"
+          },
+          {
+            "category": "2021 年",
+            "value": 80,
+            "group": "公交车"
+          },
+          {
+            "category": "2022 年",
+            "value": 130,
+            "group": "地铁"
+          },
+          {
+            "category": "2022 年",
+            "value": 85,
+            "group": "公交车"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "使用量 (万人次)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "交通方式",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "使用量 (万人次)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "城市公共交通使用量变化情况"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -91,20 +410,122 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "Q1", "value": 500, "group": "Apple" },
-        { "category": "Q1", "value": 450, "group": "Google" },
-        { "category": "Q2", "value": 520, "group": "Apple" },
-        { "category": "Q2", "value": 480, "group": "Google" },
-        { "category": "Q3", "value": 550, "group": "Apple" },
-        { "category": "Q3", "value": 500, "group": "Google" },
-        { "category": "Q4", "value": 600, "group": "Apple" },
-        { "category": "Q4", "value": 530, "group": "Google" }
+        {
+          "category": "Q1",
+          "value": 500,
+          "group": "Apple"
+        },
+        {
+          "category": "Q1",
+          "value": 450,
+          "group": "Google"
+        },
+        {
+          "category": "Q2",
+          "value": 520,
+          "group": "Apple"
+        },
+        {
+          "category": "Q2",
+          "value": 480,
+          "group": "Google"
+        },
+        {
+          "category": "Q3",
+          "value": 550,
+          "group": "Apple"
+        },
+        {
+          "category": "Q3",
+          "value": 500,
+          "group": "Google"
+        },
+        {
+          "category": "Q4",
+          "value": 600,
+          "group": "Apple"
+        },
+        {
+          "category": "Q4",
+          "value": 530,
+          "group": "Google"
+        }
       ],
       "stack": true,
       "title": "2023 年五大科技公司季度营收增长",
       "axisXTitle": "季度",
       "axisYTitle": "营收 (亿美元)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Q1",
+            "value": 500,
+            "group": "Apple"
+          },
+          {
+            "category": "Q1",
+            "value": 450,
+            "group": "Google"
+          },
+          {
+            "category": "Q2",
+            "value": 520,
+            "group": "Apple"
+          },
+          {
+            "category": "Q2",
+            "value": 480,
+            "group": "Google"
+          },
+          {
+            "category": "Q3",
+            "value": 550,
+            "group": "Apple"
+          },
+          {
+            "category": "Q3",
+            "value": 500,
+            "group": "Google"
+          },
+          {
+            "category": "Q4",
+            "value": 600,
+            "group": "Apple"
+          },
+          {
+            "category": "Q4",
+            "value": 530,
+            "group": "Google"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "营收 (亿美元)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "公司",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "营收 (亿美元)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "2023 年五大科技公司季度营收增长"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -112,42 +533,245 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "亚洲", "value": 400, "group": "2019 年" },
-        { "category": "亚洲", "value": 550, "group": "2023 年" },
-        { "category": "欧洲", "value": 380, "group": "2019 年" },
-        { "category": "欧洲", "value": 520, "group": "2023 年" },
-        { "category": "美洲", "value": 350, "group": "2019 年" },
-        { "category": "美洲", "value": 480, "group": "2023 年" }
+        {
+          "category": "亚洲",
+          "value": 400,
+          "group": "2019 年"
+        },
+        {
+          "category": "亚洲",
+          "value": 550,
+          "group": "2023 年"
+        },
+        {
+          "category": "欧洲",
+          "value": 380,
+          "group": "2019 年"
+        },
+        {
+          "category": "欧洲",
+          "value": 520,
+          "group": "2023 年"
+        },
+        {
+          "category": "美洲",
+          "value": 350,
+          "group": "2019 年"
+        },
+        {
+          "category": "美洲",
+          "value": 480,
+          "group": "2023 年"
+        }
       ],
       "stack": true,
       "title": "2019 年与 2023 年各大洲旅游收入对比",
       "axisXTitle": "大洲",
       "axisYTitle": "收入 (亿美元)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "亚洲",
+            "value": 400,
+            "group": "2019 年"
+          },
+          {
+            "category": "亚洲",
+            "value": 550,
+            "group": "2023 年"
+          },
+          {
+            "category": "欧洲",
+            "value": 380,
+            "group": "2019 年"
+          },
+          {
+            "category": "欧洲",
+            "value": 520,
+            "group": "2023 年"
+          },
+          {
+            "category": "美洲",
+            "value": 350,
+            "group": "2019 年"
+          },
+          {
+            "category": "美洲",
+            "value": 480,
+            "group": "2023 年"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "大洲",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "收入 (亿美元)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "年份",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "收入 (亿美元)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "2019 年与 2023 年各大洲旅游收入对比"
+        }
+      }
+    ]
   },
-
   {
     "type": "text2chart",
     "question": "各大洲不同年份的农业生产总值对比，2018 年亚洲为 2560 亿美元，欧洲为 1980 亿美元，非洲为 1370 亿美元，美洲为 2290 亿美元，澳洲为 850 亿美元；2022 年亚洲为 2890 亿美元，欧洲为 2050 亿美元，非洲为 1580 亿美元，美洲为 2450 亿美元，澳洲为 910 亿美元。用条形图可视化",
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "亚洲", "value": 2560, "group": "2018" },
-        { "category": "亚洲", "value": 2890, "group": "2022" },
-        { "category": "欧洲", "value": 1980, "group": "2018" },
-        { "category": "欧洲", "value": 2050, "group": "2022" },
-        { "category": "非洲", "value": 1370, "group": "2018" },
-        { "category": "非洲", "value": 1580, "group": "2022" },
-        { "category": "美洲", "value": 2290, "group": "2018" },
-        { "category": "美洲", "value": 2450, "group": "2022" },
-        { "category": "澳洲", "value": 850, "group": "2018" },
-        { "category": "澳洲", "value": 910, "group": "2022" }
+        {
+          "category": "亚洲",
+          "value": 2560,
+          "group": "2018"
+        },
+        {
+          "category": "亚洲",
+          "value": 2890,
+          "group": "2022"
+        },
+        {
+          "category": "欧洲",
+          "value": 1980,
+          "group": "2018"
+        },
+        {
+          "category": "欧洲",
+          "value": 2050,
+          "group": "2022"
+        },
+        {
+          "category": "非洲",
+          "value": 1370,
+          "group": "2018"
+        },
+        {
+          "category": "非洲",
+          "value": 1580,
+          "group": "2022"
+        },
+        {
+          "category": "美洲",
+          "value": 2290,
+          "group": "2018"
+        },
+        {
+          "category": "美洲",
+          "value": 2450,
+          "group": "2022"
+        },
+        {
+          "category": "澳洲",
+          "value": 850,
+          "group": "2018"
+        },
+        {
+          "category": "澳洲",
+          "value": 910,
+          "group": "2022"
+        }
       ],
       "group": true,
       "title": "各大洲农业生产总值对比",
       "axisXTitle": "大洲",
       "axisYTitle": "农业生产总值 (亿美元)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "亚洲",
+            "value": 2560,
+            "group": "2018"
+          },
+          {
+            "category": "亚洲",
+            "value": 2890,
+            "group": "2022"
+          },
+          {
+            "category": "欧洲",
+            "value": 1980,
+            "group": "2018"
+          },
+          {
+            "category": "欧洲",
+            "value": 2050,
+            "group": "2022"
+          },
+          {
+            "category": "非洲",
+            "value": 1370,
+            "group": "2018"
+          },
+          {
+            "category": "非洲",
+            "value": 1580,
+            "group": "2022"
+          },
+          {
+            "category": "美洲",
+            "value": 2290,
+            "group": "2018"
+          },
+          {
+            "category": "美洲",
+            "value": 2450,
+            "group": "2022"
+          },
+          {
+            "category": "澳洲",
+            "value": 850,
+            "group": "2018"
+          },
+          {
+            "category": "澳洲",
+            "value": 910,
+            "group": "2022"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "大洲",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "农业生产总值 (亿美元)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "年份",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "农业生产总值 (亿美元)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各大洲不同年份的农业生产总值对比"
+        }
+      }
+    ]
   },
   {
     "type": "text2chart",
@@ -155,31 +779,136 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "数学", "value": 82.5 },
-        { "category": "物理", "value": 78.9 },
-        { "category": "化学", "value": 85.2 },
-        { "category": "生物", "value": 79.5 },
-        { "category": "历史", "value": 88.0 }
+        {
+          "category": "数学",
+          "value": 82.5
+        },
+        {
+          "category": "物理",
+          "value": 78.9
+        },
+        {
+          "category": "化学",
+          "value": 85.2
+        },
+        {
+          "category": "生物",
+          "value": 79.5
+        },
+        {
+          "category": "历史",
+          "value": 88
+        }
       ],
       "title": "不同学科平均成绩",
       "axisXTitle": "学科",
       "axisYTitle": "平均成绩 (分)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "数学",
+            "value": 82.5
+          },
+          {
+            "category": "物理",
+            "value": 78.9
+          },
+          {
+            "category": "化学",
+            "value": 85.2
+          },
+          {
+            "category": "生物",
+            "value": 79.5
+          },
+          {
+            "category": "历史",
+            "value": 88
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "学科",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "平均成绩 (分)",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "平均成绩 (分)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同学科平均成绩"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "用条形图可视化我的数据 [{ \"region\": \"北美\", \"sales\": 5000 }, { \"region\": \"欧洲\", \"sales\": 7000 }, { \"region\": \"亚洲\", \"sales\": 8000 }]",
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "北美", "value": 5000 },
-        { "category": "欧洲", "value": 7000 },
-        { "category": "亚洲", "value": 8000 }
+        {
+          "category": "北美",
+          "value": 5000
+        },
+        {
+          "category": "欧洲",
+          "value": 7000
+        },
+        {
+          "category": "亚洲",
+          "value": 8000
+        }
       ],
       "axisXTitle": "region",
       "axisYTitle": "sales"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "北美",
+            "value": 5000
+          },
+          {
+            "category": "欧洲",
+            "value": 7000
+          },
+          {
+            "category": "亚洲",
+            "value": 8000
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "region",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "sales",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "sales",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同地区的销售额对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -187,13 +916,59 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "研发", "value": 30000 },
-        { "category": "市场", "value": 15000 },
-        { "category": "销售", "value": 20000 }
+        {
+          "category": "研发",
+          "value": 30000
+        },
+        {
+          "category": "市场",
+          "value": 15000
+        },
+        {
+          "category": "销售",
+          "value": 20000
+        }
       ],
       "axisXTitle": "department",
       "axisYTitle": "budget"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "研发",
+            "value": 30000
+          },
+          {
+            "category": "市场",
+            "value": 15000
+          },
+          {
+            "category": "销售",
+            "value": 20000
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "department",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "budget",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "budget",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "各部门预算对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -201,34 +976,181 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "手机", "value": 32000 },
-        { "category": "电脑", "value": 45000 },
-        { "category": "平板", "value": 15000 }
+        {
+          "category": "手机",
+          "value": 32000
+        },
+        {
+          "category": "电脑",
+          "value": 45000
+        },
+        {
+          "category": "平板",
+          "value": 15000
+        }
       ],
       "axisXTitle": "product",
       "axisYTitle": "revenue"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "手机",
+            "value": 32000
+          },
+          {
+            "category": "电脑",
+            "value": 45000
+          },
+          {
+            "category": "平板",
+            "value": 15000
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "product",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "revenue",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "revenue",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "使用条形图来表示不同产品的收入"
+        }
+      }
+    ]
   },
-
   {
     "type": "data2chart",
     "question": "用分组条形图可视化我不同产品的季度销售额，数据如下：{ '产品A': { 'Q1': 5000, 'Q2': 7000, 'Q3': 8000, 'Q4': 6000 }, '产品B': { 'Q1': 3000, 'Q2': 4000, 'Q3': 5000, 'Q4': 4500 } }",
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "Q1", "value": 5000, "group": "产品A" },
-        { "category": "Q2", "value": 7000, "group": "产品A" },
-        { "category": "Q3", "value": 8000, "group": "产品A" },
-        { "category": "Q4", "value": 6000, "group": "产品A" },
-        { "category": "Q1", "value": 3000, "group": "产品B" },
-        { "category": "Q2", "value": 4000, "group": "产品B" },
-        { "category": "Q3", "value": 5000, "group": "产品B" },
-        { "category": "Q4", "value": 4500, "group": "产品B" }
+        {
+          "category": "Q1",
+          "value": 5000,
+          "group": "产品A"
+        },
+        {
+          "category": "Q2",
+          "value": 7000,
+          "group": "产品A"
+        },
+        {
+          "category": "Q3",
+          "value": 8000,
+          "group": "产品A"
+        },
+        {
+          "category": "Q4",
+          "value": 6000,
+          "group": "产品A"
+        },
+        {
+          "category": "Q1",
+          "value": 3000,
+          "group": "产品B"
+        },
+        {
+          "category": "Q2",
+          "value": 4000,
+          "group": "产品B"
+        },
+        {
+          "category": "Q3",
+          "value": 5000,
+          "group": "产品B"
+        },
+        {
+          "category": "Q4",
+          "value": 4500,
+          "group": "产品B"
+        }
       ],
       "group": true,
       "axisXTitle": "季度",
       "axisYTitle": "销售额"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Q1",
+            "value": 5000,
+            "group": "产品A"
+          },
+          {
+            "category": "Q2",
+            "value": 7000,
+            "group": "产品A"
+          },
+          {
+            "category": "Q3",
+            "value": 8000,
+            "group": "产品A"
+          },
+          {
+            "category": "Q4",
+            "value": 6000,
+            "group": "产品A"
+          },
+          {
+            "category": "Q1",
+            "value": 3000,
+            "group": "产品B"
+          },
+          {
+            "category": "Q2",
+            "value": 4000,
+            "group": "产品B"
+          },
+          {
+            "category": "Q3",
+            "value": 5000,
+            "group": "产品B"
+          },
+          {
+            "category": "Q4",
+            "value": 4500,
+            "group": "产品B"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "销售额",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "产品",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "销售额",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同产品的季度销售额对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -236,17 +1158,101 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "电力", "value": 200, "group": "北美" },
-        { "category": "天然气", "value": 150, "group": "北美" },
-        { "category": "电力", "value": 180, "group": "欧洲" },
-        { "category": "天然气", "value": 170, "group": "欧洲" },
-        { "category": "电力", "value": 250, "group": "亚洲" },
-        { "category": "天然气", "value": 130, "group": "亚洲" }
+        {
+          "category": "电力",
+          "value": 200,
+          "group": "北美"
+        },
+        {
+          "category": "天然气",
+          "value": 150,
+          "group": "北美"
+        },
+        {
+          "category": "电力",
+          "value": 180,
+          "group": "欧洲"
+        },
+        {
+          "category": "天然气",
+          "value": 170,
+          "group": "欧洲"
+        },
+        {
+          "category": "电力",
+          "value": 250,
+          "group": "亚洲"
+        },
+        {
+          "category": "天然气",
+          "value": 130,
+          "group": "亚洲"
+        }
       ],
       "group": true,
       "axisXTitle": "能源类型",
       "axisYTitle": "消耗 (单位)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "电力",
+            "value": 200,
+            "group": "北美"
+          },
+          {
+            "category": "天然气",
+            "value": 150,
+            "group": "北美"
+          },
+          {
+            "category": "电力",
+            "value": 180,
+            "group": "欧洲"
+          },
+          {
+            "category": "天然气",
+            "value": 170,
+            "group": "欧洲"
+          },
+          {
+            "category": "电力",
+            "value": 250,
+            "group": "亚洲"
+          },
+          {
+            "category": "天然气",
+            "value": 130,
+            "group": "亚洲"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "能源类型",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "消耗 (单位)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "地区",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "消耗 (单位)",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同地区的能源消耗对比"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -254,17 +1260,101 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "男生", "value": 150, "group": "年级1" },
-        { "category": "女生", "value": 130, "group": "年级1" },
-        { "category": "男生", "value": 160, "group": "年级2" },
-        { "category": "女生", "value": 140, "group": "年级2" },
-        { "category": "男生", "value": 170, "group": "年级3" },
-        { "category": "女生", "value": 150, "group": "年级3" }
+        {
+          "category": "男生",
+          "value": 150,
+          "group": "年级1"
+        },
+        {
+          "category": "女生",
+          "value": 130,
+          "group": "年级1"
+        },
+        {
+          "category": "男生",
+          "value": 160,
+          "group": "年级2"
+        },
+        {
+          "category": "女生",
+          "value": 140,
+          "group": "年级2"
+        },
+        {
+          "category": "男生",
+          "value": 170,
+          "group": "年级3"
+        },
+        {
+          "category": "女生",
+          "value": 150,
+          "group": "年级3"
+        }
       ],
       "group": true,
       "axisXTitle": "性别",
       "axisYTitle": "人数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "男生",
+            "value": 150,
+            "group": "年级1"
+          },
+          {
+            "category": "女生",
+            "value": 130,
+            "group": "年级1"
+          },
+          {
+            "category": "男生",
+            "value": 160,
+            "group": "年级2"
+          },
+          {
+            "category": "女生",
+            "value": 140,
+            "group": "年级2"
+          },
+          {
+            "category": "男生",
+            "value": 170,
+            "group": "年级3"
+          },
+          {
+            "category": "女生",
+            "value": 150,
+            "group": "年级3"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "性别",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "人数",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "年级",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "人数",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同年级学生的人数"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -272,17 +1362,101 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "男生", "value": 150, "group": "年级1" },
-        { "category": "女生", "value": 130, "group": "年级1" },
-        { "category": "男生", "value": 160, "group": "年级2" },
-        { "category": "女生", "value": 140, "group": "年级2" },
-        { "category": "男生", "value": 170, "group": "年级3" },
-        { "category": "女生", "value": 150, "group": "年级3" }
+        {
+          "category": "男生",
+          "value": 150,
+          "group": "年级1"
+        },
+        {
+          "category": "女生",
+          "value": 130,
+          "group": "年级1"
+        },
+        {
+          "category": "男生",
+          "value": 160,
+          "group": "年级2"
+        },
+        {
+          "category": "女生",
+          "value": 140,
+          "group": "年级2"
+        },
+        {
+          "category": "男生",
+          "value": 170,
+          "group": "年级3"
+        },
+        {
+          "category": "女生",
+          "value": 150,
+          "group": "年级3"
+        }
       ],
       "stack": true,
       "axisXTitle": "性别",
       "axisYTitle": "人数"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "男生",
+            "value": 150,
+            "group": "年级1"
+          },
+          {
+            "category": "女生",
+            "value": 130,
+            "group": "年级1"
+          },
+          {
+            "category": "男生",
+            "value": 160,
+            "group": "年级2"
+          },
+          {
+            "category": "女生",
+            "value": 140,
+            "group": "年级2"
+          },
+          {
+            "category": "男生",
+            "value": 170,
+            "group": "年级3"
+          },
+          {
+            "category": "女生",
+            "value": 150,
+            "group": "年级3"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "性别",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "人数",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "年级",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "人数",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "不同年级学生的人数"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -290,17 +1464,101 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "电力", "value": 200, "group": "北美" },
-        { "category": "天然气", "value": 150, "group": "北美" },
-        { "category": "电力", "value": 180, "group": "欧洲" },
-        { "category": "天然气", "value": 170, "group": "欧洲" },
-        { "category": "电力", "value": 250, "group": "亚洲" },
-        { "category": "天然气", "value": 130, "group": "亚洲" }
+        {
+          "category": "电力",
+          "value": 200,
+          "group": "北美"
+        },
+        {
+          "category": "天然气",
+          "value": 150,
+          "group": "北美"
+        },
+        {
+          "category": "电力",
+          "value": 180,
+          "group": "欧洲"
+        },
+        {
+          "category": "天然气",
+          "value": 170,
+          "group": "欧洲"
+        },
+        {
+          "category": "电力",
+          "value": 250,
+          "group": "亚洲"
+        },
+        {
+          "category": "天然气",
+          "value": 130,
+          "group": "亚洲"
+        }
       ],
       "stack": true,
       "axisXTitle": "能源类型",
       "axisYTitle": "消耗 (单位)"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "电力",
+            "value": 200,
+            "group": "北美"
+          },
+          {
+            "category": "天然气",
+            "value": 150,
+            "group": "北美"
+          },
+          {
+            "category": "电力",
+            "value": 180,
+            "group": "欧洲"
+          },
+          {
+            "category": "天然气",
+            "value": 170,
+            "group": "欧洲"
+          },
+          {
+            "category": "电力",
+            "value": 250,
+            "group": "亚洲"
+          },
+          {
+            "category": "天然气",
+            "value": 130,
+            "group": "亚洲"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "能源类型",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "消耗 (单位)",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "地区",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "消耗 (单位)",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "我公司在不同地区的能源消耗"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -308,20 +1566,131 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "January", "value": 3000, "group": "Marketing" },
-        { "category": "February", "value": 4000, "group": "Marketing" },
-        { "category": "March", "value": 3500, "group": "Marketing" },
-        { "category": "January", "value": 2000, "group": "Sales" },
-        { "category": "February", "value": 3000, "group": "Sales" },
-        { "category": "March", "value": 2800, "group": "Sales" },
-        { "category": "January", "value": 4000, "group": "R&D" },
-        { "category": "February", "value": 4500, "group": "R&D" },
-        { "category": "March", "value": 4200, "group": "R&D" }
+        {
+          "category": "January",
+          "value": 3000,
+          "group": "Marketing"
+        },
+        {
+          "category": "February",
+          "value": 4000,
+          "group": "Marketing"
+        },
+        {
+          "category": "March",
+          "value": 3500,
+          "group": "Marketing"
+        },
+        {
+          "category": "January",
+          "value": 2000,
+          "group": "Sales"
+        },
+        {
+          "category": "February",
+          "value": 3000,
+          "group": "Sales"
+        },
+        {
+          "category": "March",
+          "value": 2800,
+          "group": "Sales"
+        },
+        {
+          "category": "January",
+          "value": 4000,
+          "group": "R&D"
+        },
+        {
+          "category": "February",
+          "value": 4500,
+          "group": "R&D"
+        },
+        {
+          "category": "March",
+          "value": 4200,
+          "group": "R&D"
+        }
       ],
       "stack": true,
       "axisXTitle": "月份",
       "axisYTitle": "开支"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "January",
+            "value": 3000,
+            "group": "Marketing"
+          },
+          {
+            "category": "February",
+            "value": 4000,
+            "group": "Marketing"
+          },
+          {
+            "category": "March",
+            "value": 3500,
+            "group": "Marketing"
+          },
+          {
+            "category": "January",
+            "value": 2000,
+            "group": "Sales"
+          },
+          {
+            "category": "February",
+            "value": 3000,
+            "group": "Sales"
+          },
+          {
+            "category": "March",
+            "value": 2800,
+            "group": "Sales"
+          },
+          {
+            "category": "January",
+            "value": 4000,
+            "group": "R&D"
+          },
+          {
+            "category": "February",
+            "value": 4500,
+            "group": "R&D"
+          },
+          {
+            "category": "March",
+            "value": 4200,
+            "group": "R&D"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "月份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "开支",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "部门",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "开支",
+          "key": "value",
+          "purpose": "Composition",
+          "purposeDesc": "不同部门每个月的开支情况"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -329,20 +1698,131 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "January", "value": 3000, "group": "Marketing" },
-        { "category": "February", "value": 4000, "group": "Marketing" },
-        { "category": "March", "value": 3500, "group": "Marketing" },
-        { "category": "January", "value": 2000, "group": "Sales" },
-        { "category": "February", "value": 3000, "group": "Sales" },
-        { "category": "March", "value": 2800, "group": "Sales" },
-        { "category": "January", "value": 4000, "group": "R&D" },
-        { "category": "February", "value": 4500, "group": "R&D" },
-        { "category": "March", "value": 4200, "group": "R&D" }
+        {
+          "category": "January",
+          "value": 3000,
+          "group": "Marketing"
+        },
+        {
+          "category": "February",
+          "value": 4000,
+          "group": "Marketing"
+        },
+        {
+          "category": "March",
+          "value": 3500,
+          "group": "Marketing"
+        },
+        {
+          "category": "January",
+          "value": 2000,
+          "group": "Sales"
+        },
+        {
+          "category": "February",
+          "value": 3000,
+          "group": "Sales"
+        },
+        {
+          "category": "March",
+          "value": 2800,
+          "group": "Sales"
+        },
+        {
+          "category": "January",
+          "value": 4000,
+          "group": "R&D"
+        },
+        {
+          "category": "February",
+          "value": 4500,
+          "group": "R&D"
+        },
+        {
+          "category": "March",
+          "value": 4200,
+          "group": "R&D"
+        }
       ],
       "group": true,
       "axisXTitle": "月份",
       "axisYTitle": "开支"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "January",
+            "value": 3000,
+            "group": "Marketing"
+          },
+          {
+            "category": "February",
+            "value": 4000,
+            "group": "Marketing"
+          },
+          {
+            "category": "March",
+            "value": 3500,
+            "group": "Marketing"
+          },
+          {
+            "category": "January",
+            "value": 2000,
+            "group": "Sales"
+          },
+          {
+            "category": "February",
+            "value": 3000,
+            "group": "Sales"
+          },
+          {
+            "category": "March",
+            "value": 2800,
+            "group": "Sales"
+          },
+          {
+            "category": "January",
+            "value": 4000,
+            "group": "R&D"
+          },
+          {
+            "category": "February",
+            "value": 4500,
+            "group": "R&D"
+          },
+          {
+            "category": "March",
+            "value": 4200,
+            "group": "R&D"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "月份",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "开支",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "部门",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "开支",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同部门每个月的开支情况比较"
+        }
+      }
+    ]
   },
   {
     "type": "data2chart",
@@ -350,18 +1830,120 @@
     "answer": {
       "type": "bar",
       "data": [
-        { "category": "Q1", "value": 40, "group": "North" },
-        { "category": "Q2", "value": 45, "group": "North" },
-        { "category": "Q1", "value": 30, "group": "South" },
-        { "category": "Q2", "value": 35, "group": "South" },
-        { "category": "Q1", "value": 20, "group": "East" },
-        { "category": "Q2", "value": 25, "group": "East" },
-        { "category": "Q1", "value": 10, "group": "West" },
-        { "category": "Q2", "value": 15, "group": "West" }
+        {
+          "category": "Q1",
+          "value": 40,
+          "group": "North"
+        },
+        {
+          "category": "Q2",
+          "value": 45,
+          "group": "North"
+        },
+        {
+          "category": "Q1",
+          "value": 30,
+          "group": "South"
+        },
+        {
+          "category": "Q2",
+          "value": 35,
+          "group": "South"
+        },
+        {
+          "category": "Q1",
+          "value": 20,
+          "group": "East"
+        },
+        {
+          "category": "Q2",
+          "value": 25,
+          "group": "East"
+        },
+        {
+          "category": "Q1",
+          "value": 10,
+          "group": "West"
+        },
+        {
+          "category": "Q2",
+          "value": 15,
+          "group": "West"
+        }
       ],
       "group": true,
       "axisXTitle": "季度",
       "axisYTitle": "市场份额"
-    }
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "Q1",
+            "value": 40,
+            "group": "North"
+          },
+          {
+            "category": "Q2",
+            "value": 45,
+            "group": "North"
+          },
+          {
+            "category": "Q1",
+            "value": 30,
+            "group": "South"
+          },
+          {
+            "category": "Q2",
+            "value": 35,
+            "group": "South"
+          },
+          {
+            "category": "Q1",
+            "value": 20,
+            "group": "East"
+          },
+          {
+            "category": "Q2",
+            "value": 25,
+            "group": "East"
+          },
+          {
+            "category": "Q1",
+            "value": 10,
+            "group": "West"
+          },
+          {
+            "category": "Q2",
+            "value": 15,
+            "group": "West"
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "季度",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "市场份额",
+            "dataType": "number"
+          },
+          {
+            "id": "group",
+            "name": "地区",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "市场份额",
+          "key": "value",
+          "purpose": "Comparison",
+          "purposeDesc": "不同地区两个季度的市场份额对比"
+        }
+      }
+    ]
   }
 ]
