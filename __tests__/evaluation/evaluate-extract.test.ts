@@ -53,50 +53,36 @@ describe('extract evaluation pass rate > 98%', () => {
     },
   });
 
-  const EVALUATE_CASES = loadDataset()
-    .slice(0, 1)
-    .map((v) => {
-      return {
-        name: v.name,
-        input: v.input[0].value,
-        expect: v.dataShards.slice(0, 1),
-      };
-    });
+  // todo: add more cases
+  const EVALUATE_CASES = loadDataset('line').slice(0, 1);
 
   const total = EVALUATE_CASES.length;
   let pass = 0;
 
-  let currentCase;
-
-  const evaluateCase = async () => {
-    if (!currentCase) return;
-    const result = await advisor.extract({
-      purpose: currentCase.input,
-    });
-
-    if (result.length !== currentCase.expect.length) {
-      console.log(chalk.red(`result length dismatch: expect ${currentCase.expect.length} but got ${result.length}`));
+  const evaluateCase = async (currentCase) => {
+    const result = await advisor.extract(currentCase.question);
+    if (result.length !== currentCase.dataShards.length) {
+      console.log(
+        chalk.red(`result length dismatch: expect ${currentCase.dataShards.length} but got ${result.length}`)
+      );
       console.log(chalk.red(`${currentCase.name} not pass!`));
     } else {
-      console.debug(result, currentCase.expect);
-      const isValid = result.every((res, i) => evalSimilarity(res, currentCase.expect[i]));
+      console.debug(result, currentCase.dataShards);
+      const isValid = result.every((res, i) => evalSimilarity(res, currentCase.dataShards[i]));
       if (isValid) {
         pass++;
-        console.log(chalk.greenBright(`${currentCase.name} pass!`));
+        console.log(chalk.greenBright(`${currentCase.question.slice(0, 10)} pass!`));
       } else {
-        console.log(chalk.red(`${currentCase.name} not pass!`));
+        console.log(chalk.red(`${currentCase.question.slice(0, 10)} not pass!`));
+        console.log('result', chalk.red(JSON.stringify(result)));
       }
     }
     console.log(chalk.yellow('wait 2000ms...'));
     await sleep(2000);
   };
 
-  for (const testCase of EVALUATE_CASES) {
-    currentCase = testCase;
-    it(`test ${testCase.name}`, evaluateCase);
-  }
-
-  it('test pass rate >= 98%', () => {
+  it('test pass rate >= 98%', async () => {
+    await evaluateCase(EVALUATE_CASES[0]);
     expect(pass / total).toBeGreaterThanOrEqual(0.98);
   });
 });

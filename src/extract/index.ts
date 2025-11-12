@@ -1,96 +1,67 @@
 import _ from 'lodash';
 
 import { DATA_SHAPE } from '../types';
-import { matchDataShape } from './infer';
-import { getPlainShard } from './shard';
 import { DataStore } from './model/DataStore';
 import { Hierarchy } from './model/Hierarchy';
 import { Relation } from './model/Relation';
-import { extract } from './extract';
+import { extractText } from './extract';
 
 import type {
   DataShard,
-  Meta,
   PlainLikeDataType,
   HierarchyLikeDataType,
   RelationLikeDataType,
   AdvisorConfig,
 } from '../types';
 
-export const extractData: (
-  input: string | Record<string, any> | Record<string, any>[],
+const computeFeatures = (shard: DataShard): DataShard => {
+  let featuresMap = {};
+  if (shard.shape === DATA_SHAPE.PLAIN) {
+    const metaIds = shard.metas.map((meta) => meta.id);
+    const ds = new DataStore({
+      data: (shard.data as PlainLikeDataType).map((record) => {
+        return metaIds.map((id) => record[id]);
+      }),
+      columns: metaIds,
+    });
+    const features = ds.getColumnFeatures();
+    featuresMap = _.keyBy(features, 'name');
+  } else if (shard.shape === DATA_SHAPE.HIERARCHY) {
+    const result = new Hierarchy(shard.data as HierarchyLikeDataType);
+    const features = result.getFeatures();
+    featuresMap = _.keyBy(features, 'name');
+  } else if (shard.shape === DATA_SHAPE.RELATION) {
+    const relation = new Relation(shard.data as RelationLikeDataType);
+    const features = relation.getFeatures();
+    featuresMap = _.keyBy(features, 'name');
+  }
+  return {
+    ...shard,
+    metas: shard.metas.map((meta) => {
+      return {
+        ...meta,
+        statisticsFeature: featuresMap[meta.id],
+      };
+    }),
+  };
+};
+
+export const extract = async (
+  input: string,
   config?: {
     llmConfig?: AdvisorConfig['llm'];
   }
-) => Promise<DataShard[]> = async (input, config) => {
-  const shards: DataShard[] = [];
-  if (typeof input === 'string') {
-    const res = await extract(input, config?.llmConfig);
-    if (!_.isArray(res)) {
-      return [res];
-    }
-    return res;
-  }
-  const inferRes = matchDataShape(input);
-  if (inferRes.shape === DATA_SHAPE.PLAIN) {
-    const ds = new DataStore({
-      data: inferRes.format.data,
-      columns: inferRes.format.columns,
-    });
-    const features = await ds.getColumnFeatures();
-    const metas: Meta[] = features.map((feature) => ({
-      id: feature.name,
-      name: feature.name,
-      dataType: feature.types[0],
-      allData: feature.rawData,
-      statisticsFeature: feature,
-    }));
-
-    if (ds.columns.length >= 4 && config?.llmConfig) {
-      const res = await getPlainShard(ds, config?.llmConfig);
-      shards.push(...res);
-    } else {
-      shards.push({
-        shape: DATA_SHAPE.PLAIN,
-        data: input as PlainLikeDataType,
-        metas,
-      });
-    }
-  } else if (inferRes.shape === DATA_SHAPE.HIERARCHY) {
-    const result = new Hierarchy(inferRes.format.data as HierarchyLikeDataType);
-    const metas = result.getFeatures();
-    shards.push({
-      shape: DATA_SHAPE.HIERARCHY,
-      data: result.roots as HierarchyLikeDataType,
-      metas,
-    });
-  } else if (inferRes.shape === DATA_SHAPE.RELATION) {
-    const relation = new Relation(inferRes.format.data as RelationLikeDataType);
-    const features = relation.getFeatures();
-    shards.push({
-      shape: DATA_SHAPE.RELATION,
-      data: inferRes.format.data,
-      // @ts-ignore
-      metas: [
-        ...features.edgeFeatures.map((v) => {
-          return {
-            id: v.name,
-            name: v.name,
-            dataType: v.recommendation,
-            statisticsFeature: v,
-          };
-        }),
-        ...features.nodeFeatures.map((v) => {
-          return {
-            id: v.name,
-            name: v.name,
-            dataType: v.recommendation,
-            statisticsFeature: v,
-          };
-        }),
-      ],
-    });
+) => {
+  // extract with llm
+  let dataShards = await extractText(input, config?.llmConfig);
+  if (!_.isArray(dataShards)) {
+    dataShards = [dataShards];
   }
 
-  return shards;
+  // compute features
+  dataShards = dataShards.map((shard) => {
+    return computeFeatures(shard);
+  });
+
+  return dataShards;
 };

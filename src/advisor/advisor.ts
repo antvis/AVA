@@ -1,6 +1,6 @@
 /* eslint-disable no-dupe-class-members */
-import { AdviseChartParams, AdviseStageOutput, AdvisorConfig, DataShard, Spec } from '../types';
-import { extractData } from '../extract';
+import { AdviseStageOutput, AdvisorConfig, DataShard, Spec } from '../types';
+import { extract } from '../extract';
 import { logError } from '../utils';
 import { getRenderer } from '../bind';
 import { adviseCharts } from '../advise';
@@ -41,12 +41,10 @@ export class Advisor {
    *
       advisor.extract({ type: 'A', value: 2 });
    */
-  async extract(params: AdviseChartParams) {
+  async extract(input: string) {
     try {
-      const { purpose } = params;
-      const input = `${purpose}`;
-      const dataShards = await extractData(input, { llmConfig: this.config.llm });
-      console.debug(dataShards, this.config.llm);
+      const dataShards = await extract(input, { llmConfig: this.config.llm });
+      console.debug('dataShards', dataShards);
       return dataShards;
     } catch (e) {
       logError('LLM extract failed');

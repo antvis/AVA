@@ -29,8 +29,8 @@ describe('DataStore', () => {
     expect(ds.getRowData(2)).toEqual(data[2]);
   });
 
-  test('computeColumnFeature & getColumnFeature', async () => {
-    const featureForId = await ds.getColumnFeature('id');
+  test('computeColumnFeature & getColumnFeature', () => {
+    const featureForId = ds.getColumnFeature('id');
     expect(featureForId).toEqual({
       count: 5,
       distinct: 5,
@@ -70,41 +70,36 @@ describe('DataStore', () => {
     columns: ['category', 'name', 'value', 'date'],
   });
 
-  test('getSample by string', async () => {
-    const sampleData1 = await ds2.getSample('category', 1 / 3);
+  test('getSample by string', () => {
+    const sampleData1 = ds2.getSample('category', 1 / 3);
     expect(sampleData1.length).toBe(3);
-    const sampleData2 = await ds2.getSample('category', 2 / 3);
+    const sampleData2 = ds2.getSample('category', 2 / 3);
     expect(sampleData2.length).toBe(6);
   });
 
-  test('getSample by number', async () => {
-    const sampleData1 = await ds2.getSample('value', 1 / 3);
+  test('getSample by number', () => {
+    const sampleData1 = ds2.getSample('value', 1 / 3);
     expect(sampleData1.length).toBeGreaterThanOrEqual(2);
     expect(sampleData1.length).toBeLessThanOrEqual(4);
-    const sampleData2 = await ds2.getSample('value', 2 / 3);
+    const sampleData2 = ds2.getSample('value', 2 / 3);
     expect(sampleData2.length).toBeGreaterThanOrEqual(5);
     expect(sampleData2.length).toBeLessThanOrEqual(7);
   });
 
-  // todo: test sample by date column
-
-  // todo: test sample with more data
-
-  // todo: should ref to some paper
-  test('getAssociationScore', async () => {
-    const score1 = await ds2.getAssociationScore('category', 'value');
+  test('getAssociationScore', () => {
+    const score1 = ds2.getAssociationScore('category', 'value');
     expect(score1).toBeGreaterThanOrEqual(0);
     expect(score1).toBeLessThanOrEqual(1);
 
-    const score2 = await ds2.getAssociationScore('category', 'date');
+    const score2 = ds2.getAssociationScore('category', 'date');
     expect(score2).toBeLessThanOrEqual(0.5);
 
     // name and value is strongly associated
-    const score3 = await ds2.getAssociationScore('name', 'value');
+    const score3 = ds2.getAssociationScore('name', 'value');
     expect(score3).toBe(0);
 
     // name and date is not associated
-    const score4 = await ds2.getAssociationScore('name', 'date');
+    const score4 = ds2.getAssociationScore('name', 'date');
     expect(score4).toBe(0);
   });
 });
