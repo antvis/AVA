@@ -44,7 +44,7 @@ export interface AdvisorConfig {
 
 export interface AdviseChartParams {
   /** raw data */
-  data: FieldDataType;
+  data?: FieldDataType;
   /** field Metadata */
   metas?: Meta[];
   /** the user's visualization purpose, such as viewing data trends */

@@ -1,8 +1,7 @@
 import { AsyncSeriesHook } from 'tapable';
-import { Spec } from './render';
-
 import { Meta, FieldDataType, PlainLikeDataType, DataShard } from './data';
 import { AdvisorConfig, AdviseChartParams, AdviseText, AdviseTextParams } from './advisor';
+import { Spec } from './render';
 
 export type AdviseParams = AdviseChartParams | AdviseTextParams;
 

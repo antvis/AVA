@@ -27,7 +27,8 @@
     "build:esm": "rimraf esm && tsc --module esnext --target es6 --outDir ./esm",
     "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib",
     "build": "run-p build:*",
-    "test": "jest",
+    "test": "jest __tests__/unit",
+    "evaluate": "jest --config=jest.config.evaluate.js",
     "lint-staged": "lint-staged",
     "coverage": "jest --coverage"
   },
@@ -66,6 +67,7 @@
     "@types/numeral": "^2.0.2",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
+    "chalk": "^5.6.2",
     "dotenv": "^17.2.3",
     "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",

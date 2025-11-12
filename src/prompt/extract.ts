@@ -1,74 +1,152 @@
-export const getExtractPrompt = (input: string) => {
-  return `
-    # 你是一个数据解析专家，你的任务是将用户输入的文本解析为结构化数据，并理解用户的分析意图。
-    ## 通过 typescript 类型来定义输出的类型，如下:
-    type PlainLikeDataType = Array<Record<string, string | number>> | Array<Array<string | number>>; // 常规的二维明细数据
-    type DATA_SHAPE = 'plain' | 'graph' | 'tree' | 'flow'; // 数据形状
-    type HierarchyDataType = Array<{
+export const EXTRACT_PROMPT_CH = `
+# 角色：你是一个文本解析专家以及数据解析专家。
+# 任务：我会输入一段文本，你需要将文本中的数据信息提取出来，并组装成结构化的数据。
+## 输出类型定义，我会用 typescript 来定义需要输出的数据结构，如下：
+\`\`\`typescript
+  // 数据形状：明细数据、层级数据、关系型数据、地理型数据
+  type DATA_SHAPE = 'plain' | 'hierarchy' | 'relation' | 'geo';
+  type PlainLikeDataType = Array<Record<string, string | number>>;
+
+  type HierarchyDataType = Array<{
+    id: string;
+    name?: string;
+    children?: HierarchyDataType;
+    [key: string]: any;
+  }>;
+
+  type RelationDataType = {
+    nodes: Array<{
       id: string;
       name?: string;
-      children?: HierarchyDataType;
       [key: string]: any;
-    }>; // 树形数据
-
-    export type RelationDataType = {
-      nodes: Array<{
-        id: string;
-        name?: string;
-        [key: string]: any;
-      }>;
-      edges: Array<{
-        source: string;
-        target: string;
-        [key: string]: any;
-      }>;
-    }; // 图数据
-
-    export type FlowDataType = {
-      nodes: Array<{
-        id: string;
-        name?: string;
-        [key: string]: any;
-      }>;
-      edges: Array<{
-        source: string;
-        target: string;
-        value: number;
-        [key: string]: any;
-      }>;
-    }; // 流向数据
-
-    type FieldDataType<T extends DATA_SHAPE> = T extends 'tree'
-      ? HierarchyDataType
-      : T extends 'flow'
-      ? FlowDataType
-      : T extends 'graph'
-      ? RelationDataType
-      : PlainLikeDataType; // 数据类型统一定义
-
-    type DataShards = Array<{
-      shape: DATA_SHAPE;
-      data: FieldDataType<DATA_SHAPE>;
-      metas: Array<{
-        id: string; // 字段在数据中的 id
-        name: string; // 字段的名称
-        dataType: 'number' | 'string' | 'date' | 'geo'; // 字段的类型
-      }>; // 字段元信息
-      purpose?: {
-        name: string; // 字段的名称
-        key: string; // 字段在数据中的 key
-        purpose: 'Comparison' | 'Trend' | 'Anomaly' | 'Composition' | 'Proportion' | 'Relationship' | 'Distribution' | 'Rank'; // 分析意图
-        purposeDesc?: string; // 分析意图的简要说明
-      };
     }>;
-    ## 需要你根据用户的输入文本，解析出其中的数据，并根据用户的意图，将其转化为上述 ts 类型中的 DataShards，并用标准 JSON 字符串输出，不要使用\`\`\`JSON等任何代码块包裹
-    ## 建议的执行步骤是
-    ### 一、分离数据和文本
-    ### 二、解析数据，判断数据形状，并将其转化为 PlainLikeDataType、TreeDataType、GraphDataType、FlowDataType 中的一种
-    ### 三、理解用户意图，分析字段的名词和key，并将其转化为 DataShards 中的 purpose 信息
-    ### 四、如果用户没有意图，请根据你对这份数据的理解，拆解出一到两个分析意图，并构建 purpose 信息
-    ### 五、将数据和文本转化为 DataShards 数组结构，注意 DataShards 需要是一个数组，并用纯文本的 JSON 字符串输出
-    ## 用户输入的文本如下：
-    ${input}
-  `.trim();
+    edges: Array<{
+      source: string;
+      target: string;
+      [key: string]: any;
+    }>;
+  };
+
+  type GeoDataType = {
+    geoKeys: Array<{
+      type: 'country' | 'city' | 'province' | 'lon&lat';
+      key: string;
+      name: string;
+    }>;
+    data: Array<Record<string, string | number>>;
+  };
+
+  type FieldDataType<T extends DATA_SHAPE> = T extends 'hierarchy'
+    ? HierarchyDataType : T extends 'relation'
+    ? RelationDataType : T extends 'geo'
+    ? GeoDataType : PlainLikeDataType;
+
+  type DataShard = {
+    shape: DATA_SHAPE;
+    data: FieldDataType<DATA_SHAPE>; // 具体的数据信息
+    metas: Array<{
+      id: string;
+      name: string;
+      dataType: 'number' | 'string' | 'date' | 'geo'; // 分别表示数值、字符串、日期和地理类型
+    }>; // 数据描述信息，包括各字段的名称类型
+    purpose?: {
+      name: string;
+      key: string;
+      purpose: 'Comparison' | 'Trend' | 'Anomaly' | 'Composition' | 'Proportion' | 'Relationship' | 'Distribution' | 'Rank' | 'Geo';
+      purposeDesc?: string;
+    };
+  };
+
+  // 这是需要最后输出的类型
+  type DataShards = DataShard[];
+\`\`\`
+
+## 输出要求：
+- 数据解析时，如果是数字，需要关注数据单位，最终的抽取数据需要将单位计算在内，数字的单位默认是**个**，比如"1.23万"，解析为数据应该为 12300;
+- 需要准确判断数据的形状，并将其转化为上文类型声明中的对应类型，包括 'plain' | 'hierarchy' | 'relation' ｜ 'geo' 这四种，一定要判断准确;
+- 判断完数据性状后，生成 data 对象，data 需要按照上面 typescript 定义的类型，将输入对象的 data 字段进行格式转化;
+- 生成 metas 对象，metas 为数据中每个字段的描述信息，包括 id，语义名称，数据类型;
+- 生成 purpose 对象，purpose 包含了在哪个字段上进行怎样的意图类型分析的信息;
+- 将面生成的信息组合形成 dataShards，并 stringify 后返回;
+- 请直接输出 JSON 字符串，不要加 \`\`\`json 等标记
+## 用户输入的文本如下：
+`;
+
+export const EXTRACT_PROMPT_EN = `
+# Role: You are a text parsing expert and data analysis specialist.
+# Task: I will provide a piece of text, and you are required to extract the data information from it and organize it into structured format.
+## Output Type Definition: I will use TypeScript to define the expected output data structure as follows:
+\`\`\`typescript
+// Data shape: plain data, hierarchical data, relational data, geographic data
+type DATA_SHAPE = 'plain' | 'hierarchy' | 'relation' | 'geo';
+type PlainLikeDataType = Array<Record<string, string | number>>;
+
+type HierarchyDataType = Array<{
+  id: string;
+  name?: string;
+  children?: HierarchyDataType;
+  [key: string]: any;
+}>;
+
+type RelationDataType = {
+  nodes: Array<{
+    id: string;
+    name?: string;
+    [key: string]: any;
+  }>;
+  edges: Array<{
+    source: string;
+    target: string;
+    [key: string]: any;
+  }>;
+};
+
+type GeoDataType = {
+  geoKeys: Array<{
+    type: 'country' | 'city' | 'province' | 'lon&lat';
+    key: string;
+    name: string;
+  }>;
+  data: Array<Record<string, string | number>>;
+};
+
+type FieldDataType<T extends DATA_SHAPE> = T extends 'hierarchy'
+  ? HierarchyDataType : T extends 'relation'
+  ? RelationDataType : T extends 'geo'
+  ? GeoDataType : PlainLikeDataType;
+
+type DataShard = {
+  shape: DATA_SHAPE;
+  data: FieldDataType<DATA_SHAPE>; // The actual data content
+  metas: Array<{
+    id: string;
+    name: string;
+    dataType: 'number' | 'string' | 'date' | 'geo'; // Indicates number, string, date, or geographic type
+  }>; // Metadata describing each field, including field ID, semantic name, and data type
+  purpose?: {
+    name: string;
+    key: string;
+    purpose: 'Comparison' | 'Trend' | 'Anomaly' | 'Composition' | 'Proportion' | 'Relationship' | 'Distribution' | 'Rank' | 'Geo';
+    purposeDesc?: string;
+  };
+};
+
+// This is the final output type
+type DataShards = DataShard[];
+\`\`\`
+
+## Output Requirements:
+- During data parsing, pay attention to numeric units. The extracted numeric values must account for their units. The default unit is **"individual" (个)**. For example, "1.23万" should be parsed as the number 12300.
+- Accurately determine the data shape and convert it into the corresponding type defined above: one of 'plain', 'hierarchy', 'relation', or 'geo'. The classification must be precise.
+- After determining the data shape, generate the \`data\` object according to the TypeScript type definition provided, transforming the input data accordingly.
+- Generate the \`metas\` object, which contains metadata for each field in the data, including \`id\`, semantic \`name\`, and \`dataType\`.
+- Generate the \`purpose\` object, which specifies on which field what kind of analytical intent applies (e.g., comparison, trend, etc.).
+- Assemble all the generated information into a \`DataShards\` structure, then return it as a JSON string.
+- Output only the JSON string directly — do not wrap it with \`\`\`json or any other formatting markers.
+
+## Input Text:
+`;
+
+export const getExtractPrompt = (input: string, language: 'ch' | 'en' = 'ch') => {
+  return `${language === 'ch' ? EXTRACT_PROMPT_CH : EXTRACT_PROMPT_EN}\n${input}`;
 };

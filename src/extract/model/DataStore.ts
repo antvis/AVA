@@ -52,10 +52,10 @@ export class DataStore {
    * @param column
    * @returns
    */
-  async getColumnFeature(column: string) {
+  getColumnFeature(column: string) {
     const feature = this.columnsFeatureMap.get(column);
     if (!feature) {
-      await this.computeColumnFeature(column);
+      this.computeColumnFeature(column);
     }
     return this.columnsFeatureMap.get(column) as ColumnFeature;
   }
@@ -64,11 +64,11 @@ export class DataStore {
    * 按列抽样
    * @param column
    */
-  async getSample(column: string, ratio = 0.5) {
+  getSample(column: string, ratio = 0.5) {
     if (ratio >= 1) {
       return this.data;
     }
-    const feature = await this.getColumnFeature(column);
+    const feature = this.getColumnFeature(column);
     const colIndex = this.columnIndexMap.get(column);
     const res = [];
     if (feature.recommendation === 'date') {
@@ -130,15 +130,15 @@ export class DataStore {
   /**
    * 计算两列的相关性系数
    */
-  async getAssociationScore(col1: string, col2: string) {
+  getAssociationScore(col1: string, col2: string) {
     const key1 = `${col1}-${col2}`;
     const key2 = `${col2}-${col1}`;
     const cache = this.associationScoreMap.get(key1) || this.associationScoreMap.get(key2);
     if (cache) {
       return cache;
     }
-    const feature1 = await this.getColumnFeature(col1);
-    const feature2 = await this.getColumnFeature(col2);
+    const feature1 = this.getColumnFeature(col1);
+    const feature2 = this.getColumnFeature(col2);
     const score = calculateCorrelation(
       {
         type: feature1.recommendation,
@@ -153,23 +153,21 @@ export class DataStore {
     return score;
   }
 
-  async computeColumnFeature(column: string) {
+  computeColumnFeature(column: string) {
     if (!this.columnsFeatureMap.has(column)) {
       const data = this.getColumnData(column);
       this.columnsFeatureMap.set(column, analyzeField(data, false));
     }
   }
 
-  async getColumnFeatures() {
-    const features = await Promise.all(
-      this.columns.map(async (column) => {
-        const res = await this.getColumnFeature(column);
-        return {
-          name: column,
-          ...res,
-        };
-      })
-    );
+  getColumnFeatures() {
+    const features = this.columns.map((column) => {
+      const res = this.getColumnFeature(column);
+      return {
+        name: column,
+        ...res,
+      };
+    });
     return features;
   }
 

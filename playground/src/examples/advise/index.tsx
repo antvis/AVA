@@ -33,13 +33,17 @@ const AdviseSummary: React.FC = () => {
     try {
       parsedData = JSON.parse(data);
     } catch (_e) {
-      parsedData = null;
+      parsedData = data;
     }
     // 尝试调用 advise，但无论成功与否都渲染兜底图
     message.loading('正在生成图表建议...', 0);
     try {
-      if (parsedData) {
+      if (typeof parsedData !== 'string') {
         const dataShards = await advisor.extract({ purpose: '请根据数据生成图表建议', data: parsedData });
+        const advises = await advisor.advise(dataShards);
+        advisor.render('#chart', advises[0].charts[0].spec);
+      } else {
+        const dataShards = await advisor.extract({ purpose: parsedData });
         const advises = await advisor.advise(dataShards);
         advisor.render('#chart', advises[0].charts[0].spec);
       }
