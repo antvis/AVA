@@ -38,15 +38,10 @@ const AdviseSummary: React.FC = () => {
     // 尝试调用 advise，但无论成功与否都渲染兜底图
     message.loading('正在生成图表建议...', 0);
     try {
-      if (typeof parsedData !== 'string') {
-        const dataShards = await advisor.extract(JSON.stringify(parsedData));
-        const advises = await advisor.advise(dataShards);
-        advisor.render('#chart', advises[0].charts[0].spec);
-      } else {
-        const dataShards = await advisor.extract(parsedData);
-        const advises = await advisor.advise(dataShards);
-        advisor.render('#chart', advises[0].charts[0].spec);
-      }
+      const input = typeof parsedData !== 'string' ? JSON.stringify(parsedData) : parsedData;
+      const dataShards = await advisor.extract(input);
+      const advises = await advisor.advise(dataShards);
+      advisor.render('#chart', advises[0].charts[0].spec);
     } catch (_e) {
       // 忽略错误，仅用于验证 advisor.render
       // eslint-disable-next-line no-console

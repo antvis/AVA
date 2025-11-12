@@ -81,7 +81,7 @@ export async function advisePlainCharts(
     // select the highest scored chart id for each shard
     selectedChartIds = idsMatrix.map((row) => row[0]);
   } catch (e) {
-    logError('LLM advise failed');
+    logError('LLM advise failed', e);
     return [];
   }
 
@@ -89,7 +89,7 @@ export async function advisePlainCharts(
   try {
     specs = await generateSpecs(dataShards, selectedChartIds, llm);
   } catch (e) {
-    logError('LLM spec generation failed');
+    logError('LLM spec generation failed', e);
     return [];
   }
 
