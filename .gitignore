@@ -93,6 +93,7 @@ temp.diff
 **/*/.env.local
 
 # local script and data
+**/*/*.local.sh
 **/*/*.local.cjs
 **/*/*.local.test.cjs
 **/*/*.local.js
