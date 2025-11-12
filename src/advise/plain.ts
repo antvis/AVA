@@ -1,8 +1,15 @@
 import { CHARTS } from '../ckb';
 import { getChartAdvisePrompt, getSpecGeneratePrompt } from '../prompt';
 import { logError, requestLLM, safeJsonParse, isOpenAi, isTbox, computeAllowedChartIds } from '../utils';
-import type { AdvisorConfig, AdviseStageOutput, Meta, PlainLikeDataType, DataShard, ChartIdMatrix } from '../types';
-import type { Spec } from '../bind';
+import type {
+  AdvisorConfig,
+  AdviseStageOutput,
+  Meta,
+  PlainLikeDataType,
+  DataShard,
+  ChartIdMatrix,
+  Spec,
+} from '../types';
 
 /**
  * @desc recommend chart ids based on data shape
