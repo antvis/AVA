@@ -9,7 +9,7 @@ export default defineConfig({
     siteUrl: 'https://antv.antgroup.com/', 
     isAntVSite: false,
     githubUrl: 'https://github.com/antvis/AVA',
-   // disable feedback feature to avoid runtime hooks that expect repo info
+    // disable feedback feature to avoid runtime hooks that expect repo info
     feedback: false,
     footerTheme: 'light', // 白色 底部主题
     // 是否显示搜索框
@@ -39,12 +39,7 @@ export default defineConfig({
     cases: [],
     // ensure playground config exists so CodeEditor destructuring won't fail
     playground: {
-      // 自定义预览容器（主题仅读取 container，不使用 htmlCodeTemplate）
       container: "<div id='container' class='playgroundCodeContainer' />",
-      // extraLib: '',
-      // playgroundBeforeExecute: '',
-      // playgroundDidMount: '',
-      // playgroundWillUnmount: '',
       devDependencies: {
         typescript: 'latest',
       },
@@ -158,68 +153,65 @@ export default defineConfig({
         order: 3,
       },
     ],
-
      /** 首页技术栈介绍 */
     detail: {
-			title: {
-				zh: 'AVA',
-				en: 'AVA',
-			},
-			description: {
-				zh: 'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。',
-				en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.'
-			},
-			image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yvxBT42GPRIAAAAAAAAAAAAADmJ7AQ/original',
-			imageStyle: {
-				marginLeft: '70px',
-				marginTop: '100px',
-			},
-			buttons: [
-				{
-					text: {
-						zh: '开始使用',
-						en: 'Getting Started',
-					},
-					link: `/guide/index`,
-				},
-				{
-					text: {
-						zh: '图表示例',
-						en: 'Examples',
-					},
-					link: `/examples`,
-					type: 'primary',
-				},
-			],
+      title: {
+        zh: 'AVA',
+        en: 'AVA',
+      },
+      description: {
+        zh: 'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。',
+        en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.'
+      },
+      image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yvxBT42GPRIAAAAAAAAAAAAADmJ7AQ/original',
+      imageStyle: {
+        marginLeft: '70px',
+        marginTop: '100px',
+      },
+      buttons: [
+        {
+          text: {
+            zh: '开始使用',
+            en: 'Getting Started',
+          },
+          link: `/guide/index`,
+        },
+        {
+          text: {
+            zh: '图表示例',
+            en: 'Examples',
+          },
+          link: `/examples`,
+          type: 'primary',
+        },
+      ],
     },
     news: [
-			{
-
-				type: {
-						zh: '推荐',
-						en: 'Recommend',
-				},
-				title: {
-						zh: '远方·远芳 AntV 2022 年度发布',
-						en: 'AntV Anniversary 2022',
-				},
-				date: '2022.11.22',
-				link: 'https://www.yuque.com/antv/blog/1122_6',
-			},
-			{
-				type: {
-						zh: '推荐',
-						en: 'Recommend',
-				},
-				title: {
-						zh: 'AVA：见字如晤，展信舒颜',
-						en: 'AVA 3.0 Pre-Publish',
-				},
-				date: '2022.11.22',
-				link: 'https://www.yuque.com/antv/blog/ava2022',
-			},
+      {
+        type: {
+          zh: '推荐',
+          en: 'Recommend',
+        },
+        title: {
+            zh: '远方·远芳 AntV 2022 年度发布',
+            en: 'AntV Anniversary 2022',
+        },
+        date: '2022.11.22',
+        link: 'https://www.yuque.com/antv/blog/1122_6',
+      },
+      {
+        type: {
+          zh: '推荐',
+          en: 'Recommend',
+        },
+        title: {
+          zh: 'AVA：见字如晤，展信舒颜',
+          en: 'AVA 3.0 Pre-Publish',
+        },
+        date: '2022.11.22',
+        link: 'https://www.yuque.com/antv/blog/ava2022',
+      },
     ],
-    
   },
   chainWebpack(memo: any) {
     try {
