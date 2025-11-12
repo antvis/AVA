@@ -21,6 +21,7 @@ Output the “best chart type (chartId)” with the rationale for selection, and
 # Inputs
 - data: raw data (array) used to draw charts.
 - meta: field metadata (array), each item includes id, name, dataType (number/string/date/geo).
+ - meta: field metadata (array), each item includes id, name, dataType (number/string/date/geo), unit (string, optional; data unit such as %, °C, 元, 件, 人, 小时)。
 - purpose: visualization intent (a sentence or several bullet points).
 - Chart Knowledge Base: the collection of knowledge definitions for all available charts (including chart names, usage descriptions, etc.).
 - Batch input support: The input may be an array containing multiple items, each with data, meta, and purpose. When the input is an array, you must make a recommendation for each item independently and output results in the same order as the input.
@@ -56,7 +57,7 @@ Output the “best chart type (chartId)” with the rationale for selection, and
 - Scenario conventions: approaches that are more intuitive in common scenarios
 
 # Thinking Process (internal reasoning first, then provide results)
-1. Metadata parsing: count field data types, discrete/continuous, time series, and presence of grouping.
+1. Metadata parsing: count field data types, discrete/continuous, time series, presence of grouping, and detect numeric units (meta.unit) to adjust chart suitability.
 2. Intent alignment: map the purpose to usage categories (comparison, trend, proportion, distribution, relationship, hierarchy, etc.), and form an initial candidate set.
 3. Fitness validation: for each candidate, check data and necessary conditions (required fields, type constraints, length and enumerations, etc.).
 4. Selection and ranking: sort by evaluation dimensions, determine the primary chart and alternatives, and explain trade-offs (readability, order preservation, intent alignment, data match).
@@ -77,7 +78,7 @@ ${JSON.stringify(params)}
 `;
 };
 
-export const getSpecGeneratePrompt = (params: { chartId: string; data: PlainLikeDataType }[]) => {
+export const getSpecGeneratePrompt = (params: { chartId: string; data: PlainLikeDataType; metas: Meta[] }[]) => {
   const inputSchema = params
     .map((item) => {
       return `ChartId: ${item.chartId}\nInputSchema: ${JSON.stringify(CHARTS[item.chartId].inputSchema)}`;
@@ -97,6 +98,7 @@ export const getSpecGeneratePrompt = (params: { chartId: string; data: PlainLike
 - Fields:
   - chartId: a chart type identifier, e.g., line, area, bar, pie, scatter, etc.
   - data: raw data records (array) provided by the user.
+  - meta: field meta info, e.g., unit, format, etc.
 
 # Strict Rules
 - Use only properties allowed by the chart’s inputSchema; do not output extra keys.
@@ -173,94 +175,49 @@ export const getSpecGeneratePrompt = (params: { chartId: string; data: PlainLike
 ${inputSchema}
 
 # Examples
-- Input:
-  - chartId: line
-  - data:
-    [
-      { "date": "1999", "value": 9 },
-      { "date": "2000", "value": 2 },
-      { "date": "2001", "value": 3 },
-      { "date": "2002", "value": 5 },
-      { "date": "2003", "value": 9 }
-    ]
-  - Output:
+- Input
+  [
     {
+      "chartId": "dual-axes",
       "data": [
-        { "time": "1999", "value": 9 },
-        { "time": "2000", "value": 2 },
-        { "time": "2001", "value": 3 },
-        { "time": "2002", "value": 5 },
-        { "time": "2003", "value": 9 }
+        { "year": 2017, "revenue": 85.4, "employeeSatisfaction": 7.2 },
+        { "year": 2018, "revenue": 93.2, "employeeSatisfaction": 7.5 },
+        { "year": 2019, "revenue": 100.1, "employeeSatisfaction": 7.8 },
+        { "year": 2020, "revenue": 108.6, "employeeSatisfaction": 8 },
+        { "year": 2021, "revenue": 115.5, "employeeSatisfaction": 8.2 }
       ],
+      "metas": [
+        { "id": "year", "name": "年份", "dataType": "number" },
+        { "id": "revenue", "name": "收入", "dataType": "number", "unit": "亿元" },
+        { "id": "employeeSatisfaction", "name": "员工满意度", "dataType": "number", "unit": "分" }
+      ]
+    }
+  ]
+- Output
+  [
+    {
       "theme": "default",
       "style": { "texture": "default" },
       "width": 600,
       "height": 400,
-      "title": "Value over Time",
-      "axisXTitle": "Date",
-      "axisYTitle": "Value"
+      "title": "Revenue and Satisfaction over Years",
+      "axisXTitle": "Year",
+      "categories": [ "2017", "2018", "2019", "2020", "2021" ],
+      "series": [
+        {
+          "type": "column",
+          "data": [ 85.4, 93.2, 100.1, 108.6, 115.5 ],
+          "axisYTitle": "Revenue (亿)"
+        },
+        {
+          "type": "line",
+          "data": [ 7.2, 7.5, 7.8, 8, 8.2 ],
+          "axisYTitle": "Satisfaction (分)"
+        }
+      ]
     }
+  ]
 
-- Input (batch):
-  - items:
-    [
-      {
-        "chartId": "line",
-        "data": [
-          { "date": "1999", "value": 9 },
-          { "date": "2000", "value": 2 },
-          { "date": "2001", "value": 3 },
-          { "date": "2002", "value": 5 },
-          { "date": "2003", "value": 9 }
-        ]
-      },
-      {
-        "chartId": "area",
-        "data": [
-          { "date": "1999", "value": 9 },
-          { "date": "2000", "value": 2 },
-          { "date": "2001", "value": 3 },
-          { "date": "2002", "value": 5 },
-          { "date": "2003", "value": 9 }
-        ]
-      }
-    ]
-  - Output:
-    [
-      {
-        "data": [
-          { "time": "1999", "value": 9 },
-          { "time": "2000", "value": 2 },
-          { "time": "2001", "value": 3 },
-          { "time": "2002", "value": 5 },
-          { "time": "2003", "value": 9 }
-        ],
-        "theme": "default",
-        "style": { "texture": "default" },
-        "width": 600,
-        "height": 400,
-        "title": "Value over Time",
-        "axisXTitle": "Date",
-        "axisYTitle": "Value"
-      },
-      {
-        "data": [
-          { "time": "1999", "value": 9 },
-          { "time": "2000", "value": 2 },
-          { "time": "2001", "value": 3 },
-          { "time": "2002", "value": 5 },
-          { "time": "2003", "value": 9 }
-        ],
-        "stack": false,
-        "theme": "default",
-        "style": { "texture": "default" },
-        "width": 600,
-        "height": 400,
-        "title": "Area of Value over Time",
-        "axisXTitle": "Date",
-        "axisYTitle": "Value"
-      }
-    ]
 
 The user's input information is as follows:
 ${JSON.stringify(params)}
