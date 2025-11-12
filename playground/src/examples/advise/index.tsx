@@ -39,11 +39,11 @@ const AdviseSummary: React.FC = () => {
     message.loading('正在生成图表建议...', 0);
     try {
       if (typeof parsedData !== 'string') {
-        const dataShards = await advisor.extract({ purpose: '请根据数据生成图表建议', data: parsedData });
+        const dataShards = await advisor.extract(JSON.stringify(parsedData));
         const advises = await advisor.advise(dataShards);
         advisor.render('#chart', advises[0].charts[0].spec);
       } else {
-        const dataShards = await advisor.extract({ purpose: parsedData });
+        const dataShards = await advisor.extract(parsedData);
         const advises = await advisor.advise(dataShards);
         advisor.render('#chart', advises[0].charts[0].spec);
       }

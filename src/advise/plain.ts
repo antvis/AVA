@@ -46,9 +46,10 @@ export async function generateSpecs(
   llm: AdvisorConfig['llm']
 ): Promise<Spec[]> {
   const specPrompt = getSpecGeneratePrompt(
-    dataShards.map(({ data }, i) => ({
+    dataShards.map(({ data, metas }, i) => ({
       chartId: selectedChartIds[i],
       data: data as PlainLikeDataType,
+      metas: metas as Meta[],
     }))
   );
   const chartSpecsStr = await requestLLM({ config: llm, prompt: specPrompt });
