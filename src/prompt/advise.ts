@@ -20,8 +20,7 @@ Output the “best chart type (chartId)” with the rationale for selection, and
 
 # Inputs
 - data: raw data (array) used to draw charts.
-- meta: field metadata (array), each item includes id, name, dataType (number/string/date/geo).
- - meta: field metadata (array), each item includes id, name, dataType (number/string/date/geo), unit (string, optional; data unit such as %, °C, 元, 件, 人, 小时)。
+- meta: field metadata (array), each item includes id, name, dataType (number/string/date/geo), unit (string, optional; data unit such as %, °C, 元, 件, 人, 小时)。
 - purpose: visualization intent (a sentence or several bullet points).
 - Chart Knowledge Base: the collection of knowledge definitions for all available charts (including chart names, usage descriptions, etc.).
 - Batch input support: The input may be an array containing multiple items, each with data, meta, and purpose. When the input is an array, you must make a recommendation for each item independently and output results in the same order as the input.
