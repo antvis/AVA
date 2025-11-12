@@ -30,6 +30,14 @@
     "@types/react-dom": "^19.2.2",
     "dumi": "^2.4.21",
     "typescript": "^5.0.0"
+  },
+  "resolutions": {
+    "@monaco-editor/loader": "1.5.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@monaco-editor/loader": "1.5.0"
+    }
   }
 }
 

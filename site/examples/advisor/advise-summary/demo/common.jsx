@@ -9,14 +9,14 @@ import { Advisor, bindRenderer } from '@antv/ava';
 // @ts-ignore
 const { createRoot } = ReactDOM;
 
-export const render = (container: string, spec: any): React.ReactNode => {
+export const customRender = (container, spec) => {
   const mount =
-    typeof container === 'string' ? (document.querySelector(container) as HTMLElement) : (container as HTMLElement);
+    typeof container === 'string' ? document.querySelector(container) : (container);
   if (!mount) return;
 
   const { type, ...chartProps } = spec;
   const VISComps = DEFAULT_CHART_COMPONENTS;
-  const Comp = VISComps[type] as React.ComponentType<any>;
+  const Comp = VISComps[type];
 
   if (!Comp) {
     throw new Error(`Unknown chart type: ${type}`);
@@ -46,12 +46,12 @@ const App = () => {
   const [data, setData] = useState(JSON.stringify(sampleData, null, 2));
 
   useEffect(() => {
-    bindRenderer(render as any);
+    bindRenderer(customRender);
   }, []);
 
   const advise = async () => {
     // 安全解析数据，失败不抛错
-    let parsedData: any = null;
+    let parsedData = null;
     try {
       parsedData = JSON.parse(data);
     } catch (_e) {
@@ -74,7 +74,7 @@ const App = () => {
       console.log(_e);
     } finally {
       message.destroy();
-      render('#chart', {
+      customRender('#chart', {
         type: 'line',
         data: [
           { time: '2010', value: 100 },

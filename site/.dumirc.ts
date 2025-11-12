@@ -27,7 +27,7 @@ export default defineConfig({
     // 是否在 demo 页展示图表视图切换
     showChartResize: true,
     // 是否在 demo 页展示API文档
-    showAPIDoc: true,
+    showAPIDoc: false,
     // 是否展示国内镜像链接
     showChinaMirror: false,
     // `metas` is expected by the theme Index component
@@ -39,11 +39,15 @@ export default defineConfig({
     cases: [],
     // ensure playground config exists so CodeEditor destructuring won't fail
     playground: {
-      container: '<div id="container" />',
-      extraLib: '',
-      playgroundBeforeExecute: '',
-      playgroundDidMount: '',
-      playgroundWillUnmount: '',
+      // 自定义预览容器（主题仅读取 container，不使用 htmlCodeTemplate）
+      container: "<div id='container' class='playgroundCodeContainer' />",
+      // extraLib: '',
+      // playgroundBeforeExecute: '',
+      // playgroundDidMount: '',
+      // playgroundWillUnmount: '',
+      devDependencies: {
+        typescript: 'latest',
+      },
     },
     navs: [
       {
@@ -157,62 +161,63 @@ export default defineConfig({
 
      /** 首页技术栈介绍 */
     detail: {
-        title: {
-          zh: 'AVA',
-          en: 'AVA',
-        },
-        description: {
-          zh: 'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。',
-          en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.'
-        },
-        image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yvxBT42GPRIAAAAAAAAAAAAADmJ7AQ/original',
-        imageStyle: {
-          marginLeft: '70px',
-          marginTop: '100px',
-        },
-        buttons: [
-          {
-            text: {
-              zh: '开始使用',
-              en: 'Getting Started',
-            },
-            link: `/guide/index`,
-          },
-          {
-            text: {
-              zh: '图表示例',
-              en: 'Examples',
-            },
-            link: `/examples`,
-            type: 'primary',
-          },
-        ],
+			title: {
+				zh: 'AVA',
+				en: 'AVA',
+			},
+			description: {
+				zh: 'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。',
+				en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.'
+			},
+			image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yvxBT42GPRIAAAAAAAAAAAAADmJ7AQ/original',
+			imageStyle: {
+				marginLeft: '70px',
+				marginTop: '100px',
+			},
+			buttons: [
+				{
+					text: {
+						zh: '开始使用',
+						en: 'Getting Started',
+					},
+					link: `/guide/index`,
+				},
+				{
+					text: {
+						zh: '图表示例',
+						en: 'Examples',
+					},
+					link: `/examples`,
+					type: 'primary',
+				},
+			],
     },
     news: [
-        {
-            type: {
-                zh: '推荐',
-                en: 'Recommend',
-            },
-            title: {
-                zh: '远方·远芳 AntV 2022 年度发布',
-                en: 'AntV Anniversary 2022',
-            },
-            date: '2022.11.22',
-            link: 'https://www.yuque.com/antv/blog/1122_6',
-        },
-        {
-            type: {
-                zh: '推荐',
-                en: 'Recommend',
-            },
-            title: {
-                zh: 'AVA：见字如晤，展信舒颜',
-                en: 'AVA 3.0 Pre-Publish',
-            },
-            date: '2022.11.22',
-            link: 'https://www.yuque.com/antv/blog/ava2022',
-        },
+			{
+
+				type: {
+						zh: '推荐',
+						en: 'Recommend',
+				},
+				title: {
+						zh: '远方·远芳 AntV 2022 年度发布',
+						en: 'AntV Anniversary 2022',
+				},
+				date: '2022.11.22',
+				link: 'https://www.yuque.com/antv/blog/1122_6',
+			},
+			{
+				type: {
+						zh: '推荐',
+						en: 'Recommend',
+				},
+				title: {
+						zh: 'AVA：见字如晤，展信舒颜',
+						en: 'AVA 3.0 Pre-Publish',
+				},
+				date: '2022.11.22',
+				link: 'https://www.yuque.com/antv/blog/ava2022',
+			},
     ],
     
   },

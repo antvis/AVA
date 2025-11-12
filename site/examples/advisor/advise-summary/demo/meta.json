@@ -5,7 +5,7 @@
   },
   "demos": [
     {
-      "filename": "common.tsx",
+      "filename": "common.jsx",
       "title": {
         "en": "Common Usage",
         "zh": "常规使用"
