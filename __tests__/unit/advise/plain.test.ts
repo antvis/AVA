@@ -8,6 +8,16 @@ jest.mock('../../../src/utils', () => {
 });
 
 describe('Plain Chart Advise', () => {
+  let errorSpy: jest.SpyInstance;
+
+  beforeAll(() => {
+    errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    errorSpy.mockRestore();
+  });
+
   afterEach(() => {
     jest.resetAllMocks();
   });
