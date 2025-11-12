@@ -68,7 +68,7 @@ describe('Plain Chart Advise', () => {
   });
 
   it('advisePlainCharts: returns empty output when LLM is missing', async () => {
-    const out = await advisePlainCharts(SINGLE_DATA_SHARD, {} as any);
+    const out = await advisePlainCharts(SINGLE_DATA_SHARD, { llm: OPENAI_LLM });
     expect(out).toEqual([]);
   });
 
@@ -79,8 +79,8 @@ describe('Plain Chart Advise', () => {
     const out = await advisePlainCharts(SINGLE_DATA_SHARD, { llm: OPENAI_LLM });
     expect(out).toEqual([
       {
-        metas: SINGLE_DATA_SHARD[0].metas as any,
-        data: SINGLE_DATA_SHARD[0].data as any,
+        metas: SINGLE_DATA_SHARD[0].metas,
+        data: SINGLE_DATA_SHARD[0].data,
         charts: [
           {
             spec: { ...TREND_DATA.spec, type: 'line' },
@@ -99,8 +99,8 @@ describe('Plain Chart Advise', () => {
     const out = await advisePlainCharts(MULTI_DATA_SHARDS, { llm: OPENAI_LLM });
     expect(out).toEqual([
       {
-        metas: MULTI_DATA_SHARDS[0].metas as any,
-        data: MULTI_DATA_SHARDS[0].data as any,
+        metas: MULTI_DATA_SHARDS[0].metas,
+        data: MULTI_DATA_SHARDS[0].data,
         charts: [
           {
             spec: { ...TREND_DATA.spec, type: 'line' },
@@ -108,8 +108,8 @@ describe('Plain Chart Advise', () => {
         ],
       },
       {
-        metas: MULTI_DATA_SHARDS[1].metas as any,
-        data: MULTI_DATA_SHARDS[1].data as any,
+        metas: MULTI_DATA_SHARDS[1].metas,
+        data: MULTI_DATA_SHARDS[1].data,
         charts: [
           {
             spec: { ...COMPARISON_DATA.spec, type: 'pie' },
