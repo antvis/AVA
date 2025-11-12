@@ -151,6 +151,6 @@ type DataShards = DataShard[];
 ## Input Text:
 `;
 
-export const getExtractPrompt = (input: string, language: 'ch' | 'en' = 'en') => {
+export const getExtractPrompt = (input: string, language: 'ch' | 'en' = 'ch') => {
   return `${language === 'ch' ? EXTRACT_PROMPT_CH : EXTRACT_PROMPT_EN}\n${input}`;
 };

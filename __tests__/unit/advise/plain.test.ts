@@ -68,7 +68,7 @@ describe('Plain Chart Advise', () => {
   });
 
   it('advisePlainCharts: returns empty output when LLM is missing', async () => {
-    const out = await advisePlainCharts(SINGLE_DATA_SHARD, { llm: OPENAI_LLM });
+    const out = await advisePlainCharts(SINGLE_DATA_SHARD, {});
     expect(out).toEqual([]);
   });
 
