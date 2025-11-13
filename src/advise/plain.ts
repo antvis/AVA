@@ -1,8 +1,15 @@
 import { CHARTS } from '../ckb';
 import { getChartAdvisePrompt, getSpecGeneratePrompt } from '../prompt';
 import { logError, requestLLM, safeJsonParse, isOpenAi, isTbox, computeAllowedChartIds } from '../utils';
-import type { AdvisorConfig, AdviseStageOutput, Meta, PlainLikeDataType, DataShard, ChartIdMatrix } from '../types';
-import type { Spec } from '../bind';
+import type {
+  AdvisorConfig,
+  AdviseStageOutput,
+  Meta,
+  PlainLikeDataType,
+  DataShard,
+  ChartIdMatrix,
+  Spec,
+} from '../types';
 
 /**
  * @desc recommend chart ids based on data shape
@@ -39,9 +46,10 @@ export async function generateSpecs(
   llm: AdvisorConfig['llm']
 ): Promise<Spec[]> {
   const specPrompt = getSpecGeneratePrompt(
-    dataShards.map(({ data }, i) => ({
+    dataShards.map(({ data, metas }, i) => ({
       chartId: selectedChartIds[i],
       data: data as PlainLikeDataType,
+      metas: metas as Meta[],
     }))
   );
   const chartSpecsStr = await requestLLM({ config: llm, prompt: specPrompt });
@@ -73,7 +81,7 @@ export async function advisePlainCharts(
     // select the highest scored chart id for each shard
     selectedChartIds = idsMatrix.map((row) => row[0]);
   } catch (e) {
-    logError('LLM advise failed');
+    logError('LLM advise failed', e);
     return [];
   }
 
@@ -81,7 +89,7 @@ export async function advisePlainCharts(
   try {
     specs = await generateSpecs(dataShards, selectedChartIds, llm);
   } catch (e) {
-    logError('LLM spec generation failed');
+    logError('LLM spec generation failed', e);
     return [];
   }
 

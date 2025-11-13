@@ -79,6 +79,7 @@ export type Meta<T extends COLUMN_TYPE = COLUMN_TYPE> = {
   allData?: T extends COLUMN_TYPE.string ? string[] : number[];
   statisticsFeature?: StringColumnFeature | NumberColumnFeature | DateColumnFeature | GeoColumnFeature;
   format?: string;
+  unit?: string; // 单位信息，例如 "元"、"人"、"%" 等, dataType 为 number 时必填
 };
 
 export type MeasureMethod = 'SUM' | 'COUNT' | 'MAX' | 'MIN' | 'MEAN' | 'COUNT_DISTINCT';

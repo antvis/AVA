@@ -8,7 +8,9 @@ export const extractText = async (input: string, config: AdvisorConfig['llm']) =
       config,
       prompt: getExtractPrompt(input),
     });
-    return JSON.parse(res);
+    // TODO: @思莫 需要从 prompt 层约束模型返回
+    const jsonStr = res.replace(/```json|```|```JSON/g, '');
+    return JSON.parse(jsonStr);
   } catch (e) {
     return [];
   }
