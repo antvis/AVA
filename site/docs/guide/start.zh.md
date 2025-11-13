@@ -56,7 +56,7 @@ const vis = advisor.render(container, config);
   const advisor = new AVA.Advisor({llm});
 
   // 3. 抽取结构化信息
-  const meta = advisor.extract("This is a text includes data and infomation.");
+  const meta = advisor.extract("This is a text includes data and information.");
 
   // 4. 结合结构化信息推荐图表
   const info = advisor.advise(meta);
