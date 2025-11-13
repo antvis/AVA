@@ -11,6 +11,8 @@ import './App.css';
 import RenderCustom from './examples/render/custom';
 import RenderDefault from './examples/render/default';
 import RenderDemand from './examples/render/demand';
+import RenderGPTVis from './examples/render/gpt-vis';
+import RenderGPTVisSSR from './examples/render/gpt-vis-ssr';
 
 const { Header, Content, Sider } = Layout;
 
@@ -79,6 +81,18 @@ const menuConfig: MenuConfig[] = [
             label: '自定义示例',
             path: '/render-custom',
             component: RenderCustom,
+          },
+          {
+            key: 'render-summary-gpt-vis',
+            label: 'GPT-Vis MarkDown示例',
+            path: '/render-gpt-vis',
+            component: RenderGPTVis,
+          },
+          {
+            key: 'render-summary-gpt-vis-ssr',
+            label: 'GPT-Vis ssr 示例',
+            path: '/render-gpt-vis-ssr',
+            component: RenderGPTVisSSR,
           },
         ],
       },

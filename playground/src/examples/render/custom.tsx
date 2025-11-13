@@ -6,11 +6,9 @@ import { Advisor, bindRenderer } from '../../../../src';
 import { cleanAndFormatJSON, formatJSON } from '../../utils';
 
 // 自定义图片渲染器
-const customImageRenderer = (params: any) => {
-  const { container, spec } = params || {};
+const customImageRenderer = (container: string, spec: any) => {
   const { url } = spec;
-  const mount =
-    typeof container === 'string' ? (document.querySelector(container) as HTMLElement) : (container as HTMLElement);
+  const mount = document.querySelector(container) as HTMLElement;
   if (!mount) return;
 
   // 清空之前的内容
