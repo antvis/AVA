@@ -7,8 +7,7 @@ import { Line, Area, Bar, Pie } from '@antv/gpt-vis';
 import { cleanAndFormatJSON, formatJSON } from '../../utils';
 
 // GPT-Vis 按需引用
-const demandRender = (params: any) => {
-  const { container, spec } = params || {};
+const demandRender = (container: string, spec: any) => {
   const { type, ...chartProps } = spec;
   const chartType = type as 'line' | 'area' | 'bar' | 'pie';
   const mount =
@@ -27,7 +26,6 @@ const demandRender = (params: any) => {
     throw new Error(`Unknown chart type: ${chartType}`);
   }
 
-  // 清空之前的内容
   mount.innerHTML = '';
 
   const chartElement = React.createElement(Comp, chartProps);
@@ -35,7 +33,6 @@ const demandRender = (params: any) => {
   root.render(chartElement);
 };
 
-// 创建 advisor 实例并为该实例绑定自定义渲染器
 const advisor = new Advisor({
   llm: {
     appId: '202511APkFwG00560135',
@@ -63,9 +60,7 @@ const RenderDemand: React.FC = () => {
 
   const render = async () => {
     try {
-      // 清理可能存在的外层引号
       const cleaned = cleanAndFormatJSON(data);
-      // 将 JSON 字符串解析为对象
       const parsedData = JSON.parse(cleaned);
       advisor.render('#img-chart', parsedData);
     } catch (error) {
