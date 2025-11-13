@@ -147,8 +147,8 @@ export default defineConfig({
         slug: 'render',
         icon: 'block',
         title: {
-          zh: '图表渲染(render)',
-          en: 'Chart Rendering (render)',
+          zh: '图表渲染',
+          en: 'Chart Rendering',
         },
         order: 3,
       },
