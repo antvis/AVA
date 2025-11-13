@@ -10,15 +10,14 @@ const gptVisRenderer = (container: string, spec: any) => {
   const mount = document.querySelector(container) as HTMLElement;
   if (!mount) return;
 
-  // 清空之前的内容
   mount.innerHTML = '';
+
   const content = `## GPT-VIS 
   Components for GPTs, generative AI, and LLM projects. Not only UI Components.
   \`\`\`vis-chart
   ${JSON.stringify(spec)}
   \`\`\``;
   const root = ReactDOM.createRoot(mount);
-  // @ts-ignore
   root.render(<GPTVis>{content}</GPTVis>);
 };
 
