@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import ReactDOM from 'react-dom/client';
 import { Input, Button, Space, Card, message } from 'antd';
 import { Advisor, bindRenderer } from '../../../../src';
@@ -11,7 +10,6 @@ const customImageRenderer = (container: string, spec: any) => {
   const mount = document.querySelector(container) as HTMLElement;
   if (!mount) return;
 
-  // 清空之前的内容
   mount.innerHTML = '';
 
   const chartElement = React.createElement('img', { src: url, style: { maxWidth: '100%', height: '400px' } });
@@ -19,15 +17,12 @@ const customImageRenderer = (container: string, spec: any) => {
   root.render(chartElement);
 };
 
-// 创建 advisor 实例并为该实例绑定自定义渲染器
 const advisor = new Advisor({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
   },
 });
-
-// 为当前实例绑定自定义渲染器
 
 const sampleData = {
   type: 'image',
@@ -43,9 +38,7 @@ const RenderCustom: React.FC = () => {
 
   const render = async () => {
     try {
-      // 清理可能存在的外层引号
       const cleaned = cleanAndFormatJSON(data);
-      // 将 JSON 字符串解析为对象
       const parsedData = JSON.parse(cleaned);
       advisor.render('#img-chart', parsedData);
     } catch (error) {

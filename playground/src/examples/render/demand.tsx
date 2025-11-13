@@ -26,7 +26,6 @@ const demandRender = (container: string, spec: any) => {
     throw new Error(`Unknown chart type: ${chartType}`);
   }
 
-  // 清空之前的内容
   mount.innerHTML = '';
 
   const chartElement = React.createElement(Comp, chartProps);
@@ -34,7 +33,6 @@ const demandRender = (container: string, spec: any) => {
   root.render(chartElement);
 };
 
-// 创建 advisor 实例并为该实例绑定自定义渲染器
 const advisor = new Advisor({
   llm: {
     appId: '202511APkFwG00560135',
@@ -62,9 +60,7 @@ const RenderDemand: React.FC = () => {
 
   const render = async () => {
     try {
-      // 清理可能存在的外层引号
       const cleaned = cleanAndFormatJSON(data);
-      // 将 JSON 字符串解析为对象
       const parsedData = JSON.parse(cleaned);
       advisor.render('#img-chart', parsedData);
     } catch (error) {
