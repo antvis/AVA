@@ -1,12 +1,9 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { GPTVis, DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
+import { GPTVis } from '@antv/gpt-vis';
 import { Advisor, bindRenderer } from '@antv/ava';
 
 const { createRoot } = ReactDOM;
-
-
-console.log('[common.jsx] Module level - DEFAULT_CHART_COMPONENTS:', DEFAULT_CHART_COMPONENTS, GPTVis );
 
 const renderGPTVis = (container, spec) => {
   const mount = document.querySelector(container);
@@ -29,7 +26,7 @@ const advisor = new Advisor({
   },
 });
 
-const GPTVisAPP = () => {
+const APP = () => {
 
   useEffect(() => {
 
@@ -56,4 +53,4 @@ const GPTVisAPP = () => {
 };
 
 const root = createRoot(document.getElementById('container'));
-root.render(<GPTVisAPP />);
+root.render(<APP />);

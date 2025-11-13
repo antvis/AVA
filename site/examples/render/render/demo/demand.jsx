@@ -5,9 +5,6 @@ import { Advisor, bindRenderer } from '@antv/ava';
 
 const { createRoot } = ReactDOM;
 
-// 创建一个全局的 root 映射，避免重复创建
-const rootMap = new Map();
-
 const renderArea = (container, spec) => {
   const mount = document.querySelector(container);
   if (!mount) return;
@@ -20,14 +17,7 @@ const renderArea = (container, spec) => {
     throw new Error(`Unknown chart type: ${type}`);
   }
   const chartElement = React.createElement(Comp, chartProps);
-
-  // 重用或创建新的 root
-  let root = rootMap.get(container);
-  if (!root) {
-    root = createRoot(mount);
-    rootMap.set(container, root);
-  }
-
+  const root = createRoot(mount);
   root.render(chartElement);
 };
 

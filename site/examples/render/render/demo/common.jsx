@@ -6,8 +6,6 @@ import { Advisor, bindRenderer } from '@antv/ava';
 
 const { createRoot } = ReactDOM;
 
-console.log('[common.jsx] Module level - DEFAULT_CHART_COMPONENTS:', DEFAULT_CHART_COMPONENTS, GPTVis );
-
 const render = (container, spec) => {
   const mount = document.querySelector(container);
   if (!mount) return;
