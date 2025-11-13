@@ -26,7 +26,7 @@ const advisor = new Advisor({
   },
 });
 
-const APP = () => {
+const App = () => {
 
   useEffect(() => {
 
@@ -53,4 +53,4 @@ const APP = () => {
 };
 
 const root = createRoot(document.getElementById('container'));
-root.render(<APP />);
+root.render(<App />);

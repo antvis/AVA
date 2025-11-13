@@ -65,10 +65,10 @@ const chartSpec =  {
 };
 
 const advisor = new Advisor();
-const RenderChart: React.FC = () => {
+const RenderChart = () => {
 
   useEffect(() => {
-    bindRenderer(render as any);
+    bindRenderer(render);
     advisor.render('#chart', chartSpec);  
   }, []);
 
