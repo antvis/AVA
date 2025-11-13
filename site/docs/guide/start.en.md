@@ -56,7 +56,7 @@ const vis = advisor.render(container, config);
   const advisor = new AVA.Advisor({llm});
 
   // 3. Extract structured information
-  const meta = advisor.extract("This is a text includes data and infomation.");
+  const meta = advisor.extract("This is a text includes data and information.");
 
   // 4. Advise charts based on structured information
   const info = advisor.advise(meta);
