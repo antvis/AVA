@@ -6,7 +6,7 @@ export default defineConfig({
     title: 'AVA',
     description: 'A framework and solution for more convenient visual analytics.',
     defaultLanguage: 'zh',
-    siteUrl: 'https://antv.antgroup.com/', 
+    siteUrl: 'https://antv.antgroup.com/',
     isAntVSite: false,
     githubUrl: 'https://github.com/antvis/AVA',
     // disable feedback feature to avoid runtime hooks that expect repo info
@@ -71,14 +71,14 @@ export default defineConfig({
       {
         slug: 'guide',
         title: {
-          zh: '教程', 
+          zh: '教程',
           en: 'Guide',
         },
       },
       {
         slug: 'guide/scene',
         title: {
-          zh: '场景案例', 
+          zh: '场景案例',
           en: 'Scene Cases',
         },
         order: 3,
@@ -110,8 +110,8 @@ export default defineConfig({
       {
         slug: 'api/render',
         title: {
-          zh: '图表渲染（Render）',
-          en: 'Chart Rendering (Render)',
+          zh: '图表渲染',
+          en: 'Chart Rendering',
         },
         order: 3,
       },
@@ -147,8 +147,8 @@ export default defineConfig({
         slug: 'render',
         icon: 'block',
         title: {
-          zh: '图表渲染(render)',
-          en: 'Chart Rendering (render)',
+          zh: '图表渲染',
+          en: 'Chart Rendering',
         },
         order: 3,
       },

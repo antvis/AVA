@@ -1,9 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Space, Card, message } from 'antd';
 import { Advisor, bindRenderer } from '../../../../src';
-import { render as GPTVisRender, cleanAndFormatJSON, formatJSON } from '../../utils';
+import { cleanAndFormatJSON, formatJSON } from '../../utils';
+import { GPTVis } from '@antv/gpt-vis';
+import ReactDOM from 'react-dom/client';
 
-// 创建 advisor 实例并为该实例绑定渲染器
+// 自定义 GPTVis Markdown 渲染
+const gptVisRenderer = (container: string, spec: any) => {
+  const mount = document.querySelector(container) as HTMLElement;
+  if (!mount) return;
+
+  mount.innerHTML = '';
+
+  const content = `## GPT-VIS 
+  Components for GPTs, generative AI, and LLM projects. Not only UI Components.
+  \`\`\`vis-chart
+  ${JSON.stringify(spec)}
+  \`\`\``;
+  const root = ReactDOM.createRoot(mount);
+  root.render(<GPTVis>{content}</GPTVis>);
+};
+
 const advisor = new Advisor({
   llm: {
     appId: '202511APkFwG00560135',
@@ -12,7 +29,7 @@ const advisor = new Advisor({
 });
 
 const sampleData = {
-  type: 'column',
+  type: 'bar',
   data: [
     { category: '2013', value: 59.3 },
     { category: '2014', value: 64.4 },
@@ -29,18 +46,16 @@ const sampleData = {
   axisYTitle: 'GDP',
 };
 
-const RenderDefault: React.FC = () => {
+const RenderGPTVis: React.FC = () => {
   const [data, setData] = useState(JSON.stringify(sampleData, null, 2));
 
   useEffect(() => {
-    bindRenderer(GPTVisRender as any);
+    bindRenderer(gptVisRenderer as any);
   }, []);
 
   const render = async () => {
     try {
-      // 清理可能存在的外层引号
       const cleaned = cleanAndFormatJSON(data);
-      // 将 JSON 字符串解析为对象
       const parsedData = JSON.parse(cleaned);
       advisor.render('#chart', parsedData);
     } catch (error) {
@@ -88,4 +103,4 @@ const RenderDefault: React.FC = () => {
   );
 };
 
-export default RenderDefault;
+export default RenderGPTVis;
