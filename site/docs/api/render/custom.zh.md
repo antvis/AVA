@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom/client';
 import { Advisor, bindRenderer } from '@antv/ava';
 import { Line, Area, Bar, Pie } from '@antv/gpt-vis';
 
-const demandRender = (container: string, spec: any) => {
+const demandRender = (container, spec) => {
   const { type, ...chartProps } = spec;
   const chartType = type as 'line' | 'area' | 'bar' | 'pie';
 
@@ -136,7 +136,7 @@ const components = {
   }),
 };
 
-const gptVisRenderer = (container: string, spec: any) => {
+const gptVisRenderer = (container, spec) => {
   const mount = document.querySelector(container) as HTMLElement;
   if (!mount) return;
 
@@ -186,7 +186,7 @@ GPT-Vis 也支持在服务端进行图表渲染，以下示例展示了如何在
 import { render } from '@antv/gpt-vis-ssr';
 import { Advisor, bindRenderer } from '@antv/ava';
 
-const gptVisSSRRenderer = async (container: string, spec: any) => {
+const gptVisSSRRenderer = async (container, spec) => {
   const chart = await render(spec);
   // 导出
   chart.exportToFile('chart');
