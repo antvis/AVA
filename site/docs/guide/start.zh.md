@@ -45,7 +45,7 @@ const vis = advisor.render(container, config);
 ```
 ## CDN
 `AVA`也提供了 UMD 版本，可以直接通过 CDN 加载，然后直接使用。这个时候的 `Advisor` 对象可以通过命名空间 `AVA` 去访问。
-```js
+```html
 <!-- 引入 UMD 版本 -->
 <script src="https://unpkg.com/@antv/ava@latest/dist/ava.umd.js"></script>
 <script>
