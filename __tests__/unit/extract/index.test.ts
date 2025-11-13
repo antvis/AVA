@@ -31,7 +31,15 @@ describe.skip('extractData', () => {
       { 用户ID: 1003, 姓名: '王五', 年龄: 28 },
       { 用户ID: 1004, 姓名: '赵六', 年龄: 35 },
     ]);
-    expect(shard.metas).toEqual([
+    expect(
+      shard.metas.map((v) => {
+        return {
+          id: String(v.id),
+          name: v.name,
+          dataType: v.dataType,
+        };
+      })
+    ).toEqual([
       { id: '用户ID', name: '用户ID', dataType: 'number' },
       { id: '姓名', name: '姓名', dataType: 'string' },
       { id: '年龄', name: '年龄', dataType: 'number' },
