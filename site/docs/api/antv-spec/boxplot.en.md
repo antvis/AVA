@@ -16,7 +16,6 @@ A box plot (also known as a box-and-whisker plot) is a standardized way of displ
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |
 | axisYTitle | string                                   | No       | -         | Y-axis title |
-| title      | string                                   | No       | -         | Chart title  |
 | theme      | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme  |
 | style      | IStyle                                   | No       | -         | Chart style  |
 

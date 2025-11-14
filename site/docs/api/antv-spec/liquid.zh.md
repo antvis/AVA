@@ -1,6 +1,8 @@
 ---
 title: 水波图
 order: 12
+redirect_from:
+  - /zh/docs/api/antv-spec/liquid
 ---
 
 ## 简介

@@ -15,7 +15,7 @@ A district map is used to display the geographical boundaries of a country or re
 | data       | DistrictMapDataItem[]                    | Yes      | -         | Data                  |
 | title      | string                                   | No       | -         | Chart title           |
 | district   | string                                   | Yes      | -         | District code         |
-| theme      | "default" \u0026#124; "dark" \u0026#124; "academy" | No       | "default" | Chart theme           |
+| theme      | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme           |
 
 ### DistrictMapDataItem
 | Property | Type   | Required | Default | Description    |

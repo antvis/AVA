@@ -29,7 +29,7 @@ A path map is a visualization that displays routes, paths, or trajectories on a 
 | Property   | Type     | Required | Default | Description   |
 | ---------- | -------- | -------- | ------- | ------------- |
 | points     | LngLat[] | Yes      | -       | Path points   |
-| width      | Polyline | No       | 2       | Path width    |
+| width      | number | No       | 2       | Path width    |
 | color      | string   | No       | #16f    | Color         |
 | dottedLine | boolean  | No       | false   | Dashed or not |
 
@@ -39,7 +39,7 @@ A path map is a visualization that displays routes, paths, or trajectories on a 
 | --------- | ------ | -------- | ------- | ----------- |
 | longitude | number | Yes      | -       | Longitude   |
 | latitude  | number | Yes      | -       | Latitude    |
-| label     | number | Yes      | -       | Label text  |
+| label     | string | Yes      | -       | Label text  |
 
 ## Spec example
 

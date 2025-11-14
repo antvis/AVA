@@ -17,7 +17,6 @@ redirect_from:
 | title      | string                                   | 否       | -         | 图表的标题 |
 | axisXTitle | string                                   | 否       | -         | x 轴的标题 |
 | axisYTitle | string                                   | 否       | -         | y 轴的标题 |
-| title      | string                                   | 否       | -         | 图表的标题 |
 | theme      | "default" &#124; "dark" &#124; "academy" | 否       | "default" | 图表主题   |
 | style      | IStyle                                   | 否       | -         | 图表样式   |
 
@@ -27,7 +26,7 @@ redirect_from:
 | -------- | ------ | -------- | ------ | ------------ |
 | category | string | 是       | -      | 数据分类名称 |
 | value    | number | 是       | -      | 数据分类值   |
-| group    | number | 否       | -      | 数据分组名称 |
+| group    | string | 否       | -      | 数据分组名称 |
 
 ### IStyle
 

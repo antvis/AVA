@@ -16,7 +16,7 @@ A pie chart is a circular statistical graphic, which presents data as slices of 
 | data        | PieDataItem[]                    | Yes      | -         | Pie chart data                            |
 | title       | string                           | No       | -         | Chart title                               |
 | innerRadius | number                           | No       | -         | Inner radius; set to create a donut chart |
-| theme       | 'default' | 'dark' | 'academy' | No       | "default" | Chart theme                               |
+| theme       | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme                               |
 | style       | IStyle                           | No       | -         | Chart style                               |
 
 ### IStyle
@@ -38,6 +38,7 @@ A pie chart is a circular statistical graphic, which presents data as slices of 
 
 ```json
 {
+  "type": "pie",
   "title": "My Pie Chart",
   "innerRadius": 0.6,
   "theme": "dark",

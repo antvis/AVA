@@ -15,7 +15,7 @@ redirect_from:
 | data       | DistrictMapDataItem[]                    | 是       | -         | 数据       |
 | title      | string                                   | 否       | -         | 图表的标题 |
 | district   | string                                   | 是       | -         | 行政区划代码 |
-| theme      | "default" \u0026#124; "dark" \u0026#124; "academy" | 否       | "default" | 图表主题   |
+| theme      | "default" &#124; "dark" &#124; "academy"  | 否       | "default" | 图表主题   |
 
 ### DistrictMapDataItem
 | 属性  | 类型   | 是否必传 | 默认值 | 说明         |

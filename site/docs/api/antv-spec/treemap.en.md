@@ -18,7 +18,7 @@ A treemap is a visualization method for displaying hierarchical data using neste
 | theme    | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme |
 | style    | IStyle                                   | No       | -         | Chart style |
 
-### TreeNode
+### TreemapDataItem
 
 | Property | Type       | Required | Default | Description      |
 | -------- | ---------- | -------- | ------- | ---------------- |

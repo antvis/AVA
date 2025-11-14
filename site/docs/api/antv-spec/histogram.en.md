@@ -13,7 +13,7 @@ A histogram is an approximate representation of the distribution of numerical da
 
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
-| data       | HistogramDataItem[]                      | Yes      | -         | Data         |
+| data       | number[]                                 | Yes      | -         | Data         |
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |
 | axisYTitle | string                                   | No       | -         | Y-axis title |
@@ -32,13 +32,7 @@ A histogram is an approximate representation of the distribution of numerical da
 ```json
 {
   "type": "histogram",
-  "data": [
-    { "value": 1.2 },
-    { "value": 3.4 },
-    { "value": 2.2 },
-    { "value": 4.1 },
-    { "value": 3.8 }
-  ],
+  "data": [1.2, 3.4, 2.2, 4.1, 3.8],
   "title": "This is a histogram",
   "bin": 2
 }

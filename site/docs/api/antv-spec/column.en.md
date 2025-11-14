@@ -26,7 +26,7 @@ A column chart is a data visualization where each category is represented by a r
 | -------- | ------ | -------- | ------- | ------------------- |
 | category | string | Yes      | -       | Data category name  |
 | value    | number | Yes      | -       | Data category value |
-| group    | number | No       | -       | Data grouping name  |
+| group    | string | No       | -       | Data grouping name  |
 
 ### IStyle
 | Property        | Type     | Required | Default | Description      |

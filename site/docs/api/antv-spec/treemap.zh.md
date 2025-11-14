@@ -18,7 +18,7 @@ redirect_from:
 | theme | "default" &#124; "dark" &#124; "academy" | 否       | "default" | 图表主题   |
 | style | IStyle                                   | 否       | -         | 图表样式   |
 
-### TreeNode
+### TreemapDataItem
 
 | 属性     | 类型       | 是否必传 | 默认值 | 说明           |
 | -------- | ---------- | -------- | ------ | -------------- |

@@ -2,7 +2,7 @@
 title: Liquid Chart
 order: 12
 redirect_from:
-  - /zh/docs/api/antv-spec/liquid
+  - /en/docs/api/antv-spec/liquid
 ---
 
 ## Introduction

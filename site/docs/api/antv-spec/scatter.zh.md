@@ -26,7 +26,7 @@ redirect_from:
 | ----- | ------ | -------- | ------ | ---------------- |
 | x     | number | 是       | -      | X 轴上的数值变量 |
 | y     | number | 是       | -      | Y 轴上的数值变量 |
-| group | number | 否       | -      | 数据分组名称     |
+| group | string | 否       | -      | 数据分组名称     |
 
 ### IStyle
 
