@@ -31,8 +31,19 @@ export default defineConfig({
     // 是否展示国内镜像链接
     showChinaMirror: false,
     // `metas` is expected by the theme Index component
+    ai: {
+      recommend: "https://assets.antv.antgroup.com/ava/recommend.json",  // 写生产地址，因为预发地址仅内网访问
+      codeRunner: "codeRunner",
+    },
     metas: {
-      title: 'AVA',
+      title: {
+        zh: 'AVA 可视分析框架',
+        en: 'AVA Visual Analytics Framework',
+      },
+      description: {
+        zh: 'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。',
+        en: 'AVA is a technical framework born for more convenient visual analytics. VA stands for Visual Analytics, and the first A has multiple meanings: its goal is to become an Automated, AI-driven, and Augmented visual analytics solution.',
+      },
     },
     companies: [],
     features: [],
