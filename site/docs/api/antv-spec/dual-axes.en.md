@@ -37,27 +37,28 @@ A dual-axes chart allows for the visualization of two different data series on t
 ## Spec example
 
 ```json
-  {
-    "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    "series": [
-      {
-        "type": "column",
-        "data": [120, 132, 101, 134, 90, 230],
-        "axisYTitle": "Sales (USD)"
-      },
-      {
-        "type": "line",
-        "data": [820, 932, 901, 934, 1290, 1330],
-        "axisYTitle": "Revenue (USD)"
-      }
-    ],
-    "title": "Sales vs Revenue - H1 2024",
-    "axisXTitle": "Month",
-    "theme": "default",
-    "style": {
-      "backgroundColor": "#ffffff",
-      "palette": ["#5B8FF9", "#5AD8A6"],
-      "lineWidth": 2
+{
+  "type": "dual-axes",
+  "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  "series": [
+    {
+      "type": "column",
+      "data": [120, 132, 101, 134, 90, 230],
+      "axisYTitle": "Sales (USD)"
+    },
+    {
+      "type": "line",
+      "data": [820, 932, 901, 934, 1290, 1330],
+      "axisYTitle": "Revenue (USD)"
     }
+  ],
+  "title": "Sales vs Revenue - H1 2024",
+  "axisXTitle": "Month",
+  "theme": "default",
+  "style": {
+    "backgroundColor": "#ffffff",
+    "palette": ["#5B8FF9", "#5AD8A6"],
+    "lineWidth": 2
   }
+}
 ```
