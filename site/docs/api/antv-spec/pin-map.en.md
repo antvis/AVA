@@ -22,7 +22,7 @@ A pin map is a visualization that displays geographical locations using markers 
 | --------- | ------ | -------- | ------- | ----------- |
 | longitude | number | Yes      | -       | Longitude   |
 | latitude  | number | Yes      | -       | Latitude    |
-| label     | number | Yes      | -       | Label text  |
+| label     | string | Yes      | -       | Label text  |
 
 ## Spec example
 

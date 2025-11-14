@@ -33,6 +33,7 @@ order: 17
 ## Spec 示例
 ```json
 {
+  "type": "pie",
   "title": "My Pie Chart",
   "innerRadius": 0.6,
   "theme": "dark",

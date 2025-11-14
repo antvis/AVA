@@ -17,7 +17,6 @@ A violin plot is a statistical representation of numerical data that combines as
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |
 | axisYTitle | string                                   | No       | -         | Y-axis title |
-| title      | string                                   | No       | -         | Chart title  |
 | theme      | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme  |
 | style      | IStyle                                   | No       | -         | Chart style  |
 
@@ -27,7 +26,7 @@ A violin plot is a statistical representation of numerical data that combines as
 | -------- | ------ | -------- | ------- | ------------------- |
 | category | string | Yes      | -       | Data category name  |
 | value    | number | Yes      | -       | Data category value |
-| group    | number | No       | -       | Data group name     |
+| group    | string | No       | -       | Data group name     |
 
 ### IStyle
 

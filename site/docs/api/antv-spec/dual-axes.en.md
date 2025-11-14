@@ -12,7 +12,8 @@ A dual-axes chart allows for the visualization of two different data series on t
 ## Spec
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
-| data       | DualAxesDataItem[]                       | Yes      | -         | Data         |
+| categories | string[]                                 | Yes      | -         | Categories   |
+| series     | SeriesDataItem[]                         | Yes      | -         | Series       |
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |
 | axisYTitle | string                                   | No       | -         | Y-axis title |
@@ -36,27 +37,27 @@ A dual-axes chart allows for the visualization of two different data series on t
 ## Spec example
 
 ```json
-{
-  "type": "dual-axes",
-  "data": [
-    { "time": "Jan.", "value": 18.9, "series": "value" },
-    { "time": "Feb.", "value": 28.8, "series": "value" },
-    { "time": "Jan.", "value": 12.4, "series": "count" },
-    { "time": "Feb.", "value": 23.2, "series": "count" }
-  ],
-  "title": "This is a dual-axes chart",
-  "axisXTitle": "time",
-  "series": [
-    {
-      "type": "column",
-      "series": "value",
-      "axisYTitle": "value"
-    },
-    {
-      "type": "line",
-      "series": "count",
-      "axisYTitle": "count"
+  {
+    "categories": ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    "series": [
+      {
+        "type": "column",
+        "data": [120, 132, 101, 134, 90, 230],
+        "axisYTitle": "Sales (USD)"
+      },
+      {
+        "type": "line",
+        "data": [820, 932, 901, 934, 1290, 1330],
+        "axisYTitle": "Revenue (USD)"
+      }
+    ],
+    "title": "Sales vs Revenue - H1 2024",
+    "axisXTitle": "Month",
+    "theme": "default",
+    "style": {
+      "backgroundColor": "#ffffff",
+      "palette": ["#5B8FF9", "#5AD8A6"],
+      "lineWidth": 2
     }
-  ]
-}
+  }
 ```

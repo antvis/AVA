@@ -26,7 +26,7 @@ redirect_from:
 | -------- | ------ | -------- | ------ | ------------ |
 | category | string | 是       | -      | 数据分类名称 |
 | value    | number | 是       | -      | 数据分类值   |
-| group    | number | 否       | -      | 数据分组名称 |
+| group    | string | 否       | -      | 数据分组名称 |
 
 ### IStyle
 | 属性            | 类型     | 是否必传 | 默认值 | 说明     |

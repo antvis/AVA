@@ -16,7 +16,6 @@ redirect_from:
 | title      | string                                   | 否       | -         | 图表的标题 |
 | axisXTitle | string                                   | 否       | -         | x 轴的标题 |
 | axisYTitle | string                                   | 否       | -         | y 轴的标题 |
-| title      | string                                   | 否       | -         | 图表的标题 |
 | theme      | "default" &#124; "dark" &#124; "academy" | 否       | "default" | 图表主题   |
 | style      | IStyle                                   | 否       | -         | 图表样式   |
 

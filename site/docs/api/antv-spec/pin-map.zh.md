@@ -22,7 +22,7 @@ redirect_from:
 | --------- | ------ | -------- | ------ | -------- |
 | longitude | number | 是       | -      | 经度     |
 | latitude  | number | 是       | -      | 纬度     |
-| label     | number | 是       | -      | 文字标注 |
+| label     | string | 是       | -      | 文字标注 |
 
 ## Spec 示例
 

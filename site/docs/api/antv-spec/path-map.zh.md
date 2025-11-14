@@ -29,7 +29,7 @@ redirect_from:
 | 属性       | 类型     | 是否必传 | 默认值 | 说明     |
 | ---------- | -------- | -------- | ------ | -------- |
 | points     | LngLat[] | 是       | -      | 路径标注 |
-| width      | Polyline | 否       | 2      | 轨迹宽度 |
+| width      | number | 否       | 2      | 轨迹宽度 |
 | color      | string   | 否       | #16f   | 颜色     |
 | dottedLine | boolean  | 否       | false  | 是否虚线 |
 
@@ -39,7 +39,7 @@ redirect_from:
 | --------- | ------ | -------- | ------ | -------- |
 | longitude | number | 是       | -      | 经度     |
 | latitude  | number | 是       | -      | 纬度     |
-| label     | number | 是       | -      | 文字标注 |
+| label     | string | 是       | -      | 文字标注 |
 
 ## Spec 示例
 

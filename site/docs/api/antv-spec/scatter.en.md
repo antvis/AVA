@@ -26,7 +26,7 @@ A scatter plot is a type of plot or mathematical diagram using Cartesian coordin
 | -------- | ------ | -------- | ------- | -------------------------- |
 | x        | number | Yes      | -       | Numeric variable on X-axis |
 | y        | number | Yes      | -       | Numeric variable on Y-axis |
-| group    | number | No       | -       | Data grouping name         |
+| group    | string | No       | -       | Data grouping name         |
 
 ### IStyle
 
