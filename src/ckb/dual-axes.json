@@ -1,6 +1,6 @@
 {
   "name": "generate_dual_axes_chart",
-  "description": "Generate a dual axes chart which is a combination chart that integrates two different chart types, typically combining a bar chart with a line chart to display both the trend and comparison of data, such as, the trend of sales and profit over time.",
+  "description": "Generates a dual-axes chart, which is ideal for visualizing two data series that have different units or vastly different value ranges. By using two separate Y-axes, it allows for a clear comparison of trends and relationships between disparate datasets on a shared X-axis. It's commonly implemented as a combination of a bar chart and a line chart, for example, to show monthly sales volume (bars) against profit margin percentage (line).",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -8,7 +8,11 @@
       "theme": {
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "type": "string"
       },
       "style": {
@@ -28,7 +32,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -71,7 +78,10 @@
             "type": {
               "type": "string",
               "description": "The optional value can be 'column' or 'line'.",
-              "enum": ["column", "line"]
+              "enum": [
+                "column",
+                "line"
+              ]
             },
             "data": {
               "type": "array",
@@ -86,11 +96,17 @@
               "description": "Set the y-axis title of the chart series, such as, axisYTitle: '销售额'."
             }
           },
-          "required": ["type", "data"]
+          "required": [
+            "type",
+            "data"
+          ]
         },
         "description": "Series for dual axes chart, such as, [{ type: 'column', data: [91.9, 99.1, 101.6, 114.4, 121], axisYTitle: '销售额' }, { type: 'line', data: [0.055, 0.06, 0.062, 0.07, 0.075], 'axisYTitle': '利润率' }]."
       }
     },
-    "required": ["categories", "series"]
+    "required": [
+      "categories",
+      "series"
+    ]
   }
 }
