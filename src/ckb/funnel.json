@@ -1,5 +1,5 @@
 {
-  "name": "funnel chart",
+  "name": "funnel",
   "description": "A funnel chart is a special type of visualization chart used to show the flow of data through different stages in a business process. It is named for its funnel-like shape, displaying the data volume of each stage from top to bottom, usually wide at the top and narrow at the bottom, reflecting the process of data loss or conversion. Funnel charts are particularly suitable for visualizing conversion rates in business processes, such as sales funnels, user registration flows, or marketing funnels. With a funnel chart, you can intuitively observe data changes at each stage and identify key conversion points or bottlenecks. Each layer of the funnel chart represents a stage in the process, and the width or area of the layer is usually proportional to the data volume of that stage, thus clearly reflecting the data loss during the conversion process.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",

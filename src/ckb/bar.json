@@ -1,5 +1,5 @@
 {
-  "name": "bar chart",
+  "name": "bar",
   "description": "A bar chart is a statistical chart that uses horizontal rectangular bars to make numerical comparisons between different categories. Unlike a column chart, the rectangular bars of a bar chart are arranged from left to right, not from bottom to top. A bar chart also requires a categorical variable and a numerical variable. On a bar chart, each entity of the categorical variable is represented by a horizontal rectangular bar, and the numerical value determines the length of the bar. Bar charts are suitable for comparing categorical data, especially when the category names are long or when there are many categories, as the horizontal arrangement makes it easier to display these categories. In addition, bar charts are also more suitable for horizontal comparison.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",

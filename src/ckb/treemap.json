@@ -1,5 +1,5 @@
 {
-  "name": "treemap chart",
+  "name": "treemap",
   "description": "A treemap is a visualization chart used to display hierarchical data, representing tree-structured data through a series of nested rectangles. The area of each rectangle is proportional to its corresponding value, and color is often used to distinguish different categories or levels. A treemap transforms a tree data structure into a planar space filled with rectangles, intuitively displaying the hierarchical relationships and numerical proportions of the data. Treemaps are particularly suitable for displaying large amounts of data with hierarchical relationships, such as file systems, organizational structures, budget allocations, and stock markets. Compared to traditional tree structure diagrams, treemaps can use space more effectively and have the function of showing proportions, allowing users to quickly understand the distribution and importance of the data.",
   "inputSchema": {
     "type": "object",

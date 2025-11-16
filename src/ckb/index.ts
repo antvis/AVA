@@ -20,28 +20,32 @@ import treemap from './treemap.json';
 import venn from './venn.json';
 import violin from './violin.json';
 import wordCloud from './word-cloud.json';
+import organizationChart from './organization-chart.json';
+import pathMap from './path-map.json';
 
 export const CHARTS = {
   area,
   bar,
   boxplot,
   column,
+  'dual-axes': dualAxes,
+  'fishbone-diagram': fishboneDiagram,
+  'flow-diagram': flowDiagram,
   funnel,
   histogram,
   line,
   liquid,
+  'mind-map': mindMap,
+  'network-graph': networkGraph,
+  'organization-chart': organizationChart,
+  'path-map': pathMap,
   pie,
+  'pin-map': pinMap,
   radar,
   sankey,
   scatter,
   treemap,
   venn,
   violin,
-  'dual-axes': dualAxes,
-  'fishbone-diagram': fishboneDiagram,
-  'flow-diagram': flowDiagram,
-  'mind-map': mindMap,
-  'network-graph': networkGraph,
-  'pin-map': pinMap,
   'word-cloud': wordCloud,
 };

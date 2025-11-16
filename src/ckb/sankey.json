@@ -1,5 +1,5 @@
 {
-  "name": "sankey chart",
+  "name": "sankey",
   "description": "A Sankey diagram is a chart used to visualize the flow relationships of traffic, energy, funds, etc., between different nodes. The bandwidth represents the flow size, and the nodes and flow lines intuitively show the direction and distribution of each part. It is often used in analysis scenarios such as energy flow, capital flow, and user paths. It is suitable for displaying various types of flow distribution and directional relationships, such as energy flow, capital circulation, user behavior paths, supply chain flow, etc. It highlights the distribution structure and flow path of the traffic.",
   "inputSchema": {
     "type": "object",

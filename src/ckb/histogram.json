@@ -1,5 +1,5 @@
 {
-  "name": "histogram chart",
+  "name": "histogram",
   "description": "A histogram, similar in shape to a bar chart, has a completely different meaning. A histogram involves statistical concepts; first, the data is grouped, and then the number of data elements in each group is counted. In a Cartesian coordinate system, the horizontal axis marks the endpoints of each group, and the vertical axis represents the frequency. The height of each rectangle represents the corresponding frequency, and such a chart is called a frequency distribution histogram. To get the quantity for each group in a frequency distribution histogram, the frequency is multiplied by the group interval. Since the group interval is constant for a given histogram, if the vertical axis directly represents the quantity, the height of each rectangle represents the number of data elements. This maintains the distribution's shape while also intuitively showing the quantity in each group.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",

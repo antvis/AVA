@@ -1,5 +1,5 @@
 {
-  "name": "liquid chart",
+  "name": "liquid",
   "description": "A liquid chart is a chart that uses a liquid filling effect to represent a numerical ratio. It usually uses a circular container as a carrier to intuitively display the current progress or proportion of a certain indicator through the liquid level height and wave dynamics. The height of the liquid represents the percentage of the value, and the wave effect enhances the visual expressiveness, making it suitable for displaying the completion or status of a single indicator.",
   "inputSchema": {
     "type": "object",

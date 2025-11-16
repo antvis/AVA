@@ -1,5 +1,5 @@
 {
-  "name": "venn chart",
+  "name": "venn",
   "description": "A Venn diagram is a chart that uses circles or other closed curves to represent sets and their relationships. A Venn diagram shows the intersection, union, and difference relationships between different sets through overlapping areas, and is a classic chart type for displaying set relationships in data visualization. Venn diagrams are particularly suitable for showing the relationships between different data sets, such as the overlapping relationships of user groups, the intersection of product features, and overlapping users in market analysis. Through intuitive circular areas and overlapping parts, complex set logic relationships can be clearly expressed. When it is necessary to analyze the commonalities and differences between multiple groups or categories, a Venn diagram is a very effective visualization tool. It can help users quickly understand the inclusion, intersection, and independence relationships between data.",
   "inputSchema": {
     "type": "object",

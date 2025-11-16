@@ -1,5 +1,5 @@
 {
-  "name": "boxplot chart",
+  "name": "boxplot",
   "description": "A box plot is a statistical chart used to display the distribution of a set of data. It can display five important statistics of the data: the minimum, the lower quartile (Q1), the median (Q2), the upper quartile (Q3), and the maximum, while also clearly identifying outliers in the data. The design of the box plot is simple and clear. Through the combination of the box and whiskers, one can quickly understand the central tendency, degree of dispersion, and skewness of the data, making it an important tool in statistical analysis and data exploration.",
   "inputSchema": {
     "type": "object",

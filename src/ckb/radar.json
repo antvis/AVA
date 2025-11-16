@@ -1,5 +1,5 @@
 {
-  "name": "radar chart",
+  "name": "radar",
   "description": "A radar chart is a graph that displays multivariate data. Typically, three or more axes radiate from the same center point at equal angular intervals, with each axis representing a quantitative variable. The points on each axis are connected in sequence to form a line or geometric shape. A radar chart can be used to compare variables or to check for outliers among them. Additionally, comparisons of overall numerical situations can be made between multiple radar charts or between multiple data layers on a single radar chart. Applicable scenarios: 1. A data object is composed of multiple feature categories, such as the nutritional components of food (sugar, vitamins, minerals, fat, water); 2. The data feature categories are limited and can all be normalized or discretized. Not applicable scenarios: 1. There are too many categories in the data object, or they cannot be standardized to a uniform degree; 2. There are too many overlapping polygons in the radar chart.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",

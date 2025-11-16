@@ -1,5 +1,5 @@
 {
-  "name": "violin chart",
+  "name": "violin",
   "description": "A violin plot is a data visualization chart that combines a box plot and a kernel density estimate to show the distribution shape and statistical summary of data. The shape of a violin plot is similar to a violin, hence the name. A violin plot displays the distribution density of data at different numerical intervals through a density curve, while also overlaying the statistical information of a box plot (such as the median, quartiles, etc.). This allows for a more intuitive reflection of the data's distribution characteristics, including multimodality, skewness, and outliers. Compared to a traditional box plot, a violin plot provides richer distribution information and is particularly suitable for comparing the distribution characteristics of multiple groups of data, making it an important tool for exploratory data analysis and statistical visualization.",
   "inputSchema": {
     "type": "object",
