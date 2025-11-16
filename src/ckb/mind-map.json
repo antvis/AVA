@@ -1,6 +1,6 @@
 {
-  "name": "generate_mind_map",
-  "description": "Generate a mind map chart to organizes and presents information in a hierarchical structure with branches radiating from a central topic, such as, a diagram showing the relationship between a main topic and its subtopics.",
+  "name": "mind-map",
+  "description": "A mind map is a diagram used to organize and display information in the form of hierarchical branches with a central theme at its core. It is distributed on both sides of a central point, making reasonable use of space and clearly presenting the hierarchical relationship between the main trunk and its branches. It expands layer by layer, using nodes as units to classify concepts, tasks, or ideas. When the text content is complex, a mind map can help extract and structure key information, clarifying the relationship between the main topic and sub-topics.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -35,25 +35,37 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         }
                       }
                     },
-                    "required": ["name"]
+                    "required": [
+                      "name"
+                    ]
                   }
                 }
               },
-              "required": ["name"]
+              "required": [
+                "name"
+              ]
             }
           }
         },
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "description": "Data for mind map chart which is a hierarchical structure, such as, { name: 'main topic', children: [{ name: 'topic 1', children: [{ name:'subtopic 1-1' }] }, and the maximum depth is 3."
       },
       "theme": {
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "type": "string"
       },
       "style": {
@@ -61,7 +73,10 @@
         "properties": {
           "texture": {
             "type": "string",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style."
           }
@@ -79,7 +94,9 @@
         "description": "Set the height of chart, default is 400."
       }
     },
-    "required": ["data"],
+    "required": [
+      "data"
+    ],
     "$schema": "http://json-schema.org/draft-07/schema#"
   }
 }

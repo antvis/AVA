@@ -12,7 +12,6 @@ import liquid from './liquid.json';
 import mindMap from './mind-map.json';
 import networkGraph from './network-graph.json';
 import pie from './pie.json';
-import pinMap from './pin-map.json';
 import radar from './radar.json';
 import sankey from './sankey.json';
 import scatter from './scatter.json';
@@ -20,28 +19,36 @@ import treemap from './treemap.json';
 import venn from './venn.json';
 import violin from './violin.json';
 import wordCloud from './word-cloud.json';
+import organizationChart from './organization-chart.json';
+import table from './table.json';
+import indentedTree from './indented-tree.json';
 
 export const CHARTS = {
   area,
   bar,
   boxplot,
   column,
-  funnel,
-  histogram,
-  line,
-  liquid,
-  pie,
-  radar,
-  sankey,
-  scatter,
-  treemap,
-  venn,
-  violin,
   'dual-axes': dualAxes,
   'fishbone-diagram': fishboneDiagram,
   'flow-diagram': flowDiagram,
+  funnel,
+  // 'heat-map': heatMap, // TODO: 地图渲染有点问题，先屏蔽掉
+  histogram,
+  'indented-tree': indentedTree,
+  line,
+  liquid,
   'mind-map': mindMap,
   'network-graph': networkGraph,
-  'pin-map': pinMap,
+  'organization-chart': organizationChart,
+  // 'path-map': pathMap, // TODO: 地图渲染有点问题，先屏蔽掉
+  pie,
+  // 'pin-map': pinMap, // TODO: 地图渲染有点问题，先屏蔽掉
+  radar,
+  sankey,
+  scatter,
+  table,
+  treemap,
+  venn,
+  violin,
   'word-cloud': wordCloud,
 };

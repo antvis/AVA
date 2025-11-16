@@ -1,6 +1,6 @@
 {
-  "name": "generate_scatter_chart",
-  "description": "Generate a scatter chart to show the relationship between two variables, helps discover their relationship or trends, such as, the strength of correlation, data distribution patterns.",
+  "name": "scatter",
+  "description": "A scatter plot is a visualization chart that displays the relationship between two continuous variables as points on a two-dimensional coordinate plane. The position of each data point is determined by the values of two variables, with one variable determining the horizontal position (x-axis) and the other determining the vertical position (y-axis). A scatter plot is different from a line chart; a scatter plot is mainly used to explore and display the correlation, distribution patterns, and identification of outliers between variables, while a line chart is more suitable for showing the trend changes of continuous data.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -22,14 +22,21 @@
               "type": "number"
             }
           },
-          "required": ["x", "y"]
+          "required": [
+            "x",
+            "y"
+          ]
         },
         "description": "Data for scatter chart, such as, [{ x: 10, y: 15 }]."
       },
       "theme": {
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "type": "string"
       },
       "style": {
@@ -49,7 +56,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -81,6 +91,8 @@
         "description": "Set the y-axis title of chart."
       }
     },
-    "required": ["data"]
+    "required": [
+      "data"
+    ]
   }
 }
