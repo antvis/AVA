@@ -125,8 +125,8 @@ export async function adviseCharts(dataShards: DataShard[], config: AdvisorConfi
   }
 
   const output: AdviseStageOutput = specs.map((spec, i) => ({
-    metas: dataShards[i]?.metas as Meta[],
-    data: dataShards[i]?.data as PlainLikeDataType,
+    metas: (dataShards[i]?.metas as Meta[]) ?? [],
+    data: (dataShards[i]?.data as PlainLikeDataType) ?? [],
     charts: [
       {
         spec,
