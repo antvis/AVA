@@ -99,7 +99,7 @@ export const genSpecByDataShardPrompt = (params: { chartId: string; data: PlainL
 - Output only the valid JSON configuration objects in an array.
 
 # Final Output Requirement
-- All inputs (single or multiple items) must return a JSON array of configuration objects in the same order as input.
+- All inputs (single or multiple items) must return a JSON array of configuration objects in the same order as input items.
 - In all cases, do not include extra text, explanations, or code fences.
  - Output MUST be a plain JSON string; do not use Markdown code fences (e.g., \`\`\`JSON).
 
