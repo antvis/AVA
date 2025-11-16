@@ -31,7 +31,7 @@ export const genSpecByDataShardPrompt = (params: { chartId: string; data: PlainL
 - Respect types and required fields; ensure all required keys exist.
 - Apply schema defaults if a property is optional and has a default (theme, style.texture, width, height).
 - Do not modify numeric values other than parsing strings to numbers when necessary. Do not aggregate unless explicitly required by schema.
-- Output must be a single JSON object with no prose, no code fences, and no extra commentary.
+- Output must be a JSON array of configuration objects. No prose, no code fences, no extra commentary.
 
 # Batch Handling
 - When the input is an array, treat each item independently based on its chartId and data.
@@ -96,11 +96,10 @@ export const genSpecByDataShardPrompt = (params: { chartId: string; data: PlainL
 - Normalize raw data to match the schema’s required shape and types.
 - Fill optional properties with schema defaults when applicable.
 - Validate the final configuration against the inputSchema.
-- Output only the valid JSON configuration object.
+- Output only the valid JSON configuration objects in an array.
 
 # Final Output Requirement
-- Single input: return only the JSON configuration object.
-- Batch input: return only the JSON array of configuration objects in the same order as input.
+- All inputs (single or multiple items) must return a JSON array of configuration objects in the same order as input.
 - In all cases, do not include extra text, explanations, or code fences.
  - Output MUST be a plain JSON string; do not use Markdown code fences (e.g., \`\`\`JSON).
 
@@ -187,7 +186,7 @@ export const genSpecByInputPrompt = (params: { chartId: string; input: string }[
 - Respect types and required fields; ensure all required keys exist.
 - Apply schema defaults if a property is optional and has a default (theme, style.texture, width, height).
 - Do not modify numeric values other than parsing strings to numbers when necessary. Do not aggregate unless explicitly required by schema.
-- Output must be a single JSON object (for single item) or a JSON array (for multiple items). No prose, no code fences, no extra commentary.
+- Output must be a JSON array of configuration objects. No prose, no code fences, no extra commentary.
 
 # Batch Handling
 - When the input contains multiple items, treat each item independently.
@@ -258,11 +257,10 @@ export const genSpecByInputPrompt = (params: { chartId: string; input: string }[
   - Fill optional properties with schema defaults when applicable.
   - Generate meaningful title and axis titles.
   - Validate the final configuration against the inputSchema.
-- Output only the valid JSON configuration object(s).
+- Output only the valid JSON configuration objects in an array.
 
 # Final Output Requirement
-- Single item: return only the JSON configuration object.
-- Multiple items: return only the JSON array of configuration objects in the same order as input items.
+- All inputs (single or multiple items) must return a JSON array of configuration objects in the same order as input items.
 - In all cases, do not include extra text, explanations, or code fences.
  - Output MUST be a plain JSON string; do not use Markdown code fences (e.g., \`\`\`JSON).
 
