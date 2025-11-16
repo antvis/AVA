@@ -29,6 +29,7 @@ export async function recommendChartIds(params: {
   const { dataShards, llm, allowed, input } = params;
   if (!llm) throw new Error('LLM config is missing or invalid');
   const allowedIds = allowed ?? Object.keys(CHARTS);
+  // If no data shards are provided, use user input to recommend charts; otherwise, use the data-shard.
   const prompt = isEmpty(dataShards)
     ? adviseChartByInputPrompt([input], allowedIds)
     : adviseChartByDataShardPrompt(
@@ -61,6 +62,7 @@ export async function generateSpecs(params: {
   llm: AdvisorConfig['llm'];
 }): Promise<Spec[]> {
   const { dataShards, selectedChartIds, input, llm } = params;
+  // If no data shards are provided, use user input to generate specs; otherwise, use the data-shard.
   const prompt = isEmpty(dataShards)
     ? genSpecByInputPrompt([{ input, chartId: selectedChartIds[0] }])
     : genSpecByDataShardPrompt(
