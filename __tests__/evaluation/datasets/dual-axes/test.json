@@ -2,6 +2,7 @@
   {
     "type": "text2chart",
     "question": "用双轴图展示某公司的年收入与员工满意度，2017年至2021年的收入分别为85.4亿、93.2亿、100.1亿、108.6亿、115.5亿，员工满意度（满分10分）分别为7.2、7.5、7.8、8.0、8.2。",
+    "questionWithoutChart": "用图表展示某公司的年收入与员工满意度，2017年至2021年的收入分别为85.4亿、93.2亿、100.1亿、108.6亿、115.5亿，员工满意度（满分10分）分别为7.2、7.5、7.8、8.0、8.2。",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -150,6 +151,7 @@
   {
     "type": "text2chart",
     "question": "用双轴图来表示一个城市的年度平均气温和降水量。从2016到2020年，平均气温分别是15°C、16°C、17°C、18°C、19°C；同期的年降水量为800mm、850mm、900mm、950mm、1000mm。",
+    "questionWithoutChart": "用图表来表示一个城市的年度平均气温和降水量。从2016到2020年，平均气温分别是15°C、16°C、17°C、18°C、19°C；同期的年降水量为800mm、850mm、900mm、950mm、1000mm。",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -248,6 +250,7 @@
   {
     "type": "text2chart",
     "question": "利用双轴图展示一家电商平台的商品销量和退货率。在2019至2023年间，商品销量依次是120万件、130万件、140万件、150万件、160万件；相应的退货率则为2%、2.5%、3%、3.5%、4%。",
+    "questionWithoutChart": "利用图表展示一家电商平台的商品销量和退货率。在2019至2023年间，商品销量依次是120万件、130万件、140万件、150万件、160万件；相应的退货率则为2%、2.5%、3%、3.5%、4%。",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -346,6 +349,7 @@
   {
     "type": "text2chart",
     "question": "通过双轴图呈现某地区每年的人口增长数量以及经济增长率。2015年至2019年间，人口增量分别是12万、14万、16万、18万、20万；同期GDP增长率分别为3.5%、4.0%、4.5%、5.0%、5.5%。",
+    "questionWithoutChart": "通过图表呈现某地区每年的人口增长数量以及经济增长率。2015年至2019年间，人口增量分别是12万、14万、16万、18万、20万；同期GDP增长率分别为3.5%、4.0%、4.5%、5.0%、5.5%。",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -449,6 +453,7 @@
   {
     "type": "text2chart",
     "question": "采用双轴图形式描绘一国能源消费总量及其可再生能源占比的变化趋势。从2013到2017年，该国总能源消费量分别为50亿吨标准煤、52亿吨标准煤、54亿吨标准煤、56亿吨标准煤、58亿吨标准煤；可再生能源比例依次为10%、12%、14%、16%、18%。",
+    "questionWithoutChart": "采用图表形式描绘一国能源消费总量及其可再生能源占比的变化趋势。从2013到2017年，该国总能源消费量分别为50亿吨标准煤、52亿吨标准煤、54亿吨标准煤、56亿吨标准煤、58亿吨标准煤；可再生能源比例依次为10%、12%、14%、16%、18%。",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -547,6 +552,7 @@
   {
     "type": "data2chart",
     "question": "用双轴图可视化我的数据 [{ \"year\": 2019, \"sales\": 300, \"profit_margin\": 20 }, { \"year\": 2020, \"sales\": 400, \"profit_margin\": 22 }, { \"year\": 2021, \"sales\": 500, \"profit_margin\": 25 }]",
+    "questionWithoutChart": "用图表可视化我的数据 [{ \"year\": 2019, \"sales\": 300, \"profit_margin\": 20 }, { \"year\": 2020, \"sales\": 400, \"profit_margin\": 22 }, { \"year\": 2021, \"sales\": 500, \"profit_margin\": 25 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -626,6 +632,7 @@
   {
     "type": "data2chart",
     "question": "用双轴图展示过去三年的气温和降水量数据 [{ \"month\": \"Jan\", \"temperature\": 5, \"rainfall\": 50 }, { \"month\": \"Feb\", \"temperature\": 7, \"rainfall\": 60 }, { \"month\": \"Mar\", \"temperature\": 10, \"rainfall\": 80 }]",
+    "questionWithoutChart": "用图表展示过去三年的气温和降水量数据 [{ \"month\": \"Jan\", \"temperature\": 5, \"rainfall\": 50 }, { \"month\": \"Feb\", \"temperature\": 7, \"rainfall\": 60 }, { \"month\": \"Mar\", \"temperature\": 10, \"rainfall\": 80 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -708,6 +715,7 @@
   {
     "type": "data2chart",
     "question": "用双轴图显示用户增长与活跃度 [{ \"quarter\": \"Q1\", \"user_growth\": 500, \"activity_rate\": 60 }, { \"quarter\": \"Q2\", \"user_growth\": 700, \"activity_rate\": 65 }, { \"quarter\": \"Q3\", \"user_growth\": 900, \"activity_rate\": 70 }]",
+    "questionWithoutChart": "用图表显示用户增长与活跃度 [{ \"quarter\": \"Q1\", \"user_growth\": 500, \"activity_rate\": 60 }, { \"quarter\": \"Q2\", \"user_growth\": 700, \"activity_rate\": 65 }, { \"quarter\": \"Q3\", \"user_growth\": 900, \"activity_rate\": 70 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -787,6 +795,7 @@
   {
     "type": "data2chart",
     "question": "用双轴图表示产品销售量与退货率 [{ \"product\": \"A\", \"sales_volume\": 200, \"return_rate\": 5 }, { \"product\": \"B\", \"sales_volume\": 300, \"return_rate\": 7 }, { \"product\": \"C\", \"sales_volume\": 400, \"return_rate\": 9 }]",
+    "questionWithoutChart": "用图表表示产品销售量与退货率 [{ \"product\": \"A\", \"sales_volume\": 200, \"return_rate\": 5 }, { \"product\": \"B\", \"sales_volume\": 300, \"return_rate\": 7 }, { \"product\": \"C\", \"sales_volume\": 400, \"return_rate\": 9 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -866,6 +875,7 @@
   {
     "type": "data2chart",
     "question": "用双轴图绘制公司收入与支出情况 [{ \"year\": 2018, \"income\": 1000, \"expenses\": 800 }, { \"year\": 2019, \"income\": 1200, \"expenses\": 900 }, { \"year\": 2020, \"income\": 1500, \"expenses\": 1000 }]",
+    "questionWithoutChart": "用图表绘制公司收入与支出情况 [{ \"year\": 2018, \"income\": 1000, \"expenses\": 800 }, { \"year\": 2019, \"income\": 1200, \"expenses\": 900 }, { \"year\": 2020, \"income\": 1500, \"expenses\": 1000 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -945,6 +955,7 @@
   {
     "type": "data2chart",
     "question": "用组合图可视化我的数据 [{ \"year\": 2017, \"revenue\": 800, \"profit_margin\": 15 }, { \"year\": 2018, \"revenue\": 900, \"profit_margin\": 18 }, { \"year\": 2019, \"revenue\": 1000, \"profit_margin\": 20 }]",
+    "questionWithoutChart": "用图表可视化我的数据 [{ \"year\": 2017, \"revenue\": 800, \"profit_margin\": 15 }, { \"year\": 2018, \"revenue\": 900, \"profit_margin\": 18 }, { \"year\": 2019, \"revenue\": 1000, \"profit_margin\": 20 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -1024,6 +1035,7 @@
   {
     "type": "data2chart",
     "question": "用组合图展示过去三年的网站访问量和转化率 [{ \"month\": \"Apr\", \"visits\": 10000, \"conversion_rate\": 2.5 }, { \"month\": \"May\", \"visits\": 12000, \"conversion_rate\": 3.0 }, { \"month\": \"Jun\", \"visits\": 15000, \"conversion_rate\": 3.5 }]",
+    "questionWithoutChart": "用图表展示过去三年的网站访问量和转化率 [{ \"month\": \"Apr\", \"visits\": 10000, \"conversion_rate\": 2.5 }, { \"month\": \"May\", \"visits\": 12000, \"conversion_rate\": 3.0 }, { \"month\": \"Jun\", \"visits\": 15000, \"conversion_rate\": 3.5 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -1103,6 +1115,7 @@
   {
     "type": "data2chart",
     "question": "用组合图表示不同地区的销售额和市场份额 [{ \"region\": \"North\", \"sales\": 5000, \"market_share\": 20 }, { \"region\": \"South\", \"sales\": 7000, \"market_share\": 25 }, { \"region\": \"East\", \"sales\": 6000, \"market_share\": 22 }]",
+    "questionWithoutChart": "用图表表示不同地区的销售额和市场份额 [{ \"region\": \"North\", \"sales\": 5000, \"market_share\": 20 }, { \"region\": \"South\", \"sales\": 7000, \"market_share\": 25 }, { \"region\": \"East\", \"sales\": 6000, \"market_share\": 22 }]",
     "answer": {
       "type": "dual-axes",
       "categories": [
@@ -1182,6 +1195,7 @@
   {
     "type": "data2chart",
     "question": "用组合图可视化过去50天的股票价格和交易量 [{\"day\":1,\"price\":100,\"volume\":10000},{\"day\":2,\"price\":102,\"volume\":12000},{\"day\":3,\"price\":101,\"volume\":11000},{\"day\":4,\"price\":103,\"volume\":13000},{\"day\":5,\"price\":104,\"volume\":14000},{\"day\":6,\"price\":105,\"volume\":15000},{\"day\":7,\"price\":106,\"volume\":16000},{\"day\":8,\"price\":107,\"volume\":17000},{\"day\":9,\"price\":108,\"volume\":18000},{\"day\":10,\"price\":109,\"volume\":19000},{\"day\":11,\"price\":110,\"volume\":20000},{\"day\":12,\"price\":111,\"volume\":21000},{\"day\":13,\"price\":112,\"volume\":22000},{\"day\":14,\"price\":113,\"volume\":23000},{\"day\":15,\"price\":114,\"volume\":24000},{\"day\":16,\"price\":115,\"volume\":25000},{\"day\":17,\"price\":116,\"volume\":26000},{\"day\":18,\"price\":117,\"volume\":27000},{\"day\":19,\"price\":118,\"volume\":28000},{\"day\":20,\"price\":119,\"volume\":29000},{\"day\":21,\"price\":120,\"volume\":30000},{\"day\":22,\"price\":121,\"volume\":31000},{\"day\":23,\"price\":122,\"volume\":32000},{\"day\":24,\"price\":123,\"volume\":33000},{\"day\":25,\"price\":124,\"volume\":34000},{\"day\":26,\"price\":125,\"volume\":35000},{\"day\":27,\"price\":126,\"volume\":36000},{\"day\":28,\"price\":127,\"volume\":37000},{\"day\":29,\"price\":128,\"volume\":38000},{\"day\":30,\"price\":129,\"volume\":39000},{\"day\":31,\"price\":130,\"volume\":40000},{\"day\":32,\"price\":131,\"volume\":41000},{\"day\":33,\"price\":132,\"volume\":42000},{\"day\":34,\"price\":133,\"volume\":43000},{\"day\":35,\"price\":134,\"volume\":44000},{\"day\":36,\"price\":135,\"volume\":45000},{\"day\":37,\"price\":136,\"volume\":46000},{\"day\":38,\"price\":137,\"volume\":47000},{\"day\":39,\"price\":138,\"volume\":48000},{\"day\":40,\"price\":139,\"volume\":49000},{\"day\":41,\"price\":140,\"volume\":50000},{\"day\":42,\"price\":141,\"volume\":51000},{\"day\":43,\"price\":142,\"volume\":52000},{\"day\":44,\"price\":143,\"volume\":53000},{\"day\":45,\"price\":144,\"volume\":54000},{\"day\":46,\"price\":145,\"volume\":55000},{\"day\":47,\"price\":146,\"volume\":56000},{\"day\":48,\"price\":147,\"volume\":57000},{\"day\":49,\"price\":148,\"volume\":58000},{\"day\":50,\"price\":149,\"volume\":59000}]",
+    "questionWithoutChart": "用图表可视化过去50天的股票价格和交易量 [{\"day\":1,\"price\":100,\"volume\":10000},{\"day\":2,\"price\":102,\"volume\":12000},{\"day\":3,\"price\":101,\"volume\":11000},{\"day\":4,\"price\":103,\"volume\":13000},{\"day\":5,\"price\":104,\"volume\":14000},{\"day\":6,\"price\":105,\"volume\":15000},{\"day\":7,\"price\":106,\"volume\":16000},{\"day\":8,\"price\":107,\"volume\":17000},{\"day\":9,\"price\":108,\"volume\":18000},{\"day\":10,\"price\":109,\"volume\":19000},{\"day\":11,\"price\":110,\"volume\":20000},{\"day\":12,\"price\":111,\"volume\":21000},{\"day\":13,\"price\":112,\"volume\":22000},{\"day\":14,\"price\":113,\"volume\":23000},{\"day\":15,\"price\":114,\"volume\":24000},{\"day\":16,\"price\":115,\"volume\":25000},{\"day\":17,\"price\":116,\"volume\":26000},{\"day\":18,\"price\":117,\"volume\":27000},{\"day\":19,\"price\":118,\"volume\":28000},{\"day\":20,\"price\":119,\"volume\":29000},{\"day\":21,\"price\":120,\"volume\":30000},{\"day\":22,\"price\":121,\"volume\":31000},{\"day\":23,\"price\":122,\"volume\":32000},{\"day\":24,\"price\":123,\"volume\":33000},{\"day\":25,\"price\":124,\"volume\":34000},{\"day\":26,\"price\":125,\"volume\":35000},{\"day\":27,\"price\":126,\"volume\":36000},{\"day\":28,\"price\":127,\"volume\":37000},{\"day\":29,\"price\":128,\"volume\":38000},{\"day\":30,\"price\":129,\"volume\":39000},{\"day\":31,\"price\":130,\"volume\":40000},{\"day\":32,\"price\":131,\"volume\":41000},{\"day\":33,\"price\":132,\"volume\":42000},{\"day\":34,\"price\":133,\"volume\":43000},{\"day\":35,\"price\":134,\"volume\":44000},{\"day\":36,\"price\":135,\"volume\":45000},{\"day\":37,\"price\":136,\"volume\":46000},{\"day\":38,\"price\":137,\"volume\":47000},{\"day\":39,\"price\":138,\"volume\":48000},{\"day\":40,\"price\":139,\"volume\":49000},{\"day\":41,\"price\":140,\"volume\":50000},{\"day\":42,\"price\":141,\"volume\":51000},{\"day\":43,\"price\":142,\"volume\":52000},{\"day\":44,\"price\":143,\"volume\":53000},{\"day\":45,\"price\":144,\"volume\":54000},{\"day\":46,\"price\":145,\"volume\":55000},{\"day\":47,\"price\":146,\"volume\":56000},{\"day\":48,\"price\":147,\"volume\":57000},{\"day\":49,\"price\":148,\"volume\":58000},{\"day\":50,\"price\":149,\"volume\":59000}]",
     "answer": {
       "type": "dual-axes",
       "categories": [

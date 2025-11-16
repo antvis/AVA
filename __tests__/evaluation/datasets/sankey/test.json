@@ -1,0 +1,750 @@
+[
+  {
+    "type": "text2chart",
+    "question": "某电商平台用户行为流向：从首页到商品页50000人，商品页到购物车35000人，购物车到结算25000人，结算到支付15000人，支付到完成8000人，用桑基图展示用户转化流程",
+    "questionWithoutChart": "某电商平台用户行为流向：从首页到商品页50000人，商品页到购物车35000人，购物车到结算25000人，结算到支付15000人，支付到完成8000人，用图表展示用户转化流程",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "首页",
+          "target": "商品页",
+          "value": 50000
+        },
+        {
+          "source": "商品页",
+          "target": "购物车",
+          "value": 35000
+        },
+        {
+          "source": "购物车",
+          "target": "结算",
+          "value": 25000
+        },
+        {
+          "source": "结算",
+          "target": "支付",
+          "value": 15000
+        },
+        {
+          "source": "支付",
+          "target": "完成",
+          "value": 8000
+        }
+      ],
+      "title": "电商平台用户转化流程"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "首页",
+            "target": "商品页",
+            "value": 50000
+          },
+          {
+            "source": "商品页",
+            "target": "购物车",
+            "value": 35000
+          },
+          {
+            "source": "购物车",
+            "target": "结算",
+            "value": 25000
+          },
+          {
+            "source": "结算",
+            "target": "支付",
+            "value": 15000
+          },
+          {
+            "source": "支付",
+            "target": "完成",
+            "value": 8000
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "来源页面",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "目标页面",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "用户数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "用户数",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "电商平台用户转化流程分析"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某企业能源流向分析：煤炭发电1000万度，其中工业用电600万度，居民用电400万度；工业用电中制造业350万度，化工150万度，采矿业100万度，用桑基图展示能源流向",
+    "questionWithoutChart": "某企业能源流向分析：煤炭发电1000万度，其中工业用电600万度，居民用电400万度；工业用电中制造业350万度，化工150万度，采矿业100万度，用图表展示能源流向",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "煤炭发电",
+          "target": "工业用电",
+          "value": 600
+        },
+        {
+          "source": "煤炭发电",
+          "target": "居民用电",
+          "value": 400
+        },
+        {
+          "source": "工业用电",
+          "target": "制造业",
+          "value": 350
+        },
+        {
+          "source": "工业用电",
+          "target": "化工",
+          "value": 150
+        },
+        {
+          "source": "工业用电",
+          "target": "采矿业",
+          "value": 100
+        }
+      ],
+      "title": "企业能源流向分析"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "煤炭发电",
+            "target": "工业用电",
+            "value": 600
+          },
+          {
+            "source": "煤炭发电",
+            "target": "居民用电",
+            "value": 400
+          },
+          {
+            "source": "工业用电",
+            "target": "制造业",
+            "value": 350
+          },
+          {
+            "source": "工业用电",
+            "target": "化工",
+            "value": 150
+          },
+          {
+            "source": "工业用电",
+            "target": "采矿业",
+            "value": 100
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "能源来源",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "能源去向",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "用电量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "用电量",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "企业能源流向分布分析"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某城市交通流量分析：早高峰进城车辆8000辆，其中商务区4000辆，工业区2500辆，住宅区1500辆；商务区车辆中金融街2000辆，商业街1500辆，写字楼500辆，用桑基图展示交通流向",
+    "questionWithoutChart": "某城市交通流量分析：早高峰进城车辆8000辆，其中商务区4000辆，工业区2500辆，住宅区1500辆；商务区车辆中金融街2000辆，商业街1500辆，写字楼500辆，用图表展示交通流向",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "进城车辆",
+          "target": "商务区",
+          "value": 4000
+        },
+        {
+          "source": "进城车辆",
+          "target": "工业区",
+          "value": 2500
+        },
+        {
+          "source": "进城车辆",
+          "target": "住宅区",
+          "value": 1500
+        },
+        {
+          "source": "商务区",
+          "target": "金融街",
+          "value": 2000
+        },
+        {
+          "source": "商务区",
+          "target": "商业街",
+          "value": 1500
+        },
+        {
+          "source": "商务区",
+          "target": "写字楼",
+          "value": 500
+        }
+      ],
+      "title": "城市交通流量分析"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "进城车辆",
+            "target": "商务区",
+            "value": 4000
+          },
+          {
+            "source": "进城车辆",
+            "target": "工业区",
+            "value": 2500
+          },
+          {
+            "source": "进城车辆",
+            "target": "住宅区",
+            "value": 1500
+          },
+          {
+            "source": "商务区",
+            "target": "金融街",
+            "value": 2000
+          },
+          {
+            "source": "商务区",
+            "target": "商业街",
+            "value": 1500
+          },
+          {
+            "source": "商务区",
+            "target": "写字楼",
+            "value": 500
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "车流来源",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "车流去向",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "车流量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "车流量",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "城市交通流量分布分析"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某电商平台资金流动分析：用户支付总额100万元，其中商品成本60万元，平台佣金20万元，物流费用15万元，其他费用5万元，用桑基图展示资金流向",
+    "questionWithoutChart": "某电商平台资金流动分析：用户支付总额100万元，其中商品成本60万元，平台佣金20万元，物流费用15万元，其他费用5万元，用图表展示资金流向",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "用户支付",
+          "target": "商品成本",
+          "value": 60
+        },
+        {
+          "source": "用户支付",
+          "target": "平台佣金",
+          "value": 20
+        },
+        {
+          "source": "用户支付",
+          "target": "物流费用",
+          "value": 15
+        },
+        {
+          "source": "用户支付",
+          "target": "其他费用",
+          "value": 5
+        }
+      ],
+      "title": "电商平台资金流向分析"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "用户支付",
+            "target": "商品成本",
+            "value": 60
+          },
+          {
+            "source": "用户支付",
+            "target": "平台佣金",
+            "value": 20
+          },
+          {
+            "source": "用户支付",
+            "target": "物流费用",
+            "value": 15
+          },
+          {
+            "source": "用户支付",
+            "target": "其他费用",
+            "value": 5
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "资金来源",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "资金去向",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "资金额",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "资金额",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "电商平台资金流向分布分析"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某工厂原材料流向分析：原材料入库500吨，其中生产线A使用200吨，生产线B使用150吨，生产线C使用100吨，库存50吨，用桑基图展示原材料流向",
+    "questionWithoutChart": "某工厂原材料流向分析：原材料入库500吨，其中生产线A使用200吨，生产线B使用150吨，生产线C使用100吨，库存50吨，用图表展示原材料流向",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "原材料入库",
+          "target": "生产线A",
+          "value": 200
+        },
+        {
+          "source": "原材料入库",
+          "target": "生产线B",
+          "value": 150
+        },
+        {
+          "source": "原材料入库",
+          "target": "生产线C",
+          "value": 100
+        },
+        {
+          "source": "原材料入库",
+          "target": "库存",
+          "value": 50
+        }
+      ],
+      "title": "工厂原材料流向分析"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "原材料入库",
+            "target": "生产线A",
+            "value": 200
+          },
+          {
+            "source": "原材料入库",
+            "target": "生产线B",
+            "value": 150
+          },
+          {
+            "source": "原材料入库",
+            "target": "生产线C",
+            "value": 100
+          },
+          {
+            "source": "原材料入库",
+            "target": "库存",
+            "value": 50
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "材料来源",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "材料去向",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "材料用量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "材料用量",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "工厂原材料流向分布分析"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某公司员工晋升流向分析：入职员工100人，其中技术岗位60人，管理岗位25人，销售岗位15人；技术岗位中高级工程师35人，工程师25人，用桑基图展示员工晋升流向",
+    "questionWithoutChart": "某公司员工晋升流向分析：入职员工100人，其中技术岗位60人，管理岗位25人，销售岗位15人；技术岗位中高级工程师35人，工程师25人，用图表展示员工晋升流向",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "入职员工",
+          "target": "技术岗位",
+          "value": 60
+        },
+        {
+          "source": "入职员工",
+          "target": "管理岗位",
+          "value": 25
+        },
+        {
+          "source": "入职员工",
+          "target": "销售岗位",
+          "value": 15
+        },
+        {
+          "source": "技术岗位",
+          "target": "高级工程师",
+          "value": 35
+        },
+        {
+          "source": "技术岗位",
+          "target": "工程师",
+          "value": 25
+        }
+      ],
+      "title": "公司员工晋升流向分析"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "入职员工",
+            "target": "技术岗位",
+            "value": 60
+          },
+          {
+            "source": "入职员工",
+            "target": "管理岗位",
+            "value": 25
+          },
+          {
+            "source": "入职员工",
+            "target": "销售岗位",
+            "value": 15
+          },
+          {
+            "source": "技术岗位",
+            "target": "高级工程师",
+            "value": 35
+          },
+          {
+            "source": "技术岗位",
+            "target": "工程师",
+            "value": 25
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "员工来源",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "晋升去向",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "员工数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "员工数量",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "公司员工晋升流向分布分析"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某学校学生活动参与流向分析：在校学生1000人，其中体育活动400人，文艺活动300人，学术活动200人，社会实践100人；体育活动中篮球150人，足球100人，羽毛球150人，用桑基图展示学生活动参与流向",
+    "questionWithoutChart": "某学校学生活动参与流向分析：在校学生1000人，其中体育活动400人，文艺活动300人，学术活动200人，社会实践100人；体育活动中篮球150人，足球100人，羽毛球150人，用图表展示学生活动参与流向",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "在校学生",
+          "target": "体育活动",
+          "value": 400
+        },
+        {
+          "source": "在校学生",
+          "target": "文艺活动",
+          "value": 300
+        },
+        {
+          "source": "在校学生",
+          "target": "学术活动",
+          "value": 200
+        },
+        {
+          "source": "在校学生",
+          "target": "社会实践",
+          "value": 100
+        },
+        {
+          "source": "体育活动",
+          "target": "篮球",
+          "value": 150
+        },
+        {
+          "source": "体育活动",
+          "target": "足球",
+          "value": 100
+        },
+        {
+          "source": "体育活动",
+          "target": "羽毛球",
+          "value": 150
+        }
+      ],
+      "title": "学生活动参与流向分析"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "在校学生",
+            "target": "体育活动",
+            "value": 400
+          },
+          {
+            "source": "在校学生",
+            "target": "文艺活动",
+            "value": 300
+          },
+          {
+            "source": "在校学生",
+            "target": "学术活动",
+            "value": 200
+          },
+          {
+            "source": "在校学生",
+            "target": "社会实践",
+            "value": 100
+          },
+          {
+            "source": "体育活动",
+            "target": "篮球",
+            "value": 150
+          },
+          {
+            "source": "体育活动",
+            "target": "足球",
+            "value": 100
+          },
+          {
+            "source": "体育活动",
+            "target": "羽毛球",
+            "value": 150
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "学生来源",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "活动去向",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "参与人数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "参与人数",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "学校学生活动参与流向分布分析"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某医院患者就诊流向分析：门诊患者800人，其中内科350人，外科250人，儿科200人；内科患者中呼吸科120人，消化科100人，心血管科130人，用桑基图展示患者就诊流向",
+    "questionWithoutChart": "某医院患者就诊流向分析：门诊患者800人，其中内科350人，外科250人，儿科200人；内科患者中呼吸科120人，消化科100人，心血管科130人，用图表展示患者就诊流向",
+    "answer": {
+      "type": "sankey",
+      "data": [
+        {
+          "source": "门诊患者",
+          "target": "内科",
+          "value": 350
+        },
+        {
+          "source": "门诊患者",
+          "target": "外科",
+          "value": 250
+        },
+        {
+          "source": "门诊患者",
+          "target": "儿科",
+          "value": 200
+        },
+        {
+          "source": "内科",
+          "target": "呼吸科",
+          "value": 120
+        },
+        {
+          "source": "内科",
+          "target": "消化科",
+          "value": 100
+        },
+        {
+          "source": "内科",
+          "target": "心血管科",
+          "value": 130
+        }
+      ],
+      "title": "医院患者就诊流向分析"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "source": "门诊患者",
+            "target": "内科",
+            "value": 350
+          },
+          {
+            "source": "门诊患者",
+            "target": "外科",
+            "value": 250
+          },
+          {
+            "source": "门诊患者",
+            "target": "儿科",
+            "value": 200
+          },
+          {
+            "source": "内科",
+            "target": "呼吸科",
+            "value": 120
+          },
+          {
+            "source": "内科",
+            "target": "消化科",
+            "value": 100
+          },
+          {
+            "source": "内科",
+            "target": "心血管科",
+            "value": 130
+          }
+        ],
+        "metas": [
+          {
+            "id": "source",
+            "name": "患者来源",
+            "dataType": "string"
+          },
+          {
+            "id": "target",
+            "name": "就诊去向",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "患者数量",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "患者数量",
+          "key": "value",
+          "purpose": "Flow",
+          "purposeDesc": "医院患者就诊流向分布分析"
+        }
+      }
+    ]
+  }
+]

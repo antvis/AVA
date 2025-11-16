@@ -2,6 +2,7 @@
   {
     "type": "text2chart",
     "question": "公司年度员工满意度调查：工作环境4分、薪资待遇3分、职业发展5分、管理层沟通2分、团队协作5分，用雷达图可视化：",
+    "questionWithoutChart": "公司年度员工满意度调查：工作环境4分、薪资待遇3分、职业发展5分、管理层沟通2分、团队协作5分，用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -76,6 +77,7 @@
   {
     "type": "text2chart",
     "question": "产品A的市场表现评估：质量5分、创新3分、客户满意度4分、市场份额4分、品牌认知度5分，用雷达图可视化：",
+    "questionWithoutChart": "产品A的市场表现评估：质量5分、创新3分、客户满意度4分、市场份额4分、品牌认知度5分，用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -150,6 +152,7 @@
   {
     "type": "text2chart",
     "question": "李华的综合素质评价：责任感4分、创造力5分、适应能力3分、沟通技巧4分、团队合作5分，用雷达图可视化：",
+    "questionWithoutChart": "李华的综合素质评价：责任感4分、创造力5分、适应能力3分、沟通技巧4分、团队合作5分，用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -224,6 +227,7 @@
   {
     "type": "text2chart",
     "question": "手机品牌X的用户评价：操作便捷性4分、电池续航5分、相机性能4分、性价比3分、售后服务3分，用雷达图可视化：",
+    "questionWithoutChart": "手机品牌X的用户评价：操作便捷性4分、电池续航5分、相机性能4分、性价比3分、售后服务3分，用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -298,6 +302,7 @@
   {
     "type": "text2chart",
     "question": "学生在科学实验课程中的表现：动手能力5分、观察力4分、分析能力3分、实验设计4分、团队协作5分，用雷达图可视化：",
+    "questionWithoutChart": "学生在科学实验课程中的表现：动手能力5分、观察力4分、分析能力3分、实验设计4分、团队协作5分，用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -372,6 +377,7 @@
   {
     "type": "text2chart",
     "question": "在国际会议中，五个国家的代表对合作的五个维度进行了评分。美国：经济合作8分、技术合作7分、文化交流6分、教育合作9分、环保合作5分。中国：经济合作9分、技术合作8分、文化交流7分、教育合作6分、环保合作7分。德国：经济合作6分、技术合作8分、文化交流7分、教育合作7分、环保合作9分。用雷达图可视化：",
+    "questionWithoutChart": "在国际会议中，五个国家的代表对合作的五个维度进行了评分。美国：经济合作8分、技术合作7分、文化交流6分、教育合作9分、环保合作5分。中国：经济合作9分、技术合作8分、文化交流7分、教育合作6分、环保合作7分。德国：经济合作6分、技术合作8分、文化交流7分、教育合作7分、环保合作9分。用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -561,6 +567,7 @@
   {
     "type": "text2chart",
     "question": "在年度游戏大赛中，三名选手对五个游戏类型进行了评分。选手A：动作游戏8分、策略游戏9分、冒险游戏7分、角色扮演游戏6分、模拟游戏5分。选手B：动作游戏7分、策略游戏6分、冒险游戏8分、角色扮演游戏9分、模拟游戏6分。选手C：动作游戏6分、策略游戏8分、冒险游戏9分、角色扮演游戏7分、模拟游戏8分。用雷达图可视化：",
+    "questionWithoutChart": "在年度游戏大赛中，三名选手对五个游戏类型进行了评分。选手A：动作游戏8分、策略游戏9分、冒险游戏7分、角色扮演游戏6分、模拟游戏5分。选手B：动作游戏7分、策略游戏6分、冒险游戏8分、角色扮演游戏9分、模拟游戏6分。选手C：动作游戏6分、策略游戏8分、冒险游戏9分、角色扮演游戏7分、模拟游戏8分。用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -750,6 +757,7 @@
   {
     "type": "text2chart",
     "question": "公司举办了一次内部评审，三位员工对团队的工作效率、创新能力、沟通能力、客户满意度、项目完成度进行了评分。员工X：工作效率9分、创新能力8分、沟通能力7分、客户满意度8分、项目完成度6分。员工Y：工作效率7分、创新能力9分、沟通能力8分、客户满意度7分、项目完成度8分。员工Z：工作效率8分、创新能力7分、沟通能力9分、客户满意度6分、项目完成度9分。用雷达图可视化：",
+    "questionWithoutChart": "公司举办了一次内部评审，三位员工对团队的工作效率、创新能力、沟通能力、客户满意度、项目完成度进行了评分。员工X：工作效率9分、创新能力8分、沟通能力7分、客户满意度8分、项目完成度6分。员工Y：工作效率7分、创新能力9分、沟通能力8分、客户满意度7分、项目完成度8分。员工Z：工作效率8分、创新能力7分、沟通能力9分、客户满意度6分、项目完成度9分。用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -939,6 +947,7 @@
   {
     "type": "text2chart",
     "question": "一项关于家用电器使用情况的调查显示，三类用户对五种电器的使用频率进行了打分。普通用户：电视7分、冰箱8分、洗衣机9分、空调6分、微波炉5分。学生用户：电视8分、冰箱6分、洗衣机7分、空调5分、微波炉9分。专业用户：电视6分、冰箱9分、洗衣机8分、空调7分、微波炉6分。用雷达图可视化：",
+    "questionWithoutChart": "一项关于家用电器使用情况的调查显示，三类用户对五种电器的使用频率进行了打分。普通用户：电视7分、冰箱8分、洗衣机9分、空调6分、微波炉5分。学生用户：电视8分、冰箱6分、洗衣机7分、空调5分、微波炉9分。专业用户：电视6分、冰箱9分、洗衣机8分、空调7分、微波炉6分。用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1128,6 +1137,7 @@
   {
     "type": "text2chart",
     "question": "在一次职业培训中，三个组的学员对培训课程的五个方面进行了评分。组1：内容质量9分、讲师水平8分、互动性7分、实用性8分、难易度6分。组2：内容质量7分、讲师水平9分、互动性8分、实用性7分、难易度8分。组3：内容质量8分、讲师水平7分、互动性9分、实用性6分、难易度9分。用雷达图可视化：",
+    "questionWithoutChart": "在一次职业培训中，三个组的学员对培训课程的五个方面进行了评分。组1：内容质量9分、讲师水平8分、互动性7分、实用性8分、难易度6分。组2：内容质量7分、讲师水平9分、互动性8分、实用性7分、难易度8分。组3：内容质量8分、讲师水平7分、互动性9分、实用性6分、难易度9分。用图表可视化：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1317,6 +1327,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"skill\": \"Communication\", \"score\": 8 }, { \"skill\": \"Leadership\", \"score\": 9 }, { \"skill\": \"Technical\", \"score\": 7 }, { \"skill\": \"Creativity\", \"score\": 6 }, { \"skill\": \"Adaptability\", \"score\": 5 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"skill\": \"Communication\", \"score\": 8 }, { \"skill\": \"Leadership\", \"score\": 9 }, { \"skill\": \"Technical\", \"score\": 7 }, { \"skill\": \"Creativity\", \"score\": 6 }, { \"skill\": \"Adaptability\", \"score\": 5 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1391,6 +1402,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"dimension\": \"Speed\", \"score\": 4 }, { \"dimension\": \"Power\", \"score\": 6 }, { \"dimension\": \"Endurance\", \"score\": 8 }, { \"dimension\": \"Agility\", \"score\": 7 }, { \"dimension\": \"Balance\", \"score\": 5 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"dimension\": \"Speed\", \"score\": 4 }, { \"dimension\": \"Power\", \"score\": 6 }, { \"dimension\": \"Endurance\", \"score\": 8 }, { \"dimension\": \"Agility\", \"score\": 7 }, { \"dimension\": \"Balance\", \"score\": 5 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1465,6 +1477,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"aspect\": \"Quality\", \"score\": 7 }, { \"aspect\": \"Efficiency\", \"score\": 5 }, { \"aspect\": \"Innovation\", \"score\": 6 }, { \"aspect\": \"Reliability\", \"score\": 8 }, { \"aspect\": \"Sustainability\", \"score\": 4 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"aspect\": \"Quality\", \"score\": 7 }, { \"aspect\": \"Efficiency\", \"score\": 5 }, { \"aspect\": \"Innovation\", \"score\": 6 }, { \"aspect\": \"Reliability\", \"score\": 8 }, { \"aspect\": \"Sustainability\", \"score\": 4 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1539,6 +1552,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"metric\": \"Accuracy\", \"score\": 9 }, { \"metric\": \"Precision\", \"score\": 7 }, { \"metric\": \"Recall\", \"score\": 6 }, { \"metric\": \"F1-Score\", \"score\": 8 }, { \"metric\": \"Sensitivity\", \"score\": 5 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"metric\": \"Accuracy\", \"score\": 9 }, { \"metric\": \"Precision\", \"score\": 7 }, { \"metric\": \"Recall\", \"score\": 6 }, { \"metric\": \"F1-Score\", \"score\": 8 }, { \"metric\": \"Sensitivity\", \"score\": 5 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1613,6 +1627,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"attribute\": \"Taste\", \"score\": 7 }, { \"attribute\": \"Smell\", \"score\": 8 }, { \"attribute\": \"Texture\", \"score\": 6 }, { \"attribute\": \"Color\", \"score\": 5 }, { \"attribute\": \"Freshness\", \"score\": 9 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"attribute\": \"Taste\", \"score\": 7 }, { \"attribute\": \"Smell\", \"score\": 8 }, { \"attribute\": \"Texture\", \"score\": 6 }, { \"attribute\": \"Color\", \"score\": 5 }, { \"attribute\": \"Freshness\", \"score\": 9 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1687,6 +1702,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"car\": \"Sedan\", \"feature\": \"Safety\", \"score\": 8 }, { \"car\": \"Sedan\", \"feature\": \"Comfort\", \"score\": 6 }, { \"car\": \"Sedan\", \"feature\": \"Fuel Efficiency\", \"score\": 7 }, { \"car\": \"SUV\", \"feature\": \"Safety\", \"score\": 9 }, { \"car\": \"SUV\", \"feature\": \"Comfort\", \"score\": 8 }, { \"car\": \"SUV\", \"feature\": \"Fuel Efficiency\", \"score\": 5 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"car\": \"Sedan\", \"feature\": \"Safety\", \"score\": 8 }, { \"car\": \"Sedan\", \"feature\": \"Comfort\", \"score\": 6 }, { \"car\": \"Sedan\", \"feature\": \"Fuel Efficiency\", \"score\": 7 }, { \"car\": \"SUV\", \"feature\": \"Safety\", \"score\": 9 }, { \"car\": \"SUV\", \"feature\": \"Comfort\", \"score\": 8 }, { \"car\": \"SUV\", \"feature\": \"Fuel Efficiency\", \"score\": 5 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1786,6 +1802,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"team\": \"Team A\", \"skill\": \"Offense\", \"score\": 7 }, { \"team\": \"Team A\", \"skill\": \"Defense\", \"score\": 6 }, { \"team\": \"Team A\", \"skill\": \"Teamwork\", \"score\": 8 }, { \"team\": \"Team B\", \"skill\": \"Offense\", \"score\": 6 }, { \"team\": \"Team B\", \"skill\": \"Defense\", \"score\": 8 }, { \"team\": \"Team B\", \"skill\": \"Teamwork\", \"score\": 7 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"team\": \"Team A\", \"skill\": \"Offense\", \"score\": 7 }, { \"team\": \"Team A\", \"skill\": \"Defense\", \"score\": 6 }, { \"team\": \"Team A\", \"skill\": \"Teamwork\", \"score\": 8 }, { \"team\": \"Team B\", \"skill\": \"Offense\", \"score\": 6 }, { \"team\": \"Team B\", \"skill\": \"Defense\", \"score\": 8 }, { \"team\": \"Team B\", \"skill\": \"Teamwork\", \"score\": 7 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1885,6 +1902,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"city\": \"New York\", \"aspect\": \"Cost of Living\", \"score\": 6 }, { \"city\": \"New York\", \"aspect\": \"Safety\", \"score\": 5 }, { \"city\": \"New York\", \"aspect\": \"Public Transport\", \"score\": 8 }, { \"city\": \"Los Angeles\", \"aspect\": \"Cost of Living\", \"score\": 7 }, { \"city\": \"Los Angeles\", \"aspect\": \"Safety\", \"score\": 6 }, { \"city\": \"Los Angeles\", \"aspect\": \"Public Transport\", \"score\": 7 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"city\": \"New York\", \"aspect\": \"Cost of Living\", \"score\": 6 }, { \"city\": \"New York\", \"aspect\": \"Safety\", \"score\": 5 }, { \"city\": \"New York\", \"aspect\": \"Public Transport\", \"score\": 8 }, { \"city\": \"Los Angeles\", \"aspect\": \"Cost of Living\", \"score\": 7 }, { \"city\": \"Los Angeles\", \"aspect\": \"Safety\", \"score\": 6 }, { \"city\": \"Los Angeles\", \"aspect\": \"Public Transport\", \"score\": 7 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -1984,6 +2002,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"gadget\": \"Smartphone\", \"attribute\": \"Battery Life\", \"score\": 6 }, { \"gadget\": \"Smartphone\", \"attribute\": \"Camera Quality\", \"score\": 8 }, { \"gadget\": \"Smartphone\", \"attribute\": \"User Interface\", \"score\": 7 }, { \"gadget\": \"Laptop\", \"attribute\": \"Battery Life\", \"score\": 8 }, { \"gadget\": \"Laptop\", \"attribute\": \"Camera Quality\", \"score\": 5 }, { \"gadget\": \"Laptop\", \"attribute\": \"User Interface\", \"score\": 9 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"gadget\": \"Smartphone\", \"attribute\": \"Battery Life\", \"score\": 6 }, { \"gadget\": \"Smartphone\", \"attribute\": \"Camera Quality\", \"score\": 8 }, { \"gadget\": \"Smartphone\", \"attribute\": \"User Interface\", \"score\": 7 }, { \"gadget\": \"Laptop\", \"attribute\": \"Battery Life\", \"score\": 8 }, { \"gadget\": \"Laptop\", \"attribute\": \"Camera Quality\", \"score\": 5 }, { \"gadget\": \"Laptop\", \"attribute\": \"User Interface\", \"score\": 9 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -2083,6 +2102,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据 `[ { \"animal\": \"Lion\", \"trait\": \"Strength\", \"score\": 9 }, { \"animal\": \"Lion\", \"trait\": \"Speed\", \"score\": 8 }, { \"animal\": \"Lion\", \"trait\": \"Intelligence\", \"score\": 6 }, { \"animal\": \"Elephant\", \"trait\": \"Strength\", \"score\": 10 }, { \"animal\": \"Elephant\", \"trait\": \"Speed\", \"score\": 4 }, { \"animal\": \"Elephant\", \"trait\": \"Intelligence\", \"score\": 7 } ]`：",
+    "questionWithoutChart": "用图表可视化我的数据 `[ { \"animal\": \"Lion\", \"trait\": \"Strength\", \"score\": 9 }, { \"animal\": \"Lion\", \"trait\": \"Speed\", \"score\": 8 }, { \"animal\": \"Lion\", \"trait\": \"Intelligence\", \"score\": 6 }, { \"animal\": \"Elephant\", \"trait\": \"Strength\", \"score\": 10 }, { \"animal\": \"Elephant\", \"trait\": \"Speed\", \"score\": 4 }, { \"animal\": \"Elephant\", \"trait\": \"Intelligence\", \"score\": 7 } ]`：",
     "answer": {
       "type": "radar",
       "data": [
@@ -2182,6 +2202,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据，{ 'Tiger': {'Strength': 8, 'Speed': 9, 'Intelligence': 5}, 'Giraffe': {'Strength': 6, 'Speed': 7, 'Intelligence': 8}}",
+    "questionWithoutChart": "用图表可视化我的数据，{ 'Tiger': {'Strength': 8, 'Speed': 9, 'Intelligence': 5}, 'Giraffe': {'Strength': 6, 'Speed': 7, 'Intelligence': 8}}",
     "answer": {
       "type": "radar",
       "data": [
@@ -2281,6 +2302,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据，{'Smartphone': {'Battery': 7, 'Performance': 8, 'Camera': 9}, 'Laptop': {'Battery': 6, 'Performance': 9, 'Camera': 5}}",
+    "questionWithoutChart": "用图表可视化我的数据，{'Smartphone': {'Battery': 7, 'Performance': 8, 'Camera': 9}, 'Laptop': {'Battery': 6, 'Performance': 9, 'Camera': 5}}",
     "answer": {
       "type": "radar",
       "data": [
@@ -2380,6 +2402,7 @@
   {
     "type": "data2chart",
     "question": "用雷达图可视化我的数据，{'CityA': {'Infrastructure': 8, 'Education': 7, 'Healthcare': 9}, 'CityB': {'Infrastructure': 7, 'Education': 9, 'Healthcare': 8}}",
+    "questionWithoutChart": "用图表可视化我的数据，{'CityA': {'Infrastructure': 8, 'Education': 7, 'Healthcare': 9}, 'CityB': {'Infrastructure': 7, 'Education': 9, 'Healthcare': 8}}",
     "answer": {
       "type": "radar",
       "data": [
