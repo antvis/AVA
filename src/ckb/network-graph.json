@@ -1,6 +1,6 @@
 {
-  "name": "generate_network_graph",
-  "description": "Generate a network graph chart to show relationships (edges) between entities (nodes), such as, relationships between people in social networks.",
+  "name": "network-graph",
+  "description": "A network graph is a graph that shows the relationships (edges) between entities (nodes). Through the connection of nodes and edges, it intuitively represents a complex network structure. Each node represents an entity, and each edge represents the relationship or connection between two nodes. The key to a network graph is to show 'who is connected to whom'. For example, a node can represent a person, and a line can represent whether two people know each other.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -17,7 +17,9 @@
                   "type": "string"
                 }
               },
-              "required": ["name"],
+              "required": [
+                "name"
+              ],
               "type": "object"
             }
           },
@@ -36,18 +38,28 @@
                   "type": "string"
                 }
               },
-              "required": ["source", "target"],
+              "required": [
+                "source",
+                "target"
+              ],
               "type": "object"
             }
           }
         },
-        "required": ["nodes", "edges"],
+        "required": [
+          "nodes",
+          "edges"
+        ],
         "description": "Data for network graph chart, such as, { nodes: [{ name: 'node1' }, { name: 'node2' }], edges: [{ source: 'node1', target: 'node2', name: 'edge1' }] }"
       },
       "theme": {
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "type": "string"
       },
       "style": {
@@ -56,7 +68,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -73,6 +88,8 @@
         "default": 400
       }
     },
-    "required": ["data"]
+    "required": [
+      "data"
+    ]
   }
 }

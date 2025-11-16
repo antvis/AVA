@@ -1,6 +1,6 @@
 {
-  "name": "generate_line_chart",
-  "description": "Generate a line chart to show trends over time, such as, the ratio of Apple computer sales to Apple's profits changed from 2000 to 2016.",
+  "name": "line chart",
+  "description": "A line chart is a statistical chart that connects data points in order of time or category to form a line, used to show the trend of data changes over time or ordered categories. Through the rise or fall of the line, it can intuitively represent the speed, magnitude, range, and periodicity of data changes. Line charts are particularly suitable for displaying data changes in continuous time series, and can effectively reflect trends, fluctuations, periodicity, and outliers in the data. When comparing multiple series of data, a line chart clearly shows the comparison and relationship between each data series through lines of different colors or styles. Compared to an area chart, a line chart focuses more on showing the trend and trajectory of data changes rather than the total volume; compared to a bar chart, a line chart is more suitable for showing continuous trends rather than discrete numerical comparisons.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -21,14 +21,21 @@
               "type": "string"
             }
           },
-          "required": ["time", "value"]
+          "required": [
+            "time",
+            "value"
+          ]
         },
         "description": "Data for line chart, it should be an array of objects, each object contains a `time` field and a `value` field, such as, [{ time: '2015', value: 23 }, { time: '2016', value: 32 }]."
       },
       "theme": {
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "type": "string"
       },
       "style": {
@@ -52,7 +59,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -84,6 +94,8 @@
         "description": "Set the y-axis title of chart."
       }
     },
-    "required": ["data"]
+    "required": [
+      "data"
+    ]
   }
 }

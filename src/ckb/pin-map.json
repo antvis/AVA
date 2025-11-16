@@ -1,6 +1,6 @@
 {
-  "name": "generate_pin_map",
-  "description": "Generate a point map to display the location and distribution of point data on the map, such as the location distribution of attractions, hospitals, supermarkets, etc.",
+  "name": "pin-map",
+  "description": "A pin map is a visualization chart that marks geographic data as points on a map. Each point represents a specific location data and is described with a label, such as store locations, event occurrences, or attraction distributions. Pin maps make it easy for users to intuitively locate and view location-related data. In terms of data, a pin map requires at least the longitude and latitude data of the geographic location, and generally can also have a label field to describe the point. Applicable scenarios: 1. Displaying geographic location data such as stores, restaurants, and attractions; 2. Visualizing the location of events, such as earthquakes, fires, and traffic accidents; 3. Displaying geographic information, such as densely populated areas, climate distribution, and landform features.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -53,7 +53,10 @@
         "description": "Set the height of map, default is 1000."
       }
     },
-    "required": ["title", "data"],
+    "required": [
+      "title",
+      "data"
+    ],
     "$schema": "http://json-schema.org/draft-07/schema#"
   }
 }

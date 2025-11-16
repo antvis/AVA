@@ -1,6 +1,6 @@
 {
-  "name": "generate_column_chart",
-  "description": "Generate a column chart, which are best for comparing categorical data, such as, when values are close, column charts are preferable because our eyes are better at judging height than other visual elements like area or angles.",
+  "name": "column chart",
+  "description": "A typical column chart (also known as a bar chart) uses vertical or horizontal bars to show numerical comparisons between categories. One axis represents the categorical dimension to be compared, and the other axis represents the corresponding values. A column chart is different from a histogram; it cannot show the continuous trend of data within an interval. A column chart describes categorical data, answering the question 'how many?' in each category.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -21,7 +21,10 @@
               "type": "string"
             }
           },
-          "required": ["category", "value"]
+          "required": [
+            "category",
+            "value"
+          ]
         },
         "description": "Data for column chart, such as, [{ category: '分类一', value: 10 }, { category: '分类二', value: 20 }], when grouping or stacking is needed for column, the data should contain a `group` field, such as, when [{ category: '北京', value: 825, group: '油车' }, { category: '北京', value: 1000, group: '电车' }]."
       },
@@ -52,7 +55,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -61,7 +67,11 @@
       "theme": {
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "type": "string"
       },
       "width": {
@@ -90,6 +100,8 @@
         "description": "Set the y-axis title of chart."
       }
     },
-    "required": ["data"]
+    "required": [
+      "data"
+    ]
   }
 }

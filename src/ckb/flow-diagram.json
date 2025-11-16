@@ -1,6 +1,6 @@
 {
-  "name": "generate_flow_diagram",
-  "description": "Generate a flow diagram chart to show the steps and decision points of a process or system, such as, scenarios requiring linear process presentation.",
+  "name": "flow-diagram",
+  "description": "A flowchart is used to intuitively represent the steps and decision points of a process or system. It shows the entire process from start to finish. Each node represents a specific step or decision point, and the edges represent the sequence and relationship between the steps. Edges only need to be named when there is a branching meaning. Applicable scenarios: 1. Suitable for scenarios that need to display linear processes or steps; 2. Planning and tracking project progress, clarifying the sequence and dependencies of tasks; 3. Building decision trees to show different decision points and path scenarios.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
@@ -17,7 +17,9 @@
                   "type": "string"
                 }
               },
-              "required": ["name"],
+              "required": [
+                "name"
+              ],
               "type": "object"
             }
           },
@@ -36,18 +38,28 @@
                   "type": "string"
                 }
               },
-              "required": ["source", "target"],
+              "required": [
+                "source",
+                "target"
+              ],
               "type": "object"
             }
           }
         },
-        "required": ["nodes", "edges"],
+        "required": [
+          "nodes",
+          "edges"
+        ],
         "description": "Data for flow diagram chart, such as, { nodes: [{ name: 'node1' }, { name: 'node2' }], edges: [{ source: 'node1', target: 'node2', name: 'edge1' }] }."
       },
       "theme": {
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "type": "string"
       },
       "style": {
@@ -56,7 +68,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -73,6 +88,8 @@
         "default": 400
       }
     },
-    "required": ["data"]
+    "required": [
+      "data"
+    ]
   }
 }

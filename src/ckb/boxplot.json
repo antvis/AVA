@@ -1,6 +1,6 @@
 {
-  "name": "generate_boxplot_chart",
-  "description": "Generate a boxplot chart to show data for statistical summaries among different categories, such as, comparing the distribution of data points across categories.",
+  "name": "boxplot chart",
+  "description": "A box plot is a statistical chart used to display the distribution of a set of data. It can display five important statistics of the data: the minimum, the lower quartile (Q1), the median (Q2), the upper quartile (Q3), and the maximum, while also clearly identifying outliers in the data. The design of the box plot is simple and clear. Through the combination of the box and whiskers, one can quickly understand the central tendency, degree of dispersion, and skewness of the data, making it an important tool in statistical analysis and data exploration.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -22,7 +22,10 @@
               "description": "Optional group for the data point, used for grouping in the boxplot."
             }
           },
-          "required": ["category", "value"]
+          "required": [
+            "category",
+            "value"
+          ]
         },
         "minItems": 1,
         "description": "Data for boxplot chart, such as, [{ category: '分类一', value: 10 }] or [{ category: '分类二', value: 20, group: '组别一' }]."
@@ -44,7 +47,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -52,7 +58,11 @@
       },
       "theme": {
         "type": "string",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'."
       },
@@ -82,7 +92,9 @@
         "description": "Set the y-axis title of chart."
       }
     },
-    "required": ["data"],
+    "required": [
+      "data"
+    ],
     "$schema": "http://json-schema.org/draft-07/schema#"
   }
 }

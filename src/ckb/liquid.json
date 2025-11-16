@@ -1,6 +1,6 @@
 {
-  "name": "generate_liquid_chart",
-  "description": "Generate a liquid chart to visualize a single value as a percentage, such as, the current occupancy rate of a reservoir or the completion percentage of a project.",
+  "name": "liquid chart",
+  "description": "A liquid chart is a chart that uses a liquid filling effect to represent a numerical ratio. It usually uses a circular container as a carrier to intuitively display the current progress or proportion of a certain indicator through the liquid level height and wave dynamics. The height of the liquid represents the percentage of the value, and the wave effect enhances the visual expressiveness, making it suitable for displaying the completion or status of a single indicator.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -12,13 +12,22 @@
       },
       "shape": {
         "type": "string",
-        "enum": ["circle", "rect", "pin", "triangle"],
+        "enum": [
+          "circle",
+          "rect",
+          "pin",
+          "triangle"
+        ],
         "default": "circle",
         "description": "The shape of the liquid chart, can be 'circle', 'rect', 'pin', or 'triangle'. Default is 'circle'."
       },
       "theme": {
         "type": "string",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'."
       },
@@ -36,7 +45,10 @@
           "texture": {
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style.",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "type": "string"
           }
         },
@@ -58,7 +70,9 @@
         "description": "Set the title of chart."
       }
     },
-    "required": ["percent"],
+    "required": [
+      "percent"
+    ],
     "$schema": "http://json-schema.org/draft-07/schema#"
   }
 }

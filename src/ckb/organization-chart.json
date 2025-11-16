@@ -1,6 +1,6 @@
 {
-  "name": "generate_organization_chart",
-  "description": "Generate an organization chart to visualize the hierarchical structure of an organization, such as, a diagram showing the relationship between a CEO and their direct reports.",
+  "name": "organization-chart",
+  "description": "An organization chart is used to intuitively display the hierarchical structure and departmental relationships within an organization. It uses nodes and edges to represent different positions, departments, and their hierarchical relationships. Each node represents a position or department, and the edges represent superior-subordinate or peer relationships. It is presented in a tree structure, with the top level being the highest management, expanding downwards layer by layer to various departments and positions. Applicable scenarios: 1. To display the hierarchical structure of a company or team, clarifying the superior-subordinate relationships of various positions and departments; 2. To show the distribution of employee positions and departments; 3. In project management, to clarify the members and division of responsibilities of the project team; 4. For dependency analysis such as equity penetration and investment in upstream and downstream companies.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -47,30 +47,45 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         }
                       }
                     },
-                    "required": ["name"]
+                    "required": [
+                      "name"
+                    ]
                   }
                 }
               },
-              "required": ["name"]
+              "required": [
+                "name"
+              ]
             }
           }
         },
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "description": "Data for organization chart which is a hierarchical structure, such as, { name: 'CEO', description: 'Chief Executive Officer', children: [{ name: 'CTO', description: 'Chief Technology Officer', children: [{ name: 'Dev Manager', description: 'Development Manager' }] }] }, and the maximum depth is 3."
       },
       "orient": {
         "type": "string",
-        "enum": ["horizontal", "vertical"],
+        "enum": [
+          "horizontal",
+          "vertical"
+        ],
         "default": "vertical",
         "description": "Orientation of the organization chart, either horizontal or vertical. Default is vertical, when the level of the chart is more than 3, it is recommended to use horizontal orientation."
       },
       "theme": {
         "type": "string",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'."
       },
@@ -79,7 +94,10 @@
         "properties": {
           "texture": {
             "type": "string",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style."
           }
@@ -97,7 +115,9 @@
         "description": "Set the height of chart, default is 400."
       }
     },
-    "required": ["data"],
+    "required": [
+      "data"
+    ],
     "$schema": "http://json-schema.org/draft-07/schema#"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "generate_dual_axes_chart",
-  "description": "Generates a dual-axes chart, which is ideal for visualizing two data series that have different units or vastly different value ranges. By using two separate Y-axes, it allows for a clear comparison of trends and relationships between disparate datasets on a shared X-axis. It's commonly implemented as a combination of a bar chart and a line chart, for example, to show monthly sales volume (bars) against profit margin percentage (line).",
+  "name": "dual-axes chart",
+  "description": "A dual-axes chart is a combination chart that combines two different chart types, usually a column chart and a line chart. It uses two vertical Y-axes (left and right) in a single chart, corresponding to different numerical dimensions. The column chart is used to display the size or quantity of one set of data, while the line chart shows the trend of another set of data. Dual-axis charts are very suitable for simultaneously displaying the trends of different types of data. Applicable scenarios: 1. Simultaneously displaying two data sets with different orders of magnitude, such as sales and growth rate; 2. Comparing the relative trends of two sets of variables, such as observing sales and profit margin over the same period; 3. Data dimensions are different but share a common X-axis (e.g., time, category). Not applicable scenarios: 1. When the data types are the same and the orders of magnitude are similar, a single chart type (like a line or column chart) is simpler; 2. When two related data dimensions for comparison cannot be found, the value of a dual-axes chart is diminished.",
   "inputSchema": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",

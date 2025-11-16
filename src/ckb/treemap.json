@@ -1,6 +1,6 @@
 {
-  "name": "generate_treemap_chart",
-  "description": "Generate a treemap chart to display hierarchical data and can intuitively show comparisons between items at the same level, such as, show disk space usage with treemap.",
+  "name": "treemap chart",
+  "description": "A treemap is a visualization chart used to display hierarchical data, representing tree-structured data through a series of nested rectangles. The area of each rectangle is proportional to its corresponding value, and color is often used to distinguish different categories or levels. A treemap transforms a tree data structure into a planar space filled with rectangles, intuitively displaying the hierarchical relationships and numerical proportions of the data. Treemaps are particularly suitable for displaying large amounts of data with hierarchical relationships, such as file systems, organizational structures, budget allocations, and stock markets. Compared to traditional tree structure diagrams, treemaps can use space more effectively and have the function of showing proportions, allowing users to quickly understand the distribution and importance of the data.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -38,15 +38,24 @@
                           "type": "number"
                         }
                       },
-                      "required": ["name", "value"]
+                      "required": [
+                        "name",
+                        "value"
+                      ]
                     }
                   }
                 },
-                "required": ["name", "value"]
+                "required": [
+                  "name",
+                  "value"
+                ]
               }
             }
           },
-          "required": ["name", "value"]
+          "required": [
+            "name",
+            "value"
+          ]
         },
         "minItems": 1,
         "description": "Data for treemap chart which is a hierarchical structure, such as, [{ name: 'Design', value: 70, children: [{ name: 'Tech', value: 20 }] }], and the maximum depth is 3."
@@ -67,7 +76,10 @@
           },
           "texture": {
             "type": "string",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style."
           }
@@ -76,7 +88,11 @@
       },
       "theme": {
         "type": "string",
-        "enum": ["default", "academy", "dark"],
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ],
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'."
       },
@@ -96,7 +112,9 @@
         "description": "Set the title of chart."
       }
     },
-    "required": ["data"],
+    "required": [
+      "data"
+    ],
     "$schema": "http://json-schema.org/draft-07/schema#"
   }
 }

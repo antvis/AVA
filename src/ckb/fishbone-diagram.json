@@ -1,6 +1,6 @@
 {
-  "name": "generate_fishbone_diagram",
-  "description": "Generate a fishbone diagram chart to uses a fish skeleton, like structure to display the causes or effects of a core problem, with the problem as the fish head and the causes/effects as the fish bones. It suits problems that can be split into multiple related factors.",
+  "name": "fishbone-diagram",
+  "description": "A fishbone diagram is a chart that uses a core problem as the fish head and analyzes and displays the causes or results of the problem in the form of fishbone branches. It utilizes the structure of a fishbone to break down the problem into multiple categories and further subdivides specific causes or results under each category, thereby clearly presenting a complete picture of the problem. It uses nodes as units and delves deeper level by level to classify problems, causes, or results. When a problem is complex and involves multiple aspects, a fishbone diagram can help sort out and structure key information, clarifying the causal relationship between the main problem and its underlying factors.",
   "inputSchema": {
     "type": "object",
     "properties": {
@@ -35,19 +35,27 @@
                               "type": "string"
                             }
                           },
-                          "required": ["name"]
+                          "required": [
+                            "name"
+                          ]
                         }
                       }
                     },
-                    "required": ["name"]
+                    "required": [
+                      "name"
+                    ]
                   }
                 }
               },
-              "required": ["name"]
+              "required": [
+                "name"
+              ]
             }
           }
         },
-        "required": ["name"],
+        "required": [
+          "name"
+        ],
         "description": "Data for fishbone diagram chart which is a hierarchical structure, such as, { name: 'main topic', children: [{ name: 'topic 1', children: [{ name: 'subtopic 1-1' }] }] }, and the maximum depth is 3."
       },
       "style": {
@@ -55,7 +63,10 @@
         "properties": {
           "texture": {
             "type": "string",
-            "enum": ["default", "rough"],
+            "enum": [
+              "default",
+              "rough"
+            ],
             "default": "default",
             "description": "Set the texture for the chart, optional, default is 'default'. 'rough' refers to hand-drawn style."
           }
@@ -66,7 +77,11 @@
         "type": "string",
         "default": "default",
         "description": "Set the theme for the chart, optional, default is 'default'.",
-        "enum": ["default", "academy", "dark"]
+        "enum": [
+          "default",
+          "academy",
+          "dark"
+        ]
       },
       "width": {
         "type": "number",
@@ -79,7 +94,9 @@
         "description": "Set the height of chart, default is 400."
       }
     },
-    "required": ["data"],
+    "required": [
+      "data"
+    ],
     "$schema": "http://json-schema.org/draft-07/schema#"
   }
 }
