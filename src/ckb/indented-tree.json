@@ -1,0 +1,39 @@
+{
+  "name": "indented-tree",
+  "description": "An indented tree is a visualization method used to represent hierarchical data in a compact, easy-to-read format. It displays a tree-like structure where parent-child relationships are shown through indentation. Each child node is indented under its parent, clearly illustrating the data's nested structure and depth. This layout is highly intuitive for exploring hierarchies, such as file systems, organizational charts, or threaded conversations. It allows users to quickly understand the relationships between different levels of data.",
+    "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "data": {
+        "description": "Data for the indented tree, representing a hierarchical structure. It should be an object with a 'name' and an optional 'children' array.",
+        "$ref": "#/definitions/treeNode"
+      },
+      "theme": {
+        "type": "string",
+        "enum": ["default", "academy"],
+        "description": "Theme for the chart."
+      }
+    },
+    "required": ["data"],
+    "definitions": {
+      "treeNode": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the node."
+          },
+          "children": {
+            "type": "array",
+            "description": "Child nodes of the current node.",
+            "items": {
+              "$ref": "#/definitions/treeNode"
+            }
+          }
+        },
+        "required": ["name"]
+      }
+    }
+  }
+}
