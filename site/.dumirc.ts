@@ -223,5 +223,6 @@ export default defineConfig({
       // ignore
     }
     return memo;
-  }
+  },
+  define: { 'process.env.TEST_TOKEN': process.env.TEST_TOKEN }
 });
