@@ -1,0 +1,686 @@
+[
+  {
+    "type": "text2chart",
+    "question": "某电商平台用户购买流程转化：访问网站10000人，浏览商品8000人，加入购物车5000人，提交订单3000人，完成支付1500人，用漏斗图展示转化情况",
+    "questionWithoutChart": "某电商平台用户购买流程转化：访问网站10000人，浏览商品8000人，加入购物车5000人，提交订单3000人，完成支付1500人，用图表展示转化情况",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "访问网站",
+          "value": 10000
+        },
+        {
+          "category": "浏览商品",
+          "value": 8000
+        },
+        {
+          "category": "加入购物车",
+          "value": 5000
+        },
+        {
+          "category": "提交订单",
+          "value": 3000
+        },
+        {
+          "category": "完成支付",
+          "value": 1500
+        }
+      ],
+      "title": "电商平台用户购买转化漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "访问网站",
+            "value": 10000
+          },
+          {
+            "category": "浏览商品",
+            "value": 8000
+          },
+          {
+            "category": "加入购物车",
+            "value": 5000
+          },
+          {
+            "category": "提交订单",
+            "value": 3000
+          },
+          {
+            "category": "完成支付",
+            "value": 1500
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "购买阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "用户数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "用户数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "电商平台用户购买流程转化情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某软件公司销售漏斗：潜在客户200个，需求沟通150个，产品演示100个，商务谈判60个，合同签订30个，用漏斗图展示销售流程",
+    "questionWithoutChart": "某软件公司销售漏斗：潜在客户200个，需求沟通150个，产品演示100个，商务谈判60个，合同签订30个，用图表展示销售流程",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "潜在客户",
+          "value": 200
+        },
+        {
+          "category": "需求沟通",
+          "value": 150
+        },
+        {
+          "category": "产品演示",
+          "value": 100
+        },
+        {
+          "category": "商务谈判",
+          "value": 60
+        },
+        {
+          "category": "合同签订",
+          "value": 30
+        }
+      ],
+      "title": "软件公司销售流程漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "潜在客户",
+            "value": 200
+          },
+          {
+            "category": "需求沟通",
+            "value": 150
+          },
+          {
+            "category": "产品演示",
+            "value": 100
+          },
+          {
+            "category": "商务谈判",
+            "value": 60
+          },
+          {
+            "category": "合同签订",
+            "value": 30
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "销售阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "客户数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "客户数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "软件公司销售流程转化情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某招聘流程候选人筛选：投递简历500份，简历筛选通过300人，初试150人，复试80人，录用30人，用漏斗图展示招聘筛选过程",
+    "questionWithoutChart": "某招聘流程候选人筛选：投递简历500份，简历筛选通过300人，初试150人，复试80人，录用30人，用图表展示招聘筛选过程",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "投递简历",
+          "value": 500
+        },
+        {
+          "category": "简历筛选",
+          "value": 300
+        },
+        {
+          "category": "初试",
+          "value": 150
+        },
+        {
+          "category": "复试",
+          "value": 80
+        },
+        {
+          "category": "录用",
+          "value": 30
+        }
+      ],
+      "title": "公司招聘流程筛选漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "投递简历",
+            "value": 500
+          },
+          {
+            "category": "简历筛选",
+            "value": 300
+          },
+          {
+            "category": "初试",
+            "value": 150
+          },
+          {
+            "category": "复试",
+            "value": 80
+          },
+          {
+            "category": "录用",
+            "value": 30
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "招聘阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "候选人数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "候选人数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "公司招聘流程候选人筛选情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某教育机构课程报名流程：咨询课程1000人，试听课程600人，正式报名400人，缴费确认250人，完成学习180人，用漏斗图展示课程转化",
+    "questionWithoutChart": "某教育机构课程报名流程：咨询课程1000人，试听课程600人，正式报名400人，缴费确认250人，完成学习180人，用图表展示课程转化",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "咨询课程",
+          "value": 1000
+        },
+        {
+          "category": "试听课程",
+          "value": 600
+        },
+        {
+          "category": "正式报名",
+          "value": 400
+        },
+        {
+          "category": "缴费确认",
+          "value": 250
+        },
+        {
+          "category": "完成学习",
+          "value": 180
+        }
+      ],
+      "title": "教育机构课程报名转化漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "咨询课程",
+            "value": 1000
+          },
+          {
+            "category": "试听课程",
+            "value": 600
+          },
+          {
+            "category": "正式报名",
+            "value": 400
+          },
+          {
+            "category": "缴费确认",
+            "value": 250
+          },
+          {
+            "category": "完成学习",
+            "value": 180
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "课程阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "学员数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "学员数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "教育机构课程报名转化情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某APP用户注册流程：下载应用5000次，打开应用4000次，点击注册2500次，填写信息1500次，验证成功800人，用漏斗图展示注册转化",
+    "questionWithoutChart": "某APP用户注册流程：下载应用5000次，打开应用4000次，点击注册2500次，填写信息1500次，验证成功800人，用图表展示注册转化",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "下载应用",
+          "value": 5000
+        },
+        {
+          "category": "打开应用",
+          "value": 4000
+        },
+        {
+          "category": "点击注册",
+          "value": 2500
+        },
+        {
+          "category": "填写信息",
+          "value": 1500
+        },
+        {
+          "category": "验证成功",
+          "value": 800
+        }
+      ],
+      "title": "APP用户注册流程漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "下载应用",
+            "value": 5000
+          },
+          {
+            "category": "打开应用",
+            "value": 4000
+          },
+          {
+            "category": "点击注册",
+            "value": 2500
+          },
+          {
+            "category": "填写信息",
+            "value": 1500
+          },
+          {
+            "category": "验证成功",
+            "value": 800
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "注册阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "用户数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "用户数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "APP用户注册流程转化情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某保险公司理赔流程：报案客户300人，材料提交240人，初审通过180人，现场勘查120人，理赔完成90人，用漏斗图展示理赔流程",
+    "questionWithoutChart": "某保险公司理赔流程：报案客户300人，材料提交240人，初审通过180人，现场勘查120人，理赔完成90人，用图表展示理赔流程",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "客户报案",
+          "value": 300
+        },
+        {
+          "category": "材料提交",
+          "value": 240
+        },
+        {
+          "category": "初审通过",
+          "value": 180
+        },
+        {
+          "category": "现场勘查",
+          "value": 120
+        },
+        {
+          "category": "理赔完成",
+          "value": 90
+        }
+      ],
+      "title": "保险公司理赔流程漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "客户报案",
+            "value": 300
+          },
+          {
+            "category": "材料提交",
+            "value": 240
+          },
+          {
+            "category": "初审通过",
+            "value": 180
+          },
+          {
+            "category": "现场勘查",
+            "value": 120
+          },
+          {
+            "category": "理赔完成",
+            "value": 90
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "理赔阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "客户数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "客户数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "保险公司理赔流程转化情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某房地产销售流程：看房客户800组，意向登记500组，签订认购书300组，办理贷款200组，交房入住150套，用漏斗图展示销售转化",
+    "questionWithoutChart": "某房地产销售流程：看房客户800组，意向登记500组，签订认购书300组，办理贷款200组，交房入住150套，用图表展示销售转化",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "看房客户",
+          "value": 800
+        },
+        {
+          "category": "意向登记",
+          "value": 500
+        },
+        {
+          "category": "签订认购书",
+          "value": 300
+        },
+        {
+          "category": "办理贷款",
+          "value": 200
+        },
+        {
+          "category": "交房入住",
+          "value": 150
+        }
+      ],
+      "title": "房地产销售流程漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "看房客户",
+            "value": 800
+          },
+          {
+            "category": "意向登记",
+            "value": 500
+          },
+          {
+            "category": "签订认购书",
+            "value": 300
+          },
+          {
+            "category": "办理贷款",
+            "value": 200
+          },
+          {
+            "category": "交房入住",
+            "value": 150
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "销售阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "客户数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "客户数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "房地产销售流程转化情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某汽车4S店销售流程：进店客户400组，试驾体验250组，价格谈判180组，签订合同120组，提车成功80台，用漏斗图展示汽车销售转化",
+    "questionWithoutChart": "某汽车4S店销售流程：进店客户400组，试驾体验250组，价格谈判180组，签订合同120组，提车成功80台，用图表展示汽车销售转化",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "进店客户",
+          "value": 400
+        },
+        {
+          "category": "试驾体验",
+          "value": 250
+        },
+        {
+          "category": "价格谈判",
+          "value": 180
+        },
+        {
+          "category": "签订合同",
+          "value": 120
+        },
+        {
+          "category": "提车成功",
+          "value": 80
+        }
+      ],
+      "title": "汽车4S店销售流程漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "进店客户",
+            "value": 400
+          },
+          {
+            "category": "试驾体验",
+            "value": 250
+          },
+          {
+            "category": "价格谈判",
+            "value": 180
+          },
+          {
+            "category": "签订合同",
+            "value": 120
+          },
+          {
+            "category": "提车成功",
+            "value": 80
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "销售阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "客户数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "客户数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "汽车4S店销售流程转化情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某银行贷款审批流程：贷款申请1000笔，资料审核800笔，资信评估600笔，抵押登记400笔，放款成功300笔，用漏斗图展示贷款审批流程",
+    "questionWithoutChart": "某银行贷款审批流程：贷款申请1000笔，资料审核800笔，资信评估600笔，抵押登记400笔，放款成功300笔，用图表展示贷款审批流程",
+    "answer": {
+      "type": "funnel",
+      "data": [
+        {
+          "category": "贷款申请",
+          "value": 1000
+        },
+        {
+          "category": "资料审核",
+          "value": 800
+        },
+        {
+          "category": "资信评估",
+          "value": 600
+        },
+        {
+          "category": "抵押登记",
+          "value": 400
+        },
+        {
+          "category": "放款成功",
+          "value": 300
+        }
+      ],
+      "title": "银行贷款审批流程漏斗"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "贷款申请",
+            "value": 1000
+          },
+          {
+            "category": "资料审核",
+            "value": 800
+          },
+          {
+            "category": "资信评估",
+            "value": 600
+          },
+          {
+            "category": "抵押登记",
+            "value": 400
+          },
+          {
+            "category": "放款成功",
+            "value": 300
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "审批阶段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "贷款笔数",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "贷款笔数",
+          "key": "value",
+          "purpose": "Proportion",
+          "purposeDesc": "银行贷款审批流程转化情况"
+        }
+      }
+    ]
+  }
+]
