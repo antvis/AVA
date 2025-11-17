@@ -1,97 +1,2141 @@
 [
   {
     "type": "text2chart",
-    "question": "某班级学生数学成绩分布：60-70分5人，70-80分10人，80-90分15人，90-100分8人，用箱线图可视化",
-    "questionWithoutChart": "某班级学生数学成绩分布：60-70分5人，70-80分10人，80-90分15人，90-100分8人，用图表可视化",
+    "question": "用箱线图展示不同交通方式的通勤时长分布：公交样本（分钟）[40, 45, 50, 55, 60, 52]；地铁样本[28, 30, 32, 35, 38, 34]；汽车样本[20, 25, 30, 27, 33, 29]。",
+    "questionWithoutChart": "用图表展示不同交通方式的通勤时长分布：公交样本（分钟）[40, 45, 50, 55, 60, 52]；地铁样本[28, 30, 32, 35, 38, 34]；汽车样本[20, 25, 30, 27, 33, 29]。",
     "answer": {
       "type": "boxplot",
       "data": [
         {
-          "category": "数学成绩",
-          "value": 65
+          "category": "公交",
+          "value": 40
         },
         {
-          "category": "数学成绩",
-          "value": 68
+          "category": "公交",
+          "value": 45
         },
         {
-          "category": "数学成绩",
-          "value": 72
+          "category": "公交",
+          "value": 50
         },
         {
-          "category": "数学成绩",
-          "value": 75
+          "category": "公交",
+          "value": 55
         },
         {
-          "category": "数学成绩",
-          "value": 78
+          "category": "公交",
+          "value": 60
         },
         {
-          "category": "数学成绩",
-          "value": 82
+          "category": "公交",
+          "value": 52
         },
         {
-          "category": "数学成绩",
-          "value": 85
+          "category": "地铁",
+          "value": 28
         },
         {
-          "category": "数学成绩",
-          "value": 88
+          "category": "地铁",
+          "value": 30
         },
         {
-          "category": "数学成绩",
-          "value": 92
+          "category": "地铁",
+          "value": 32
         },
         {
-          "category": "数学成绩",
-          "value": 95
+          "category": "地铁",
+          "value": 35
+        },
+        {
+          "category": "地铁",
+          "value": 38
+        },
+        {
+          "category": "地铁",
+          "value": 34
+        },
+        {
+          "category": "汽车",
+          "value": 20
+        },
+        {
+          "category": "汽车",
+          "value": 25
+        },
+        {
+          "category": "汽车",
+          "value": 30
+        },
+        {
+          "category": "汽车",
+          "value": 27
+        },
+        {
+          "category": "汽车",
+          "value": 33
+        },
+        {
+          "category": "汽车",
+          "value": 29
         }
       ],
-      "title": "班级学生数学成绩分布"
+      "title": "交通方式通勤时长分布"
     },
     "dataShards": [
       {
         "shape": "plain",
         "data": [
           {
-            "category": "数学成绩",
-            "value": 65
+            "category": "公交",
+            "value": 40
           },
           {
-            "category": "数学成绩",
-            "value": 68
+            "category": "公交",
+            "value": 45
           },
           {
-            "category": "数学成绩",
-            "value": 72
+            "category": "公交",
+            "value": 50
           },
           {
-            "category": "数学成绩",
-            "value": 75
+            "category": "公交",
+            "value": 55
           },
           {
-            "category": "数学成绩",
-            "value": 78
+            "category": "公交",
+            "value": 60
           },
           {
-            "category": "数学成绩",
-            "value": 82
+            "category": "公交",
+            "value": 52
           },
           {
-            "category": "数学成绩",
-            "value": 85
+            "category": "地铁",
+            "value": 28
           },
           {
-            "category": "数学成绩",
-            "value": 88
+            "category": "地铁",
+            "value": 30
           },
           {
-            "category": "数学成绩",
+            "category": "地铁",
+            "value": 32
+          },
+          {
+            "category": "地铁",
+            "value": 35
+          },
+          {
+            "category": "地铁",
+            "value": 38
+          },
+          {
+            "category": "地铁",
+            "value": 34
+          },
+          {
+            "category": "汽车",
+            "value": 20
+          },
+          {
+            "category": "汽车",
+            "value": 25
+          },
+          {
+            "category": "汽车",
+            "value": 30
+          },
+          {
+            "category": "汽车",
+            "value": 27
+          },
+          {
+            "category": "汽车",
+            "value": 33
+          },
+          {
+            "category": "汽车",
+            "value": 29
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "交通方式",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "时长（分钟）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "时长（分钟）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "交通方式通勤时长分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示各部门月薪分布：技术部样本（万元）[1.6, 1.8, 2.0, 2.2, 1.9, 2.1]；销售部样本[1.2, 1.4, 1.6, 1.8, 1.5, 1.7]；市场部样本[1.1, 1.3, 1.4, 1.6, 1.2, 1.5]。",
+    "questionWithoutChart": "用图表展示各部门月薪分布：技术部样本（万元）[1.6, 1.8, 2.0, 2.2, 1.9, 2.1]；销售部样本[1.2, 1.4, 1.6, 1.8, 1.5, 1.7]；市场部样本[1.1, 1.3, 1.4, 1.6, 1.2, 1.5]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "技术部",
+          "value": 1.6
+        },
+        {
+          "category": "技术部",
+          "value": 1.8
+        },
+        {
+          "category": "技术部",
+          "value": 2.0
+        },
+        {
+          "category": "技术部",
+          "value": 2.2
+        },
+        {
+          "category": "技术部",
+          "value": 1.9
+        },
+        {
+          "category": "技术部",
+          "value": 2.1
+        },
+        {
+          "category": "销售部",
+          "value": 1.2
+        },
+        {
+          "category": "销售部",
+          "value": 1.4
+        },
+        {
+          "category": "销售部",
+          "value": 1.6
+        },
+        {
+          "category": "销售部",
+          "value": 1.8
+        },
+        {
+          "category": "销售部",
+          "value": 1.5
+        },
+        {
+          "category": "销售部",
+          "value": 1.7
+        },
+        {
+          "category": "市场部",
+          "value": 1.1
+        },
+        {
+          "category": "市场部",
+          "value": 1.3
+        },
+        {
+          "category": "市场部",
+          "value": 1.4
+        },
+        {
+          "category": "市场部",
+          "value": 1.6
+        },
+        {
+          "category": "市场部",
+          "value": 1.2
+        },
+        {
+          "category": "市场部",
+          "value": 1.5
+        }
+      ],
+      "title": "部门月薪分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "技术部",
+            "value": 1.6
+          },
+          {
+            "category": "技术部",
+            "value": 1.8
+          },
+          {
+            "category": "技术部",
+            "value": 2.0
+          },
+          {
+            "category": "技术部",
+            "value": 2.2
+          },
+          {
+            "category": "技术部",
+            "value": 1.9
+          },
+          {
+            "category": "技术部",
+            "value": 2.1
+          },
+          {
+            "category": "销售部",
+            "value": 1.2
+          },
+          {
+            "category": "销售部",
+            "value": 1.4
+          },
+          {
+            "category": "销售部",
+            "value": 1.6
+          },
+          {
+            "category": "销售部",
+            "value": 1.8
+          },
+          {
+            "category": "销售部",
+            "value": 1.5
+          },
+          {
+            "category": "销售部",
+            "value": 1.7
+          },
+          {
+            "category": "市场部",
+            "value": 1.1
+          },
+          {
+            "category": "市场部",
+            "value": 1.3
+          },
+          {
+            "category": "市场部",
+            "value": 1.4
+          },
+          {
+            "category": "市场部",
+            "value": 1.6
+          },
+          {
+            "category": "市场部",
+            "value": 1.2
+          },
+          {
+            "category": "市场部",
+            "value": 1.5
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "部门",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "月薪（万元）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "月薪（万元）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "各部门月薪分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示科室等待时长分布：内科样本（分钟）[15, 20, 25, 30, 22, 28]；外科样本[30, 35, 40, 45, 38, 33]；儿科样本[8, 10, 12, 15, 11, 14]。",
+    "questionWithoutChart": "用图表展示科室等待时长分布：内科样本（分钟）[15, 20, 25, 30, 22, 28]；外科样本[30, 35, 40, 45, 38, 33]；儿科样本[8, 10, 12, 15, 11, 14]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "内科",
+          "value": 15
+        },
+        {
+          "category": "内科",
+          "value": 20
+        },
+        {
+          "category": "内科",
+          "value": 25
+        },
+        {
+          "category": "内科",
+          "value": 30
+        },
+        {
+          "category": "内科",
+          "value": 22
+        },
+        {
+          "category": "内科",
+          "value": 28
+        },
+        {
+          "category": "外科",
+          "value": 30
+        },
+        {
+          "category": "外科",
+          "value": 35
+        },
+        {
+          "category": "外科",
+          "value": 40
+        },
+        {
+          "category": "外科",
+          "value": 45
+        },
+        {
+          "category": "外科",
+          "value": 38
+        },
+        {
+          "category": "外科",
+          "value": 33
+        },
+        {
+          "category": "儿科",
+          "value": 8
+        },
+        {
+          "category": "儿科",
+          "value": 10
+        },
+        {
+          "category": "儿科",
+          "value": 12
+        },
+        {
+          "category": "儿科",
+          "value": 15
+        },
+        {
+          "category": "儿科",
+          "value": 11
+        },
+        {
+          "category": "儿科",
+          "value": 14
+        }
+      ],
+      "title": "科室等待时长分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "内科",
+            "value": 15
+          },
+          {
+            "category": "内科",
+            "value": 20
+          },
+          {
+            "category": "内科",
+            "value": 25
+          },
+          {
+            "category": "内科",
+            "value": 30
+          },
+          {
+            "category": "内科",
+            "value": 22
+          },
+          {
+            "category": "内科",
+            "value": 28
+          },
+          {
+            "category": "外科",
+            "value": 30
+          },
+          {
+            "category": "外科",
+            "value": 35
+          },
+          {
+            "category": "外科",
+            "value": 40
+          },
+          {
+            "category": "外科",
+            "value": 45
+          },
+          {
+            "category": "外科",
+            "value": 38
+          },
+          {
+            "category": "外科",
+            "value": 33
+          },
+          {
+            "category": "儿科",
+            "value": 8
+          },
+          {
+            "category": "儿科",
+            "value": 10
+          },
+          {
+            "category": "儿科",
+            "value": 12
+          },
+          {
+            "category": "儿科",
+            "value": 15
+          },
+          {
+            "category": "儿科",
+            "value": 11
+          },
+          {
+            "category": "儿科",
+            "value": 14
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "科室",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "时长（分钟）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "时长（分钟）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "科室等待时长分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示商品订单金额分布：电子产品样本（元）[899, 999, 1299, 1399, 1599, 1799]；服装样本[149, 199, 249, 299, 349, 179]；图书样本[29, 39, 49, 59, 69, 79]。",
+    "questionWithoutChart": "用图表展示商品订单金额分布：电子产品样本（元）[899, 999, 1299, 1399, 1599, 1799]；服装样本[149, 199, 249, 299, 349, 179]；图书样本[29, 39, 49, 59, 69, 79]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "电子产品",
+          "value": 899
+        },
+        {
+          "category": "电子产品",
+          "value": 999
+        },
+        {
+          "category": "电子产品",
+          "value": 1299
+        },
+        {
+          "category": "电子产品",
+          "value": 1399
+        },
+        {
+          "category": "电子产品",
+          "value": 1599
+        },
+        {
+          "category": "电子产品",
+          "value": 1799
+        },
+        {
+          "category": "服装",
+          "value": 149
+        },
+        {
+          "category": "服装",
+          "value": 199
+        },
+        {
+          "category": "服装",
+          "value": 249
+        },
+        {
+          "category": "服装",
+          "value": 299
+        },
+        {
+          "category": "服装",
+          "value": 349
+        },
+        {
+          "category": "服装",
+          "value": 179
+        },
+        {
+          "category": "图书",
+          "value": 29
+        },
+        {
+          "category": "图书",
+          "value": 39
+        },
+        {
+          "category": "图书",
+          "value": 49
+        },
+        {
+          "category": "图书",
+          "value": 59
+        },
+        {
+          "category": "图书",
+          "value": 69
+        },
+        {
+          "category": "图书",
+          "value": 79
+        }
+      ],
+      "title": "商品订单金额分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "电子产品",
+            "value": 899
+          },
+          {
+            "category": "电子产品",
+            "value": 999
+          },
+          {
+            "category": "电子产品",
+            "value": 1299
+          },
+          {
+            "category": "电子产品",
+            "value": 1399
+          },
+          {
+            "category": "电子产品",
+            "value": 1599
+          },
+          {
+            "category": "电子产品",
+            "value": 1799
+          },
+          {
+            "category": "服装",
+            "value": 149
+          },
+          {
+            "category": "服装",
+            "value": 199
+          },
+          {
+            "category": "服装",
+            "value": 249
+          },
+          {
+            "category": "服装",
+            "value": 299
+          },
+          {
+            "category": "服装",
+            "value": 349
+          },
+          {
+            "category": "服装",
+            "value": 179
+          },
+          {
+            "category": "图书",
+            "value": 29
+          },
+          {
+            "category": "图书",
+            "value": 39
+          },
+          {
+            "category": "图书",
+            "value": 49
+          },
+          {
+            "category": "图书",
+            "value": 59
+          },
+          {
+            "category": "图书",
+            "value": 69
+          },
+          {
+            "category": "图书",
+            "value": 79
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "类别",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "订单金额（元）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "订单金额（元）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "商品订单金额分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示年级身高分布：一年级样本（厘米）[115, 118, 120, 122, 117, 119]；三年级样本[130, 132, 135, 128, 131, 134]；初一样本[155, 158, 160, 152, 156, 159]。",
+    "questionWithoutChart": "用图表展示年级身高分布：一年级样本（厘米）[115, 118, 120, 122, 117, 119]；三年级样本[130, 132, 135, 128, 131, 134]；初一样本[155, 158, 160, 152, 156, 159]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "一年级",
+          "value": 115
+        },
+        {
+          "category": "一年级",
+          "value": 118
+        },
+        {
+          "category": "一年级",
+          "value": 120
+        },
+        {
+          "category": "一年级",
+          "value": 122
+        },
+        {
+          "category": "一年级",
+          "value": 117
+        },
+        {
+          "category": "一年级",
+          "value": 119
+        },
+        {
+          "category": "三年级",
+          "value": 130
+        },
+        {
+          "category": "三年级",
+          "value": 132
+        },
+        {
+          "category": "三年级",
+          "value": 135
+        },
+        {
+          "category": "三年级",
+          "value": 128
+        },
+        {
+          "category": "三年级",
+          "value": 131
+        },
+        {
+          "category": "三年级",
+          "value": 134
+        },
+        {
+          "category": "初一",
+          "value": 155
+        },
+        {
+          "category": "初一",
+          "value": 158
+        },
+        {
+          "category": "初一",
+          "value": 160
+        },
+        {
+          "category": "初一",
+          "value": 152
+        },
+        {
+          "category": "初一",
+          "value": 156
+        },
+        {
+          "category": "初一",
+          "value": 159
+        }
+      ],
+      "title": "年级身高分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "一年级",
+            "value": 115
+          },
+          {
+            "category": "一年级",
+            "value": 118
+          },
+          {
+            "category": "一年级",
+            "value": 120
+          },
+          {
+            "category": "一年级",
+            "value": 122
+          },
+          {
+            "category": "一年级",
+            "value": 117
+          },
+          {
+            "category": "一年级",
+            "value": 119
+          },
+          {
+            "category": "三年级",
+            "value": 130
+          },
+          {
+            "category": "三年级",
+            "value": 132
+          },
+          {
+            "category": "三年级",
+            "value": 135
+          },
+          {
+            "category": "三年级",
+            "value": 128
+          },
+          {
+            "category": "三年级",
+            "value": 131
+          },
+          {
+            "category": "三年级",
+            "value": 134
+          },
+          {
+            "category": "初一",
+            "value": 155
+          },
+          {
+            "category": "初一",
+            "value": 158
+          },
+          {
+            "category": "初一",
+            "value": 160
+          },
+          {
+            "category": "初一",
+            "value": 152
+          },
+          {
+            "category": "初一",
+            "value": 156
+          },
+          {
+            "category": "初一",
+            "value": 159
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年级",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "身高（厘米）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "身高（厘米）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "年级身高分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示区域房价分布：市中心样本（万元/套）[220, 240, 260, 210, 230, 250]；郊区样本[150, 160, 140, 170, 155, 165]；新区样本[180, 190, 200, 175, 185, 195]。",
+    "questionWithoutChart": "用图表展示区域房价分布：市中心样本（万元/套）[220, 240, 260, 210, 230, 250]；郊区样本[150, 160, 140, 170, 155, 165]；新区样本[180, 190, 200, 175, 185, 195]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "市中心",
+          "value": 220
+        },
+        {
+          "category": "市中心",
+          "value": 240
+        },
+        {
+          "category": "市中心",
+          "value": 260
+        },
+        {
+          "category": "市中心",
+          "value": 210
+        },
+        {
+          "category": "市中心",
+          "value": 230
+        },
+        {
+          "category": "市中心",
+          "value": 250
+        },
+        {
+          "category": "郊区",
+          "value": 150
+        },
+        {
+          "category": "郊区",
+          "value": 160
+        },
+        {
+          "category": "郊区",
+          "value": 140
+        },
+        {
+          "category": "郊区",
+          "value": 170
+        },
+        {
+          "category": "郊区",
+          "value": 155
+        },
+        {
+          "category": "郊区",
+          "value": 165
+        },
+        {
+          "category": "新区",
+          "value": 180
+        },
+        {
+          "category": "新区",
+          "value": 190
+        },
+        {
+          "category": "新区",
+          "value": 200
+        },
+        {
+          "category": "新区",
+          "value": 175
+        },
+        {
+          "category": "新区",
+          "value": 185
+        },
+        {
+          "category": "新区",
+          "value": 195
+        }
+      ],
+      "title": "区域房价分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "市中心",
+            "value": 220
+          },
+          {
+            "category": "市中心",
+            "value": 240
+          },
+          {
+            "category": "市中心",
+            "value": 260
+          },
+          {
+            "category": "市中心",
+            "value": 210
+          },
+          {
+            "category": "市中心",
+            "value": 230
+          },
+          {
+            "category": "市中心",
+            "value": 250
+          },
+          {
+            "category": "郊区",
+            "value": 150
+          },
+          {
+            "category": "郊区",
+            "value": 160
+          },
+          {
+            "category": "郊区",
+            "value": 140
+          },
+          {
+            "category": "郊区",
+            "value": 170
+          },
+          {
+            "category": "郊区",
+            "value": 155
+          },
+          {
+            "category": "郊区",
+            "value": 165
+          },
+          {
+            "category": "新区",
+            "value": 180
+          },
+          {
+            "category": "新区",
+            "value": 190
+          },
+          {
+            "category": "新区",
+            "value": 200
+          },
+          {
+            "category": "新区",
+            "value": 175
+          },
+          {
+            "category": "新区",
+            "value": 185
+          },
+          {
+            "category": "新区",
+            "value": 195
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "区域",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "房价（万元/套）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "房价（万元/套）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "区域房价分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示配送路线时效分布：同城样本（小时）[6, 7, 8, 5, 9, 7]；省内样本[12, 14, 10, 13, 11, 12]；跨省样本[24, 26, 22, 28, 25, 23]。",
+    "questionWithoutChart": "用图表展示配送路线时效分布：同城样本（小时）[6, 7, 8, 5, 9, 7]；省内样本[12, 14, 10, 13, 11, 12]；跨省样本[24, 26, 22, 28, 25, 23]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "同城",
+          "value": 6
+        },
+        {
+          "category": "同城",
+          "value": 7
+        },
+        {
+          "category": "同城",
+          "value": 8
+        },
+        {
+          "category": "同城",
+          "value": 5
+        },
+        {
+          "category": "同城",
+          "value": 9
+        },
+        {
+          "category": "同城",
+          "value": 7
+        },
+        {
+          "category": "省内",
+          "value": 12
+        },
+        {
+          "category": "省内",
+          "value": 14
+        },
+        {
+          "category": "省内",
+          "value": 10
+        },
+        {
+          "category": "省内",
+          "value": 13
+        },
+        {
+          "category": "省内",
+          "value": 11
+        },
+        {
+          "category": "省内",
+          "value": 12
+        },
+        {
+          "category": "跨省",
+          "value": 24
+        },
+        {
+          "category": "跨省",
+          "value": 26
+        },
+        {
+          "category": "跨省",
+          "value": 22
+        },
+        {
+          "category": "跨省",
+          "value": 28
+        },
+        {
+          "category": "跨省",
+          "value": 25
+        },
+        {
+          "category": "跨省",
+          "value": 23
+        }
+      ],
+      "title": "配送路线时效分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "同城",
+            "value": 6
+          },
+          {
+            "category": "同城",
+            "value": 7
+          },
+          {
+            "category": "同城",
+            "value": 8
+          },
+          {
+            "category": "同城",
+            "value": 5
+          },
+          {
+            "category": "同城",
+            "value": 9
+          },
+          {
+            "category": "同城",
+            "value": 7
+          },
+          {
+            "category": "省内",
+            "value": 12
+          },
+          {
+            "category": "省内",
+            "value": 14
+          },
+          {
+            "category": "省内",
+            "value": 10
+          },
+          {
+            "category": "省内",
+            "value": 13
+          },
+          {
+            "category": "省内",
+            "value": 11
+          },
+          {
+            "category": "省内",
+            "value": 12
+          },
+          {
+            "category": "跨省",
+            "value": 24
+          },
+          {
+            "category": "跨省",
+            "value": 26
+          },
+          {
+            "category": "跨省",
+            "value": 22
+          },
+          {
+            "category": "跨省",
+            "value": 28
+          },
+          {
+            "category": "跨省",
+            "value": 25
+          },
+          {
+            "category": "跨省",
+            "value": 23
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "路线",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "时效（小时）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "时效（小时）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "配送路线时效分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示菜品制作时间分布：凉菜样本（分钟）[5, 7, 6, 8, 9, 7]；热菜样本[12, 14, 10, 18, 16, 15]；汤类样本[20, 25, 22, 18, 24, 26]。",
+    "questionWithoutChart": "用图表展示菜品制作时间分布：凉菜样本（分钟）[5, 7, 6, 8, 9, 7]；热菜样本[12, 14, 10, 18, 16, 15]；汤类样本[20, 25, 22, 18, 24, 26]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "凉菜",
+          "value": 5
+        },
+        {
+          "category": "凉菜",
+          "value": 7
+        },
+        {
+          "category": "凉菜",
+          "value": 6
+        },
+        {
+          "category": "凉菜",
+          "value": 8
+        },
+        {
+          "category": "凉菜",
+          "value": 9
+        },
+        {
+          "category": "凉菜",
+          "value": 7
+        },
+        {
+          "category": "热菜",
+          "value": 12
+        },
+        {
+          "category": "热菜",
+          "value": 14
+        },
+        {
+          "category": "热菜",
+          "value": 10
+        },
+        {
+          "category": "热菜",
+          "value": 18
+        },
+        {
+          "category": "热菜",
+          "value": 16
+        },
+        {
+          "category": "热菜",
+          "value": 15
+        },
+        {
+          "category": "汤类",
+          "value": 20
+        },
+        {
+          "category": "汤类",
+          "value": 25
+        },
+        {
+          "category": "汤类",
+          "value": 22
+        },
+        {
+          "category": "汤类",
+          "value": 18
+        },
+        {
+          "category": "汤类",
+          "value": 24
+        },
+        {
+          "category": "汤类",
+          "value": 26
+        }
+      ],
+      "title": "菜品制作时间分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "凉菜",
+            "value": 5
+          },
+          {
+            "category": "凉菜",
+            "value": 7
+          },
+          {
+            "category": "凉菜",
+            "value": 6
+          },
+          {
+            "category": "凉菜",
+            "value": 8
+          },
+          {
+            "category": "凉菜",
+            "value": 9
+          },
+          {
+            "category": "凉菜",
+            "value": 7
+          },
+          {
+            "category": "热菜",
+            "value": 12
+          },
+          {
+            "category": "热菜",
+            "value": 14
+          },
+          {
+            "category": "热菜",
+            "value": 10
+          },
+          {
+            "category": "热菜",
+            "value": 18
+          },
+          {
+            "category": "热菜",
+            "value": 16
+          },
+          {
+            "category": "热菜",
+            "value": 15
+          },
+          {
+            "category": "汤类",
+            "value": 20
+          },
+          {
+            "category": "汤类",
+            "value": 25
+          },
+          {
+            "category": "汤类",
+            "value": 22
+          },
+          {
+            "category": "汤类",
+            "value": 18
+          },
+          {
+            "category": "汤类",
+            "value": 24
+          },
+          {
+            "category": "汤类",
+            "value": 26
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "菜品类型",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "时间（分钟）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "时间（分钟）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "菜品制作时间分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示生产线合格率分布：A线样本（%）[92, 94, 90, 95, 93, 96]；B线样本[88, 90, 87, 89, 91, 90]；C线样本[85, 86, 84, 87, 88, 86]。",
+    "questionWithoutChart": "用图表展示生产线合格率分布：A线样本（%）[92, 94, 90, 95, 93, 96]；B线样本[88, 90, 87, 89, 91, 90]；C线样本[85, 86, 84, 87, 88, 86]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "A线",
+          "value": 92
+        },
+        {
+          "category": "A线",
+          "value": 94
+        },
+        {
+          "category": "A线",
+          "value": 90
+        },
+        {
+          "category": "A线",
+          "value": 95
+        },
+        {
+          "category": "A线",
+          "value": 93
+        },
+        {
+          "category": "A线",
+          "value": 96
+        },
+        {
+          "category": "B线",
+          "value": 88
+        },
+        {
+          "category": "B线",
+          "value": 90
+        },
+        {
+          "category": "B线",
+          "value": 87
+        },
+        {
+          "category": "B线",
+          "value": 89
+        },
+        {
+          "category": "B线",
+          "value": 91
+        },
+        {
+          "category": "B线",
+          "value": 90
+        },
+        {
+          "category": "C线",
+          "value": 85
+        },
+        {
+          "category": "C线",
+          "value": 86
+        },
+        {
+          "category": "C线",
+          "value": 84
+        },
+        {
+          "category": "C线",
+          "value": 87
+        },
+        {
+          "category": "C线",
+          "value": 88
+        },
+        {
+          "category": "C线",
+          "value": 86
+        }
+      ],
+      "title": "生产线合格率分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "A线",
             "value": 92
           },
           {
-            "category": "数学成绩",
+            "category": "A线",
+            "value": 94
+          },
+          {
+            "category": "A线",
+            "value": 90
+          },
+          {
+            "category": "A线",
             "value": 95
+          },
+          {
+            "category": "A线",
+            "value": 93
+          },
+          {
+            "category": "A线",
+            "value": 96
+          },
+          {
+            "category": "B线",
+            "value": 88
+          },
+          {
+            "category": "B线",
+            "value": 90
+          },
+          {
+            "category": "B线",
+            "value": 87
+          },
+          {
+            "category": "B线",
+            "value": 89
+          },
+          {
+            "category": "B线",
+            "value": 91
+          },
+          {
+            "category": "B线",
+            "value": 90
+          },
+          {
+            "category": "C线",
+            "value": 85
+          },
+          {
+            "category": "C线",
+            "value": 86
+          },
+          {
+            "category": "C线",
+            "value": 84
+          },
+          {
+            "category": "C线",
+            "value": 87
+          },
+          {
+            "category": "C线",
+            "value": 88
+          },
+          {
+            "category": "C线",
+            "value": 86
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "生产线",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "合格率（%）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "合格率（%）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "生产线合格率分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示年龄段锻炼时长分布：18-25岁样本（分钟）[45, 50, 55, 60, 48, 52]；26-35岁样本[40, 45, 50, 38, 42, 48]；36-45岁样本[35, 40, 45, 33, 37, 43]。",
+    "questionWithoutChart": "用图表展示年龄段锻炼时长分布：18-25岁样本（分钟）[45, 50, 55, 60, 48, 52]；26-35岁样本[40, 45, 50, 38, 42, 48]；36-45岁样本[35, 40, 45, 33, 37, 43]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "18-25岁",
+          "value": 45
+        },
+        {
+          "category": "18-25岁",
+          "value": 50
+        },
+        {
+          "category": "18-25岁",
+          "value": 55
+        },
+        {
+          "category": "18-25岁",
+          "value": 60
+        },
+        {
+          "category": "18-25岁",
+          "value": 48
+        },
+        {
+          "category": "18-25岁",
+          "value": 52
+        },
+        {
+          "category": "26-35岁",
+          "value": 40
+        },
+        {
+          "category": "26-35岁",
+          "value": 45
+        },
+        {
+          "category": "26-35岁",
+          "value": 50
+        },
+        {
+          "category": "26-35岁",
+          "value": 38
+        },
+        {
+          "category": "26-35岁",
+          "value": 42
+        },
+        {
+          "category": "26-35岁",
+          "value": 48
+        },
+        {
+          "category": "36-45岁",
+          "value": 35
+        },
+        {
+          "category": "36-45岁",
+          "value": 40
+        },
+        {
+          "category": "36-45岁",
+          "value": 45
+        },
+        {
+          "category": "36-45岁",
+          "value": 33
+        },
+        {
+          "category": "36-45岁",
+          "value": 37
+        },
+        {
+          "category": "36-45岁",
+          "value": 43
+        }
+      ],
+      "title": "年龄段锻炼时长分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "18-25岁",
+            "value": 45
+          },
+          {
+            "category": "18-25岁",
+            "value": 50
+          },
+          {
+            "category": "18-25岁",
+            "value": 55
+          },
+          {
+            "category": "18-25岁",
+            "value": 60
+          },
+          {
+            "category": "18-25岁",
+            "value": 48
+          },
+          {
+            "category": "18-25岁",
+            "value": 52
+          },
+          {
+            "category": "26-35岁",
+            "value": 40
+          },
+          {
+            "category": "26-35岁",
+            "value": 45
+          },
+          {
+            "category": "26-35岁",
+            "value": 50
+          },
+          {
+            "category": "26-35岁",
+            "value": 38
+          },
+          {
+            "category": "26-35岁",
+            "value": 42
+          },
+          {
+            "category": "26-35岁",
+            "value": 48
+          },
+          {
+            "category": "36-45岁",
+            "value": 35
+          },
+          {
+            "category": "36-45岁",
+            "value": 40
+          },
+          {
+            "category": "36-45岁",
+            "value": 45
+          },
+          {
+            "category": "36-45岁",
+            "value": 33
+          },
+          {
+            "category": "36-45岁",
+            "value": 37
+          },
+          {
+            "category": "36-45岁",
+            "value": 43
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "年龄段",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "时长（分钟）",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "时长（分钟）",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "年龄段锻炼时长分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示地区AQI分布：城区样本[85, 90, 95, 80, 88, 92]；工业区样本[120, 130, 125, 115, 135, 128]；郊区样本[70, 75, 65, 80, 72, 78]。",
+    "questionWithoutChart": "用图表展示地区AQI分布：城区样本[85, 90, 95, 80, 88, 92]；工业区样本[120, 130, 125, 115, 135, 128]；郊区样本[70, 75, 65, 80, 72, 78]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "城区",
+          "value": 85
+        },
+        {
+          "category": "城区",
+          "value": 90
+        },
+        {
+          "category": "城区",
+          "value": 95
+        },
+        {
+          "category": "城区",
+          "value": 80
+        },
+        {
+          "category": "城区",
+          "value": 88
+        },
+        {
+          "category": "城区",
+          "value": 92
+        },
+        {
+          "category": "工业区",
+          "value": 120
+        },
+        {
+          "category": "工业区",
+          "value": 130
+        },
+        {
+          "category": "工业区",
+          "value": 125
+        },
+        {
+          "category": "工业区",
+          "value": 115
+        },
+        {
+          "category": "工业区",
+          "value": 135
+        },
+        {
+          "category": "工业区",
+          "value": 128
+        },
+        {
+          "category": "郊区",
+          "value": 70
+        },
+        {
+          "category": "郊区",
+          "value": 75
+        },
+        {
+          "category": "郊区",
+          "value": 65
+        },
+        {
+          "category": "郊区",
+          "value": 80
+        },
+        {
+          "category": "郊区",
+          "value": 72
+        },
+        {
+          "category": "郊区",
+          "value": 78
+        }
+      ],
+      "title": "地区AQI分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "城区",
+            "value": 85
+          },
+          {
+            "category": "城区",
+            "value": 90
+          },
+          {
+            "category": "城区",
+            "value": 95
+          },
+          {
+            "category": "城区",
+            "value": 80
+          },
+          {
+            "category": "城区",
+            "value": 88
+          },
+          {
+            "category": "城区",
+            "value": 92
+          },
+          {
+            "category": "工业区",
+            "value": 120
+          },
+          {
+            "category": "工业区",
+            "value": 130
+          },
+          {
+            "category": "工业区",
+            "value": 125
+          },
+          {
+            "category": "工业区",
+            "value": 115
+          },
+          {
+            "category": "工业区",
+            "value": 135
+          },
+          {
+            "category": "工业区",
+            "value": 128
+          },
+          {
+            "category": "郊区",
+            "value": 70
+          },
+          {
+            "category": "郊区",
+            "value": 75
+          },
+          {
+            "category": "郊区",
+            "value": 65
+          },
+          {
+            "category": "郊区",
+            "value": 80
+          },
+          {
+            "category": "郊区",
+            "value": 72
+          },
+          {
+            "category": "郊区",
+            "value": 78
+          }
+        ],
+        "metas": [
+          {
+            "id": "category",
+            "name": "地区",
+            "dataType": "string"
+          },
+          {
+            "id": "value",
+            "name": "AQI",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "AQI",
+          "key": "value",
+          "purpose": "Distribution",
+          "purposeDesc": "地区AQI分布"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "用箱线图展示科目成绩分布：数学样本（分）[78, 82, 85, 90, 88, 76]；语文样本[75, 80, 82, 78, 85, 81]；英语样本[70, 75, 78, 82, 76, 80]。",
+    "questionWithoutChart": "用图表展示科目成绩分布：数学样本（分）[78, 82, 85, 90, 88, 76]；语文样本[75, 80, 82, 78, 85, 81]；英语样本[70, 75, 78, 82, 76, 80]。",
+    "answer": {
+      "type": "boxplot",
+      "data": [
+        {
+          "category": "数学",
+          "value": 78
+        },
+        {
+          "category": "数学",
+          "value": 82
+        },
+        {
+          "category": "数学",
+          "value": 85
+        },
+        {
+          "category": "数学",
+          "value": 90
+        },
+        {
+          "category": "数学",
+          "value": 88
+        },
+        {
+          "category": "数学",
+          "value": 76
+        },
+        {
+          "category": "语文",
+          "value": 75
+        },
+        {
+          "category": "语文",
+          "value": 80
+        },
+        {
+          "category": "语文",
+          "value": 82
+        },
+        {
+          "category": "语文",
+          "value": 78
+        },
+        {
+          "category": "语文",
+          "value": 85
+        },
+        {
+          "category": "语文",
+          "value": 81
+        },
+        {
+          "category": "英语",
+          "value": 70
+        },
+        {
+          "category": "英语",
+          "value": 75
+        },
+        {
+          "category": "英语",
+          "value": 78
+        },
+        {
+          "category": "英语",
+          "value": 82
+        },
+        {
+          "category": "英语",
+          "value": 76
+        },
+        {
+          "category": "英语",
+          "value": 80
+        }
+      ],
+      "title": "科目成绩分布"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "category": "数学",
+            "value": 78
+          },
+          {
+            "category": "数学",
+            "value": 82
+          },
+          {
+            "category": "数学",
+            "value": 85
+          },
+          {
+            "category": "数学",
+            "value": 90
+          },
+          {
+            "category": "数学",
+            "value": 88
+          },
+          {
+            "category": "数学",
+            "value": 76
+          },
+          {
+            "category": "语文",
+            "value": 75
+          },
+          {
+            "category": "语文",
+            "value": 80
+          },
+          {
+            "category": "语文",
+            "value": 82
+          },
+          {
+            "category": "语文",
+            "value": 78
+          },
+          {
+            "category": "语文",
+            "value": 85
+          },
+          {
+            "category": "语文",
+            "value": 81
+          },
+          {
+            "category": "英语",
+            "value": 70
+          },
+          {
+            "category": "英语",
+            "value": 75
+          },
+          {
+            "category": "英语",
+            "value": 78
+          },
+          {
+            "category": "英语",
+            "value": 82
+          },
+          {
+            "category": "英语",
+            "value": 76
+          },
+          {
+            "category": "英语",
+            "value": 80
           }
         ],
         "metas": [
@@ -107,1195 +2151,10 @@
           }
         ],
         "purpose": {
-          "name": "数学成绩",
+          "name": "分数",
           "key": "value",
           "purpose": "Distribution",
-          "purposeDesc": "班级学生数学成绩分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某公司三个部门员工薪资分布情况：技术部、销售部、市场部，用箱线图展示各部门薪资水平差异",
-    "questionWithoutChart": "某公司三个部门员工薪资分布情况：技术部、销售部、市场部，用图表展示各部门薪资水平差异",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "技术部",
-          "value": 8000,
-          "group": "部门"
-        },
-        {
-          "category": "技术部",
-          "value": 9500,
-          "group": "部门"
-        },
-        {
-          "category": "技术部",
-          "value": 12000,
-          "group": "部门"
-        },
-        {
-          "category": "技术部",
-          "value": 15000,
-          "group": "部门"
-        },
-        {
-          "category": "销售部",
-          "value": 6000,
-          "group": "部门"
-        },
-        {
-          "category": "销售部",
-          "value": 7500,
-          "group": "部门"
-        },
-        {
-          "category": "销售部",
-          "value": 9000,
-          "group": "部门"
-        },
-        {
-          "category": "销售部",
-          "value": 11000,
-          "group": "部门"
-        },
-        {
-          "category": "市场部",
-          "value": 7000,
-          "group": "部门"
-        },
-        {
-          "category": "市场部",
-          "value": 8500,
-          "group": "部门"
-        }
-      ],
-      "title": "公司各部门员工薪资分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "技术部",
-            "value": 8000,
-            "group": "部门"
-          },
-          {
-            "category": "技术部",
-            "value": 9500,
-            "group": "部门"
-          },
-          {
-            "category": "技术部",
-            "value": 12000,
-            "group": "部门"
-          },
-          {
-            "category": "技术部",
-            "value": 15000,
-            "group": "部门"
-          },
-          {
-            "category": "销售部",
-            "value": 6000,
-            "group": "部门"
-          },
-          {
-            "category": "销售部",
-            "value": 7500,
-            "group": "部门"
-          },
-          {
-            "category": "销售部",
-            "value": 9000,
-            "group": "部门"
-          },
-          {
-            "category": "销售部",
-            "value": 11000,
-            "group": "部门"
-          },
-          {
-            "category": "市场部",
-            "value": 7000,
-            "group": "部门"
-          },
-          {
-            "category": "市场部",
-            "value": 8500,
-            "group": "部门"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "部门",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "薪资",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "薪资",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "公司各部门员工薪资分布对比"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某医院各科室病人等待时间统计：内科、外科、儿科、妇科，用箱线图展示各科室病人等待时间的分布情况",
-    "questionWithoutChart": "某医院各科室病人等待时间统计：内科、外科、儿科、妇科，用图表展示各科室病人等待时间的分布情况",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "内科",
-          "value": 15
-        },
-        {
-          "category": "内科",
-          "value": 25
-        },
-        {
-          "category": "内科",
-          "value": 35
-        },
-        {
-          "category": "内科",
-          "value": 45
-        },
-        {
-          "category": "外科",
-          "value": 20
-        },
-        {
-          "category": "外科",
-          "value": 30
-        },
-        {
-          "category": "外科",
-          "value": 40
-        },
-        {
-          "category": "外科",
-          "value": 50
-        },
-        {
-          "category": "儿科",
-          "value": 10
-        },
-        {
-          "category": "儿科",
-          "value": 20
-        }
-      ],
-      "title": "医院各科室病人等待时间分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "内科",
-            "value": 15
-          },
-          {
-            "category": "内科",
-            "value": 25
-          },
-          {
-            "category": "内科",
-            "value": 35
-          },
-          {
-            "category": "内科",
-            "value": 45
-          },
-          {
-            "category": "外科",
-            "value": 20
-          },
-          {
-            "category": "外科",
-            "value": 30
-          },
-          {
-            "category": "外科",
-            "value": 40
-          },
-          {
-            "category": "外科",
-            "value": 50
-          },
-          {
-            "category": "儿科",
-            "value": 10
-          },
-          {
-            "category": "儿科",
-            "value": 20
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "科室",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "等待时间",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "等待时间",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "医院各科室病人等待时间分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某电商平台不同商品类别价格分布：电子产品、服装、家居用品、图书，用箱线图展示各类商品价格分布",
-    "questionWithoutChart": "某电商平台不同商品类别价格分布：电子产品、服装、家居用品、图书，用图表展示各类商品价格分布",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "电子产品",
-          "value": 200
-        },
-        {
-          "category": "电子产品",
-          "value": 500
-        },
-        {
-          "category": "电子产品",
-          "value": 800
-        },
-        {
-          "category": "电子产品",
-          "value": 1200
-        },
-        {
-          "category": "服装",
-          "value": 50
-        },
-        {
-          "category": "服装",
-          "value": 100
-        },
-        {
-          "category": "服装",
-          "value": 150
-        },
-        {
-          "category": "服装",
-          "value": 300
-        },
-        {
-          "category": "家居用品",
-          "value": 30
-        },
-        {
-          "category": "家居用品",
-          "value": 80
-        }
-      ],
-      "title": "电商平台各类商品价格分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "电子产品",
-            "value": 200
-          },
-          {
-            "category": "电子产品",
-            "value": 500
-          },
-          {
-            "category": "电子产品",
-            "value": 800
-          },
-          {
-            "category": "电子产品",
-            "value": 1200
-          },
-          {
-            "category": "服装",
-            "value": 50
-          },
-          {
-            "category": "服装",
-            "value": 100
-          },
-          {
-            "category": "服装",
-            "value": 150
-          },
-          {
-            "category": "服装",
-            "value": 300
-          },
-          {
-            "category": "家居用品",
-            "value": 30
-          },
-          {
-            "category": "家居用品",
-            "value": 80
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "商品类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "价格",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "价格",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "电商平台各类商品价格分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某学校各年级学生身高分布情况：一年级、三年级、五年级、初中一年级，用箱线图展示不同年级学生身高分布",
-    "questionWithoutChart": "某学校各年级学生身高分布情况：一年级、三年级、五年级、初中一年级，用图表展示不同年级学生身高分布",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "一年级",
-          "value": 110
-        },
-        {
-          "category": "一年级",
-          "value": 115
-        },
-        {
-          "category": "一年级",
-          "value": 120
-        },
-        {
-          "category": "一年级",
-          "value": 125
-        },
-        {
-          "category": "三年级",
-          "value": 125
-        },
-        {
-          "category": "三年级",
-          "value": 130
-        },
-        {
-          "category": "三年级",
-          "value": 135
-        },
-        {
-          "category": "三年级",
-          "value": 140
-        },
-        {
-          "category": "五年级",
-          "value": 140
-        },
-        {
-          "category": "五年级",
-          "value": 145
-        }
-      ],
-      "title": "学校各年级学生身高分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "一年级",
-            "value": 110
-          },
-          {
-            "category": "一年级",
-            "value": 115
-          },
-          {
-            "category": "一年级",
-            "value": 120
-          },
-          {
-            "category": "一年级",
-            "value": 125
-          },
-          {
-            "category": "三年级",
-            "value": 125
-          },
-          {
-            "category": "三年级",
-            "value": 130
-          },
-          {
-            "category": "三年级",
-            "value": 135
-          },
-          {
-            "category": "三年级",
-            "value": 140
-          },
-          {
-            "category": "五年级",
-            "value": 140
-          },
-          {
-            "category": "五年级",
-            "value": 145
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "年级",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "身高",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "身高",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "学校各年级学生身高分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某城市不同区域房价分布：市中心、郊区、新区、老城区，用箱线图展示各区域房价的分布差异",
-    "questionWithoutChart": "某城市不同区域房价分布：市中心、郊区、新区、老城区，用图表展示各区域房价的分布差异",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "市中心",
-          "value": 15000
-        },
-        {
-          "category": "市中心",
-          "value": 18000
-        },
-        {
-          "category": "市中心",
-          "value": 22000
-        },
-        {
-          "category": "市中心",
-          "value": 25000
-        },
-        {
-          "category": "郊区",
-          "value": 8000
-        },
-        {
-          "category": "郊区",
-          "value": 10000
-        },
-        {
-          "category": "郊区",
-          "value": 12000
-        },
-        {
-          "category": "郊区",
-          "value": 15000
-        },
-        {
-          "category": "新区",
-          "value": 12000
-        },
-        {
-          "category": "新区",
-          "value": 14000
-        }
-      ],
-      "title": "城市各区域房价分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "市中心",
-            "value": 15000
-          },
-          {
-            "category": "市中心",
-            "value": 18000
-          },
-          {
-            "category": "市中心",
-            "value": 22000
-          },
-          {
-            "category": "市中心",
-            "value": 25000
-          },
-          {
-            "category": "郊区",
-            "value": 8000
-          },
-          {
-            "category": "郊区",
-            "value": 10000
-          },
-          {
-            "category": "郊区",
-            "value": 12000
-          },
-          {
-            "category": "郊区",
-            "value": 15000
-          },
-          {
-            "category": "新区",
-            "value": 12000
-          },
-          {
-            "category": "新区",
-            "value": 14000
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "区域",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "房价",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "房价",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "城市各区域房价分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某快递公司不同配送路线时效统计：同城、省内、跨省、偏远地区，用箱线图展示各路线的配送时间分布",
-    "questionWithoutChart": "某快递公司不同配送路线时效统计：同城、省内、跨省、偏远地区，用图表展示各路线的配送时间分布",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "同城",
-          "value": 1
-        },
-        {
-          "category": "同城",
-          "value": 1.5
-        },
-        {
-          "category": "同城",
-          "value": 2
-        },
-        {
-          "category": "同城",
-          "value": 2.5
-        },
-        {
-          "category": "省内",
-          "value": 2
-        },
-        {
-          "category": "省内",
-          "value": 3
-        },
-        {
-          "category": "省内",
-          "value": 4
-        },
-        {
-          "category": "省内",
-          "value": 5
-        },
-        {
-          "category": "跨省",
-          "value": 3
-        },
-        {
-          "category": "跨省",
-          "value": 4
-        }
-      ],
-      "title": "快递公司各路线配送时间分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "同城",
-            "value": 1
-          },
-          {
-            "category": "同城",
-            "value": 1.5
-          },
-          {
-            "category": "同城",
-            "value": 2
-          },
-          {
-            "category": "同城",
-            "value": 2.5
-          },
-          {
-            "category": "省内",
-            "value": 2
-          },
-          {
-            "category": "省内",
-            "value": 3
-          },
-          {
-            "category": "省内",
-            "value": 4
-          },
-          {
-            "category": "省内",
-            "value": 5
-          },
-          {
-            "category": "跨省",
-            "value": 3
-          },
-          {
-            "category": "跨省",
-            "value": 4
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "配送路线",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "配送时间",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "配送时间",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "快递公司各路线配送时间分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某餐厅不同菜品制作时间统计：凉菜、热菜、汤类、主食，用箱线图展示各类菜品的制作时间分布",
-    "questionWithoutChart": "某餐厅不同菜品制作时间统计：凉菜、热菜、汤类、主食，用图表展示各类菜品的制作时间分布",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "凉菜",
-          "value": 5
-        },
-        {
-          "category": "凉菜",
-          "value": 8
-        },
-        {
-          "category": "凉菜",
-          "value": 10
-        },
-        {
-          "category": "凉菜",
-          "value": 12
-        },
-        {
-          "category": "热菜",
-          "value": 15
-        },
-        {
-          "category": "热菜",
-          "value": 20
-        },
-        {
-          "category": "热菜",
-          "value": 25
-        },
-        {
-          "category": "热菜",
-          "value": 30
-        },
-        {
-          "category": "汤类",
-          "value": 20
-        },
-        {
-          "category": "汤类",
-          "value": 25
-        }
-      ],
-      "title": "餐厅各类菜品制作时间分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "凉菜",
-            "value": 5
-          },
-          {
-            "category": "凉菜",
-            "value": 8
-          },
-          {
-            "category": "凉菜",
-            "value": 10
-          },
-          {
-            "category": "凉菜",
-            "value": 12
-          },
-          {
-            "category": "热菜",
-            "value": 15
-          },
-          {
-            "category": "热菜",
-            "value": 20
-          },
-          {
-            "category": "热菜",
-            "value": 25
-          },
-          {
-            "category": "热菜",
-            "value": 30
-          },
-          {
-            "category": "汤类",
-            "value": 20
-          },
-          {
-            "category": "汤类",
-            "value": 25
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "菜品类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "制作时间",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "制作时间",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "餐厅各类菜品制作时间分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某工厂不同生产线产品合格率统计：A线、B线、C线、D线，用箱线图展示各生产线的产品合格率分布",
-    "questionWithoutChart": "某工厂不同生产线产品合格率统计：A线、B线、C线、D线，用图表展示各生产线的产品合格率分布",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "A线",
-          "value": 85
-        },
-        {
-          "category": "A线",
-          "value": 88
-        },
-        {
-          "category": "A线",
-          "value": 92
-        },
-        {
-          "category": "A线",
-          "value": 95
-        },
-        {
-          "category": "B线",
-          "value": 80
-        },
-        {
-          "category": "B线",
-          "value": 85
-        },
-        {
-          "category": "B线",
-          "value": 90
-        },
-        {
-          "category": "B线",
-          "value": 93
-        },
-        {
-          "category": "C线",
-          "value": 87
-        },
-        {
-          "category": "C线",
-          "value": 90
-        }
-      ],
-      "title": "工厂各生产线产品合格率分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "A线",
-            "value": 85
-          },
-          {
-            "category": "A线",
-            "value": 88
-          },
-          {
-            "category": "A线",
-            "value": 92
-          },
-          {
-            "category": "A线",
-            "value": 95
-          },
-          {
-            "category": "B线",
-            "value": 80
-          },
-          {
-            "category": "B线",
-            "value": 85
-          },
-          {
-            "category": "B线",
-            "value": 90
-          },
-          {
-            "category": "B线",
-            "value": 93
-          },
-          {
-            "category": "C线",
-            "value": 87
-          },
-          {
-            "category": "C线",
-            "value": 90
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "生产线",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "合格率",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "合格率",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "工厂各生产线产品合格率分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某健身房不同年龄段会员锻炼时长统计：18-25岁、26-35岁、36-45岁、46-55岁，用箱线图展示各年龄段会员的锻炼时长分布",
-    "questionWithoutChart": "某健身房不同年龄段会员锻炼时长统计：18-25岁、26-35岁、36-45岁、46-55岁，用图表展示各年龄段会员的锻炼时长分布",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "18-25岁",
-          "value": 30
-        },
-        {
-          "category": "18-25岁",
-          "value": 45
-        },
-        {
-          "category": "18-25岁",
-          "value": 60
-        },
-        {
-          "category": "18-25岁",
-          "value": 75
-        },
-        {
-          "category": "26-35岁",
-          "value": 25
-        },
-        {
-          "category": "26-35岁",
-          "value": 40
-        },
-        {
-          "category": "26-35岁",
-          "value": 55
-        },
-        {
-          "category": "26-35岁",
-          "value": 70
-        },
-        {
-          "category": "36-45岁",
-          "value": 20
-        },
-        {
-          "category": "36-45岁",
-          "value": 35
-        }
-      ],
-      "title": "健身房各年龄段会员锻炼时长分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "18-25岁",
-            "value": 30
-          },
-          {
-            "category": "18-25岁",
-            "value": 45
-          },
-          {
-            "category": "18-25岁",
-            "value": 60
-          },
-          {
-            "category": "18-25岁",
-            "value": 75
-          },
-          {
-            "category": "26-35岁",
-            "value": 25
-          },
-          {
-            "category": "26-35岁",
-            "value": 40
-          },
-          {
-            "category": "26-35岁",
-            "value": 55
-          },
-          {
-            "category": "26-35岁",
-            "value": 70
-          },
-          {
-            "category": "36-45岁",
-            "value": 20
-          },
-          {
-            "category": "36-45岁",
-            "value": 35
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "年龄段",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "锻炼时长",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "锻炼时长",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "健身房各年龄段会员锻炼时长分布情况"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "某银行不同业务类型办理时间统计：存款、取款、转账、理财，用箱线图展示各类业务的办理时间分布",
-    "questionWithoutChart": "某银行不同业务类型办理时间统计：存款、取款、转账、理财，用图表展示各类业务的办理时间分布",
-    "answer": {
-      "type": "boxplot",
-      "data": [
-        {
-          "category": "存款",
-          "value": 3
-        },
-        {
-          "category": "存款",
-          "value": 5
-        },
-        {
-          "category": "存款",
-          "value": 8
-        },
-        {
-          "category": "存款",
-          "value": 10
-        },
-        {
-          "category": "取款",
-          "value": 2
-        },
-        {
-          "category": "取款",
-          "value": 4
-        },
-        {
-          "category": "取款",
-          "value": 6
-        },
-        {
-          "category": "取款",
-          "value": 8
-        },
-        {
-          "category": "转账",
-          "value": 5
-        },
-        {
-          "category": "转账",
-          "value": 8
-        }
-      ],
-      "title": "银行各类业务办理时间分布"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "存款",
-            "value": 3
-          },
-          {
-            "category": "存款",
-            "value": 5
-          },
-          {
-            "category": "存款",
-            "value": 8
-          },
-          {
-            "category": "存款",
-            "value": 10
-          },
-          {
-            "category": "取款",
-            "value": 2
-          },
-          {
-            "category": "取款",
-            "value": 4
-          },
-          {
-            "category": "取款",
-            "value": 6
-          },
-          {
-            "category": "取款",
-            "value": 8
-          },
-          {
-            "category": "转账",
-            "value": 5
-          },
-          {
-            "category": "转账",
-            "value": 8
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "业务类型",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "办理时间",
-            "dataType": "number"
-          }
-        ],
-        "purpose": {
-          "name": "办理时间",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "银行各类业务办理时间分布情况"
+          "purposeDesc": "科目成绩分布"
         }
       }
     ]
