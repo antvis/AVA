@@ -1,5 +1,7 @@
 import { loadDataset } from '../loadDataset';
 import { Advisor, Spec } from '../../../src';
+import { validateObject } from '../../../src/utils/validator';
+import { CHARTS } from '../../../src/ckb';
 
 type TestData = {
   type: string;
@@ -63,8 +65,10 @@ export const runAdviseEvaluation = (selectQuestion: (data: TestData) => string) 
           executionTime,
         });
 
+        const { type, ...finalSpec } = spec;
         expect(spec).not.toEqual([]);
-        expect(spec.type).toEqual(answer.type);
+        expect(type).toEqual(answer.type);
+        expect(validateObject(CHARTS[type].zodSchema, finalSpec)).toEqual(answer.data);
       });
     });
   };
