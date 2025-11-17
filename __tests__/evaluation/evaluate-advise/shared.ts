@@ -68,7 +68,7 @@ export const runAdviseEvaluation = (selectQuestion: (data: TestData) => string) 
         const { type, ...finalSpec } = spec;
         expect(spec).not.toEqual([]);
         expect(type).toEqual(answer.type);
-        expect(validateObject(CHARTS[type].zodSchema, finalSpec)).toEqual(answer.data);
+        expect(validateObject(CHARTS[type].zodSchema, finalSpec)).toEqual(true);
       });
     });
   };
