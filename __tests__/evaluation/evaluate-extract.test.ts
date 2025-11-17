@@ -1,7 +1,7 @@
-import chalk from 'chalk';
 import _ from 'lodash';
 import { Advisor } from '../../src/advisor';
-import { loadDataset } from './loadDataset';
+import { loadAllData } from './loadDataset';
+import logger from './logger';
 
 const sleep = (duration: number) => {
   return new Promise((resolve) => {
@@ -32,38 +32,57 @@ describe('extract evaluation pass rate > 70%', () => {
     },
   });
 
-  const EVALUATE_CASES = loadDataset('line');
+  const EVALUATE_CASES = loadAllData();
 
-  const total = EVALUATE_CASES.length;
+  const total = EVALUATE_CASES.reduce((pre, cur) => {
+    return pre + cur.data.length;
+  }, 0);
+
   let pass = 0;
 
   const evaluateCase = async (currentCase) => {
     const result = await advisor.extract(currentCase.question);
+
+    if (result.length === 0) {
+      logger.error(`${currentCase.key}:${currentCase.index} not pass, extract method throw error!`);
+      return;
+    }
     if (result.length !== currentCase.dataShards.length) {
-      console.log(
-        chalk.red(`result length dismatch: expect ${currentCase.dataShards.length} but got ${result.length}`)
+      logger.error(
+        `${currentCase.key}:${currentCase.index} not pass: result length dismatch, expect ${currentCase.dataShards.length} but got ${result.length}!`
       );
-      console.log(chalk.red(`${currentCase.name} not pass!`));
     } else {
-      console.debug(result, currentCase.dataShards);
       const isValid = result.every((res, i) => evalSimilarity(res, currentCase.dataShards[i]));
       if (isValid) {
         pass++;
-        console.log(chalk.greenBright(`${currentCase.question.slice(0, 10)} pass!`));
+        logger.info(`${currentCase.key}:${currentCase.index} pass!`);
       } else {
-        console.log(chalk.red(`${currentCase.question.slice(0, 10)} not pass!`));
-        console.log('result', chalk.red(JSON.stringify(result)));
+        logger.info(
+          `${currentCase.key}:${currentCase.index} not pass, result: ${JSON.stringify(result)};expect: ${
+            currentCase.dataShards
+          }`
+        );
       }
     }
-    console.log(chalk.yellow('wait 2000ms...'));
     await sleep(2000);
   };
 
-  // evaluate for all case
-  it('test pass rate >= 70%', async () => {
-    for (const CASE of EVALUATE_CASES) {
-      await evaluateCase(CASE);
-    }
-    expect(pass / total).toBeGreaterThanOrEqual(0.7);
-  }, 30000000);
+  const evaluateGroup = async (key, cases) => {
+    it.each(
+      cases.map((v, index) => ({ ...v, index, key })),
+      `test ${name}:%question`,
+      async (currentCase) => {
+        await evaluateCase(currentCase);
+      },
+      300000
+    );
+  };
+
+  it.each(EVALUATE_CASES)(
+    'test %key',
+    async (currentCase) => {
+      await evaluateGroup(currentCase.key, currentCase.data);
+    },
+    3000000
+  );
 });

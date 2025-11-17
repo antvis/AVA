@@ -17,3 +17,13 @@ export const loadDataset = (dirname: string) => {
     return [];
   }
 };
+
+export const loadAllData = () => {
+  const dirs = fs.readdirSync(DIR_PATH);
+  return _.map(dirs, (dirname) => {
+    return {
+      key: dirname,
+      data: loadDataset(dirname),
+    };
+  });
+};
