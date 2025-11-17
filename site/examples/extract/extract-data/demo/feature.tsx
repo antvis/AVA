@@ -12,9 +12,50 @@ const advisor = new Advisor({
 
 const App = () => {
   const [input, setInput] = useState(`
-    一个超市的商品分类及其库存数量，如有三个主分类：食品、饮料和日用品。食品类有 300 件，饮料类有 200 件，日用品类有 500 件。食品类分为新鲜食品 150 件、罐头食品 100 件和零食 50 件；饮料类分为碳酸饮料 100 件和果汁 100 件；日用品类分为清洁用品 300 件和个人护理 200 件
+    [
+      {
+        "category": "Q1",
+        "value": 200,
+        "group": "公司 A"
+      },
+      {
+        "category": "Q1",
+        "value": 180,
+        "group": "公司 B"
+      },
+      {
+        "category": "Q2",
+        "value": 250,
+        "group": "公司 A"
+      },
+      {
+        "category": "Q2",
+        "value": 230,
+        "group": "公司 B"
+      },
+      {
+        "category": "Q3",
+        "value": 300,
+        "group": "公司 A"
+      },
+      {
+        "category": "Q3",
+        "value": 280,
+        "group": "公司 B"
+      },
+      {
+        "category": "Q4",
+        "value": 350,
+        "group": "公司 A"
+      },
+      {
+        "category": "Q4",
+        "value": 330,
+        "group": "公司 B"
+      }
+    ]
   `.trim());
-  const [reslut ,setResult] = useState([]);
+  const [reslut, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleExtract = useCallback(async () => {
@@ -32,7 +73,7 @@ const App = () => {
       <h3>提取结果：</h3>
       <pre>
         <code lang="json">
-         {JSON.stringify(reslut, null, 2)}
+          {JSON.stringify(reslut, null, 2)}
         </code>
       </pre>
     </div>

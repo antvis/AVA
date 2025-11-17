@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "target": "es6",
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "declaration": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noEmitOnError": false,
+    "pretty": true,
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@antv/ava": [
+        "../src"
+      ]
+    }
+  },
+  "include": [
+    "examples/**/*",
+  ]
+}

@@ -69,6 +69,7 @@ export const EXTRACT_PROMPT_CH = `
 - 判断完数据性状后，生成 data 对象，data 需要按照上面 typescript 定义的类型，将输入对象的 data 字段进行格式转化;
 - 生成 metas 对象，metas 为数据中每个字段的描述信息，包括 id，语义名称，数据类型;
 - 生成 purpose 对象，purpose 包含了在哪个字段上进行怎样的意图类型分析的信息;
+- DataShards 长度为一，只生成一条 DataShard 结构;
 - 将面生成的信息组合形成 dataShards，并 stringify 后返回;
 - **请直接输出 JSON 字符串，不要用 \`\`\`json 等标记包裹**;
 ## 用户输入的文本如下：
@@ -145,6 +146,7 @@ type DataShards = DataShard[];
 - After determining the data shape, generate the \`data\` object according to the TypeScript type definition provided, transforming the input data accordingly.
 - Generate the \`metas\` object, which contains metadata for each field in the data, including \`id\`, semantic \`name\`, and \`dataType\`.
 - Generate the \`purpose\` object, which specifies on which field what kind of analytical intent applies (e.g., comparison, trend, etc.).
+- DataShards should have a length of one, generating only one DataShard structure.
 - Assemble all the generated information into a \`DataShards\` structure, then return it as a JSON string.
 - **Output only the JSON string directly — do not wrap it with \`\`\`json or any other formatting markers**.
 
