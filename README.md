@@ -39,21 +39,20 @@
 `AVA series` contains 3 packages, [@antv/ava](https://github.com/antvis/AVA), [@antv/gpt-vis](https://github.com/antvis/GPT-Vis) and [@antv/mcp-server-chart](https://github.com/antvis/mcp-server-chart): 
 
 * [@antv/ava](https://www.npmjs.com/package/@antv/ava) : AVA core package, containing main modules below:
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">data (Data Processing)</span>: Data Processing Module. Used for statistical analysis and processing of datasets.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">extract (Data Processing)</span>: Extract data meta from structured and unstructured data, used for chart recommendation.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">insight (Auto Insight)</span>: Automatic Insights Module. Automatically discover data insights from multi-dimensional data.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">advise (Chart Recommendation)</span>: Chart Recommendation Module. Recommend chart types and specific chart detail settings based on data and analysis needs, which is the  `Specification` of antvis.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">render (Chart Renderring)</span>: Chart Renderring Module. Render charts based on the recommended chart types and settings with `GPT-Vis`.
+  * `data (Data Processing)`: Data Processing Module. Used for statistical analysis and processing of datasets.
+  * `extract (Data Processing)`: Extract data meta from structured and unstructured data, used for chart recommendation.
+  * `insight (Auto Insight)`: Automatic Insights Module. Automatically discover data insights from multi-dimensional data.
+  * `advise (Chart Recommendation)`: Chart Recommendation Module. Recommend chart types and specific chart detail settings based on data and analysis needs, which is the  `Specification` of antvis.
+  * `render (Chart Renderring)`: Chart Renderring Module. Render charts based on the recommended chart types and settings with `GPT-Vis`.
 
 * [@antv/gpt-vis](https://github.com/antvis/GPT-Vis) : Components for GPTs, generative AI, and LLM projects, not only UI Components, it contains:
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">LLM Protocol</span>: A visual protocol for LLM Agent cards, designed for LLM conversational interaction and service serialized output, to facilitate rapid integration into AI applications.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">Chart knowledge base</span>: Provides a rich set of chart knowledge base data, which can be used to recommend charts by RAG and prompt-based generation.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">\<GPTVis \/></span>: Developed components for LLM applications, with 20+ commonly used VIS components built-in, providing convenient expansion mechanism and architecture design for customized UI requirements.
+  * `LLM Protocol`: A visual protocol for LLM Agent cards, designed for LLM conversational interaction and service serialized output, to facilitate rapid integration into AI applications.
+  * `Chart knowledge base`: Provides a rich set of chart knowledge base data, which can be used to recommend charts by RAG and prompt-based generation.
+  * `<GPTVis />`: Developed components for LLM applications, with 20+ commonly used VIS components built-in, providing convenient expansion mechanism and architecture design for customized UI requirements.
   
 * [@antv/mcp-server-chart](https://github.com/antvis/mcp-server-chart) : A visualization mcp contains `25+` visual charts using @antvis. Using for chart generation and data analysis.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">25+ Charts</span>: It contains `25+` visual charts frequently used in data analysis, freely and easily integrated into the data analysis chain.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">Isomorphic Specification</span>: It is a standard specification for chart generation, which can be used to generate charts in different scenarios, isomorphic with the specification of `AVA`.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">\<GPTVis \/></span>: Developed components for LLM applications, with 20+ commonly used VIS components built-in, providing convenient expansion mechanism and architecture design for customized UI requirements.
+  * `25+ Charts`: It contains `25+` visual charts frequently used in data analysis, freely and easily integrated into the data analysis chain.
+  * `Isomorphic Specification`: It is a standard specification for chart generation, which can be used to generate charts in different scenarios, isomorphic with the specification of `AVA`.
   
 
 
@@ -68,7 +67,7 @@ $ npm install @antv/gpt-vis
 
 The following two examples show the use of [@antv/ava](https://www.npmjs.com/package/@antv/ava) and [@antv/gpt-vis](https://www.npmjs.com/package/@antv/gpt-vis) respectively:
 
-1. **Demo 1**: Use the <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">insight (Auto Insight)</span> in [@antv/ava](https://www.npmjs.com/package/@antv/ava) to extract data insights. Input multi-dimensional data, the backend automatically runs different algorithms to find interesting patterns in the data, evaluates them uniformly and returns high-quality data insights according to the score.
+1. **Demo 1**: Use the `insight (Auto Insight)` in [@antv/ava](https://www.npmjs.com/package/@antv/ava) to extract data insights. Input multi-dimensional data, the backend automatically runs different algorithms to find interesting patterns in the data, evaluates them uniformly and returns high-quality data insights according to the score.
 
     ```js
     import { getInsights } from '@antv/ava';
@@ -91,7 +90,7 @@ The following two examples show the use of [@antv/ava](https://www.npmjs.com/pac
     const insightRes = getInsights(data)
     ```
 
-2. **Demo 2**: Use the <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">advise (Chart Recommendation)</span> in [@antv/ava](https://www.npmjs.com/package/@antv/ava) to recommend charts, and render charts based on the recommended chart types and settings with `GPT-Vis`.
+2. **Demo 2**: Use the `advise (Chart Recommendation)` in [@antv/ava](https://www.npmjs.com/package/@antv/ava) to recommend charts, and render charts based on the recommended chart types and settings with `GPT-Vis`.
 
     ```js
     import { AVA } from '@antv/ava';
