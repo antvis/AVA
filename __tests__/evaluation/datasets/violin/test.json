@@ -1,982 +1,634 @@
 [
   {
     "type": "text2chart",
-    "question": "某公司员工薪资分布分析：技术部员工薪资数据，用小提琴图展示薪资分布密度和统计特征",
-    "questionWithoutChart": "某公司员工薪资分布分析：技术部员工薪资数据，用图表展示薪资分布密度和统计特征",
+    "question": "我想比较三个班级（A班, B班, C班）学生的考试成绩分布情况。A班的成绩是[85, 92, 78, 88, 95]，B班的成绩是[76, 88, 82, 90, 85]，C班的成绩是[92, 95, 89, 96, 94]。请用小提琴图展示这三个班级成绩的分布。",
+    "questionWithoutChart": "我想比较三个班级（A班, B班, C班）学生的考试成绩分布情况。A班的成绩是[85, 92, 78, 88, 95]，B班的成绩是[76, 88, 82, 90, 85]，C班的成绩是[92, 95, 89, 96, 94]。请用图表展示这三个班级成绩的分布。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "初级工程师",
-          "value": 8000,
-          "group": "技术部"
+          "category": "A班",
+          "value": 85
         },
         {
-          "category": "初级工程师",
-          "value": 8500,
-          "group": "技术部"
+          "category": "A班",
+          "value": 92
         },
         {
-          "category": "初级工程师",
-          "value": 7800,
-          "group": "技术部"
+          "category": "A班",
+          "value": 78
         },
         {
-          "category": "中级工程师",
-          "value": 12000,
-          "group": "技术部"
+          "category": "A班",
+          "value": 88
         },
         {
-          "category": "中级工程师",
-          "value": 13500,
-          "group": "技术部"
+          "category": "A班",
+          "value": 95
         },
         {
-          "category": "中级工程师",
-          "value": 12800,
-          "group": "技术部"
+          "category": "B班",
+          "value": 76
         },
         {
-          "category": "高级工程师",
-          "value": 18000,
-          "group": "技术部"
+          "category": "B班",
+          "value": 88
         },
         {
-          "category": "高级工程师",
-          "value": 19500,
-          "group": "技术部"
+          "category": "B班",
+          "value": 82
         },
         {
-          "category": "高级工程师",
-          "value": 17200,
-          "group": "技术部"
+          "category": "B班",
+          "value": 90
         },
         {
-          "category": "技术专家",
-          "value": 25000,
-          "group": "技术部"
+          "category": "B班",
+          "value": 85
+        },
+        {
+          "category": "C班",
+          "value": 92
+        },
+        {
+          "category": "C班",
+          "value": 95
+        },
+        {
+          "category": "C班",
+          "value": 89
+        },
+        {
+          "category": "C班",
+          "value": 96
+        },
+        {
+          "category": "C班",
+          "value": 94
         }
-      ],
-      "title": "技术部员工薪资分布",
-      "axisXTitle": "职位等级",
-      "axisYTitle": "薪资（元）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "初级工程师",
-            "value": 8000,
-            "group": "技术部"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "薪资分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "员工薪资分布密度和统计特征分析"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "不同学科考试成绩分布对比：数学、物理、化学三门课程的成绩分布，用小提琴图展示各科目成绩密度分布",
-    "questionWithoutChart": "不同学科考试成绩分布对比：数学、物理、化学三门课程的成绩分布，用图表展示各科目成绩密度分布",
+    "question": "请分析两种治疗方法（方法A, 方法B）对患者恢复时间（天）的影响。方法A的恢复时间数据是[10, 12, 11, 13, 14]，方法B的恢复时间数据是[15, 14, 16, 17, 15]。请用小提琴图比较这两种方法的恢复时间分布。",
+    "questionWithoutChart": "请分析两种治疗方法（方法A, 方法B）对患者恢复时间（天）的影响。方法A的恢复时间数据是[10, 12, 11, 13, 14]，方法B的恢复时间数据是[15, 14, 16, 17, 15]。请用图表比较这两种方法的恢复时间分布。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "60-70分",
-          "value": 65,
-          "group": "数学"
+          "category": "方法A",
+          "value": 10
         },
         {
-          "category": "70-80分",
-          "value": 75,
-          "group": "数学"
+          "category": "方法A",
+          "value": 12
         },
         {
-          "category": "80-90分",
-          "value": 85,
-          "group": "数学"
+          "category": "方法A",
+          "value": 11
         },
         {
-          "category": "90-100分",
-          "value": 95,
-          "group": "数学"
+          "category": "方法A",
+          "value": 13
         },
         {
-          "category": "60-70分",
-          "value": 68,
-          "group": "物理"
+          "category": "方法A",
+          "value": 14
         },
         {
-          "category": "70-80分",
-          "value": 78,
-          "group": "物理"
+          "category": "方法B",
+          "value": 15
         },
         {
-          "category": "80-90分",
-          "value": 88,
-          "group": "物理"
+          "category": "方法B",
+          "value": 14
         },
         {
-          "category": "90-100分",
-          "value": 92,
-          "group": "物理"
+          "category": "方法B",
+          "value": 16
         },
         {
-          "category": "60-70分",
-          "value": 63,
-          "group": "化学"
+          "category": "方法B",
+          "value": 17
         },
         {
-          "category": "70-80分",
-          "value": 73,
-          "group": "化学"
+          "category": "方法B",
+          "value": 15
         }
-      ],
-      "title": "三门学科考试成绩分布对比",
-      "axisXTitle": "分数段",
-      "axisYTitle": "成绩（分）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "60-70分",
-            "value": 65,
-            "group": "数学"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "成绩分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "不同学科考试成绩分布密度对比"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某医院不同科室患者年龄分布：内科、外科、儿科的患者年龄数据，用小提琴图展示各科室患者年龄分布特征",
-    "questionWithoutChart": "某医院不同科室患者年龄分布：内科、外科、儿科的患者年龄数据，用图表展示各科室患者年龄分布特征",
+    "question": "我想比较两个部门（销售部, 技术部）不同性别（男, 女）员工的月薪（千元）分布。销售部男员工薪资[15, 22, 18]，女员工薪资[14, 20, 17]；技术部男员工薪资[25, 30, 28]，女员工薪资[24, 29, 27]。请用小提琴图展示薪资分布。",
+    "questionWithoutChart": "我想比较两个部门（销售部, 技术部）不同性别（男, 女）员工的月薪（千元）分布。销售部男员工薪资[15, 22, 18]，女员工薪资[14, 20, 17]；技术部男员工薪资[25, 30, 28]，女员工薪资[24, 29, 27]。请用图表展示薪资分布。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "0-10岁",
-          "value": 5,
-          "group": "儿科"
-        },
-        {
-          "category": "10-20岁",
+          "category": "销售部",
           "value": 15,
-          "group": "儿科"
+          "group": "男"
         },
         {
-          "category": "20-30岁",
+          "category": "销售部",
+          "value": 22,
+          "group": "男"
+        },
+        {
+          "category": "销售部",
+          "value": 18,
+          "group": "男"
+        },
+        {
+          "category": "销售部",
+          "value": 14,
+          "group": "女"
+        },
+        {
+          "category": "销售部",
+          "value": 20,
+          "group": "女"
+        },
+        {
+          "category": "销售部",
+          "value": 17,
+          "group": "女"
+        },
+        {
+          "category": "技术部",
           "value": 25,
-          "group": "内科"
+          "group": "男"
         },
         {
-          "category": "30-40岁",
-          "value": 35,
-          "group": "内科"
+          "category": "技术部",
+          "value": 30,
+          "group": "男"
         },
         {
-          "category": "40-50岁",
-          "value": 45,
-          "group": "内科"
+          "category": "技术部",
+          "value": 28,
+          "group": "男"
         },
         {
-          "category": "50-60岁",
-          "value": 55,
-          "group": "外科"
+          "category": "技术部",
+          "value": 24,
+          "group": "女"
         },
         {
-          "category": "60-70岁",
-          "value": 65,
-          "group": "外科"
+          "category": "技术部",
+          "value": 29,
+          "group": "女"
         },
         {
-          "category": "70-80岁",
-          "value": 75,
-          "group": "外科"
-        },
-        {
-          "category": "80-90岁",
-          "value": 85,
-          "group": "内科"
-        },
-        {
-          "category": "90-100岁",
-          "value": 95,
-          "group": "内科"
+          "category": "技术部",
+          "value": 27,
+          "group": "女"
         }
-      ],
-      "title": "医院各科室患者年龄分布",
-      "axisXTitle": "年龄段",
-      "axisYTitle": "年龄（岁）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "0-10岁",
-            "value": 5,
-            "group": "儿科"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "年龄分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "医院不同科室患者年龄分布特征分析"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某电商平台不同品类商品价格分布：电子产品、服装、家居用品的价格数据，用小提琴图展示各品类商品价格密度分布",
-    "questionWithoutChart": "某电商平台不同品类商品价格分布：电子产品、服装、家居用品的价格数据，用图表展示各品类商品价格密度分布",
+    "question": "请分析三种不同类型产品（电子产品, 服装, 图书）的用户评分分布。电子产品的评分是[4.5, 4.2, 4.8, 4.0]，服装的评分是[3.8, 4.1, 3.5, 4.3]，图书的评分是[4.9, 4.8, 4.7, 4.9]。请用小提琴图展示这些评分数据。",
+    "questionWithoutChart": "请分析三种不同类型产品（电子产品, 服装, 图书）的用户评分分布。电子产品的评分是[4.5, 4.2, 4.8, 4.0]，服装的评分是[3.8, 4.1, 3.5, 4.3]，图书的评分是[4.9, 4.8, 4.7, 4.9]。请用图表展示这些评分数据。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "低价商品",
-          "value": 50,
-          "group": "服装"
+          "category": "电子产品",
+          "value": 4.5
         },
         {
-          "category": "中低价商品",
-          "value": 150,
-          "group": "服装"
+          "category": "电子产品",
+          "value": 4.2
         },
         {
-          "category": "中价商品",
-          "value": 300,
-          "group": "电子产品"
+          "category": "电子产品",
+          "value": 4.8
         },
         {
-          "category": "中高价商品",
-          "value": 800,
-          "group": "电子产品"
+          "category": "电子产品",
+          "value": 4.0
         },
         {
-          "category": "高价商品",
-          "value": 2000,
-          "group": "电子产品"
+          "category": "服装",
+          "value": 3.8
         },
         {
-          "category": "低价商品",
-          "value": 80,
-          "group": "家居用品"
+          "category": "服装",
+          "value": 4.1
         },
         {
-          "category": "中低价商品",
-          "value": 200,
-          "group": "家居用品"
+          "category": "服装",
+          "value": 3.5
         },
         {
-          "category": "中价商品",
-          "value": 500,
-          "group": "家居用品"
+          "category": "服装",
+          "value": 4.3
         },
         {
-          "category": "中高价商品",
-          "value": 1200,
-          "group": "家居用品"
+          "category": "图书",
+          "value": 4.9
         },
         {
-          "category": "高价商品",
-          "value": 3000,
-          "group": "电子产品"
+          "category": "图书",
+          "value": 4.8
+        },
+        {
+          "category": "图书",
+          "value": 4.7
+        },
+        {
+          "category": "图书",
+          "value": 4.9
         }
-      ],
-      "title": "电商平台各品类商品价格分布",
-      "axisXTitle": "价格区间",
-      "axisYTitle": "价格（元）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "低价商品",
-            "value": 50,
-            "group": "服装"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "价格分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "电商平台不同品类商品价格密度分布分析"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某城市不同区域房价分布：市中心、郊区、开发区的新房价格数据，用小提琴图展示各区域房价分布密度和统计特征",
-    "questionWithoutChart": "某城市不同区域房价分布：市中心、郊区、开发区的新房价格数据，用图表展示各区域房价分布密度和统计特征",
+    "question": "我想比较三个城市（北京, 上海, 广州）在过去一周的每日最高气温（摄氏度）分布。北京的气温是[25, 26, 28, 27, 29, 30, 28]，上海是[28, 29, 30, 31, 32, 30, 29]，广州是[32, 33, 34, 33, 35, 34, 33]。请用小提琴图展示气温分布。",
+    "questionWithoutChart": "我想比较三个城市（北京, 上海, 广州）在过去一周的每日最高气温（摄氏度）分布。北京的气温是[25, 26, 28, 27, 29, 30, 28]，上海是[28, 29, 30, 31, 32, 30, 29]，广州是[32, 33, 34, 33, 35, 34, 33]。请用图表展示气温分布。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "低价房",
-          "value": 8000,
-          "group": "郊区"
+          "category": "北京",
+          "value": 25
         },
         {
-          "category": "中低价房",
-          "value": 12000,
-          "group": "郊区"
+          "category": "北京",
+          "value": 26
         },
         {
-          "category": "中价房",
-          "value": 18000,
-          "group": "开发区"
+          "category": "北京",
+          "value": 28
         },
         {
-          "category": "中高价房",
-          "value": 25000,
-          "group": "市中心"
+          "category": "北京",
+          "value": 27
         },
         {
-          "category": "高价房",
-          "value": 35000,
-          "group": "市中心"
+          "category": "北京",
+          "value": 29
         },
         {
-          "category": "超高价房",
-          "value": 50000,
-          "group": "市中心"
+          "category": "北京",
+          "value": 30
         },
         {
-          "category": "中价房",
-          "value": 15000,
-          "group": "开发区"
+          "category": "北京",
+          "value": 28
         },
         {
-          "category": "中高价房",
-          "value": 22000,
-          "group": "开发区"
+          "category": "上海",
+          "value": 28
         },
         {
-          "category": "高价房",
-          "value": 28000,
-          "group": "市中心"
+          "category": "上海",
+          "value": 29
         },
         {
-          "category": "中低价房",
-          "value": 10000,
-          "group": "郊区"
+          "category": "上海",
+          "value": 30
+        },
+        {
+          "category": "上海",
+          "value": 31
+        },
+        {
+          "category": "上海",
+          "value": 32
+        },
+        {
+          "category": "上海",
+          "value": 30
+        },
+        {
+          "category": "上海",
+          "value": 29
+        },
+        {
+          "category": "广州",
+          "value": 32
+        },
+        {
+          "category": "广州",
+          "value": 33
+        },
+        {
+          "category": "广州",
+          "value": 34
+        },
+        {
+          "category": "广州",
+          "value": 33
+        },
+        {
+          "category": "广州",
+          "value": 35
+        },
+        {
+          "category": "广州",
+          "value": 34
+        },
+        {
+          "category": "广州",
+          "value": 33
         }
-      ],
-      "title": "城市各区域房价分布",
-      "axisXTitle": "价格区间",
-      "axisYTitle": "房价（元/平米）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "低价房",
-            "value": 8000,
-            "group": "郊区"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "房价分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "城市不同区域房价分布密度和统计特征分析"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某学校不同年级学生身高分布：一年级、三年级、五年级学生的身高数据，用小提琴图展示各年级学生身高分布特征",
-    "questionWithoutChart": "某学校不同年级学生身高分布：一年级、三年级、五年级学生的身高数据，用图表展示各年级学生身高分布特征",
+    "question": "请分析不同施肥方案（方案A, 方案B, 对照组）对作物产量（公斤/亩）的影响。方案A的产量数据是[550, 560, 540, 580]，方案B是[600, 610, 590, 620]，对照组是[500, 510, 490, 520]。请用小提琴图展示产量分布。",
+    "questionWithoutChart": "请分析不同施肥方案（方案A, 方案B, 对照组）对作物产量（公斤/亩）的影响。方案A的产量数据是[550, 560, 540, 580]，方案B是[600, 610, 590, 620]，对照组是[500, 510, 490, 520]。请用图表展示产量分布。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "110-120cm",
-          "value": 115,
-          "group": "一年级"
+          "category": "方案A",
+          "value": 550
         },
         {
-          "category": "120-130cm",
-          "value": 125,
-          "group": "一年级"
+          "category": "方案A",
+          "value": 560
         },
         {
-          "category": "130-140cm",
-          "value": 135,
-          "group": "三年级"
+          "category": "方案A",
+          "value": 540
         },
         {
-          "category": "140-150cm",
-          "value": 145,
-          "group": "三年级"
+          "category": "方案A",
+          "value": 580
         },
         {
-          "category": "150-160cm",
-          "value": 155,
-          "group": "五年级"
+          "category": "方案B",
+          "value": 600
         },
         {
-          "category": "160-170cm",
-          "value": 165,
-          "group": "五年级"
+          "category": "方案B",
+          "value": 610
         },
         {
-          "category": "120-130cm",
-          "value": 128,
-          "group": "三年级"
+          "category": "方案B",
+          "value": 590
         },
         {
-          "category": "130-140cm",
-          "value": 138,
-          "group": "五年级"
+          "category": "方案B",
+          "value": 620
         },
         {
-          "category": "140-150cm",
-          "value": 148,
-          "group": "五年级"
+          "category": "对照组",
+          "value": 500
         },
         {
-          "category": "110-120cm",
-          "value": 118,
-          "group": "一年级"
+          "category": "对照组",
+          "value": 510
+        },
+        {
+          "category": "对照组",
+          "value": 490
+        },
+        {
+          "category": "对照组",
+          "value": 520
         }
-      ],
-      "title": "学校各年级学生身高分布",
-      "axisXTitle": "身高段",
-      "axisYTitle": "身高（cm）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "110-120cm",
-            "value": 115,
-            "group": "一年级"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "身高分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "学校不同年级学生身高分布特征对比"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某工厂不同车间生产效率分布：装配车间、质检车间、包装车间的日产量数据，用小提琴图展示各车间生产效率分布密度",
-    "questionWithoutChart": "某工厂不同车间生产效率分布：装配车间、质检车间、包装车间的日产量数据，用图表展示各车间生产效率分布密度",
+    "question": "比较两家公司（公司A, 公司B）的员工年龄分布。公司A的员工年龄是[25, 30, 35, 28, 40, 45, 50]，公司B的员工年龄是[22, 28, 32, 38, 42, 35, 29]。请用小提琴图展示年龄分布。",
+    "questionWithoutChart": "比较两家公司（公司A, 公司B）的员工年龄分布。公司A的员工年龄是[25, 30, 35, 28, 40, 45, 50]，公司B的员工年龄是[22, 28, 32, 38, 42, 35, 29]。请用图表展示年龄分布。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "低产量",
-          "value": 80,
-          "group": "装配车间"
+          "category": "公司A",
+          "value": 25
         },
         {
-          "category": "中低产量",
-          "value": 120,
-          "group": "装配车间"
+          "category": "公司A",
+          "value": 30
         },
         {
-          "category": "中产量",
-          "value": 160,
-          "group": "装配车间"
+          "category": "公司A",
+          "value": 35
         },
         {
-          "category": "中高产量",
-          "value": 200,
-          "group": "质检车间"
+          "category": "公司A",
+          "value": 28
         },
         {
-          "category": "高产量",
-          "value": 250,
-          "group": "质检车间"
+          "category": "公司A",
+          "value": 40
         },
         {
-          "category": "低产量",
-          "value": 90,
-          "group": "包装车间"
+          "category": "公司A",
+          "value": 45
         },
         {
-          "category": "中低产量",
-          "value": 130,
-          "group": "包装车间"
+          "category": "公司A",
+          "value": 50
         },
         {
-          "category": "中产量",
-          "value": 170,
-          "group": "质检车间"
+          "category": "公司B",
+          "value": 22
         },
         {
-          "category": "中高产量",
-          "value": 220,
-          "group": "质检车间"
+          "category": "公司B",
+          "value": 28
         },
         {
-          "category": "高产量",
-          "value": 280,
-          "group": "装配车间"
+          "category": "公司B",
+          "value": 32
+        },
+        {
+          "category": "公司B",
+          "value": 38
+        },
+        {
+          "category": "公司B",
+          "value": 42
+        },
+        {
+          "category": "公司B",
+          "value": 35
+        },
+        {
+          "category": "公司B",
+          "value": 29
         }
-      ],
-      "title": "工厂各车间生产效率分布",
-      "axisXTitle": "产量区间",
-      "axisYTitle": "日产量（件）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "低产量",
-            "value": 80,
-            "group": "装配车间"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "效率分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "工厂不同车间生产效率分布密度对比"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某银行不同客户群体存款分布：普通客户、VIP客户、企业客户的存款金额数据，用小提琴图展示各群体存款分布特征",
-    "questionWithoutChart": "某银行不同客户群体存款分布：普通客户、VIP客户、企业客户的存款金额数据，用图表展示各群体存款分布特征",
+    "question": "我想分析不同运动类型（跑步, 游泳, 瑜伽）的每周锻炼时长（小时）分布。跑步的时长数据是[3, 4, 3.5, 5]，游泳是[2, 2.5, 3, 3.5]，瑜伽是[5, 6, 5.5, 7]。请用小提琴图展示。",
+    "questionWithoutChart": "我想分析不同运动类型（跑步, 游泳, 瑜伽）的每周锻炼时长（小时）分布。跑步的时长数据是[3, 4, 3.5, 5]，游泳是[2, 2.5, 3, 3.5]，瑜伽是[5, 6, 5.5, 7]。请用图表展示。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "小额存款",
-          "value": 5000,
-          "group": "普通客户"
+          "category": "跑步",
+          "value": 3
         },
         {
-          "category": "中额存款",
-          "value": 20000,
-          "group": "普通客户"
+          "category": "跑步",
+          "value": 4
         },
         {
-          "category": "大额存款",
-          "value": 80000,
-          "group": "VIP客户"
+          "category": "跑步",
+          "value": 3.5
         },
         {
-          "category": "超大额存款",
-          "value": 200000,
-          "group": "VIP客户"
+          "category": "跑步",
+          "value": 5
         },
         {
-          "category": "巨额存款",
-          "value": 500000,
-          "group": "企业客户"
+          "category": "游泳",
+          "value": 2
         },
         {
-          "category": "小额存款",
-          "value": 8000,
-          "group": "VIP客户"
+          "category": "游泳",
+          "value": 2.5
         },
         {
-          "category": "中额存款",
-          "value": 30000,
-          "group": "VIP客户"
+          "category": "游泳",
+          "value": 3
         },
         {
-          "category": "大额存款",
-          "value": 120000,
-          "group": "企业客户"
+          "category": "游泳",
+          "value": 3.5
         },
         {
-          "category": "超大额存款",
-          "value": 300000,
-          "group": "企业客户"
+          "category": "瑜伽",
+          "value": 5
         },
         {
-          "category": "中额存款",
-          "value": 25000,
-          "group": "普通客户"
+          "category": "瑜伽",
+          "value": 6
+        },
+        {
+          "category": "瑜伽",
+          "value": 5.5
+        },
+        {
+          "category": "瑜伽",
+          "value": 7
         }
-      ],
-      "title": "银行各客户群体存款分布",
-      "axisXTitle": "存款区间",
-      "axisYTitle": "存款金额（元）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "小额存款",
-            "value": 5000,
-            "group": "普通客户"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "存款分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "银行不同客户群体存款分布特征分析"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某健身房不同会员锻炼时长分布：月卡会员、季卡会员、年卡会员的每周锻炼时长数据，用小提琴图展示各类型会员锻炼时长分布密度",
-    "questionWithoutChart": "某健身房不同会员锻炼时长分布：月卡会员、季卡会员、年卡会员的每周锻炼时长数据，用图表展示各类型会员锻炼时长分布密度",
+    "question": "请比较两个在线教育平台（平台A, 平台B）的用户每日使用时长（分钟）分布。平台A的用户使用时长是[30, 45, 60, 50, 70]，平台B是[40, 55, 65, 75, 80]。请用小提琴图进行可视化。",
+    "questionWithoutChart": "请比较两个在线教育平台（平台A, 平台B）的用户每日使用时长（分钟）分布。平台A的用户使用时长是[30, 45, 60, 50, 70]，平台B是[40, 55, 65, 75, 80]。请用图表进行可视化。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "1-2小时",
-          "value": 1.5,
-          "group": "月卡会员"
+          "category": "平台A",
+          "value": 30
         },
         {
-          "category": "2-3小时",
-          "value": 2.5,
-          "group": "月卡会员"
+          "category": "平台A",
+          "value": 45
         },
         {
-          "category": "3-4小时",
-          "value": 3.5,
-          "group": "季卡会员"
+          "category": "平台A",
+          "value": 60
         },
         {
-          "category": "4-5小时",
-          "value": 4.5,
-          "group": "季卡会员"
+          "category": "平台A",
+          "value": 50
         },
         {
-          "category": "5-6小时",
-          "value": 5.5,
-          "group": "年卡会员"
+          "category": "平台A",
+          "value": 70
         },
         {
-          "category": "6-7小时",
-          "value": 6.5,
-          "group": "年卡会员"
+          "category": "平台B",
+          "value": 40
         },
         {
-          "category": "3-4小时",
-          "value": 3.8,
-          "group": "年卡会员"
+          "category": "平台B",
+          "value": 55
         },
         {
-          "category": "4-5小时",
-          "value": 4.8,
-          "group": "年卡会员"
+          "category": "平台B",
+          "value": 65
         },
         {
-          "category": "2-3小时",
-          "value": 2.8,
-          "group": "季卡会员"
+          "category": "平台B",
+          "value": 75
         },
         {
-          "category": "1-2小时",
-          "value": 1.8,
-          "group": "月卡会员"
+          "category": "平台B",
+          "value": 80
         }
-      ],
-      "title": "健身房各类型会员锻炼时长分布",
-      "axisXTitle": "时长区间",
-      "axisYTitle": "锻炼时长（小时/周）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "1-2小时",
-            "value": 1.5,
-            "group": "月卡会员"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "时长分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "健身房不同会员锻炼时长分布密度对比"
-        }
-      }
-    ]
+      ]
+    }
   },
   {
     "type": "text2chart",
-    "question": "某餐厅不同时段客流量分布：早餐时段、午餐时段、晚餐时段的每小时客流量数据，用小提琴图展示各时段客流分布特征",
-    "questionWithoutChart": "某餐厅不同时段客流量分布：早餐时段、午餐时段、晚餐时段的每小时客流量数据，用图表展示各时段客流分布特征",
+    "question": "我想比较不同电影类型（科幻, 喜剧, 恐怖）的观众评分分布。科幻片评分为[8.5, 9.0, 8.2, 7.8]，喜剧片为[7.5, 8.0, 7.2, 6.8]，恐怖片为[6.5, 7.0, 6.2, 5.8]。请用小提琴图展示这些评分的分布情况。",
+    "questionWithoutChart": "我想比较不同电影类型（科幻, 喜剧, 恐怖）的观众评分分布。科幻片评分为[8.5, 9.0, 8.2, 7.8]，喜剧片为[7.5, 8.0, 7.2, 6.8]，恐怖片为[6.5, 7.0, 6.2, 5.8]。请用图表展示这些评分的分布情况。",
     "answer": {
       "type": "violin",
       "data": [
         {
-          "category": "20-30人",
-          "value": 25,
-          "group": "早餐时段"
+          "category": "科幻",
+          "value": 8.5
         },
         {
-          "category": "30-40人",
-          "value": 35,
-          "group": "早餐时段"
+          "category": "科幻",
+          "value": 9.0
         },
         {
-          "category": "40-50人",
-          "value": 45,
-          "group": "午餐时段"
+          "category": "科幻",
+          "value": 8.2
         },
         {
-          "category": "50-60人",
-          "value": 55,
-          "group": "午餐时段"
+          "category": "科幻",
+          "value": 7.8
         },
         {
-          "category": "60-70人",
-          "value": 65,
-          "group": "晚餐时段"
+          "category": "喜剧",
+          "value": 7.5
         },
         {
-          "category": "70-80人",
-          "value": 75,
-          "group": "晚餐时段"
+          "category": "喜剧",
+          "value": 8.0
         },
         {
-          "category": "40-50人",
-          "value": 48,
-          "group": "晚餐时段"
+          "category": "喜剧",
+          "value": 7.2
         },
         {
-          "category": "50-60人",
-          "value": 58,
-          "group": "晚餐时段"
+          "category": "喜剧",
+          "value": 6.8
         },
         {
-          "category": "30-40人",
-          "value": 38,
-          "group": "午餐时段"
+          "category": "恐怖",
+          "value": 6.5
         },
         {
-          "category": "60-70人",
-          "value": 68,
-          "group": "午餐时段"
+          "category": "恐怖",
+          "value": 7.0
+        },
+        {
+          "category": "恐怖",
+          "value": 6.2
+        },
+        {
+          "category": "恐怖",
+          "value": 5.8
         }
-      ],
-      "title": "餐厅各时段客流量分布",
-      "axisXTitle": "客流区间",
-      "axisYTitle": "客流量（人/小时）"
-    },
-    "dataShards": [
-      {
-        "shape": "plain",
-        "data": [
-          {
-            "category": "20-30人",
-            "value": 25,
-            "group": "早餐时段"
-          }
-        ],
-        "metas": [
-          {
-            "id": "category",
-            "name": "类别",
-            "dataType": "string"
-          },
-          {
-            "id": "value",
-            "name": "数值",
-            "dataType": "number"
-          },
-          {
-            "id": "group",
-            "name": "分组",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "客流分布",
-          "key": "value",
-          "purpose": "Distribution",
-          "purposeDesc": "餐厅不同时段客流量分布特征分析"
-        }
-      }
-    ]
+      ]
+    }
   }
 ]

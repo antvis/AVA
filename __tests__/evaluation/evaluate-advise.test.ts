@@ -26,9 +26,28 @@ const evaluateDatasets = (chartId: string) => {
 };
 
 describe('evaluation advise', () => {
-  evaluateDatasets('dual-axes');
-  evaluateDatasets('line');
+  evaluateDatasets('area');
   evaluateDatasets('bar');
-  evaluateDatasets('pie');
+  evaluateDatasets('boxplot');
   evaluateDatasets('column');
+  evaluateDatasets('dual-axes');
+  evaluateDatasets('fishbone-diagram');
+  evaluateDatasets('flow-diagram');
+  evaluateDatasets('funnel');
+  evaluateDatasets('histogram');
+  evaluateDatasets('indented-tree');
+  evaluateDatasets('line');
+  evaluateDatasets('liquid');
+  evaluateDatasets('mind-map');
+  evaluateDatasets('network-graph');
+  evaluateDatasets('organization-chart');
+  evaluateDatasets('pie');
+  evaluateDatasets('radar');
+  evaluateDatasets('sankey');
+  evaluateDatasets('scatter');
+  evaluateDatasets('table');
+  evaluateDatasets('treemap');
+  evaluateDatasets('venn');
+  evaluateDatasets('violin');
+  evaluateDatasets('word-cloud');
 });
