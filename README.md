@@ -50,7 +50,7 @@
   * `Chart knowledge base`: Provides a rich set of chart knowledge base data, which can be used to recommend charts by RAG and prompt-based generation.
   * `<GPTVis />`: Developed components for LLM applications, with 20+ commonly used VIS components built-in, providing convenient expansion mechanism and architecture design for customized UI requirements.
   
-* [@antv/mcp-server-chart](https://github.com/antvis/mcp-server-chart) : A visualization mcp contains `25+` visual charts using @antvis. Using for chart generation and data analysis.
+* [@antv/mcp-server-chart](https://github.com/antvis/mcp-server-chart) : A visualization mcp contains `25+` visual charts using @antvis. Used for chart generation and data analysis.
   * `25+ Charts`: It contains `25+` visual charts frequently used in data analysis, freely and easily integrated into the data analysis chain.
   * `Isomorphic Specification`: It is a standard specification for chart generation, which can be used to generate charts in different scenarios, isomorphic with the specification of `AVA`.
   
