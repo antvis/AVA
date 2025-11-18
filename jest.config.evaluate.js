@@ -2,6 +2,7 @@ module.exports = {
   testPathIgnorePatterns: ['/lib/', '/esm/'],
   setupFiles: ['<rootDir>/jest.setup.js'],
   collectCoverage: false,
+  verbose: true,
   maxWorkers: 1, // 重要，保证所有评测用例在单独的进程中运行，避免并发调用模型请求
   testRegex: '(/__tests__/evaluation/.*.(test|spec)).(js?|jsx?|tsx?|ts?)$',
   coveragePathIgnorePatterns: ['(tests/.*.mock).(jsx?|tsx?)$'],
