@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import fs from 'fs';
-import { Advisor } from '../../../src/advisor';
-import { sleep } from '../utils';
-import { loadAllData } from '../loadDataset';
+import { AVA } from '../../../src/advisor';
+import { sleep } from '../utils/common';
 import winston from 'winston';
 import { GENRATE_ERROR_LOG_PATH, GENRATE_RESULT_LOG_PATH } from './constants';
+import { loadAllData } from '../utils/loadDataset';
 
 const excludes = [
   'flow-diagram',
@@ -26,7 +26,7 @@ const logger = winston.createLogger({
 
 // 通过 API 生成抽取结果
 describe('generate extract result', () => {
-  const advisor = new Advisor({
+  const ava = new AVA({
     llm: {
       authorization: process.env.TBOX_LLM_AUTH || '',
       appId: process.env.TBOX_LLM_APP_ID || '',
@@ -51,7 +51,7 @@ describe('generate extract result', () => {
   let success = 0;
 
   const generateCase = async (currentCase) => {
-    const result = await advisor.extract(currentCase.question);
+    const result = await ava.extract(currentCase.question);
     if (!result || !result?.length) {
       logger.error({
         input: currentCase.question,

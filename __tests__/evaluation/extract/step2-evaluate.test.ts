@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import fs from 'fs';
 import winston from 'winston';
-import { requestTboxLLM } from '../utils';
+import { requestTboxLLM } from '../utils/common';
 import { GENRATE_RESULT_LOG_PATH, EVALUATE_ERROR_LOG_PATH, EVALUATE_RESULT_LOG_PATH } from './constants';
 
 const logger = winston.createLogger({
