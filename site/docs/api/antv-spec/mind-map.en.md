@@ -13,14 +13,14 @@ A mind map is a hierarchical diagram used to visually organize information. It s
 
 | Property | Type          | Required | Default | Description |
 | -------- | ------------- | -------- | ------- | ----------- |
-| type     | `string`      | Yes      | -       | Chart type, fixed to `mind-map` |
+| type     | string      | Yes      | -       | Chart type, fixed to `mind-map` |
 | data     | `MindMapData` | Yes      | -       | Data        |
 
 ### MindMapData
 
 | Property | Type            | Required | Default | Description                                                                                                                                                                                                     |
 | -------- | --------------- | -------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name     | `string`        | Yes      | -       | Node name, displayed on the mind map node                                                                                                                                                                       |
+| name     | string        | Yes      | -       | Node name, displayed on the mind map node                                                                                                                                                                       |
 | children | `MindMapData[]` | No       | -       | Current node's child node collection. If current node has no children, this field can be omitted. Each child node is also a `MindMapData` object, allowing recursive construction of multi-level tree structure |
 
 ## Spec example

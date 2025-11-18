@@ -12,7 +12,7 @@ A column chart is a data visualization where each category is represented by a r
 ## Spec
 | Property   | Type                                     | Required | Default   | Description           |
 | ---------- | ---------------------------------------- | -------- | --------- | --------------------- |
-| type       | `string`                                  | Yes      | -         | Chart type, fixed to `column` |
+| type       | string                                  | Yes      | -         | Chart type, fixed to `column` |
 | data       | ColumnDataItem[]                         | Yes      | -         | Data                  |
 | title      | string                                   | No       | -         | Chart title           |
 | axisXTitle | string                                   | No       | -         | X-axis title          |

@@ -13,7 +13,7 @@ A violin plot is a statistical representation of numerical data that combines as
 
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
-| type       | `string`                                  | Yes      | -         | Chart type, fixed to `violin` |
+| type       | string                                  | Yes      | -         | Chart type, fixed to `violin` |
 | data       | ViolinDataItem[]                         | Yes      | -         | Data         |
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |

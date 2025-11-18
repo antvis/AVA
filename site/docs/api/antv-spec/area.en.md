@@ -12,7 +12,7 @@ An area chart or area graph displays graphically quantitative data. It is based 
 ## Spec  
 | Property   | Type                                     | Required | Default   | Description                                                          |
 | ---------- | ---------------------------------------- | -------- | --------- | -------------------------------------------------------------------- |
-| type       | `string`                                  | Yes      | -         | Chart type, fixed to `area`                                          |
+| type       | string                                | Yes      | -         | Chart type, fixed to `area`|
 | data       | AreaDataItem[]                           | Yes      | -         | Data                                                                 |
 | stack      | boolean                                  | No       | -         | Enable stacking. Stacked area chart requires the group field in data |
 | title      | string                                   | No       | -         | Chart title                                                          |

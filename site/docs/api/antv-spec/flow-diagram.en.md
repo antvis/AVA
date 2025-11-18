@@ -13,7 +13,7 @@ A flow diagram is a type of diagram that represents a workflow or process.
 
 | Property | Type              | Required | Default | Description |
 | -------- | ----------------- | -------- | ------- | ----------- |
-| type     | `string`          | Yes      | -       | Chart type, fixed to `flow-diagram` |
+| type     | string          | Yes      | -       | Chart type, fixed to `flow-diagram` |
 | data     | `FlowDiagramData` | Yes      | -       | Data        |
 
 ### FlowDiagramData
@@ -27,15 +27,15 @@ A flow diagram is a type of diagram that represents a workflow or process.
 
 | Property | Type     | Required | Default | Description                                  |
 | -------- | -------- | -------- | ------- | -------------------------------------------- |
-| name     | `string` | Yes      | -       | Node name; must be unique to identify a node |
+| name     | string | Yes      | -       | Node name; must be unique to identify a node |
 
 ### FlowDiagramEdge
 
 | Property | Type     | Required | Default | Description                                                          |
 | -------- | -------- | -------- | ------- | -------------------------------------------------------------------- |
-| source   | `string` | Yes      | -       | Name of the source node; refers to the `name` of a `FlowDiagramNode` |
-| target   | `string` | Yes      | -       | Name of the target node; refers to the `name` of a `FlowDiagramNode` |
-| name     | `string` | No       | -       | Edge name for identification                                         |
+| source   | string | Yes      | -       | Name of the source node; refers to the `name` of a `FlowDiagramNode` |
+| target   | string | Yes      | -       | Name of the target node; refers to the `name` of a `FlowDiagramNode` |
+| name     | string | No       | -       | Edge name for identification                                         |
 
 ## Spec example
 
