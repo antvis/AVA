@@ -1,0 +1,322 @@
+[
+  {
+    "type": "text2chart",
+    "question": "某公司年度销售目标完成率为75%，用水波图展示销售目标完成情况",
+    "questionWithoutChart": "某公司年度销售目标完成率为75%，用图表展示销售目标完成情况",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.75,
+      "shape": "circle",
+      "title": "年度销售目标完成率"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.75
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "完成率",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "完成率",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "年度销售目标完成情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某项目进度完成度为60%，用水波图可视化项目进度情况",
+    "questionWithoutChart": "某项目进度完成度为60%，用图表可视化项目进度情况",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.6,
+      "shape": "circle",
+      "title": "项目进度完成度"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.6
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "完成度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "完成度",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "项目进度完成情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某班级学生考试及格率为85%，用水波图展示及格率情况",
+    "questionWithoutChart": "某班级学生考试及格率为85%，用图表展示及格率情况",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.85,
+      "shape": "circle",
+      "title": "班级考试及格率"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.85
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "及格率",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "及格率",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "班级学生考试及格率情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某产品市场占有率为45%，用水波图可视化市场占有率",
+    "questionWithoutChart": "某产品市场占有率为45%，用图表可视化市场占有率",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.45,
+      "shape": "circle",
+      "title": "产品市场占有率"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.45
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "占有率",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "占有率",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "产品市场占有率情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某公司员工出勤率为92%，用水波图展示出勤率情况",
+    "questionWithoutChart": "某公司员工出勤率为92%，用图表展示出勤率情况",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.92,
+      "shape": "circle",
+      "title": "员工出勤率"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.92
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "出勤率",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "出勤率",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "公司员工出勤率情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某客户满意度调查得分为78%，用水波图可视化满意度",
+    "questionWithoutChart": "某客户满意度调查得分为78%，用图表可视化满意度",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.78,
+      "shape": "circle",
+      "title": "客户满意度"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.78
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "满意度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "满意度",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "客户满意度调查结果"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某网站用户留存率为65%，用水波图展示用户留存情况",
+    "questionWithoutChart": "某网站用户留存率为65%，用图表展示用户留存情况",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.65,
+      "shape": "circle",
+      "title": "用户留存率"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.65
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "留存率",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "留存率",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "网站用户留存率情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某产品功能使用率为55%，用水波图可视化功能使用情况",
+    "questionWithoutChart": "某产品功能使用率为55%，用图表可视化功能使用情况",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.55,
+      "shape": "circle",
+      "title": "产品功能使用率"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.55
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "使用率",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "使用率",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "产品功能使用率情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某任务完成进度为88%，用水波图展示任务完成情况",
+    "questionWithoutChart": "某任务完成进度为88%，用图表展示任务完成情况",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.88,
+      "shape": "circle",
+      "title": "任务完成进度"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.88
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "完成进度",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "完成进度",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "任务完成进度情况"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某系统运行稳定性为95%，用水波图可视化系统稳定性",
+    "questionWithoutChart": "某系统运行稳定性为95%，用图表可视化系统稳定性",
+    "answer": {
+      "type": "liquid",
+      "percent": 0.95,
+      "shape": "circle",
+      "title": "系统运行稳定性"
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": {
+          "percent": 0.95
+        },
+        "metas": [
+          {
+            "id": "percent",
+            "name": "稳定性",
+            "dataType": "number"
+          }
+        ],
+        "purpose": {
+          "name": "稳定性",
+          "key": "percent",
+          "purpose": "Proportion",
+          "purposeDesc": "系统运行稳定性情况"
+        }
+      }
+    ]
+  }
+]

@@ -29,6 +29,8 @@
     "build": "run-p build:*",
     "test": "jest",
     "evaluate": "jest --config=jest.config.evaluate.js",
+    "evaluate:advise": "jest --config=jest.config.evaluate.js __tests__/evaluation/evaluate-advise",
+    "evaluate:extract": "jest --config=jest.config.evaluate.js __tests__/evaluation/evaluate-extract.test.ts",
     "lint-staged": "lint-staged",
     "coverage": "jest --coverage"
   },
@@ -52,7 +54,9 @@
     "openai": "^6.2.0",
     "regression": "^2.0.1",
     "tapable": "^2.2.1",
-    "tslib": "^2.3.1"
+    "tslib": "^2.3.1",
+    "zod": "^3.25.16",
+    "zod-to-json-schema": "^3.24.5"
   },
   "devDependencies": {
     "@antv/data-samples": "^1.0.1",

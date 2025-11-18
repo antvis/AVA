@@ -24,7 +24,7 @@ const evalSimilarity = (source, target) => {
   );
 };
 
-describe('extract evaluation pass rate > 98%', () => {
+describe('extract evaluation pass rate > 70%', () => {
   const advisor = new Advisor({
     llm: {
       authorization: process.env.TBOX_LLM_AUTH || '',

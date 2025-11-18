@@ -1,4 +1,5 @@
 module.exports = {
+  testPathIgnorePatterns: ['/lib/', '/esm/'],
   setupFiles: ['<rootDir>/jest.setup.js'],
   collectCoverage: false,
   maxWorkers: 1, // 重要，保证所有评测用例在单独的进程中运行，避免并发调用模型请求

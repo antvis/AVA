@@ -1,0 +1,470 @@
+[
+  {
+    "type": "text2chart",
+    "question": "西安一日游路线：钟楼、大唐不夜城、大雁塔，用路径地图展示旅游路线",
+    "questionWithoutChart": "西安一日游路线：钟楼、大唐不夜城、大雁塔，用图表展示旅游路线",
+    "answer": {
+      "type": "path-map",
+      "title": "西安一日游精品路线",
+      "data": [
+        {
+          "data": [
+            "西安钟楼",
+            "西安大唐不夜城",
+            "西安大雁塔"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "西安钟楼",
+              "西安大唐不夜城",
+              "西安大雁塔"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "景点路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "旅游路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "西安一日游景点路线规划"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "北京文化游路线：故宫、天安门广场、王府井、什刹海，用路径地图展示北京文化景点路线",
+    "questionWithoutChart": "北京文化游路线：故宫、天安门广场、王府井、什刹海，用图表展示北京文化景点路线",
+    "answer": {
+      "type": "path-map",
+      "title": "北京文化景点游",
+      "data": [
+        {
+          "data": [
+            "北京故宫",
+            "北京天安门广场",
+            "北京王府井",
+            "北京什刹海"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "北京故宫",
+              "北京天安门广场",
+              "北京王府井",
+              "北京什刹海"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "文化路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "文化路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "北京文化景点游览路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "杭州西湖经典路线：西湖、雷峰塔、断桥残雪、苏堤春晓，用路径地图展示西湖游览路线",
+    "questionWithoutChart": "杭州西湖经典路线：西湖、雷峰塔、断桥残雪、苏堤春晓，用图表展示西湖游览路线",
+    "answer": {
+      "type": "path-map",
+      "title": "杭州西湖经典游",
+      "data": [
+        {
+          "data": [
+            "杭州西湖",
+            "杭州雷峰塔",
+            "杭州断桥残雪",
+            "杭州苏堤春晓"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "杭州西湖",
+              "杭州雷峰塔",
+              "杭州断桥残雪",
+              "杭州苏堤春晓"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "西湖路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "西湖路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "杭州西湖经典景点游览路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "成都美食游路线：锦里、宽窄巷子、春熙路、太古里，用路径地图展示成都美食文化路线",
+    "questionWithoutChart": "成都美食游路线：锦里、宽窄巷子、春熙路、太古里，用图表展示成都美食文化路线",
+    "answer": {
+      "type": "path-map",
+      "title": "成都美食文化游",
+      "data": [
+        {
+          "data": [
+            "成都锦里",
+            "成都宽窄巷子",
+            "成都春熙路",
+            "成都太古里"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "成都锦里",
+              "成都宽窄巷子",
+              "成都春熙路",
+              "成都太古里"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "美食路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "美食路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "成都美食文化景点路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "上海都市游路线：外滩、东方明珠、南京路、豫园，用路径地图展示上海都市景点路线",
+    "questionWithoutChart": "上海都市游路线：外滩、东方明珠、南京路、豫园，用图表展示上海都市景点路线",
+    "answer": {
+      "type": "path-map",
+      "title": "上海都市精品游",
+      "data": [
+        {
+          "data": [
+            "上海外滩",
+            "上海东方明珠",
+            "上海南京路",
+            "上海豫园"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "上海外滩",
+              "上海东方明珠",
+              "上海南京路",
+              "上海豫园"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "都市路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "都市路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "上海都市景点游览路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "青岛海滨游路线：栈桥、八大关、五四广场、崂山，用路径地图展示青岛海滨景点路线",
+    "questionWithoutChart": "青岛海滨游路线：栈桥、八大关、五四广场、崂山，用图表展示青岛海滨景点路线",
+    "answer": {
+      "type": "path-map",
+      "title": "青岛海滨风光游",
+      "data": [
+        {
+          "data": [
+            "青岛栈桥",
+            "青岛八大关",
+            "青岛五四广场",
+            "青岛崂山"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "青岛栈桥",
+              "青岛八大关",
+              "青岛五四广场",
+              "青岛崂山"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "海滨路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "海滨路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "青岛海滨景点游览路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "苏州园林游路线：拙政园、狮子林、留园、虎丘，用路径地图展示苏州园林游览路线",
+    "questionWithoutChart": "苏州园林游路线：拙政园、狮子林、留园、虎丘，用图表展示苏州园林游览路线",
+    "answer": {
+      "type": "path-map",
+      "title": "苏州古典园林游",
+      "data": [
+        {
+          "data": [
+            "苏州拙政园",
+            "苏州狮子林",
+            "苏州留园",
+            "苏州虎丘"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "苏州拙政园",
+              "苏州狮子林",
+              "苏州留园",
+              "苏州虎丘"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "园林路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "园林路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "苏州古典园林游览路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "厦门文艺游路线：鼓浪屿、曾厝垵、环岛路、南普陀寺，用路径地图展示厦门文艺景点路线",
+    "questionWithoutChart": "厦门文艺游路线：鼓浪屿、曾厝垵、环岛路、南普陀寺，用图表展示厦门文艺景点路线",
+    "answer": {
+      "type": "path-map",
+      "title": "厦门文艺清新游",
+      "data": [
+        {
+          "data": [
+            "厦门鼓浪屿",
+            "厦门曾厝垵",
+            "厦门环岛路",
+            "厦门南普陀寺"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "厦门鼓浪屿",
+              "厦门曾厝垵",
+              "厦门环岛路",
+              "厦门南普陀寺"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "文艺路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "文艺路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "厦门文艺清新景点路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "广州岭南游路线：沙面、陈家祠、白云山、珠江夜游，用路径地图展示广州岭南文化路线",
+    "questionWithoutChart": "广州岭南游路线：沙面、陈家祠、白云山、珠江夜游，用图表展示广州岭南文化路线",
+    "answer": {
+      "type": "path-map",
+      "title": "广州岭南文化游",
+      "data": [
+        {
+          "data": [
+            "广州沙面",
+            "广州陈家祠",
+            "广州白云山",
+            "广州珠江夜游"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "广州沙面",
+              "广州陈家祠",
+              "广州白云山",
+              "广州珠江夜游"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "岭南路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "岭南路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "广州岭南文化景点路线"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "长沙红色游路线：橘子洲头、岳麓山、湖南省博物馆、天心阁，用路径地图展示长沙红色旅游景点路线",
+    "questionWithoutChart": "长沙红色游路线：橘子洲头、岳麓山、湖南省博物馆、天心阁，用图表展示长沙红色旅游景点路线",
+    "answer": {
+      "type": "path-map",
+      "title": "长沙红色文化游",
+      "data": [
+        {
+          "data": [
+            "长沙橘子洲头",
+            "长沙岳麓山",
+            "湖南省博物馆",
+            "长沙天心阁"
+          ]
+        }
+      ]
+    },
+    "dataShards": [
+      {
+        "shape": "plain",
+        "data": [
+          {
+            "data": [
+              "长沙橘子洲头",
+              "长沙岳麓山",
+              "湖南省博物馆",
+              "长沙天心阁"
+            ]
+          }
+        ],
+        "metas": [
+          {
+            "id": "data",
+            "name": "红色路线",
+            "dataType": "array"
+          }
+        ],
+        "purpose": {
+          "name": "红色路线",
+          "key": "data",
+          "purpose": "Flow",
+          "purposeDesc": "长沙红色文化景点游览路线"
+        }
+      }
+    ]
+  }
+]

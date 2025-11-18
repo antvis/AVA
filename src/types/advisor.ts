@@ -33,6 +33,8 @@ export type TboxLLM = BaseLLMConfig & {
 };
 
 export interface AdvisorConfig {
+  /** user input */
+  input?: string;
   llm?: OpenAiLLM | TboxLLM;
   /** Allowed charts for recommendation */
   includes?: string[];

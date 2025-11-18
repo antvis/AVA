@@ -1,6 +1,6 @@
 ---
-title: 场景案例 一
-order: 2
+title: MCP 调用
+order: 0
 redirect_from:
   - /zh/docs/scene/mcp
 ---

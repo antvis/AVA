@@ -1,0 +1,634 @@
+[
+  {
+    "type": "text2chart",
+    "question": "我想比较三个班级（A班, B班, C班）学生的考试成绩分布情况。A班的成绩是[85, 92, 78, 88, 95]，B班的成绩是[76, 88, 82, 90, 85]，C班的成绩是[92, 95, 89, 96, 94]。请用小提琴图展示这三个班级成绩的分布。",
+    "questionWithoutChart": "我想比较三个班级（A班, B班, C班）学生的考试成绩分布情况。A班的成绩是[85, 92, 78, 88, 95]，B班的成绩是[76, 88, 82, 90, 85]，C班的成绩是[92, 95, 89, 96, 94]。请用图表展示这三个班级成绩的分布。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "A班",
+          "value": 85
+        },
+        {
+          "category": "A班",
+          "value": 92
+        },
+        {
+          "category": "A班",
+          "value": 78
+        },
+        {
+          "category": "A班",
+          "value": 88
+        },
+        {
+          "category": "A班",
+          "value": 95
+        },
+        {
+          "category": "B班",
+          "value": 76
+        },
+        {
+          "category": "B班",
+          "value": 88
+        },
+        {
+          "category": "B班",
+          "value": 82
+        },
+        {
+          "category": "B班",
+          "value": 90
+        },
+        {
+          "category": "B班",
+          "value": 85
+        },
+        {
+          "category": "C班",
+          "value": 92
+        },
+        {
+          "category": "C班",
+          "value": 95
+        },
+        {
+          "category": "C班",
+          "value": 89
+        },
+        {
+          "category": "C班",
+          "value": 96
+        },
+        {
+          "category": "C班",
+          "value": 94
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "请分析两种治疗方法（方法A, 方法B）对患者恢复时间（天）的影响。方法A的恢复时间数据是[10, 12, 11, 13, 14]，方法B的恢复时间数据是[15, 14, 16, 17, 15]。请用小提琴图比较这两种方法的恢复时间分布。",
+    "questionWithoutChart": "请分析两种治疗方法（方法A, 方法B）对患者恢复时间（天）的影响。方法A的恢复时间数据是[10, 12, 11, 13, 14]，方法B的恢复时间数据是[15, 14, 16, 17, 15]。请用图表比较这两种方法的恢复时间分布。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "方法A",
+          "value": 10
+        },
+        {
+          "category": "方法A",
+          "value": 12
+        },
+        {
+          "category": "方法A",
+          "value": 11
+        },
+        {
+          "category": "方法A",
+          "value": 13
+        },
+        {
+          "category": "方法A",
+          "value": 14
+        },
+        {
+          "category": "方法B",
+          "value": 15
+        },
+        {
+          "category": "方法B",
+          "value": 14
+        },
+        {
+          "category": "方法B",
+          "value": 16
+        },
+        {
+          "category": "方法B",
+          "value": 17
+        },
+        {
+          "category": "方法B",
+          "value": 15
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "我想比较两个部门（销售部, 技术部）不同性别（男, 女）员工的月薪（千元）分布。销售部男员工薪资[15, 22, 18]，女员工薪资[14, 20, 17]；技术部男员工薪资[25, 30, 28]，女员工薪资[24, 29, 27]。请用小提琴图展示薪资分布。",
+    "questionWithoutChart": "我想比较两个部门（销售部, 技术部）不同性别（男, 女）员工的月薪（千元）分布。销售部男员工薪资[15, 22, 18]，女员工薪资[14, 20, 17]；技术部男员工薪资[25, 30, 28]，女员工薪资[24, 29, 27]。请用图表展示薪资分布。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "销售部",
+          "value": 15,
+          "group": "男"
+        },
+        {
+          "category": "销售部",
+          "value": 22,
+          "group": "男"
+        },
+        {
+          "category": "销售部",
+          "value": 18,
+          "group": "男"
+        },
+        {
+          "category": "销售部",
+          "value": 14,
+          "group": "女"
+        },
+        {
+          "category": "销售部",
+          "value": 20,
+          "group": "女"
+        },
+        {
+          "category": "销售部",
+          "value": 17,
+          "group": "女"
+        },
+        {
+          "category": "技术部",
+          "value": 25,
+          "group": "男"
+        },
+        {
+          "category": "技术部",
+          "value": 30,
+          "group": "男"
+        },
+        {
+          "category": "技术部",
+          "value": 28,
+          "group": "男"
+        },
+        {
+          "category": "技术部",
+          "value": 24,
+          "group": "女"
+        },
+        {
+          "category": "技术部",
+          "value": 29,
+          "group": "女"
+        },
+        {
+          "category": "技术部",
+          "value": 27,
+          "group": "女"
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "请分析三种不同类型产品（电子产品, 服装, 图书）的用户评分分布。电子产品的评分是[4.5, 4.2, 4.8, 4.0]，服装的评分是[3.8, 4.1, 3.5, 4.3]，图书的评分是[4.9, 4.8, 4.7, 4.9]。请用小提琴图展示这些评分数据。",
+    "questionWithoutChart": "请分析三种不同类型产品（电子产品, 服装, 图书）的用户评分分布。电子产品的评分是[4.5, 4.2, 4.8, 4.0]，服装的评分是[3.8, 4.1, 3.5, 4.3]，图书的评分是[4.9, 4.8, 4.7, 4.9]。请用图表展示这些评分数据。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "电子产品",
+          "value": 4.5
+        },
+        {
+          "category": "电子产品",
+          "value": 4.2
+        },
+        {
+          "category": "电子产品",
+          "value": 4.8
+        },
+        {
+          "category": "电子产品",
+          "value": 4.0
+        },
+        {
+          "category": "服装",
+          "value": 3.8
+        },
+        {
+          "category": "服装",
+          "value": 4.1
+        },
+        {
+          "category": "服装",
+          "value": 3.5
+        },
+        {
+          "category": "服装",
+          "value": 4.3
+        },
+        {
+          "category": "图书",
+          "value": 4.9
+        },
+        {
+          "category": "图书",
+          "value": 4.8
+        },
+        {
+          "category": "图书",
+          "value": 4.7
+        },
+        {
+          "category": "图书",
+          "value": 4.9
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "我想比较三个城市（北京, 上海, 广州）在过去一周的每日最高气温（摄氏度）分布。北京的气温是[25, 26, 28, 27, 29, 30, 28]，上海是[28, 29, 30, 31, 32, 30, 29]，广州是[32, 33, 34, 33, 35, 34, 33]。请用小提琴图展示气温分布。",
+    "questionWithoutChart": "我想比较三个城市（北京, 上海, 广州）在过去一周的每日最高气温（摄氏度）分布。北京的气温是[25, 26, 28, 27, 29, 30, 28]，上海是[28, 29, 30, 31, 32, 30, 29]，广州是[32, 33, 34, 33, 35, 34, 33]。请用图表展示气温分布。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "北京",
+          "value": 25
+        },
+        {
+          "category": "北京",
+          "value": 26
+        },
+        {
+          "category": "北京",
+          "value": 28
+        },
+        {
+          "category": "北京",
+          "value": 27
+        },
+        {
+          "category": "北京",
+          "value": 29
+        },
+        {
+          "category": "北京",
+          "value": 30
+        },
+        {
+          "category": "北京",
+          "value": 28
+        },
+        {
+          "category": "上海",
+          "value": 28
+        },
+        {
+          "category": "上海",
+          "value": 29
+        },
+        {
+          "category": "上海",
+          "value": 30
+        },
+        {
+          "category": "上海",
+          "value": 31
+        },
+        {
+          "category": "上海",
+          "value": 32
+        },
+        {
+          "category": "上海",
+          "value": 30
+        },
+        {
+          "category": "上海",
+          "value": 29
+        },
+        {
+          "category": "广州",
+          "value": 32
+        },
+        {
+          "category": "广州",
+          "value": 33
+        },
+        {
+          "category": "广州",
+          "value": 34
+        },
+        {
+          "category": "广州",
+          "value": 33
+        },
+        {
+          "category": "广州",
+          "value": 35
+        },
+        {
+          "category": "广州",
+          "value": 34
+        },
+        {
+          "category": "广州",
+          "value": 33
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "请分析不同施肥方案（方案A, 方案B, 对照组）对作物产量（公斤/亩）的影响。方案A的产量数据是[550, 560, 540, 580]，方案B是[600, 610, 590, 620]，对照组是[500, 510, 490, 520]。请用小提琴图展示产量分布。",
+    "questionWithoutChart": "请分析不同施肥方案（方案A, 方案B, 对照组）对作物产量（公斤/亩）的影响。方案A的产量数据是[550, 560, 540, 580]，方案B是[600, 610, 590, 620]，对照组是[500, 510, 490, 520]。请用图表展示产量分布。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "方案A",
+          "value": 550
+        },
+        {
+          "category": "方案A",
+          "value": 560
+        },
+        {
+          "category": "方案A",
+          "value": 540
+        },
+        {
+          "category": "方案A",
+          "value": 580
+        },
+        {
+          "category": "方案B",
+          "value": 600
+        },
+        {
+          "category": "方案B",
+          "value": 610
+        },
+        {
+          "category": "方案B",
+          "value": 590
+        },
+        {
+          "category": "方案B",
+          "value": 620
+        },
+        {
+          "category": "对照组",
+          "value": 500
+        },
+        {
+          "category": "对照组",
+          "value": 510
+        },
+        {
+          "category": "对照组",
+          "value": 490
+        },
+        {
+          "category": "对照组",
+          "value": 520
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "比较两家公司（公司A, 公司B）的员工年龄分布。公司A的员工年龄是[25, 30, 35, 28, 40, 45, 50]，公司B的员工年龄是[22, 28, 32, 38, 42, 35, 29]。请用小提琴图展示年龄分布。",
+    "questionWithoutChart": "比较两家公司（公司A, 公司B）的员工年龄分布。公司A的员工年龄是[25, 30, 35, 28, 40, 45, 50]，公司B的员工年龄是[22, 28, 32, 38, 42, 35, 29]。请用图表展示年龄分布。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "公司A",
+          "value": 25
+        },
+        {
+          "category": "公司A",
+          "value": 30
+        },
+        {
+          "category": "公司A",
+          "value": 35
+        },
+        {
+          "category": "公司A",
+          "value": 28
+        },
+        {
+          "category": "公司A",
+          "value": 40
+        },
+        {
+          "category": "公司A",
+          "value": 45
+        },
+        {
+          "category": "公司A",
+          "value": 50
+        },
+        {
+          "category": "公司B",
+          "value": 22
+        },
+        {
+          "category": "公司B",
+          "value": 28
+        },
+        {
+          "category": "公司B",
+          "value": 32
+        },
+        {
+          "category": "公司B",
+          "value": 38
+        },
+        {
+          "category": "公司B",
+          "value": 42
+        },
+        {
+          "category": "公司B",
+          "value": 35
+        },
+        {
+          "category": "公司B",
+          "value": 29
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "我想分析不同运动类型（跑步, 游泳, 瑜伽）的每周锻炼时长（小时）分布。跑步的时长数据是[3, 4, 3.5, 5]，游泳是[2, 2.5, 3, 3.5]，瑜伽是[5, 6, 5.5, 7]。请用小提琴图展示。",
+    "questionWithoutChart": "我想分析不同运动类型（跑步, 游泳, 瑜伽）的每周锻炼时长（小时）分布。跑步的时长数据是[3, 4, 3.5, 5]，游泳是[2, 2.5, 3, 3.5]，瑜伽是[5, 6, 5.5, 7]。请用图表展示。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "跑步",
+          "value": 3
+        },
+        {
+          "category": "跑步",
+          "value": 4
+        },
+        {
+          "category": "跑步",
+          "value": 3.5
+        },
+        {
+          "category": "跑步",
+          "value": 5
+        },
+        {
+          "category": "游泳",
+          "value": 2
+        },
+        {
+          "category": "游泳",
+          "value": 2.5
+        },
+        {
+          "category": "游泳",
+          "value": 3
+        },
+        {
+          "category": "游泳",
+          "value": 3.5
+        },
+        {
+          "category": "瑜伽",
+          "value": 5
+        },
+        {
+          "category": "瑜伽",
+          "value": 6
+        },
+        {
+          "category": "瑜伽",
+          "value": 5.5
+        },
+        {
+          "category": "瑜伽",
+          "value": 7
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "请比较两个在线教育平台（平台A, 平台B）的用户每日使用时长（分钟）分布。平台A的用户使用时长是[30, 45, 60, 50, 70]，平台B是[40, 55, 65, 75, 80]。请用小提琴图进行可视化。",
+    "questionWithoutChart": "请比较两个在线教育平台（平台A, 平台B）的用户每日使用时长（分钟）分布。平台A的用户使用时长是[30, 45, 60, 50, 70]，平台B是[40, 55, 65, 75, 80]。请用图表进行可视化。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "平台A",
+          "value": 30
+        },
+        {
+          "category": "平台A",
+          "value": 45
+        },
+        {
+          "category": "平台A",
+          "value": 60
+        },
+        {
+          "category": "平台A",
+          "value": 50
+        },
+        {
+          "category": "平台A",
+          "value": 70
+        },
+        {
+          "category": "平台B",
+          "value": 40
+        },
+        {
+          "category": "平台B",
+          "value": 55
+        },
+        {
+          "category": "平台B",
+          "value": 65
+        },
+        {
+          "category": "平台B",
+          "value": 75
+        },
+        {
+          "category": "平台B",
+          "value": 80
+        }
+      ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "我想比较不同电影类型（科幻, 喜剧, 恐怖）的观众评分分布。科幻片评分为[8.5, 9.0, 8.2, 7.8]，喜剧片为[7.5, 8.0, 7.2, 6.8]，恐怖片为[6.5, 7.0, 6.2, 5.8]。请用小提琴图展示这些评分的分布情况。",
+    "questionWithoutChart": "我想比较不同电影类型（科幻, 喜剧, 恐怖）的观众评分分布。科幻片评分为[8.5, 9.0, 8.2, 7.8]，喜剧片为[7.5, 8.0, 7.2, 6.8]，恐怖片为[6.5, 7.0, 6.2, 5.8]。请用图表展示这些评分的分布情况。",
+    "answer": {
+      "type": "violin",
+      "data": [
+        {
+          "category": "科幻",
+          "value": 8.5
+        },
+        {
+          "category": "科幻",
+          "value": 9.0
+        },
+        {
+          "category": "科幻",
+          "value": 8.2
+        },
+        {
+          "category": "科幻",
+          "value": 7.8
+        },
+        {
+          "category": "喜剧",
+          "value": 7.5
+        },
+        {
+          "category": "喜剧",
+          "value": 8.0
+        },
+        {
+          "category": "喜剧",
+          "value": 7.2
+        },
+        {
+          "category": "喜剧",
+          "value": 6.8
+        },
+        {
+          "category": "恐怖",
+          "value": 6.5
+        },
+        {
+          "category": "恐怖",
+          "value": 7.0
+        },
+        {
+          "category": "恐怖",
+          "value": 6.2
+        },
+        {
+          "category": "恐怖",
+          "value": 5.8
+        }
+      ]
+    }
+  }
+]

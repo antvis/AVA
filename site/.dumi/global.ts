@@ -6,6 +6,11 @@ if (window) {
   (window as any).gptVis = require('@antv/gpt-vis');
   (window as any).ava = require('../../src');
 
+  try {
+    console.debug(process.env);
+  } catch(e) {
+    console.error(e);
+  }
   // require('antd/lib/alert/style/index.css');
   // require('katex/dist/katex.min.css');
 }

@@ -1,0 +1,763 @@
+[
+  {
+    "type": "text2chart",
+    "question": "某公司组织架构：总经理下设技术部、销售部、人事部，技术部下设前端组、后端组、测试组，用缩进树图展示公司组织结构",
+    "questionWithoutChart": "某公司组织架构：总经理下设技术部、销售部、人事部，技术部下设前端组、后端组、测试组，用图表展示公司组织结构",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "总经理",
+        "children": [
+          {
+            "name": "技术部",
+            "children": [
+              {
+                "name": "前端组"
+              },
+              {
+                "name": "后端组"
+              },
+              {
+                "name": "测试组"
+              }
+            ]
+          },
+          {
+            "name": "销售部"
+          },
+          {
+            "name": "人事部"
+          }
+        ]
+      },
+      "title": "公司组织架构图"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "总经理",
+          "children": [
+            {
+              "name": "技术部",
+              "children": [
+                {
+                  "name": "前端组"
+                },
+                {
+                  "name": "后端组"
+                },
+                {
+                  "name": "测试组"
+                }
+              ]
+            },
+            {
+              "name": "销售部"
+            },
+            {
+              "name": "人事部"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "部门名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "组织架构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "公司组织架构层级关系"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某文件系统目录结构：根目录下有文档、图片、视频三个文件夹，文档文件夹下有工作、学习、个人三个子文件夹，用缩进树图展示文件系统结构",
+    "questionWithoutChart": "某文件系统目录结构：根目录下有文档、图片、视频三个文件夹，文档文件夹下有工作、学习、个人三个子文件夹，用图表展示文件系统结构",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "根目录",
+        "children": [
+          {
+            "name": "文档",
+            "children": [
+              {
+                "name": "工作"
+              },
+              {
+                "name": "学习"
+              },
+              {
+                "name": "个人"
+              }
+            ]
+          },
+          {
+            "name": "图片"
+          },
+          {
+            "name": "视频"
+          }
+        ]
+      },
+      "title": "文件系统目录结构"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "根目录",
+          "children": [
+            {
+              "name": "文档",
+              "children": [
+                {
+                  "name": "工作"
+                },
+                {
+                  "name": "学习"
+                },
+                {
+                  "name": "个人"
+                }
+              ]
+            },
+            {
+              "name": "图片"
+            },
+            {
+              "name": "视频"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "目录名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "目录结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "文件系统目录层级结构"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某产品分类体系：电子产品包含手机、电脑、平板，手机又分为苹果、华为、小米三个品牌，用缩进树图展示产品分类层级",
+    "questionWithoutChart": "某产品分类体系：电子产品包含手机、电脑、平板，手机又分为苹果、华为、小米三个品牌，用图表展示产品分类层级",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "电子产品",
+        "children": [
+          {
+            "name": "手机",
+            "children": [
+              {
+                "name": "苹果"
+              },
+              {
+                "name": "华为"
+              },
+              {
+                "name": "小米"
+              }
+            ]
+          },
+          {
+            "name": "电脑"
+          },
+          {
+            "name": "平板"
+          }
+        ]
+      },
+      "title": "产品分类体系"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "电子产品",
+          "children": [
+            {
+              "name": "手机",
+              "children": [
+                {
+                  "name": "苹果"
+                },
+                {
+                  "name": "华为"
+                },
+                {
+                  "name": "小米"
+                }
+              ]
+            },
+            {
+              "name": "电脑"
+            },
+            {
+              "name": "平板"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "产品类别",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "产品分类",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "产品分类层级关系"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某学校课程体系：理工科包含数学、物理、化学，文科包含语文、历史、地理，用缩进树图展示学科分类结构",
+    "questionWithoutChart": "某学校课程体系：理工科包含数学、物理、化学，文科包含语文、历史、地理，用图表展示学科分类结构",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "课程",
+        "children": [
+          {
+            "name": "理工科",
+            "children": [
+              {
+                "name": "数学"
+              },
+              {
+                "name": "物理"
+              },
+              {
+                "name": "化学"
+              }
+            ]
+          },
+          {
+            "name": "文科",
+            "children": [
+              {
+                "name": "语文"
+              },
+              {
+                "name": "历史"
+              },
+              {
+                "name": "地理"
+              }
+            ]
+          }
+        ]
+      },
+      "title": "学校课程体系结构"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "课程",
+          "children": [
+            {
+              "name": "理工科",
+              "children": [
+                {
+                  "name": "数学"
+                },
+                {
+                  "name": "物理"
+                },
+                {
+                  "name": "化学"
+                }
+              ]
+            },
+            {
+              "name": "文科",
+              "children": [
+                {
+                  "name": "语文"
+                },
+                {
+                  "name": "历史"
+                },
+                {
+                  "name": "地理"
+                }
+              ]
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "学科名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "课程体系",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "学校课程体系分类结构"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某项目管理任务分解：项目A包含需求分析、设计开发、测试上线三个阶段，每个阶段又有具体任务，用缩进树图展示项目任务结构",
+    "questionWithoutChart": "某项目管理任务分解：项目A包含需求分析、设计开发、测试上线三个阶段，每个阶段又有具体任务，用图表展示项目任务结构",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "项目A",
+        "children": [
+          {
+            "name": "需求分析",
+            "children": [
+              {
+                "name": "用户调研"
+              },
+              {
+                "name": "需求文档"
+              }
+            ]
+          },
+          {
+            "name": "设计开发",
+            "children": [
+              {
+                "name": "UI设计"
+              },
+              {
+                "name": "功能开发"
+              }
+            ]
+          },
+          {
+            "name": "测试上线",
+            "children": [
+              {
+                "name": "功能测试"
+              },
+              {
+                "name": "部署上线"
+              }
+            ]
+          }
+        ]
+      },
+      "title": "项目任务分解结构"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "项目A",
+          "children": [
+            {
+              "name": "需求分析",
+              "children": [
+                {
+                  "name": "用户调研"
+                },
+                {
+                  "name": "需求文档"
+                }
+              ]
+            },
+            {
+              "name": "设计开发",
+              "children": [
+                {
+                  "name": "UI设计"
+                },
+                {
+                  "name": "功能开发"
+                }
+              ]
+            },
+            {
+              "name": "测试上线",
+              "children": [
+                {
+                  "name": "功能测试"
+                },
+                {
+                  "name": "部署上线"
+                }
+              ]
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "任务名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "任务分解",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "项目任务层级分解结构"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某网站导航菜单结构：首页、产品、服务、关于我们四个主要栏目，产品栏目下又有子分类，用缩进树图展示网站导航层级",
+    "questionWithoutChart": "某网站导航菜单结构：首页、产品、服务、关于我们四个主要栏目，产品栏目下又有子分类，用图表展示网站导航层级",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "网站导航",
+        "children": [
+          {
+            "name": "首页"
+          },
+          {
+            "name": "产品",
+            "children": [
+              {
+                "name": "产品A"
+              },
+              {
+                "name": "产品B"
+              },
+              {
+                "name": "产品C"
+              }
+            ]
+          },
+          {
+            "name": "服务"
+          },
+          {
+            "name": "关于我们"
+          }
+        ]
+      },
+      "title": "网站导航菜单结构"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "网站导航",
+          "children": [
+            {
+              "name": "首页"
+            },
+            {
+              "name": "产品",
+              "children": [
+                {
+                  "name": "产品A"
+                },
+                {
+                  "name": "产品B"
+                },
+                {
+                  "name": "产品C"
+                }
+              ]
+            },
+            {
+              "name": "服务"
+            },
+            {
+              "name": "关于我们"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "导航项",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "导航结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "网站导航菜单层级结构"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某图书馆图书分类：自然科学类包含生物、化学、物理，社会科学类包含经济、法律、教育，用缩进树图展示图书分类体系",
+    "questionWithoutChart": "某图书馆图书分类：自然科学类包含生物、化学、物理，社会科学类包含经济、法律、教育，用图表展示图书分类体系",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "图书分类",
+        "children": [
+          {
+            "name": "自然科学",
+            "children": [
+              {
+                "name": "生物"
+              },
+              {
+                "name": "化学"
+              },
+              {
+                "name": "物理"
+              }
+            ]
+          },
+          {
+            "name": "社会科学",
+            "children": [
+              {
+                "name": "经济"
+              },
+              {
+                "name": "法律"
+              },
+              {
+                "name": "教育"
+              }
+            ]
+          }
+        ]
+      },
+      "title": "图书馆图书分类体系"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "图书分类",
+          "children": [
+            {
+              "name": "自然科学",
+              "children": [
+                {
+                  "name": "生物"
+                },
+                {
+                  "name": "化学"
+                },
+                {
+                  "name": "物理"
+                }
+              ]
+            },
+            {
+              "name": "社会科学",
+              "children": [
+                {
+                  "name": "经济"
+                },
+                {
+                  "name": "法律"
+                },
+                {
+                  "name": "教育"
+                }
+              ]
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "分类名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "图书分类",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "图书馆图书分类层级体系"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某电商平台商品分类：数码家电包含手机、电脑、相机，服装鞋帽包含男装、女装、童装，用缩进树图展示商品分类结构",
+    "questionWithoutChart": "某电商平台商品分类：数码家电包含手机、电脑、相机，服装鞋帽包含男装、女装、童装，用图表展示商品分类结构",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "商品分类",
+        "children": [
+          {
+            "name": "数码家电",
+            "children": [
+              {
+                "name": "手机"
+              },
+              {
+                "name": "电脑"
+              },
+              {
+                "name": "相机"
+              }
+            ]
+          },
+          {
+            "name": "服装鞋帽",
+            "children": [
+              {
+                "name": "男装"
+              },
+              {
+                "name": "女装"
+              },
+              {
+                "name": "童装"
+              }
+            ]
+          }
+        ]
+      },
+      "title": "电商平台商品分类结构"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "商品分类",
+          "children": [
+            {
+              "name": "数码家电",
+              "children": [
+                {
+                  "name": "手机"
+                },
+                {
+                  "name": "电脑"
+                },
+                {
+                  "name": "相机"
+                }
+              ]
+            },
+            {
+              "name": "服装鞋帽",
+              "children": [
+                {
+                  "name": "男装"
+                },
+                {
+                  "name": "女装"
+                },
+                {
+                  "name": "童装"
+                }
+              ]
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "分类名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "商品分类",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "电商平台商品分类层级结构"
+        }
+      }
+    ]
+  },
+  {
+    "type": "text2chart",
+    "question": "某项目管理团队成员结构：项目经理负责整体管理，下设技术负责人和业务负责人，技术负责人管理前端和后端开发，用缩进树图展示项目团队结构",
+    "questionWithoutChart": "某项目管理团队成员结构：项目经理负责整体管理，下设技术负责人和业务负责人，技术负责人管理前端和后端开发，用图表展示项目团队结构",
+    "answer": {
+      "type": "indented-tree",
+      "data": {
+        "name": "项目经理",
+        "children": [
+          {
+            "name": "技术负责人",
+            "children": [
+              {
+                "name": "前端开发"
+              },
+              {
+                "name": "后端开发"
+              }
+            ]
+          },
+          {
+            "name": "业务负责人"
+          }
+        ]
+      },
+      "title": "项目团队组织结构"
+    },
+    "dataShards": [
+      {
+        "shape": "tree",
+        "data": {
+          "name": "项目经理",
+          "children": [
+            {
+              "name": "技术负责人",
+              "children": [
+                {
+                  "name": "前端开发"
+                },
+                {
+                  "name": "后端开发"
+                }
+              ]
+            },
+            {
+              "name": "业务负责人"
+            }
+          ]
+        },
+        "metas": [
+          {
+            "id": "name",
+            "name": "职位名称",
+            "dataType": "string"
+          }
+        ],
+        "purpose": {
+          "name": "团队结构",
+          "key": "name",
+          "purpose": "Hierarchy",
+          "purposeDesc": "项目团队成员层级结构"
+        }
+      }
+    ]
+  }
+]
