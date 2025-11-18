@@ -12,7 +12,7 @@ redirect_from:
 <div align="center">
 
 <i>A framework for **A**I driven **V**isual **A**nalytics.</i>
-<i><a href="https://ava.antv.antgroup.com/"><https://ava.antv.antgroup.com></a></i>
+<i><a href="https://ava.antv.antgroup.com/">https://ava.antv.antgroup.com</a></i>
 
 </div>
 
