@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import _ from 'lodash';
 import { Advisor } from '../../src/advisor';
-import { loadDataset } from './loadDataset';
+import { loadDataset } from './utils/loadDataset';
 
 const sleep = (duration: number) => {
   return new Promise((resolve) => {

@@ -2,9 +2,7 @@ import _ from 'lodash';
 import fs from 'fs';
 import path from 'path';
 
-const dirname = path.dirname(__filename);
-
-const DIR_PATH = path.resolve(dirname, './datasets');
+const DIR_PATH = path.resolve(process.cwd(), '__tests__/evaluation/datasets');
 
 export const loadDataset = (dirname: string) => {
   if (!dirname) return [];
