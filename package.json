@@ -28,8 +28,8 @@
     "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib",
     "build": "run-p build:*",
     "test": "jest",
-    "evaluate": "jest --config=jest.config.evaluate.js",
-    "evaluate:advise": "jest --config=jest.config.evaluate.js __tests__/evaluation/advise",
+    "evaluate": "jest --runInBand --config=jest.config.evaluate.js",
+    "evaluate:advise": "jest --runInBand --config=jest.config.evaluate.js __tests__/evaluation/evaluate-advise",
     "evaluate:extract": "jest --config=jest.config.evaluate.js --runInBand __tests__/evaluation/extract/step1-generate.test.ts __tests__/evaluation/extract/step2-evaluate.test.ts __tests__/evaluation/extract/step3-assert.test.ts",
     "lint-staged": "lint-staged",
     "coverage": "jest --coverage"
