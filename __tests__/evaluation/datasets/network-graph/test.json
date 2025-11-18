@@ -1,2724 +1,410 @@
 [
   {
     "type": "text2chart",
-    "question": "在《复仇者联盟》中，主要人物包括钢铁侠、美国队长、雷神、绿巨人、黑寡妇和鹰眼。钢铁侠、雷神、绿巨人和美国队长互为队友。黑寡妇和鹰眼是长期的合作伙伴。用网络图可视化这些超级英雄的关系。",
-    "questionWithoutChart": "在《复仇者联盟》中，主要人物包括钢铁侠、美国队长、雷神、绿巨人、黑寡妇和鹰眼。钢铁侠、雷神、绿巨人和美国队长互为队友。黑寡妇和鹰眼是长期的合作伙伴。用图表可视化这些超级英雄的关系。",
+    "question": "创建一个社交网络图，展示 Alice、Bob、Charlie 和 David 之间的朋友关系。节点是这四个人，他们之间的关系是：Alice 是 Bob 和 Charlie 的朋友，Bob 和 Charlie 也是朋友，Charlie 还认识 David。请用网络图表示这些关系。",
+"questionWithoutChart": "我想为我的社交网络创建一个图表。节点包括 Alice、Bob、Charlie 和 David。他们之间的关系是：Alice 是 Bob 和 Charlie 的朋友，Bob 和 Charlie 也是朋友，Charlie 还认识 David。",
     "answer": {
       "type": "network-graph",
       "data": {
         "nodes": [
           {
-            "name": "钢铁侠"
+            "name": "Alice"
           },
           {
-            "name": "美国队长"
+            "name": "Bob"
           },
           {
-            "name": "雷神"
+            "name": "Charlie"
           },
           {
-            "name": "绿巨人"
-          },
-          {
-            "name": "黑寡妇"
-          },
-          {
-            "name": "鹰眼"
+            "name": "David"
           }
         ],
         "edges": [
           {
-            "source": "钢铁侠",
-            "target": "美国队长",
-            "name": "队友"
+            "source": "Alice",
+            "target": "Bob"
           },
           {
-            "source": "钢铁侠",
-            "target": "雷神",
-            "name": "队友"
+            "source": "Alice",
+            "target": "Charlie"
           },
           {
-            "source": "钢铁侠",
-            "target": "绿巨人",
-            "name": "队友"
+            "source": "Bob",
+            "target": "Charlie"
           },
           {
-            "source": "美国队长",
-            "target": "雷神",
-            "name": "队友"
-          },
-          {
-            "source": "美国队长",
-            "target": "绿巨人",
-            "name": "队友"
-          },
-          {
-            "source": "雷神",
-            "target": "绿巨人",
-            "name": "队友"
-          },
-          {
-            "source": "黑寡妇",
-            "target": "鹰眼",
-            "name": "合作伙伴"
-          }
-        ]
-      }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "name": "钢铁侠"
-            },
-            {
-              "name": "美国队长"
-            },
-            {
-              "name": "雷神"
-            },
-            {
-              "name": "绿巨人"
-            },
-            {
-              "name": "黑寡妇"
-            },
-            {
-              "name": "鹰眼"
-            }
-          ],
-          "edges": [
-            {
-              "source": "钢铁侠",
-              "target": "美国队长",
-              "name": "队友"
-            },
-            {
-              "source": "钢铁侠",
-              "target": "雷神",
-              "name": "队友"
-            },
-            {
-              "source": "钢铁侠",
-              "target": "绿巨人",
-              "name": "队友"
-            },
-            {
-              "source": "美国队长",
-              "target": "雷神",
-              "name": "队友"
-            },
-            {
-              "source": "美国队长",
-              "target": "绿巨人",
-              "name": "队友"
-            },
-            {
-              "source": "雷神",
-              "target": "绿巨人",
-              "name": "队友"
-            },
-            {
-              "source": "黑寡妇",
-              "target": "鹰眼",
-              "name": "合作伙伴"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "超级英雄名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "关系来源",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "关系目标",
-            "dataType": "string"
-          },
-          {
-            "id": "name",
-            "name": "关系类型",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "超级英雄关系",
-          "key": "edges",
-          "purpose": "Relationship",
-          "purposeDesc": "复仇者联盟主要人物关系网络"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "漫威宇宙中充满了复杂的人物关系网络，构建了一个错综复杂的世界。复仇者联盟的核心成员包括钢铁侠、美国队长、雷神、绿巨人、黑寡妇和鹰眼，他们之间既是队友又时常因理念不同发生冲突。钢铁侠如同蜘蛛侠的导师，与美国队长从对立到并肩作战。雷神与他的兄弟洛基有时是敌人，有时是盟友。X战警中的教授X和万磁王是亦敌亦友，金刚狼与凤凰女、镭射眼等都有深厚的战友情谊。银河护卫队中的星爵和卡魔拉发展出复杂的感情，而火箭浣熊与格鲁特组成了默契的搭档。灭霸是所有英雄的共同敌人，他与卡魔拉、星云之间的父女关系增添了故事的深度。奇异博士、蚁人等英雄也与复仇者有着密切的合作，面对共同的威胁。九头蛇作为持续的反派势力，与美国队长有深仇大恨。将此人物关系网络可视化出来。",
-    "questionWithoutChart": "漫威宇宙中充满了复杂的人物关系网络，构建了一个错综复杂的世界。复仇者联盟的核心成员包括钢铁侠、美国队长、雷神、绿巨人、黑寡妇和鹰眼，他们之间既是队友又时常因理念不同发生冲突。钢铁侠如同蜘蛛侠的导师，与美国队长从对立到并肩作战。雷神与他的兄弟洛基有时是敌人，有时是盟友。X战警中的教授X和万磁王是亦敌亦友，金刚狼与凤凰女、镭射眼等都有深厚的战友情谊。银河护卫队中的星爵和卡魔拉发展出复杂的感情，而火箭浣熊与格鲁特组成了默契的搭档。灭霸是所有英雄的共同敌人，他与卡魔拉、星云之间的父女关系增添了故事的深度。奇异博士、蚁人等英雄也与复仇者有着密切的合作，面对共同的威胁。九头蛇作为持续的反派势力，与美国队长有深仇大恨。将此人物关系网络可视化出来。",
-    "answer": {
-      "type": "network-graph",
-      "data": {
-        "nodes": [
-          {
-            "name": "钢铁侠"
-          },
-          {
-            "name": "美国队长"
-          },
-          {
-            "name": "雷神"
-          },
-          {
-            "name": "绿巨人"
-          },
-          {
-            "name": "黑寡妇"
-          },
-          {
-            "name": "鹰眼"
-          },
-          {
-            "name": "蜘蛛侠"
-          },
-          {
-            "name": "洛基"
-          },
-          {
-            "name": "教授X"
-          },
-          {
-            "name": "万磁王"
-          },
-          {
-            "name": "金刚狼"
-          },
-          {
-            "name": "凤凰女"
-          },
-          {
-            "name": "镭射眼"
-          },
-          {
-            "name": "星爵"
-          },
-          {
-            "name": "卡魔拉"
-          },
-          {
-            "name": "火箭浣熊"
-          },
-          {
-            "name": "格鲁特"
-          },
-          {
-            "name": "灭霸"
-          },
-          {
-            "name": "星云"
-          },
-          {
-            "name": "奇异博士"
-          },
-          {
-            "name": "蚁人"
-          },
-          {
-            "name": "九头蛇"
-          }
-        ],
-        "edges": [
-          {
-            "source": "钢铁侠",
-            "target": "美国队长",
-            "name": "队友/对立"
-          },
-          {
-            "source": "钢铁侠",
-            "target": "蜘蛛侠",
-            "name": "导师"
-          },
-          {
-            "source": "美国队长",
-            "target": "九头蛇",
-            "name": "敌人"
-          },
-          {
-            "source": "雷神",
-            "target": "洛基",
-            "name": "兄弟/敌人"
-          },
-          {
-            "source": "黑寡妇",
-            "target": "鹰眼",
-            "name": "战友"
-          },
-          {
-            "source": "教授X",
-            "target": "万磁王",
-            "name": "亦敌亦友"
-          },
-          {
-            "source": "金刚狼",
-            "target": "凤凰女",
-            "name": "战友"
-          },
-          {
-            "source": "金刚狼",
-            "target": "镭射眼",
-            "name": "战友"
-          },
-          {
-            "source": "星爵",
-            "target": "卡魔拉",
-            "name": "感情"
-          },
-          {
-            "source": "火箭浣熊",
-            "target": "格鲁特",
-            "name": "搭档"
-          },
-          {
-            "source": "灭霸",
-            "target": "卡魔拉",
-            "name": "父女"
-          },
-          {
-            "source": "灭霸",
-            "target": "星云",
-            "name": "父女"
-          },
-          {
-            "source": "奇异博士",
-            "target": "复仇者联盟",
-            "name": "盟友"
-          },
-          {
-            "source": "蚁人",
-            "target": "复仇者联盟",
-            "name": "盟友"
-          }
-        ]
-      }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "name": "钢铁侠"
-            },
-            {
-              "name": "美国队长"
-            },
-            {
-              "name": "雷神"
-            },
-            {
-              "name": "绿巨人"
-            },
-            {
-              "name": "黑寡妇"
-            },
-            {
-              "name": "鹰眼"
-            },
-            {
-              "name": "蜘蛛侠"
-            },
-            {
-              "name": "洛基"
-            },
-            {
-              "name": "教授X"
-            },
-            {
-              "name": "万磁王"
-            },
-            {
-              "name": "金刚狼"
-            },
-            {
-              "name": "凤凰女"
-            },
-            {
-              "name": "镭射眼"
-            },
-            {
-              "name": "星爵"
-            },
-            {
-              "name": "卡魔拉"
-            },
-            {
-              "name": "火箭浣熊"
-            },
-            {
-              "name": "格鲁特"
-            },
-            {
-              "name": "灭霸"
-            },
-            {
-              "name": "星云"
-            },
-            {
-              "name": "奇异博士"
-            },
-            {
-              "name": "蚁人"
-            },
-            {
-              "name": "九头蛇"
-            }
-          ],
-          "edges": [
-            {
-              "source": "钢铁侠",
-              "target": "美国队长",
-              "name": "队友/对立"
-            },
-            {
-              "source": "钢铁侠",
-              "target": "蜘蛛侠",
-              "name": "导师"
-            },
-            {
-              "source": "美国队长",
-              "target": "九头蛇",
-              "name": "敌人"
-            },
-            {
-              "source": "雷神",
-              "target": "洛基",
-              "name": "兄弟/敌人"
-            },
-            {
-              "source": "黑寡妇",
-              "target": "鹰眼",
-              "name": "战友"
-            },
-            {
-              "source": "教授X",
-              "target": "万磁王",
-              "name": "亦敌亦友"
-            },
-            {
-              "source": "金刚狼",
-              "target": "凤凰女",
-              "name": "战友"
-            },
-            {
-              "source": "金刚狼",
-              "target": "镭射眼",
-              "name": "战友"
-            },
-            {
-              "source": "星爵",
-              "target": "卡魔拉",
-              "name": "感情"
-            },
-            {
-              "source": "火箭浣熊",
-              "target": "格鲁特",
-              "name": "搭档"
-            },
-            {
-              "source": "灭霸",
-              "target": "卡魔拉",
-              "name": "父女"
-            },
-            {
-              "source": "灭霸",
-              "target": "星云",
-              "name": "父女"
-            },
-            {
-              "source": "奇异博士",
-              "target": "复仇者联盟",
-              "name": "盟友"
-            },
-            {
-              "source": "蚁人",
-              "target": "复仇者联盟",
-              "name": "盟友"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "人物名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "关系来源",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "关系目标",
-            "dataType": "string"
-          },
-          {
-            "id": "relation",
-            "name": "关系类型",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "人物关系",
-          "key": "edges",
-          "purpose": "Relationship",
-          "purposeDesc": "漫威宇宙人物关系网络可视化"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "用网络图来展示出迪士尼的各个角色之间的关系。",
-    "questionWithoutChart": "用图表来展示出迪士尼的各个角色之间的关系。",
-    "answer": {
-      "type": "network-graph",
-      "data": {
-        "nodes": [
-          {
-            "name": "米老鼠"
-          },
-          {
-            "name": "唐老鸭"
-          },
-          {
-            "name": "布鲁托"
-          },
-          {
-            "name": "黛西"
-          },
-          {
-            "name": "高飞"
-          },
-          {
-            "name": "明妮"
-          },
-          {
-            "name": "奥斯瓦尔德"
-          },
-          {
-            "name": "皮特"
-          },
-          {
-            "name": "艾尔莎"
-          },
-          {
-            "name": "安娜"
-          },
-          {
-            "name": "雪宝"
-          },
-          {
-            "name": "奥拉夫"
-          },
-          {
-            "name": "克里斯托夫"
-          },
-          {
-            "name": "斯文"
-          },
-          {
-            "name": "老虎"
-          },
-          {
-            "name": "狮子王"
-          },
-          {
-            "name": "辛巴"
-          },
-          {
-            "name": "木法沙"
-          },
-          {
-            "name": "刀疤"
-          },
-          {
-            "name": "拉风"
-          },
-          {
-            "name": "蒂莫尼"
-          },
-          {
-            "name": "茉莉"
-          },
-          {
-            "name": "阿拉丁"
-          },
-          {
-            "name": "贾方"
-          },
-          {
-            "name": "阿布"
-          },
-          {
-            "name": "贾法尔"
-          },
-          {
-            "name": "茉莉的妈妈"
-          },
-          {
-            "name": "茉莉的爸爸"
-          }
-        ],
-        "edges": [
-          {
-            "source": "米老鼠",
-            "target": "唐老鸭",
-            "name": "朋友"
-          },
-          {
-            "source": "米老鼠",
-            "target": "布鲁托",
-            "name": "宠物"
-          },
-          {
-            "source": "米老鼠",
-            "target": "黛西",
-            "name": "恋人"
-          },
-          {
-            "source": "米老鼠",
-            "target": "高飞",
-            "name": "朋友"
-          },
-          {
-            "source": "米老鼠",
-            "target": "明妮",
-            "name": "朋友"
-          },
-          {
-            "source": "唐老鸭",
-            "target": "布鲁托",
-            "name": "宠物"
-          },
-          {
-            "source": "唐老鸭",
-            "target": "奥斯瓦尔德",
-            "name": "敌人"
-          },
-          {
-            "source": "唐老鸭",
-            "target": "皮特",
-            "name": "敌人"
-          },
-          {
-            "source": "艾尔莎",
-            "target": "安娜",
-            "name": "姐妹"
-          },
-          {
-            "source": "艾尔莎",
-            "target": "雪宝",
-            "name": "朋友"
-          },
-          {
-            "source": "艾尔莎",
-            "target": "奥拉夫",
-            "name": "朋友"
-          },
-          {
-            "source": "安娜",
-            "target": "克里斯托夫",
-            "name": "朋友"
-          },
-          {
-            "source": "安娜",
-            "target": "斯文",
-            "name": "朋友"
-          },
-          {
-            "source": "老虎",
-            "target": "狮子王",
-            "name": "敌人"
-          },
-          {
-            "source": "狮子王",
-            "target": "辛巴",
-            "name": "父亲"
-          },
-          {
-            "source": "狮子王",
-            "target": "木法沙",
-            "name": "儿子"
-          },
-          {
-            "source": "狮子王",
-            "target": "刀疤",
-            "name": "敌人"
-          },
-          {
-            "source": "狮子王",
-            "target": "拉风",
-            "name": "朋友"
-          },
-          {
-            "source": "蒂莫尼",
-            "target": "茉莉",
-            "name": "朋友"
-          },
-          {
-            "source": "茉莉",
-            "target": "阿拉丁",
-            "name": "恋人"
-          },
-          {
-            "source": "茉莉",
-            "target": "贾方",
-            "name": "敌人"
-          },
-          {
-            "source": "茉莉",
-            "target": "阿布",
-            "name": "朋友"
-          },
-          {
-            "source": "茉莉",
-            "target": "贾法尔",
-            "name": "父亲"
-          },
-          {
-            "source": "茉莉",
-            "target": "茉莉的妈妈",
-            "name": "母亲"
-          },
-          {
-            "source": "茉莉",
-            "target": "茉莉的爸爸",
-            "name": "父亲"
-          }
-        ]
-      }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "id": "米老鼠",
-              "name": "米老鼠"
-            },
-            {
-              "id": "唐老鸭",
-              "name": "唐老鸭"
-            },
-            {
-              "id": "布鲁托",
-              "name": "布鲁托"
-            },
-            {
-              "id": "黛西",
-              "name": "黛西"
-            },
-            {
-              "id": "高飞",
-              "name": "高飞"
-            },
-            {
-              "id": "明妮",
-              "name": "明妮"
-            },
-            {
-              "id": "奥斯瓦尔德",
-              "name": "奥斯瓦尔德"
-            },
-            {
-              "id": "皮特",
-              "name": "皮特"
-            },
-            {
-              "id": "艾尔莎",
-              "name": "艾尔莎"
-            },
-            {
-              "id": "安娜",
-              "name": "安娜"
-            },
-            {
-              "id": "雪宝",
-              "name": "雪宝"
-            },
-            {
-              "id": "奥拉夫",
-              "name": "奥拉夫"
-            },
-            {
-              "id": "克里斯托夫",
-              "name": "克里斯托夫"
-            },
-            {
-              "id": "斯文",
-              "name": "斯文"
-            },
-            {
-              "id": "老虎",
-              "name": "老虎"
-            },
-            {
-              "id": "狮子王",
-              "name": "狮子王"
-            },
-            {
-              "id": "辛巴",
-              "name": "辛巴"
-            },
-            {
-              "id": "木法沙",
-              "name": "木法沙"
-            },
-            {
-              "id": "刀疤",
-              "name": "刀疤"
-            },
-            {
-              "id": "拉风",
-              "name": "拉风"
-            },
-            {
-              "id": "蒂莫尼",
-              "name": "蒂莫尼"
-            },
-            {
-              "id": "茉莉",
-              "name": "茉莉"
-            },
-            {
-              "id": "阿拉丁",
-              "name": "阿拉丁"
-            },
-            {
-              "id": "贾方",
-              "name": "贾方"
-            },
-            {
-              "id": "阿布",
-              "name": "阿布"
-            },
-            {
-              "id": "贾法尔",
-              "name": "贾法尔"
-            },
-            {
-              "id": "茉莉的妈妈",
-              "name": "茉莉的妈妈"
-            },
-            {
-              "id": "茉莉的爸爸",
-              "name": "茉莉的爸爸"
-            }
-          ],
-          "edges": [
-            {
-              "source": "米老鼠",
-              "target": "唐老鸭",
-              "name": "朋友"
-            },
-            {
-              "source": "米老鼠",
-              "target": "布鲁托",
-              "name": "宠物"
-            },
-            {
-              "source": "米老鼠",
-              "target": "黛西",
-              "name": "恋人"
-            },
-            {
-              "source": "米老鼠",
-              "target": "高飞",
-              "name": "朋友"
-            },
-            {
-              "source": "米老鼠",
-              "target": "明妮",
-              "name": "朋友"
-            },
-            {
-              "source": "唐老鸭",
-              "target": "布鲁托",
-              "name": "宠物"
-            },
-            {
-              "source": "唐老鸭",
-              "target": "奥斯瓦尔德",
-              "name": "敌人"
-            },
-            {
-              "source": "唐老鸭",
-              "target": "皮特",
-              "name": "敌人"
-            },
-            {
-              "source": "艾尔莎",
-              "target": "安娜",
-              "name": "姐妹"
-            },
-            {
-              "source": "艾尔莎",
-              "target": "雪宝",
-              "name": "朋友"
-            },
-            {
-              "source": "艾尔莎",
-              "target": "奥拉夫",
-              "name": "朋友"
-            },
-            {
-              "source": "安娜",
-              "target": "克里斯托夫",
-              "name": "朋友"
-            },
-            {
-              "source": "安娜",
-              "target": "斯文",
-              "name": "朋友"
-            },
-            {
-              "source": "老虎",
-              "target": "狮子王",
-              "name": "敌人"
-            },
-            {
-              "source": "狮子王",
-              "target": "辛巴",
-              "name": "父亲"
-            },
-            {
-              "source": "狮子王",
-              "target": "木法沙",
-              "name": "儿子"
-            },
-            {
-              "source": "狮子王",
-              "target": "刀疤",
-              "name": "敌人"
-            },
-            {
-              "source": "狮子王",
-              "target": "拉风",
-              "name": "朋友"
-            },
-            {
-              "source": "蒂莫尼",
-              "target": "茉莉",
-              "name": "朋友"
-            },
-            {
-              "source": "茉莉",
-              "target": "阿拉丁",
-              "name": "恋人"
-            },
-            {
-              "source": "茉莉",
-              "target": "贾方",
-              "name": "敌人"
-            },
-            {
-              "source": "茉莉",
-              "target": "阿布",
-              "name": "朋友"
-            },
-            {
-              "source": "茉莉",
-              "target": "贾法尔",
-              "name": "父亲"
-            },
-            {
-              "source": "茉莉",
-              "target": "茉莉的妈妈",
-              "name": "母亲"
-            },
-            {
-              "source": "茉莉",
-              "target": "茉莉的爸爸",
-              "name": "父亲"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "角色名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "来源角色",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "目标角色",
-            "dataType": "string"
-          },
-          {
-            "id": "name",
-            "name": "关系类型",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "角色关系",
-          "key": "name",
-          "purpose": "Relationship",
-          "purposeDesc": "迪士尼角色之间的关系网络"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "以米奇为中心展开他的社交圈并可视化出来",
-    "questionWithoutChart": "以米奇为中心展开他的社交圈并可视化出来",
-    "answer": {
-      "type": "network-graph",
-      "data": {
-        "nodes": [
-          {
-            "name": "米老鼠"
-          },
-          {
-            "name": "唐老鸭"
-          },
-          {
-            "name": "布鲁托"
-          },
-          {
-            "name": "黛西"
-          },
-          {
-            "name": "高飞"
-          },
-          {
-            "name": "明妮"
-          },
-          {
-            "name": "奥斯瓦尔德"
-          },
-          {
-            "name": "皮特"
-          }
-        ],
-        "edges": [
-          {
-            "source": "米老鼠",
-            "target": "唐老鸭",
-            "name": "朋友"
-          },
-          {
-            "source": "米老鼠",
-            "target": "布鲁托",
-            "name": "宠物"
-          },
-          {
-            "source": "米老鼠",
-            "target": "黛西",
-            "name": "恋人"
-          },
-          {
-            "source": "米老鼠",
-            "target": "高飞",
-            "name": "朋友"
-          },
-          {
-            "source": "米老鼠",
-            "target": "明妮",
-            "name": "朋友"
-          },
-          {
-            "source": "唐老鸭",
-            "target": "布鲁托",
-            "name": "宠物"
-          },
-          {
-            "source": "唐老鸭",
-            "target": "奥斯瓦尔德",
-            "name": "敌人"
-          },
-          {
-            "source": "唐老鸭",
-            "target": "皮特",
-            "name": "敌人"
-          }
-        ]
-      }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "id": "米老鼠",
-              "name": "米老鼠"
-            },
-            {
-              "id": "唐老鸭",
-              "name": "唐老鸭"
-            },
-            {
-              "id": "布鲁托",
-              "name": "布鲁托"
-            },
-            {
-              "id": "黛西",
-              "name": "黛西"
-            },
-            {
-              "id": "高飞",
-              "name": "高飞"
-            },
-            {
-              "id": "明妮",
-              "name": "明妮"
-            },
-            {
-              "id": "奥斯瓦尔德",
-              "name": "奥斯瓦尔德"
-            },
-            {
-              "id": "皮特",
-              "name": "皮特"
-            }
-          ],
-          "edges": [
-            {
-              "source": "米老鼠",
-              "target": "唐老鸭",
-              "name": "朋友"
-            },
-            {
-              "source": "米老鼠",
-              "target": "布鲁托",
-              "name": "宠物"
-            },
-            {
-              "source": "米老鼠",
-              "target": "黛西",
-              "name": "恋人"
-            },
-            {
-              "source": "米老鼠",
-              "target": "高飞",
-              "name": "朋友"
-            },
-            {
-              "source": "米老鼠",
-              "target": "明妮",
-              "name": "朋友"
-            },
-            {
-              "source": "唐老鸭",
-              "target": "布鲁托",
-              "name": "宠物"
-            },
-            {
-              "source": "唐老鸭",
-              "target": "奥斯瓦尔德",
-              "name": "敌人"
-            },
-            {
-              "source": "唐老鸭",
-              "target": "皮特",
-              "name": "敌人"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "来源节点",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "目标节点",
-            "dataType": "string"
-          },
-          {
-            "id": "relation",
-            "name": "关系类型",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "社交关系",
-          "key": "name",
-          "purpose": "Relationship",
-          "purposeDesc": "以米奇为中心展开他的社交圈"
-        }
-      }
-    ]
-  },
-  {
-    "type": "text2chart",
-    "question": "用关系图来可视化出语言谱系树",
-    "questionWithoutChart": "用图表来可视化出语言谱系树",
-    "answer": {
-      "type": "network-graph",
-      "data": {
-        "nodes": [
-          {
-            "name": "印欧语系"
-          },
-          {
-            "name": "斯拉夫语族"
-          },
-          {
-            "name": "罗曼语族"
-          },
-          {
-            "name": "日耳曼语族"
-          },
-          {
-            "name": "凯尔特语族"
-          },
-          {
-            "name": "波罗的语族"
-          },
-          {
-            "name": "希腊语族"
-          },
-          {
-            "name": "阿尔巴尼亚语族"
-          },
-          {
-            "name": "亚美尼亚语族"
-          },
-          {
-            "name": "印度-伊朗语族"
-          },
-          {
-            "name": "斯拉夫语支"
-          },
-          {
-            "name": "东斯拉夫语支"
-          },
-          {
-            "name": "西斯拉夫语支"
-          },
-          {
-            "name": "南斯拉夫语支"
-          },
-          {
-            "name": "拉丁语支"
-          },
-          {
-            "name": "意大利语支"
-          },
-          {
-            "name": "法语支"
-          },
-          {
-            "name": "西班牙语支"
-          },
-          {
-            "name": "葡萄牙语支"
-          },
-          {
-            "name": "加泰罗尼亚语支"
-          },
-          {
-            "name": "日耳曼语支"
-          },
-          {
-            "name": "北日耳曼语支"
-          },
-          {
-            "name": "西日耳曼语支"
-          },
-          {
-            "name": "东日耳曼语支"
-          },
-          {
-            "name": "凯尔特语支"
-          },
-          {
-            "name": "波罗的语支"
-          },
-          {
-            "name": "希腊语支"
-          },
-          {
-            "name": "阿尔巴尼亚语支"
-          },
-          {
-            "name": "亚美尼亚语支"
-          },
-          {
-            "name": "印度-伊朗语支"
-          },
-          {
-            "name": "波斯语支"
-          },
-          {
-            "name": "印度-雅利安语支"
-          },
-          {
-            "name": "伊朗语支"
-          },
-          {
-            "name": "俄语"
-          },
-          {
-            "name": "波兰语"
-          },
-          {
-            "name": "捷克语"
-          },
-          {
-            "name": "斯洛伐克语"
-          },
-          {
-            "name": "保加利亚语"
-          },
-          {
-            "name": "塞尔维亚语"
-          },
-          {
-            "name": "克罗地亚语"
-          },
-          {
-            "name": "斯洛文尼亚语"
-          },
-          {
-            "name": "拉丁语"
-          },
-          {
-            "name": "意大利语"
-          },
-          {
-            "name": "法语"
-          },
-          {
-            "name": "西班牙语"
-          },
-          {
-            "name": "葡萄牙语"
-          },
-          {
-            "name": "加泰罗尼亚语"
-          },
-          {
-            "name": "英语"
-          },
-          {
-            "name": "德语"
-          },
-          {
-            "name": "荷兰语"
-          },
-          {
-            "name": "瑞典语"
-          },
-          {
-            "name": "丹麦语"
-          },
-          {
-            "name": "挪威语"
-          },
-          {
-            "name": "冰岛语"
-          },
-          {
-            "name": "爱尔兰语"
-          },
-          {
-            "name": "威尔士语"
-          },
-          {
-            "name": "布列塔尼语"
-          },
-          {
-            "name": "拉脱维亚语"
-          },
-          {
-            "name": "立陶宛语"
-          },
-          {
-            "name": "希腊语"
-          },
-          {
-            "name": "阿尔巴尼亚语"
-          },
-          {
-            "name": "亚美尼亚语"
-          },
-          {
-            "name": "波斯语"
-          },
-          {
-            "name": "普什图语"
-          },
-          {
-            "name": "印地语"
-          },
-          {
-            "name": "孟加拉语"
-          },
-          {
-            "name": "俄语"
-          },
-          {
-            "name": "波兰语"
-          },
-          {
-            "name": "捷克语"
-          },
-          {
-            "name": "斯洛伐克语"
-          },
-          {
-            "name": "保加利亚语"
-          },
-          {
-            "name": "塞尔维亚语"
-          },
-          {
-            "name": "克罗地亚语"
-          },
-          {
-            "name": "斯洛文尼亚语"
-          },
-          {
-            "name": "拉丁语"
-          },
-          {
-            "name": "意大利语"
-          },
-          {
-            "name": "法语"
-          },
-          {
-            "name": "西班牙语"
-          },
-          {
-            "name": "葡萄牙语"
-          },
-          {
-            "name": "加泰罗尼亚语"
-          },
-          {
-            "name": "英语"
-          },
-          {
-            "name": "德语"
-          },
-          {
-            "name": "荷兰语"
-          },
-          {
-            "name": "瑞典语"
-          },
-          {
-            "name": "丹麦语"
-          },
-          {
-            "name": "挪威语"
-          },
-          {
-            "name": "冰岛语"
-          },
-          {
-            "name": "爱尔兰语"
-          },
-          {
-            "name": "威尔士语"
-          },
-          {
-            "name": "布列塔尼语"
-          },
-          {
-            "name": "拉脱维亚语"
-          },
-          {
-            "name": "立陶宛语"
-          },
-          {
-            "name": "希腊语"
-          },
-          {
-            "name": "阿尔巴尼亚语"
-          },
-          {
-            "name": "亚美尼亚语"
-          },
-          {
-            "name": "波斯语"
-          },
-          {
-            "name": "普什图语"
-          },
-          {
-            "name": "印地语"
-          },
-          {
-            "name": "孟加拉语"
-          }
-        ],
-        "edges": [
-          {
-            "source": "印欧语系",
-            "target": "斯拉夫语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "罗曼语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "日耳曼语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "凯尔特语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "波罗的语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "希腊语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "阿尔巴尼亚语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "亚美尼亚语族",
-            "name": "语族"
-          },
-          {
-            "source": "印欧语系",
-            "target": "印度-伊朗语族",
-            "name": "语族"
-          },
-          {
-            "source": "斯拉夫语族",
-            "target": "斯拉夫语支",
-            "name": "语支"
-          },
-          {
-            "source": "斯拉夫语族",
-            "target": "东斯拉夫语支",
-            "name": "语支"
-          },
-          {
-            "source": "斯拉夫语族",
-            "target": "西斯拉夫语支",
-            "name": "语支"
-          },
-          {
-            "source": "斯拉夫语族",
-            "target": "南斯拉夫语支",
-            "name": "语支"
-          },
-          {
-            "source": "罗曼语族",
-            "target": "拉丁语支",
-            "name": "语支"
-          },
-          {
-            "source": "罗曼语族",
-            "target": "意大利语支",
-            "name": "语支"
-          },
-          {
-            "source": "罗曼语族",
-            "target": "法语支",
-            "name": "语支"
-          },
-          {
-            "source": "罗曼语族",
-            "target": "西班牙语支",
-            "name": "语支"
-          },
-          {
-            "source": "罗曼语族",
-            "target": "葡萄牙语支",
-            "name": "语支"
-          },
-          {
-            "source": "罗曼语族",
-            "target": "加泰罗尼亚语支",
-            "name": "语支"
-          },
-          {
-            "source": "日耳曼语族",
-            "target": "日耳曼语支",
-            "name": "语支"
-          },
-          {
-            "source": "日耳曼语族",
-            "target": "北日耳曼语支",
-            "name": "语支"
-          },
-          {
-            "source": "日耳曼语族",
-            "target": "西日耳曼语支",
-            "name": "语支"
-          },
-          {
-            "source": "日耳曼语族",
-            "target": "东日耳曼语支",
-            "name": "语支"
-          },
-          {
-            "source": "凯尔特语族",
-            "target": "凯尔特语支",
-            "name": "语支"
-          },
-          {
-            "source": "波罗的语族",
-            "target": "波罗的语支",
-            "name": "语支"
-          },
-          {
-            "source": "希腊语族",
-            "target": "希腊语支",
-            "name": "语支"
-          },
-          {
-            "source": "阿尔巴尼亚语族",
-            "target": "阿尔巴尼亚语支",
-            "name": "语支"
-          },
-          {
-            "source": "亚美尼亚语族",
-            "target": "亚美尼亚语支",
-            "name": "语支"
-          },
-          {
-            "source": "印度-伊朗语族",
-            "target": "印度-伊朗语支",
-            "name": "语支"
-          },
-          {
-            "source": "印度-伊朗语族",
-            "target": "波斯语支",
-            "name": "语支"
-          },
-          {
-            "source": "印度-伊朗语族",
-            "target": "印度-雅利安语支",
-            "name": "语支"
-          },
-          {
-            "source": "印度-伊朗语族",
-            "target": "伊朗语支",
-            "name": "语支"
-          },
-          {
-            "source": "斯拉夫语支",
-            "target": "俄语",
-            "name": "语言"
-          },
-          {
-            "source": "斯拉夫语支",
-            "target": "波兰语",
-            "name": "语言"
-          },
-          {
-            "source": "斯拉夫语支",
-            "target": "捷克语",
-            "name": "语言"
-          },
-          {
-            "source": "斯拉夫语支",
-            "target": "斯洛伐克语",
-            "name": "语言"
-          },
-          {
-            "source": "东斯拉夫语支",
-            "target": "保加利亚语",
-            "name": "语言"
-          },
-          {
-            "source": "东斯拉夫语支",
-            "target": "塞尔维亚语",
-            "name": "语言"
-          },
-          {
-            "source": "东斯拉夫语支",
-            "target": "克罗地亚语",
-            "name": "语言"
-          },
-          {
-            "source": "东斯拉夫语支",
-            "target": "斯洛文尼亚语",
-            "name": "语言"
-          },
-          {
-            "source": "拉丁语支",
-            "target": "拉丁语",
-            "name": "语言"
-          },
-          {
-            "source": "拉丁语支",
-            "target": "意大利语",
-            "name": "语言"
-          },
-          {
-            "source": "拉丁语支",
-            "target": "法语",
-            "name": "语言"
-          },
-          {
-            "source": "拉丁语支",
-            "target": "西班牙语",
-            "name": "语言"
-          },
-          {
-            "source": "拉丁语支",
-            "target": "葡萄牙语",
-            "name": "语言"
-          },
-          {
-            "source": "拉丁语支",
-            "target": "加泰罗尼亚语",
-            "name": "语言"
-          },
-          {
-            "source": "日耳曼语支",
-            "target": "英语",
-            "name": "语言"
-          },
-          {
-            "source": "日耳曼语支",
-            "target": "德语",
-            "name": "语言"
-          },
-          {
-            "source": "日耳曼语支",
-            "target": "荷兰语",
-            "name": "语言"
-          },
-          {
-            "source": "日耳曼语支",
-            "target": "瑞典语",
-            "name": "语言"
-          },
-          {
-            "source": "日耳曼语支",
-            "target": "丹麦语",
-            "name": "语言"
-          },
-          {
-            "source": "日耳曼语支",
-            "target": "挪威语",
-            "name": "语言"
-          },
-          {
-            "source": "日耳曼语支",
-            "target": "冰岛语",
-            "name": "语言"
-          },
-          {
-            "source": "凯尔特语支",
-            "target": "爱尔兰语",
-            "name": "语言"
-          },
-          {
-            "source": "凯尔特语支",
-            "target": "威尔士语",
-            "name": "语言"
-          },
-          {
-            "source": "凯尔特语支",
-            "target": "布列塔尼语",
-            "name": "语言"
-          },
-          {
-            "source": "波罗的语支",
-            "target": "拉脱维亚语",
-            "name": "语言"
-          },
-          {
-            "source": "波罗的语支",
-            "target": "立陶宛语",
-            "name": "语言"
-          },
-          {
-            "source": "希腊语支",
-            "target": "希腊语",
-            "name": "语言"
-          },
-          {
-            "source": "阿尔巴尼亚语支",
-            "target": "阿尔巴尼亚语",
-            "name": "语言"
-          },
-          {
-            "source": "亚美尼亚语支",
-            "target": "亚美尼亚语",
-            "name": "语言"
-          },
-          {
-            "source": "波斯语支",
-            "target": "波斯语",
-            "name": "语言"
-          },
-          {
-            "source": "印度-雅利安语支",
-            "target": "印地语",
-            "name": "语言"
-          },
-          {
-            "source": "印度-雅利安语支",
-            "target": "孟加拉语",
-            "name": "语言"
-          },
-          {
-            "source": "伊朗语支",
-            "target": "普什图语",
-            "name": "语言"
+            "source": "Charlie",
+            "target": "David"
           }
         ]
       }
     }
   },
   {
-    "question": "用网络图来可视化我的数据 `[[\"乔布斯\", \"创立\", \"苹果\"], [\"沃兹尼亚克\", \"共同创立\", \"苹果\"], [\"比尔·盖茨\", \"创立\", \"微软\"], [\"苹果\", \"竞争\", \"微软\"]]`。",
-    "questionWithoutChart": "用图表来可视化我的数据 `[[\"乔布斯\", \"创立\", \"苹果\"], [\"沃兹尼亚克\", \"共同创立\", \"苹果\"], [\"比尔·盖茨\", \"创立\", \"微软\"], [\"苹果\", \"竞争\", \"微软\"]]`。",
+    "type": "text2chart",
+    "question": "我想可视化一个航线网络图。节点包括城市：北京、上海、广州、成都。航线包括：北京到上海，北京到广州，上海到广州，以及上海到成都。请生成对应的网络图。",
+    "questionWithoutChart": "我想为我的航线网络创建一个图表。节点包括城市：北京、上海、广州、成都。航线包括：北京到上海，北京到广州，上海到广州，以及上海到成都。请生成对应的网络图。",
     "answer": {
       "type": "network-graph",
       "data": {
         "nodes": [
           {
-            "name": "乔布斯"
+            "name": "北京"
           },
           {
-            "name": "沃兹尼亚克"
+            "name": "上海"
           },
           {
-            "name": "比尔·盖茨"
+            "name": "广州"
           },
           {
-            "name": "苹果"
-          },
-          {
-            "name": "微软"
+            "name": "成都"
           }
         ],
         "edges": [
           {
-            "source": "乔布斯",
-            "target": "苹果",
-            "name": "创立"
+            "source": "北京",
+            "target": "上海"
           },
           {
-            "source": "沃兹尼亚克",
-            "target": "苹果",
-            "name": "共同创立"
+            "source": "北京",
+            "target": "广州"
           },
           {
-            "source": "比尔·盖茨",
-            "target": "微软",
-            "name": "创立"
+            "source": "上海",
+            "target": "广州"
           },
           {
-            "source": "苹果",
-            "target": "微软",
-            "name": "竞争"
+            "source": "上海",
+            "target": "成都"
           }
         ]
       }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "id": "乔布斯",
-              "name": "乔布斯"
-            },
-            {
-              "id": "沃兹尼亚克",
-              "name": "沃兹尼亚克"
-            },
-            {
-              "id": "比尔·盖茨",
-              "name": "比尔·盖茨"
-            },
-            {
-              "id": "苹果",
-              "name": "苹果"
-            },
-            {
-              "id": "微软",
-              "name": "微软"
-            }
-          ],
-          "edges": [
-            {
-              "source": "乔布斯",
-              "target": "苹果",
-              "name": "创立"
-            },
-            {
-              "source": "沃兹尼亚克",
-              "target": "苹果",
-              "name": "共同创立"
-            },
-            {
-              "source": "比尔·盖茨",
-              "target": "微软",
-              "name": "创立"
-            },
-            {
-              "source": "苹果",
-              "target": "微软",
-              "name": "竞争"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "节点名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "源节点",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "目标节点",
-            "dataType": "string"
-          },
-          {
-            "id": "edgeName",
-            "name": "关系名称",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "关系网络",
-          "key": "edges",
-          "purpose": "Relationship",
-          "purposeDesc": "展示人物与公司之间的创建和竞争关系"
-        }
-      }
-    ]
+    }
   },
   {
-    "question": "用网络图来表达我的数据 `[[\"北极星\", \"带领\", \"X战警\"], [\"金刚狼\", \"成员\", \"X战警\"], [\"万磁王\", \"敌对\", \"X战警\"], [\"万磁王\", \"父亲\", \"北极星\"]]`。",
-    "questionWithoutChart": "用图表来表达我的数据 `[[\"北极星\", \"带领\", \"X战警\"], [\"金刚狼\", \"成员\", \"X战警\"], [\"万磁王\", \"敌对\", \"X战警\"], [\"万磁王\", \"父亲\", \"北极星\"]]`。",
+    "type": "text2chart",
+    "question": "请绘制一个简单的办公室局域网拓扑图。网络中有以下设备：一个服务器（Server），两台个人电脑（PC1, PC2）和一个打印机（Printer）。服务器连接到PC1和PC2，而PC1和PC2都连接到打印机。",
+    "questionWithoutChart": "我想为我的办公室局域网创建一个图表。节点包括服务器（Server）、两台个人电脑（PC1, PC2）和一个打印机（Printer）。服务器连接到PC1和PC2，而PC1和PC2都连接到打印机。",
     "answer": {
       "type": "network-graph",
       "data": {
         "nodes": [
           {
-            "name": "北极星"
+            "name": "Server"
           },
           {
-            "name": "金刚狼"
+            "name": "PC1"
           },
           {
-            "name": "万磁王"
+            "name": "PC2"
           },
           {
-            "name": "X战警"
+            "name": "Printer"
           }
         ],
         "edges": [
           {
-            "source": "北极星",
-            "target": "X战警",
-            "name": "带领"
+            "source": "Server",
+            "target": "PC1"
           },
           {
-            "source": "金刚狼",
-            "target": "X战警",
-            "name": "成员"
+            "source": "Server",
+            "target": "PC2"
           },
           {
-            "source": "万磁王",
-            "target": "X战警",
-            "name": "敌对"
+            "source": "PC1",
+            "target": "Printer"
           },
           {
-            "source": "万磁王",
-            "target": "北极星",
-            "name": "父亲"
+            "source": "PC2",
+            "target": "Printer"
           }
         ]
       }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "id": "北极星",
-              "name": "北极星"
-            },
-            {
-              "id": "金刚狼",
-              "name": "金刚狼"
-            },
-            {
-              "id": "万磁王",
-              "name": "万磁王"
-            },
-            {
-              "id": "X战警",
-              "name": "X战警"
-            }
-          ],
-          "edges": [
-            {
-              "source": "北极星",
-              "target": "X战警",
-              "name": "带领"
-            },
-            {
-              "source": "金刚狼",
-              "target": "X战警",
-              "name": "成员"
-            },
-            {
-              "source": "万磁王",
-              "target": "X战警",
-              "name": "敌对"
-            },
-            {
-              "source": "万磁王",
-              "target": "北极星",
-              "name": "父亲"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "节点名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "源节点",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "目标节点",
-            "dataType": "string"
-          },
-          {
-            "id": "edgeName",
-            "name": "关系名称",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "关系网络",
-          "key": "edges",
-          "purpose": "Relationship",
-          "purposeDesc": "用网络图表达角色关系"
-        }
-      }
-    ]
+    }
   },
   {
-    "question": "用网络图演示我的数据 `[[\"乔治·卢卡斯\", \"创作\", \"星球大战\"], [\"马克·哈米尔\", \"扮演\", \"卢克·天行者\"], [\"哈里森·福特\", \"扮演\", \"汉·索罗\"], [\"星球大战\", \"系列\", \"电影\"]]`。",
-    "questionWithoutChart": "用图表演示我的数据 `[[\"乔治·卢卡斯\", \"创作\", \"星球大战\"], [\"马克·哈米尔\", \"扮演\", \"卢克·天行者\"], [\"哈里森·福特\", \"扮演\", \"汉·索罗\"], [\"星球大战\", \"系列\", \"电影\"]]`。",
+    "type": "text2chart",
+    "question": "我需要一个项目任务依赖关系图。项目包含四个任务：Task A, Task B, Task C, Task D。Task B 和 Task C 都依赖于 Task A 的完成。Task D 依赖于 Task B 和 Task C 的完成。请用网络图展示这个依赖关系。",
+    "questionWithoutChart": "我想为我的项目任务创建一个图表。任务包括：Task A, Task B, Task C, Task D。Task B 和 Task C 都依赖于 Task A 的完成。Task D 依赖于 Task B 和 Task C 的完成。请用网络图展示这个依赖关系。",
     "answer": {
       "type": "network-graph",
       "data": {
         "nodes": [
           {
-            "name": "乔治·卢卡斯"
+            "name": "Task A"
           },
           {
-            "name": "马克·哈米尔"
+            "name": "Task B"
           },
           {
-            "name": "哈里森·福特"
+            "name": "Task C"
           },
           {
-            "name": "卢克·天行者"
-          },
-          {
-            "name": "汉·索罗"
-          },
-          {
-            "name": "星球大战"
-          },
-          {
-            "name": "电影"
+            "name": "Task D"
           }
         ],
         "edges": [
           {
-            "source": "乔治·卢卡斯",
-            "target": "星球大战",
-            "name": "创作"
+            "source": "Task A",
+            "target": "Task B"
           },
           {
-            "source": "马克·哈米尔",
-            "target": "卢克·天行者",
-            "name": "扮演"
+            "source": "Task A",
+            "target": "Task C"
           },
           {
-            "source": "哈里森·福特",
-            "target": "汉·索罗",
-            "name": "扮演"
+            "source": "Task B",
+            "target": "Task D"
           },
           {
-            "source": "星球大战",
-            "target": "电影",
-            "name": "系列"
+            "source": "Task C",
+            "target": "Task D"
           }
         ]
       }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "id": "乔治·卢卡斯",
-              "name": "乔治·卢卡斯"
-            },
-            {
-              "id": "马克·哈米尔",
-              "name": "马克·哈米尔"
-            },
-            {
-              "id": "哈里森·福特",
-              "name": "哈里森·福特"
-            },
-            {
-              "id": "卢克·天行者",
-              "name": "卢克·天行者"
-            },
-            {
-              "id": "汉·索罗",
-              "name": "汉·索罗"
-            },
-            {
-              "id": "星球大战",
-              "name": "星球大战"
-            },
-            {
-              "id": "电影",
-              "name": "电影"
-            }
-          ],
-          "edges": [
-            {
-              "source": "乔治·卢卡斯",
-              "target": "星球大战",
-              "name": "创作"
-            },
-            {
-              "source": "马克·哈米尔",
-              "target": "卢克·天行者",
-              "name": "扮演"
-            },
-            {
-              "source": "哈里森·福特",
-              "target": "汉·索罗",
-              "name": "扮演"
-            },
-            {
-              "source": "星球大战",
-              "target": "电影",
-              "name": "系列"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "节点名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "源节点",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "目标节点",
-            "dataType": "string"
-          },
-          {
-            "id": "edgeName",
-            "name": "关系名称",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "关系网络",
-          "key": "edges",
-          "purpose": "Relationship",
-          "purposeDesc": "用网络图演示数据关系"
-        }
-      }
-    ]
+    }
   },
   {
-    "question": "用网络图来展示数据关系 `[[\"狮子\", \"生存\", \"非洲大草原\"], [\"猎豹\", \"生存\", \"非洲大草原\"], [\"长颈鹿\", \"生存\", \"非洲大草原\"], [\"非洲大草原\", \"栖息地\", \"动物\"]]`。",
-    "questionWithoutChart": "用图表来展示数据关系 `[[\"狮子\", \"生存\", \"非洲大草原\"], [\"猎豹\", \"生存\", \"非洲大草原\"], [\"长颈鹿\", \"生存\", \"非洲大草原\"], [\"非洲大草原\", \"栖息地\", \"动物\"]]`。",
+    "type": "text2chart",
+    "question": "请创建一个《哈利·波特》中部分角色的关系网络图。角色包括哈利、罗恩、赫敏和马尔福。哈利、罗恩和赫敏是朋友关系，互相连接。哈利和马尔福是对手关系。请展示这些人物关系。",
+    "questionWithoutChart": "我想为我的《哈利·波特》角色创建一个图表。角色包括哈利、罗恩、赫敏和马尔福。哈利、罗恩和赫敏是朋友关系，互相连接。哈利和马尔福是对手关系。请展示这些人物关系。",
     "answer": {
       "type": "network-graph",
       "data": {
         "nodes": [
           {
-            "name": "狮子"
+            "name": "哈利"
           },
           {
-            "name": "猎豹"
+            "name": "罗恩"
           },
           {
-            "name": "长颈鹿"
+            "name": "赫敏"
           },
           {
-            "name": "非洲大草原"
-          },
-          {
-            "name": "动物"
+            "name": "马尔福"
           }
         ],
         "edges": [
           {
-            "source": "狮子",
-            "target": "非洲大草原",
-            "name": "生存"
+            "source": "哈利",
+            "target": "罗恩",
+            "name": "朋友"
           },
           {
-            "source": "猎豹",
-            "target": "非洲大草原",
-            "name": "生存"
+            "source": "哈利",
+            "target": "赫敏",
+            "name": "朋友"
           },
           {
-            "source": "长颈鹿",
-            "target": "非洲大草原",
-            "name": "生存"
+            "source": "罗恩",
+            "target": "赫敏",
+            "name": "朋友"
           },
           {
-            "source": "非洲大草原",
-            "target": "动物",
-            "name": "栖息地"
+            "source": "哈利",
+            "target": "马尔福",
+            "name": "对手"
           }
         ]
       }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "id": "狮子",
-              "name": "狮子"
-            },
-            {
-              "id": "猎豹",
-              "name": "猎豹"
-            },
-            {
-              "id": "长颈鹿",
-              "name": "长颈鹿"
-            },
-            {
-              "id": "非洲大草原",
-              "name": "非洲大草原"
-            },
-            {
-              "id": "动物",
-              "name": "动物"
-            }
-          ],
-          "edges": [
-            {
-              "source": "狮子",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "猎豹",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "长颈鹿",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "非洲大草原",
-              "target": "动物",
-              "name": "栖息地"
-            }
-          ]
-        },
-        "metas": [
-          {
-            "id": "name",
-            "name": "节点名称",
-            "dataType": "string"
-          },
-          {
-            "id": "source",
-            "name": "源节点",
-            "dataType": "string"
-          },
-          {
-            "id": "target",
-            "name": "目标节点",
-            "dataType": "string"
-          },
-          {
-            "id": "edgeName",
-            "name": "关系名称",
-            "dataType": "string"
-          }
-        ],
-        "purpose": {
-          "name": "关系网络",
-          "key": "edges",
-          "purpose": "Relationship",
-          "purposeDesc": "展示动物与栖息地之间的关系网络"
-        }
-      }
-    ]
+    }
   },
   {
-    "question": "用网络图来展示数据关系 `[[\"狮子\", \"生存\", \"非洲大草原\"], [\"猎豹\", \"生存\", \"非洲大草原\"], [\"长颈鹿\", \"生存\", \"非洲大草原\"], [\"大象\", \"生存\", \"非洲大草原\"], [\"犀牛\", \"生存\", \"非洲大草原\"], [\"河马\", \"生存\", \"非洲大草原\"], [\"斑马\", \"生存\", \"非洲大草原\"], [\"鬣狗\", \"生存\", \"非洲大草原\"], [\"狐猴\", \"生存\", \"非洲大草原\"], [\"角马\", \"生存\", \"非洲大草原\"], [\"鸵鸟\", \"生存\", \"非洲大草原\"], [\"野狗\", \"生存\", \"非洲大草原\"], [\"鬣羚\", \"生存\", \"非洲大草原\"], [\"猎鹰\", \"生存\", \"非洲大草原\"], [\"蜂鸟\", \"生存\", \"非洲大草原\"], [\"野牛\", \"生存\", \"非洲大草原\"], [\"鬣狗\", \"生存\", \"非洲大草原\"], [\"美洲豹\", \"生存\", \"非洲大草原\"], [\"鳄鱼\", \"生存\", \"非洲大草原\"], [\"蟒蛇\", \"生存\", \"非洲大草原\"], [\"非洲大草原\", \"栖息地\", \"动物\"]]`。",
-    "questionWithoutChart": "用图表来展示数据关系 `[[\"狮子\", \"生存\", \"非洲大草原\"], [\"猎豹\", \"生存\", \"非洲大草原\"], [\"长颈鹿\", \"生存\", \"非洲大草原\"], [\"大象\", \"生存\", \"非洲大草原\"], [\"犀牛\", \"生存\", \"非洲大草原\"], [\"河马\", \"生存\", \"非洲大草原\"], [\"斑马\", \"生存\", \"非洲大草原\"], [\"鬣狗\", \"生存\", \"非洲大草原\"], [\"狐猴\", \"生存\", \"非洲大草原\"], [\"角马\", \"生存\", \"非洲大草原\"], [\"鸵鸟\", \"生存\", \"非洲大草原\"], [\"野狗\", \"生存\", \"非洲大草原\"], [\"鬣羚\", \"生存\", \"非洲大草原\"], [\"猎鹰\", \"生存\", \"非洲大草原\"], [\"蜂鸟\", \"生存\", \"非洲大草原\"], [\"野牛\", \"生存\", \"非洲大草原\"], [\"鬣狗\", \"生存\", \"非洲大草原\"], [\"美洲豹\", \"生存\", \"非洲大草原\"], [\"鳄鱼\", \"生存\", \"非洲大草原\"], [\"蟒蛇\", \"生存\", \"非洲大草原\"], [\"非洲大草原\", \"栖息地\", \"动物\"]]`。",
+    "type": "text2chart",
+    "question": "我想创建一个简单的食物网。节点包括：草、兔子、狐狸、狼。关系是“被吃”。兔子吃草，狐狸和狼吃兔子。请用网络图表示这个捕食关系。",
+    "questionWithoutChart": "我想为我的食物网创建一个图表。节点包括：草、兔子、狐狸、狼。关系是“被吃”。兔子吃草，狐狸和狼吃兔子。请用网络图表示这个捕食关系。",
     "answer": {
       "type": "network-graph",
       "data": {
         "nodes": [
           {
-            "name": "狮子"
+            "name": "草"
           },
           {
-            "name": "猎豹"
+            "name": "兔子"
           },
           {
-            "name": "长颈鹿"
+            "name": "狐狸"
           },
           {
-            "name": "大象"
-          },
-          {
-            "name": "犀牛"
-          },
-          {
-            "name": "河马"
-          },
-          {
-            "name": "斑马"
-          },
-          {
-            "name": "鬣狗"
-          },
-          {
-            "name": "狐猴"
-          },
-          {
-            "name": "角马"
-          },
-          {
-            "name": "鸵鸟"
-          },
-          {
-            "name": "野狗"
-          },
-          {
-            "name": "鬣羚"
-          },
-          {
-            "name": "猎鹰"
-          },
-          {
-            "name": "蜂鸟"
-          },
-          {
-            "name": "野牛"
-          },
-          {
-            "name": "美洲豹"
-          },
-          {
-            "name": "鳄鱼"
-          },
-          {
-            "name": "蟒蛇"
-          },
-          {
-            "name": "非洲大草原"
-          },
-          {
-            "name": "动物"
+            "name": "狼"
           }
         ],
         "edges": [
           {
-            "source": "狮子",
-            "target": "非洲大草原",
-            "name": "生存"
+            "source": "草",
+            "target": "兔子"
           },
           {
-            "source": "猎豹",
-            "target": "非洲大草原",
-            "name": "生存"
+            "source": "兔子",
+            "target": "狐狸"
           },
           {
-            "source": "长颈鹿",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "大象",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "犀牛",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "河马",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "斑马",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "鬣狗",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "狐猴",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "角马",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "鸵鸟",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "野狗",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "鬣羚",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "猎鹰",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "蜂鸟",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "野牛",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "美洲豹",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "鳄鱼",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "蟒蛇",
-            "target": "非洲大草原",
-            "name": "生存"
-          },
-          {
-            "source": "非洲大草原",
-            "target": "动物",
-            "name": "栖息地"
+            "source": "兔子",
+            "target": "狼"
           }
         ]
       }
-    },
-    "dataShards": [
-      {
-        "shape": "relation",
-        "data": {
-          "nodes": [
-            {
-              "id": "狮子",
-              "name": "狮子"
-            },
-            {
-              "id": "猎豹",
-              "name": "猎豹"
-            },
-            {
-              "id": "长颈鹿",
-              "name": "长颈鹿"
-            },
-            {
-              "id": "大象",
-              "name": "大象"
-            },
-            {
-              "id": "犀牛",
-              "name": "犀牛"
-            },
-            {
-              "id": "河马",
-              "name": "河马"
-            },
-            {
-              "id": "斑马",
-              "name": "斑马"
-            },
-            {
-              "id": "鬣狗",
-              "name": "鬣狗"
-            },
-            {
-              "id": "狐猴",
-              "name": "狐猴"
-            },
-            {
-              "id": "角马",
-              "name": "角马"
-            },
-            {
-              "id": "鸵鸟",
-              "name": "鸵鸟"
-            },
-            {
-              "id": "野狗",
-              "name": "野狗"
-            },
-            {
-              "id": "鬣羚",
-              "name": "鬣羚"
-            },
-            {
-              "id": "猎鹰",
-              "name": "猎鹰"
-            },
-            {
-              "id": "蜂鸟",
-              "name": "蜂鸟"
-            },
-            {
-              "id": "野牛",
-              "name": "野牛"
-            },
-            {
-              "id": "美洲豹",
-              "name": "美洲豹"
-            },
-            {
-              "id": "鳄鱼",
-              "name": "鳄鱼"
-            },
-            {
-              "id": "蟒蛇",
-              "name": "蟒蛇"
-            },
-            {
-              "id": "非洲大草原",
-              "name": "非洲大草原"
-            },
-            {
-              "id": "动物",
-              "name": "动物"
-            }
-          ],
-          "edges": [
-            {
-              "source": "狮子",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "猎豹",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "长颈鹿",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "大象",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "犀牛",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "河马",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "斑马",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "鬣狗",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "狐猴",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "角马",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "鸵鸟",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "野狗",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "鬣羚",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "猎鹰",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "蜂鸟",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "野牛",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "美洲豹",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "鳄鱼",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "蟒蛇",
-              "target": "非洲大草原",
-              "name": "生存"
-            },
-            {
-              "source": "非洲大草原",
-              "target": "动物",
-              "name": "栖息地"
-            }
-          ]
-        },
-        "metas": [
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "请绘制一个产品供应链的网络图。节点包括：原料供应商、制造商、分销商和零售商。物料从原料供应商流向制造商，然后到分销商，最后到达零售商。请展示这个流程。",
+    "questionWithoutChart": "我想为我的产品供应链创建一个图表。节点包括：原料供应商、制造商、分销商和零售商。物料从原料供应商流向制造商，然后到分销商，最后到达零售商。请展示这个流程。",
+    "answer": {
+      "type": "network-graph",
+      "data": {
+        "nodes": [
           {
-            "id": "name",
-            "name": "节点名称",
-            "dataType": "string"
+            "name": "原料供应商"
           },
           {
-            "id": "source",
-            "name": "源节点",
-            "dataType": "string"
+            "name": "制造商"
           },
           {
-            "id": "target",
-            "name": "目标节点",
-            "dataType": "string"
+            "name": "分销商"
           },
           {
-            "id": "name",
-            "name": "关系名称",
-            "dataType": "string"
+            "name": "零售商"
           }
         ],
-        "purpose": {
-          "name": "关系",
-          "key": "name",
-          "purpose": "Relationship",
-          "purposeDesc": "展示动物与非洲大草原之间的生存关系以及非洲大草原作为动物栖息地的关系"
-        }
+        "edges": [
+          {
+            "source": "原料供应商",
+            "target": "制造商"
+          },
+          {
+            "source": "制造商",
+            "target": "分销商"
+          },
+          {
+            "source": "分销商",
+            "target": "零售商"
+          }
+        ]
       }
-    ]
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "我需要一个软件模块依赖图。我们有三个模块：Module A, Module B, Module C，以及一个核心库 Core Library。Module A 和 Module B 都依赖于 Core Library。同时，Module A 也依赖于 Module C。请用网络图表示这些依赖关系。",
+    "questionWithoutChart": "我想为我的软件模块依赖创建一个图表。模块包括：Module A, Module B, Module C，以及一个核心库 Core Library。Module A 和 Module B 都依赖于 Core Library。同时，Module A 也依赖于 Module C。请用图表示这些依赖关系。",
+    "answer": {
+      "type": "network-graph",
+      "data": {
+        "nodes": [
+          {
+            "name": "Module A"
+          },
+          {
+            "name": "Module B"
+          },
+          {
+            "name": "Module C"
+          },
+          {
+            "name": "Core Library"
+          }
+        ],
+        "edges": [
+          {
+            "source": "Module A",
+            "target": "Core Library"
+          },
+          {
+            "source": "Module B",
+            "target": "Core Library"
+          },
+          {
+            "source": "Module A",
+            "target": "Module C"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "展示一个国际会议的参与者关系图。参会者有：美国总统、法国总统、德国总理、日本首相。美国总统与法国总统、日本首相进行了会谈，法国总统与德国总理进行了会谈。请用网络图表示这些双边会谈。",
+    "questionWithoutChart": "我想为我的国际会议参与者创建一个图表。参会者有：美国总统、法国总统、德国总理、日本首相。美国总统与法国总统、日本首相进行了会谈，法国总统与德国总理进行了会谈。请用图表示这些双边会谈。",
+    "answer": {
+      "type": "network-graph",
+      "data": {
+        "nodes": [
+          {
+            "name": "美国总统"
+          },
+          {
+            "name": "法国总统"
+          },
+          {
+            "name": "德国总理"
+          },
+          {
+            "name": "日本首相"
+          }
+        ],
+        "edges": [
+          {
+            "source": "美国总统",
+            "target": "法国总统"
+          },
+          {
+            "source": "法国总统",
+            "target": "德国总理"
+          },
+          {
+            "source": "美国总统",
+            "target": "日本首相"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "text2chart",
+    "question": "请创建一个简单的区块链P2P网络示意图。网络中有四个节点：Node1, Node2, Node3, Node4。它们形成一个环形连接：Node1连接到Node2，Node2连接到Node3，Node3连接到Node4，Node4连接回Node1。",
+    "questionWithoutChart": "我想为我的区块链P2P网络创建一个图表。网络中有四个节点：Node1, Node2, Node3, Node4。它们形成一个环形连接：Node1连接到Node2，Node2连接到Node3，Node3连接到Node4，Node4连接回Node1。",
+    "answer": {
+      "type": "network-graph",
+      "data": {
+        "nodes": [
+          {
+            "name": "Node1"
+          },
+          {
+            "name": "Node2"
+          },
+          {
+            "name": "Node3"
+          },
+          {
+            "name": "Node4"
+          }
+        ],
+        "edges": [
+          {
+            "source": "Node1",
+            "target": "Node2"
+          },
+          {
+            "source": "Node2",
+            "target": "Node3"
+          },
+          {
+            "source": "Node3",
+            "target": "Node4"
+          },
+          {
+            "source": "Node4",
+            "target": "Node1"
+          }
+        ]
+      }
+    }
   }
 ]
