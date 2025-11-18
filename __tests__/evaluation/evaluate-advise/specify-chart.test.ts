@@ -9,6 +9,6 @@ runAdviseEvaluation(
   (d: TestData) => d.question,
   (spec: Spec, answer: TestData['answer']) => {
     const { type, ...finalSpec } = spec || {};
-    return type === answer.type && validateObject(CHARTS[type].zodSchema, finalSpec) === true;
+    return type === answer.type && CHARTS[type] && validateObject(CHARTS[type].zodSchema, finalSpec) === true;
   }
 );
