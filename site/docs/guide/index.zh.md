@@ -12,7 +12,7 @@ redirect_from:
 <div align="center">
 
 <i>一个 **A**I 驱动的 **V**isual **A**nalytics（可视化分析）框架。</i>
-<i><a href="https://ava.antv.antgroup.com/"><https://ava.antv.antgroup.com></a></i>
+<i><a href="https://ava.antv.antgroup.com/">https://ava.antv.antgroup.com</a></i>
 
 </div>
 
