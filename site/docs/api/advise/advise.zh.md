@@ -24,12 +24,12 @@ AVA 类（来自 `@antv/ava`）负责协调这些步骤。
 ```ts
 import { AVA } from '@antv/ava';
 
-const advisor = new AVA({ /* 配置 */ });
-const shards = await advisor.extract({ purpose: '请根据数据生成图表建议', data });
-const advises = await advisor.advise(shards);
+const ava = new AVA({ /* 配置 */ });
+const shards = await ava.extract({ purpose: '请根据数据生成图表建议', data });
+const advises = await ava.advise(shards);
 // advises 是建议数组，通常包含 charts、insights、metadata 等字段
 const firstSpec = advises[0]?.charts?.[0]?.spec;
-advisor.render('#container', firstSpec);
+ava.render('#container', firstSpec);
 ```
 
 ## 备注

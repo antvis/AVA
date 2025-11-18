@@ -19,12 +19,12 @@ const renderGPTVis = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 
 const App = () => {
   useEffect(() => {
     bindRenderer(renderGPTVis);
-    advisor.render('#charts', {
+    ava.render('#charts', {
       type: 'funnel',
       data: [
         { category: '浏览网站', value: 50000 },
@@ -36,7 +36,7 @@ const App = () => {
     });
 
     return () => {
-      advisor.destroy();
+      ava.destroy();
     };
   }, []);
 

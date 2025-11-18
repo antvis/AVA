@@ -27,12 +27,12 @@ const renderPie = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 
 const App = () => {
   useEffect(() => {
     bindRenderer(renderPie);
-    advisor.render('#chart', {
+    ava.render('#chart', {
       type: 'pie',
       data: [
         { category: '分类一', value: 27 },
@@ -45,7 +45,7 @@ const App = () => {
     });
 
     return () => {
-      advisor.destroy();
+      ava.destroy();
     };
   }, []);
 

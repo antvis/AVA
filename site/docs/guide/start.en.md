@@ -32,16 +32,16 @@ import { render } from '@antv/gpt-vis';
 AVA.bindRenderer(render);
 
 // 2. Initialize
-const advisor = new AVA({llm});
+const ava = new AVA({llm});
 
 // 3. Extract structured information
-const meta = advisor.extract("This is a text includes data and infomation.");
+const meta = ava.extract("This is a text includes data and infomation.");
 
 // 4. Advise charts based on structured information
-const info = advisor.advise(meta);
+const info = ava.advise(meta);
 
 // 5. Render the visualization
-const vis = advisor.render(container, config);
+const vis = ava.render(container, config);
 ```
 ## CDN
 `AVA` also provides a UMD version that can be loaded directly via CDN. The `AVA` object can be accessed through the `AVA` namespace.
@@ -53,16 +53,16 @@ const vis = advisor.render(container, config);
   AVA.bindRenderer(render);
 
   // 2. Initialize
-  const advisor = new AVA({llm});
+  const ava = new AVA({llm});
 
   // 3. Extract structured information
-  const meta = advisor.extract("This is a text includes data and information.");
+  const meta = ava.extract("This is a text includes data and information.");
 
   // 4. Advise charts based on structured information
-  const info = advisor.advise(meta);
+  const info = ava.advise(meta);
 
   // 5. Render the visualization
-  const vis = advisor.render(container, config);
+  const vis = ava.render(container, config);
 </script>
 ```
 

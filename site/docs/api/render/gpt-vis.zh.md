@@ -27,12 +27,12 @@ import { AVA, bindRenderer } from '@antv/ava';
 import { render } from '@antv/gpt-vis';
 
 bindRenderer(render);
-const advisor = new AVA();
-advisor.render('#chart', {type: 'bar', data: [...]});
+const ava = new AVA();
+ava.render('#chart', {type: 'bar', data: [...]});
 ```
 
 ## bindRenderer 函数
-`bindRenderer` 函数用于绑定自定义的图表渲染器，以便在 `advisor.render` 方法中调用。
+`bindRenderer` 函数用于绑定自定义的图表渲染器，以便在 `ava.render` 方法中调用。
 
 ```ts
 function bindRenderer(renderer: Renderer): void
@@ -64,12 +64,12 @@ const chartSpec =  {
   axisYTitle: 'GDP',
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(render);
-    advisor.render('#chart', chartSpec);  
+    ava.render('#chart', chartSpec);  
   }, []);
 
   return <div id="chart"/>

@@ -27,12 +27,12 @@ import { AVA, bindRenderer } from '@antv/ava';
 import { render } from '@antv/gpt-vis';
 
 bindRenderer(render);
-const advisor = new AVA();
-advisor.render('#chart', {type: 'bar', data: [...]});
+const ava = new AVA();
+ava.render('#chart', {type: 'bar', data: [...]});
 ```
 
 ## bindRenderer Function
-The `bindRenderer` function is used to bind a custom chart renderer for invocation in the `advisor.render` method.
+The `bindRenderer` function is used to bind a custom chart renderer for invocation in the `ava.render` method.
 
 ```ts
 function bindRenderer(renderer: Renderer): void
@@ -64,12 +64,12 @@ const chartSpec =  {
   axisYTitle: 'GDP',
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(render);
-    advisor.render('#chart', chartSpec);  
+    ava.render('#chart', chartSpec);  
   }, []);
 
   return <div id="chart"/>

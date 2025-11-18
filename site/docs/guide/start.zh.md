@@ -32,16 +32,16 @@ import { render } from '@antv/gpt-vis';
 AVA.bindRenderer(render);
 
 // 2. 初始化
-const advisor = new AVA({llm});
+const ava = new AVA({llm});
 
 // 3. 抽取结构化信息
-const meta = advisor.extract("This is a text includes data and information.");
+const meta = ava.extract("This is a text includes data and information.");
 
 // 4. 结合结构化信息推荐图表
-const info = advisor.advise(meta);
+const info = ava.advise(meta);
 
 // 5. 可视化呈现
-const vis = advisor.render(container, config);
+const vis = ava.render(container, config);
 ```
 ## CDN
 `AVA`也提供了 UMD 版本，可以直接通过 CDN 加载，然后直接使用。这个时候的 `AVA` 对象可以通过命名空间 `AVA` 去访问。
@@ -53,15 +53,15 @@ const vis = advisor.render(container, config);
   AVA.bindRenderer(render);
 
   // 2. 初始化
-  const advisor = new AVA({llm});
+  const ava = new AVA({llm});
 
   // 3. 抽取结构化信息
-  const meta = advisor.extract("This is a text includes data and information.");
+  const meta = ava.extract("This is a text includes data and information.");
 
   // 4. 结合结构化信息推荐图表
-  const info = advisor.advise(meta);
+  const info = ava.advise(meta);
 
   // 5. 可视化呈现
-  const vis = advisor.render(container, config);
+  const vis = ava.render(container, config);
 </script>
 ```

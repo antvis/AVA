@@ -25,7 +25,7 @@ const evalSimilarity = (source, target) => {
 };
 
 describe('extract evaluation pass rate > 70%', () => {
-  const advisor = new AVA({
+  const ava = new AVA({
     llm: {
       authorization: process.env.TBOX_LLM_AUTH || '',
       appId: process.env.TBOX_LLM_APP_ID || '',
@@ -38,7 +38,7 @@ describe('extract evaluation pass rate > 70%', () => {
   let pass = 0;
 
   const evaluateCase = async (currentCase) => {
-    const result = await advisor.extract(currentCase.question);
+    const result = await ava.extract(currentCase.question);
     if (result.length !== currentCase.dataShards.length) {
       console.log(
         chalk.red(`result length dismatch: expect ${currentCase.dataShards.length} but got ${result.length}`)

@@ -9,7 +9,7 @@ redirect_from:
 
 `@antv/gpt-vis` 内置 25+ 图表类型，完整打包体积约 420 KB。在多数页面只需要 1~3 种图表的场景下，全量引入会造成不必要的体积与首屏执行开销。所谓“按需渲染”（或“按需加载”）即：
 1. 仅导入当前交互真正需要的图表组件。
-2. 运行期根据 advisor 返回的推荐 / 业务指定的 spec.type 动态选择对应组件。
+2. 运行期根据 ava 返回的推荐 / 业务指定的 spec.type 动态选择对应组件。
 3. 可结合构建工具的 Tree Shaking、ESM 与动态 import 分割代码，进一步减少初始加载。
 
 核心思路
@@ -64,7 +64,7 @@ const renderer = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -80,7 +80,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-    advisor.render('#chart', chartSpec);
+    ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -136,7 +136,7 @@ GPTVis 协议是一种基于 Markdown 语法的图表渲染协议，通过扩展
 1. 定义图表配置：包含 type 与 data 等字段。
 2. 编写 renderer：查询挂载节点，清空内容，拼接 Markdown（内含 ```vis-chart 代码块 + JSON）。
 3. bindRenderer：将自定义逻辑注入 AVA 的统一渲染流程。
-4. 调用 advisor.render('#chart', spec)：驱动生成最终图表。
+4. 调用 ava.render('#chart', spec)：驱动生成最终图表。
 5. 在 React 中仅需一个占位容器 div#chart。
 
 要点
@@ -168,7 +168,7 @@ const renderer = (container: string, spec: any) => {
   root.render(<GPTVis>{content}</GPTVis>);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -184,7 +184,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-     advisor.render('#chart', chartSpec);
+     ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -225,7 +225,7 @@ const renderer = (container, spec) => {
   root.render(<GPTVisLite components={components}>{content}</GPTVisLite>);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -241,7 +241,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-    advisor.render('#chart', chartSpec);
+    ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -320,8 +320,8 @@ import { AVA } from '@antv/ava';
 import { render } from '@antv/gpt-vis-ssr';
 
 async function advisorSSR(data) {
-  const advisor = new AVA();
-  const advises  = advisor.advise(data);
+  const ava = new AVA();
+  const advises  = ava.advise(data);
   const spec =  advises[0].charts[0].spec;
   const chart = await render(spec);
   return chart.toBuffer('png');

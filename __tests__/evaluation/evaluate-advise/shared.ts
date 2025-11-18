@@ -18,7 +18,7 @@ type TestData = {
 export const runAdviseEvaluation = (selectQuestion: (data: TestData) => string) => {
   jest.setTimeout(3600000);
 
-  const advisor = new AVA({
+  const ava = new AVA({
     llm: {
       appId: process.env.TBOX_APP_ID!,
       authorization: process.env.TBOX_AUTHORIZATION!,
@@ -37,7 +37,7 @@ export const runAdviseEvaluation = (selectQuestion: (data: TestData) => string) 
         const question = selectQuestion(data);
         let spec: Spec;
         try {
-          const advises = await advisor.advise([]);
+          const advises = await ava.advise([]);
           spec = advises[0].charts[0].spec;
         } catch (error) {
           const endTime = Date.now();

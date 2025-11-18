@@ -3,8 +3,8 @@ import { Input, Button, Space, Card, message } from 'antd';
 import { AVA, bindRenderer } from '../../../../src';
 import { render as GPTVisRender, cleanAndFormatJSON, formatJSON } from '../../utils';
 
-// 创建 advisor 实例并为该实例绑定渲染器
-const advisor = new AVA({
+// 创建 ava 实例并为该实例绑定渲染器
+const ava = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
@@ -42,7 +42,7 @@ const RenderDefault: React.FC = () => {
       const cleaned = cleanAndFormatJSON(data);
       // 将 JSON 字符串解析为对象
       const parsedData = JSON.parse(cleaned);
-      advisor.render('#chart', parsedData);
+      ava.render('#chart', parsedData);
     } catch (error) {
       message.error(`请输入有效的 JSON 格式数据: ${error}`);
     }

@@ -24,12 +24,12 @@ The AVA class (from `@antv/ava`) coordinates these steps.
 ```ts
 import { AVA } from '@antv/ava';
 
-const advisor = new AVA({ /* options */ });
-const shards = await advisor.extract({ purpose: '请根据数据生成图表建议', data });
-const advises = await advisor.advise(shards);
+const ava = new AVA({ /* options */ });
+const shards = await ava.extract({ purpose: '请根据数据生成图表建议', data });
+const advises = await ava.advise(shards);
 // advises is an array of recommendation objects; each may contain charts, insights, and metadata
 const firstSpec = advises[0]?.charts?.[0]?.spec;
-advisor.render('#container', firstSpec);
+ava.render('#container', firstSpec);
 ```
 
 ## Notes

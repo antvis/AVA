@@ -21,12 +21,12 @@ const renderArea = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 
 const App = () => {
   useEffect(() => {
     bindRenderer(renderArea);
-    advisor.render('#chart', {
+    ava.render('#chart', {
       type: 'area',
       data: [
         { time: '2018', value: 91.9 },
@@ -38,7 +38,7 @@ const App = () => {
     });
 
     return () => {
-      advisor.destroy();
+      ava.destroy();
     };
   }, []);
 

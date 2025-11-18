@@ -9,7 +9,7 @@ redirect_from:
 
 `@antv/gpt-vis` includes 25+ chart types with a full bundle size of approximately 420 KB. In scenarios where most pages only need 1-3 chart types, importing the entire library causes unnecessary bundle size and first-screen execution overhead. "On-demand rendering" (or "lazy loading") means:
 1. Only import the chart components actually needed for the current interaction.
-2. Dynamically select corresponding components at runtime based on advisor recommendations or business-specified spec.type.
+2. Dynamically select corresponding components at runtime based on ava recommendations or business-specified spec.type.
 3. Combine with build tools' Tree Shaking, ESM, and dynamic import for code splitting to further reduce initial loading.
 
 Core Concepts
@@ -64,7 +64,7 @@ const renderer = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -80,7 +80,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-    advisor.render('#chart', chartSpec);
+    ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -136,7 +136,7 @@ Steps
 1. Define chart configuration: Include fields like type and data.
 2. Write renderer: Query mount node, clear content, concatenate Markdown (containing ```vis-chart code block + JSON).
 3. bindRenderer: Inject custom logic into AVA's unified rendering process.
-4. Call advisor.render('#chart', spec): Drive final chart generation.
+4. Call ava.render('#chart', spec): Drive final chart generation.
 5. In React, only need a placeholder container div#chart.
 
 Key Points
@@ -168,7 +168,7 @@ const renderer = (container: string, spec: any) => {
   root.render(<GPTVis>{content}</GPTVis>);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -184,7 +184,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-     advisor.render('#chart', chartSpec);
+     ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -225,7 +225,7 @@ const renderer = (container, spec) => {
   root.render(<GPTVisLite components={components}>{content}</GPTVisLite>);
 };
 
-const advisor = new AVA();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -241,7 +241,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-    advisor.render('#chart', chartSpec);
+    ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -320,8 +320,8 @@ import { AVA } from '@antv/ava';
 import { render } from '@antv/gpt-vis-ssr';
 
 async function advisorSSR(data) {
-  const advisor = new AVA();
-  const advises  = advisor.advise(data);
+  const ava = new AVA();
+  const advises  = ava.advise(data);
   const spec =  advises[0].charts[0].spec;
   const chart = await render(spec);
   return chart.toBuffer('png');

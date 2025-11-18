@@ -17,7 +17,7 @@ const customImageRenderer = (container: string, spec: any) => {
   root.render(chartElement);
 };
 
-const advisor = new AVA({
+const ava = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
@@ -40,7 +40,7 @@ const RenderCustom: React.FC = () => {
     try {
       const cleaned = cleanAndFormatJSON(data);
       const parsedData = JSON.parse(cleaned);
-      advisor.render('#img-chart', parsedData);
+      ava.render('#img-chart', parsedData);
     } catch (error) {
       message.error(`请输入有效的 JSON 格式数据: ${error}`);
     }

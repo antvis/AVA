@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import { Input, Button } from 'antd';
 import { AVA } from '@antv/ava';
 
-const advisor = new AVA({
+const ava = new AVA({
   llm: {
     appId: '202510APxPmo00551539',
     authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
@@ -63,7 +63,7 @@ const App = () => {
 
   const handleExtract = useCallback(async () => {
     setLoading(true);
-    const result = await advisor.extract(input);
+    const result = await ava.extract(input);
     setResult(result);
     setLoading(false);
   }, [loading]);
