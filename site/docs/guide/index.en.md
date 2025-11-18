@@ -102,12 +102,12 @@ The following examples show the use of [@antv/ava](https://www.npmjs.com/package
 
     //  Input: Multi-dimensional data
     const data = `Help to visualize the data below: 
-     城市 人口数 GDP
-     北京 2000 5000
-     上海 2100 6000
-     天津 800 3000
-     重庆 2200 4000
-     杭州 900 3000
+     City Population GDP
+     Beijing 2000 5000
+     Shanghai 2100 6000
+     Tianjin 800 3000
+     Chongqing 2200 4000
+     Hangzhou 900 3000
     `;
 
     // new AVA instance.
