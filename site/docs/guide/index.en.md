@@ -48,7 +48,7 @@ redirect_from:
   * `extract (Data Processing)`: Extract data meta from structured and unstructured data, used for chart recommendation.
   * `insight (Auto Insight)`: Automatic Insights Module. Automatically discover data insights from multi-dimensional data.
   * `advise (Chart Recommendation)`: Chart Recommendation Module. Recommend chart types and specific chart detail settings based on data and analysis needs, which is the  `Specification` of antvis.
-  * `render (Chart Renderring)`: Chart Renderring Module. Render charts based on the recommended chart types and settings with `GPT-Vis`.
+  * `render (Chart Rendering)`: Chart Rendering Module. Render charts based on the recommended chart types and settings with `GPT-Vis`.
 
 * [@antv/gpt-vis](https://github.com/antvis/GPT-Vis) : Components for GPTs, generative AI, and LLM projects, not only UI Components, it contains:
   * `LLM Protocol`: A visual protocol for LLM Agent cards, designed for LLM conversational interaction and service serialized output, to facilitate rapid integration into AI applications.
