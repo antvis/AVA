@@ -13,6 +13,7 @@ A network graph is a visual representation of relationships and connections betw
 
 | Property | Type               | Required | Default | Description |
 | -------- | ------------------ | -------- | ------- | ----------- |
+| type     | `string`           | Yes      | -       | Chart type, fixed to `network-graph` |
 | data     | `NetworkGraphData` | Yes      | -       | Data        |
 
 ### NetworkGraphData

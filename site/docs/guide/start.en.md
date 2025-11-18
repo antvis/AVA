@@ -5,7 +5,7 @@ redirect_from:
   - /en/docs/guide/start
 ---
 
-Welcome to `@antv/AVA`! This guide will help you get started quickly and use `AVA` for intelligent visualization recommendations.
+Welcome to `@antv/ava`! This guide will help you get started quickly and use `AVA` for intelligent visualization recommendations.
 
 There are currently two ways to use `AVA`:
 - Package Manager
@@ -25,14 +25,14 @@ yarn add @antv/ava
 ```
 After successful installation, you can implement intelligent visualization recommendations with the following code:
 ```js
-import { AVA } from "@antv/ava"
+import { AVA, bindRenderer } from "@antv/ava"
 import { render } from '@antv/gpt-vis';
 
 // 1. Register the chart renderer
-AVA.bindRenderer(render);
+bindRenderer(render);
 
-// 2. Initialize
-const ava = new AVA({llm});
+// 2. Initialize the ava instance with LLM configuration
+const ava = new AVA({ url: '', model: '', apiKey:'' });
 
 // 3. Extract structured information
 const meta = ava.extract("This is a text includes data and infomation.");
@@ -46,14 +46,13 @@ const vis = ava.render(container, config);
 ## CDN
 `AVA` also provides a UMD version that can be loaded directly via CDN. The `AVA` object can be accessed through the `AVA` namespace.
 ```html
-<!-- Import UMD version -->
 <script src="https://unpkg.com/@antv/ava@latest/dist/ava.umd.js"></script>
 <script>
   // 1. Register the chart renderer
-  AVA.bindRenderer(render);
+  bindRenderer(render);
 
-  // 2. Initialize
-  const ava = new AVA({llm});
+  // 2. Initialize the ava instance with LLM configuration
+  const ava = new AVA({ url: '', model: '', apiKey:'' });
 
   // 3. Extract structured information
   const meta = ava.extract("This is a text includes data and information.");

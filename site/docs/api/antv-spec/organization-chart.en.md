@@ -13,6 +13,7 @@ An organization chart is a diagram that shows the structure of an organization a
 
 | Property | Type                    | Required | Default | Description |
 | -------- | ----------------------- | -------- | ------- | ----------- |
+| type     | `string`                | Yes      | -       | Chart type, fixed to `organization-chart` |
 | data     | `OrganizationChartData` | Yes      | -       | Data        |
 
 ### OrganizationChartData

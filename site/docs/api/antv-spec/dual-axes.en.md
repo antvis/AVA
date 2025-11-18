@@ -12,6 +12,7 @@ A dual-axes chart allows for the visualization of two different data series on t
 ## Spec
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
+| type       | `string`                                  | Yes      | -         | Chart type, fixed to `dual-axes` |
 | categories | string[]                                 | Yes      | -         | Categories   |
 | series     | SeriesDataItem[]                         | Yes      | -         | Series       |
 | title      | string                                   | No       | -         | Chart title  |

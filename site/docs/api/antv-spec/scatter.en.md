@@ -13,6 +13,7 @@ A scatter plot is a type of plot or mathematical diagram using Cartesian coordin
 
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
+| type       | `string`                                  | Yes      | -         | Chart type, fixed to `scatter` |
 | data       | ScatterDataItem[]                        | Yes      | -         | Data         |
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |

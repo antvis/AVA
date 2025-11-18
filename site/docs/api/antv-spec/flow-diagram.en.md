@@ -13,6 +13,7 @@ A flow diagram is a type of diagram that represents a workflow or process.
 
 | Property | Type              | Required | Default | Description |
 | -------- | ----------------- | -------- | ------- | ----------- |
+| type     | `string`          | Yes      | -       | Chart type, fixed to `flow-diagram` |
 | data     | `FlowDiagramData` | Yes      | -       | Data        |
 
 ### FlowDiagramData

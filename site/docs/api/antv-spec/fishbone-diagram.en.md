@@ -13,6 +13,7 @@ A fishbone diagram is a cause-and-effect diagram that helps managers track down 
 
 | Property | Type           | Required | Default | Description |
 | -------- | -------------- | -------- | ------- | ----------- |
+| type     | `string`       | Yes      | -       | Chart type, fixed to `fishbone-diagram` |
 | data     | `FishboneData` | Yes      | -       | Data        |
 
 ### FishboneData
