@@ -4,6 +4,7 @@ import { validateObject } from '../../../src/utils/validator';
 import { CHARTS } from '../../../src/ckb';
 import { Spec } from '../../../src/types';
 
+// 未指定图表类型时推荐，以下图表类型之间认为是等价的
 const equivalentSets = [
   new Set(['line', 'area', 'column', 'bar']),
   new Set(['bar', 'column', 'pie']),
