@@ -5,13 +5,12 @@ import { DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
 import ReactDOM from 'react-dom';
 
 // eslint-disable-next-line import/no-unresolved
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 // @ts-ignore
 const { createRoot } = ReactDOM;
 
 export const customRender = (container, spec) => {
-  const mount =
-    typeof container === 'string' ? document.querySelector(container) : (container);
+  const mount = typeof container === 'string' ? document.querySelector(container) : container;
   if (!mount) return;
 
   const { type, ...chartProps } = spec;
@@ -26,8 +25,8 @@ export const customRender = (container, spec) => {
   root.render(chartElement);
 };
 
-// 创建 advisor 实例并为该实例绑定渲染器
-const advisor = new Advisor({
+// 创建 ava 实例并为该实例绑定渲染器
+const ava = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
@@ -60,17 +59,17 @@ const App = () => {
     // 尝试调用 advise，但无论成功与否都渲染兜底图
     message.loading('正在生成图表建议...', 0);
     try {
-      if (!advisor) {
-        message.error('advisor instance not ready');
+      if (!ava) {
+        message.error('ava instance not ready');
         return;
       }
       if (parsedData) {
-        const dataShards = await advisor.extract({ purpose: '请根据数据生成图表建议', data: parsedData });
-        const advises = await advisor.advise(dataShards);
-        advisor.render('#chart', advises[0].charts[0].spec);
+        const dataShards = await ava.extract({ purpose: '请根据数据生成图表建议', data: parsedData });
+        const advises = await ava.advise(dataShards);
+        ava.render('#chart', advises[0].charts[0].spec);
       }
     } catch (_e) {
-      // 忽略错误，仅用于验证 advisor.render
+      // 忽略错误，仅用于验证 ava.render
       console.log(_e);
     } finally {
       message.destroy();

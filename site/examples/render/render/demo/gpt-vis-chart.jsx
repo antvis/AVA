@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { GPTVis } from '@antv/gpt-vis';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 
 const { createRoot } = ReactDOM;
 
@@ -19,31 +19,28 @@ const renderGPTVis = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new Advisor();
+const ava = new AVA();
 
 const App = () => {
-
   useEffect(() => {
     bindRenderer(renderGPTVis);
-    advisor.render('#charts', {
-      'type': 'funnel',
-      'data': [
-        { 'category': '浏览网站', 'value': 50000 },
-        { 'category': '放入购物车', 'value': 35000 },
-        { 'category': '生成订单', 'value': 25000 },
-        { 'category': '支付订单', 'value': 15000 },
-        { 'category': '完成交易', 'value': 8000 }
-      ]
+    ava.render('#charts', {
+      type: 'funnel',
+      data: [
+        { category: '浏览网站', value: 50000 },
+        { category: '放入购物车', value: 35000 },
+        { category: '生成订单', value: 25000 },
+        { category: '支付订单', value: 15000 },
+        { category: '完成交易', value: 8000 },
+      ],
     });
 
     return () => {
-      advisor.destroy();
+      ava.destroy();
     };
   }, []);
 
-  return (
-    <div id="charts" />
-  );
+  return <div id="charts" />;
 };
 
 const root = createRoot(document.getElementById('container'));

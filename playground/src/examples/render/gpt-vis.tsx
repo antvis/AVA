@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Space, Card, message } from 'antd';
-import { Advisor, bindRenderer } from '../../../../src';
+import { AVA, bindRenderer } from '../../../../src';
 import { cleanAndFormatJSON, formatJSON } from '../../utils';
 import { GPTVis } from '@antv/gpt-vis';
 import ReactDOM from 'react-dom/client';
@@ -12,7 +12,7 @@ const gptVisRenderer = (container: string, spec: any) => {
 
   mount.innerHTML = '';
 
-  const content = `## GPT-VIS 
+  const content = `## GPT-VIS
   Components for GPTs, generative AI, and LLM projects. Not only UI Components.
   \`\`\`vis-chart
   ${JSON.stringify(spec)}
@@ -21,7 +21,7 @@ const gptVisRenderer = (container: string, spec: any) => {
   root.render(<GPTVis>{content}</GPTVis>);
 };
 
-const advisor = new Advisor({
+const ava = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
@@ -57,7 +57,7 @@ const RenderGPTVis: React.FC = () => {
     try {
       const cleaned = cleanAndFormatJSON(data);
       const parsedData = JSON.parse(cleaned);
-      advisor.render('#chart', parsedData);
+      ava.render('#chart', parsedData);
     } catch (error) {
       message.error(`请输入有效的 JSON 格式数据: ${error}`);
     }

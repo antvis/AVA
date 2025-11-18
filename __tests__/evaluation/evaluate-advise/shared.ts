@@ -1,5 +1,5 @@
 import { loadDataset } from '../utils/loadDataset';
-import { Advisor, Spec } from '../../../src';
+import { AVA, Spec } from '../../../src';
 
 export type TestData = {
   type: string;
@@ -24,7 +24,7 @@ export const runAdviseEvaluation = (
 ) => {
   jest.setTimeout(3600000);
 
-  const advisor = new Advisor({
+  const ava = new AVA({
     llm: {
       appId: process.env.TBOX_APP_ID!,
       authorization: process.env.TBOX_AUTHORIZATION!,
@@ -39,8 +39,8 @@ export const runAdviseEvaluation = (
         console.log(`evaluate ${chartId} case ${i}`);
         const { answer } = data;
         const question = selectQuestion(data);
-        const dataShards = await advisor.extract(question);
-        const advises = await advisor.advise(dataShards);
+        const dataShards = await ava.extract(question);
+        const advises = await ava.advise(dataShards);
         const { spec } = advises?.[0]?.charts?.[0] || {};
         const success = isPass(spec, answer);
         expect(success).toEqual(true);

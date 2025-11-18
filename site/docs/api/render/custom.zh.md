@@ -9,7 +9,7 @@ redirect_from:
 
 `@antv/gpt-vis` 内置 25+ 图表类型，完整打包体积约 420 KB。在多数页面只需要 1~3 种图表的场景下，全量引入会造成不必要的体积与首屏执行开销。所谓“按需渲染”（或“按需加载”）即：
 1. 仅导入当前交互真正需要的图表组件。
-2. 运行期根据 advisor 返回的推荐 / 业务指定的 spec.type 动态选择对应组件。
+2. 运行期根据 ava 返回的推荐 / 业务指定的 spec.type 动态选择对应组件。
 3. 可结合构建工具的 Tree Shaking、ESM 与动态 import 分割代码，进一步减少初始加载。
 
 核心思路
@@ -25,7 +25,7 @@ redirect_from:
 - SSR / Edge 友好：更小的包可更快上传与冷启动。
 
 实现要点
-- bindRenderer(demandRender) 将 Advisor 的统一 render 流程与自定义渲染逻辑衔接。
+- bindRenderer(demandRender) 将 AVA 的统一 render 流程与自定义渲染逻辑衔接。
 - 在 demandRender 中使用 spec.type 进行组件选择；清空旧容器 (mount.innerHTML = '') 避免残留。
 - 若需多实例或频繁更新，可缓存 ReactRoot；不复用时可 root.unmount() 做资源释放。
 - 结合构建工具：Vite / Webpack 默认支持 ESM Tree Shaking；确保使用 import { Line } from '@antv/gpt-vis' 而不是整包命名空间聚合。
@@ -35,7 +35,7 @@ redirect_from:
 ```js
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { Line, Area, Bar, Pie } from '@antv/gpt-vis';
 
 const renderer = (container, spec) => {
@@ -64,7 +64,7 @@ const renderer = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new Advisor();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -80,7 +80,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-    advisor.render('#chart', chartSpec);
+    ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -135,8 +135,8 @@ GPTVis 协议是一种基于 Markdown 语法的图表渲染协议，通过扩展
 步骤
 1. 定义图表配置：包含 type 与 data 等字段。
 2. 编写 renderer：查询挂载节点，清空内容，拼接 Markdown（内含 ```vis-chart 代码块 + JSON）。
-3. bindRenderer：将自定义逻辑注入 Advisor 的统一渲染流程。
-4. 调用 advisor.render('#chart', spec)：驱动生成最终图表。
+3. bindRenderer：将自定义逻辑注入 AVA 的统一渲染流程。
+4. 调用 ava.render('#chart', spec)：驱动生成最终图表。
 5. 在 React 中仅需一个占位容器 div#chart。
 
 要点
@@ -150,7 +150,7 @@ GPTVis 协议是一种基于 Markdown 语法的图表渲染协议，通过扩展
 ```js
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { GPTVis } from '@antv/gpt-vis';
 
 const renderer = (container: string, spec: any) => {
@@ -168,7 +168,7 @@ const renderer = (container: string, spec: any) => {
   root.render(<GPTVis>{content}</GPTVis>);
 };
 
-const advisor = new Advisor();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -184,7 +184,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-     advisor.render('#chart', chartSpec);
+     ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -200,7 +200,7 @@ export default RenderChart;
 ```js
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { GPTVisLite, Pie, withChartCode, ChartType } from '@antv/gpt-vis';
 
 const components = {
@@ -225,7 +225,7 @@ const renderer = (container, spec) => {
   root.render(<GPTVisLite components={components}>{content}</GPTVisLite>);
 };
 
-const advisor = new Advisor();
+const ava = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -241,7 +241,7 @@ const RenderChart = () => {
 
   useEffect(() => {
     bindRenderer(renderer);
-    advisor.render('#chart', chartSpec);
+    ava.render('#chart', chartSpec);
   }, []);
  
   return (
@@ -312,16 +312,16 @@ main();
 
 <img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*XqCnTbkpAkQAAAAAAAAAAAAADmJ7AQ/fmt.webp" alt="gpt-vis-ssr" width="600" />
 
-### 与 Advisor 集成
+### 与 AVA 集成
 
-服务端常见流程：先用 Advisor 推荐，再渲染输出图片。
+服务端常见流程：先用 AVA 推荐，再渲染输出图片。
 ```ts
-import { Advisor } from '@antv/ava';
+import { AVA } from '@antv/ava';
 import { render } from '@antv/gpt-vis-ssr';
 
 async function advisorSSR(data) {
-  const advisor = new Advisor();
-  const advises  = advisor.advise(data);
+  const ava = new AVA();
+  const advises  = ava.advise(data);
   const spec =  advises[0].charts[0].spec;
   const chart = await render(spec);
   return chart.toBuffer('png');
