@@ -13,6 +13,7 @@ A Sankey diagram is a type of flow diagram that shows the flow of resources or q
 
 | Property  | Type                                                   | Required | Default   | Description    |
 | --------- | ------------------------------------------------------ | -------- | --------- | -------------- |
+| type      | string                                                | Yes      | -         | Chart type, fixed to `sankey` |
 | data      | SankeyDataItem[]                                       | Yes      | -         | Data           |
 | nodeAlign | "left" &#124; "center" &#124; "right" &#124; "justify" | No       | "center"  | Node alignment |
 | title     | string                                                 | No       | -         | Chart title    |

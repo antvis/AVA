@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import { Input, Button, Space, Card, message } from 'antd';
-import { Advisor, bindRenderer } from '../../../../src';
+import { AVA, bindRenderer } from '../../../../src';
 import { render } from '../../utils';
 
-// 创建 advisor 实例并为该实例绑定渲染器
-const advisor = new Advisor({
+// 创建 ava 实例并为该实例绑定渲染器
+const ava = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
@@ -39,11 +39,11 @@ const AdviseSummary: React.FC = () => {
     message.loading('正在生成图表建议...', 0);
     try {
       const input = typeof parsedData !== 'string' ? JSON.stringify(parsedData) : parsedData;
-      const dataShards = await advisor.extract(input);
-      const advises = await advisor.advise(dataShards);
-      advisor.render('#chart', advises[0].charts[0].spec);
+      const dataShards = await ava.extract(input);
+      const advises = await ava.advise(dataShards);
+      ava.render('#chart', advises[0].charts[0].spec);
     } catch (_e) {
-      // 忽略错误，仅用于验证 advisor.render
+      // 忽略错误，仅用于验证 ava.render
       // eslint-disable-next-line no-console
       console.log(_e);
     } finally {

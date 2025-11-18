@@ -1,8 +1,8 @@
-import { Advisor, bindRenderer } from '../../src';
+import { AVA, bindRenderer } from '../../src';
 
 describe('index', () => {
-  it('Advisor', async () => {
-    expect(Advisor).toBeDefined();
+  it('AVA', async () => {
+    expect(AVA).toBeDefined();
   });
 
   it('bindRenderer', async () => {

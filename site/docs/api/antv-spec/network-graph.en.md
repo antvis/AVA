@@ -13,6 +13,7 @@ A network graph is a visual representation of relationships and connections betw
 
 | Property | Type               | Required | Default | Description |
 | -------- | ------------------ | -------- | ------- | ----------- |
+| type     | string           | Yes      | -       | Chart type, fixed to `network-graph` |
 | data     | `NetworkGraphData` | Yes      | -       | Data        |
 
 ### NetworkGraphData
@@ -26,15 +27,15 @@ A network graph is a visual representation of relationships and connections betw
 
 | Property | Type     | Required | Default | Description                                  |
 | -------- | -------- | -------- | ------- | -------------------------------------------- |
-| name     | `string` | Yes      | -       | Node name; must be unique to identify a node |
+| name     | string | Yes      | -       | Node name; must be unique to identify a node |
 
 ### NetworkGraphEdge
 
 | Property | Type     | Required | Default | Description                                                           |
 | -------- | -------- | -------- | ------- | --------------------------------------------------------------------- |
-| source   | `string` | Yes      | -       | Name of the source node; refers to the `name` of a `NetworkGraphNode` |
-| target   | `string` | Yes      | -       | Name of the target node; refers to the `name` of a `NetworkGraphNode` |
-| name     | `string` | Yes      | -       | Edge name for identification                                          |
+| source   | string | Yes      | -       | Name of the source node; refers to the `name` of a `NetworkGraphNode` |
+| target   | string | Yes      | -       | Name of the target node; refers to the `name` of a `NetworkGraphNode` |
+| name     | string | Yes      | -       | Edge name for identification                                          |
 
 ## Spec example
 

@@ -13,6 +13,7 @@ A word cloud is a visual representation of text data where the size of each word
 
 | Property | Type                                     | Required | Default   | Description |
 | -------- | ---------------------------------------- | -------- | --------- | ----------- |
+| type     | string                                  | Yes      | -         | Chart type, fixed to `word-cloud` |
 | data     | WordCloudDataItem[]                      | Yes      | -         | Data        |
 | title    | string                                   | No       | -         | Chart title |
 | theme    | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme |

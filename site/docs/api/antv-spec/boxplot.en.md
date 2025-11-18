@@ -12,6 +12,7 @@ A box plot (also known as a box-and-whisker plot) is a standardized way of displ
 ## Spec
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
+| type       | string                                  | Yes      | -         | Chart type, fixed to `boxplot` |
 | data       | BoxplotDataItem[]                        | Yes      | -         | Data         |
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |

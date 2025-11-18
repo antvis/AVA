@@ -12,6 +12,7 @@ A bar chart or bar graph is a chart or graph that presents categorical data with
 ## Spec
 | Property   | Type                                     | Required | Default   | Description           |
 | ---------- | ---------------------------------------- | -------- | --------- | --------------------- |
+| type       | string                                   | Yes      | -         | Chart type, fixed to `bar` |
 | data       | BarDataItem[]                            | Yes      | -         | Data                  |
 | title      | string                                   | No       | -         | Chart title           |
 | axisXTitle | string                                   | No       | -         | X-axis title          |

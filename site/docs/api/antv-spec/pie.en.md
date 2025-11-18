@@ -13,6 +13,7 @@ A pie chart is a circular statistical graphic, which presents data as slices of 
 
 | Property    | Type                             | Required | Default   | Description                               |
 | ----------- | -------------------------------- | -------- | --------- | ----------------------------------------- |
+| type        | string                          | Yes      | -         | Chart type, fixed to `pie`                 |
 | data        | PieDataItem[]                    | Yes      | -         | Pie chart data                            |
 | title       | string                           | No       | -         | Chart title                               |
 | innerRadius | number                           | No       | -         | Inner radius; set to create a donut chart |

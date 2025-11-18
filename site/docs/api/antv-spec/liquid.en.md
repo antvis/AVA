@@ -13,6 +13,7 @@ A liquid chart is used to show the percentage of a quantity.
 
 | Property | Type                                                  | Required | Default   | Description        |
 | -------- | ----------------------------------------------------- | -------- | --------- | ------------------ |
+| type     | string                                              | Yes      | -         | Chart type, fixed to `liquid` |
 | percent  | number                                                | Yes      | -         | Percentage         |
 | shape    | "rect" &#124; "circle" &#124; "pin" &#124; "triangle" | No       | "circle"  | Shape of the chart |
 | title    | string                                                | No       | -         | Chart title        |

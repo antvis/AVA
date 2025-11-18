@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Area } from '@antv/gpt-vis';
 import ReactDOM from 'react-dom';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 
 const { createRoot } = ReactDOM;
 
@@ -21,36 +21,28 @@ const renderArea = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new Advisor({
-  llm: {
-    appId: '202511APkFwG00560135',
-    authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
-  },
-});
+const ava = new AVA();
 
 const App = () => {
   useEffect(() => {
     bindRenderer(renderArea);
-    advisor.render('#chart', {
-      'type': 'area',
-      'data': [
-        { 'time': '2018', 'value': 91.9 },
-        { 'time': '2019', 'value': 99.1 },
-        { 'time': '2020', 'value': 101.6 },
-        { 'time': '2021', 'value': 114.4 },
-        { 'time': '2022', 'value': 121 }
-      ]
+    ava.render('#chart', {
+      type: 'area',
+      data: [
+        { time: '2018', value: 91.9 },
+        { time: '2019', value: 99.1 },
+        { time: '2020', value: 101.6 },
+        { time: '2021', value: 114.4 },
+        { time: '2022', value: 121 },
+      ],
     });
 
-    // cleanup 时不需要 unbindRenderer，因为下一个组件会重新绑定
     return () => {
-      advisor.destroy();
+      ava.destroy();
     };
   }, []);
 
-  return (
-    <div id="chart" />
-  );
+  return <div id="chart" />;
 };
 
 const root = createRoot(document.getElementById('container'));

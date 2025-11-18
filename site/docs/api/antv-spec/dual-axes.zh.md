@@ -12,6 +12,7 @@ redirect_from:
 ## Spec
 | 属性       | 类型                                     | 是否必传 | 默认值    | 说明       |
 | ---------- | ---------------------------------------- | -------- | --------- | ---------- |
+| type       | string                                  | 是       | -         | 图表类型，固定为 `dual-axes` |
 | categories | string[]                                 | 是       | -         | 分类       |
 | series     | SeriesDataItem[]                         | 是       | -         | 系列       |
 | title      | string                                   | 否       | -         | 图表的标题 |

@@ -13,6 +13,7 @@ A line chart is a type of chart which displays information as a series of data p
 
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
+| type       | string                                  | Yes      | -         | Chart type, fixed to `line` |
 | data       | LineDataItem[]                           | Yes      | -         | Data         |
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |

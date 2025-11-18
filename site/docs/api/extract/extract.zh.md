@@ -8,7 +8,7 @@ redirect_from:
 ## extract 方法
 
 ```typescript
-import { Advisor } from "@ava/advisor";
+import { AVA } from "@antv/ava";
 
 const advisor = new Advisor({
   llm: {

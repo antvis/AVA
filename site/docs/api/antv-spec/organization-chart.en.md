@@ -13,14 +13,15 @@ An organization chart is a diagram that shows the structure of an organization a
 
 | Property | Type                    | Required | Default | Description |
 | -------- | ----------------------- | -------- | ------- | ----------- |
+| type     | string                | Yes      | -       | Chart type, fixed to `organization-chart` |
 | data     | `OrganizationChartData` | Yes      | -       | Data        |
 
 ### OrganizationChartData
 
 | Property    | Type                      | Required | Default | Description                                                                                                                                                                                                              |
 | ----------- | ------------------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| name        | `string`                  | Yes      | -       | Node name that represents a position or department; must be unique                                                                                                                                                       |
-| description | `string`                  | No       | -       | Node description, e.g., job responsibilities or department introduction                                                                                                                                                  |
+| name        | string                  | Yes      | -       | Node name that represents a position or department; must be unique                                                                                                                                                       |
+| description | string                  | No       | -       | Node description, e.g., job responsibilities or department introduction                                                                                                                                                  |
 | children    | `OrganizationChartData[]` | No       | -       | Child nodes representing subordinate positions or departments. If there are no children, this field can be omitted. Each child is also an `OrganizationChartData`, allowing recursive nesting to form a multi-level tree |
 
 ## Spec example

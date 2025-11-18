@@ -6,12 +6,12 @@ import { getRenderer } from '../bind';
 import { adviseCharts } from '../advise';
 
 /**
- * The 1st level advisor class.
+ * The 1st level ava class.
  * Used to extract data, recommend charts, and render charts. All functionalities are AI-driven.
  */
-export class Advisor {
+export class AVA {
   /**
-   * Configuration for the advisor. Includes LLM settings, chart inclusion/exclusion lists.
+   * Configuration for the ava. Includes LLM settings, chart inclusion/exclusion lists.
    */
   private config!: AdvisorConfig;
 
@@ -24,11 +24,11 @@ export class Advisor {
    *
    * Case 1 - User provides a text query, extract relevant data shards:
    *
-      advisor.extract('What is the average age of people who work as engineers?');
+      ava.extract('What is the average age of people who work as engineers?');
    *
    * Case 2 - User provides a query with raw data:
    *
-      advisor.extract(`帮我可视化以下数据：
+      ava.extract(`帮我可视化以下数据：
         城市 类别 渠道 销售额 价格
         杭州 体育 A  100  80
         北京 体育 A  200  90
@@ -39,7 +39,7 @@ export class Advisor {
    *
    * Case 3 - User provides raw data, extract data shards directly:
    *
-      advisor.extract({ type: 'A', value: 2 });
+      ava.extract({ type: 'A', value: 2 });
    */
   async extract(input: string) {
     try {
@@ -57,10 +57,10 @@ export class Advisor {
   }
 
   /**
-   * Advise charts based on the data shards, which are extracted from the `advisor.extract` API.
-   * This is the core function of the Advisor class, which leverages LLMs to recommend suitable chart types and encodings based on the provided data and user purpose.
+   * Advise charts based on the data shards, which are extracted from the `ava.extract` API.
+   * This is the core function of the AVA class, which leverages LLMs to recommend suitable chart types and encodings based on the provided data and user purpose.
    *
-   * const advises = advisor.advise(dataShards);
+   * const advises = ava.advise(dataShards);
    */
   async advise(dataShard: DataShard[]): Promise<AdviseStageOutput> {
     return adviseCharts(dataShard, this.config);
@@ -71,7 +71,7 @@ export class Advisor {
    *
    * Case 1 - Using default renderer (AVA built-in):
    *
-      advisor.render({
+      ava.render({
         container: '#chart',
         spec: chartSpec,
       });
@@ -80,7 +80,7 @@ export class Advisor {
    *
       const customRenderer: Renderer = (container, spec) => { ... };
       bindRenderer(customRenderer);
-      advisor.render({
+      ava.render({
         container: '#chart',
         spec: chartSpec,
       });

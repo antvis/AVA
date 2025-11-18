@@ -13,6 +13,7 @@ redirect_from:
 
 | 属性  | 类型                                     | 是否必传 | 默认值    | 说明       |
 | ----- | ---------------------------------------- | -------- | --------- | ---------- |
+| type  | string                                | Yes      | -         | Chart type, fixed to `radar` |
 | data  | RadarDataItem[]                          | 是       | -         | 数据       |
 | title | string                                   | 否       | -         | 图表的标题 |
 | theme | "default" &#124; "dark" &#124; "academy" | 否       | "default" | 图表主题   |

@@ -1,9 +1,7 @@
-import { loadDataset } from '../loadDataset';
-import { Advisor, Spec } from '../../../src';
-import { validateObject } from '../../../src/utils/validator';
-import { CHARTS } from '../../../src/ckb';
+import { loadDataset } from '../utils/loadDataset';
+import { AVA, Spec } from '../../../src';
 
-type TestData = {
+export type TestData = {
   type: string;
   question: string;
   questionWithoutChart: string;
@@ -15,60 +13,37 @@ type TestData = {
   dataShards: Object[];
 };
 
-export const runAdviseEvaluation = (selectQuestion: (data: TestData) => string) => {
+/**
+ * 评测 advise 方法
+ * @param selectQuestion 从 TestData 中选择问题的函数
+ * @param isPass 检查评测是否通过
+ */
+export const runAdviseEvaluation = (
+  selectQuestion: (data: TestData) => string,
+  isPass: (spec: Spec, answer: TestData['answer']) => boolean
+) => {
   jest.setTimeout(3600000);
 
-  const advisor = new Advisor({
+  const ava = new AVA({
     llm: {
       appId: process.env.TBOX_APP_ID!,
       authorization: process.env.TBOX_AUTHORIZATION!,
     },
   });
 
-  const evaluateDatasets = (chartId: string) => {
-    const datasets = loadDataset(chartId);
-    const chartResults = [];
+  const evaluateChartAdvise = (chartId: string) => {
+    const dataset = loadDataset(chartId);
 
-    datasets.forEach((data: TestData, i: number) => {
+    dataset.forEach((data: TestData, i: number) => {
       it(`evaluate ${chartId} case ${i}`, async () => {
-        const startTime = Date.now();
         console.log(`evaluate ${chartId} case ${i}`);
         const { answer } = data;
         const question = selectQuestion(data);
-        let spec: Spec;
-        try {
-          const advises = await advisor.advise([]);
-          spec = advises[0].charts[0].spec;
-        } catch (error) {
-          const endTime = Date.now();
-          const executionTime = endTime - startTime;
-          chartResults.push({
-            testName: `evaluate ${chartId} case ${i}`,
-            question,
-            expectedAnswer: answer,
-            actualSpec: null,
-            status: 'failed',
-            executionTime,
-          });
-          throw error;
-        }
-
-        const endTime = Date.now();
-        const executionTime = endTime - startTime;
-        const assertionsPass = spec !== undefined && spec?.type === answer.type;
-        chartResults.push({
-          testName: `evaluate ${chartId} case ${i}`,
-          question,
-          expectedAnswer: answer,
-          actualSpec: spec,
-          status: assertionsPass ? 'success' : 'failed',
-          executionTime,
-        });
-
-        const { type, ...finalSpec } = spec;
-        expect(spec).not.toEqual([]);
-        expect(type).toEqual(answer.type);
-        expect(validateObject(CHARTS[type].zodSchema, finalSpec)).toBe(true);
+        const dataShards = await ava.extract(question);
+        const advises = await ava.advise(dataShards);
+        const { spec } = advises?.[0]?.charts?.[0] || {};
+        const success = isPass(spec, answer);
+        expect(success).toEqual(true);
       });
     });
   };
@@ -101,6 +76,6 @@ export const runAdviseEvaluation = (selectQuestion: (data: TestData) => string) 
   ];
 
   describe('evaluation advise', () => {
-    chartIds.forEach(evaluateDatasets);
+    chartIds.forEach(evaluateChartAdvise);
   });
 };

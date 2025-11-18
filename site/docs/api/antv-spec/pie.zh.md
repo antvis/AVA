@@ -10,8 +10,10 @@ order: 17
 
 | 属性  | 类型                                     | 是否必传 | 默认值    | 说明       |
 | ----- | ---------------------------------------- | -------- | --------- | ---------- |
+| type  | string                                  | 是       | -         | 图表类型，固定为 `pie` |
 | data  | PieDataItem[]                            | 是       | -         | 数据       |
 | title | string                                   | 否       | -         | 图表的标题 |
+| innerRadius | number                                   | 否       | -         | 内半径；设置为创建donut图表 |
 | theme | "default" &#124; "dark" &#124; "academy" | 否       | "default" | 图表主题   |
 | style | IStyle                                   | 否       | -         | 图表样式   |
 

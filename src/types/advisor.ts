@@ -40,7 +40,7 @@ export interface AdvisorConfig {
   includes?: string[];
   /** Excluded charts from recommendation */
   excludes?: string[];
-  /** Custom renderer for this advisor instance */
+  /** Custom renderer for this ava instance */
   renderer?: Renderer;
 }
 

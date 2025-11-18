@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 import { Button, Space, Card } from 'antd';
-import { Advisor, bindRenderer } from '../../../../src';
+import { AVA, bindRenderer } from '../../../../src';
 import { render } from '../../utils';
 
-// 创建 advisor 实例并为该实例绑定渲染器
-const advisor = new Advisor({
+// 创建 ava 实例并为该实例绑定渲染器
+const ava = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
@@ -34,10 +34,10 @@ const MultipleChartsDemo: React.FC = () => {
   }, []);
 
   const advise = async () => {
-    const dataShards = await advisor.extract({ purpose: '请根据数据生成图表建议', data });
-    const advises = await advisor.advise(dataShards);
+    const dataShards = await ava.extract('');
+    const advises = await ava.advise(dataShards);
     advises.forEach((item) => {
-      advisor.render('#charts', item.charts[0].spec);
+      ava.render('#charts', item.charts[0].spec);
     });
   };
 

@@ -11,6 +11,7 @@ order: 14
 
 | 属性 | 类型               | 是否必传 | 默认值 | 说明 |
 | ---- | ------------------ | -------- | ------ | ---- |
+| type | string           | 是       | -      | 图表类型，固定为 `network-graph` |
 | data | `NetworkGraphData` | 是       | -      | 数据 |
 
 ### NetworkGraphData
@@ -24,15 +25,15 @@ order: 14
 
 | 属性 | 类型     | 是否必传 | 默认值 | 说明                               |
 | ---- | -------- | -------- | ------ | ---------------------------------- |
-| name | `string` | 是       | -      | 节点的名称，必须唯一，用于标识节点 |
+| name | string | 是       | -      | 节点的名称，必须唯一，用于标识节点 |
 
 ### NetworkGraphEdge
 
 | 属性   | 类型     | 是否必传 | 默认值 | 说明                                                     |
 | ------ | -------- | -------- | ------ | -------------------------------------------------------- |
-| source | `string` | 是       | -      | 边的起始节点名称，指向 `NetworkGraphNode` 的 `name` 属性 |
-| target | `string` | 是       | -      | 边的目标节点名称，指向 `NetworkGraphNode` 的 `name` 属性 |
-| name   | `string` | 是       | -      | 边的名称，用于标识边                                     |
+| source | string | 是       | -      | 边的起始节点名称，指向 `NetworkGraphNode` 的 `name` 属性 |
+| target | string | 是       | -      | 边的目标节点名称，指向 `NetworkGraphNode` 的 `name` 属性 |
+| name   | string | 是       | -      | 边的名称，用于标识边                                     |
 
 ## Spec 示例
 
