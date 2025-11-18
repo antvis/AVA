@@ -21,15 +21,15 @@
   },
   "dependencies": {
     "@antv/gpt-vis": "^0.5.9",
-    "antd": "^5.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "antd": "^5.29.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@antv/dumi-theme-antv": "beta",
-    "@types/react-dom": "^19.2.2",
+    "@antv/dumi-theme-antv": "^0.7.10",
+    "@types/react-dom": "^19.2.3",
     "dumi": "^2.4.21",
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.3"
   },
   "resolutions": {
     "@monaco-editor/loader": "1.5.0"
@@ -40,5 +40,3 @@
     }
   }
 }
-
-

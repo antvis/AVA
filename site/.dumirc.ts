@@ -97,24 +97,24 @@ export default defineConfig({
       {
         slug: 'api/antv-spec',
         title: {
-          zh: '图表知识库（AntV Spec）',
-          en: 'Chart Knowledge Base (AntV Spec)',
+          zh: '图表知识库',
+          en: 'Chart Knowledge Base',
         },
         order: 1,
       },
       {
         slug: 'api/extract',
         title: {
-          zh: '数据处理 (Extract)',
-          en: 'Data Processing (Extract)',
+          zh: '数据提取',
+          en: 'Data Extraction',
         },
         order: 2,
       },
       {
         slug: 'api/advise',
         title: {
-          zh: '图表推荐（Advise）',
-          en: 'Chart Recommendation (Advise)',
+          zh: '图表推荐',
+          en: 'Chart Recommendation',
         },
         order: 3,
       },
@@ -129,8 +129,8 @@ export default defineConfig({
       {
         slug: 'api/insight',
         title: {
-          zh: '图表洞察（Insight）',
-          en: 'Chart Insight (Insight)',
+          zh: '图表洞察',
+          en: 'Chart Insight',
         },
         order: 4,
       }
@@ -140,8 +140,8 @@ export default defineConfig({
         slug: 'advisor',
         icon: 'star-single-line',
         title: {
-          zh: '图表推荐(advisor)',
-          en: 'Chart Recommendation (advisor)',
+          zh: '图表推荐',
+          en: 'Chart Recommendation',
         },
         order: 2,
       },
@@ -149,8 +149,8 @@ export default defineConfig({
         slug: 'extract',
         icon: 'facet',
         title: {
-          zh: '数据提取(extract)',
-          en: 'Data Extraction (extract)',
+          zh: '数据提取',
+          en: 'Data Extraction',
         },
         order: 1,
       },

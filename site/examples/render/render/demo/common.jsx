@@ -22,16 +22,10 @@ const render = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new Advisor({
-  llm: {
-    appId: '202511APkFwG00560135',
-    authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
-  },
-});
+const advisor = new Advisor();
 
 const App = () => {
   useEffect(() => {
-
     bindRenderer(render);
     advisor.render('#chart', {
       'type': 'line',
