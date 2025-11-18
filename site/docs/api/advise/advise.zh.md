@@ -1,5 +1,5 @@
 ---
-title: 图表推荐（Advise）
+title: 图表推荐
 order: 0
 redirect_from:
   - /zh/docs/api/advise

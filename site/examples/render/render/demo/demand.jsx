@@ -21,12 +21,7 @@ const renderArea = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new Advisor({
-  llm: {
-    appId: '202511APkFwG00560135',
-    authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
-  },
-});
+const advisor = new Advisor();
 
 const App = () => {
   useEffect(() => {
@@ -42,7 +37,6 @@ const App = () => {
       ]
     });
 
-    // cleanup 时不需要 unbindRenderer，因为下一个组件会重新绑定
     return () => {
       advisor.destroy();
     };
