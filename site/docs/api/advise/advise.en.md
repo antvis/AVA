@@ -7,7 +7,7 @@ redirect_from:
 
 # Advise (Chart Recommendation)
  
-This page describes the "advise" capability: generating chart recommendations from data using the Advisor workflow.
+This page describes the "advise" capability: generating chart recommendations from data using the AVA workflow.
 
 ## Overview
 
@@ -17,14 +17,14 @@ This page describes the "advise" capability: generating chart recommendations fr
 2. `advise` — generate chart recommendations based on the extracted features
 3. `render` — render a recommended chart using the chosen renderer
 
-The Advisor class (from `@antv/ava`) coordinates these steps.
+The AVA class (from `@antv/ava`) coordinates these steps.
 
 ## Typical usage
 
 ```ts
-import { Advisor } from '@antv/ava';
+import { AVA } from '@antv/ava';
 
-const advisor = new Advisor({ /* options */ });
+const advisor = new AVA({ /* options */ });
 const shards = await advisor.extract({ purpose: '请根据数据生成图表建议', data });
 const advises = await advisor.advise(shards);
 // advises is an array of recommendation objects; each may contain charts, insights, and metadata

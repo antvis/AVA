@@ -9,7 +9,7 @@ import { adviseCharts } from '../advise';
  * The 1st level advisor class.
  * Used to extract data, recommend charts, and render charts. All functionalities are AI-driven.
  */
-export class Advisor {
+export class AVA {
   /**
    * Configuration for the advisor. Includes LLM settings, chart inclusion/exclusion lists.
    */
@@ -58,7 +58,7 @@ export class Advisor {
 
   /**
    * Advise charts based on the data shards, which are extracted from the `advisor.extract` API.
-   * This is the core function of the Advisor class, which leverages LLMs to recommend suitable chart types and encodings based on the provided data and user purpose.
+   * This is the core function of the AVA class, which leverages LLMs to recommend suitable chart types and encodings based on the provided data and user purpose.
    *
    * const advises = advisor.advise(dataShards);
    */

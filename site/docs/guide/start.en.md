@@ -25,14 +25,14 @@ yarn add @antv/ava
 ```
 After successful installation, you can implement intelligent visualization recommendations with the following code:
 ```js
-import { Advisor } from "@antv/ava"
+import { AVA } from "@antv/ava"
 import { render } from '@antv/gpt-vis';
 
 // 1. Register the chart renderer
-Advisor.bindRenderer(render);
+AVA.bindRenderer(render);
 
 // 2. Initialize
-const advisor = new Advisor({llm});
+const advisor = new AVA({llm});
 
 // 3. Extract structured information
 const meta = advisor.extract("This is a text includes data and infomation.");
@@ -44,16 +44,16 @@ const info = advisor.advise(meta);
 const vis = advisor.render(container, config);
 ```
 ## CDN
-`AVA` also provides a UMD version that can be loaded directly via CDN. The `Advisor` object can be accessed through the `AVA` namespace.
+`AVA` also provides a UMD version that can be loaded directly via CDN. The `AVA` object can be accessed through the `AVA` namespace.
 ```html
 <!-- Import UMD version -->
 <script src="https://unpkg.com/@antv/ava@latest/dist/ava.umd.js"></script>
 <script>
   // 1. Register the chart renderer
-  AVA.Advisor.bindRenderer(render);
+  AVA.bindRenderer(render);
 
   // 2. Initialize
-  const advisor = new AVA.Advisor({llm});
+  const advisor = new AVA({llm});
 
   // 3. Extract structured information
   const meta = advisor.extract("This is a text includes data and information.");

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Space, Card, message } from 'antd';
-import { Advisor, bindRenderer } from '../../../../src';
+import { AVA, bindRenderer } from '../../../../src';
 import { render as GPTVisRender, cleanAndFormatJSON, formatJSON } from '../../utils';
 
 // 创建 advisor 实例并为该实例绑定渲染器
-const advisor = new Advisor({
+const advisor = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',

@@ -25,7 +25,7 @@ Advantages
 - SSR / Edge friendly: Smaller bundles enable faster uploads and cold starts.
 
 Implementation Points
-- bindRenderer(demandRender) connects Advisor's unified render process with custom rendering logic.
+- bindRenderer(demandRender) connects AVA's unified render process with custom rendering logic.
 - Use spec.type for component selection in demandRender; clear old container (mount.innerHTML = '') to avoid residuals.
 - For multiple instances or frequent updates, cache ReactRoot; use root.unmount() for resource cleanup when not reusing.
 - Combine with build tools: Vite / Webpack support ESM Tree Shaking by default; ensure using import { Line } from '@antv/gpt-vis' instead of entire namespace aggregation.
@@ -35,7 +35,7 @@ The following example is based on the "static on-demand" strategy, registering f
 ```js
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { Line, Area, Bar, Pie } from '@antv/gpt-vis';
 
 const renderer = (container, spec) => {
@@ -64,7 +64,7 @@ const renderer = (container, spec) => {
   root.render(chartElement);
 };
 
-const advisor = new Advisor();
+const advisor = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -135,7 +135,7 @@ The following example demonstrates the most streamlined integration approach. Th
 Steps
 1. Define chart configuration: Include fields like type and data.
 2. Write renderer: Query mount node, clear content, concatenate Markdown (containing ```vis-chart code block + JSON).
-3. bindRenderer: Inject custom logic into Advisor's unified rendering process.
+3. bindRenderer: Inject custom logic into AVA's unified rendering process.
 4. Call advisor.render('#chart', spec): Drive final chart generation.
 5. In React, only need a placeholder container div#chart.
 
@@ -150,7 +150,7 @@ Below is the complete minimal example.
 ```js
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { GPTVis } from '@antv/gpt-vis';
 
 const renderer = (container: string, spec: any) => {
@@ -168,7 +168,7 @@ const renderer = (container: string, spec: any) => {
   root.render(<GPTVis>{content}</GPTVis>);
 };
 
-const advisor = new Advisor();
+const advisor = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -200,7 +200,7 @@ export default RenderChart;
 ```js
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { GPTVisLite, Pie, withChartCode, ChartType } from '@antv/gpt-vis';
 
 const components = {
@@ -225,7 +225,7 @@ const renderer = (container, spec) => {
   root.render(<GPTVisLite components={components}>{content}</GPTVisLite>);
 };
 
-const advisor = new Advisor();
+const advisor = new AVA();
 const chartSpec = {
   type: 'area',
   data: [
@@ -312,15 +312,15 @@ This generates a visualization in approximately 400ms as shown below, essentiall
 
 <img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*XqCnTbkpAkQAAAAAAAAAAAAADmJ7AQ/fmt.webp" alt="gpt-vis-ssr" width="600" />
 
-### Integration with Advisor
+### Integration with AVA
 
-Common server-side workflow: Use Advisor for recommendations first, then render and output images.
+Common server-side workflow: Use AVA for recommendations first, then render and output images.
 ```ts
-import { Advisor } from '@antv/ava';
+import { AVA } from '@antv/ava';
 import { render } from '@antv/gpt-vis-ssr';
 
 async function advisorSSR(data) {
-  const advisor = new Advisor();
+  const advisor = new AVA();
   const advises  = advisor.advise(data);
   const spec =  advises[0].charts[0].spec;
   const chart = await render(spec);

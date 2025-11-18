@@ -1,5 +1,5 @@
 import { loadDataset } from '../loadDataset';
-import { Advisor, Spec } from '../../../src';
+import { AVA, Spec } from '../../../src';
 import { validateObject } from '../../../src/utils/validator';
 import { CHARTS } from '../../../src/ckb';
 
@@ -18,7 +18,7 @@ type TestData = {
 export const runAdviseEvaluation = (selectQuestion: (data: TestData) => string) => {
   jest.setTimeout(3600000);
 
-  const advisor = new Advisor({
+  const advisor = new AVA({
     llm: {
       appId: process.env.TBOX_APP_ID!,
       authorization: process.env.TBOX_AUTHORIZATION!,

@@ -5,13 +5,12 @@ import { DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
 import ReactDOM from 'react-dom';
 
 // eslint-disable-next-line import/no-unresolved
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 // @ts-ignore
 const { createRoot } = ReactDOM;
 
 export const customRender = (container, spec) => {
-  const mount =
-    typeof container === 'string' ? document.querySelector(container) : (container);
+  const mount = typeof container === 'string' ? document.querySelector(container) : container;
   if (!mount) return;
 
   const { type, ...chartProps } = spec;
@@ -27,7 +26,7 @@ export const customRender = (container, spec) => {
 };
 
 // 创建 advisor 实例并为该实例绑定渲染器
-const advisor = new Advisor({
+const advisor = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',

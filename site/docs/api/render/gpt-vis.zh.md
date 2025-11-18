@@ -7,7 +7,7 @@ redirect_from:
 
 ## render
 
-`render` 方法是 Advisor 类中用于将图表规范渲染成实际图表 DOM 的接口。
+`render` 方法是 AVA 类中用于将图表规范渲染成实际图表 DOM 的接口。
 
 ```ts
 render(container: string, spec: Spec)
@@ -23,11 +23,11 @@ render(container: string, spec: Spec)
 在使用 GPT-Vis 进行图表渲染时，可以通过 GPTVis 中`render` 方法将生成的图表规范直接渲染到指定的 DOM 容器中。例如：
 
 ```ts
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { render } from '@antv/gpt-vis';
 
 bindRenderer(render);
-const advisor = new Advisor();
+const advisor = new AVA();
 advisor.render('#chart', {type: 'bar', data: [...]});
 ```
 
@@ -41,7 +41,7 @@ function bindRenderer(renderer: Renderer): void
 ## 使用 GPT-Vis 渲染图表示例
 
 ```js
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { render } from '@antv/gpt-vis';
 import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';  
@@ -64,7 +64,7 @@ const chartSpec =  {
   axisYTitle: 'GDP',
 };
 
-const advisor = new Advisor();
+const advisor = new AVA();
 const RenderChart = () => {
 
   useEffect(() => {

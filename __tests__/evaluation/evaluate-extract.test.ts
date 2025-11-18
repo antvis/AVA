@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import _ from 'lodash';
-import { Advisor } from '../../src/advisor';
+import { AVA } from '../../src/advisor';
 import { loadDataset } from './loadDataset';
 
 const sleep = (duration: number) => {
@@ -25,7 +25,7 @@ const evalSimilarity = (source, target) => {
 };
 
 describe('extract evaluation pass rate > 70%', () => {
-  const advisor = new Advisor({
+  const advisor = new AVA({
     llm: {
       authorization: process.env.TBOX_LLM_AUTH || '',
       appId: process.env.TBOX_LLM_APP_ID || '',

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Input, Button, Space, Card, message } from 'antd';
-import { Advisor, bindRenderer } from '../../../../src';
+import { AVA, bindRenderer } from '../../../../src';
 import { cleanAndFormatJSON, formatJSON } from '../../utils';
 
 // 自定义图片渲染器
@@ -17,7 +17,7 @@ const customImageRenderer = (container: string, spec: any) => {
   root.render(chartElement);
 };
 
-const advisor = new Advisor({
+const advisor = new AVA({
   llm: {
     appId: '202511APkFwG00560135',
     authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',

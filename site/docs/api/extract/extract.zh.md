@@ -8,9 +8,9 @@ redirect_from:
 ## 抽取结构化数据
 
 ```typescript
-import { Advisor } from "@ava/advisor";
+import { AVA } from "@ava/advisor";
 
-const advisor = new Advisor({
+const advisor = new AVA({
   llm
 })
 ```

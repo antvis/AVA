@@ -7,7 +7,7 @@ redirect_from:
 
 ## render
 
-The `render` method is an interface in the Advisor class used to render chart specifications into actual chart DOM elements.
+The `render` method is an interface in the AVA class used to render chart specifications into actual chart DOM elements.
 
 ```ts
 render(container: string, spec: Spec)
@@ -23,11 +23,11 @@ render(container: string, spec: Spec)
 When using GPT-Vis for chart rendering, you can use the `render` method in GPTVis to directly render the generated chart specification into a specified DOM container. For example:
 
 ```ts
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { render } from '@antv/gpt-vis';
 
 bindRenderer(render);
-const advisor = new Advisor();
+const advisor = new AVA();
 advisor.render('#chart', {type: 'bar', data: [...]});
 ```
 
@@ -41,7 +41,7 @@ function bindRenderer(renderer: Renderer): void
 ## Example of Rendering Charts with GPT-Vis
 
 ```js
-import { Advisor, bindRenderer } from '@antv/ava';
+import { AVA, bindRenderer } from '@antv/ava';
 import { render } from '@antv/gpt-vis';
 import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';  
@@ -64,7 +64,7 @@ const chartSpec =  {
   axisYTitle: 'GDP',
 };
 
-const advisor = new Advisor();
+const advisor = new AVA();
 const RenderChart = () => {
 
   useEffect(() => {

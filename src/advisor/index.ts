@@ -1,1 +1,1 @@
-export { Advisor } from './advisor';
+export { AVA } from './advisor';

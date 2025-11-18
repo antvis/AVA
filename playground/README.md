@@ -52,7 +52,7 @@ playground/
 ### Advise Summary
 
 #### 基础示例 (`/advise-summary`)
-- 展示如何使用 Advisor 生成图表建议
+- 展示如何使用 AVA 生成图表建议
 - 支持自定义 JSON 数据输入
 - 实时预览生成的图表
 
@@ -68,7 +68,7 @@ playground/
 
 ```tsx
 // 引入会直接指向 packages/ava/src
-import { Advisor } from '@antv/ava';
+import { AVA } from '@antv/ava';
 ```
 
 修改 `packages/ava/src` 下的任何文件，浏览器会立即更新！
