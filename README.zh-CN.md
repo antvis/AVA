@@ -18,8 +18,8 @@
   <img width="800" src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*OmYvSbCXy2gAAAAAAAAAAAAADvmcAQ/original" alt="AVA 示例">
 
   <p align="center">
-    <a href="https://ava.antv.antgroup.com/guide/intro" target="_blank">教程</a> •
-    <a href="https://ava.antv.antgroup.com/api" target="_blank">API 文档</a> •
+    <a href="https://ava.antv.antgroup.com/guide" target="_blank">教程</a> •
+    <a href="https://ava.antv.antgroup.com/api/antv-spec/antv-spec" target="_blank">API 文档</a> •
     <a href="https://ava.antv.antgroup.com/examples" target="_blank">示例</a> •
     <a href="https://github.com/antvis/mcp-server-chart" target="_blank">MCP 服务</a>
   </p>
