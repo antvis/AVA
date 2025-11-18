@@ -52,7 +52,7 @@ const vis = ava.render(container, config);
   bindRenderer(render);
 
   // 2. 初始化，传入 LLM 配置
-  const ava = new AVA({ url: '', model: '',  apiKey:'' });
+  const ava = new AVA({ url: '', model: '', apiKey:'' });
 
   // 3. 抽取结构化信息
   const meta = ava.extract("This is a text includes data and information.");
