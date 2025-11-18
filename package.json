@@ -24,13 +24,13 @@
   "scripts": {
     "clean": "rimraf lib esm dist",
     "build:umd": "father build",
-    "build:esm": "rimraf esm && tsc --module esnext --target es6 --outDir ./esm",
-    "build:cjs": "rimraf lib && tsc --module commonjs --target es6 --outDir ./lib",
+    "build:esm": "rimraf esm && tsc -p tsconfig.build.json --module esnext --target es6 --outDir ./esm",
+    "build:cjs": "rimraf lib && tsc -p tsconfig.build.json --module commonjs --target es6 --outDir ./lib",
     "build": "run-p build:*",
     "test": "jest",
     "evaluate": "jest --runInBand --config=jest.config.evaluate.js",
     "evaluate:advise": "jest --runInBand --config=jest.config.evaluate.js __tests__/evaluation/evaluate-advise",
-    "evaluate:extract": "jest --runInBand --config=jest.config.evaluate.js __tests__/evaluation/evaluate-extract.test.ts",
+    "evaluate:extract": "jest --config=jest.config.evaluate.js --runInBand __tests__/evaluation/extract/step1-generate.test.ts __tests__/evaluation/extract/step2-evaluate.test.ts __tests__/evaluation/extract/step3-assert.test.ts",
     "lint-staged": "lint-staged",
     "coverage": "jest --coverage"
   },
@@ -86,10 +86,11 @@
     "npm-run-all": "^4.1.5",
     "numeral": "^2.0.6",
     "prettier": "^2.4.1",
+    "process": "^0.11.10",
     "rimraf": "^6.1.0",
     "ts-jest": "^29.4.5",
     "typescript": "^5.9.2",
-    "process": "^0.11.10"
+    "winston": "^3.18.3"
   },
   "author": {
     "name": "AntV",

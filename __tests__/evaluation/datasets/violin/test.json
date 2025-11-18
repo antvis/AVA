@@ -570,7 +570,10 @@
           "category": "平台B",
           "value": 80
         }
-      ]
+      ],
+      "title": "健身房各类型会员锻炼时长分布",
+      "axisXTitle": "时长区间",
+      "axisYTitle": "锻炼时长（小时/周）"
     }
   },
   {

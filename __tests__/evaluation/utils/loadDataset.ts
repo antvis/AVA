@@ -15,3 +15,18 @@ export const loadDataset = (dirname: string) => {
     return [];
   }
 };
+
+export const loadAllData = (exclueds?: string[]) => {
+  const dirs = fs.readdirSync(DIR_PATH);
+  const includes = exclueds
+    ? _.filter(dirs, (dirname) => {
+        return !exclueds?.includes(dirname);
+      })
+    : dirs;
+  return _.map(includes, (dirname) => {
+    return {
+      key: dirname,
+      data: loadDataset(dirname),
+    };
+  });
+};

@@ -105,8 +105,8 @@ export default defineConfig({
       {
         slug: 'api/extract',
         title: {
-          zh: '数据提取',
-          en: 'Data Extraction',
+          zh: '数据抽取 (Extract)',
+          en: 'Data Processing (Extract)',
         },
         order: 2,
       },
