@@ -26,7 +26,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@antv/dumi-theme-antv": "beta",
+    "@antv/dumi-theme-antv": "0.7.10",
     "@types/react-dom": "^19.2.2",
     "dumi": "^2.4.21",
     "typescript": "^5.0.0"
