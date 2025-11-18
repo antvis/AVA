@@ -12,7 +12,7 @@ redirect_from:
 ## Spec
 | 属性       | 类型                                     | 是否必传 | 默认值    | 说明       |
 | ---------- | ---------------------------------------- | -------- | --------- | ---------- |
-| type       | `string`                                  | 是       | -         | 图表类型，固定为 `boxplot` |
+| type       | string                                  | 是       | -         | 图表类型，固定为 `boxplot` |
 | data       | BoxplotDataItem[]                        | 是       | -         | 数据       |
 | title      | string                                   | 否       | -         | 图表的标题 |
 | axisXTitle | string                                   | 否       | -         | x 轴的标题 |

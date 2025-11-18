@@ -13,9 +13,9 @@ The table component presents structured data in rows and columns. It supports cu
 
 | Property | Type              | Required | Default | Description |
 | -------- | ----------------- | -------- | ------- | ----------- |
-| type     | `string`          | Yes      | -       | Chart type, fixed to `table` |
+| type     | string          | Yes      | -       | Chart type, fixed to `table` |
 | data     | `TableDataItem[]` | Yes      | -       | Data |
-| title    | `string`          | No       | -       | Chart title |
+| title    | string          | No       | -       | Chart title |
 
 ### TableDataItem
 

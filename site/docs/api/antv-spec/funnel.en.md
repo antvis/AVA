@@ -13,7 +13,7 @@ A funnel chart is a type of chart that is often used to represent stages in a sa
 
 | Property | Type                                     | Required | Default   | Description |
 | -------- | ---------------------------------------- | -------- | --------- | ----------- |
-| type     | `string`                                  | Yes      | -         | Chart type, fixed to `funnel` |
+| type     | string                                  | Yes      | -         | Chart type, fixed to `funnel` |
 | data     | FunnelDataItem[]                         | Yes      | -         | Data        |
 | title    | string                                   | No       | -         | Chart title |
 | theme    | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme |

@@ -13,14 +13,14 @@ An indented tree visualizes hierarchical structures and parent–child relations
 
 | Property | Type               | Required | Default | Description |
 | -------- | ------------------ | -------- | ------- | ----------- |
-| type     | `string`           | Yes      | -       | Chart type, fixed to `indented-tree` |
+| type     | string           | Yes      | -       | Chart type, fixed to `indented-tree` |
 | data     | `IndentedTreeData` | Yes      | -       | Data |
 
 ### IndentedTreeData
 
 | Property | Type                  | Required | Default | Description |
 | -------- | --------------------- | -------- | ------- | ----------- |
-| name     | `string`              | Yes      | -       | The node’s display name |
+| name     | string              | Yes      | -       | The node’s display name |
 | children | `IndentedTreeData[]`  | No       | -       | Child nodes of the current node. Omit if none. Children are also `IndentedTreeData` and can nest recursively |
 
 ## Spec Example

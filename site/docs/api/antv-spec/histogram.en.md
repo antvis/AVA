@@ -13,7 +13,7 @@ A histogram is an approximate representation of the distribution of numerical da
 
 | Property   | Type                                     | Required | Default   | Description  |
 | ---------- | ---------------------------------------- | -------- | --------- | ------------ |
-| type       | `string`                                  | Yes      | -         | Chart type, fixed to `histogram` |
+| type       | string                                  | Yes      | -         | Chart type, fixed to `histogram` |
 | data       | number[]                                 | Yes      | -         | Data         |
 | title      | string                                   | No       | -         | Chart title  |
 | axisXTitle | string                                   | No       | -         | X-axis title |

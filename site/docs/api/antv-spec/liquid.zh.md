@@ -13,7 +13,7 @@ redirect_from:
 
 | 属性    | 类型                                                  | 是否必传 | 默认值    | 说明       |
 | ------- | ----------------------------------------------------- | -------- | --------- | ---------- |
-| type    | `string`                                              | 是       | -         | 图表类型，固定为 `liquid` |
+| type    | string                                              | 是       | -         | 图表类型，固定为 `liquid` |
 | percent | number                                                | 是       | -         | 百分比     |
 | shape   | "rect" &#124; "circle" &#124; "pin" &#124; "triangle" | 否       | "circle"  | 水波图形状 |
 | title   | string                                                | 否       | -         | 图表的标题 |

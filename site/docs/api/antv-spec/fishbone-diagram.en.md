@@ -13,14 +13,14 @@ A fishbone diagram is a cause-and-effect diagram that helps managers track down 
 
 | Property | Type           | Required | Default | Description |
 | -------- | -------------- | -------- | ------- | ----------- |
-| type     | `string`       | Yes      | -       | Chart type, fixed to `fishbone-diagram` |
+| type     | string       | Yes      | -       | Chart type, fixed to `fishbone-diagram` |
 | data     | `FishboneData` | Yes      | -       | Data        |
 
 ### FishboneData
 
 | Property | Type             | Required | Default | Description                                                                                                                                       |
 | -------- | ---------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name     | `string`         | Yes      | -       | Node name                                                                                                                                         |
+| name     | string         | Yes      | -       | Node name                                                                                                                                         |
 | children | `FishboneData[]` | No       | -       | Child nodes; if absent, it is a leaf. Each child is a `FishboneData` and can recursively contain its own children to form a multi-level structure |
 
 ## Spec example
