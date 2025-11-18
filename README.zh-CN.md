@@ -127,13 +127,9 @@ $ npm install @antv/gpt-vis
 
 ## 学术论文
 
-1. [VizLinter](https://vegalite-linter.idvxlab.com/)：<span style="font-size: 12px; color: grey">
-  Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter：数据可视化的规则检查与修复框架。 <i>IEEE 可视化和计算机图形学汇刊</i>，28(1)，pp.206-216。
-  </span>
+<sub>1. [VizLinter](https://vegalite-linter.idvxlab.com/): Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. <i>IEEE transactions on visualization and computer graphics</i>, 28(1), pp.206-216.</suub>
 
-2. [探索可视化设计的类型学](https://oversea.cnki.net/KCMS/detail/detail.aspx?dbcode=CJFD&dbname=CJFDAUTO&filename=MSDG202203021&uniplatform=OVERSEAS_EN&v=HcZsiecIxauSoKEB1s92_BImgnrMiazYsfZUpb-gcl0zXYx_MEwv5alz1UgtPjz1)：<span style="font-size: 12px; color: grey">
-蓝星宇, 王嘉喆. 数据可视化设计的类型学实践。《美术大观》，2022(3), 149-152。
-</span>
+<sub>2. [Exploring the Typology of Visualization Design](https://oversea.cnki.net/KCMS/detail/detail.aspx?dbcode=CJFD&dbname=CJFDAUTO&filename=MSDG202203021&uniplatform=OVERSEAS_EN&v=HcZsiecIxauSoKEB1s92_BImgnrMiazYsfZUpb-gcl0zXYx_MEwv5alz1UgtPjz1): 蓝星宇, 王嘉喆. 数据可视化设计的类型学实践, 《美术大观》, 2022(3), 149-152.</sub>
 
 
 ## 开源协议
