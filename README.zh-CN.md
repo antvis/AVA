@@ -1,65 +1,78 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18"> [English](./README.md) | 简体中文
+<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18" alt="中英文切换"> [English](./README.md) | 简体中文
 
 <div align="center">
-  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
+  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA 标志">
 </div>
 
 <div align="center">
 
-<i>智能可视分析框架</i>
+<i>一个 **A**I 驱动的 **V**isual **A**nalytics（可视化分析）框架。</i>
 <i><a href="https://ava.antv.antgroup.com/"><https://ava.antv.antgroup.com></a></i>
 
 </div>
 
-----
-
-## 什么是 AVA
-
-[AVA](https://github.com/antvis/AVA)（<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics）是为了更简便的可视分析而生的技术框架。第一个 **A** 具有多重涵义：智能驱动（*AI driven*）、自动化（*Automated*）、支持增强分析（*Augmented*）, **VA** 代表可视分析。它可以辅助用户进行**数据处理**、提取**数据洞察**、实现**图表的推荐和自动生成**，此外它还可以**优化已有的图表**。
+[AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA 示例"> 可视化分析) 是专为更便捷的 AI 驱动可视化分析设计的技术框架。首字母 **A** 具有多重含义：AI 驱动（AI driven）、自动化（Automated）、增强分析（Augmented），**VA** 代表可视化分析（Visual Analytics）。它能协助用户完成数据提取处理、从数据中发掘洞察、推荐并生成图表。
 <br />
 
 <div align="center">
-  <img width="800" src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*wpo3RpdULnAAAAAAAAAAAAAADvmcAQ/original" alt="AVA pipeline">
+  <img width="800" src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*OmYvSbCXy2gAAAAAAAAAAAAADvmcAQ/original" alt="AVA 示例">
+
+  <p align="center">
+    <a href="https://ava.antv.antgroup.com/guide/intro" target="_blank">教程</a> •
+    <a href="https://ava.antv.antgroup.com/api" target="_blank">API 文档</a> •
+    <a href="https://ava.antv.antgroup.com/examples" target="_blank">示例</a> •
+    <a href="https://github.com/antvis/mcp-server-chart" target="_blank">MCP 服务</a>
+  </p>
 </div>
 
-## AVA 的组成
 
-* [@antv/ava](https://www.npmjs.com/package/@antv/ava) ：AVA 核心包，包含四大主要模块：
+## 核心特性
 
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">data (数据处理)</span>：数据处理模块。用于数据集统计分析和处理。
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">insight (智能洞察)</span>：自动洞察模块。自动地从多维数据中发现数据洞察。
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">ckb (图表知识库)</span>：图表知识库模块。基于经验总结的关于可视化和图表的各种基本知识和观察，它是智能图表推荐的基石。
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">advisor (图表推荐和自动生成)</span>：图表推荐模块。基于数据和分析需求来推荐图表类型和具体的图表细节设置，也可对既有的图表进行图表优化。
+* **AI 驱动**：基于 AI 技术，可自动处理数据、推荐图表并生成图表。
+* **丰富的知识库与图表类型**：提供丰富的图表知识库，支持 25+ 图表类型，包括折线图、柱状图、饼图、散点图等。
+* **功能全面且高度可定制**：功能覆盖数据分析全流程，连接人与数据，打通数据分析链"最后一公里"，支持图表渲染与交互的自定义。
+* **同构 Spec 规范**：包含同构的 AntV Spec 规范，可应用于不同场景下的图表生成。
 
 
-## AVA 的特性
+## 构成组件
 
-* 智能式驱动：集自动化、智能化于一体，简化可视分析过程。
-* 丰富的功能：其功能覆盖数据分析全过程，链接人和数据，联通数据分析链条上的“最后一公里”。
-* 灵活的语法：内置丰富的配置项，支持自定义。
+`AVA 系列`包含 3 个核心包：[@antv/ava](https://github.com/antvis/AVA)、[@antv/gpt-vis](https://github.com/antvis/GPT-Vis) 和 [@antv/mcp-server-chart](https://github.com/antvis/mcp-server-chart)： 
 
-## 文档
+* [@antv/ava](https://www.npmjs.com/package/@antv/ava) : AVA 核心包，包含以下模块：
+  * `data (数据处理)`: 数据处理模块，用于数据集的统计分析及处理。
+  * `extract (数据提取)`: 从结构化/非结构化数据中提取元信息，用于图表推荐。
+  * `insight (自动洞察)`: 自动洞察模块，从多维数据中自动发现数据洞察。
+  * `advise (图表推荐)`: 图表推荐模块，基于数据和分析需求推荐图表类型及具体配置（AntV 的 `Specification` 规范）。
+  * `render (图表渲染)`: 图表渲染模块，基于推荐结果通过 `GPT-Vis` 渲染图表。
 
-* <a href='https://ava.antv.antgroup.com/guide/intro' target='_blank'>入门教程</a>
-* <a href='https://ava.antv.antgroup.com/api/ckb/ckb' target='_blank'>API文档</a>
-* <a href='https://ava.antv.antgroup.com/examples' target='_blank'>图表示例</a>
+* [@antv/gpt-vis](https://github.com/antvis/GPT-Vis) : 面向 GPT、生成式 AI 和 LLM 项目的组件库，包含：
+  * `LLM 协议`：面向 LLM Agent 卡片设计的可视化协议，适用于 LLM 对话交互与服务序列化输出，便于快速集成至 AI 应用。
+  * `图表知识库`：提供丰富的图表知识库数据，支持基于 RAG 和提示工程的图表推荐。
+  * `<GPTVis />`：为 LLM 应用开发的组件，内置 20+ 常用可视化组件，提供便捷的扩展机制和架构设计。
 
-## 开始使用
+* [@antv/mcp-server-chart](https://github.com/antvis/mcp-server-chart) : 包含 `25+` 个 @antvis 可视化图表的 MCP 服务，用于图表生成与数据分析。
+  * `25+ 图表类型`：包含数据分析常用图表，可轻松集成至数据分析链路。
+  * `同构规范`：遵循标准图表生成规范，支持跨场景图表生成，与 `AVA` 规范同构。
+  
 
-可以通过 NPM 包管理器来安装 [@antv/ava](https://www.npmjs.com/package/@antv/ava)
+
+## 快速开始
+
+可通过 npm 安装 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 和 [@antv/gpt-vis](https://www.npmjs.com/package/@antv/gpt-vis)：
 
 ```bash
 $ npm install @antv/ava
+$ npm install @antv/gpt-vis
 ```
 
-以下案例展示了 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 的使用方式（演示代码基于 React ）：
+以下示例展示 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 的用法：
 
-1. **案例一**：使用 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 中的 <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">insight (智能洞察) 模块</span> 提取数据洞察。输入多维数据，后台自动运行不同算法来发现数据中有趣的模式，统一评估后按照分数返回高质量的数据洞察结果。
+1. **示例 1**：使用 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 的 `insight (自动洞察)` 模块提取数据洞察。输入多维数据后，后端自动运行不同算法发现数据中的潜在规律，通过统一评估返回高质量数据洞察。
 
     ```js
     import { getInsights } from '@antv/ava';
 
-    //  输入：多维数据
+    // 输入：多维数据
     const data = [
         { year: '2000', value: 100 },
         { year: '2001', value: 200 },
@@ -73,39 +86,56 @@ $ npm install @antv/ava
         { year: '2009', value: 1000 },
     ]
 
-    // insightRes 中包含数据中有趣的洞察 insights
+    // insightRes 包含从数据中发现的有趣洞察
     const insightRes = getInsights(data)
     ```
 
+2. **示例 2**：使用 [@antv/ava](https://www.npmjs.com/package/@antv/ava) 的 `advise (图表推荐)` 模块推荐图表，并通过 `GPT-Vis` 渲染推荐结果。
+
+    ```js
+    import { AVA } from '@antv/ava';
+
+    // 输入：多维数据
+    const data = `请可视化以下数据： 
+     城市 人口数 GDP
+     北京 2000 5000
+     上海 2100 6000
+     天津 800 3000
+     重庆 2200 4000
+     杭州 900 3000
+    `;
+
+    // 创建 AVA 实例
+    const ava = new AVA({ /*...*/ });
+
+    // 提取元信息
+    const meta = ava.extract(data);
+
+    // 获取图表推荐
+    const charts = ava.advise(meta);
+    ```
+
+
 ## 参与贡献 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-我们欢迎任何共建。请先阅读 [贡献指南](./CONTRIBUTING.zh-CN.md)。欢迎通过 [pull requests](https://github.com/antvis/AVA/pulls) 或 [GitHub issues](https://github.com/antvis/AVA/issues) 向我们提供你的想法。让我们一起来把 AVA 做得更好！
-
-开发指引请参考 [Wiki: Development](https://github.com/antvis/AVA/wiki/Development)。
-
-> 强烈推荐阅读 [《提问的智慧》](https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way)、[《如何向开源社区提问题》](https://github.com/seajs/seajs/issues/545) 和 [《如何有效地报告 Bug》](http://www.chiark.greenend.org.uk/%7Esgtatham/bugs-cn.html)、[《如何向开源项目提交无法解答的问题》](https://zhuanlan.zhihu.com/p/25795393)，更好的问题更容易获得帮助。
-
-## 合作机构
+我们欢迎所有贡献，请先阅读[贡献指南](./CONTRIBUTING.md)。您可以通过 [PR](https://github.com/antvis/AVA/pulls) 或 [GitHub Issues](https://github.com/antvis/AVA/issues) 提交想法。让我们共同打造更好的 AVA。
 
 <div align="center">
   <a href="https://idvxlab.com/"><img src="https://gw.alipayobjects.com/zos/antfincdn/rxgntN5msN/idvx.png" alt="iDVx" width="140" align="middle" hspace="20"></a>
 </div>
 
-## 学术成果
 
-[VizLinter](https://vegalite-linter.idvxlab.com/)
+## 学术论文
 
-<div style="font-size: 12px; color: grey">
-Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. <i>IEEE transactions on visualization and computer graphics</i>, 28(1), pp.206-216.
-</div>
-<br>
+1. [VizLinter](https://vegalite-linter.idvxlab.com/)：<span style="font-size: 12px; color: grey">
+  Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter：数据可视化的规则检查与修复框架。 <i>IEEE 可视化和计算机图形学汇刊</i>，28(1)，pp.206-216。
+  </span>
 
-[《数据可视化设计的类型学实践》](https://www.cnki.com.cn/Article/CJFDTotal-MSDG202203021.htm)
+2. [探索可视化设计的类型学](https://oversea.cnki.net/KCMS/detail/detail.aspx?dbcode=CJFD&dbname=CJFDAUTO&filename=MSDG202203021&uniplatform=OVERSEAS_EN&v=HcZsiecIxauSoKEB1s92_BImgnrMiazYsfZUpb-gcl0zXYx_MEwv5alz1UgtPjz1)：<span style="font-size: 12px; color: grey">
+蓝星宇, 王嘉喆. 数据可视化设计的类型学实践。《美术大观》，2022(3), 149-152。
+</span>
 
-<div style="font-size: 12px; color: grey">
-蓝星宇, 王嘉喆. 数据可视化设计的类型学实践, 《美术大观》, 2022(3), 149-152.
-</div>
 
-## 许可证
+## 开源协议
 
-MIT@[AntV](https://github.com/antvis).
+MIT@[AntV](https://github.com/antvis)。

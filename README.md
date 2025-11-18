@@ -65,7 +65,7 @@ $ npm install @antv/ava
 $ npm install @antv/gpt-vis
 ```
 
-The following two examples show the use of [@antv/ava](https://www.npmjs.com/package/@antv/ava) and [@antv/gpt-vis](https://www.npmjs.com/package/@antv/gpt-vis) respectively:
+The following examples show the use of [@antv/ava](https://www.npmjs.com/package/@antv/ava) respectively:
 
 1. **Demo 1**: Use the `insight (Auto Insight)` in [@antv/ava](https://www.npmjs.com/package/@antv/ava) to extract data insights. Input multi-dimensional data, the backend automatically runs different algorithms to find interesting patterns in the data, evaluates them uniformly and returns high-quality data insights according to the score.
 
