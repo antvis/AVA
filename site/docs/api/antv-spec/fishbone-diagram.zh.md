@@ -13,6 +13,7 @@ redirect_from:
 
 | 属性 | 类型           | 是否必传 | 默认值 | 说明 |
 | ---- | -------------- | -------- | ------ | ---- |
+| type | `string`       | 是       | -      | 图表类型，固定为 `fishbone-diagram` |
 | data | `FishboneData` | 是       | -      | 数据 |
 
 ### FishboneData

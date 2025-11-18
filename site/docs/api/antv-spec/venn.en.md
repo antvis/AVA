@@ -13,6 +13,7 @@ A Venn diagram is a graphical representation of all possible logical relationshi
 
 | Property | Type                                     | Required | Default   | Description |
 | -------- | ---------------------------------------- | -------- | --------- | ----------- |
+| type     | `string`                                  | Yes      | -         | Chart type, fixed to `venn` |
 | data     | VennDataItem[]                           | Yes      | -         | Data        |
 | title    | string                                   | No       | -         | Chart title |
 | theme    | "default" &#124; "dark" &#124; "academy" | No       | "default" | Chart theme |

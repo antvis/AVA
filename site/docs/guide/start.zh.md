@@ -5,7 +5,7 @@ redirect_from:
   - /zh/docs/guide/start
 ---
 
-欢迎使用 `@antv/AVA`！本指南将帮助你快速上手并使用`AVA`进行智能可视化推荐
+欢迎使用 `@antv/ava`！本指南将帮助你快速上手并使用`AVA`进行智能可视化推荐
 
 目前有两种使用 `AVA` 的方式：
 - 包管理器
@@ -25,14 +25,14 @@ yarn add @antv/ava
 ```
 安装成功后通过如下代码即可实现智能可视化推荐
 ```js
-import { AVA } from "@antv/ava"
+import { AVA, bindRenderer } from "@antv/ava"
 import { render } from '@antv/gpt-vis';
 
 // 1. 注册图表渲染器
-AVA.bindRenderer(render);
+bindRenderer(render);
 
-// 2. 初始化
-const ava = new AVA({llm});
+// 2. 初始化，传入 LLM 配置
+const ava = new AVA({ url: '', model: '',  apiKey:'' });
 
 // 3. 抽取结构化信息
 const meta = ava.extract("This is a text includes data and information.");
@@ -46,14 +46,13 @@ const vis = ava.render(container, config);
 ## CDN
 `AVA`也提供了 UMD 版本，可以直接通过 CDN 加载，然后直接使用。这个时候的 `AVA` 对象可以通过命名空间 `AVA` 去访问。
 ```html
-<!-- 引入 UMD 版本 -->
 <script src="https://unpkg.com/@antv/ava@latest/dist/ava.umd.js"></script>
 <script>
   // 1. 注册图表渲染器
-  AVA.bindRenderer(render);
+  bindRenderer(render);
 
-  // 2. 初始化
-  const ava = new AVA({llm});
+  // 2. 初始化，传入 LLM 配置
+  const ava = new AVA({ url: '', model: '',  apiKey:'' });
 
   // 3. 抽取结构化信息
   const meta = ava.extract("This is a text includes data and information.");

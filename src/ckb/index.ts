@@ -33,7 +33,6 @@ export const CHARTS: CKB = {
   'fishbone-diagram': fishboneDiagram,
   'flow-diagram': flowDiagram,
   funnel,
-  // 'heat-map': heatMap, // TODO: 地图渲染有点问题，先屏蔽掉
   histogram,
   'indented-tree': indentedTree,
   line,
@@ -41,9 +40,7 @@ export const CHARTS: CKB = {
   'mind-map': mindMap,
   'network-graph': networkGraph,
   'organization-chart': organizationChart,
-  // 'path-map': pathMap, // TODO: 地图渲染有点问题，先屏蔽掉
   pie,
-  // 'pin-map': pinMap, // TODO: 地图渲染有点问题，先屏蔽掉
   radar,
   sankey,
   scatter,

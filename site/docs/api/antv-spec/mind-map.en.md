@@ -13,6 +13,7 @@ A mind map is a hierarchical diagram used to visually organize information. It s
 
 | Property | Type          | Required | Default | Description |
 | -------- | ------------- | -------- | ------- | ----------- |
+| type     | `string`      | Yes      | -       | Chart type, fixed to `mind-map` |
 | data     | `MindMapData` | Yes      | -       | Data        |
 
 ### MindMapData
