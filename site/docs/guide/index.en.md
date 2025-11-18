@@ -35,7 +35,7 @@ redirect_from:
 
 * **AI driven**: Based on AI, it can automatically process data, recommend charts, and generate charts.
 * **Chart knowledge base**: It provides a rich knowledge base of charts and supports 25+ charts, including line charts, bar charts, pie charts, scatter plots, and more.
-* **Rich functions and Highly customizable**: Its functions cover the whole process of data analysis, linking people and data, and connecting the "last mile" of the data analysis chain and support for customization of chart rendering, and chart interaction.
+* **Rich functions and highly customizable**: Its functions cover the whole process of data analysis, linking people and data, and connecting the "last mile" of the data analysis chain and support for customization of chart rendering, and chart interaction.
 * **Isomorphic**: It contains an isomorphic AntV specification, which can be used to generate charts in different scenarios.
 
 
