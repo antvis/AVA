@@ -23,6 +23,6 @@ runAdviseEvaluation(
       if (a === b) return true;
       return equivalentSets.some((set) => set.has(a) && set.has(b));
     };
-    return typeMatches(type, answer.type) && validateObject(CHARTS[type].zodSchema, finalSpec) === true;
+    return typeMatches(type, answer.type) && CHARTS[type] && validateObject(CHARTS[type].zodSchema, finalSpec) === true;
   }
 );
