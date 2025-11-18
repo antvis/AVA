@@ -18,8 +18,8 @@
   <img width="800" src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*OmYvSbCXy2gAAAAAAAAAAAAADvmcAQ/original" alt="AVA examples">
 
   <p align="center">
-    <a href="https://ava.antv.antgroup.com/guide/intro" target="_blank">Tutorial</a> •
-    <a href="https://ava.antv.antgroup.com/api" target="_blank">API documentation</a> •
+    <a href="https://ava.antv.antgroup.com/guide" target="_blank">Tutorial</a> •
+    <a href="https://ava.antv.antgroup.com/api/antv-spec/antv-spec" target="_blank">API documentation</a> •
     <a href="https://ava.antv.antgroup.com/examples" target="_blank">Examples</a> •
     <a href="https://github.com/antvis/mcp-server-chart" target="_blank">MCP Server</a>
   </p>
