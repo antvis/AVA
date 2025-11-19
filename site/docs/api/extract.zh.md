@@ -8,9 +8,9 @@ redirect_from:
 ## extract()
 
 ```typescript
-import { Advisor } from "@antv/ava";
+import { AVA } from "@antv/ava";
 
-const advisor = new Advisor({
+const advisor = new AVA({
   llm: {
     authorization: process.env.TBOX_LLM_AUTH || 'your tbox authorization',
     appId: process.env.TBOX_LLM_APP_ID || 'your tbox appId',
