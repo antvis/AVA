@@ -103,22 +103,6 @@ export default defineConfig({
           zh: '图表知识库（Antv Spec）',
           en: 'Chart Knowledge Base',
         },
-        order: 1,
-      },
-      {
-        slug: 'api/extract',
-        title: {
-          zh: '数据抽取（extract）',
-          en: 'Data Processing (Extract)',
-        },
-        order: 2,
-      },
-      {
-        slug: 'api/advise',
-        title: {
-          zh: '图表推荐（advise）',
-          en: 'Chart Recommendation',
-        },
         order: 3,
       },
       {
@@ -127,7 +111,7 @@ export default defineConfig({
           zh: '图表渲染（render）',
           en: 'Chart Rendering',
         },
-        order: 3,
+        order: 4,
       },
       {
         slug: 'api/insight',
@@ -135,8 +119,8 @@ export default defineConfig({
           zh: '图表洞察（insight）',
           en: 'Chart Insight',
         },
-        order: 4,
-      },
+        order: 5,
+      }
     ],
     examples: [
       {
