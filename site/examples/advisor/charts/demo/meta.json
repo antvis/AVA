@@ -1,0 +1,200 @@
+{
+  "title": {
+    "zh": "使用概览",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "area.jsx",
+      "title": {
+        "en": "Area Chart",
+        "zh": "面积图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "bar.jsx",
+      "title": {
+        "en": "Bar Chart",
+        "zh": "条形图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "boxplot.jsx",
+      "title": {
+        "en": "Boxplot",
+        "zh": "箱线图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "column.jsx",
+      "title": {
+        "en": "Column Chart",
+        "zh": "柱形图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "dual-axes.jsx",
+      "title": {
+        "en": "Dual Axes",
+        "zh": "双轴图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "fishbone-diagram.jsx",
+      "title": {
+        "en": "Fishbone Diagram",
+        "zh": "鱼骨图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "flow-diagram.jsx",
+      "title": {
+        "en": "Flow Diagram",
+        "zh": "流程图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "funnel.jsx",
+      "title": {
+        "en": "Funnel",
+        "zh": "漏斗图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "histogram.jsx",
+      "title": {
+        "en": "Histogram",
+        "zh": "直方图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "indented-tree.jsx",
+      "title": {
+        "en": "Indented Tree",
+        "zh": "缩进树图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "line.jsx",
+      "title": {
+        "en": "Line Chart",
+        "zh": "折线图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "liquid.jsx",
+      "title": {
+        "en": "Liquid",
+        "zh": "水波图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "mind-map.jsx",
+      "title": {
+        "en": "Mind Map",
+        "zh": "思维导图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "network-graph.jsx",
+      "title": {
+        "en": "Network Graph",
+        "zh": "网络图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "organization-chart.jsx",
+      "title": {
+        "en": "Organization Chart",
+        "zh": "组织架构图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "pie.jsx",
+      "title": {
+        "en": "Pie Chart",
+        "zh": "饼图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "radar.jsx",
+      "title": {
+        "en": "Radar Chart",
+        "zh": "雷达图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "sankey.jsx",
+      "title": {
+        "en": "Sankey Diagram",
+        "zh": "桑基图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "scatter.jsx",
+      "title": {
+        "en": "Scatter Plot",
+        "zh": "散点图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "table.jsx",
+      "title": {
+        "en": "Table",
+        "zh": "表格"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "treemap.jsx",
+      "title": {
+        "en": "Treemap",
+        "zh": "矩阵树图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "venn.jsx",
+      "title": {
+        "en": "Venn Diagram",
+        "zh": "维恩图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "violin.jsx",
+      "title": {
+        "en": "Violin Plot",
+        "zh": "小提琴图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    },
+    {
+      "filename": "word-cloud.jsx",
+      "title": {
+        "en": "Word Cloud",
+        "zh": "词云图"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+    }
+  ]
+}

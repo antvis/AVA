@@ -1,7 +1,10 @@
 import { defineConfig } from 'dumi';
 
 export default defineConfig({
-  locales: [{ id: 'zh', name: '中文' }, { id: 'en', name: 'English' }],
+  locales: [
+    { id: 'zh', name: '中文' },
+    { id: 'en', name: 'English' },
+  ],
   themeConfig: {
     title: 'AVA',
     description: 'A framework and solution for more convenient visual analytics.',
@@ -32,8 +35,8 @@ export default defineConfig({
     showChinaMirror: false,
     // `metas` is expected by the theme Index component
     ai: {
-      recommend: "https://assets.antv.antgroup.com/ava/recommend.json",  // 写生产地址，因为预发地址仅内网访问
-      codeRunner: "codeRunner",
+      recommend: 'https://assets.antv.antgroup.com/ava/recommend.json', // 写生产地址，因为预发地址仅内网访问
+      codeRunner: 'codeRunner',
     },
     metas: {
       title: {
@@ -97,7 +100,7 @@ export default defineConfig({
       {
         slug: 'api/antv-spec',
         title: {
-          zh: '图表知识库',
+          zh: '图表知识库（Antv Spec）',
           en: 'Chart Knowledge Base',
         },
         order: 3,
@@ -105,7 +108,7 @@ export default defineConfig({
       {
         slug: 'api/render',
         title: {
-          zh: '图表渲染',
+          zh: '图表渲染（render）',
           en: 'Chart Rendering',
         },
         order: 4,
@@ -113,7 +116,7 @@ export default defineConfig({
       {
         slug: 'api/insight',
         title: {
-          zh: '图表洞察',
+          zh: '图表洞察（insight）',
           en: 'Chart Insight',
         },
         order: 5,
@@ -121,34 +124,34 @@ export default defineConfig({
     ],
     examples: [
       {
-        slug: 'advisor',
-        icon: 'star-single-line',
-        title: {
-          zh: '图表推荐',
-          en: 'Chart Recommendation',
-        },
-        order: 2,
-      },
-      {
         slug: 'extract',
         icon: 'facet',
         title: {
-          zh: '数据提取',
+          zh: '数据抽取（extract）',
           en: 'Data Extraction',
         },
         order: 1,
       },
       {
+        slug: 'advisor',
+        icon: 'star-single-line',
+        title: {
+          zh: '图表推荐（advise）',
+          en: 'Chart Recommendation',
+        },
+        order: 2,
+      },
+      {
         slug: 'render',
         icon: 'block',
         title: {
-          zh: '图表渲染',
+          zh: '图表渲染（render）',
           en: 'Chart Rendering',
         },
         order: 3,
       },
     ],
-     /** 首页技术栈介绍 */
+    /** 首页技术栈介绍 */
     detail: {
       title: {
         zh: 'AVA',
@@ -156,7 +159,7 @@ export default defineConfig({
       },
       description: {
         zh: 'AVA 是为了更简便的可视分析而生的技术框架。 VA 代表可视分析（Visual Analytics），而第一个 A 具有多重涵义：其目标是成为一个自动化（Automated）、智能驱动（AI driven）、支持增强分析（Augmented）的可视分析解决方案。',
-        en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.'
+        en: 'AVA is a framework for more convenient Visual Analytics. The first A of AVA has many meanings. It states that the goal of this framework is to become an Automated, AI driven solution that supports Augmented analytics.',
       },
       image: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yvxBT42GPRIAAAAAAAAAAAAADmJ7AQ/original',
       imageStyle: {
@@ -188,8 +191,8 @@ export default defineConfig({
           en: 'Recommend',
         },
         title: {
-            zh: '远方·远芳 AntV 2022 年度发布',
-            en: 'AntV Anniversary 2022',
+          zh: '远方·远芳 AntV 2022 年度发布',
+          en: 'AntV Anniversary 2022',
         },
         date: '2022.11.22',
         link: 'https://www.yuque.com/antv/blog/1122_6',
@@ -213,11 +216,10 @@ export default defineConfig({
       // remove critters plugin added by @antv/dumi-theme-antv to avoid
       // "Could not find HTML asset" errors in some envs
       memo.plugins.delete('critters');
-
     } catch (e) {
       // ignore
     }
     return memo;
   },
-  define: { 'process.env.TEST_TOKEN': process.env.TEST_TOKEN }
+  define: { 'process.env.TEST_TOKEN': process.env.TEST_TOKEN },
 });

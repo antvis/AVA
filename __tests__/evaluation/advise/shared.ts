@@ -1,4 +1,4 @@
-import { loadDataset } from '../utils/loadDataset';
+import { loadDataset } from '../utils/load-dataset';
 import { AVA, Spec } from '../../../src';
 
 export type TestData = {
