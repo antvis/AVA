@@ -17,7 +17,7 @@ describe('expect evaluate pass rate >= 90%', () => {
 
   it('evaluate extract pass rate >= 90%', () => {
     const content = fs.readFileSync(EVALUATE_RESULT_LOG_PATH);
-    const lines = content.toString().split('\n');
+    const lines = content.toString().split('\n').filter(line => line.length > 0);
     let total = lines.length;
     let pass = 0;
 
