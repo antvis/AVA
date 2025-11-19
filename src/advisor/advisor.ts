@@ -4,6 +4,7 @@ import { extract } from '../extract';
 import { logError, logInDev } from '../utils';
 import { getRenderer } from '../bind';
 import { adviseCharts } from '../advise';
+import { isEmpty, isObject } from 'lodash';
 
 /**
  * The 1st level ava class.
@@ -14,6 +15,11 @@ export class AVA {
    * Configuration for the ava. Includes LLM settings, chart inclusion/exclusion lists.
    */
   private config!: AdvisorConfig;
+
+  /**
+   * Whether the data shards have been extracted.
+   */
+  private extracted: boolean = false;
 
   constructor(config: AdvisorConfig = {}) {
     this.config = config;
@@ -41,7 +47,7 @@ export class AVA {
    *
       ava.extract({ type: 'A', value: 2 });
    */
-  async extract(input: string) {
+  async extract(input: string = '') {
     try {
       this.config = {
         ...this.config,
@@ -49,8 +55,10 @@ export class AVA {
       };
       const dataShards = await extract(input, { llmConfig: this.config.llm });
       logInDev.debug('LLM extract dataShards', dataShards);
+      this.extracted = true;
       return dataShards || [];
     } catch (e) {
+      this.extracted = false;
       logError('LLM extract failed');
       return [];
     }
@@ -62,8 +70,16 @@ export class AVA {
    *
    * const advises = ava.advise(dataShards);
    */
-  async advise(dataShard: DataShard[]): Promise<AdviseStageOutput> {
-    return adviseCharts(dataShard, this.config);
+  async advise(query: DataShard[] | string): Promise<AdviseStageOutput> {
+    let finalQuery = query;
+    if (this.extracted) {
+      // If data extraction was performed but resulted in an empty array of shards, fall back to the original input for recommendations
+      finalQuery = isEmpty(query) ? this.config.input : query;
+    } else {
+      // If no data extraction was performed, use the original input for recommendations
+      finalQuery = isObject(query) ? JSON.stringify(query) : query;
+    }
+    return adviseCharts(finalQuery, this.config);
   }
 
   /**
