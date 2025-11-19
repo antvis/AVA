@@ -27,12 +27,11 @@
     "build:esm": "rimraf esm && tsc -p tsconfig.build.json --module esnext --target es6 --outDir ./esm",
     "build:cjs": "rimraf lib && tsc -p tsconfig.build.json --module commonjs --target es6 --outDir ./lib",
     "build": "run-p build:*",
-    "test": "jest",
-    "evaluate": "jest --runInBand --config=jest.config.evaluate.js",
-    "evaluate:advise": "jest --runInBand --config=jest.config.evaluate.js __tests__/evaluation/evaluate-advise",
-    "evaluate:extract": "jest --config=jest.config.evaluate.js --runInBand __tests__/evaluation/extract/step1-generate.test.ts __tests__/evaluation/extract/step2-evaluate.test.ts __tests__/evaluation/extract/step3-assert.test.ts",
-    "lint-staged": "lint-staged",
-    "coverage": "jest --coverage"
+    "test": "jest __tests__/unit",
+    "evaluate": "run-s evaluate:*",
+    "evaluate:advise": "jest __tests__/evaluation/advise --verbose --runInBand",
+    "evaluate:extract": "jest __tests__/evaluation/extract --verbose --runInBand",
+    "lint-staged": "lint-staged"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

@@ -4,7 +4,7 @@ import { AVA } from '../../../src/advisor';
 import { sleep } from '../utils/common';
 import winston from 'winston';
 import { GENRATE_ERROR_LOG_PATH, GENRATE_RESULT_LOG_PATH } from './constants';
-import { loadAllData } from '../utils/loadDataset';
+import { loadAllData } from '../utils/load-dataset';
 
 const excludes = [
   'flow-diagram',
