@@ -27,7 +27,7 @@ const prompt = `
 
 export const evaluate = async () => {
   const content = fs.readFileSync(GENRATE_RESULT_LOG_PATH);
-  const lines = content.toString().split('\n');
+  const lines = content.toString().split('\n').filter(line => line.length > 0);
 
   console.log('data length:', lines.length);
 
