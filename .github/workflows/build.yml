@@ -9,25 +9,29 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - name: ⤵️　Checkout
+      - name: ⤵️ Checkout
         uses: actions/checkout@v5
 
-      - name: 🎉　Setup Node.js
+      - name: 🎉 Setup Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 20
 
-      - name: 📦　Install dependencies
+      - name: 📦 Install dependencies
         run: npm install
 
-      - name: 🚀　Build
+      - name: 🚀 Build
         run: npm run build
 
-      - name: ✅　Test & Evaluate
-        env:
-          TBOX_LLM_APP_ID: ${{ secrets.TBOX_LLM_APP_ID }}
-          TBOX_LLM_AUTH: ${{ secrets.TBOX_LLM_AUTH }}
+      - name: ✅ Test
         run: npm run test
+
+      # Evaluate llm 资源消耗比较大，手动触发
+      # - name: 🧑🏻‍💻 Evaluate
+      #   env:
+      #     TBOX_LLM_APP_ID: ${{ secrets.TBOX_LLM_APP_ID }}
+      #     TBOX_LLM_AUTH: ${{ secrets.TBOX_LLM_AUTH }}
+      #   run: npm run evaluate
 
       - name: 💡 Upload coverage to Codecov
         uses: codecov/codecov-action@v5

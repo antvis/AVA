@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import _ from 'lodash';
 import { AVA } from '../../src/advisor';
-import { loadDataset } from './utils/loadDataset';
+import { loadDataset } from './utils/load-dataset';
 
 const sleep = (duration: number) => {
   return new Promise((resolve) => {
