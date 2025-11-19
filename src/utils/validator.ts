@@ -103,6 +103,7 @@ export const validateObject = (schema: Record<string, z.ZodTypeAny>, data: unkno
 // TODO: use zod v4 JSON to schema to replace zod-to-json-schema when v4 is stable
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export const zodToJsonSchema = (schema: Record<string, z.ZodType<any>>) => {
+  // @ts-expect-error ignore
   return zodToJsonSchemaOriginal(z.object(schema), {
     rejectedAdditionalProperties: undefined,
     $refStrategy: 'none',
