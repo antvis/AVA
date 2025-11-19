@@ -100,22 +100,6 @@ export default defineConfig({
           zh: '图表知识库',
           en: 'Chart Knowledge Base',
         },
-        order: 1,
-      },
-      {
-        slug: 'api/extract',
-        title: {
-          zh: '数据抽取 (Extract)',
-          en: 'Data Processing (Extract)',
-        },
-        order: 2,
-      },
-      {
-        slug: 'api/advise',
-        title: {
-          zh: '图表推荐',
-          en: 'Chart Recommendation',
-        },
         order: 3,
       },
       {
@@ -124,7 +108,7 @@ export default defineConfig({
           zh: '图表渲染',
           en: 'Chart Rendering',
         },
-        order: 3,
+        order: 4,
       },
       {
         slug: 'api/insight',
@@ -132,7 +116,7 @@ export default defineConfig({
           zh: '图表洞察',
           en: 'Chart Insight',
         },
-        order: 4,
+        order: 5,
       }
     ],
     examples: [
