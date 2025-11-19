@@ -29,8 +29,8 @@
     "build": "run-p build:*",
     "test": "jest __tests__/unit",
     "evaluate": "run-s evaluate:*",
-    "evaluate:advise": "jest __tests__/evaluation/advise --verbose --runInBand ",
-    "evaluate:extract": "jest __tests__/evaluation/extract --verbose --runInBand ",
+    "evaluate:advise": "jest __tests__/evaluation/advise --verbose --runInBand",
+    "evaluate:extract": "jest __tests__/evaluation/extract --verbose --runInBand",
     "lint-staged": "lint-staged"
   },
   "lint-staged": {
