@@ -6,9 +6,9 @@ redirect_from:
 ---
 
 ```typescript
-import { Advisor } from "@ava/advisor";
+import { AVA } from "@ava/ava";
 
-const advisor = new Advisor({
+const ava = new AVA({
   llm: {
     authorization: process.env.TBOX_LLM_AUTH || '',
     appId: process.env.TBOX_LLM_APP_ID || '',
