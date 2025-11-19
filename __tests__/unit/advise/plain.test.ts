@@ -25,41 +25,40 @@ describe('Plain Chart Advise', () => {
   it('recommendChartIds: returns chart ids for single shard', async () => {
     const requestLLM = utils.requestLLM as jest.Mock;
     requestLLM.mockResolvedValue('[ ["line", "bar"] ]');
-    const ids = await recommendChartIds({ dataShards: SINGLE_DATA_SHARD, llm: OPENAI_LLM, input: '用柱状图展示' });
+    const ids = await recommendChartIds({ query: SINGLE_DATA_SHARD, llm: OPENAI_LLM });
     expect(ids).toEqual([['line', 'bar']]);
   });
 
   it('recommendChartIds: returns chart ids for multiple shards', async () => {
     const requestLLM = utils.requestLLM as jest.Mock;
     requestLLM.mockResolvedValue('[ ["line"], ["pie"] ]');
-    const ids = await recommendChartIds({ dataShards: MULTI_DATA_SHARDS, llm: OPENAI_LLM, input: '用柱状图展示' });
+    const ids = await recommendChartIds({ query: MULTI_DATA_SHARDS, llm: OPENAI_LLM });
     expect(ids).toEqual([['line'], ['pie']]);
   });
 
   it('recommendChartIds: throws when LLM returns empty for single shard', async () => {
     const requestLLM = utils.requestLLM as jest.Mock;
     requestLLM.mockResolvedValue('[]');
-    await expect(
-      recommendChartIds({ dataShards: SINGLE_DATA_SHARD, llm: OPENAI_LLM, input: '用柱状图展示' })
-    ).rejects.toThrow('empty chart advise');
+    await expect(recommendChartIds({ query: SINGLE_DATA_SHARD, llm: OPENAI_LLM })).rejects.toThrow(
+      'empty chart advise'
+    );
   });
 
   it('recommendChartIds: throws when ids count less than shard count', async () => {
     const requestLLM = utils.requestLLM as jest.Mock;
     requestLLM.mockResolvedValue('[]');
-    await expect(
-      recommendChartIds({ dataShards: MULTI_DATA_SHARDS, llm: OPENAI_LLM, input: '用柱状图展示' })
-    ).rejects.toThrow('empty chart advise');
+    await expect(recommendChartIds({ query: MULTI_DATA_SHARDS, llm: OPENAI_LLM })).rejects.toThrow(
+      'empty chart advise'
+    );
   });
 
   it('generateSpecs: returns specs for single shard', async () => {
     const requestLLM = utils.requestLLM as jest.Mock;
     requestLLM.mockResolvedValue(JSON.stringify([TREND_DATA.spec]));
     const specs = await generateSpecs({
-      dataShards: SINGLE_DATA_SHARD,
+      query: SINGLE_DATA_SHARD,
       selectedChartIds: ['line'],
       llm: OPENAI_LLM,
-      input: '',
     });
     expect(specs).toEqual([{ ...TREND_DATA.spec, type: 'line' }]);
   });
@@ -68,10 +67,9 @@ describe('Plain Chart Advise', () => {
     const requestLLM = utils.requestLLM as jest.Mock;
     requestLLM.mockResolvedValue(JSON.stringify([TREND_DATA.spec, COMPARISON_DATA.spec]));
     const specs = await generateSpecs({
-      dataShards: MULTI_DATA_SHARDS,
+      query: MULTI_DATA_SHARDS,
       selectedChartIds: ['line', 'pie'],
       llm: OPENAI_LLM,
-      input: '',
     });
     expect(specs).toEqual([
       { ...TREND_DATA.spec, type: 'line' },
@@ -84,10 +82,9 @@ describe('Plain Chart Advise', () => {
     requestLLM.mockResolvedValue('[]');
     await expect(
       generateSpecs({
-        dataShards: SINGLE_DATA_SHARD,
+        query: SINGLE_DATA_SHARD,
         selectedChartIds: ['line'],
         llm: OPENAI_LLM,
-        input: '',
       })
     ).rejects.toThrow('empty chart spec');
   });
@@ -97,10 +94,9 @@ describe('Plain Chart Advise', () => {
     requestLLM.mockResolvedValue('[]');
     await expect(
       generateSpecs({
-        dataShards: MULTI_DATA_SHARDS,
+        query: MULTI_DATA_SHARDS,
         selectedChartIds: ['line', 'pie'],
         llm: OPENAI_LLM,
-        input: '',
       })
     ).rejects.toThrow('empty chart spec');
   });
