@@ -30,7 +30,8 @@ const ava = new AVA({
   },
 });
 
-const sampleQuery = '某市的平均气温在2018年为15度，2019年上升至17度，2020年又下降到16度。请使用折线图来展示这一变化趋势。';
+const sampleQuery =
+  '某市的平均气温在2018年为15度，2019年上升至17度，2020年又下降到16度，2021年回升至18度，2022年达到19度，2023年略微下降至17.5度。请使用折线图来展示这一变化趋势。';
 
 const App = () => {
   const [query, setQuery] = useState(sampleQuery);
@@ -58,7 +59,9 @@ const App = () => {
     <div>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
         <Input.TextArea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="请输入图表数据" />
-        <Button onClick={advise} disabled={isAdvising} loading={isAdvising}>advise</Button>
+        <Button onClick={advise} disabled={isAdvising} loading={isAdvising}>
+          advise
+        </Button>
         <div id="chart" />
       </Space>
     </div>
