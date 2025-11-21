@@ -26,5 +26,9 @@ runAdviseEvaluation(
   (spec: Spec, answer: TestData['answer']) => {
     const { type, ...finalSpec } = spec || {};
     return typeMatches(type, answer.type) && validateObject(CHARTS[type].zodSchema, finalSpec) === true;
+  },
+  {
+    info: '__tests__/evaluation/advise/unspecified-chart-info.jsonl',
+    error: '__tests__/evaluation/advise/unspecified-chart-error.jsonl',
   }
 );

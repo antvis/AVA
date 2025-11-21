@@ -10,5 +10,9 @@ runAdviseEvaluation(
   (spec: Spec, answer: TestData['answer']) => {
     const { type, ...finalSpec } = spec || {};
     return type === answer.type && CHARTS[type] && validateObject(CHARTS[type].zodSchema, finalSpec) === true;
+  },
+  {
+    info: '__tests__/evaluation/advise/specify-chart-info.jsonl',
+    error: '__tests__/evaluation/advise/specify-chart-error.jsonl',
   }
 );
