@@ -29,7 +29,8 @@ const ava = new AVA({
   },
 });
 
-const sampleQuery = '能帮我可视化出研发部门的组织架构吗？首席研发官是 David  Wright，他的团队包括研发经理  Patrick  Young  和实验室主管 Judy  Grey 。Patrick  Young  负责研发团队，成员有研发工程师 Natalie  Fox  和项目经理 Ian  Clark 。Judy  Grey  管理实验室，团队包括实验室技术员 Nancy  Brown  和实验室助理 Alan  White。';
+const sampleQuery =
+  '能帮我可视化出研发部门的组织架构吗？首席研发官是 David  Wright，他的团队包括研发经理  Patrick  Young  和实验室主管 Judy  Grey 。Patrick  Young  负责研发团队，成员有研发工程师 Natalie  Fox  和项目经理 Ian  Clark 。Judy  Grey  管理实验室，团队包括实验室技术员 Nancy  Brown  和实验室助理 Alan  White。';
 
 const App = () => {
   const [query, setQuery] = useState(sampleQuery);
@@ -56,7 +57,9 @@ const App = () => {
     <div>
       <Space direction="vertical" size="middle" style={{ width: '100%' }}>
         <Input.TextArea value={query} onChange={(e) => setQuery(e.target.value)} placeholder="请输入图表数据" />
-        <Button onClick={advise} disabled={isAdvising} loading={isAdvising}>advise</Button>
+        <Button onClick={advise} disabled={isAdvising} loading={isAdvising}>
+          advise
+        </Button>
         <div id="chart" />
       </Space>
     </div>
