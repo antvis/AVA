@@ -1,5 +1,4 @@
 import { assert } from '../common';
-
 import * as cache from './caches';
 
 /**
