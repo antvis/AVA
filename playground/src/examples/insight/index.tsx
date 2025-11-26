@@ -181,7 +181,7 @@ const InsightVisualization: React.FC = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <Card title="Advise Summary Demo" style={{ marginBottom: '20px' }}>
+      <Card title="Insight Demo" style={{ marginBottom: '20px' }}>
         <Steps current={currentStep} onChange={setCurrentStep} items={steps} />
         <p>{steps[currentStep].desc}</p>
         <div style={{ height: 'calc(100% - 80px)' }}>
