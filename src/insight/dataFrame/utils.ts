@@ -65,7 +65,7 @@ export function convertDataType(data: unknown, type: Extra['columnTypes'][number
     if (type === 'null' && !isNil(data)) {
       return null;
     }
-    if ((type === 'integer' || type === 'float') && !isNumber(data)) {
+    if (type === 'number' && !isNumber(data)) {
       return +data;
     }
     if (type === 'date' && !isDate(data) && (isNumber(data) || isString(data))) {

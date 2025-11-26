@@ -294,7 +294,7 @@ export type PatternInfo2InsightInfoProps = SpecificInsightProps & {
  * Field Type
  * @public
  */
-export type FieldType = 'null' | 'boolean' | 'integer' | 'float' | 'date' | 'string';
+export type FieldType = 'null' | 'boolean' | 'number' | 'date' | 'string';
 
 /**
  * String Field
@@ -361,8 +361,7 @@ export interface DateFieldInfo extends FieldInfo {
  * The field meta which be existed only the Field type is mixed
  */
 export type FieldMeta = {
-  integer?: NumberFieldInfo;
-  float?: NumberFieldInfo;
+  number?: NumberFieldInfo;
   date?: DateFieldInfo;
   string?: StringFieldInfo;
 };

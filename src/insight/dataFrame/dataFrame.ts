@@ -11,7 +11,8 @@ import {
   convertDataType,
 } from './utils';
 import type { FrameData, Axis, Extra, FieldsInfo, SeriesData } from './types';
-import { analyzeField } from './analyzeField';
+import type { FieldType } from '../types';
+import { analyzeField } from '../../extract/features';
 
 /* 2D data structure */
 export default class DataFrame extends BaseFrame {
@@ -621,8 +622,14 @@ export default class DataFrame extends BaseFrame {
     const fields: FieldsInfo = [];
     for (let i = 0; i < this.columns?.length; i += 1) {
       const column = this.columns[i];
+      const feature = analyzeField(this.colData[i] as unknown[], this.extra.strictDatePattern);
+      const types = feature.types as string[] | undefined;
+      const typeValue: FieldType | 'mixed' = types && types.length > 1 ? 'mixed' : (types?.[0] as FieldType) || 'null';
+      const { types: _t, recommendation, ...rest } = feature;
       fields.push({
-        ...analyzeField(this.colData[i] as unknown[], this.extra.strictDatePattern),
+        ...rest,
+        type: typeValue,
+        recommendation: recommendation as FieldType,
         name: String(column),
       });
     }

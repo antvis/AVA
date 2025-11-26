@@ -70,7 +70,7 @@ export const lowVarianceChecker: ExtractorChecker = ({ data, subjectInfo, fieldP
   if (checkerFor1M1D !== true) return checkerFor1M1D;
   const { measures } = subjectInfo;
   // 低方差检验使用变异系数 sigma/mean 作为检验统计量，要求均值不能为0
-  if (['float', 'integer'].includes(fieldPropsMap[measures[0].fieldName].recommendation)) {
+  if (['number'].includes(fieldPropsMap[measures[0].fieldName].recommendation)) {
     if ((fieldPropsMap[measures[0].fieldName] as NumberFieldInfo).mean !== 0) return true;
     return 'The low variance test uses the coefficient of variation sigma/mean as the test statistic and requires that the mean cannot be 0. ';
   }
