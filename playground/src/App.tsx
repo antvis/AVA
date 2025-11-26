@@ -1,18 +1,16 @@
 import React from 'react';
-
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import type { MenuProps } from 'antd';
-
 import AdviseSummary from './examples/advise';
 import MultipleChartsDemo from './examples/advise/multiple';
-
-import './App.css';
+import Insight from './examples/insight';
 import RenderCustom from './examples/render/custom';
 import RenderDefault from './examples/render/default';
 import RenderDemand from './examples/render/demand';
 import RenderGPTVis from './examples/render/gpt-vis';
 import RenderGPTVisSSR from './examples/render/gpt-vis-ssr';
+import './App.css';
 
 const { Header, Content, Sider } = Layout;
 
@@ -96,6 +94,18 @@ const menuConfig: MenuConfig[] = [
           },
         ],
       },
+      {
+        key: 'insight',
+        label: '数据洞察',
+        children: [
+          {
+            key: 'insight-basic',
+            label: '基础示例',
+            path: '/insight',
+            component: Insight,
+          },
+        ],
+      },
     ],
   },
 ];
@@ -144,7 +154,7 @@ const AppContent: React.FC = () => {
           <Menu
             mode="inline"
             selectedKeys={[selectedKey]}
-            defaultOpenKeys={['advice', 'advise-summary', 'render-summary']}
+            defaultOpenKeys={['advice', 'advise-summary', 'render-summary', 'insight']}
             style={{ height: '100%', borderRight: 0 }}
             items={generateMenuItems(menuConfig)}
           />
