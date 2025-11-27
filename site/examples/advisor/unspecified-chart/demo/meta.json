@@ -1,0 +1,40 @@
+{
+  "title": {
+    "zh": "使用概览",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "demo1.jsx",
+      "title": {
+        "en": "Unspecified chart type - Example 1",
+        "zh": "未指定图表类型-示例一"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*lfraR6h2BSgAAAAASWAAAAgAemJ7AQ/fmt.webp"
+    },
+    {
+      "filename": "demo2.jsx",
+      "title": {
+        "en": "Unspecified chart type - Example 2",
+        "zh": "未指定图表类型-示例二"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*VqCmSoMnVCAAAAAARBAAAAgAemJ7AQ/fmt.webp"
+    },
+    {
+      "filename": "demo3.jsx",
+      "title": {
+        "en": "Unspecified chart type - Example 3",
+        "zh": "未指定图表类型-示例三"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*2DIHS5o1fJ4AAAAARMAAAAgAemJ7AQ/fmt.webp"
+    },
+    {
+      "filename": "demo4.jsx",
+      "title": {
+        "en": "Unspecified chart type - Example 4",
+        "zh": "未指定图表类型-示例四"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*bqRnT7ps_9UAAAAARKAAAAgAemJ7AQ/fmt.webp"
+    }
+  ]
+}
