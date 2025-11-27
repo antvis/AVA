@@ -25,8 +25,8 @@ export const render = (container, spec) => {
 // 创建 ava 实例
 const ava = new AVA({
   llm: {
-    appId: '202511APkFwG00560135',
-    authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
+    appId: 'your tbox appId',
+    authorization: 'your tbox authorization',
   },
 });
 
