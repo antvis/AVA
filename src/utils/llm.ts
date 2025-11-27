@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { get } from 'lodash';
 import OpenAI from 'openai';
-
 import { logError, sleep } from './common';
 
 import type { OpenAiLLM, TboxLLM } from '../types';

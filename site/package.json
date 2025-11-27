@@ -30,6 +30,7 @@
     "@antv/dumi-theme-antv": "0.7.10",
     "@types/react-dom": "^19.2.2",
     "dumi": "^2.4.21",
+    "axios": "^1.12.2",
     "typescript": "^5.9.3"
   },
   "resolutions": {

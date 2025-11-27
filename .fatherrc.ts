@@ -4,6 +4,9 @@ import { defineConfig } from 'father';
 export default defineConfig({
   umd: {
     name: 'AVA',
-    output: 'dist'
+    output: 'dist',
+    externals: {
+      axios: 'axios',
+    }
   }
 });
