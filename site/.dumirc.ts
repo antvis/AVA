@@ -101,7 +101,7 @@ export default defineConfig({
       {
         slug: 'api/antv-spec',
         title: {
-          zh: '图表知识库（Antv Spec）',
+          zh: '图表知识库(Antv Spec)',
           en: 'Chart Knowledge Base',
         },
         order: 3,
@@ -109,7 +109,7 @@ export default defineConfig({
       {
         slug: 'api/render',
         title: {
-          zh: '图表渲染（render）',
+          zh: '图表渲染(render)',
           en: 'Chart Rendering',
         },
         order: 4,
@@ -117,8 +117,8 @@ export default defineConfig({
       {
         slug: 'api/insight',
         title: {
-          zh: '图表洞察（insight）',
-          en: 'Chart Insight',
+          zh: '自动洞察(insight)',
+          en: 'Insight',
         },
         order: 5,
       }
@@ -128,7 +128,7 @@ export default defineConfig({
         slug: 'extract',
         icon: 'facet',
         title: {
-          zh: '数据抽取（extract）',
+          zh: '数据抽取(extract)',
           en: 'Data Extraction',
         },
         order: 1,
@@ -137,7 +137,7 @@ export default defineConfig({
         slug: 'advisor',
         icon: 'star-single-line',
         title: {
-          zh: '图表推荐（advise）',
+          zh: '图表推荐(advise)',
           en: 'Chart Recommendation',
         },
         order: 2,
@@ -146,7 +146,7 @@ export default defineConfig({
         slug: 'render',
         icon: 'block',
         title: {
-          zh: '图表渲染（render）',
+          zh: '图表渲染(render)',
           en: 'Chart Rendering',
         },
         order: 3,
