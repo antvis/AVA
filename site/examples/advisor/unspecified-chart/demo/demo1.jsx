@@ -31,7 +31,7 @@ const ava = new AVA({
 });
 
 const sampleQuery =
-  '不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%。用柱形图展示';
+  '用图表展示某公司的年收入与员工满意度，2017年至2021年的收入分别为85.4亿、93.2亿、100.1亿、108.6亿、115.5亿，员工满意度（满分10分）分别为7.2、7.5、7.8、8.0、8.2。';
 
 const App = () => {
   const [query, setQuery] = useState(sampleQuery);

@@ -31,7 +31,7 @@ const ava = new AVA({
 });
 
 const sampleQuery =
-  '不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%。用柱形图展示';
+  '我想分析项目延期的原因，可能涉及时间管理、资源分配、团队合作和技术问题四个方面。时间管理方面，可能是规划不当和进度跟踪不足；资源分配方面，可能是人力不足和设备短缺；团队合作方面，可能是沟通不畅和责任不清；技术问题方面，可能是技术难题和系统故障。用图表可视化。';
 
 const App = () => {
   const [query, setQuery] = useState(sampleQuery);

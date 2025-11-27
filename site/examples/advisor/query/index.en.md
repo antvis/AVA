@@ -1,4 +1,4 @@
 ---
 title: Different types of input
-order: 0
+order: 2
 ---

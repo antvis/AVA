@@ -31,7 +31,7 @@ const ava = new AVA({
 });
 
 const sampleQuery =
-  '不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%。用柱形图展示';
+  '用图表展示一个软件开发公司的项目情况及其投入的开发人员数量，如公司有三个主要项目：移动应用开发、Web 开发和嵌入式系统开发。移动应用开发有 150 人，Web 开发有 100 人，嵌入式系统开发有 200 人。移动应用开发分为 Android 开发 80 人和 iOS 开发 70 人；Web 开发分为前端开发 60 人和后端开发 40 人；嵌入式系统开发分为驱动开发 120 人和应用开发 80 人。';
 
 const App = () => {
   const [query, setQuery] = useState(sampleQuery);
