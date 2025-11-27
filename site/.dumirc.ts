@@ -1,4 +1,5 @@
 import { defineConfig } from 'dumi';
+import path from 'path';
 
 export default defineConfig({
   locales: [
@@ -222,4 +223,7 @@ export default defineConfig({
     return memo;
   },
   define: { 'process.env.TEST_TOKEN': process.env.TEST_TOKEN },
+  alias: {
+    '@antv/ava': path.resolve(__dirname, '../src'),
+  }
 });

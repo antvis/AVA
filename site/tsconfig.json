@@ -28,5 +28,6 @@
   },
   "include": [
     "examples/**/*",
+    "docs/**/*.tsx"
   ]
 }

@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import React, { useState, useCallback } from 'react';
-import ReactDOM from 'react-dom';
 import { Input, Button, Space, Card } from 'antd';
 import { JsonView } from 'react-json-view-lite';
 import { AVA } from '@antv/ava';
@@ -18,8 +17,16 @@ const CARD_STYLE = {
   overflow: 'auto',
 };
 
-const INPUT_DATA =
-  '2021 年公司不同部门的预算分配，研发部 50 百万美元，市场部 40 百万美元，销售部 60 百万美元，行政部 20 百万美元';
+const INPUT_DATA = `
+Name,Age,Department,Salary,City
+Alice Johnson,28,Engineering,75000,New York
+Bob Smith,34,Marketing,68000,Los Angeles
+Carol Davis,42,Sales,72000,Chicago
+David Wilson,29,Engineering,80000,Seattle
+Eva Brown,31,HR,65000,Austin
+Frank Miller,37,Sales,78000,Denver
+Grace Lee,26,Marketing,62000,Portland
+`.trim();
 
 const App = () => {
   const [input, setInput] = useState(INPUT_DATA);
@@ -53,8 +60,4 @@ const App = () => {
   );
 };
 
-const mountNode = document.getElementById('container');
-if (mountNode) {
-  const root = ReactDOM.createRoot(mountNode);
-  root.render(<App />);
-}
+export default App;

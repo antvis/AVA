@@ -1,6 +1,5 @@
 /* eslint-disable import/no-unresolved */
 import React, { useState, useCallback } from 'react';
-import ReactDOM from 'react-dom';
 import { Input, Button, Space, Card } from 'antd';
 import { JsonView } from 'react-json-view-lite';
 import { AVA } from '@antv/ava';
@@ -53,8 +52,4 @@ const App = () => {
   );
 };
 
-const mountNode = document.getElementById('container');
-if (mountNode) {
-  const root = ReactDOM.createRoot(mountNode);
-  root.render(<App />);
-}
+export default App;

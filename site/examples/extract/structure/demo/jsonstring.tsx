@@ -7,8 +7,8 @@ import { AVA } from '@antv/ava';
 
 const ava = new AVA({
   llm: {
-    appId: '202510APxPmo00551539',
-    authorization: 'TBox-c4ae8a71224e42baaafb1c01d15395a7',
+    appId: 'your tbox appId',
+    authorization: 'your tbox authorization',
   },
 });
 
