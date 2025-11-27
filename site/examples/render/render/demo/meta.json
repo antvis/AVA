@@ -29,10 +29,18 @@
       "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*IyIRQIQHyKYAAAAAgCAAAAgAemJ7AQ/fmt.avif"
     },
     {
-      "filename": "gpt-vis-demand.jsx",
+      "filename": "gpt-vis-ssr.jsx",
       "title": {
-        "en": "Using GPTVis Protocol on Demand",
-        "zh": "按需使用 GPTVis 协议"
+        "en": "GPTVis SSR Service",
+        "zh": "GPTVis SSR 服务"
+      },
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*IyIRQIQHyKYAAAAAgCAAAAgAemJ7AQ/fmt.avif"
+    },
+    {
+      "filename": "quick-chart.jsx",
+      "title": {
+        "en": "QuickChart Service",
+        "zh": "QuickChart 服务"
       },
       "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*IyIRQIQHyKYAAAAAgCAAAAgAemJ7AQ/fmt.avif"
     }
