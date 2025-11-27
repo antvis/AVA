@@ -25,13 +25,13 @@ export const render = (container, spec) => {
 // 创建 ava 实例
 const ava = new AVA({
   llm: {
-    appId: 'your tbox appId',
-    authorization: 'your tbox authorization',
+    appId: '202511APkFwG00560135',
+    authorization: 'TBox-174d46eaa4374e96b3fd99b6fec527d7',
   },
 });
 
 const sampleQuery =
-  '不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%。用柱形图展示';
+  '某教育机构课程报名流程：咨询课程1000人，试听课程600人，正式报名400人，缴费确认250人，完成学习180人，用图表展示课程转化。';
 
 const App = () => {
   const [query, setQuery] = useState(sampleQuery);
