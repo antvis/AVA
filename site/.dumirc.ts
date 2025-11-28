@@ -154,6 +154,15 @@ export default defineConfig({
         },
         order: 3,
       },
+      {
+        slug: 'insight',
+        icon: 'block',
+        title: {
+          zh: '自动洞察(insight)',
+          en: 'Insight',
+        },
+        order: 4,
+      }
     ],
     /** 首页技术栈介绍 */
     detail: {
