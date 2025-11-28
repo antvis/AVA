@@ -1,0 +1,32 @@
+{
+  "title": {
+    "zh": "中文分类",
+    "en": "Category"
+  },
+  "demos": [
+    {
+      "filename": "basic.jsx",
+      "title": {
+        "zh": "基础用法",
+        "en": "Basic usage"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/zt2jXO97%262/li-basic.gif"
+    },
+    {
+      "filename": "custom.jsx",
+      "title": {
+        "zh": "自定义指标和维度",
+        "en": "Custom measures and dimensions"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/ixkElKx8UT/li-custom-measures.gif"
+    },
+    {
+      "filename": "specify-type.jsx",
+      "title": {
+        "zh": "指定洞察类型",
+        "en": "Extract insight of a specified type"
+      },
+      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/zt2jXO97%262/li-basic.gif"
+    }
+  ]
+}
