@@ -7,10 +7,8 @@ if (window) {
   (window as any).reactJsonViewLite = require('react-json-view-lite');
   const axios = require('axios');
 
-  /** 代理百宝箱请求 */
   axios.interceptors.request.use(
     (config) => {
-      // 检查请求URL是否匹配目标域名
       if (config.url && config.url.includes('https://api.tbox.cn/api/completion')) {
         const originData = JSON.parse(config.data);
         config.headers['x-webgw-version'] = '2.0';
