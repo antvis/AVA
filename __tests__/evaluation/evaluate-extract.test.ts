@@ -45,7 +45,6 @@ describe('extract evaluation pass rate > 70%', () => {
       );
       console.log(chalk.red(`${currentCase.name} not pass!`));
     } else {
-      console.debug(result, currentCase.dataShards);
       const isValid = result.every((res, i) => evalSimilarity(res, currentCase.dataShards[i]));
       if (isValid) {
         pass++;

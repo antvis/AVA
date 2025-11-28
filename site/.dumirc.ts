@@ -6,6 +6,9 @@ export default defineConfig({
     { id: 'zh', name: '中文' },
     { id: 'en', name: 'English' },
   ],
+  headScripts: [
+    { src: 'https://gw.alipayobjects.com/os/lib/axios/1.12.2/dist/axios.min.js', async: false }
+  ],
   themeConfig: {
     title: 'AVA',
     description: 'A framework and solution for more convenient visual analytics.',
@@ -225,5 +228,8 @@ export default defineConfig({
   define: { 'process.env.TEST_TOKEN': process.env.TEST_TOKEN },
   alias: {
     '@antv/ava': path.resolve(__dirname, '../src'),
-  }
+  },
+  externals: {
+    'axios': 'axios',
+  },
 });
