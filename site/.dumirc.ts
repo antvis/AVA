@@ -94,10 +94,10 @@ export default defineConfig({
         },
       },
       {
-        slug: 'guide/scene',
+        slug: 'guide/tech',
         title: {
-          zh: '场景案例',
-          en: 'Scene Cases',
+          zh: '技术介绍',
+          en: 'Tech Introduction',
         },
         order: 3,
       },
