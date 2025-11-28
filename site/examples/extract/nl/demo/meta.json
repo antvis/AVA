@@ -10,7 +10,7 @@
         "en": "",
         "zh": "从自然语言中提取明细数据"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*e8NRQqYUVJMAAAAAgCAAAAgAemJ7AQ/original"
     },
     {
       "filename": "relation.tsx",
@@ -18,7 +18,7 @@
         "en": "",
         "zh": "从自然语言中提取关系型数据"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*SAQQTrv_ccsAAAAAgBAAAAgAemJ7AQ/original"
     },
     {
       "filename": "hierarchy.tsx",
@@ -26,7 +26,7 @@
         "en": "",
         "zh": "从自然语言中提取层级数据"
       },
-      "screenshot": "https://gw.alipayobjects.com/zos/antfincdn/SuynCPdHr/ca-steps.gif"
+      "screenshot": "https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*-Sx-QZUd_UAAAAAAgCAAAAgAemJ7AQ/original"
     }
   ]
 }
