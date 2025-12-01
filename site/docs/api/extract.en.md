@@ -5,19 +5,19 @@ redirect_from:
   - /en/docs/api
 ---
 
-## extract()
+## extract
 
 ```typescript
 import { AVA } from "@antv/ava";
 
-const advisor = new AVA({
+const ava = new AVA({
   llm: {
     authorization: process.env.TBOX_LLM_AUTH || 'your tbox authorization',
     appId: process.env.TBOX_LLM_APP_ID || 'your tbox appId',
   },
 });
 
-const data = await advisor.extract(`Please help me analyze the data: User growth across different social media platforms in 2018. Facebook grew by 8%, Twitter by 12%, and Instagram by 22%.`);
+const data = await ava.extract(`Please help me analyze the data: User growth across different social media platforms in 2018. Facebook grew by 8%, Twitter by 12%, and Instagram by 22%.`);
 
 console.log(data);
 

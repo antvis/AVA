@@ -1,9 +1,9 @@
-import type { AdvisorConfig, AdviseStageOutput, Meta, PlainLikeDataType, DataShard } from '../types';
+import type { AVAContext, AdviseStageOutput, Meta, PlainLikeDataType, DataShard } from '../types';
 
 /**
  * @desc advise graph based on data shape
  */
-export async function adviseGraph(dataShards: DataShard[], _config: AdvisorConfig = {}): Promise<AdviseStageOutput> {
+export async function adviseGraph(dataShards: DataShard[], _config: AVAContext): Promise<AdviseStageOutput> {
   // TODO: implement graph advise
   return [
     {

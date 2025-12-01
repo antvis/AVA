@@ -92,6 +92,7 @@ export default defineConfig({
           zh: '教程',
           en: 'Guide',
         },
+        order: 0
       },
       {
         slug: 'guide/tech',
@@ -99,29 +100,29 @@ export default defineConfig({
           zh: '技术介绍',
           en: 'Tech Introduction',
         },
-        order: 3,
-      },
-      {
-        slug: 'api/antv-spec',
-        title: {
-          zh: '图表知识库(Antv Spec)',
-          en: 'Chart Knowledge Base',
-        },
-        order: 3,
+        order: 2,
       },
       {
         slug: 'api/render',
         title: {
           zh: '图表渲染(render)',
-          en: 'Chart Rendering',
+          en: 'render',
         },
-        order: 4,
+        order: 3,
       },
       {
         slug: 'api/insight',
         title: {
           zh: '自动洞察(insight)',
           en: 'Insight',
+        },
+        order: 4,
+      },
+      {
+        slug: 'api/antv-spec',
+        title: {
+          zh: '图表知识库(Antv Spec)',
+          en: 'Chart Knowledge Base',
         },
         order: 5,
       }

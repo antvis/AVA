@@ -6,15 +6,7 @@ import {
   genSpecByInputPrompt,
 } from '../prompt';
 import { logError, requestLLM, safeJsonParse, isOpenAi, isTbox, computeAllowedChartIds, logInDev } from '../utils';
-import type {
-  AdvisorConfig,
-  AdviseStageOutput,
-  Meta,
-  PlainLikeDataType,
-  DataShard,
-  ChartIdMatrix,
-  Spec,
-} from '../types';
+import type { AVAContext, AdviseStageOutput, Meta, PlainLikeDataType, DataShard, ChartIdMatrix, Spec } from '../types';
 import { isEmpty } from 'lodash';
 
 /**
@@ -22,7 +14,7 @@ import { isEmpty } from 'lodash';
  */
 export async function recommendChartIds(params: {
   query: DataShard[] | string;
-  llm: AdvisorConfig['llm'];
+  llm: AVAContext['llm'];
   allowed?: string[];
 }): Promise<ChartIdMatrix> {
   const { query, llm, allowed } = params;
@@ -58,7 +50,7 @@ export async function recommendChartIds(params: {
 export async function generateSpecs(params: {
   query: DataShard[] | string;
   selectedChartIds: string[];
-  llm: AdvisorConfig['llm'];
+  llm: AVAContext['llm'];
 }): Promise<Spec[]> {
   const { query, selectedChartIds, llm } = params;
   // If no data shards are provided, use user input to generate specs; otherwise, use the data-shard.
@@ -87,10 +79,7 @@ export async function generateSpecs(params: {
 /**
  * @desc advise plain charts based on data shape
  */
-export async function adviseCharts(
-  query: DataShard[] | string,
-  config: AdvisorConfig = {}
-): Promise<AdviseStageOutput> {
+export async function adviseCharts(query: DataShard[] | string, config: AVAContext): Promise<AdviseStageOutput> {
   const allowed = computeAllowedChartIds(config.includes, config.excludes);
   const { llm } = config;
   const useLLM = !!llm && (isOpenAi(llm) || isTbox(llm));

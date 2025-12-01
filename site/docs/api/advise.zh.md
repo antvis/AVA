@@ -1,11 +1,11 @@
 ---
-title: 图表推荐
+title: 图表推荐(advise)
 order: 2
 redirect_from:
   - /zh/docs/api
 ---
 
-## Advise()
+## Advise
 
 本页面说明“图表推荐（advise）”功能：基于数据生成图表建议的典型流程。
 

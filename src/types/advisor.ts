@@ -1,4 +1,4 @@
-import { Renderer, UiConfig } from './render';
+import { UiConfig } from './render';
 import { FieldDataType, Meta } from './data';
 
 /**
@@ -32,17 +32,19 @@ export type TboxLLM = BaseLLMConfig & {
   authorization: string;
 };
 
-export interface AdvisorConfig {
-  /** user input */
-  input?: string;
-  llm?: OpenAiLLM | TboxLLM;
+export interface AVAConfig {
+  /** LLM config */
+  llm: OpenAiLLM | TboxLLM;
   /** Allowed charts for recommendation */
   includes?: string[];
   /** Excluded charts from recommendation */
   excludes?: string[];
-  /** Custom renderer for this ava instance */
-  renderer?: Renderer;
 }
+
+export type AVAContext = AVAConfig & {
+  /** user input */
+  input: string;
+};
 
 export interface AdviseChartParams {
   /** raw data */
