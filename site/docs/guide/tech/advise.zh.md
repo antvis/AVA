@@ -49,56 +49,26 @@ const adviseSpec = async () => {
   "type ": "dual-axes",
   "title": "Sales and Return Rate over Years",
   "axisXTitle": "Year",
-  "categories": [
-    "2019",
-    "2020",
-    "2021",
-    "2022",
-    "2023"
-  ],
+  "categories": ["2019", "2020", "2021", "2022", "2023"],
   "series": [
     {
       "type": "column",
-      "data": [
-        1200000,
-        1300000,
-        1400000,
-        1500000,
-        1600000
-      ],
+      "data": [1200000, 1300000, 1400000, 1500000, 1600000],
       "axisYTitle": "Sales (件)"
     },
     {
       "type": "line",
-      "data": [
-        2,
-        2.5,
-        3,
-        3.5,
-        4
-      ],
+      "data": [2, 2.5, 3, 3.5, 4],
       "axisYTitle": "Return Rate (%)"
     },
     {
       "type": "line",
-      "data": [
-        1200000,
-        1300000,
-        1400000,
-        1500000,
-        1600000
-      ],
+      "data": [1200000, 1300000, 1400000, 1500000, 1600000],
       "axisYTitle": "Sales (件)"
     },
     {
       "type": "line",
-      "data": [
-        2,
-        2.5,
-        3,
-        3.5,
-        4
-      ],
+      "data": [2, 2.5, 3, 3.5, 4],
       "axisYTitle": "Return Rate (%)"
     }
   ]
@@ -131,36 +101,16 @@ const adviseSpec = async () => {
   "type ": "network-graph",
   "data": {
     "nodes": [
-      {
-        "name": "服务器"
-      },
-      {
-        "name": "个人电脑1"
-      },
-      {
-        "name": "个人电脑2"
-      },
-      {
-        "name": "打印机"
-      }
+      {"name": "服务器"},
+      {"name": "个人电脑1"},
+      {"name": "个人电脑2"},
+      {"name": "打印机"}
     ],
     "edges": [
-      {
-        "source": "服务器",
-        "target": "个人电脑1"
-      },
-      {
-        "source": "服务器",
-        "target": "个人电脑2"
-      },
-      {
-        "source": "个人电脑1",
-        "target": "打印机"
-      },
-      {
-        "source": "个人电脑2",
-        "target": "打印机"
-      }
+      {"source": "服务器", "target": "个人电脑1"},
+      {"source": "服务器", "target": "个人电脑2"},
+      {"source": "个人电脑1", "target": "打印机"},
+      {"source": "个人电脑2", "target": "打印机"}
     ]
   },
 }
