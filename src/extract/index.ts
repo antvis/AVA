@@ -6,13 +6,7 @@ import { Hierarchy } from './model/Hierarchy';
 import { Relation } from './model/Relation';
 import { extractText } from './extract';
 
-import type {
-  DataShard,
-  PlainLikeDataType,
-  HierarchyLikeDataType,
-  RelationLikeDataType,
-  AdvisorConfig,
-} from '../types';
+import type { DataShard, PlainLikeDataType, HierarchyLikeDataType, RelationLikeDataType, AVAContext } from '../types';
 
 const computeFeatures = (shard: DataShard): DataShard => {
   let featuresMap = {};
@@ -49,7 +43,7 @@ const computeFeatures = (shard: DataShard): DataShard => {
 export const extract = async (
   input: string,
   config?: {
-    llmConfig?: AdvisorConfig['llm'];
+    llmConfig?: AVAContext['llm'];
   }
 ) => {
   // extract with llm

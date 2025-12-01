@@ -1,5 +1,5 @@
 /* eslint-disable no-dupe-class-members */
-import { AdviseStageOutput, AdvisorConfig, DataShard, Spec } from '../types';
+import { AdviseStageOutput, AVAConfig, AVAContext, DataShard, Spec } from '../types';
 import { extract } from '../extract';
 import { logError, logInDev } from '../utils';
 import { getRenderer } from '../bind';
@@ -14,15 +14,15 @@ export class AVA {
   /**
    * Configuration for the ava. Includes LLM settings, chart inclusion/exclusion lists.
    */
-  private config!: AdvisorConfig;
+  private config!: AVAContext;
 
   /**
    * Whether the data shards have been extracted.
    */
   private extracted: boolean = false;
 
-  constructor(config: AdvisorConfig = {}) {
-    this.config = config;
+  constructor(config: AVAConfig) {
+    this.config = { ...config, input: '' };
   }
 
   /**

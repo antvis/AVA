@@ -5,7 +5,7 @@ redirect_from:
   - /en/docs/api
 ---
 
-## Advise()
+## Advise
 
 This page describes the **Chart Recommendation (`advise`)** feature: the typical workflow for generating chart suggestions based on data.
 

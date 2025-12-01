@@ -1,6 +1,6 @@
 import { AsyncSeriesHook } from 'tapable';
 import { Meta, FieldDataType, PlainLikeDataType, DataShard } from './data';
-import { AdvisorConfig, AdviseChartParams, AdviseText, AdviseTextParams } from './advisor';
+import { AVAContext, AdviseChartParams, AdviseText, AdviseTextParams } from './advisor';
 import { Spec } from './render';
 
 export type AdviseParams = AdviseChartParams | AdviseTextParams;
@@ -9,7 +9,7 @@ export type AdviseResult<T extends AdviseParams> = T extends AdviseChartParams ?
 
 export type PluginInput<T extends AdviseParams> = {
   dataStore: DataStore;
-  context: AdvisorConfig & T;
+  context: AVAContext & T;
   curStage: string;
 };
 
@@ -55,7 +55,7 @@ export type DataStore = {
 };
 
 export abstract class BasePipeline<T extends AdviseParams = AdviseChartParams> {
-  abstract config: AdvisorConfig;
+  abstract config: AVAContext;
 
   abstract stages: Stages<T>;
 

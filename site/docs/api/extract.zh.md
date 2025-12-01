@@ -1,23 +1,23 @@
 ---
-title: 数据抽取
+title: 数据抽取(extract)
 order: 1
 redirect_from:
   - /zh/docs/api
 ---
 
-## extract()
+## extract
 
 ```typescript
 import { AVA } from "@antv/ava";
 
-const advisor = new AVA({
+const ava = new AVA({
   llm: {
     authorization: process.env.TBOX_LLM_AUTH || 'your tbox authorization',
     appId: process.env.TBOX_LLM_APP_ID || 'your tbox appId',
   },
 });
 
-const data = await advisor.extract(`请帮我分析数据: 不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%`);
+const data = await ava.extract(`请帮我分析数据: 不同社交媒体平台的用户增长情况，2018 年 Facebook 用户增长 8%，Twitter 用户增长 12%，Instagram 用户增长 22%`);
 
 console.log(data);
 

@@ -37,56 +37,26 @@ const adviseSpec = async () => {
   "type": "dual-axes",
   "title": "Sales and Return Rate over Years",
   "axisXTitle": "Year",
-  "categories": [
-    "2019",
-    "2020",
-    "2021",
-    "2022",
-    "2023"
-  ],
+  "categories": ["2019", "2020", "2021", "2022", "2023"],
   "series": [
     {
       "type": "column",
-      "data": [
-        1200000,
-        1300000,
-        1400000,
-        1500000,
-        1600000
-      ],
+      "data": [1200000, 1300000, 1400000, 1500000, 1600000],
       "axisYTitle": "Sales (units)"
     },
     {
       "type": "line",
-      "data": [
-        2,
-        2.5,
-        3,
-        3.5,
-        4
-      ],
+      "data": [2, 2.5, 3, 3.5, 4],
       "axisYTitle": "Return Rate (%)"
     },
     {
       "type": "line",
-      "data": [
-        1200000,
-        1300000,
-        1400000,
-        1500000,
-        1600000
-      ],
+      "data": [1200000, 1300000, 1400000, 1500000, 1600000],
       "axisYTitle": "Sales (units)"
     },
     {
       "type": "line",
-      "data": [
-        2,
-        2.5,
-        3,
-        3.5,
-        4
-      ],
+      "data": [2, 2.5, 3, 3.5, 4],
       "axisYTitle": "Return Rate (%)"
     }
   ]
@@ -119,36 +89,16 @@ const adviseSpec = async () => {
   "type": "network-graph",
   "data": {
     "nodes": [
-      {
-        "name": "Server"
-      },
-      {
-        "name": "PC1"
-      },
-      {
-        "name": "PC2"
-      },
-      {
-        "name": "Printer"
-      }
+      {"name": "Server"},
+      {"name": "PC1"},
+      {"name": "PC2"},
+      {"name": "Printer"}
     ],
     "edges": [
-      {
-        "source": "Server",
-        "target": "PC1"
-      },
-      {
-        "source": "Server",
-        "target": "PC2"
-      },
-      {
-        "source": "PC1",
-        "target": "Printer"
-      },
-      {
-        "source": "PC2",
-        "target": "Printer"
-      }
+      {"source": "Server", "target": "PC1"},
+      {"source": "Server", "target": "PC2"},
+      {"source": "PC1", "target": "Printer"},
+      {"source": "PC2", "target": "Printer"}
     ]
   }
 }

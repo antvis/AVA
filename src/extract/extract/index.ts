@@ -1,8 +1,8 @@
 import { requestLLM } from '../../utils';
 import { getExtractPrompt } from '../../prompt';
-import type { AdvisorConfig } from '../../types';
+import type { AVAContext } from '../../types';
 
-export const extractText = async (input: string, config: AdvisorConfig['llm']) => {
+export const extractText = async (input: string, config: AVAContext['llm']) => {
   try {
     const res = await requestLLM({
       config,

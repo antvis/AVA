@@ -8,7 +8,7 @@ redirect_from:
 `extract` 是一个数据处理模块，可以处理抽取结构化和非结构化数据。
 
 <div style="display:flex;justify-content:center">
-  <img style="height: 200px;align: center" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*aRzfT5N-ZvsAAAAAgFAAAAgAemJ7AQ/original"></img>
+  <img style="height: 400px;align: center" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*aRzfT5N-ZvsAAAAAgFAAAAgAemJ7AQ/original"></img>
 </div>
 
 ## 🔨 使用
