@@ -7,7 +7,9 @@ redirect_from:
 
 `extract` is a data processing module capable of extracting structured and unstructured data.
 
-<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*pJ-9TJUrKHcAAAAAgFAAAAgAemJ7AQ/original"></img>
+<div style="display:flex;justify-content:center">
+  <img style="height: 200px;align: center" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*pJ-9TJUrKHcAAAAAgFAAAAgAemJ7AQ/original"></img>
+</div>
 
 ## 🔨 Usage
 
