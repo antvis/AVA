@@ -1,24 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
-import { Spec } from '../../../src/types';
-
-export const render = (container: string, spec: Spec) => {
-  const mount =
-    typeof container === 'string' ? (document.querySelector(container) as HTMLElement) : (container as HTMLElement);
-  if (!mount) return;
-
-  const { type, ...chartProps } = spec;
-  const VISComps = DEFAULT_CHART_COMPONENTS;
-  const Comp = VISComps[type] as React.ComponentType<any>;
-
-  if (!Comp) {
-    throw new Error(`Unknown chart type: ${type}`);
-  }
-  const chartElement = React.createElement(Comp, chartProps);
-  const root = ReactDOM.createRoot(mount);
-  root.render(chartElement);
-};
 
 export const cleanAndFormatJSON = (jsonStr: string): string => {
   let cleaned = jsonStr.trim();
