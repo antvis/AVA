@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@antv/ava-react": "^3.3.2",
-    "@antv/gpt-vis": "^0.5.9",
+    "@antv/gpt-vis": "^0.5.10",
     "@antv/gpt-vis-ssr": "^0.3.1",
     "antd": "^5.12.0",
     "axios": "^1.12.2",

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Space, Card, message } from 'antd';
 import { AVA, bindRenderer } from '../../../../src';
-import { render as GPTVisRender, cleanAndFormatJSON, formatJSON } from '../../utils';
+import { cleanAndFormatJSON, formatJSON } from '../../utils';
+import { render as GPTVisRender } from '@antv/gpt-vis';
 
 // 创建 ava 实例并为该实例绑定渲染器
 const ava = new AVA({
