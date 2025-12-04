@@ -2,25 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Input, Button, message, Space } from 'antd';
 import ReactDOM from 'react-dom';
 import { AVA, bindRenderer } from '@antv/ava';
-import { DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
+import { render } from '@antv/gpt-vis';
 
 const { createRoot } = ReactDOM;
-
-export const render = (container, spec) => {
-  const mount = typeof container === 'string' ? document.querySelector(container) : container;
-  if (!mount) return;
-
-  const { type, ...chartProps } = spec;
-  const VISComps = DEFAULT_CHART_COMPONENTS;
-  const Comp = VISComps[type];
-
-  if (!Comp) {
-    throw new Error(`Unknown chart type: ${type}`);
-  }
-  const chartElement = React.createElement(Comp, chartProps);
-  const root = createRoot(mount);
-  root.render(chartElement);
-};
 
 // 创建 ava 实例
 const ava = new AVA({

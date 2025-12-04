@@ -1,25 +1,9 @@
 import React, { useEffect } from 'react';
-import { DEFAULT_CHART_COMPONENTS } from '@antv/gpt-vis';
+import { render } from '@antv/gpt-vis';
 import ReactDOM from 'react-dom';
 import { AVA, bindRenderer } from '@antv/ava';
 
 const { createRoot } = ReactDOM;
-
-const render = (container, spec) => {
-  const mount = document.querySelector(container);
-  if (!mount) return;
-
-  const { type, ...chartProps } = spec;
-  const VISComps = DEFAULT_CHART_COMPONENTS;
-  const Comp = VISComps[type];
-
-  if (!Comp) {
-    throw new Error(`Unknown chart type: ${type}`);
-  }
-  const chartElement = React.createElement(Comp, chartProps);
-  const root = createRoot(mount);
-  root.render(chartElement);
-};
 
 const ava = new AVA();
 
