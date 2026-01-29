@@ -15,13 +15,13 @@ AVA v4 is a fundamental shift from rule-based analytics to AI-native capabilitie
 
 ```
 AVA/
-├── packages/ava/          # Main AVA v4 package
-│   ├── src/
-│   │   ├── data/         # Data loading and processing
-│   │   ├── analysis/     # Query generation and execution
-│   │   ├── visualize/    # Chart recommendation (coming soon)
-│   │   ├── ava.ts        # Main AVA class
-│   │   └── types.ts      # TypeScript definitions
+├── src/                   # Source code
+│   ├── data/             # Data loading and processing
+│   ├── analysis/         # Query generation and execution
+│   ├── visualize/        # Chart recommendation (coming soon)
+│   ├── ava.ts            # Main AVA class
+│   └── types.ts          # TypeScript definitions
+├── packages/ava/         # Main AVA v4 package
 │   └── README.md
 ├── examples/             # Usage examples
 │   ├── basic-usage.ts
@@ -167,8 +167,8 @@ const ava = new AVA({
 ## 📚 Documentation
 
 - [Package README](./packages/ava/README.md) - Main package documentation
-- [Data Module](./packages/ava/src/data/README.md) - Data loading and processing
-- [Analysis Module](./packages/ava/src/analysis/README.md) - Query generation and execution
+- [Data Module](./src/data/README.md) - Data loading and processing
+- [Analysis Module](./src/analysis/README.md) - Query generation and execution
 - [Examples](./examples/README.md) - Usage examples and tutorials
 
 ## 🚧 Roadmap
