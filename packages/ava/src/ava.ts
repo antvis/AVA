@@ -3,13 +3,14 @@
  */
 
 import { generateText } from 'ai';
-import type { AVAConfig, LLMConfig, AnalysisResponse, DatasetInfo } from './types';
+import { createOpenAI } from '@ai-sdk/openai';
+import type { AVAConfig, LLMConfig, DatasetInfo } from './types';
 import { loadCSV, extractMetadata, formatDatasetInfo } from './data';
 import {
   SQLiteDataStore,
-  executeDataframeCode,
+  executeDataCode,
   generateSQL,
-  generateDataframeCode,
+  generateDataCode,
 } from './analysis';
 
 const DEFAULT_SQLITE_THRESHOLD = 10 * 1024; // 10KB
@@ -68,19 +69,19 @@ export class AVA {
         );
       }
     } else {
-      // Use danfojs for small datasets
+      // Use JavaScript for small datasets
       if (!this.data) {
         throw new Error('Data not available in memory.');
       }
 
       const dataInfoStr = formatDatasetInfo(this.dataInfo);
-      const code = await generateDataframeCode(this.llmConfig, dataInfoStr, query);
+      const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
 
       try {
-        analysisData = await executeDataframeCode(this.data, code);
+        analysisData = await executeDataCode(this.data, code);
       } catch (error) {
         throw new Error(
-          `Failed to execute dataframe code: ${error instanceof Error ? error.message : String(error)}`
+          `Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`
         );
       }
     }
@@ -95,8 +96,6 @@ export class AVA {
    * Summarize analysis result using LLM
    */
   private async summarizeResult(query: string, data: any): Promise<string> {
-    const { createOpenAI } = await import('@ai-sdk/openai');
-    
     const openai = createOpenAI({
       apiKey: this.llmConfig.apiKey,
       baseURL: this.llmConfig.baseURL,
@@ -114,7 +113,7 @@ ${dataStr}
 Provide a natural language summary of the result. If the result is tabular data, you can present it as a markdown table.`;
 
     const { text } = await generateText({
-      model: openai(this.llmConfig.model),
+      model: openai(this.llmConfig.model) as any,
       prompt,
     });
 

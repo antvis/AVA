@@ -19,7 +19,7 @@ AVA v4 is a complete rewrite focused on AI-native capabilities. It leverages Lar
 [@antv/ava](https://www.npmjs.com/package/@antv/ava) contains three main modules:
 
 * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">data</span>: Data loading and processing. Supports CSV files with automatic type inference and metadata extraction.
-* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">analysis</span>: Natural language to code/SQL generation. Uses danfojs for small datasets (<10KB) and SQLite for large datasets.
+* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">analysis</span>: Natural language to code/SQL generation. Uses JavaScript helper functions for small datasets (<10KB) and SQLite for large datasets.
 * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">visualize</span>: AI-powered chart recommendation and generation (coming soon).
 
 
@@ -78,7 +78,7 @@ await ava.analysis("Calculate the growth rate compared to last year");
 
 ### 📊 Smart Data Handling
 
-- **Small datasets (<10KB)**: Uses [danfojs](https://danfo.jsdata.org/) for fast in-memory analysis
+- **Small datasets (<10KB)**: Uses custom JavaScript helper functions for fast in-memory analysis
 - **Large datasets (≥10KB)**: Automatically switches to SQLite for efficient querying
 
 ### 🔄 Automatic Type Inference

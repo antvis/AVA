@@ -1,12 +1,12 @@
 # Analysis Module
 
-The analysis module handles data querying and analysis using either danfojs for small datasets or SQLite for large datasets.
+The analysis module handles data querying and analysis using either JavaScript operations for small datasets or SQLite for large datasets.
 
 ## Features
 
 - **SQLite Integration**: Automatic storage for large datasets (>10KB)
-- **Danfojs Support**: In-memory analysis for small datasets
-- **Natural Language to Code**: Generate SQL or danfojs code from user queries
+- **JavaScript Operations**: In-memory analysis for small datasets with helper functions
+- **Natural Language to Code**: Generate SQL or JavaScript code from user queries
 - **Code Execution**: Safe execution of generated code
 
 ## API
@@ -31,18 +31,33 @@ store.close();
 - `getSchema(): string` - Get table schema information
 - `close(): void` - Close database connection
 
-### `executeDataframeCode(data: any[], code: string): Promise<any>`
+### `executeDataCode(data: any[], code: string): Promise<any>`
 
-Executes danfojs code against the data.
+Executes JavaScript code against the data with helper operations.
 
 ```typescript
-import { executeDataframeCode } from '@antv/ava';
+import { executeDataCode } from '@antv/ava';
 
 const code = `
-  const result = df.groupby(['region']).col(['revenue']).mean();
+  const grouped = ops.groupBy(data, 'region');
+  const result = Object.keys(grouped).map(region => ({
+    region,
+    avgRevenue: ops.avg(grouped[region], 'revenue')
+  }));
 `;
-const result = await executeDataframeCode(data, code);
+const result = await executeDataCode(data, code);
 ```
+
+#### Available Operations
+
+The `ops` object provides helper functions:
+- `groupBy(arr, key)` - Group array by key
+- `sum(arr, key)` - Sum values by key
+- `avg(arr, key)` - Average values by key
+- `max(arr, key)` - Maximum value by key
+- `min(arr, key)` - Minimum value by key
+- `count(arr)` - Count items
+- `sortBy(arr, key, order)` - Sort array by key
 
 ### `generateSQL(llmConfig: LLMConfig, schema: string, query: string): Promise<string>`
 
@@ -59,24 +74,24 @@ const sql = await generateSQL(
 // Returns: SELECT region, AVG(CAST(revenue AS REAL)) as avg_revenue FROM data GROUP BY region
 ```
 
-### `generateDataframeCode(llmConfig: LLMConfig, dataInfo: string, query: string): Promise<string>`
+### `generateDataCode(llmConfig: LLMConfig, dataInfo: string, query: string): Promise<string>`
 
-Generates danfojs code from natural language using LLM.
+Generates JavaScript code from natural language using LLM.
 
 ```typescript
-import { generateDataframeCode } from '@antv/ava';
+import { generateDataCode } from '@antv/ava';
 
-const code = await generateDataframeCode(
+const code = await generateDataCode(
   { model: 'gpt-4', apiKey: 'your-key' },
   dataInfoString,
   'What is the average revenue by region?'
 );
-// Returns: const result = df.groupby(['region']).col(['revenue']).mean();
+// Returns JavaScript code using helper operations
 ```
 
 ## Data Size Threshold
 
-- **Small Data (<10KB)**: Uses danfojs for in-memory analysis
+- **Small Data (<10KB)**: Uses JavaScript helper functions for in-memory analysis
 - **Large Data (≥10KB)**: Uses SQLite for efficient querying
 
 The threshold is configurable via `AVAConfig.sqliteThreshold`.
