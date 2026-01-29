@@ -18,7 +18,6 @@ AVA/
 ├── src/                   # Source code
 │   ├── data/             # Data loading and processing
 │   ├── analysis/         # Query generation and execution
-│   ├── visualize/        # Chart recommendation (coming soon)
 │   ├── ava.ts            # Main AVA class
 │   └── types.ts          # TypeScript definitions
 ├── packages/ava/         # Main AVA v4 package
