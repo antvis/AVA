@@ -1,142 +1,212 @@
-<img src="https://gw.alipayobjects.com/zos/antfincdn/R8sN%24GNdh6/language.svg" width="18" alt="Switch between English and Chinese"> English | [简体中文](./README.zh-CN.md)
+# AVA v4 - AI Branch
 
-<div align="center">
-  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
-</div>
+This is the development branch for AVA v4, a complete rewrite focused on **AI-native Visual Analytics**.
 
-<div align="center">
+## 🚀 What's New in v4
 
-<i>A framework for automated visual analytics.</i>
-<i><a href="https://ava.antv.antgroup.com/"><https://ava.antv.antgroup.com></a></i>
+AVA v4 is a fundamental shift from rule-based analytics to AI-native capabilities:
 
-</div>
+- **Natural Language Queries**: Ask questions about your data in plain English
+- **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
+- **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
+- **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
 
-----
+## 📦 Project Structure
 
-## What is AVA
-
-[AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. The first **A** has multiple meanings: AI driven, Automated, Augmented, and **VA** stands for Visual Analytics. It can assist users in data processing, extracting insights from data, recommending and generating charts, and optimizing existing charts.
-<br />
-
-<div align="center">
-  <img width="800" src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*OmYvSbCXy2gAAAAAAAAAAAAADvmcAQ/original" alt="AVA examples">
-</div>
-
-## Composition
-
-AVA contains 2 packages, [@antv/ava](https://www.npmjs.com/package/@antv/ava) and [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react) : 
-
-* [@antv/ava](https://www.npmjs.com/package/@antv/ava) : AVA core package, containing four main modules:
-
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">data (Data Processing)</span>: Data Processing Module. Used for statistical analysis and processing of datasets.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">insight (Auto Insight)</span>: Automatic Insights Module. Automatically discover data insights from multi-dimensional data.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">ckb (Chart Knowledge Base)</span>: Chart Knowledge Base Module. Based on empirically derived knowledge and observations about the various fundamentals of visualization and charts, it is the cornerstone of intelligent chart recommendations.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">advisor (Chart Recommendation)</span>: Chart Recommendation Module. Recommend chart types and specific chart detail settings based on data and analysis needs, as well as chart optimization for existing charts.
-
-* [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react) : A plug-and-play React component library based on the integration of AVA capabilities, it contains three core components:
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">\<NarrativeTextVis \/></span>: Demonstrate data insight interpretation text. In a full-flow presentation of data analysis, using text to describe data phenomena is as critical as giving insightful conclusions.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">\<InsightCard \/></span>: Present data insights in a combination of graphics and text. It is possible to either receive data directly and perform insights automatically, or to visualize and interpret only the insight result data for presentation.
-  * <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">\<AutoChart \/></span>>: Automatically recommends and renders the appropriate chart based on the data. It provides users with the ability to implement intelligent visualizations in one line of code, and the component is currently undergoing further upgrades.
-
-
-## Features
-
-* Intelligent drive: Integrates automation and intelligence to simplify the visual analysis process.
-* Rich functions: Its functions cover the whole process of data analysis, linking people and data, and connecting the "last mile" of the data analysis chain.
-* Flexible syntax: Rich built-in configuration items and support for customization.
-
-## Documentation
-
-* <a href='https://ava.antv.antgroup.com/guide/intro' target='_blank'>Tutorial</a>
-* <a href='https://ava.antv.antgroup.com/api/ckb/ckb' target='_blank'>API</a>
-* <a href='https://ava.antv.antgroup.com/examples' target='_blank'>Examples</a>
-
-## Getting Started
-
-NPM package manager can be used to install  [@antv/ava](https://www.npmjs.com/package/@antv/ava) and [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react).
-
-```bash
-$ npm install @antv/ava
-$ npm install @antv/ava-react
+```
+AVA/
+├── packages/ava/          # Main AVA v4 package
+│   ├── src/
+│   │   ├── data/         # Data loading and processing
+│   │   ├── analysis/     # Query generation and execution
+│   │   ├── visualize/    # Chart recommendation (coming soon)
+│   │   ├── ava.ts        # Main AVA class
+│   │   └── types.ts      # TypeScript definitions
+│   └── README.md
+├── examples/             # Usage examples
+│   ├── basic-usage.ts
+│   └── README.md
+└── data/                 # Sample datasets
+    └── companies.csv
 ```
 
-The following two examples show the use of [@antv/ava](https://www.npmjs.com/package/@antv/ava) and [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react) respectively (demo code based on React):
+## 🛠️ Development Setup
 
-1. **Demo 1**: Use the <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">insight (Auto Insight)</span> in [@antv/ava](https://www.npmjs.com/package/@antv/ava) to extract data insights. Input multi-dimensional data, the backend automatically runs different algorithms to find interesting patterns in the data, evaluates them uniformly and returns high-quality data insights according to the score.
+### Prerequisites
 
-    ```js
-    import { getInsights } from '@antv/ava';
+- Node.js >= 18.0.0
+- npm or yarn
+- OpenAI API key (or compatible LLM provider)
 
-    //  Input: Multi-dimensional data
-    const data = [
-        { year: '2000', value: 100 },
-        { year: '2001', value: 200 },
-        { year: '2002', value: 220 },
-        { year: '2003', value: 230 },
-        { year: '2004', value: 245 },
-        { year: '2005', value: 156 },
-        { year: '2006', value: 178 },
-        { year: '2007', value: 180 },
-        { year: '2008', value: 190 },
-        { year: '2009', value: 1000 },
-    ]
+### Installation
 
-    // The insightRes contains interesting insights from the data.
-    const insightRes = getInsights(data)
-    ```
- 
-2. **Demo 2**: Use <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">\<InsightCard \/></span> in [@antv/ava-react](https://www.npmjs.com/package/@antv/ava-react) to display the insight results. This component can display data insight results directly, here using the insight results from Demo 1 as input:
+```bash
+# Install dependencies
+cd packages/ava
+npm install --ignore-scripts
 
-    ```html
-    <div id="root"></div>
-    ```
+# Build the package
+npm run build
+```
 
-    ```js
-    // import <InsightCard /> component
-    import { InsightCard } from '@antv/ava-react';
+### Running Examples
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
+```bash
+# Set your API key
+export OPENAI_API_KEY='your-api-key-here'
 
-    // render
-    root.render(
-      <InsightCard insightInfo={insightRes.insights[0]} visualizationOptions={{ lang: 'zh-CN' }} />
-    );
-    ```
+# Run example (requires ts-node)
+npm install -g ts-node
+ts-node examples/basic-usage.ts
+```
 
-    The result of the rendering is as follows:
-    <div align="center">
-      <img width="800" src="https://mdn.alipayobjects.com/huamei_kjfwsg/afts/img/A*i0jhSKWjCbkAAAAAAAAAAAAADvmcAQ/original" alt="Data Insight Results">
-    </div>
+## 📖 Quick Start
 
+```typescript
+import { AVA } from '@antv/ava';
 
+// Initialize with LLM config
+const ava = new AVA({
+  llm: {
+    model: 'gpt-4',
+    apiKey: 'YOUR_API_KEY',
+  },
+});
 
-## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+// Load data
+await ava.loadCSV('data/companies.csv');
 
-We welcome all contributions. Please read our [Contributing Guide](./CONTRIBUTING.md) first. You can submit any ideas as [pull requests](https://github.com/antvis/AVA/pulls) or as [GitHub issues](https://github.com/antvis/AVA/issues). Let's build a better AVA together.
+// Ask questions in natural language
+const result = await ava.analysis('What is the average revenue by region?');
+console.log(result);
 
-More at [Wiki: Development](https://github.com/antvis/AVA/wiki/Development).
+// Clean up
+ava.dispose();
+```
 
-## Collaboration
+## 🏗️ Architecture
 
-<div align="center">
-  <a href="https://idvxlab.com/"><img src="https://gw.alipayobjects.com/zos/antfincdn/rxgntN5msN/idvx.png" alt="iDVx" width="140" align="middle" hspace="20"></a>
-</div>
+### Core Modules
 
-## Papers
+#### 1. Data Module
+- CSV file loading with automatic parsing
+- Type inference (number, string, date, boolean)
+- Metadata extraction (unique counts, null counts, samples)
+- Smart data size detection
 
-[VizLinter](https://vegalite-linter.idvxlab.com/)
+#### 2. Analysis Module
+- **Small datasets (<10KB)**: JavaScript helper functions for in-memory analysis
+- **Large datasets (≥10KB)**: Automatic SQLite storage for efficient querying
+- Natural language to code/SQL generation using LLM
+- Safe code execution environment
 
-<div style="font-size: 12px; color: grey">
-Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. <i>IEEE transactions on visualization and computer graphics</i>, 28(1), pp.206-216.
-</div>
-<br>
+#### 3. Visualize Module (Coming Soon)
+- AI-powered chart recommendations
+- Automatic spec generation
+- Integration with visualization libraries
 
-[《数据可视化设计的类型学实践》（Exploring the Typology of Visualization Design）](https://oversea.cnki.net/KCMS/detail/detail.aspx?dbcode=CJFD&dbname=CJFDAUTO&filename=MSDG202203021&uniplatform=OVERSEAS_EN&v=HcZsiecIxauSoKEB1s92_BImgnrMiazYsfZUpb-gcl0zXYx_MEwv5alz1UgtPjz1)
+### Data Flow
 
-<div style="font-size: 12px; color: grey">
-蓝星宇, 王嘉喆. 数据可视化设计的类型学实践, 《美术大观》, 2022(3), 149-152.
-</div>
+```
+User Query
+    ↓
+AVA Instance
+    ↓
+┌─────────────┐
+│ Data Module │ → Load & Parse CSV
+└─────────────┘
+    ↓
+┌──────────────┐
+│Size Check    │
+└──────────────┘
+    ↓         ↓
+ <10KB      ≥10KB
+    ↓         ↓
+JavaScript  SQLite
+ Helpers     Query
+    ↓         ↓
+┌──────────────────┐
+│ Analysis Module  │ → Generate & Execute Code/SQL
+└──────────────────┘
+    ↓
+┌──────────────┐
+│ LLM Summary  │ → Natural Language Response
+└──────────────┘
+    ↓
+User Response
+```
 
-## License
+## 🎯 Design Principles
 
-MIT@[AntV](https://github.com/antvis).
+1. **AI-Native**: LLMs at the core, not an add-on
+2. **Simple & Clean**: Minimal dependencies, clean code
+3. **Smart Defaults**: Automatic optimization based on data size
+4. **Developer-Friendly**: Clear APIs, comprehensive documentation
+5. **Extensible**: Modular design for easy customization
+
+## 🔧 Configuration
+
+### LLM Configuration
+
+```typescript
+const ava = new AVA({
+  llm: {
+    model: 'gpt-4',              // Model name
+    apiKey: 'your-key',          // API key
+    baseURL: 'https://...',      // Optional: custom endpoint
+  },
+  sqliteThreshold: 10 * 1024,    // Optional: SQLite threshold in bytes
+});
+```
+
+### Supported Models
+
+- OpenAI: `gpt-4`, `gpt-3.5-turbo`, `gpt-4-turbo`
+- Any OpenAI-compatible API endpoint
+
+## 📚 Documentation
+
+- [Package README](./packages/ava/README.md) - Main package documentation
+- [Data Module](./packages/ava/src/data/README.md) - Data loading and processing
+- [Analysis Module](./packages/ava/src/analysis/README.md) - Query generation and execution
+- [Examples](./examples/README.md) - Usage examples and tutorials
+
+## 🚧 Roadmap
+
+- [x] Core data loading (CSV)
+- [x] Natural language to code/SQL
+- [x] Smart data handling (JavaScript/SQLite)
+- [x] Basic analysis capabilities
+- [ ] Visualize module with chart recommendations
+- [ ] Additional data sources (JSON, Excel, APIs)
+- [ ] Streaming responses
+- [ ] Chart rendering integration
+- [ ] Advanced aggregation operations
+- [ ] Multi-table queries
+
+## 🤝 Contributing
+
+This is an experimental branch. Contributions are welcome! Please ensure:
+
+- Code is clean and well-documented
+- TypeScript types are properly defined
+- New features include examples
+- READMEs are updated as needed
+
+## 📝 Notes
+
+- This branch (`ai`) contains a complete rewrite and is not backward compatible with AVA v3
+- The focus is on AI-native capabilities using LLMs
+- Dependencies are minimal to keep the package lightweight
+- Uses Vercel AI SDK for LLM integration
+- SQLite (via better-sqlite3) for large dataset handling
+
+## 🔗 Related Projects
+
+- [GPT-Vis](https://github.com/antvis/GPT-Vis) - Visualization components
+- [Chart Visualization Skills](https://github.com/antvis/chart-visualization-skills) - LLM skills for charts
+- [Vercel AI SDK](https://sdk.vercel.ai/) - LLM integration
+
+## 📄 License
+
+MIT

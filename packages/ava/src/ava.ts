@@ -4,7 +4,7 @@
 
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
-import type { AVAConfig, LLMConfig, DatasetInfo } from './types';
+
 import { loadCSV, extractMetadata, formatDatasetInfo } from './data';
 import {
   SQLiteDataStore,
@@ -12,6 +12,8 @@ import {
   generateSQL,
   generateDataCode,
 } from './analysis';
+
+import type { AVAConfig, LLMConfig, DatasetInfo } from './types';
 
 const DEFAULT_SQLITE_THRESHOLD = 10 * 1024; // 10KB
 

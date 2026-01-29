@@ -1,8 +1,0 @@
-# gatsby files
-.cache/
-public
-
-
-# dumi2 website builder
-.dumi/tmp
-.dumi/tmp-production
