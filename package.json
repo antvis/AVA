@@ -45,6 +45,12 @@
     "test": "jest",
     "coverage": "jest --coverage"
   },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.0",
     "ai": "^3.4.33",
