@@ -5,84 +5,36 @@
     "packages/*"
   ],
   "scripts": {
-    "boot": "lerna bootstrap --force-local",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
     "lint-fix": "npm run lint -- --fix",
-    "lint-staged": "lint-staged",
     "prettier": "prettier -c \"**/*\"",
     "prettier:ava": "cd ./packages/ava && npm run prettier",
-    "prettier:ava-react": "cd ./packages/ava-react && npm run prettier",
     "prettier-fix": "npm run prettier -- --write",
     "format": "npm run prettier-fix && npm run lint-fix",
     "format:ava": "cd ./packages/ava && npm run format",
-    "format:ava-react": "cd ./packages/ava-react && npm run format",
-    "test": "jest",
+    "test": "cd ./packages/ava && npm run test",
     "test:ava": "cd ./packages/ava && npm run test",
-    "test:ava-react": "cd ./packages/ava-react && npm run test",
-    "coverage": "jest --coverage",
+    "coverage": "cd ./packages/ava && npm run coverage",
     "coverage:ava": "cd ./packages/ava && npm run coverage",
-    "coverage:ava-react": "cd ./packages/ava-react && npm run coverage",
+    "build": "cd ./packages/ava && npm run build",
     "build:ava": "cd ./packages/ava && npm run build",
-    "build:ava-react": "cd ./packages/ava-react && npm run build",
-    "build": "npm run build:ava && npm run build:ava-react",
-    "clean": "git clean -dfx",
-    "setup:playground": "cd playground && npm install",
-    "start:playground": "cd playground && npm start",
-    "setup:site": "cd site && npm install",
-    "start:site": "cd site && npm start",
-    "build:site": "cd site && npm run build",
-    "prepare": "husky install",
-    "ci": "run-s format lint-staged build",
-    "release": "lerna exec --no-private --concurrency 1 -- npx --no-install semantic-release",
-    "release-manual": "npm run ci && lerna publish",
-    "prerelease-manual": "npm run ci && lerna publish prerelease",
-    "prerelease-manual-beta": "npm run ci && lerna publish prerelease --preid beta",
-    "one-stop-setup": "npm install && npm run build && npm run setup:playground && npm run setup:site"
+    "clean": "git clean -dfx"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "packages/*.{js,jsx,ts,tsx}": [
-      "jest --bail --findRelatedTests"
-    ]
-  },
+
   "author": {
     "name": "AntV",
     "url": "https://antv.vision/"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.1.0",
-    "@commitlint/config-conventional": "^13.1.0",
-    "@semantic-release/changelog": "^6.0.1",
-    "@semantic-release/git": "^10.0.1",
     "@types/jest": "^23.3.14",
-    "@types/lodash": "^4.14.180",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
-    "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.24.1",
-    "eslint-plugin-react": "^7.24.0",
-    "husky": "^7.0.1",
-    "jest": "^24.9.0",
-    "jest-extended": "^0.11.5",
-    "lerna": "^3.15.0",
-    "lint-staged": "^11.0.0",
-    "npm-run-all": "^4.1.5",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
-    "semantic-release": "^19.0.2",
-    "semantic-release-monorepo": "^7.0.5",
-    "ts-jest": "^24.1.0",
     "tslib": "^2.3.1",
     "typescript": "^4.9.3"
   }
