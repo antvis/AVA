@@ -7,6 +7,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
+    "declarationDir": "./lib",
     "importHelpers": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -19,5 +20,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
+  "include": ["./src"],
   "exclude": ["node_modules", "**/esm", "**/lib", "**/dist", "**/build"]
 }

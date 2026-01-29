@@ -20,8 +20,6 @@ AVA/
 │   ├── analysis/         # Query generation and execution
 │   ├── ava.ts            # Main AVA class
 │   └── types.ts          # TypeScript definitions
-├── packages/ava/         # Main AVA v4 package
-│   └── README.md
 ├── examples/             # Usage examples
 │   ├── basic-usage.ts
 │   └── README.md
@@ -41,7 +39,6 @@ AVA/
 
 ```bash
 # Install dependencies
-cd packages/ava
 npm install --ignore-scripts
 
 # Build the package
@@ -165,7 +162,6 @@ const ava = new AVA({
 
 ## 📚 Documentation
 
-- [Package README](./packages/ava/README.md) - Main package documentation
 - [Data Module](./src/data/README.md) - Data loading and processing
 - [Analysis Module](./src/analysis/README.md) - Query generation and execution
 - [Examples](./examples/README.md) - Usage examples and tutorials
