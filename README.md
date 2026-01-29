@@ -1,60 +1,19 @@
-# AVA v4 - AI Branch
+# AVA
 
-This is the development branch for AVA v4, a complete rewrite focused on **AI-native Visual Analytics**.
+This is the development branch for AVA, a complete rewrite focused on **AI-native Visual Analytics**.
 
-## 🚀 What's New in v4
+<div align="center">
+  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
+</div>
 
-AVA v4 is a fundamental shift from rule-based analytics to AI-native capabilities:
+## 🚀 Features
+
+AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
 - **Natural Language Queries**: Ask questions about your data in plain English
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-
-## 📦 Project Structure
-
-```
-AVA/
-├── src/                   # Source code
-│   ├── data/             # Data loading and processing
-│   ├── analysis/         # Query generation and execution
-│   ├── ava.ts            # Main AVA class
-│   └── types.ts          # TypeScript definitions
-├── examples/             # Usage examples
-│   ├── basic-usage.ts
-│   └── README.md
-└── data/                 # Sample datasets
-    └── companies.csv
-```
-
-## 🛠️ Development Setup
-
-### Prerequisites
-
-- Node.js >= 18.0.0
-- npm or yarn
-- OpenAI API key (or compatible LLM provider)
-
-### Installation
-
-```bash
-# Install dependencies
-npm install --ignore-scripts
-
-# Build the package
-npm run build
-```
-
-### Running Examples
-
-```bash
-# Set your API key
-export OPENAI_API_KEY='your-api-key-here'
-
-# Run example (requires ts-node)
-npm install -g ts-node
-ts-node examples/basic-usage.ts
-```
 
 ## 📖 Quick Start
 
@@ -132,40 +91,6 @@ JavaScript  SQLite
 User Response
 ```
 
-## 🎯 Design Principles
-
-1. **AI-Native**: LLMs at the core, not an add-on
-2. **Simple & Clean**: Minimal dependencies, clean code
-3. **Smart Defaults**: Automatic optimization based on data size
-4. **Developer-Friendly**: Clear APIs, comprehensive documentation
-5. **Extensible**: Modular design for easy customization
-
-## 🔧 Configuration
-
-### LLM Configuration
-
-```typescript
-const ava = new AVA({
-  llm: {
-    model: 'gpt-4',              // Model name
-    apiKey: 'your-key',          // API key
-    baseURL: 'https://...',      // Optional: custom endpoint
-  },
-  sqliteThreshold: 10 * 1024,    // Optional: SQLite threshold in bytes
-});
-```
-
-### Supported Models
-
-- OpenAI: `gpt-4`, `gpt-3.5-turbo`, `gpt-4-turbo`
-- Any OpenAI-compatible API endpoint
-
-## 📚 Documentation
-
-- [Data Module](./src/data/README.md) - Data loading and processing
-- [Analysis Module](./src/analysis/README.md) - Query generation and execution
-- [Examples](./examples/README.md) - Usage examples and tutorials
-
 ## 🚧 Roadmap
 
 - [x] Core data loading (CSV)
@@ -179,7 +104,7 @@ const ava = new AVA({
 - [ ] Advanced aggregation operations
 - [ ] Multi-table queries
 
-## 🤝 Contributing
+## 🤝 Developer Contributions
 
 This is an experimental branch. Contributions are welcome! Please ensure:
 
@@ -187,14 +112,6 @@ This is an experimental branch. Contributions are welcome! Please ensure:
 - TypeScript types are properly defined
 - New features include examples
 - READMEs are updated as needed
-
-## 📝 Notes
-
-- This branch (`ai`) contains a complete rewrite and is not backward compatible with AVA v3
-- The focus is on AI-native capabilities using LLMs
-- Dependencies are minimal to keep the package lightweight
-- Uses Vercel AI SDK for LLM integration
-- SQLite (via better-sqlite3) for large dataset handling
 
 ## 🔗 Related Projects
 
