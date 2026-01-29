@@ -33,23 +33,13 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
+    "lint": "eslint --ext .ts,.tsx \"./src\"",
     "lint-fix": "npm run lint -- --fix",
-    "prettier": "prettier -c \"**/*\"",
-    "prettier-fix": "npm run prettier -- --write",
-    "format": "npm run prettier-fix && npm run lint-fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "clean": "rimraf lib esm",
-    "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
-    "build:esm": "rimraf ./esm && tsc --module es6 --outDir esm",
-    "build": "npm run build:cjs && npm run build:esm",
-    "test": "jest",
-    "coverage": "jest --coverage"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
+    "build:cjs": "tsc --module commonjs --outDir lib",
+    "build:esm": "tsc --module es6 --outDir esm",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.0",
@@ -60,17 +50,13 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.12",
-    "@types/jest": "^23.3.12",
     "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.24.1",
-    "jest": "^24.9.0",
-    "lint-staged": "^11.0.1",
-    "npm-run-all": "^4.1.5",
+    "eslint-import-resolver-typescript": "^2.4.0",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.3"
