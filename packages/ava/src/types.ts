@@ -1,0 +1,67 @@
+/**
+ * Core type definitions for AVA v4
+ */
+
+/**
+ * LLM configuration
+ */
+export interface LLMConfig {
+  /** Model name (e.g., 'gpt-4', 'gpt-3.5-turbo') */
+  model: string;
+  /** API key for the LLM provider */
+  apiKey: string;
+  /** Optional API base URL */
+  baseURL?: string;
+}
+
+/**
+ * AVA configuration
+ */
+export interface AVAConfig {
+  /** LLM configuration */
+  llm: LLMConfig;
+  /** Threshold for using SQLite (in bytes), default 10KB */
+  sqliteThreshold?: number;
+}
+
+/**
+ * Data field metadata
+ */
+export interface FieldMetadata {
+  /** Field name */
+  name: string;
+  /** Field type */
+  type: 'number' | 'string' | 'date' | 'boolean';
+  /** Sample values */
+  samples?: any[];
+  /** Number of unique values */
+  uniqueCount?: number;
+  /** Number of null values */
+  nullCount?: number;
+}
+
+/**
+ * Dataset information
+ */
+export interface DatasetInfo {
+  /** Number of rows */
+  rowCount: number;
+  /** Number of columns */
+  columnCount: number;
+  /** Field metadata */
+  fields: FieldMetadata[];
+  /** Estimated size in bytes */
+  sizeInBytes: number;
+}
+
+/**
+ * Analysis response
+ */
+export interface AnalysisResponse {
+  /** The analysis result as text */
+  text: string;
+  /** Optional structured data result */
+  data?: any[];
+  /** Optional markdown content */
+  markdown?: string;
+}

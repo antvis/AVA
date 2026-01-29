@@ -1,1 +1,0 @@
-export { advicesForChart } from './advicesForChart';
