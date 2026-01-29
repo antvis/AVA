@@ -3,7 +3,10 @@
  */
 
 import * as fs from 'fs';
+
+// eslint-disable-next-line import/no-unresolved
 import { parse } from 'csv-parse/sync';
+
 import type { FieldMetadata, DatasetInfo } from '../types';
 
 /**
@@ -102,11 +105,11 @@ export function extractMetadata(data: any[]): DatasetInfo {
  * Format dataset info as a string for LLM context
  */
 export function formatDatasetInfo(info: DatasetInfo): string {
-  let result = `Dataset Info:\n`;
+  let result = 'Dataset Info:\n';
   result += `- Rows: ${info.rowCount}\n`;
   result += `- Columns: ${info.columnCount}\n`;
   result += `- Size: ${(info.sizeInBytes / 1024).toFixed(2)} KB\n`;
-  result += `\nFields:\n`;
+  result += '\nFields:\n';
   
   for (const field of info.fields) {
     result += `- ${field.name} (${field.type}): `;
@@ -117,7 +120,7 @@ export function formatDatasetInfo(info: DatasetInfo): string {
     if (field.samples && field.samples.length > 0) {
       result += `\n  Sample values: ${field.samples.slice(0, 3).join(', ')}`;
     }
-    result += `\n`;
+    result += '\n';
   }
   
   return result;

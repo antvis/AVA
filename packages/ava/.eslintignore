@@ -1,0 +1,5 @@
+lib/
+esm/
+node_modules/
+coverage/
+*.min.js

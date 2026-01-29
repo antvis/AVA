@@ -6,8 +6,6 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'airbnb-base',
-    'plugin:react/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
     'prettier',
@@ -16,11 +14,8 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
-    ecmaFeatures: {
-      jsx: true,
-    },
   },
-  plugins: ['@typescript-eslint', 'import', 'react'],
+  plugins: ['@typescript-eslint', 'import'],
   rules: {
     semi: 2,
     quotes: [1, 'single', 'avoid-escape'],
@@ -56,20 +51,9 @@ module.exports = {
         groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'object', 'type', 'unknown'],
         pathGroups: [
           {
-            pattern: 'react',
-            group: 'external',
-            position: 'before',
-          },
-          {
             pattern: '@/**',
             group: 'internal',
             position: 'before',
-          },
-          {
-            pattern: '*.{less,css}',
-            patternOptions: { matchBase: true },
-            group: 'unknown',
-            position: 'after',
           },
         ],
         pathGroupsExcludedImportTypes: ['builtin', 'type'],
@@ -79,9 +63,6 @@ module.exports = {
     ],
   },
   settings: {
-    react: {
-      version: 'detect',
-    },
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
