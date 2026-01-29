@@ -1,32 +1,56 @@
 {
-  "name": "ava",
-  "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
-  "scripts": {
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx \"./\"",
-    "lint-fix": "npm run lint -- --fix",
-    "prettier": "prettier -c \"**/*\"",
-    "prettier:ava": "cd ./packages/ava && npm run prettier",
-    "prettier-fix": "npm run prettier -- --write",
-    "format": "npm run prettier-fix && npm run lint-fix",
-    "format:ava": "cd ./packages/ava && npm run format",
-    "test": "cd ./packages/ava && npm run test",
-    "test:ava": "cd ./packages/ava && npm run test",
-    "coverage": "cd ./packages/ava && npm run coverage",
-    "coverage:ava": "cd ./packages/ava && npm run coverage",
-    "build": "cd ./packages/ava && npm run build",
-    "build:ava": "cd ./packages/ava && npm run build",
-    "clean": "git clean -dfx"
-  },
-
+  "name": "@antv/ava",
+  "version": "4.0.0-alpha.1",
+  "description": "A framework for AI-native Visual Analytics",
   "author": {
     "name": "AntV",
-    "url": "https://antv.vision/"
+    "url": "https://antv.antgroup.com/"
+  },
+  "homepage": "https://ava.antv.antgroup.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/antvis/AVA"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "visualization",
+    "ai-native",
+    "visual-analytics",
+    "llm"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "module": "esm/index.js",
+  "files": [
+    "esm",
+    "lib"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "lint": "eslint --ext .ts,.tsx \"./src\"",
+    "lint-fix": "npm run lint -- --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" && npm run lint-fix",
+    "clean": "rimraf lib esm",
+    "build:cjs": "tsc --module commonjs --outDir lib",
+    "build:esm": "tsc --module es6 --outDir esm",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^1.0.0",
+    "ai": "^3.4.33",
+    "better-sqlite3": "^11.8.1",
+    "csv-parse": "^5.6.0",
+    "tslib": "^2.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^23.3.14",
+    "@types/better-sqlite3": "^7.6.12",
+    "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
@@ -35,7 +59,6 @@
     "eslint-plugin-import": "^2.24.1",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
-    "tslib": "^2.3.1",
     "typescript": "^4.9.3"
   }
 }
