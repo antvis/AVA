@@ -1,10 +1,10 @@
-<div align="center">
-  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
-</div>
-
 # AVA
 
 This is the development branch for AVA, a complete rewrite focused on **AI-native Visual Analytics**.
+
+<div align="center">
+  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
+</div>
 
 ## 🚀 Features
 
@@ -14,14 +14,6 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-
-## 🎯 Design Principles
-
-1. **AI-Native**: LLMs at the core, not an add-on
-2. **Simple & Clean**: Minimal dependencies, clean code
-3. **Smart Defaults**: Automatic optimization based on data size
-4. **Developer-Friendly**: Clear APIs, comprehensive documentation
-5. **Extensible**: Modular design for easy customization
 
 ## 📖 Quick Start
 
@@ -126,3 +118,7 @@ This is an experimental branch. Contributions are welcome! Please ensure:
 - [GPT-Vis](https://github.com/antvis/GPT-Vis) - Visualization components
 - [Chart Visualization Skills](https://github.com/antvis/chart-visualization-skills) - LLM skills for charts
 - [Vercel AI SDK](https://sdk.vercel.ai/) - LLM integration
+
+## 📄 License
+
+MIT
