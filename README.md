@@ -4,11 +4,11 @@
 
 # AVA
 
-This is the development branch for AVA v4, a complete rewrite focused on **AI-native Visual Analytics**.
+This is the development branch for AVA, a complete rewrite focused on **AI-native Visual Analytics**.
 
 ## 🚀 Features
 
-AVA v4 is a fundamental shift from rule-based analytics to AI-native capabilities:
+AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
 - **Natural Language Queries**: Ask questions about your data in plain English
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
