@@ -6,7 +6,7 @@
 </h1>
 
 <div align="center">
-A framework for automated visual analytics.
+A framework for AI-native Visual Analytics.
 
 [![MIT License](https://img.shields.io/github/license/antvis/ava)](/LICENSE) [![Language](https://img.shields.io/badge/language-typescript-blue.svg)](https://www.typescriptlang.org) [![NPM Package](https://img.shields.io/npm/v/@antv/ava.svg)](https://www.npmjs.com/package/@antv/ava) [![NPM Downloads](http://img.shields.io/npm/dm/@antv/ava.svg)](https://www.npmjs.com/package/@antv/ava) 
 
@@ -14,12 +14,14 @@ A framework for automated visual analytics.
 
 ## Introduction
 
-[@antv/ava](https://www.npmjs.com/package/@antv/ava) is the core JS package of AVA, which contains four main modules:
+AVA v4 is a complete rewrite focused on AI-native capabilities. It leverages Large Language Models (LLMs) to provide conversational data analysis and visualization.
 
-* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">data (Data Processing)</span>: Data Processing Module. Used for statistical analysis and processing of datasets.
-* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">insight (Auto Insight)</span>: Automatic Insights Module. Automatically discover data insights from multi-dimensional data.
-* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">ckb (Chart Knowledge Base)</span>: Chart Knowledge Base Module. Based on empirically derived knowledge and observations about the various fundamentals of visualization and charts, it is the cornerstone of intelligent chart recommendations.
-* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">advisor (Chart Recommendation)</span>: Chart Recommendation Module. Recommend chart types and specific chart detail settings based on data and analysis needs, as well as chart optimization for existing charts.
+[@antv/ava](https://www.npmjs.com/package/@antv/ava) contains three main modules:
+
+* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">data</span>: Data loading and processing. Supports CSV files with automatic type inference and metadata extraction.
+* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">analysis</span>: Natural language to code/SQL generation. Uses JavaScript helper functions for small datasets (<10KB) and SQLite for large datasets.
+* <span style="background-color:#A9A9A9; padding:2px 4px; border-radius:4px;color: black;">visualize</span>: AI-powered chart recommendation and generation (coming soon).
+
 
 ## Installation and Usage
 
@@ -33,37 +35,112 @@ $ npm install @antv/ava --save
 $ yarn add @antv/ava
 ```
 
-The following is a practical example of how the four main modules of [@antv/ava](https://www.npmjs.com/package/@antv/ava) can be used:
+**Requirements:**
+- Node.js >= 18.0.0
+- An OpenAI-compatible API key
 
-```ts
-import { DataFrame, getInsights, ckb, Advisor } from '@antv/ava';
+## Quick Start
 
-// input data
-const data = [
-  { price: 38, type: 'A' },
-  { price: 52, type: 'B' },
-  { price: 61, type: 'C' },
-  { price: 145, type: 'D' },
-  { price: 49, type: 'E' },
-];
+```typescript
+import { AVA } from '@antv/ava';
 
-// 1. Data Processing Module
-const df = new DataFrame(data);
-const dataInfo = df.info();
+// Initialize AVA with LLM configuration
+const ava = new AVA({
+  llm: {
+    model: 'gpt-4',
+    apiKey: 'YOUR_OPENAI_API_KEY',
+  },
+});
 
-// 2. Automatic Insights Module
-const { insights } = getInsights(data);
+// Load data
+await ava.loadCSV('data/companies.csv');
 
-// 3. Chart Knowledge Base Module
-const myCkb = ckb();
-
-// 4. Chart Advisor
-const chartAdvisor = new Advisor();
-// recommend charts and give optimization suggestions based on input data
-const results = chartAdvisor.advise({ data });
+// Ask questions in natural language
+const response = await ava.analysis("What is the average revenue by region?");
+console.log(response);
+// Output: "Based on the data, the average revenue by region is:
+// - California: $28,500
+// - New York: $22,100
+// - Texas: $19,800"
 ```
 
-For more examples, please refer to: [AVA Site](https://ava.antv.antgroup.com/examples)
+## Features
+
+### 🤖 AI-Native Analysis
+
+Ask questions in natural language and get intelligent answers:
+
+```typescript
+await ava.analysis("What is the max revenue by region?");
+await ava.analysis("Show me the top 5 companies by revenue");
+await ava.analysis("Calculate the growth rate compared to last year");
+```
+
+### 📊 Smart Data Handling
+
+- **Small datasets (<10KB)**: Uses custom JavaScript helper functions for fast in-memory analysis
+- **Large datasets (≥10KB)**: Automatically switches to SQLite for efficient querying
+
+### 🔄 Automatic Type Inference
+
+AVA automatically detects field types (number, string, date, boolean) and extracts metadata.
+
+## API Documentation
+
+### `new AVA(config: AVAConfig)`
+
+Create a new AVA instance.
+
+**Parameters:**
+- `config.llm.model`: LLM model name (e.g., 'gpt-4', 'gpt-3.5-turbo')
+- `config.llm.apiKey`: API key for the LLM provider
+- `config.llm.baseURL` (optional): Custom API endpoint
+- `config.sqliteThreshold` (optional): Size threshold for SQLite usage (default: 10KB)
+
+### `await ava.loadCSV(filePath: string)`
+
+Load a CSV file for analysis.
+
+### `await ava.analysis(query: string): Promise<string>`
+
+Analyze data using natural language query. Returns a human-readable summary.
+
+### `ava.dispose()`
+
+Clean up resources (close database connections, free memory).
+
+## Architecture
+
+AVA v4 uses a modular architecture:
+
+```
+┌─────────────────────────────────────┐
+│           AVA Core                  │
+├─────────────────────────────────────┤
+│  Data Module                        │
+│  - CSV Loading                      │
+│  - Type Inference                   │
+│  - Metadata Extraction              │
+├─────────────────────────────────────┤
+│  Analysis Module                    │
+│  - Natural Language → Code/SQL      │
+│  - danfojs Execution                │
+│  - SQLite Query                     │
+├─────────────────────────────────────┤
+│  Visualize Module (Coming Soon)     │
+│  - Chart Recommendation             │
+│  - Spec Generation                  │
+└─────────────────────────────────────┘
+```
+
+## Module Documentation
+
+- [Data Module](./src/data/README.md) - Data loading and processing
+- [Analysis Module](./src/analysis/README.md) - Query generation and execution
+
+## Examples
+
+See the `/examples` directory for more usage examples.
 
 ## Contribution [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 

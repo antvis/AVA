@@ -1,7 +1,7 @@
 {
   "name": "@antv/ava",
-  "version": "3.4.1",
-  "description": "A framework for automated visual analytics.",
+  "version": "4.0.0-alpha.1",
+  "description": "A framework for AI-native Visual Analytics",
   "author": {
     "name": "AntV",
     "url": "https://antv.antgroup.com/"
@@ -9,13 +9,14 @@
   "homepage": "https://ava.antv.antgroup.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/antvis/AVA/tree/master/packages/ava"
+    "url": "https://github.com/antvis/AVA/tree/ai/packages/ava"
   },
   "sideEffects": false,
   "keywords": [
     "visualization",
-    "augmented-analytics",
-    "insight"
+    "ai-native",
+    "visual-analytics",
+    "llm"
   ],
   "license": "MIT",
   "publishConfig": {
@@ -23,13 +24,14 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "unpkg": "dist/ava.min.js",
   "module": "esm/index.js",
   "files": [
     "esm",
-    "dist",
     "lib"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "lint": "eslint --ext .js,.jsx,.ts,.tsx './'",
     "lint-fix": "npm run lint -- --fix",
@@ -37,15 +39,12 @@
     "prettier-fix": "npm run prettier -- --write",
     "format": "npm run prettier-fix && npm run lint-fix",
     "lint-staged": "lint-staged",
-    "clean": "rimraf lib esm dist",
-    "build:umd": "father build",
+    "clean": "rimraf lib esm",
     "build:cjs": "rimraf ./lib && tsc --module commonjs --outDir lib",
     "build:esm": "rimraf ./esm && tsc --module es6 --outDir esm",
-    "build:ntv-schema": "mkdir -p build && ts-json-schema-generator -f tsconfig.json -p src/text/index.ts -t NarrativeTextSpec --no-type-check --no-ref-encode > build/ntv-schema.json",
-    "build": "run-p build:*",
+    "build": "npm run build:cjs && npm run build:esm",
     "test": "jest",
-    "coverage": "jest --coverage",
-    "watch": "yarn module && yarn build --w"
+    "coverage": "jest --coverage"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -54,35 +53,22 @@
     ]
   },
   "dependencies": {
-    "@antv/antv-spec": "^0.1.0-alpha.18",
-    "@antv/g2": "^5.0.8",
-    "@antv/smart-color": "^0.2.1",
-    "bayesian-changepoint": "^1.0.1",
-    "csstype": "^3.1.2",
-    "heap-js": "^2.1.6",
-    "lodash": "^4.17.21",
-    "regression": "^2.0.1",
+    "@ai-sdk/openai": "^1.0.0",
+    "ai": "^3.4.33",
+    "better-sqlite3": "^11.8.1",
+    "csv-parse": "^5.6.0",
     "tslib": "^2.3.1"
   },
   "devDependencies": {
-    "@antv/algorithm": "^0.1.25",
-    "@antv/color-schema": "^0.2.3",
-    "@antv/data-samples": "^1.0.1",
-    "@stdlib/types": "^0.0.12",
-    "@types/d3-array": "^3.0.1",
+    "@types/better-sqlite3": "^7.6.12",
     "@types/jest": "^23.3.12",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@types/lodash": "^4.14.171",
-    "@types/numeral": "^2.0.2",
+    "@types/node": "^18.0.0",
     "eslint": "^7.32.0",
-    "father": "^4.1.0",
     "jest": "^24.9.0",
     "lint-staged": "^11.0.1",
     "npm-run-all": "^4.1.5",
-    "numeral": "^2.0.6",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
-    "ts-json-schema-generator": "^1.1.2",
     "typescript": "^4.9.3"
   }
 }
