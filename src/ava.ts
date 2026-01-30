@@ -5,7 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { loadCSV, extractMetadata, formatDatasetInfo } from './data';
+import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';
 import {
   SQLiteDataStore,
   executeDataCode,
@@ -49,11 +49,59 @@ export class AVA {
   }
 
   /**
+   * Load data from JSON object array
+   */
+  async loadObject(data: any[]): Promise<void> {
+    this.data = await loadObject(data);
+    this.dataInfo = extractMetadata(this.data);
+
+    // If data is large, load into SQLite
+    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
+      this.sqliteStore = new SQLiteDataStore();
+      this.sqliteStore.loadData(this.data);
+      // Clear data from memory to save space
+      this.data = null;
+    }
+  }
+
+  /**
+   * Load data from URL
+   */
+  async loadURL(url: string, transform?: (response: any) => any[]): Promise<void> {
+    this.data = await loadURL(url, transform);
+    this.dataInfo = extractMetadata(this.data);
+
+    // If data is large, load into SQLite
+    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
+      this.sqliteStore = new SQLiteDataStore();
+      this.sqliteStore.loadData(this.data);
+      // Clear data from memory to save space
+      this.data = null;
+    }
+  }
+
+  /**
+   * Load data from text using LLM
+   */
+  async loadText(text: string): Promise<void> {
+    this.data = await loadText(text, this.llmConfig);
+    this.dataInfo = extractMetadata(this.data);
+
+    // If data is large, load into SQLite
+    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
+      this.sqliteStore = new SQLiteDataStore();
+      this.sqliteStore.loadData(this.data);
+      // Clear data from memory to save space
+      this.data = null;
+    }
+  }
+
+  /**
    * Analyze data using natural language query
    */
   async analysis(query: string): Promise<string> {
     if (!this.dataInfo) {
-      throw new Error('No data loaded. Please call loadCSV() first.');
+      throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
     }
 
     let analysisData: any[] = [];

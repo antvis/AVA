@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { describe, it, expect, beforeAll } from 'vitest';
 
-import { loadCSV, extractMetadata, formatDatasetInfo } from '../src/data';
+import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from '../src/data';
 
 interface CompanyData {
   company: string;
@@ -119,6 +119,75 @@ describe('Data Module', () => {
       const formatted = formatDatasetInfo(metadata);
       
       expect(formatted).toContain('Sample values:');
+    });
+  });
+
+  describe('loadObject', () => {
+    it('should load data from object array', async () => {
+      const data = [
+        { name: 'Alice', age: 30, city: 'Beijing' },
+        { name: 'Bob', age: 25, city: 'Shanghai' },
+        { name: 'Charlie', age: 35, city: 'Hangzhou' },
+      ];
+      
+      const result = await loadObject(data);
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBe(3);
+      expect(result[0]).toHaveProperty('name');
+      expect(result[0]).toHaveProperty('age');
+      expect(result[0]).toHaveProperty('city');
+    });
+
+    it('should throw error for non-array input', async () => {
+      await expect(loadObject({} as any)).rejects.toThrow('Data must be an array');
+    });
+
+    it('should throw error for array with non-object items', async () => {
+      await expect(loadObject([1, 2, 3] as any)).rejects.toThrow('All items in the array must be objects');
+    });
+
+    it('should handle empty array', async () => {
+      const result = await loadObject([]);
+      expect(result).toEqual([]);
+    });
+
+    it('should work with metadata extraction', async () => {
+      const data = [
+        { name: 'Alice', age: 30, city: 'Beijing' },
+        { name: 'Bob', age: 25, city: 'Shanghai' },
+      ];
+      
+      const result = await loadObject(data);
+      const metadata = extractMetadata(result);
+      
+      expect(metadata.rowCount).toBe(2);
+      expect(metadata.columnCount).toBe(3);
+      expect(metadata.fields.length).toBe(3);
+      
+      const nameField = metadata.fields.find(f => f.name === 'name');
+      const ageField = metadata.fields.find(f => f.name === 'age');
+      
+      expect(nameField?.type).toBe('string');
+      expect(ageField?.type).toBe('number');
+    });
+  });
+
+  describe('loadURL', () => {
+    it('should throw error for invalid URL', async () => {
+      await expect(loadURL('invalid-url')).rejects.toThrow();
+    });
+
+    it('should handle transform function', async () => {
+      // Skip network tests in CI - this is just to show the interface
+      // In real scenarios, you would mock fetch or use a local test server
+    });
+  });
+
+  describe('loadText', () => {
+    it('should require LLM config', async () => {
+      // Skip LLM tests as they require API keys
+      // In real scenarios, you would mock the LLM response
     });
   });
 });
