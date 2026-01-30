@@ -52,7 +52,7 @@ ava.dispose();
 
 ## 🏗️ Architecture
 
-### Data Flow
+AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), and results are summarized using LLM into natural language responses.
 
 ```
 User Query
