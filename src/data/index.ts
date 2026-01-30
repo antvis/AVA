@@ -33,7 +33,7 @@ function inferFieldType(values: any[]): 'number' | 'string' | 'date' | 'boolean'
   if (nonNullValues.length === 0) return 'string';
   
   // Check if all values are numbers
-  const allNumbers = nonNullValues.every(v => typeof v === 'number' || !isNaN(Number(v)));
+  const allNumbers = nonNullValues.every(v => typeof v === 'number' || !Number.isNaN(Number(v)));
   if (allNumbers) return 'number';
   
   // Check if all values are booleans
@@ -50,7 +50,7 @@ function inferFieldType(values: any[]): 'number' | 'string' | 'date' | 'boolean'
   const allDates = nonNullValues.every(v => {
     if (typeof v === 'string') {
       const date = new Date(v);
-      return !isNaN(date.getTime());
+      return !Number.isNaN(date.getTime());
     }
     return false;
   });

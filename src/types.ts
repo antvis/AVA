@@ -20,8 +20,8 @@ export interface LLMConfig {
 export interface AVAConfig {
   /** LLM configuration */
   llm: LLMConfig;
-  /** Threshold for using SQLite (in bytes), default 10KB */
-  sqliteThreshold?: number;
+  /** Threshold for using SQL(in bytes), default 10KB */
+  sqlThreshold?: number;
 }
 
 /**
