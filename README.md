@@ -33,8 +33,14 @@ const ava = new AVA({
   },
 });
 
-// Load data
+// Load data from various sources
 await ava.loadCSV('data/companies.csv');
+// or load from JSON object
+await ava.loadObject([{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }]);
+// or load from URL
+await ava.loadURL('https://api.example.com/data', (response) => response.data);
+// or extract from text
+await ava.loadText('杭州 100，上海 200，北京 300');
 
 // Ask questions in natural language
 const result = await ava.analysis('What is the average revenue by region?');
@@ -46,44 +52,33 @@ ava.dispose();
 
 ## 🏗️ Architecture
 
-### Core Modules
-
-#### 1. Data Module
-- CSV file loading with automatic parsing
-- Type inference (number, string, date, boolean)
-- Metadata extraction (unique counts, null counts, samples)
-- Smart data size detection
-
-#### 2. Analysis Module
-- **Small datasets (<10KB)**: JavaScript helper functions for in-memory analysis
-- **Large datasets (≥10KB)**: Automatic SQLite storage for efficient querying
-- Natural language to code/SQL generation using LLM
-- Safe code execution environment
-
-#### 3. Visualize Module (Coming Soon)
-- AI-powered chart recommendations
-- Automatic spec generation
-- Integration with visualization libraries
-
-### Data Flow
+AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), and results are summarized using LLM into natural language responses.
 
 ```
 User Query
     ↓
 AVA Instance
     ↓
-┌─────────────┐
-│ Data Module │ → Load & Parse CSV
-└─────────────┘
+┌─────────────────┐
+│  Data Module    │ → Load from multiple sources:
+│                 │   • CSV File (loadCSV)
+│                 │   • JSON Object (loadObject)
+│                 │   • URL (loadURL)
+│                 │   • Text (loadText + LLM)
+└─────────────────┘
+    ↓
+┌──────────────────┐
+│ Metadata Extract │ → Type inference, statistics
+└──────────────────┘
     ↓
 ┌──────────────┐
-│Size Check    │
+│  Size Check  │
 └──────────────┘
     ↓         ↓
  <10KB      ≥10KB
     ↓         ↓
 JavaScript  SQLite
- Helpers     Query
+ Helpers    Storage
     ↓         ↓
 ┌──────────────────┐
 │ Analysis Module  │ → Generate & Execute Code/SQL
@@ -99,12 +94,13 @@ User Response
 ## 🚧 Roadmap
 
 - [x] Core data loading (CSV)
+- [x] Multiple data sources (JSON Object, URL, Text)
 - [x] Natural language to code/SQL
 - [x] Smart data handling (JavaScript/SQLite)
 - [x] Basic analysis capabilities
 - [x] Comprehensive unit tests with vitest
 - [ ] Visualize module with chart recommendations
-- [ ] Additional data sources (JSON, Excel, APIs)
+- [ ] Additional data sources (Excel, Database connections)
 - [ ] Streaming responses
 - [ ] Chart rendering integration
 - [ ] Advanced aggregation operations
