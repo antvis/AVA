@@ -39,7 +39,11 @@
     "clean": "rimraf lib esm",
     "build:cjs": "tsc --module commonjs --outDir lib",
     "build:esm": "tsc --module es6 --outDir esm",
-    "build": "npm run clean && npm run build:cjs && npm run build:esm"
+    "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.0",
@@ -55,12 +59,15 @@
     "@types/node": "^18.0.0",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
+    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/ui": "^4.0.18",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.24.1",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.3",
+    "vitest": "^4.0.18"
   }
 }

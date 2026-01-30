@@ -12,7 +12,7 @@ async function main() {
   // Initialize AVA with LLM configuration
   const ava = new AVA({
     llm: {
-      model: 'Ling-1T',
+      model: 'ling-1t',
       apiKey: process.env.API_KEY || 'YOUR_API_KEY',
       baseURL: 'https://api.tbox.cn/api/llm/v1',
     },

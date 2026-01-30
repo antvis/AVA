@@ -27,8 +27,9 @@ import { AVA } from '@antv/ava';
 // Initialize with LLM config
 const ava = new AVA({
   llm: {
-    model: 'gpt-4',
+    model: 'ling-1t',
     apiKey: 'YOUR_API_KEY',
+    baseURL: 'LLM_BASE_URL',
   },
 });
 
@@ -101,6 +102,7 @@ User Response
 - [x] Natural language to code/SQL
 - [x] Smart data handling (JavaScript/SQLite)
 - [x] Basic analysis capabilities
+- [x] Comprehensive unit tests with vitest
 - [ ] Visualize module with chart recommendations
 - [ ] Additional data sources (JSON, Excel, APIs)
 - [ ] Streaming responses
