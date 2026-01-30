@@ -15,6 +15,12 @@ describe('AVA Integration Tests', () => {
   const apiKey = process.env.LING_1T_API_KEY;
   const skipLLMTests = !apiKey;
 
+  const getLLMConfig = () => ({
+    model: 'Ling-1T',
+    apiKey: apiKey || '',
+    baseURL: 'https://api.tbox.cn/api/llm/v1',
+  });
+
   beforeEach(() => {
     if (skipLLMTests) {
       // eslint-disable-next-line no-console
@@ -23,11 +29,7 @@ describe('AVA Integration Tests', () => {
     }
 
     ava = new AVA({
-      llm: {
-        model: 'Ling-1T',
-        apiKey,
-        baseURL: 'https://api.tbox.cn/api/llm/v1',
-      },
+      llm: getLLMConfig(),
     });
   });
 
@@ -42,8 +44,7 @@ describe('AVA Integration Tests', () => {
       if (skipLLMTests) return;
       
       await ava.loadCSV(testDataPath);
-      // If no error is thrown, the test passes
-      expect(true).toBe(true);
+      // No error thrown means data loaded successfully
     });
 
     it('should throw error when analyzing without loading data', async () => {
@@ -88,6 +89,7 @@ describe('AVA Integration Tests', () => {
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
+      // Maximum revenue in test data is 32400
       expect(result).toContain('32400');
     }, 60000);
 
@@ -118,11 +120,7 @@ describe('AVA Integration Tests', () => {
       
       // Create AVA with very small threshold to force SQLite usage
       const avaLarge = new AVA({
-        llm: {
-          model: 'Ling-1T',
-          apiKey,
-          baseURL: 'https://api.tbox.cn/api/llm/v1',
-        },
+        llm: getLLMConfig(),
         sqlThreshold: 100, // Very small threshold
       });
 
@@ -132,6 +130,7 @@ describe('AVA Integration Tests', () => {
         
         expect(result).toBeDefined();
         expect(typeof result).toBe('string');
+        // Verify result mentions the count (12 companies in test data)
         expect(result).toContain('12');
       } finally {
         avaLarge.dispose();
@@ -142,11 +141,7 @@ describe('AVA Integration Tests', () => {
       if (skipLLMTests) return;
       
       const avaLarge = new AVA({
-        llm: {
-          model: 'Ling-1T',
-          apiKey,
-          baseURL: 'https://api.tbox.cn/api/llm/v1',
-        },
+        llm: getLLMConfig(),
         sqlThreshold: 100,
       });
 
@@ -168,16 +163,11 @@ describe('AVA Integration Tests', () => {
       if (skipLLMTests) return;
       
       const testAva = new AVA({
-        llm: {
-          model: 'Ling-1T',
-          apiKey,
-          baseURL: 'https://api.tbox.cn/api/llm/v1',
-        },
+        llm: getLLMConfig(),
       });
 
       testAva.dispose();
-      // If no error is thrown, the test passes
-      expect(true).toBe(true);
+      // No error thrown means dispose worked correctly
     });
   });
 });

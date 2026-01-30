@@ -8,9 +8,15 @@ import { describe, it, expect, beforeAll } from 'vitest';
 
 import { loadCSV, extractMetadata, formatDatasetInfo } from '../index';
 
+interface CompanyData {
+  company: string;
+  region: string;
+  revenue: number;
+}
+
 describe('Data Module', () => {
   const testDataPath = path.join(__dirname, '../../../data/companies.csv');
-  let testData: any[];
+  let testData: CompanyData[];
 
   beforeAll(async () => {
     testData = await loadCSV(testDataPath);

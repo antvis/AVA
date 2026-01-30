@@ -7,6 +7,12 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { SQLiteDataStore, executeDataCode, generateSQL, generateDataCode } from '../index';
 
 describe('Analysis Module', () => {
+  const getLLMConfig = () => ({
+    model: 'Ling-1T',
+    apiKey: process.env.LING_1T_API_KEY || '',
+    baseURL: 'https://api.tbox.cn/api/llm/v1',
+  });
+
   describe('SQLiteDataStore', () => {
     let store: SQLiteDataStore;
 
@@ -168,12 +174,7 @@ describe('Analysis Module', () => {
         return;
       }
 
-      const llmConfig = {
-        model: 'Ling-1T',
-        apiKey,
-        baseURL: 'https://api.tbox.cn/api/llm/v1',
-      };
-
+      const llmConfig = getLLMConfig();
       const schema = 'company (TEXT), region (TEXT), revenue (TEXT)';
       const query = 'Show all companies';
       
@@ -193,12 +194,7 @@ describe('Analysis Module', () => {
         return;
       }
 
-      const llmConfig = {
-        model: 'Ling-1T',
-        apiKey,
-        baseURL: 'https://api.tbox.cn/api/llm/v1',
-      };
-
+      const llmConfig = getLLMConfig();
       const schema = 'company (TEXT), region (TEXT), revenue (TEXT)';
       const query = 'What is the average revenue by region?';
       
@@ -220,12 +216,7 @@ describe('Analysis Module', () => {
         return;
       }
 
-      const llmConfig = {
-        model: 'Ling-1T',
-        apiKey,
-        baseURL: 'https://api.tbox.cn/api/llm/v1',
-      };
-
+      const llmConfig = getLLMConfig();
       const dataInfo = `Dataset Info:
 - Rows: 12
 - Columns: 3
@@ -250,12 +241,7 @@ Fields:
         return;
       }
 
-      const llmConfig = {
-        model: 'Ling-1T',
-        apiKey,
-        baseURL: 'https://api.tbox.cn/api/llm/v1',
-      };
-
+      const llmConfig = getLLMConfig();
       const dataInfo = `Dataset Info:
 - Rows: 12
 - Columns: 3
