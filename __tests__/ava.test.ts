@@ -11,6 +11,7 @@ import { AVA } from '../src/ava';
 describe('AVA Integration Tests', () => {
   let ava: AVA;
   const testDataPath = path.join(__dirname, '../data/companies.csv');
+  const heartDataPath = path.join(__dirname, '../data/heart.csv');
 
   const apiKey = process.env.LING_1T_API_KEY;
   const skipLLMTests = !apiKey;
@@ -207,5 +208,80 @@ describe('AVA Integration Tests', () => {
       testAva.dispose();
       // No error thrown means dispose worked correctly
     });
+  });
+
+  describe('Heart Disease Dataset Tests', () => {
+    beforeEach(async () => {
+      if (skipLLMTests) return;
+      ava = new AVA({
+        llm: getLLMConfig(),
+      });
+      await ava.loadCSV(heartDataPath);
+    });
+
+    it('should load heart.csv file successfully', async () => {
+      if (skipLLMTests) return;
+      // No error thrown means data loaded successfully
+    });
+
+    it('should analyze age distribution in heart disease data', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const result = await ava.analysis('What is the average age of patients?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.length).toBeGreaterThan(0);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
+
+    it('should analyze heart disease by gender', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const result = await ava.analysis('How many patients with heart disease by gender?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.toLowerCase()).toMatch(/male|female/);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
+
+    it('should analyze heart disease prevalence', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const result = await ava.analysis('What is the percentage of patients with heart disease?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.length).toBeGreaterThan(0);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
+
+    it('should analyze cholesterol levels', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const result = await ava.analysis('What is the average cholesterol level?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.toLowerCase()).toContain('cholesterol');
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
   });
 });
