@@ -1,9 +1,9 @@
 /**
- * Basic example of AVA v4 usage
+ * Companies Dataset Analysis Example
  * 
- * This example demonstrates:
- * 1. Loading a CSV file
- * 2. Analyzing data with natural language queries
+ * This example demonstrates analyzing a companies dataset:
+ * 1. Loading the companies.csv file
+ * 2. Analyzing revenue and company metrics by region
  */
 
 import { AVA } from '../src';
