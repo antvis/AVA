@@ -89,3 +89,6 @@ temp.diff
 **/*/src/.umi-production
 **/*/src/.umi-test
 **/*/.env.local
+
+# scripts with API keys
+scripts/run-tests-with-api-key.sh
