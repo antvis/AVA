@@ -12,8 +12,8 @@ import type { LLMConfig } from '../types';
  * SQLite database wrapper for large datasets
  */
 export class SQLiteDataStore {
-  private db: Database.Database;
-  private tableName: string = 'data';
+  private readonly db: Database.Database;
+  private readonly tableName: string = 'data';
 
   constructor(dbPath: string = ':memory:') {
     this.db = new Database(dbPath);

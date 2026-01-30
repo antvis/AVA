@@ -6,20 +6,21 @@
  * 2. Analyzing data with natural language queries
  */
 
-import { AVA } from '../packages/ava/src';
+import { AVA } from '../src';
 
 async function main() {
   // Initialize AVA with LLM configuration
   const ava = new AVA({
     llm: {
-      model: 'gpt-4',
-      apiKey: process.env.OPENAI_API_KEY || 'YOUR_OPENAI_API_KEY',
+      model: 'Ling-1T',
+      apiKey: process.env.API_KEY || 'YOUR_API_KEY',
+      baseURL: 'https://api.tbox.cn/api/llm/v1',
     },
   });
 
   try {
     // Load data from CSV
-    await ava.loadCSV('data/companies.csv');
+    await ava.loadCSV('../data/companies.csv');
     console.log('✓ Data loaded successfully\n');
 
     // Example 1: Simple aggregation

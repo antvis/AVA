@@ -15,21 +15,21 @@ import {
 
 import type { AVAConfig, LLMConfig, DatasetInfo } from './types';
 
-const DEFAULT_SQLITE_THRESHOLD = 10 * 1024; // 10KB
+const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 
 /**
  * Main AVA class for AI-native visual analytics
  */
 export class AVA {
-  private llmConfig: LLMConfig;
-  private sqliteThreshold: number;
+  private readonly llmConfig: LLMConfig;
+  private readonly sqlThreshold: number;
   private data: any[] | null = null;
   private dataInfo: DatasetInfo | null = null;
   private sqliteStore: SQLiteDataStore | null = null;
 
   constructor(config: AVAConfig) {
     this.llmConfig = config.llm;
-    this.sqliteThreshold = config.sqliteThreshold || DEFAULT_SQLITE_THRESHOLD;
+    this.sqlThreshold = config.sqlThreshold || DEFAULT_SQL_THRESHOLD;
   }
 
   /**
@@ -40,7 +40,7 @@ export class AVA {
     this.dataInfo = extractMetadata(this.data);
 
     // If data is large, load into SQLite
-    if (this.dataInfo.sizeInBytes > this.sqliteThreshold) {
+    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
       this.sqliteStore = new SQLiteDataStore();
       this.sqliteStore.loadData(this.data);
       // Clear data from memory to save space
