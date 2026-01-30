@@ -27,8 +27,9 @@ import { AVA } from '@antv/ava';
 // Initialize with LLM config
 const ava = new AVA({
   llm: {
-    model: 'gpt-4',
+    model: 'ling-1t',
     apiKey: 'YOUR_API_KEY',
+    baseURL: 'LLM_BASE_URL',
   },
 });
 

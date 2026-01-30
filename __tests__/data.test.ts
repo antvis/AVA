@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { describe, it, expect, beforeAll } from 'vitest';
 
-import { loadCSV, extractMetadata, formatDatasetInfo } from '../index';
+import { loadCSV, extractMetadata, formatDatasetInfo } from '../src/data';
 
 interface CompanyData {
   company: string;
@@ -15,7 +15,7 @@ interface CompanyData {
 }
 
 describe('Data Module', () => {
-  const testDataPath = path.join(__dirname, '../../../data/companies.csv');
+  const testDataPath = path.join(__dirname, '../data/companies.csv');
   let testData: CompanyData[];
 
   beforeAll(async () => {

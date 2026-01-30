@@ -6,17 +6,17 @@ import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import { AVA } from '../ava';
+import { AVA } from '../src/ava';
 
 describe('AVA Integration Tests', () => {
   let ava: AVA;
-  const testDataPath = path.join(__dirname, '../../data/companies.csv');
+  const testDataPath = path.join(__dirname, '../data/companies.csv');
 
   const apiKey = process.env.LING_1T_API_KEY;
   const skipLLMTests = !apiKey;
 
   const getLLMConfig = () => ({
-    model: 'Ling-1T',
+    model: 'ling-1t',
     apiKey: apiKey || '',
     baseURL: 'https://api.tbox.cn/api/llm/v1',
   });

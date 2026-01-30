@@ -4,11 +4,11 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import { SQLiteDataStore, executeDataCode, generateSQL, generateDataCode } from '../index';
+import { SQLiteDataStore, executeDataCode, generateSQL, generateDataCode } from '../src/analysis';
 
 describe('Analysis Module', () => {
   const getLLMConfig = () => ({
-    model: 'Ling-1T',
+    model: 'ling-1t',
     apiKey: process.env.LING_1T_API_KEY || '',
     baseURL: 'https://api.tbox.cn/api/llm/v1',
   });
