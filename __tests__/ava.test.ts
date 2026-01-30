@@ -89,8 +89,8 @@ describe('AVA Integration Tests', () => {
       
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
-      // Maximum revenue in test data is 32400
-      expect(result).toContain('32400');
+      // Maximum revenue in test data is 32400 (may be formatted as 32,400)
+      expect(result.toLowerCase()).toMatch(/32[,\s]?400/);
     }, 60000);
 
     it('should analyze and return summary for filtering query', async () => {
