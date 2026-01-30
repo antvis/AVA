@@ -2,8 +2,10 @@
  * Integration tests for AVA main class
  */
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as path from 'path';
+
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { AVA } from '../ava';
 
 describe('AVA Integration Tests', () => {
@@ -15,6 +17,7 @@ describe('AVA Integration Tests', () => {
 
   beforeEach(() => {
     if (skipLLMTests) {
+      // eslint-disable-next-line no-console
       console.log('Skipping LLM integration test: LING_1T_API_KEY not set');
       return;
     }

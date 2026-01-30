@@ -3,6 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { SQLiteDataStore, executeDataCode, generateSQL, generateDataCode } from '../index';
 
 describe('Analysis Module', () => {
@@ -162,6 +163,7 @@ describe('Analysis Module', () => {
     it('should generate SQL query for simple query', async () => {
       const apiKey = process.env.LING_1T_API_KEY;
       if (!apiKey) {
+        // eslint-disable-next-line no-console
         console.log('Skipping LLM test: LING_1T_API_KEY not set');
         return;
       }
@@ -186,6 +188,7 @@ describe('Analysis Module', () => {
     it('should generate SQL with aggregation', async () => {
       const apiKey = process.env.LING_1T_API_KEY;
       if (!apiKey) {
+        // eslint-disable-next-line no-console
         console.log('Skipping LLM test: LING_1T_API_KEY not set');
         return;
       }
@@ -212,6 +215,7 @@ describe('Analysis Module', () => {
     it('should generate JavaScript code for aggregation', async () => {
       const apiKey = process.env.LING_1T_API_KEY;
       if (!apiKey) {
+        // eslint-disable-next-line no-console
         console.log('Skipping LLM test: LING_1T_API_KEY not set');
         return;
       }
@@ -241,6 +245,7 @@ Fields:
     it('should generate code for grouping operation', async () => {
       const apiKey = process.env.LING_1T_API_KEY;
       if (!apiKey) {
+        // eslint-disable-next-line no-console
         console.log('Skipping LLM test: LING_1T_API_KEY not set');
         return;
       }

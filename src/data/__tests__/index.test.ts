@@ -2,8 +2,10 @@
  * Unit tests for data module
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
 import * as path from 'path';
+
+import { describe, it, expect, beforeAll } from 'vitest';
+
 import { loadCSV, extractMetadata, formatDatasetInfo } from '../index';
 
 describe('Data Module', () => {
