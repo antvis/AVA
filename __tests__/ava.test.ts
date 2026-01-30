@@ -213,9 +213,6 @@ describe('AVA Integration Tests', () => {
   describe('Heart Disease Dataset Tests', () => {
     beforeEach(async () => {
       if (skipLLMTests) return;
-      ava = new AVA({
-        llm: getLLMConfig(),
-      });
       await ava.loadCSV(heartDataPath);
     });
 
