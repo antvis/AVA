@@ -109,21 +109,6 @@ User Response
 - [ ] Advanced aggregation operations
 - [ ] Multi-table queries
 
-## 🧪 Testing
-
-This project includes comprehensive unit tests built with [Vitest](https://vitest.dev/). See [TESTING.md](./TESTING.md) for details.
-
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-```
-
 ## 🤝 Developer Contributions
 
 This is an experimental branch. Contributions are welcome! Please ensure:
