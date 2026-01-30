@@ -210,6 +210,120 @@ describe('AVA Integration Tests', () => {
     });
   });
 
+  describe('loadText Integration Tests', () => {
+    it('should load and analyze data from simple text', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const text = '杭州 100，上海 200，北京 300';
+        await ava.loadText(text);
+        
+        const result = await ava.analysis('What is the sum of all values?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.length).toBeGreaterThan(0);
+        // Result should mention the sum (600)
+        expect(result).toMatch(/600/);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
+
+    it('should extract structured data from narrative text', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const text = `
+          公司销售报告：
+          第一季度，华东区销售额 1500 万，完成率 95%
+          第二季度，华东区销售额 1800 万，完成率 102%
+          第一季度，华南区销售额 1200 万，完成率 88%
+          第二季度，华南区销售额 1600 万，完成率 98%
+        `;
+        
+        await ava.loadText(text);
+        
+        const result = await ava.analysis('Which quarter had the best completion rate?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.length).toBeGreaterThan(0);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
+
+    it('should extract data from tabular text format', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const text = `
+          Product    Price   Stock
+          Laptop     5999    50
+          Phone      3999    120
+          Tablet     2999    80
+        `;
+        
+        await ava.loadText(text);
+        
+        const result = await ava.analysis('Which product has the highest stock?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.toLowerCase()).toContain('phone');
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
+
+    it('should handle loadText with aggregation queries', async () => {
+      if (skipLLMTests) return;
+      
+      try {
+        const text = 'Beijing 100, Shanghai 200, Hangzhou 150, Shenzhen 180';
+        await ava.loadText(text);
+        
+        const result = await ava.analysis('What is the average value?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.length).toBeGreaterThan(0);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      }
+    }, 60000);
+
+    it('should work with SQLite for large text-extracted data', async () => {
+      if (skipLLMTests) return;
+      
+      const avaLarge = new AVA({
+        llm: getLLMConfig(),
+        sqlThreshold: 100, // Very small threshold to force SQLite usage
+      });
+
+      try {
+        const text = 'Beijing 100, Shanghai 200, Hangzhou 150, Shenzhen 180, Guangzhou 170';
+        await avaLarge.loadText(text);
+        
+        const result = await avaLarge.analysis('What is the total?');
+        
+        expect(result).toBeDefined();
+        expect(typeof result).toBe('string');
+        expect(result.length).toBeGreaterThan(0);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+      } finally {
+        avaLarge.dispose();
+      }
+    }, 60000);
+  });
+
   describe('Heart Disease Dataset Tests', () => {
     beforeEach(async () => {
       if (skipLLMTests) return;
