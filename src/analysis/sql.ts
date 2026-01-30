@@ -101,10 +101,8 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
     prompt,
   });
 
-  // Clean up the SQL
-  let sql = text.trim();
-  // Remove markdown code blocks if present
-  sql = sql.replace(/^```sql\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+  // Clean up the SQL - remove markdown code blocks if present
+  const sql = text.trim().replace(/^```(?:sql)?\s*|\s*```$/gi, '');
   
   return sql.trim();
 }

@@ -110,10 +110,8 @@ Now generate the code:`;
     prompt,
   });
 
-  // Clean up the code
-  let code = text.trim();
-  // Remove markdown code blocks if present
-  code = code.replace(/^```javascript\s*/i, '').replace(/^```js\s*/i, '').replace(/^```\s*/, '').replace(/```\s*$/, '');
+  // Clean up the code - remove markdown code blocks if present
+  const code = text.trim().replace(/^```(?:javascript|js)?\s*|\s*```$/gi, '');
   
   return code.trim();
 }
