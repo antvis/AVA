@@ -3,7 +3,7 @@
  */
 
 // Re-export SQLite data store
-export { SQLiteDataStore } from './sqlite-data-store';
+export { SQLiteDataStore } from './sqlite';
 
 // Re-export SQL-related functionality
 export { generateSQL } from './sql';
