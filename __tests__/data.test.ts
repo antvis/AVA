@@ -144,7 +144,7 @@ describe('Data Module', () => {
     });
 
     it('should throw error for array with non-object items', async () => {
-      await expect(loadObject([1, 2, 3] as any)).rejects.toThrow('All items in the array must be objects');
+      await expect(loadObject([1, 2, 3] as any)).rejects.toThrow('All items in the array must be plain objects');
     });
 
     it('should handle empty array', async () => {

@@ -37,15 +37,7 @@ export class AVA {
    */
   async loadCSV(filePath: string): Promise<void> {
     this.data = await loadCSV(filePath);
-    this.dataInfo = extractMetadata(this.data);
-
-    // If data is large, load into SQLite
-    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
-      this.sqliteStore = new SQLiteDataStore();
-      this.sqliteStore.loadData(this.data);
-      // Clear data from memory to save space
-      this.data = null;
-    }
+    this.processLoadedData();
   }
 
   /**
@@ -53,15 +45,7 @@ export class AVA {
    */
   async loadObject(data: any[]): Promise<void> {
     this.data = await loadObject(data);
-    this.dataInfo = extractMetadata(this.data);
-
-    // If data is large, load into SQLite
-    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
-      this.sqliteStore = new SQLiteDataStore();
-      this.sqliteStore.loadData(this.data);
-      // Clear data from memory to save space
-      this.data = null;
-    }
+    this.processLoadedData();
   }
 
   /**
@@ -69,15 +53,7 @@ export class AVA {
    */
   async loadURL(url: string, transform?: (response: any) => any[]): Promise<void> {
     this.data = await loadURL(url, transform);
-    this.dataInfo = extractMetadata(this.data);
-
-    // If data is large, load into SQLite
-    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
-      this.sqliteStore = new SQLiteDataStore();
-      this.sqliteStore.loadData(this.data);
-      // Clear data from memory to save space
-      this.data = null;
-    }
+    this.processLoadedData();
   }
 
   /**
@@ -85,6 +61,17 @@ export class AVA {
    */
   async loadText(text: string): Promise<void> {
     this.data = await loadText(text, this.llmConfig);
+    this.processLoadedData();
+  }
+
+  /**
+   * Process loaded data: extract metadata and load into SQLite if large
+   */
+  private processLoadedData(): void {
+    if (!this.data) {
+      throw new Error('No data to process');
+    }
+
     this.dataInfo = extractMetadata(this.data);
 
     // If data is large, load into SQLite
