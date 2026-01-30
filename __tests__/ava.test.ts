@@ -216,11 +216,6 @@ describe('AVA Integration Tests', () => {
       await ava.loadCSV(heartDataPath);
     });
 
-    it('should load heart.csv file successfully', async () => {
-      if (skipLLMTests) return;
-      // No error thrown means data loaded successfully
-    });
-
     it('should analyze age distribution in heart disease data', async () => {
       if (skipLLMTests) return;
       
