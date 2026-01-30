@@ -52,29 +52,6 @@ ava.dispose();
 
 ## 🏗️ Architecture
 
-### Core Modules
-
-#### 1. Data Module
-- Multiple data source support:
-  - **CSV**: File loading with automatic parsing
-  - **JSON Object**: Direct in-memory data input
-  - **URL**: Fetch data from remote endpoints with optional transformation
-  - **Text**: LLM-powered extraction of structured data from unstructured text
-- Type inference (number, string, date, boolean)
-- Metadata extraction (unique counts, null counts, samples)
-- Smart data size detection
-
-#### 2. Analysis Module
-- **Small datasets (<10KB)**: JavaScript helper functions for in-memory analysis
-- **Large datasets (≥10KB)**: Automatic SQLite storage for efficient querying
-- Natural language to code/SQL generation using LLM
-- Safe code execution environment
-
-#### 3. Visualize Module (Coming Soon)
-- AI-powered chart recommendations
-- Automatic spec generation
-- Integration with visualization libraries
-
 ### Data Flow
 
 ```
