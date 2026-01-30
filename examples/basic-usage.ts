@@ -12,9 +12,9 @@ async function main() {
   // Initialize AVA with LLM configuration
   const ava = new AVA({
     llm: {
-      model: 'deepseek-chat',
+      model: 'Ling-1T',
       apiKey: process.env.API_KEY || '',
-      baseURL: 'https://api.deepseek.com',
+      baseURL: 'https://api.tbox.cn/api/llm/v1',
     },
   });
 
