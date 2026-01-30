@@ -4,9 +4,6 @@
 
 import Database from 'better-sqlite3';
 
-/**
- * SQLite database wrapper for large datasets
- */
 export class SQLiteDataStore {
   private readonly db: Database.Database;
   private readonly tableName: string = 'data';
