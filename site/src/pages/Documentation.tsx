@@ -2,25 +2,98 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const documentationContent = `
-# AVA - AI-Native Visual Analytics
+const Documentation: React.FC = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#f8fbfc] to-white">
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-3 mb-6">
+            <img 
+              src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" 
+              alt="AVA Logo" 
+              className="w-20 h-20"
+            />
+            <h1 className="text-5xl font-bold text-gray-800">AVA</h1>
+          </div>
+          <p className="text-2xl text-gray-600 mb-4">AI-Native Visual Analytics</p>
+          <p className="text-lg text-gray-500 max-w-3xl mx-auto">
+            A technology framework designed for more convenient visual analytics, powered by AI
+          </p>
+        </div>
 
-AVA (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. The first **A** has multiple meanings: AI native, Automated, Augmented, and **VA** stands for Visual Analytics.
+        {/* Features Grid */}
+        <div className="grid md:grid-cols-3 gap-6 mb-16">
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-[#78d3f8]/10 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-2xl">💬</span>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Natural Language</h3>
+            <p className="text-sm text-gray-600">Ask questions about your data in plain English</p>
+          </div>
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-[#78d3f8]/10 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-2xl">🤖</span>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">LLM-Powered</h3>
+            <p className="text-sm text-gray-600">Leverages large language models for intelligent analysis</p>
+          </div>
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="w-12 h-12 bg-[#78d3f8]/10 rounded-lg flex items-center justify-center mb-4">
+              <span className="text-2xl">⚡</span>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Smart Processing</h3>
+            <p className="text-sm text-gray-600">Auto-switches between in-memory and SQLite based on data size</p>
+          </div>
+        </div>
 
-## 🚀 Features
+        {/* Main Documentation Content */}
+        <div className="grid lg:grid-cols-4 gap-8">
+          {/* Sidebar Navigation */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-24 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-sm font-semibold text-gray-800 mb-4 uppercase tracking-wide">Contents</h3>
+              <nav className="space-y-2 text-sm">
+                <a href="#installation" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Installation</a>
+                <a href="#quick-start" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Quick Start</a>
+                <a href="#architecture" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Architecture</a>
+                <a href="#api-reference" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">API Reference</a>
+                <a href="#examples" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Examples</a>
+                <a href="#configuration" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Configuration</a>
+                <a href="#best-practices" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Best Practices</a>
+              </nav>
+            </div>
+          </div>
 
-AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
+          {/* Main Content */}
+          <div className="lg:col-span-3 space-y-12">
+            {/* Installation */}
+            <section id="installation" className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span className="text-2xl">📦</span>
+                Installation
+              </h2>
+              <div className="space-y-4">
+                <p className="text-gray-600">Install AVA using your preferred package manager:</p>
+                <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-sm">
+                  <div className="text-gray-400 mb-2"># npm</div>
+                  <div>npm install @antv/ava</div>
+                  <div className="text-gray-400 mt-4 mb-2"># yarn</div>
+                  <div>yarn add @antv/ava</div>
+                </div>
+              </div>
+            </section>
 
-- **Natural Language Queries**: Ask questions about your data in plain English
-- **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
-- **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
-- **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
-
-## 📖 Quick Start
-
-\`\`\`typescript
-import { AVA } from '@antv/ava';
+            {/* Quick Start */}
+            <section id="quick-start" className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span className="text-2xl">🚀</span>
+                Quick Start
+              </h2>
+              <div className="space-y-4">
+                <p className="text-gray-600">Get started with AVA in just a few lines of code:</p>
+                <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+                  <pre className="whitespace-pre">{`import { AVA } from '@antv/ava';
 
 // Initialize with LLM config
 const ava = new AVA({
@@ -29,264 +102,233 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  sqlThreshold: 1024 * 1024 * 2, // Threshold for switching to SQLite
 });
 
-// Load data from various sources in Node.js
-await ava.loadCSV('data/companies.csv');
+// Load data
+await ava.loadObject([
+  { city: 'Hangzhou', gdp: 18753 },
+  { city: 'Shanghai', gdp: 43214 }
+]);
 
-// Load CSV from file input in browser
-const fileInput = document.querySelector('input[type="file"]');
-const file = fileInput.files[0];
-const csvContent = await file.text();
-await ava.loadCSV(csvContent);
-
-// or load from JSON object
-await ava.loadObject([{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }]);
-
-// or load from URL
-await ava.loadURL('https://api.example.com/data', (response) => response.data);
-
-// or extract from text
-await ava.loadText('杭州 100，上海 200，北京 300');
-
-// Ask questions in natural language
-const result = await ava.analysis('What is the average revenue by region?');
-console.log(result);
+// Ask questions
+const result = await ava.analysis(
+  'What is the average GDP?'
+);
+console.log(result.text);
 
 // Clean up
-ava.dispose();
-\`\`\`
+ava.dispose();`}</pre>
+                </div>
+              </div>
+            </section>
 
-## 🏗️ Architecture
+            {/* Architecture */}
+            <section id="architecture" className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span className="text-2xl">🏗️</span>
+                Architecture
+              </h2>
+              <div className="space-y-6">
+                <p className="text-gray-600">AVA uses a modular pipeline architecture:</p>
+                <div className="bg-gradient-to-r from-[#78d3f8]/10 to-transparent rounded-lg p-6 border-l-4 border-[#78d3f8]">
+                  <div className="space-y-3 text-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">1</div>
+                      <div>
+                        <div className="font-semibold text-gray-800">Data Module</div>
+                        <div className="text-gray-600">Load from CSV, JSON, URL, or text</div>
+                      </div>
+                    </div>
+                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">2</div>
+                      <div>
+                        <div className="font-semibold text-gray-800">Metadata Extract</div>
+                        <div className="text-gray-600">Type inference and statistics</div>
+                      </div>
+                    </div>
+                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">3</div>
+                      <div>
+                        <div className="font-semibold text-gray-800">Size Check</div>
+                        <div className="text-gray-600">&lt;10KB: JavaScript | ≥10KB: SQLite</div>
+                      </div>
+                    </div>
+                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">4</div>
+                      <div>
+                        <div className="font-semibold text-gray-800">Analysis Module</div>
+                        <div className="text-gray-600">Generate & execute code/SQL</div>
+                      </div>
+                    </div>
+                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">5</div>
+                      <div>
+                        <div className="font-semibold text-gray-800">LLM Summary</div>
+                        <div className="text-gray-600">Natural language response</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages:
+            {/* API Reference */}
+            <section id="api-reference" className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <span className="text-2xl">📚</span>
+                API Reference
+              </h2>
+              <div className="space-y-8">
+                {/* Constructor */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Constructor</h3>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <code className="text-sm text-[#78d3f8]">new AVA(options: AVAOptions)</code>
+                    <div className="mt-4 space-y-2 text-sm">
+                      <div className="flex gap-2">
+                        <span className="text-gray-500 font-mono">llm</span>
+                        <span className="text-gray-600">— LLM configuration (model, apiKey, baseURL)</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-gray-500 font-mono">sqlThreshold</span>
+                        <span className="text-gray-600">— Size threshold for SQLite (default: 10MB)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-1. **Data Module** - Load from multiple sources:
-   - CSV File (\`loadCSV\`)
-   - JSON Object (\`loadObject\`)
-   - URL (\`loadURL\`)
-   - Text (\`loadText\` + LLM)
+                {/* Data Loading */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Data Loading</h3>
+                  <div className="space-y-3">
+                    {[
+                      { method: 'loadCSV(content: string)', desc: 'Load data from CSV string' },
+                      { method: 'loadObject(data: object[])', desc: 'Load data from array of objects' },
+                      { method: 'loadURL(url: string, transform?: Function)', desc: 'Load data from URL' },
+                      { method: 'loadText(text: string)', desc: 'Extract data from unstructured text' },
+                    ].map((item, idx) => (
+                      <div key={idx} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <code className="text-sm text-[#78d3f8] block mb-2">{item.method}</code>
+                        <p className="text-sm text-gray-600">{item.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-2. **Metadata Extract** - Type inference and statistics
+                {/* Analysis */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Analysis</h3>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <code className="text-sm text-[#78d3f8] block mb-2">analysis(query: string)</code>
+                    <p className="text-sm text-gray-600 mb-3">Analyze data with natural language query</p>
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <div>Returns: <code className="bg-white px-1 rounded">{'{ text, code?, sql?, visualizationHTML? }'}</code></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-3. **Size Check** - Determines processing strategy
-   - < 10KB: JavaScript Helpers
-   - ≥ 10KB: SQLite Storage
-
-4. **Analysis Module** - Generate & Execute Code/SQL
-
-5. **LLM Summary** - Natural Language Response
-
-6. **Visualization** (Optional) - Chart recommendations
-
-## 📚 API Reference
-
-### AVA Constructor
-
-\`\`\`typescript
-new AVA(options: AVAOptions)
-\`\`\`
-
-**Options:**
-- \`llm\`: LLM configuration object
-  - \`model\`: Model name (e.g., 'ling-1t', 'gpt-4')
-  - \`apiKey\`: Your API key
-  - \`baseURL\`: API base URL
-- \`sqlThreshold\`: Size threshold in bytes for switching to SQLite (default: 10MB)
-
-### Data Loading Methods
-
-#### loadCSV(content: string)
-Load data from CSV content string.
-
-\`\`\`typescript
-await ava.loadCSV(csvString);
-\`\`\`
-
-#### loadObject(data: object[])
-Load data from an array of objects.
-
-\`\`\`typescript
-await ava.loadObject([
-  { name: 'Alice', age: 30 },
-  { name: 'Bob', age: 25 }
-]);
-\`\`\`
-
-#### loadURL(url: string, transform?: Function)
-Load data from a URL with optional transform function.
-
-\`\`\`typescript
-await ava.loadURL('https://api.example.com/data', 
-  (response) => response.data
-);
-\`\`\`
-
-#### loadText(text: string)
-Extract structured data from unstructured text using LLM.
-
-\`\`\`typescript
-await ava.loadText('Sales: Q1 $100k, Q2 $150k, Q3 $200k');
-\`\`\`
-
-### Analysis Methods
-
-#### analysis(query: string)
-Analyze data based on natural language query.
-
-\`\`\`typescript
-const result = await ava.analysis('What is the total revenue?');
-// Returns: { text: string, code?: string, sql?: string, visualizationHTML?: string }
-\`\`\`
-
-**Response Object:**
-- \`text\`: Natural language summary of the analysis
-- \`code\`: JavaScript code used for analysis (if applicable)
-- \`sql\`: SQL query used for analysis (if applicable)
-- \`visualizationHTML\`: HTML for interactive chart (if applicable)
-
-### Cleanup
-
-#### dispose()
-Clean up resources and close database connections.
-
-\`\`\`typescript
-ava.dispose();
-\`\`\`
-
-## 💡 Usage Examples
-
-### Example 1: Simple Data Analysis
-
-\`\`\`typescript
-const ava = new AVA({ llm: config });
-
-await ava.loadObject([
-  { product: 'A', sales: 100, region: 'North' },
-  { product: 'B', sales: 150, region: 'South' },
-  { product: 'A', sales: 200, region: 'South' }
-]);
-
-const result = await ava.analysis('What are the top selling products?');
-console.log(result.text);
-\`\`\`
-
-### Example 2: CSV File Analysis
-
-\`\`\`typescript
-// In browser
-const fileInput = document.querySelector('input[type="file"]');
+            {/* Examples */}
+            <section id="examples" className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <span className="text-2xl">💡</span>
+                Usage Examples
+              </h2>
+              <div className="space-y-6">
+                <div className="border-l-4 border-[#78d3f8] pl-4">
+                  <h4 className="font-semibold text-gray-800 mb-2">Browser File Upload</h4>
+                  <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
+                    <pre className="whitespace-pre">{`const fileInput = document.querySelector('input[type="file"]');
 fileInput.addEventListener('change', async (e) => {
   const file = e.target.files[0];
   const content = await file.text();
-  
   await ava.loadCSV(content);
-  const result = await ava.analysis('Show me trends over time');
-  
-  // Display visualization
-  if (result.visualizationHTML) {
-    document.getElementById('chart').innerHTML = result.visualizationHTML;
-  }
-});
-\`\`\`
-
-### Example 3: API Data Analysis
-
-\`\`\`typescript
-await ava.loadURL(
+  const result = await ava.analysis('Show trends');
+});`}</pre>
+                  </div>
+                </div>
+                <div className="border-l-4 border-[#78d3f8] pl-4">
+                  <h4 className="font-semibold text-gray-800 mb-2">API Data Analysis</h4>
+                  <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
+                    <pre className="whitespace-pre">{`await ava.loadURL(
   'https://api.example.com/sales',
   (response) => response.data.items
 );
+const result = await ava.analysis('Compare by region');`}</pre>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-const result = await ava.analysis('Compare sales by region');
-console.log(result.text);
-\`\`\`
+            {/* Configuration */}
+            <section id="configuration" className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <span className="text-2xl">⚙️</span>
+                Configuration
+              </h2>
+              <div className="space-y-4">
+                <p className="text-gray-600">AVA supports multiple LLM providers:</p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-sm font-semibold text-gray-700 mb-2">OpenAI</div>
+                    <div className="font-mono text-xs text-gray-600 space-y-1">
+                      <div>model: 'gpt-4'</div>
+                      <div>baseURL: 'api.openai.com/v1'</div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="text-sm font-semibold text-gray-700 mb-2">Custom Provider</div>
+                    <div className="font-mono text-xs text-gray-600 space-y-1">
+                      <div>model: 'ling-1t'</div>
+                      <div>baseURL: 'your-llm-api.com'</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
-## 🔧 Configuration
+            {/* Best Practices */}
+            <section id="best-practices" className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <span className="text-2xl">⭐</span>
+                Best Practices
+              </h2>
+              <div className="space-y-3">
+                {[
+                  'Always call ava.dispose() when done to free resources',
+                  'Wrap async calls in try-catch blocks for error handling',
+                  'Validate data format before loading',
+                  'Set sqlThreshold based on expected data sizes',
+                  'Never expose API keys in client-side code',
+                ].map((practice, idx) => (
+                  <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <span className="text-[#78d3f8] mt-0.5">✓</span>
+                    <span className="text-sm text-gray-700">{practice}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
 
-### LLM Configuration
-
-AVA supports multiple LLM providers. Configure your preferred provider:
-
-\`\`\`typescript
-// OpenAI
-const ava = new AVA({
-  llm: {
-    model: 'gpt-4',
-    apiKey: process.env.OPENAI_API_KEY,
-    baseURL: 'https://api.openai.com/v1'
-  }
-});
-
-// Custom LLM Provider
-const ava = new AVA({
-  llm: {
-    model: 'ling-1t',
-    apiKey: process.env.CUSTOM_API_KEY,
-    baseURL: 'https://api.custom-provider.com/v1'
-  }
-});
-\`\`\`
-
-### Performance Tuning
-
-Adjust the SQL threshold based on your use case:
-
-\`\`\`typescript
-// For memory-constrained environments
-const ava = new AVA({
-  llm: config,
-  sqlThreshold: 1024 * 1024 * 1 // 1MB
-});
-
-// For high-performance environments
-const ava = new AVA({
-  llm: config,
-  sqlThreshold: 1024 * 1024 * 100 // 100MB
-});
-\`\`\`
-
-## 🌟 Best Practices
-
-1. **Always dispose instances**: Call \`ava.dispose()\` when done to free resources
-2. **Handle errors**: Wrap async calls in try-catch blocks
-3. **Validate data**: Ensure data is properly formatted before loading
-4. **Use appropriate thresholds**: Set \`sqlThreshold\` based on expected data sizes
-5. **Secure API keys**: Never expose API keys in client-side code
-
-## 📦 Installation
-
-\`\`\`bash
-npm install @antv/ava
-\`\`\`
-
-or
-
-\`\`\`bash
-yarn add @antv/ava
-\`\`\`
-
-## 🔗 Links
-
-- [GitHub Repository](https://github.com/antvis/AVA)
-- [Report Issues](https://github.com/antvis/AVA/issues)
-- [AntV Community](https://antv.vision/)
-
-## 📄 License
-
-MIT
-`;
-
-const Documentation: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-[#f8fbfc]">
-      <main className="max-w-4xl mx-auto px-6 py-12">
-        <div className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
-          <div className="prose prose-slate max-w-none prose-headings:text-gray-800 prose-h1:text-3xl prose-h1:font-bold prose-h1:mb-4 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-600 prose-p:leading-relaxed prose-a:text-[#78d3f8] prose-a:no-underline hover:prose-a:underline prose-code:text-[#78d3f8] prose-code:bg-gray-100 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-strong:text-gray-800 prose-ul:text-gray-600 prose-ol:text-gray-600 prose-li:my-1">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {documentationContent}
-            </ReactMarkdown>
+            {/* Links */}
+            <section className="bg-gradient-to-r from-[#78d3f8]/10 to-transparent rounded-xl p-8 border border-[#78d3f8]/20">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Resources</h2>
+              <div className="grid md:grid-cols-3 gap-4">
+                <a href="https://github.com/antvis/AVA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#78d3f8] hover:underline">
+                  <span>→</span> GitHub Repository
+                </a>
+                <a href="https://github.com/antvis/AVA/issues" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#78d3f8] hover:underline">
+                  <span>→</span> Report Issues
+                </a>
+                <a href="https://antv.vision/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#78d3f8] hover:underline">
+                  <span>→</span> AntV Community
+                </a>
+              </div>
+            </section>
           </div>
         </div>
       </main>
