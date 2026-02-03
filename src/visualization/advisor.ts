@@ -5,36 +5,10 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
+import { extractMetadata, formatDatasetInfo } from '../data';
+
 import type { LLMConfig } from '../types';
 import type { ChartType } from './types';
-
-/**
- * Analyze data structure to help chart selection
- */
-function analyzeDataStructure(data: any[]): string {
-  if (!data || data.length === 0) {
-    return '数据为空';
-  }
-
-  const sample = data[0];
-  const fields = Object.keys(sample);
-  const fieldTypes = fields.map((field) => {
-    const value = sample[field];
-    let type = '其他';
-    if (typeof value === 'number') {
-      type = '数值';
-    } else if (typeof value === 'string') {
-      type = '文本';
-    }
-    return `${field}: ${type}`;
-  });
-
-  return `
-数据行数: ${data.length}
-字段: ${fieldTypes.join(', ')}
-示例数据: ${JSON.stringify(data.slice(0, 3), null, 2)}
-`;
-}
 
 /**
  * Advise appropriate chart type based on user query and data
@@ -50,7 +24,9 @@ export async function adviseChartType(
     baseURL: llmConfig.baseURL,
   });
 
-  const dataInfo = analyzeDataStructure(data);
+  // Use existing metadata extraction functionality
+  const metadata = extractMetadata(data);
+  const dataInfo = formatDatasetInfo(metadata);
 
   const prompt = `你是一个图表推荐专家。根据用户的查询和数据特征，判断是否需要可视化，如果需要则推荐最合适的图表类型。
 
