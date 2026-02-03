@@ -6,11 +6,6 @@ interface DataPreviewProps {
 }
 
 const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
-  if (data.length === 0) return null;
-
-  const columns = Object.keys(data[0]);
-  const displayData = data.slice(0, 10);
-
   const formatValue = (value: string | number | boolean | null): string => {
     if (value === null || value === undefined) return '-';
     if (typeof value === 'number') {
@@ -35,6 +30,9 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
     return 'text-gray-700';
   };
 
+  const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  const displayData = data.slice(0, 10);
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-5">
@@ -56,35 +54,49 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-gray-100">
-              {columns.map(col => (
-                <th key={col} className="text-left py-3 px-4 font-medium text-[#78d3f8]">
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {displayData.map((row, idx) => (
-              <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50">
-                {columns.map(col => (
-                  <td key={col} className={`py-3 px-4 ${getValueColor(row[col])}`}>
-                    {formatValue(row[col])}
-                  </td>
+      {data.length === 0 ? (
+        <div className="flex items-center justify-center py-12 text-gray-400">
+          <div className="text-center">
+            <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p className="text-sm font-medium">No data available</p>
+            <p className="text-xs mt-1">Import data to see the preview</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  {columns.map(col => (
+                    <th key={col} className="text-left py-2 px-4 font-medium text-[#78d3f8]">
+                      {col}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {displayData.map((row, idx) => (
+                  <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50">
+                    {columns.map(col => (
+                      <td key={col} className={`py-2 px-4 ${getValueColor(row[col])}`}>
+                        {formatValue(row[col])}
+                      </td>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+              </tbody>
+            </table>
+          </div>
 
-      {data.length > 10 && (
-        <p className="mt-4 text-sm text-gray-400 text-center">
-          Showing 10 of {data.length} rows
-        </p>
+          {data.length > 10 && (
+            <p className="mt-4 text-sm text-gray-400 text-center">
+              Showing 10 of {data.length} rows
+            </p>
+          )}
+        </>
       )}
     </div>
   );
