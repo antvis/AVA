@@ -75,9 +75,9 @@ export function extractMetadata(data: any[]): DatasetInfo {
     });
   }
   
-  // Estimate size in bytes
+  // Estimate size in bytes (works in both Node.js and browser)
   const jsonString = JSON.stringify(data);
-  const sizeInBytes = Buffer.byteLength(jsonString, 'utf-8');
+  const sizeInBytes = new TextEncoder().encode(jsonString).length;
   
   return {
     rowCount: data.length,

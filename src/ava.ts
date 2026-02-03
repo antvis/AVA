@@ -41,7 +41,7 @@ export class AVA {
    */
   async loadCSV(filePath: string): Promise<void> {
     this.data = await loadCSV(filePath);
-    this.processLoadedData();
+    await this.processLoadedData();
   }
 
   /**
@@ -49,7 +49,7 @@ export class AVA {
    */
   async loadObject(data: any[]): Promise<void> {
     this.data = await loadObject(data);
-    this.processLoadedData();
+    await this.processLoadedData();
   }
 
   /**
@@ -57,7 +57,7 @@ export class AVA {
    */
   async loadURL(url: string, transform?: (response: any) => any[]): Promise<void> {
     this.data = await loadURL(url, transform);
-    this.processLoadedData();
+    await this.processLoadedData();
   }
 
   /**
@@ -65,13 +65,13 @@ export class AVA {
    */
   async loadText(text: string): Promise<void> {
     this.data = await loadText(text, this.llmConfig);
-    this.processLoadedData();
+    await this.processLoadedData();
   }
 
   /**
    * Process loaded data: extract metadata and load into SQLite if large
    */
-  private processLoadedData(): void {
+  private async processLoadedData(): Promise<void> {
     if (!this.data) {
       throw new Error('No data to process');
     }
@@ -81,7 +81,7 @@ export class AVA {
     // If data is large, load into SQLite
     if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
       this.sqliteStore = new SQLiteDataStore();
-      this.sqliteStore.loadData(this.data);
+      await this.sqliteStore.loadData(this.data);
       // Clear data from memory to save space
       this.data = null;
     }
@@ -99,11 +99,11 @@ export class AVA {
 
     // Use SQLite for large datasets
     if (this.sqliteStore) {
-      const schema = this.sqliteStore.getSchema();
+      const schema = await this.sqliteStore.getSchema();
       const sql = await generateSQL(this.llmConfig, schema, query);
       
       try {
-        analysisData = this.sqliteStore.query(sql);
+        analysisData = await this.sqliteStore.query(sql);
       } catch (error) {
         throw new Error(
           `Failed to execute SQL query: ${error instanceof Error ? error.message : String(error)}`

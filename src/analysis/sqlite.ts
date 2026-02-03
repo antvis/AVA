@@ -1,22 +1,48 @@
 /**
  * SQLite database wrapper for large datasets
+ * Note: This module requires 'better-sqlite3' which is Node.js-only.
+ * In browser environments, it will gracefully fail with helpful error messages.
  */
 
-import Database from 'better-sqlite3';
+type Database = any;
 
 export class SQLiteDataStore {
-  private readonly db: Database.Database;
+  private db: Database | null = null;
   private readonly tableName: string = 'data';
+  private readonly dbPath: string;
 
   constructor(dbPath: string = ':memory:') {
-    this.db = new Database(dbPath);
+    this.dbPath = dbPath;
+  }
+
+  /**
+   * Initialize the database (lazy loading)
+   */
+  private async initDb(): Promise<void> {
+    if (this.db) return;
+    
+    // Check if we're in a browser environment
+    if (typeof window !== 'undefined') {
+      throw new Error('SQLite is not supported in browser environments. Please reduce data size or use in-memory processing.');
+    }
+    
+    try {
+      // Dynamic import for Node.js-only module
+      const Database = (await import('better-sqlite3')).default;
+      this.db = new Database(this.dbPath);
+    } catch (error) {
+      throw new Error(
+        `Failed to load better-sqlite3. This module is only available in Node.js environments: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
   }
 
   /**
    * Load data into SQLite table
    */
-  loadData(data: any[]): void {
-    if (!data || data.length === 0) return;
+  async loadData(data: any[]): Promise<void> {
+    await this.initDb();
+    if (!this.db || !data || data.length === 0) return;
 
     // Create table from first row
     const columns = Object.keys(data[0]);
@@ -47,14 +73,18 @@ export class SQLiteDataStore {
   /**
    * Execute SQL query
    */
-  query(sql: string): any[] {
+  async query(sql: string): Promise<any[]> {
+    await this.initDb();
+    if (!this.db) return [];
     return this.db.prepare(sql).all();
   }
 
   /**
    * Get schema info
    */
-  getSchema(): string {
+  async getSchema(): Promise<string> {
+    await this.initDb();
+    if (!this.db) return '';
     const result = this.db.prepare(`PRAGMA table_info(${this.tableName})`).all();
     return result.map((col: any) => `${col.name} (${col.type})`).join(', ');
   }
@@ -63,6 +93,9 @@ export class SQLiteDataStore {
    * Close database
    */
   close(): void {
-    this.db.close();
+    if (this.db) {
+      this.db.close();
+      this.db = null;
+    }
   }
 }
