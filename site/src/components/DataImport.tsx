@@ -26,11 +26,8 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded }) =>
 
     try {
       // Use the global AVA instance's loadText to extract structured data from text
-      await avaInstance.loadText(textInput);
-
-      // Get the data for preview by running a simple analysis
-      const response = await avaInstance.analysis('Show all data rows as JSON array');
-      const data = response.data || [];
+      // The loadText API returns the loaded structured data directly
+      const data = await avaInstance.loadText(textInput);
       
       onDataLoaded(data);
     } catch (err) {
@@ -63,9 +60,10 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded }) =>
       }
 
       // Use the global AVA instance's loadObject to load the parsed data
-      await avaInstance.loadObject(parsedData);
+      // The loadObject API returns the loaded structured data directly
+      const data = await avaInstance.loadObject(parsedData);
       
-      onDataLoaded(parsedData);
+      onDataLoaded(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse CSV');
     } finally {
