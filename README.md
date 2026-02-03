@@ -22,8 +22,6 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
 ## 📖 Quick Start
 
-### Node.js Environment
-
 ```typescript
 import { AVA } from '@antv/ava';
 
@@ -34,14 +32,24 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
+  sqlThreshold: 1024 * 1024 * 2, // Threshold for switching to SQLite
 });
 
-// Load data from various sources
+// Load data from various sources in Node.js
 await ava.loadCSV('data/companies.csv');
+
+// Load CSV from file input in browser
+const fileInput = document.querySelector('input[type="file"]');
+const file = fileInput.files[0];
+const csvContent = await file.text();
+await ava.loadCSV(csvContent);
+
 // or load from JSON object
 await ava.loadObject([{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }]);
+
 // or load from URL
 await ava.loadURL('https://api.example.com/data', (response) => response.data);
+
 // or extract from text
 await ava.loadText('杭州 100，上海 200，北京 300');
 
@@ -51,39 +59,6 @@ console.log(result);
 
 // Clean up
 ava.dispose();
-```
-
-### Browser Environment
-
-```typescript
-import { AVA } from '@antv/ava';
-
-const ava = new AVA({
-  llm: {
-    model: 'ling-1t',
-    apiKey: 'YOUR_API_KEY',
-    baseURL: 'LLM_BASE_URL',
-  },
-});
-
-// Load CSV from file input
-const fileInput = document.querySelector('input[type="file"]');
-const file = fileInput.files[0];
-const csvContent = await file.text();
-await ava.loadCSV(csvContent);
-
-// Or load from URL
-await ava.loadURL('https://api.example.com/data', (response) => response.data);
-
-// Or load from JSON object
-await ava.loadObject([
-  { product: 'A', revenue: 1000 },
-  { product: 'B', revenue: 2000 }
-]);
-
-// Analyze data
-const result = await ava.analysis('Show top products by revenue');
-console.log(result);
 ```
 
 ## 🏗️ Architecture
@@ -155,22 +130,6 @@ AVA v4 is designed to run seamlessly in both browser and Node.js environments:
 AVA automatically detects the runtime environment and adapts:
 - **Browser**: Uses in-memory processing, accepts CSV content strings
 - **Node.js**: Supports file paths for CSV, uses SQLite for large datasets (>10KB)
-```
-
-## 🚧 Roadmap
-
-- [x] Core data loading (CSV)
-- [x] Multiple data sources (JSON Object, URL, Text)
-- [x] Natural language to code/SQL
-- [x] Smart data handling (JavaScript/SQLite)
-- [x] Basic analysis capabilities
-- [x] Comprehensive unit tests with vitest
-- [ ] Visualize module with chart recommendations
-- [ ] Additional data sources (Excel, Database connections)
-- [ ] Streaming responses
-- [ ] Chart rendering integration
-- [ ] Advanced aggregation operations
-- [ ] Multi-table queries
 
 ## 🤝 Developer Contributions
 
@@ -178,7 +137,7 @@ This is an experimental branch. Contributions are welcome! Please ensure:
 
 - Code is clean and well-documented
 - TypeScript types are properly defined
-- New features include examples
+- New features include examples, and tests
 - READMEs are updated as needed
 
 ## 🔗 Related Projects
