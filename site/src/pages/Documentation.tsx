@@ -102,6 +102,7 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
+  sqlThreshold: 1024 * 1024 * 2, // 2MB threshold
 });
 
 // Load data
@@ -115,6 +116,8 @@ const result = await ava.analysis(
   'What is the average GDP?'
 );
 console.log(result.text);
+// Optionally access: result.code, result.sql, 
+// or result.visualizationHTML
 
 // Clean up
 ava.dispose();`}</pre>
@@ -152,7 +155,7 @@ ava.dispose();`}</pre>
                       <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">3</div>
                       <div>
                         <div className="font-semibold text-gray-800">Size Check</div>
-                        <div className="text-gray-600">&lt;10KB: JavaScript | ≥10KB: SQLite</div>
+                        <div className="text-gray-600">&lt;10MB: JavaScript | ≥10MB: SQLite</div>
                       </div>
                     </div>
                     <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
@@ -226,7 +229,11 @@ ava.dispose();`}</pre>
                     <code className="text-sm text-[#78d3f8] block mb-2">analysis(query: string)</code>
                     <p className="text-sm text-gray-600 mb-3">Analyze data with natural language query</p>
                     <div className="text-xs text-gray-500 space-y-1">
-                      <div>Returns: <code className="bg-white px-1 rounded">{'{ text, code?, sql?, visualizationHTML? }'}</code></div>
+                      <div className="font-semibold mb-2">Returns object with:</div>
+                      <div>• <code className="bg-white px-1 rounded">text</code> — Natural language summary of the analysis</div>
+                      <div>• <code className="bg-white px-1 rounded">code</code> — JavaScript code used (if applicable)</div>
+                      <div>• <code className="bg-white px-1 rounded">sql</code> — SQL query used (if applicable)</div>
+                      <div>• <code className="bg-white px-1 rounded">visualizationHTML</code> — Interactive chart HTML (if applicable)</div>
                     </div>
                   </div>
                 </div>
