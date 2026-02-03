@@ -24,57 +24,57 @@ describe('Analysis Module', () => {
       store.close();
     });
 
-    it('should create and load data', () => {
+    it('should create and load data', async () => {
       const testData = [
         { name: 'Alice', age: 30, city: 'NYC' },
         { name: 'Bob', age: 25, city: 'SF' },
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      store.loadData(testData);
-      const result = store.query('SELECT * FROM data');
+      await store.loadData(testData);
+      const result = await store.query('SELECT * FROM data');
       
       expect(result).toBeDefined();
       expect(result.length).toBe(3);
     });
 
-    it('should handle empty data', () => {
-      store.loadData([]);
-      const schema = store.getSchema();
+    it('should handle empty data', async () => {
+      await store.loadData([]);
+      const schema = await store.getSchema();
       expect(schema).toBeDefined();
     });
 
-    it('should query with WHERE clause', () => {
+    it('should query with WHERE clause', async () => {
       const testData = [
         { name: 'Alice', age: 30, city: 'NYC' },
         { name: 'Bob', age: 25, city: 'SF' },
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      store.loadData(testData);
-      const result = store.query("SELECT * FROM data WHERE city = 'NYC'");
+      await store.loadData(testData);
+      const result = await store.query("SELECT * FROM data WHERE city = 'NYC'");
       
       expect(result.length).toBe(2);
     });
 
-    it('should query with aggregation', () => {
+    it('should query with aggregation', async () => {
       const testData = [
         { name: 'Alice', age: 30, city: 'NYC' },
         { name: 'Bob', age: 25, city: 'SF' },
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      store.loadData(testData);
-      const result = store.query('SELECT COUNT(*) as count FROM data');
+      await store.loadData(testData);
+      const result = await store.query('SELECT COUNT(*) as count FROM data');
       
       expect(result[0].count).toBe(3);
     });
 
-    it('should get schema info', () => {
+    it('should get schema info', async () => {
       const testData = [{ name: 'Alice', age: 30 }];
-      store.loadData(testData);
+      await store.loadData(testData);
       
-      const schema = store.getSchema();
+      const schema = await store.getSchema();
       expect(schema).toContain('name');
       expect(schema).toContain('age');
     });

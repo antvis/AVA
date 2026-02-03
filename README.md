@@ -18,8 +18,11 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
+- **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
 
 ## 📖 Quick Start
+
+### Node.js Environment
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -50,9 +53,42 @@ console.log(result);
 ava.dispose();
 ```
 
+### Browser Environment
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: 'ling-1t',
+    apiKey: 'YOUR_API_KEY',
+    baseURL: 'LLM_BASE_URL',
+  },
+});
+
+// Load CSV from file input
+const fileInput = document.querySelector('input[type="file"]');
+const file = fileInput.files[0];
+const csvContent = await file.text();
+await ava.loadCSV(csvContent);
+
+// Or load from URL
+await ava.loadURL('https://api.example.com/data', (response) => response.data);
+
+// Or load from JSON object
+await ava.loadObject([
+  { product: 'A', revenue: 1000 },
+  { product: 'B', revenue: 2000 }
+]);
+
+// Analyze data
+const result = await ava.analysis('Show top products by revenue');
+console.log(result);
+```
+
 ## 🏗️ Architecture
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), and results are summarized using LLM into natural language responses.
+AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), results are summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
 
 ```
 User Query
@@ -88,7 +124,37 @@ JavaScript  SQLite
 │ LLM Summary  │ → Natural Language Response
 └──────────────┘
     ↓
+┌─────────────────────┐
+│ Visualization       │ → Optional chart generation:
+│ Module (Optional)   │   • Detect visualization intent
+│                     │   • Recommend chart type
+│                     │   • Generate chart syntax & HTML
+└─────────────────────┘
+    ↓
 User Response
+(Text + Data + Chart)
+```
+
+## 🌐 Browser & Server Compatibility
+
+AVA v4 is designed to run seamlessly in both browser and Node.js environments:
+
+### ✅ Browser Support
+- All core features work in modern browsers (Chrome, Firefox, Safari, Edge)
+- CSV loading via File API or direct content strings
+- JSON object and URL loading fully supported
+- In-memory data processing for datasets under 10KB
+- Note: SQLite is not available in browsers; keep datasets under 10KB or use the server-side version for large datasets
+
+### ✅ Node.js Support
+- Full feature set including large dataset handling with SQLite
+- File system access for CSV loading
+- Automatic switching between in-memory and SQLite based on data size (10KB threshold)
+
+### Environment Detection
+AVA automatically detects the runtime environment and adapts:
+- **Browser**: Uses in-memory processing, accepts CSV content strings
+- **Node.js**: Supports file paths for CSV, uses SQLite for large datasets (>10KB)
 ```
 
 ## 🚧 Roadmap
