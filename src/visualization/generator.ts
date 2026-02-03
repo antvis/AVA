@@ -10,13 +10,14 @@ import type { LLMConfig, ChartType } from '../types';
 /**
  * Generate complete HTML code for visualization with GPT-Vis syntax embedded
  * This function combines both syntax generation and HTML generation in a single LLM call
+ * Returns both the syntax and HTML for frontend display
  */
 export async function generateVisualizationHTML(
   chartType: ChartType,
   data: any[],
   query: string,
   llmConfig: LLMConfig
-): Promise<string> {
+): Promise<{ syntax: string; html: string }> {
   const openai = createOpenAI({
     apiKey: llmConfig.apiKey,
     baseURL: llmConfig.baseURL,
@@ -384,5 +385,23 @@ title 人员信息
     prompt,
   });
 
-  return text.trim();
+  const html = text.trim();
+  
+  // Extract GPT-Vis syntax from the HTML
+  // Look for the visSyntax variable assignment in template literal
+  const syntaxMatch = html.match(/const visSyntax = `([^`]*)`/);
+  let syntax = '';
+  
+  if (syntaxMatch && syntaxMatch[1]) {
+    syntax = syntaxMatch[1].trim();
+  } else {
+    // Fallback: try to find content between vis keyword and gptVis.render
+    // Using [\s\S] instead of . with s flag for ES5 compatibility
+    const fallbackMatch = html.match(/visSyntax\s*=\s*`([\s\S]*?)`[\s\S]*?gptVis\.render/);
+    if (fallbackMatch && fallbackMatch[1]) {
+      syntax = fallbackMatch[1].trim();
+    }
+  }
+
+  return { syntax, html };
 }

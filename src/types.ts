@@ -64,6 +64,8 @@ export interface AnalysisResponse {
   data?: any[];
   /** Optional markdown content */
   markdown?: string;
+  /** Optional GPT-Vis syntax */
+  visualizationSyntax?: string;
   /** Optional visualization HTML code */
   visualizationHTML?: string;
 }

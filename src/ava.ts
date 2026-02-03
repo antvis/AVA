@@ -132,6 +132,7 @@ export class AVA {
 
     // Detect visualization intent and generate visualization if needed
     let visualizationHTML: string | undefined;
+    let visualizationSyntax: string | undefined;
     try {
       // adviseChartType now handles both intent detection and chart selection
       // Returns null if no visualization intent detected
@@ -139,7 +140,9 @@ export class AVA {
       
       if (chartType && analysisData.length > 0) {
         // generateVisualizationHTML now combines syntax generation and HTML generation
-        visualizationHTML = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
+        const result = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
+        visualizationSyntax = result.syntax;
+        visualizationHTML = result.html;
       }
     } catch (error) {
       // Visualization is optional, don't fail the analysis if it fails
@@ -151,6 +154,7 @@ export class AVA {
     return {
       text: summary,
       data: analysisData,
+      visualizationSyntax,
       visualizationHTML,
     };
   }
