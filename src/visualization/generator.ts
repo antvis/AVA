@@ -131,6 +131,16 @@ title 标题
 }
 
 /**
+ * Escape special characters in syntax for safe embedding in template literals
+ */
+function escapeSyntaxForTemplate(syntax: string): string {
+  return syntax
+    .replace(/\\/g, '\\\\')  // Escape backslashes first
+    .replace(/`/g, '\\`')     // Escape backticks
+    .replace(/\$/g, '\\$');   // Escape dollar signs
+}
+
+/**
  * Generate complete HTML code for visualization
  */
 export async function generateVisualizationHTML(
@@ -141,6 +151,8 @@ export async function generateVisualizationHTML(
     apiKey: llmConfig.apiKey,
     baseURL: llmConfig.baseURL,
   });
+
+  const escapedSyntax = escapeSyntaxForTemplate(syntax);
 
   const prompt = `你是一个前端代码生成专家。根据提供的 GPT-Vis 语法，生成一个完整的可独立运行的 HTML 文件。
 
@@ -178,7 +190,7 @@ ${syntax}
         height: 600,
       });
       
-      const visSyntax = \`${syntax}\`;
+      const visSyntax = \`${escapedSyntax}\`;
       
       gptVis.render(visSyntax);
     </script>
