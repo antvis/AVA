@@ -131,16 +131,6 @@ title 标题
 }
 
 /**
- * Escape special characters in syntax for safe embedding in template literals
- */
-function escapeSyntaxForTemplate(syntax: string): string {
-  return syntax
-    .replace(/\\/g, '\\\\')  // Escape backslashes first
-    .replace(/`/g, '\\`')     // Escape backticks
-    .replace(/\$/g, '\\$');   // Escape dollar signs
-}
-
-/**
  * Generate complete HTML code for visualization
  */
 export async function generateVisualizationHTML(
@@ -151,8 +141,6 @@ export async function generateVisualizationHTML(
     apiKey: llmConfig.apiKey,
     baseURL: llmConfig.baseURL,
   });
-
-  const escapedSyntax = escapeSyntaxForTemplate(syntax);
 
   const prompt = `你是一个前端代码生成专家。根据提供的 GPT-Vis 语法，生成一个完整的可独立运行的 HTML 文件。
 
@@ -168,6 +156,7 @@ ${syntax}
 4. 使用 GPTVis.GPTVis 类来渲染图表
 5. 添加简单的样式使页面美观
 6. 只返回 HTML 代码，不要有其他说明文字
+7. 在 JavaScript 中，将上面的 GPT-Vis 语法作为模板字符串赋值给 visSyntax 变量，注意要正确转义特殊字符
 
 参考模板：
 <!DOCTYPE html>
@@ -190,7 +179,8 @@ ${syntax}
         height: 600,
       });
       
-      const visSyntax = \`${escapedSyntax}\`;
+      // 将上面的 GPT-Vis 语法放在这里，使用模板字符串，并正确转义特殊字符
+      const visSyntax = \`...\`;
       
       gptVis.render(visSyntax);
     </script>

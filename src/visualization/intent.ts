@@ -37,5 +37,5 @@ export async function detectVisualizationIntent(
   });
 
   const trimmedResponse = text.trim();
-  return trimmedResponse.startsWith('是') || trimmedResponse.toLowerCase().includes('yes');
+  return trimmedResponse.startsWith('是') || trimmedResponse.toLowerCase() === 'yes';
 }

@@ -20,7 +20,12 @@ function analyzeDataStructure(data: any[]): string {
   const fields = Object.keys(sample);
   const fieldTypes = fields.map((field) => {
     const value = sample[field];
-    const type = typeof value === 'number' ? '数值' : typeof value === 'string' ? '文本' : '其他';
+    let type = '其他';
+    if (typeof value === 'number') {
+      type = '数值';
+    } else if (typeof value === 'string') {
+      type = '文本';
+    }
     return `${field}: ${type}`;
   });
 
