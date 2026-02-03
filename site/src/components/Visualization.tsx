@@ -12,6 +12,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showCode, setShowCode] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const handleGenerate = useCallback(async () => {
@@ -94,23 +95,37 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
 
       {/* Analysis Summary - Always show when result.text exists, rendered with react-markdown */}
       {result && result.text && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-xl">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Analysis Summary</h4>
+        <div className="mb-4 p-4 bg-gray-50 rounded-xl relative">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-medium text-gray-700">Analysis Summary</h4>
+            {/* View Code Icon Button */}
+            {analysisCode && (
+              <button
+                onClick={() => setShowCode(!showCode)}
+                className={`p-1.5 rounded-lg transition-colors ${showCode ? 'bg-[#78d3f8]/20 text-[#78d3f8]' : 'hover:bg-gray-200 text-gray-500'}`}
+                title={showCode ? 'Hide code' : 'View code'}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              </button>
+            )}
+          </div>
           <div className="text-sm text-gray-600 prose prose-sm max-w-none">
             <ReactMarkdown>{result.text}</ReactMarkdown>
           </div>
-        </div>
-      )}
-
-      {/* Analysis Code - Show code or sql used for data analysis */}
-      {analysisCode && (
-        <div className="mb-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">
-            {result?.sql ? 'SQL Query' : 'Analysis Code'}
-          </h4>
-          <pre className="p-4 bg-gray-900 text-gray-100 rounded-xl text-xs overflow-x-auto">
-            {analysisCode}
-          </pre>
+          
+          {/* Collapsible Code Block */}
+          {showCode && analysisCode && (
+            <div className="mt-4">
+              <h5 className="text-xs font-medium text-gray-500 mb-2">
+                {result?.sql ? 'SQL Query' : 'Analysis Code'}
+              </h5>
+              <pre className="p-4 bg-gray-900 text-gray-100 rounded-xl text-xs overflow-x-auto">
+                {analysisCode}
+              </pre>
+            </div>
+          )}
         </div>
       )}
 
