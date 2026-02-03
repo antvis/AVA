@@ -112,13 +112,10 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
               </button>
             )}
           </div>
-          <div className="text-sm text-gray-600 prose prose-sm max-w-none">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.text}</ReactMarkdown>
-          </div>
           
-          {/* Collapsible Code Block */}
+          {/* Collapsible Code Block - Moved above summary text */}
           {showCode && analysisCode && (
-            <div className="mt-4">
+            <div className="mb-4">
               <h5 className="text-xs font-medium text-gray-500 mb-2">
                 {result?.sql ? 'SQL Query' : 'Analysis Code'}
               </h5>
@@ -127,6 +124,10 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
               </pre>
             </div>
           )}
+          
+          <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.text}</ReactMarkdown>
+          </div>
         </div>
       )}
 
