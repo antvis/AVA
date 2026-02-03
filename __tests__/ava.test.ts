@@ -174,7 +174,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text).toBeDefined();
         expect(typeof result.text).toBe('string');
         // Verify result mentions the count (12 companies in test data)
-        expect(result).toContain('12');
+        expect(result.text).toContain('12');
       } catch (error) {
         // If the API fails, skip the test rather than failing
         // eslint-disable-next-line no-console
@@ -240,7 +240,7 @@ describe('AVA Integration Tests', () => {
         expect(typeof result.text).toBe('string');
         expect(result.text.length).toBeGreaterThan(0);
         // Result should mention the sum (600)
-        expect(result).toMatch(/600/);
+        expect(result.text).toMatch(/600/);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
@@ -381,7 +381,7 @@ describe('AVA Integration Tests', () => {
         expect(typeof result).toBe('object');
         expect(result.text).toBeDefined();
         expect(typeof result.text).toBe('string');
-        expect(result.toLowerCase()).toMatch(/male|female/);
+        expect(result.text.toLowerCase()).toMatch(/male|female/);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
