@@ -4,4 +4,3 @@
 
 export { adviseChartType } from './advisor';
 export { generateVisualizationHTML } from './generator';
-export type { ChartType, VisualizationResult } from './types';

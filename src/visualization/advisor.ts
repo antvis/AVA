@@ -7,8 +7,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 
 import { extractMetadata, formatDatasetInfo } from '../data';
 
-import type { LLMConfig } from '../types';
-import type { ChartType } from './types';
+import type { LLMConfig, ChartType } from '../types';
 
 /**
  * Advise appropriate chart type based on user query and data

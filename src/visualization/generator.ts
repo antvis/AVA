@@ -5,8 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import type { LLMConfig } from '../types';
-import type { ChartType } from './types';
+import type { LLMConfig, ChartType } from '../types';
 
 /**
  * Generate complete HTML code for visualization with GPT-Vis syntax embedded

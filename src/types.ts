@@ -67,3 +67,28 @@ export interface AnalysisResponse {
   /** Optional visualization HTML code */
   visualizationHTML?: string;
 }
+
+/**
+ * Supported chart types from GPT-Vis
+ */
+export type ChartType = 
+  | 'line'
+  | 'column'
+  | 'bar'
+  | 'pie'
+  | 'area'
+  | 'scatter'
+  | 'dual-axes'
+  | 'histogram'
+  | 'boxplot'
+  | 'radar'
+  | 'funnel'
+  | 'waterfall'
+  | 'liquid'
+  | 'word-cloud'
+  | 'violin'
+  | 'venn'
+  | 'treemap'
+  | 'sankey'
+  | 'table'
+  | 'summary';
