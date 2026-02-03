@@ -1,0 +1,40 @@
+name: Surge PR Preview
+
+on:
+  pull_request:
+    paths:
+      - 'site/**'
+      - 'src/**'
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+      
+      - name: Build main package
+        run: npm run build
+      
+      - name: Build site
+        run: |
+          cd site
+          npm install
+          npm run build
+      
+      - uses: afc163/surge-preview@v1
+        with:
+          surge_token: ${{ secrets.SURGE_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dist: site/dist
+          build: echo "Site already built"
