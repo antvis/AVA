@@ -14,7 +14,6 @@ import {
 } from './analysis';
 import {
   selectChartType,
-  generateGPTVisSyntax,
   generateVisualizationHTML,
 } from './visualization';
 
@@ -139,8 +138,8 @@ export class AVA {
       const chartType = await selectChartType(query, analysisData, this.llmConfig);
       
       if (chartType && analysisData.length > 0) {
-        const syntax = await generateGPTVisSyntax(chartType, analysisData, query, this.llmConfig);
-        visualizationHTML = await generateVisualizationHTML(syntax, this.llmConfig);
+        // generateVisualizationHTML now combines syntax generation and HTML generation
+        visualizationHTML = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
       }
     } catch (error) {
       // Visualization is optional, don't fail the analysis if it fails

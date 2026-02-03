@@ -3,5 +3,5 @@
  */
 
 export { selectChartType } from './chart-selector';
-export { generateGPTVisSyntax, generateVisualizationHTML } from './generator';
+export { generateVisualizationHTML } from './generator';
 export type { ChartType, VisualizationResult } from './types';
