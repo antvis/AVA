@@ -56,7 +56,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
       </div>
 
       {/* Query Input */}
-      <div className="flex gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <input
           type="text"
           value={query}
@@ -69,7 +69,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
         <button
           onClick={handleGenerate}
           disabled={isLoading || !query.trim() || !avaInstance}
-          className="flex items-center gap-2 px-6 py-3 bg-[#78d3f8] hover:bg-[#4ec4ef] disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl transition-colors whitespace-nowrap"
+          className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-[#78d3f8] hover:bg-[#4ec4ef] disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl transition-colors whitespace-nowrap"
         >
           {isLoading ? (
             <>
