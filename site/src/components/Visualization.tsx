@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { AVA } from '@antv/ava';
 import type { AnalysisResponse } from '@antv/ava';
 
@@ -41,6 +42,9 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
       }
     }
   }, [result?.visualizationHTML]);
+
+  // Get analysis code (JavaScript or SQL)
+  const analysisCode = result?.code || result?.sql;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -88,24 +92,43 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
         </div>
       )}
 
-      {/* Analysis Summary - Always show when result.text exists */}
+      {/* Analysis Summary - Always show when result.text exists, rendered with react-markdown */}
       {result && result.text && (
         <div className="mb-4 p-4 bg-gray-50 rounded-xl">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Analysis Summary</h4>
-          <p className="text-sm text-gray-600">{result.text}</p>
+          <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+            <ReactMarkdown>{result.text}</ReactMarkdown>
+          </div>
         </div>
       )}
 
-      {/* Preview Area - Show visualization iframe only if visualizationHTML exists */}
-      <div className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-        {result && result.visualizationHTML ? (
+      {/* Analysis Code - Show code or sql used for data analysis */}
+      {analysisCode && (
+        <div className="mb-4">
+          <h4 className="text-sm font-medium text-gray-700 mb-2">
+            {result?.sql ? 'SQL Query' : 'Analysis Code'}
+          </h4>
+          <pre className="p-4 bg-gray-900 text-gray-100 rounded-xl text-xs overflow-x-auto">
+            {analysisCode}
+          </pre>
+        </div>
+      )}
+
+      {/* Visualization Area - Only show when visualizationHTML exists */}
+      {result?.visualizationHTML && (
+        <div className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
           <iframe
             ref={iframeRef}
             className="w-full h-[400px] border-0"
             title="Visualization"
             sandbox="allow-scripts"
           />
-        ) : (
+        </div>
+      )}
+
+      {/* Placeholder - Only show when no result yet */}
+      {!result && (
+        <div className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
           <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-gray-400">
             <div className="relative mb-4">
               {/* Background bars */}
@@ -131,8 +154,8 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
               <span>{'</>'} Embed</span>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -108,11 +108,14 @@ export class AVA {
     }
 
     let analysisData: any[] = [];
+    let analysisCode: string | undefined;
+    let analysisSql: string | undefined;
 
     // Use SQLite for large datasets
     if (this.sqliteStore) {
       const schema = await this.sqliteStore.getSchema();
       const sql = await generateSQL(this.llmConfig, schema, query);
+      analysisSql = sql;
       
       try {
         analysisData = await this.sqliteStore.query(sql);
@@ -129,6 +132,7 @@ export class AVA {
 
       const dataInfoStr = formatDatasetInfo(this.dataInfo);
       const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
+      analysisCode = code;
 
       try {
         analysisData = await executeDataCode(this.data, code);
@@ -166,6 +170,8 @@ export class AVA {
     return {
       text: summary,
       data: analysisData,
+      code: analysisCode,
+      sql: analysisSql,
       visualizationSyntax,
       visualizationHTML,
     };
