@@ -30,7 +30,7 @@ async function main() {
     // Query the data
     console.log('Query: How many users are there and what are their cities?');
     const response1 = await ava.analysis('How many users are there and what are their cities?');
-    console.log('Response:', response1);
+    console.log('Response:', response1.text);
     console.log('\n---\n');
 
     // Example 2: Load data with transform function
@@ -58,7 +58,7 @@ async function main() {
 
     console.log('Query: List all companies');
     const response2 = await ava2.analysis('List all unique companies');
-    console.log('Response:', response2);
+    console.log('Response:', response2.text);
 
     // Clean up second instance
     ava2.dispose();

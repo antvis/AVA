@@ -28,7 +28,7 @@ async function main() {
 
     console.log('Query: What is the total?');
     const response1 = await ava.analysis('What is the sum of all values?');
-    console.log('Response:', response1);
+    console.log('Response:', response1.text);
     console.log('\n---\n');
 
     // Example 2: More complex text with multiple fields
@@ -55,7 +55,7 @@ async function main() {
 
     console.log('Query: Which region and quarter had the best completion rate?');
     const response2 = await ava2.analysis('Which region and quarter had the best completion rate?');
-    console.log('Response:', response2);
+    console.log('Response:', response2.text);
     console.log('\n---\n');
 
     // Example 3: Tabular text
@@ -82,7 +82,7 @@ async function main() {
 
     console.log('Query: What is the total value of all inventory?');
     const response3 = await ava3.analysis('Calculate the total inventory value (price times stock for each product)');
-    console.log('Response:', response3);
+    console.log('Response:', response3.text);
 
     // Clean up additional instances
     ava2.dispose();

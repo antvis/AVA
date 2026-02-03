@@ -12,8 +12,12 @@ import {
   generateSQL,
   generateDataCode,
 } from './analysis';
+import {
+  adviseChartType,
+  generateVisualizationHTML,
+} from './visualization';
 
-import type { AVAConfig, LLMConfig, DatasetInfo } from './types';
+import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse } from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 
@@ -86,7 +90,7 @@ export class AVA {
   /**
    * Analyze data using natural language query
    */
-  async analysis(query: string): Promise<string> {
+  async analysis(query: string): Promise<AnalysisResponse> {
     if (!this.dataInfo) {
       throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
     }
@@ -125,8 +129,34 @@ export class AVA {
 
     // Summarize the result using LLM
     const summary = await this.summarizeResult(query, analysisData);
+
+    // Detect visualization intent and generate visualization if needed
+    let visualizationHTML: string | undefined;
+    let visualizationSyntax: string | undefined;
+    try {
+      // adviseChartType now handles both intent detection and chart selection
+      // Returns null if no visualization intent detected
+      const chartType = await adviseChartType(query, analysisData, this.llmConfig);
+      
+      if (chartType && analysisData.length > 0) {
+        // generateVisualizationHTML now combines syntax generation and HTML generation
+        const result = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
+        visualizationSyntax = result.syntax;
+        visualizationHTML = result.html;
+      }
+    } catch (error) {
+      // Visualization is optional, don't fail the analysis if it fails
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      // eslint-disable-next-line no-console
+      console.warn('Failed to generate visualization:', errorMessage);
+    }
     
-    return summary;
+    return {
+      text: summary,
+      data: analysisData,
+      visualizationSyntax,
+      visualizationHTML,
+    };
   }
 
   /**
