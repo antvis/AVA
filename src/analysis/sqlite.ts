@@ -42,22 +42,22 @@ export class SQLiteDataStore {
    */
   async loadData(data: any[]): Promise<void> {
     await this.initDb();
-    if (!this.db || !data || data.length === 0) return;
+    if (!data || data.length === 0) return;
 
     // Create table from first row
     const columns = Object.keys(data[0]);
     const columnDefs = columns.map(col => `"${col}" TEXT`).join(', ');
     
-    this.db.exec(`DROP TABLE IF EXISTS ${this.tableName}`);
-    this.db.exec(`CREATE TABLE ${this.tableName} (${columnDefs})`);
+    this.db!.exec(`DROP TABLE IF EXISTS ${this.tableName}`);
+    this.db!.exec(`CREATE TABLE ${this.tableName} (${columnDefs})`);
 
     // Insert data
     const placeholders = columns.map(() => '?').join(', ');
-    const insert = this.db.prepare(
+    const insert = this.db!.prepare(
       `INSERT INTO ${this.tableName} VALUES (${placeholders})`
     );
 
-    const insertMany = this.db.transaction((rows: any[]) => {
+    const insertMany = this.db!.transaction((rows: any[]) => {
       for (const row of rows) {
         const values = columns.map(col => {
           const val = row[col];
@@ -75,8 +75,7 @@ export class SQLiteDataStore {
    */
   async query(sql: string): Promise<any[]> {
     await this.initDb();
-    if (!this.db) return [];
-    return this.db.prepare(sql).all();
+    return this.db!.prepare(sql).all();
   }
 
   /**
@@ -84,8 +83,7 @@ export class SQLiteDataStore {
    */
   async getSchema(): Promise<string> {
     await this.initDb();
-    if (!this.db) return '';
-    const result = this.db.prepare(`PRAGMA table_info(${this.tableName})`).all();
+    const result = this.db!.prepare(`PRAGMA table_info(${this.tableName})`).all();
     return result.map((col: any) => `${col.name} (${col.type})`).join(', ');
   }
 
