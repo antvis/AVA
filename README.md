@@ -88,7 +88,7 @@ console.log(result);
 
 ## 🏗️ Architecture
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), and results are summarized using LLM into natural language responses.
+AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), results are summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
 
 ```
 User Query
@@ -124,7 +124,15 @@ JavaScript  SQLite
 │ LLM Summary  │ → Natural Language Response
 └──────────────┘
     ↓
+┌─────────────────────┐
+│ Visualization       │ → Optional chart generation:
+│ Module (Optional)   │   • Detect visualization intent
+│                     │   • Recommend chart type
+│                     │   • Generate chart syntax & HTML
+└─────────────────────┘
+    ↓
 User Response
+(Text + Data + Chart)
 ```
 
 ## 🌐 Browser & Server Compatibility
