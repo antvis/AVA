@@ -61,7 +61,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
           <thead>
             <tr className="border-b border-gray-100">
               {columns.map(col => (
-                <th key={col} className="text-left py-3 px-4 font-medium text-[#78d3f8]">
+                <th key={col} className="text-left py-2 px-4 font-medium text-[#78d3f8]">
                   {col}
                 </th>
               ))}
@@ -71,7 +71,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
             {displayData.map((row, idx) => (
               <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50">
                 {columns.map(col => (
-                  <td key={col} className={`py-3 px-4 ${getValueColor(row[col])}`}>
+                  <td key={col} className={`py-2 px-4 ${getValueColor(row[col])}`}>
                     {formatValue(row[col])}
                   </td>
                 ))}

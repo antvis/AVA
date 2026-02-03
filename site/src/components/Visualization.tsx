@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { AVA } from '@antv/ava';
 import type { AnalysisResponse } from '@antv/ava';
 
@@ -112,7 +113,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
             )}
           </div>
           <div className="text-sm text-gray-600 prose prose-sm max-w-none">
-            <ReactMarkdown>{result.text}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{result.text}</ReactMarkdown>
           </div>
           
           {/* Collapsible Code Block */}
