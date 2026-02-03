@@ -13,3 +13,37 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8fbfc;
 }
+
+/* Table styling for markdown-rendered tables in prose */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose thead {
+  background-color: #f3f4f6;
+}
+
+.prose th {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+}
+
+.prose td {
+  border: 1px solid #e5e7eb;
+  padding: 0.5rem 0.75rem;
+  color: #4b5563;
+}
+
+.prose tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.prose tbody tr:hover {
+  background-color: #f3f4f6;
+}
