@@ -91,13 +91,12 @@ const Header: React.FC<{ onOpenConfig: () => void }> = ({ onOpenConfig }) => (
   <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100">
     <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#78d3f8] to-[#4ec4ef] flex items-center justify-center">
-          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        </div>
+        <img 
+          src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original" 
+          alt="AVA ChartGenie Logo" 
+          className="w-8 h-8"
+        />
         <span className="text-lg font-semibold text-gray-800">AVA ChartGenie</span>
-        <span className="text-lg">📊</span>
       </div>
       <div className="flex items-center gap-4">
         <button
@@ -596,7 +595,7 @@ const Visualization: React.FC<{
 // Footer
 const Footer: React.FC = () => (
   <footer className="text-center py-8 text-gray-400 text-sm">
-    © 2024 AVA ChartGenie Workspace. Built for designers and data nerds 🚀
+    AVA ChartGenie ©2026 By AntV
   </footer>
 );
 
