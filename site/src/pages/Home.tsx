@@ -17,7 +17,7 @@ interface HomeProps {
   onCloseConfig: () => void;
 }
 
-function Home({ onOpenConfig, isConfigOpen, onCloseConfig }: HomeProps) {
+function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
   const [llmConfig, setLLMConfig] = useState<LLMConfig>(loadLLMConfig);
   const [data, setData] = useState<DataRow[]>([]);
 
