@@ -178,7 +178,7 @@ ${syntax}
         height: 600,
       });
       
-      const visSyntax = \\\`${syntax}\\\`;
+      const visSyntax = \`${syntax}\`;
       
       gptVis.render(visSyntax);
     </script>

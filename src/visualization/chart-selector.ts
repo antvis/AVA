@@ -78,5 +78,19 @@ ${dataInfo}
     prompt,
   });
 
-  return text.trim() as ChartType;
+  const chartType = text.trim();
+  
+  // Validate that the chart type is valid
+  const validChartTypes: ChartType[] = [
+    'line', 'column', 'bar', 'pie', 'area', 'scatter', 'dual-axes',
+    'histogram', 'boxplot', 'radar', 'funnel', 'waterfall', 'liquid',
+    'word-cloud', 'violin', 'venn', 'treemap', 'sankey', 'table', 'summary',
+  ];
+  
+  if (validChartTypes.includes(chartType as ChartType)) {
+    return chartType as ChartType;
+  }
+  
+  // Default to column chart if invalid
+  return 'column';
 }
