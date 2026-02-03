@@ -36,6 +36,6 @@ export async function detectVisualizationIntent(
     prompt,
   });
 
-  const trimmedResponse = text.trim();
-  return trimmedResponse.startsWith('是') || trimmedResponse.toLowerCase() === 'yes';
+  const trimmedResponse = text.trim().toLowerCase();
+  return trimmedResponse.startsWith('是') || trimmedResponse.startsWith('yes');
 }

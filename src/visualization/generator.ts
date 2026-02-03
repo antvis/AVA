@@ -156,7 +156,8 @@ ${syntax}
 4. 使用 GPTVis.GPTVis 类来渲染图表
 5. 添加简单的样式使页面美观
 6. 只返回 HTML 代码，不要有其他说明文字
-7. 在 JavaScript 中，将上面的 GPT-Vis 语法作为模板字符串赋值给 visSyntax 变量，注意要正确转义特殊字符
+7. 在 JavaScript 中，将上面的 GPT-Vis 语法作为模板字符串赋值给 visSyntax 变量
+8. 注意：如果语法中包含反引号(\`)、美元符号($)或反斜杠(\\)，需要在模板字符串中用反斜杠转义
 
 参考模板：
 <!DOCTYPE html>
@@ -179,8 +180,13 @@ ${syntax}
         height: 600,
       });
       
-      // 将上面的 GPT-Vis 语法放在这里，使用模板字符串，并正确转义特殊字符
-      const visSyntax = \`...\`;
+      const visSyntax = \`vis line
+data
+  - time 2020
+    value 100
+  - time 2021
+    value 120
+title 示例图表\`;
       
       gptVis.render(visSyntax);
     </script>

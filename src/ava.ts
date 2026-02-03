@@ -144,8 +144,9 @@ export class AVA {
       }
     } catch (error) {
       // Visualization is optional, don't fail the analysis if it fails
+      const errorMessage = error instanceof Error ? error.message : String(error);
       // eslint-disable-next-line no-console
-      console.warn('Failed to generate visualization:', error);
+      console.warn('Failed to generate visualization:', errorMessage);
     }
     
     return {
