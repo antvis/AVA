@@ -38,7 +38,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\" && npm run lint-fix",
     "clean": "rimraf lib esm",
     "build:cjs": "tsc --module commonjs --outDir lib",
-    "build:esm": "tsc --module es6 --outDir esm",
+    "build:esm": "tsc --module es2020 --outDir esm",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "test": "vitest run",
     "test:watch": "vitest",
