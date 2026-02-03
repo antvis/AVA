@@ -12,8 +12,14 @@ import {
   generateSQL,
   generateDataCode,
 } from './analysis';
+import {
+  detectVisualizationIntent,
+  selectChartType,
+  generateGPTVisSyntax,
+  generateVisualizationHTML,
+} from './visualization';
 
-import type { AVAConfig, LLMConfig, DatasetInfo } from './types';
+import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse } from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 
@@ -86,7 +92,7 @@ export class AVA {
   /**
    * Analyze data using natural language query
    */
-  async analysis(query: string): Promise<string> {
+  async analysis(query: string): Promise<AnalysisResponse> {
     if (!this.dataInfo) {
       throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
     }
@@ -125,8 +131,28 @@ export class AVA {
 
     // Summarize the result using LLM
     const summary = await this.summarizeResult(query, analysisData);
+
+    // Detect visualization intent and generate visualization if needed
+    let visualizationHTML: string | undefined;
+    try {
+      const hasVisualizationIntent = await detectVisualizationIntent(query, this.llmConfig);
+      
+      if (hasVisualizationIntent && analysisData.length > 0) {
+        const chartType = await selectChartType(query, analysisData, this.llmConfig);
+        const syntax = await generateGPTVisSyntax(chartType, analysisData, query, this.llmConfig);
+        visualizationHTML = await generateVisualizationHTML(syntax, this.llmConfig);
+      }
+    } catch (error) {
+      // Visualization is optional, don't fail the analysis if it fails
+      // eslint-disable-next-line no-console
+      console.warn('Failed to generate visualization:', error);
+    }
     
-    return summary;
+    return {
+      text: summary,
+      data: analysisData,
+      visualizationHTML,
+    };
   }
 
   /**

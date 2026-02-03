@@ -27,25 +27,25 @@ async function main() {
     // Example 1: Loan status distribution
     console.log('Query 1: What is the distribution of loan status?');
     const response1 = await ava.analysis('What is the distribution of loan status?');
-    console.log('Response:', response1);
+    console.log('Response:', response1.text);
     console.log('\n---\n');
 
     // Example 2: Average loan amount by education
     console.log('Query 2: What is the average principal by education level?');
     const response2 = await ava.analysis('What is the average principal by education level?');
-    console.log('Response:', response2);
+    console.log('Response:', response2.text);
     console.log('\n---\n');
 
     // Example 3: Gender analysis
     console.log('Query 3: How many loans by gender?');
     const response3 = await ava.analysis('How many loans by gender?');
-    console.log('Response:', response3);
+    console.log('Response:', response3.text);
     console.log('\n---\n');
 
     // Example 4: Age analysis
     console.log('Query 4: What is the average age of borrowers?');
     const response4 = await ava.analysis('What is the average age of borrowers?');
-    console.log('Response:', response4);
+    console.log('Response:', response4.text);
     
   } catch (error) {
     console.error('Error:', error instanceof Error ? error.message : String(error));

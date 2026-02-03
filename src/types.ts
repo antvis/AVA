@@ -64,4 +64,6 @@ export interface AnalysisResponse {
   data?: any[];
   /** Optional markdown content */
   markdown?: string;
+  /** Optional visualization HTML code */
+  visualizationHTML?: string;
 }

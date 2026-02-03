@@ -27,25 +27,25 @@ async function main() {
     // Example 1: Age analysis
     console.log('Query 1: What is the average age of patients?');
     const response1 = await ava.analysis('What is the average age of patients?');
-    console.log('Response:', response1);
+    console.log('Response:', response1.text);
     console.log('\n---\n');
 
     // Example 2: Gender distribution
     console.log('Query 2: How many patients with heart disease by gender?');
     const response2 = await ava.analysis('How many patients with heart disease by gender?');
-    console.log('Response:', response2);
+    console.log('Response:', response2.text);
     console.log('\n---\n');
 
     // Example 3: Disease prevalence
     console.log('Query 3: What percentage of patients have heart disease?');
     const response3 = await ava.analysis('What percentage of patients have heart disease?');
-    console.log('Response:', response3);
+    console.log('Response:', response3.text);
     console.log('\n---\n');
 
     // Example 4: Cholesterol analysis
     console.log('Query 4: What is the average cholesterol level for patients with heart disease?');
     const response4 = await ava.analysis('What is the average cholesterol level for patients with heart disease?');
-    console.log('Response:', response4);
+    console.log('Response:', response4.text);
     
   } catch (error) {
     console.error('Error:', error instanceof Error ? error.message : String(error));

@@ -35,19 +35,19 @@ async function main() {
     // Example 1: Find city with highest GDP
     console.log('Query 1: Which city has the highest GDP?');
     const response1 = await ava.analysis('Which city has the highest GDP?');
-    console.log('Response:', response1);
+    console.log('Response:', response1.text);
     console.log('\n---\n');
 
     // Example 2: Calculate average population
     console.log('Query 2: What is the average population of these cities?');
     const response2 = await ava.analysis('What is the average population of these cities?');
-    console.log('Response:', response2);
+    console.log('Response:', response2.text);
     console.log('\n---\n');
 
     // Example 3: Sort by GDP per capita
     console.log('Query 3: Sort cities by GDP per capita (GDP/population)');
     const response3 = await ava.analysis('Sort cities by GDP per capita, calculated as GDP divided by population');
-    console.log('Response:', response3);
+    console.log('Response:', response3.text);
     
   } catch (error) {
     console.error('Error:', error instanceof Error ? error.message : String(error));
