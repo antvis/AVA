@@ -39,14 +39,18 @@ async function main() {
     console.log('Query: 绘制各城市GDP的柱状图');
     const response = await ava.analysis('绘制各城市GDP的柱状图');
     
-    console.log('Response Text:', response.text);
-    console.log('\nVisualization Generated:', response.visualizationHTML ? 'Yes' : 'No');
+    console.log('\n✓ Response Text:', response.text);
     
+    // Show visualization Syntax in console (truncated)
+    if (response.visualizationSyntax) {
+      console.log('\n✓ Response Visualization Syntax:', response.visualizationSyntax);
+    }
+
     // Save visualization HTML if generated
     if (response.visualizationHTML) {
       const outputPath = path.join(__dirname, '../output-visualization.html');
       fs.writeFileSync(outputPath, response.visualizationHTML);
-      console.log(`\n✓ Visualization HTML saved to: ${outputPath}`);
+      console.log(`\n✓ Response Visualization HTML saved to: ${outputPath}`);
       console.log('Open this file in a browser to view the visualization.');
     }
 
