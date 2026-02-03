@@ -26,10 +26,13 @@ export async function loadCSV(filePathOrContent: string): Promise<any[]> {
   let content: string;
   
   // Check if running in Node.js environment and input looks like a file path
-  if (typeof process !== 'undefined' && process.versions?.node && !filePathOrContent.includes('\n') && !filePathOrContent.includes(',')) {
+  // Path patterns: starts with ./ ../ / or drive letter (Windows)
+  const isLikelyFilePath = /^(\.\/|\.\.\/|\/|[a-zA-Z]:\\)/.test(filePathOrContent);
+  
+  if (typeof process !== 'undefined' && process.versions?.node && isLikelyFilePath) {
     // Node.js: read from file system
-    const fs = await import('fs');
-    content = fs.readFileSync(filePathOrContent, 'utf-8');
+    const fs = await import('fs/promises');
+    content = await fs.readFile(filePathOrContent, 'utf-8');
   } else {
     // Browser or content string: use as-is
     content = filePathOrContent;
