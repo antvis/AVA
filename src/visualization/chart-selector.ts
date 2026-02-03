@@ -38,12 +38,13 @@ function analyzeDataStructure(data: any[]): string {
 
 /**
  * Select appropriate chart type based on user query and data
+ * Returns null if no visualization intent is detected
  */
 export async function selectChartType(
   query: string,
   data: any[],
   llmConfig: LLMConfig
-): Promise<ChartType> {
+): Promise<ChartType | null> {
   const openai = createOpenAI({
     apiKey: llmConfig.apiKey,
     baseURL: llmConfig.baseURL,
@@ -51,7 +52,7 @@ export async function selectChartType(
 
   const dataInfo = analyzeDataStructure(data);
 
-  const prompt = `你是一个图表推荐专家。根据用户的查询和数据特征，推荐最合适的图表类型。
+  const prompt = `你是一个图表推荐专家。根据用户的查询和数据特征，判断是否需要可视化，如果需要则推荐最合适的图表类型。
 
 ## 用户查询
 ${query}
@@ -76,14 +77,21 @@ ${dataInfo}
 - 展示流量流向 → sankey (桑基图)
 - 展示详细数据明细 → table (表格)
 
-请只回复图表类型的英文名称（如 line、column、pie 等），不要有其他内容。`;
+如果用户查询包含可视化意图（如：绘制、画图、展示图表、趋势、占比等），请只回复图表类型的英文名称（如 line、column、pie 等）。
+如果用户查询不包含可视化意图，请回复"none"。
+不要有其他内容。`;
 
   const { text } = await generateText({
     model: openai(llmConfig.model) as any,
     prompt,
   });
 
-  const chartType = text.trim();
+  const chartType = text.trim().toLowerCase();
+  
+  // Check if no visualization intent
+  if (chartType === 'none' || chartType === '否' || chartType === 'no') {
+    return null;
+  }
   
   // Validate that the chart type is valid
   const validChartTypes: ChartType[] = [
@@ -96,6 +104,6 @@ ${dataInfo}
     return chartType as ChartType;
   }
   
-  // Default to column chart if invalid
-  return 'column';
+  // If invalid response but not explicitly "none", return null (no intent)
+  return null;
 }

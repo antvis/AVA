@@ -13,7 +13,6 @@ import {
   generateDataCode,
 } from './analysis';
 import {
-  detectVisualizationIntent,
   selectChartType,
   generateGPTVisSyntax,
   generateVisualizationHTML,
@@ -135,10 +134,11 @@ export class AVA {
     // Detect visualization intent and generate visualization if needed
     let visualizationHTML: string | undefined;
     try {
-      const hasVisualizationIntent = await detectVisualizationIntent(query, this.llmConfig);
+      // selectChartType now handles both intent detection and chart selection
+      // Returns null if no visualization intent detected
+      const chartType = await selectChartType(query, analysisData, this.llmConfig);
       
-      if (hasVisualizationIntent && analysisData.length > 0) {
-        const chartType = await selectChartType(query, analysisData, this.llmConfig);
+      if (chartType && analysisData.length > 0) {
         const syntax = await generateGPTVisSyntax(chartType, analysisData, query, this.llmConfig);
         visualizationHTML = await generateVisualizationHTML(syntax, this.llmConfig);
       }
