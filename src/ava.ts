@@ -13,7 +13,7 @@ import {
   generateDataCode,
 } from './analysis';
 import {
-  selectChartType,
+  adviseChartType,
   generateVisualizationHTML,
 } from './visualization';
 
@@ -133,9 +133,9 @@ export class AVA {
     // Detect visualization intent and generate visualization if needed
     let visualizationHTML: string | undefined;
     try {
-      // selectChartType now handles both intent detection and chart selection
+      // adviseChartType now handles both intent detection and chart selection
       // Returns null if no visualization intent detected
-      const chartType = await selectChartType(query, analysisData, this.llmConfig);
+      const chartType = await adviseChartType(query, analysisData, this.llmConfig);
       
       if (chartType && analysisData.length > 0) {
         // generateVisualizationHTML now combines syntax generation and HTML generation
