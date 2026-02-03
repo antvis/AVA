@@ -1,20 +1,10 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { AVA } from '@antv/ava';
+import type { LLMConfig, AnalysisResponse } from '@antv/ava';
 
 // Types for the application
-interface LLMConfig {
-  model: string;
-  apiKey: string;
-  baseURL: string;
-}
-
 interface DataRow {
   [key: string]: string | number | boolean | null;
-}
-
-interface AnalysisResult {
-  text: string;
-  data?: DataRow[];
-  visualizationHTML?: string;
 }
 
 // Default LLM config
@@ -94,288 +84,6 @@ const parseCSV = (csvContent: string): DataRow[] => {
   }
   
   return data;
-};
-
-// Extract structured data from text using LLM
-const extractDataFromText = async (text: string, config: LLMConfig): Promise<DataRow[]> => {
-  const response = await fetch(`${config.baseURL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: config.model,
-      messages: [
-        {
-          role: 'system',
-          content: `You are a data extraction assistant. Extract structured data from the text and return it as a JSON array of objects.
-The text may contain data in various formats. Your task is to:
-1. Identify the structure and pattern in the data
-2. Extract all data points
-3. Return a JSON array where each element is an object with appropriate key-value pairs
-4. Ensure all objects have the same keys (columns)
-5. Use meaningful key names based on the context
-Return ONLY the JSON array, no additional text or explanation.`
-        },
-        {
-          role: 'user',
-          content: text
-        }
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`API request failed: ${response.statusText}`);
-  }
-
-  const result = await response.json();
-  const responseText = result.choices[0]?.message?.content || '';
-  
-  // Try parsing the entire response first
-  try {
-    const data = JSON.parse(responseText);
-    if (Array.isArray(data)) {
-      return data;
-    }
-  } catch {
-    // If direct parsing fails, try to extract JSON array from response
-  }
-
-  // Extract JSON array using regex
-  const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-  if (!jsonMatch) {
-    throw new Error('Could not extract JSON array from LLM response');
-  }
-  
-  try {
-    const data = JSON.parse(jsonMatch[0]);
-    if (!Array.isArray(data)) {
-      throw new Error('LLM did not return an array');
-    }
-    return data;
-  } catch (error) {
-    throw new Error(`Failed to parse extracted JSON: ${error instanceof Error ? error.message : String(error)}`);
-  }
-};
-
-// Analyze data using LLM
-const analyzeData = async (
-  data: DataRow[],
-  query: string,
-  config: LLMConfig
-): Promise<AnalysisResult> => {
-  const dataStr = JSON.stringify(data, null, 2);
-  
-  // Analyze the data directly using LLM
-  const analysisResponse = await fetch(`${config.baseURL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: config.model,
-      messages: [
-        {
-          role: 'system',
-          content: `You are a data analysis assistant. Analyze the provided data based on the user's query.
-Provide a clear and helpful summary of your analysis.
-If the query asks for specific calculations (like sum, average, max, min, etc.), compute them and include the results.
-If the query asks for filtered data, include the relevant data rows in your response.
-
-Return your response in the following JSON format:
-{
-  "summary": "Clear explanation of the analysis result with computed values",
-  "resultData": [] // Optional: filtered or computed data rows if applicable
-}
-
-Only return valid JSON, no other text.`
-        },
-        {
-          role: 'user',
-          content: `Data:\n${dataStr}\n\nQuery: ${query}`
-        }
-      ],
-    }),
-  });
-
-  if (!analysisResponse.ok) {
-    throw new Error(`API request failed: ${analysisResponse.statusText}`);
-  }
-
-  const analysisResult = await analysisResponse.json();
-  const analysisText = analysisResult.choices[0]?.message?.content || '';
-  
-  let analysisData: DataRow[] = data;
-  let summary = '';
-  
-  try {
-    // Try to extract JSON from the response
-    const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      summary = parsed.summary || analysisText;
-      
-      // Use result data if provided, otherwise use original data
-      if (parsed.resultData && Array.isArray(parsed.resultData) && parsed.resultData.length > 0) {
-        analysisData = parsed.resultData;
-      }
-    } else {
-      summary = analysisText;
-    }
-  } catch {
-    summary = analysisText;
-  }
-
-  // Check if visualization is needed
-  const visCheckResponse = await fetch(`${config.baseURL}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${config.apiKey}`,
-    },
-    body: JSON.stringify({
-      model: config.model,
-      messages: [
-        {
-          role: 'system',
-          content: `Determine if the user's query needs a visualization.
-If yes, return one of these chart types: line, column, bar, pie, area, scatter
-If no visualization is needed, return "none"
-Only return the chart type or "none", nothing else.`
-        },
-        {
-          role: 'user',
-          content: query
-        }
-      ],
-    }),
-  });
-
-  const visCheckResult = await visCheckResponse.json();
-  const chartType = visCheckResult.choices[0]?.message?.content?.trim().toLowerCase() || 'none';
-  
-  let visualizationHTML: string | undefined;
-  
-  if (chartType !== 'none' && ['line', 'column', 'bar', 'pie', 'area', 'scatter'].includes(chartType)) {
-    // Generate visualization
-    const visResponse = await fetch(`${config.baseURL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${config.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: config.model,
-        messages: [
-          {
-            role: 'system',
-            content: `You are a GPT-Vis visualization expert. Generate a complete HTML file with GPT-Vis syntax.
-
-## Chart Type: ${chartType}
-
-## GPT-Vis Syntax Examples:
-
-### Line Chart
-\`\`\`
-vis line
-data
-  - time 2020
-    value 100
-  - time 2021
-    value 120
-title Trend
-\`\`\`
-
-### Column Chart
-\`\`\`
-vis column
-data
-  - category A
-    value 30
-  - category B
-    value 50
-title Comparison
-\`\`\`
-
-### Pie Chart
-\`\`\`
-vis pie
-data
-  - category A
-    value 30
-  - category B
-    value 50
-title Distribution
-\`\`\`
-
-### Bar Chart
-\`\`\`
-vis bar
-data
-  - category Item1
-    value 100
-  - category Item2
-    value 200
-title Comparison
-\`\`\`
-
-## HTML Template:
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
-  <style>
-    body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f5f5f5; }
-    #container { width: 100%; height: 400px; background: white; border-radius: 8px; }
-  </style>
-</head>
-<body>
-  <div id="container"></div>
-  <script>
-    const gptVis = new GPTVis.GPTVis({ container: '#container' });
-    const visSyntax = \`[GPT-Vis syntax here]\`;
-    gptVis.render(visSyntax);
-  </script>
-</body>
-</html>
-
-Generate a complete HTML file with the correct GPT-Vis syntax for the data. Return ONLY the HTML code.`
-          },
-          {
-            role: 'user',
-            content: `Data:\n${JSON.stringify(analysisData.slice(0, 20), null, 2)}\n\nQuery: ${query}`
-          }
-        ],
-      }),
-    });
-
-    const visResult = await visResponse.json();
-    let visHTML: string = visResult.choices[0]?.message?.content || '';
-    
-    // Clean up the HTML if it's wrapped in code blocks
-    if (visHTML.includes('```html')) {
-      const match = visHTML.match(/```html\s*([\s\S]*?)```/);
-      if (match) {
-        visHTML = match[1].trim();
-      }
-    } else if (visHTML.includes('```')) {
-      const match = visHTML.match(/```\s*([\s\S]*?)```/);
-      if (match) {
-        visHTML = match[1].trim();
-      }
-    }
-    visualizationHTML = visHTML;
-  }
-
-  return {
-    text: summary,
-    data: analysisData,
-    visualizationHTML,
-  };
 };
 
 // Header Component
@@ -482,7 +190,7 @@ const ConfigModal: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-2">Base URL</label>
             <input
               type="text"
-              value={localConfig.baseURL}
+              value={localConfig.baseURL || ''}
               onChange={e => setLocalConfig({ ...localConfig, baseURL: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all"
               placeholder="https://api.example.com/v1"
@@ -511,7 +219,7 @@ const ConfigModal: React.FC<{
 
 // Data Import Section
 const DataImport: React.FC<{
-  onDataLoaded: (data: DataRow[]) => void;
+  onDataLoaded: (data: DataRow[], avaInstance: AVA) => void;
   llmConfig: LLMConfig;
 }> = ({ onDataLoaded, llmConfig }) => {
   const [textInput, setTextInput] = useState('');
@@ -530,8 +238,20 @@ const DataImport: React.FC<{
     setError(null);
 
     try {
-      const data = await extractDataFromText(textInput, llmConfig);
-      onDataLoaded(data);
+      // Initialize AVA with LLM config
+      const ava = new AVA({
+        llm: llmConfig,
+        sqlThreshold: 1024 * 1024 * 100, // 100MB threshold to avoid SQLite in browser
+      });
+
+      // Use AVA's loadText to extract structured data from text
+      await ava.loadText(textInput);
+
+      // Get the data for preview by running a simple analysis
+      const response = await ava.analysis('Show all data rows as JSON array');
+      const data = response.data || [];
+      
+      onDataLoaded(data, ava);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to extract data');
     } finally {
@@ -543,16 +263,34 @@ const DataImport: React.FC<{
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!llmConfig.apiKey) {
+      setError('Please configure your LLM API key first');
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
       const content = await file.text();
-      const data = parseCSV(content);
-      if (data.length === 0) {
+      
+      // Parse CSV in browser
+      const parsedData = parseCSV(content);
+      
+      if (parsedData.length === 0) {
         throw new Error('No valid data found in CSV file');
       }
-      onDataLoaded(data);
+
+      // Initialize AVA with LLM config
+      const ava = new AVA({
+        llm: llmConfig,
+        sqlThreshold: 1024 * 1024 * 100, // 100MB threshold to avoid SQLite in browser
+      });
+
+      // Use AVA's loadObject to load the parsed data
+      await ava.loadObject(parsedData);
+      
+      onDataLoaded(parsedData, ava);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse CSV');
     } finally {
@@ -715,34 +453,30 @@ const DataPreview: React.FC<{ data: DataRow[] }> = ({ data }) => {
 
 // Visualization Section
 const Visualization: React.FC<{
-  data: DataRow[];
-  llmConfig: LLMConfig;
-}> = ({ data, llmConfig }) => {
+  avaInstance: AVA | null;
+}> = ({ avaInstance }) => {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const handleGenerate = useCallback(async () => {
-    if (!query.trim() || data.length === 0) return;
-    if (!llmConfig.apiKey) {
-      setError('Please configure your LLM API key first');
-      return;
-    }
+    if (!query.trim() || !avaInstance) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const analysisResult = await analyzeData(data, query, llmConfig);
+      // Use AVA's analysis method to process the query
+      const analysisResult = await avaInstance.analysis(query);
       setResult(analysisResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed');
     } finally {
       setIsLoading(false);
     }
-  }, [query, data, llmConfig]);
+  }, [query, avaInstance]);
 
   // Update iframe content when visualization changes
   useEffect(() => {
@@ -772,11 +506,11 @@ const Visualization: React.FC<{
           onKeyDown={e => e.key === 'Enter' && handleGenerate()}
           placeholder="Create a trend line comparing North America and Europe sales growth"
           className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all text-sm"
-          disabled={data.length === 0}
+          disabled={!avaInstance}
         />
         <button
           onClick={handleGenerate}
-          disabled={isLoading || !query.trim() || data.length === 0}
+          disabled={isLoading || !query.trim() || !avaInstance}
           className="flex items-center gap-2 px-6 py-3 bg-[#78d3f8] hover:bg-[#4ec4ef] disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl transition-colors whitespace-nowrap"
         >
           {isLoading ? (
@@ -871,15 +605,36 @@ function App() {
   const [llmConfig, setLLMConfig] = useState<LLMConfig>(loadLLMConfig);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [data, setData] = useState<DataRow[]>([]);
+  const [avaInstance, setAvaInstance] = useState<AVA | null>(null);
 
   const handleSaveConfig = (config: LLMConfig) => {
     setLLMConfig(config);
     saveLLMConfig(config);
+    // Reset AVA instance when config changes
+    if (avaInstance) {
+      avaInstance.dispose();
+      setAvaInstance(null);
+    }
+    setData([]);
   };
 
-  const handleDataLoaded = (newData: DataRow[]) => {
+  const handleDataLoaded = (newData: DataRow[], ava: AVA) => {
+    // Dispose previous instance if exists
+    if (avaInstance) {
+      avaInstance.dispose();
+    }
     setData(newData);
+    setAvaInstance(ava);
   };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (avaInstance) {
+        avaInstance.dispose();
+      }
+    };
+  }, [avaInstance]);
 
   return (
     <div className="min-h-screen bg-[#f8fbfc]">
@@ -900,7 +655,7 @@ function App() {
         <div className="space-y-6">
           <DataImport onDataLoaded={handleDataLoaded} llmConfig={llmConfig} />
           <DataPreview data={data} />
-          <Visualization data={data} llmConfig={llmConfig} />
+          <Visualization avaInstance={avaInstance} />
         </div>
       </main>
 
