@@ -42,16 +42,45 @@ const saveLLMConfig = (config: LLMConfig) => {
   localStorage.setItem('ava-llm-config', JSON.stringify(config));
 };
 
-// Simple CSV parser for browser
+// RFC 4180 compliant CSV parser for browser
 const parseCSV = (csvContent: string): DataRow[] => {
   const lines = csvContent.trim().split('\n');
   if (lines.length < 2) return [];
   
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+  // Parse a CSV line handling quoted values with commas
+  const parseLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          // Escaped quote
+          current += '"';
+          i++;
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
+  
+  const headers = parseLine(lines[0]).map(h => h.replace(/^["']|["']$/g, ''));
   const data: DataRow[] = [];
   
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',').map(v => v.trim().replace(/^["']|["']$/g, ''));
+    const values = parseLine(lines[i]).map(v => v.replace(/^["']|["']$/g, ''));
     if (values.length === headers.length) {
       const row: DataRow = {};
       headers.forEach((header, index) => {
@@ -139,7 +168,7 @@ const analyzeData = async (
 ): Promise<AnalysisResult> => {
   const dataStr = JSON.stringify(data, null, 2);
   
-  // First, analyze the data
+  // Analyze the data directly using LLM
   const analysisResponse = await fetch(`${config.baseURL}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -152,13 +181,14 @@ const analyzeData = async (
         {
           role: 'system',
           content: `You are a data analysis assistant. Analyze the provided data based on the user's query.
-First, write JavaScript code to process the data and get the result.
-Then, provide a clear summary of the findings.
+Provide a clear and helpful summary of your analysis.
+If the query asks for specific calculations (like sum, average, max, min, etc.), compute them and include the results.
+If the query asks for filtered data, include the relevant data rows in your response.
 
 Return your response in the following JSON format:
 {
-  "code": "// JavaScript code to process the data (data variable is available)",
-  "summary": "Clear explanation of the analysis result"
+  "summary": "Clear explanation of the analysis result with computed values",
+  "resultData": [] // Optional: filtered or computed data rows if applicable
 }
 
 Only return valid JSON, no other text.`
@@ -178,7 +208,7 @@ Only return valid JSON, no other text.`
   const analysisResult = await analysisResponse.json();
   const analysisText = analysisResult.choices[0]?.message?.content || '';
   
-  let analysisData: DataRow[] = [];
+  let analysisData: DataRow[] = data;
   let summary = '';
   
   try {
@@ -188,26 +218,15 @@ Only return valid JSON, no other text.`
       const parsed = JSON.parse(jsonMatch[0]);
       summary = parsed.summary || analysisText;
       
-      if (parsed.code) {
-        try {
-          // Execute the code safely
-          const fn = new Function('data', `
-            ${parsed.code}
-            return typeof result !== 'undefined' ? result : data;
-          `);
-          const result = fn(data);
-          analysisData = Array.isArray(result) ? result : [result];
-        } catch {
-          analysisData = data;
-        }
+      // Use result data if provided, otherwise use original data
+      if (parsed.resultData && Array.isArray(parsed.resultData) && parsed.resultData.length > 0) {
+        analysisData = parsed.resultData;
       }
     } else {
       summary = analysisText;
-      analysisData = data;
     }
   } catch {
     summary = analysisText;
-    analysisData = data;
   }
 
   // Check if visualization is needed
@@ -618,8 +637,8 @@ const DataPreview: React.FC<{ data: DataRow[] }> = ({ data }) => {
   const formatValue = (value: string | number | boolean | null): string => {
     if (value === null || value === undefined) return '-';
     if (typeof value === 'number') {
-      // Check if it looks like a percentage
-      if (Math.abs(value) <= 1 && String(value).includes('.')) {
+      // Check if it looks like a percentage (values between -1 and 1 exclusive, with decimals)
+      if (Math.abs(value) < 1 && value !== 0 && String(value).includes('.')) {
         return `${(value * 100).toFixed(0)}%`;
       }
       return value.toLocaleString();
@@ -629,7 +648,7 @@ const DataPreview: React.FC<{ data: DataRow[] }> = ({ data }) => {
 
   const getValueColor = (value: string | number | boolean | null): string => {
     if (typeof value === 'number') {
-      if (value > 0 && Math.abs(value) <= 1) return 'text-green-500';
+      if (value > 0 && Math.abs(value) < 1) return 'text-green-500';
       if (value < 0) return 'text-red-500';
     }
     if (typeof value === 'string') {
@@ -809,7 +828,7 @@ const Visualization: React.FC<{
                 <div className="w-8 h-24 bg-[#78d3f8] rounded-t-lg" />
                 <div className="w-8 h-20 bg-[#78d3f8] rounded-t-lg" />
                 <div className="w-8 h-28 bg-[#78d3f8] rounded-t-lg" />
-                <div className="w-8 h-22 bg-[#78d3f8] rounded-t-lg" />
+                <div className="w-8 h-[88px] bg-[#78d3f8] rounded-t-lg" />
               </div>
               {/* Sparkle icon */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl">
