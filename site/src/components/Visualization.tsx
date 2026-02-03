@@ -88,23 +88,23 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
         </div>
       )}
 
-      {/* Preview Area */}
+      {/* Analysis Summary - Always show when result.text exists */}
+      {result && result.text && (
+        <div className="mb-4 p-4 bg-gray-50 rounded-xl">
+          <h4 className="text-sm font-medium text-gray-700 mb-2">Analysis Summary</h4>
+          <p className="text-sm text-gray-600">{result.text}</p>
+        </div>
+      )}
+
+      {/* Preview Area - Show visualization iframe only if visualizationHTML exists */}
       <div className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-        {result ? (
-          result.visualizationHTML ? (
-            <iframe
-              ref={iframeRef}
-              className="w-full h-[400px] border-0"
-              title="Visualization"
-              sandbox="allow-scripts"
-            />
-          ) : (
-            <div className="p-6">
-              <pre className="whitespace-pre-wrap text-sm text-gray-700 font-mono bg-gray-50 rounded-lg p-4">
-                {result.text}
-              </pre>
-            </div>
-          )
+        {result && result.visualizationHTML ? (
+          <iframe
+            ref={iframeRef}
+            className="w-full h-[400px] border-0"
+            title="Visualization"
+            sandbox="allow-scripts"
+          />
         ) : (
           <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-gray-400">
             <div className="relative mb-4">
@@ -133,14 +133,6 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
           </div>
         )}
       </div>
-
-      {/* Analysis Summary */}
-      {result && !result.visualizationHTML && result.text && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-xl">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Analysis Summary</h4>
-          <p className="text-sm text-gray-600">{result.text}</p>
-        </div>
-      )}
     </div>
   );
 };
