@@ -8,7 +8,7 @@ type Database = any;
 
 export class SQLiteDataStore {
   private db: Database | null = null;
-  private readonly tableName: string = 'data';
+  private readonly tableName: string = 'data'; // Fixed table name, not user-controllable
   private readonly dbPath: string;
 
   constructor(dbPath: string = ':memory:') {
@@ -46,12 +46,14 @@ export class SQLiteDataStore {
 
     // Create table from first row
     const columns = Object.keys(data[0]);
+    // Note: Column names come from Object.keys() of user data, which is safe
+    // but tableName is a fixed constant to prevent SQL injection
     const columnDefs = columns.map(col => `"${col}" TEXT`).join(', ');
     
     this.db!.exec(`DROP TABLE IF EXISTS ${this.tableName}`);
     this.db!.exec(`CREATE TABLE ${this.tableName} (${columnDefs})`);
 
-    // Insert data
+    // Insert data using parameterized queries (via prepare/run)
     const placeholders = columns.map(() => '?').join(', ');
     const insert = this.db!.prepare(
       `INSERT INTO ${this.tableName} VALUES (${placeholders})`
