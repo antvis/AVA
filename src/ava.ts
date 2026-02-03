@@ -38,34 +38,46 @@ export class AVA {
 
   /**
    * Load CSV file
+   * @returns The loaded structured data
    */
-  async loadCSV(filePath: string): Promise<void> {
+  async loadCSV(filePath: string): Promise<any[]> {
     this.data = await loadCSV(filePath);
+    const loadedData = [...this.data];
     await this.processLoadedData();
+    return loadedData;
   }
 
   /**
    * Load data from JSON object array
+   * @returns The loaded structured data
    */
-  async loadObject(data: any[]): Promise<void> {
+  async loadObject(data: any[]): Promise<any[]> {
     this.data = await loadObject(data);
+    const loadedData = [...this.data];
     await this.processLoadedData();
+    return loadedData;
   }
 
   /**
    * Load data from URL
+   * @returns The loaded structured data
    */
-  async loadURL(url: string, transform?: (response: any) => any[]): Promise<void> {
+  async loadURL(url: string, transform?: (response: any) => any[]): Promise<any[]> {
     this.data = await loadURL(url, transform);
+    const loadedData = [...this.data];
     await this.processLoadedData();
+    return loadedData;
   }
 
   /**
    * Load data from text using LLM
+   * @returns The loaded structured data
    */
-  async loadText(text: string): Promise<void> {
+  async loadText(text: string): Promise<any[]> {
     this.data = await loadText(text, this.llmConfig);
+    const loadedData = [...this.data];
     await this.processLoadedData();
+    return loadedData;
   }
 
   /**
@@ -96,11 +108,14 @@ export class AVA {
     }
 
     let analysisData: any[] = [];
+    let analysisCode: string | undefined;
+    let analysisSql: string | undefined;
 
     // Use SQLite for large datasets
     if (this.sqliteStore) {
       const schema = await this.sqliteStore.getSchema();
       const sql = await generateSQL(this.llmConfig, schema, query);
+      analysisSql = sql;
       
       try {
         analysisData = await this.sqliteStore.query(sql);
@@ -117,6 +132,7 @@ export class AVA {
 
       const dataInfoStr = formatDatasetInfo(this.dataInfo);
       const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
+      analysisCode = code;
 
       try {
         analysisData = await executeDataCode(this.data, code);
@@ -154,6 +170,8 @@ export class AVA {
     return {
       text: summary,
       data: analysisData,
+      code: analysisCode,
+      sql: analysisSql,
       visualizationSyntax,
       visualizationHTML,
     };

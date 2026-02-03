@@ -68,6 +68,10 @@ export interface AnalysisResponse {
   visualizationSyntax?: string;
   /** Optional visualization HTML code */
   visualizationHTML?: string;
+  /** Optional JavaScript code used for data analysis (for small datasets) */
+  code?: string;
+  /** Optional SQL query used for data analysis (for large datasets with SQLite) */
+  sql?: string;
 }
 
 /**
