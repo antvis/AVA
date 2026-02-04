@@ -37,23 +37,29 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
   useEffect(() => {
     if (result?.visualizationHTML && iframeRef.current) {
       const htmlContent = result.visualizationHTML; // Capture to maintain type narrowing
+      const iframe = iframeRef.current;
+      
+      // Handler to write content after iframe resets
+      const handleLoad = () => {
+        const doc = iframe.contentDocument;
+        if (doc) {
+          doc.open();
+          doc.write(htmlContent);
+          doc.close();
+        }
+        iframe.removeEventListener('load', handleLoad);
+      };
+      
+      // Listen for load event before resetting
+      iframe.addEventListener('load', handleLoad);
       
       // Reset iframe by setting src to about:blank to clear previous context
-      iframeRef.current.src = 'about:blank';
+      iframe.src = 'about:blank';
       
-      // Wait for iframe to reset, then write new content
-      const timer = setTimeout(() => {
-        if (iframeRef.current) {
-          const doc = iframeRef.current.contentDocument;
-          if (doc) {
-            doc.open();
-            doc.write(htmlContent);
-            doc.close();
-          }
-        }
-      }, 0);
-      
-      return () => clearTimeout(timer);
+      // Cleanup function
+      return () => {
+        iframe.removeEventListener('load', handleLoad);
+      };
     }
   }, [result?.visualizationHTML]);
 
