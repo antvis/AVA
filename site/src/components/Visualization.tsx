@@ -138,7 +138,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
             ref={iframeRef}
             className="w-full h-[400px] border-0"
             title="Visualization"
-            sandbox="allow-scripts"
+            sandbox="allow-scripts allow-same-origin"
           />
         </div>
       )}
