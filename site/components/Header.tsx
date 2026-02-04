@@ -1,17 +1,20 @@
+'use client'
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface HeaderProps {
   onOpenConfig: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
-  const location = useLocation();
+  const pathname = usePathname();
   
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1">
+        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1">
           <img 
             src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original" 
             alt="AVA ChartGenie Logo" 
@@ -21,9 +24,9 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
         </Link>
         <div className="flex items-center gap-4">
           <Link
-            to="/documentation"
+            href="/documentation"
             className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
-              location.pathname === '/documentation'
+              pathname === '/documentation' || pathname === '/documentation/'
                 ? 'text-[#78d3f8] bg-[#78d3f8]/10'
                 : 'text-gray-600 hover:text-[#78d3f8] hover:bg-[#78d3f8]/10'
             }`}

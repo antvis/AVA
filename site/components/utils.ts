@@ -9,6 +9,11 @@ export const DEFAULT_LLM_CONFIG: LLMConfig = {
 
 // Load LLM config from localStorage
 export const loadLLMConfig = (): LLMConfig => {
+  // Check if running in browser
+  if (typeof window === 'undefined') {
+    return DEFAULT_LLM_CONFIG;
+  }
+  
   try {
     const saved = localStorage.getItem('ava-llm-config');
     if (saved) {
@@ -22,7 +27,9 @@ export const loadLLMConfig = (): LLMConfig => {
 
 // Save LLM config to localStorage
 export const saveLLMConfig = (config: LLMConfig) => {
-  localStorage.setItem('ava-llm-config', JSON.stringify(config));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('ava-llm-config', JSON.stringify(config));
+  }
 };
 
 // RFC 4180 compliant CSV parser for browser
