@@ -17,7 +17,7 @@ body {
 /* Playful left-right jumping animation that respects prefers-reduced-motion */
 .ava-pulse {
   display: inline-block;
-  animation: jump-horizontal 1.2s ease-in-out infinite;
+  animation: jump-horizontal 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -29,27 +29,35 @@ body {
 @keyframes jump-horizontal {
   0% {
     transform: translate(0, 0);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
   }
   12.5% {
     transform: translate(-3px, -8px);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
   }
   25% {
     transform: translate(-5px, 0);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
   }
   37.5% {
     transform: translate(-3px, -8px);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
   }
   50% {
     transform: translate(0, 0);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
   }
   62.5% {
     transform: translate(3px, -8px);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
   }
   75% {
     transform: translate(5px, 0);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
   }
   87.5% {
     transform: translate(3px, -8px);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
   }
   100% {
     transform: translate(0, 0);
