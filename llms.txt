@@ -49,7 +49,7 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 
 1. **Data Module**: Load from multiple sources (CSV, JSON, URL, or text)
 2. **Metadata Extract**: Type inference, statistics
-3. **Size Check**: <10KB uses JavaScript helpers, ≥10KB uses SQLite storage
+3. **Size Check**: Below threshold uses JavaScript helpers, above threshold uses SQLite storage (default threshold: 10KB, configurable)
 4. **Analysis Module**: Generate & Execute Code/SQL
 5. **LLM Summary**: Natural Language Response
 6. **Visualization Module (Optional)**: Chart generation with type detection and recommendation
@@ -77,13 +77,14 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 ### Browser Support
 - All core features work in modern browsers (Chrome, Firefox, Safari, Edge)
 - CSV loading via File API or direct content strings
-- In-memory data processing for datasets under 10KB
-- Note: SQLite is not available in browsers
+- In-memory data processing only (SQLite not available)
+- For best browser performance, keep datasets small or increase sqlThreshold
 
 ### Node.js Support
 - Full feature set including large dataset handling with SQLite
 - File system access for CSV loading
-- Automatic switching between in-memory and SQLite based on data size (10KB threshold)
+- Automatic switching between in-memory and SQLite based on data size
+- Default threshold: 10KB (configurable via sqlThreshold option)
 
 ## Best Practices
 
