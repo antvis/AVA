@@ -26,15 +26,6 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://ava.antv.vision/" />
     <script>
-      // GitHub Pages SPA redirect handler
-      (function() {
-        var redirect = sessionStorage.redirect;
-        delete sessionStorage.redirect;
-        if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect);
-        }
-      })();
-      
       // Buffer polyfill for browser compatibility with csv-parse
       window.Buffer = window.Buffer || {
         isBuffer: function() { return false; },
