@@ -21,7 +21,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
     if (!query.trim()) return;
     
     if (!avaInstance) {
-      setError('Please configure your LLM API key first');
+      setError('Please configure your LLM API key first. Click the LLM button in the header to set up.');
       return;
     }
 
@@ -113,7 +113,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm" role="alert" aria-live="assertive">
           {error}
         </div>
       )}
