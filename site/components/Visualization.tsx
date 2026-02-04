@@ -19,6 +19,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
+  const [isHoveringChart, setIsHoveringChart] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Restore query and result from localStorage on mount
@@ -91,6 +92,66 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
   // Get analysis code (JavaScript or SQL)
   const analysisCode = result?.code || result?.sql;
+
+  // Download chart as PNG
+  const handleDownload = useCallback(async () => {
+    if (!iframeRef.current) return;
+    
+    try {
+      const iframe = iframeRef.current;
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+      
+      if (!iframeDoc) {
+        console.error('Cannot access iframe document');
+        return;
+      }
+
+      // Use html2canvas library to capture iframe content
+      // We need to import it dynamically for client-side rendering
+      const html2canvas = (await import('html2canvas')).default;
+      
+      const canvas = await html2canvas(iframeDoc.body, {
+        backgroundColor: '#ffffff',
+        scale: 2, // Higher quality
+      });
+      
+      // Convert canvas to blob and download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `chart-${Date.now()}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+    } catch (error) {
+      console.error('Failed to download chart:', error);
+      setError('Failed to download chart. Please try again.');
+    }
+  }, []);
+
+  // Copy code to clipboard
+  const handleCopy = useCallback(async () => {
+    const contentToCopy = analysisCode || result?.visualizationHTML || '';
+    
+    if (!contentToCopy) {
+      setError('No content available to copy');
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(contentToCopy);
+      // Could add a toast notification here
+      console.log('Content copied to clipboard');
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      setError('Failed to copy to clipboard. Please try again.');
+    }
+  }, [analysisCode, result?.visualizationHTML]);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -177,7 +238,40 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
       {/* Visualization Area - Only show when visualizationHTML exists */}
       {result?.visualizationHTML && (
-        <div className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        <div 
+          className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white relative"
+          onMouseEnter={() => setIsHoveringChart(true)}
+          onMouseLeave={() => setIsHoveringChart(false)}
+        >
+          {/* Action Buttons - Appear on hover */}
+          {isHoveringChart && (
+            <div className="absolute top-4 right-4 z-10 flex gap-2">
+              {/* Download Button */}
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-2 px-3 py-2 bg-white/90 hover:bg-white border border-gray-200 text-gray-700 hover:text-[#78d3f8] rounded-lg shadow-sm transition-all hover:shadow-md"
+                title="Download chart as PNG"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span className="text-sm font-medium">Download</span>
+              </button>
+              
+              {/* Copy Button */}
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-2 px-3 py-2 bg-white/90 hover:bg-white border border-gray-200 text-gray-700 hover:text-[#78d3f8] rounded-lg shadow-sm transition-all hover:shadow-md"
+                title="Copy visualization code"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span className="text-sm font-medium">Copy</span>
+              </button>
+            </div>
+          )}
+          
           <iframe
             ref={iframeRef}
             className="w-full h-[400px] border-0"
