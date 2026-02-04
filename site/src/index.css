@@ -14,31 +14,27 @@ body {
   background-color: #f8fbfc;
 }
 
-/* Playful shake animation on hover that respects prefers-reduced-motion */
+/* Playful left-right bouncing animation that respects prefers-reduced-motion */
 .ava-pulse {
   display: inline-block;
-  cursor: pointer;
-}
-
-.ava-pulse:hover {
-  animation: shake 0.5s ease-in-out;
+  animation: bounce-horizontal 1.5s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ava-pulse:hover {
+  .ava-pulse {
     animation: none;
   }
 }
 
-@keyframes shake {
+@keyframes bounce-horizontal {
   0%, 100% {
-    transform: translateX(0) rotate(0deg);
+    transform: translateX(0);
   }
-  10%, 30%, 50%, 70%, 90% {
-    transform: translateX(-3px) rotate(-2deg);
+  25% {
+    transform: translateX(-5px);
   }
-  20%, 40%, 60%, 80% {
-    transform: translateX(3px) rotate(2deg);
+  75% {
+    transform: translateX(5px);
   }
 }
 
