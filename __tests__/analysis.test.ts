@@ -163,6 +163,50 @@ describe('Analysis Module', () => {
       const code = 'const result = invalidFunction();';
       await expect(executeDataCode(testData, code)).rejects.toThrow();
     });
+
+    it('should execute median operation', async () => {
+      const code = 'const result = stat.median(data, "score");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toBe(87.5); // (85 + 90) / 2
+    });
+
+    it('should execute variance operation', async () => {
+      const code = 'const result = stat.variance(data, "score");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toBeCloseTo(31.25, 2); // variance of [80, 85, 90, 95]
+    });
+
+    it('should execute stdDev operation', async () => {
+      const code = 'const result = stat.stdDev(data, "score");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toBeCloseTo(5.59, 2); // sqrt(31.25) ≈ 5.59
+    });
+
+    it('should execute distinct operation', async () => {
+      const code = 'const result = stat.distinct(data, "region");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toEqual(['East', 'West']);
+    });
+
+    it('should execute filter operation', async () => {
+      const code = 'const result = stat.filter(data, item => item.score > 85);';
+      const result = await executeDataCode(testData, code);
+      expect(result.length).toBe(2);
+      expect(result[0].name).toBe('Alice');
+      expect(result[1].name).toBe('Charlie');
+    });
+
+    it('should execute first operation', async () => {
+      const code = 'const result = stat.first(data);';
+      const result = await executeDataCode(testData, code);
+      expect(result.name).toBe('Alice');
+    });
+
+    it('should execute last operation', async () => {
+      const code = 'const result = stat.last(data);';
+      const result = await executeDataCode(testData, code);
+      expect(result.name).toBe('David');
+    });
   });
 
   describe('generateSQL', () => {

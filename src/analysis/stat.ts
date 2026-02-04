@@ -85,6 +85,86 @@ export const stat = {
       return order === 'asc' ? compare : -compare;
     });
   },
+
+  /**
+   * Calculate median value for a specific key
+   * @param arr - Array to calculate median from
+   * @param key - Key to get median by
+   * @returns Median value
+   */
+  median: (arr: any[], key: string) => {
+    if (arr.length === 0) return 0;
+    const sorted = [...arr].map(item => Number(item[key]) || 0).sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+    return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+  },
+
+  /**
+   * Calculate variance for a specific key
+   * @param arr - Array to calculate variance from
+   * @param key - Key to get variance by
+   * @returns Variance value
+   */
+  variance: (arr: any[], key: string) => {
+    if (arr.length === 0) return 0;
+    const values = arr.map(item => Number(item[key]) || 0);
+    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+    const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
+    return squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+  },
+
+  /**
+   * Calculate standard deviation for a specific key
+   * @param arr - Array to calculate standard deviation from
+   * @param key - Key to get standard deviation by
+   * @returns Standard deviation value
+   */
+  stdDev: (arr: any[], key: string) => {
+    if (arr.length === 0) return 0;
+    const values = arr.map(item => Number(item[key]) || 0);
+    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+    const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
+    const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+    return Math.sqrt(variance);
+  },
+
+  /**
+   * Get distinct/unique values for a specific key
+   * @param arr - Array to get unique values from
+   * @param key - Key to get unique values by
+   * @returns Array of unique values
+   */
+  distinct: (arr: any[], key: string) => {
+    return [...new Set(arr.map(item => item[key]))];
+  },
+
+  /**
+   * Filter array by a predicate function
+   * @param arr - Array to filter
+   * @param predicate - Function that returns true for items to keep
+   * @returns Filtered array
+   */
+  filter: (arr: any[], predicate: (item: any) => boolean) => {
+    return arr.filter(predicate);
+  },
+
+  /**
+   * Get first element of array
+   * @param arr - Array to get first element from
+   * @returns First element or undefined
+   */
+  first: (arr: any[]) => {
+    return arr.length > 0 ? arr[0] : undefined;
+  },
+
+  /**
+   * Get last element of array
+   * @param arr - Array to get last element from
+   * @returns Last element or undefined
+   */
+  last: (arr: any[]) => {
+    return arr.length > 0 ? arr[arr.length - 1] : undefined;
+  },
 };
 
 /**
@@ -97,8 +177,15 @@ export const STAT_OPS_PROMPT = `You have access to a "data" array and a "stat" o
 - stat.avg(arr, key) - Average values by key
 - stat.max(arr, key) - Max value by key
 - stat.min(arr, key) - Min value by key
+- stat.median(arr, key) - Median value by key
+- stat.variance(arr, key) - Variance by key
+- stat.stdDev(arr, key) - Standard deviation by key
+- stat.distinct(arr, key) - Unique values by key
 - stat.count(arr) - Count items
-- stat.sortBy(arr, key, order) - Sort array`;
+- stat.sortBy(arr, key, order) - Sort array
+- stat.filter(arr, predicate) - Filter array by condition
+- stat.first(arr) - Get first element
+- stat.last(arr) - Get last element`;
 
 /**
  * Example usage of stat operations for LLM prompt
