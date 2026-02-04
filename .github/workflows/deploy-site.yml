@@ -31,7 +31,7 @@ jobs:
       - name: Build main package
         run: npm run build
 
-      - name: Build site
+      - name: Build site with Next.js
         run: |
           cd site
           npm install
@@ -41,7 +41,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site/dist
+          publish_dir: ./site/out
           publish_branch: gh-pages
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'

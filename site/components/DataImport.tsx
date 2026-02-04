@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useRef } from 'react';
 import { AVA } from '@antv/ava';
 import type { DataRow } from './types';

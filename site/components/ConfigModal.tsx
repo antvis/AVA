@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useEffect } from 'react';
 import type { LLMConfig } from '@antv/ava';
 

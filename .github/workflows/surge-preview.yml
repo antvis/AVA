@@ -26,7 +26,7 @@ jobs:
       - name: Build main package
         run: npm run build
       
-      - name: Build site
+      - name: Build site with Next.js
         run: |
           cd site
           npm install
@@ -36,5 +36,5 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dist: site/dist
+          dist: site/out
           build: echo "Site already built"
