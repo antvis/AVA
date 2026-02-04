@@ -1,0 +1,113 @@
+# AVA - AI-Native Visual Analytics
+
+> AVA is a technology framework designed for more convenient visual analytics, powered by AI.
+
+## Overview
+
+AVA, a complete rewrite focused on **AI-native Visual Analytics**. The first **A** has multiple meanings: AI native, Automated, Augmented, and **VA** stands for Visual Analytics. It can assist users in unstructured data loading, data processing and analysis, as well as visualization code generation.
+
+## Key Features
+
+- **Natural Language Queries**: Ask questions about your data in plain English
+- **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
+- **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
+- **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
+- **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
+
+## Quick Start
+
+```typescript
+import { AVA } from '@antv/ava';
+
+// Initialize with LLM config
+const ava = new AVA({
+  llm: {
+    model: 'ling-1t',
+    apiKey: 'YOUR_API_KEY',
+    baseURL: 'LLM_BASE_URL',
+  },
+  sqlThreshold: 1024 * 1024 * 2, // Threshold for switching to SQLite
+});
+
+// Load data from various sources
+await ava.loadCSV('data/companies.csv'); // Node.js
+await ava.loadObject([{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }]);
+await ava.loadURL('https://api.example.com/data', (response) => response.data);
+await ava.loadText('杭州 100，上海 200，北京 300');
+
+// Ask questions in natural language
+const result = await ava.analysis('What is the average revenue by region?');
+console.log(result);
+
+// Clean up
+ava.dispose();
+```
+
+## Architecture
+
+AVA uses a modular pipeline architecture that processes user queries through distinct stages:
+
+1. **Data Module**: Load from multiple sources (CSV, JSON, URL, or text)
+2. **Metadata Extract**: Type inference, statistics
+3. **Size Check**: <10KB uses JavaScript helpers, ≥10KB uses SQLite storage
+4. **Analysis Module**: Generate & Execute Code/SQL
+5. **LLM Summary**: Natural Language Response
+6. **Visualization Module (Optional)**: Chart generation with type detection and recommendation
+
+## API Reference
+
+### Constructor
+- `new AVA(options: AVAOptions)` - Initialize AVA instance with LLM configuration and options
+
+### Data Loading Methods
+- `loadCSV(content: string)` - Load data from CSV string
+- `loadObject(data: object[])` - Load data from array of objects
+- `loadURL(url: string, transform?: Function)` - Load data from URL
+- `loadText(text: string)` - Extract data from unstructured text using LLM
+
+### Analysis
+- `analysis(query: string)` - Analyze data with natural language query
+  - Returns: `{ text, code, sql, visualizationHTML }`
+
+### Cleanup
+- `dispose()` - Clean up resources and close database connections
+
+## Browser & Server Compatibility
+
+### Browser Support
+- All core features work in modern browsers (Chrome, Firefox, Safari, Edge)
+- CSV loading via File API or direct content strings
+- In-memory data processing for datasets under 10KB
+- Note: SQLite is not available in browsers
+
+### Node.js Support
+- Full feature set including large dataset handling with SQLite
+- File system access for CSV loading
+- Automatic switching between in-memory and SQLite based on data size (10KB threshold)
+
+## Best Practices
+
+- Always call `ava.dispose()` when done to free resources
+- Wrap async calls in try-catch blocks for error handling
+- Validate data format before loading
+- Set sqlThreshold based on expected data sizes
+- Never expose API keys in client-side code
+
+## Resources
+
+- GitHub Repository: https://github.com/antvis/AVA
+- Documentation: https://ava.antv.vision/documentation
+- Issues: https://github.com/antvis/AVA/issues
+- Related Projects:
+  - GPT-Vis: https://github.com/antvis/GPT-Vis
+  - Chart Visualization Skills: https://github.com/antvis/chart-visualization-skills
+  - Vercel AI SDK: https://sdk.vercel.ai/
+
+## License
+
+MIT License - Copyright (c) AntV
+
+---
+
+For full documentation, visit: https://ava.antv.vision/documentation
+For the complete README, see: https://github.com/antvis/AVA/blob/ai/README.md

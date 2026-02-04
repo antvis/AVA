@@ -1,0 +1,6 @@
+# robots.txt for AVA
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://ava.antv.vision/sitemap.xml
