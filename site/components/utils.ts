@@ -52,7 +52,16 @@ export const loadAppState = (): Partial<AppState> => {
   try {
     const saved = localStorage.getItem('ava-app-state');
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Validate basic structure to prevent security issues
+      if (typeof parsed === 'object' && parsed !== null) {
+        return {
+          data: Array.isArray(parsed.data) ? parsed.data : undefined,
+          textInput: typeof parsed.textInput === 'string' ? parsed.textInput : undefined,
+          query: typeof parsed.query === 'string' ? parsed.query : undefined,
+          analysisResult: parsed.analysisResult || undefined,
+        };
+      }
     }
   } catch (e) {
     console.error('Failed to load app state:', e);

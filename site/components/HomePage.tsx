@@ -59,7 +59,8 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
       }
     }
     setIsInitialized(true);
-  }, [avaInstance]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Cleanup on unmount
   useEffect(() => {

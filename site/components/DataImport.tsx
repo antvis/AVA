@@ -80,7 +80,6 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       
       // Save to localStorage (clear textInput since we're using file)
       saveAppState({ data, textInput: '' });
-      setTextInput('');
       
       onDataLoaded(data);
     } catch (err) {
