@@ -47,10 +47,9 @@ export const dataOps = {
    * Find maximum value for a specific key
    * @param arr - Array to search
    * @param key - Key to find max by
-   * @returns Maximum value, or 0 if array is empty
+   * @returns Maximum value
    */
   max: (arr: any[], key: string) => {
-    if (arr.length === 0) return 0;
     return Math.max(...arr.map(item => Number(item[key]) || 0));
   },
 
@@ -58,10 +57,9 @@ export const dataOps = {
    * Find minimum value for a specific key
    * @param arr - Array to search
    * @param key - Key to find min by
-   * @returns Minimum value, or 0 if array is empty
+   * @returns Minimum value
    */
   min: (arr: any[], key: string) => {
-    if (arr.length === 0) return 0;
     return Math.min(...arr.map(item => Number(item[key]) || 0));
   },
 
