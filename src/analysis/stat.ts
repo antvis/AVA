@@ -4,6 +4,17 @@
  */
 
 /**
+ * Helper function to calculate variance
+ */
+const calculateVariance = (arr: any[], key: string): number => {
+  if (arr.length === 0) return 0;
+  const values = arr.map(item => Number(item[key]) || 0);
+  const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
+  const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
+  return squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+};
+
+/**
  * Statistical operations object with data manipulation functions
  */
 export const stat = {
@@ -106,11 +117,7 @@ export const stat = {
    * @returns Variance value
    */
   variance: (arr: any[], key: string) => {
-    if (arr.length === 0) return 0;
-    const values = arr.map(item => Number(item[key]) || 0);
-    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
-    const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
-    return squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
+    return calculateVariance(arr, key);
   },
 
   /**
@@ -120,12 +127,7 @@ export const stat = {
    * @returns Standard deviation value
    */
   stdDev: (arr: any[], key: string) => {
-    if (arr.length === 0) return 0;
-    const values = arr.map(item => Number(item[key]) || 0);
-    const mean = values.reduce((sum, val) => sum + val, 0) / values.length;
-    const squaredDiffs = values.map(val => Math.pow(val - mean, 2));
-    const variance = squaredDiffs.reduce((sum, val) => sum + val, 0) / values.length;
-    return Math.sqrt(variance);
+    return Math.sqrt(calculateVariance(arr, key));
   },
 
   /**
@@ -140,6 +142,7 @@ export const stat = {
 
   /**
    * Filter array by a predicate function
+   * Provides a consistent API for filtering within generated code
    * @param arr - Array to filter
    * @param predicate - Function that returns true for items to keep
    * @returns Filtered array
