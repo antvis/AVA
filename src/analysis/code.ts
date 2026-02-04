@@ -5,7 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { dataOps, STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
+import { stat, STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
 import type { LLMConfig } from '../types';
 
@@ -20,12 +20,12 @@ export async function executeDataCode(
 ): Promise<any> {
   try {
     // Execute code with data and helper functions
-    const func = new Function('data', 'ops', `
+    const func = new Function('data', 'stat', `
       ${code}
       return result;
     `);
     
-    const result = func(data, dataOps);
+    const result = func(data, stat);
     
     return result;
   } catch (error) {

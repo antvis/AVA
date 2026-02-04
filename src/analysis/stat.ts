@@ -4,9 +4,9 @@
  */
 
 /**
- * Data operations object with statistical and data manipulation functions
+ * Statistical operations object with data manipulation functions
  */
-export const dataOps = {
+export const stat = {
   /**
    * Group array by a specific key
    * @param arr - Array to group
@@ -91,21 +91,21 @@ export const dataOps = {
  * Stat operations prompt for LLM
  * This describes the available statistical operations that can be used in generated code
  */
-export const STAT_OPS_PROMPT = `You have access to a "data" array and an "ops" object with helper functions:
-- ops.groupBy(arr, key) - Group array by key
-- ops.sum(arr, key) - Sum values by key
-- ops.avg(arr, key) - Average values by key
-- ops.max(arr, key) - Max value by key
-- ops.min(arr, key) - Min value by key
-- ops.count(arr) - Count items
-- ops.sortBy(arr, key, order) - Sort array`;
+export const STAT_OPS_PROMPT = `You have access to a "data" array and a "stat" object with helper functions:
+- stat.groupBy(arr, key) - Group array by key
+- stat.sum(arr, key) - Sum values by key
+- stat.avg(arr, key) - Average values by key
+- stat.max(arr, key) - Max value by key
+- stat.min(arr, key) - Min value by key
+- stat.count(arr) - Count items
+- stat.sortBy(arr, key, order) - Sort array`;
 
 /**
  * Example usage of stat operations for LLM prompt
  */
 export const STAT_OPS_EXAMPLE = `Example:
-const grouped = ops.groupBy(data, 'region');
+const grouped = stat.groupBy(data, 'region');
 const result = Object.keys(grouped).map(region => ({
   region,
-  avgRevenue: ops.avg(grouped[region], 'revenue')
+  avgRevenue: stat.avg(grouped[region], 'revenue')
 }));`;

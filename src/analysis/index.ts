@@ -10,6 +10,3 @@ export { generateSQL } from './sql';
 
 // Re-export code execution functionality
 export { executeDataCode, generateDataCode } from './code';
-
-// Re-export stat operations
-export { dataOps, STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
