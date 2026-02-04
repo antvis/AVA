@@ -14,9 +14,10 @@ body {
   background-color: #f8fbfc;
 }
 
-/* Accessible pulse animation that respects prefers-reduced-motion */
+/* Playful bounce and glow animation that respects prefers-reduced-motion */
 .ava-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  display: inline-block;
+  animation: playful-bounce 2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -25,12 +26,22 @@ body {
   }
 }
 
-@keyframes pulse {
+@keyframes playful-bounce {
   0%, 100% {
-    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.1) translateY(-2px);
+    filter: brightness(1.2);
   }
   50% {
-    opacity: 0.7;
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+  75% {
+    transform: scale(1.05) translateY(-1px);
+    filter: brightness(1.1);
   }
 }
 
