@@ -36,12 +36,30 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
   // Update iframe content when visualization changes
   useEffect(() => {
     if (result?.visualizationHTML && iframeRef.current) {
-      const doc = iframeRef.current.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write(result.visualizationHTML);
-        doc.close();
-      }
+      const htmlContent = result.visualizationHTML; // Capture to maintain type narrowing
+      const iframe = iframeRef.current;
+      
+      // Handler to write content after iframe resets
+      const handleLoad = () => {
+        const doc = iframe.contentDocument;
+        if (doc) {
+          doc.open();
+          doc.write(htmlContent);
+          doc.close();
+        }
+        iframe.removeEventListener('load', handleLoad);
+      };
+      
+      // Listen for load event before resetting
+      iframe.addEventListener('load', handleLoad);
+      
+      // Reset iframe by setting src to about:blank to clear previous context
+      iframe.src = 'about:blank';
+      
+      // Cleanup function
+      return () => {
+        iframe.removeEventListener('load', handleLoad);
+      };
     }
   }, [result?.visualizationHTML]);
 
@@ -138,7 +156,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
             ref={iframeRef}
             className="w-full h-[400px] border-0"
             title="Visualization"
-            sandbox="allow-scripts"
+            sandbox="allow-scripts allow-same-origin"
           />
         </div>
       )}

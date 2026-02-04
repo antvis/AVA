@@ -338,14 +338,14 @@ title 人员信息
 2. 将生成的 GPT-Vis 语法嵌入到一个完整的 HTML 文件中
 3. HTML 文件必须包含：
    - 完整的 HTML 结构 (<!DOCTYPE html>, <html>, <head>, <body>)
-   - 引入 GPT-Vis 的 UMD 版本：https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js
-   - 设置容器尺寸为 800px × 600px
+   - 引入 GPT-Vis 的 UMD 版本：https://unpkg.com/@antv/gpt-vis@beta
    - 使用 GPTVis.GPTVis 类初始化并渲染图表
    - 添加简洁美观的样式
 4. GPT-Vis 语法要求：
    - 数据字段映射必须正确
    - 根据数据特征生成合适的标题
    - 确保语法格式完全符合 GPT-Vis 规范
+   - 语法不要生成 width height，图表会按照容器自适应大小
 5. 只返回 HTML 代码，不要有任何其他说明文字
 6. 在 JavaScript 中使用模板字符串时，如果语法中包含反引号(\`)、美元符号($)或反斜杠(\\)，需要用反斜杠转义
 
@@ -356,19 +356,23 @@ title 人员信息
   <head>
     <meta charset="UTF-8">
     <title>Data Visualization</title>
-    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
+    <script src="https://unpkg.com/@antv/gpt-vis@beta"></script>
     <style>
-      body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background: #f5f5f5; }
-      #container { width: 800px; height: 600px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+      html, body, #container {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
     </style>
   </head>
   <body>
     <div id="container"></div>
     <script>
       const gptVis = new GPTVis.GPTVis({
-        container: '#container',
-        width: 800,
-        height: 600,
+        container: 'container',
       });
       
       const visSyntax = \`[这里放入根据数据生成的正确 GPT-Vis 语法]\`;
