@@ -3,7 +3,7 @@ name: Deploy Site to GitHub Pages
 on:
   push:
     branches:
-      - ai
+      - gh-pages
 
 permissions:
   contents: read
