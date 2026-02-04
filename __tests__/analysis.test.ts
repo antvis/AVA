@@ -89,41 +89,41 @@ describe('Analysis Module', () => {
     ];
 
     it('should execute simple count operation', async () => {
-      const code = 'const result = ops.count(data);';
+      const code = 'const result = stat.count(data);';
       const result = await executeDataCode(testData, code);
       expect(result).toBe(4);
     });
 
     it('should execute sum operation', async () => {
-      const code = 'const result = ops.sum(data, "score");';
+      const code = 'const result = stat.sum(data, "score");';
       const result = await executeDataCode(testData, code);
       expect(result).toBe(350);
     });
 
     it('should execute average operation', async () => {
-      const code = 'const result = ops.avg(data, "score");';
+      const code = 'const result = stat.avg(data, "score");';
       const result = await executeDataCode(testData, code);
       expect(result).toBe(87.5);
     });
 
     it('should execute max operation', async () => {
-      const code = 'const result = ops.max(data, "score");';
+      const code = 'const result = stat.max(data, "score");';
       const result = await executeDataCode(testData, code);
       expect(result).toBe(95);
     });
 
     it('should execute min operation', async () => {
-      const code = 'const result = ops.min(data, "score");';
+      const code = 'const result = stat.min(data, "score");';
       const result = await executeDataCode(testData, code);
       expect(result).toBe(80);
     });
 
     it('should execute groupBy operation', async () => {
       const code = `
-        const grouped = ops.groupBy(data, 'region');
+        const grouped = stat.groupBy(data, 'region');
         const result = Object.keys(grouped).map(region => ({
           region,
-          count: ops.count(grouped[region])
+          count: stat.count(grouped[region])
         }));
       `;
       const result = await executeDataCode(testData, code);
@@ -134,7 +134,7 @@ describe('Analysis Module', () => {
     });
 
     it('should execute sortBy operation', async () => {
-      const code = 'const result = ops.sortBy(data, "score", "desc");';
+      const code = 'const result = stat.sortBy(data, "score", "desc");';
       const result = await executeDataCode(testData, code);
       
       expect(result[0].score).toBe(95);
@@ -143,11 +143,11 @@ describe('Analysis Module', () => {
 
     it('should handle complex operations', async () => {
       const code = `
-        const grouped = ops.groupBy(data, 'region');
+        const grouped = stat.groupBy(data, 'region');
         const result = Object.keys(grouped).map(region => ({
           region,
-          avgScore: ops.avg(grouped[region], 'score'),
-          maxScore: ops.max(grouped[region], 'score')
+          avgScore: stat.avg(grouped[region], 'score'),
+          maxScore: stat.max(grouped[region], 'score')
         }));
       `;
       const result = await executeDataCode(testData, code);
@@ -162,6 +162,50 @@ describe('Analysis Module', () => {
     it('should throw error for invalid code', async () => {
       const code = 'const result = invalidFunction();';
       await expect(executeDataCode(testData, code)).rejects.toThrow();
+    });
+
+    it('should execute median operation', async () => {
+      const code = 'const result = stat.median(data, "score");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toBe(87.5); // (85 + 90) / 2
+    });
+
+    it('should execute variance operation', async () => {
+      const code = 'const result = stat.variance(data, "score");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toBeCloseTo(31.25, 2); // variance of [80, 85, 90, 95]
+    });
+
+    it('should execute stdDev operation', async () => {
+      const code = 'const result = stat.stdDev(data, "score");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toBeCloseTo(5.59, 2); // sqrt(31.25) ≈ 5.59
+    });
+
+    it('should execute distinct operation', async () => {
+      const code = 'const result = stat.distinct(data, "region");';
+      const result = await executeDataCode(testData, code);
+      expect(result).toEqual(['East', 'West']);
+    });
+
+    it('should execute filter operation', async () => {
+      const code = 'const result = stat.filter(data, item => item.score > 85);';
+      const result = await executeDataCode(testData, code);
+      expect(result.length).toBe(2);
+      expect(result[0].name).toBe('Alice');
+      expect(result[1].name).toBe('Charlie');
+    });
+
+    it('should execute first operation', async () => {
+      const code = 'const result = stat.first(data);';
+      const result = await executeDataCode(testData, code);
+      expect(result.name).toBe('Alice');
+    });
+
+    it('should execute last operation', async () => {
+      const code = 'const result = stat.last(data);';
+      const result = await executeDataCode(testData, code);
+      expect(result.name).toBe('David');
     });
   });
 
