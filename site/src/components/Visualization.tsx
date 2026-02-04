@@ -36,12 +36,22 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
   // Update iframe content when visualization changes
   useEffect(() => {
     if (result?.visualizationHTML && iframeRef.current) {
-      const doc = iframeRef.current.contentDocument;
-      if (doc) {
-        doc.open();
-        doc.write(result.visualizationHTML);
-        doc.close();
-      }
+      // Reset iframe by setting src to about:blank to clear previous context
+      iframeRef.current.src = 'about:blank';
+      
+      // Wait for iframe to reset, then write new content
+      const timer = setTimeout(() => {
+        if (iframeRef.current) {
+          const doc = iframeRef.current.contentDocument;
+          if (doc) {
+            doc.open();
+            doc.write(result.visualizationHTML);
+            doc.close();
+          }
+        }
+      }, 0);
+      
+      return () => clearTimeout(timer);
     }
   }, [result?.visualizationHTML]);
 
