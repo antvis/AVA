@@ -366,7 +366,7 @@ title 人员信息
     <div id="container"></div>
     <script>
       const gptVis = new GPTVis.GPTVis({
-        container: 'container',
+        container: '#container',
       });
       
       const visSyntax = \`[这里放入根据数据生成的正确 GPT-Vis 语法]\`;
