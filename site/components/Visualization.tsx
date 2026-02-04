@@ -4,18 +4,35 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { AVA } from '@antv/ava';
 import type { AnalysisResponse } from '@antv/ava';
+import type { DataRow } from './types';
+import { loadAppState, saveAppState } from './utils';
 
 interface VisualizationProps {
   avaInstance: AVA | null;
+  data: DataRow[];
+  isInitialized: boolean;
 }
 
-const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
+const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInitialized }) => {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Restore query and result from localStorage on mount
+  useEffect(() => {
+    if (isInitialized) {
+      const savedState = loadAppState();
+      if (savedState.query) {
+        setQuery(savedState.query);
+      }
+      if (savedState.analysisResult) {
+        setResult(savedState.analysisResult);
+      }
+    }
+  }, [isInitialized]);
 
   const handleGenerate = useCallback(async () => {
     if (!query.trim() || !avaInstance) return;
@@ -27,6 +44,9 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
       // Use the global AVA instance's analysis method to process the query
       const analysisResult = await avaInstance.analysis(query);
       setResult(analysisResult);
+      
+      // Save to localStorage
+      saveAppState({ query, analysisResult });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed');
     } finally {

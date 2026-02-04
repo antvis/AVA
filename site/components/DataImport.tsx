@@ -1,19 +1,30 @@
 'use client'
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AVA } from '@antv/ava';
 import type { DataRow } from './types';
-import { parseCSV } from './utils';
+import { parseCSV, loadAppState, saveAppState } from './utils';
 
 interface DataImportProps {
   avaInstance: AVA | null;
   onDataLoaded: (data: DataRow[]) => void;
+  isInitialized: boolean;
 }
 
-const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded }) => {
+const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isInitialized }) => {
   const [textInput, setTextInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Restore text input from localStorage on mount
+  useEffect(() => {
+    if (isInitialized) {
+      const savedState = loadAppState();
+      if (savedState.textInput) {
+        setTextInput(savedState.textInput);
+      }
+    }
+  }, [isInitialized]);
 
   const handleTextSubmit = async () => {
     if (!textInput.trim()) return;
@@ -29,6 +40,9 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded }) =>
       // Use the global AVA instance's loadText to extract structured data from text
       // The loadText API returns the loaded structured data directly
       const data = await avaInstance.loadText(textInput);
+      
+      // Save to localStorage
+      saveAppState({ data, textInput });
       
       onDataLoaded(data);
     } catch (err) {
@@ -63,6 +77,10 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded }) =>
       // Use the global AVA instance's loadObject to load the parsed data
       // The loadObject API returns the loaded structured data directly
       const data = await avaInstance.loadObject(parsedData);
+      
+      // Save to localStorage (clear textInput since we're using file)
+      saveAppState({ data, textInput: '' });
+      setTextInput('');
       
       onDataLoaded(data);
     } catch (err) {
