@@ -103,6 +103,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
       
       if (!iframeDoc) {
         console.error('Cannot access iframe document');
+        setError('Cannot access iframe document. Please try again.');
         return;
       }
 
@@ -132,7 +133,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
       console.error('Failed to download chart:', error);
       setError('Failed to download chart. Please try again.');
     }
-  }, []);
+  }, [setError]);
 
   // Copy code to clipboard
   const handleCopy = useCallback(async () => {
@@ -145,13 +146,11 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
     try {
       await navigator.clipboard.writeText(contentToCopy);
-      // Could add a toast notification here
-      console.log('Content copied to clipboard');
     } catch (error) {
       console.error('Failed to copy to clipboard:', error);
       setError('Failed to copy to clipboard. Please try again.');
     }
-  }, [analysisCode, result?.visualizationHTML]);
+  }, [analysisCode, result?.visualizationHTML, setError]);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
