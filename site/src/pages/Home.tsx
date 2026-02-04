@@ -57,7 +57,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
         {/* Hero */}
         <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-800 mb-3">
-            AI Chart Generator <span>✨</span>
+            AI Chart Generator by <span className="text-[#78d3f8] animate-pulse">AVA</span> <span>✨</span>
           </h1>
           <p className="text-gray-500">
             Turn messy data into beautiful visualizations in seconds
