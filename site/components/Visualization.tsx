@@ -101,30 +101,31 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
     }
 
     try {
+      // Helper function to escape CSV values
+      const escapeCSVValue = (value: string | number | boolean | null | undefined): string => {
+        if (value === null || value === undefined) {
+          return '';
+        }
+        const stringValue = String(value);
+        // Escape values that contain commas, quotes, or newlines
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+          return `"${stringValue.replace(/"/g, '""')}"`;
+        }
+        return stringValue;
+      };
+
       // Get column headers from the first row
       const headers = Object.keys(data[0]);
       
       // Create CSV content
       const csvRows = [];
       
-      // Add header row
-      csvRows.push(headers.join(','));
+      // Add header row with proper escaping
+      csvRows.push(headers.map(escapeCSVValue).join(','));
       
       // Add data rows
       for (const row of data) {
-        const values = headers.map(header => {
-          const value = row[header];
-          // Handle null/undefined values
-          if (value === null || value === undefined) {
-            return '';
-          }
-          // Escape values that contain commas, quotes, or newlines
-          const stringValue = String(value);
-          if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
-            return `"${stringValue.replace(/"/g, '""')}"`;
-          }
-          return stringValue;
-        });
+        const values = headers.map(header => escapeCSVValue(row[header]));
         csvRows.push(values.join(','));
       }
       
