@@ -193,9 +193,40 @@ export const STAT_OPS_PROMPT = `You have access to a "data" array and a "stat" o
 /**
  * Example usage of stat operations for LLM prompt
  */
-export const STAT_OPS_EXAMPLE = `Example:
+export const STAT_OPS_EXAMPLE = `Examples:
+
+1. Grouping and aggregation:
 const grouped = stat.groupBy(data, 'region');
 const result = Object.keys(grouped).map(region => ({
   region,
-  avgRevenue: stat.avg(grouped[region], 'revenue')
-}));`;
+  avgRevenue: stat.avg(grouped[region], 'revenue'),
+  totalSales: stat.sum(grouped[region], 'sales')
+}));
+
+2. Statistical analysis:
+const scores = data;
+const result = {
+  mean: stat.avg(scores, 'value'),
+  median: stat.median(scores, 'value'),
+  stdDev: stat.stdDev(scores, 'value'),
+  min: stat.min(scores, 'value'),
+  max: stat.max(scores, 'value')
+};
+
+3. Filtering and sorting:
+const filtered = stat.filter(data, item => item.score > 80);
+const result = stat.sortBy(filtered, 'score', 'desc');
+
+4. Finding unique values and counts:
+const categories = stat.distinct(data, 'category');
+const result = categories.map(cat => ({
+  category: cat,
+  count: stat.count(stat.filter(data, item => item.category === cat))
+}));
+
+5. Getting boundary elements:
+const result = {
+  firstEntry: stat.first(data),
+  lastEntry: stat.last(data),
+  topScorer: stat.first(stat.sortBy(data, 'score', 'desc'))
+};`;
