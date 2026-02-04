@@ -14,6 +14,56 @@ body {
   background-color: #f8fbfc;
 }
 
+/* Playful left-right jumping animation that respects prefers-reduced-motion */
+.ava-pulse {
+  display: inline-block;
+  animation: jump-horizontal 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ava-pulse {
+    animation: none;
+  }
+}
+
+@keyframes jump-horizontal {
+  0% {
+    transform: translate(0, 0) scale(1, 1);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
+  }
+  12.5% {
+    transform: translate(-3px, -8px) scale(0.9, 1.1);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
+  }
+  25% {
+    transform: translate(-5px, 0) scale(1.1, 0.9);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
+  }
+  37.5% {
+    transform: translate(-3px, -8px) scale(0.9, 1.1);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
+  }
+  50% {
+    transform: translate(0, 0) scale(1, 1);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
+  }
+  62.5% {
+    transform: translate(3px, -8px) scale(0.9, 1.1);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
+  }
+  75% {
+    transform: translate(5px, 0) scale(1.1, 0.9);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 0);
+  }
+  87.5% {
+    transform: translate(3px, -8px) scale(0.9, 1.1);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.67, 1);
+  }
+  100% {
+    transform: translate(0, 0) scale(1, 1);
+  }
+}
+
 /* Table styling for markdown-rendered tables in prose */
 .prose table {
   width: 100%;
