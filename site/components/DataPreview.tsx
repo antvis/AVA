@@ -5,6 +5,45 @@ interface DataPreviewProps {
   data: DataRow[];
 }
 
+// Helper function to convert data to CSV format
+const convertToCSV = (data: DataRow[]): string => {
+  if (data.length === 0) return '';
+  
+  const headers = Object.keys(data[0]);
+  const csvHeaders = headers.join(',');
+  
+  const csvRows = data.map(row => {
+    return headers.map(header => {
+      const value = row[header];
+      // Handle values that contain commas or quotes
+      if (value === null || value === undefined) return '';
+      const stringValue = String(value);
+      if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+        return `"${stringValue.replace(/"/g, '""')}"`;
+      }
+      return stringValue;
+    }).join(',');
+  });
+  
+  return [csvHeaders, ...csvRows].join('\n');
+};
+
+// Helper function to download CSV
+const downloadCSV = (data: DataRow[]) => {
+  const csvContent = convertToCSV(data);
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `data_${new Date().getTime()}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
 const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
   const formatValue = (value: string | number | boolean | null): string => {
     if (value === null || value === undefined) return '-';
@@ -40,13 +79,13 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
           <span className="flex items-center justify-center w-6 h-6 bg-[#78d3f8]/20 text-[#78d3f8] text-sm font-semibold rounded-full">2</span>
           <h2 className="text-lg font-semibold text-gray-800">Structured Data Preview</h2>
         </div>
-        <div className="flex items-center gap-2 text-gray-400">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => downloadCSV(data)}
+            disabled={data.length === 0}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-[#78d3f8] disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Download as CSV"
+          >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
