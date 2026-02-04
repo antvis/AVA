@@ -14,10 +14,10 @@ body {
   background-color: #f8fbfc;
 }
 
-/* Playful left-right bouncing animation that respects prefers-reduced-motion */
+/* Playful left-right jumping animation that respects prefers-reduced-motion */
 .ava-pulse {
   display: inline-block;
-  animation: bounce-horizontal 1.5s ease-in-out infinite;
+  animation: jump-horizontal 1.2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -26,15 +26,33 @@ body {
   }
 }
 
-@keyframes bounce-horizontal {
-  0%, 100% {
-    transform: translateX(0);
+@keyframes jump-horizontal {
+  0% {
+    transform: translate(0, 0);
+  }
+  12.5% {
+    transform: translate(-3px, -8px);
   }
   25% {
-    transform: translateX(-5px);
+    transform: translate(-5px, 0);
+  }
+  37.5% {
+    transform: translate(-3px, -8px);
+  }
+  50% {
+    transform: translate(0, 0);
+  }
+  62.5% {
+    transform: translate(3px, -8px);
   }
   75% {
-    transform: translateX(5px);
+    transform: translate(5px, 0);
+  }
+  87.5% {
+    transform: translate(3px, -8px);
+  }
+  100% {
+    transform: translate(0, 0);
   }
 }
 
