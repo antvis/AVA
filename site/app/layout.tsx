@@ -34,7 +34,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="canonical" href="https://ava.antv.vision/" />
         <script dangerouslySetInnerHTML={{
           __html: `
             // Buffer polyfill for browser compatibility with csv-parse
