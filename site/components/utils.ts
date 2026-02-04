@@ -32,9 +32,57 @@ export const saveLLMConfig = (config: LLMConfig) => {
   }
 };
 
-// RFC 4180 compliant CSV parser for browser
+// Application state persistence
 import type { DataRow } from './types';
+import type { AnalysisResponse } from '@antv/ava';
 
+export interface AppState {
+  data: DataRow[];
+  textInput: string;
+  query: string;
+  analysisResult: AnalysisResponse | null;
+}
+
+// Load application state from localStorage
+export const loadAppState = (): Partial<AppState> => {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+  
+  try {
+    const saved = localStorage.getItem('ava-app-state');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Validate basic structure to prevent security issues
+      if (typeof parsed === 'object' && parsed !== null) {
+        return {
+          data: Array.isArray(parsed.data) ? parsed.data : undefined,
+          textInput: typeof parsed.textInput === 'string' ? parsed.textInput : undefined,
+          query: typeof parsed.query === 'string' ? parsed.query : undefined,
+          analysisResult: parsed.analysisResult || undefined,
+        };
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load app state:', e);
+  }
+  return {};
+};
+
+// Save application state to localStorage
+export const saveAppState = (state: Partial<AppState>) => {
+  if (typeof window !== 'undefined') {
+    try {
+      const currentState = loadAppState();
+      const newState = { ...currentState, ...state };
+      localStorage.setItem('ava-app-state', JSON.stringify(newState));
+    } catch (e) {
+      console.error('Failed to save app state:', e);
+    }
+  }
+};
+
+// RFC 4180 compliant CSV parser for browser
 export const parseCSV = (csvContent: string): DataRow[] => {
   const lines = csvContent.trim().split('\n');
   if (lines.length < 2) return [];

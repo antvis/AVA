@@ -9,6 +9,7 @@ import {
   Visualization,
   loadLLMConfig,
   saveLLMConfig,
+  loadAppState,
 } from '../components';
 import type { DataRow } from '../components';
 
@@ -21,6 +22,7 @@ interface HomeProps {
 function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
   const [llmConfig, setLLMConfig] = useState<LLMConfig>(loadLLMConfig);
   const [data, setData] = useState<DataRow[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Create a single global AVA instance that persists across data import and analysis
   const avaInstance = useMemo(() => {
@@ -42,6 +44,23 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
   const handleDataLoaded = (newData: DataRow[]) => {
     setData(newData);
   };
+
+  // Load state from localStorage on initial mount and re-load data into AVA instance
+  useEffect(() => {
+    const savedState = loadAppState();
+    if (savedState.data && savedState.data.length > 0) {
+      setData(savedState.data);
+      
+      // Re-instantiate AVA with the saved data so analysis can continue
+      if (avaInstance) {
+        avaInstance.loadObject(savedState.data).catch((err) => {
+          console.error('Failed to restore data to AVA instance:', err);
+        });
+      }
+    }
+    setIsInitialized(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Cleanup on unmount
   useEffect(() => {
@@ -67,9 +86,9 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
         {/* Sections */}
         <div className="space-y-6">
-          <DataImport avaInstance={avaInstance} onDataLoaded={handleDataLoaded} />
+          <DataImport avaInstance={avaInstance} onDataLoaded={handleDataLoaded} isInitialized={isInitialized} />
           <DataPreview data={data} />
-          <Visualization avaInstance={avaInstance} />
+          <Visualization avaInstance={avaInstance} data={data} isInitialized={isInitialized} />
         </div>
       </main>
 
