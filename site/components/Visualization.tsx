@@ -18,7 +18,12 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const handleGenerate = useCallback(async () => {
-    if (!query.trim() || !avaInstance) return;
+    if (!query.trim()) return;
+    
+    if (!avaInstance) {
+      setError('Please configure your LLM API key first. Click the LLM button in the header to set up.');
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -83,11 +88,11 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
           onKeyDown={e => e.key === 'Enter' && handleGenerate()}
           placeholder="Create a trend line comparing North America and Europe sales growth"
           className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all text-sm"
-          disabled={!avaInstance}
+          disabled={isLoading}
         />
         <button
           onClick={handleGenerate}
-          disabled={isLoading || !query.trim() || !avaInstance}
+          disabled={isLoading || !query.trim()}
           className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-[#78d3f8] hover:bg-[#4ec4ef] disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl transition-colors whitespace-nowrap"
         >
           {isLoading ? (
@@ -108,7 +113,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance }) => {
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm" role="alert" aria-live="assertive">
           {error}
         </div>
       )}
