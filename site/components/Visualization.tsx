@@ -93,64 +93,58 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   // Get analysis code (JavaScript or SQL)
   const analysisCode = result?.code || result?.sql;
 
-  // Download chart as PNG
-  const handleDownload = useCallback(async () => {
-    if (!iframeRef.current) return;
-    
-    try {
-      const iframe = iframeRef.current;
-      const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-      
-      if (!iframeDoc) {
-        console.error('Cannot access iframe document');
-        setError('Cannot access iframe document. Please try again.');
-        return;
-      }
-
-      // Use html2canvas library to capture iframe content
-      // We need to import it dynamically for client-side rendering
-      const html2canvas = (await import('html2canvas')).default;
-      
-      const canvas = await html2canvas(iframeDoc.body, {
-        backgroundColor: '#ffffff',
-        scale: 2, // Higher quality
-      });
-      
-      // Convert canvas to blob and download
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `chart-${Date.now()}.png`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        }
-      }, 'image/png');
-    } catch (error) {
-      console.error('Failed to download chart:', error);
-      setError('Failed to download chart. Please try again.');
-    }
-  }, [setError]);
-
-  // Copy code to clipboard
-  const handleCopy = useCallback(async () => {
-    const contentToCopy = analysisCode || result?.visualizationHTML || '';
-    
-    if (!contentToCopy) {
-      setError('No content available to copy');
+  // Download data as CSV
+  const handleDownload = useCallback(() => {
+    if (!data || data.length === 0) {
+      setError('No data available to download');
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(contentToCopy);
+      // Get column headers from the first row
+      const headers = Object.keys(data[0]);
+      
+      // Create CSV content
+      const csvRows = [];
+      
+      // Add header row
+      csvRows.push(headers.join(','));
+      
+      // Add data rows
+      for (const row of data) {
+        const values = headers.map(header => {
+          const value = row[header];
+          // Handle null/undefined values
+          if (value === null || value === undefined) {
+            return '';
+          }
+          // Escape values that contain commas, quotes, or newlines
+          const stringValue = String(value);
+          if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
+            return `"${stringValue.replace(/"/g, '""')}"`;
+          }
+          return stringValue;
+        });
+        csvRows.push(values.join(','));
+      }
+      
+      const csvContent = csvRows.join('\n');
+      
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `data-${Date.now()}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      setError('Failed to copy to clipboard. Please try again.');
+      console.error('Failed to download data:', error);
+      setError('Failed to download data. Please try again.');
     }
-  }, [analysisCode, result?.visualizationHTML, setError]);
+  }, [data, setError]);
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -249,24 +243,12 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
               <button
                 onClick={handleDownload}
                 className="flex items-center gap-2 px-3 py-2 bg-white/90 hover:bg-white border border-gray-200 text-gray-700 hover:text-[#78d3f8] rounded-lg shadow-sm transition-all hover:shadow-md"
-                title="Download chart as PNG"
+                title="Download data as CSV"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 <span className="text-sm font-medium">Download</span>
-              </button>
-              
-              {/* Copy Button */}
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-2 px-3 py-2 bg-white/90 hover:bg-white border border-gray-200 text-gray-700 hover:text-[#78d3f8] rounded-lg shadow-sm transition-all hover:shadow-md"
-                title="Copy visualization code"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <span className="text-sm font-medium">Copy</span>
               </button>
             </div>
           )}
