@@ -1,14 +1,27 @@
-# AVA
-
-AVA, a complete rewrite focused on **AI-native Visual Analytics**.
+<div align="center">
+  <h1>AVA, AI-native Visual Analytics</h1>
+  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
+</div>
 
 [AVA](https://github.com/antvis/AVA) (<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*QzIsSrfsCW0AAAAAAAAAAAAADmJ7AQ/original" width="16" alt="AVA examples"> Visual Analytics) is a technology framework designed for more convenient visual analytics. The first **A** has multiple meanings: AI native, Automated, Augmented, and **VA** stands for Visual Analytics. It can assist users in unstructured data loading, data processing and analysis, as well as visualization code generation.
 
-<br />
-
-<div align="center">
-  <img width="200" height="120" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" alt="AVA logo">
-</div>
+<p align="center">
+  <a href="https://github.com/antvis/ava">
+    <img src="https://img.shields.io/badge/GitHub-000000?style=for-the-badge&logo=github&logoColor=white" alt="GitHub" />
+  </a>
+  <a href="https://ava.antv.vision">
+    <img src="https://img.shields.io/badge/Website-2F54EB?style=for-the-badge" alt="Website" />
+  </a>
+  <a href="https://ava.antv.vision/documentation">
+    <img src="https://img.shields.io/badge/Docs-722ED1?style=for-the-badge" alt="Documentation" />
+  </a>
+  <a href="https://ava.antv.vision/">
+    <img src="https://img.shields.io/badge/AI%20Agent-EB2F96?style=for-the-badge" alt="AI Agent" />
+  </a>
+  <a href="https://github.com/antvis/AVA/blob/ai/llms.txt">
+    <img src="https://img.shields.io/badge/LLMS-FA8C16?style=for-the-badge" alt="llms" />
+  </a>
+</p>
 
 ## 🚀 Features
 
@@ -21,6 +34,18 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
 
 ## 📖 Quick Start
+
+- Install `AVA` by npm
+
+```bash
+npm install @antv/ava
+
+pnpm install @antv/ava
+
+yarn add @antv/ava
+```
+
+- Then run  the code below
 
 ```typescript
 import { AVA } from '@antv/ava';
