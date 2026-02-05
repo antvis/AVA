@@ -13,12 +13,40 @@ interface VisualizationProps {
   isInitialized: boolean;
 }
 
+// Helper function to download HTML
+const downloadHTML = (html: string) => {
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  
+  link.setAttribute('href', url);
+  link.setAttribute('download', `chart_${new Date().getTime()}.html`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// Helper function to copy HTML to clipboard
+const copyToClipboard = async (html: string): Promise<boolean> => {
+  try {
+    await navigator.clipboard.writeText(html);
+    return true;
+  } catch (err) {
+    console.error('Failed to copy:', err);
+    return false;
+  }
+};
+
 const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInitialized }) => {
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
+  const [isHoveringChart, setIsHoveringChart] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Restore query and result from localStorage on mount
@@ -91,6 +119,24 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
   // Get analysis code (JavaScript or SQL)
   const analysisCode = result?.code || result?.sql;
+
+  // Handle copy action
+  const handleCopy = async () => {
+    if (result?.visualizationHTML) {
+      const success = await copyToClipboard(result.visualizationHTML);
+      if (success) {
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+      }
+    }
+  };
+
+  // Handle download action
+  const handleDownload = () => {
+    if (result?.visualizationHTML) {
+      downloadHTML(result.visualizationHTML);
+    }
+  };
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -177,7 +223,48 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
       {/* Visualization Area - Only show when visualizationHTML exists */}
       {result?.visualizationHTML && (
-        <div className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        <div 
+          className="relative min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white"
+          onMouseEnter={() => setIsHoveringChart(true)}
+          onMouseLeave={() => setIsHoveringChart(false)}
+        >
+          {/* Action buttons overlay */}
+          {isHoveringChart && (
+            <div className="absolute top-3 right-3 z-10 flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-lg shadow-lg p-1 border border-gray-200">
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 rounded-md transition-colors text-sm text-gray-700"
+                title="Copy HTML"
+              >
+                {copySuccess ? (
+                  <>
+                    <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-green-500">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>Copy</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={handleDownload}
+                className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-gray-100 rounded-md transition-colors text-sm text-gray-700"
+                title="Download HTML"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Download</span>
+              </button>
+            </div>
+          )}
+          
           <iframe
             ref={iframeRef}
             className="w-full h-[400px] border-0"
