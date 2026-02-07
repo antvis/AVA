@@ -51,7 +51,7 @@ Example format:
   }
 ]
 
-Generate the JSON array now:`;
+Generate the JSON array now.`;
 
   const { text } = await generateText({
     model: openai(llmConfig.model) as any,
