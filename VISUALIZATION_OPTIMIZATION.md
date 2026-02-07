@@ -18,7 +18,7 @@ This approach had several drawbacks:
 
 ## Solution
 
-The new unified approach combines both operations into a **single LLM call** through the `generateVisualizationWithAdvice()` function.
+The new unified approach combines both operations into a **single LLM call** through the `adviseVisualization()` function.
 
 ### Key Features
 
@@ -44,16 +44,16 @@ The new unified approach combines both operations into a **single LLM call** thr
 
 ## Implementation Details
 
-### New Function: `generateVisualizationWithAdvice()`
+### New Function: `adviseVisualization()`
 
-Located in: `src/visualization/unified.ts`
+Located in: `src/visualization/advisor.ts`
 
 ```typescript
-export async function generateVisualizationWithAdvice(
+export async function adviseVisualization(
   query: string,
   data: any[],
   llmConfig: LLMConfig
-): Promise<UnifiedVisualizationResult>
+): Promise<VisualizationResult>
 ```
 
 **Input:**
@@ -82,7 +82,7 @@ if (chartType) {
 }
 
 // New approach (1 LLM call):
-const result = await generateVisualizationWithAdvice(query, data, llmConfig);
+const result = await adviseVisualization(query, data, llmConfig);
 if (result.chartType) {
   // Use result.syntax and result.html
 }
@@ -145,8 +145,8 @@ if (chartType) {
 }
 
 // After (1 call):
-import { generateVisualizationWithAdvice } from '@antv/ava';
-const result = await generateVisualizationWithAdvice(query, data, llmConfig);
+import { adviseVisualization } from '@antv/ava';
+const result = await adviseVisualization(query, data, llmConfig);
 if (result.chartType) {
   // Use result.syntax and result.html
 }

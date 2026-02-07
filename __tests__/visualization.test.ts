@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { generateVisualizationWithAdvice } from '../src/visualization';
+import { adviseVisualization } from '../src/visualization';
 
 describe('Visualization Module', () => {
   const getLLMConfig = () => ({
@@ -13,7 +13,7 @@ describe('Visualization Module', () => {
     baseURL: 'https://api.tbox.cn/api/llm/v1',
   });
 
-  describe('generateVisualizationWithAdvice', () => {
+  describe('adviseVisualization', () => {
     it('should detect visualization intent and generate HTML in a single call', async () => {
       const apiKey = process.env.LING_1T_API_KEY;
       if (!apiKey) {
@@ -31,7 +31,7 @@ describe('Visualization Module', () => {
       ];
 
       try {
-        const result = await generateVisualizationWithAdvice(
+        const result = await adviseVisualization(
           '绘制各城市GDP的柱状图',
           data,
           getLLMConfig()
@@ -75,7 +75,7 @@ describe('Visualization Module', () => {
       ];
 
       try {
-        const result = await generateVisualizationWithAdvice(
+        const result = await adviseVisualization(
           '哪个城市的GDP最高？',
           data,
           getLLMConfig()
@@ -109,7 +109,7 @@ describe('Visualization Module', () => {
 
       try {
         // Test pie chart intent
-        const pieResult = await generateVisualizationWithAdvice(
+        const pieResult = await adviseVisualization(
           '绘制占比饼图',
           data,
           getLLMConfig()
@@ -142,7 +142,7 @@ describe('Visualization Module', () => {
       ];
 
       try {
-        const result = await generateVisualizationWithAdvice(
+        const result = await adviseVisualization(
           '绘制趋势折线图',
           data,
           getLLMConfig()

@@ -110,3 +110,15 @@ export interface SuggestResult {
   /** Reason for the score */
   reason: string;
 }
+
+/**
+ * Result of unified visualization advice and generation
+ */
+export interface VisualizationResult {
+  /** The recommended chart type, null if no visualization intent detected */
+  chartType: ChartType | null;
+  /** GPT-Vis syntax, undefined if no visualization */
+  syntax?: string;
+  /** Complete HTML code, undefined if no visualization */
+  html?: string;
+}

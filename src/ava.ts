@@ -13,7 +13,7 @@ import {
   generateDataCode,
 } from './analysis';
 import {
-  generateVisualizationWithAdvice,
+  adviseVisualization,
 } from './visualization';
 import { generateSuggestions } from './suggest';
 
@@ -153,7 +153,7 @@ export class AVA {
       // Use unified function that combines intent detection, chart type recommendation,
       // and HTML generation in a single LLM call
       if (analysisData.length > 0) {
-        const result = await generateVisualizationWithAdvice(query, analysisData, this.llmConfig);
+        const result = await adviseVisualization(query, analysisData, this.llmConfig);
         
         if (result.chartType) {
           visualizationSyntax = result.syntax;
