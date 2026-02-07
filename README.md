@@ -28,6 +28,7 @@
 AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
 - **Natural Language Queries**: Ask questions about your data in plain English
+- **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
@@ -78,9 +79,25 @@ await ava.loadURL('https://api.example.com/data', (response) => response.data);
 // or extract from text
 await ava.loadText('杭州 100，上海 200，北京 300');
 
+// Get suggested analysis queries
+const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
+console.log(queries);
+// [
+//   {
+//     query: 'What is the average revenue by region?',
+//     score: 0.95,
+//     reason: 'Understanding revenue distribution across regions helps identify high-performing areas'
+//   },
+//   ...
+// ]
+
 // Ask questions in natural language
 const result = await ava.analysis('What is the average revenue by region?');
 console.log(result);
+
+// Or use a suggested query
+const suggestedResult = await ava.analysis(queries[0].query);
+console.log(suggestedResult);
 
 // Clean up
 ava.dispose();

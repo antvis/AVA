@@ -16,8 +16,9 @@ import {
   adviseChartType,
   generateVisualizationHTML,
 } from './visualization';
+import { generateSuggestions } from './suggest';
 
-import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse } from './types';
+import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse, SuggestResult } from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 
@@ -203,6 +204,19 @@ Provide a natural language summary of the result. If the result is tabular data,
     });
 
     return text;
+  }
+
+  /**
+   * Suggest analysis queries based on loaded data
+   * @param count Number of queries to suggest (default: 3)
+   * @returns Array of suggested queries with scores and reasons
+   */
+  async suggest(count: number = 3): Promise<SuggestResult[]> {
+    if (!this.dataInfo) {
+      throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
+    }
+
+    return generateSuggestions(this.llmConfig, this.dataInfo, count);
   }
 
   /**
