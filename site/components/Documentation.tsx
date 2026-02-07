@@ -235,6 +235,21 @@ ava.dispose();`}</pre>
                     </div>
                   </div>
                 </div>
+
+                {/* Suggest */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Query Suggestions</h3>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <code className="text-sm text-[#78d3f8] block mb-2">suggest(count?: number)</code>
+                    <p className="text-sm text-gray-600 mb-3">Get AI-recommended analysis queries based on dataset characteristics (default: 3)</p>
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <div className="font-semibold mb-2">Returns array of objects with:</div>
+                      <div>• <code className="bg-white px-1 rounded">query</code> — Suggested analysis question</div>
+                      <div>• <code className="bg-white px-1 rounded">score</code> — Meaningfulness score (0-1)</div>
+                      <div>• <code className="bg-white px-1 rounded">reason</code> — Explanation for the suggestion</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -245,6 +260,25 @@ ava.dispose();`}</pre>
                 Usage Examples
               </h2>
               <div className="space-y-6">
+                <div className="border-l-4 border-[#78d3f8] pl-4">
+                  <h4 className="font-semibold text-gray-800 mb-2">Query Suggestions</h4>
+                  <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
+                    <pre className="whitespace-pre">{`await ava.loadObject([
+  { city: 'Hangzhou', gdp: 18753 },
+  { city: 'Shanghai', gdp: 43214 }
+]);
+
+// Get 5 suggested queries
+const suggestions = await ava.suggest(5);
+console.log(suggestions[0]);
+// { query: "What is the average GDP?", 
+//   score: 0.95, 
+//   reason: "Reveals economic patterns" }
+
+// Use suggested query for analysis
+const result = await ava.analysis(suggestions[0].query);`}</pre>
+                  </div>
+                </div>
                 <div className="border-l-4 border-[#78d3f8] pl-4">
                   <h4 className="font-semibold text-gray-800 mb-2">Browser File Upload</h4>
                   <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
