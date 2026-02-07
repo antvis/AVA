@@ -13,8 +13,7 @@ import {
   generateDataCode,
 } from './analysis';
 import {
-  adviseChartType,
-  generateVisualizationHTML,
+  generateVisualizationWithAdvice,
 } from './visualization';
 import { generateSuggestions } from './suggest';
 
@@ -147,19 +146,19 @@ export class AVA {
     // Summarize the result using LLM
     const summary = await this.summarizeResult(query, analysisData);
 
-    // Detect visualization intent and generate visualization if needed
+    // Detect visualization intent and generate visualization if needed using unified approach
     let visualizationHTML: string | undefined;
     let visualizationSyntax: string | undefined;
     try {
-      // adviseChartType now handles both intent detection and chart selection
-      // Returns null if no visualization intent detected
-      const chartType = await adviseChartType(query, analysisData, this.llmConfig);
-      
-      if (chartType && analysisData.length > 0) {
-        // generateVisualizationHTML now combines syntax generation and HTML generation
-        const result = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
-        visualizationSyntax = result.syntax;
-        visualizationHTML = result.html;
+      // Use unified function that combines intent detection, chart type recommendation,
+      // and HTML generation in a single LLM call
+      if (analysisData.length > 0) {
+        const result = await generateVisualizationWithAdvice(query, analysisData, this.llmConfig);
+        
+        if (result.chartType) {
+          visualizationSyntax = result.syntax;
+          visualizationHTML = result.html;
+        }
       }
     } catch (error) {
       // Visualization is optional, don't fail the analysis if it fails

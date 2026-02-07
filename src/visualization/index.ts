@@ -4,3 +4,5 @@
 
 export { adviseChartType } from './advisor';
 export { generateVisualizationHTML } from './generator';
+export { generateVisualizationWithAdvice } from './unified';
+export type { UnifiedVisualizationResult } from './unified';
