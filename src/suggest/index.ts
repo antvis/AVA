@@ -7,19 +7,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 
 import { formatDatasetInfo } from '../data';
 
-import type { LLMConfig, DatasetInfo } from '../types';
-
-/**
- * Result of a suggested query
- */
-export interface SuggestResult {
-  /** The suggested query string */
-  query: string;
-  /** Score between 0-1 indicating meaningfulness */
-  score: number;
-  /** Reason for the score */
-  reason: string;
-}
+import type { LLMConfig, DatasetInfo, SuggestResult } from '../types';
 
 /**
  * Generate suggested analysis queries based on dataset
