@@ -571,13 +571,15 @@ title 人员信息
     const html = parsed.html?.trim() || '';
     
     // Extract GPT-Vis syntax from the HTML
-    const syntaxMatch = html.match(/const visSyntax = `([^`]*)`/);
+    // Handle escaped backticks and other special characters in template string
+    const syntaxMatch = html.match(/const visSyntax = `((?:[^`\\]|\\.)*)`/);
     let syntax = '';
     
     if (syntaxMatch && syntaxMatch[1]) {
       syntax = syntaxMatch[1].trim();
     } else {
       // Fallback: try to find content between vis keyword and gptVis.render
+      // Using a more permissive pattern that handles escaped characters
       const fallbackMatch = html.match(/visSyntax\s*=\s*`([\s\S]*?)`[\s\S]*?gptVis\.render/);
       if (fallbackMatch && fallbackMatch[1]) {
         syntax = fallbackMatch[1].trim();
