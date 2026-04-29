@@ -327,7 +327,7 @@ data
     value 1500
 title "User Purchase Overlap"
 \`\`\`
-交集用逗号分隔集合标识：\`sets: "A,B"\`。
+交集用逗号分隔集合标识：\`sets: A,B\`。
 
 ### treemap（矩阵树图）
 \`\`\`
