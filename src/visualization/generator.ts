@@ -124,7 +124,7 @@ data
 
 以下各小节标题即为 \`type\` 值。所有图表均支持通用属性：\`title\`、\`theme\`（default/dark/academy）。
 
-### line / area
+### line / area（折线图 / 面积图）
 \`\`\`
 vis line
 data
@@ -140,7 +140,7 @@ axisYTitle "Sales (10K)"
 \`\`\`
 \`stack\` 仅 area 支持。
 
-### column / bar
+### column / bar（柱形图 / 条形图）
 \`\`\`
 vis column
 data
@@ -155,7 +155,7 @@ axisXTitle Month
 axisYTitle "GMV (100M)"
 \`\`\`
 
-### pie
+### pie（饼图）
 \`\`\`
 vis pie
 data
@@ -169,7 +169,7 @@ title "Mobile OS Market Share"
 \`\`\`
 value 不可使用百分比数字。\`innerRadius\` 设为 0.6 变为环图。
 
-### scatter
+### scatter（散点图）
 \`\`\`
 vis scatter
 data
@@ -184,7 +184,7 @@ axisXTitle "Height (cm)"
 axisYTitle "Weight (kg)"
 \`\`\`
 
-### dual-axes
+### dual-axes（双轴图）
 \`\`\`
 vis dual-axes
 categories
@@ -208,7 +208,7 @@ title "Monthly Sales & Profit Rate"
 axisXTitle Month
 \`\`\`
 
-### histogram
+### histogram（直方图）
 \`\`\`
 vis histogram
 data
@@ -226,7 +226,7 @@ axisXTitle Score
 axisYTitle Count
 \`\`\`
 
-### boxplot / violin
+### boxplot / violin（箱线图 / 小提琴图）
 同一 category 需多条数据以展示分布。
 \`\`\`
 vis boxplot
@@ -248,7 +248,7 @@ axisXTitle Subject
 axisYTitle Score
 \`\`\`
 
-### radar
+### radar（雷达图）
 \`\`\`
 vis radar
 data
@@ -262,7 +262,7 @@ title "Framework Evaluation"
 \`\`\`
 \`align\`: 是否对齐各维度比例尺，默认 false。
 
-### funnel
+### funnel（漏斗图）
 \`\`\`
 vis funnel
 data
@@ -275,7 +275,7 @@ data
 title "E-commerce Conversion Funnel"
 \`\`\`
 
-### waterfall
+### waterfall（瀑布图）
 \`\`\`
 vis waterfall
 data
@@ -291,7 +291,7 @@ title "Quarterly Revenue Waterfall"
 \`\`\`
 value 可为负数表示减少。
 
-### liquid
+### liquid（水波图）
 \`\`\`
 vis liquid
 percent 0.72
@@ -300,7 +300,7 @@ title "Server CPU Usage"
 \`\`\`
 \`percent\` 范围 0~1。\`shape\` 可选 rect/circle/pin/triangle。
 
-### word-cloud
+### word-cloud（词云图）
 \`\`\`
 vis word-cloud
 data
@@ -313,7 +313,7 @@ data
 title "AI Technology Keywords"
 \`\`\`
 
-### venn
+### venn（韦恩图）
 \`\`\`
 vis venn
 data
@@ -329,7 +329,7 @@ title "User Purchase Overlap"
 \`\`\`
 交集用逗号分隔集合标识：\`sets: "A,B"\`。
 
-### treemap
+### treemap（矩阵树图）
 \`\`\`
 vis treemap
 data
@@ -350,7 +350,7 @@ data
 title "Tech Market Cap"
 \`\`\`
 
-### sankey
+### sankey（桑基图）
 \`\`\`
 vis sankey
 data
@@ -367,7 +367,7 @@ nodeAlign justify
 title "Energy Flow"
 \`\`\`
 
-### table
+### table（表格）
 \`\`\`
 vis table
 data
