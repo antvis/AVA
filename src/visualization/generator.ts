@@ -23,7 +23,7 @@ export async function generateVisualizationHTML(
     baseURL: llmConfig.baseURL,
   });
 
-  const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，直接生成一个完整的可独立运行的 HTML 文件，其中包含正确的 GPT-Vis 语法。
+  const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成一个完整的可独立运行的 HTML 文件，其中包含正确的 GPT-Vis 语法。
 
 ## 任务信息
 
@@ -36,300 +36,348 @@ export async function generateVisualizationHTML(
 ${JSON.stringify(data, null, 2)}
 \`\`\`
 
-## GPT-Vis 完整图表示例参考
+## Syntax 语法规则
 
-### 折线图 (line)
+第一行必须是 \`vis [type]\`（summary 除外，直接以 Markdown 内容开头）。字段名和值之间用空格分隔，**不要用冒号**。属性顺序：先 \`data\`，后 \`title\`/\`axisXTitle\` 等。
+
+**基本属性** — \`key value\`，每行一个：
+
 \`\`\`
-vis line
+title 年度趋势
+theme dark
+\`\`\`
+
+**对象数组** — \`data\` 下每项用 \`- \` 开头，子字段缩进：
+
+\`\`\`
+{  { time: string; value: number; }[] }
+→
 data
   - time 2020
     value 100
   - time 2021
     value 120
-  - time 2022
-    value 150
-title 年度趋势
-axisXTitle 年份
-axisYTitle 数值
 \`\`\`
 
-### 柱形图 (column)
+**纯值数组** — 每项用 \`- \` 开头：
+
+\`\`\`
+{  number[] }
+→
+data
+  - 10
+  - 20
+\`\`\`
+
+**含空格的字符串值** — 用引号（单引号或双引号）包裹；不含空格时可省略引号：
+
+\`\`\`
+categories
+  - "North America"
+  - '东南 亚'
+  - 欧洲
+\`\`\`
+
+**嵌套对象** — 对象名占一行，子属性缩进：
+
+\`\`\`
+{ style?: { backgroundColor?: string; palette?: string[] } }
+→
+style
+  backgroundColor #f0f2f5
+  palette
+    - #5B8FF9
+    - #61DDAA
+\`\`\`
+
+**递归树形** — \`children\` 数组用 \`- \` 缩进：
+
+\`\`\`
+type TreeData = { name: string; children?: TreeData[] }
+{  TreeData }
+→
+data
+  name 根节点
+  children
+    - name 子节点A
+      children
+        - name 孙节点
+    - name 子节点B
+\`\`\`
+
+**图数据** — \`nodes\`/\`edges\` 数组用 \`- \` 缩进：
+
+\`\`\`
+{  { nodes: { name: string }[]; edges: { source: string; target: string; name?: string }[] } }
+→
+data
+  nodes
+    - name 节点A
+    - name 节点B
+  edges
+    - source 节点A
+      target 节点B
+      name 关系
+\`\`\`
+
+## 图表类型 Syntax 示例
+
+以下各小节标题即为 \`type\` 值。所有图表均支持通用属性：\`title\`、\`theme\`（default/dark/academy）。
+
+### line / area
+\`\`\`
+vis line
+data
+  - time 2018
+    value 201
+  - time 2019
+    value 221
+  - time 2020
+    value 307
+title "EV Sales Trend"
+axisXTitle Year
+axisYTitle "Sales (10K)"
+\`\`\`
+\`stack\` 仅 area 支持。
+
+### column / bar
 \`\`\`
 vis column
 data
-  - category A产品
-    value 30
-  - category B产品
-    value 50
-  - category C产品
-    value 20
-title 产品销量对比
-axisXTitle 产品
-axisYTitle 销量
+  - category Jan
+    value 820
+  - category Feb
+    value 650
+  - category Mar
+    value 780
+title "E-commerce Monthly GMV"
+axisXTitle Month
+axisYTitle "GMV (100M)"
 \`\`\`
 
-### 条形图 (bar)
-\`\`\`
-vis bar
-data
-  - category 第一产业
-    value 7200
-  - category 第二产业
-    value 36600
-  - category 第三产业
-    value 41000
-title 产业产值
-\`\`\`
-
-### 饼图 (pie)
+### pie
 \`\`\`
 vis pie
 data
-  - category 类别A
-    value 30
-  - category 类别B
-    value 50
-  - category 类别C
-    value 20
-title 占比分析
+  - category Android
+    value 72
+  - category iOS
+    value 27
+  - category Others
+    value 1
+title "Mobile OS Market Share"
 \`\`\`
+value 不可使用百分比数字。\`innerRadius\` 设为 0.6 变为环图。
 
-### 环图 (pie with innerRadius)
-\`\`\`
-vis pie
-data
-  - category 城镇人口
-    value 63.89
-  - category 乡村人口
-    value 36.11
-innerRadius 0.6
-title 人口分布
-\`\`\`
-
-### 面积图 (area)
-\`\`\`
-vis area
-data
-  - time 1月
-    value 23.895
-  - time 2月
-    value 23.695
-  - time 3月
-    value 23.655
-title 股票价格变化
-axisXTitle 月份
-axisYTitle 价格
-\`\`\`
-
-### 散点图 (scatter)
+### scatter
 \`\`\`
 vis scatter
 data
-  - x 10
-    y 15
-  - x 20
-    y 25
-  - x 30
-    y 35
-title 相关性分析
+  - x 161.2
+    y 51.6
+  - x 167.5
+    y 59
+  - x 159.5
+    y 49.2
+title "Height vs Weight"
+axisXTitle "Height (cm)"
+axisYTitle "Weight (kg)"
 \`\`\`
 
-### 双轴图 (dual-axes)
+### dual-axes
 \`\`\`
 vis dual-axes
 categories
-  - 2018
-  - 2019
-  - 2020
-  - 2021
-  - 2022
-title 销售额与利润率
-axisXTitle 年份
+  - Jan
+  - Feb
+  - Mar
 series
   - type column
-    data 91.9 99.1 101.6 114.4 121
-    axisYTitle 销售额(亿)
+    axisYTitle "Sales (10K)"
+    data
+      - 820
+      - 650
+      - 780
   - type line
-    data 0.055 0.06 0.062 0.07 0.075
-    axisYTitle 利润率
+    axisYTitle "Profit (%)"
+    data
+      - 12
+      - 10
+      - 13
+title "Monthly Sales & Profit Rate"
+axisXTitle Month
 \`\`\`
 
-### 直方图 (histogram)
+### histogram
 \`\`\`
 vis histogram
 data
-  - 78
+  - 68
+  - 72
+  - 85
+  - 56
+  - 91
+  - 74
+  - 63
   - 88
-  - 60
-  - 100
-  - 95
-binNumber 5
-title 成绩分布
+binNumber 10
+title "Exam Score Distribution"
+axisXTitle Score
+axisYTitle Count
 \`\`\`
 
-### 箱线图 (boxplot)
+### boxplot / violin
+同一 category 需多条数据以展示分布。
 \`\`\`
 vis boxplot
 data
-  - category 班级A
-    value 15
-  - category 班级A
-    value 18
-  - category 班级A
-    value 22
-  - category 班级A
-    value 27
-  - category 班级A
-    value 35
-title 成绩分布
+  - category Math
+    value 72
+  - category Math
+    value 85
+  - category Math
+    value 68
+  - category History
+    value 78
+  - category History
+    value 82
+  - category History
+    value 75
+title "Exam Scores by Subject"
+axisXTitle Subject
+axisYTitle Score
 \`\`\`
 
-### 雷达图 (radar)
+### radar
 \`\`\`
 vis radar
 data
-  - name 沟通能力
-    value 2
-  - name 协作能力
-    value 3
-  - name 领导能力
-    value 2
-  - name 学习能力
-    value 5
-  - name 创新能力
-    value 6
-  - name 技术能力
-    value 9
-title 能力评估
+  - name Performance
+    value 85
+  - name Ecosystem
+    value 92
+  - name "Learning Curve"
+    value 78
+title "Framework Evaluation"
 \`\`\`
+\`align\`: 是否对齐各维度比例尺，默认 false。
 
-### 漏斗图 (funnel)
+### funnel
 \`\`\`
 vis funnel
 data
-  - category 访问
-    value 1000
-  - category 咨询
-    value 600
-  - category 下单
-    value 300
-  - category 成交
-    value 120
-title 销售漏斗
+  - category "Browse Products"
+    value 100
+  - category "Add to Cart"
+    value 45
+  - category "Complete Payment"
+    value 18
+title "E-commerce Conversion Funnel"
 \`\`\`
 
-### 瀑布图 (waterfall)
+### waterfall
 \`\`\`
 vis waterfall
 data
-  - category 期初利润
-    value 100
-  - category 销售收入
-    value 80
-  - category 运营成本
-    value -50
-  - category 税费
-    value -20
-  - category 总计
+  - category Q1
+    value 120
+  - category Q2
+    value 569
+  - category Q3
+    value 231
+  - category Total
     isTotal true
-title 利润变化
+title "Quarterly Revenue Waterfall"
 \`\`\`
+value 可为负数表示减少。
 
-### 水波图 (liquid)
+### liquid
 \`\`\`
 vis liquid
-percent 0.75
-title 任务完成度
+percent 0.72
+shape circle
+title "Server CPU Usage"
 \`\`\`
+\`percent\` 范围 0~1。\`shape\` 可选 rect/circle/pin/triangle。
 
-### 词云图 (word-cloud)
+### word-cloud
 \`\`\`
 vis word-cloud
 data
-  - text 环境
-    value 20
-  - text 保护
-    value 15
-  - text 可持续发展
-    value 10
-title 关键词
+  - text "Machine Learning"
+    value 100
+  - text "Deep Learning"
+    value 95
+  - text NLP
+    value 88
+title "AI Technology Keywords"
 \`\`\`
 
-### 小提琴图 (violin)
-\`\`\`
-vis violin
-data
-  - category 班级A
-    value 15
-  - category 班级A
-    value 18
-  - category 班级A
-    value 22
-title 数据分布
-\`\`\`
-
-### 韦恩图 (venn)
+### venn
 \`\`\`
 vis venn
 data
   - sets A
-    value 20
-    label 集合A
+    value 3500
+    label Phone
   - sets B
-    value 15
-    label 集合B
+    value 2800
+    label Earphones
   - sets A,B
-    value 5
-    label 交集AB
-title 集合关系
+    value 1500
+title "User Purchase Overlap"
 \`\`\`
+交集用逗号分隔集合标识：\`sets: "A,B"\`。
 
-### 矩阵树图 (treemap)
+### treemap
 \`\`\`
 vis treemap
 data
-  - name A部门
-    value 100
+  - name Software
+    value 2800
     children
-      - name A1
-        value 40
-      - name A2
-        value 30
-      - name A3
-        value 30
-title 组织结构
+      - name Microsoft
+        value 1200
+      - name Oracle
+        value 500
+  - name Hardware
+    value 2200
+    children
+      - name Apple
+        value 1500
+      - name Dell
+        value 400
+title "Tech Market Cap"
 \`\`\`
 
-### 桑基图 (sankey)
+### sankey
 \`\`\`
 vis sankey
 data
-  - source 煤炭
-    target 发电厂
-    value 120
-  - source 天然气
-    target 发电厂
-    value 80
-  - source 发电厂
-    target 工业
-    value 100
-  - source 发电厂
-    target 居民
-    value 60
-title 能源流动
+  - source Coal
+    target Electricity
+    value 320
+  - source "Natural Gas"
+    target Heating
+    value 160
+  - source Hydro
+    target Electricity
+    value 180
+nodeAlign justify
+title "Energy Flow"
 \`\`\`
 
-### 表格 (table)
+### table
 \`\`\`
 vis table
 data
-  - 姓名 张三
-    年龄 25
-    城市 北京
-  - 姓名 李四
-    年龄 30
-    城市 上海
-title 人员信息
+  - Product Smartphone
+    Region "East China"
+    "Sales Amount" 4580
+  - Product Laptop
+    Region "South China"
+    "Sales Amount" 3200
+title "2024 Q1 Sales Report"
 \`\`\`
 
 ## 要求
@@ -338,11 +386,13 @@ title 人员信息
 2. 将生成的 GPT-Vis 语法嵌入到一个完整的 HTML 文件中
 3. HTML 文件必须包含：
    - 完整的 HTML 结构 (<!DOCTYPE html>, <html>, <head>, <body>)
-   - 引入 GPT-Vis 的 UMD 版本：https://unpkg.com/@antv/gpt-vis@beta
+   - 引入 GPT-Vis 的 UMD 版本：https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js
    - 使用 GPTVis.GPTVis 类初始化并渲染图表
+   - container 参数必须使用 CSS 选择器格式（如 '#container'），不能省略 # 前缀
    - 添加简洁美观的样式
 4. GPT-Vis 语法要求：
-   - 数据字段映射必须正确
+   - 数据字段映射必须正确，字段名和值之间用空格分隔，**不要用冒号**
+   - data 必须在 title 等属性之前
    - 根据数据特征生成合适的标题
    - 确保语法格式完全符合 GPT-Vis 规范
    - 语法不要生成 width height，图表会按照容器自适应大小
@@ -356,7 +406,7 @@ title 人员信息
   <head>
     <meta charset="UTF-8">
     <title>Data Visualization</title>
-    <script src="https://unpkg.com/@antv/gpt-vis@beta"></script>
+    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
     <style>
       html, body, #container {
         margin: 0;
@@ -372,11 +422,11 @@ title 人员信息
     <div id="container"></div>
     <script>
       const gptVis = new GPTVis.GPTVis({
-        container: 'container',
+        container: '#container',
       });
-      
+
       const visSyntax = \`[这里放入根据数据生成的正确 GPT-Vis 语法]\`;
-      
+
       gptVis.render(visSyntax);
     </script>
   </body>
@@ -390,12 +440,12 @@ title 人员信息
   });
 
   const html = text.trim();
-  
+
   // Extract GPT-Vis syntax from the HTML
   // Look for the visSyntax variable assignment in template literal
   const syntaxMatch = html.match(/const visSyntax = `([^`]*)`/);
   let syntax = '';
-  
+
   if (syntaxMatch && syntaxMatch[1]) {
     syntax = syntaxMatch[1].trim();
   } else {
