@@ -113,32 +113,14 @@ export function formatDatasetInfo(info: DatasetInfo): string {
 }
 
 /**
- * Generate a human-readable data description for LLM context.
- * Supports arrays, objects (e.g. {labels, datasets}), strings, and primitives.
- * Unlike extractMetadata which requires flat object arrays, this handles any data format.
+ * Describe non-array data formats for LLM context.
+ * Handles objects (chart data patterns, generic), strings, and primitives.
  */
-export function describeData(data: unknown): string {
-  // Array of flat objects — use the existing metadata pipeline
-  if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'object' && data[0] !== null) {
-    try {
-      const metadata = extractMetadata(data as any[]);
-      return formatDatasetInfo(metadata);
-    } catch {
-      // Fallback to raw description if metadata extraction fails
-    }
-  }
-
-  // Array of primitives
-  if (Array.isArray(data)) {
-    if (data.length === 0) return 'Dataset Info:\n- Empty dataset (0 rows)';
-    const sample = data.slice(0, 5).map(v => JSON.stringify(v)).join(', ');
-    return `Dataset Info:\n- Type: array of ${typeof data[0]}\n- Length: ${data.length}\n- Sample: ${sample}`;
-  }
-
-  // Object: { labels, datasets } pattern
+export function formatDatasetInfoWithNonArray(data: unknown): string {
   if (typeof data === 'object' && data !== null) {
     const obj = data as Record<string, unknown>;
 
+    // { labels, datasets } pattern — common chart data format
     if (Array.isArray(obj.labels) && Array.isArray(obj.datasets)) {
       const datasetSummaries = (obj.datasets as Array<Record<string, unknown>>).map((ds, i) => {
         const label = typeof ds.label === 'string' ? ds.label : `series-${i + 1}`;
@@ -157,30 +139,18 @@ export function describeData(data: unknown): string {
 
     // Generic object — describe keys and types
     const keys = Object.keys(obj);
-    const fieldDescs = keys.map(k => {
+    const fieldDesc = keys.map((k) => {
       const v = obj[k];
       const type = Array.isArray(v) ? `array[${v.length}]` : typeof v;
       const sample = typeof v === 'string' ? `"${v.slice(0, 30)}"` : JSON.stringify(v)?.slice(0, 50);
       return `  - ${k} (${type}): ${sample}`;
     });
-    return [
-      'Dataset Info:',
-      '- Type: object',
-      `- Fields (${keys.length}):`,
-      ...fieldDescs,
-    ].join('\n');
+    return ['Dataset Info:', '- Type: object', `- Fields (${keys.length}):`, ...fieldDesc].join('\n');
   }
 
-  // String
   if (typeof data === 'string') {
-    return [
-      'Dataset Info:',
-      '- Type: string',
-      `- Length: ${data.length} characters`,
-      `- Preview: ${data}`,
-    ].join('\n');
+    return ['Dataset Info:', '- Type: string', `- Length: ${data.length} characters`, `- Preview: ${data}`].join('\n');
   }
 
-  // Fallback for number, boolean, null, undefined
   return `Dataset Info:\n- Type: ${data === null ? 'null' : typeof data}\n- Value: ${String(data)}`;
 }

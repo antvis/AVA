@@ -5,7 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { describeData } from '../data';
+import { formatDatasetInfoWithNonArray, extractMetadata, formatDatasetInfo } from '../data';
 
 import type { LLMConfig, ChartType } from '../types';
 
@@ -22,8 +22,7 @@ export async function adviseChartType(
     apiKey: llmConfig.apiKey,
     baseURL: llmConfig.baseURL,
   });
-
-  const dataInfo = describeData(data);
+  const dataInfo = Array.isArray(data) ? formatDatasetInfo(extractMetadata(data)) : formatDatasetInfoWithNonArray(data);
 
   const prompt = `你是一个图表推荐专家。根据用户的查询和数据特征，判断是否需要可视化，如果需要则推荐最合适的图表类型。
 
