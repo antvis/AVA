@@ -5,7 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { extractMetadata, formatDatasetInfo } from '../data';
+import { describeData } from '../data';
 
 import type { LLMConfig, ChartType } from '../types';
 
@@ -15,7 +15,7 @@ import type { LLMConfig, ChartType } from '../types';
  */
 export async function adviseChartType(
   query: string,
-  data: any[],
+  data: unknown,
   llmConfig: LLMConfig
 ): Promise<ChartType | null> {
   const openai = createOpenAI({
@@ -23,9 +23,7 @@ export async function adviseChartType(
     baseURL: llmConfig.baseURL,
   });
 
-  // Use existing metadata extraction functionality
-  const metadata = extractMetadata(data);
-  const dataInfo = formatDatasetInfo(metadata);
+  const dataInfo = describeData(data);
 
   const prompt = `你是一个图表推荐专家。根据用户的查询和数据特征，判断是否需要可视化，如果需要则推荐最合适的图表类型。
 
@@ -59,7 +57,7 @@ ${dataInfo}
 - **功能**: 占比、成分分析
 - **适用场景**: 显示组成部分占整体的比例，强调某部分在整体中的占比
 - **数据要求**: 需要一个分类字段和一个数值字段，分类应构成一个整体
-- **不适用场景**: 
+- **不适用场景**:
   - 变量相互独立不构成整体
   - 不能表现趋势
   - 数值接近时难以分辨
@@ -165,23 +163,23 @@ ${dataInfo}
   });
 
   const chartType = text.trim().toLowerCase();
-  
+
   // Check if no visualization intent
   if (chartType === 'none' || chartType === '否' || chartType === 'no') {
     return null;
   }
-  
+
   // Validate that the chart type is valid
   const validChartTypes: ChartType[] = [
     'line', 'column', 'bar', 'pie', 'area', 'scatter', 'dual-axes',
     'histogram', 'boxplot', 'radar', 'funnel', 'waterfall', 'liquid',
     'word-cloud', 'violin', 'venn', 'treemap', 'sankey', 'table', 'summary',
   ];
-  
+
   if (validChartTypes.includes(chartType as ChartType)) {
     return chartType as ChartType;
   }
-  
+
   // If invalid response but not explicitly "none", return null (no intent)
   return null;
 }

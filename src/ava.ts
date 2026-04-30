@@ -23,6 +23,17 @@ import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse, SuggestResult
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 
 /**
+ * Check if analysis result has meaningful data for visualization.
+ * Accepts arrays (non-empty), objects (non-empty), and non-null/non-undefined primitives.
+ */
+function hasData(data: unknown): boolean {
+  if (data == null) return false;
+  if (Array.isArray(data)) return data.length > 0;
+  if (typeof data === 'object') return Object.keys(data).length > 0;
+  return true;
+}
+
+/**
  * Main AVA class for AI-native visual analytics
  */
 export class AVA {
@@ -108,7 +119,7 @@ export class AVA {
       throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
     }
 
-    let analysisData: any[] = [];
+    let analysisData: any = null;
     let analysisCode: string | undefined;
     let analysisSql: string | undefined;
 
@@ -117,7 +128,7 @@ export class AVA {
       const schema = await this.sqliteStore.getSchema();
       const sql = await generateSQL(this.llmConfig, schema, query);
       analysisSql = sql;
-      
+
       try {
         analysisData = await this.sqliteStore.query(sql);
       } catch (error) {
@@ -151,12 +162,10 @@ export class AVA {
     let visualizationHTML: string | undefined;
     let visualizationSyntax: string | undefined;
     try {
-      // adviseChartType now handles both intent detection and chart selection
-      // Returns null if no visualization intent detected
+      // adviseChartType uses describeData which handles any data format
       const chartType = await adviseChartType(query, analysisData, this.llmConfig);
-      
-      if (chartType && analysisData.length > 0) {
-        // generateVisualizationHTML now combines syntax generation and HTML generation
+      if (chartType && hasData(analysisData)) {
+        // generateVisualizationHTML uses JSON.stringify which handles any JSON-serializable data
         const result = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
         visualizationSyntax = result.syntax;
         visualizationHTML = result.html;
@@ -167,7 +176,7 @@ export class AVA {
       // eslint-disable-next-line no-console
       console.warn('Failed to generate visualization:', errorMessage);
     }
-    
+
     return {
       text: summary,
       data: analysisData,
