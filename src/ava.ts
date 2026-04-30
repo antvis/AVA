@@ -119,7 +119,7 @@ export class AVA {
       throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
     }
 
-    let analysisData: any = null;
+    let analysisData: any = undefined;
     let analysisCode: string | undefined;
     let analysisSql: string | undefined;
 
