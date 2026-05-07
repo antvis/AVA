@@ -14,7 +14,7 @@ import type { LLMConfig, ChartType } from '../types';
  */
 export async function generateVisualizationHTML(
   chartType: ChartType,
-  data: any[],
+  data: any,
   query: string,
   llmConfig: LLMConfig
 ): Promise<{ syntax: string; html: string }> {
