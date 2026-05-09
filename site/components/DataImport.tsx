@@ -66,6 +66,9 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
 
     try {
       const fileName = file.name.toLowerCase();
+      if (file.size > 25 * 1024 * 1024) {
+        throw new Error('File size exceeds 25MB limit');
+      }
       const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
 
       let parsedData: DataRow[];

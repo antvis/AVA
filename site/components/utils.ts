@@ -91,7 +91,7 @@ export const parseExcel = (arrayBuffer: ArrayBuffer): DataRow[] => {
 
   if (jsonData.length < 2) return [];
 
-  const headers = (jsonData[0] as string[]).map(h => String(h).trim());
+  const headers = (jsonData[0] as any[]).map(h => (h !== null && h !== undefined ? String(h).trim() : ''));
   const result: DataRow[] = [];
 
   for (let i = 1; i < jsonData.length; i++) {
