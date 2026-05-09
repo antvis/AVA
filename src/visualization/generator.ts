@@ -439,7 +439,16 @@ title "2024 Q1 Sales Report"
     prompt,
   });
 
-  const html = text.trim();
+  // Remove markdown code block markers if present
+  let html = text.trim();
+  if (html.startsWith('```html')) {
+    html = html.slice(7).trim();
+  } else if (html.startsWith('```')) {
+    html = html.slice(3).trim();
+  }
+  if (html.endsWith('```')) {
+    html = html.slice(0, -3).trim();
+  }
 
   // Extract GPT-Vis syntax from the HTML
   // Look for the visSyntax variable assignment in template literal
