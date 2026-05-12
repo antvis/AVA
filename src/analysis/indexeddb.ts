@@ -64,24 +64,36 @@ export class IndexedDBDataStore {
     await this.initDB();
     if (!data || data.length === 0) return;
 
-    // Check storage quota (best effort)
+    // Check storage quota (best effort) — use row-count heuristic instead of
+    // JSON.stringify, which would require serialising the entire dataset and
+    // could OOM the browser for large inputs.
     if ('storage' in navigator && 'estimate' in navigator.storage) {
       try {
         const estimate = await navigator.storage.estimate();
-        const dataSize = new Blob([JSON.stringify(data)]).size;
-        if (estimate.usage && estimate.quota && estimate.usage + dataSize > estimate.quota * 0.9) {
-          throw new Error('Storage quota exceeded. Data size exceeds available storage space.');
+        if (estimate.quota) {
+          // Sample up to 10 rows to estimate average row size
+          const sampleSize = Math.min(10, data.length);
+          const sampleBytes = new Blob([JSON.stringify(data.slice(0, sampleSize))]).size;
+          const avgRowBytes = sampleBytes / sampleSize;
+          const estimatedTotal = avgRowBytes * data.length;
+          if ((estimate.usage ?? 0) + estimatedTotal > estimate.quota * 0.9) {
+            throw new Error(
+              `Storage quota exceeded. Estimated ${(estimatedTotal / 1024 / 1024).toFixed(1)}MB ` +
+              `needed but only ${((estimate.quota - estimate.usage) / 1024 / 1024).toFixed(1)}MB available.`
+            );
+          }
         }
       } catch (e) {
-        // Ignore estimation errors, proceed with attempt
+        // Re-throw our own quota errors; ignore estimation failures
+        if (e instanceof Error && e.message.startsWith('Storage quota exceeded')) throw e;
       }
     }
 
     // Clear existing data first
     await this.clear();
 
-    // Extract fields from first row
-    const fields = Object.keys(data[0]);
+    // Sample first 50 rows for field discovery (may miss rare fields in later rows)
+    const fields = Array.from(new Set(data.slice(0, 50).flatMap(row => Object.keys(row))));
 
     // Store metadata
     await this.db!.put('metadata', { key: 'fields', value: fields });
@@ -100,10 +112,15 @@ export class IndexedDBDataStore {
         const store = tx.objectStore('data');
 
         for (const row of batch) {
-          // Remove __id if exists to avoid conflicts with auto-increment keyPath
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { __id: _unused, ...cleanRow } = row;
-          store.put(cleanRow);
+          // Only destructure to remove __id when it actually exists;
+          // unconditional spread on every row creates excessive GC pressure for large datasets
+          if ('__id' in row) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { __id: _unused, ...cleanRow } = row;
+            store.put(cleanRow);
+          } else {
+            store.put(row);
+          }
         }
 
         await tx.done;
@@ -124,16 +141,12 @@ export class IndexedDBDataStore {
    */
   async getAllData(): Promise<Record<string, unknown>[]> {
     await this.initDB();
-    return this.db!.getAll('data');
-  }
-
-  /**
-   * Get the number of rows stored
-   */
-  async getCount(): Promise<number> {
-    await this.initDB();
-    const count = await this.db!.count('data');
-    return count;
+    const allData = await this.db!.getAll('data');
+    // __id is the auto-increment keyPath; always present on stored rows,
+    // so we must strip it. Simple destructuring is fine here since we already
+    // hold the full dataset in memory (the getAllData call dominates cost).
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    return allData.map(({ __id, ...row }) => row);
   }
 
   /**

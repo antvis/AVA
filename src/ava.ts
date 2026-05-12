@@ -171,12 +171,13 @@ export class AVA {
       // Use IndexedDB for large datasets in browser
       const rowCount = await this.indexedDBStore.getRowCount();
 
-      // Warn for very large datasets that will be loaded into memory
-      if (rowCount > 50000) {
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[AVA] Loading ${rowCount.toLocaleString()} rows from IndexedDB into memory. ` +
-          'This may cause performance issues. Consider reducing data size or using a backend service.'
+      // Hard limit: prevent OOM by refusing to load excessively large datasets into memory
+      const MAX_IN_MEMORY_ROWS = 50000;
+      if (rowCount > MAX_IN_MEMORY_ROWS) {
+        throw new Error(
+          `Dataset too large for in-browser analysis (${rowCount.toLocaleString()} rows, ` +
+          `limit: ${MAX_IN_MEMORY_ROWS.toLocaleString()}). ` +
+          'Please reduce the data size or use a backend analysis service.'
         );
       }
 
