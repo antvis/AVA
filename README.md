@@ -161,12 +161,12 @@ AVA v4 is designed to run seamlessly in both browser and Node.js environments:
 - CSV loading via File API or direct content strings
 - JSON object and URL loading fully supported
 - In-memory data processing for datasets under 10KB
-- Note: SQLite is not available in browsers; keep datasets under 10KB or use the server-side version for large datasets
+- Note: Uses IndexedDB for persistent storage of large datasets (default >100KB) in browsers; for extremely large datasets, use the server-side version to avoid memory pressure
 
 ### ✅ Node.js Support
 - Full feature set including large dataset handling with SQLite
 - File system access for CSV loading
-- Automatic switching between in-memory and SQLite based on data size (10KB threshold)
+- Automatic switching between in-memory and SQLite based on data size (100KB threshold)
 
 ### Environment Detection
 AVA automatically detects the runtime environment and adapts:
