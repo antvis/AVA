@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AVA } from '@antv/ava';
 import type { DataRow } from './types';
-import { parseCSV, loadAppState, saveAppState } from './utils';
+import { parseCSV, parseExcel, loadAppState, saveAppState } from './utils';
 
 interface DataImportProps {
   avaInstance: AVA | null;
@@ -40,10 +40,10 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       // Use the global AVA instance's loadText to extract structured data from text
       // The loadText API returns the loaded structured data directly
       const data = await avaInstance.loadText(textInput);
-      
+
       // Save to localStorage
       saveAppState({ data, textInput });
-      
+
       onDataLoaded(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to extract data');
@@ -65,25 +65,31 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
     setError(null);
 
     try {
-      const content = await file.text();
-      
-      // Parse CSV in browser
-      const parsedData = parseCSV(content);
-      
-      if (parsedData.length === 0) {
-        throw new Error('No valid data found in CSV file');
+      const fileName = file.name.toLowerCase();
+      if (file.size > 25 * 1024 * 1024) {
+        throw new Error('File size exceeds 25MB limit');
+      }
+      const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+
+      let parsedData: DataRow[];
+
+      if (isExcel) {
+        const arrayBuffer = await file.arrayBuffer();
+        parsedData = parseExcel(arrayBuffer);
+      } else {
+        const content = await file.text();
+        parsedData = parseCSV(content);
       }
 
-      // Use the global AVA instance's loadObject to load the parsed data
-      // The loadObject API returns the loaded structured data directly
+      if (parsedData.length === 0) {
+        throw new Error(`No valid data found in ${isExcel ? 'Excel' : 'CSV'} file`);
+      }
+
       const data = await avaInstance.loadObject(parsedData);
-      
-      // Save to localStorage (clear textInput since we're using file)
       saveAppState({ data, textInput: '' });
-      
       onDataLoaded(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to parse CSV');
+      setError(err instanceof Error ? err.message : 'Failed to parse file');
     } finally {
       setIsLoading(false);
       if (fileInputRef.current) {

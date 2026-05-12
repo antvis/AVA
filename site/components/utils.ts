@@ -1,4 +1,5 @@
 import type { LLMConfig } from '@antv/ava';
+import * as XLSX from 'xlsx';
 
 // Default LLM config
 export const DEFAULT_LLM_CONFIG: LLMConfig = {
@@ -13,7 +14,7 @@ export const loadLLMConfig = (): LLMConfig => {
   if (typeof window === 'undefined') {
     return DEFAULT_LLM_CONFIG;
   }
-  
+
   try {
     const saved = localStorage.getItem('ava-llm-config');
     if (saved) {
@@ -48,7 +49,7 @@ export const loadAppState = (): Partial<AppState> => {
   if (typeof window === 'undefined') {
     return {};
   }
-  
+
   try {
     const saved = localStorage.getItem('ava-app-state');
     if (saved) {
@@ -82,20 +83,54 @@ export const saveAppState = (state: Partial<AppState>) => {
   }
 };
 
+// Parse Excel file (.xlsx, .xls) to DataRow array
+export const parseExcel = (arrayBuffer: ArrayBuffer): DataRow[] => {
+  const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as unknown[][];
+
+  if (jsonData.length < 2) return [];
+
+  const headers = (jsonData[0] as any[]).map(h => (h !== null && h !== undefined ? String(h).trim() : ''));
+  const result: DataRow[] = [];
+
+  for (let i = 1; i < jsonData.length; i++) {
+    const row = jsonData[i];
+    if (!row || row.length === 0) continue;
+
+    const rowData: DataRow = {};
+    headers.forEach((header, index) => {
+      const val = row[index];
+      if (val === undefined || val === null) {
+        rowData[header] = '';
+      } else if (typeof val === 'number') {
+        rowData[header] = val;
+      } else {
+        const strVal = String(val).trim();
+        const num = Number(strVal);
+        rowData[header] = !isNaN(num) && strVal !== '' ? num : strVal;
+      }
+    });
+    result.push(rowData);
+  }
+
+  return result;
+};
+
 // RFC 4180 compliant CSV parser for browser
 export const parseCSV = (csvContent: string): DataRow[] => {
   const lines = csvContent.trim().split('\n');
   if (lines.length < 2) return [];
-  
+
   // Parse a CSV line handling quoted values with commas
   const parseLine = (line: string): string[] => {
     const result: string[] = [];
     let current = '';
     let inQuotes = false;
-    
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      
+
       if (char === '"') {
         if (inQuotes && line[i + 1] === '"') {
           // Escaped quote
@@ -115,10 +150,10 @@ export const parseCSV = (csvContent: string): DataRow[] => {
     result.push(current.trim());
     return result;
   };
-  
+
   const headers = parseLine(lines[0]).map(h => h.replace(/^["']|["']$/g, ''));
   const data: DataRow[] = [];
-  
+
   for (let i = 1; i < lines.length; i++) {
     const values = parseLine(lines[i]).map(v => v.replace(/^["']|["']$/g, ''));
     if (values.length === headers.length) {
@@ -132,6 +167,6 @@ export const parseCSV = (csvContent: string): DataRow[] => {
       data.push(row);
     }
   }
-  
+
   return data;
 };
