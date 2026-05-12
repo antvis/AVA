@@ -22,6 +22,7 @@ import { generateSuggestions } from './suggest';
 import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse, SuggestResult } from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
+const MAX_IN_MEMORY_ROWS = 50000;
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -172,7 +173,6 @@ export class AVA {
       const rowCount = await this.indexedDBStore.getRowCount();
 
       // Hard limit: prevent OOM by refusing to load excessively large datasets into memory
-      const MAX_IN_MEMORY_ROWS = 50000;
       if (rowCount > MAX_IN_MEMORY_ROWS) {
         throw new Error(
           `Dataset too large for in-browser analysis (${rowCount.toLocaleString()} rows, ` +
