@@ -8,6 +8,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';
 import {
   SQLiteDataStore,
+  IndexedDBDataStore,
   executeDataCode,
   generateSQL,
   generateDataCode,
@@ -20,7 +21,7 @@ import { generateSuggestions } from './suggest';
 
 import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse, SuggestResult } from './types';
 
-const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
+const DEFAULT_SQL_THRESHOLD = 100 * 1024; // 100KB
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -42,6 +43,7 @@ export class AVA {
   private data: any[] | null = null;
   private dataInfo: DatasetInfo | null = null;
   private sqliteStore: SQLiteDataStore | null = null;
+  private indexedDBStore: IndexedDBDataStore | null = null;
 
   constructor(config: AVAConfig) {
     this.llmConfig = config.llm;
@@ -93,7 +95,16 @@ export class AVA {
   }
 
   /**
-   * Process loaded data: extract metadata and load into SQLite if large
+   * Check if IndexedDB is available in the current environment
+   */
+  private hasIndexedDB(): boolean {
+    // eslint-disable-next-line no-undef
+    return typeof window !== 'undefined' && 'indexedDB' in window;
+  }
+
+  /**
+   * Process loaded data: extract metadata and load into storage if large
+   * Uses SQLite for Node.js, IndexedDB for browser (with fallback to memory)
    */
   private async processLoadedData(): Promise<void> {
     if (!this.data) {
@@ -102,12 +113,32 @@ export class AVA {
 
     this.dataInfo = extractMetadata(this.data);
 
-    // If data is large, load into SQLite
+    // If data is large, load into appropriate storage
     if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
-      this.sqliteStore = new SQLiteDataStore();
-      await this.sqliteStore.loadData(this.data);
-      // Clear data from memory to save space
-      this.data = null;
+      const isNode = typeof window === 'undefined';
+
+      if (isNode) {
+        // Node.js environment: use SQLite
+        this.sqliteStore = new SQLiteDataStore();
+        await this.sqliteStore.loadData(this.data);
+        // Clear data from memory to save space
+        this.data = null;
+      } else if (this.hasIndexedDB()) {
+        // Browser environment with IndexedDB support
+        this.indexedDBStore = new IndexedDBDataStore();
+        await this.indexedDBStore.loadData(this.data);
+        // Clear data from memory to save space
+        this.data = null;
+      } else {
+        // Browser without IndexedDB: keep in memory with warning
+        // eslint-disable-next-line no-console
+        console.warn(
+          '[AVA] IndexedDB is not available in this environment. ' +
+          'Large datasets may cause memory issues. ' +
+          'Consider using a modern browser or reducing data size.'
+        );
+        // Keep data in memory (this.data remains set)
+      }
     }
   }
 
@@ -123,7 +154,7 @@ export class AVA {
     let analysisCode: string | undefined;
     let analysisSql: string | undefined;
 
-    // Use SQLite for large datasets
+    // Use SQLite for large datasets in Node.js
     if (this.sqliteStore) {
       const schema = await this.sqliteStore.getSchema();
       const sql = await generateSQL(this.llmConfig, schema, query);
@@ -134,6 +165,32 @@ export class AVA {
       } catch (error) {
         throw new Error(
           `Failed to execute SQL query: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+    } else if (this.indexedDBStore) {
+      // Use IndexedDB for large datasets in browser
+      const rowCount = await this.indexedDBStore.getRowCount();
+
+      // Warn for very large datasets that will be loaded into memory
+      if (rowCount > 50000) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[AVA] Loading ${rowCount.toLocaleString()} rows from IndexedDB into memory. ` +
+          'This may cause performance issues. Consider reducing data size or using a backend service.'
+        );
+      }
+
+      const data = await this.indexedDBStore.getAllData();
+
+      const dataInfoStr = formatDatasetInfo(this.dataInfo);
+      const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
+      analysisCode = code;
+
+      try {
+        analysisData = await executeDataCode(data, code);
+      } catch (error) {
+        throw new Error(
+          `Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`
         );
       }
     } else {
@@ -235,6 +292,10 @@ Provide a natural language summary of the result. If the result is tabular data,
     if (this.sqliteStore) {
       this.sqliteStore.close();
       this.sqliteStore = null;
+    }
+    if (this.indexedDBStore) {
+      this.indexedDBStore.close();
+      this.indexedDBStore = null;
     }
     this.data = null;
     this.dataInfo = null;

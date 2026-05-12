@@ -27,10 +27,10 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
   // Create a single global AVA instance that persists across data import and analysis
   const avaInstance = useMemo(() => {
     if (!llmConfig.apiKey) return null;
-    
+
     return new AVA({
       llm: llmConfig,
-      sqlThreshold: 1024 * 1024 * 100, // 100MB threshold to avoid SQLite in browser
+      sqlThreshold: 1024 * 1024 * 5, // 5MB threshold to avoid SQLite in browser
     });
   }, [llmConfig]);
 
@@ -50,7 +50,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
     const savedState = loadAppState();
     if (savedState.data && savedState.data.length > 0) {
       setData(savedState.data);
-      
+
       // Re-instantiate AVA with the saved data so analysis can continue
       if (avaInstance) {
         avaInstance.loadObject(savedState.data).catch((err) => {
