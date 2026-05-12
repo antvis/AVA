@@ -21,7 +21,7 @@ import { generateSuggestions } from './suggest';
 
 import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse, SuggestResult } from './types';
 
-const DEFAULT_SQL_THRESHOLD = 100 * 1024; // 100KB
+const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 
 /**
  * Check if analysis result has meaningful data for visualization.
