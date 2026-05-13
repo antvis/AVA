@@ -130,9 +130,14 @@ AVA Instance
     ↓         ↓
  <10KB      ≥10KB
     ↓         ↓
-JavaScript  SQLite
- Helpers    Storage
-    ↓         ↓
+JavaScript  ┌──────────────┐
+ Helpers    │ Env Check    │
+            └──────────────┘
+                ↓         ↓
+            Browser    Node.js
+                ↓         ↓
+            IndexedDB  SQLite
+                ↓         ↓
 ┌──────────────────┐
 │ Analysis Module  │ → Generate & Execute Code/SQL
 └──────────────────┘
