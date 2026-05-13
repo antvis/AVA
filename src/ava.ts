@@ -6,21 +6,76 @@ import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';
-import {
-  SQLiteDataStore,
-  executeDataCode,
-  generateSQL,
-  generateDataCode,
-} from './analysis';
-import {
-  adviseChartType,
-  generateVisualizationHTML,
-} from './visualization';
+import { SQLiteDataStore, executeDataCode, generateSQL, generateDataCode } from './analysis';
+import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 
-import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse, SuggestResult } from './types';
+import type {
+  AVAConfig,
+  LLMConfig,
+  DatasetInfo,
+  AnalysisResponse,
+  AnalysisOptions,
+  SuggestResult,
+  AnalysisProgressCallback,
+  StepEmitterParams,
+  AnalysisStep,
+} from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
+
+enum STEP_PHASE {
+  SQL_CODE = 'sqlCode',
+  JS_CODE = 'jsCode',
+  EXECUTE = 'execute',
+  SUMMARIZE = 'summarize',
+  ADVISOR = 'advisor',
+  VISUALIZE = 'visualize',
+}
+
+const STEP_LABEL: Record<STEP_PHASE, string> = {
+  [STEP_PHASE.SQL_CODE]: '生成查询代码',
+  [STEP_PHASE.JS_CODE]: '生成分析代码',
+  [STEP_PHASE.EXECUTE]: '执行分析',
+  [STEP_PHASE.SUMMARIZE]: '生成分析摘要',
+  [STEP_PHASE.ADVISOR]: '检测图表类型',
+  [STEP_PHASE.VISUALIZE]: '生成可视化',
+};
+
+const createStepEmitter = (onProgress: AnalysisProgressCallback | undefined) => {
+  let id = 0;
+  const steps: AnalysisStep[] = [];
+
+  return (params: StepEmitterParams | StepEmitterParams[]) => {
+    const items = Array.isArray(params) ? params : [params];
+    for (const item of items) {
+      const existingIdx = steps.findIndex((s) => s.phase === item.phase);
+      const label = STEP_LABEL[item.phase as STEP_PHASE];
+
+      if (existingIdx !== -1) {
+        steps[existingIdx] = {
+          ...steps[existingIdx],
+          status: item.params.status,
+          timestamp: Date.now(),
+          detail: item.params.detail,
+          error: item.params.error,
+        };
+      } else {
+        steps.push({
+          id: String(id++),
+          agent: 'main',
+          phase: item.phase,
+          label,
+          status: item.params.status,
+          timestamp: Date.now(),
+          detail: item.params.detail,
+          error: item.params.error,
+        });
+      }
+    }
+    onProgress?.([...steps]);
+  };
+};
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -114,11 +169,14 @@ export class AVA {
   /**
    * Analyze data using natural language query
    */
-  async analysis(query: string): Promise<AnalysisResponse> {
+  async analysis(query: string, options?: AnalysisOptions): Promise<AnalysisResponse> {
     if (!this.dataInfo) {
-      throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
+      throw new Error(
+        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).'
+      );
     }
 
+    const progress = createStepEmitter(options?.onProgress);
     let analysisData: any = undefined;
     let analysisCode: string | undefined;
     let analysisSql: string | undefined;
@@ -126,15 +184,42 @@ export class AVA {
     // Use SQLite for large datasets
     if (this.sqliteStore) {
       const schema = await this.sqliteStore.getSchema();
-      const sql = await generateSQL(this.llmConfig, schema, query);
+
+      progress({ phase: STEP_PHASE.SQL_CODE, params: { status: 'running' } });
+      let sql: string;
+      try {
+        sql = await generateSQL(this.llmConfig, schema, query);
+      } catch (error) {
+        progress({
+          phase: STEP_PHASE.SQL_CODE,
+          params: {
+            status: 'error',
+            error: error instanceof Error ? error.message : String(error),
+          },
+        });
+        throw error;
+      }
       analysisSql = sql;
+      progress([
+        { phase: STEP_PHASE.SQL_CODE, params: { status: 'done', detail: sql } },
+        { phase: STEP_PHASE.EXECUTE, params: { status: 'running' } },
+      ]);
 
       try {
         analysisData = await this.sqliteStore.query(sql);
+        progress({
+          phase: STEP_PHASE.EXECUTE,
+          params: { status: 'done', detail: `返回 ${analysisData.length} 条记录` },
+        });
       } catch (error) {
-        throw new Error(
-          `Failed to execute SQL query: ${error instanceof Error ? error.message : String(error)}`
-        );
+        progress({
+          phase: STEP_PHASE.EXECUTE,
+          params: {
+            status: 'error',
+            error: error instanceof Error ? error.message : String(error),
+          },
+        });
+        throw new Error(`Failed to execute SQL query: ${error instanceof Error ? error.message : String(error)}`);
       }
     } else {
       // Use JavaScript for small datasets
@@ -143,32 +228,72 @@ export class AVA {
       }
 
       const dataInfoStr = formatDatasetInfo(this.dataInfo);
-      const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
+
+      progress({ phase: STEP_PHASE.JS_CODE, params: { status: 'running' } });
+      let code: string;
+      try {
+        code = await generateDataCode(this.llmConfig, dataInfoStr, query);
+      } catch (error) {
+        progress({
+          phase: STEP_PHASE.JS_CODE,
+          params: {
+            status: 'error',
+            error: error instanceof Error ? error.message : String(error),
+          },
+        });
+        throw error;
+      }
       analysisCode = code;
+      progress([
+        { phase: STEP_PHASE.JS_CODE, params: { status: 'done', detail: code } },
+        { phase: STEP_PHASE.EXECUTE, params: { status: 'running' } },
+      ]);
 
       try {
         analysisData = await executeDataCode(this.data, code);
+        progress({
+          phase: STEP_PHASE.EXECUTE,
+          params: { status: 'done', detail: `返回 ${analysisData.length} 条记录` },
+        });
       } catch (error) {
-        throw new Error(
-          `Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`
-        );
+        progress({
+          phase: STEP_PHASE.EXECUTE,
+          params: {
+            status: 'error',
+            error: error instanceof Error ? error.message : String(error),
+          },
+        });
+        throw new Error(`Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
 
     // Summarize the result using LLM
+    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'running' } });
     const summary = await this.summarizeResult(query, analysisData);
+    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'done', detail: summary.slice(0, 200) } });
 
     // Detect visualization intent and generate visualization if needed
     let visualizationHTML: string | undefined;
     let visualizationSyntax: string | undefined;
     try {
+      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'running' } });
       // adviseChartType uses describeData which handles any data format
       const chartType = await adviseChartType(query, analysisData, this.llmConfig);
+      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'done', detail: chartType || '无需可视化' } });
+
       if (chartType && hasData(analysisData)) {
         // generateVisualizationHTML uses JSON.stringify which handles any JSON-serializable data
+        progress({ phase: STEP_PHASE.VISUALIZE, params: { status: 'running' } });
         const result = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
         visualizationSyntax = result.syntax;
         visualizationHTML = result.html;
+        progress({
+          phase: STEP_PHASE.VISUALIZE,
+          params: {
+            status: 'done',
+            detail: visualizationSyntax ? visualizationSyntax.slice(0, 200) : '',
+          },
+        });
       }
     } catch (error) {
       // Visualization is optional, don't fail the analysis if it fails
@@ -222,7 +347,9 @@ Provide a natural language summary of the result. If the result is tabular data,
    */
   async suggest(count: number = 3): Promise<SuggestResult[]> {
     if (!this.dataInfo) {
-      throw new Error('No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).');
+      throw new Error(
+        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).'
+      );
     }
 
     return generateSuggestions(this.llmConfig, this.dataInfo, count);

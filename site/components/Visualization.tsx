@@ -3,10 +3,11 @@ import React, { useState, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { AVA } from '@antv/ava';
-import type { AnalysisResponse } from '@antv/ava';
+import type { AnalysisResponse, AnalysisStep } from '@antv/ava';
 import type { DataRow } from './types';
 import { loadAppState, saveAppState } from './utils';
 import GPTVisRenderer from './GPTVisRenderer';
+import AnalysisSteps from './AnalysisSteps';
 
 interface VisualizationProps {
   avaInstance: AVA | null;
@@ -21,6 +22,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
+  const [steps, setSteps] = useState<AnalysisStep[]>([]);
 
   // Restore query and result from localStorage on mount
   useEffect(() => {
@@ -45,10 +47,14 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
     setIsLoading(true);
     setError(null);
+    setSteps([]);  // Clear old steps on new analysis
 
     try {
-      // Use the global AVA instance's analysis method to process the query
-      const analysisResult = await avaInstance.analysis(query);
+      const analysisResult = await avaInstance.analysis(query, {
+        onProgress: (steps) => {
+          setSteps(steps);
+        },
+      });
       setResult(analysisResult);
 
       // Save to localStorage
@@ -168,6 +174,11 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
         >
           {error}
         </div>
+      )}
+
+      {/* Analysis Progress Steps */}
+      {steps.length > 0 && (
+        <AnalysisSteps steps={steps} collapsed={!isLoading} />
       )}
 
       {/* Analysis Summary - Always show when result.text exists, rendered with react-markdown */}
