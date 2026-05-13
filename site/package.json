@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@antv/ava": "file:..",
+    "@antv/gpt-vis": "^1.0.0",
     "@tailwindcss/postcss": "^4.1.18",
     "autoprefixer": "^10.4.24",
     "buffer": "^6.0.3",
