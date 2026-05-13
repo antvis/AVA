@@ -14,32 +14,35 @@ const GPTVisRenderer: React.FC<GPTVisRendererProps> = ({ syntax, width, height, 
   const containerRef = useRef<HTMLDivElement>(null);
   const instanceRef = useRef<GPTVis | null>(null);
 
+  // Mount: create instance once. Unmount: destroy.
   useEffect(() => {
-    if (!containerRef.current || !syntax) return;
+    if (!containerRef.current) return;
+
+    const instance = new GPTVis({
+      container: containerRef.current,
+      width,
+      height,
+      theme: 'light',
+      wrapper: true,
+    });
+    instanceRef.current = instance;
+
+    return () => {
+      instance.destroy();
+      instanceRef.current = null;
+    };
+  }, []);
+
+  // Update: re-render when syntax or dimensions change.
+  useEffect(() => {
+    if (!instanceRef.current || !syntax) return;
 
     try {
-      if (!instanceRef.current) {
-        instanceRef.current = new GPTVis({
-          container: containerRef.current,
-          width,
-          height,
-          theme: 'light',
-          wrapper: true,
-        });
-      }
-
       instanceRef.current.render(syntax);
       onRender?.();
     } catch (err) {
       onError?.(err instanceof Error ? err : new Error(String(err)));
     }
-
-    return () => {
-      if (instanceRef.current) {
-        instanceRef.current.destroy();
-        instanceRef.current = null;
-      }
-    };
   }, [syntax, width, height]);
 
   return <div ref={containerRef} className="w-full h-full" />;
