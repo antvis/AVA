@@ -86,9 +86,13 @@ export const saveAppState = (state: Partial<AppState>) => {
 
     // Skip persisting data if it exceeds the size limit
     const dataToStore: Partial<AppState> = { ...newState };
-    if (dataToStore.data && dataToStore.data.length > 0) {
-      const serializedData = JSON.stringify(dataToStore.data);
-      if (serializedData.length > MAX_DATA_SERIALIZED_SIZE) {
+    if (dataToStore.data && dataToStore.data.length > 50) {
+      // Estimate the serialized size by sampling the first 50 rows
+      // instead of serializing the entire dataset, which could be
+      // expensive in CPU and memory for large arrays.
+      const sampleLength = JSON.stringify(dataToStore.data.slice(0, 50)).length;
+      const estimatedTotalSize = (sampleLength / 50) * dataToStore.data.length;
+      if (estimatedTotalSize > MAX_DATA_SERIALIZED_SIZE) {
         delete dataToStore.data;
       }
     }
@@ -107,7 +111,7 @@ export const parseExcel = (arrayBuffer: ArrayBuffer): DataRow[] => {
 
   if (jsonData.length < 2) return [];
 
-  const headers = (jsonData[0] as any[]).map(h => (h !== null && h !== undefined ? String(h).trim() : ''));
+  const headers = (jsonData[0] as any[]).map((h) => (h !== null && h !== undefined ? String(h).trim() : ''));
   const result: DataRow[] = [];
 
   for (let i = 1; i < jsonData.length; i++) {

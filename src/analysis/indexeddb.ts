@@ -115,9 +115,8 @@ export class IndexedDBDataStore {
           // Only destructure to remove __id when it actually exists;
           // unconditional spread on every row creates excessive GC pressure for large datasets
           if ('__id' in row) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { __id: _unused, ...cleanRow } = row;
-            store.put(cleanRow);
+            delete (row as any).__id;
+            store.put(row);
           } else {
             store.put(row);
           }
@@ -146,7 +145,10 @@ export class IndexedDBDataStore {
     // so we must strip it. Simple destructuring is fine here since we already
     // hold the full dataset in memory (the getAllData call dominates cost).
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    return allData.map(({ __id, ...row }) => row);
+    return allData.map((row) => {
+      delete row.__id;
+      return row;
+    });
   }
 
   /**
@@ -219,22 +221,25 @@ export class IndexedDBDataStore {
   private inferType(values: Array<unknown>): string {
     if (values.length === 0) return 'unknown';
 
-    const allNumbers = values.every(v => typeof v === 'number' || !Number.isNaN(Number(v)));
+    const allBooleans = values.every(v =>
+      typeof v === 'boolean' || v === 'true' || v === 'false'
+    );
+    if (allBooleans) return 'boolean';
+
+    const allNumbers = values.every(v =>
+      typeof v === 'number' || (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v)))
+    );
     if (allNumbers) return 'number';
 
+    const isoDateRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:?\d{2})?)?$/;
     const allDates = values.every(v => {
-      if (typeof v === 'string') {
+      if (typeof v === 'string' && isoDateRegex.test(v)) {
         const date = new Date(v);
         return !Number.isNaN(date.getTime());
       }
       return false;
     });
     if (allDates) return 'date';
-
-    const allBooleans = values.every(v =>
-      typeof v === 'boolean' || v === 'true' || v === 'false'
-    );
-    if (allBooleans) return 'boolean';
 
     return 'string';
   }
