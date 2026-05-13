@@ -23,6 +23,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
   const [llmConfig, setLLMConfig] = useState<LLMConfig>(loadLLMConfig);
   const [data, setData] = useState<DataRow[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   // Create a single global AVA instance that persists across data import and analysis
   const avaInstance = useMemo(() => {
@@ -30,7 +31,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
     return new AVA({
       llm: llmConfig,
-      sqlThreshold: 1024 * 1024 * 5, // 5MB threshold to avoid SQLite in browser
+      sqlThreshold: 1024 * 1024 * 3, // 3MB threshold — data above this goes to IndexedDB
     });
   }, [llmConfig]);
 
@@ -86,8 +87,8 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
         {/* Sections */}
         <div className="space-y-6">
-          <DataImport avaInstance={avaInstance} onDataLoaded={handleDataLoaded} isInitialized={isInitialized} />
-          <DataPreview data={data} />
+          <DataImport avaInstance={avaInstance} onDataLoaded={handleDataLoaded} isInitialized={isInitialized} onLoadingChange={setIsLoadingData} />
+          <DataPreview data={data} isLoading={isLoadingData} />
           <Visualization avaInstance={avaInstance} data={data} isInitialized={isInitialized} />
         </div>
       </main>

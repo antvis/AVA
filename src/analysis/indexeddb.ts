@@ -150,6 +150,20 @@ export class IndexedDBDataStore {
   }
 
   /**
+   * Estimate the in-memory size (bytes) of the full dataset by sampling rows.
+   * Uses JSON serialization of sampled rows as a proxy for memory footprint.
+   */
+  async estimateMemorySize(sampleSize: number = 20): Promise<number> {
+    const count = await this.getRowCount();
+    if (count === 0) return 0;
+
+    const actualSampleSize = Math.min(sampleSize, count);
+    const sample = await this.db!.getAll('data', undefined, actualSampleSize);
+    const sampleBytes = new Blob([JSON.stringify(sample)]).size;
+    return (sampleBytes / actualSampleSize) * count;
+  }
+
+  /**
    * Get stored row count from metadata (faster than counting)
    */
   async getRowCount(): Promise<number> {

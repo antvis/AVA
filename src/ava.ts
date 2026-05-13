@@ -22,7 +22,7 @@ import { generateSuggestions } from './suggest';
 import type { AVAConfig, LLMConfig, DatasetInfo, AnalysisResponse, SuggestResult } from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
-const MAX_IN_MEMORY_ROWS = 50000;
+const MAX_IN_MEMORY_BYTES = 20 * 1024 * 1024; // 20MB — browser is not a big-data environment
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -140,6 +140,16 @@ export class AVA {
         );
         // Keep data in memory (this.data remains set)
       }
+    } else {
+      // Data is small — clean up stale store references from previous loads
+      if (this.sqliteStore) {
+        this.sqliteStore.close();
+        this.sqliteStore = null;
+      }
+      if (this.indexedDBStore) {
+        await this.indexedDBStore.deleteDatabase();
+        this.indexedDBStore = null;
+      }
     }
   }
 
@@ -170,14 +180,15 @@ export class AVA {
       }
     } else if (this.indexedDBStore) {
       // Use IndexedDB for large datasets in browser
-      const rowCount = await this.indexedDBStore.getRowCount();
+      const estimatedBytes = await this.indexedDBStore.estimateMemorySize();
 
-      // Hard limit: prevent OOM by refusing to load excessively large datasets into memory
-      if (rowCount > MAX_IN_MEMORY_ROWS) {
+      if (estimatedBytes > MAX_IN_MEMORY_BYTES) {
         throw new Error(
-          `Dataset too large for in-browser analysis (${rowCount.toLocaleString()} rows, ` +
-          `limit: ${MAX_IN_MEMORY_ROWS.toLocaleString()}). ` +
-          'Please reduce the data size or use a backend analysis service.'
+          'Dataset too large for browser analysis ' +
+          `(estimated ${(estimatedBytes / 1024 / 1024).toFixed(1)}MB). ` +
+          'The browser environment is not suitable for large-scale data processing. ' +
+          'Please use the Node.js backend (SQLite) for full-dataset analysis, ' +
+          'or reduce the data size before loading.'
         );
       }
 

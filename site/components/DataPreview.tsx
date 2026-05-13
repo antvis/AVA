@@ -3,15 +3,16 @@ import type { DataRow } from './types';
 
 interface DataPreviewProps {
   data: DataRow[];
+  isLoading?: boolean;
 }
 
 // Helper function to convert data to CSV format
 const convertToCSV = (data: DataRow[]): string => {
   if (data.length === 0) return '';
-  
+
   const headers = Object.keys(data[0]);
   const csvHeaders = headers.join(',');
-  
+
   const csvRows = data.map(row => {
     return headers.map(header => {
       const value = row[header];
@@ -24,7 +25,7 @@ const convertToCSV = (data: DataRow[]): string => {
       return stringValue;
     }).join(',');
   });
-  
+
   return [csvHeaders, ...csvRows].join('\n');
 };
 
@@ -34,7 +35,7 @@ const downloadCSV = (data: DataRow[]) => {
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);
-  
+
   link.setAttribute('href', url);
   link.setAttribute('download', `data_${new Date().getTime()}.csv`);
   link.style.visibility = 'hidden';
@@ -44,7 +45,7 @@ const downloadCSV = (data: DataRow[]) => {
   URL.revokeObjectURL(url);
 };
 
-const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
+const DataPreview: React.FC<DataPreviewProps> = ({ data, isLoading }) => {
   const formatValue = (value: string | number | boolean | null): string => {
     if (value === null || value === undefined) return '-';
     if (typeof value === 'number') {
@@ -80,9 +81,9 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
           <h2 className="text-lg font-semibold text-gray-800">Structured Data Preview</h2>
         </div>
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={() => downloadCSV(data)}
-            disabled={data.length === 0}
+            disabled={data.length === 0 || isLoading}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-[#78d3f8] disabled:opacity-50 disabled:cursor-not-allowed"
             title="Download as CSV"
           >
@@ -93,7 +94,24 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data }) => {
         </div>
       </div>
 
-      {data.length === 0 ? (
+      {isLoading ? (
+        <div className="space-y-3">
+          {/* Skeleton header row */}
+          <div className="flex gap-4 animate-pulse">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-3 bg-gray-200 rounded flex-1" />
+            ))}
+          </div>
+          {/* Skeleton data rows */}
+          {[...Array(10)].map((_, rowIdx) => (
+            <div key={rowIdx} className="flex gap-4 animate-pulse">
+              {[...Array(5)].map((_, colIdx) => (
+                <div key={colIdx} className="h-4 bg-gray-100 rounded flex-1" />
+              ))}
+            </div>
+          ))}
+        </div>
+      ) : data.length === 0 ? (
         <div className="flex items-center justify-center py-12 text-gray-400">
           <div className="text-center">
             <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
