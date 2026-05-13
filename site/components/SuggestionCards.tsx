@@ -14,18 +14,19 @@ const SuggestionCards: React.FC<SuggestionCardsProps> = ({ suggestions, onSelect
   if (suggestions.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-3 gap-3 mb-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
       {suggestions.map((s, i) => (
-        <div key={i} className="relative flex">
+        <div key={s.query} className="relative flex">
           <button
+            type="button"
             onClick={() => { onSelect(s.query); onDismiss(); }}
             onMouseEnter={() => setHoveredIdx(i)}
             onMouseLeave={() => setHoveredIdx(null)}
             className="h-full w-full text-left px-3.5 py-3 bg-white hover:bg-gradient-to-br hover:from-[#78d3f8]/8 hover:to-[#e8f8ff] border border-gray-200/80 hover:border-[#78d3f8]/40 rounded-xl transition-all duration-200 cursor-pointer group shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(120,211,248,0.15)]"
           >
-            <div className="flex items-start gap-2">
+            <div aria-hidden="true" className="flex items-start gap-2">
               <span className="shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center rounded-md bg-[#78d3f8]/10 text-[11px] group-hover:bg-[#78d3f8]/20 transition-colors">💡</span>
-              <span className="text-[13px] text-gray-600 group-hover:text-[#0c8fb4] leading-relaxed transition-colors" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{s.query}</span>
+              <span className="text-[13px] text-gray-600 group-hover:text-[#0c8fb4] leading-relaxed transition-colors line-clamp-2">{s.query}</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
               <div className="flex-1 h-[3px] bg-gray-100 rounded-full overflow-hidden">
