@@ -28,6 +28,8 @@ export async function generateSuggestions(
 
 ${dataInfoStr}
 
+IMPORTANT: Detect the language of the dataset (from column names and sample values). You MUST write the "query" and "reason" fields in the SAME language as the dataset. For example, if column names or sample values are in Chinese, write queries and reasons in Chinese; if in English, write in English; if in Japanese, write in Japanese. If the dataset language is ambiguous, default to English.
+
 For each suggested query, provide:
 1. The query text (a natural language question that can be analyzed)
 2. A score between 0 and 1 indicating how meaningful/valuable this analysis would be (1 being most meaningful)
@@ -64,9 +66,9 @@ Generate the JSON array now.`;
     if (!jsonMatch) {
       throw new Error('No JSON array found in response');
     }
-    
+
     const suggestions = JSON.parse(jsonMatch[0]) as SuggestResult[];
-    
+
     // Validate and normalize the results
     return suggestions
       .filter(s => s.query && typeof s.score === 'number' && s.reason)
