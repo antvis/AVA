@@ -24,8 +24,8 @@ const SuggestionCards: React.FC<SuggestionCardsProps> = ({ suggestions, onSelect
             onMouseLeave={() => setHoveredIdx(null)}
             className="h-full w-full text-left px-3.5 py-3 bg-white hover:bg-gradient-to-br hover:from-[#78d3f8]/8 hover:to-[#e8f8ff] border border-gray-200/80 hover:border-[#78d3f8]/40 rounded-xl transition-all duration-200 cursor-pointer group shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(120,211,248,0.15)]"
           >
-            <div aria-hidden="true" className="flex items-start gap-2">
-              <span className="shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center rounded-md bg-[#78d3f8]/10 text-[11px] group-hover:bg-[#78d3f8]/20 transition-colors">💡</span>
+            <div className="flex items-start gap-2">
+              <span aria-hidden="true" className="shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center rounded-md bg-[#78d3f8]/10 text-[11px] group-hover:bg-[#78d3f8]/20 transition-colors">💡</span>
               <span className="text-[13px] text-gray-600 group-hover:text-[#0c8fb4] leading-relaxed transition-colors line-clamp-2">{s.query}</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
