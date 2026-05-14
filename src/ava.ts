@@ -34,12 +34,12 @@ enum STEP_PHASE {
 }
 
 const STEP_LABEL: Record<STEP_PHASE, string> = {
-  [STEP_PHASE.SQL_CODE]: '生成查询代码',
-  [STEP_PHASE.JS_CODE]: '生成分析代码',
-  [STEP_PHASE.EXECUTE]: '执行分析',
-  [STEP_PHASE.SUMMARIZE]: '生成分析摘要',
-  [STEP_PHASE.ADVISOR]: '检测图表类型',
-  [STEP_PHASE.VISUALIZE]: '生成可视化',
+  [STEP_PHASE.SQL_CODE]: 'Generate SQL query',
+  [STEP_PHASE.JS_CODE]: 'Generate analysis code',
+  [STEP_PHASE.EXECUTE]: 'Execute analysis',
+  [STEP_PHASE.SUMMARIZE]: 'Generate analysis summary',
+  [STEP_PHASE.ADVISOR]: 'Detect chart type',
+  [STEP_PHASE.VISUALIZE]: 'Generate visualization',
 };
 
 const createStepEmitter = (onProgress: AnalysisProgressCallback | undefined) => {
@@ -209,7 +209,7 @@ export class AVA {
         analysisData = await this.sqliteStore.query(sql);
         progress({
           phase: STEP_PHASE.EXECUTE,
-          params: { status: 'done', detail: `返回 ${analysisData.length} 条记录` },
+          params: { status: 'done', detail: `Returned ${analysisData.length} records` },
         });
       } catch (error) {
         progress({
@@ -253,7 +253,7 @@ export class AVA {
         analysisData = await executeDataCode(this.data, code);
         progress({
           phase: STEP_PHASE.EXECUTE,
-          params: { status: 'done', detail: `返回 ${analysisData.length} 条记录` },
+          params: { status: 'done', detail: `Returned ${analysisData.length} records` },
         });
       } catch (error) {
         progress({
@@ -279,7 +279,7 @@ export class AVA {
       progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'running' } });
       // adviseChartType uses describeData which handles any data format
       const chartType = await adviseChartType(query, analysisData, this.llmConfig);
-      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'done', detail: chartType || '无需可视化' } });
+      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'done', detail: chartType || 'No visualization needed' } });
 
       if (chartType && hasData(analysisData)) {
         // generateVisualizationHTML uses JSON.stringify which handles any JSON-serializable data
