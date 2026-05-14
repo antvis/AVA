@@ -31,7 +31,7 @@ const GPTVisRenderer: React.FC<GPTVisRendererProps> = ({ syntax, width, height, 
       instance.destroy();
       instanceRef.current = null;
     };
-  }, []);
+  }, [width, height]);
 
   // Update: re-render when syntax or dimensions change.
   useEffect(() => {
