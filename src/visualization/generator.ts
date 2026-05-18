@@ -390,16 +390,21 @@ title "2024 Q1 Sales Report"
    - 使用 GPTVis.GPTVis 类初始化并渲染图表
    - container 参数必须使用 CSS 选择器格式（如 '#container'），不能省略 # 前缀
    - 添加简洁美观的样式
+   - 整个 HTML 中只允许有一个 \`new GPTVis.GPTVis(...)\` 实例和一次 \`render()\` 调用
+   - GPT-Vis 语法的变量名必须是 \`visSyntax\`，禁止使用其他名称
 4. GPT-Vis 语法要求：
    - 数据字段映射必须正确，字段名和值之间用空格分隔，**不要用冒号**
    - data 必须在 title 等属性之前
    - 根据数据特征生成合适的标题
    - 确保语法格式完全符合 GPT-Vis 规范
    - 语法不要生成 width height，图表会按照容器自适应大小
+   - 语法必须直接写在模板字符串中，禁止用 \`+\` 拼接字符串
+   - 禁止 \${...} 插值语法，语法必须是纯字符串
+   - 模板字符串内的 GPT-Vis 语法从第一列开始（\`vis xxx\` 前面不能有空格），每层嵌套用两个空格缩进。模板字符串的开头 \\\` 后面直接换行，结尾 \\\` 前面也换行
 5. 只返回 HTML 代码，不要有任何其他说明文字
 6. 在 JavaScript 中使用模板字符串时，如果语法中包含反引号(\`)、美元符号($)或反斜杠(\\)，需要用反斜杠转义
 
-## HTML 模板参考
+## HTML 模板参考（必须严格遵循此结构）
 
 <!DOCTYPE html>
 <html>
@@ -414,7 +419,6 @@ title "2024 Q1 Sales Report"
         font-family: Arial, sans-serif;
         width: 100%;
         height: 100%;
-        display: block;
       }
     </style>
   </head>
@@ -425,7 +429,13 @@ title "2024 Q1 Sales Report"
         container: '#container',
       });
 
-      const visSyntax = \`[这里放入根据数据生成的正确 GPT-Vis 语法]\`;
+      const visSyntax = \\\`
+vis [type]
+data
+  - ...
+title ...
+axisXTitle ...
+axisYTitle ...\\\`;
 
       gptVis.render(visSyntax);
     </script>
