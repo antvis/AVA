@@ -3,8 +3,9 @@ import React, { useState, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { AVA } from '@antv/ava';
-import type { AnalysisResponse } from '@antv/ava';
+import type { AnalysisResponse, SuggestResult } from '@antv/ava';
 import type { DataRow } from './types';
+import SuggestionCards from './SuggestionCards';
 import { loadAppState, saveAppState } from './utils';
 import GPTVisRenderer from './GPTVisRenderer';
 
@@ -18,6 +19,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuggesting, setIsSuggesting] = useState(false);
+  const [suggestions, setSuggestions] = useState<SuggestResult[]>([]);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
@@ -67,15 +69,13 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
     }
 
     setIsSuggesting(true);
+    setSuggestions([]);
     setError(null);
 
     try {
-      // Get suggestions from AVA instance
-      const suggestions = await avaInstance.suggest(1);
-      if (suggestions.length > 0) {
-        // Fill the input with the top suggestion
-        setQuery(suggestions[0].query);
-      }
+      // Get 3 suggestions from AVA instance
+      const results = await avaInstance.suggest(3);
+      setSuggestions(results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to get suggestions');
     } finally {
@@ -101,7 +101,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => { setQuery(e.target.value); setSuggestions([]); }}
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             placeholder="Create a trend line comparing North America and Europe sales growth"
             className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all text-sm"
@@ -160,6 +160,12 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
         </button>
       </div>
 
+      {/* Suggestion Cards */}
+      <SuggestionCards
+        suggestions={suggestions}
+        onSelect={(q) => setQuery(q)}
+        onDismiss={() => setSuggestions([])}
+      />
       {error && (
         <div
           className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm"

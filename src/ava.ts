@@ -205,6 +205,8 @@ User Query: ${query}
 Analysis Result:
 ${dataStr}
 
+IMPORTANT: Detect the language of the user query. You MUST write your summary in the SAME language as the user query. For example, if the query is in Chinese, write the summary in Chinese; if in English, write in English; if in Japanese, write in Japanese. If the query language is ambiguous, default to English.
+
 Provide a natural language summary of the result. If the result is tabular data, you can present it as a markdown table.`;
 
     const { text } = await generateText({
