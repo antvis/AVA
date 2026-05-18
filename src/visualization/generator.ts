@@ -400,7 +400,7 @@ title "2024 Q1 Sales Report"
    - 语法不要生成 width height，图表会按照容器自适应大小
    - 语法必须直接写在模板字符串中，禁止用 \`+\` 拼接字符串
    - 禁止 \${...} 插值语法，语法必须是纯字符串
-   - 模板字符串内的 GPT-Vis 语法从第一列开始（\`vis xxx\` 前面不能有空格），每层嵌套用两个空格缩进。模板字符串的开头 \\\` 后面直接换行，结尾 \\\` 前面也换行
+   - 模板字符串内的 GPT-Vis 语法从第一列开始（\`vis xxx\` 前面不能有空格），每层嵌套用两个空格缩进。模板字符串的开头 \` 后面直接换行，结尾 \` 前面也换行
 5. 只返回 HTML 代码，不要有任何其他说明文字
 6. 在 JavaScript 中使用模板字符串时，如果语法中包含反引号(\`)、美元符号($)或反斜杠(\\)，需要用反斜杠转义
 
@@ -429,13 +429,13 @@ title "2024 Q1 Sales Report"
         container: '#container',
       });
 
-      const visSyntax = \\\`
+      const visSyntax = \`
 vis [type]
 data
   - ...
 title ...
 axisXTitle ...
-axisYTitle ...\\\`;
+axisYTitle ...\`;
 
       gptVis.render(visSyntax);
     </script>
