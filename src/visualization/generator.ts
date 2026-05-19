@@ -440,7 +440,7 @@ title "2024 Q1 Sales Report"
   });
 
   // Remove markdown code block markers if present
-  let html = text.trim().replace(/^```(?:html)?\s*/i, '').replace(/\s*```$/, '').trim();
+  let html = text.replace(/[\s\S]*?```(?:html)?\s*/i, '').replace(/\s*```[\s\S]*$/, '').trim();
 
   // Extract GPT-Vis syntax from the HTML
   // Look for the visSyntax variable assignment in template literal

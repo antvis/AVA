@@ -70,16 +70,36 @@ export const loadAppState = (): Partial<AppState> => {
   return {};
 };
 
+// Maximum size for serialized data in localStorage (bytes)
+// localStorage has a ~5MB total quota; reserve most of it for other keys
+const MAX_DATA_SERIALIZED_SIZE = 3 * 1024 * 1024; // 3MB
+
 // Save application state to localStorage
+// Large datasets are not persisted here — they are already stored in
+// IndexedDB via the AVA instance, so duplicating them in localStorage
+// would exceed its quota and cause QuotaExceededError.
 export const saveAppState = (state: Partial<AppState>) => {
-  if (typeof window !== 'undefined') {
-    try {
-      const currentState = loadAppState();
-      const newState = { ...currentState, ...state };
-      localStorage.setItem('ava-app-state', JSON.stringify(newState));
-    } catch (e) {
-      console.error('Failed to save app state:', e);
+  if (typeof window === 'undefined') return;
+  try {
+    const currentState = loadAppState();
+    const newState = { ...currentState, ...state };
+
+    // Skip persisting data if it exceeds the size limit
+    const dataToStore: Partial<AppState> = { ...newState };
+    if (dataToStore.data && dataToStore.data.length > 50) {
+      // Estimate the serialized size by sampling the first 50 rows
+      // instead of serializing the entire dataset, which could be
+      // expensive in CPU and memory for large arrays.
+      const sampleLength = JSON.stringify(dataToStore.data.slice(0, 50)).length;
+      const estimatedTotalSize = (sampleLength / 50) * dataToStore.data.length;
+      if (estimatedTotalSize > MAX_DATA_SERIALIZED_SIZE) {
+        delete dataToStore.data;
+      }
     }
+
+    localStorage.setItem('ava-app-state', JSON.stringify(dataToStore));
+  } catch (e) {
+    console.error('Failed to save app state:', e);
   }
 };
 
@@ -91,7 +111,7 @@ export const parseExcel = (arrayBuffer: ArrayBuffer): DataRow[] => {
 
   if (jsonData.length < 2) return [];
 
-  const headers = (jsonData[0] as any[]).map(h => (h !== null && h !== undefined ? String(h).trim() : ''));
+  const headers = (jsonData[0] as any[]).map((h) => (h !== null && h !== undefined ? String(h).trim() : ''));
   const result: DataRow[] = [];
 
   for (let i = 1; i < jsonData.length; i++) {
