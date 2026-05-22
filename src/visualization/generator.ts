@@ -19,7 +19,8 @@ function wrapSyntaxInHTML(syntax: string): string {
   const escapedSyntax = syntax
     .replace(/\\/g, '\\\\')
     .replace(/`/g, '\\`')
-    .replace(/\$/g, '\\$');
+    .replace(/\$/g, '\\$')
+    .replace(/<\/script>/g, '<\\/script>');
 
   return `<!DOCTYPE html>
 <html>
