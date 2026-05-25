@@ -244,7 +244,7 @@ ${a}
 
 如果用户查询包含可视化意图，请只回复图表类型的英文名称（如 line、column、pie 等）。
 如果用户查询不包含可视化意图，请回复"none"。
-不要有其他内容。`,{text:i}=await sa({model:n(r.model),prompt:s}),o=i.trim().toLowerCase();return"none"===o||"否"===o||"no"===o?null:["line","column","bar","pie","area","scatter","dual-axes","histogram","boxplot","radar","funnel","waterfall","liquid","word-cloud","violin","venn","treemap","sankey","table","summary"].includes(o)?o:null}async function oL(e,t,r,n){let a=i3({apiKey:n.apiKey,baseURL:n.baseURL}),s=`你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成一个完整的可独立运行的 HTML 文件，其中包含正确的 GPT-Vis 语法。
+不要有其他内容。`,{text:i}=await sa({model:n(r.model),prompt:s}),o=i.trim().toLowerCase();return"none"===o||"否"===o||"no"===o?null:["line","column","bar","pie","area","scatter","dual-axes","histogram","boxplot","radar","funnel","waterfall","liquid","word-cloud","violin","venn","treemap","sankey","table","summary"].includes(o)?o:null}async function oL(e,t,r,n){let a,s=i3({apiKey:n.apiKey,baseURL:n.baseURL}),i=`你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis 语法。
 
 ## 任务信息
 
@@ -603,26 +603,13 @@ title "2024 Q1 Sales Report"
 
 ## 要求
 
-1. 根据上述提供的图表类型、数据和用户查询，生成对应的 GPT-Vis 语法
-2. 将生成的 GPT-Vis 语法嵌入到一个完整的 HTML 文件中
-3. HTML 文件必须包含：
-   - 完整的 HTML 结构 (<!DOCTYPE html>, <html>, <head>, <body>)
-   - 引入 GPT-Vis 的 UMD 版本：https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js
-   - 使用 GPTVis.GPTVis 类初始化并渲染图表
-   - container 参数必须使用 CSS 选择器格式（如 '#container'），不能省略 # 前缀
-   - 添加简洁美观的样式
-4. GPT-Vis 语法要求：
-   - 数据字段映射必须正确，字段名和值之间用空格分隔，**不要用冒号**
-   - data 必须在 title 等属性之前
-   - 根据数据特征生成合适的标题
-   - 确保语法格式完全符合 GPT-Vis 规范
-   - 语法不要生成 width height，图表会按照容器自适应大小
-5. 只返回 HTML 代码，不要有任何其他说明文字
-6. 在 JavaScript 中使用模板字符串时，如果语法中包含反引号(\`)、美元符号($)或反斜杠(\\)，需要用反斜杠转义
-
-## HTML 模板参考
-
-<!DOCTYPE html>
+1. 只生成 GPT-Vis 语法，不要生成 HTML 或任何其他代码
+2. 数据字段映射必须正确，字段名和值之间用空格分隔，**不要用冒号**
+3. data 必须在 title 等属性之前
+4. 根据数据特征生成合适的标题
+5. 确保语法格式完全符合上述 GPT-Vis 规范
+6. 不要生成 width height，图表会按照容器自适应大小
+7. 直接输出语法内容，不要用代码块包裹，不要有任何说明文字`,{text:o}=await sa({model:s(n.model),prompt:i}),l=o.trim().replace(/^```(?:vis|yaml|text)?\s*\n?/i,"").replace(/\n?\s*```$/,"").trim(),u=(a=l.replace(/\\/g,"\\\\").replace(/`/g,"\\`").replace(/\$/g,"\\$").replace(/<\/script>/g,"<\\/script>"),`<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
@@ -635,7 +622,6 @@ title "2024 Q1 Sales Report"
         font-family: Arial, sans-serif;
         width: 100%;
         height: 100%;
-        display: block;
       }
     </style>
   </head>
@@ -646,14 +632,12 @@ title "2024 Q1 Sales Report"
         container: '#container',
       });
 
-      const visSyntax = \`[这里放入根据数据生成的正确 GPT-Vis 语法]\`;
+      const visSyntax = \`${a}\`;
 
       gptVis.render(visSyntax);
     </script>
   </body>
-</html>
-
-请直接返回完整的 HTML 代码。`,{text:i}=await sa({model:a(n.model),prompt:s}),o=i.replace(/[\s\S]*?```(?:html)?\s*/i,"").replace(/\s*```[\s\S]*$/,"").trim(),l=o.match(/const visSyntax = `([^`]*)`/),u="";if(l&&l[1])u=l[1].trim();else{let e=o.match(/visSyntax\s*=\s*`([\s\S]*?)`[\s\S]*?gptVis\.render/);e&&e[1]&&(u=e[1].trim())}return{syntax:u,html:o}}async function oB(e,t,r=3){let n=i3({apiKey:e.apiKey,baseURL:e.baseURL}),a=od(t),s=`You are a data analysis expert. Based on the following dataset information, suggest ${r} most meaningful analysis queries that would provide valuable insights.
+</html>`);return{syntax:l,html:u}}async function oB(e,t,r=3){let n=i3({apiKey:e.apiKey,baseURL:e.baseURL}),a=od(t),s=`You are a data analysis expert. Based on the following dataset information, suggest ${r} most meaningful analysis queries that would provide valuable insights.
 
 ${a}
 
