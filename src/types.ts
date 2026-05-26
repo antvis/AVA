@@ -110,3 +110,49 @@ export interface SuggestResult {
   /** Reason for the score */
   reason: string;
 }
+
+/**
+ * Status of a single analysis step
+ */
+export type StepStatus = 'pending' | 'running' | 'done' | 'error';
+
+/**
+ * A single analysis step
+ * Designed to be JSON-serializable for history storage
+ */
+export interface AnalysisStep {
+  /** Unique step ID */
+  id: string;
+  /** Agent identifier, reserved for multi-agent scenarios. Currently fixed as 'main' */
+  agent: string;
+  /** Step phase identifier, such as 'code', 'execute', 'summarize', 'advisor', 'visualize' */
+  phase: string;
+  /** Short label for UI display, e.g., "Generate analysis code" */
+  label: string;
+  /** Current step status */
+  status: StepStatus;
+  /** Optional: raw output summary, shown when user clicks "view" */
+  detail?: string;
+  /** Optional: error message when step fails */
+  error?: string;
+  /** Unix millisecond timestamp, updated on step status change */
+  timestamp: number;
+}
+
+/**
+ * Progress callback function type
+ */
+export type AnalysisProgressCallback = (steps: AnalysisStep[]) => void;
+
+/**
+ * Parameters for emitting a single analysis step
+ */
+export type StepEmitterParams = { phase: string; params: { status: StepStatus; detail?: string; error?: string } };
+
+/**
+ * Extended options for the analysis() method
+ */
+export interface AnalysisOptions {
+  /** Progress callback, pushes analysis progress step by step */
+  onProgress?: AnalysisProgressCallback;
+}
