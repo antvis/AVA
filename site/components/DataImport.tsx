@@ -8,9 +8,10 @@ interface DataImportProps {
   avaInstance: AVA | null;
   onDataLoaded: (data: DataRow[]) => void;
   isInitialized: boolean;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
-const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isInitialized }) => {
+const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isInitialized, onLoadingChange }) => {
   const [textInput, setTextInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +35,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
     }
 
     setIsLoading(true);
+    onLoadingChange?.(true);
     setError(null);
 
     try {
@@ -49,6 +51,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       setError(err instanceof Error ? err.message : 'Failed to extract data');
     } finally {
       setIsLoading(false);
+      onLoadingChange?.(false);
     }
   };
 
@@ -62,6 +65,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
     }
 
     setIsLoading(true);
+    onLoadingChange?.(true);
     setError(null);
 
     try {
@@ -92,6 +96,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       setError(err instanceof Error ? err.message : 'Failed to parse file');
     } finally {
       setIsLoading(false);
+      onLoadingChange?.(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }

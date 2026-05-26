@@ -6,3 +6,4 @@ export { default as DataPreview } from './DataPreview';
 export { default as Visualization } from './Visualization';
 export * from './types';
 export * from './utils';
+export { default as SuggestionCards } from './SuggestionCards';

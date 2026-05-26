@@ -97,3 +97,15 @@ body {
 .prose tbody tr:hover {
   background-color: #f3f4f6;
 }
+
+/* Suggestion tooltip animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}

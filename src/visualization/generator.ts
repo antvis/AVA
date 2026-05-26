@@ -1,5 +1,9 @@
 /**
- * GPT-Vis HTML code generator with comprehensive chart examples
+ * GPT-Vis visualization generator
+ *
+ * Strategy: LLM only generates pure GPT-Vis syntax, then we wrap it
+ * into an HTML template locally. This avoids unreliable regex extraction
+ * from LLM-generated HTML and ensures the HTML is always well-formed.
  */
 
 import { generateText } from 'ai';
@@ -8,9 +12,55 @@ import { createOpenAI } from '@ai-sdk/openai';
 import type { LLMConfig, ChartType } from '../types';
 
 /**
- * Generate complete HTML code for visualization with GPT-Vis syntax embedded
- * This function combines both syntax generation and HTML generation in a single LLM call
- * Returns both the syntax and HTML for frontend display
+ * Wrap GPT-Vis syntax into a standalone HTML file that can be opened in any browser
+ */
+function wrapSyntaxInHTML(syntax: string): string {
+  // Escape backticks, dollar signs, and backslashes for JS template literal
+  const escapedSyntax = syntax
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$/g, '\\$')
+    .replace(/<\/script>/g, '<\\/script>');
+
+  return `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Data Visualization</title>
+    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
+    <style>
+      html, body, #container {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      const gptVis = new GPTVis.GPTVis({
+        container: '#container',
+      });
+
+      const visSyntax = \`${escapedSyntax}\`;
+
+      gptVis.render(visSyntax);
+    </script>
+  </body>
+</html>`;
+}
+
+/**
+ * Generate GPT-Vis syntax via LLM and wrap it into a standalone HTML file
+ *
+ * The LLM is instructed to return only pure GPT-Vis syntax (no HTML wrapper).
+ * The HTML is then generated locally from a fixed template, ensuring:
+ * 1. Syntax extraction is 100% reliable (the entire LLM output IS the syntax)
+ * 2. The HTML is always well-formed regardless of LLM output variance
+ * 3. Users without @antv/gpt-vis installed can still use the HTML directly
  */
 export async function generateVisualizationHTML(
   chartType: ChartType,
@@ -23,7 +73,7 @@ export async function generateVisualizationHTML(
     baseURL: llmConfig.baseURL,
   });
 
-  const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成一个完整的可独立运行的 HTML 文件，其中包含正确的 GPT-Vis 语法。
+  const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis 语法。
 
 ## 任务信息
 
@@ -382,81 +432,29 @@ title "2024 Q1 Sales Report"
 
 ## 要求
 
-1. 根据上述提供的图表类型、数据和用户查询，生成对应的 GPT-Vis 语法
-2. 将生成的 GPT-Vis 语法嵌入到一个完整的 HTML 文件中
-3. HTML 文件必须包含：
-   - 完整的 HTML 结构 (<!DOCTYPE html>, <html>, <head>, <body>)
-   - 引入 GPT-Vis 的 UMD 版本：https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js
-   - 使用 GPTVis.GPTVis 类初始化并渲染图表
-   - container 参数必须使用 CSS 选择器格式（如 '#container'），不能省略 # 前缀
-   - 添加简洁美观的样式
-4. GPT-Vis 语法要求：
-   - 数据字段映射必须正确，字段名和值之间用空格分隔，**不要用冒号**
-   - data 必须在 title 等属性之前
-   - 根据数据特征生成合适的标题
-   - 确保语法格式完全符合 GPT-Vis 规范
-   - 语法不要生成 width height，图表会按照容器自适应大小
-5. 只返回 HTML 代码，不要有任何其他说明文字
-6. 在 JavaScript 中使用模板字符串时，如果语法中包含反引号(\`)、美元符号($)或反斜杠(\\)，需要用反斜杠转义
-
-## HTML 模板参考
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Data Visualization</title>
-    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
-    <style>
-      html, body, #container {
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="container"></div>
-    <script>
-      const gptVis = new GPTVis.GPTVis({
-        container: '#container',
-      });
-
-      const visSyntax = \`[这里放入根据数据生成的正确 GPT-Vis 语法]\`;
-
-      gptVis.render(visSyntax);
-    </script>
-  </body>
-</html>
-
-请直接返回完整的 HTML 代码。`;
+1. 只生成 GPT-Vis 语法，不要生成 HTML 或任何其他代码
+2. 数据字段映射必须正确，字段名和值之间用空格分隔，**不要用冒号**
+3. data 必须在 title 等属性之前
+4. 根据数据特征生成合适的标题
+5. 确保语法格式完全符合上述 GPT-Vis 规范
+6. 不要生成 width height，图表会按照容器自适应大小
+7. 直接输出语法内容，不要用代码块包裹，不要有任何说明文字`;
 
   const { text } = await generateText({
     model: openai(llmConfig.model) as any,
     prompt,
   });
 
-  // Remove markdown code block markers if present
-  let html = text.trim().replace(/^```(?:html)?\s*/i, '').replace(/\s*```$/, '').trim();
+  // The LLM returns pure GPT-Vis syntax directly
+  // Remove possible markdown code block wrappers (LLM may still wrap in ```...```)
+  const syntax = text
+    .trim()
+    .replace(/^```(?:vis|yaml|text)?\s*\n?/i, '')
+    .replace(/\n?\s*```$/, '')
+    .trim();
 
-  // Extract GPT-Vis syntax from the HTML
-  // Look for the visSyntax variable assignment in template literal
-  const syntaxMatch = html.match(/const visSyntax = `([^`]*)`/);
-  let syntax = '';
-
-  if (syntaxMatch && syntaxMatch[1]) {
-    syntax = syntaxMatch[1].trim();
-  } else {
-    // Fallback: try to find content between vis keyword and gptVis.render
-    // Using [\s\S] instead of . with s flag for ES5 compatibility
-    const fallbackMatch = html.match(/visSyntax\s*=\s*`([\s\S]*?)`[\s\S]*?gptVis\.render/);
-    if (fallbackMatch && fallbackMatch[1]) {
-      syntax = fallbackMatch[1].trim();
-    }
-  }
+  // Wrap syntax into a standalone HTML file using a fixed template
+  const html = wrapSyntaxInHTML(syntax);
 
   return { syntax, html };
 }
