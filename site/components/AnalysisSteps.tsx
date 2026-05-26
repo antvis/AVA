@@ -234,7 +234,7 @@ export default function AnalysisSteps({ steps, collapsed }: AnalysisStepsProps) 
               {isExpanded && step.detail && (
                 <div className="mt-1.5 ml-6.5">
                   <pre className="p-3 bg-gray-900 text-gray-100 rounded-lg text-xs overflow-x-auto font-mono leading-relaxed">
-                    {step.detail}
+                    {step.detail.slice(0, 200)}
                   </pre>
                 </div>
               )}

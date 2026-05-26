@@ -347,7 +347,7 @@ export class AVA {
     // Summarize the result using LLM
     progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'running' } });
     const summary = await this.summarizeResult(query, analysisData);
-    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'done', detail: summary.slice(0, 200) } });
+    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'done', detail: summary } });
 
     // Detect visualization intent and generate visualization if needed
     let visualizationHTML: string | undefined;
@@ -368,7 +368,7 @@ export class AVA {
           phase: STEP_PHASE.VISUALIZE,
           params: {
             status: 'done',
-            detail: visualizationSyntax ? visualizationSyntax.slice(0, 200) : '',
+            detail: visualizationSyntax || '',
           },
         });
       }
