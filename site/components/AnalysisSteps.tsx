@@ -118,7 +118,7 @@ export default function AnalysisSteps({ steps, collapsed }: AnalysisStepsProps) 
     <span className="flex items-center gap-2 text-sm">
       <DoneIcon />
       <span>
-        分析完成 · 共 {sorted.length} 步{totalDuration !== null && ` · 耗时 ${totalDuration.toFixed(1)}s`}
+        Analysis complete · {sorted.length} steps{totalDuration !== null && ` · ${totalDuration.toFixed(1)}s`}
       </span>
     </span>
   );
@@ -132,7 +132,7 @@ export default function AnalysisSteps({ steps, collapsed }: AnalysisStepsProps) 
         >
           {title}
           <span className="text-[#78d3f8] font-medium flex items-center gap-1">
-            展开
+            Expand
             <svg
               className="w-3 h-3"
               viewBox="0 0 24 24"
@@ -160,7 +160,7 @@ export default function AnalysisSteps({ steps, collapsed }: AnalysisStepsProps) 
             onClick={() => setForceExpanded(false)}
             className="text-xs text-gray-400 hover:text-gray-600 transition-colors flex items-center gap-1 flex-shrink-0"
           >
-            收起
+            Collapse
             <svg
               className="w-3 h-3"
               viewBox="0 0 24 24"
@@ -209,7 +209,7 @@ export default function AnalysisSteps({ steps, collapsed }: AnalysisStepsProps) 
                       isExpanded ? 'text-[#78d3f8]' : 'text-gray-400 hover:text-[#78d3f8]'
                     }`}
                   >
-                    {isExpanded ? '收起' : '查看'}
+                    {isExpanded ? 'Collapse' : 'View'}
                     <svg
                       className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                       viewBox="0 0 24 24"
