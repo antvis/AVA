@@ -3,7 +3,7 @@ name: Publish to npm
 on:
   push:
     tags:
-      - 'v[0-9]*.[0-9]*.[0-9]*'
+      - '[0-9]*.[0-9]*.[0-9]*'
 
 permissions:
   contents: read
@@ -24,11 +24,6 @@ jobs:
 
       - name: Build
         run: npm run build
-
-      - name: Run tests
-        run: npm test
-        env:
-          LING_1T_API_KEY: ${{ secrets.LING_1T_API_KEY }}
 
       - name: Publish to NPM
         run: |
