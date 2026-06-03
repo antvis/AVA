@@ -28,9 +28,9 @@ jobs:
       - name: Publish to NPM
         run: |
           if [[ "${{ github.ref_name }}" == *"-alpha"* ]]; then
-            npm publish --provenance --tag alpha
+            npm publish --provenance --access public --tag alpha
           elif [[ "${{ github.ref_name }}" == *"-beta"* ]]; then
-            npm publish --provenance --tag beta
+            npm publish --provenance --access public --tag beta
           else
-            npm publish --provenance
+            npm publish --provenance --access public
           fi
