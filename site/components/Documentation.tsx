@@ -114,8 +114,12 @@ const result = await ava.analysis(
   'What is the average GDP?'
 );
 console.log(result.text);
-// Optionally access: result.code, result.sql, 
-// or result.visualizationHTML
+// Access: result.code, result.sql, result.data
+
+// Generate visualization from analysis result
+const viz = await ava.visualize(result);
+console.log(viz.syntax); // chart syntax for GPT-Vis
+// or use viz.html for standalone HTML
 
 // Clean up
 ava.dispose();`}</pre>
@@ -172,6 +176,14 @@ ava.dispose();`}</pre>
                         <div className="text-gray-600">Natural language response</div>
                       </div>
                     </div>
+                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">6</div>
+                      <div>
+                        <div className="font-semibold text-gray-800">Visualization</div>
+                        <div className="text-gray-600">Chart advisor + chart generation</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -224,14 +236,29 @@ ava.dispose();`}</pre>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Analysis</h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <code className="text-sm text-[#78d3f8] block mb-2">analysis(query: string)</code>
-                    <p className="text-sm text-gray-600 mb-3">Analyze data with natural language query</p>
+                    <code className="text-sm text-[#78d3f8] block mb-2">analysis(query: string, options?: AnalysisOptions)</code>
+                    <p className="text-sm text-gray-600 mb-3">Analyze data with natural language query. Returns text summary + structured data + code/SQL.</p>
                     <div className="text-xs text-gray-500 space-y-1">
                       <div className="font-semibold mb-2">Returns object with:</div>
                       <div>• <code className="bg-white px-1 rounded">text</code> — Natural language summary of the analysis</div>
+                      <div>• <code className="bg-white px-1 rounded">data</code> — Structured analysis result (array or object)</div>
                       <div>• <code className="bg-white px-1 rounded">code</code> — JavaScript code used (if applicable)</div>
                       <div>• <code className="bg-white px-1 rounded">sql</code> — SQL query used (if applicable)</div>
-                      <div>• <code className="bg-white px-1 rounded">visualizationHTML</code> — Interactive chart HTML (if applicable)</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visualization */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">Visualization</h3>
+                  <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <code className="text-sm text-[#78d3f8] block mb-2">visualize(analysisResult: AnalysisResponse, options?: VisualizeOptions)</code>
+                    <p className="text-sm text-gray-600 mb-3">Generate chart from analysis result. Must be called after <code className="bg-white px-1 rounded text-xs">analysis()</code>.</p>
+                    <div className="text-xs text-gray-500 space-y-1">
+                      <div className="font-semibold mb-2">Returns object with (or null if no visualization needed):</div>
+                      <div>• <code className="bg-white px-1 rounded">chartType</code> — Recommended chart type</div>
+                      <div>• <code className="bg-white px-1 rounded">syntax</code> — GPT-Vis chart syntax for rendering</div>
+                      <div>• <code className="bg-white px-1 rounded">html</code> — Standalone HTML that renders the chart</div>
                     </div>
                   </div>
                 </div>

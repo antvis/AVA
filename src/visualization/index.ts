@@ -2,5 +2,5 @@
  * Visualization module for chart recommendation and GPT-Vis code generation
  */
 
-export { adviseChartType } from './advisor';
+export { adviseChartType, chartDefinitions } from './advisor';
 export { generateVisualizationHTML } from './generator';

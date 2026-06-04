@@ -5,18 +5,17 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';
 import {
-  SQLiteDataStore,
-  IndexedDBDataStore,
-  executeDataCode,
-  generateSQL,
-  generateDataCode,
-} from './analysis';
-import {
-  adviseChartType,
-  generateVisualizationHTML,
-} from './visualization';
+  loadCSV,
+  loadObject,
+  loadURL,
+  loadText,
+  extractMetadata,
+  formatDatasetInfo,
+  formatDatasetInfoWithNonArray,
+} from './data';
+import { SQLiteDataStore, IndexedDBDataStore, executeDataCode, generateSQL, generateDataCode } from './analysis';
+import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 
 import type {
@@ -25,6 +24,8 @@ import type {
   DatasetInfo,
   AnalysisResponse,
   AnalysisOptions,
+  VisualizeResponse,
+  VisualizeOptions,
   SuggestResult,
   AnalysisProgressCallback,
   StepEmitterParams,
@@ -198,8 +199,8 @@ export class AVA {
         // eslint-disable-next-line no-console
         console.warn(
           '[AVA] IndexedDB is not available in this environment. ' +
-          'Large datasets may cause memory issues. ' +
-          'Consider using a modern browser or reducing data size.'
+            'Large datasets may cause memory issues. ' +
+            'Consider using a modern browser or reducing data size.'
         );
         // Keep data in memory (this.data remains set)
       }
@@ -217,7 +218,9 @@ export class AVA {
   }
 
   /**
-   * Analyze data using natural language query
+   * Analyze data using natural language query.
+   * Returns analysis results (text summary + data + code/sql).
+   * Use visualize() separately to generate charts from the analysis result.
    */
   async analysis(query: string, options?: AnalysisOptions): Promise<AnalysisResponse> {
     if (!this.dataInfo) {
@@ -230,6 +233,7 @@ export class AVA {
     let analysisData: any = undefined;
     let analysisCode: string | undefined;
     let analysisSql: string | undefined;
+    const dataInfoStr = formatDatasetInfo(this.dataInfo);
 
     // Use SQLite for large datasets in Node.js
     if (this.sqliteStore) {
@@ -278,33 +282,28 @@ export class AVA {
       if (estimatedBytes > MAX_IN_MEMORY_BYTES) {
         throw new Error(
           'Dataset too large for browser analysis ' +
-          `(estimated ${(estimatedBytes / 1024 / 1024).toFixed(1)}MB). ` +
-          'The browser environment is not suitable for large-scale data processing. ' +
-          'Please use the Node.js backend (SQLite) for full-dataset analysis, ' +
-          'or reduce the data size before loading.'
+            `(estimated ${(estimatedBytes / 1024 / 1024).toFixed(1)}MB). ` +
+            'The browser environment is not suitable for large-scale data processing. ' +
+            'Please use the Node.js backend (SQLite) for full-dataset analysis, ' +
+            'or reduce the data size before loading.'
         );
       }
 
       const data = await this.indexedDBStore.getAllData();
 
-      const dataInfoStr = formatDatasetInfo(this.dataInfo);
       const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
       analysisCode = code;
 
       try {
         analysisData = await executeDataCode(data, code);
       } catch (error) {
-        throw new Error(
-          `Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`
-        );
+        throw new Error(`Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`);
       }
     } else {
       // Use JavaScript for small datasets
       if (!this.data) {
         throw new Error('Data not available in memory.');
       }
-
-      const dataInfoStr = formatDatasetInfo(this.dataInfo);
 
       progress({ phase: STEP_PHASE.JS_CODE, params: { status: 'running' } });
       let code: string;
@@ -349,44 +348,63 @@ export class AVA {
     const summary = await this.summarizeResult(query, analysisData);
     progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'done', detail: summary } });
 
-    // Detect visualization intent and generate visualization if needed
-    let visualizationHTML: string | undefined;
-    let visualizationSyntax: string | undefined;
-    try {
-      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'running' } });
-      // adviseChartType uses describeData which handles any data format
-      const chartType = await adviseChartType(query, analysisData, this.llmConfig);
-      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'done', detail: chartType || 'No visualization needed' } });
-
-      if (chartType && hasData(analysisData)) {
-        // generateVisualizationHTML uses JSON.stringify which handles any JSON-serializable data
-        progress({ phase: STEP_PHASE.VISUALIZE, params: { status: 'running' } });
-        const result = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
-        visualizationSyntax = result.syntax;
-        visualizationHTML = result.html;
-        progress({
-          phase: STEP_PHASE.VISUALIZE,
-          params: {
-            status: 'done',
-            detail: visualizationSyntax || '',
-          },
-        });
-      }
-    } catch (error) {
-      // Visualization is optional, don't fail the analysis if it fails
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      // eslint-disable-next-line no-console
-      console.warn('Failed to generate visualization:', errorMessage);
-    }
-
     return {
+      query,
       text: summary,
       data: analysisData,
       code: analysisCode,
       sql: analysisSql,
-      visualizationSyntax,
-      visualizationHTML,
     };
+  }
+
+  /**
+   * Visualize analysis data by recommending a chart type and generating chart HTML.
+   * Accepts the result from analysis() — the query and data are read from it.
+   *
+   * @param analysisResult - The result returned from analysis()
+   * @param options - Optional visualization options
+   * @returns VisualizeResponse with chartType, syntax, and html, or null if no visualization is needed
+   */
+  async visualize(analysisResult: AnalysisResponse, options?: VisualizeOptions): Promise<VisualizeResponse | null> {
+    const { data, query } = analysisResult;
+    const progress = createStepEmitter(options?.onProgress);
+
+    try {
+      // Format analysis data info from the analysis result data
+      const analysisDataInfoStr = Array.isArray(data)
+        ? formatDatasetInfo(extractMetadata(data))
+        : formatDatasetInfoWithNonArray(data);
+
+      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'running' } });
+      const chartType = await adviseChartType(query, analysisDataInfoStr, this.llmConfig);
+      progress({
+        phase: STEP_PHASE.ADVISOR,
+        params: { status: 'done', detail: chartType ?? 'No visualization needed' },
+      });
+
+      if (!chartType || !hasData(data)) {
+        return null;
+      }
+
+      progress({ phase: STEP_PHASE.VISUALIZE, params: { status: 'running' } });
+      const result = await generateVisualizationHTML(chartType, data, query, this.llmConfig);
+      progress({
+        phase: STEP_PHASE.VISUALIZE,
+        params: { status: 'done', detail: result.syntax || '' },
+      });
+
+      return {
+        chartType,
+        syntax: result.syntax,
+        html: result.html,
+      };
+    } catch (error) {
+      // Visualization is optional, don't fail if it fails
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      // eslint-disable-next-line no-console
+      console.warn('Failed to generate visualization:', errorMessage);
+      return null;
+    }
   }
 
   /**

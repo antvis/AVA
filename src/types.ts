@@ -55,23 +55,41 @@ export interface DatasetInfo {
 }
 
 /**
- * Analysis response
+ * Analysis response — data analysis results only (no visualization)
  */
 export interface AnalysisResponse {
+  /** The original user query */
+  query: string;
   /** The analysis result as text */
   text: string;
   /** Optional structured data result */
   data?: any[];
   /** Optional markdown content */
   markdown?: string;
-  /** Optional GPT-Vis syntax */
-  visualizationSyntax?: string;
-  /** Optional visualization HTML code */
-  visualizationHTML?: string;
   /** Optional JavaScript code used for data analysis (for small datasets) */
   code?: string;
   /** Optional SQL query used for data analysis (for large datasets with SQLite) */
   sql?: string;
+}
+
+/**
+ * Visualization response — chart generation results
+ */
+export interface VisualizeResponse {
+  /** Recommended chart type */
+  chartType: ChartType;
+  /** GPT-Vis syntax */
+  syntax: string;
+  /** Standalone HTML that renders the chart */
+  html: string;
+}
+
+/**
+ * Visualization options
+ */
+export interface VisualizeOptions {
+  /** Progress callback, pushes visualization progress step by step */
+  onProgress?: AnalysisProgressCallback;
 }
 
 /**
@@ -98,6 +116,38 @@ export type ChartType =
   | 'sankey'
   | 'table'
   | 'summary';
+
+/**
+ * Chart type definition — structured metadata for prompt generation
+ */
+export interface ChartTypeDefinition {
+  /** Chart type identifier */
+  type: ChartType;
+  /** Chinese name */
+  nameZh: string;
+  /** English name */
+  nameEn: string;
+  /** Feature descriptions */
+  features: string[];
+  /** Applicable use cases */
+  useCases: string[];
+  /** Data requirements */
+  dataRequirements: string[];
+  /** Limitations / inapplicable scenarios */
+  limitations: string[];
+}
+
+/**
+ * Structured result from chart type advisor
+ */
+export interface ChartAdvisorResult {
+  /** Recommended chart type, null if no visualization intent detected */
+  chartType: ChartType | null;
+  /** Confidence score 0-1 */
+  confidence: number;
+  /** Reason for the recommendation */
+  reason: string;
+}
 
 /**
  * Result of a suggested query
