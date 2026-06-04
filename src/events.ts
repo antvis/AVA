@@ -12,7 +12,13 @@ export class EventEmitter {
   }
 
   off(event: string, handler: Handler): this {
-    this._events.get(event)?.delete(handler);
+    const handlers = this._events.get(event);
+    if (handlers) {
+      handlers.delete(handler);
+      if (handlers.size === 0) {
+        this._events.delete(event);
+      }
+    }
     return this;
   }
 

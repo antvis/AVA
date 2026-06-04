@@ -268,6 +268,10 @@ export class AVA extends EventEmitter {
   async visualize(analysisResult: AnalysisResponse): Promise<VisualizeResponse | null> {
     const { data, query } = analysisResult;
 
+    if (!hasData(data)) {
+      return null;
+    }
+
     try {
       // Format analysis data info from the analysis result data
       const analysisDataInfoStr = Array.isArray(data)
@@ -282,7 +286,7 @@ export class AVA extends EventEmitter {
         detail: chartType ?? 'No visualization needed',
       });
 
-      if (!chartType || !hasData(data)) {
+      if (!chartType) {
         return null;
       }
 
