@@ -116,9 +116,7 @@ export interface ChartTypeDefinition {
   /** Chart type identifier */
   type: ChartType;
   /** Chinese name */
-  nameZh: string;
-  /** English name */
-  nameEn: string;
+  name: string;
   /** Feature descriptions */
   features: string[];
   /** Applicable use cases */
@@ -140,6 +138,5 @@ export interface SuggestResult {
   /** Reason for the score */
   reason: string;
 }
-
 
 

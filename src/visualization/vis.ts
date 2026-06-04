@@ -7,8 +7,7 @@ import type { ChartTypeDefinition } from '../types';
 const chartDefinitions: ChartTypeDefinition[] = [
   {
     type: 'line',
-    nameZh: '折线图',
-    nameEn: 'Line Chart',
+    name: '折线图',
     features: ['比较', '趋势分析'],
     useCases: ['展示数值随时间或有序类别的变化', '分析事物随时间变化的趋势'],
     dataRequirements: ['需要一个时间字段或分类字段', '至少一个数值字段'],
@@ -16,8 +15,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'column',
-    nameZh: '柱形图',
-    nameEn: 'Column Chart',
+    name: '柱形图',
     features: ['比较', '分布', '排名'],
     useCases: ['对分类数据进行数值比较', '尤其是当数值比较接近时'],
     dataRequirements: ['需要一个分类变量和一个数值变量'],
@@ -25,8 +23,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'bar',
-    nameZh: '条形图',
-    nameEn: 'Bar Chart',
+    name: '条形图',
     features: ['比较', '分布', '排名'],
     useCases: ['分类数据比较', '特别适合分类名称较长或分类数量较多的情况'],
     dataRequirements: ['需要一个分类变量和一个数值变量'],
@@ -34,8 +31,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'pie',
-    nameZh: '饼图',
-    nameEn: 'Pie Chart',
+    name: '饼图',
     features: ['占比', '成分分析'],
     useCases: ['显示组成部分占整体的比例', '强调某部分在整体中的占比'],
     dataRequirements: ['需要一个分类字段和一个数值字段', '分类应构成一个整体'],
@@ -43,8 +39,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'area',
-    nameZh: '面积图',
-    nameEn: 'Area Chart',
+    name: '面积图',
     features: ['比较', '趋势分析'],
     useCases: ['体现连续自变量下数据趋势变化', '同时观察数据总量变化'],
     dataRequirements: ['需要时间序列或有序数据'],
@@ -52,8 +47,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'scatter',
-    nameZh: '散点图',
-    nameEn: 'Scatter Chart',
+    name: '散点图',
     features: ['相关性分析', '分布'],
     useCases: ['发现两个变量之间的关系或趋势', '显示数据分布', '检测异常值'],
     dataRequirements: ['需要两个数值变量'],
@@ -61,8 +55,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'dual-axes',
-    nameZh: '双轴图',
-    nameEn: 'Dual Axes Chart',
+    name: '双轴图',
     features: ['多维对比', '趋势分析'],
     useCases: ['同时展示两个不同量级的数据'],
     dataRequirements: ['需要多个数值序列'],
@@ -70,8 +63,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'histogram',
-    nameZh: '直方图',
-    nameEn: 'Histogram',
+    name: '直方图',
     features: ['分布分析'],
     useCases: ['显示数据分布'],
     dataRequirements: ['连续数值数据'],
@@ -79,8 +71,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'boxplot',
-    nameZh: '箱线图',
-    nameEn: 'Box Plot',
+    name: '箱线图',
     features: ['分布分析', '异常检测'],
     useCases: ['显示数据分布和异常值'],
     dataRequirements: ['连续数值数据', '可按分类分组'],
@@ -88,8 +79,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'radar',
-    nameZh: '雷达图',
-    nameEn: 'Radar Chart',
+    name: '雷达图',
     features: ['多维对比'],
     useCases: ['多维度数据对比'],
     dataRequirements: ['多个维度的数值数据'],
@@ -97,8 +87,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'funnel',
-    nameZh: '漏斗图',
-    nameEn: 'Funnel Chart',
+    name: '漏斗图',
     features: ['流程分析', '转化分析'],
     useCases: ['展示流程转化率'],
     dataRequirements: ['有序的分类数据和对应数值'],
@@ -106,8 +95,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'waterfall',
-    nameZh: '瀑布图',
-    nameEn: 'Waterfall Chart',
+    name: '瀑布图',
     features: ['增减变化分析'],
     useCases: ['显示累计效应'],
     dataRequirements: ['分类数据和增减数值'],
@@ -115,8 +103,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'liquid',
-    nameZh: '水波图',
-    nameEn: 'Liquid Fill Chart',
+    name: '水波图',
     features: ['进度展示', '占比'],
     useCases: ['显示百分比或进度'],
     dataRequirements: ['单个百分比数值'],
@@ -124,8 +111,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'word-cloud',
-    nameZh: '词云图',
-    nameEn: 'Word Cloud',
+    name: '词云图',
     features: ['词频分析', '热点展示'],
     useCases: ['展示文本词频'],
     dataRequirements: ['文本和对应频次'],
@@ -133,8 +119,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'violin',
-    nameZh: '小提琴图',
-    nameEn: 'Violin Plot',
+    name: '小提琴图',
     features: ['分布分析'],
     useCases: ['显示数据分布密度'],
     dataRequirements: ['连续数值数据'],
@@ -142,8 +127,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'venn',
-    nameZh: '韦恩图',
-    nameEn: 'Venn Diagram',
+    name: '韦恩图',
     features: ['集合交并关系'],
     useCases: ['显示集合关系'],
     dataRequirements: ['集合及其交集数据'],
@@ -151,8 +135,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'treemap',
-    nameZh: '矩阵树图',
-    nameEn: 'Treemap',
+    name: '矩阵树图',
     features: ['层级占比', '结构分析'],
     useCases: ['显示层级数据占比'],
     dataRequirements: ['层级结构数据'],
@@ -160,8 +143,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'sankey',
-    nameZh: '桑基图',
-    nameEn: 'Sankey Diagram',
+    name: '桑基图',
     features: ['流向分析'],
     useCases: ['展示流量流向'],
     dataRequirements: ['源、目标、流量数值'],
@@ -169,8 +151,7 @@ const chartDefinitions: ChartTypeDefinition[] = [
   },
   {
     type: 'table',
-    nameZh: '表格',
-    nameEn: 'Table',
+    name: '表格',
     features: ['数据展示', '查找'],
     useCases: ['展示详细数据明细'],
     dataRequirements: ['任意结构化数据'],
