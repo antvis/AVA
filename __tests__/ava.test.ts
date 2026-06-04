@@ -79,7 +79,7 @@ describe('AVA Integration Tests', () => {
         expect(result).not.toHaveProperty('visualizationHTML');
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -101,7 +101,7 @@ describe('AVA Integration Tests', () => {
         expect(result.query).toBe('What is the average revenue by region?');
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -119,7 +119,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.toLowerCase()).toMatch(/32[,\s]?400/);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -136,7 +136,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.toLowerCase()).toContain('california');
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -153,7 +153,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
   });
@@ -186,7 +186,7 @@ describe('AVA Integration Tests', () => {
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 120000);
 
@@ -207,7 +207,7 @@ describe('AVA Integration Tests', () => {
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 120000);
 
@@ -226,7 +226,7 @@ describe('AVA Integration Tests', () => {
         expect(steps.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       } finally {
         ava.off('step', handler);
       }
@@ -255,7 +255,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text).toContain('12');
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       } finally {
         avaLarge.dispose();
       }
@@ -280,7 +280,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       } finally {
         avaLarge.dispose();
       }
@@ -319,7 +319,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text).toMatch(/600/);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -346,7 +346,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -372,7 +372,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.toLowerCase()).toContain('phone');
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -392,7 +392,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -417,7 +417,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       } finally {
         avaLarge.dispose();
       }
@@ -443,7 +443,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -477,7 +477,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
 
@@ -494,7 +494,7 @@ describe('AVA Integration Tests', () => {
         expect(result.text.toLowerCase()).toContain('cholesterol');
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
       }
     }, 60000);
   });
