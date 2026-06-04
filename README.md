@@ -115,6 +115,12 @@ ava.dispose();
 
 ## 📘 Documentation
 
+Create an AVA instance:
+
+- `new AVA(options)`: initialize runtime and LLM configuration.
+  - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
+  - `sqlThreshold?`: optional size threshold (bytes) to switch from in-memory analysis to SQLite/IndexedDB (default: 10KB)
+
 Core APIs in AVA:
 
 - `loadCSV(filePathOrContent)`: load CSV (Node.js: file path; Browser: CSV content string).
