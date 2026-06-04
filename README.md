@@ -113,6 +113,36 @@ console.log(suggestedResult);
 ava.dispose();
 ```
 
+## 📘 Documentation
+
+Core APIs in AVA:
+
+- `loadCSV(filePathOrContent)`: load CSV (Node.js: file path; Browser: CSV content string).
+- `loadObject(data)` / `loadURL(url, transform?)` / `loadText(text)`: load data into AVA.
+- `suggest(count?)`: generate recommended analysis questions.
+- `analysis(query)`: run data analysis and return `{ query, text, data, code?, sql? }` (`code` for in-memory JS analysis, `sql` for SQLite analysis).
+- `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
+- `dispose()`: release SQLite / IndexedDB and in-memory resources.
+
+Minimal usage:
+
+```typescript
+const ava = new AVA({ llm: { model, apiKey, baseURL } });
+
+await ava.loadObject([{ city: 'Hangzhou', gdp: 18753 }]);
+
+const analysis = await ava.analysis('Show GDP by city');
+console.log(analysis.text);
+
+const viz = await ava.visualize(analysis);
+if (viz) {
+  console.log(viz.chartType);
+  console.log(viz.html);
+}
+
+ava.dispose();
+```
+
 ## 🏗️ Architecture
 
 AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), results are summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
