@@ -85,17 +85,9 @@ export interface VisualizeResponse {
 }
 
 /**
- * Visualization options
- */
-export interface VisualizeOptions {
-  /** Progress callback, pushes visualization progress step by step */
-  onProgress?: AnalysisProgressCallback;
-}
-
-/**
  * Supported chart types from GPT-Vis
  */
-export type ChartType = 
+export type ChartType =
   | 'line'
   | 'column'
   | 'bar'
@@ -138,18 +130,6 @@ export interface ChartTypeDefinition {
 }
 
 /**
- * Structured result from chart type advisor
- */
-export interface ChartAdvisorResult {
-  /** Recommended chart type, null if no visualization intent detected */
-  chartType: ChartType | null;
-  /** Confidence score 0-1 */
-  confidence: number;
-  /** Reason for the recommendation */
-  reason: string;
-}
-
-/**
  * Result of a suggested query
  */
 export interface SuggestResult {
@@ -189,20 +169,19 @@ export interface AnalysisStep {
   timestamp: number;
 }
 
-/**
- * Progress callback function type
- */
-export type AnalysisProgressCallback = (steps: AnalysisStep[]) => void;
+/** Payload emitted on each step progress event */
+export interface StepEvent {
+  phase: string;
+  status: StepStatus;
+  detail?: string;
+  error?: string;
+}
 
-/**
- * Parameters for emitting a single analysis step
- */
-export type StepEmitterParams = { phase: string; params: { status: StepStatus; detail?: string; error?: string } };
-
-/**
- * Extended options for the analysis() method
- */
-export interface AnalysisOptions {
-  /** Progress callback, pushes analysis progress step by step */
-  onProgress?: AnalysisProgressCallback;
+export enum STEP_PHASE {
+  SQL_CODE = 'sqlCode',
+  JS_CODE = 'jsCode',
+  EXECUTE = 'execute',
+  SUMMARIZE = 'summarize',
+  ADVISOR = 'advisor',
+  VISUALIZE = 'visualize',
 }

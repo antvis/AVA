@@ -4,19 +4,19 @@
  * Main entry point
  */
 export { AVA } from './ava';
+export { EventEmitter } from './events';
 export type {
   AVAConfig,
   LLMConfig,
   AnalysisResponse,
   VisualizeResponse,
-  VisualizeOptions,
   AnalysisStep,
   StepStatus,
+  StepEvent,
   DatasetInfo,
   FieldMetadata,
   ChartType,
   ChartTypeDefinition,
-  ChartAdvisorResult,
   SuggestResult,
 } from './types';
 export { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';

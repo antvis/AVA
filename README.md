@@ -93,7 +93,18 @@ console.log(queries);
 
 // Ask questions in natural language
 const result = await ava.analysis('What is the average revenue by region?');
-console.log(result);
+console.log(result.text);  // Natural language summary
+// result.data → structured analysis result
+// result.code → JavaScript code (small datasets)
+// result.sql  → SQL query (large datasets with SQLite)
+
+// Generate chart visualization from analysis result
+const viz = await ava.visualize(result);
+if (viz) {
+  console.log(viz.chartType); // e.g. 'column'
+  console.log(viz.syntax);   // GPT-Vis chart syntax
+  // viz.html → standalone HTML that renders the chart
+}
 
 // Or use a suggested query
 const suggestedResult = await ava.analysis(queries[0].query);

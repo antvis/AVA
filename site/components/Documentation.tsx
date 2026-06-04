@@ -7,9 +7,9 @@ const Documentation: React.FC = () => {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-3 mb-6">
-            <img 
-              src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original" 
-              alt="AVA Logo" 
+            <img
+              src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original"
+              alt="AVA Logo"
               className="w-20 h-20"
             />
             <h1 className="text-5xl font-bold text-gray-800">AVA</h1>
@@ -236,7 +236,7 @@ ava.dispose();`}</pre>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Analysis</h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <code className="text-sm text-[#78d3f8] block mb-2">analysis(query: string, options?: AnalysisOptions)</code>
+                    <code className="text-sm text-[#78d3f8] block mb-2">analysis(query: string)</code>
                     <p className="text-sm text-gray-600 mb-3">Analyze data with natural language query. Returns text summary + structured data + code/SQL.</p>
                     <div className="text-xs text-gray-500 space-y-1">
                       <div className="font-semibold mb-2">Returns object with:</div>
@@ -252,7 +252,7 @@ ava.dispose();`}</pre>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Visualization</h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <code className="text-sm text-[#78d3f8] block mb-2">visualize(analysisResult: AnalysisResponse, options?: VisualizeOptions)</code>
+                    <code className="text-sm text-[#78d3f8] block mb-2">visualize(analysisResult: AnalysisResponse)</code>
                     <p className="text-sm text-gray-600 mb-3">Generate chart from analysis result. Must be called after <code className="bg-white px-1 rounded text-xs">analysis()</code>.</p>
                     <div className="text-xs text-gray-500 space-y-1">
                       <div className="font-semibold mb-2">Returns object with (or null if no visualization needed):</div>
@@ -298,8 +298,8 @@ ava.dispose();`}</pre>
 // Get 5 suggested queries
 const suggestions = await ava.suggest(5);
 console.log(suggestions[0]);
-// { query: "What is the average GDP?", 
-//   score: 0.95, 
+// { query: "What is the average GDP?",
+//   score: 0.95,
 //   reason: "Reveals economic patterns" }
 
 // Use suggested query for analysis

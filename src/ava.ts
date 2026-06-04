@@ -17,76 +17,20 @@ import {
 import { SQLiteDataStore, IndexedDBDataStore, executeDataCode, generateSQL, generateDataCode } from './analysis';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
+import { EventEmitter } from './events';
+import { STEP_PHASE } from './types';
 
 import type {
   AVAConfig,
   LLMConfig,
   DatasetInfo,
   AnalysisResponse,
-  AnalysisOptions,
   VisualizeResponse,
-  VisualizeOptions,
   SuggestResult,
-  AnalysisProgressCallback,
-  StepEmitterParams,
-  AnalysisStep,
 } from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 const MAX_IN_MEMORY_BYTES = 20 * 1024 * 1024; // 20MB — browser is not a big-data environment
-
-enum STEP_PHASE {
-  SQL_CODE = 'sqlCode',
-  JS_CODE = 'jsCode',
-  EXECUTE = 'execute',
-  SUMMARIZE = 'summarize',
-  ADVISOR = 'advisor',
-  VISUALIZE = 'visualize',
-}
-
-const STEP_LABEL: Record<STEP_PHASE, string> = {
-  [STEP_PHASE.SQL_CODE]: 'Generate SQL query',
-  [STEP_PHASE.JS_CODE]: 'Generate analysis code',
-  [STEP_PHASE.EXECUTE]: 'Execute analysis',
-  [STEP_PHASE.SUMMARIZE]: 'Generate analysis summary',
-  [STEP_PHASE.ADVISOR]: 'Detect chart type',
-  [STEP_PHASE.VISUALIZE]: 'Generate visualization',
-};
-
-const createStepEmitter = (onProgress: AnalysisProgressCallback | undefined) => {
-  let id = 0;
-  const steps: AnalysisStep[] = [];
-
-  return (params: StepEmitterParams | StepEmitterParams[]) => {
-    const items = Array.isArray(params) ? params : [params];
-    for (const item of items) {
-      const existingIdx = steps.findIndex((s) => s.phase === item.phase);
-      const label = STEP_LABEL[item.phase as STEP_PHASE];
-
-      if (existingIdx !== -1) {
-        steps[existingIdx] = {
-          ...steps[existingIdx],
-          status: item.params.status,
-          timestamp: Date.now(),
-          detail: item.params.detail,
-          error: item.params.error,
-        };
-      } else {
-        steps.push({
-          id: String(id++),
-          agent: 'main',
-          phase: item.phase,
-          label,
-          status: item.params.status,
-          timestamp: Date.now(),
-          detail: item.params.detail,
-          error: item.params.error,
-        });
-      }
-    }
-    onProgress?.([...steps]);
-  };
-};
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -102,7 +46,7 @@ function hasData(data: unknown): boolean {
 /**
  * Main AVA class for AI-native visual analytics
  */
-export class AVA {
+export class AVA extends EventEmitter {
   private readonly llmConfig: LLMConfig;
   private readonly sqlThreshold: number;
   private data: any[] | null = null;
@@ -111,6 +55,7 @@ export class AVA {
   private indexedDBStore: IndexedDBDataStore | null = null;
 
   constructor(config: AVAConfig) {
+    super();
     this.llmConfig = config.llm;
     this.sqlThreshold = config.sqlThreshold || DEFAULT_SQL_THRESHOLD;
   }
@@ -222,14 +167,13 @@ export class AVA {
    * Returns analysis results (text summary + data + code/sql).
    * Use visualize() separately to generate charts from the analysis result.
    */
-  async analysis(query: string, options?: AnalysisOptions): Promise<AnalysisResponse> {
+  async analysis(query: string): Promise<AnalysisResponse> {
     if (!this.dataInfo) {
       throw new Error(
         'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).'
       );
     }
 
-    const progress = createStepEmitter(options?.onProgress);
     let analysisData: any = undefined;
     let analysisCode: string | undefined;
     let analysisSql: string | undefined;
@@ -239,42 +183,18 @@ export class AVA {
     if (this.sqliteStore) {
       const schema = await this.sqliteStore.getSchema();
 
-      progress({ phase: STEP_PHASE.SQL_CODE, params: { status: 'running' } });
-      let sql: string;
-      try {
-        sql = await generateSQL(this.llmConfig, schema, query);
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.SQL_CODE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw error;
-      }
+      this.emit('step', { phase: STEP_PHASE.SQL_CODE, status: 'running' });
+      const sql = await generateSQL(this.llmConfig, schema, query);
       analysisSql = sql;
-      progress([
-        { phase: STEP_PHASE.SQL_CODE, params: { status: 'done', detail: sql } },
-        { phase: STEP_PHASE.EXECUTE, params: { status: 'running' } },
-      ]);
+      this.emit('step', { phase: STEP_PHASE.SQL_CODE, status: 'done', detail: sql });
 
-      try {
-        analysisData = await this.sqliteStore.query(sql);
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: { status: 'done', detail: `Returned ${analysisData.length} records` },
-        });
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw new Error(`Failed to execute SQL query: ${error instanceof Error ? error.message : String(error)}`);
-      }
+      this.emit('step', { phase: STEP_PHASE.EXECUTE, status: 'running' });
+      analysisData = await this.sqliteStore.query(sql);
+      this.emit('step', {
+        phase: STEP_PHASE.EXECUTE,
+        status: 'done',
+        detail: `Returned ${analysisData.length} records`,
+      });
     } else if (this.indexedDBStore) {
       // Use IndexedDB for large datasets in browser
       const estimatedBytes = await this.indexedDBStore.estimateMemorySize();
@@ -291,62 +211,42 @@ export class AVA {
 
       const data = await this.indexedDBStore.getAllData();
 
+      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'running' });
       const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
       analysisCode = code;
+      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'done', detail: code });
 
-      try {
-        analysisData = await executeDataCode(data, code);
-      } catch (error) {
-        throw new Error(`Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`);
-      }
+      this.emit('step', { phase: STEP_PHASE.EXECUTE, status: 'running' });
+      analysisData = await executeDataCode(data, code);
+      this.emit('step', {
+        phase: STEP_PHASE.EXECUTE,
+        status: 'done',
+        detail: `Returned ${analysisData.length} records`,
+      });
     } else {
       // Use JavaScript for small datasets
       if (!this.data) {
         throw new Error('Data not available in memory.');
       }
 
-      progress({ phase: STEP_PHASE.JS_CODE, params: { status: 'running' } });
-      let code: string;
-      try {
-        code = await generateDataCode(this.llmConfig, dataInfoStr, query);
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.JS_CODE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw error;
-      }
+      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'running' });
+      const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
       analysisCode = code;
-      progress([
-        { phase: STEP_PHASE.JS_CODE, params: { status: 'done', detail: code } },
-        { phase: STEP_PHASE.EXECUTE, params: { status: 'running' } },
-      ]);
+      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'done', detail: code });
 
-      try {
-        analysisData = await executeDataCode(this.data, code);
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: { status: 'done', detail: `Returned ${analysisData.length} records` },
-        });
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw new Error(`Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`);
-      }
+      this.emit('step', { phase: STEP_PHASE.EXECUTE, status: 'running' });
+      analysisData = await executeDataCode(this.data, code);
+      this.emit('step', {
+        phase: STEP_PHASE.EXECUTE,
+        status: 'done',
+        detail: `Returned ${analysisData.length} records`,
+      });
     }
 
     // Summarize the result using LLM
-    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'running' } });
+    this.emit('step', { phase: STEP_PHASE.SUMMARIZE, status: 'running' });
     const summary = await this.summarizeResult(query, analysisData);
-    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'done', detail: summary } });
+    this.emit('step', { phase: STEP_PHASE.SUMMARIZE, status: 'done', detail: summary });
 
     return {
       query,
@@ -365,9 +265,8 @@ export class AVA {
    * @param options - Optional visualization options
    * @returns VisualizeResponse with chartType, syntax, and html, or null if no visualization is needed
    */
-  async visualize(analysisResult: AnalysisResponse, options?: VisualizeOptions): Promise<VisualizeResponse | null> {
+  async visualize(analysisResult: AnalysisResponse): Promise<VisualizeResponse | null> {
     const { data, query } = analysisResult;
-    const progress = createStepEmitter(options?.onProgress);
 
     try {
       // Format analysis data info from the analysis result data
@@ -375,22 +274,24 @@ export class AVA {
         ? formatDatasetInfo(extractMetadata(data))
         : formatDatasetInfoWithNonArray(data);
 
-      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'running' } });
+      this.emit('step', { phase: STEP_PHASE.ADVISOR, status: 'running' });
       const chartType = await adviseChartType(query, analysisDataInfoStr, this.llmConfig);
-      progress({
+      this.emit('step', {
         phase: STEP_PHASE.ADVISOR,
-        params: { status: 'done', detail: chartType ?? 'No visualization needed' },
+        status: 'done',
+        detail: chartType ?? 'No visualization needed',
       });
 
       if (!chartType || !hasData(data)) {
         return null;
       }
 
-      progress({ phase: STEP_PHASE.VISUALIZE, params: { status: 'running' } });
+      this.emit('step', { phase: STEP_PHASE.VISUALIZE, status: 'running' });
       const result = await generateVisualizationHTML(chartType, data, query, this.llmConfig);
-      progress({
+      this.emit('step', {
         phase: STEP_PHASE.VISUALIZE,
-        params: { status: 'done', detail: result.syntax || '' },
+        status: 'done',
+        detail: result.syntax || '',
       });
 
       return {
@@ -456,6 +357,7 @@ Provide a natural language summary of the result. If the result is tabular data,
    * Clean up resources
    */
   dispose(): void {
+    this.removeAllListeners();
     if (this.sqliteStore) {
       this.sqliteStore.close();
       this.sqliteStore = null;

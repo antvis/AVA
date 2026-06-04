@@ -211,22 +211,24 @@ describe('AVA Integration Tests', () => {
       }
     }, 120000);
 
-    it('should support onProgress callback for visualize', async () => {
+    it('should emit step events during visualize', async () => {
       if (skipLLMTests) return;
-      
+
+      const steps: any[] = [];
+      const handler = (event: any) => { steps.push({ ...event }); };
+      ava.on('step', handler);
+
       try {
         const analysisResult = await ava.analysis('Show revenue by region as a chart');
-        const steps: any[] = [];
-        
-        const vizResult = await ava.visualize(analysisResult, {
-          onProgress: (s) => { steps.push([...s]); },
-        });
-        
-        // Progress callback should have been called
+        await ava.visualize(analysisResult);
+
+        // Step events should have been emitted
         expect(steps.length).toBeGreaterThan(0);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log('Skipping test due to API error:', error instanceof Error ? error instanceof Error ? error.message : String(error));
+      } finally {
+        ava.off('step', handler);
       }
     }, 120000);
   });
