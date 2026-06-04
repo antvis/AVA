@@ -1,29 +1,19 @@
 'use client';
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { AVA } from '@antv/ava';
-import type { AnalysisResponse, AnalysisStep, StepEvent, SuggestResult, VisualizeResponse } from '@antv/ava';
+import type { AnalysisResponse, SuggestResult, VisualizeResponse } from '@antv/ava';
 import type { DataRow } from './types';
 import SuggestionCards from './SuggestionCards';
 import { loadAppState, saveAppState } from './utils';
 import GPTVisRenderer from './GPTVisRenderer';
-import AnalysisSteps from './AnalysisSteps';
 
 interface VisualizationProps {
   avaInstance: AVA | null;
   data: DataRow[];
   isInitialized: boolean;
 }
-
-const STEP_LABELS: Record<string, string> = {
-  sqlCode: 'Generate SQL query',
-  jsCode: 'Generate analysis code',
-  execute: 'Execute analysis',
-  summarize: 'Generate analysis summary',
-  advisor: 'Detect chart type',
-  visualize: 'Generate visualization',
-};
 
 const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInitialized }) => {
   const [query, setQuery] = useState('');
@@ -34,42 +24,6 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   const [vizResult, setVizResult] = useState<VisualizeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
-  const [steps, setSteps] = useState<AnalysisStep[]>([]);
-  const stepsAcc = useRef<AnalysisStep[]>([]);
-  const stepIdRef = useRef(0);
-
-  // Listen to step events from AVA instance
-  useEffect(() => {
-    if (!avaInstance) return;
-
-    const handler = (event: StepEvent) => {
-      const existingIdx = stepsAcc.current.findIndex((s) => s.phase === event.phase);
-      if (existingIdx !== -1) {
-        stepsAcc.current[existingIdx] = {
-          ...stepsAcc.current[existingIdx],
-          status: event.status,
-          detail: event.detail,
-          error: event.error,
-          timestamp: Date.now(),
-        };
-      } else {
-        stepsAcc.current.push({
-          id: String(stepIdRef.current++),
-          agent: 'main',
-          phase: event.phase,
-          label: STEP_LABELS[event.phase] || event.phase,
-          status: event.status,
-          detail: event.detail,
-          error: event.error,
-          timestamp: Date.now(),
-        });
-      }
-      setSteps([...stepsAcc.current]);
-    };
-
-    avaInstance.on('step', handler);
-    return () => { avaInstance.off('step', handler); };
-  }, [avaInstance]);
 
   // Restore query and result from localStorage on mount
   useEffect(() => {
@@ -94,9 +48,6 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
     setIsLoading(true);
     setError(null);
-    stepsAcc.current = [];
-    stepIdRef.current = 0;
-    setSteps([]);
     setVizResult(null);
 
     try {
@@ -230,11 +181,6 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
         >
           {error}
         </div>
-      )}
-
-      {/* Analysis Progress Steps */}
-      {steps.length > 0 && (
-        <AnalysisSteps steps={steps} collapsed={!isLoading} />
       )}
 
       {/* Analysis Summary - Always show when result.text exists, rendered with react-markdown */}

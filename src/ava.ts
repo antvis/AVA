@@ -17,8 +17,6 @@ import {
 import { SQLiteDataStore, IndexedDBDataStore, executeDataCode, generateSQL, generateDataCode } from './analysis';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
-import { EventEmitter } from './events';
-import { STEP_PHASE } from './types';
 
 import type {
   AVAConfig,
@@ -46,7 +44,7 @@ function hasData(data: unknown): boolean {
 /**
  * Main AVA class for AI-native visual analytics
  */
-export class AVA extends EventEmitter {
+export class AVA {
   private readonly llmConfig: LLMConfig;
   private readonly sqlThreshold: number;
   private data: any[] | null = null;
@@ -55,7 +53,6 @@ export class AVA extends EventEmitter {
   private indexedDBStore: IndexedDBDataStore | null = null;
 
   constructor(config: AVAConfig) {
-    super();
     this.llmConfig = config.llm;
     this.sqlThreshold = config.sqlThreshold || DEFAULT_SQL_THRESHOLD;
   }
@@ -183,18 +180,10 @@ export class AVA extends EventEmitter {
     if (this.sqliteStore) {
       const schema = await this.sqliteStore.getSchema();
 
-      this.emit('step', { phase: STEP_PHASE.SQL_CODE, status: 'running' });
       const sql = await generateSQL(this.llmConfig, schema, query);
       analysisSql = sql;
-      this.emit('step', { phase: STEP_PHASE.SQL_CODE, status: 'done', detail: sql });
 
-      this.emit('step', { phase: STEP_PHASE.EXECUTE, status: 'running' });
       analysisData = await this.sqliteStore.query(sql);
-      this.emit('step', {
-        phase: STEP_PHASE.EXECUTE,
-        status: 'done',
-        detail: `Returned ${analysisData.length} records`,
-      });
     } else if (this.indexedDBStore) {
       // Use IndexedDB for large datasets in browser
       const estimatedBytes = await this.indexedDBStore.estimateMemorySize();
@@ -211,42 +200,24 @@ export class AVA extends EventEmitter {
 
       const data = await this.indexedDBStore.getAllData();
 
-      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'running' });
       const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
       analysisCode = code;
-      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'done', detail: code });
 
-      this.emit('step', { phase: STEP_PHASE.EXECUTE, status: 'running' });
       analysisData = await executeDataCode(data, code);
-      this.emit('step', {
-        phase: STEP_PHASE.EXECUTE,
-        status: 'done',
-        detail: `Returned ${analysisData.length} records`,
-      });
     } else {
       // Use JavaScript for small datasets
       if (!this.data) {
         throw new Error('Data not available in memory.');
       }
 
-      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'running' });
       const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
       analysisCode = code;
-      this.emit('step', { phase: STEP_PHASE.JS_CODE, status: 'done', detail: code });
 
-      this.emit('step', { phase: STEP_PHASE.EXECUTE, status: 'running' });
       analysisData = await executeDataCode(this.data, code);
-      this.emit('step', {
-        phase: STEP_PHASE.EXECUTE,
-        status: 'done',
-        detail: `Returned ${analysisData.length} records`,
-      });
     }
 
     // Summarize the result using LLM
-    this.emit('step', { phase: STEP_PHASE.SUMMARIZE, status: 'running' });
     const summary = await this.summarizeResult(query, analysisData);
-    this.emit('step', { phase: STEP_PHASE.SUMMARIZE, status: 'done', detail: summary });
 
     return {
       query,
@@ -278,25 +249,13 @@ export class AVA extends EventEmitter {
         ? formatDatasetInfo(extractMetadata(data))
         : formatDatasetInfoWithNonArray(data);
 
-      this.emit('step', { phase: STEP_PHASE.ADVISOR, status: 'running' });
       const chartType = await adviseChartType(query, analysisDataInfoStr, this.llmConfig);
-      this.emit('step', {
-        phase: STEP_PHASE.ADVISOR,
-        status: 'done',
-        detail: chartType ?? 'No visualization needed',
-      });
 
       if (!chartType) {
         return null;
       }
 
-      this.emit('step', { phase: STEP_PHASE.VISUALIZE, status: 'running' });
       const result = await generateVisualizationHTML(chartType, data, query, this.llmConfig);
-      this.emit('step', {
-        phase: STEP_PHASE.VISUALIZE,
-        status: 'done',
-        detail: result.syntax || '',
-      });
 
       return {
         chartType,
@@ -361,7 +320,6 @@ Provide a natural language summary of the result. If the result is tabular data,
    * Clean up resources
    */
   dispose(): void {
-    this.removeAllListeners();
     if (this.sqliteStore) {
       this.sqliteStore.close();
       this.sqliteStore = null;

@@ -4,15 +4,13 @@
  * Main entry point
  */
 export { AVA } from './ava';
-export { EventEmitter } from './events';
+
 export type {
   AVAConfig,
   LLMConfig,
   AnalysisResponse,
   VisualizeResponse,
-  AnalysisStep,
-  StepStatus,
-  StepEvent,
+
   DatasetInfo,
   FieldMetadata,
   ChartType,
