@@ -100,11 +100,10 @@ console.log(result.text);  // Natural language summary
 
 // Generate chart visualization from analysis result
 const viz = await ava.visualize(result);
-if (viz) {
-  console.log(viz.chartType); // e.g. 'column'
-  console.log(viz.syntax);   // GPT-Vis chart syntax
-  // viz.html → standalone HTML that renders the chart
-}
+console.log(viz.chartType); // e.g. 'column'
+console.log(viz.syntax);   // GPT-Vis chart syntax
+// viz.html → standalone HTML that renders the chart
+
 
 // Or use a suggested query
 const suggestedResult = await ava.analysis(queries[0].query);

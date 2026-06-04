@@ -10,7 +10,6 @@ export type {
   LLMConfig,
   AnalysisResponse,
   VisualizeResponse,
-
   DatasetInfo,
   FieldMetadata,
   ChartType,
@@ -18,4 +17,3 @@ export type {
   SuggestResult,
 } from './types';
 export { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';
-export { chartDefinitions } from './visualization';
