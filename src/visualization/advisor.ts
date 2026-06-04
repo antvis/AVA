@@ -16,20 +16,28 @@ import type { LLMConfig, ChartType } from '../types';
 const allChartTypes = chartDefinitions.map(d => d.type);
 const chartTypeSet = new Set(allChartTypes);
 const chartTypeList = [...allChartTypes, 'none'].map(t => `"${t}"`).join(', ');
-const chartDescriptions = chartDefinitions
-  .map((chart) => {
-    const lines = [
-      `### ${chart.nameZh} (${chart.type})`,
-      `- **功能**: ${chart.features.join('、')}`,
-      `- **适用场景**: ${chart.useCases.join('；')}`,
-      `- **数据要求**: ${chart.dataRequirements.join('；')}`,
-    ];
-    if (chart.limitations.length > 0) {
-      lines.push(`- **不适用场景**: ${chart.limitations.join('；')}`);
-    }
-    return lines.join('\n');
-  })
-  .join('\n\n');
+let chartDescriptionsCache: string | null = null;
+
+function getChartDescriptions(): string {
+  if (chartDescriptionsCache) return chartDescriptionsCache;
+
+  chartDescriptionsCache = chartDefinitions
+    .map((chart) => {
+      const lines = [
+        `### ${chart.nameZh} (${chart.type})`,
+        `- **功能**: ${chart.features.join('、')}`,
+        `- **适用场景**: ${chart.useCases.join('；')}`,
+        `- **数据要求**: ${chart.dataRequirements.join('；')}`,
+      ];
+      if (chart.limitations.length > 0) {
+        lines.push(`- **不适用场景**: ${chart.limitations.join('；')}`);
+      }
+      return lines.join('\n');
+    })
+    .join('\n\n');
+
+  return chartDescriptionsCache;
+}
 
 function buildAdvisorPrompt(query: string, dataInfoStr: string): string {
   return `你是一个图表推荐专家。根据用户的查询和数据特征，判断是否需要可视化，如果需要则推荐最合适的图表类型。
@@ -42,7 +50,7 @@ ${dataInfoStr}
 
 ## 图表类型详细说明
 
-${chartDescriptions}
+${getChartDescriptions()}
 
 ## 推荐规则
 
