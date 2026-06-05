@@ -3,12 +3,11 @@ import React, { useState, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { AVA } from '@antv/ava';
-import type { AnalysisResponse, AnalysisStep, SuggestResult } from '@antv/ava';
+import type { AnalysisResponse, SuggestResult, VisualizeResponse } from '@antv/ava';
 import type { DataRow } from './types';
 import SuggestionCards from './SuggestionCards';
 import { loadAppState, saveAppState } from './utils';
 import GPTVisRenderer from './GPTVisRenderer';
-import AnalysisSteps from './AnalysisSteps';
 
 interface VisualizationProps {
   avaInstance: AVA | null;
@@ -22,9 +21,9 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [suggestions, setSuggestions] = useState<SuggestResult[]>([]);
   const [result, setResult] = useState<AnalysisResponse | null>(null);
+  const [vizResult, setVizResult] = useState<VisualizeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showCode, setShowCode] = useState(false);
-  const [steps, setSteps] = useState<AnalysisStep[]>([]);
 
   // Restore query and result from localStorage on mount
   useEffect(() => {
@@ -49,18 +48,20 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
     setIsLoading(true);
     setError(null);
-    setSteps([]);  // Clear old steps on new analysis
+    setVizResult(null);
 
     try {
-      const analysisResult = await avaInstance.analysis(query, {
-        onProgress: (steps) => {
-          setSteps(steps);
-        },
-      });
+      const analysisResult = await avaInstance.analysis(query);
       setResult(analysisResult);
-
-      // Save to localStorage
       saveAppState({ query, analysisResult });
+
+      // Generate visualization from analysis result
+      try {
+        const viz = await avaInstance.visualize(analysisResult);
+        setVizResult(viz);
+      } catch {
+        // visualization failure is non-fatal
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed');
     } finally {
@@ -182,11 +183,6 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
         </div>
       )}
 
-      {/* Analysis Progress Steps */}
-      {steps.length > 0 && (
-        <AnalysisSteps steps={steps} collapsed={!isLoading} />
-      )}
-
       {/* Analysis Summary - Always show when result.text exists, rendered with react-markdown */}
       {result && result.text && (
         <div className="mb-4 p-4 bg-gray-50 rounded-xl relative">
@@ -227,10 +223,10 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
         </div>
       )}
 
-      {/* Visualization Area - Only show when visualizationSyntax exists */}
-      {result?.visualizationSyntax && (
+      {/* Visualization Area - Only show when chart syntax exists */}
+      {vizResult?.syntax && (
         <div className="relative min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-          <GPTVisRenderer syntax={result.visualizationSyntax} />
+          <GPTVisRenderer syntax={vizResult.syntax} />
         </div>
       )}
 

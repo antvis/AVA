@@ -5,18 +5,17 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';
 import {
-  SQLiteDataStore,
-  IndexedDBDataStore,
-  executeDataCode,
-  generateSQL,
-  generateDataCode,
-} from './analysis';
-import {
-  adviseChartType,
-  generateVisualizationHTML,
-} from './visualization';
+  loadCSV,
+  loadObject,
+  loadURL,
+  loadText,
+  extractMetadata,
+  formatDatasetInfo,
+  formatDatasetInfoWithNonArray,
+} from './data';
+import { SQLiteDataStore, IndexedDBDataStore, executeDataCode, generateSQL, generateDataCode } from './analysis';
+import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 
 import type {
@@ -24,68 +23,12 @@ import type {
   LLMConfig,
   DatasetInfo,
   AnalysisResponse,
-  AnalysisOptions,
+  VisualizeResponse,
   SuggestResult,
-  AnalysisProgressCallback,
-  StepEmitterParams,
-  AnalysisStep,
 } from './types';
 
 const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
 const MAX_IN_MEMORY_BYTES = 20 * 1024 * 1024; // 20MB — browser is not a big-data environment
-
-enum STEP_PHASE {
-  SQL_CODE = 'sqlCode',
-  JS_CODE = 'jsCode',
-  EXECUTE = 'execute',
-  SUMMARIZE = 'summarize',
-  ADVISOR = 'advisor',
-  VISUALIZE = 'visualize',
-}
-
-const STEP_LABEL: Record<STEP_PHASE, string> = {
-  [STEP_PHASE.SQL_CODE]: 'Generate SQL query',
-  [STEP_PHASE.JS_CODE]: 'Generate analysis code',
-  [STEP_PHASE.EXECUTE]: 'Execute analysis',
-  [STEP_PHASE.SUMMARIZE]: 'Generate analysis summary',
-  [STEP_PHASE.ADVISOR]: 'Detect chart type',
-  [STEP_PHASE.VISUALIZE]: 'Generate visualization',
-};
-
-const createStepEmitter = (onProgress: AnalysisProgressCallback | undefined) => {
-  let id = 0;
-  const steps: AnalysisStep[] = [];
-
-  return (params: StepEmitterParams | StepEmitterParams[]) => {
-    const items = Array.isArray(params) ? params : [params];
-    for (const item of items) {
-      const existingIdx = steps.findIndex((s) => s.phase === item.phase);
-      const label = STEP_LABEL[item.phase as STEP_PHASE];
-
-      if (existingIdx !== -1) {
-        steps[existingIdx] = {
-          ...steps[existingIdx],
-          status: item.params.status,
-          timestamp: Date.now(),
-          detail: item.params.detail,
-          error: item.params.error,
-        };
-      } else {
-        steps.push({
-          id: String(id++),
-          agent: 'main',
-          phase: item.phase,
-          label,
-          status: item.params.status,
-          timestamp: Date.now(),
-          detail: item.params.detail,
-          error: item.params.error,
-        });
-      }
-    }
-    onProgress?.([...steps]);
-  };
-};
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -198,8 +141,8 @@ export class AVA {
         // eslint-disable-next-line no-console
         console.warn(
           '[AVA] IndexedDB is not available in this environment. ' +
-          'Large datasets may cause memory issues. ' +
-          'Consider using a modern browser or reducing data size.'
+            'Large datasets may cause memory issues. ' +
+            'Consider using a modern browser or reducing data size.'
         );
         // Keep data in memory (this.data remains set)
       }
@@ -217,60 +160,30 @@ export class AVA {
   }
 
   /**
-   * Analyze data using natural language query
+   * Analyze data using natural language query.
+   * Returns analysis results (text summary + data + code/sql).
+   * Use visualize() separately to generate charts from the analysis result.
    */
-  async analysis(query: string, options?: AnalysisOptions): Promise<AnalysisResponse> {
+  async analysis(query: string): Promise<AnalysisResponse> {
     if (!this.dataInfo) {
       throw new Error(
         'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).'
       );
     }
 
-    const progress = createStepEmitter(options?.onProgress);
     let analysisData: any = undefined;
     let analysisCode: string | undefined;
     let analysisSql: string | undefined;
+    const dataInfoStr = formatDatasetInfo(this.dataInfo);
 
     // Use SQLite for large datasets in Node.js
     if (this.sqliteStore) {
       const schema = await this.sqliteStore.getSchema();
 
-      progress({ phase: STEP_PHASE.SQL_CODE, params: { status: 'running' } });
-      let sql: string;
-      try {
-        sql = await generateSQL(this.llmConfig, schema, query);
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.SQL_CODE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw error;
-      }
+      const sql = await generateSQL(this.llmConfig, schema, query);
       analysisSql = sql;
-      progress([
-        { phase: STEP_PHASE.SQL_CODE, params: { status: 'done', detail: sql } },
-        { phase: STEP_PHASE.EXECUTE, params: { status: 'running' } },
-      ]);
 
-      try {
-        analysisData = await this.sqliteStore.query(sql);
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: { status: 'done', detail: `Returned ${analysisData.length} records` },
-        });
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw new Error(`Failed to execute SQL query: ${error instanceof Error ? error.message : String(error)}`);
-      }
+      analysisData = await this.sqliteStore.query(sql);
     } else if (this.indexedDBStore) {
       // Use IndexedDB for large datasets in browser
       const estimatedBytes = await this.indexedDBStore.estimateMemorySize();
@@ -278,115 +191,84 @@ export class AVA {
       if (estimatedBytes > MAX_IN_MEMORY_BYTES) {
         throw new Error(
           'Dataset too large for browser analysis ' +
-          `(estimated ${(estimatedBytes / 1024 / 1024).toFixed(1)}MB). ` +
-          'The browser environment is not suitable for large-scale data processing. ' +
-          'Please use the Node.js backend (SQLite) for full-dataset analysis, ' +
-          'or reduce the data size before loading.'
+            `(estimated ${(estimatedBytes / 1024 / 1024).toFixed(1)}MB). ` +
+            'The browser environment is not suitable for large-scale data processing. ' +
+            'Please use the Node.js backend (SQLite) for full-dataset analysis, ' +
+            'or reduce the data size before loading.'
         );
       }
 
       const data = await this.indexedDBStore.getAllData();
 
-      const dataInfoStr = formatDatasetInfo(this.dataInfo);
       const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
       analysisCode = code;
 
-      try {
-        analysisData = await executeDataCode(data, code);
-      } catch (error) {
-        throw new Error(
-          `Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
+      analysisData = await executeDataCode(data, code);
     } else {
       // Use JavaScript for small datasets
       if (!this.data) {
         throw new Error('Data not available in memory.');
       }
 
-      const dataInfoStr = formatDatasetInfo(this.dataInfo);
-
-      progress({ phase: STEP_PHASE.JS_CODE, params: { status: 'running' } });
-      let code: string;
-      try {
-        code = await generateDataCode(this.llmConfig, dataInfoStr, query);
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.JS_CODE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw error;
-      }
+      const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
       analysisCode = code;
-      progress([
-        { phase: STEP_PHASE.JS_CODE, params: { status: 'done', detail: code } },
-        { phase: STEP_PHASE.EXECUTE, params: { status: 'running' } },
-      ]);
 
-      try {
-        analysisData = await executeDataCode(this.data, code);
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: { status: 'done', detail: `Returned ${analysisData.length} records` },
-        });
-      } catch (error) {
-        progress({
-          phase: STEP_PHASE.EXECUTE,
-          params: {
-            status: 'error',
-            error: error instanceof Error ? error.message : String(error),
-          },
-        });
-        throw new Error(`Failed to execute data code: ${error instanceof Error ? error.message : String(error)}`);
-      }
+      analysisData = await executeDataCode(this.data, code);
     }
 
     // Summarize the result using LLM
-    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'running' } });
     const summary = await this.summarizeResult(query, analysisData);
-    progress({ phase: STEP_PHASE.SUMMARIZE, params: { status: 'done', detail: summary } });
-
-    // Detect visualization intent and generate visualization if needed
-    let visualizationHTML: string | undefined;
-    let visualizationSyntax: string | undefined;
-    try {
-      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'running' } });
-      // adviseChartType uses describeData which handles any data format
-      const chartType = await adviseChartType(query, analysisData, this.llmConfig);
-      progress({ phase: STEP_PHASE.ADVISOR, params: { status: 'done', detail: chartType || 'No visualization needed' } });
-
-      if (chartType && hasData(analysisData)) {
-        // generateVisualizationHTML uses JSON.stringify which handles any JSON-serializable data
-        progress({ phase: STEP_PHASE.VISUALIZE, params: { status: 'running' } });
-        const result = await generateVisualizationHTML(chartType, analysisData, query, this.llmConfig);
-        visualizationSyntax = result.syntax;
-        visualizationHTML = result.html;
-        progress({
-          phase: STEP_PHASE.VISUALIZE,
-          params: {
-            status: 'done',
-            detail: visualizationSyntax || '',
-          },
-        });
-      }
-    } catch (error) {
-      // Visualization is optional, don't fail the analysis if it fails
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      // eslint-disable-next-line no-console
-      console.warn('Failed to generate visualization:', errorMessage);
-    }
 
     return {
+      query,
       text: summary,
       data: analysisData,
       code: analysisCode,
       sql: analysisSql,
-      visualizationSyntax,
-      visualizationHTML,
     };
+  }
+
+  /**
+   * Visualize analysis data by recommending a chart type and generating chart HTML.
+   * Accepts the result from analysis() — the query and data are read from it.
+   *
+   * @param analysisResult - The result returned from analysis()
+   * @param options - Optional visualization options
+   * @returns VisualizeResponse with chartType, syntax, and html, or null if no visualization is needed
+   */
+  async visualize(analysisResult: AnalysisResponse): Promise<VisualizeResponse | null> {
+    const { data, query } = analysisResult;
+
+    if (!hasData(data)) {
+      return null;
+    }
+
+    try {
+      // Format analysis data info from the analysis result data
+      const analysisDataInfoStr = Array.isArray(data)
+        ? formatDatasetInfo(extractMetadata(data))
+        : formatDatasetInfoWithNonArray(data);
+
+      const chartType = await adviseChartType(query, analysisDataInfoStr, this.llmConfig);
+
+      if (!chartType) {
+        return null;
+      }
+
+      const result = await generateVisualizationHTML(chartType, data, query, this.llmConfig);
+
+      return {
+        chartType,
+        syntax: result.syntax,
+        html: result.html,
+      };
+    } catch (error) {
+      // Visualization is optional, don't fail if it fails
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      // eslint-disable-next-line no-console
+      console.warn('Failed to generate visualization:', errorMessage);
+      return null;
+    }
   }
 
   /**

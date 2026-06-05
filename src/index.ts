@@ -4,15 +4,16 @@
  * Main entry point
  */
 export { AVA } from './ava';
+
 export type {
   AVAConfig,
   LLMConfig,
   AnalysisResponse,
-  AnalysisStep,
-  StepStatus,
+  VisualizeResponse,
   DatasetInfo,
   FieldMetadata,
   ChartType,
+  ChartTypeDefinition,
   SuggestResult,
 } from './types';
 export { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';

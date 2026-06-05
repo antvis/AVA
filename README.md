@@ -93,13 +93,59 @@ console.log(queries);
 
 // Ask questions in natural language
 const result = await ava.analysis('What is the average revenue by region?');
-console.log(result);
+console.log(result.text);  // Natural language summary
+// result.data → structured analysis result
+// result.code → JavaScript code (small datasets)
+// result.sql  → SQL query (large datasets with SQLite)
+
+// Generate chart visualization from analysis result
+const viz = await ava.visualize(result);
+console.log(viz.chartType); // e.g. 'column'
+console.log(viz.syntax);   // GPT-Vis chart syntax
+// viz.html → standalone HTML that renders the chart
+
 
 // Or use a suggested query
 const suggestedResult = await ava.analysis(queries[0].query);
 console.log(suggestedResult);
 
 // Clean up
+ava.dispose();
+```
+
+## 📘 Documentation
+
+Create an AVA instance:
+
+- `new AVA(options)`: initialize runtime and LLM configuration.
+  - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
+  - `sqlThreshold?`: optional size threshold (bytes) to switch from in-memory analysis to SQLite/IndexedDB (default: 10KB)
+
+Core APIs in AVA:
+
+- `loadCSV(filePathOrContent)`: load CSV (Node.js: file path; Browser: CSV content string).
+- `loadObject(data)` / `loadURL(url, transform?)` / `loadText(text)`: load data into AVA.
+- `suggest(count?)`: generate recommended analysis questions.
+- `analysis(query)`: run data analysis and return `{ query, text, data, code?, sql? }` (`code` for in-memory JS analysis, `sql` for SQLite analysis).
+- `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
+- `dispose()`: release SQLite / IndexedDB and in-memory resources.
+
+Minimal usage:
+
+```typescript
+const ava = new AVA({ llm: { model, apiKey, baseURL } });
+
+await ava.loadObject([{ city: 'Hangzhou', gdp: 18753 }]);
+
+const analysis = await ava.analysis('Show GDP by city');
+console.log(analysis.text);
+
+const viz = await ava.visualize(analysis);
+if (viz) {
+  console.log(viz.chartType);
+  console.log(viz.html);
+}
+
 ava.dispose();
 ```
 
