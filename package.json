@@ -6,10 +6,10 @@
     "name": "AntV",
     "url": "https://antv.antgroup.com/"
   },
-  "homepage": "https://ava.antv.antgroup.com",
+  "homepage": "https://ava.antv.vision/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/antvis/AVA"
+    "url": "git+https://github.com/antvis/AVA.git"
   },
   "sideEffects": false,
   "keywords": [
