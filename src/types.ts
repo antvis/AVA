@@ -38,7 +38,7 @@ export type SourceFormat = 'csv' | 'json' | 'parquet';
 
 /**
  * External source types for loadSource.
- * Database types (mysql/postgre) are reserved and not implemented yet.
+ * Database types (mysql/postgresql) are reserved and not implemented yet.
  */
 export type SourceType = SourceFormat;
 
@@ -55,11 +55,11 @@ export interface FileSourceOptions {
 /**
  * External data source configuration for loadSource.
  * - file types (csv/json/parquet): loaded through DuckDB's readers, `options` is FileSourceOptions
- * - database types (mysql/postgre): `options` is passed through to the connection (reserved)
+ * - database types (mysql/postgresql): `options` is passed through to the connection (reserved)
  */
 export type DataSourceConfig =
   | { type: SourceFormat; options: FileSourceOptions }
-  | { type: 'mysql' | 'postgre'; options: Record<string, unknown> };
+  | { type: 'mysql' | 'postgresql'; options: Record<string, unknown> };
 
 /**
  * Unified data source consumed by analysis engines.

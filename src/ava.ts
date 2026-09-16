@@ -116,7 +116,7 @@ export class AVA {
    * Load an external data source into DuckDB (Node.js only, requires engine: 'duckdb').
    * File sources (csv/json/parquet) may be local paths or http(s) URLs — remote files
    * are downloaded first, so OSS/S3 signed URLs work through the same path.
-   * Database sources (mysql/postgre) are reserved and not implemented yet.
+   * Database sources (mysql/postgresql) are reserved and not implemented yet.
    * Data is never materialized into JS memory.
    * @returns Dataset metadata inferred by DuckDB
    * @example

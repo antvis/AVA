@@ -3,8 +3,12 @@
  * File sources (csv/json/parquet) may be local paths or http(s) URLs; remote files are
  * downloaded to a temp file first (httpfs is intentionally not used), so OSS/S3 objects
  * are supported via signed URLs through the same HTTP path.
- * Database sources (mysql/postgre) are reserved and not implemented yet.
+ * Database sources (mysql/postgresql) are reserved and not implemented yet.
  */
+
+import * as fs from 'fs/promises';
+import * as os from 'os';
+import * as path from 'path';
 
 import type { DataSource, DataSourceConfig } from '../types';
 
@@ -36,10 +40,7 @@ export async function resolveSource(config: DataSourceConfig): Promise<ResolvedS
       throw new Error(`Failed to fetch ${sourcePath}: ${response.status} ${response.statusText}`);
     }
 
-    const fs = await import('fs/promises');
-    const os = await import('os');
-    const nodePath = await import('path');
-    const tmpFile = nodePath.join(
+    const tmpFile = path.join(
       os.tmpdir(),
       `ava-source-${Date.now()}-${Math.random().toString(36).slice(2)}.${format}`
     );
@@ -55,6 +56,6 @@ export async function resolveSource(config: DataSourceConfig): Promise<ResolvedS
     };
   }
 
-  // Database sources (mysql/postgre) are reserved and not implemented yet
+  // Database sources (mysql/postgresql) are reserved and not implemented yet
   throw new Error(`loadSource: "${config.type}" sources are not supported yet.`);
 }

@@ -2,6 +2,8 @@
  * Integration tests for AVA main class
  */
 
+import { readFile } from 'fs/promises';
+import { createServer } from 'http';
 import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -58,8 +60,6 @@ describe('AVA Integration Tests', () => {
     });
 
     it('should load a remote CSV over HTTP', async () => {
-      const { createServer } = await import('http');
-      const { readFile } = await import('fs/promises');
       const server = createServer(async (_req, res) => {
         res.setHeader('Content-Type', 'text/csv');
         res.end(await readFile(testDataPath, 'utf-8'));

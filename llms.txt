@@ -74,7 +74,7 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 - `loadObject(data: object[])` - Load data from array of objects
 - `loadURL(url: string, transform?: Function)` - Load data from URL
 - `loadText(text: string)` - Extract data from unstructured text using LLM
-- `loadSource(config)` - Load external data into DuckDB (Node.js only, requires `engine: 'duckdb'`); `{ type, options }` where `type` is `'csv' | 'json' | 'parquet'` (file source: `options: { path, headers? }`, a local path or http(s) URL) or a reserved database type `'mysql' | 'postgre'`
+- `loadSource(config)` - Load external data into DuckDB (Node.js only, requires `engine: 'duckdb'`); `{ type, options }` where `type` is `'csv' | 'json' | 'parquet'` (file source: `options: { path, headers? }`, a local path or http(s) URL) or a reserved database type `'mysql' | 'postgresql'`
 
 ### Query Suggestions
 - `suggest(count?: number)` - Get AI-recommended analysis queries based on dataset characteristics (default: 3)

@@ -128,7 +128,7 @@ Core APIs in AVA:
 
 - `loadCSV(filePathOrContent)`: load CSV (Node.js: file path; Browser: CSV content string).
 - `loadObject(data)` / `loadURL(url, transform?)` / `loadText(text)`: load data into AVA.
-- `loadSource(config)`: load external data into DuckDB (Node.js only) — `{ type, options }` where `type` is `csv | json | parquet` (file source: `options: { path, headers? }`, a local path or http(s) URL such as OSS signed links), or a reserved database type (`mysql | postgre`).
+- `loadSource(config)`: load external data into DuckDB (Node.js only) — `{ type, options }` where `type` is `csv | json | parquet` (file source: `options: { path, headers? }`, a local path or http(s) URL such as OSS signed links), or a reserved database type (`mysql | postgresql`).
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query)`: run data analysis and return `{ query, text, data, engine, dsl? }` — `dsl` is the executed JS code or DuckDB SQL, `engine` identifies the engine (`'code' | 'duckdb'`).
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).

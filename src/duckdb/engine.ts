@@ -5,13 +5,16 @@
  * Note: This engine requires '@duckdb/node-api', which is Node.js-only.
  */
 
+import * as fs from 'fs/promises';
+import * as os from 'os';
+import * as path from 'path';
+
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
+import { DuckDBInstance } from '@duckdb/node-api';
 
+import type { DuckDBConnection } from '@duckdb/node-api';
 import type { AnalysisEngine, DataSource, DatasetInfo, FieldMetadata, LLMConfig, SourceFormat } from '../types';
-
-type DuckDBInstance = any;
-type DuckDBConnection = any;
 
 const READ_FN: Record<SourceFormat, string> = {
   csv: 'read_csv',
@@ -95,16 +98,9 @@ export class DuckDBStore {
       throw new Error('DuckDB is not supported in browser environments.');
     }
 
-    try {
-      const { DuckDBInstance } = await import('@duckdb/node-api');
-      this.instance = await DuckDBInstance.create(':memory:');
-      this.connection = await this.instance.connect();
-      return this.connection;
-    } catch (error) {
-      throw new Error(
-        `Failed to initialize DuckDB. This module is only available in Node.js environments: ${error instanceof Error ? error.message : String(error)}`
-      );
-    }
+    this.instance = await DuckDBInstance.create(':memory:');
+    this.connection = await this.instance.connect();
+    return this.connection;
   }
 
   /**
@@ -115,9 +111,6 @@ export class DuckDBStore {
     if (!data || data.length === 0) return;
     const conn = await this.getConnection();
 
-    const os = await import('os');
-    const path = await import('path');
-    const fs = await import('fs/promises');
     const tmpFile = path.join(os.tmpdir(), `ava-data-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
 
     await fs.writeFile(tmpFile, JSON.stringify(data));
