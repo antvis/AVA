@@ -9,9 +9,15 @@ export type {
   AVAConfig,
   LLMConfig,
   SourceType,
-  SourceFormat,
+  FileFormat,
+  LoadedSource,
   DataSourceConfig,
   FileSourceOptions,
+  ObjectSourceOptions,
+  URLSourceOptions,
+  TextSourceOptions,
+  CSVSourceOptions,
+  AnalysisEngine,
   AnalysisResponse,
   VisualizeResponse,
   DatasetInfo,
@@ -20,4 +26,4 @@ export type {
   ChartTypeDefinition,
   SuggestResult,
 } from './types';
-export { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './code';
+export { extractMetadata, formatDatasetInfo } from './duckdb';

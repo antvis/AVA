@@ -3,22 +3,22 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+
 import { AVA } from '../src';
-import { executeDataCode, generateDataCode } from '../src/code';
-import { DuckDBStore, generateSQL } from '../src/duckdb';
+import { DuckDBEngine, generateSQL } from '../src/duckdb';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
 describe('Analysis Module', () => {
-  describe('DuckDBStore', () => {
-    let store: DuckDBStore;
+  describe('DuckDBEngine', () => {
+    let engine: DuckDBEngine;
 
     beforeEach(() => {
-      store = new DuckDBStore();
+      engine = new DuckDBEngine(getLLMConfig());
     });
 
-    afterEach(() => {
-      store.close();
+    afterEach(async () => {
+      await engine.dispose();
     });
 
     it('should create and load data', async () => {
@@ -28,16 +28,16 @@ describe('Analysis Module', () => {
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      await store.registerData(testData);
-      const result = await store.query('SELECT * FROM data');
-      
+      await engine.load({ type: 'object', options: { data: testData } });
+      const result = await engine.execute('SELECT * FROM data');
+
       expect(result).toBeDefined();
       expect(result.length).toBe(3);
     });
 
     it('should handle empty data', async () => {
-      await store.registerData([]);
-      const schema = await store.getSchema();
+      await engine.load({ type: 'object', options: { data: [] } });
+      const schema = await engine.getSchema();
       expect(schema).toBeDefined();
     });
 
@@ -48,9 +48,9 @@ describe('Analysis Module', () => {
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      await store.registerData(testData);
-      const result = await store.query("SELECT * FROM data WHERE city = 'NYC'");
-      
+      await engine.load({ type: 'object', options: { data: testData } });
+      const result = await engine.execute("SELECT * FROM data WHERE city = 'NYC'");
+
       expect(result.length).toBe(2);
     });
 
@@ -61,148 +61,19 @@ describe('Analysis Module', () => {
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      await store.registerData(testData);
-      const result = await store.query('SELECT COUNT(*) as count FROM data');
-      
+      await engine.load({ type: 'object', options: { data: testData } });
+      const result = await engine.execute('SELECT COUNT(*) as count FROM data');
+
       expect(result[0].count).toBe(3);
     });
 
     it('should get schema info', async () => {
       const testData = [{ name: 'Alice', age: 30 }];
-      await store.registerData(testData);
-      
-      const schema = await store.getSchema();
+      await engine.load({ type: 'object', options: { data: testData } });
+
+      const schema = await engine.getSchema();
       expect(schema).toContain('name');
       expect(schema).toContain('age');
-    });
-  });
-
-  describe('executeDataCode', () => {
-    const testData = [
-      { name: 'Alice', score: 90, region: 'East' },
-      { name: 'Bob', score: 85, region: 'West' },
-      { name: 'Charlie', score: 95, region: 'East' },
-      { name: 'David', score: 80, region: 'West' },
-    ];
-
-    it('should execute simple count operation', async () => {
-      const code = 'const result = stat.count(data);';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBe(4);
-    });
-
-    it('should execute sum operation', async () => {
-      const code = 'const result = stat.sum(data, "score");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBe(350);
-    });
-
-    it('should execute average operation', async () => {
-      const code = 'const result = stat.avg(data, "score");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBe(87.5);
-    });
-
-    it('should execute max operation', async () => {
-      const code = 'const result = stat.max(data, "score");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBe(95);
-    });
-
-    it('should execute min operation', async () => {
-      const code = 'const result = stat.min(data, "score");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBe(80);
-    });
-
-    it('should execute groupBy operation', async () => {
-      const code = `
-        const grouped = stat.groupBy(data, 'region');
-        const result = Object.keys(grouped).map(region => ({
-          region,
-          count: stat.count(grouped[region])
-        }));
-      `;
-      const result = await executeDataCode(testData, code);
-      
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(2);
-    });
-
-    it('should execute sortBy operation', async () => {
-      const code = 'const result = stat.sortBy(data, "score", "desc");';
-      const result = await executeDataCode(testData, code);
-      
-      expect(result[0].score).toBe(95);
-      expect(result[3].score).toBe(80);
-    });
-
-    it('should handle complex operations', async () => {
-      const code = `
-        const grouped = stat.groupBy(data, 'region');
-        const result = Object.keys(grouped).map(region => ({
-          region,
-          avgScore: stat.avg(grouped[region], 'score'),
-          maxScore: stat.max(grouped[region], 'score')
-        }));
-      `;
-      const result = await executeDataCode(testData, code);
-      
-      expect(result).toBeDefined();
-      expect(result.length).toBe(2);
-      expect(result[0]).toHaveProperty('region');
-      expect(result[0]).toHaveProperty('avgScore');
-      expect(result[0]).toHaveProperty('maxScore');
-    });
-
-    it('should throw error for invalid code', async () => {
-      const code = 'const result = invalidFunction();';
-      await expect(executeDataCode(testData, code)).rejects.toThrow();
-    });
-
-    it('should execute median operation', async () => {
-      const code = 'const result = stat.median(data, "score");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBe(87.5); // (85 + 90) / 2
-    });
-
-    it('should execute variance operation', async () => {
-      const code = 'const result = stat.variance(data, "score");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBeCloseTo(31.25, 2); // variance of [80, 85, 90, 95]
-    });
-
-    it('should execute stdDev operation', async () => {
-      const code = 'const result = stat.stdDev(data, "score");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toBeCloseTo(5.59, 2); // sqrt(31.25) ≈ 5.59
-    });
-
-    it('should execute distinct operation', async () => {
-      const code = 'const result = stat.distinct(data, "region");';
-      const result = await executeDataCode(testData, code);
-      expect(result).toEqual(['East', 'West']);
-    });
-
-    it('should execute filter operation', async () => {
-      const code = 'const result = stat.filter(data, item => item.score > 85);';
-      const result = await executeDataCode(testData, code);
-      expect(result.length).toBe(2);
-      expect(result[0].name).toBe('Alice');
-      expect(result[1].name).toBe('Charlie');
-    });
-
-    it('should execute first operation', async () => {
-      const code = 'const result = stat.first(data);';
-      const result = await executeDataCode(testData, code);
-      expect(result.name).toBe('Alice');
-    });
-
-    it('should execute last operation', async () => {
-      const code = 'const result = stat.last(data);';
-      const result = await executeDataCode(testData, code);
-      expect(result.name).toBe('David');
     });
   });
 
@@ -231,46 +102,6 @@ describe('Analysis Module', () => {
       expect(typeof sql).toBe('string');
       expect(sql.length).toBeGreaterThan(0);
       expect(sql.toLowerCase()).toContain('select');
-    }, 30000);
-  });
-
-  describe.skipIf(skipLLMTests)('generateDataCode', () => {
-    it('should generate JavaScript code for aggregation', async () => {
-      const llmConfig = getLLMConfig();
-      const dataInfo = `Dataset Info:
-- Rows: 12
-- Columns: 3
-Fields:
-- company (string)
-- region (string)
-- revenue (number)`;
-      
-      const query = 'What is the total revenue?';
-      
-      const code = await generateDataCode(llmConfig, dataInfo, query);
-
-      expect(code).toBeDefined();
-      expect(typeof code).toBe('string');
-      expect(code).toContain('result');
-    }, 30000);
-
-    it('should generate code for grouping operation', async () => {
-      const llmConfig = getLLMConfig();
-      const dataInfo = `Dataset Info:
-- Rows: 12
-- Columns: 3
-Fields:
-- company (string)
-- region (string)
-- revenue (number)`;
-      
-      const query = 'Group companies by region';
-      
-      const code = await generateDataCode(llmConfig, dataInfo, query);
-
-      expect(code).toBeDefined();
-      expect(code).toContain('result');
-      expect(code.toLowerCase()).toContain('group');
     }, 30000);
   });
 

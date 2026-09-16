@@ -31,7 +31,6 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
     return new AVA({
       llm: llmConfig,
-      // default 'code' engine: in-memory JS analysis, browser-compatible
     });
   }, [llmConfig]);
 

@@ -49,8 +49,8 @@ describe('AVA Integration Tests', () => {
     });
 
     it('should load a local CSV file and infer typed metadata', async () => {
-      sourceAva = new AVA({ llm: getLLMConfig(), engine: 'duckdb' });
-      const info = await sourceAva.loadSource({ type: 'csv', options: { path: testDataPath } });
+      sourceAva = new AVA({ llm: getLLMConfig() });
+      const info = await sourceAva.loadSource({ type: 'csv-file', options: { path: testDataPath } });
 
       expect(info.rowCount).toBe(12);
       expect(info.columnCount).toBe(3);
@@ -68,9 +68,9 @@ describe('AVA Integration Tests', () => {
       const { port } = server.address() as { port: number };
 
       try {
-        sourceAva = new AVA({ llm: getLLMConfig(), engine: 'duckdb' });
+        sourceAva = new AVA({ llm: getLLMConfig() });
         const info = await sourceAva.loadSource({
-          type: 'csv',
+          type: 'csv-file',
           options: { path: `http://127.0.0.1:${port}/companies.csv` },
         });
         expect(info.rowCount).toBe(12);
@@ -81,17 +81,10 @@ describe('AVA Integration Tests', () => {
     });
 
     it('should reject reserved database source types', async () => {
-      sourceAva = new AVA({ llm: getLLMConfig(), engine: 'duckdb' });
+      sourceAva = new AVA({ llm: getLLMConfig() });
       await expect(sourceAva.loadSource({ type: 'mysql', options: {} })).rejects.toThrow(
         'not supported yet',
       );
-    });
-
-    it('should reject loadSource when using the code engine', async () => {
-      sourceAva = new AVA({ llm: getLLMConfig() }); // default: code
-      await expect(
-        sourceAva.loadSource({ type: 'csv', options: { path: testDataPath } }),
-      ).rejects.toThrow('requires engine: "duckdb"');
     });
   });
 
@@ -204,10 +197,9 @@ describe('AVA Integration Tests', () => {
 
   describe.skipIf(skipLLMTests)('Analysis with Large Dataset (DuckDB)', () => {
     it('should use DuckDB for large datasets', async () => {
-      // Create AVA with the duckdb engine for SQL analysis
+      // Create AVA for SQL analysis
       const avaLarge = new AVA({
         llm: getLLMConfig(),
-        engine: 'duckdb',
       });
 
       try {
@@ -228,7 +220,6 @@ describe('AVA Integration Tests', () => {
     it('should handle aggregation with DuckDB', async () => {
       const avaLarge = new AVA({
         llm: getLLMConfig(),
-        engine: 'duckdb',
       });
 
       try {
@@ -328,7 +319,6 @@ describe('AVA Integration Tests', () => {
     it('should work with DuckDB for large text-extracted data', async () => {
       const avaLarge = new AVA({
         llm: getLLMConfig(),
-        engine: 'duckdb',
       });
 
       try {

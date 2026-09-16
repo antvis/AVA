@@ -100,7 +100,6 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  engine: 'duckdb', // 'code' (default, in-memory JS, browser-compatible) | 'duckdb' (Node.js, SQL)
 });
 
 // Load data
@@ -114,7 +113,7 @@ const result = await ava.analysis(
   'What is the average GDP?'
 );
 console.log(result.text);
-// Access: result.dsl, result.engine, result.data
+// Access: result.sql, result.data
 
 // Generate visualization from analysis result
 const viz = await ava.visualize(result);
@@ -206,10 +205,6 @@ ava.dispose();`}</pre>
                         <span className="text-gray-500 font-mono">llm</span>
                         <span className="text-gray-600">— LLM configuration (model, apiKey, baseURL)</span>
                       </div>
-                      <div className="flex gap-2">
-                        <span className="text-gray-500 font-mono">engine</span>
-                        <span className="text-gray-600">— 'code' (default, in-memory JS, browser-compatible) | 'duckdb' (Node.js only, SQL)</span>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -219,11 +214,11 @@ ava.dispose();`}</pre>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Data Loading</h3>
                   <div className="space-y-3">
                     {[
-                      { method: 'loadCSV(content: string)', desc: 'Load data from CSV string' },
-                      { method: 'loadObject(data: object[])', desc: 'Load data from array of objects' },
-                      { method: 'loadURL(url: string, transform?: Function)', desc: 'Load data from URL' },
-                      { method: 'loadText(text: string)', desc: 'Extract data from unstructured text' },
-                      { method: 'loadSource(config: { type, options })', desc: 'Load external data into DuckDB (Node.js only, requires engine: duckdb)' },
+                      { method: 'loadCSV(content: string)', desc: 'Shortcut for loadSource({ type: \'csv\' })' },
+                      { method: 'loadObject(data: object[])', desc: 'Shortcut for loadSource({ type: \'object\' })' },
+                      { method: 'loadURL(url: string, transform?: Function)', desc: 'Shortcut for loadSource({ type: \'url\' })' },
+                      { method: 'loadText(text: string)', desc: 'Shortcut for loadSource({ type: \'text\' }) — extracts data via LLM' },
+                      { method: 'loadSource(config: { type, options })', desc: 'Load any data source (inline csv/object/url/text, or csv-file/json/parquet files)' },
                     ].map((item, idx) => (
                       <div key={idx} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                         <code className="text-sm text-[#78d3f8] block mb-2">{item.method}</code>
@@ -370,7 +365,6 @@ const result = await ava.analysis('Compare by region');`}</pre>
                   'Always call ava.dispose() when done to free resources',
                   'Wrap async calls in try-catch blocks for error handling',
                   'Validate data format before loading',
-                  "Use engine: 'duckdb' in Node.js for large datasets or file/remote sources",
                   'Never expose API keys in client-side code',
                 ].map((practice, idx) => (
                   <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">

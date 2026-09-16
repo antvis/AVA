@@ -90,8 +90,8 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
     }
   }, [avaInstance]);
 
-  // Get analysis code (JavaScript or SQL)
-  const analysisCode = result?.dsl;
+  // Get analysis SQL
+  const analysisCode = result?.sql;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">

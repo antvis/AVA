@@ -58,14 +58,14 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  engine: 'duckdb', // 'code' (default, in-memory JS, browser-compatible) | 'duckdb' (Node.js, SQL)
 });
 
 // Load data from various sources in Node.js
 await ava.loadCSV('data/companies.csv');
 
-// or load a local/remote file directly into DuckDB (csv/json/parquet, e.g. OSS signed URL)
+// or load a local/remote file directly into DuckDB (csv-file/json/parquet, e.g. OSS signed URL)
 await ava.loadSource({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
+await ava.loadSource({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 
 // Load CSV from file input in browser
 const fileInput = document.querySelector('input[type="file"]');
@@ -98,8 +98,7 @@ console.log(queries);
 const result = await ava.analysis('What is the average revenue by region?');
 console.log(result.text);  // Natural language summary
 // result.data → structured analysis result
-// result.dsl    → executed DSL (JS code for the code engine, SQL for duckdb)
-// result.engine → the engine that produced the result ('code' | 'duckdb')
+// result.sql  → the DuckDB SQL executed for the analysis
 
 // Generate chart visualization from analysis result
 const viz = await ava.visualize(result);
@@ -122,17 +121,15 @@ Create an AVA instance:
 
 - `new AVA(options)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `engine?`: `'code'` (default; in-memory JS, works in browser and Node.js) or `'duckdb'` (Node.js only; SQL, required for `loadSource` and large datasets)
 
 Core APIs in AVA:
 
-- `loadCSV(filePathOrContent)`: load CSV (Node.js: file path; Browser: CSV content string).
-- `loadObject(data)` / `loadURL(url, transform?)` / `loadText(text)`: load data into AVA.
-- `loadSource(config)`: load external data into DuckDB (Node.js only) — `{ type, options }` where `type` is `csv | json | parquet` (file source: `options: { path, headers? }`, a local path or http(s) URL such as OSS signed links), or a reserved database type (`mysql | postgresql`).
+- `loadCSV(filePathOrContent)` / `loadObject(data)` / `loadURL(url, transform?)` / `loadText(text)`: shortcuts for `loadSource` with inline data types (`csv` / `object` / `url` / `text`).
+- `loadSource(config)`: load any data source — `{ type, options }` where `type` is an inline type (`csv`: `{ pathOrContent }`, `object`: `{ data }`, `url`: `{ url, transform? }`, `text`: `{ text }`), a file type (`csv-file | json | parquet`: `{ path, headers? }`, a local path or http(s) URL such as OSS signed links), or a reserved database type (`mysql | postgresql`).
 - `suggest(count?)`: generate recommended analysis questions.
-- `analysis(query)`: run data analysis and return `{ query, text, data, engine, dsl? }` — `dsl` is the executed JS code or DuckDB SQL, `engine` identifies the engine (`'code' | 'duckdb'`).
+- `analysis(query)`: run data analysis and return `{ query, text, data, sql? }` — `sql` is the DuckDB SQL executed for the analysis.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
-- `dispose()`: release engine resources (in-memory data, DuckDB instance, temp files).
+- `dispose()`: release engine resources (DuckDB instance, temp files).
 
 Minimal usage:
 
@@ -155,7 +152,7 @@ ava.dispose();
 
 ## 🏗️ Architecture
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, text, or external files) as a unified DataSource, then analyzed by the configured engine (`code`: in-memory JavaScript; `duckdb`: SQL), summarized using LLM into natural language responses, and optionally visualized with chart recommendations. The analysis API is agnostic to which engine executes the query.
+AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, text, or external files) via `loadSource`, then analyzed by the DuckDB engine (natural-language queries are turned into SQL via LLM and executed against an in-memory DuckDB instance), summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
 
 ```
 User Query
@@ -163,24 +160,24 @@ User Query
 AVA Instance
     ↓
 ┌─────────────────┐
-│  Data Module    │ → Load from multiple sources:
+│  Data Module    │ → Load from multiple sources (loadSource):
 │                 │   • CSV File (loadCSV)
 │                 │   • JSON Object (loadObject)
 │                 │   • URL (loadURL)
 │                 │   • Text (loadText + LLM)
-│                 │   • Local/remote file (loadSource + DuckDB)
+│                 │   • Local/remote file (csv-file/json/parquet)
 └─────────────────┘
     ↓
 ┌──────────────────┐
-│ Metadata Extract │ → Type inference, statistics
+│ Metadata Extract │ → Type inference, statistics (via DuckDB)
 └──────────────────┘
     ↓
 ┌──────────────────┐
-│  Engine (config) │ → 'code' (default): in-memory JS, browser + Node.js
-└──────────────────┘   'duckdb': SQL via DuckDB, Node.js only
+│  DuckDB Engine   │ → SQL via DuckDB, Node.js only
+└──────────────────┘
     ↓
 ┌──────────────────┐
-│ Analysis Module  │ → Generate & Execute Code/SQL (engine-agnostic)
+│ Analysis Module  │ → Generate & Execute SQL
 └──────────────────┘
     ↓
 ┌──────────────┐
@@ -198,24 +195,13 @@ User Response
 (Text + Data + Chart)
 ```
 
-## 🌐 Browser & Server Compatibility
+## 🌐 Node.js Support
 
-AVA v4 is designed to run seamlessly in both browser and Node.js environments:
+AVA v4 runs in Node.js, backed by an in-memory DuckDB instance (LLM generates SQL):
 
-### ✅ Browser Support
-- All core features work in modern browsers (Chrome, Firefox, Safari, Edge) with the default `code` engine
-- CSV loading via File API or direct content strings
-- JSON object and URL loading fully supported
-- In-memory data processing only; for large datasets use Node.js with the `duckdb` engine
-
-### ✅ Node.js Support
-- Full feature set with both engines: `code` (in-memory JS) and `duckdb` (SQL)
-- File system access for CSV loading, plus remote files (csv/json/parquet) via `loadSource` (requires `engine: 'duckdb'`)
-
-### Engine Selection
-The engine is chosen explicitly via config — `analysis()` behaves the same either way:
-- **`code` (default)**: data stays in memory, LLM generates JavaScript. Works everywhere.
-- **`duckdb`**: data lives in an in-memory DuckDB instance, LLM generates SQL. Node.js only; required for file/remote sources.
+- Full feature set: inline data (csv/object/url/text) and local/remote files (csv-file/json/parquet) via `loadSource`
+- File system access for CSV loading, plus remote files such as OSS signed URLs
+- Data is never materialized into JS memory for file sources — DuckDB reads them directly
 
 ## 🤝 Developer Contributions
 

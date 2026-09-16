@@ -5,18 +5,23 @@
  * Note: This engine requires '@duckdb/node-api', which is Node.js-only.
  */
 
-import * as fs from 'fs/promises';
-import * as os from 'os';
-import * as path from 'path';
-
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { DuckDBInstance } from '@duckdb/node-api';
 
-import type { DuckDBConnection } from '@duckdb/node-api';
-import type { AnalysisEngine, DataSource, DatasetInfo, FieldMetadata, LLMConfig, SourceFormat } from '../types';
+import { loadSource } from './loaders';
 
-const READ_FN: Record<SourceFormat, string> = {
+import type { DuckDBConnection } from '@duckdb/node-api';
+import type {
+  AnalysisEngine,
+  DataSourceConfig,
+  DatasetInfo,
+  FieldMetadata,
+  FileFormat,
+  LLMConfig,
+} from '../types';
+
+const READ_FN: Record<FileFormat, string> = {
   csv: 'read_csv',
   json: 'read_json',
   parquet: 'read_parquet',
@@ -83,10 +88,13 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
   return sql.trim();
 }
 
-export class DuckDBStore {
+export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
   private readonly tableName: string = 'data'; // Fixed table name, not user-controllable
+  private cleanup: (() => Promise<void>) | null = null;
+
+  constructor(private readonly llmConfig: LLMConfig) {}
 
   /**
    * Get or create the DuckDB connection (lazy loading)
@@ -104,30 +112,10 @@ export class DuckDBStore {
   }
 
   /**
-   * Register an in-memory array as the `data` table.
-   * Goes through a temp JSON file so DuckDB infers proper column types.
-   */
-  async registerData(data: any[]): Promise<void> {
-    if (!data || data.length === 0) return;
-    const conn = await this.getConnection();
-
-    const tmpFile = path.join(os.tmpdir(), `ava-data-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
-
-    await fs.writeFile(tmpFile, JSON.stringify(data));
-    try {
-      await conn.run(
-        `CREATE OR REPLACE TABLE ${this.tableName} AS SELECT * FROM read_json('${escapeSql(tmpFile)}', auto_detect=true)`
-      );
-    } finally {
-      await fs.unlink(tmpFile).catch(() => {});
-    }
-  }
-
-  /**
    * Register a local file as the `data` view (csv/json/parquet).
-   * The view reads the file lazily, so the file must outlive the store.
+   * The view reads the file lazily, so the file must outlive the engine.
    */
-  async registerFile(filePath: string, format: SourceFormat): Promise<void> {
+  private async registerFile(filePath: string, format: FileFormat): Promise<void> {
     const conn = await this.getConnection();
     const sniff = format === 'parquet' ? '' : ', auto_detect=true';
     await conn.run(
@@ -135,10 +123,31 @@ export class DuckDBStore {
     );
   }
 
-  /**
-   * Execute SQL query against the `data` table
-   */
-  async query(sql: string): Promise<any[]> {
+  async load(config: DataSourceConfig): Promise<DatasetInfo> {
+    if (typeof window !== 'undefined') {
+      throw new Error('The duckdb engine is only available in Node.js.');
+    }
+
+    try {
+      // Each loader turns the source config into a local file for DuckDB to read
+      const source = await loadSource(config, this.llmConfig);
+      await this.registerFile(source.path, source.format);
+      this.cleanup = source.cleanup;
+    } catch (error) {
+      await this.cleanup?.();
+      this.cleanup = null;
+      this.close();
+      throw error;
+    }
+
+    return this.getDatasetInfo();
+  }
+
+  async getDSL(query: string): Promise<string> {
+    return generateSQL(this.llmConfig, await this.getSchema(), query);
+  }
+
+  async execute(sql: string): Promise<any> {
     const conn = await this.getConnection();
     const reader = await conn.runAndReadAll(sql);
     return coerceNumbers(reader.getRowObjectsJson());
@@ -164,9 +173,18 @@ export class DuckDBStore {
   /**
    * Derive dataset metadata from DuckDB without materializing the data.
    * sizeInBytes is a rough estimate — the data itself lives in DuckDB.
+   * Returns empty metadata when no table exists (e.g. empty data registered).
    */
   async getDatasetInfo(): Promise<DatasetInfo> {
     const conn = await this.getConnection();
+
+    // DESCRIBE throws when the table doesn't exist (e.g. empty data registered)
+    const exists = await conn.runAndReadAll(
+      `SELECT 1 FROM information_schema.tables WHERE table_name = '${this.tableName}'`
+    );
+    if (exists.getRowObjectsJson().length === 0) {
+      return { rowCount: 0, columnCount: 0, fields: [], sizeInBytes: 0 };
+    }
 
     const colsReader = await conn.runAndReadAll(`DESCRIBE ${this.tableName}`);
     const cols = colsReader.getRowObjectsJson();
@@ -192,9 +210,9 @@ export class DuckDBStore {
   }
 
   /**
-   * Close database
+   * Close the database connection and instance
    */
-  close(): void {
+  private close(): void {
     try {
       this.connection?.closeSync();
       this.instance?.closeSync();
@@ -204,55 +222,9 @@ export class DuckDBStore {
     this.connection = null;
     this.instance = null;
   }
-}
-
-export class DuckDBEngine implements AnalysisEngine {
-  private store: DuckDBStore | null = null;
-  private cleanup: (() => Promise<void>) | null = null;
-
-  constructor(private readonly llmConfig: LLMConfig) {}
-
-  async load(source: DataSource): Promise<DatasetInfo> {
-    if (typeof window !== 'undefined') {
-      throw new Error('The duckdb engine is only available in Node.js. Use engine: "code" in browser.');
-    }
-
-    this.store = new DuckDBStore();
-    try {
-      if (source.kind === 'file') {
-        await this.store.registerFile(source.path, source.format);
-        this.cleanup = source.cleanup ?? null;
-      } else {
-        await this.store.registerData(source.data);
-      }
-    } catch (error) {
-      if (source.kind === 'file') {
-        await source.cleanup?.();
-      }
-      this.store = null;
-      throw error;
-    }
-
-    return this.store.getDatasetInfo();
-  }
-
-  async getDSL(query: string): Promise<string> {
-    if (!this.store) {
-      throw new Error('No data loaded.');
-    }
-    return generateSQL(this.llmConfig, await this.store.getSchema(), query);
-  }
-
-  async execute(sql: string): Promise<any> {
-    if (!this.store) {
-      throw new Error('No data loaded.');
-    }
-    return this.store.query(sql);
-  }
 
   async dispose(): Promise<void> {
-    this.store?.close();
-    this.store = null;
+    this.close();
     await this.cleanup?.();
     this.cleanup = null;
   }

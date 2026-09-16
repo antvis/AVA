@@ -6,33 +6,23 @@ import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import {
-  CodeEngine,
-  loadCSV,
-  loadObject,
-  loadURL,
-  loadText,
+  DuckDBEngine,
   extractMetadata,
   formatDatasetInfo,
   formatDatasetInfoWithNonArray,
-} from './code';
-import { DuckDBEngine, resolveSource } from './duckdb';
+} from './duckdb';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 
 import type {
-  AnalysisEngine,
   AVAConfig,
   LLMConfig,
-  EngineType,
-  DataSource,
   DataSourceConfig,
   DatasetInfo,
   AnalysisResponse,
   VisualizeResponse,
   SuggestResult,
 } from './types';
-
-const DEFAULT_ENGINE: EngineType = 'code';
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -47,31 +37,28 @@ function hasData(data: unknown): boolean {
 
 /**
  * Main AVA class for AI-native visual analytics.
- * Data loading produces a DataSource; analysis() delegates to the configured
- * engine ('code' | 'duckdb') and is agnostic to how queries are executed.
+ * Data loading and analysis are backed by the DuckDB engine — natural-language
+ * queries are turned into SQL via LLM and executed against an in-memory DuckDB.
  */
 export class AVA {
   private readonly llmConfig: LLMConfig;
-  private readonly engineType: EngineType;
-  private engine: AnalysisEngine | null = null;
+  private engine: DuckDBEngine | null = null;
   private dataInfo: DatasetInfo | null = null;
 
   constructor(config: AVAConfig) {
     this.llmConfig = config.llm;
-    this.engineType = config.engine ?? DEFAULT_ENGINE;
   }
 
   /**
-   * Load a data source into the configured engine.
+   * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  private async load(source: DataSource): Promise<DatasetInfo> {
+  async loadSource(config: DataSourceConfig): Promise<DatasetInfo> {
     await this.engine?.dispose();
 
-    this.engine =
-      this.engineType === 'duckdb' ? new DuckDBEngine(this.llmConfig) : new CodeEngine(this.llmConfig);
+    this.engine = new DuckDBEngine(this.llmConfig);
     try {
-      this.dataInfo = await this.engine.load(source);
+      this.dataInfo = await this.engine.load(config);
     } catch (error) {
       await this.engine.dispose();
       this.engine = null;
@@ -81,62 +68,40 @@ export class AVA {
   }
 
   /**
-   * Load CSV file
+   * Load CSV file — shortcut for loadSource({ type: 'csv', options: { pathOrContent } })
    * @returns Dataset metadata
    */
   async loadCSV(filePath: string): Promise<DatasetInfo> {
-    return this.load({ kind: 'inline', data: await loadCSV(filePath) });
+    return this.loadSource({ type: 'csv', options: { pathOrContent: filePath } });
   }
 
   /**
-   * Load data from JSON object array
+   * Load data from JSON object array — shortcut for loadSource({ type: 'object', options: { data } })
    * @returns Dataset metadata
    */
   async loadObject(data: any[]): Promise<DatasetInfo> {
-    return this.load({ kind: 'inline', data: await loadObject(data) });
+    return this.loadSource({ type: 'object', options: { data } });
   }
 
   /**
-   * Load data from URL
+   * Load data from URL — shortcut for loadSource({ type: 'url', options: { url, transform } })
    * @returns Dataset metadata
    */
   async loadURL(url: string, transform?: (response: any) => any[]): Promise<DatasetInfo> {
-    return this.load({ kind: 'inline', data: await loadURL(url, transform) });
+    return this.loadSource({ type: 'url', options: { url, transform } });
   }
 
   /**
-   * Load data from text using LLM
+   * Load data from text using LLM — shortcut for loadSource({ type: 'text', options: { text } })
    * @returns Dataset metadata
    */
   async loadText(text: string): Promise<DatasetInfo> {
-    return this.load({ kind: 'inline', data: await loadText(text, this.llmConfig) });
-  }
-
-  /**
-   * Load an external data source into DuckDB (Node.js only, requires engine: 'duckdb').
-   * File sources (csv/json/parquet) may be local paths or http(s) URLs — remote files
-   * are downloaded first, so OSS/S3 signed URLs work through the same path.
-   * Database sources (mysql/postgresql) are reserved and not implemented yet.
-   * Data is never materialized into JS memory.
-   * @returns Dataset metadata inferred by DuckDB
-   * @example
-   * ```typescript
-   * const ava = new AVA({ llm, engine: 'duckdb' });
-   * await ava.loadSource({ type: 'csv', options: { path: './data/companies.csv' } });
-   * await ava.loadSource({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
-   * await ava.loadSource({ type: 'csv', options: { path: signedOssUrl, headers: { ... } } });
-   * ```
-   */
-  async loadSource(source: DataSourceConfig): Promise<DatasetInfo> {
-    if (this.engineType !== 'duckdb') {
-      throw new Error('loadSource requires engine: "duckdb" — file/remote sources are queried via DuckDB SQL.');
-    }
-    return this.load(await resolveSource(source));
+    return this.loadSource({ type: 'text', options: { text } });
   }
 
   /**
    * Analyze data using natural language query.
-   * Delegates execution to the configured engine (code or duckdb).
+   * The query is turned into SQL via LLM and executed by DuckDB.
    * Use visualize() separately to generate charts from the analysis result.
    */
   async analysis(query: string): Promise<AnalysisResponse> {
@@ -146,8 +111,8 @@ export class AVA {
       );
     }
 
-    const dsl = await this.engine.getDSL(query);
-    const data = await this.engine.execute(dsl);
+    const sql = await this.engine.getDSL(query);
+    const data = await this.engine.execute(sql);
 
     // Summarize the result using LLM
     const summary = await this.summarizeResult(query, data);
@@ -156,8 +121,7 @@ export class AVA {
       query,
       text: summary,
       data,
-      engine: this.engineType,
-      dsl,
+      sql,
     };
   }
 
