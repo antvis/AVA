@@ -16,7 +16,7 @@ async function main() {
   const ava = new AVA({
     llm: {
       model: 'ling-1t',
-      apiKey: process.env.API_KEY || 'YOUR_API_KEY',
+      apiKey: process.env.OPENAI_LLM_API_KEY || 'YOUR_API_KEY',
       baseURL: 'https://api.tbox.cn/api/llm/v1',
     },
   });
@@ -41,16 +41,16 @@ async function main() {
     
     console.log('\n✓ Response Text:', response.text);
     
-    // Show visualization Syntax in console (truncated)
-    if (response.visualizationSyntax) {
-      console.log('\n✓ Response Visualization Syntax:', response.visualizationSyntax);
-    }
+    // Generate visualization from the analysis result
+    const vis = await ava.visualize(response);
+    if (vis) {
+      console.log('\n✓ Chart Type:', vis.chartType);
+      console.log('\n✓ Visualization Syntax:', vis.syntax);
 
-    // Save visualization HTML if generated
-    if (response.visualizationHTML) {
+      // Save visualization HTML
       const outputPath = path.join(__dirname, '../output-visualization.html');
-      fs.writeFileSync(outputPath, response.visualizationHTML);
-      console.log(`\n✓ Response Visualization HTML saved to: ${outputPath}`);
+      fs.writeFileSync(outputPath, vis.html);
+      console.log(`\n✓ Visualization HTML saved to: ${outputPath}`);
       console.log('Open this file in a browser to view the visualization.');
     }
 

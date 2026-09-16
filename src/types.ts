@@ -15,14 +15,62 @@ export interface LLMConfig {
 }
 
 /**
+ * Analysis engine type:
+ * - `code`: in-memory JavaScript execution (works in both Node.js and browser)
+ * - `duckdb`: DuckDB SQL execution (Node.js only; required for file/remote sources and large data)
+ */
+export type EngineType = 'code' | 'duckdb';
+
+/**
  * AVA configuration
  */
 export interface AVAConfig {
   /** LLM configuration */
   llm: LLMConfig;
-  /** Threshold for using SQL(in bytes), default 10KB */
-  sqlThreshold?: number;
+  /** Analysis engine, defaults to 'code' */
+  engine?: EngineType;
 }
+
+/**
+ * Data file formats supported by loadSource, read through DuckDB's readers
+ */
+export type SourceFormat = 'csv' | 'json' | 'parquet';
+
+/**
+ * External source types for loadSource.
+ * Database types (mysql/postgre) are reserved and not implemented yet.
+ */
+export type SourceType = SourceFormat;
+
+/**
+ * Options for file sources: a local file path or an http(s) URL
+ */
+export interface FileSourceOptions {
+  /** Local file path or http(s) URL */
+  path: string;
+  /** HTTP headers for remote sources (e.g. Authorization) */
+  headers?: Record<string, string>;
+}
+
+/**
+ * External data source configuration for loadSource.
+ * - file types (csv/json/parquet): loaded through DuckDB's readers, `options` is FileSourceOptions
+ * - database types (mysql/postgre): `options` is passed through to the connection (reserved)
+ */
+export type DataSourceConfig =
+  | { type: SourceFormat; options: FileSourceOptions }
+  | { type: 'mysql' | 'postgre'; options: Record<string, unknown> };
+
+/**
+ * Unified data source consumed by analysis engines.
+ * - `inline`: data already materialized as an object array (object/text/parsed csv/url)
+ * - `file`: a local csv/json/parquet file (remote files are downloaded to temp files first)
+ *
+ * Extensible — database sources (e.g. mysql) can be added as new variants later.
+ */
+export type DataSource =
+  | { kind: 'inline'; data: any[] }
+  | { kind: 'file'; path: string; format: SourceFormat; cleanup?: () => Promise<void> };
 
 /**
  * Data field metadata
@@ -55,6 +103,22 @@ export interface DatasetInfo {
 }
 
 /**
+ * An analysis engine: loads a data source, turns natural-language queries
+ * into its executable DSL (JavaScript or SQL) via LLM, and executes it.
+ * Implemented by CodeEngine (code/) and DuckDBEngine (duckdb/).
+ */
+export interface AnalysisEngine {
+  /** Load a data source and return its metadata */
+  load(source: DataSource): Promise<DatasetInfo>;
+  /** Generate the executable DSL (SQL or JS code) for a natural-language query */
+  getDSL(query: string): Promise<string>;
+  /** Execute a DSL returned by getDSL against the loaded data */
+  execute(dsl: string): Promise<any>;
+  /** Release resources (temp files, database connections) */
+  dispose(): Promise<void>;
+}
+
+/**
  * Analysis response — data analysis results only (no visualization)
  */
 export interface AnalysisResponse {
@@ -66,10 +130,10 @@ export interface AnalysisResponse {
   data?: any[];
   /** Optional markdown content */
   markdown?: string;
-  /** Optional JavaScript code used for data analysis (for small datasets) */
-  code?: string;
-  /** Optional SQL query used for data analysis (for large datasets with SQLite) */
-  sql?: string;
+  /** The engine that produced this result ('code' | 'duckdb') */
+  engine: EngineType;
+  /** The DSL executed for the analysis (JS code for the code engine, SQL for duckdb) */
+  dsl?: string;
 }
 
 /**

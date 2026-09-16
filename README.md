@@ -30,7 +30,7 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - **Natural Language Queries**: Ask questions about your data in plain English
 - **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
-- **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
+- **Smart Data Handling**: Automatically chooses between in-memory processing and DuckDB based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
 - **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
 
@@ -58,11 +58,14 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  sqlThreshold: 1024 * 1024 * 2, // Threshold for switching to SQLite
+  engine: 'duckdb', // 'code' (default, in-memory JS, browser-compatible) | 'duckdb' (Node.js, SQL)
 });
 
 // Load data from various sources in Node.js
 await ava.loadCSV('data/companies.csv');
+
+// or load a local/remote file directly into DuckDB (csv/json/parquet, e.g. OSS signed URL)
+await ava.loadSource({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
 
 // Load CSV from file input in browser
 const fileInput = document.querySelector('input[type="file"]');
@@ -95,8 +98,8 @@ console.log(queries);
 const result = await ava.analysis('What is the average revenue by region?');
 console.log(result.text);  // Natural language summary
 // result.data → structured analysis result
-// result.code → JavaScript code (small datasets)
-// result.sql  → SQL query (large datasets with SQLite)
+// result.dsl    → executed DSL (JS code for the code engine, SQL for duckdb)
+// result.engine → the engine that produced the result ('code' | 'duckdb')
 
 // Generate chart visualization from analysis result
 const viz = await ava.visualize(result);
@@ -119,16 +122,17 @@ Create an AVA instance:
 
 - `new AVA(options)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `sqlThreshold?`: optional size threshold (bytes) to switch from in-memory analysis to SQLite/IndexedDB (default: 10KB)
+  - `engine?`: `'code'` (default; in-memory JS, works in browser and Node.js) or `'duckdb'` (Node.js only; SQL, required for `loadSource` and large datasets)
 
 Core APIs in AVA:
 
 - `loadCSV(filePathOrContent)`: load CSV (Node.js: file path; Browser: CSV content string).
 - `loadObject(data)` / `loadURL(url, transform?)` / `loadText(text)`: load data into AVA.
+- `loadSource(config)`: load external data into DuckDB (Node.js only) — `{ type, options }` where `type` is `csv | json | parquet` (file source: `options: { path, headers? }`, a local path or http(s) URL such as OSS signed links), or a reserved database type (`mysql | postgre`).
 - `suggest(count?)`: generate recommended analysis questions.
-- `analysis(query)`: run data analysis and return `{ query, text, data, code?, sql? }` (`code` for in-memory JS analysis, `sql` for SQLite analysis).
+- `analysis(query)`: run data analysis and return `{ query, text, data, engine, dsl? }` — `dsl` is the executed JS code or DuckDB SQL, `engine` identifies the engine (`'code' | 'duckdb'`).
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
-- `dispose()`: release SQLite / IndexedDB and in-memory resources.
+- `dispose()`: release engine resources (in-memory data, DuckDB instance, temp files).
 
 Minimal usage:
 
@@ -151,7 +155,7 @@ ava.dispose();
 
 ## 🏗️ Architecture
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, or text), analyzed intelligently based on size (JavaScript for small datasets, SQLite for large ones), results are summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
+AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, text, or external files) as a unified DataSource, then analyzed by the configured engine (`code`: in-memory JavaScript; `duckdb`: SQL), summarized using LLM into natural language responses, and optionally visualized with chart recommendations. The analysis API is agnostic to which engine executes the query.
 
 ```
 User Query
@@ -164,28 +168,19 @@ AVA Instance
 │                 │   • JSON Object (loadObject)
 │                 │   • URL (loadURL)
 │                 │   • Text (loadText + LLM)
+│                 │   • Local/remote file (loadSource + DuckDB)
 └─────────────────┘
     ↓
 ┌──────────────────┐
 │ Metadata Extract │ → Type inference, statistics
 └──────────────────┘
     ↓
-┌──────────────┐
-│  Size Check  │
-└──────────────┘
-    ↓         ↓
- <10KB      ≥10KB
-    ↓         ↓
-JavaScript  ┌──────────────┐
- Helpers    │ Env Check    │
-            └──────────────┘
-                ↓         ↓
-            Browser    Node.js
-                ↓         ↓
-            IndexedDB  SQLite
-                ↓         ↓
 ┌──────────────────┐
-│ Analysis Module  │ → Generate & Execute Code/SQL
+│  Engine (config) │ → 'code' (default): in-memory JS, browser + Node.js
+└──────────────────┘   'duckdb': SQL via DuckDB, Node.js only
+    ↓
+┌──────────────────┐
+│ Analysis Module  │ → Generate & Execute Code/SQL (engine-agnostic)
 └──────────────────┘
     ↓
 ┌──────────────┐
@@ -208,21 +203,19 @@ User Response
 AVA v4 is designed to run seamlessly in both browser and Node.js environments:
 
 ### ✅ Browser Support
-- All core features work in modern browsers (Chrome, Firefox, Safari, Edge)
+- All core features work in modern browsers (Chrome, Firefox, Safari, Edge) with the default `code` engine
 - CSV loading via File API or direct content strings
 - JSON object and URL loading fully supported
-- In-memory data processing for datasets under 10KB
-- Note: Uses IndexedDB for persistent storage of large datasets (default >10KB) in browsers; for extremely large datasets, use the server-side version to avoid memory pressure
+- In-memory data processing only; for large datasets use Node.js with the `duckdb` engine
 
 ### ✅ Node.js Support
-- Full feature set including large dataset handling with SQLite
-- File system access for CSV loading
-- Automatic switching between in-memory and SQLite based on data size (10KB threshold)
+- Full feature set with both engines: `code` (in-memory JS) and `duckdb` (SQL)
+- File system access for CSV loading, plus remote files (csv/json/parquet) via `loadSource` (requires `engine: 'duckdb'`)
 
-### Environment Detection
-AVA automatically detects the runtime environment and adapts:
-- **Browser**: Uses in-memory processing, accepts CSV content strings
-- **Node.js**: Supports file paths for CSV, uses SQLite for large datasets (>10KB)
+### Engine Selection
+The engine is chosen explicitly via config — `analysis()` behaves the same either way:
+- **`code` (default)**: data stays in memory, LLM generates JavaScript. Works everywhere.
+- **`duckdb`**: data lives in an in-memory DuckDB instance, LLM generates SQL. Node.js only; required for file/remote sources.
 
 ## 🤝 Developer Contributions
 
@@ -232,6 +225,10 @@ This is an experimental branch. Contributions are welcome! Please ensure:
 - TypeScript types are properly defined
 - New features include examples, and tests
 - READMEs are updated as needed
+
+### Running tests with an LLM
+
+Copy `.env.example` to `.env` and fill in `OPENAI_LLM_API_KEY` (optionally `OPENAI_LLM_MODEL` / `OPENAI_LLM_BASE_URL`). Vitest loads `.env` through `vitest.setup.ts`, so `npm test` picks it up with no extra flags. Without a key the LLM-dependent suites are reported as **skipped**, and the rest of the suite still runs offline.
 
 ## 🔗 Related Projects
 

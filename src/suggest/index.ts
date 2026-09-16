@@ -5,7 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { formatDatasetInfo } from '../data';
+import { formatDatasetInfo } from '../code';
 
 import type { LLMConfig, DatasetInfo, SuggestResult } from '../types';
 

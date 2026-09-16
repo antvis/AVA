@@ -91,7 +91,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   }, [avaInstance]);
 
   // Get analysis code (JavaScript or SQL)
-  const analysisCode = result?.code || result?.sql;
+  const analysisCode = result?.dsl;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
@@ -212,7 +212,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
           {/* Collapsible Code Block - Moved above summary text */}
           {showCode && analysisCode && (
             <div className="mb-4">
-              <h5 className="text-xs font-medium text-gray-500 mb-2">{result?.sql ? 'SQL Query' : 'Analysis Code'}</h5>
+              <h5 className="text-xs font-medium text-gray-500 mb-2">{result?.engine === 'duckdb' ? 'SQL Query' : 'Analysis Code'}</h5>
               <pre className="p-4 bg-gray-900 text-gray-100 rounded-xl text-xs overflow-x-auto">{analysisCode}</pre>
             </div>
           )}

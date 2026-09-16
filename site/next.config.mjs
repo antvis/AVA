@@ -10,7 +10,7 @@ const nextConfig = {
   // Configure Turbopack to handle Node.js modules
   turbopack: {
     resolveAlias: {
-      'better-sqlite3': './stubs/better-sqlite3.js',
+      '@duckdb/node-api': './stubs/duckdb-node-api.js',
     },
   },
   webpack: (config, { isServer }) => {
@@ -18,7 +18,7 @@ const nextConfig = {
     if (!isServer) {
       config.resolve.alias = {
         ...config.resolve.alias,
-        'better-sqlite3': require.resolve('./stubs/better-sqlite3.js'),
+        '@duckdb/node-api': require.resolve('./stubs/duckdb-node-api.js'),
       };
       config.resolve.fallback = {
         ...config.resolve.fallback,

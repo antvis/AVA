@@ -1,14 +1,8 @@
 /**
- * Data module for loading and processing data
+ * Metadata extraction and formatting for in-memory data
  */
 
 import type { FieldMetadata, DatasetInfo } from '../types';
-
-// Re-export data loading functions from individual modules
-export { loadCSV } from './csv';
-export { loadObject } from './json';
-export { loadURL } from './url';
-export { loadText } from './text';
 
 /**
  * Infer field type from sample values

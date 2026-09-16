@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { describe, it, expect, beforeAll } from 'vitest';
 
-import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from '../src/data';
+import { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from '../src/code';
 
 interface CompanyData {
   company: string;

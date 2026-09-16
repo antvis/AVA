@@ -3,21 +3,18 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { AVA } from '../src';
+import { executeDataCode, generateDataCode } from '../src/code';
+import { DuckDBStore, generateSQL } from '../src/duckdb';
 
-import { SQLiteDataStore, executeDataCode, generateSQL, generateDataCode } from '../src/analysis';
+import { getLLMConfig, skipLLMTests } from './test-utils';
 
 describe('Analysis Module', () => {
-  const getLLMConfig = () => ({
-    model: 'ling-1t',
-    apiKey: process.env.LING_1T_API_KEY || '',
-    baseURL: 'https://api.tbox.cn/api/llm/v1',
-  });
-
-  describe('SQLiteDataStore', () => {
-    let store: SQLiteDataStore;
+  describe('DuckDBStore', () => {
+    let store: DuckDBStore;
 
     beforeEach(() => {
-      store = new SQLiteDataStore();
+      store = new DuckDBStore();
     });
 
     afterEach(() => {
@@ -31,7 +28,7 @@ describe('Analysis Module', () => {
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      await store.loadData(testData);
+      await store.registerData(testData);
       const result = await store.query('SELECT * FROM data');
       
       expect(result).toBeDefined();
@@ -39,7 +36,7 @@ describe('Analysis Module', () => {
     });
 
     it('should handle empty data', async () => {
-      await store.loadData([]);
+      await store.registerData([]);
       const schema = await store.getSchema();
       expect(schema).toBeDefined();
     });
@@ -51,7 +48,7 @@ describe('Analysis Module', () => {
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      await store.loadData(testData);
+      await store.registerData(testData);
       const result = await store.query("SELECT * FROM data WHERE city = 'NYC'");
       
       expect(result.length).toBe(2);
@@ -64,7 +61,7 @@ describe('Analysis Module', () => {
         { name: 'Charlie', age: 35, city: 'NYC' },
       ];
 
-      await store.loadData(testData);
+      await store.registerData(testData);
       const result = await store.query('SELECT COUNT(*) as count FROM data');
       
       expect(result[0].count).toBe(3);
@@ -72,7 +69,7 @@ describe('Analysis Module', () => {
 
     it('should get schema info', async () => {
       const testData = [{ name: 'Alice', age: 30 }];
-      await store.loadData(testData);
+      await store.registerData(testData);
       
       const schema = await store.getSchema();
       expect(schema).toContain('name');
@@ -209,67 +206,36 @@ describe('Analysis Module', () => {
     });
   });
 
-  describe('generateSQL', () => {
+  describe.skipIf(skipLLMTests)('generateSQL', () => {
     it('should generate SQL query for simple query', async () => {
-      const apiKey = process.env.LING_1T_API_KEY;
-      if (!apiKey) {
-        // eslint-disable-next-line no-console
-        console.log('Skipping LLM test: LING_1T_API_KEY not set');
-        return;
-      }
-
       const llmConfig = getLLMConfig();
       const schema = 'company (TEXT), region (TEXT), revenue (TEXT)';
       const query = 'Show all companies';
       
-      try {
-        const sql = await generateSQL(llmConfig, schema, query);
-        
-        expect(sql).toBeDefined();
-        expect(typeof sql).toBe('string');
-        expect(sql.toLowerCase()).toContain('select');
-        expect(sql.toLowerCase()).toContain('from');
-      } catch (error) {
-        // If the API fails, skip the test rather than failing
-        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
-      }
+      const sql = await generateSQL(llmConfig, schema, query);
+
+      expect(sql).toBeDefined();
+      expect(typeof sql).toBe('string');
+      expect(sql.toLowerCase()).toContain('select');
+      expect(sql.toLowerCase()).toContain('from');
     }, 30000);
 
     it('should generate SQL with aggregation', async () => {
-      const apiKey = process.env.LING_1T_API_KEY;
-      if (!apiKey) {
-        // eslint-disable-next-line no-console
-        console.log('Skipping LLM test: LING_1T_API_KEY not set');
-        return;
-      }
-
       const llmConfig = getLLMConfig();
       const schema = 'company (TEXT), region (TEXT), revenue (TEXT)';
       const query = 'What is the average revenue by region?';
       
-      try {
-        const sql = await generateSQL(llmConfig, schema, query);
-        
-        expect(sql).toBeDefined();
-        expect(typeof sql).toBe('string');
-        expect(sql.length).toBeGreaterThan(0);
-        expect(sql.toLowerCase()).toContain('select');
-      } catch (error) {
-        // If the API fails, skip the test rather than failing
-        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
-      }
+      const sql = await generateSQL(llmConfig, schema, query);
+
+      expect(sql).toBeDefined();
+      expect(typeof sql).toBe('string');
+      expect(sql.length).toBeGreaterThan(0);
+      expect(sql.toLowerCase()).toContain('select');
     }, 30000);
   });
 
-  describe('generateDataCode', () => {
+  describe.skipIf(skipLLMTests)('generateDataCode', () => {
     it('should generate JavaScript code for aggregation', async () => {
-      const apiKey = process.env.LING_1T_API_KEY;
-      if (!apiKey) {
-        // eslint-disable-next-line no-console
-        console.log('Skipping LLM test: LING_1T_API_KEY not set');
-        return;
-      }
-
       const llmConfig = getLLMConfig();
       const dataInfo = `Dataset Info:
 - Rows: 12
@@ -281,26 +247,14 @@ Fields:
       
       const query = 'What is the total revenue?';
       
-      try {
-        const code = await generateDataCode(llmConfig, dataInfo, query);
-        
-        expect(code).toBeDefined();
-        expect(typeof code).toBe('string');
-        expect(code).toContain('result');
-      } catch (error) {
-        // If the API fails, skip the test rather than failing
-        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
-      }
+      const code = await generateDataCode(llmConfig, dataInfo, query);
+
+      expect(code).toBeDefined();
+      expect(typeof code).toBe('string');
+      expect(code).toContain('result');
     }, 30000);
 
     it('should generate code for grouping operation', async () => {
-      const apiKey = process.env.LING_1T_API_KEY;
-      if (!apiKey) {
-        // eslint-disable-next-line no-console
-        console.log('Skipping LLM test: LING_1T_API_KEY not set');
-        return;
-      }
-
       const llmConfig = getLLMConfig();
       const dataInfo = `Dataset Info:
 - Rows: 12
@@ -312,29 +266,16 @@ Fields:
       
       const query = 'Group companies by region';
       
-      try {
-        const code = await generateDataCode(llmConfig, dataInfo, query);
-        
-        expect(code).toBeDefined();
-        expect(code).toContain('result');
-        expect(code.toLowerCase()).toContain('group');
-      } catch (error) {
-        // If the API fails, skip the test rather than failing
-        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
-      }
+      const code = await generateDataCode(llmConfig, dataInfo, query);
+
+      expect(code).toBeDefined();
+      expect(code).toContain('result');
+      expect(code.toLowerCase()).toContain('group');
     }, 30000);
   });
 
-  describe('Visualization Intent Detection', () => {
+  describe.skipIf(skipLLMTests)('Visualization Intent Detection', () => {
     it('should detect visualization intent and generate HTML', async () => {
-      const apiKey = process.env.LING_1T_API_KEY;
-      if (!apiKey) {
-        // eslint-disable-next-line no-console
-        console.log('Skipping LLM integration test: LING_1T_API_KEY not set');
-        return;
-      }
-
-      const { AVA } = await import('../src');
       const ava = new AVA({
         llm: getLLMConfig(),
       });
@@ -359,35 +300,28 @@ Fields:
         expect(response.text).toBeDefined();
         expect(typeof response.text).toBe('string');
         expect(response.data).toBeDefined();
-        expect(Array.isArray(response.data)).toBe(true);
+        expect(response.data).not.toBeNull();
+        // The shape is decided by the LLM-generated code: a row array for tabular queries, an
+        // aggregate object for scalar ones. visualize() accepts both (see
+        // formatDatasetInfoWithNonArray), so Array.isArray is deliberately not asserted here —
+        // the visualize assertions below are the real signal.
 
-        // Verify visualization was generated
-        expect(response.visualizationHTML).toBeDefined();
-        expect(typeof response.visualizationHTML).toBe('string');
-        expect(response.visualizationHTML!.length).toBeGreaterThan(0);
-        expect(response.visualizationHTML).toContain('<!DOCTYPE html>');
-        expect(response.visualizationHTML).toContain('GPT-Vis');
-
-        // Verify syntax was extracted
-        expect(response.visualizationSyntax).toBeDefined();
-        expect(typeof response.visualizationSyntax).toBe('string');
-      } catch (error) {
-        // If the API fails, skip the test rather than failing
-        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+        // Verify visualization can be generated from the analysis result
+        const vis = await ava.visualize(response);
+        expect(vis).not.toBeNull();
+        expect(vis!.chartType).toBeDefined();
+        expect(typeof vis!.syntax).toBe('string');
+        expect(vis!.html.length).toBeGreaterThan(0);
+        expect(vis!.html).toContain('<!DOCTYPE html>');
+        // The standalone HTML must load the gpt-vis UMD bundle and mount the class (see wrapSyntaxInHTML)
+        expect(vis!.html).toContain('@antv/gpt-vis/dist/umd/index.min.js');
+        expect(vis!.html).toContain('new GPTVis.GPTVis');
       } finally {
-        ava.dispose();
+        await ava.dispose();
       }
     }, 60000); // Increased timeout for LLM calls
 
     it('should not generate visualization for non-visualization queries', async () => {
-      const apiKey = process.env.LING_1T_API_KEY;
-      if (!apiKey) {
-        // eslint-disable-next-line no-console
-        console.log('Skipping LLM integration test: LING_1T_API_KEY not set');
-        return;
-      }
-
-      const { AVA } = await import('../src');
       const ava = new AVA({
         llm: getLLMConfig(),
       });
@@ -408,14 +342,12 @@ Fields:
         expect(response.text).toBeDefined();
         expect(typeof response.text).toBe('string');
 
-        // Should not generate visualization for simple query
-        expect(response.visualizationHTML).toBeUndefined();
-        expect(response.visualizationSyntax).toBeUndefined();
-      } catch (error) {
-        // If the API fails, skip the test rather than failing
-        console.log('Skipping test due to API error:', error instanceof Error ? error.message : String(error));
+        // Analysis result carries no visualization; the advisor declines simple queries
+        expect(response).not.toHaveProperty('visualizationHTML');
+        const vis = await ava.visualize(response);
+        expect(vis).toBeNull();
       } finally {
-        ava.dispose();
+        await ava.dispose();
       }
     }, 60000);
   });

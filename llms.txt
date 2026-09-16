@@ -11,7 +11,7 @@ AVA, a complete rewrite focused on **AI-native Visual Analytics**. The first **A
 - **Natural Language Queries**: Ask questions about your data in plain English
 - **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
-- **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
+- **Smart Data Handling**: Automatically chooses between in-memory processing and DuckDB based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
 - **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
 
@@ -27,7 +27,7 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  sqlThreshold: 1024 * 1024 * 2, // Threshold for switching to SQLite
+  engine: 'duckdb', // 'code' (default, in-memory JS, browser-compatible) | 'duckdb' (Node.js, SQL)
 });
 
 // Load data from various sources
@@ -57,10 +57,10 @@ ava.dispose();
 
 AVA uses a modular pipeline architecture that processes user queries through distinct stages:
 
-1. **Data Module**: Load from multiple sources (CSV, JSON, URL, or text)
+1. **Data Module**: Load from multiple sources (CSV, JSON, URL, text, or external files via loadSource) as a unified DataSource
 2. **Metadata Extract**: Type inference, statistics
-3. **Size Check**: Below threshold uses JavaScript helpers, above threshold uses SQLite storage (default threshold: 10KB, configurable)
-4. **Analysis Module**: Generate & Execute Code/SQL
+3. **Engine**: Explicitly configured via `engine` option — 'code' (default, in-memory JS, browser-compatible) or 'duckdb' (Node.js only, SQL, required for file/remote sources)
+4. **Analysis Module**: Generate & Execute Code/SQL (engine-agnostic API)
 5. **LLM Summary**: Natural Language Response
 6. **Visualization Module (Optional)**: Chart generation with type detection and recommendation
 
@@ -74,6 +74,7 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 - `loadObject(data: object[])` - Load data from array of objects
 - `loadURL(url: string, transform?: Function)` - Load data from URL
 - `loadText(text: string)` - Extract data from unstructured text using LLM
+- `loadSource(config)` - Load external data into DuckDB (Node.js only, requires `engine: 'duckdb'`); `{ type, options }` where `type` is `'csv' | 'json' | 'parquet'` (file source: `options: { path, headers? }`, a local path or http(s) URL) or a reserved database type `'mysql' | 'postgre'`
 
 ### Query Suggestions
 - `suggest(count?: number)` - Get AI-recommended analysis queries based on dataset characteristics (default: 3)
@@ -83,7 +84,7 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 
 ### Analysis
 - `analysis(query: string)` - Analyze data with natural language query
-  - Returns: `{ text, code, sql, visualizationHTML }`
+  - Returns: `{ query, text, data, code?, sql? }` (`code` from the code engine, `sql` from the duckdb engine)
 
 ### Cleanup
 - `dispose()` - Clean up resources and close database connections
@@ -93,21 +94,20 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 ### Browser Support
 - All core features work in modern browsers (Chrome, Firefox, Safari, Edge)
 - CSV loading via File API or direct content strings
-- In-memory data processing only (SQLite not available)
-- For best browser performance, keep datasets small or increase sqlThreshold
+- In-memory data processing only (the `code` engine; DuckDB is not available in browsers)
+- For best browser performance, keep datasets small; use Node.js with `engine: 'duckdb'` for large datasets
 
 ### Node.js Support
-- Full feature set including large dataset handling with SQLite
+- Full feature set including large dataset handling with DuckDB and remote files (loadSource)
 - File system access for CSV loading
-- Automatic switching between in-memory and SQLite based on data size
-- Default threshold: 10KB (configurable via sqlThreshold option)
+- Choose the engine explicitly: 'code' (default, in-memory JS) or 'duckdb' (SQL, large datasets and files)
 
 ## Best Practices
 
 - Always call `ava.dispose()` when done to free resources
 - Wrap async calls in try-catch blocks for error handling
 - Validate data format before loading
-- Set sqlThreshold based on expected data sizes
+- Use `engine: 'duckdb'` in Node.js for large datasets or file/remote sources
 - Never expose API keys in client-side code
 
 ## Resources

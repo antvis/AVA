@@ -14,7 +14,7 @@ async function main() {
   const ava = new AVA({
     llm: {
       model: 'ling-1t',
-      apiKey: process.env.API_KEY || 'YOUR_API_KEY',
+      apiKey: process.env.OPENAI_LLM_API_KEY || 'YOUR_API_KEY',
       baseURL: 'https://api.tbox.cn/api/llm/v1',
     },
   });

@@ -6,6 +6,7 @@ import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import {
+  CodeEngine,
   loadCSV,
   loadObject,
   loadURL,
@@ -13,22 +14,25 @@ import {
   extractMetadata,
   formatDatasetInfo,
   formatDatasetInfoWithNonArray,
-} from './data';
-import { SQLiteDataStore, IndexedDBDataStore, executeDataCode, generateSQL, generateDataCode } from './analysis';
+} from './code';
+import { DuckDBEngine, resolveSource } from './duckdb';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 
 import type {
+  AnalysisEngine,
   AVAConfig,
   LLMConfig,
+  EngineType,
+  DataSource,
+  DataSourceConfig,
   DatasetInfo,
   AnalysisResponse,
   VisualizeResponse,
   SuggestResult,
 } from './types';
 
-const DEFAULT_SQL_THRESHOLD = 10 * 1024; // 10KB
-const MAX_IN_MEMORY_BYTES = 20 * 1024 * 1024; // 20MB — browser is not a big-data environment
+const DEFAULT_ENGINE: EngineType = 'code';
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -42,189 +46,118 @@ function hasData(data: unknown): boolean {
 }
 
 /**
- * Main AVA class for AI-native visual analytics
+ * Main AVA class for AI-native visual analytics.
+ * Data loading produces a DataSource; analysis() delegates to the configured
+ * engine ('code' | 'duckdb') and is agnostic to how queries are executed.
  */
 export class AVA {
   private readonly llmConfig: LLMConfig;
-  private readonly sqlThreshold: number;
-  private data: any[] | null = null;
+  private readonly engineType: EngineType;
+  private engine: AnalysisEngine | null = null;
   private dataInfo: DatasetInfo | null = null;
-  private sqliteStore: SQLiteDataStore | null = null;
-  private indexedDBStore: IndexedDBDataStore | null = null;
 
   constructor(config: AVAConfig) {
     this.llmConfig = config.llm;
-    this.sqlThreshold = config.sqlThreshold || DEFAULT_SQL_THRESHOLD;
+    this.engineType = config.engine ?? DEFAULT_ENGINE;
+  }
+
+  /**
+   * Load a data source into the configured engine.
+   * Reloading disposes the previous engine and its resources.
+   */
+  private async load(source: DataSource): Promise<DatasetInfo> {
+    await this.engine?.dispose();
+
+    this.engine =
+      this.engineType === 'duckdb' ? new DuckDBEngine(this.llmConfig) : new CodeEngine(this.llmConfig);
+    try {
+      this.dataInfo = await this.engine.load(source);
+    } catch (error) {
+      await this.engine.dispose();
+      this.engine = null;
+      throw error;
+    }
+    return this.dataInfo;
   }
 
   /**
    * Load CSV file
-   * @returns The loaded structured data
+   * @returns Dataset metadata
    */
-  async loadCSV(filePath: string): Promise<any[]> {
-    this.data = await loadCSV(filePath);
-    const loadedData = [...this.data];
-    await this.processLoadedData();
-    return loadedData;
+  async loadCSV(filePath: string): Promise<DatasetInfo> {
+    return this.load({ kind: 'inline', data: await loadCSV(filePath) });
   }
 
   /**
    * Load data from JSON object array
-   * @returns The loaded structured data
+   * @returns Dataset metadata
    */
-  async loadObject(data: any[]): Promise<any[]> {
-    this.data = await loadObject(data);
-    const loadedData = [...this.data];
-    await this.processLoadedData();
-    return loadedData;
+  async loadObject(data: any[]): Promise<DatasetInfo> {
+    return this.load({ kind: 'inline', data: await loadObject(data) });
   }
 
   /**
    * Load data from URL
-   * @returns The loaded structured data
+   * @returns Dataset metadata
    */
-  async loadURL(url: string, transform?: (response: any) => any[]): Promise<any[]> {
-    this.data = await loadURL(url, transform);
-    const loadedData = [...this.data];
-    await this.processLoadedData();
-    return loadedData;
+  async loadURL(url: string, transform?: (response: any) => any[]): Promise<DatasetInfo> {
+    return this.load({ kind: 'inline', data: await loadURL(url, transform) });
   }
 
   /**
    * Load data from text using LLM
-   * @returns The loaded structured data
+   * @returns Dataset metadata
    */
-  async loadText(text: string): Promise<any[]> {
-    this.data = await loadText(text, this.llmConfig);
-    const loadedData = [...this.data];
-    await this.processLoadedData();
-    return loadedData;
+  async loadText(text: string): Promise<DatasetInfo> {
+    return this.load({ kind: 'inline', data: await loadText(text, this.llmConfig) });
   }
 
   /**
-   * Check if IndexedDB is available in the current environment
+   * Load an external data source into DuckDB (Node.js only, requires engine: 'duckdb').
+   * File sources (csv/json/parquet) may be local paths or http(s) URLs — remote files
+   * are downloaded first, so OSS/S3 signed URLs work through the same path.
+   * Database sources (mysql/postgre) are reserved and not implemented yet.
+   * Data is never materialized into JS memory.
+   * @returns Dataset metadata inferred by DuckDB
+   * @example
+   * ```typescript
+   * const ava = new AVA({ llm, engine: 'duckdb' });
+   * await ava.loadSource({ type: 'csv', options: { path: './data/companies.csv' } });
+   * await ava.loadSource({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
+   * await ava.loadSource({ type: 'csv', options: { path: signedOssUrl, headers: { ... } } });
+   * ```
    */
-  private hasIndexedDB(): boolean {
-    // eslint-disable-next-line no-undef
-    return typeof window !== 'undefined' && 'indexedDB' in window;
-  }
-
-  /**
-   * Process loaded data: extract metadata and load into storage if large
-   * Uses SQLite for Node.js, IndexedDB for browser (with fallback to memory)
-   */
-  private async processLoadedData(): Promise<void> {
-    if (!this.data) {
-      throw new Error('No data to process');
+  async loadSource(source: DataSourceConfig): Promise<DatasetInfo> {
+    if (this.engineType !== 'duckdb') {
+      throw new Error('loadSource requires engine: "duckdb" — file/remote sources are queried via DuckDB SQL.');
     }
-
-    this.dataInfo = extractMetadata(this.data);
-
-    // If data is large, load into appropriate storage
-    if (this.dataInfo.sizeInBytes > this.sqlThreshold) {
-      const isNode = typeof window === 'undefined';
-
-      if (isNode) {
-        // Node.js environment: use SQLite
-        this.sqliteStore = new SQLiteDataStore();
-        await this.sqliteStore.loadData(this.data);
-        // Clear data from memory to save space
-        this.data = null;
-      } else if (this.hasIndexedDB()) {
-        // Browser environment with IndexedDB support
-        this.indexedDBStore = new IndexedDBDataStore();
-        await this.indexedDBStore.loadData(this.data);
-        // Clear data from memory to save space
-        this.data = null;
-      } else {
-        // Browser without IndexedDB: keep in memory with warning
-        // eslint-disable-next-line no-console
-        console.warn(
-          '[AVA] IndexedDB is not available in this environment. ' +
-            'Large datasets may cause memory issues. ' +
-            'Consider using a modern browser or reducing data size.'
-        );
-        // Keep data in memory (this.data remains set)
-      }
-    } else {
-      // Data is small — clean up stale store references from previous loads
-      if (this.sqliteStore) {
-        this.sqliteStore.close();
-        this.sqliteStore = null;
-      }
-      if (this.indexedDBStore) {
-        await this.indexedDBStore.deleteDatabase();
-        this.indexedDBStore = null;
-      }
-    }
+    return this.load(await resolveSource(source));
   }
 
   /**
    * Analyze data using natural language query.
-   * Returns analysis results (text summary + data + code/sql).
+   * Delegates execution to the configured engine (code or duckdb).
    * Use visualize() separately to generate charts from the analysis result.
    */
   async analysis(query: string): Promise<AnalysisResponse> {
-    if (!this.dataInfo) {
+    if (!this.engine || !this.dataInfo) {
       throw new Error(
-        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).'
+        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, loadText, or loadSource).'
       );
     }
 
-    let analysisData: any = undefined;
-    let analysisCode: string | undefined;
-    let analysisSql: string | undefined;
-    const dataInfoStr = formatDatasetInfo(this.dataInfo);
-
-    // Use SQLite for large datasets in Node.js
-    if (this.sqliteStore) {
-      const schema = await this.sqliteStore.getSchema();
-
-      const sql = await generateSQL(this.llmConfig, schema, query);
-      analysisSql = sql;
-
-      analysisData = await this.sqliteStore.query(sql);
-    } else if (this.indexedDBStore) {
-      // Use IndexedDB for large datasets in browser
-      const estimatedBytes = await this.indexedDBStore.estimateMemorySize();
-
-      if (estimatedBytes > MAX_IN_MEMORY_BYTES) {
-        throw new Error(
-          'Dataset too large for browser analysis ' +
-            `(estimated ${(estimatedBytes / 1024 / 1024).toFixed(1)}MB). ` +
-            'The browser environment is not suitable for large-scale data processing. ' +
-            'Please use the Node.js backend (SQLite) for full-dataset analysis, ' +
-            'or reduce the data size before loading.'
-        );
-      }
-
-      const data = await this.indexedDBStore.getAllData();
-
-      const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
-      analysisCode = code;
-
-      analysisData = await executeDataCode(data, code);
-    } else {
-      // Use JavaScript for small datasets
-      if (!this.data) {
-        throw new Error('Data not available in memory.');
-      }
-
-      const code = await generateDataCode(this.llmConfig, dataInfoStr, query);
-      analysisCode = code;
-
-      analysisData = await executeDataCode(this.data, code);
-    }
+    const dsl = await this.engine.getDSL(query);
+    const data = await this.engine.execute(dsl);
 
     // Summarize the result using LLM
-    const summary = await this.summarizeResult(query, analysisData);
+    const summary = await this.summarizeResult(query, data);
 
     return {
       query,
       text: summary,
-      data: analysisData,
-      code: analysisCode,
-      sql: analysisSql,
+      data,
+      engine: this.engineType,
+      dsl,
     };
   }
 
@@ -309,7 +242,7 @@ Provide a natural language summary of the result. If the result is tabular data,
   async suggest(count: number = 3): Promise<SuggestResult[]> {
     if (!this.dataInfo) {
       throw new Error(
-        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, or loadText).'
+        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, loadText, or loadSource).'
       );
     }
 
@@ -317,18 +250,11 @@ Provide a natural language summary of the result. If the result is tabular data,
   }
 
   /**
-   * Clean up resources
+   * Clean up resources (engine storage, temp files)
    */
-  dispose(): void {
-    if (this.sqliteStore) {
-      this.sqliteStore.close();
-      this.sqliteStore = null;
-    }
-    if (this.indexedDBStore) {
-      this.indexedDBStore.close();
-      this.indexedDBStore = null;
-    }
-    this.data = null;
+  async dispose(): Promise<void> {
+    await this.engine?.dispose();
+    this.engine = null;
     this.dataInfo = null;
   }
 }

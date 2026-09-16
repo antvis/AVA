@@ -31,7 +31,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
     return new AVA({
       llm: llmConfig,
-      sqlThreshold: 1024 * 1024 * 3, // 3MB threshold — data above this goes to IndexedDB
+      // default 'code' engine: in-memory JS analysis, browser-compatible
     });
   }, [llmConfig]);
 

@@ -75,9 +75,9 @@ export const loadAppState = (): Partial<AppState> => {
 const MAX_DATA_SERIALIZED_SIZE = 3 * 1024 * 1024; // 3MB
 
 // Save application state to localStorage
-// Large datasets are not persisted here — they are already stored in
-// IndexedDB via the AVA instance, so duplicating them in localStorage
-// would exceed its quota and cause QuotaExceededError.
+// Large datasets are not persisted here — the AVA instance holds them
+// in memory, so duplicating them in localStorage would exceed its
+// quota and cause QuotaExceededError.
 export const saveAppState = (state: Partial<AppState>) => {
   if (typeof window === 'undefined') return;
   try {

@@ -5,14 +5,14 @@
  * to get AI-recommended analysis queries based on your data.
  */
 
-import { AVA } from '@antv/ava';
+import { AVA } from '../src';
 
 async function main() {
   // Initialize AVA with LLM config
   const ava = new AVA({
     llm: {
       model: 'ling-1t',
-      apiKey: process.env.LING_1T_API_KEY || 'YOUR_API_KEY',
+      apiKey: process.env.OPENAI_LLM_API_KEY || 'YOUR_API_KEY',
       baseURL: 'https://api.tbox.cn/api/llm/v1',
     },
   });

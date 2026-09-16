@@ -100,7 +100,7 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  sqlThreshold: 1024 * 1024 * 2, // 2MB threshold
+  engine: 'duckdb', // 'code' (default, in-memory JS, browser-compatible) | 'duckdb' (Node.js, SQL)
 });
 
 // Load data
@@ -114,7 +114,7 @@ const result = await ava.analysis(
   'What is the average GDP?'
 );
 console.log(result.text);
-// Access: result.code, result.sql, result.data
+// Access: result.dsl, result.engine, result.data
 
 // Generate visualization from analysis result
 const viz = await ava.visualize(result);
@@ -207,8 +207,8 @@ ava.dispose();`}</pre>
                         <span className="text-gray-600">— LLM configuration (model, apiKey, baseURL)</span>
                       </div>
                       <div className="flex gap-2">
-                        <span className="text-gray-500 font-mono">sqlThreshold</span>
-                        <span className="text-gray-600">— Size threshold for SQLite (default: 10MB)</span>
+                        <span className="text-gray-500 font-mono">engine</span>
+                        <span className="text-gray-600">— 'code' (default, in-memory JS, browser-compatible) | 'duckdb' (Node.js only, SQL)</span>
                       </div>
                     </div>
                   </div>
@@ -223,6 +223,7 @@ ava.dispose();`}</pre>
                       { method: 'loadObject(data: object[])', desc: 'Load data from array of objects' },
                       { method: 'loadURL(url: string, transform?: Function)', desc: 'Load data from URL' },
                       { method: 'loadText(text: string)', desc: 'Extract data from unstructured text' },
+                      { method: 'loadSource(config: { type, options })', desc: 'Load external data into DuckDB (Node.js only, requires engine: duckdb)' },
                     ].map((item, idx) => (
                       <div key={idx} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                         <code className="text-sm text-[#78d3f8] block mb-2">{item.method}</code>
@@ -369,7 +370,7 @@ const result = await ava.analysis('Compare by region');`}</pre>
                   'Always call ava.dispose() when done to free resources',
                   'Wrap async calls in try-catch blocks for error handling',
                   'Validate data format before loading',
-                  'Set sqlThreshold based on expected data sizes',
+                  "Use engine: 'duckdb' in Node.js for large datasets or file/remote sources",
                   'Never expose API keys in client-side code',
                 ].map((practice, idx) => (
                   <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
