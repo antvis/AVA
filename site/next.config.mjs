@@ -11,6 +11,8 @@ const nextConfig = {
   turbopack: {
     resolveAlias: {
       '@duckdb/node-api': './stubs/duckdb-node-api.js',
+      ssh2: './stubs/node-module.js',
+      'adm-zip': './stubs/node-module.js',
     },
   },
   webpack: (config, { isServer }) => {

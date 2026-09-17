@@ -3,9 +3,7 @@
  * file for DuckDB to read.
  */
 
-import { removeTempFile, writeTempFile } from '../../util/file';
-
-import { fileSource } from '../util/file';
+import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
 import type { JsonSourceOptions, LoadedSource } from '../../types';
 

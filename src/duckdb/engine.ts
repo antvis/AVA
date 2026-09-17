@@ -13,8 +13,6 @@ import { coerceNumbers } from '../util/coerce';
 import { mapFieldType, stringifySchema } from '../util/schema';
 import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 
-import { loadSource } from './loaders';
-
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
   AnalysisEngine,
@@ -110,6 +108,7 @@ export class DuckDBEngine implements AnalysisEngine {
 
   async load(config: DataSourceConfig): Promise<Schema> {
     try {
+      const { loadSource } = await import('./loaders');
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
       this.tableNames = await source.register(conn);

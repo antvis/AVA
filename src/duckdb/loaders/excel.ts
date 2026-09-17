@@ -8,7 +8,7 @@ import { dirname } from 'node:path';
 
 import AdmZip from 'adm-zip';
 
-import { downloadToTempFile, removeTempFile } from '../../util/file';
+import { downloadToTempFile, removeTempFile } from '../util/file';
 import { escapeSql, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
 import type { ExcelSourceOptions, LoadedSource } from '../../types';

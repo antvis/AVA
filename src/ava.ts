@@ -5,9 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { DuckDBEngine } from './duckdb';
 import { InterpreterEngine } from './interpreter';
-import { SupabaseEngine } from './saas';
 import { extractDataSchema, stringifySchema } from './util/schema';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
@@ -43,7 +41,7 @@ function hasData(data: unknown): boolean {
 export class AVA {
   private readonly llmConfig: LLMConfig;
   private readonly engineConfig: EngineConfig;
-  private engine: AnalysisEngine | null = null;
+  engine: AnalysisEngine | null = null;
   private schema: Schema | null = null;
 
   constructor(config: AVAConfig) {
@@ -52,17 +50,20 @@ export class AVA {
   }
 
   /**
-   * Instantiate the engine selected by the engine config. A supabase data
-   * source always routes to the SupabaseEngine regardless of the configured
-   * engine, since its data never leaves the SaaS.
+   * Instantiate the engine selected by the engine config.
+   * DuckDB and Supabase engines are Node-only and lazily imported so that
+   * browser bundles (interpreter engine) never pull in their dependencies.
    */
-  private createEngine(): AnalysisEngine {
+  private async createEngine(): Promise<AnalysisEngine> {
     switch (this.engineConfig.type) {
       case 'interpreter':
         return new InterpreterEngine(this.llmConfig);
-      case 'supabase':
+      case 'supabase': {
+        const { SupabaseEngine } = await import('./saas');
         return new SupabaseEngine(this.llmConfig);
+      }
       case 'duckdb': {
+        const { DuckDBEngine } = await import('./duckdb');
         const { memoryLimit, threads, maxTempDirectorySize, queryTimeoutMs } = this.engineConfig;
         return new DuckDBEngine(this.llmConfig, {
           memoryLimit,
@@ -81,7 +82,7 @@ export class AVA {
   async load(config: DataSourceConfig): Promise<Schema> {
     await this.engine?.dispose();
 
-    this.engine = this.createEngine();
+    this.engine = await this.createEngine();
     try {
       this.schema = await this.engine.load(config);
     } catch (error) {

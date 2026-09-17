@@ -1,14 +1,14 @@
 /**
- * Unit tests for src/util/file.ts
+ * Unit tests for src/duckdb/util/file.ts
  */
 
 import * as fs from 'fs/promises';
 
 import { describe, it, expect } from 'vitest';
 
-import { writeTempFile, removeTempFile } from '../../src/util/file';
+import { writeTempFile, removeTempFile } from '../../../src/duckdb/util/file';
 
-describe('util/file', () => {
+describe('duckdb/util/file', () => {
   it('writeTempFile writes content readable from the returned path', async () => {
     const tmpFile = await writeTempFile('hello ava', 'txt');
     try {

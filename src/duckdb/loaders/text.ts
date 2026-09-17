@@ -6,9 +6,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { removeTempFile, writeTempFile } from '../../util/file';
-
-import { fileSource } from '../util/file';
+import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
 import type { LLMConfig, TextSourceOptions, LoadedSource } from '../../types';
 

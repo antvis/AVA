@@ -38,6 +38,15 @@ export class InterpreterEngine implements AnalysisEngine {
     return extractDataSchema(this.data);
   }
 
+  /**
+   * Return the loaded in-memory rows (null when nothing is loaded).
+   * Only the interpreter engine keeps data as a plain single-table array,
+   * so it is the only engine that can expose it directly.
+   */
+  getData(): any[] | null {
+    return this.data;
+  }
+
   async getDSL(query: string): Promise<string> {
     if (!this.data) {
       throw new Error('No data loaded. Please call load() first.');

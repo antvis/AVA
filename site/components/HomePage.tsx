@@ -31,6 +31,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
     return new AVA({
       llm: llmConfig,
+      engine: { type: 'interpreter' },
     });
   }, [llmConfig]);
 
@@ -51,9 +52,9 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
     if (savedState.data && savedState.data.length > 0) {
       setData(savedState.data);
 
-      // Re-instantiate AVA with the saved data so analysis can continue
+      // Re-load the saved data into the AVA instance so analysis can continue
       if (avaInstance) {
-        avaInstance.loadObject(savedState.data).catch((err) => {
+        avaInstance.load({ type: 'json', options: { data: savedState.data } }).catch((err) => {
           console.error('Failed to restore data to AVA instance:', err);
         });
       }

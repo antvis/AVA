@@ -1,18 +1,47 @@
 /**
- * Shared file-source helpers for the file-based loaders (csv-file, json-file,
- * parquet). A local file path is used directly; a remote URL is downloaded to
- * a temp file first. This module only holds utilities — each concrete loader
- * lives in its own file.
+ * File helpers for the DuckDB engine: temp file creation, remote download,
+ * cleanup, and the shared file-source helpers used by the file-based loaders
+ * (csv-file, json-file, parquet). A local file path is used directly; a remote
+ * URL is downloaded to a temp file first. Node.js only.
  */
 
-import { dirname } from 'node:path';
+import * as fs from 'node:fs/promises';
+import * as os from 'node:os';
+import { dirname, join } from 'node:path';
 
-import { downloadToTempFile, removeTempFile } from '../../util/file';
 import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
 
 import type { CSVReadOptions, FileFormat, LoadedSource } from '../../types';
 
 const noopCleanup = async (): Promise<void> => {};
+
+/** Write content to a unique temp file and return its path */
+export async function writeTempFile(content: string | Buffer, ext: string): Promise<string> {
+  const tmpFile = join(
+    os.tmpdir(),
+    `ava-source-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+  );
+  await fs.writeFile(tmpFile, content);
+  return tmpFile;
+}
+
+/** Download a remote URL to a temp file and return its path */
+export async function downloadToTempFile(
+  url: string,
+  ext: string,
+  headers?: Record<string, string>
+): Promise<string> {
+  const response = await fetch(url, { headers });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
+  }
+  return writeTempFile(Buffer.from(await response.arrayBuffer()), ext);
+}
+
+/** Delete a temp file, ignoring errors */
+export async function removeTempFile(filePath: string): Promise<void> {
+  await fs.unlink(filePath).catch(() => {});
+}
 
 /**
  * Build a LoadedSource that registers a local file as the single `data` view.

@@ -6,9 +6,7 @@
 // eslint-disable-next-line import/no-unresolved
 import { parse } from 'csv-parse/sync';
 
-import { removeTempFile, writeTempFile } from '../../util/file';
-
-import { fileSource } from '../util/file';
+import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
 import type { CSVSourceOptions, LoadedSource } from '../../types';
 
