@@ -1,3 +1,7 @@
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
@@ -15,13 +19,22 @@ const nextConfig = {
       'adm-zip': './stubs/node-module.js',
     },
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@duckdb/node-api': require.resolve('./stubs/duckdb-node-api.js'),
+      ssh2: require.resolve('./stubs/node-module.js'),
+      'adm-zip': require.resolve('./stubs/node-module.js'),
+    };
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(
+        /^node:(fs\/promises|net|os|path)$/,
+        require.resolve('./stubs/node-module.js'),
+      ),
+    );
+
     // Handle Node.js modules that should not be bundled for browser
     if (!isServer) {
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@duckdb/node-api': require.resolve('./stubs/duckdb-node-api.js'),
-      };
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
