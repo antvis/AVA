@@ -30,5 +30,6 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.9.3"
-  }
+  },
+  "repository": "https://github.com/antvis/AVA.git"
 }

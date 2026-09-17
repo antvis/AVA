@@ -19,7 +19,7 @@ import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
   AnalysisEngine,
   DataSourceConfig,
-  EngineOptions,
+  DuckDBEngineOptions,
   Schema,
   TableSchema,
   FieldMetadata,
@@ -63,7 +63,7 @@ export class DuckDBEngine implements AnalysisEngine {
 
   constructor(
     private readonly llmConfig: LLMConfig,
-    private readonly engineOptions: EngineOptions = {},
+    private readonly engineOptions: DuckDBEngineOptions = {},
   ) {}
 
   /**

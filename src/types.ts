@@ -21,7 +21,7 @@ export interface LLMConfig {
  * applies secure defaults (512MB memory, 1 thread, 30s query timeout) so a
  * runaway LLM-generated query cannot exhaust the host's memory/CPU/disk.
  */
-export interface EngineOptions {
+export interface DuckDBEngineOptions {
   /** Memory limit, e.g. '512MB'. Default '512MB'. */
   memoryLimit?: string;
   /** Number of worker threads. Default 1. */
@@ -33,13 +33,23 @@ export interface EngineOptions {
 }
 
 /**
+ * Engine selection and per-engine options. The `type` discriminant picks the
+ * analysis engine; the remaining fields are the options for that engine.
+ * Currently only the DuckDB engine has configurable options.
+ */
+export type EngineConfig =
+  | ({ type: 'duckdb' } & DuckDBEngineOptions)
+  | { type: 'interpreter' }
+  | { type: 'supabase' };
+
+/**
  * AVA configuration
  */
 export interface AVAConfig {
   /** LLM configuration */
   llm: LLMConfig;
-  /** Optional DuckDB engine resource limits (defaults applied when omitted) */
-  engine?: EngineOptions;
+  /** Engine selection and options (defaults to the DuckDB engine when omitted) */
+  engine?: EngineConfig;
 }
 
 /**
