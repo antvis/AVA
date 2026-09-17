@@ -5,6 +5,7 @@
 
 import { loadCSV } from './csv';
 import { loadCSVFile } from './csv-file';
+import { loadExcel } from './excel';
 import { loadJson } from './json';
 import { loadJSONFile } from './json-file';
 import { loadParquetFile } from './parquet';
@@ -31,6 +32,8 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       return loadJSONFile(config.options);
     case 'parquet':
       return loadParquetFile(config.options);
+    case 'excel':
+      return loadExcel(config.options);
     case 'mysql':
       return loadMySQL(config.options);
     case 'postgresql':

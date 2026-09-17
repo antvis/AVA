@@ -65,9 +65,11 @@ const ava = new AVA({
 // CSV file in Node.js (local path or http(s) URL)
 await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 
-// or load a local/remote file directly into DuckDB (csv-file/json-file/parquet, e.g. OSS signed URL)
+// or load a local/remote file directly into DuckDB (csv-file/json-file/parquet/excel, e.g. OSS signed URL)
 await ava.load({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
 await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
+// an Excel workbook registers one view per sheet
+await ava.load({ type: 'excel', options: { path: 'data/report.xlsx' } });
 
 // or load inline CSV content
 await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
@@ -126,7 +128,7 @@ Core APIs in AVA:
 
 - `load(config)`: load any data source — `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
   - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
-  - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`
+  - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query)`: run data analysis and return `{ query, text, data, sql? }` — `sql` is the DuckDB SQL executed for the analysis.
@@ -166,7 +168,7 @@ AVA Instance
 │                 │   • Inline CSV (csv)
 │                 │   • JSON object array (json)
 │                 │   • Text (text + LLM)
-│                 │   • Local/remote file (csv-file/json-file/parquet)
+│                 │   • Local/remote file (csv-file/json-file/parquet/excel)
 │                 │   • Database (mysql/postgresql)
 └─────────────────┘
     ↓
@@ -201,7 +203,7 @@ User Response
 
 AVA v4 runs in Node.js, backed by an in-memory DuckDB instance (LLM generates SQL):
 
-- Full feature set: inline data (csv/json/text), local/remote files (csv-file/json-file/parquet), and databases (mysql/postgresql) via `load`
+- Full feature set: inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), and databases (mysql/postgresql) via `load`
 - File system access for CSV loading, plus remote files such as OSS signed URLs
 - Data is never materialized into JS memory for file sources — DuckDB reads them directly
 - Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)

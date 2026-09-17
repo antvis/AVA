@@ -73,7 +73,7 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 ### Data Loading
 - `load(config)` - Load any data source; `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
   - inline types: `'csv'` (`{ csv }`, raw CSV content string), `'json'` (`{ data }`), `'text'` (`{ text }`, extracts data from unstructured text using LLM)
-  - file types (`{ path, headers? }`, a local path or http(s) URL): `'csv-file'`, `'json-file'`, `'parquet'`
+  - file types (`{ path, headers? }`, a local path or http(s) URL): `'csv-file'`, `'json-file'`, `'parquet'`, `'excel'` (one view per sheet)
   - database types: `'mysql'` (`{ host, port?, database, user?, password?, ssh? }`), `'postgresql'` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 
 ### Query Suggestions
@@ -92,7 +92,7 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 ## Node.js Support
 
 - Runs in Node.js, backed by an in-memory DuckDB instance (LLM generates SQL)
-- Full feature set: inline data (csv/json/text), local/remote files (csv-file/json-file/parquet), and databases (mysql/postgresql) via `load`
+- Full feature set: inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), and databases (mysql/postgresql) via `load`
 - File system access for CSV loading, plus remote files such as OSS signed URLs
 - Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
 

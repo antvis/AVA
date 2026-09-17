@@ -55,6 +55,7 @@ export type SourceType =
   | 'csv-file'
   | 'json-file'
   | 'parquet'
+  | 'excel'
   | 'mysql'
   | 'postgresql';
 
@@ -97,6 +98,17 @@ export interface JsonFileSourceOptions {
  * Options for Parquet file sources: a local file path or an http(s) URL
  */
 export interface ParquetSourceOptions {
+  /** Local file path or http(s) URL */
+  path: string;
+  /** HTTP headers for remote sources (e.g. Authorization) */
+  headers?: Record<string, string>;
+}
+
+/**
+ * Options for Excel file sources: a local file path or an http(s) URL.
+ * Every sheet in the workbook is registered as its own view.
+ */
+export interface ExcelSourceOptions {
   /** Local file path or http(s) URL */
   path: string;
   /** HTTP headers for remote sources (e.g. Authorization) */
@@ -161,6 +173,7 @@ export type DataSourceConfig =
   | { type: 'csv-file'; options: CSVFileSourceOptions }
   | { type: 'json-file'; options: JsonFileSourceOptions }
   | { type: 'parquet'; options: ParquetSourceOptions }
+  | { type: 'excel'; options: ExcelSourceOptions }
   | { type: 'mysql'; options: MySQLSourceOptions }
   | { type: 'postgresql'; options: PostgreSQLSourceOptions };
 
