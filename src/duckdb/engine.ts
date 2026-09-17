@@ -19,10 +19,39 @@ import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
   AnalysisEngine,
   DataSourceConfig,
+  EngineOptions,
   Schema,
   FieldMetadata,
   LLMConfig,
 } from '../types';
+
+/**
+ * Process-level security baseline: DuckDB extensions run with the same
+ * privileges as the host process, so disable auto-install/auto-load and
+ * non-official extensions at instance creation. The mysql/postgres loaders
+ * still work because those extensions are statically linked (built-in), so
+ * an explicit `LOAD mysql`/`LOAD postgres` is unaffected by these flags.
+ * https://duckdb.org/docs/current/operations_manual/securing_duckdb/securing_extensions
+ */
+const EXTENSION_LOCKDOWN = {
+  allow_community_extensions: 'false',
+  allow_unsigned_extensions: 'false',
+  autoinstall_known_extensions: 'false',
+  autoload_known_extensions: 'false',
+} as const;
+
+/** Defaults keep a runaway LLM-generated query from exhausting the host. */
+const DEFAULT_MEMORY_LIMIT = '512MB';
+const DEFAULT_THREADS = 1;
+const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
+
+/** Thrown when a query exceeds the configured timeout. */
+export class QueryTimeoutError extends Error {
+  constructor(timeoutMs: number) {
+    super(`DuckDB query timed out after ${timeoutMs}ms`);
+    this.name = 'QueryTimeoutError';
+  }
+}
 
 export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
@@ -30,7 +59,10 @@ export class DuckDBEngine implements AnalysisEngine {
   private readonly tableName: string = 'data';
   private cleanup: (() => Promise<void>) | null = null;
 
-  constructor(private readonly llmConfig: LLMConfig) {}
+  constructor(
+    private readonly llmConfig: LLMConfig,
+    private readonly engineOptions: EngineOptions = {},
+  ) {}
 
   /**
    * Get or create the DuckDB connection (lazy loading)
@@ -38,7 +70,7 @@ export class DuckDBEngine implements AnalysisEngine {
   private async getConnection(): Promise<DuckDBConnection> {
     if (this.connection) return this.connection;
 
-    this.instance = await DuckDBInstance.create(':memory:');
+    this.instance = await DuckDBInstance.create(':memory:', { ...EXTENSION_LOCKDOWN });
     this.connection = await this.instance.connect();
     return this.connection;
   }
@@ -49,6 +81,13 @@ export class DuckDBEngine implements AnalysisEngine {
    * configuration so LLM-generated SQL cannot read arbitrary files or undo it.
    */
   private async restrictAccess(conn: DuckDBConnection, allowedDirectories: string[]): Promise<void> {
+    // Resource limits must be set before lock_configuration (which freezes all
+    // settings). They bound a runaway LLM-generated query's memory/CPU/disk.
+    await conn.run(`SET memory_limit = ${sqlStringLiteral(this.engineOptions.memoryLimit ?? DEFAULT_MEMORY_LIMIT)}`);
+    await conn.run(`SET threads = ${this.engineOptions.threads ?? DEFAULT_THREADS}`);
+    if (this.engineOptions.maxTempDirectorySize) {
+      await conn.run(`SET max_temp_directory_size = ${sqlStringLiteral(this.engineOptions.maxTempDirectorySize)}`);
+    }
     if (allowedDirectories.length > 0) {
       await conn.run(`SET allowed_directories = [${allowedDirectories.map(sqlStringLiteral).join(', ')}]`);
     }
@@ -112,8 +151,40 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
 
   async execute(sql: string): Promise<any> {
     const conn = await this.getConnection();
-    const reader = await conn.runAndReadAll(sql);
+    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(sql));
     return coerceNumbers(reader.getRowObjectsJson());
+  }
+
+  /**
+   * Race a query against the configured timeout. On timeout, interrupt the
+   * connection (cancels the running query) and reject with QueryTimeoutError,
+   * so a slow/pathological LLM-generated query cannot hang the session.
+   */
+  private async runWithTimeout<T>(conn: DuckDBConnection, operation: Promise<T>): Promise<T> {
+    const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
+    if (timeoutMs <= 0) return operation;
+
+    const timeoutMarker = Symbol('duckdb-query-timeout');
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const result = await Promise.race([
+        operation,
+        new Promise<typeof timeoutMarker>((resolve) => {
+          timeoutId = setTimeout(() => resolve(timeoutMarker), timeoutMs);
+          // Don't keep the process alive solely for this timer.
+          timeoutId.unref?.();
+        }),
+      ]);
+      if (result === timeoutMarker) {
+        conn.interrupt();
+        // Swallow the interrupted query's rejection so it isn't unhandled.
+        void operation.catch(() => undefined);
+        throw new QueryTimeoutError(timeoutMs);
+      }
+      return result;
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
   }
 
   /**

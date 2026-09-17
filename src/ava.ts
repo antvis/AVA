@@ -13,6 +13,7 @@ import { generateSuggestions } from './suggest';
 import type {
   AVAConfig,
   LLMConfig,
+  EngineOptions,
   DataSourceConfig,
   Schema,
   AnalysisResponse,
@@ -38,11 +39,13 @@ function hasData(data: unknown): boolean {
  */
 export class AVA {
   private readonly llmConfig: LLMConfig;
+  private readonly engineOptions: EngineOptions;
   private engine: DuckDBEngine | null = null;
   private schema: Schema | null = null;
 
   constructor(config: AVAConfig) {
     this.llmConfig = config.llm;
+    this.engineOptions = config.engine ?? {};
   }
 
   /**
@@ -52,7 +55,7 @@ export class AVA {
   async loadSource(config: DataSourceConfig): Promise<Schema> {
     await this.engine?.dispose();
 
-    this.engine = new DuckDBEngine(this.llmConfig);
+    this.engine = new DuckDBEngine(this.llmConfig, this.engineOptions);
     try {
       this.schema = await this.engine.load(config);
     } catch (error) {

@@ -17,11 +17,29 @@ export interface LLMConfig {
 }
 
 /**
+ * DuckDB engine resource limits and query timeout. All optional; the engine
+ * applies secure defaults (512MB memory, 1 thread, 30s query timeout) so a
+ * runaway LLM-generated query cannot exhaust the host's memory/CPU/disk.
+ */
+export interface EngineOptions {
+  /** Memory limit, e.g. '512MB'. Default '512MB'. */
+  memoryLimit?: string;
+  /** Number of worker threads. Default 1. */
+  threads?: number;
+  /** Max size of the spill (temp) directory, e.g. '1GB'. Unset = unlimited. */
+  maxTempDirectorySize?: string;
+  /** Per-query timeout in milliseconds. Default 30000. */
+  queryTimeoutMs?: number;
+}
+
+/**
  * AVA configuration
  */
 export interface AVAConfig {
   /** LLM configuration */
   llm: LLMConfig;
+  /** Optional DuckDB engine resource limits (defaults applied when omitted) */
+  engine?: EngineOptions;
 }
 
 /**

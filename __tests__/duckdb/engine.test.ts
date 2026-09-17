@@ -5,6 +5,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { DuckDBEngine } from '../../src/duckdb';
+import { QueryTimeoutError } from '../../src/duckdb/engine';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 describe('DuckDBEngine', () => {
@@ -35,6 +36,34 @@ describe('DuckDBEngine', () => {
 
     const aggregated = await engine.execute('SELECT COUNT(*) as count FROM data');
     expect(aggregated[0].count).toBe(3);
+  });
+
+  it('should apply resource limits and still run normal queries', async () => {
+    const limited = new DuckDBEngine(getLLMConfig(), {
+      memoryLimit: '256MB',
+      threads: 2,
+      maxTempDirectorySize: '100MB',
+    });
+    try {
+      await limited.load({ type: 'object', options: { data: [{ a: 1 }, { a: 2 }] } });
+      const rows = await limited.execute('SELECT SUM(a) AS total FROM data');
+      expect(rows[0].total).toBe(3);
+    } finally {
+      await limited.dispose();
+    }
+  });
+
+  it('should abort a query that exceeds the configured timeout', async () => {
+    const fast = new DuckDBEngine(getLLMConfig(), { queryTimeoutMs: 100 });
+    try {
+      await fast.load({ type: 'object', options: { data: [{ a: 1 }] } });
+      // A large cross join is far slower than the 100ms timeout.
+      const slowQuery =
+        'SELECT COUNT(*) FROM range(100000) a, range(100000) b';
+      await expect(fast.execute(slowQuery)).rejects.toThrow(QueryTimeoutError);
+    } finally {
+      await fast.dispose();
+    }
   });
 
   describe.skipIf(skipLLMTests)('getDSL', () => {
