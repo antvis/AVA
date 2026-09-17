@@ -102,6 +102,7 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
 
   /**
    * Derive the dataset schema from DuckDB without materializing the data.
+   * Categorical fields get distinct values; numeric/temporal fields get min/max.
    * Returns an empty schema when no table exists (e.g. empty data registered).
    */
   private async getSchema(): Promise<Schema> {
@@ -117,21 +118,41 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
     const colsReader = await conn.runAndReadAll(`DESCRIBE ${this.tableName}`);
     const cols = colsReader.getRowObjectsJson();
 
-    const countReader = await conn.runAndReadAll(`SELECT COUNT(*) AS c FROM ${this.tableName}`);
-    const rowCount = Number(countReader.getRowObjectsJson()[0]?.c ?? 0);
+    // One aggregate query computes row count plus per-column stats
+    const MAX_DISTINCT = 20;
+    const stats = cols.map((col: any, i: number) => {
+      const name = `"${String(col.column_name).replace(/"/g, '""')}"`;
+      const type = mapFieldType(String(col.column_type));
+      if (type === 'string' || type === 'boolean') {
+        return `struct_pack(distinct_count := COUNT(DISTINCT ${name}), items := COALESCE(min(DISTINCT ${name}, ${MAX_DISTINCT}), [])) AS "s${i}"`;
+      }
+      const finite = /DOUBLE|FLOAT|REAL/i.test(String(col.column_type)) ? ` FILTER (WHERE isfinite(${name}))` : '';
+      // Numbers stay numeric; temporal columns become epoch milliseconds
+      const minExpr = type === 'date' ? `epoch_ms(min(${name}))` : `min(${name})${finite}`;
+      const maxExpr = type === 'date' ? `epoch_ms(max(${name}))` : `max(${name})${finite}`;
+      return `struct_pack(min := ${minExpr}, max := ${maxExpr}) AS "s${i}"`;
+    });
+    const profileSql = `SELECT COUNT(*) AS "__rows", ${stats.join(', ')} FROM ${this.tableName}`;
+    const profileRow = (await conn.runAndReadAll(profileSql)).getRowObjectsJson()[0] as any;
 
-    const sampleReader = await conn.runAndReadAll(`SELECT * FROM ${this.tableName} LIMIT 5`);
-    const sampleRows = coerceNumbers(sampleReader.getRowObjectsJson());
-
-    const fields: FieldMetadata[] = cols.map((col: any) => ({
-      name: col.column_name,
-      type: mapFieldType(String(col.column_type)),
-      rawType: String(col.column_type),
-      samples: sampleRows.map((row) => row[col.column_name]).filter((v) => v != null),
-    }));
+    const fields: FieldMetadata[] = cols.map((col: any, i: number) => {
+      const rawType = String(col.column_type);
+      const type = mapFieldType(rawType);
+      const stat = profileRow[`s${i}`] as any;
+      const field: FieldMetadata = { name: col.column_name, type, rawType };
+      if (type === 'string' || type === 'boolean') {
+        field.uniqueCount = Number(stat?.distinct_count ?? 0);
+        field.samples = (stat?.items ?? []) as any[];
+      } else {
+        // BIGINT/DECIMAL/epoch_ms come back as strings — coerce to numbers
+        field.min = stat?.min == null ? undefined : Number(stat.min);
+        field.max = stat?.max == null ? undefined : Number(stat.max);
+      }
+      return field;
+    });
 
     return {
-      rowCount,
+      rowCount: Number(profileRow.__rows ?? 0),
       columnCount: fields.length,
       fields,
     };

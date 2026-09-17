@@ -63,19 +63,34 @@ export function extractDataSchema(data: any[]): Schema {
 
   const fields: FieldMetadata[] = [];
   const columns = Object.keys(data[0]);
+  const MAX_DISTINCT = 20;
 
   for (const col of columns) {
     const values = data.map(row => row[col]);
     const nonNullValues = values.filter(v => v != null && v !== '');
-    const uniqueValues = new Set(values);
-
-    fields.push({
+    const type = inferFieldType(values);
+    const field: FieldMetadata = {
       name: col,
-      type: inferFieldType(values),
-      samples: nonNullValues.slice(0, 5),
-      uniqueCount: uniqueValues.size,
+      type,
       nullCount: values.length - nonNullValues.length,
-    });
+    };
+
+    if (type === 'string' || type === 'boolean') {
+      const distinct = [...new Set(nonNullValues)];
+      field.uniqueCount = distinct.length;
+      field.samples = distinct.slice(0, MAX_DISTINCT);
+    } else if (type === 'number') {
+      const nums = nonNullValues.map(Number).filter(n => !Number.isNaN(n));
+      field.min = Math.min(...nums);
+      field.max = Math.max(...nums);
+    } else {
+      // date: epoch milliseconds
+      const ts = nonNullValues.map(v => new Date(v).getTime()).filter(t => !Number.isNaN(t));
+      field.min = Math.min(...ts);
+      field.max = Math.max(...ts);
+    }
+
+    fields.push(field);
   }
 
   return {
@@ -87,7 +102,7 @@ export function extractDataSchema(data: any[]): Schema {
 
 /**
  * Stringify a Schema as a multi-line description for LLM context.
- * Includes row/column counts and per-field type, unique/null counts, and samples.
+ * Categorical fields list distinct values; numeric/temporal fields show min/max.
  */
 export function stringifySchema(schema: Schema): string {
   let result = 'Dataset Info:\n';
@@ -100,11 +115,14 @@ export function stringifySchema(schema: Schema): string {
     if (field.uniqueCount !== undefined) {
       result += `${field.uniqueCount} unique values`;
     }
+    if (field.min !== undefined && field.min !== null) {
+      result += `min ${field.min}, max ${field.max}`;
+    }
     if (field.nullCount) {
       result += `, ${field.nullCount} nulls`;
     }
     if (field.samples && field.samples.length > 0) {
-      result += `\n  Sample values: ${field.samples.slice(0, 3).join(', ')}`;
+      result += `\n  Values: ${field.samples.join(', ')}`;
     }
     result += '\n';
   }

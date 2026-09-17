@@ -123,12 +123,16 @@ export interface FieldMetadata {
   type: 'number' | 'string' | 'date' | 'boolean';
   /** Raw column type from the engine (e.g. DuckDB's BIGINT/VARCHAR), when available */
   rawType?: string;
-  /** Sample values */
+  /** Distinct values (categorical fields, up to 20) */
   samples?: any[];
   /** Number of unique values */
   uniqueCount?: number;
   /** Number of null values */
   nullCount?: number;
+  /** Minimum value (numeric fields; temporal fields as epoch ms) */
+  min?: number;
+  /** Maximum value (numeric fields; temporal fields as epoch ms) */
+  max?: number;
 }
 
 /**
