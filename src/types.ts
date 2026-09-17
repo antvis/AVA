@@ -43,26 +43,33 @@ export interface AVAConfig {
 }
 
 /**
- * Data source types for loadSource.
- * - inline types: `csv` (content string), `object`, `url`, `text`
- * - file types: `csv-file`, `json`, `parquet` (read through DuckDB's readers)
- * - database types: `mysql` (ATTACH through DuckDB's mysql extension); `postgresql` is reserved
+ * Data source types for load.
+ * - inline types: `csv` (content string), `json` (object array), `text`
+ * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
+ * - database types: `mysql`, `postgresql` (ATTACH through DuckDB's extension)
  */
 export type SourceType =
   | 'csv'
-  | 'object'
-  | 'url'
+  | 'json'
   | 'text'
   | 'csv-file'
-  | 'json'
+  | 'json-file'
   | 'parquet'
   | 'mysql'
   | 'postgresql';
 
 /**
- * Options for file sources: a local file path or an http(s) URL
+ * Options for inline CSV data sources (raw CSV content string)
  */
-export interface FileSourceOptions {
+export interface CSVSourceOptions {
+  /** Raw CSV content string */
+  csv: string;
+}
+
+/**
+ * Options for CSV file sources: a local file path or an http(s) URL
+ */
+export interface CSVFileSourceOptions {
   /** Local file path or http(s) URL */
   path: string;
   /** HTTP headers for remote sources (e.g. Authorization) */
@@ -70,18 +77,30 @@ export interface FileSourceOptions {
 }
 
 /**
- * Options for inline data sources (object array)
+ * Options for inline JSON data sources (object array)
  */
-export interface ObjectSourceOptions {
+export interface JsonSourceOptions {
   data: any[];
 }
 
 /**
- * Options for URL data sources
+ * Options for JSON file sources: a local file path or an http(s) URL
  */
-export interface URLSourceOptions {
-  url: string;
-  transform?: (response: any) => any[];
+export interface JsonFileSourceOptions {
+  /** Local file path or http(s) URL */
+  path: string;
+  /** HTTP headers for remote sources (e.g. Authorization) */
+  headers?: Record<string, string>;
+}
+
+/**
+ * Options for Parquet file sources: a local file path or an http(s) URL
+ */
+export interface ParquetSourceOptions {
+  /** Local file path or http(s) URL */
+  path: string;
+  /** HTTP headers for remote sources (e.g. Authorization) */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -89,14 +108,6 @@ export interface URLSourceOptions {
  */
 export interface TextSourceOptions {
   text: string;
-}
-
-/**
- * Options for CSV data sources (file path or content string)
- */
-export interface CSVSourceOptions {
-  /** File path (Node.js) or CSV content string (browser) */
-  pathOrContent: string;
 }
 
 /**
@@ -118,8 +129,6 @@ export interface MySQLSourceOptions {
   database: string;
   user?: string;
   password?: string;
-  /** Table to read as the data view */
-  table: string;
   /** Optional SSH tunnel the MySQL connection is forwarded through */
   ssh?: SSHOptions;
 }
@@ -133,9 +142,7 @@ export interface PostgreSQLSourceOptions {
   database: string;
   user?: string;
   password?: string;
-  /** Table to read as the data view */
-  table: string;
-  /** Schema the table lives in (defaults to `public`) */
+  /** Schema the tables live in (defaults to `public`) */
   schema?: string;
   /** Optional SSH tunnel the PostgreSQL connection is forwarded through */
   ssh?: SSHOptions;
@@ -143,33 +150,36 @@ export interface PostgreSQLSourceOptions {
 
 /**
  * External data source configuration for loadSource.
- * - inline types (csv/object/url/text): data is materialized into JS memory
- * - file types (csv-file/json/parquet): loaded through DuckDB's readers, `options` is FileSourceOptions
+ * - inline types (csv/json/text): data is materialized into JS memory
+ * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
  * - database types (mysql/postgresql): ATTACH through DuckDB's extension
  */
 export type DataSourceConfig =
   | { type: 'csv'; options: CSVSourceOptions }
-  | { type: 'object'; options: ObjectSourceOptions }
-  | { type: 'url'; options: URLSourceOptions }
+  | { type: 'json'; options: JsonSourceOptions }
   | { type: 'text'; options: TextSourceOptions }
-  | { type: 'csv-file'; options: FileSourceOptions }
-  | { type: 'json'; options: FileSourceOptions }
-  | { type: 'parquet'; options: FileSourceOptions }
+  | { type: 'csv-file'; options: CSVFileSourceOptions }
+  | { type: 'json-file'; options: JsonFileSourceOptions }
+  | { type: 'parquet'; options: ParquetSourceOptions }
   | { type: 'mysql'; options: MySQLSourceOptions }
   | { type: 'postgresql'; options: PostgreSQLSourceOptions };
 
 /**
- * File formats readable by DuckDB's readers (csv-file maps to csv).
+ * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).
  */
 export type FileFormat = 'csv' | 'json' | 'parquet';
 
 /**
- * A loaded data source, ready for an engine to register as the data view.
- * File loaders register a local file; database loaders ATTACH and register a table.
+ * A loaded data source, ready for an engine to register as one or more views.
+ * File loaders register a single `data` view; database loaders ATTACH and
+ * register one view per discovered table.
  */
 export interface LoadedSource {
-  /** Register the source as the `tableName` view on the given connection */
-  register: (conn: DuckDBConnection, tableName: string) => Promise<void>;
+  /**
+   * Register the source's view(s) on the given connection and return the
+   * names of all registered views (the engine exposes each to the LLM).
+   */
+  register: (conn: DuckDBConnection) => Promise<string[]>;
   /**
    * Directories the engine whitelists for file access after registering
    * (the data file's directory for file sources; empty for in-memory/remote sources).
@@ -202,15 +212,27 @@ export interface FieldMetadata {
 }
 
 /**
- * Dataset schema — metadata describing the loaded data
+ * Schema of a single table/view in the loaded data source
  */
-export interface Schema {
+export interface TableSchema {
+  /** Table/view name as registered in the engine */
+  name: string;
   /** Number of rows */
   rowCount: number;
   /** Number of columns */
   columnCount: number;
   /** Field metadata */
   fields: FieldMetadata[];
+}
+
+/**
+ * Dataset schema — metadata describing the loaded data source.
+ * A source may expose multiple tables (e.g. a MySQL database or a multi-sheet
+ * Excel workbook); each is registered as its own view so the LLM can JOIN them.
+ */
+export interface Schema {
+  /** All tables/views exposed by the data source */
+  tables: TableSchema[];
 }
 
 /**

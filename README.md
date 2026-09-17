@@ -32,7 +32,7 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - **Smart Data Handling**: Automatically chooses between in-memory processing and DuckDB based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
+- **Node.js**: Runs in Node.js, backed by an in-memory DuckDB instance
 
 ## 📖 Quick Start
 
@@ -60,27 +60,26 @@ const ava = new AVA({
   },
 });
 
-// Load data from various sources in Node.js
-await ava.loadCSV('data/companies.csv');
+// Load data from various sources — all through ava.load({ type, options })
 
-// or load a local/remote file directly into DuckDB (csv-file/json/parquet, e.g. OSS signed URL)
-await ava.loadSource({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
-await ava.loadSource({ type: 'csv-file', options: { path: 'data/companies.csv' } });
+// CSV file in Node.js (local path or http(s) URL)
+await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 
-// Load CSV from file input in browser
-const fileInput = document.querySelector('input[type="file"]');
-const file = fileInput.files[0];
-const csvContent = await file.text();
-await ava.loadCSV(csvContent);
+// or load a local/remote file directly into DuckDB (csv-file/json-file/parquet, e.g. OSS signed URL)
+await ava.load({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
+await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 
-// or load from JSON object
-await ava.loadObject([{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }]);
+// or load inline CSV content
+await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
 
-// or load from URL
-await ava.loadURL('https://api.example.com/data', (response) => response.data);
+// or load from a JSON object array
+await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
 
 // or extract from text
-await ava.loadText('杭州 100，上海 200，北京 300');
+await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
+
+// or attach a database (every table is exposed to the LLM)
+await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 
 // Get suggested analysis queries
 const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
@@ -119,13 +118,16 @@ ava.dispose();
 
 Create an AVA instance:
 
-- `new AVA(options)`: initialize runtime and LLM configuration.
+- `new AVA(config)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
+  - `engine?`: optional DuckDB resource limits — `{ memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (defaults: `512MB`, `1` thread, `30s` query timeout)
 
 Core APIs in AVA:
 
-- `loadCSV(filePathOrContent)` / `loadObject(data)` / `loadURL(url, transform?)` / `loadText(text)`: shortcuts for `loadSource` with inline data types (`csv` / `object` / `url` / `text`).
-- `loadSource(config)`: load any data source — `{ type, options }` where `type` is an inline type (`csv`: `{ pathOrContent }`, `object`: `{ data }`, `url`: `{ url, transform? }`, `text`: `{ text }`), a file type (`csv-file | json | parquet`: `{ path, headers? }`, a local path or http(s) URL such as OSS signed links), or a reserved database type (`mysql | postgresql`).
+- `load(config)`: load any data source — `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
+  - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
+  - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`
+  - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query)`: run data analysis and return `{ query, text, data, sql? }` — `sql` is the DuckDB SQL executed for the analysis.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
@@ -136,7 +138,7 @@ Minimal usage:
 ```typescript
 const ava = new AVA({ llm: { model, apiKey, baseURL } });
 
-await ava.loadObject([{ city: 'Hangzhou', gdp: 18753 }]);
+await ava.load({ type: 'json', options: { data: [{ city: 'Hangzhou', gdp: 18753 }] } });
 
 const analysis = await ava.analysis('Show GDP by city');
 console.log(analysis.text);
@@ -152,7 +154,7 @@ ava.dispose();
 
 ## 🏗️ Architecture
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (CSV, JSON, URL, text, or external files) via `loadSource`, then analyzed by the DuckDB engine (natural-language queries are turned into SQL via LLM and executed against an in-memory DuckDB instance), summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
+AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (inline CSV/JSON/text, local/remote files, or databases) via `load`, then analyzed by the DuckDB engine (natural-language queries are turned into SQL via LLM and executed against an in-memory DuckDB instance), summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
 
 ```
 User Query
@@ -160,12 +162,12 @@ User Query
 AVA Instance
     ↓
 ┌─────────────────┐
-│  Data Module    │ → Load from multiple sources (loadSource):
-│                 │   • CSV File (loadCSV)
-│                 │   • JSON Object (loadObject)
-│                 │   • URL (loadURL)
-│                 │   • Text (loadText + LLM)
-│                 │   • Local/remote file (csv-file/json/parquet)
+│  Data Module    │ → Load from multiple sources (load):
+│                 │   • Inline CSV (csv)
+│                 │   • JSON object array (json)
+│                 │   • Text (text + LLM)
+│                 │   • Local/remote file (csv-file/json-file/parquet)
+│                 │   • Database (mysql/postgresql)
 └─────────────────┘
     ↓
 ┌──────────────────┐
@@ -199,9 +201,10 @@ User Response
 
 AVA v4 runs in Node.js, backed by an in-memory DuckDB instance (LLM generates SQL):
 
-- Full feature set: inline data (csv/object/url/text) and local/remote files (csv-file/json/parquet) via `loadSource`
+- Full feature set: inline data (csv/json/text), local/remote files (csv-file/json-file/parquet), and databases (mysql/postgresql) via `load`
 - File system access for CSV loading, plus remote files such as OSS signed URLs
 - Data is never materialized into JS memory for file sources — DuckDB reads them directly
+- Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
 
 ## 🤝 Developer Contributions
 

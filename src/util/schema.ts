@@ -3,7 +3,7 @@
  * metadata from in-memory data, and stringify a Schema for LLM prompts.
  */
 
-import type { FieldMetadata, Schema } from '../types';
+import type { FieldMetadata, Schema, TableSchema } from '../types';
 
 /** Map DuckDB column types to AVA field types */
 export function mapFieldType(columnType: string): FieldMetadata['type'] {
@@ -50,15 +50,17 @@ function inferFieldType(values: any[]): 'number' | 'string' | 'date' | 'boolean'
 }
 
 /**
- * Extract metadata from data
+ * Extract metadata from in-memory rows as a single `data` table.
  */
 export function extractDataSchema(data: any[]): Schema {
+  const table: TableSchema = {
+    name: 'data',
+    rowCount: 0,
+    columnCount: 0,
+    fields: [],
+  };
   if (!data || data.length === 0) {
-    return {
-      rowCount: 0,
-      columnCount: 0,
-      fields: [],
-    };
+    return { tables: [table] };
   }
 
   const fields: FieldMetadata[] = [];
@@ -93,38 +95,43 @@ export function extractDataSchema(data: any[]): Schema {
     fields.push(field);
   }
 
-  return {
-    rowCount: data.length,
-    columnCount: columns.length,
-    fields,
-  };
+  table.rowCount = data.length;
+  table.columnCount = columns.length;
+  table.fields = fields;
+  return { tables: [table] };
 }
 
 /**
  * Stringify a Schema as a multi-line description for LLM context.
- * Categorical fields list distinct values; numeric/temporal fields show min/max.
+ * Each table is described with its name and fields so the LLM can reference
+ * and JOIN them. Categorical fields list distinct values; numeric/temporal
+ * fields show min/max.
  */
 export function stringifySchema(schema: Schema): string {
-  let result = 'Dataset Info:\n';
-  result += `- Rows: ${schema.rowCount}\n`;
-  result += `- Columns: ${schema.columnCount}\n`;
-  result += '\nFields:\n';
+  let result = `Dataset Info: ${schema.tables.length} table(s)\n`;
 
-  for (const field of schema.fields) {
-    result += `- ${field.name} (${field.rawType ?? field.type}): `;
-    if (field.uniqueCount !== undefined) {
-      result += `${field.uniqueCount} unique values`;
+  for (const table of schema.tables) {
+    result += `\nTable "${table.name}":\n`;
+    result += `- Rows: ${table.rowCount}\n`;
+    result += `- Columns: ${table.columnCount}\n`;
+    result += 'Fields:\n';
+
+    for (const field of table.fields) {
+      result += `- ${field.name} (${field.rawType ?? field.type}): `;
+      if (field.uniqueCount !== undefined) {
+        result += `${field.uniqueCount} unique values`;
+      }
+      if (field.min !== undefined && field.min !== null) {
+        result += `min ${field.min}, max ${field.max}`;
+      }
+      if (field.nullCount) {
+        result += `, ${field.nullCount} nulls`;
+      }
+      if (field.samples && field.samples.length > 0) {
+        result += `\n  Values: ${field.samples.join(', ')}`;
+      }
+      result += '\n';
     }
-    if (field.min !== undefined && field.min !== null) {
-      result += `min ${field.min}, max ${field.max}`;
-    }
-    if (field.nullCount) {
-      result += `, ${field.nullCount} nulls`;
-    }
-    if (field.samples && field.samples.length > 0) {
-      result += `\n  Values: ${field.samples.join(', ')}`;
-    }
-    result += '\n';
   }
 
   return result;

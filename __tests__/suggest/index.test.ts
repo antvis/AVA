@@ -27,7 +27,7 @@ describe.skipIf(skipLLMTests)('suggest', () => {
   });
 
   it('should return scored suggestions after loading data', async () => {
-    await ava.loadCSV(testDataPath);
+    await ava.load({ type: 'csv-file', options: { path: testDataPath } });
     const suggestions = await ava.suggest();
 
     expect(suggestions.length).toBe(3);

@@ -24,11 +24,13 @@ describe('AVA', () => {
 
   describe('Data Loading', () => {
     it('should load a CSV file and return its schema', async () => {
-      const schema = await ava.loadCSV(testDataPath);
+      const schema = await ava.load({ type: 'csv-file', options: { path: testDataPath } });
 
-      expect(schema.rowCount).toBe(12);
-      expect(schema.columnCount).toBe(3);
-      expect(schema.fields.find((f) => f.name === 'revenue')?.type).toBe('number');
+      expect(schema.tables).toHaveLength(1);
+      const table = schema.tables[0];
+      expect(table.rowCount).toBe(12);
+      expect(table.columnCount).toBe(3);
+      expect(table.fields.find((f) => f.name === 'revenue')?.type).toBe('number');
     });
 
     it('should throw when analyzing without loading data', async () => {
@@ -38,7 +40,7 @@ describe('AVA', () => {
 
   describe.skipIf(skipLLMTests)('analysis', () => {
     it('should answer a natural language query with a summary and data', async () => {
-      await ava.loadCSV(testDataPath);
+      await ava.load({ type: 'csv-file', options: { path: testDataPath } });
 
       const result = await ava.analysis('What is the average revenue by region?');
 
@@ -52,7 +54,7 @@ describe('AVA', () => {
 
   describe.skipIf(skipLLMTests)('visualize', () => {
     it('should generate chart HTML from an analysis result', async () => {
-      await ava.loadCSV(testDataPath);
+      await ava.load({ type: 'csv-file', options: { path: testDataPath } });
       const analysisResult = await ava.analysis('Visualize the average revenue by region as a bar chart');
 
       const viz = await ava.visualize(analysisResult);
@@ -65,7 +67,7 @@ describe('AVA', () => {
 
   describe.skipIf(skipLLMTests)('loadText', () => {
     it('should extract structured data from text and analyze it', async () => {
-      await ava.loadText('杭州 100，上海 200，北京 300');
+      await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
 
       const result = await ava.analysis('What is the sum of all values?');
 
@@ -75,7 +77,7 @@ describe('AVA', () => {
 
   describe('dispose', () => {
     it('should dispose resources without error', async () => {
-      await ava.loadCSV(testDataPath);
+      await ava.load({ type: 'csv-file', options: { path: testDataPath } });
       await expect(ava.dispose()).resolves.toBeUndefined();
     });
   });

@@ -52,7 +52,7 @@ export class AVA {
    * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  async loadSource(config: DataSourceConfig): Promise<Schema> {
+  async load(config: DataSourceConfig): Promise<Schema> {
     await this.engine?.dispose();
 
     this.engine = new DuckDBEngine(this.llmConfig, this.engineOptions);
@@ -67,38 +67,6 @@ export class AVA {
   }
 
   /**
-   * Load CSV file — shortcut for loadSource({ type: 'csv', options: { pathOrContent } })
-   * @returns Dataset metadata
-   */
-  async loadCSV(filePath: string): Promise<Schema> {
-    return this.loadSource({ type: 'csv', options: { pathOrContent: filePath } });
-  }
-
-  /**
-   * Load data from JSON object array — shortcut for loadSource({ type: 'object', options: { data } })
-   * @returns Dataset metadata
-   */
-  async loadObject(data: any[]): Promise<Schema> {
-    return this.loadSource({ type: 'object', options: { data } });
-  }
-
-  /**
-   * Load data from URL — shortcut for loadSource({ type: 'url', options: { url, transform } })
-   * @returns Dataset metadata
-   */
-  async loadURL(url: string, transform?: (response: any) => any[]): Promise<Schema> {
-    return this.loadSource({ type: 'url', options: { url, transform } });
-  }
-
-  /**
-   * Load data from text using LLM — shortcut for loadSource({ type: 'text', options: { text } })
-   * @returns Dataset metadata
-   */
-  async loadText(text: string): Promise<Schema> {
-    return this.loadSource({ type: 'text', options: { text } });
-  }
-
-  /**
    * Analyze data using natural language query.
    * The query is turned into SQL via LLM and executed by DuckDB.
    * Use visualize() separately to generate charts from the analysis result.
@@ -106,7 +74,7 @@ export class AVA {
   async analysis(query: string): Promise<AnalysisResponse> {
     if (!this.engine || !this.schema) {
       throw new Error(
-        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, loadText, or loadSource).'
+        'No data loaded. Please call load() first.'
       );
     }
 
@@ -204,7 +172,7 @@ Provide a natural language summary of the result. If the result is tabular data,
   async suggest(count: number = 3): Promise<SuggestResult[]> {
     if (!this.schema) {
       throw new Error(
-        'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, loadText, or loadSource).'
+        'No data loaded. Please call load() first.'
       );
     }
 

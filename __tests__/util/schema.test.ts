@@ -15,15 +15,18 @@ describe('extractDataSchema', () => {
 
     const schema = extractDataSchema(data);
 
-    expect(schema.rowCount).toBe(2);
-    expect(schema.columnCount).toBe(3);
-    expect(schema.fields.find(f => f.name === 'company')?.type).toBe('string');
-    expect(schema.fields.find(f => f.name === 'revenue')?.type).toBe('number');
+    expect(schema.tables).toHaveLength(1);
+    const table = schema.tables[0];
+    expect(table.name).toBe('data');
+    expect(table.rowCount).toBe(2);
+    expect(table.columnCount).toBe(3);
+    expect(table.fields.find(f => f.name === 'company')?.type).toBe('string');
+    expect(table.fields.find(f => f.name === 'revenue')?.type).toBe('number');
   });
 
   it('should handle empty data', () => {
     const schema = extractDataSchema([]);
-    expect(schema).toEqual({ rowCount: 0, columnCount: 0, fields: [] });
+    expect(schema).toEqual({ tables: [{ name: 'data', rowCount: 0, columnCount: 0, fields: [] }] });
   });
 });
 

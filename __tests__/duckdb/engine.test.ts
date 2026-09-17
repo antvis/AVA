@@ -26,7 +26,7 @@ describe('DuckDBEngine', () => {
       { name: 'Charlie', age: 35, city: 'NYC' },
     ];
 
-    await engine.load({ type: 'object', options: { data: testData } });
+    await engine.load({ type: 'json', options: { data: testData } });
 
     const all = await engine.execute('SELECT * FROM data');
     expect(all.length).toBe(3);
@@ -45,7 +45,7 @@ describe('DuckDBEngine', () => {
       maxTempDirectorySize: '100MB',
     });
     try {
-      await limited.load({ type: 'object', options: { data: [{ a: 1 }, { a: 2 }] } });
+      await limited.load({ type: 'json', options: { data: [{ a: 1 }, { a: 2 }] } });
       const rows = await limited.execute('SELECT SUM(a) AS total FROM data');
       expect(rows[0].total).toBe(3);
     } finally {
@@ -56,7 +56,7 @@ describe('DuckDBEngine', () => {
   it('should abort a query that exceeds the configured timeout', async () => {
     const fast = new DuckDBEngine(getLLMConfig(), { queryTimeoutMs: 100 });
     try {
-      await fast.load({ type: 'object', options: { data: [{ a: 1 }] } });
+      await fast.load({ type: 'json', options: { data: [{ a: 1 }] } });
       // A large cross join is far slower than the 100ms timeout.
       const slowQuery =
         'SELECT COUNT(*) FROM range(100000) a, range(100000) b';
@@ -69,7 +69,7 @@ describe('DuckDBEngine', () => {
   describe.skipIf(skipLLMTests)('getDSL', () => {
     it('should generate SQL from a natural language query', async () => {
       await engine.load({
-        type: 'object',
+        type: 'json',
         options: { data: [{ company: 'A', region: 'East', revenue: 100 }] },
       });
 

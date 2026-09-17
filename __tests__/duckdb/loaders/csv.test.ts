@@ -19,7 +19,7 @@ describe('loaders/csv', () => {
   });
 
   it('registers CSV content as a queryable view', async () => {
-    source = await loadCSV({ pathOrContent: 'name,age\nAlice,30\nBob,25' });
+    source = await loadCSV({ csv: 'name,age\nAlice,30\nBob,25' });
 
     const rows = await registerAndQuery(source);
     expect(rows).toEqual([

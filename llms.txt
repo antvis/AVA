@@ -13,7 +13,7 @@ AVA, a complete rewrite focused on **AI-native Visual Analytics**. The first **A
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - **Smart Data Handling**: Automatically chooses between in-memory processing and DuckDB based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
+- **Node.js**: Runs in Node.js, backed by an in-memory DuckDB instance
 
 ## Quick Start
 
@@ -29,11 +29,11 @@ const ava = new AVA({
   },
 });
 
-// Load data from various sources
-await ava.loadCSV('data/companies.csv'); // Node.js
-await ava.loadObject([{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }]);
-await ava.loadURL('https://api.example.com/data', (response) => response.data);
-await ava.loadText('杭州 100，上海 200，北京 300');
+// Load data from various sources — all through ava.load({ type, options })
+await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } }); // Node.js
+await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
+await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
+await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 
 // Get AI-suggested queries
 const suggestions = await ava.suggest(5); // Get top 5 suggestions (default: 3)
@@ -56,7 +56,7 @@ ava.dispose();
 
 AVA uses a modular pipeline architecture that processes user queries through distinct stages:
 
-1. **Data Module**: Load from multiple sources (CSV, JSON, URL, text, or external files via loadSource)
+1. **Data Module**: Load from multiple sources (inline CSV/JSON/text, local/remote files, or databases via load)
 2. **Metadata Extract**: Type inference, statistics (via DuckDB)
 3. **Engine**: DuckDB (Node.js only) — natural-language queries are turned into SQL via LLM and executed against an in-memory DuckDB instance
 4. **Analysis Module**: Generate & Execute SQL
@@ -66,14 +66,15 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 ## API Reference
 
 ### Constructor
-- `new AVA(options: AVAOptions)` - Initialize AVA instance with LLM configuration and options
+- `new AVA(config: AVAConfig)` - Initialize AVA instance with LLM configuration and options
+  - `llm`: required model config `{ model, apiKey, baseURL? }`
+  - `engine?`: optional DuckDB resource limits `{ memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (defaults: `512MB`, `1` thread, `30s` query timeout)
 
-### Data Loading Methods
-- `loadCSV(content: string)` - Shortcut for `loadSource({ type: 'csv', options: { pathOrContent } })`
-- `loadObject(data: object[])` - Shortcut for `loadSource({ type: 'object', options: { data } })`
-- `loadURL(url: string, transform?: Function)` - Shortcut for `loadSource({ type: 'url', options: { url, transform } })`
-- `loadText(text: string)` - Shortcut for `loadSource({ type: 'text', options: { text } })` (extracts data from unstructured text using LLM)
-- `loadSource(config)` - Load any data source; `{ type, options }` where `type` is an inline type (`'csv'`: `{ pathOrContent }`, `'object'`: `{ data }`, `'url'`: `{ url, transform? }`, `'text'`: `{ text }`), a file type (`'csv-file' | 'json' | 'parquet'`: `{ path, headers? }`, a local path or http(s) URL), or a reserved database type `'mysql' | 'postgresql'`
+### Data Loading
+- `load(config)` - Load any data source; `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
+  - inline types: `'csv'` (`{ csv }`, raw CSV content string), `'json'` (`{ data }`), `'text'` (`{ text }`, extracts data from unstructured text using LLM)
+  - file types (`{ path, headers? }`, a local path or http(s) URL): `'csv-file'`, `'json-file'`, `'parquet'`
+  - database types: `'mysql'` (`{ host, port?, database, user?, password?, ssh? }`), `'postgresql'` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 
 ### Query Suggestions
 - `suggest(count?: number)` - Get AI-recommended analysis queries based on dataset characteristics (default: 3)
@@ -91,8 +92,9 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 ## Node.js Support
 
 - Runs in Node.js, backed by an in-memory DuckDB instance (LLM generates SQL)
-- Full feature set: inline data (csv/object/url/text) and local/remote files (csv-file/json/parquet) via `loadSource`
+- Full feature set: inline data (csv/json/text), local/remote files (csv-file/json-file/parquet), and databases (mysql/postgresql) via `load`
 - File system access for CSV loading, plus remote files such as OSS signed URLs
+- Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
 
 ## Best Practices
 

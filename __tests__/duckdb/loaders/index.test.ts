@@ -17,9 +17,9 @@ describe('loaders/index', () => {
     source = null;
   });
 
-  it('dispatches object source to a registerable source', async () => {
+  it('dispatches json source to a registerable source', async () => {
     source = await loadSource(
-      { type: 'object', options: { data: [{ a: 1 }] } },
+      { type: 'json', options: { data: [{ a: 1 }] } },
       getLLMConfig()
     );
 

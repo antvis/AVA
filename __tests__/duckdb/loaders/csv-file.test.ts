@@ -1,18 +1,18 @@
 /**
- * Unit tests for src/duckdb/loaders/file.ts
+ * Unit tests for src/duckdb/loaders/csv-file.ts
  */
 
 import * as path from 'path';
 
 import { describe, it, expect, afterEach, vi } from 'vitest';
 
-import { loadCSVFile } from '../../../src/duckdb/loaders/file';
+import { loadCSVFile } from '../../../src/duckdb/loaders/csv-file';
 
 import { registerAndQuery } from './helper';
 
 import type { LoadedSource } from '../../../src/types';
 
-describe('loaders/file', () => {
+describe('loaders/csv-file', () => {
   let source: LoadedSource | null = null;
 
   afterEach(async () => {

@@ -11,7 +11,7 @@ import { DuckDBInstance } from '@duckdb/node-api';
 
 import { coerceNumbers } from '../util/coerce';
 import { mapFieldType, stringifySchema } from '../util/schema';
-import { sqlStringLiteral } from '../util/sql';
+import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 
 import { loadSource } from './loaders';
 
@@ -21,6 +21,7 @@ import type {
   DataSourceConfig,
   EngineOptions,
   Schema,
+  TableSchema,
   FieldMetadata,
   LLMConfig,
 } from '../types';
@@ -56,7 +57,8 @@ export class QueryTimeoutError extends Error {
 export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
-  private readonly tableName: string = 'data';
+  /** Names of all views registered by the loaded source (one per table) */
+  private tableNames: string[] = [];
   private cleanup: (() => Promise<void>) | null = null;
 
   constructor(
@@ -110,7 +112,7 @@ export class DuckDBEngine implements AnalysisEngine {
     try {
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
-      await source.register(conn, this.tableName);
+      this.tableNames = await source.register(conn);
       await this.restrictAccess(conn, source.allowedDirectories);
       this.cleanup = source.cleanup;
     } catch (error) {
@@ -138,7 +140,7 @@ ${schema}
 
 User Query: ${query}
 
-Generate ONLY the SQL query without any explanation or markdown formatting. The table name is "data". Use DuckDB SQL syntax.`;
+Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables by their exact names shown above (join them when the question spans multiple tables). Use DuckDB SQL syntax.`;
 
     const { text } = await generateText({
       model: openai(this.llmConfig.model) as any,
@@ -188,27 +190,30 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
   }
 
   /**
-   * Derive the dataset schema from DuckDB without materializing the data.
-   * Categorical fields get distinct values; numeric/temporal fields get min/max.
-   * Returns an empty schema when no table exists (e.g. empty data registered).
+   * Derive the dataset schema from DuckDB without materializing the data:
+   * one TableSchema per registered view. Categorical fields get distinct
+   * values; numeric/temporal fields get min/max.
    */
   private async getSchema(): Promise<Schema> {
     const conn = await this.getConnection();
-
-    const exists = await conn.runAndReadAll(
-      `SELECT 1 FROM information_schema.tables WHERE table_name = '${this.tableName}'`
-    );
-    if (exists.getRowObjectsJson().length === 0) {
-      return { rowCount: 0, columnCount: 0, fields: [] };
+    const tables: TableSchema[] = [];
+    for (const name of this.tableNames) {
+      tables.push(await this.getTableSchema(conn, name));
     }
+    return { tables };
+  }
 
-    const colsReader = await conn.runAndReadAll(`DESCRIBE ${this.tableName}`);
+  /**
+   * Profile a single view: row count plus per-column stats.
+   */
+  private async getTableSchema(conn: DuckDBConnection, tableName: string): Promise<TableSchema> {
+    const colsReader = await conn.runAndReadAll(`DESCRIBE ${sqlIdentifier(tableName)}`);
     const cols = colsReader.getRowObjectsJson();
 
     // One aggregate query computes row count plus per-column stats
     const MAX_DISTINCT = 20;
     const stats = cols.map((col: any, i: number) => {
-      const name = `"${String(col.column_name).replace(/"/g, '""')}"`;
+      const name = sqlIdentifier(String(col.column_name));
       const type = mapFieldType(String(col.column_type));
       if (type === 'string' || type === 'boolean') {
         return `struct_pack(distinct_count := COUNT(DISTINCT ${name}), items := COALESCE(min(DISTINCT ${name}, ${MAX_DISTINCT}), [])) AS "s${i}"`;
@@ -219,7 +224,7 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
       const maxExpr = type === 'date' ? `epoch_ms(max(${name}))` : `max(${name})${finite}`;
       return `struct_pack(min := ${minExpr}, max := ${maxExpr}) AS "s${i}"`;
     });
-    const profileSql = `SELECT COUNT(*) AS "__rows", ${stats.join(', ')} FROM ${this.tableName}`;
+    const profileSql = `SELECT COUNT(*) AS "__rows", ${stats.join(', ')} FROM ${sqlIdentifier(tableName)}`;
     const profileRow = (await conn.runAndReadAll(profileSql)).getRowObjectsJson()[0] as any;
 
     const fields: FieldMetadata[] = cols.map((col: any, i: number) => {
@@ -239,7 +244,8 @@ Generate ONLY the SQL query without any explanation or markdown formatting. The 
     });
 
     return {
-      rowCount: Number(profileRow.__rows ?? 0),
+      name: tableName,
+      rowCount: Number(profileRow?.__rows ?? 0),
       columnCount: fields.length,
       fields,
     };

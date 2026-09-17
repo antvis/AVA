@@ -1,15 +1,16 @@
 /**
  * Data source loaders: turn a DataSourceConfig into a LoadedSource
- * that the engine registers as the `data` view.
+ * that the engine registers as one or more views.
  */
 
 import { loadCSV } from './csv';
-import { loadObject } from './object';
-import { loadURL } from './url';
+import { loadCSVFile } from './csv-file';
+import { loadJson } from './json';
+import { loadJSONFile } from './json-file';
+import { loadParquetFile } from './parquet';
 import { loadText } from './text';
 import { loadMySQL } from './mysql';
 import { loadPostgreSQL } from './postgresql';
-import { loadCSVFile, loadJSONFile, loadParquetFile } from './file';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
@@ -20,15 +21,13 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
   switch (config.type) {
     case 'csv':
       return loadCSV(config.options);
-    case 'object':
-      return loadObject(config.options);
-    case 'url':
-      return loadURL(config.options);
+    case 'json':
+      return loadJson(config.options);
     case 'text':
       return loadText(config.options, llmConfig);
     case 'csv-file':
       return loadCSVFile(config.options);
-    case 'json':
+    case 'json-file':
       return loadJSONFile(config.options);
     case 'parquet':
       return loadParquetFile(config.options);

@@ -1,6 +1,6 @@
 /**
- * Inline CSV loader: parse CSV content (or a Node.js file path) into rows,
- * then re-serialize to a temp CSV file for DuckDB to read.
+ * Inline CSV loader: parse raw CSV content into rows, then re-serialize to a
+ * temp CSV file for DuckDB to read. (For CSV files use the csv-file loader.)
  */
 
 // eslint-disable-next-line import/no-unresolved
@@ -8,7 +8,7 @@ import { parse } from 'csv-parse/sync';
 
 import { removeTempFile, writeTempFile } from '../../util/file';
 
-import { fileSource } from './file';
+import { fileSource } from './util/file';
 
 import type { CSVSourceOptions, LoadedSource } from '../../types';
 
@@ -31,19 +31,9 @@ function toCSV(rows: any[]): string {
 }
 
 export async function loadCSV(options: CSVSourceOptions): Promise<LoadedSource> {
-  const { pathOrContent } = options;
-  let content: string;
+  const { csv } = options;
 
-  // A value that looks like a file path is read from disk; otherwise treated as raw CSV content
-  const looksLikeFilePath = /^(\.\/|\.\.\/|\/|[a-zA-Z]:[\\/]|\\\\)/.test(pathOrContent);
-  if (typeof window === 'undefined' && typeof process !== 'undefined' && process.versions?.node && looksLikeFilePath) {
-    const fs = await import('fs/promises');
-    content = await fs.readFile(pathOrContent, 'utf-8');
-  } else {
-    content = pathOrContent;
-  }
-
-  const rows = parse(content, {
+  const rows = parse(csv, {
     columns: true,
     skip_empty_lines: true,
     cast: true,
