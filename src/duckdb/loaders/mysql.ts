@@ -129,6 +129,8 @@ export async function loadMySQL(options: MySQLSourceOptions): Promise<LoadedSour
         throw error;
       }
     },
+    // Pure remote source — no local file access needed after ATTACH
+    allowedDirectories: [],
     cleanup: async () => {
       await tunnel?.close();
     },

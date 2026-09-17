@@ -15,3 +15,8 @@ export const READ_FN: Record<FileFormat, string> = {
 export function escapeSql(value: string): string {
   return value.replace(/'/g, "''");
 }
+
+/** Quote a value as a SQL string literal */
+export function sqlStringLiteral(value: string): string {
+  return `'${escapeSql(value)}'`;
+}

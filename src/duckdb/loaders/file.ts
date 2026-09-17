@@ -3,6 +3,8 @@
  * A local file path is used directly; a remote URL is downloaded to a temp file first.
  */
 
+import { dirname } from 'node:path';
+
 import { downloadToTempFile, removeTempFile } from '../../util/file';
 import { READ_FN, escapeSql } from '../../util/sql';
 
@@ -13,6 +15,7 @@ const noopCleanup = async (): Promise<void> => {};
 /**
  * Build a LoadedSource that registers a local file as the data view.
  * The view reads the file lazily, so the file must outlive the engine.
+ * The file's directory is whitelisted so the engine can still read it after hardening.
  */
 export function fileSource(
   path: string,
@@ -26,6 +29,7 @@ export function fileSource(
         `CREATE OR REPLACE VIEW ${tableName} AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`
       );
     },
+    allowedDirectories: [dirname(path)],
     cleanup,
   };
 }

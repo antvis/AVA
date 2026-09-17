@@ -2,12 +2,15 @@
  * DuckDB engine: LLM generates SQL, executed against an in-memory DuckDB instance.
  */
 
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { DuckDBInstance } from '@duckdb/node-api';
 
 import { coerceNumbers } from '../util/coerce';
 import { mapFieldType, stringifySchema } from '../util/schema';
+import { sqlStringLiteral } from '../util/sql';
 
 import { loadSource } from './loaders';
 
@@ -39,11 +42,36 @@ export class DuckDBEngine implements AnalysisEngine {
     return this.connection;
   }
 
+  /**
+   * Harden the session after the data view is registered: whitelist the data
+   * file's directories, then disable further external access and lock the
+   * configuration so LLM-generated SQL cannot read arbitrary files or undo it.
+   */
+  private async restrictAccess(conn: DuckDBConnection, allowedDirectories: string[]): Promise<void> {
+    if (allowedDirectories.length > 0) {
+      await conn.run(`SET allowed_directories = [${allowedDirectories.map(sqlStringLiteral).join(', ')}]`);
+    }
+    // Confine spill files (from out-of-memory sorts/joins) to a known directory
+    // instead of the default `.tmp` in the process working directory.
+    const tempBase = allowedDirectories[0] ?? tmpdir();
+    await conn.run(`SET temp_directory = ${sqlStringLiteral(join(tempBase, '.dbtmp'))}`);
+    // en Postgres catalog, external access must be disabled before disabling the local filesystem; configuration lock must be set last.
+    // The data view is already registered, so external access is no longer needed.
+    await conn.run('SET enable_external_access = false');
+    if (allowedDirectories.length === 0) {
+      // No local data file to read — disable the local filesystem entirely.
+      await conn.run("SET disabled_filesystems = 'LocalFileSystem'");
+    }
+    // Lock last so the settings above cannot be changed again.
+    await conn.run('SET lock_configuration = true');
+  }
+
   async load(config: DataSourceConfig): Promise<Schema> {
     try {
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
       await source.register(conn, this.tableName);
+      await this.restrictAccess(conn, source.allowedDirectories);
       this.cleanup = source.cleanup;
     } catch (error) {
       await this.cleanup?.();

@@ -136,6 +136,11 @@ export type FileFormat = 'csv' | 'json' | 'parquet';
 export interface LoadedSource {
   /** Register the source as the `tableName` view on the given connection */
   register: (conn: DuckDBConnection, tableName: string) => Promise<void>;
+  /**
+   * Directories the engine whitelists for file access after registering
+   * (the data file's directory for file sources; empty for in-memory/remote sources).
+   */
+  allowedDirectories: string[];
   /** Release resources (temp files, attached databases, tunnels) */
   cleanup: () => Promise<void>;
 }
