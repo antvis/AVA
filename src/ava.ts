@@ -6,6 +6,7 @@ import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import { DuckDBEngine } from './duckdb';
+import { SupabaseEngine } from './saas';
 import { extractDataSchema, stringifySchema } from './util/schema';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
@@ -16,6 +17,7 @@ import type {
   EngineOptions,
   DataSourceConfig,
   Schema,
+  AnalysisEngine,
   AnalysisResponse,
   VisualizeResponse,
   SuggestResult,
@@ -40,7 +42,7 @@ function hasData(data: unknown): boolean {
 export class AVA {
   private readonly llmConfig: LLMConfig;
   private readonly engineOptions: EngineOptions;
-  private engine: DuckDBEngine | null = null;
+  private engine: AnalysisEngine | null = null;
   private schema: Schema | null = null;
 
   constructor(config: AVAConfig) {
@@ -55,7 +57,10 @@ export class AVA {
   async load(config: DataSourceConfig): Promise<Schema> {
     await this.engine?.dispose();
 
-    this.engine = new DuckDBEngine(this.llmConfig, this.engineOptions);
+    this.engine =
+      config.type === 'supabase'
+        ? new SupabaseEngine(this.llmConfig)
+        : new DuckDBEngine(this.llmConfig, this.engineOptions);
     try {
       this.schema = await this.engine.load(config);
     } catch (error) {

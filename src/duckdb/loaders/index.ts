@@ -38,5 +38,9 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       return loadMySQL(config.options);
     case 'postgresql':
       return loadPostgreSQL(config.options);
+    case 'supabase':
+      // Supabase is a SaaS source executed remotely — AVA routes it to
+      // SupabaseEngine, so it must never reach the DuckDB loaders
+      throw new Error('Supabase sources are handled by SupabaseEngine, not the DuckDB engine');
   }
 }

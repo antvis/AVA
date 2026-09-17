@@ -47,6 +47,7 @@ export interface AVAConfig {
  * - inline types: `csv` (content string), `json` (object array), `text`
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
  * - database types: `mysql`, `postgresql` (ATTACH through DuckDB's extension)
+ * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
   | 'csv'
@@ -57,7 +58,8 @@ export type SourceType =
   | 'parquet'
   | 'excel'
   | 'mysql'
-  | 'postgresql';
+  | 'postgresql'
+  | 'supabase';
 
 /**
  * Options for inline CSV data sources (raw CSV content string)
@@ -161,10 +163,25 @@ export interface PostgreSQLSourceOptions {
 }
 
 /**
+ * Options for Supabase data sources (handled by SaasDBEngine, not the DuckDB
+ * engine). Schema is discovered and SQL is executed through the Supabase
+ * Management API — data never leaves the SaaS. The OAuth handshake
+ * (authorize/token exchange/refresh) is out of scope: the consuming app
+ * obtains the access token and passes it here.
+ */
+export interface SupabaseSourceOptions {
+  /** OAuth access token from the Supabase Management API OAuth flow */
+  accessToken: string;
+  /** Project reference (as returned by GET https://api.supabase.com/v1/projects) */
+  projectRef: string;
+}
+
+/**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
  * - database types (mysql/postgresql): ATTACH through DuckDB's extension
+ * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
  */
 export type DataSourceConfig =
   | { type: 'csv'; options: CSVSourceOptions }
@@ -175,7 +192,8 @@ export type DataSourceConfig =
   | { type: 'parquet'; options: ParquetSourceOptions }
   | { type: 'excel'; options: ExcelSourceOptions }
   | { type: 'mysql'; options: MySQLSourceOptions }
-  | { type: 'postgresql'; options: PostgreSQLSourceOptions };
+  | { type: 'postgresql'; options: PostgreSQLSourceOptions }
+  | { type: 'supabase'; options: SupabaseSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).
