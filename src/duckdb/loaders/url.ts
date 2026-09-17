@@ -5,6 +5,8 @@
 
 import { removeTempFile, writeTempFile } from '../../util/file';
 
+import { fileSource } from './file';
+
 import type { URLSourceOptions, LoadedSource } from '../../types';
 
 export async function loadURL(options: URLSourceOptions): Promise<LoadedSource> {
@@ -34,5 +36,5 @@ export async function loadURL(options: URLSourceOptions): Promise<LoadedSource> 
   }
 
   const tmpFile = await writeTempFile(JSON.stringify(result), 'json');
-  return { path: tmpFile, format: 'json', cleanup: () => removeTempFile(tmpFile) };
+  return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile));
 }

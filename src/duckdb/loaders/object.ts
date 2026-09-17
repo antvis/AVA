@@ -5,6 +5,8 @@
 
 import { removeTempFile, writeTempFile } from '../../util/file';
 
+import { fileSource } from './file';
+
 import type { ObjectSourceOptions, LoadedSource } from '../../types';
 
 export async function loadObject(options: ObjectSourceOptions): Promise<LoadedSource> {
@@ -18,5 +20,5 @@ export async function loadObject(options: ObjectSourceOptions): Promise<LoadedSo
   }
 
   const tmpFile = await writeTempFile(JSON.stringify(data), 'json');
-  return { path: tmpFile, format: 'json', cleanup: () => removeTempFile(tmpFile) };
+  return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile));
 }

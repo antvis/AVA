@@ -8,7 +8,6 @@ import { DuckDBInstance } from '@duckdb/node-api';
 
 import { coerceNumbers } from '../util/coerce';
 import { mapFieldType, stringifySchema } from '../util/schema';
-import { READ_FN, escapeSql } from '../util/sql';
 
 import { loadSource } from './loaders';
 
@@ -18,7 +17,6 @@ import type {
   DataSourceConfig,
   Schema,
   FieldMetadata,
-  FileFormat,
   LLMConfig,
 } from '../types';
 
@@ -41,22 +39,11 @@ export class DuckDBEngine implements AnalysisEngine {
     return this.connection;
   }
 
-  /**
-   * Register a local file as the `data` view (csv/json/parquet).
-   * The view reads the file lazily, so the file must outlive the engine.
-   */
-  private async registerFile(filePath: string, format: FileFormat): Promise<void> {
-    const conn = await this.getConnection();
-    const sniff = format === 'parquet' ? '' : ', auto_detect=true';
-    await conn.run(
-      `CREATE OR REPLACE VIEW ${this.tableName} AS SELECT * FROM ${READ_FN[format]}('${escapeSql(filePath)}'${sniff})`
-    );
-  }
-
   async load(config: DataSourceConfig): Promise<Schema> {
     try {
       const source = await loadSource(config, this.llmConfig);
-      await this.registerFile(source.path, source.format);
+      const conn = await this.getConnection();
+      await source.register(conn, this.tableName);
       this.cleanup = source.cleanup;
     } catch (error) {
       await this.cleanup?.();

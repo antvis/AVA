@@ -17,18 +17,19 @@ describe('loaders/index', () => {
     source = null;
   });
 
-  it('dispatches object source to a temp json file', async () => {
+  it('dispatches object source to a registerable source', async () => {
     source = await loadSource(
       { type: 'object', options: { data: [{ a: 1 }] } },
       getLLMConfig()
     );
 
-    expect(source.format).toBe('json');
+    expect(typeof source.register).toBe('function');
+    expect(typeof source.cleanup).toBe('function');
   });
 
   it('throws for reserved database source types', async () => {
     await expect(
-      loadSource({ type: 'mysql', options: {} }, getLLMConfig())
+      loadSource({ type: 'postgresql', options: {} }, getLLMConfig())
     ).rejects.toThrow('not supported yet');
   });
 });

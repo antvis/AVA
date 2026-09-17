@@ -2,6 +2,8 @@
  * Core type definitions for AVA v4
  */
 
+import type { DuckDBConnection } from '@duckdb/node-api';
+
 /**
  * LLM configuration
  */
@@ -26,7 +28,7 @@ export interface AVAConfig {
  * Data source types for loadSource.
  * - inline types: `csv` (content string), `object`, `url`, `text`
  * - file types: `csv-file`, `json`, `parquet` (read through DuckDB's readers)
- * - database types (mysql/postgresql) are reserved and not implemented yet
+ * - database types: `mysql` (ATTACH through DuckDB's mysql extension); `postgresql` is reserved
  */
 export type SourceType =
   | 'csv'
@@ -80,10 +82,36 @@ export interface CSVSourceOptions {
 }
 
 /**
+ * SSH tunnel options for MySQL sources (forwards the MySQL connection through an SSH server)
+ */
+export interface MySQLSSHOptions {
+  host: string;
+  port?: number;
+  user: string;
+  password?: string;
+}
+
+/**
+ * Options for MySQL data sources (ATTACH through DuckDB's mysql extension)
+ */
+export interface MySQLSourceOptions {
+  host: string;
+  port?: number;
+  database: string;
+  user?: string;
+  password?: string;
+  /** Table to read as the data view */
+  table: string;
+  /** Optional SSH tunnel the MySQL connection is forwarded through */
+  ssh?: MySQLSSHOptions;
+}
+
+/**
  * External data source configuration for loadSource.
  * - inline types (csv/object/url/text): data is materialized into JS memory
  * - file types (csv-file/json/parquet): loaded through DuckDB's readers, `options` is FileSourceOptions
- * - database types (mysql/postgresql): `options` is passed through to the connection (reserved)
+ * - database types (mysql): ATTACH through DuckDB's extension, `options` is MySQLSourceOptions
+ * - postgresql: reserved
  */
 export type DataSourceConfig =
   | { type: 'csv'; options: CSVSourceOptions }
@@ -93,7 +121,8 @@ export type DataSourceConfig =
   | { type: 'csv-file'; options: FileSourceOptions }
   | { type: 'json'; options: FileSourceOptions }
   | { type: 'parquet'; options: FileSourceOptions }
-  | { type: 'mysql' | 'postgresql'; options: Record<string, unknown> };
+  | { type: 'mysql'; options: MySQLSourceOptions }
+  | { type: 'postgresql'; options: Record<string, unknown> };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv).
@@ -101,15 +130,13 @@ export type DataSourceConfig =
 export type FileFormat = 'csv' | 'json' | 'parquet';
 
 /**
- * A loaded data source, ready for an engine to register.
- * Each loader turns its source config into a local file that the engine reads directly.
+ * A loaded data source, ready for an engine to register as the data view.
+ * File loaders register a local file; database loaders ATTACH and register a table.
  */
 export interface LoadedSource {
-  /** Local file path for the engine to read */
-  path: string;
-  /** File format, determines which reader is used */
-  format: FileFormat;
-  /** Release resources (e.g. delete temp files). No-op for pre-existing local files. */
+  /** Register the source as the `tableName` view on the given connection */
+  register: (conn: DuckDBConnection, tableName: string) => Promise<void>;
+  /** Release resources (temp files, attached databases, tunnels) */
   cleanup: () => Promise<void>;
 }
 

@@ -8,6 +8,8 @@ import { createOpenAI } from '@ai-sdk/openai';
 
 import { removeTempFile, writeTempFile } from '../../util/file';
 
+import { fileSource } from './file';
+
 import type { LLMConfig, TextSourceOptions, LoadedSource } from '../../types';
 
 async function extractData(text: string, llmConfig: LLMConfig): Promise<any[]> {
@@ -62,5 +64,5 @@ Return ONLY the JSON array, no additional text or explanation. The response must
 export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig): Promise<LoadedSource> {
   const data = await extractData(options.text, llmConfig);
   const tmpFile = await writeTempFile(JSON.stringify(data), 'json');
-  return { path: tmpFile, format: 'json', cleanup: () => removeTempFile(tmpFile) };
+  return fileSource(tmpFile, 'json', () => removeTempFile(tmpFile));
 }

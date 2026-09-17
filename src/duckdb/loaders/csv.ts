@@ -8,6 +8,8 @@ import { parse } from 'csv-parse/sync';
 
 import { removeTempFile, writeTempFile } from '../../util/file';
 
+import { fileSource } from './file';
+
 import type { CSVSourceOptions, LoadedSource } from '../../types';
 
 /**
@@ -49,5 +51,5 @@ export async function loadCSV(options: CSVSourceOptions): Promise<LoadedSource> 
   });
 
   const tmpFile = await writeTempFile(toCSV(rows), 'csv');
-  return { path: tmpFile, format: 'csv', cleanup: () => removeTempFile(tmpFile) };
+  return fileSource(tmpFile, 'csv', () => removeTempFile(tmpFile));
 }

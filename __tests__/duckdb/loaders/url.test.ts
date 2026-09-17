@@ -2,11 +2,11 @@
  * Unit tests for src/duckdb/loaders/url.ts
  */
 
-import * as fs from 'fs/promises';
-
 import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { loadURL } from '../../../src/duckdb/loaders/url';
+
+import { registerAndQuery } from './helper';
 
 import type { LoadedSource } from '../../../src/types';
 
@@ -19,7 +19,7 @@ describe('loaders/url', () => {
     vi.unstubAllGlobals();
   });
 
-  it('fetches JSON and applies transform into a temp json file', async () => {
+  it('fetches JSON, applies transform, and registers a queryable view', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({
       ok: true,
       json: async () => ({ users: [{ name: 'Alice' }, { name: 'Bob' }] }),
@@ -30,9 +30,8 @@ describe('loaders/url', () => {
       transform: (res) => res.users,
     });
 
-    expect(source.format).toBe('json');
-    const content = JSON.parse(await fs.readFile(source.path, 'utf-8'));
-    expect(content).toEqual([{ name: 'Alice' }, { name: 'Bob' }]);
+    const rows = await registerAndQuery(source);
+    expect(rows).toEqual([{ name: 'Alice' }, { name: 'Bob' }]);
   });
 
   it('rejects when the result is not an array', async () => {

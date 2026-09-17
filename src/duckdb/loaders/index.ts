@@ -7,6 +7,7 @@ import { loadCSV } from './csv';
 import { loadObject } from './object';
 import { loadURL } from './url';
 import { loadText } from './text';
+import { loadMySQL } from './mysql';
 import { loadCSVFile, loadJSONFile, loadParquetFile } from './file';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
@@ -14,8 +15,8 @@ import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 export type { LoadedSource } from '../../types';
 
 /**
- * Load a data source config into a local file that DuckDB can read.
- * @throws Error for reserved/unsupported source types (mysql, postgresql)
+ * Load a data source config into a LoadedSource the engine can register.
+ * @throws Error for reserved/unsupported source types (postgresql)
  */
 export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig): Promise<LoadedSource> {
   switch (config.type) {
@@ -33,6 +34,8 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       return loadJSONFile(config.options);
     case 'parquet':
       return loadParquetFile(config.options);
+    case 'mysql':
+      return loadMySQL(config.options);
     default:
       throw new Error(`loadSource: "${config.type}" sources are not supported yet.`);
   }

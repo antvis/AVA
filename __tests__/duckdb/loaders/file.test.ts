@@ -8,6 +8,8 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { loadCSVFile } from '../../../src/duckdb/loaders/file';
 
+import { registerAndQuery } from './helper';
+
 import type { LoadedSource } from '../../../src/types';
 
 describe('loaders/file', () => {
@@ -19,15 +21,15 @@ describe('loaders/file', () => {
     vi.unstubAllGlobals();
   });
 
-  it('uses a local file path directly without creating a temp file', async () => {
+  it('registers a local csv file as a queryable view', async () => {
     const localPath = path.join(__dirname, '../../../data/companies.csv');
     source = await loadCSVFile({ path: localPath });
 
-    expect(source.format).toBe('csv');
-    expect(source.path).toBe(localPath);
+    const rows = await registerAndQuery(source);
+    expect(rows.length).toBeGreaterThan(0);
   });
 
-  it('downloads a remote file to a temp file', async () => {
+  it('downloads a remote file and registers it as a queryable view', async () => {
     vi.stubGlobal('fetch', vi.fn(async () => ({
       ok: true,
       status: 200,
@@ -36,8 +38,7 @@ describe('loaders/file', () => {
 
     source = await loadCSVFile({ path: 'https://example.com/data.csv' });
 
-    expect(source.format).toBe('csv');
-    expect(source.path).not.toBe('https://example.com/data.csv');
-    expect(source.path.endsWith('.csv')).toBe(true);
+    const rows = await registerAndQuery(source);
+    expect(rows).toEqual([{ a: 1, b: 2 }]);
   });
 });

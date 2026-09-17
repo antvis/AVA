@@ -36,7 +36,7 @@ describe('AVA', () => {
     });
 
     it('should reject reserved database source types', async () => {
-      await expect(ava.loadSource({ type: 'mysql', options: {} })).rejects.toThrow(
+      await expect(ava.loadSource({ type: 'postgresql', options: {} })).rejects.toThrow(
         'not supported yet',
       );
     });
