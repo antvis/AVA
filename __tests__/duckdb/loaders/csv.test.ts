@@ -4,24 +4,22 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 
-import { loadCSV } from '../../../src/duckdb/loaders/csv';
-
-import { registerAndQuery } from './helper';
-
-import type { LoadedSource } from '../../../src/types';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { getLLMConfig } from '../../test-utils';
 
 describe('loaders/csv', () => {
-  let source: LoadedSource | null = null;
+  let engine: DuckDBEngine | null = null;
 
   afterEach(async () => {
-    await source?.cleanup();
-    source = null;
+    await engine?.dispose();
+    engine = null;
   });
 
   it('registers CSV content as a queryable view', async () => {
-    source = await loadCSV({ csv: 'name,age\nAlice,30\nBob,25' });
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({ type: 'csv', options: { csv: 'name,age\nAlice,30\nBob,25' } });
 
-    const rows = await registerAndQuery(source);
+    const rows = await engine.execute('SELECT * FROM "data"');
     expect(rows).toEqual([
       { name: 'Alice', age: 30 },
       { name: 'Bob', age: 25 },

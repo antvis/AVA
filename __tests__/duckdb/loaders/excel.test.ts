@@ -5,78 +5,56 @@
 
 import * as path from 'path';
 
-import { DuckDBInstance } from '@duckdb/node-api';
 import { describe, it, expect, afterEach } from 'vitest';
 
-import { loadExcel } from '../../../src/duckdb/loaders/excel';
-
-import type { LoadedSource } from '../../../src/types';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { getLLMConfig } from '../../test-utils';
 
 describe('loaders/excel', () => {
-  let source: LoadedSource | null = null;
+  let engine: DuckDBEngine | null = null;
   const xlsxPath = path.join(__dirname, '../../../data/sheets.xlsx');
 
   afterEach(async () => {
-    await source?.cleanup();
-    source = null;
+    await engine?.dispose();
+    engine = null;
   });
 
   it('registers one view per sheet and reads each sheet', async () => {
-    source = await loadExcel({ path: xlsxPath });
+    engine = new DuckDBEngine(getLLMConfig());
+    const schema = await engine.load({ type: 'excel', options: { path: xlsxPath } });
 
-    const instance = await DuckDBInstance.create(':memory:');
-    const conn = await instance.connect();
-    try {
-      const tableNames = await source.register(conn);
-      expect(tableNames).toEqual(['Sales', 'Costs']);
+    expect(schema.tables.map((t) => t.name)).toEqual(['Sales', 'Costs']);
 
-      const sales = await conn.runAndReadAll('SELECT * FROM "Sales" ORDER BY region');
-      expect(sales.getRowObjectsJson()).toEqual([
-        { region: 'East', revenue: 100 },
-        { region: 'West', revenue: 200 },
-      ]);
+    const sales = await engine.execute('SELECT * FROM "Sales" ORDER BY region');
+    expect(sales).toEqual([
+      { region: 'East', revenue: 100 },
+      { region: 'West', revenue: 200 },
+    ]);
 
-      const costs = await conn.runAndReadAll('SELECT * FROM "Costs" ORDER BY region');
-      expect(costs.getRowObjectsJson()).toEqual([
-        { region: 'East', cost: 30 },
-        { region: 'West', cost: 50 },
-      ]);
-    } finally {
-      conn.closeSync();
-      instance.closeSync();
-    }
+    const costs = await engine.execute('SELECT * FROM "Costs" ORDER BY region');
+    expect(costs).toEqual([
+      { region: 'East', cost: 30 },
+      { region: 'West', cost: 50 },
+    ]);
   });
 
   it('supports joining across sheets', async () => {
-    source = await loadExcel({ path: xlsxPath });
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({ type: 'excel', options: { path: xlsxPath } });
 
-    const instance = await DuckDBInstance.create(':memory:');
-    const conn = await instance.connect();
-    try {
-      await source.register(conn);
-      const reader = await conn.runAndReadAll(
-        'SELECT s.region, s.revenue - c.cost AS profit FROM "Sales" s JOIN "Costs" c USING (region) ORDER BY s.region'
-      );
-      expect(reader.getRowObjectsJson()).toEqual([
-        { region: 'East', profit: 70 },
-        { region: 'West', profit: 150 },
-      ]);
-    } finally {
-      conn.closeSync();
-      instance.closeSync();
-    }
+    const rows = await engine.execute(
+      'SELECT s.region, s.revenue - c.cost AS profit FROM "Sales" s JOIN "Costs" c USING (region) ORDER BY s.region'
+    );
+    expect(rows).toEqual([
+      { region: 'East', profit: 70 },
+      { region: 'West', profit: 150 },
+    ]);
   });
 
   it('throws for a non-xlsx file', async () => {
-    source = await loadExcel({ path: path.join(__dirname, '../../../data/companies.csv') });
-
-    const instance = await DuckDBInstance.create(':memory:');
-    const conn = await instance.connect();
-    try {
-      await expect(source.register(conn)).rejects.toThrow();
-    } finally {
-      conn.closeSync();
-      instance.closeSync();
-    }
+    engine = new DuckDBEngine(getLLMConfig());
+    await expect(
+      engine.load({ type: 'excel', options: { path: path.join(__dirname, '../../../data/companies.csv') } })
+    ).rejects.toThrow();
   });
 });

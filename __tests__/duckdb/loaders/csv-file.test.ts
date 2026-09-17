@@ -6,26 +6,24 @@ import * as path from 'path';
 
 import { describe, it, expect, afterEach, vi } from 'vitest';
 
-import { loadCSVFile } from '../../../src/duckdb/loaders/csv-file';
-
-import { registerAndQuery } from './helper';
-
-import type { LoadedSource } from '../../../src/types';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { getLLMConfig } from '../../test-utils';
 
 describe('loaders/csv-file', () => {
-  let source: LoadedSource | null = null;
+  let engine: DuckDBEngine | null = null;
 
   afterEach(async () => {
-    await source?.cleanup();
-    source = null;
+    await engine?.dispose();
+    engine = null;
     vi.unstubAllGlobals();
   });
 
   it('registers a local csv file as a queryable view', async () => {
+    engine = new DuckDBEngine(getLLMConfig());
     const localPath = path.join(__dirname, '../../../data/companies.csv');
-    source = await loadCSVFile({ path: localPath });
+    await engine.load({ type: 'csv-file', options: { path: localPath } });
 
-    const rows = await registerAndQuery(source);
+    const rows = await engine.execute('SELECT * FROM "data"');
     expect(rows.length).toBeGreaterThan(0);
   });
 
@@ -36,9 +34,10 @@ describe('loaders/csv-file', () => {
       arrayBuffer: async () => new TextEncoder().encode('a,b\n1,2').buffer,
     })));
 
-    source = await loadCSVFile({ path: 'https://example.com/data.csv' });
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({ type: 'csv-file', options: { path: 'https://example.com/data.csv' } });
 
-    const rows = await registerAndQuery(source);
+    const rows = await engine.execute('SELECT * FROM "data"');
     expect(rows).toEqual([{ a: 1, b: 2 }]);
   });
 });

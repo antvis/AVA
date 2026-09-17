@@ -4,25 +4,22 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 
-import { loadText } from '../../../src/duckdb/loaders/text';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { skipLLMTests, getLLMConfig } from '../../test-utils';
 
-import { registerAndQuery } from './helper';
-
-import type { LoadedSource } from '../../../src/types';
-
 describe.skipIf(skipLLMTests)('loaders/text', () => {
-  let source: LoadedSource | null = null;
+  let engine: DuckDBEngine | null = null;
 
   afterEach(async () => {
-    await source?.cleanup();
-    source = null;
+    await engine?.dispose();
+    engine = null;
   });
 
   it('extracts structured data via LLM and registers a queryable view', async () => {
-    source = await loadText({ text: 'Beijing 100, Shanghai 200' }, getLLMConfig());
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({ type: 'text', options: { text: 'Beijing 100, Shanghai 200' } });
 
-    const rows = await registerAndQuery(source);
+    const rows = await engine.execute('SELECT * FROM "data"');
     expect(rows.length).toBeGreaterThan(0);
   });
 });

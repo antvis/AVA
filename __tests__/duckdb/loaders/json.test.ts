@@ -4,28 +4,29 @@
 
 import { describe, it, expect, afterEach } from 'vitest';
 
-import { loadJson } from '../../../src/duckdb/loaders/json';
-
-import { registerAndQuery } from './helper';
-
-import type { LoadedSource } from '../../../src/types';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { getLLMConfig } from '../../test-utils';
 
 describe('loaders/json', () => {
-  let source: LoadedSource | null = null;
+  let engine: DuckDBEngine | null = null;
 
   afterEach(async () => {
-    await source?.cleanup();
-    source = null;
+    await engine?.dispose();
+    engine = null;
   });
 
   it('registers an object array as a queryable view', async () => {
-    source = await loadJson({ data: [{ name: 'Alice', age: 30 }] });
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({ type: 'json', options: { data: [{ name: 'Alice', age: 30 }] } });
 
-    const rows = await registerAndQuery(source);
+    const rows = await engine.execute('SELECT * FROM "data"');
     expect(rows).toEqual([{ name: 'Alice', age: 30 }]);
   });
 
   it('rejects non-array input', async () => {
-    await expect(loadJson({ data: {} as any })).rejects.toThrow('Data must be an array');
+    engine = new DuckDBEngine(getLLMConfig());
+    await expect(engine.load({ type: 'json', options: { data: {} as any } })).rejects.toThrow(
+      'Data must be an array'
+    );
   });
 });
