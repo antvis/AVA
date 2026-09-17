@@ -7,7 +7,7 @@ import { createServer, type Server, type Socket } from 'node:net';
 
 import { Client } from 'ssh2';
 
-import type { SSHOptions } from '../../../types';
+import type { SSHOptions } from '../../types';
 
 const SSH_CONNECT_TIMEOUT_MS = 10000;
 

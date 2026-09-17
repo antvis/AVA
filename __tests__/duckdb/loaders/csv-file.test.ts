@@ -40,4 +40,16 @@ describe('loaders/csv-file', () => {
     const rows = await engine.execute('SELECT * FROM "data"');
     expect(rows).toEqual([{ a: 1, b: 2 }]);
   });
+
+  it('passes reader options (delim) through to read_csv', async () => {
+    engine = new DuckDBEngine(getLLMConfig());
+    const localPath = path.join(__dirname, '../../../data/semicolon.csv');
+    await engine.load({ type: 'csv-file', options: { path: localPath, options: { delim: ';' } } });
+
+    const rows = await engine.execute('SELECT * FROM "data" ORDER BY name');
+    expect(rows).toEqual([
+      { name: 'Alice', age: 30 },
+      { name: 'Bob', age: 25 },
+    ]);
+  });
 });

@@ -4,7 +4,7 @@
  * parses CSV content in JS first.
  */
 
-import { createFileLoader } from './util/file';
+import { createFileLoader } from '../util/file';
 
 import type { CSVFileSourceOptions } from '../../types';
 

@@ -8,7 +8,7 @@ import { parse } from 'csv-parse/sync';
 
 import { removeTempFile, writeTempFile } from '../../util/file';
 
-import { fileSource } from './util/file';
+import { fileSource } from '../util/file';
 
 import type { CSVSourceOptions, LoadedSource } from '../../types';
 
@@ -30,8 +30,8 @@ function toCSV(rows: any[]): string {
   return lines.join('\n');
 }
 
-export async function loadCSV(options: CSVSourceOptions): Promise<LoadedSource> {
-  const { csv } = options;
+export async function loadCSV(loaderOptions: CSVSourceOptions): Promise<LoadedSource> {
+  const { csv, options } = loaderOptions;
 
   const rows = parse(csv, {
     columns: true,
@@ -41,5 +41,5 @@ export async function loadCSV(options: CSVSourceOptions): Promise<LoadedSource> 
   });
 
   const tmpFile = await writeTempFile(toCSV(rows), 'csv');
-  return fileSource(tmpFile, 'csv', () => removeTempFile(tmpFile));
+  return fileSource(tmpFile, 'csv', () => removeTempFile(tmpFile), options);
 }

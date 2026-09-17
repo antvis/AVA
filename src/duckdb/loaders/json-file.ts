@@ -4,7 +4,7 @@
  * which takes an in-memory object array.
  */
 
-import { createFileLoader } from './util/file';
+import { createFileLoader } from '../util/file';
 
 import type { JsonFileSourceOptions } from '../../types';
 

@@ -62,11 +62,114 @@ export type SourceType =
   | 'supabase';
 
 /**
+ * DuckDB read_csv reader options.
+ * Mirrors the Parameters table in
+ * https://duckdb.org/docs/stable/data/csv/overview.html
+ * Type mapping: BOOL→boolean, BIGINT→number, VARCHAR→string,
+ * VARCHAR[]→string[], STRUCT→Record<string, string>, TYPE[]→string[].
+ * All fields optional; unset fields fall back to the reader default / sniffer.
+ * Only the primary name of aliased options is kept (delim, not sep/delimiter).
+ */
+export interface CSVReadOptions {
+  // ── structure / columns ─────────────────────
+  /** First line of each file contains the column names. Default false */
+  header?: boolean;
+  /** Column names, as a list */
+  names?: string[];
+  /** Column names → types struct, e.g. { col1: 'INTEGER' }. Disables schema auto-detection */
+  columns?: Record<string, string>;
+  /** Column types, by position (list) or by name (struct) */
+  types?: string[] | Record<string, string>;
+  /** Skip type detection and read all columns as VARCHAR. Default false */
+  all_varchar?: boolean;
+  /** Remove non-alphanumeric chars from column names; prefix reserved keywords with _ */
+  normalize_names?: boolean;
+  /** Columns that must not be matched against the NULL string */
+  force_not_null?: string[];
+
+  // ── delimiter / quoting ─────────────────────
+  /** Field delimiter (up to 4 bytes). Default ',' */
+  delim?: string;
+  /** Quote character. Default '"' */
+  quote?: string;
+  /** Escape character for the quote within quoted values. Default '"' */
+  escape?: string;
+  /** Character used to initiate comments */
+  comment?: string;
+  /** New line character(s): '\r' | '\n' | '\r\n' */
+  new_line?: string;
+
+  // ── type detection / formats ────────────────
+  /** Auto detect CSV parameters. Default true */
+  auto_detect?: boolean;
+  /** Types the sniffer considers when detecting column types, e.g. ['BIGINT', 'DATE'] */
+  auto_type_candidates?: string[];
+  /** Date format used when parsing dates */
+  dateformat?: string;
+  /** Timestamp format used when parsing timestamps */
+  timestampformat?: string;
+  /** Decimal separator for numbers. Default '.' */
+  decimal_separator?: string;
+  /** Thousands separator (single char, different from decimal_separator) */
+  thousands?: string;
+  /** String(s) that represent a NULL value */
+  nullstr?: string | string[];
+  /** Allow the conversion of quoted values to NULL. Default true */
+  allow_quoted_nulls?: boolean;
+
+  // ── sampling / performance ──────────────────
+  /** Number of sample lines for auto detection. Default 20480 */
+  sample_size?: number;
+  /** Size of the read buffers in bytes. Default 16 * max_line_size */
+  buffer_size?: number;
+  /** Files used by the sniffer for multi-file schema detection; -1 = all. Default 10 */
+  files_to_sniff?: number;
+  /** Maximum line size in bytes. Default 2000000 */
+  max_line_size?: number;
+  /** Use the parallel CSV reader. Default true */
+  parallel?: boolean;
+  /** Number of lines to skip at the start of each file. Default 0 */
+  skip?: number;
+
+  // ── error handling / rejects ────────────────
+  /** Ignore any parsing errors encountered. Default false */
+  ignore_errors?: boolean;
+  /** Pad short rows with NULL values on the right. Default false */
+  null_padding?: boolean;
+  /** Throw an error upon encountering any issue. Default true */
+  strict_mode?: boolean;
+  /** Skip faulty lines and store them in the rejects table. Default false */
+  store_rejects?: boolean;
+  /** Temp table name for faulty lines. Default 'reject_errors' */
+  rejects_table?: string;
+  /** Temp table name for faulty scans. Default 'reject_scans' */
+  rejects_scan?: string;
+  /** Upper limit on faulty lines recorded per file; 0 = no limit. Default 0 */
+  rejects_limit?: number;
+
+  // ── encoding / compression ──────────────────
+  /** File encoding: 'utf-8' | 'utf-16' | 'latin-1'. Default 'utf-8' */
+  encoding?: string;
+  /** Compression method: 'none' | 'gzip' | 'zstd'. Default auto (from file extension) */
+  compression?: string;
+
+  // ── multiple files ──────────────────────────
+  /** Align columns from different files by name instead of position. Default false */
+  union_by_name?: boolean;
+  /** Interpret the path as a Hive partitioned path. Default auto-detected */
+  hive_partitioning?: boolean;
+  /** Add the source file path to each row as a `filename` column. Default false */
+  filename?: boolean;
+}
+
+/**
  * Options for inline CSV data sources (raw CSV content string)
  */
 export interface CSVSourceOptions {
   /** Raw CSV content string */
   csv: string;
+  /** Extra DuckDB read_csv options */
+  options?: CSVReadOptions;
 }
 
 /**
@@ -77,6 +180,8 @@ export interface CSVFileSourceOptions {
   path: string;
   /** HTTP headers for remote sources (e.g. Authorization) */
   headers?: Record<string, string>;
+  /** Extra DuckDB read_csv options */
+  options?: CSVReadOptions;
 }
 
 /**

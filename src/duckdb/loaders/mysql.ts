@@ -6,7 +6,7 @@
 
 import { escapeSql, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
-import { createSshTunnel } from './util/ssh';
+import { createSshTunnel } from '../util/ssh';
 
 import type { MySQLSourceOptions, LoadedSource } from '../../types';
 

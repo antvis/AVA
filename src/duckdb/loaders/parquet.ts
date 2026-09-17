@@ -3,7 +3,7 @@
  * DuckDB's parquet reader.
  */
 
-import { createFileLoader } from './util/file';
+import { createFileLoader } from '../util/file';
 
 import type { ParquetSourceOptions } from '../../types';
 
