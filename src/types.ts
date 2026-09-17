@@ -82,9 +82,9 @@ export interface CSVSourceOptions {
 }
 
 /**
- * SSH tunnel options for MySQL sources (forwards the MySQL connection through an SSH server)
+ * SSH tunnel options for database sources (forwards the connection through an SSH server)
  */
-export interface MySQLSSHOptions {
+export interface SSHOptions {
   host: string;
   port?: number;
   user: string;
@@ -103,15 +103,31 @@ export interface MySQLSourceOptions {
   /** Table to read as the data view */
   table: string;
   /** Optional SSH tunnel the MySQL connection is forwarded through */
-  ssh?: MySQLSSHOptions;
+  ssh?: SSHOptions;
+}
+
+/**
+ * Options for PostgreSQL data sources (ATTACH through DuckDB's postgres extension)
+ */
+export interface PostgreSQLSourceOptions {
+  host: string;
+  port?: number;
+  database: string;
+  user?: string;
+  password?: string;
+  /** Table to read as the data view */
+  table: string;
+  /** Schema the table lives in (defaults to `public`) */
+  schema?: string;
+  /** Optional SSH tunnel the PostgreSQL connection is forwarded through */
+  ssh?: SSHOptions;
 }
 
 /**
  * External data source configuration for loadSource.
  * - inline types (csv/object/url/text): data is materialized into JS memory
  * - file types (csv-file/json/parquet): loaded through DuckDB's readers, `options` is FileSourceOptions
- * - database types (mysql): ATTACH through DuckDB's extension, `options` is MySQLSourceOptions
- * - postgresql: reserved
+ * - database types (mysql/postgresql): ATTACH through DuckDB's extension
  */
 export type DataSourceConfig =
   | { type: 'csv'; options: CSVSourceOptions }
@@ -122,7 +138,7 @@ export type DataSourceConfig =
   | { type: 'json'; options: FileSourceOptions }
   | { type: 'parquet'; options: FileSourceOptions }
   | { type: 'mysql'; options: MySQLSourceOptions }
-  | { type: 'postgresql'; options: Record<string, unknown> };
+  | { type: 'postgresql'; options: PostgreSQLSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv).

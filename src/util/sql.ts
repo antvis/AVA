@@ -20,3 +20,8 @@ export function escapeSql(value: string): string {
 export function sqlStringLiteral(value: string): string {
   return `'${escapeSql(value)}'`;
 }
+
+/** Quote a SQL identifier (database/schema/table name) */
+export function sqlIdentifier(name: string): string {
+  return `"${name.replace(/"/g, '""')}"`;
+}

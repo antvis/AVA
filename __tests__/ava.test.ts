@@ -34,12 +34,6 @@ describe('AVA', () => {
     it('should throw when analyzing without loading data', async () => {
       await expect(ava.analysis('test query')).rejects.toThrow('No data loaded');
     });
-
-    it('should reject reserved database source types', async () => {
-      await expect(ava.loadSource({ type: 'postgresql', options: {} })).rejects.toThrow(
-        'not supported yet',
-      );
-    });
   });
 
   describe.skipIf(skipLLMTests)('analysis', () => {

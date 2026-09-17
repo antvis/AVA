@@ -26,10 +26,4 @@ describe('loaders/index', () => {
     expect(typeof source.register).toBe('function');
     expect(typeof source.cleanup).toBe('function');
   });
-
-  it('throws for reserved database source types', async () => {
-    await expect(
-      loadSource({ type: 'postgresql', options: {} }, getLLMConfig())
-    ).rejects.toThrow('not supported yet');
-  });
 });
