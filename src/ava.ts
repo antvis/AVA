@@ -5,12 +5,8 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import {
-  DuckDBEngine,
-  extractMetadata,
-  formatDatasetInfo,
-  formatDatasetInfoWithNonArray,
-} from './duckdb';
+import { DuckDBEngine } from './duckdb';
+import { extractDataSchema, stringifySchema } from './util/schema';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 
@@ -18,7 +14,7 @@ import type {
   AVAConfig,
   LLMConfig,
   DataSourceConfig,
-  DatasetInfo,
+  Schema,
   AnalysisResponse,
   VisualizeResponse,
   SuggestResult,
@@ -43,7 +39,7 @@ function hasData(data: unknown): boolean {
 export class AVA {
   private readonly llmConfig: LLMConfig;
   private engine: DuckDBEngine | null = null;
-  private dataInfo: DatasetInfo | null = null;
+  private schema: Schema | null = null;
 
   constructor(config: AVAConfig) {
     this.llmConfig = config.llm;
@@ -53,25 +49,25 @@ export class AVA {
    * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  async loadSource(config: DataSourceConfig): Promise<DatasetInfo> {
+  async loadSource(config: DataSourceConfig): Promise<Schema> {
     await this.engine?.dispose();
 
     this.engine = new DuckDBEngine(this.llmConfig);
     try {
-      this.dataInfo = await this.engine.load(config);
+      this.schema = await this.engine.load(config);
     } catch (error) {
       await this.engine.dispose();
       this.engine = null;
       throw error;
     }
-    return this.dataInfo;
+    return this.schema;
   }
 
   /**
    * Load CSV file — shortcut for loadSource({ type: 'csv', options: { pathOrContent } })
    * @returns Dataset metadata
    */
-  async loadCSV(filePath: string): Promise<DatasetInfo> {
+  async loadCSV(filePath: string): Promise<Schema> {
     return this.loadSource({ type: 'csv', options: { pathOrContent: filePath } });
   }
 
@@ -79,7 +75,7 @@ export class AVA {
    * Load data from JSON object array — shortcut for loadSource({ type: 'object', options: { data } })
    * @returns Dataset metadata
    */
-  async loadObject(data: any[]): Promise<DatasetInfo> {
+  async loadObject(data: any[]): Promise<Schema> {
     return this.loadSource({ type: 'object', options: { data } });
   }
 
@@ -87,7 +83,7 @@ export class AVA {
    * Load data from URL — shortcut for loadSource({ type: 'url', options: { url, transform } })
    * @returns Dataset metadata
    */
-  async loadURL(url: string, transform?: (response: any) => any[]): Promise<DatasetInfo> {
+  async loadURL(url: string, transform?: (response: any) => any[]): Promise<Schema> {
     return this.loadSource({ type: 'url', options: { url, transform } });
   }
 
@@ -95,7 +91,7 @@ export class AVA {
    * Load data from text using LLM — shortcut for loadSource({ type: 'text', options: { text } })
    * @returns Dataset metadata
    */
-  async loadText(text: string): Promise<DatasetInfo> {
+  async loadText(text: string): Promise<Schema> {
     return this.loadSource({ type: 'text', options: { text } });
   }
 
@@ -105,7 +101,7 @@ export class AVA {
    * Use visualize() separately to generate charts from the analysis result.
    */
   async analysis(query: string): Promise<AnalysisResponse> {
-    if (!this.engine || !this.dataInfo) {
+    if (!this.engine || !this.schema) {
       throw new Error(
         'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, loadText, or loadSource).'
       );
@@ -113,8 +109,6 @@ export class AVA {
 
     const sql = await this.engine.getDSL(query);
     const data = await this.engine.execute(sql);
-
-    // Summarize the result using LLM
     const summary = await this.summarizeResult(query, data);
 
     return {
@@ -141,12 +135,13 @@ export class AVA {
     }
 
     try {
-      // Format analysis data info from the analysis result data
-      const analysisDataInfoStr = Array.isArray(data)
-        ? formatDatasetInfo(extractMetadata(data))
-        : formatDatasetInfoWithNonArray(data);
+      // Describe the result data for the chart advisor; non-array data falls back to raw JSON
+      const analysisSchemaStr = Array.isArray(data)
+        ? stringifySchema(extractDataSchema(data))
+        // TODO - Consider using a more structured schema for non-array data, e.g., object keys and types
+        : JSON.stringify(data);
 
-      const chartType = await adviseChartType(query, analysisDataInfoStr, this.llmConfig);
+      const chartType = await adviseChartType(query, analysisSchemaStr, this.llmConfig);
 
       if (!chartType) {
         return null;
@@ -204,13 +199,13 @@ Provide a natural language summary of the result. If the result is tabular data,
    * @returns Array of suggested queries with scores and reasons
    */
   async suggest(count: number = 3): Promise<SuggestResult[]> {
-    if (!this.dataInfo) {
+    if (!this.schema) {
       throw new Error(
         'No data loaded. Please call one of the load methods first (loadCSV, loadObject, loadURL, loadText, or loadSource).'
       );
     }
 
-    return generateSuggestions(this.llmConfig, this.dataInfo, count);
+    return generateSuggestions(this.llmConfig, this.schema, count);
   }
 
   /**
@@ -219,6 +214,6 @@ Provide a natural language summary of the result. If the result is tabular data,
   async dispose(): Promise<void> {
     await this.engine?.dispose();
     this.engine = null;
-    this.dataInfo = null;
+    this.schema = null;
   }
 }

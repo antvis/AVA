@@ -3,10 +3,11 @@
  * A local file path is used directly; a remote URL is downloaded to a temp file first.
  */
 
-import { noopCleanup } from '../../types';
 import { downloadToTempFile, removeTempFile } from '../../util/file';
 
 import type { FileFormat, FileSourceOptions, LoadedSource } from '../../types';
+
+const noopCleanup = async (): Promise<void> => {};
 
 function createFileLoader(format: FileFormat) {
   return async (options: FileSourceOptions): Promise<LoadedSource> => {

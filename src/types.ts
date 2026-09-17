@@ -113,9 +113,6 @@ export interface LoadedSource {
   cleanup: () => Promise<void>;
 }
 
-/** No-op cleanup for sources that don't create temp files */
-export const noopCleanup = async (): Promise<void> => {};
-
 /**
  * Data field metadata
  */
@@ -124,6 +121,8 @@ export interface FieldMetadata {
   name: string;
   /** Field type */
   type: 'number' | 'string' | 'date' | 'boolean';
+  /** Raw column type from the engine (e.g. DuckDB's BIGINT/VARCHAR), when available */
+  rawType?: string;
   /** Sample values */
   samples?: any[];
   /** Number of unique values */
@@ -133,17 +132,15 @@ export interface FieldMetadata {
 }
 
 /**
- * Dataset information
+ * Dataset schema — metadata describing the loaded data
  */
-export interface DatasetInfo {
+export interface Schema {
   /** Number of rows */
   rowCount: number;
   /** Number of columns */
   columnCount: number;
   /** Field metadata */
   fields: FieldMetadata[];
-  /** Estimated size in bytes */
-  sizeInBytes: number;
 }
 
 /**
@@ -153,8 +150,8 @@ export interface DatasetInfo {
  * to allow alternative engines in the future.
  */
 export interface AnalysisEngine {
-  /** Load a data source config and return its metadata */
-  load(config: DataSourceConfig): Promise<DatasetInfo>;
+  /** Load a data source config and return its schema */
+  load(config: DataSourceConfig): Promise<Schema>;
   /** Generate the executable DSL (SQL) for a natural-language query */
   getDSL(query: string): Promise<string>;
   /** Execute a DSL returned by getDSL against the loaded data */

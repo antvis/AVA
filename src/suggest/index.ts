@@ -5,16 +5,16 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { formatDatasetInfo } from '../duckdb';
+import { stringifySchema } from '../util/schema';
 
-import type { LLMConfig, DatasetInfo, SuggestResult } from '../types';
+import type { LLMConfig, Schema, SuggestResult } from '../types';
 
 /**
  * Generate suggested analysis queries based on dataset
  */
 export async function generateSuggestions(
   llmConfig: LLMConfig,
-  dataInfo: DatasetInfo,
+  schema: Schema,
   count: number = 3
 ): Promise<SuggestResult[]> {
   const openai = createOpenAI({
@@ -22,11 +22,11 @@ export async function generateSuggestions(
     baseURL: llmConfig.baseURL,
   });
 
-  const dataInfoStr = formatDatasetInfo(dataInfo);
+  const schemaStr = stringifySchema(schema);
 
   const prompt = `You are a data analysis expert. Based on the following dataset information, suggest ${count} most meaningful analysis queries that would provide valuable insights.
 
-${dataInfoStr}
+${schemaStr}
 
 IMPORTANT: Detect the language of the dataset (from column names and sample values). You MUST write the "query" and "reason" fields in the SAME language as the dataset. For example, if column names or sample values are in Chinese, write queries and reasons in Chinese; if in English, write in English; if in Japanese, write in Japanese. If the dataset language is ambiguous, default to English.
 
@@ -60,7 +60,6 @@ Generate the JSON array now.`;
     prompt,
   });
 
-  // Parse the JSON response
   try {
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
@@ -69,16 +68,15 @@ Generate the JSON array now.`;
 
     const suggestions = JSON.parse(jsonMatch[0]) as SuggestResult[];
 
-    // Validate and normalize the results
     return suggestions
       .filter(s => s.query && typeof s.score === 'number' && s.reason)
       .map(s => ({
         query: s.query,
-        score: Math.max(0, Math.min(1, s.score)), // Clamp score between 0-1
+        score: Math.max(0, Math.min(1, s.score)),
         reason: s.reason,
       }))
-      .sort((a, b) => b.score - a.score) // Sort by score descending
-      .slice(0, count); // Ensure we return exactly count items
+      .sort((a, b) => b.score - a.score)
+      .slice(0, count);
   } catch (error) {
     throw new Error(`Failed to parse suggestions: ${error instanceof Error ? error.message : String(error)}`);
   }

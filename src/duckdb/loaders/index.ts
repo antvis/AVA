@@ -33,7 +33,6 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       return loadJSONFile(config.options);
     case 'parquet':
       return loadParquetFile(config.options);
-    // Database sources are reserved and not implemented yet
     default:
       throw new Error(`loadSource: "${config.type}" sources are not supported yet.`);
   }

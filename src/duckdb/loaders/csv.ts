@@ -32,8 +32,7 @@ export async function loadCSV(options: CSVSourceOptions): Promise<LoadedSource> 
   const { pathOrContent } = options;
   let content: string;
 
-  // In Node.js, a value that looks like a file path is read from disk;
-  // otherwise the value is treated as raw CSV content.
+  // A value that looks like a file path is read from disk; otherwise treated as raw CSV content
   const looksLikeFilePath = /^(\.\/|\.\.\/|\/|[a-zA-Z]:[\\/]|\\\\)/.test(pathOrContent);
   if (typeof window === 'undefined' && typeof process !== 'undefined' && process.versions?.node && looksLikeFilePath) {
     const fs = await import('fs/promises');

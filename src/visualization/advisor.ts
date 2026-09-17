@@ -1,9 +1,6 @@
 /**
- * Chart type advisor based on data and query
- *
- * The caller (AVA class) is responsible for formatting data metadata into a
- * string via formatDatasetInfo / formatDatasetInfoWithNonArray before calling
- * adviseChartType.
+ * Chart type advisor: recommend a chart type from the query and a
+ * pre-formatted data description string.
  */
 
 import { generateText } from 'ai';

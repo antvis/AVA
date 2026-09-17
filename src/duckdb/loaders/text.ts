@@ -35,7 +35,7 @@ Return ONLY the JSON array, no additional text or explanation. The response must
     prompt,
   });
 
-  // Try parsing the entire response first
+  // Parse the whole response first, then fall back to extracting the JSON array
   try {
     const data = JSON.parse(responseText);
     if (Array.isArray(data)) return data;
@@ -43,7 +43,6 @@ Return ONLY the JSON array, no additional text or explanation. The response must
     // Fall through to regex extraction
   }
 
-  // Extract JSON array using non-greedy regex
   const jsonMatch = responseText.match(/\[[\s\S]*?\]/);
   if (!jsonMatch) {
     throw new Error('Could not extract JSON array from LLM response');
