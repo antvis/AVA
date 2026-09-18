@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
-import { AVA } from '@antv/ava';
-import type { InterpreterEngine } from '@antv/ava';
+import { AVA } from '@antv/ava/browser';
+import type { InterpreterEngine } from '@antv/ava/browser';
 import type { DataRow } from './types';
 import { parseCSV, parseExcel, loadAppState, saveAppState } from './utils';
 

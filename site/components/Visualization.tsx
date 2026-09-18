@@ -2,8 +2,8 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { AVA } from '@antv/ava';
-import type { AnalysisResponse, SuggestResult, VisualizeResponse } from '@antv/ava';
+import { AVA } from '@antv/ava/browser';
+import type { AnalysisResponse, SuggestResult, VisualizeResponse } from '@antv/ava/browser';
 import type { DataRow } from './types';
 import SuggestionCards from './SuggestionCards';
 import { loadAppState, saveAppState } from './utils';

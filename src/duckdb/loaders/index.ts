@@ -8,16 +8,18 @@ import { loadCSVFile } from './csv-file';
 import { loadExcel } from './excel';
 import { loadJson } from './json';
 import { loadJSONFile } from './json-file';
-import { loadParquetFile } from './parquet';
-import { loadText } from './text';
 import { loadMySQL } from './mysql';
+import { loadParquetFile } from './parquet';
 import { loadPostgreSQL } from './postgresql';
+import { loadText } from './text';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
 
 export type { LoadedSource } from '../../types';
 
-/** Load a data source config into a LoadedSource the engine can register. */
+/**
+ * Load a data source config into a LoadedSource the engine can register.
+ */
 export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig): Promise<LoadedSource> {
   switch (config.type) {
     case 'csv':

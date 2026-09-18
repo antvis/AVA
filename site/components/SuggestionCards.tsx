@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import type { SuggestResult } from '@antv/ava';
+import type { SuggestResult } from '@antv/ava/browser';
 
 interface SuggestionCardsProps {
   suggestions: SuggestResult[];

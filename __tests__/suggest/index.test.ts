@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import { AVA } from '../../src/ava';
+import { AVA } from '../../src';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 // Every test below drives the LLM, so the whole suite is skipped without a key.

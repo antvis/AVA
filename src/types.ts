@@ -2,7 +2,15 @@
  * Core type definitions for AVA v4
  */
 
-import type { DuckDBConnection } from '@duckdb/node-api';
+/**
+ * Minimal structural type for a database connection used by LoadedSource.
+ * Matches the subset of @duckdb/node-api's DuckDBConnection that loaders use,
+ * declared here so the shared types never import the Node-only package.
+ */
+export interface DuckDBConnection {
+  run(sql: string): Promise<unknown>;
+  runAndReadAll(sql: string): Promise<{ getRowObjectsJson(): Record<string, unknown>[] }>;
+}
 
 /**
  * LLM configuration

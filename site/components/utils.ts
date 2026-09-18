@@ -1,4 +1,4 @@
-import type { LLMConfig } from '@antv/ava';
+import type { LLMConfig } from '@antv/ava/browser';
 import * as XLSX from 'xlsx';
 
 // Default LLM config
@@ -35,7 +35,7 @@ export const saveLLMConfig = (config: LLMConfig) => {
 
 // Application state persistence
 import type { DataRow } from './types';
-import type { AnalysisResponse } from '@antv/ava';
+import type { AnalysisResponse } from '@antv/ava/browser';
 
 export interface AppState {
   data: DataRow[];

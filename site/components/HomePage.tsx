@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react';
-import { AVA } from '@antv/ava';
-import type { LLMConfig } from '@antv/ava';
+import { AVA } from '@antv/ava/browser';
+import type { LLMConfig } from '@antv/ava/browser';
 import {
   ConfigModal,
   DataImport,

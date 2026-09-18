@@ -1,14 +1,11 @@
 /**
- * AVA v4 - Node.js entry point
- * Registers all engines (DuckDB, Supabase, interpreter) before exporting AVA.
+ * AVA v4 - Browser entry point
+ * Only registers the interpreter engine, so Node-only engines (DuckDB,
+ * Supabase) and their dependencies are never traced into browser bundles.
  */
-import { DuckDBEngine } from './duckdb';
 import { InterpreterEngine } from './interpreter';
-import { SupabaseEngine } from './saas';
 import { registerEngine } from './engines';
 
-registerEngine('duckdb', DuckDBEngine);
-registerEngine('supabase', SupabaseEngine);
 registerEngine('interpreter', InterpreterEngine);
 
 export { AVA } from './ava';

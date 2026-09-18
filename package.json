@@ -11,7 +11,12 @@
     "type": "git",
     "url": "git+https://github.com/antvis/AVA.git"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./esm/index.js",
+    "./lib/index.js",
+    "./esm/index.browser.js",
+    "./lib/index.browser.js"
+  ],
   "keywords": [
     "visualization",
     "ai-native",
@@ -25,6 +30,26 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "module": "esm/index.js",
+  "exports": {
+    ".": {
+      "browser": {
+        "types": "./esm/index.browser.d.ts",
+        "import": "./esm/index.browser.js",
+        "require": "./lib/index.browser.js"
+      },
+      "default": {
+        "types": "./lib/index.d.ts",
+        "import": "./esm/index.js",
+        "require": "./lib/index.js"
+      }
+    },
+    "./browser": {
+      "types": "./esm/index.browser.d.ts",
+      "import": "./esm/index.browser.js",
+      "require": "./lib/index.browser.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "esm",
     "lib"
@@ -38,7 +63,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\" && npm run lint-fix",
     "clean": "rimraf lib esm",
     "build:cjs": "tsc --module commonjs --outDir lib",
-    "build:esm": "tsc --module es2020 --outDir esm",
+    "build:esm": "tsc --module es2020 --outDir esm --declarationDir esm",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -10,6 +10,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { DuckDBInstance } from '@duckdb/node-api';
 
 import { coerceNumbers } from '../util/coerce';
+import { loadSource } from './loaders';
 import { mapFieldType, stringifySchema } from '../util/schema';
 import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 
@@ -108,7 +109,6 @@ export class DuckDBEngine implements AnalysisEngine {
 
   async load(config: DataSourceConfig): Promise<Schema> {
     try {
-      const { loadSource } = await import('./loaders');
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
       this.tableNames = await source.register(conn);

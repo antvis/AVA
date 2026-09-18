@@ -6,7 +6,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-import { AVA } from '../../src/ava';
+import { AVA } from '../..';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 const CITY_DATA = [

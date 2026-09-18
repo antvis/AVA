@@ -5,7 +5,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { InterpreterEngine } from './interpreter';
+import { getEngineClass } from './engines';
 import { extractDataSchema, stringifySchema } from './util/schema';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
@@ -51,28 +51,14 @@ export class AVA {
 
   /**
    * Instantiate the engine selected by the engine config.
-   * DuckDB and Supabase engines are Node-only and lazily imported so that
-   * browser bundles (interpreter engine) never pull in their dependencies.
+   * Engine classes are registered by the entry point (index.ts /
+   * index.browser.ts), so this class never imports any engine implementation
+   * directly — Node-only engines stay out of browser bundles.
    */
   private async createEngine(): Promise<AnalysisEngine> {
-    switch (this.engineConfig.type) {
-      case 'interpreter':
-        return new InterpreterEngine(this.llmConfig);
-      case 'supabase': {
-        const { SupabaseEngine } = await import('./saas');
-        return new SupabaseEngine(this.llmConfig);
-      }
-      case 'duckdb': {
-        const { DuckDBEngine } = await import('./duckdb');
-        const { memoryLimit, threads, maxTempDirectorySize, queryTimeoutMs } = this.engineConfig;
-        return new DuckDBEngine(this.llmConfig, {
-          memoryLimit,
-          threads,
-          maxTempDirectorySize,
-          queryTimeoutMs,
-        });
-      }
-    }
+    const EngineClass = getEngineClass(this.engineConfig.type);
+    const { type, ...options } = this.engineConfig;
+    return new EngineClass(this.llmConfig, options);
   }
 
   /**
