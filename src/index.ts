@@ -1,19 +1,30 @@
 /**
- * AVA v4 - A framework for AI-native Visual Analytics
- *
- * Main entry point
+ * AVA v4 - Node.js entry point
+ * Registers all engines (DuckDB, Supabase, interpreter) before exporting AVA.
  */
-export { AVA } from './ava';
+import { DuckDBEngine } from './duckdb';
+import { InterpreterEngine } from './interpreter';
+import { SupabaseEngine } from './saas';
+import { registerEngine } from './engines';
 
+registerEngine('duckdb', DuckDBEngine);
+registerEngine('supabase', SupabaseEngine);
+registerEngine('interpreter', InterpreterEngine);
+
+export { AVA } from './ava';
+export type { InterpreterEngine } from './interpreter';
 export type {
-  AVAConfig,
   LLMConfig,
+  AVAConfig,
+  EngineConfig,
+  DuckDBEngineOptions,
+  DataSourceConfig,
+  Schema,
+  TableSchema,
+  FieldMetadata,
+  AnalysisEngine,
   AnalysisResponse,
   VisualizeResponse,
-  DatasetInfo,
-  FieldMetadata,
-  ChartType,
-  ChartTypeDefinition,
   SuggestResult,
+  ChartType,
 } from './types';
-export { loadCSV, loadObject, loadURL, loadText, extractMetadata, formatDatasetInfo } from './data';

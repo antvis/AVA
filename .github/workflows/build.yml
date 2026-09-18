@@ -31,7 +31,8 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          LING_1T_API_KEY: ${{ secrets.LING_1T_API_KEY }}
+          # Rename the repository secret to OPENAI_LLM_API_KEY and update this line when convenient.
+          OPENAI_LLM_API_KEY: ${{ secrets.OPENAI_LLM_API_KEY }}
       
       - name: Build
         run: npm run build

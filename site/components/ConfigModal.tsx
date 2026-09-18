@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import type { LLMConfig } from '@antv/ava';
+import type { LLMConfig } from '@antv/ava/browser';
 
 interface ConfigModalProps {
   isOpen: boolean;

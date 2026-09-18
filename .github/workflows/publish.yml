@@ -16,8 +16,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
+
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
@@ -28,9 +29,9 @@ jobs:
       - name: Publish to NPM
         run: |
           if [[ "${{ github.ref_name }}" == *"-alpha"* ]]; then
-            npm publish --provenance --access public --tag alpha
+            npm publish --access public --tag alpha
           elif [[ "${{ github.ref_name }}" == *"-beta"* ]]; then
-            npm publish --provenance --access public --tag beta
+            npm publish --access public --tag beta
           else
-            npm publish --provenance --access public
+            npm publish --access public
           fi

@@ -11,7 +11,12 @@
     "type": "git",
     "url": "git+https://github.com/antvis/AVA.git"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./esm/index.js",
+    "./lib/index.js",
+    "./esm/index.browser.js",
+    "./lib/index.browser.js"
+  ],
   "keywords": [
     "visualization",
     "ai-native",
@@ -25,6 +30,26 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "module": "esm/index.js",
+  "exports": {
+    ".": {
+      "browser": {
+        "types": "./esm/index.browser.d.ts",
+        "import": "./esm/index.browser.js",
+        "require": "./lib/index.browser.js"
+      },
+      "default": {
+        "types": "./lib/index.d.ts",
+        "import": "./esm/index.js",
+        "require": "./lib/index.js"
+      }
+    },
+    "./browser": {
+      "types": "./esm/index.browser.d.ts",
+      "import": "./esm/index.browser.js",
+      "require": "./lib/index.browser.js"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "esm",
     "lib"
@@ -33,12 +58,12 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "lint": "eslint --ext .ts,.tsx \"./src\"",
-    "lint-fix": "npm run lint -- --fix",
+    "lint": "eslint --ext .ts,.tsx src __tests__",
+    "lint-fix": "eslint --ext .ts,.tsx src __tests__ --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" && npm run lint-fix",
     "clean": "rimraf lib esm",
     "build:cjs": "tsc --module commonjs --outDir lib",
-    "build:esm": "tsc --module es2020 --outDir esm",
+    "build:esm": "tsc --module es2020 --outDir esm --declarationDir esm",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -47,21 +72,22 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.0.0",
+    "@duckdb/node-api": "^1.5.5-r.5",
+    "adm-zip": "^0.5.17",
     "ai": "^3.4.33",
-    "better-sqlite3": "^11.8.1",
     "csv-parse": "^5.6.0",
-    "dotenv": "^17.2.3",
-    "idb": "^8.0.3",
+    "ssh2": "^1.17.0",
     "tslib": "^2.3.1",
-    "zod": "^3.0.0"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.12",
+    "@types/adm-zip": "^0.5.8",
     "@types/node": "^18.0.0",
+    "@types/ssh2": "^1.15.5",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
-    "@vitest/coverage-v8": "^4.0.18",
-    "@vitest/ui": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/ui": "4.1.11",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-import-resolver-typescript": "^2.4.0",
@@ -69,6 +95,7 @@
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.9.3",
-    "vitest": "^4.0.18"
+    "vite": "^7.3.6",
+    "vitest": "4.1.11"
   }
 }

@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
-import { AVA } from '@antv/ava';
+import { AVA } from '@antv/ava/browser';
+import type { InterpreterEngine } from '@antv/ava/browser';
 import type { DataRow } from './types';
 import { parseCSV, parseExcel, loadAppState, saveAppState } from './utils';
 
@@ -39,9 +40,12 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
     setError(null);
 
     try {
-      // Use the global AVA instance's loadText to extract structured data from text
-      // The loadText API returns the loaded structured data directly
-      const data = await avaInstance.loadText(textInput);
+      // Extract structured data from text via LLM (text source)
+      await avaInstance.load({ type: 'text', options: { text: textInput } });
+
+      // Read the extracted data back from the interpreter engine
+      const data = (avaInstance.engine as InterpreterEngine | null)?.getData() ?? null;
+      if (!data) throw new Error('No data extracted');
 
       // Save to localStorage
       saveAppState({ data, textInput });
@@ -89,9 +93,9 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
         throw new Error(`No valid data found in ${isExcel ? 'Excel' : 'CSV'} file`);
       }
 
-      const data = await avaInstance.loadObject(parsedData);
-      saveAppState({ data, textInput: '' });
-      onDataLoaded(data);
+      await avaInstance.load({ type: 'json', options: { data: parsedData } });
+      saveAppState({ data: parsedData, textInput: '' });
+      onDataLoaded(parsedData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to parse file');
     } finally {

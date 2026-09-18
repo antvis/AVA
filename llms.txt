@@ -11,11 +11,12 @@ AVA, a complete rewrite focused on **AI-native Visual Analytics**. The first **A
 - **Natural Language Queries**: Ask questions about your data in plain English
 - **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
-- **Smart Data Handling**: Automatically chooses between in-memory processing and SQLite based on data size
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- **Browser & Node.js Compatible**: Runs seamlessly in both browser and server environments
+- **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (interpreter engine)
 
 ## Quick Start
+
+### Node.js
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -27,14 +28,14 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  sqlThreshold: 1024 * 1024 * 2, // Threshold for switching to SQLite
+  // engine: { type: 'duckdb' } is the default; no need to specify
 });
 
-// Load data from various sources
-await ava.loadCSV('data/companies.csv'); // Node.js
-await ava.loadObject([{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }]);
-await ava.loadURL('https://api.example.com/data', (response) => response.data);
-await ava.loadText('杭州 100，上海 200，北京 300');
+// Load data from various sources — all through ava.load({ type, options })
+await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } }); // Node.js
+await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
+await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
+await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 
 // Get AI-suggested queries
 const suggestions = await ava.suggest(5); // Get top 5 suggestions (default: 3)
@@ -53,27 +54,67 @@ console.log(suggestedResult);
 ava.dispose();
 ```
 
+### Browser
+
+```typescript
+import { AVA } from '@antv/ava/browser';
+
+const ava = new AVA({
+  llm: {
+    model: 'ling-1t',
+    apiKey: 'YOUR_API_KEY',
+    baseURL: 'LLM_BASE_URL',
+  },
+  engine: { type: 'interpreter' },
+});
+
+// Browser supports inline data sources only
+await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
+await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
+await ava.load({ type: 'text', options: { text: '杭州 100，上海 200' } });
+
+const result = await ava.analysis('What is the total GDP?');
+const viz = await ava.visualize(result);
+
+ava.dispose();
+```
+
 ## Architecture
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages:
+AVA uses a modular pipeline architecture with a pluggable engine registry:
 
-1. **Data Module**: Load from multiple sources (CSV, JSON, URL, or text)
+1. **Data Module**: Load from multiple sources (inline CSV/JSON/text, local/remote files, or databases via load)
 2. **Metadata Extract**: Type inference, statistics
-3. **Size Check**: Below threshold uses JavaScript helpers, above threshold uses SQLite storage (default threshold: 10KB, configurable)
-4. **Analysis Module**: Generate & Execute Code/SQL
+3. **Engine Registry**: Pluggable analysis engines
+   - **DuckDB Engine** (Node.js): SQL via in-memory DuckDB
+   - **Interpreter Engine** (Browser): JavaScript sandbox execution
+   - **Supabase Engine** (Node.js): Remote SQL via Supabase API
+4. **Analysis Module**: Generate & Execute Query
 5. **LLM Summary**: Natural Language Response
 6. **Visualization Module (Optional)**: Chart generation with type detection and recommendation
+
+### Engine Registry
+
+Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase) out of browser bundles.
+
+- **Node.js** (`@antv/ava`): registers `duckdb`, `supabase`, and `interpreter` engines
+- **Browser** (`@antv/ava/browser`): registers only the `interpreter` engine
 
 ## API Reference
 
 ### Constructor
-- `new AVA(options: AVAOptions)` - Initialize AVA instance with LLM configuration and options
+- `new AVA(config: AVAConfig)` - Initialize AVA instance with LLM configuration and options
+  - `llm`: required model config `{ model, apiKey, baseURL? }`
+  - `engine?`: engine selection and options
+    - `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default, Node.js only)
+    - `{ type: 'interpreter' }` (browser-compatible)
+    - `{ type: 'supabase' }` (Node.js only)
 
-### Data Loading Methods
-- `loadCSV(content: string)` - Load data from CSV string
-- `loadObject(data: object[])` - Load data from array of objects
-- `loadURL(url: string, transform?: Function)` - Load data from URL
-- `loadText(text: string)` - Extract data from unstructured text using LLM
+### Data Loading
+- `load(config)` - Load any data source; `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
+  - inline types: `'csv'` (`{ csv }`, raw CSV content string), `'json'` (`{ data }`), `'text'` (`{ text }`, extracts data from unstructured text using LLM)
+  - file types (`{ path, headers? }`, a local path or http(s) URL): `'csv-file'`, `'json-file'`, `'parquet'`, `'excel'` (one view per sheet) — Node.js only
+  - database types: `'mysql'` (`{ host, port?, database, user?, password?, ssh? }`), `'postgresql'` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed — Node.js only
 
 ### Query Suggestions
 - `suggest(count?: number)` - Get AI-recommended analysis queries based on dataset characteristics (default: 3)
@@ -83,32 +124,40 @@ AVA uses a modular pipeline architecture that processes user queries through dis
 
 ### Analysis
 - `analysis(query: string)` - Analyze data with natural language query
-  - Returns: `{ text, code, sql, visualizationHTML }`
+  - Returns: `{ query, text, data, sql? }` (`sql` is the DuckDB SQL executed for the analysis, DuckDB engine only)
+
+### Visualization
+- `visualize(analysisResult)` - Generate chart output from analysis result
+  - Returns: `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data)
 
 ### Cleanup
 - `dispose()` - Clean up resources and close database connections
 
-## Browser & Server Compatibility
+## Environment Support
 
-### Browser Support
-- All core features work in modern browsers (Chrome, Firefox, Safari, Edge)
-- CSV loading via File API or direct content strings
-- In-memory data processing only (SQLite not available)
-- For best browser performance, keep datasets small or increase sqlThreshold
+### Node.js
 
-### Node.js Support
-- Full feature set including large dataset handling with SQLite
-- File system access for CSV loading
-- Automatic switching between in-memory and SQLite based on data size
-- Default threshold: 10KB (configurable via sqlThreshold option)
+- Full feature set backed by an in-memory DuckDB instance (LLM generates SQL)
+- Inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), and databases (mysql/postgresql) via `load`
+- File system access for CSV loading, plus remote files such as OSS signed URLs
+- Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
+- Supabase engine for remote SQL execution via Supabase Management API
+
+### Browser
+
+- Lightweight interpreter engine for client-side analytics
+- Inline data sources only: `csv`, `json`, `text`
+- JavaScript sandbox execution with `stat` helper functions
+- No file system or database access
+- Import from `@antv/ava/browser` to avoid bundling Node.js dependencies
 
 ## Best Practices
 
 - Always call `ava.dispose()` when done to free resources
 - Wrap async calls in try-catch blocks for error handling
 - Validate data format before loading
-- Set sqlThreshold based on expected data sizes
 - Never expose API keys in client-side code
+- Use `@antv/ava/browser` in browser environments to avoid bundling Node.js dependencies
 
 ## Resources
 
