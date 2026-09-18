@@ -27,12 +27,11 @@
 
 AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
-- **Natural Language Queries**: Ask questions about your data in plain English
-- **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
-- **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
-- **Smart Data Handling**: Automatically chooses between in-memory processing and DuckDB based on data size
-- **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- **Node.js**: Runs in Node.js, backed by an in-memory DuckDB instance
+- 💬 **Natural Language Queries**: Ask questions about your data in plain English
+- 💡 **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
+- 🤖 **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
+- 🧩 **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
+- 🌐 **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (interpreter engine)
 
 ## 📖 Quick Start
 
@@ -46,7 +45,9 @@ pnpm install @antv/ava
 yarn add @antv/ava
 ```
 
-- Then run  the code below
+- Then run the code below
+
+**Node.js** (full feature set with DuckDB engine):
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -58,6 +59,7 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
+  // engine: { type: 'duckdb' } is the default; no need to specify
 });
 
 // Load data from various sources — all through ava.load({ type, options })
@@ -116,13 +118,38 @@ console.log(suggestedResult);
 ava.dispose();
 ```
 
+**Browser** (interpreter engine, inline data only):
+
+```typescript
+import { AVA } from '@antv/ava/browser';
+
+const ava = new AVA({
+  llm: {
+    model: 'ling-1t',
+    apiKey: 'YOUR_API_KEY',
+    baseURL: 'LLM_BASE_URL',
+  },
+  engine: { type: 'interpreter' },
+});
+
+// Browser supports inline data sources only
+await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
+await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
+await ava.load({ type: 'text', options: { text: '杭州 100，上海 200' } });
+
+const result = await ava.analysis('What is the total GDP?');
+const viz = await ava.visualize(result);
+
+ava.dispose();
+```
+
 ## 📘 Documentation
 
 Create an AVA instance:
 
 - `new AVA(config)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `engine?`: optional DuckDB resource limits — `{ memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (defaults: `512MB`, `1` thread, `30s` query timeout)
+  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'interpreter' }`, or `{ type: 'supabase' }`
 
 Core APIs in AVA:
 
@@ -156,7 +183,7 @@ ava.dispose();
 
 ## 🏗️ Architecture
 
-AVA uses a modular pipeline architecture that processes user queries through distinct stages. Data is loaded from multiple sources (inline CSV/JSON/text, local/remote files, or databases) via `load`, then analyzed by the DuckDB engine (natural-language queries are turned into SQL via LLM and executed against an in-memory DuckDB instance), summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
+AVA uses a modular pipeline architecture with a pluggable engine registry. Data is loaded from multiple sources via `load`, then analyzed by the selected engine, summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
 
 ```
 User Query
@@ -168,20 +195,23 @@ AVA Instance
 │                 │   • Inline CSV (csv)
 │                 │   • JSON object array (json)
 │                 │   • Text (text + LLM)
-│                 │   • Local/remote file (csv-file/json-file/parquet/excel)
-│                 │   • Database (mysql/postgresql)
+│                 │   • Local/remote file (csv-file/json-file/parquet/excel) [Node.js]
+│                 │   • Database (mysql/postgresql) [Node.js]
 └─────────────────┘
     ↓
 ┌──────────────────┐
-│ Metadata Extract │ → Type inference, statistics (via DuckDB)
+│ Metadata Extract │ → Type inference, statistics
 └──────────────────┘
     ↓
-┌──────────────────┐
-│  DuckDB Engine   │ → SQL via DuckDB, Node.js only
-└──────────────────┘
+┌─────────────────────────────────┐
+│  Engine Registry                │
+│  ├─ DuckDB Engine (Node.js)     │ → SQL via in-memory DuckDB
+│  ├─ Interpreter Engine (Browser)│ → JavaScript sandbox execution
+│  └─ Supabase Engine (Node.js)   │ → Remote SQL via Supabase API
+└─────────────────────────────────┘
     ↓
 ┌──────────────────┐
-│ Analysis Module  │ → Generate & Execute SQL
+│ Analysis Module  │ → Generate & Execute Query
 └──────────────────┘
     ↓
 ┌──────────────┐
@@ -199,14 +229,33 @@ User Response
 (Text + Data + Chart)
 ```
 
-## 🌐 Node.js Support
+### Engine Registry
 
-AVA v4 runs in Node.js, backed by an in-memory DuckDB instance (LLM generates SQL):
+Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase) out of browser bundles.
 
-- Full feature set: inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), and databases (mysql/postgresql) via `load`
+- **Node.js** (`@antv/ava`): registers `duckdb`, `supabase`, and `interpreter` engines
+- **Browser** (`@antv/ava/browser`): registers only the `interpreter` engine
+
+## 🌐 Environment Support
+
+### Node.js
+
+Full feature set backed by an in-memory DuckDB instance (LLM generates SQL):
+
+- Inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), and databases (mysql/postgresql) via `load`
 - File system access for CSV loading, plus remote files such as OSS signed URLs
 - Data is never materialized into JS memory for file sources — DuckDB reads them directly
 - Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
+- Supabase engine for remote SQL execution via Supabase Management API
+
+### Browser
+
+Lightweight interpreter engine for client-side analytics:
+
+- Inline data sources only: `csv`, `json`, `text`
+- JavaScript sandbox execution with `stat` helper functions
+- No file system or database access
+- Import from `@antv/ava/browser` to avoid bundling Node.js dependencies
 
 ## 🤝 Developer Contributions
 
