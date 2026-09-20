@@ -57,6 +57,12 @@ export interface AVAConfig {
   engine?: EngineConfig;
 }
 
+/** Per-analysis options. */
+export interface AnalysisConfig {
+  /** Strategy for this analysis (defaults to single-query). */
+  strategy?: AnalysisStrategyConfig;
+}
+
 /**
  * Data source types for load.
  * - inline types: `csv` (content string), `json` (object array), `text`
@@ -402,6 +408,19 @@ export interface AnalysisEngine {
   /** Release resources (temp files, database connections) */
   dispose(): Promise<void>;
 }
+
+/** Built-in analysis strategies. */
+export type AnalysisStrategyConfig = { type: 'single-query' };
+
+/** Runtime dependencies available to an analysis strategy. */
+export interface AnalysisRuntime {
+  schema: Schema;
+  engine: AnalysisEngine;
+  llm: LLMConfig;
+}
+
+/** A replaceable way of analyzing a natural-language query. */
+export type AnalysisStrategy = (query: string, runtime: AnalysisRuntime) => Promise<AnalysisResponse>;
 
 /**
  * Turns a natural-language query into a database-specific DSL.

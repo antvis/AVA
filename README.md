@@ -184,7 +184,7 @@ Core APIs in AVA:
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 - `suggest(count?)`: generate recommended analysis questions.
-- `analysis(query)`: run data analysis and return `{ query, text, data, sql? }` — `sql` is the DuckDB SQL executed for the analysis.
+- `analysis(query, config?)`: run data analysis and return `{ query, text, data, sql? }`; `config.strategy` selects the strategy for this call (default: `single-query`).
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 

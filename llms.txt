@@ -123,7 +123,7 @@ Engines are registered by the entry point, so the core `AVA` class never imports
   - Score ranges from 0 to 1, indicating meaningfulness
 
 ### Analysis
-- `analysis(query: string)` - Analyze data with natural language query
+- `analysis(query: string, config?: AnalysisConfig)` - Analyze data with natural language query; `config.strategy` selects the strategy for this call (default: `single-query`)
   - Returns: `{ query, text, data, sql? }` (`sql` is the DuckDB SQL executed for the analysis, DuckDB engine only)
 
 ### Visualization
