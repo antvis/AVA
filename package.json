@@ -69,6 +69,7 @@
     "build:esm": "tsc --module es2020 --outDir esm --declarationDir esm",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "test": "vitest run",
+    "eval:query": "AVA_QUERY_EVAL=1 vitest run __tests__/eval/query-result.test.ts",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage"

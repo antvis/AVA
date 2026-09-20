@@ -1,0 +1,58 @@
+{
+  "name": "ava-query-result-regression",
+  "version": 1,
+  "split": "test",
+  "cases": [
+    {
+      "id": "companies-highest-revenue",
+      "sourceFile": "data/companies.csv",
+      "question": "Which company has the highest revenue?",
+      "expectedRows": [["Data Co"]]
+    },
+    {
+      "id": "companies-average-revenue-by-region",
+      "sourceFile": "data/companies.csv",
+      "question": "What is the average revenue by region?",
+      "expectedRows": [
+        ["California", 26480],
+        ["Texas", 18933.333333333332],
+        ["New York", 21750]
+      ]
+    },
+    {
+      "id": "heart-disease-count-by-sex",
+      "sourceFile": "data/heart.csv",
+      "question": "How many patients with heart disease are there by sex?",
+      "expectedRows": [
+        ["M", 458],
+        ["F", 50]
+      ]
+    },
+    {
+      "id": "heart-disease-average-cholesterol",
+      "sourceFile": "data/heart.csv",
+      "question": "What is the average cholesterol for patients with heart disease, excluding zero values?",
+      "expectedRows": [[251.06179775280899]]
+    },
+    {
+      "id": "loans-count-by-gender",
+      "sourceFile": "data/loans_payments.csv",
+      "question": "How many loans are there by gender?",
+      "expectedRows": [
+        ["female", 77],
+        ["male", 423]
+      ]
+    },
+    {
+      "id": "loans-average-principal-by-education",
+      "sourceFile": "data/loans_payments.csv",
+      "question": "What is the average principal by education level?",
+      "expectedRows": [
+        ["Bechalor", 944.776119402985],
+        ["High School or Below", 951.1961722488038],
+        ["college", 941.3636363636364],
+        ["Master or Above", 600]
+      ]
+    }
+  ]
+}
