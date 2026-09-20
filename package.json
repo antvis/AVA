@@ -76,6 +76,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.0.0",
     "@duckdb/node-api": "^1.5.5-r.5",
+    "@supabase/pg-parser": "^0.1.7",
     "adm-zip": "^0.5.17",
     "ai": "^3.4.33",
     "csv-parse": "^5.6.0",

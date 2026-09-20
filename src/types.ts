@@ -45,10 +45,7 @@ export interface DuckDBEngineOptions {
  * analysis engine; the remaining fields are the options for that engine.
  * Currently only the DuckDB engine has configurable options.
  */
-export type EngineConfig =
-  | ({ type: 'duckdb' } & DuckDBEngineOptions)
-  | { type: 'interpreter' }
-  | { type: 'supabase' };
+export type EngineConfig = ({ type: 'duckdb' } & DuckDBEngineOptions) | { type: 'interpreter' } | { type: 'supabase' };
 
 /**
  * AVA configuration
@@ -407,6 +404,16 @@ export interface AnalysisEngine {
 }
 
 /**
+ * Turns a natural-language query into a database-specific DSL.
+ */
+export interface QueryDialect<TContext = void> {
+  /** Generate the executable DSL (SQL) for a natural-language query. */
+  getDSL(query: string, schema: Schema): Promise<string>;
+  /** Require one or more read-only DSL statements before execution */
+  validateDSL(dsl: string, context: TContext): Promise<void>;
+}
+
+/**
  * Analysis response — data analysis results only (no visualization)
  */
 export interface AnalysisResponse {
@@ -488,5 +495,3 @@ export interface SuggestResult {
   /** Reason for the score */
   reason: string;
 }
-
-

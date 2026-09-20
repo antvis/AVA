@@ -64,6 +64,21 @@ describe('SupabaseEngine', () => {
     expect(requests[1].body).toEqual({ query: 'SELECT name FROM users', read_only: true });
   });
 
+  it('allows multiple read-only statements and rejects writes', async () => {
+    const requests = stubApi([{ rows: DISCOVERY_ROWS }]);
+    const engine = new SupabaseEngine(getLLMConfig());
+    await engine.load({ type: 'supabase', options: CONNECTION });
+
+    await expect(engine.execute('SELECT 1; SELECT 2')).resolves.toEqual(DISCOVERY_ROWS);
+    await expect(engine.execute('DELETE FROM users')).rejects.toThrow('only read-only SELECT statements');
+    await expect(engine.execute('SELECT 1; DELETE FROM users')).rejects.toThrow('only read-only SELECT statements');
+    await expect(engine.execute('SELECT * FROM users FOR UPDATE')).rejects.toThrow('only read-only SELECT statements');
+    await expect(
+      engine.execute('WITH deleted AS (DELETE FROM users RETURNING *) SELECT * FROM deleted')
+    ).rejects.toThrow('only read-only SELECT statements');
+    expect(requests).toHaveLength(2);
+  });
+
   describe.skipIf(skipLLMTests)('getDSL', () => {
     it('generates PostgreSQL-flavored SQL from a natural language query', async () => {
       stubApi([{ rows: DISCOVERY_ROWS }]);

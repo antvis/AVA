@@ -5,14 +5,14 @@
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
 import { DuckDBInstance } from '@duckdb/node-api';
 
+import { DuckDBQueryDialect } from '../query/duckdb';
 import { coerceNumbers } from '../util/coerce';
-import { loadSource } from './loaders';
-import { mapFieldType, stringifySchema } from '../util/schema';
+import { mapFieldType } from '../util/schema';
 import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
+
+import { loadSource } from './loaders';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type {
@@ -59,11 +59,14 @@ export class DuckDBEngine implements AnalysisEngine {
   /** Names of all views registered by the loaded source (one per table) */
   private tableNames: string[] = [];
   private cleanup: (() => Promise<void>) | null = null;
+  private readonly queryDialect: DuckDBQueryDialect;
 
   constructor(
     private readonly llmConfig: LLMConfig,
     private readonly engineOptions: DuckDBEngineOptions = {},
-  ) {}
+  ) {
+    this.queryDialect = new DuckDBQueryDialect(llmConfig);
+  }
 
   /**
    * Get or create the DuckDB connection (lazy loading)
@@ -125,33 +128,12 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   async getDSL(query: string): Promise<string> {
-    const schema = stringifySchema(await this.getSchema());
-
-    const openai = createOpenAI({
-      apiKey: this.llmConfig.apiKey,
-      baseURL: this.llmConfig.baseURL,
-    });
-
-    const prompt = `You are a SQL expert. Given the following table schema and user query, generate a SQL query to answer the question.
-
-Table Schema:
-${schema}
-
-User Query: ${query}
-
-Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables by their exact names shown above (join them when the question spans multiple tables). Use DuckDB SQL syntax.`;
-
-    const { text } = await generateText({
-      model: openai(this.llmConfig.model) as any,
-      prompt,
-    });
-
-    // Strip markdown code fences the model may wrap around the SQL
-    return text.trim().replace(/^```(?:sql)?\s*|\s*```$/gi, '').trim();
+    return this.queryDialect.getDSL(query, await this.getSchema());
   }
 
   async execute(sql: string): Promise<any> {
     const conn = await this.getConnection();
+    await this.queryDialect.validateDSL(sql, conn);
     const reader = await this.runWithTimeout(conn, conn.runAndReadAll(sql));
     return coerceNumbers(reader.getRowObjectsJson());
   }

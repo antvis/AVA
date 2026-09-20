@@ -8,10 +8,8 @@
  * obtains the access token and passes it in the data source config.
  */
 
-import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
-
-import { mapFieldType, stringifySchema } from '../util/schema';
+import { PostgreSQLQueryDialect } from '../query/postgresql';
+import { mapFieldType } from '../util/schema';
 import { sqlStringLiteral } from '../util/sql';
 
 import type {
@@ -40,8 +38,11 @@ export class SupabaseApiError extends Error {
 export class SupabaseEngine implements AnalysisEngine {
   private schema: Schema | null = null;
   private connection: { accessToken: string; projectRef: string } | null = null;
+  private readonly queryDialect: PostgreSQLQueryDialect;
 
-  constructor(private readonly llmConfig: LLMConfig) {}
+  constructor(llmConfig: LLMConfig) {
+    this.queryDialect = new PostgreSQLQueryDialect(llmConfig);
+  }
 
   async load(config: DataSourceConfig): Promise<Schema> {
     if (config.type !== 'supabase') {
@@ -56,35 +57,14 @@ export class SupabaseEngine implements AnalysisEngine {
     if (!this.schema) {
       throw new Error('No data loaded. Please call load() first.');
     }
-    const schema = stringifySchema(this.schema);
-
-    const openai = createOpenAI({
-      apiKey: this.llmConfig.apiKey,
-      baseURL: this.llmConfig.baseURL,
-    });
-
-    const prompt = `You are a SQL expert. Given the following table schema and user query, generate a SQL query to answer the question.
-
-Table Schema:
-${schema}
-
-User Query: ${query}
-
-Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables by their exact names shown above (join them when the question spans multiple tables). Use PostgreSQL SQL syntax.`;
-
-    const { text } = await generateText({
-      model: openai(this.llmConfig.model) as any,
-      prompt,
-    });
-
-    // Strip markdown code fences the model may wrap around the SQL
-    return text.trim().replace(/^```(?:sql)?\s*|\s*```$/gi, '').trim();
+    return this.queryDialect.getDSL(query, this.schema);
   }
 
   async execute(sql: string): Promise<any> {
     if (!this.connection) {
       throw new Error('No data loaded. Please call load() first.');
     }
+    await this.queryDialect.validateDSL(sql);
     return this.runQuery(sql);
   }
 

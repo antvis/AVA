@@ -66,6 +66,18 @@ describe('DuckDBEngine', () => {
     }
   });
 
+  it('should allow multiple read-only statements and reject writes', async () => {
+    await engine.load({ type: 'json', options: { data: [{ a: 1 }] } });
+
+    await expect(engine.execute('SELECT * FROM data; SELECT 1')).resolves.toEqual([{ a: 1 }]);
+    await expect(engine.execute('CREATE TABLE blocked (a INTEGER)')).rejects.toThrow(
+      'only read-only SELECT statements'
+    );
+    await expect(engine.execute('SELECT * FROM data; CREATE TABLE blocked_too (a INTEGER)')).rejects.toThrow(
+      'only read-only SELECT statements'
+    );
+  });
+
   describe.skipIf(skipLLMTests)('getDSL', () => {
     it('should generate SQL from a natural language query', async () => {
       await engine.load({
