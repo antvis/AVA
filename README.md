@@ -35,6 +35,8 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
 ## 📖 Quick Start
 
+### SDK
+
 - Install `AVA` by npm
 
 ```bash
@@ -143,7 +145,31 @@ const viz = await ava.visualize(result);
 ava.dispose();
 ```
 
+### CLI
+
+Install the CLI:
+
+```bash
+npm install -g @antv/ava
+```
+
+Configure an OpenAI-compatible model service:
+
+```bash
+export OPENAI_API_KEY=YOUR_API_KEY
+export OPENAI_MODEL=YOUR_MODEL
+export OPENAI_BASE_URL=https://your-provider.example.com/v1
+```
+
+Run one analysis:
+
+```bash
+ava analyze data/companies.csv "What is the average revenue by region?"
+```
+
 ## 📘 Documentation
+
+### SDK
 
 Create an AVA instance:
 
@@ -179,6 +205,29 @@ if (viz) {
 }
 
 ava.dispose();
+```
+
+### CLI
+
+Use the CLI to run one analysis without writing code:
+
+```bash
+ava analyze <source> <question> [options]
+```
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `<source>` | Yes | Local path or HTTP(S) URL to the data source |
+| `<question>` | Yes | Natural-language analysis question |
+| `-t, --type <type>` | No | Source type when it cannot be inferred: `csv-file`, `json-file`, `parquet`, or `excel` |
+| `-c, --chart` | No | Generate a chart |
+| `-o, --output <path>` | With `--chart` | Write the chart to a new HTML file |
+
+Examples:
+
+```bash
+ava analyze data/companies.csv "What is the average revenue by region?"
+ava analyze data/companies.csv "Show revenue by region" --chart --output revenue.html
 ```
 
 ## 🏗️ Architecture

@@ -28,6 +28,9 @@
     "access": "public"
   },
   "main": "lib/index.js",
+  "bin": {
+    "ava": "lib/cli/index.js"
+  },
   "types": "lib/index.d.ts",
   "module": "esm/index.js",
   "exports": {
@@ -97,5 +100,11 @@
     "typescript": "^4.9.3",
     "vite": "^7.3.6",
     "vitest": "4.1.11"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "bugs": {
+    "url": "https://github.com/antvis/AVA/issues"
   }
 }

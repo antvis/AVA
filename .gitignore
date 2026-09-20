@@ -50,6 +50,10 @@ typings/
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
+# Local editor state
+.lh
+.history
+
 # IDE
 .idea
 
