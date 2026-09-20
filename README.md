@@ -35,6 +35,8 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
 ## 📖 Quick Start
 
+### SDK
+
 - Install `AVA` by npm
 
 ```bash
@@ -143,6 +145,28 @@ const viz = await ava.visualize(result);
 ava.dispose();
 ```
 
+### CLI
+
+Install the CLI:
+
+```bash
+npm install -g @antv/ava
+```
+
+Configure an OpenAI-compatible model service:
+
+```bash
+export OPENAI_API_KEY=YOUR_API_KEY
+export OPENAI_MODEL=YOUR_MODEL
+export OPENAI_BASE_URL=https://your-provider.example.com/v1
+```
+
+Run one analysis:
+
+```bash
+ava analyze data/companies.csv "What is the average revenue by region?"
+```
+
 ## 📘 Documentation
 
 ### SDK
@@ -185,29 +209,11 @@ ava.dispose();
 
 ### CLI
 
-Use the CLI for one-off analysis without writing code.
+Use the CLI to run one analysis without writing code:
 
-1. Install AVA:
-
-   ```bash
-   npm install -g @antv/ava
-   ```
-
-2. Configure your model:
-
-   AVA works with model services that provide an OpenAI-compatible API.
-
-   ```bash
-   export OPENAI_API_KEY=YOUR_API_KEY
-   export OPENAI_MODEL=YOUR_MODEL
-   export OPENAI_BASE_URL=https://your-provider.example.com/v1
-   ```
-
-3. Run an analysis:
-
-   ```bash
-   ava analyze <source> <question> [options]
-   ```
+```bash
+ava analyze <source> <question> [options]
+```
 
 | Parameter | Required | Description |
 | --- | --- | --- |
