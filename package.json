@@ -28,6 +28,9 @@
     "access": "public"
   },
   "main": "lib/index.js",
+  "bin": {
+    "ava": "./lib/cli/index.js"
+  },
   "types": "lib/index.d.ts",
   "module": "esm/index.js",
   "exports": {

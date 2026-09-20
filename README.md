@@ -145,6 +145,26 @@ ava.dispose();
 
 ## 📘 Documentation
 
+### CLI
+
+The CLI exposes one task-oriented command: `ava analyze <source> <question>`.
+It loads the source, answers the question, and optionally generates a chart
+from that analysis in one invocation.
+
+```bash
+export OPENAI_API_KEY=YOUR_API_KEY
+
+# Answer a question
+ava analyze data/companies.csv "What is the average revenue by region?"
+
+# Generate chart HTML as well
+ava analyze data/companies.csv "Show revenue by region" --chart --output revenue.html
+```
+
+Source type is inferred from `.csv`, `.json`, `.parquet`, `.xls`, and
+`.xlsx`; `--type` overrides it. Configure the provider exclusively through
+`OPENAI_API_KEY`, `OPENAI_MODEL`, and `OPENAI_BASE_URL`.
+
 Create an AVA instance:
 
 - `new AVA(config)`: initialize runtime and LLM configuration.
