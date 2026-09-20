@@ -10,10 +10,10 @@ export function parse(argv: string[]): { values: string[]; options: Options } {
     args: argv,
     allowPositionals: true,
     options: {
-      chart: { type: 'boolean' },
+      chart: { type: 'boolean', short: 'c' },
       help: { type: 'boolean', short: 'h' },
-      output: { type: 'string' },
-      type: { type: 'string' },
+      output: { type: 'string', short: 'o' },
+      type: { type: 'string', short: 't' },
     },
   });
   return { values: positionals, options: values };

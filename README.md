@@ -161,9 +161,12 @@ ava analyze data/companies.csv "What is the average revenue by region?"
 ava analyze data/companies.csv "Show revenue by region" --chart --output revenue.html
 ```
 
-Source type is inferred from `.csv`, `.json`, `.parquet`, `.xls`, and
+Source type is inferred from `.csv`, `.json`, `.parquet`, and
 `.xlsx`; `--type` overrides it. Configure the provider exclusively through
 `OPENAI_API_KEY`, `OPENAI_MODEL`, and `OPENAI_BASE_URL`.
+Chart output paths must have an existing parent directory and must not already exist.
+
+### SDK
 
 Create an AVA instance:
 
