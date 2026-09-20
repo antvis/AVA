@@ -32,7 +32,7 @@ ${accent('Options:')}
 ${accent('Environment:')}
   OPENAI_API_KEY               API key (required)
   OPENAI_MODEL                 Model name (default: gpt-4o-mini)
-  OPENAI_BASE_URL              OpenAI-compatible endpoint (optional)
+  OPENAI_BASE_URL              OpenAI-compatible endpoint (default: https://api.openai.com/v1)
 
 ${accent('Examples:')}
   ava analyze sales.csv "Summarize revenue by region"

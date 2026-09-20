@@ -145,27 +145,6 @@ ava.dispose();
 
 ## 📘 Documentation
 
-### CLI
-
-The CLI exposes one task-oriented command: `ava analyze <source> <question>`.
-It loads the source, answers the question, and optionally generates a chart
-from that analysis in one invocation.
-
-```bash
-export OPENAI_API_KEY=YOUR_API_KEY
-
-# Answer a question
-ava analyze data/companies.csv "What is the average revenue by region?"
-
-# Generate chart HTML as well
-ava analyze data/companies.csv "Show revenue by region" --chart --output revenue.html
-```
-
-Source type is inferred from `.csv`, `.json`, `.parquet`, and
-`.xlsx`; `--type` overrides it. Configure the provider exclusively through
-`OPENAI_API_KEY`, `OPENAI_MODEL`, and `OPENAI_BASE_URL`.
-Chart output paths must have an existing parent directory and must not already exist.
-
 ### SDK
 
 Create an AVA instance:
@@ -202,6 +181,47 @@ if (viz) {
 }
 
 ava.dispose();
+```
+
+### CLI
+
+Use the CLI for one-off analysis without writing code.
+
+1. Install AVA:
+
+   ```bash
+   npm install -g @antv/ava
+   ```
+
+2. Configure your model:
+
+   AVA works with model services that provide an OpenAI-compatible API.
+
+   ```bash
+   export OPENAI_API_KEY=YOUR_API_KEY
+   export OPENAI_MODEL=YOUR_MODEL
+   export OPENAI_BASE_URL=https://your-provider.example.com/v1
+   ```
+
+3. Run an analysis:
+
+   ```bash
+   ava analyze <source> <question> [options]
+   ```
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `<source>` | Yes | Local path or HTTP(S) URL to the data source |
+| `<question>` | Yes | Natural-language analysis question |
+| `-t, --type <type>` | No | Source type when it cannot be inferred: `csv-file`, `json-file`, `parquet`, or `excel` |
+| `-c, --chart` | No | Generate a chart |
+| `-o, --output <path>` | With `--chart` | Write the chart to a new HTML file |
+
+Examples:
+
+```bash
+ava analyze data/companies.csv "What is the average revenue by region?"
+ava analyze data/companies.csv "Show revenue by region" --chart --output revenue.html
 ```
 
 ## 🏗️ Architecture
