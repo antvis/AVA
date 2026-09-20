@@ -406,6 +406,13 @@ export interface AnalysisEngine {
   dispose(): Promise<void>;
 }
 
+/** Turns a natural-language query into a database-specific DSL. */
+export interface QueryDialect<TContext = void> {
+  getDSL(query: string, schema: Schema): Promise<string>;
+  /** Require one read-only DSL statement before execution. */
+  validateDSL(dsl: string, context: TContext): Promise<void>;
+}
+
 /**
  * Analysis response — data analysis results only (no visualization)
  */
@@ -488,5 +495,3 @@ export interface SuggestResult {
   /** Reason for the score */
   reason: string;
 }
-
-
