@@ -48,12 +48,13 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
 
   async validateDSL(sql: string): Promise<void> {
     const { stmts: statements = [] } = await unwrapParseResult(this.parser.parse(sql));
-    if (statements.length !== 1) {
-      throw new Error('PostgreSQL query must contain exactly one statement');
+    if (statements.length === 0) {
+      throw new Error('PostgreSQL query must contain at least one statement');
     }
-    const statement = statements[0].stmt;
-    if (!statement || !('SelectStmt' in statement) || containsMutation(statement)) {
-      throw new Error('PostgreSQL query must be read-only SELECT');
+    for (const { stmt: statement } of statements) {
+      if (!statement || !('SelectStmt' in statement) || containsMutation(statement)) {
+        throw new Error('PostgreSQL query must contain only read-only SELECT statements');
+      }
     }
   }
 }

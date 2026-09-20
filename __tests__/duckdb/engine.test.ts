@@ -66,14 +66,15 @@ describe('DuckDBEngine', () => {
     }
   });
 
-  it('should reject multiple or non-read-only SQL statements', async () => {
+  it('should allow multiple read-only statements and reject writes', async () => {
     await engine.load({ type: 'json', options: { data: [{ a: 1 }] } });
 
-    await expect(engine.execute('SELECT * FROM data; SELECT 1')).rejects.toThrow(
-      'exactly one statement'
-    );
+    await expect(engine.execute('SELECT * FROM data; SELECT 1')).resolves.toEqual([{ a: 1 }]);
     await expect(engine.execute('CREATE TABLE blocked (a INTEGER)')).rejects.toThrow(
-      'read-only SELECT'
+      'only read-only SELECT statements'
+    );
+    await expect(engine.execute('SELECT * FROM data; CREATE TABLE blocked_too (a INTEGER)')).rejects.toThrow(
+      'only read-only SELECT statements'
     );
   });
 

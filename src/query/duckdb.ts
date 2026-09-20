@@ -35,17 +35,19 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
 
   async validateDSL(sql: string, connection: DuckDBConnection): Promise<void> {
     const statements = await connection.extractStatements(sql);
-    if (statements.count !== 1) {
-      throw new Error('DuckDB query must contain exactly one statement');
+    if (statements.count === 0) {
+      throw new Error('DuckDB query must contain at least one statement');
     }
 
-    const statement = await statements.prepare(0);
-    try {
-      if (statement.statementType !== StatementType.SELECT) {
-        throw new Error('DuckDB query must be read-only SELECT');
+    for (let index = 0; index < statements.count; index += 1) {
+      const statement = await statements.prepare(index);
+      try {
+        if (statement.statementType !== StatementType.SELECT) {
+          throw new Error('DuckDB query must contain only read-only SELECT statements');
+        }
+      } finally {
+        statement.destroySync();
       }
-    } finally {
-      statement.destroySync();
     }
   }
 }

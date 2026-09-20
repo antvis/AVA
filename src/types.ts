@@ -407,9 +407,9 @@ export interface AnalysisEngine {
  * Turns a natural-language query into a database-specific DSL.
  */
 export interface QueryDialect<TContext = void> {
-  /** Generate the executable DSL (SQL) for a natural-language query */
+  /** Generate the executable DSL (SQL) for a natural-language query. */
   getDSL(query: string, schema: Schema): Promise<string>;
-  /** Validate the generated READ-ONLY DSL (SQL) before execution */
+  /** Require one or more read-only DSL statements before execution */
   validateDSL(dsl: string, context: TContext): Promise<void>;
 }
 
