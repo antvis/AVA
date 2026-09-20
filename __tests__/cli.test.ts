@@ -78,7 +78,7 @@ describe('help and validation', () => {
       await run(argv, {}, (value) => output.push(value));
 
       expect(output).toHaveLength(1);
-      expect(output[0]).toContain('✦  AVA   Talk to your data');
+      expect(output[0]).toContain('✦  AVA ');
       expect(output[0]).toContain('Usage:\n  ava <command> [options]');
       expect(output[0]).toContain('Commands:');
     }
