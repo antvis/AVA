@@ -71,6 +71,7 @@ describe('SupabaseEngine', () => {
 
     await expect(engine.execute('SELECT 1; SELECT 2')).rejects.toThrow('exactly one statement');
     await expect(engine.execute('DELETE FROM users')).rejects.toThrow('read-only SELECT');
+    await expect(engine.execute('SELECT * FROM users FOR UPDATE')).rejects.toThrow('read-only SELECT');
     await expect(
       engine.execute('WITH deleted AS (DELETE FROM users RETURNING *) SELECT * FROM deleted')
     ).rejects.toThrow('read-only SELECT');

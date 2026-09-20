@@ -1,32 +1,26 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
-import { parse } from 'pgsql-ast-parser';
+import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 
 import { stringifySchema } from '../util/schema';
 
 import type { LLMConfig, QueryDialect, Schema } from '../types';
-import type { Statement } from 'pgsql-ast-parser';
 
-function isReadOnly(statement: Statement): boolean {
-  switch (statement.type) {
-    case 'select':
-      return !statement.for;
-    case 'values':
-      return true;
-    case 'union':
-    case 'union all':
-      return isReadOnly(statement.left) && isReadOnly(statement.right);
-    case 'with':
-      return statement.bind.every((binding) => isReadOnly(binding.statement))
-        && isReadOnly(statement.in);
-    case 'with recursive':
-      return isReadOnly(statement.bind) && isReadOnly(statement.in);
-    default:
-      return false;
-  }
+const MUTATING_NODES = new Set(['InsertStmt', 'UpdateStmt', 'DeleteStmt', 'MergeStmt']);
+
+function containsMutation(value: unknown): boolean {
+  if (Array.isArray(value)) return value.some(containsMutation);
+  if (!value || typeof value !== 'object') return false;
+
+  const node = value as Record<string, unknown>;
+  if (Object.keys(node).some((key) => MUTATING_NODES.has(key))) return true;
+  if (Array.isArray(node.lockingClause) && node.lockingClause.length > 0) return true;
+  return Object.values(node).some(containsMutation);
 }
 
 export class PostgreSQLQueryDialect implements QueryDialect {
+  private readonly parser = new PgParser();
+
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async getDSL(query: string, schema: Schema): Promise<string> {
@@ -53,11 +47,12 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
   }
 
   async validateDSL(sql: string): Promise<void> {
-    const statements = parse(sql);
+    const { stmts: statements = [] } = await unwrapParseResult(this.parser.parse(sql));
     if (statements.length !== 1) {
       throw new Error('PostgreSQL query must contain exactly one statement');
     }
-    if (!isReadOnly(statements[0])) {
+    const statement = statements[0].stmt;
+    if (!statement || !('SelectStmt' in statement) || containsMutation(statement)) {
       throw new Error('PostgreSQL query must be read-only SELECT');
     }
   }
