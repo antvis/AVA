@@ -61,7 +61,6 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "eval": "pnpm build && node evals/_shared/cli.js",
     "lint": "eslint --ext .ts,.tsx src __tests__",
     "lint-fix": "eslint --ext .ts,.tsx src __tests__ --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx}\" && npm run lint-fix",

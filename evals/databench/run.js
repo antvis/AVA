@@ -23,7 +23,7 @@ const OUTPUT_COLUMNS = [
 ];
 
 const HELP = `Usage:
-  pnpm eval databench [options]
+  node cli.js databench [options]
 
 Options:
   --dataset <name>       databench-lite or databench (default: databench-lite)
@@ -31,7 +31,7 @@ Options:
   --offset <number>      Start offset after filtering (default: 0)
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
-  --output <path>        Prediction CSV (default: evals/databench/results/<dataset>.csv)
+  --output <path>        Prediction CSV (default: databench/results/<dataset>.csv)
   --help                 Show help
 `;
 
@@ -107,7 +107,7 @@ async function main(argv = process.argv.slice(2)) {
   if (!['databench-lite', 'databench'].includes(values.dataset)) {
     throw new Error('--dataset must be databench-lite or databench.');
   }
-  const output = resolve(values.output ?? `evals/databench/results/${values.dataset}.csv`);
+  const output = resolve(values.output ?? `databench/results/${values.dataset}.csv`);
   const completed = prepareOutput(output);
   const offset = integer(values.offset, 'offset', 0);
   const concurrency = integer(values.concurrency, 'concurrency', 1);
