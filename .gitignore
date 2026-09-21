@@ -96,3 +96,7 @@ temp.diff
 
 #pnpm-lock
 pnpm-lock.yaml
+
+# Downloaded/generated evaluation files
+/evals/*/datasets/
+/evals/*/results/
