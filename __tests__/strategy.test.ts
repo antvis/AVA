@@ -12,7 +12,7 @@ vi.mock('@ai-sdk/openai', () => ({
   createOpenAI: vi.fn(() => vi.fn()),
 }));
 
-describe('singleQueryAnalysis', () => {
+describe('directAnalysis', () => {
   it('generates and executes exactly one DSL statement', async () => {
     const engine = {
       getDSL: vi.fn().mockResolvedValue('SELECT 1'),
@@ -21,7 +21,7 @@ describe('singleQueryAnalysis', () => {
 
     const result = await analyze(
       'Give me one',
-      { strategy: { type: 'single-query' } },
+      { strategy: { type: 'direct' } },
       {
         schema: { tables: [] },
         engine,

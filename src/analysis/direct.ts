@@ -31,7 +31,7 @@ Provide a natural language summary of the result. If the result is tabular data,
 }
 
 /** Generate and execute one query, then summarize its data. */
-export const singleQueryAnalysis: AnalysisStrategy = async (query, { engine, llm }) => {
+export const directAnalysis: AnalysisStrategy = async (query, { engine, llm }) => {
   const sql = await engine.getDSL(query);
   const data = await engine.execute(sql);
   const summary = await summarizeResult(query, data, llm);
