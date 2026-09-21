@@ -27,7 +27,7 @@ describe('interpreter/engine', () => {
   it('rejects unsupported source types', async () => {
     engine = new InterpreterEngine(getLLMConfig());
     await expect(engine.load({ type: 'mysql', options: {} } as any)).rejects.toThrow(
-      'InterpreterEngine only supports csv/json/text sources',
+      'InterpreterEngine only supports csv/json/text sources'
     );
   });
 
@@ -36,7 +36,16 @@ describe('interpreter/engine', () => {
     await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
 
     const result = await engine.execute('const result = stat.sum(data, "value");');
-    expect(result).toBe(30);
+    expect(result.data).toEqual([{ value: 30 }]);
+  });
+
+  it('returns a bounded result', async () => {
+    engine = new InterpreterEngine(getLLMConfig());
+    await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
+
+    const result = await engine.execute('const result = data;', { maxRows: 1 });
+    expect(result.data).toEqual([{ value: 10 }]);
+    expect(result.truncated).toBe(true);
   });
 
   it('throws when executing without loading data', async () => {
@@ -50,6 +59,6 @@ describe('interpreter/engine', () => {
 
     const code = await engine.getDSL('sum of value');
     const result = await engine.execute(code);
-    expect(result).toBe(30);
+    expect(result.data).toEqual([{ value: 30 }]);
   });
 });

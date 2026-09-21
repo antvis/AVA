@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { DuckDBInstance } from '@duckdb/node-api';
 
 import { DuckDBQueryDialect } from '../query/duckdb';
+import { executionResult, limitedQuery, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
 import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
 
@@ -22,6 +23,8 @@ import type {
   TableSchema,
   FieldMetadata,
   LLMConfig,
+  ExecutionOptions,
+  ExecutionResult,
 } from '../types';
 
 /**
@@ -60,10 +63,7 @@ export class DuckDBEngine implements AnalysisEngine {
   private cleanup: (() => Promise<void>) | null = null;
   private readonly queryDialect: DuckDBQueryDialect;
 
-  constructor(
-    private readonly llmConfig: LLMConfig,
-    private readonly engineOptions: DuckDBEngineOptions = {},
-  ) {
+  constructor(private readonly llmConfig: LLMConfig, private readonly engineOptions: DuckDBEngineOptions = {}) {
     this.queryDialect = new DuckDBQueryDialect(llmConfig);
   }
 
@@ -130,11 +130,15 @@ export class DuckDBEngine implements AnalysisEngine {
     return this.queryDialect.getDSL(query, await this.getSchema());
   }
 
-  async execute(sql: string): Promise<any> {
+  async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     const conn = await this.getConnection();
     await this.queryDialect.validateDSL(sql, conn);
-    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(sql));
-    return coerceNumbers(reader.getRowObjectsJson());
+    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(sql, maxRows(options))));
+    const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
+      name: reader.columnName(index),
+      type: reader.columnType(index).toString(),
+    }));
+    return executionResult(coerceNumbers(reader.getRowObjectsJson()) as T[], schema, options);
   }
 
   /**
@@ -192,24 +196,28 @@ export class DuckDBEngine implements AnalysisEngine {
 
     // One aggregate query computes row count plus per-column stats
     const MAX_DISTINCT = 20;
-    const stats = cols.map((col: any, i: number) => {
-      const name = sqlIdentifier(String(col.column_name));
-      const type = String(col.column_type);
-      if (/\[[^\]]*\]$/.test(type)) {
-        return null;
-      }
-      const numeric = /INT|DOUBLE|FLOAT|REAL|DECIMAL|NUMERIC/i.test(type);
-      const temporal = /DATE|TIME/i.test(type);
-      if (!numeric && !temporal) {
-        return `struct_pack(distinct_count := COUNT(DISTINCT ${name}), items := COALESCE(min(DISTINCT ${name}, ${MAX_DISTINCT}), [])) AS "s${i}"`;
-      }
-      const finite = /^(DOUBLE|FLOAT|REAL)$/i.test(type) ? ` FILTER (WHERE isfinite(${name}))` : '';
-      // Numbers stay numeric; temporal columns become epoch milliseconds
-      const minExpr = temporal ? `epoch_ms(min(${name}))` : `min(${name})${finite}`;
-      const maxExpr = temporal ? `epoch_ms(max(${name}))` : `max(${name})${finite}`;
-      return `struct_pack(min := ${minExpr}, max := ${maxExpr}) AS "s${i}"`;
-    }).filter((stat): stat is string => stat !== null);
-    const profileSql = `SELECT COUNT(*) AS "__rows"${stats.length ? `, ${stats.join(', ')}` : ''} FROM ${sqlIdentifier(tableName)}`;
+    const stats = cols
+      .map((col: any, i: number) => {
+        const name = sqlIdentifier(String(col.column_name));
+        const type = String(col.column_type);
+        if (/\[[^\]]*\]$/.test(type)) {
+          return null;
+        }
+        const numeric = /INT|DOUBLE|FLOAT|REAL|DECIMAL|NUMERIC/i.test(type);
+        const temporal = /DATE|TIME/i.test(type);
+        if (!numeric && !temporal) {
+          return `struct_pack(distinct_count := COUNT(DISTINCT ${name}), items := COALESCE(min(DISTINCT ${name}, ${MAX_DISTINCT}), [])) AS "s${i}"`;
+        }
+        const finite = /^(DOUBLE|FLOAT|REAL)$/i.test(type) ? ` FILTER (WHERE isfinite(${name}))` : '';
+        // Numbers stay numeric; temporal columns become epoch milliseconds
+        const minExpr = temporal ? `epoch_ms(min(${name}))` : `min(${name})${finite}`;
+        const maxExpr = temporal ? `epoch_ms(max(${name}))` : `max(${name})${finite}`;
+        return `struct_pack(min := ${minExpr}, max := ${maxExpr}) AS "s${i}"`;
+      })
+      .filter((stat): stat is string => stat !== null);
+    const profileSql = `SELECT COUNT(*) AS "__rows"${stats.length ? `, ${stats.join(', ')}` : ''} FROM ${sqlIdentifier(
+      tableName
+    )}`;
     const profileRow = (await conn.runAndReadAll(profileSql)).getRowObjectsJson()[0] as any;
 
     const fields: FieldMetadata[] = cols.map((col: any, i: number) => {

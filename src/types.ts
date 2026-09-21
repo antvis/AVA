@@ -62,7 +62,7 @@ export interface AVAConfig {
 }
 
 /** Per-analysis options. */
-export interface AnalysisConfig {
+export interface AnalysisConfig extends ExecutionOptions {
   /** Strategy for this analysis (defaults to direct). */
   strategy?: AnalysisStrategyConfig;
 }
@@ -405,10 +405,36 @@ export interface AnalysisEngine {
   load(config: DataSourceConfig): Promise<Schema>;
   /** Generate the executable DSL (SQL) for a natural-language query */
   getDSL(query: string): Promise<string>;
-  /** Execute a DSL returned by getDSL against the loaded data */
-  execute(dsl: string): Promise<any>;
+  /** Execute one DSL statement with a bounded result. */
+  execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
   /** Release resources (temp files, database connections) */
   dispose(): Promise<void>;
+}
+
+/** Controls the maximum size of a bounded execution result. */
+export interface ExecutionOptions {
+  /** Maximum rows returned. Default 200; hard limit 10,000. */
+  maxRows?: number;
+  /** Maximum serialized UTF-8 bytes returned. Default 1 MiB. */
+  maxResultBytes?: number;
+}
+
+export interface QueryColumn {
+  name: string;
+  /** Engine-native type name when available. */
+  type?: string;
+}
+
+/** A bounded query result. */
+export interface ExecutionResult<T = Record<string, unknown>> {
+  schema: QueryColumn[];
+  data: T[];
+  /** Present only when the result was truncated. */
+  truncated?: true;
+  /** Limit that stopped the result, when truncated. */
+  truncatedBy?: 'maxRows' | 'maxResultBytes';
+  /** Known only when the bounded query reaches the end of the result. */
+  rowCount?: number;
 }
 
 /** Built-in analysis strategies. */
@@ -422,7 +448,11 @@ export interface AnalysisRuntime {
 }
 
 /** A replaceable way of analyzing a natural-language query. */
-export type AnalysisStrategy = (query: string, runtime: AnalysisRuntime) => Promise<AnalysisResponse>;
+export type AnalysisStrategy = (
+  query: string,
+  config: AnalysisConfig,
+  runtime: AnalysisRuntime
+) => Promise<AnalysisResponse>;
 
 /**
  * Turns a natural-language query into a database-specific DSL.
@@ -430,20 +460,18 @@ export type AnalysisStrategy = (query: string, runtime: AnalysisRuntime) => Prom
 export interface QueryDialect<TContext = void> {
   /** Generate the executable DSL (SQL) for a natural-language query. */
   getDSL(query: string, schema: Schema): Promise<string>;
-  /** Require one or more read-only DSL statements before execution */
+  /** Require exactly one read-only DSL statement before execution. */
   validateDSL(dsl: string, context: TContext): Promise<void>;
 }
 
 /**
  * Analysis response — data analysis results only (no visualization)
  */
-export interface AnalysisResponse {
+export interface AnalysisResponse<T = Record<string, unknown>> extends ExecutionResult<T> {
   /** The original user query */
   query: string;
   /** The analysis result as text */
   text: string;
-  /** Optional structured data result */
-  data?: any[];
   /** Optional markdown content */
   markdown?: string;
   /** The SQL executed for the analysis */

@@ -20,7 +20,7 @@ describe('loaders/csv', () => {
     await engine.load({ type: 'csv', options: { csv: 'name,age\nAlice,30\nBob,25' } });
 
     const rows = await engine.execute('SELECT * FROM "data"');
-    expect(rows).toEqual([
+    expect(rows.data).toEqual([
       { name: 'Alice', age: 30 },
       { name: 'Bob', age: 25 },
     ]);

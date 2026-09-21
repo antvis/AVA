@@ -7,7 +7,7 @@ export function analyze(query: string, config: AnalysisConfig, runtime: Analysis
 
   switch (strategy) {
     case 'direct':
-      return directAnalysis(query, runtime);
+      return directAnalysis(query, config, runtime);
     default:
       throw new Error(`Unknown analysis strategy: ${strategy}`);
   }

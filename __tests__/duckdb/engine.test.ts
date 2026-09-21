@@ -8,6 +8,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
+import { maxRows } from '../../src/util/result';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 describe('DuckDBEngine', () => {
@@ -31,13 +32,13 @@ describe('DuckDBEngine', () => {
     await engine.load({ type: 'json', options: { data: testData } });
 
     const all = await engine.execute('SELECT * FROM data');
-    expect(all.length).toBe(3);
+    expect(all.data).toHaveLength(3);
 
     const filtered = await engine.execute("SELECT * FROM data WHERE city = 'NYC'");
-    expect(filtered.length).toBe(2);
+    expect(filtered.data).toHaveLength(2);
 
     const aggregated = await engine.execute('SELECT COUNT(*) as count FROM data');
-    expect(aggregated[0].count).toBe(3);
+    expect(aggregated.data[0].count).toBe(3);
   });
 
   describe('schema profiling', () => {
@@ -64,6 +65,27 @@ describe('DuckDBEngine', () => {
     });
   });
 
+  it('should bound large query results', async () => {
+    await engine.load({
+      type: 'json',
+      options: { data: Array.from({ length: 5 }, (_, id) => ({ id })) },
+    });
+
+    const result = await engine.execute<{ id: number }>('SELECT * FROM data ORDER BY id', {
+      maxRows: 2,
+    });
+
+    expect(result.data).toEqual([{ id: 0 }, { id: 1 }]);
+    expect(result.truncated).toBe(true);
+    expect(result.rowCount).toBeUndefined();
+    expect(result.schema).toEqual([{ name: 'id', type: 'BIGINT' }]);
+  });
+
+  it('should clamp result limits', () => {
+    expect(maxRows({ maxRows: 0 })).toBe(1);
+    expect(maxRows({ maxRows: 10_001 })).toBe(10_000);
+  });
+
   it('should apply resource limits and still run normal queries', async () => {
     const limited = new DuckDBEngine(getLLMConfig(), {
       memoryLimit: '256MB',
@@ -73,7 +95,7 @@ describe('DuckDBEngine', () => {
     try {
       await limited.load({ type: 'json', options: { data: [{ a: 1 }, { a: 2 }] } });
       const rows = await limited.execute('SELECT SUM(a) AS total FROM data');
-      expect(rows[0].total).toBe(3);
+      expect(rows.data[0].total).toBe(3);
     } finally {
       await limited.dispose();
     }
@@ -84,18 +106,17 @@ describe('DuckDBEngine', () => {
     try {
       await fast.load({ type: 'json', options: { data: [{ a: 1 }] } });
       // A large cross join is far slower than the 100ms timeout.
-      const slowQuery =
-        'SELECT COUNT(*) FROM range(100000) a, range(100000) b';
+      const slowQuery = 'SELECT COUNT(*) FROM range(100000) a, range(100000) b';
       await expect(fast.execute(slowQuery)).rejects.toThrow(QueryTimeoutError);
     } finally {
       await fast.dispose();
     }
   });
 
-  it('should allow multiple read-only statements and reject writes', async () => {
+  it('should require one read-only statement', async () => {
     await engine.load({ type: 'json', options: { data: [{ a: 1 }] } });
 
-    await expect(engine.execute('SELECT * FROM data; SELECT 1')).resolves.toEqual([{ a: 1 }]);
+    await expect(engine.execute('SELECT * FROM data; SELECT 1')).rejects.toThrow('exactly one');
     await expect(engine.execute('CREATE TABLE blocked (a INTEGER)')).rejects.toThrow(
       'only read-only SELECT statements'
     );

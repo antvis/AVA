@@ -26,13 +26,13 @@ describe('loaders/excel', () => {
     expect(schema.tables.map((t) => t.name)).toEqual(['Sales', 'Costs']);
 
     const sales = await engine.execute('SELECT * FROM "Sales" ORDER BY region');
-    expect(sales).toEqual([
+    expect(sales.data).toEqual([
       { region: 'East', revenue: 100 },
       { region: 'West', revenue: 200 },
     ]);
 
     const costs = await engine.execute('SELECT * FROM "Costs" ORDER BY region');
-    expect(costs).toEqual([
+    expect(costs.data).toEqual([
       { region: 'East', cost: 30 },
       { region: 'West', cost: 50 },
     ]);
@@ -45,7 +45,7 @@ describe('loaders/excel', () => {
     const rows = await engine.execute(
       'SELECT s.region, s.revenue - c.cost AS profit FROM "Sales" s JOIN "Costs" c USING (region) ORDER BY s.region'
     );
-    expect(rows).toEqual([
+    expect(rows.data).toEqual([
       { region: 'East', profit: 70 },
       { region: 'West', profit: 150 },
     ]);

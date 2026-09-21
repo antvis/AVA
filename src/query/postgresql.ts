@@ -46,18 +46,24 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
     });
     this.llmConfig.onQueryUsage?.(usage);
 
-    return text.trim().replace(/^```(?:sql)?\s*|\s*```$/gi, '').trim();
+    return text
+      .trim()
+      .replace(/^```(?:sql)?\s*|\s*```$/gi, '')
+      .trim();
   }
 
   async validateDSL(sql: string): Promise<void> {
     const { stmts: statements = [] } = await unwrapParseResult(this.parser.parse(sql));
     if (statements.length === 0) {
-      throw new Error('PostgreSQL query must contain at least one statement');
+      throw new Error('PostgreSQL query must contain exactly one read-only SELECT statement');
     }
     for (const { stmt: statement } of statements) {
       if (!statement || !('SelectStmt' in statement) || containsMutation(statement)) {
         throw new Error('PostgreSQL query must contain only read-only SELECT statements');
       }
+    }
+    if (statements.length !== 1) {
+      throw new Error('PostgreSQL query must contain exactly one read-only SELECT statement');
     }
   }
 }

@@ -35,10 +35,7 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('SupabaseEngine', () => {
   it('loads the public-schema tables and executes SQL remotely', async () => {
-    const requests = stubApi([
-      { match: /information_schema/, rows: DISCOVERY_ROWS },
-      { rows: [{ name: 'Alice' }] },
-    ]);
+    const requests = stubApi([{ match: /information_schema/, rows: DISCOVERY_ROWS }, { rows: [{ name: 'Alice' }] }]);
 
     const engine = new SupabaseEngine(getLLMConfig());
     const schema = await engine.load({ type: 'supabase', options: CONNECTION });
@@ -60,23 +57,28 @@ describe('SupabaseEngine', () => {
     ]);
 
     const rows = await engine.execute('SELECT name FROM users');
-    expect(rows).toEqual([{ name: 'Alice' }]);
-    expect(requests[1].body).toEqual({ query: 'SELECT name FROM users', read_only: true });
+    expect(rows.data).toEqual([{ name: 'Alice' }]);
+    expect(requests[1].body.query).toContain('LIMIT 201');
+
+    const result = await engine.execute('SELECT name FROM users', { maxRows: 2 });
+    expect(result.data).toEqual([{ name: 'Alice' }]);
+    expect(result.rowCount).toBe(1);
+    expect(requests[2].body.query).toContain('LIMIT 3');
   });
 
-  it('allows multiple read-only statements and rejects writes', async () => {
+  it('requires one read-only statement', async () => {
     const requests = stubApi([{ rows: DISCOVERY_ROWS }]);
     const engine = new SupabaseEngine(getLLMConfig());
     await engine.load({ type: 'supabase', options: CONNECTION });
 
-    await expect(engine.execute('SELECT 1; SELECT 2')).resolves.toEqual(DISCOVERY_ROWS);
+    await expect(engine.execute('SELECT 1; SELECT 2')).rejects.toThrow('exactly one');
     await expect(engine.execute('DELETE FROM users')).rejects.toThrow('only read-only SELECT statements');
     await expect(engine.execute('SELECT 1; DELETE FROM users')).rejects.toThrow('only read-only SELECT statements');
     await expect(engine.execute('SELECT * FROM users FOR UPDATE')).rejects.toThrow('only read-only SELECT statements');
     await expect(
       engine.execute('WITH deleted AS (DELETE FROM users RETURNING *) SELECT * FROM deleted')
     ).rejects.toThrow('only read-only SELECT statements');
-    expect(requests).toHaveLength(2);
+    expect(requests).toHaveLength(1);
   });
 
   describe.skipIf(skipLLMTests)('getDSL', () => {

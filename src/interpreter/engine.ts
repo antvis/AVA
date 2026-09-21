@@ -10,17 +10,13 @@ import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import { extractDataSchema, stringifySchema } from '../util/schema';
+import { executionResult, inferQuerySchema } from '../util/result';
 
 import { executeCode } from './sandbox';
 import { loadSource } from './loaders';
 import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
-import type {
-  AnalysisEngine,
-  DataSourceConfig,
-  LLMConfig,
-  Schema,
-} from '../types';
+import type { AnalysisEngine, DataSourceConfig, LLMConfig, Schema, ExecutionOptions, ExecutionResult } from '../types';
 
 export class InterpreterEngine implements AnalysisEngine {
   private data: any[] | null = null;
@@ -29,9 +25,7 @@ export class InterpreterEngine implements AnalysisEngine {
 
   async load(config: DataSourceConfig): Promise<Schema> {
     if (!['csv', 'json', 'text'].includes(config.type)) {
-      throw new Error(
-        `InterpreterEngine only supports csv/json/text sources, got: ${config.type}`,
-      );
+      throw new Error(`InterpreterEngine only supports csv/json/text sources, got: ${config.type}`);
     }
 
     this.data = await loadSource(config as any, this.llmConfig);
@@ -80,15 +74,20 @@ Now generate the code:`;
       prompt,
     });
 
-    return text.trim().replace(/^```(?:javascript|js)?\s*|\s*```$/gi, '').trim();
+    return text
+      .trim()
+      .replace(/^```(?:javascript|js)?\s*|\s*```$/gi, '')
+      .trim();
   }
 
-  async execute(code: string): Promise<any> {
+  async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.data) {
       throw new Error('No data loaded. Please call load() first.');
     }
 
-    return executeCode(this.data, code);
+    const result = executeCode(this.data, code);
+    const rows = (Array.isArray(result) ? result : [{ value: result }]) as T[];
+    return executionResult(rows, inferQuerySchema(rows), options);
   }
 
   async dispose(): Promise<void> {
