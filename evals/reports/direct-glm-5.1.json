@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-21T07:28:54Z",
+  "generatedAt": "2026-09-21T07:36:23Z",
   "environment": {
     "nodeVersion": "v20.19.5",
     "pnpmVersion": "10.20.0",
     "operatingSystem": "Darwin 25.6.0",
     "architecture": "arm64",
-    "gitRevision": "b27f7c64b7d145ad4e809a274396412afd652d3b"
+    "gitRevision": "0ac003030716b96ba7495e74646e809fe6cfcad3"
   },
   "evaluation": {
     "benchmark": "DataBench full",
@@ -15,26 +15,26 @@
   },
   "summary": {
     "samples": 1830,
-    "correct": 1511,
+    "correct": 1514,
     "wrong": 233,
-    "missing": 86,
-    "accuracy": 0.8257,
+    "missing": 83,
+    "accuracy": 0.8273,
     "timingSeconds": {
-      "average": 18.92,
+      "average": 18.98,
       "minimum": 0.15,
       "maximum": 377.57,
-      "median": 11.49
+      "median": 11.53
     },
     "tokens": {
-      "prompt": 5434394,
-      "completion": 1025003,
-      "total": 6459397,
+      "prompt": 5434408,
+      "completion": 1025792,
+      "total": 6460200,
       "average": 3534
     }
   },
   "errors": {
     "wrongOrMissing": {
-      "count": 319
+      "count": 316
     },
     "categories": [
       {
@@ -45,7 +45,7 @@
       {
         "type": "missing",
         "category": "Column names contained <gx:type> suffixes",
-        "count": 7
+        "count": 4
       },
       {
         "type": "missing",
