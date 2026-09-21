@@ -2,6 +2,8 @@
  * Unit tests for DuckDBEngine
  */
 
+import * as path from 'path';
+
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 import { DuckDBEngine } from '../../src/duckdb';
@@ -36,6 +38,30 @@ describe('DuckDBEngine', () => {
 
     const aggregated = await engine.execute('SELECT COUNT(*) as count FROM data');
     expect(aggregated[0].count).toBe(3);
+  });
+
+  describe('schema profiling', () => {
+    it('should load a Parquet schema containing numeric arrays', async () => {
+      const schema = await engine.load({
+        type: 'parquet',
+        options: { path: path.join(__dirname, '../datasets/041_Airline.parquet') },
+      });
+
+      expect(schema.tables[0]).toMatchObject({ name: 'data', rowCount: 5 });
+      const field = schema.tables[0].fields.find(({ name }) => name === 'tweet_coord');
+      expect(field).toMatchObject({
+        name: 'tweet_coord',
+        type: 'DOUBLE[]',
+      });
+      expect(field).not.toHaveProperty('min');
+      expect(field).not.toHaveProperty('max');
+    });
+
+    it('should skip profiling when every column is an array', async () => {
+      const schema = await engine.load({ type: 'json', options: { data: [{ values: ['a', 'b'] }] } });
+
+      expect(schema.tables[0].fields[0]).toMatchObject({ type: 'VARCHAR[]' });
+    });
   });
 
   it('should apply resource limits and still run normal queries', async () => {

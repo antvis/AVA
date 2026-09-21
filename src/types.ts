@@ -354,10 +354,8 @@ export interface LoadedSource {
 export interface FieldMetadata {
   /** Field name */
   name: string;
-  /** Field type */
-  type: 'number' | 'string' | 'date' | 'boolean';
-  /** Raw column type from the engine (e.g. DuckDB's BIGINT/VARCHAR), when available */
-  rawType?: string;
+  /** Column type from the engine (e.g. DuckDB's BIGINT/VARCHAR) */
+  type: string;
   /** Distinct values (categorical fields, up to 20) */
   samples?: any[];
   /** Number of unique values */
