@@ -3,12 +3,12 @@
 const { writeFileSync } = require('node:fs');
 const { parseArgs } = require('node:util');
 
-const { evaluate, getDataset, loadPlugin, predictionIndex } = require('./index');
+const { evaluate, getDataset, loadPlugin, predictionIndex } = require('./_shared');
 
 const HELP = `Usage:
-  pnpm eval databench:fetch
-  pnpm eval databench [options]
-  pnpm eval --predictions <file.csv> [options]
+  node cli.js databench:fetch
+  node cli.js databench [options]
+  node cli.js --predictions <file.csv> [options]
 
 Options:
   --dataset <name>       Dataset plugin name (default: databench-lite)
@@ -27,8 +27,8 @@ function writeNew(path, content) {
 async function main(argv = process.argv.slice(2)) {
   const [command, ...args] = argv;
   if (!command) return process.stdout.write(HELP);
-  if (command === 'databench:fetch') return require('../databench/fetch').main(args);
-  if (command === 'databench') return require('../databench/run').main(args);
+  if (command === 'databench:fetch') return require('./databench/fetch').main(args);
+  if (command === 'databench') return require('./databench/run').main(args);
 
   const { values } = parseArgs({
     args: argv,

@@ -1,0 +1,106 @@
+{
+  "generatedAt": "2026-09-21T06:18:53Z",
+  "environment": {
+    "nodeVersion": "v20.19.5",
+    "pnpmVersion": "10.20.0",
+    "operatingSystem": "Darwin 25.6.0",
+    "architecture": "arm64",
+    "gitRevision": "9553f381de052dee7f25804e4ba30d05c15dafc5"
+  },
+  "evaluation": {
+    "benchmark": "DataBench full",
+    "dataset": "databench",
+    "strategy": "direct",
+    "model": "GLM-5.1"
+  },
+  "summary": {
+    "samples": 1830,
+    "correct": 1377,
+    "wrong": 211,
+    "missing": 242,
+    "accuracy": 0.7525,
+    "timingSeconds": {
+      "average": 17.64,
+      "minimum": 0.01,
+      "maximum": 278.43,
+      "median": 9.47
+    },
+    "tokens": {
+      "prompt": 5164783,
+      "completion": 949007,
+      "total": 6113790,
+      "average": 3552
+    }
+  },
+  "errors": {
+    "wrongOrMissing": {
+      "count": 453,
+      "shareOfAllSamples": 0.2475
+    },
+    "categories": [
+      {
+        "type": "wrongAnswer",
+        "category": "Prediction did not match the gold answer",
+        "count": 211,
+        "share": 0.1153,
+        "shareOf": "allSamples"
+      },
+      {
+        "type": "missing",
+        "category": "Array-column schema analysis failed",
+        "count": 100,
+        "share": 0.4132,
+        "shareOf": "missing"
+      },
+      {
+        "type": "missing",
+        "category": "Column names contained <gx:type> suffixes",
+        "count": 59,
+        "share": 0.2438,
+        "shareOf": "missing"
+      },
+      {
+        "type": "missing",
+        "category": "DuckDB native callback failed",
+        "count": 45,
+        "share": 0.186,
+        "shareOf": "missing"
+      },
+      {
+        "type": "missing",
+        "category": "Generated SQL used unsupported syntax or functions",
+        "count": 16,
+        "share": 0.0661,
+        "shareOf": "missing"
+      },
+      {
+        "type": "missing",
+        "category": "Model API connection closed",
+        "count": 9,
+        "share": 0.0372,
+        "shareOf": "missing"
+      },
+      {
+        "type": "missing",
+        "category": "Generated SQL type conversion failed",
+        "count": 6,
+        "share": 0.0248,
+        "shareOf": "missing"
+      },
+      {
+        "type": "missing",
+        "category": "Object string was not valid JSON",
+        "count": 5,
+        "share": 0.0207,
+        "shareOf": "missing"
+      },
+      {
+        "type": "missing",
+        "category": "Generated SQL referenced a missing column",
+        "count": 2,
+        "share": 0.0083,
+        "shareOf": "missing"
+      }
+    ]
+  }
+}
