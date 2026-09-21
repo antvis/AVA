@@ -9,6 +9,7 @@
  */
 
 import { PostgreSQLQueryDialect } from '../query/postgresql';
+import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../util/result';
 import { sqlStringLiteral } from '../util/sql';
 
 import type {
@@ -18,6 +19,8 @@ import type {
   LLMConfig,
   Schema,
   TableSchema,
+  ExecutionOptions,
+  ExecutionResult,
 } from '../types';
 
 const SUPABASE_API_BASE = 'https://api.supabase.com';
@@ -59,12 +62,14 @@ export class SupabaseEngine implements AnalysisEngine {
     return this.queryDialect.getDSL(query, this.schema);
   }
 
-  async execute(sql: string): Promise<any> {
+  async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.connection) {
       throw new Error('No data loaded. Please call load() first.');
     }
     await this.queryDialect.validateDSL(sql);
-    return this.runQuery(sql);
+    const limit = maxRows(options);
+    const rows = (await this.runQuery(limitedQuery(sql, limit))) as T[];
+    return executionResult(rows, inferQuerySchema(rows), limit);
   }
 
   /** Stateless — nothing to release. */
@@ -81,9 +86,7 @@ export class SupabaseEngine implements AnalysisEngine {
     let response: Response;
     try {
       response = await fetch(
-        `${SUPABASE_API_BASE}/v1/projects/${encodeURIComponent(
-          this.connection!.projectRef
-        )}/database/query`,
+        `${SUPABASE_API_BASE}/v1/projects/${encodeURIComponent(this.connection!.projectRef)}/database/query`,
         {
           method: 'POST',
           headers: {
@@ -103,10 +106,7 @@ export class SupabaseEngine implements AnalysisEngine {
 
     if (!response.ok) {
       const detail = (await response.text().catch(() => '')).slice(0, 200);
-      throw new SupabaseApiError(
-        `Supabase API request failed (${response.status}): ${detail}`,
-        response.status
-      );
+      throw new SupabaseApiError(`Supabase API request failed (${response.status}): ${detail}`, response.status);
     }
 
     const payload = (await response.json()) as unknown;
@@ -146,7 +146,7 @@ ORDER BY t.table_name, c.ordinal_position
           fields: [],
           rowCount: Number.isFinite(reltuples) && reltuples >= 0 ? Math.round(reltuples) : 0,
         });
-    }
+      }
       const table = tables.get(tableName)!;
       if (typeof row.column_name === 'string' && row.column_name) {
         const type = String(row.data_type ?? '');

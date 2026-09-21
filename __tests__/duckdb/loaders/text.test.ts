@@ -20,6 +20,6 @@ describe.skipIf(skipLLMTests)('loaders/text', () => {
     await engine.load({ type: 'text', options: { text: 'Beijing 100, Shanghai 200' } });
 
     const rows = await engine.execute('SELECT * FROM "data"');
-    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.data.length).toBeGreaterThan(0);
   });
 });

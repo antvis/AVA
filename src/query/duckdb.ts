@@ -33,13 +33,16 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
     });
     this.llmConfig.onQueryUsage?.(usage);
 
-    return text.trim().replace(/^```(?:sql)?\s*|\s*```$/gi, '').trim();
+    return text
+      .trim()
+      .replace(/^```(?:sql)?\s*|\s*```$/gi, '')
+      .trim();
   }
 
   async validateDSL(sql: string, connection: DuckDBConnection): Promise<void> {
     const statements = await connection.extractStatements(sql);
     if (statements.count === 0) {
-      throw new Error('DuckDB query must contain at least one statement');
+      throw new Error('DuckDB query must contain exactly one read-only SELECT statement');
     }
 
     for (let index = 0; index < statements.count; index += 1) {
@@ -51,6 +54,9 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
       } finally {
         statement.destroySync();
       }
+    }
+    if (statements.count !== 1) {
+      throw new Error('DuckDB query must contain exactly one read-only SELECT statement');
     }
   }
 }

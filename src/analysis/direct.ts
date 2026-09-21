@@ -32,14 +32,18 @@ Provide a natural language summary of the result. If the result is tabular data,
 }
 
 /** Generate and execute one query, then summarize its data. */
-export const directAnalysis: AnalysisStrategy = async (query, { engine, llm }) => {
+export const directAnalysis: AnalysisStrategy = async (query, { engine, llm, executionOptions }) => {
   const sql = await engine.getDSL(query);
-  const data = await engine.execute(sql);
-  const summary = await summarizeResult(query, data, llm);
+  const result = await engine.execute(sql, executionOptions);
+  const data = result.data;
+  const summary = await summarizeResult(query, result.truncated ? { data, truncated: true } : data, llm);
 
   return {
     query,
     data,
+    truncated: result.truncated,
+    schema: result.schema,
+    rowCount: result.rowCount,
     sql,
     text: summary,
   };

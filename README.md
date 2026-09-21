@@ -102,8 +102,14 @@ console.log(queries);
 // Ask questions in natural language
 const result = await ava.analysis('What is the average revenue by region?');
 console.log(result.text);  // Natural language summary
-// result.data → structured analysis result
+// result.data → bounded analysis result (result.truncated tells you if more rows exist)
 // result.sql  → the DuckDB SQL executed for the analysis
+
+// Analyze large results safely: cap the returned rows
+const rows = await ava.analysis('List companies ordered by revenue', {
+  maxRows: 200,
+});
+console.log(rows.data, rows.truncated);
 
 // Generate chart visualization from analysis result
 const viz = await ava.visualize(result);
@@ -184,7 +190,7 @@ Core APIs in AVA:
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 - `suggest(count?)`: generate recommended analysis questions.
-- `analysis(query, config?)`: run data analysis and return `{ query, text, data, sql? }`; `config.strategy` selects the strategy for this call (default: `direct`).
+- `analysis(query, config?)`: run data analysis and return `{ query, text, data, truncated, schema, rowCount?, sql? }`; `data` is capped by `maxRows` (default 200, maximum 10,000). `config.strategy` selects the strategy (default: `direct`).
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 

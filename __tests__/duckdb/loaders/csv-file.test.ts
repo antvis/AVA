@@ -24,21 +24,24 @@ describe('loaders/csv-file', () => {
     await engine.load({ type: 'csv-file', options: { path: localPath } });
 
     const rows = await engine.execute('SELECT * FROM "data"');
-    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.data.length).toBeGreaterThan(0);
   });
 
   it('downloads a remote file and registers it as a queryable view', async () => {
-    vi.stubGlobal('fetch', vi.fn(async () => ({
-      ok: true,
-      status: 200,
-      arrayBuffer: async () => new TextEncoder().encode('a,b\n1,2').buffer,
-    })));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: true,
+        status: 200,
+        arrayBuffer: async () => new TextEncoder().encode('a,b\n1,2').buffer,
+      }))
+    );
 
     engine = new DuckDBEngine(getLLMConfig());
     await engine.load({ type: 'csv-file', options: { path: 'https://example.com/data.csv' } });
 
     const rows = await engine.execute('SELECT * FROM "data"');
-    expect(rows).toEqual([{ a: 1, b: 2 }]);
+    expect(rows.data).toEqual([{ a: 1, b: 2 }]);
   });
 
   it('passes reader options (delim) through to read_csv', async () => {
@@ -47,7 +50,7 @@ describe('loaders/csv-file', () => {
     await engine.load({ type: 'csv-file', options: { path: localPath, options: { delim: ';' } } });
 
     const rows = await engine.execute('SELECT * FROM "data" ORDER BY name');
-    expect(rows).toEqual([
+    expect(rows.data).toEqual([
       { name: 'Alice', age: 30 },
       { name: 'Bob', age: 25 },
     ]);

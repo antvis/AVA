@@ -14,14 +14,20 @@ vi.mock('@ai-sdk/openai', () => ({
 
 describe('directAnalysis', () => {
   it('generates and executes exactly one DSL statement', async () => {
+    const queryResult = {
+      data: [{ value: 1 }],
+      truncated: false,
+      schema: [{ name: 'value', type: 'INTEGER' }],
+      rowCount: 1,
+    };
     const engine = {
       getDSL: vi.fn().mockResolvedValue('SELECT 1'),
-      execute: vi.fn().mockResolvedValue([{ value: 1 }]),
+      execute: vi.fn().mockResolvedValue(queryResult),
     } as unknown as AnalysisEngine;
 
     const result = await analyze(
       'Give me one',
-      { strategy: { type: 'direct' } },
+      { strategy: { type: 'direct' }, maxRows: 5 },
       {
         schema: { tables: [] },
         engine,
@@ -30,10 +36,13 @@ describe('directAnalysis', () => {
     );
 
     expect(engine.getDSL).toHaveBeenCalledOnce();
-    expect(engine.execute).toHaveBeenCalledWith('SELECT 1');
-    expect(result).toEqual({
+    expect(engine.execute).toHaveBeenCalledWith('SELECT 1', { maxRows: 5 });
+    expect(result).toMatchObject({
       query: 'Give me one',
       data: [{ value: 1 }],
+      truncated: false,
+      schema: [{ name: 'value', type: 'INTEGER' }],
+      rowCount: 1,
       sql: 'SELECT 1',
       text: 'One result.',
     });
