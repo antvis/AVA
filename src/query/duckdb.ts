@@ -24,7 +24,7 @@ ${stringifySchema(schema, sqlIdentifier)}
 
 User Query: ${query}
 
-Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables by their exact names shown above (join them when the question spans multiple tables). Use DuckDB SQL syntax.`;
+Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use DuckDB SQL syntax.`;
 
     const { text, usage } = await generateText({
       model: openai(this.llmConfig.model) as any,
