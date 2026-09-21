@@ -335,6 +335,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
   const transcript: string[] = [];
   let sql: string | undefined;
   let result: ExecutionResult | undefined;
+  let lastConfirmation: string | undefined;
   const maxSteps = config.strategy?.type === 'loop' ? config.strategy.maxSteps ?? DEFAULT_MAX_STEPS : DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
@@ -357,7 +358,11 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
     if (action === 'REFINE') continue;
 
     if (action === 'CONFIRM') {
-      if (!sql || !result) throw new Error('Loop cannot confirm before a SQL query executes successfully');
+      if (!sql || !result) {
+        lastConfirmation = text;
+        transcript.push('Runtime:\nNo final SQL has executed successfully yet. Continue the loop.');
+        continue;
+      }
       return { query, ...result, sql, text: text.replace(/^\[CONFIRM\]\s*/, '') };
     }
 
@@ -370,8 +375,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
 
     const observations: string[] = [];
     for (const proposal of queries) {
+      let statement: string | undefined;
       try {
-        const statement = await engine.getDSL(
+        statement = await engine.getDSL(
           `User question: ${query}\n\n${
             action === 'EXPLORE' ? 'Exploration' : 'Answer'
           } query proposed by the planning agent:\n${proposal}`
@@ -394,5 +400,53 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
     transcript.push(`Runtime:\n${observations.join('\n\n')}`);
   }
 
-  throw new Error(`Loop analysis did not finish within ${maxSteps} steps`);
+  // The last normal step may execute the final SQL without leaving another step for CONFIRM.
+  // Keep that valid result instead of spending an unnecessary model call.
+  if (sql && result) {
+    return {
+      query,
+      ...result,
+      sql,
+      text: lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(result.data, null, 2),
+    };
+  }
+
+  // maxSteps limits the normal loop. If it ends without final SQL, allow exactly one
+  // history-aware SQL-only turn and adopt its executed result without another CONFIRM.
+  const finalResponse = await generateText({
+    model: openai(llm.model) as any,
+    maxRetries: llm.maxRetries ?? 3,
+    prompt: `${LOOP_PROMPT}\n\n# DATABASE CONTEXT\n\nSchema:\n${stringifySchema(
+      schema
+    )}\n\nUser Question: ${query}\n\n# ITERATION HISTORY\n\n${transcript.join(
+      '\n\n'
+    )}\n\n# FINAL ATTEMPT\n\nThe loop reached its step limit without a final SQL query. Use the complete history above and respond with exactly one [SQL] action containing the final SQL query.`,
+  });
+  llm.onQueryUsage?.(finalResponse.usage);
+
+  const proposals = sqlBlocks(finalResponse.text.trim());
+  if (!finalResponse.text.trim().startsWith('[SQL]') || proposals.length !== 1) {
+    throw new Error('Loop final fallback response must contain exactly one [SQL] block');
+  }
+
+  const proposal = proposals[0];
+  let statement: string | undefined;
+  try {
+    statement = await engine.getDSL(
+      `User question: ${query}\n\nAnswer query proposed by the planning agent after reviewing the complete loop history:\n${proposal}`
+    );
+    const execution = await engine.execute(statement, config);
+    return {
+      query,
+      ...execution,
+      sql: statement,
+      text: lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
+    };
+  } catch (error) {
+    throw new Error(
+      `Loop final SQL attempt failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted SQL:\n${
+        statement ?? proposal
+      }`
+    );
+  }
 };

@@ -92,23 +92,70 @@ describe('directAnalysis', () => {
     });
   });
 
-  it('limits loop steps', async () => {
+  it('generates and adopts one final SQL after reaching maxSteps', async () => {
     vi.mocked(generateText)
       .mockClear()
-      .mockResolvedValue({ text: '[REFINE]' } as any);
+      .mockResolvedValueOnce({ text: '[REFINE]' } as any)
+      .mockResolvedValueOnce({ text: '[REFINE]' } as any)
+      .mockResolvedValueOnce({ text: '[SQL]\n```sql\nSELECT 1 AS value\n```' } as any);
 
-    await expect(
-      analyze(
-        'Keep refining',
-        { strategy: { type: 'loop', maxSteps: 2 } },
-        {
-          schema: { tables: [] },
-          engine: {} as AnalysisEngine,
-          llm: { model: 'test', apiKey: 'test' },
-        }
-      )
-    ).rejects.toThrow('Loop analysis did not finish within 2 steps');
+    const engine = {
+      getDSL: vi.fn().mockResolvedValue('SELECT 1 AS "value"'),
+      execute: vi.fn().mockResolvedValue({
+        data: [{ value: 1 }],
+        schema: [{ name: 'value' }],
+        rowCount: 1,
+      }),
+    } as unknown as AnalysisEngine;
+
+    const result = await analyze(
+      'Give me one',
+      { strategy: { type: 'loop', maxSteps: 2 } },
+      {
+        schema: { tables: [] },
+        engine,
+        llm: { model: 'test', apiKey: 'test' },
+      }
+    );
+
+    expect(generateText).toHaveBeenCalledTimes(3);
+    expect(vi.mocked(generateText).mock.calls[2][0].prompt).toContain('# ITERATION HISTORY\n\nAssistant:\n[REFINE]');
+    expect(result).toMatchObject({
+      sql: 'SELECT 1 AS "value"',
+      data: [{ value: 1 }],
+    });
+  });
+
+  it('forces one final SQL attempt when the model confirms too early', async () => {
+    vi.mocked(generateText)
+      .mockClear()
+      .mockResolvedValueOnce({ text: '[CONFIRM]\n### Conclusion\nOne row.' } as any)
+      .mockResolvedValueOnce({ text: '[SQL]\n```sql\nSELECT 1 AS value\n```' } as any);
+
+    const engine = {
+      getDSL: vi.fn().mockResolvedValue('SELECT 1 AS "value"'),
+      execute: vi.fn().mockResolvedValue({
+        data: [{ value: 1 }],
+        schema: [{ name: 'value' }],
+        rowCount: 1,
+      }),
+    } as unknown as AnalysisEngine;
+
+    const result = await analyze(
+      'Give me one',
+      { strategy: { type: 'loop', maxSteps: 1 } },
+      {
+        schema: { tables: [] },
+        engine,
+        llm: { model: 'test', apiKey: 'test' },
+      }
+    );
 
     expect(generateText).toHaveBeenCalledTimes(2);
+    expect(result).toMatchObject({
+      sql: 'SELECT 1 AS "value"',
+      data: [{ value: 1 }],
+      text: '### Conclusion\nOne row.',
+    });
   });
 });
