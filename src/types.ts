@@ -22,6 +22,8 @@ export interface LLMConfig {
   apiKey: string;
   /** Optional API base URL */
   baseURL?: string;
+  /** Maximum retries for retryable model API failures. Default 3. */
+  maxRetries?: number;
   /** Optional callback for SQL-generation token usage */
   onQueryUsage?: (usage: { promptTokens: number; completionTokens: number; totalTokens: number }) => void;
 }

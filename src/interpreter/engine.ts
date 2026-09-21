@@ -76,6 +76,7 @@ Now generate the code:`;
 
     const { text } = await generateText({
       model: openai(this.llmConfig.model) as any,
+      maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
 

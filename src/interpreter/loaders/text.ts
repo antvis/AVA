@@ -29,6 +29,7 @@ Return ONLY the JSON array, no additional text or explanation. The response must
 
   const { text: responseText } = await generateText({
     model: openai(llmConfig.model) as any,
+    maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
 

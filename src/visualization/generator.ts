@@ -442,6 +442,7 @@ title "2024 Q1 Sales Report"
 
   const { text } = await generateText({
     model: openai(llmConfig.model) as any,
+    maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
 

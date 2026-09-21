@@ -28,6 +28,7 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
 
     const { text, usage } = await generateText({
       model: openai(this.llmConfig.model) as any,
+      maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
     this.llmConfig.onQueryUsage?.(usage);

@@ -24,6 +24,7 @@ Provide a natural language summary of the result. If the result is tabular data,
 
   const { text } = await generateText({
     model: openai(llm.model) as any,
+    maxRetries: llm.maxRetries ?? 3,
     prompt,
   });
 
