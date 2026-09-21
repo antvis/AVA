@@ -7,6 +7,7 @@ import { join } from 'node:path';
 
 import { DuckDBInstance } from '@duckdb/node-api';
 
+import { AVAError } from '../util/error';
 import { DuckDBQueryDialect } from '../query/duckdb';
 import { executionResult, limitedQuery, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
@@ -47,12 +48,13 @@ const DEFAULT_MEMORY_LIMIT = '512MB';
 const DEFAULT_THREADS = 1;
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 
-/** Thrown when a query exceeds the configured timeout. */
-export class QueryTimeoutError extends Error {
-  constructor(timeoutMs: number) {
-    super(`DuckDB query timed out after ${timeoutMs}ms`);
-    this.name = 'QueryTimeoutError';
-  }
+/** Map only DuckDB's resource-limit failures; all other errors stay unchanged. */
+function mapDuckDBResourceError(error: unknown): unknown {
+  if (!(error instanceof Error)) return error;
+  // ponytail: @duckdb/node-api does not expose duckdb_result_error_type yet.
+  return /out of memory|max_temp_directory_size/i.test(error.message)
+    ? new AVAError('RESOURCE_LIMIT_EXCEEDED', error.message, {}, error)
+    : error;
 }
 
 export class DuckDBEngine implements AnalysisEngine {
@@ -133,7 +135,12 @@ export class DuckDBEngine implements AnalysisEngine {
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     const conn = await this.getConnection();
     await this.queryDialect.validateDSL(sql, conn);
-    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(sql, maxRows(options))));
+    let reader;
+    try {
+      reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(sql, maxRows(options))));
+    } catch (error) {
+      throw mapDuckDBResourceError(error);
+    }
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),
@@ -143,7 +150,7 @@ export class DuckDBEngine implements AnalysisEngine {
 
   /**
    * Race a query against the configured timeout. On timeout, interrupt the
-   * connection (cancels the running query) and reject with QueryTimeoutError,
+   * connection (cancels the running query) and reject with a typed AVA error,
    * so a slow/pathological LLM-generated query cannot hang the session.
    */
   private async runWithTimeout<T>(conn: DuckDBConnection, operation: Promise<T>): Promise<T> {
@@ -165,7 +172,7 @@ export class DuckDBEngine implements AnalysisEngine {
         conn.interrupt();
         // Swallow the interrupted query's rejection so it isn't unhandled.
         void operation.catch(() => undefined);
-        throw new QueryTimeoutError(timeoutMs);
+        throw new AVAError('QUERY_TIMEOUT', `DuckDB query timed out after ${timeoutMs}ms`, { timeoutMs });
       }
       return result;
     } finally {
@@ -181,8 +188,12 @@ export class DuckDBEngine implements AnalysisEngine {
   private async getSchema(): Promise<Schema> {
     const conn = await this.getConnection();
     const tables: TableSchema[] = [];
-    for (const name of this.tableNames) {
-      tables.push(await this.getTableSchema(conn, name));
+    try {
+      for (const name of this.tableNames) {
+        tables.push(await this.getTableSchema(conn, name));
+      }
+    } catch (error) {
+      throw mapDuckDBResourceError(error);
     }
     return { tables };
   }

@@ -1,3 +1,4 @@
+import { AVAError } from './error';
 import { utf8ByteLength } from './bytes';
 
 import type { ExecutionOptions, ExecutionResult, QueryColumn } from '../types';
@@ -53,7 +54,10 @@ export function executionResult<T>(
   for (const row of limitedRows) {
     const fields = row !== null && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row];
     if (fields.some((field) => serializedBytes(field) > MAX_FIELD_BYTES)) {
-      throw new Error('Result field exceeds the 1 MiB limit');
+      throw new AVAError('RESULT_LIMIT_EXCEEDED', 'Result field exceeds the 1 MiB limit', {
+        limit: MAX_FIELD_BYTES,
+        unit: 'bytes',
+      });
     }
 
     const rowBytes = serializedBytes(row);

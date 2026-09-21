@@ -8,6 +8,7 @@
  * obtains the access token and passes it in the data source config.
  */
 
+import { AVAError } from '../util/error';
 import { PostgreSQLQueryDialect } from '../query/postgresql';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../util/result';
 import { sqlStringLiteral } from '../util/sql';
@@ -98,7 +99,10 @@ export class SupabaseEngine implements AnalysisEngine {
       );
     } catch (error) {
       const isTimeout = error instanceof Error && error.name === 'AbortError';
-      throw new SupabaseApiError(isTimeout ? 'Supabase API request timed out' : 'Supabase API network error', 0);
+      if (isTimeout) {
+        throw new AVAError('QUERY_TIMEOUT', 'Supabase API request timed out', { timeoutMs: REQUEST_TIMEOUT_MS }, error);
+      }
+      throw new SupabaseApiError('Supabase API network error', 0);
     } finally {
       clearTimeout(timer);
     }

@@ -1,3 +1,5 @@
+import { AVAError } from '../util/error';
+
 import { directAnalysis } from './direct';
 
 import type { AnalysisConfig, AnalysisResponse, AnalysisRuntime } from '../types';
@@ -9,6 +11,6 @@ export function analyze(query: string, config: AnalysisConfig, runtime: Analysis
     case 'direct':
       return directAnalysis(query, config, runtime);
     default:
-      throw new Error(`Unknown analysis strategy: ${strategy}`);
+      throw new AVAError('CONFIGURATION_ERROR', `Unknown analysis strategy: ${strategy}`);
   }
 }

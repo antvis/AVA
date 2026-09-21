@@ -34,6 +34,24 @@ function stubApi(payloads: Array<{ match?: RegExp; rows: unknown[] }>) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('SupabaseEngine', () => {
+  it('exposes request timeouts with a stable error code', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        const error = new Error('aborted');
+        error.name = 'AbortError';
+        throw error;
+      })
+    );
+
+    await expect(
+      new SupabaseEngine(getLLMConfig()).load({ type: 'supabase', options: CONNECTION })
+    ).rejects.toMatchObject({
+      code: 'QUERY_TIMEOUT',
+      details: { timeoutMs: 30_000 },
+    });
+  });
+
   it('loads the public-schema tables and executes SQL remotely', async () => {
     const requests = stubApi([{ match: /information_schema/, rows: DISCOVERY_ROWS }, { rows: [{ name: 'Alice' }] }]);
 

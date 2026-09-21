@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { executionResult, maxResultBytes } from '../../src/util/result';
+import { AVAError } from '../../src/util/error';
 
 describe('executionResult', () => {
   it('defaults the result limit to 1 MiB', () => {
@@ -35,8 +36,6 @@ describe('executionResult', () => {
   });
 
   it('rejects a field larger than 1 MiB', () => {
-    expect(() => executionResult([{ value: 'x'.repeat(1024 * 1024) }], [])).toThrow(
-      'Result field exceeds the 1 MiB limit'
-    );
+    expect(() => executionResult([{ value: 'x'.repeat(1024 * 1024) }], [])).toThrow(AVAError);
   });
 });

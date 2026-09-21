@@ -8,6 +8,8 @@
  * browser bundles.
  */
 
+import { AVAError } from './util/error';
+
 import type { AnalysisEngine, EngineConfig, LLMConfig } from './types';
 
 /** Constructor signature every engine class must satisfy. */
@@ -38,7 +40,8 @@ export function hasEngine(type: EngineConfig['type']): boolean {
 export function getEngineClass(type: EngineConfig['type']): EngineClass {
   const engineClass = registry.get(type);
   if (!engineClass) {
-    throw new Error(
+    throw new AVAError(
+      'CONFIGURATION_ERROR',
       `Engine type "${type}" is not available in this environment. ` +
         'The browser build of @antv/ava only includes the interpreter engine; ' +
         'use the Node.js build for DuckDB or Supabase.'

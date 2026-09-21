@@ -12,6 +12,7 @@ registerEngine('supabase', SupabaseEngine);
 registerEngine('interpreter', InterpreterEngine);
 
 export { AVA } from './ava';
+export type { AVAErrorCode } from './util/error';
 export type { InterpreterEngine } from './interpreter';
 export type {
   LLMConfig,

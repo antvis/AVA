@@ -192,6 +192,7 @@ Core APIs in AVA:
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query, config?)`: run data analysis and return `{ query, text, data, truncated?, truncatedBy?, schema, rowCount?, sql? }`; `truncated: true` and `truncatedBy` are present only when `maxRows` or `maxResultBytes` truncated the result. `data` is capped by `maxRows` (default 200, maximum 10,000) and `maxResultBytes` (default 1 MiB). Individual fields over 1 MiB are rejected. `config.strategy` selects the strategy (default: `direct`).
+- Actionable failures use `AVAError` with `code`: `QUERY_TIMEOUT`, `RESOURCE_LIMIT_EXCEEDED`, `RESULT_LIMIT_EXCEEDED`, or `CONFIGURATION_ERROR`; unknown errors pass through unchanged.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 

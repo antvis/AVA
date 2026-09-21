@@ -4,10 +4,9 @@
 
 import * as path from 'path';
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { DuckDBEngine } from '../../src/duckdb';
-import { QueryTimeoutError } from '../../src/duckdb/engine';
 import { maxRows } from '../../src/util/result';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
@@ -101,13 +100,30 @@ describe('DuckDBEngine', () => {
     }
   });
 
+  it('should classify only DuckDB resource-limit errors', async () => {
+    const resourceError = new Error('Out of Memory Error: failed to pin block');
+    const unrelated = { reason: 'unknown' };
+    const runAndReadAll = vi.fn().mockRejectedValueOnce(resourceError).mockRejectedValueOnce(unrelated);
+    (engine as any).getConnection = vi.fn().mockResolvedValue({ runAndReadAll });
+    (engine as any).queryDialect.validateDSL = vi.fn();
+
+    await expect(engine.execute('SELECT 1')).rejects.toMatchObject({
+      code: 'RESOURCE_LIMIT_EXCEEDED',
+      cause: resourceError,
+    });
+    await expect(engine.execute('SELECT 1')).rejects.toBe(unrelated);
+  });
+
   it('should abort a query that exceeds the configured timeout', async () => {
     const fast = new DuckDBEngine(getLLMConfig(), { queryTimeoutMs: 100 });
     try {
       await fast.load({ type: 'json', options: { data: [{ a: 1 }] } });
       // A large cross join is far slower than the 100ms timeout.
       const slowQuery = 'SELECT COUNT(*) FROM range(100000) a, range(100000) b';
-      await expect(fast.execute(slowQuery)).rejects.toThrow(QueryTimeoutError);
+      await expect(fast.execute(slowQuery)).rejects.toMatchObject({
+        code: 'QUERY_TIMEOUT',
+        details: { timeoutMs: 100 },
+      });
     } finally {
       await fast.dispose();
     }
