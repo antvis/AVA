@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-21T06:55:20Z",
+  "generatedAt": "2026-09-21T07:09:22Z",
   "environment": {
     "nodeVersion": "v20.19.5",
     "pnpmVersion": "10.20.0",
     "operatingSystem": "Darwin 25.6.0",
     "architecture": "arm64",
-    "gitRevision": "bd3c8bb8bdddb7f5cc4cfd40b45bf90b64cbb7b4"
+    "gitRevision": "05f02236feb55a02ad2cecd9b76440e2d124f187"
   },
   "evaluation": {
     "benchmark": "DataBench full",
@@ -15,37 +15,37 @@
   },
   "summary": {
     "samples": 1830,
-    "correct": 1464,
-    "wrong": 223,
-    "missing": 143,
-    "accuracy": 0.8,
+    "correct": 1508,
+    "wrong": 231,
+    "missing": 91,
+    "accuracy": 0.824,
     "timingSeconds": {
-      "average": 19.08,
+      "average": 19.39,
       "minimum": 0.15,
       "maximum": 278.43,
-      "median": 10.96
+      "median": 11.49
     },
     "tokens": {
-      "prompt": 5461547,
-      "completion": 995930,
-      "total": 6457477,
-      "average": 3546
+      "prompt": 5421634,
+      "completion": 1001274,
+      "total": 6422908,
+      "average": 3527
     }
   },
   "errors": {
     "wrongOrMissing": {
-      "count": 366
+      "count": 322
     },
     "categories": [
       {
         "type": "wrongAnswer",
         "category": "Prediction did not match the gold answer",
-        "count": 223
+        "count": 231
       },
       {
         "type": "missing",
         "category": "Column names contained <gx:type> suffixes",
-        "count": 59
+        "count": 7
       },
       {
         "type": "missing",
