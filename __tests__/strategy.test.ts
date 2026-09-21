@@ -16,7 +16,6 @@ describe('directAnalysis', () => {
   it('generates and executes exactly one DSL statement', async () => {
     const queryResult = {
       data: [{ value: 1 }],
-      truncated: false,
       schema: [{ name: 'value', type: 'INTEGER' }],
       rowCount: 1,
     };
@@ -44,7 +43,6 @@ describe('directAnalysis', () => {
     expect(result).toMatchObject({
       query: 'Give me one',
       data: [{ value: 1 }],
-      truncated: false,
       schema: [{ name: 'value', type: 'INTEGER' }],
       rowCount: 1,
       sql: 'SELECT 1',

@@ -429,7 +429,10 @@ export interface QueryColumn {
 export interface ExecutionResult<T = Record<string, unknown>> {
   schema: QueryColumn[];
   data: T[];
-  truncated: boolean;
+  /** Present only when the result was truncated. */
+  truncated?: true;
+  /** Limit that stopped the result, when truncated. */
+  truncatedBy?: 'maxRows' | 'maxResultBytes';
   /** Known only when the bounded query reaches the end of the result. */
   rowCount?: number;
 }

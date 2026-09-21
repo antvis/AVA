@@ -36,15 +36,14 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { engine, 
   const sql = await engine.getDSL(query);
   const result = await engine.execute(sql, config);
   const data = result.data;
-  const summary = await summarizeResult(query, result.truncated ? { data, truncated: true } : data, llm);
+
+  const summaryData = result.truncatedBy ? { data, truncated: true, truncatedBy: result.truncatedBy } : data;
+  const text = await summarizeResult(query, summaryData, llm);
 
   return {
     query,
-    data,
-    truncated: result.truncated,
-    schema: result.schema,
-    rowCount: result.rowCount,
+    ...result,
     sql,
-    text: summary,
+    text,
   };
 };

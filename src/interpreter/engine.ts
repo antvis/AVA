@@ -10,7 +10,7 @@ import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
 import { extractDataSchema, stringifySchema } from '../util/schema';
-import { executionResult, inferQuerySchema, maxRows } from '../util/result';
+import { executionResult, inferQuerySchema } from '../util/result';
 
 import { executeCode } from './sandbox';
 import { loadSource } from './loaders';

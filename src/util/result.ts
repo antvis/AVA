@@ -48,6 +48,7 @@ export function executionResult<T>(
   const maxBytes = maxResultBytes(options);
   const data: T[] = [];
   let bytes = 0;
+  let truncatedBy: ExecutionResult<T>['truncatedBy'];
 
   for (const row of limitedRows) {
     const fields = row !== null && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row];
@@ -56,17 +57,20 @@ export function executionResult<T>(
     }
 
     const rowBytes = serializedBytes(row);
-    if (bytes + rowBytes > maxBytes) break;
+    if (bytes + rowBytes > maxBytes) {
+      truncatedBy = 'maxResultBytes';
+      break;
+    }
     data.push(row);
     bytes += rowBytes;
   }
 
-  const truncated = data.length < rows.length;
+  truncatedBy ??= rows.length > limit ? 'maxRows' : undefined;
   return {
     data,
-    truncated,
+    ...(truncatedBy ? { truncated: true as const, truncatedBy } : {}),
     schema,
-    rowCount: truncated ? undefined : data.length,
+    rowCount: truncatedBy ? undefined : data.length,
   };
 }
 
