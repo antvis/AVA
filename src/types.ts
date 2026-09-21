@@ -22,6 +22,8 @@ export interface LLMConfig {
   apiKey: string;
   /** Optional API base URL */
   baseURL?: string;
+  /** Optional callback for SQL-generation token usage */
+  onQueryUsage?: (usage: { promptTokens: number; completionTokens: number; totalTokens: number }) => void;
 }
 
 /**
@@ -55,6 +57,12 @@ export interface AVAConfig {
   llm: LLMConfig;
   /** Engine selection and options (defaults to the DuckDB engine when omitted) */
   engine?: EngineConfig;
+}
+
+/** Per-analysis options. */
+export interface AnalysisConfig {
+  /** Strategy for this analysis (defaults to direct). */
+  strategy?: AnalysisStrategyConfig;
 }
 
 /**
@@ -402,6 +410,19 @@ export interface AnalysisEngine {
   /** Release resources (temp files, database connections) */
   dispose(): Promise<void>;
 }
+
+/** Built-in analysis strategies. */
+export type AnalysisStrategyConfig = { type: 'direct' };
+
+/** Runtime dependencies available to an analysis strategy. */
+export interface AnalysisRuntime {
+  schema: Schema;
+  engine: AnalysisEngine;
+  llm: LLMConfig;
+}
+
+/** A replaceable way of analyzing a natural-language query. */
+export type AnalysisStrategy = (query: string, runtime: AnalysisRuntime) => Promise<AnalysisResponse>;
 
 /**
  * Turns a natural-language query into a database-specific DSL.

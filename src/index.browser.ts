@@ -13,6 +13,7 @@ export type { InterpreterEngine } from './interpreter';
 export type {
   LLMConfig,
   AVAConfig,
+  AnalysisConfig,
   EngineConfig,
   DuckDBEngineOptions,
   DataSourceConfig,
@@ -22,6 +23,9 @@ export type {
   AnalysisEngine,
   QueryDialect,
   AnalysisResponse,
+  AnalysisStrategy,
+  AnalysisStrategyConfig,
+  AnalysisRuntime,
   VisualizeResponse,
   SuggestResult,
   ChartType,

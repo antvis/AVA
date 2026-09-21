@@ -2,13 +2,11 @@
  * AVA v4 - A framework for AI-native Visual Analytics
  */
 
-import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
-
 import { getEngineClass } from './engines';
 import { extractDataSchema, stringifySchema } from './util/schema';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
+import { analyze } from './analysis';
 
 import type {
   AVAConfig,
@@ -18,6 +16,7 @@ import type {
   Schema,
   AnalysisEngine,
   AnalysisResponse,
+  AnalysisConfig,
   VisualizeResponse,
   SuggestResult,
 } from './types';
@@ -56,8 +55,8 @@ export class AVA {
    * directly — Node-only engines stay out of browser bundles.
    */
   private async createEngine(): Promise<AnalysisEngine> {
-    const EngineClass = getEngineClass(this.engineConfig.type);
     const { type, ...options } = this.engineConfig;
+    const EngineClass = getEngineClass(type);
     return new EngineClass(this.llmConfig, options);
   }
 
@@ -84,23 +83,18 @@ export class AVA {
    * The query is turned into SQL via LLM and executed by DuckDB.
    * Use visualize() separately to generate charts from the analysis result.
    */
-  async analysis(query: string): Promise<AnalysisResponse> {
+  async analysis(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
     if (!this.engine || !this.schema) {
-      throw new Error(
-        'No data loaded. Please call load() first.'
-      );
+      throw new Error('No data loaded. Please call load() first.');
     }
 
-    const sql = await this.engine.getDSL(query);
-    const data = await this.engine.execute(sql);
-    const summary = await this.summarizeResult(query, data);
-
-    return {
-      query,
-      text: summary,
-      data,
-      sql,
+    const runtime = {
+      schema: this.schema,
+      engine: this.engine,
+      llm: this.llmConfig,
     };
+
+    return analyze(query, config, runtime);
   }
 
   /**
@@ -122,8 +116,8 @@ export class AVA {
       // Describe the result data for the chart advisor; non-array data falls back to raw JSON
       const analysisSchemaStr = Array.isArray(data)
         ? stringifySchema(extractDataSchema(data))
-        // TODO - Consider using a more structured schema for non-array data, e.g., object keys and types
-        : JSON.stringify(data);
+        : // TODO - Consider using a more structured schema for non-array data, e.g., object keys and types
+          JSON.stringify(data);
 
       const chartType = await adviseChartType(query, analysisSchemaStr, this.llmConfig);
 
@@ -148,45 +142,13 @@ export class AVA {
   }
 
   /**
-   * Summarize analysis result using LLM
-   */
-  private async summarizeResult(query: string, data: any): Promise<string> {
-    const openai = createOpenAI({
-      apiKey: this.llmConfig.apiKey,
-      baseURL: this.llmConfig.baseURL,
-    });
-
-    const dataStr = typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data);
-
-    const prompt = `You are a data analysis assistant. Based on the following query and analysis result, provide a clear and concise summary.
-
-User Query: ${query}
-
-Analysis Result:
-${dataStr}
-
-IMPORTANT: Detect the language of the user query. You MUST write your summary in the SAME language as the user query. For example, if the query is in Chinese, write the summary in Chinese; if in English, write in English; if in Japanese, write in Japanese. If the query language is ambiguous, default to English.
-
-Provide a natural language summary of the result. If the result is tabular data, you can present it as a markdown table.`;
-
-    const { text } = await generateText({
-      model: openai(this.llmConfig.model) as any,
-      prompt,
-    });
-
-    return text;
-  }
-
-  /**
    * Suggest analysis queries based on loaded data
    * @param count Number of queries to suggest (default: 3)
    * @returns Array of suggested queries with scores and reasons
    */
   async suggest(count: number = 3): Promise<SuggestResult[]> {
     if (!this.schema) {
-      throw new Error(
-        'No data loaded. Please call load() first.'
-      );
+      throw new Error('No data loaded. Please call load() first.');
     }
 
     return generateSuggestions(this.llmConfig, this.schema, count);

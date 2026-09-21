@@ -25,10 +25,11 @@ User Query: ${query}
 
 Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables by their exact names shown above (join them when the question spans multiple tables). Use DuckDB SQL syntax.`;
 
-    const { text } = await generateText({
+    const { text, usage } = await generateText({
       model: openai(this.llmConfig.model) as any,
       prompt,
     });
+    this.llmConfig.onQueryUsage?.(usage);
 
     return text.trim().replace(/^```(?:sql)?\s*|\s*```$/gi, '').trim();
   }
