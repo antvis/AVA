@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-21T07:09:22Z",
+  "generatedAt": "2026-09-21T07:28:54Z",
   "environment": {
     "nodeVersion": "v20.19.5",
     "pnpmVersion": "10.20.0",
     "operatingSystem": "Darwin 25.6.0",
     "architecture": "arm64",
-    "gitRevision": "05f02236feb55a02ad2cecd9b76440e2d124f187"
+    "gitRevision": "b27f7c64b7d145ad4e809a274396412afd652d3b"
   },
   "evaluation": {
     "benchmark": "DataBench full",
@@ -15,32 +15,32 @@
   },
   "summary": {
     "samples": 1830,
-    "correct": 1508,
-    "wrong": 231,
-    "missing": 91,
-    "accuracy": 0.824,
+    "correct": 1511,
+    "wrong": 233,
+    "missing": 86,
+    "accuracy": 0.8257,
     "timingSeconds": {
-      "average": 19.39,
+      "average": 18.92,
       "minimum": 0.15,
-      "maximum": 278.43,
+      "maximum": 377.57,
       "median": 11.49
     },
     "tokens": {
-      "prompt": 5421634,
-      "completion": 1001274,
-      "total": 6422908,
-      "average": 3527
+      "prompt": 5434394,
+      "completion": 1025003,
+      "total": 6459397,
+      "average": 3534
     }
   },
   "errors": {
     "wrongOrMissing": {
-      "count": 322
+      "count": 319
     },
     "categories": [
       {
         "type": "wrongAnswer",
         "category": "Prediction did not match the gold answer",
-        "count": 231
+        "count": 233
       },
       {
         "type": "missing",
@@ -55,12 +55,12 @@
       {
         "type": "missing",
         "category": "Generated SQL used unsupported syntax or functions",
-        "count": 17
+        "count": 18
       },
       {
         "type": "missing",
         "category": "Model API connection closed",
-        "count": 9
+        "count": 2
       },
       {
         "type": "missing",
@@ -76,6 +76,11 @@
         "type": "missing",
         "category": "Generated SQL referenced a missing column",
         "count": 2
+      },
+      {
+        "type": "missing",
+        "category": "DuckDB query timed out",
+        "count": 1
       }
     ]
   }
