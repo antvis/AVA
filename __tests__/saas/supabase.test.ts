@@ -58,7 +58,7 @@ describe('SupabaseEngine', () => {
 
     const rows = await engine.execute('SELECT name FROM users');
     expect(rows.data).toEqual([{ name: 'Alice' }]);
-    expect(requests[1].body.query).toContain('LIMIT 101');
+    expect(requests[1].body.query).toContain('LIMIT 201');
 
     const result = await engine.execute('SELECT name FROM users', { maxRows: 2 });
     expect(result.data).toEqual([{ name: 'Alice' }]);
