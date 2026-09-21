@@ -3,6 +3,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 
 import { stringifySchema } from '../util/schema';
+import { sqlIdentifier } from '../util/sql';
 
 import type { LLMConfig, QueryDialect, Schema } from '../types';
 
@@ -32,14 +33,15 @@ export class PostgreSQLQueryDialect implements QueryDialect {
     const prompt = `You are a SQL expert. Given the following table schema and user query, generate a SQL query to answer the question.
 
 Table Schema:
-${stringifySchema(schema)}
+${stringifySchema(schema, sqlIdentifier)}
 
 User Query: ${query}
 
-Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables by their exact names shown above (join them when the question spans multiple tables). Use PostgreSQL SQL syntax.`;
+Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use PostgreSQL SQL syntax.`;
 
     const { text, usage } = await generateText({
       model: openai(this.llmConfig.model) as any,
+      maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });
     this.llmConfig.onQueryUsage?.(usage);

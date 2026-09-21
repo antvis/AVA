@@ -82,6 +82,7 @@ export async function adviseChartType(
 
   const { text } = await generateText({
     model: openai(llmConfig.model) as any,
+    maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
 

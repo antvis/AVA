@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { extractDataSchema, stringifySchema } from '../../src/util/schema';
+import { sqlIdentifier } from '../../src/util/sql';
 
 describe('extractDataSchema', () => {
   it('should extract schema from an object array', () => {
@@ -38,5 +39,14 @@ describe('stringifySchema', () => {
     expect(formatted).toContain('Dataset Info:');
     expect(formatted).toContain('company');
     expect(formatted).toContain('revenue');
+  });
+
+  it('should format arbitrary SQL identifiers without changing their names', () => {
+    const schema = extractDataSchema([{ 'replies<gx:number>': 1, '<name>': 'A', 'say"hello': true }]);
+    const formatted = stringifySchema(schema, sqlIdentifier);
+
+    expect(formatted).toContain('"replies<gx:number>"');
+    expect(formatted).toContain('"<name>"');
+    expect(formatted).toContain('"say""hello"');
   });
 });

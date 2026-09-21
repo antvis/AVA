@@ -57,6 +57,7 @@ Generate the JSON array now.`;
 
   const { text } = await generateText({
     model: openai(llmConfig.model) as any,
+    maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
 
