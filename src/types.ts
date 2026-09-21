@@ -22,6 +22,8 @@ export interface LLMConfig {
   apiKey: string;
   /** Optional API base URL */
   baseURL?: string;
+  /** Optional callback for SQL-generation token usage */
+  onQueryUsage?: (usage: { promptTokens: number; completionTokens: number; totalTokens: number }) => void;
 }
 
 /**
@@ -59,7 +61,7 @@ export interface AVAConfig {
 
 /** Per-analysis options. */
 export interface AnalysisConfig {
-  /** Strategy for this analysis (defaults to single-query). */
+  /** Strategy for this analysis (defaults to direct). */
   strategy?: AnalysisStrategyConfig;
 }
 
@@ -410,7 +412,7 @@ export interface AnalysisEngine {
 }
 
 /** Built-in analysis strategies. */
-export type AnalysisStrategyConfig = { type: 'single-query' };
+export type AnalysisStrategyConfig = { type: 'direct' };
 
 /** Runtime dependencies available to an analysis strategy. */
 export interface AnalysisRuntime {
