@@ -8,7 +8,7 @@
 
 import type { LLMConfig } from '../src/types';
 
-const apiKey = process.env.OPENAI_LLM_API_KEY;
+const apiKey = process.env.OPENAI_API_KEY;
 
 /** True when no API key is configured — LLM-dependent suites skip themselves. */
 export const skipLLMTests = !apiKey;
@@ -16,8 +16,8 @@ export const skipLLMTests = !apiKey;
 /** LLM config for the provider configured in `.env`. */
 export function getLLMConfig(): LLMConfig {
   return {
-    model: process.env.OPENAI_LLM_MODEL || '',
+    model: process.env.OPENAI_MODEL || '',
     apiKey: apiKey || '',
-    baseURL: process.env.OPENAI_LLM_BASE_URL || '',
+    baseURL: process.env.OPENAI_BASE_URL || '',
   };
 }

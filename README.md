@@ -317,7 +317,7 @@ This is an experimental branch. Contributions are welcome! Please ensure:
 
 ### Running tests with an LLM
 
-Copy `.env.example` to `.env` and fill in `OPENAI_LLM_API_KEY` (optionally `OPENAI_LLM_MODEL` / `OPENAI_LLM_BASE_URL`). Vitest loads `.env` through `vitest.setup.ts`, so `npm test` picks it up with no extra flags. Without a key the LLM-dependent suites are reported as **skipped**, and the rest of the suite still runs offline.
+Copy `.env.example` to `.env` and fill in `OPENAI_API_KEY` (optionally `OPENAI_MODEL` / `OPENAI_BASE_URL`). Vitest loads `.env` through `vitest.setup.ts`, so `npm test` picks it up with no extra flags. Without a key the LLM-dependent suites are reported as **skipped**, and the rest of the suite still runs offline.
 
 ## 🔗 Related Projects
 
