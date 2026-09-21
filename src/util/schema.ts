@@ -98,17 +98,17 @@ export function extractDataSchema(data: any[]): Schema {
  * and JOIN them. Categorical fields list distinct values; numeric/temporal
  * fields show min/max.
  */
-export function stringifySchema(schema: Schema): string {
+export function stringifySchema(schema: Schema, formatIdentifier?: (name: string) => string): string {
   let result = `Dataset Info: ${schema.tables.length} table(s)\n`;
 
   for (const table of schema.tables) {
-    result += `\nTable "${table.name}":\n`;
+    result += `\nTable ${formatIdentifier ? formatIdentifier(table.name) : `"${table.name}"`}:\n`;
     result += `- Rows: ${table.rowCount}\n`;
     result += `- Columns: ${table.columnCount}\n`;
     result += 'Fields:\n';
 
     for (const field of table.fields) {
-      result += `- ${field.name} (${field.type}): `;
+      result += `- ${formatIdentifier?.(field.name) ?? field.name} (${field.type}): `;
       if (field.uniqueCount !== undefined) {
         result += `${field.uniqueCount} unique values`;
       }

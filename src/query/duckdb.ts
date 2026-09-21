@@ -3,6 +3,7 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { StatementType } from '@duckdb/node-api';
 
 import { stringifySchema } from '../util/schema';
+import { sqlIdentifier } from '../util/sql';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
 import type { LLMConfig, QueryDialect, Schema } from '../types';
@@ -19,7 +20,7 @@ export class DuckDBQueryDialect implements QueryDialect<DuckDBConnection> {
     const prompt = `You are a SQL expert. Given the following table schema and user query, generate a SQL query to answer the question.
 
 Table Schema:
-${stringifySchema(schema)}
+${stringifySchema(schema, sqlIdentifier)}
 
 User Query: ${query}
 
