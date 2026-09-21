@@ -32,9 +32,9 @@ Provide a natural language summary of the result. If the result is tabular data,
 }
 
 /** Generate and execute one query, then summarize its data. */
-export const directAnalysis: AnalysisStrategy = async (query, { engine, llm, executionOptions }) => {
+export const directAnalysis: AnalysisStrategy = async (query, config, { engine, llm }) => {
   const sql = await engine.getDSL(query);
-  const result = await engine.execute(sql, executionOptions);
+  const result = await engine.execute(sql, config);
   const data = result.data;
   const summary = await summarizeResult(query, result.truncated ? { data, truncated: true } : data, llm);
 

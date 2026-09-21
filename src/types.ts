@@ -415,6 +415,8 @@ export interface AnalysisEngine {
 export interface ExecutionOptions {
   /** Maximum rows returned. Default 200; hard limit 10,000. */
   maxRows?: number;
+  /** Maximum serialized UTF-8 bytes returned. Default 1 MiB. */
+  maxResultBytes?: number;
 }
 
 export interface QueryColumn {
@@ -440,11 +442,14 @@ export interface AnalysisRuntime {
   schema: Schema;
   engine: AnalysisEngine;
   llm: LLMConfig;
-  executionOptions?: ExecutionOptions;
 }
 
 /** A replaceable way of analyzing a natural-language query. */
-export type AnalysisStrategy = (query: string, runtime: AnalysisRuntime) => Promise<AnalysisResponse>;
+export type AnalysisStrategy = (
+  query: string,
+  config: AnalysisConfig,
+  runtime: AnalysisRuntime
+) => Promise<AnalysisResponse>;
 
 /**
  * Turns a natural-language query into a database-specific DSL.

@@ -133,13 +133,12 @@ export class DuckDBEngine implements AnalysisEngine {
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     const conn = await this.getConnection();
     await this.queryDialect.validateDSL(sql, conn);
-    const limit = maxRows(options);
-    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(sql, limit)));
+    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(sql, maxRows(options))));
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),
     }));
-    return executionResult(coerceNumbers(reader.getRowObjectsJson()) as T[], schema, limit);
+    return executionResult(coerceNumbers(reader.getRowObjectsJson()) as T[], schema, options);
   }
 
   /**

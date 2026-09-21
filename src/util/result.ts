@@ -1,13 +1,29 @@
+import { utf8ByteLength } from './bytes';
+
 import type { ExecutionOptions, ExecutionResult, QueryColumn } from '../types';
 
 const DEFAULT_MAX_ROWS = 200;
 const MAX_ROWS = 10_000;
+const DEFAULT_MAX_RESULT_BYTES = 1024 * 1024; // 1M
+const MAX_FIELD_BYTES = 1024 * 1024; // 1M
 
 /**
  * Get the bounded maximum row count.
  */
 export function maxRows(options: ExecutionOptions = {}): number {
   return Math.min(Math.max(options.maxRows ?? DEFAULT_MAX_ROWS, 1), MAX_ROWS);
+}
+
+/**
+ * Get the bounded maximum serialized result size.
+ */
+export function maxResultBytes(options: ExecutionOptions = {}): number {
+  const value = options.maxResultBytes ?? DEFAULT_MAX_RESULT_BYTES;
+  return Number.isFinite(value) ? Math.max(Math.floor(value), 1) : DEFAULT_MAX_RESULT_BYTES;
+}
+
+function serializedBytes(value: unknown): number {
+  return utf8ByteLength(JSON.stringify(value) ?? '');
 }
 
 /**
@@ -24,13 +40,33 @@ export function limitedQuery(sql: string, limit: number): string {
 export function executionResult<T>(
   rows: T[],
   schema: QueryColumn[],
-  limit: number
+  options: ExecutionOptions = {}
 ): ExecutionResult<T> {
+  const limit = maxRows(options);
+  const limitedRows = rows.slice(0, limit);
+
+  const maxBytes = maxResultBytes(options);
+  const data: T[] = [];
+  let bytes = 0;
+
+  for (const row of limitedRows) {
+    const fields = row !== null && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row];
+    if (fields.some((field) => serializedBytes(field) > MAX_FIELD_BYTES)) {
+      throw new Error('Result field exceeds the 1 MiB limit');
+    }
+
+    const rowBytes = serializedBytes(row);
+    if (bytes + rowBytes > maxBytes) break;
+    data.push(row);
+    bytes += rowBytes;
+  }
+
+  const truncated = data.length < rows.length;
   return {
-    data: rows.slice(0, limit),
-    truncated: rows.length > limit,
+    data,
+    truncated,
     schema,
-    rowCount: rows.length <= limit ? rows.length : undefined,
+    rowCount: truncated ? undefined : data.length,
   };
 }
 

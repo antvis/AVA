@@ -27,7 +27,7 @@ describe('directAnalysis', () => {
 
     const result = await analyze(
       'Give me one',
-      { strategy: { type: 'direct' }, maxRows: 5 },
+      { strategy: { type: 'direct' }, maxRows: 5, maxResultBytes: 1024 },
       {
         schema: { tables: [] },
         engine,
@@ -36,7 +36,11 @@ describe('directAnalysis', () => {
     );
 
     expect(engine.getDSL).toHaveBeenCalledOnce();
-    expect(engine.execute).toHaveBeenCalledWith('SELECT 1', { maxRows: 5 });
+    expect(engine.execute).toHaveBeenCalledWith('SELECT 1', {
+      strategy: { type: 'direct' },
+      maxRows: 5,
+      maxResultBytes: 1024,
+    });
     expect(result).toMatchObject({
       query: 'Give me one',
       data: [{ value: 1 }],

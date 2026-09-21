@@ -87,7 +87,7 @@ Now generate the code:`;
 
     const result = executeCode(this.data, code);
     const rows = (Array.isArray(result) ? result : [{ value: result }]) as T[];
-    return executionResult(rows, inferQuerySchema(rows), maxRows(options));
+    return executionResult(rows, inferQuerySchema(rows), options);
   }
 
   async dispose(): Promise<void> {

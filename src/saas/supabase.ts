@@ -67,9 +67,8 @@ export class SupabaseEngine implements AnalysisEngine {
       throw new Error('No data loaded. Please call load() first.');
     }
     await this.queryDialect.validateDSL(sql);
-    const limit = maxRows(options);
-    const rows = (await this.runQuery(limitedQuery(sql, limit))) as T[];
-    return executionResult(rows, inferQuerySchema(rows), limit);
+    const rows = (await this.runQuery(limitedQuery(sql, maxRows(options)))) as T[];
+    return executionResult(rows, inferQuerySchema(rows), options);
   }
 
   /** Stateless — nothing to release. */
