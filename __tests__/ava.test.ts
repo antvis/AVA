@@ -30,7 +30,7 @@ describe('AVA', () => {
       const table = schema.tables[0];
       expect(table.rowCount).toBe(12);
       expect(table.columnCount).toBe(3);
-      expect(table.fields.find((f) => f.name === 'revenue')?.type).toBe('number');
+      expect(table.fields.find((f) => f.name === 'revenue')?.type).toBe('BIGINT');
     });
 
     it('should throw when analyzing without loading data', async () => {

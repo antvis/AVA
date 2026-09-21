@@ -1,23 +1,14 @@
 /**
- * Schema helpers: map engine column types to AVA field types, extract
- * metadata from in-memory data, and stringify a Schema for LLM prompts.
+ * Schema helpers: extract metadata from in-memory data and stringify a Schema
+ * for LLM prompts.
  */
 
 import type { FieldMetadata, Schema, TableSchema } from '../types';
 
-/** Map DuckDB column types to AVA field types */
-export function mapFieldType(columnType: string): FieldMetadata['type'] {
-  const t = columnType.toUpperCase();
-  if (/INT|DOUBLE|FLOAT|REAL|DECIMAL|NUMERIC/.test(t)) return 'number';
-  if (/BOOL/.test(t)) return 'boolean';
-  if (/DATE|TIME/.test(t)) return 'date';
-  return 'string';
-}
-
 /**
  * Infer field type from sample values
  */
-function inferFieldType(values: any[]): 'number' | 'string' | 'date' | 'boolean' {
+function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' {
   const nonNullValues = values.filter(v => v != null && v !== '');
 
   if (nonNullValues.length === 0) return 'string';
@@ -70,7 +61,7 @@ export function extractDataSchema(data: any[]): Schema {
   for (const col of columns) {
     const values = data.map(row => row[col]);
     const nonNullValues = values.filter(v => v != null && v !== '');
-    const type = inferFieldType(values);
+    const type = inferType(values);
     const field: FieldMetadata = {
       name: col,
       type,
@@ -117,7 +108,7 @@ export function stringifySchema(schema: Schema): string {
     result += 'Fields:\n';
 
     for (const field of table.fields) {
-      result += `- ${field.name} (${field.rawType ?? field.type}): `;
+      result += `- ${field.name} (${field.type}): `;
       if (field.uniqueCount !== undefined) {
         result += `${field.uniqueCount} unique values`;
       }

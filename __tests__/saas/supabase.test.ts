@@ -53,8 +53,8 @@ describe('SupabaseEngine', () => {
         rowCount: 3,
         columnCount: 2,
         fields: [
-          { name: 'id', type: 'number', rawType: 'bigint' },
-          { name: 'name', type: 'string', rawType: 'text' },
+          { name: 'id', type: 'bigint' },
+          { name: 'name', type: 'text' },
         ],
       },
     ]);

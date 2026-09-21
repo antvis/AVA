@@ -9,7 +9,6 @@
  */
 
 import { PostgreSQLQueryDialect } from '../query/postgresql';
-import { mapFieldType } from '../util/schema';
 import { sqlStringLiteral } from '../util/sql';
 
 import type {
@@ -150,11 +149,10 @@ ORDER BY t.table_name, c.ordinal_position
     }
       const table = tables.get(tableName)!;
       if (typeof row.column_name === 'string' && row.column_name) {
-        const dataType = String(row.data_type ?? '');
+        const type = String(row.data_type ?? '');
         table.fields.push({
           name: row.column_name,
-          type: mapFieldType(dataType),
-          rawType: dataType,
+          type,
         });
       }
     }
