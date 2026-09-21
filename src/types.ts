@@ -438,7 +438,7 @@ export interface ExecutionResult<T = Record<string, unknown>> {
 }
 
 /** Built-in analysis strategies. */
-export type AnalysisStrategyConfig = { type: 'direct' };
+export type AnalysisStrategyConfig = { type: 'direct' } | { type: 'loop'; maxSteps?: number };
 
 /** Runtime dependencies available to an analysis strategy. */
 export interface AnalysisRuntime {

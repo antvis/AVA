@@ -31,6 +31,7 @@ Options:
   --offset <number>      Start offset after filtering (default: 0)
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
+  --strategy <name>      direct or loop (default: direct)
   --output <path>        Prediction CSV (default: databench/results/<dataset>.csv)
   --help                 Show help
 `;
@@ -98,6 +99,7 @@ async function main(argv = process.argv.slice(2)) {
       limit: { type: 'string', default: '20' },
       offset: { type: 'string', default: '0' },
       output: { type: 'string' },
+      strategy: { type: 'string', default: 'direct' },
       suite: { type: 'string' },
     },
   });
@@ -107,6 +109,7 @@ async function main(argv = process.argv.slice(2)) {
   if (!['databench-lite', 'databench'].includes(values.dataset)) {
     throw new Error('--dataset must be databench-lite or databench.');
   }
+  if (!['direct', 'loop'].includes(values.strategy)) throw new Error('--strategy must be direct or loop.');
   const output = resolve(values.output ?? `databench/results/${values.dataset}.csv`);
   const completed = prepareOutput(output);
   const offset = integer(values.offset, 'offset', 0);
@@ -133,6 +136,7 @@ async function main(argv = process.argv.slice(2)) {
             await ava.load({ type: 'parquet', options: { path: sample.dataPath } });
             const result = await ava.analysis(
               `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`,
+              { strategy: { type: values.strategy } },
             );
             sql = result.sql ?? '';
             answer = answerFrom(result.data, sample.answerType);
