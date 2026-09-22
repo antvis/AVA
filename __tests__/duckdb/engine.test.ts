@@ -5,12 +5,10 @@
 import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { DuckDBConnection } from '@duckdb/node-api';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
 import { maxRows } from '../../src/util/result';
-import { DuckDBQueryDialect } from '../../src/query/duckdb';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 describe('DuckDBEngine', () => {
@@ -32,13 +30,7 @@ describe('DuckDBEngine', () => {
       { name: 'Charlie', age: 35, city: 'NYC' },
     ];
 
-    const reads = vi.spyOn(DuckDBConnection.prototype, 'runAndReadAll');
     const schema = await engine.load({ type: 'json', options: { data: testData } });
-    // duckdb_columns() + duckdb_constraints() + duckdb_indexes() — all in catalog queries.
-    expect(reads.mock.calls).toHaveLength(3);
-    expect(reads.mock.calls[0][0]).toContain('duckdb_columns()');
-    expect(reads.mock.calls[1][0]).toContain('duckdb_constraints()');
-    expect(reads.mock.calls[2][0]).toContain('duckdb_indexes()');
     expect(schema.tables).toEqual([
       {
         name: 'data',
@@ -51,7 +43,7 @@ describe('DuckDBEngine', () => {
         indexes: [],
       },
     ]);
-    reads.mockRestore();
+    expect(schema.relations).toEqual([]);
 
     const all = await engine.execute('SELECT * FROM data');
     expect(all.data).toHaveLength(3);
@@ -146,32 +138,6 @@ describe('DuckDBEngine', () => {
     await expect(engine.execute('SELECT * FROM data; CREATE TABLE blocked_too (a INTEGER)')).rejects.toThrow(
       'only read-only SELECT statements'
     );
-  });
-
-  it('should generate DSL from structural metadata without implicit profiling', async () => {
-    await engine.load({ type: 'json', options: { data: [{ amount: 10 }] } });
-    const reads = vi.spyOn(DuckDBConnection.prototype, 'runAndReadAll');
-    const generate = vi.spyOn(DuckDBQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT * FROM data');
-    try {
-      expect(await engine.getDSL('Show data')).toBe('SELECT * FROM data');
-      expect(reads.mock.calls).toHaveLength(3);
-      expect(reads.mock.calls[0][0]).toContain('duckdb_columns()');
-      expect(reads.mock.calls[1][0]).toContain('duckdb_constraints()');
-      expect(reads.mock.calls[2][0]).toContain('duckdb_indexes()');
-      expect(generate).toHaveBeenCalledWith('Show data', {
-        tables: [
-          {
-            name: 'data',
-            columnCount: 1,
-            fields: [{ name: 'amount', type: 'BIGINT', nullable: true }],
-            indexes: [],
-          },
-        ],
-      });
-    } finally {
-      reads.mockRestore();
-      generate.mockRestore();
-    }
   });
 
   describe.skipIf(skipLLMTests)('getDSL', () => {

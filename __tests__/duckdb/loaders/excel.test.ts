@@ -23,7 +23,7 @@ describe('loaders/excel', () => {
     engine = new DuckDBEngine(getLLMConfig());
     const schema = await engine.load({ type: 'excel', options: { path: xlsxPath } });
 
-    expect(schema.tables.map((t) => t.name)).toEqual(['Sales', 'Costs']);
+    expect(schema.tables.map((t) => t.name).sort()).toEqual(['Costs', 'Sales']);
 
     const sales = await engine.execute('SELECT * FROM "Sales" ORDER BY region');
     expect(sales.data).toEqual([

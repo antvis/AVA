@@ -18,12 +18,10 @@ describe('loaders/index', () => {
   });
 
   it('dispatches json source to a registerable source', async () => {
-    source = await loadSource(
-      { type: 'json', options: { data: [{ a: 1 }] } },
-      getLLMConfig()
-    );
+    source = await loadSource({ type: 'json', options: { data: [{ a: 1 }] } }, getLLMConfig());
 
     expect(typeof source.register).toBe('function');
+    expect(typeof source.getSchema).toBe('function');
     expect(typeof source.cleanup).toBe('function');
   });
 });
