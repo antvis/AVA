@@ -19,6 +19,7 @@ export type {
   DataSourceConfig,
   Schema,
   TableSchema,
+  TableIndex,
   FieldMetadata,
   AnalysisEngine,
   QueryDialect,

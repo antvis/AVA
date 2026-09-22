@@ -19,6 +19,7 @@ import type {
   LLMConfig,
   Schema,
   TableSchema,
+  TableIndex,
   ExecutionOptions,
   ExecutionResult,
 } from '../types';
@@ -113,15 +114,15 @@ export class SupabaseEngine implements AnalysisEngine {
   }
 
   /**
-   * Discover every BASE TABLE in the public schema (columns plus a row-count
-   * estimate from pg_class.reltuples) — one SQL round trip, no data materialized.
+   * Discover structural metadata for every BASE TABLE in the public schema.
+   * Includes NULL constraints and index information for each table.
+   * No row-count estimates or value statistics are included.
    */
   private async discoverSchema(): Promise<Schema> {
     const rows = await this.runQuery(
       `
 SELECT t.table_name,
-       c.column_name, c.data_type, c.ordinal_position,
-       cls.reltuples
+       c.column_name, c.data_type, c.ordinal_position, c.is_nullable
 FROM information_schema.tables t
 LEFT JOIN information_schema.columns c
   ON c.table_schema = t.table_schema AND c.table_name = t.table_name
@@ -149,19 +150,67 @@ ORDER BY t.table_name, c.ordinal_position
       const table = tables.get(tableName)!;
       if (typeof row.column_name === 'string' && row.column_name) {
         const type = String(row.data_type ?? '');
+        const nullable = String(row.is_nullable).toUpperCase() === 'YES';
         table.fields.push({
           name: row.column_name,
           type,
+          nullable,
         });
       }
     }
+
+    const indexes = await this.discoverIndexes();
 
     const result: TableSchema[] = [...tables.entries()].map(([name, t]) => ({
       name,
       rowCount: t.rowCount,
       columnCount: t.fields.length,
       fields: t.fields,
+      indexes: indexes.get(name) ?? [],
     }));
     return { tables: result };
+  }
+
+  /**
+   * Query index metadata from pg_indexes for every table in the public schema.
+   */
+  private async discoverIndexes(): Promise<Map<string, TableIndex[]>> {
+    const rows = await this.runQuery(
+      `
+SELECT schemaname, tablename, indexname, indexdef
+FROM pg_indexes
+WHERE schemaname = ${sqlStringLiteral(SUPABASE_SCHEMA)}
+ORDER BY tablename, indexname
+`
+    );
+
+    const map = new Map<string, TableIndex[]>();
+    for (const row of rows) {
+      const tableName = String(row.tablename ?? '');
+      if (!tableName) continue;
+
+      if (!map.has(tableName)) {
+        map.set(tableName, []);
+      }
+
+      const indexName = String(row.indexname ?? '');
+      const indexDef = String(row.indexdef ?? '');
+      const primary = /\bPRIMARY KEY\b/i.test(indexDef);
+      const unique = primary || /\bUNIQUE\b/i.test(indexDef);
+      const columns = this.parseIndexColumns(indexDef);
+
+      map.get(tableName)!.push({ name: indexName, columns, unique, primary });
+    }
+    return map;
+  }
+
+  /**
+   * Extract column names from a PostgreSQL index definition like
+   * `CREATE UNIQUE INDEX idx_name ON public.table USING btree (col1, col2)`
+   */
+  private parseIndexColumns(indexDef: string): string[] {
+    const match = indexDef.match(/\(([^)]+)\)/);
+    if (!match) return [];
+    return match[1].split(',').map((col) => col.trim()).filter(Boolean);
   }
 }

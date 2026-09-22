@@ -21,7 +21,15 @@ describe('interpreter/engine', () => {
 
     expect(schema.tables).toHaveLength(1);
     expect(schema.tables[0].name).toBe('data');
-    expect(schema.tables[0].rowCount).toBe(1);
+    expect(schema.tables[0]).toEqual({
+      name: 'data',
+      columnCount: 2,
+      fields: [
+        { name: 'name', type: 'string' },
+        { name: 'age', type: 'number' },
+      ],
+      indexes: [],
+    });
   });
 
   it('rejects unsupported source types', async () => {

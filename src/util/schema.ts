@@ -3,32 +3,28 @@
  * for LLM prompts.
  */
 
-import type { FieldMetadata, Schema, TableSchema } from '../types';
+import type { Schema, TableIndex, TableSchema } from '../types';
 
 /**
  * Infer field type from sample values
  */
 function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' {
-  const nonNullValues = values.filter(v => v != null && v !== '');
+  const nonNullValues = values.filter((v) => v != null && v !== '');
 
   if (nonNullValues.length === 0) return 'string';
 
   // Check if all values are numbers
-  const allNumbers = nonNullValues.every(v => typeof v === 'number' || !Number.isNaN(Number(v)));
+  const allNumbers = nonNullValues.every((v) => typeof v === 'number' || !Number.isNaN(Number(v)));
   if (allNumbers) return 'number';
 
   // Check if all values are booleans
-  const allBooleans = nonNullValues.every(v =>
-    typeof v === 'boolean' ||
-    v === 'true' ||
-    v === 'false' ||
-    v === 'TRUE' ||
-    v === 'FALSE'
+  const allBooleans = nonNullValues.every(
+    (v) => typeof v === 'boolean' || v === 'true' || v === 'false' || v === 'TRUE' || v === 'FALSE'
   );
   if (allBooleans) return 'boolean';
 
   // Check if values look like dates
-  const allDates = nonNullValues.every(v => {
+  const allDates = nonNullValues.every((v) => {
     if (typeof v === 'string') {
       const date = new Date(v);
       return !Number.isNaN(date.getTime());
@@ -49,6 +45,7 @@ export function extractDataSchema(data: any[]): Schema {
     rowCount: 0,
     columnCount: 0,
     fields: [],
+    indexes: [],
   };
   if (!data || data.length === 0) {
     return { tables: [table] };
@@ -59,8 +56,8 @@ export function extractDataSchema(data: any[]): Schema {
   const MAX_DISTINCT = 20;
 
   for (const col of columns) {
-    const values = data.map(row => row[col]);
-    const nonNullValues = values.filter(v => v != null && v !== '');
+    const values = data.map((row) => row[col]);
+    const nonNullValues = values.filter((v) => v != null && v !== '');
     const type = inferType(values);
     const field: FieldMetadata = {
       name: col,
@@ -73,12 +70,12 @@ export function extractDataSchema(data: any[]): Schema {
       field.uniqueCount = distinct.length;
       field.samples = distinct.slice(0, MAX_DISTINCT);
     } else if (type === 'number') {
-      const nums = nonNullValues.map(Number).filter(n => !Number.isNaN(n));
+      const nums = nonNullValues.map(Number).filter((n) => !Number.isNaN(n));
       field.min = Math.min(...nums);
       field.max = Math.max(...nums);
     } else {
       // date: epoch milliseconds
-      const ts = nonNullValues.map(v => new Date(v).getTime()).filter(t => !Number.isNaN(t));
+      const ts = nonNullValues.map((v) => new Date(v).getTime()).filter((t) => !Number.isNaN(t));
       field.min = Math.min(...ts);
       field.max = Math.max(...ts);
     }
@@ -90,6 +87,23 @@ export function extractDataSchema(data: any[]): Schema {
   table.columnCount = columns.length;
   table.fields = fields;
   return { tables: [table] };
+}
+
+/**
+ * Stringify a table's indexes for LLM context.
+ */
+function stringifyIndexes(indexes: TableIndex[], formatIdentifier?: (name: string) => string): string {
+  if (indexes.length === 0) return '';
+
+  let result = 'Indexes:\n';
+  for (const index of indexes) {
+    const tag = index.primary ? 'PRIMARY KEY' : index.unique ? 'UNIQUE' : '';
+    const prefix = tag ? `${tag} ` : '';
+    const columns = index.columns.map((col) => formatIdentifier?.(col) ?? col).join(', ');
+    const name = formatIdentifier?.(index.name) ?? index.name;
+    result += `  - ${prefix}${name} (${columns})\n`;
+  }
+  return result;
 }
 
 /**
@@ -108,20 +122,12 @@ export function stringifySchema(schema: Schema, formatIdentifier?: (name: string
     result += 'Fields:\n';
 
     for (const field of table.fields) {
-      result += `- ${formatIdentifier?.(field.name) ?? field.name} (${field.type}): `;
-      if (field.uniqueCount !== undefined) {
-        result += `${field.uniqueCount} unique values`;
-      }
-      if (field.min !== undefined && field.min !== null) {
-        result += `min ${field.min}, max ${field.max}`;
-      }
-      if (field.nullCount) {
-        result += `, ${field.nullCount} nulls`;
-      }
-      if (field.samples && field.samples.length > 0) {
-        result += `\n  Values: ${field.samples.join(', ')}`;
-      }
-      result += '\n';
+      const nullable = field.nullable === false ? ' NOT NULL' : '';
+      result += `- ${formatIdentifier?.(field.name) ?? field.name} (${field.type})${nullable}\n`;
+    }
+
+    if (table.indexes.length > 0) {
+      result += stringifyIndexes(table.indexes, formatIdentifier);
     }
   }
 

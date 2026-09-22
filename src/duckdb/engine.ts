@@ -10,7 +10,7 @@ import { DuckDBInstance } from '@duckdb/node-api';
 import { DuckDBQueryDialect } from '../query/duckdb';
 import { executionResult, limitedQuery, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
-import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
+import { sqlStringLiteral } from '../util/sql';
 
 import { loadSource } from './loaders';
 
@@ -21,7 +21,7 @@ import type {
   DuckDBEngineOptions,
   Schema,
   TableSchema,
-  FieldMetadata,
+  TableIndex,
   LLMConfig,
   ExecutionOptions,
   ExecutionResult,
@@ -174,73 +174,118 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   /**
-   * Derive the dataset schema from DuckDB without materializing the data:
-   * one TableSchema per registered view. Categorical fields get distinct
-   * values; numeric/temporal fields get min/max.
+   * Read column metadata and indexes for all registered views in catalog
+   * queries: `duckdb_columns()` for columns; `duckdb_constraints()` and
+   * `duckdb_indexes()` for constraints and secondary indexes.
+   * File-based sources simply have no constraint/index rows.
    */
   private async getSchema(): Promise<Schema> {
     const conn = await this.getConnection();
-    const tables: TableSchema[] = [];
-    for (const name of this.tableNames) {
-      tables.push(await this.getTableSchema(conn, name));
+    const nameList = this.tableNames.map(sqlStringLiteral).join(', ');
+    const tableSet = new Set(this.tableNames);
+
+    // One query for all columns across every registered table.
+    const colReader = await conn.runAndReadAll(
+      `SELECT table_name, column_name, data_type, is_nullable
+         FROM duckdb_columns()
+        WHERE table_name IN (${nameList})
+        ORDER BY table_name, column_index`
+    );
+    const columnsByTable = new Map<string, FieldMetadata[]>();
+    for (const row of colReader.getRowObjectsJson()) {
+      const tableName = String(row.table_name);
+      if (!tableSet.has(tableName)) continue;
+      (columnsByTable.get(tableName) ?? columnsByTable.set(tableName, []).get(tableName)!).push({
+        name: String(row.column_name),
+        type: String(row.data_type),
+        nullable: Boolean(row.is_nullable),
+      });
     }
+
+    // One query for all indexes across every registered table.
+    const indexMap = await this.getAllIndexes(conn, tableSet, nameList);
+
+    const tables: TableSchema[] = this.tableNames.map((name) => {
+      const fields = columnsByTable.get(name) ?? [];
+      return { name, columnCount: fields.length, fields, indexes: indexMap.get(name) ?? [] };
+    });
     return { tables };
   }
 
   /**
-   * Profile a single view: row count plus per-column stats.
+   * Query indexes for all registered tables from DuckDB's catalog in two queries:
+   *   1. duckdb_constraints() — PRIMARY KEY and UNIQUE constraints (with column names)
+   *   2. duckdb_indexes()     — secondary indexes (column names parsed from the `sql` column)
+   * Returns an empty array per table for file-based sources (no indexes).
    */
-  private async getTableSchema(conn: DuckDBConnection, tableName: string): Promise<TableSchema> {
-    const colsReader = await conn.runAndReadAll(`DESCRIBE ${sqlIdentifier(tableName)}`);
-    const cols = colsReader.getRowObjectsJson();
+  private async getAllIndexes(
+    conn: DuckDBConnection,
+    tableSet: Set<string>,
+    nameList: string
+  ): Promise<Map<string, TableIndex[]>> {
+    const result = new Map<string, TableIndex[]>();
+    for (const name of tableSet) result.set(name, []);
 
-    // One aggregate query computes row count plus per-column stats
-    const MAX_DISTINCT = 20;
-    const stats = cols
-      .map((col: any, i: number) => {
-        const name = sqlIdentifier(String(col.column_name));
-        const type = String(col.column_type);
-        if (/\[[^\]]*\]$/.test(type)) {
-          return null;
-        }
-        const numeric = /INT|DOUBLE|FLOAT|REAL|DECIMAL|NUMERIC/i.test(type);
-        const temporal = /DATE|TIME/i.test(type);
-        if (!numeric && !temporal) {
-          return `struct_pack(distinct_count := COUNT(DISTINCT ${name}), items := COALESCE(min(DISTINCT ${name}, ${MAX_DISTINCT}), [])) AS "s${i}"`;
-        }
-        const finite = /^(DOUBLE|FLOAT|REAL)$/i.test(type) ? ` FILTER (WHERE isfinite(${name}))` : '';
-        // Numbers stay numeric; temporal columns become epoch milliseconds
-        const minExpr = temporal ? `epoch_ms(min(${name}))` : `min(${name})${finite}`;
-        const maxExpr = temporal ? `epoch_ms(max(${name}))` : `max(${name})${finite}`;
-        return `struct_pack(min := ${minExpr}, max := ${maxExpr}) AS "s${i}"`;
-      })
-      .filter((stat): stat is string => stat !== null);
-    const profileSql = `SELECT COUNT(*) AS "__rows"${stats.length ? `, ${stats.join(', ')}` : ''} FROM ${sqlIdentifier(
-      tableName
-    )}`;
-    const profileRow = (await conn.runAndReadAll(profileSql)).getRowObjectsJson()[0] as any;
-
-    const fields: FieldMetadata[] = cols.map((col: any, i: number) => {
-      const type = String(col.column_type);
-      const stat = profileRow[`s${i}`] as any;
-      const field: FieldMetadata = { name: col.column_name, type };
-      if (stat?.distinct_count !== undefined) {
-        field.uniqueCount = Number(stat?.distinct_count ?? 0);
-        field.samples = (stat?.items ?? []) as any[];
-      } else if (stat) {
-        // BIGINT/DECIMAL/epoch_ms come back as strings — coerce to numbers
-        field.min = stat?.min == null ? undefined : Number(stat.min);
-        field.max = stat?.max == null ? undefined : Number(stat.max);
+    // 1. Constraints (PK / UNIQUE) — has constraint_column_names directly.
+    try {
+      const reader = await conn.runAndReadAll(
+        `SELECT table_name, constraint_name, constraint_type, constraint_column_names
+           FROM duckdb_constraints()
+          WHERE table_name IN (${nameList})
+            AND constraint_type IN ('PRIMARY KEY', 'UNIQUE')`
+      );
+      for (const row of reader.getRowObjectsJson()) {
+        const tableName = String(row.table_name);
+        if (!tableSet.has(tableName)) continue;
+        const type = String(row.constraint_type);
+        const columns = Array.isArray(row.constraint_column_names) ? row.constraint_column_names.map(String) : [];
+        result.get(tableName)!.push({
+          name: String(row.constraint_name),
+          columns,
+          unique: true,
+          primary: type === 'PRIMARY KEY',
+        });
       }
-      return field;
-    });
+    } catch {
+      // duckdb_constraints() unavailable — skip.
+    }
 
-    return {
-      name: tableName,
-      rowCount: Number(profileRow?.__rows ?? 0),
-      columnCount: fields.length,
-      fields,
-    };
+    // 2. Secondary indexes — parse column names from the `sql` (CREATE INDEX) column.
+    try {
+      const reader = await conn.runAndReadAll(
+        `SELECT table_name, index_name, is_unique, sql
+           FROM duckdb_indexes()
+          WHERE table_name IN (${nameList})`
+      );
+      for (const row of reader.getRowObjectsJson()) {
+        const tableName = String(row.table_name);
+        if (!tableSet.has(tableName)) continue;
+        const sqlDef = String(row.sql ?? '');
+        const columns = this.parseIndexColumnsFromDDL(sqlDef);
+        result.get(tableName)!.push({
+          name: String(row.index_name),
+          columns,
+          unique: Boolean(row.is_unique),
+        });
+      }
+    } catch {
+      // duckdb_indexes() unavailable — skip.
+    }
+
+    return result;
+  }
+
+  /**
+   * Extract column names from a CREATE INDEX statement like
+   * `CREATE INDEX idx_name ON table (col1, col2)`.
+   */
+  private parseIndexColumnsFromDDL(sql: string): string[] {
+    const match = sql.match(/\(([^)]+)\)/);
+    if (!match) return [];
+    return match[1]
+      .split(',')
+      .map((col) => col.trim())
+      .filter(Boolean);
   }
 
   /**

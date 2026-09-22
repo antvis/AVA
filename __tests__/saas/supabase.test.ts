@@ -12,8 +12,31 @@ const CONNECTION = { accessToken: 'token-123', projectRef: 'demo-ref' };
 
 /** Discovery rows for one table, as returned by the information_schema query */
 const DISCOVERY_ROWS = [
-  { table_name: 'users', column_name: 'id', data_type: 'bigint', ordinal_position: 1, reltuples: 3 },
-  { table_name: 'users', column_name: 'name', data_type: 'text', ordinal_position: 2, reltuples: 3 },
+  { table_name: 'users', column_name: 'id', data_type: 'bigint', ordinal_position: 1, is_nullable: 'NO', reltuples: 3 },
+  {
+    table_name: 'users',
+    column_name: 'name',
+    data_type: 'text',
+    ordinal_position: 2,
+    is_nullable: 'YES',
+    reltuples: 3,
+  },
+];
+
+/** Index rows for one table, as returned by pg_indexes */
+const INDEX_ROWS = [
+  {
+    schemaname: 'public',
+    tablename: 'users',
+    indexname: 'users_pkey',
+    indexdef: 'CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)',
+  },
+  {
+    schemaname: 'public',
+    tablename: 'users',
+    indexname: 'idx_users_name',
+    indexdef: 'CREATE INDEX idx_users_name ON public.users USING btree (name)',
+  },
 ];
 
 /** Stub global fetch to answer Management API calls; records request shapes */
@@ -35,7 +58,11 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('SupabaseEngine', () => {
   it('loads the public-schema tables and executes SQL remotely', async () => {
-    const requests = stubApi([{ match: /information_schema/, rows: DISCOVERY_ROWS }, { rows: [{ name: 'Alice' }] }]);
+    const requests = stubApi([
+      { match: /information_schema/, rows: DISCOVERY_ROWS },
+      { match: /pg_indexes/, rows: INDEX_ROWS },
+      { rows: [{ name: 'Alice' }] },
+    ]);
 
     const engine = new SupabaseEngine(getLLMConfig());
     const schema = await engine.load({ type: 'supabase', options: CONNECTION });
@@ -50,24 +77,32 @@ describe('SupabaseEngine', () => {
         rowCount: 3,
         columnCount: 2,
         fields: [
-          { name: 'id', type: 'bigint' },
-          { name: 'name', type: 'text' },
+          { name: 'id', type: 'bigint', nullable: false },
+          { name: 'name', type: 'text', nullable: true },
+        ],
+        indexes: [
+          { name: 'users_pkey', columns: ['id'], unique: true, primary: false },
+          { name: 'idx_users_name', columns: ['name'], unique: false, primary: false },
         ],
       },
     ]);
 
     const rows = await engine.execute('SELECT name FROM users');
     expect(rows.data).toEqual([{ name: 'Alice' }]);
-    expect(requests[1].body.query).toContain('LIMIT 201');
+    expect(requests[2].body.query).toContain('LIMIT 201');
 
     const result = await engine.execute('SELECT name FROM users', { maxRows: 2 });
     expect(result.data).toEqual([{ name: 'Alice' }]);
     expect(result.rowCount).toBe(1);
-    expect(requests[2].body.query).toContain('LIMIT 3');
+    expect(requests[3].body.query).toContain('LIMIT 3');
   });
 
   it('requires one read-only statement', async () => {
-    const requests = stubApi([{ rows: DISCOVERY_ROWS }]);
+    const requests = stubApi([
+      { match: /information_schema/, rows: DISCOVERY_ROWS },
+      { match: /pg_indexes/, rows: INDEX_ROWS },
+      { rows: [] },
+    ]);
     const engine = new SupabaseEngine(getLLMConfig());
     await engine.load({ type: 'supabase', options: CONNECTION });
 
@@ -78,12 +113,16 @@ describe('SupabaseEngine', () => {
     await expect(
       engine.execute('WITH deleted AS (DELETE FROM users RETURNING *) SELECT * FROM deleted')
     ).rejects.toThrow('only read-only SELECT statements');
-    expect(requests).toHaveLength(1);
+    expect(requests).toHaveLength(2);
   });
 
   describe.skipIf(skipLLMTests)('getDSL', () => {
     it('generates PostgreSQL-flavored SQL from a natural language query', async () => {
-      stubApi([{ rows: DISCOVERY_ROWS }]);
+      stubApi([
+        { match: /information_schema/, rows: DISCOVERY_ROWS },
+        { match: /pg_indexes/, rows: INDEX_ROWS },
+        { rows: [] },
+      ]);
 
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });

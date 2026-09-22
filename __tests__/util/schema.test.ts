@@ -21,13 +21,12 @@ describe('extractDataSchema', () => {
     expect(table.name).toBe('data');
     expect(table.rowCount).toBe(2);
     expect(table.columnCount).toBe(3);
-    expect(table.fields.find(f => f.name === 'company')?.type).toBe('string');
-    expect(table.fields.find(f => f.name === 'revenue')?.type).toBe('number');
+    expect(table.fields.find((f) => f.name === 'company')?.type).toBe('string');
+    expect(table.fields.find((f) => f.name === 'revenue')?.type).toBe('number');
   });
 
   it('should handle empty data', () => {
-    const schema = extractDataSchema([]);
-    expect(schema).toEqual({ tables: [{ name: 'data', rowCount: 0, columnCount: 0, fields: [] }] });
+    expect(extractDataSchema([])).toEqual({ tables: [{ name: 'data', columnCount: 0, fields: [], indexes: [] }] });
   });
 });
 

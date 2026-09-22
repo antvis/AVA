@@ -358,16 +358,31 @@ export interface FieldMetadata {
   name: string;
   /** Column type from the engine (e.g. DuckDB's BIGINT/VARCHAR) */
   type: string;
-  /** Distinct values (categorical fields, up to 20) */
-  samples?: any[];
-  /** Number of unique values */
-  uniqueCount?: number;
-  /** Number of null values */
-  nullCount?: number;
-  /** Minimum value (numeric fields; temporal fields as epoch ms) */
-  min?: number;
-  /** Maximum value (numeric fields; temporal fields as epoch ms) */
-  max?: number;
+  /** Whether the column allows NULL (engine-reported). */
+  nullable?: boolean;
+}
+
+/**
+ * A single index (or constraint-backed index) on a table.
+ *
+ * DuckDB: duckdb_constraints() for PK/UNIQUE + duckdb_indexes() for secondary indexes.
+ * MySQL: INFORMATION_SCHEMA.STATISTICS (one row per column, grouped by index name).
+ * PostgreSQL / Supabase: pg_indexes (indexdef parsed for column names).
+ */
+export interface TableIndex {
+  /** Index name (e.g. "users_pkey", "idx_orders_user_id") */
+  name: string;
+  /** Indexed columns in order */
+  columns: string[];
+  /** Whether the index enforces uniqueness */
+  unique: boolean;
+  /**
+   * Whether this index backs a PRIMARY KEY constraint.
+   * DuckDB: duckdb_constraints().constraint_type = 'PRIMARY KEY'.
+   * MySQL: INDEX_NAME = 'PRIMARY'.
+   * PostgreSQL: indexdef contains "PRIMARY KEY".
+   */
+  primary?: boolean;
 }
 
 /**
@@ -382,6 +397,8 @@ export interface TableSchema {
   columnCount: number;
   /** Field metadata */
   fields: FieldMetadata[];
+  /** Indexes on this table. Empty array for tables with no indexes (file-based sources). */
+  indexes: TableIndex[];
 }
 
 /**
