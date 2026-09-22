@@ -9,6 +9,7 @@
  * 2. 启用并运行 schema 对比测试：
  *    AVA_MYSQL_TEST=1 npx vitest run __tests__/duckdb/loaders/mysql.test.ts
  * 3. 测完清理测试库及数据卷：
+ *    docker compose -f __tests__/datasets/mysql/compose.yaml stop
  *    docker compose -f __tests__/datasets/mysql/compose.yaml down -v
  *
  * 默认连接 127.0.0.1:13306；修改端口时，Compose 和测试须设置相同的 AVA_MYSQL_TEST_PORT。
