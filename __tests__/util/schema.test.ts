@@ -2,10 +2,14 @@
  * Unit tests for util/schema
  */
 
-import { describe, it, expect } from 'vitest';
+import * as path from 'path';
 
+import { describe, it, expect } from 'vitest';
+import { DuckDBInstance } from '@duckdb/node-api';
+
+import { getDuckDBSchema } from '../../src/duckdb/util/schema';
 import { extractDataSchema, stringifySchema } from '../../src/util/schema';
-import { sqlIdentifier } from '../../src/util/sql';
+import { sqlIdentifier, sqlStringLiteral } from '../../src/util/sql';
 
 describe('extractDataSchema', () => {
   it('should extract schema from an object array', () => {
@@ -36,19 +40,40 @@ describe('extractDataSchema', () => {
 });
 
 describe('stringifySchema', () => {
-  it('should format a schema as a multi-line description', () => {
-    const schema = extractDataSchema([{ company: 'A', revenue: 100 }]);
-    const formatted = stringifySchema(schema);
+  it('stringifies the sales CSV schema as a structural description', async () => {
+    const db = await DuckDBInstance.create(':memory:');
+    try {
+      const conn = await db.connect();
+      try {
+        const csvPath = path.join(__dirname, '../datasets/sales.csv');
+        await conn.run(`CREATE TABLE sales AS SELECT * FROM read_csv_auto(${sqlStringLiteral(csvPath)})`);
 
-    expect(formatted).toContain('Dataset Info:');
-    expect(formatted).toContain('company');
-    expect(formatted).toContain('revenue');
-  });
+        const schema = await getDuckDBSchema(conn, ['sales']);
 
-  it('should omit unknown row counts while preserving known zero counts', () => {
-    const table = { name: 'data', columnCount: 0, fields: [], indexes: [] };
-    expect(stringifySchema({ tables: [table] })).not.toContain('Rows:');
-    expect(stringifySchema({ tables: [{ ...table, rowCount: 0 }] })).toContain('Rows: 0');
+        expect(stringifySchema(schema)).toBe(`Dataset Info: 1 table(s)
+Table "sales":
+- Columns: 12
+Fields:
+- "order_id" (VARCHAR)
+- "order_date" (DATE)
+- "region" (VARCHAR)
+- "category" (VARCHAR)
+- "product" (VARCHAR)
+- "channel" (VARCHAR)
+- "quantity" (BIGINT)
+- "unit_price" (DOUBLE)
+- "discount" (DOUBLE)
+- "sales" (DOUBLE)
+- "cost" (DOUBLE)
+- "profit" (DOUBLE)
+
+`);
+      } finally {
+        conn.closeSync();
+      }
+    } finally {
+      db.closeSync();
+    }
   });
 
   it('should format arbitrary SQL identifiers without changing their names', () => {
