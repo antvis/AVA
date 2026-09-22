@@ -14,15 +14,19 @@ import { createOpenAI } from '@ai-sdk/openai';
 
 import { stringifySchema } from '../util/schema';
 
-import type { AnalysisStrategy, ExecutionResult } from '../types';
+import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
 
 const DEFAULT_MAX_STEPS = 12;
 
-function sqlBlocks(response: string): string[] {
-  return [...response.matchAll(/```sql\s*([\s\S]*?)```/gi)].map((match) => match[1].trim());
+function codeBlocks(response: string, language: string): string[] {
+  const escaped = language.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return [...response.matchAll(new RegExp('```' + escaped + '\\s*([\\s\\S]*?)```', 'gi'))].map((match) =>
+    match[1].trim()
+  );
 }
 
-const LOOP_PROMPT = `You are a SQL analysis agent. Answer the user's question by querying the provided database.
+function loopPrompt(language: QueryLanguage): string {
+  return `You are a data analysis agent. Answer the user's question by querying the provided data source.
 
 # 1. RESPONSE PROTOCOL
 
@@ -36,18 +40,24 @@ Every response is one machine-readable action.
 
 Action-specific syntax:
 
-- [EXPLORE] must contain at least one fenced sql code block. Multiple blocks are allowed.
-- [REFINE] must contain reasoning and a next-step plan, but no SQL code block.
-- [SQL] must contain exactly one fenced sql code block and no other SQL block.
-- [CONFIRM] must contain verification and a concise conclusion, but no SQL code block.
+- [EXPLORE] must contain at least one fenced ${language.fence} code block. Multiple blocks are allowed.
+- [REFINE] must contain reasoning and a next-step plan, but no executable code block.
+- [SQL] must contain exactly one fenced ${language.fence} code block and no other code block.
+- [CONFIRM] must contain verification and a concise conclusion, but no executable code block.
 
-# 2. OBJECTIVE
+# 2. EXECUTION DIALECT
 
-Produce the smallest correct SQL query that answers the original question. Use database evidence instead of guessing values, formats, relationships, or column meaning.
+The runtime executes ${language.name}. Generate every executable statement directly in this language. The runtime will validate and execute it without translation.
+
+The protocol tag remains [SQL] for compatibility even when the execution dialect is not SQL.
+
+# 3. OBJECTIVE
+
+Produce the smallest correct ${language.name} statement that answers the original question. Use database evidence instead of guessing values, formats, relationships, or field meaning.
 
 Execution success alone is not correctness. Verify that the result has the intended filters, granularity, aggregation, joins, and plausible values.
 
-# 3. LOOP
+# 4. LOOP
 
 Use this state flow:
 
@@ -59,7 +69,7 @@ Use this state flow:
 
 Stop as soon as the answer is adequately verified.
 
-# 4. ACTIONS
+# 5. ACTIONS
 
 ## [EXPLORE]
 
@@ -78,7 +88,7 @@ Format:
 
 [EXPLORE]
 -- Purpose: <uncertainty being tested>
-\`\`\`sql
+\`\`\`${language.fence}
 <exploration query>
 \`\`\`
 
@@ -101,7 +111,7 @@ Next: [EXPLORE] or [SQL]
 
 Use [SQL] when the question and relevant database semantics are sufficiently understood.
 
-Before writing SQL, verify that:
+Before writing the statement, verify that:
 
 - every referenced table and column exists
 - filters use verified values and correct null semantics
@@ -112,11 +122,11 @@ Before writing SQL, verify that:
 Format:
 
 [SQL]
-\`\`\`sql
+\`\`\`${language.fence}
 <one answer query>
 \`\`\`
 
-Do not include prose outside the single SQL block.
+Do not include prose outside the single code block.
 
 ## [CONFIRM]
 
@@ -132,15 +142,16 @@ Verification:
 Conclusion:
 <concise answer based on the executed result>
 
-# 5. FINAL SELF-CHECK
+# 6. FINAL SELF-CHECK
 
 Before sending any response, verify all of the following:
 
 1. The response starts immediately with one valid action tag.
 2. Exactly one action is selected.
-3. The action's SQL block count is valid.
+3. The action's code block count is valid.
 4. The action follows the current loop state.
 5. The response contains no text before the action tag.`;
+}
 
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
@@ -158,7 +169,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
   const maxSteps = config.strategy?.type === 'loop' ? config.strategy.maxSteps ?? DEFAULT_MAX_STEPS : DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
-    const prompt = `${LOOP_PROMPT}\n\n# DATABASE CONTEXT\n\nSchema:\n${stringifySchema(
+    const prompt = `${loopPrompt(engine.language)}\n\n# DATABASE CONTEXT\n\nSchema:\n${stringifySchema(
       schema
     )}\n\nUser Question: ${query}${transcript.length ? `\n\n# ITERATION HISTORY\n\n${transcript.join('\n\n')}` : ''}`;
 
@@ -185,25 +196,22 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
       return { query, ...result, sql, text: text.replace(/^\[CONFIRM\]\s*/, '') };
     }
 
-    const queries = sqlBlocks(text);
+    const queries = codeBlocks(text, engine.language.fence);
     if (queries.length === 0 || (action === 'SQL' && queries.length !== 1)) {
       throw new Error(
-        `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} SQL block`
+        `Loop ${action} response must contain ${
+          action === 'SQL' ? 'exactly one' : 'at least one'
+        } ${engine.language.fence} code block`
       );
     }
 
     const observations: string[] = [];
     for (const proposal of queries) {
-      let statement: string | undefined;
+      const statement = proposal;
       try {
-        statement = await engine.getDSL(
-          `User question: ${query}\n\n${
-            action === 'EXPLORE' ? 'Exploration' : 'Answer'
-          } query proposed by the planning agent:\n${proposal}`
-        );
         const execution = await engine.execute(statement, config);
         observations.push(
-          `Proposed SQL:\n${proposal}\nExecutable query:\n${statement}\nResult:\n${JSON.stringify(execution)}`
+          `Proposed statement (${engine.language.name}):\n${proposal}\nResult:\n${JSON.stringify(execution)}`
         );
         if (action === 'SQL') {
           sql = statement;
@@ -212,7 +220,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
       } catch (error) {
         if (action === 'SQL') result = undefined;
         observations.push(
-          `Proposed SQL:\n${proposal}\nError:\n${error instanceof Error ? error.message : String(error)}`
+          `Proposed statement (${engine.language.name}):\n${proposal}\nError:\n${
+            error instanceof Error ? error.message : String(error)
+          }`
         );
       }
     }
@@ -235,25 +245,24 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
   const finalResponse = await generateText({
     model: openai(llm.model) as any,
     maxRetries: llm.maxRetries ?? 3,
-    prompt: `${LOOP_PROMPT}\n\n# DATABASE CONTEXT\n\nSchema:\n${stringifySchema(
+    prompt: `${loopPrompt(engine.language)}\n\n# DATABASE CONTEXT\n\nSchema:\n${stringifySchema(
       schema
     )}\n\nUser Question: ${query}\n\n# ITERATION HISTORY\n\n${transcript.join(
       '\n\n'
-    )}\n\n# FINAL ATTEMPT\n\nThe loop reached its step limit without a final SQL query. Use the complete history above and respond with exactly one [SQL] action containing the final SQL query.`,
+    )}\n\n# FINAL ATTEMPT\n\nThe loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${engine.language.name} statement.`,
   });
   llm.onQueryUsage?.(finalResponse.usage);
 
-  const proposals = sqlBlocks(finalResponse.text.trim());
+  const proposals = codeBlocks(finalResponse.text.trim(), engine.language.fence);
   if (!finalResponse.text.trim().startsWith('[SQL]') || proposals.length !== 1) {
-    throw new Error('Loop final fallback response must contain exactly one [SQL] block');
+    throw new Error(
+      `Loop final fallback response must contain exactly one ${engine.language.fence} code block`
+    );
   }
 
   const proposal = proposals[0];
-  let statement: string | undefined;
+  const statement = proposal;
   try {
-    statement = await engine.getDSL(
-      `User question: ${query}\n\nAnswer query proposed by the planning agent after reviewing the complete loop history:\n${proposal}`
-    );
     const execution = await engine.execute(statement, config);
     return {
       query,
@@ -263,9 +272,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
     };
   } catch (error) {
     throw new Error(
-      `Loop final SQL attempt failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted SQL:\n${
-        statement ?? proposal
-      }`
+      `Loop final statement failed: ${
+        error instanceof Error ? error.message : String(error)
+      }\nLast attempted ${engine.language.name} statement:\n${statement}`
     );
   }
 };

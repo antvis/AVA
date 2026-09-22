@@ -24,6 +24,7 @@ export type {
   TableSchema,
   FieldMetadata,
   AnalysisEngine,
+  QueryLanguage,
   QueryDialect,
   AnalysisResponse,
   AnalysisStrategy,
