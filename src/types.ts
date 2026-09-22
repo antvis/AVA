@@ -385,10 +385,10 @@ export interface TableIndex {
 }
 
 /**
- * A database foreign-key relationship between tables exposed by a Schema.
+ * A database foreign-key relation between tables exposed by a Schema.
  * Supports composite keys, self-relations and multiple relations between tables.
  */
-export interface TableRelationship {
+export interface TableRelation {
   /** Foreign-key constraint name, when available. */
   name?: string;
   /** Currently only database foreign-key constraints are supported. */
@@ -421,8 +421,8 @@ export interface TableSchema {
 export interface Schema {
   /** All tables/views exposed by the data source */
   tables: TableSchema[];
-  /** Relationships between tables */
-  relationships?: TableRelationship[];
+  /** Relations between tables */
+  relations?: TableRelation[];
 }
 
 /**

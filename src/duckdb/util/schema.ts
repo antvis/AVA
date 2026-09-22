@@ -23,7 +23,7 @@ WHERE database_name = current_database()
   AND ${names === undefined ? 'TRUE' : `table_name IN (${names || 'NULL'})`}`.trim();
 }
 
-/** Map keys to indexes/relationships; preserve composite FK column pairs. */
+/** Map keys to indexes/relations; preserve composite FK column pairs. */
 function constraintsSQL(tableNames?: string[]): string {
   const names = tableNames?.map(sqlStringLiteral).join(', ');
   return `
@@ -66,7 +66,7 @@ WHERE database_name = current_database()
 
 /** Read the current namespace; tableNames limits scope and preserves order ([] skips querying). */
 export async function getDuckDBSchema(conn: DuckDBConnection, tableNames?: string[]): Promise<Schema> {
-  if (tableNames?.length === 0) return { tables: [], relationships: [] };
+  if (tableNames?.length === 0) return { tables: [], relations: [] };
 
   const sql = sqlUnionAll([columnsSQL(tableNames), constraintsSQL(tableNames), indexesSQL(tableNames)]);
 

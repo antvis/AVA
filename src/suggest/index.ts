@@ -39,7 +39,7 @@ Consider queries that:
 - Reveal important patterns or trends
 - Answer key business questions
 - Identify anomalies or outliers
-- Show relationships between variables
+- Show relations between variables
 - Provide actionable insights
 
 Return ONLY a valid JSON array with ${count} objects, each having "query", "score", and "reason" fields. The array should be sorted by score in descending order.
