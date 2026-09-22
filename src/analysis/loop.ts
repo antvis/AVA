@@ -153,6 +153,16 @@ Before sending any response, verify all of the following:
 5. The response contains no text before the action tag.`;
 }
 
+const transcriptPrompt = (transcript: string[]) => {
+  if (transcript.length === 0) return '';
+
+  return `
+    # ITERATION HISTORY
+
+    ${transcript.join('\n\n')}
+  `;
+};
+
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
@@ -166,7 +176,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
   let sql: string | undefined;
   let result: ExecutionResult | undefined;
   let lastConfirmation: string | undefined;
-  const maxSteps = config.strategy?.type === 'loop' ? config.strategy.maxSteps ?? DEFAULT_MAX_STEPS : DEFAULT_MAX_STEPS;
+  const maxSteps = (config.strategy as { maxSteps?: number })?.maxSteps ?? DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
     const prompt = `${loopPrompt(engine.language)}
@@ -178,7 +188,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
 
     User Question: ${query}
 
-    ${transcript.length ? `\n\n# ITERATION HISTORY\n\n${transcript.join('\n\n')}` : ''}`;
+    ${transcriptPrompt(transcript)}`;
 
     const response = await generateText({
       model: openai(llm.model) as any,
@@ -218,7 +228,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
       try {
         const execution = await engine.execute(statement, config);
         observations.push(
-          `Proposed statement (${engine.language.name}):\n${proposal}\nResult:\n${JSON.stringify(execution)}`
+          `Proposed statement (${engine.language.name}):
+          ${proposal}
+          Result:
+          ${JSON.stringify(execution)}`
         );
         if (action === 'SQL') {
           sql = statement;
@@ -227,9 +240,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
       } catch (error) {
         if (action === 'SQL') result = undefined;
         observations.push(
-          `Proposed statement (${engine.language.name}):\n${proposal}\nError:\n${
-            error instanceof Error ? error.message : String(error)
-          }`
+          `Proposed statement (${engine.language.name}):
+          ${proposal}
+          Error:
+          ${error instanceof Error ? error.message : String(error)}`
         );
       }
     }
@@ -252,11 +266,20 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
   const finalResponse = await generateText({
     model: openai(llm.model) as any,
     maxRetries: llm.maxRetries ?? 3,
-    prompt: `${loopPrompt(engine.language)}\n\n# DATABASE CONTEXT\n\nSchema:\n${stringifySchema(
-      schema
-    )}\n\nUser Question: ${query}\n\n# ITERATION HISTORY\n\n${transcript.join(
-      '\n\n'
-    )}\n\n# FINAL ATTEMPT\n\nThe loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${
+    prompt: `${loopPrompt(engine.language)}
+
+    # DATABASE CONTEXT
+
+    Schema:
+    ${stringifySchema(schema)}
+
+    User Question: ${query}
+
+    ${transcriptPrompt(transcript)}
+
+    # FINAL ATTEMPT
+
+    The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${
       engine.language.name
     } statement.`,
   });
