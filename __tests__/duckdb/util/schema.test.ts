@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { DuckDBInstance } from '@duckdb/node-api';
 
 import { getDuckDBSchema } from '../../../src/duckdb/util/schema';
+import { stringifySchema } from '../../../src/util/schema';
 import { sqlStringLiteral } from '../../../src/util/sql';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
@@ -52,5 +53,31 @@ describe('duckdb/util/schema', () => {
       ],
       relations: [],
     });
+  });
+
+  it('stringifies the sales CSV schema as a structural description', async () => {
+    const csvPath = path.join(__dirname, '../../datasets/sales.csv');
+    await conn.run(`CREATE TABLE sales AS SELECT * FROM read_csv_auto(${sqlStringLiteral(csvPath)})`);
+
+    const schema = await getDuckDBSchema(conn, ['sales']);
+
+    expect(stringifySchema(schema)).toBe(`Dataset Info: 1 table(s)
+Table "sales":
+- Columns: 12
+Fields:
+- "order_id" (VARCHAR)
+- "order_date" (DATE)
+- "region" (VARCHAR)
+- "category" (VARCHAR)
+- "product" (VARCHAR)
+- "channel" (VARCHAR)
+- "quantity" (BIGINT)
+- "unit_price" (DOUBLE)
+- "discount" (DOUBLE)
+- "sales" (DOUBLE)
+- "cost" (DOUBLE)
+- "profit" (DOUBLE)
+
+`);
   });
 });
