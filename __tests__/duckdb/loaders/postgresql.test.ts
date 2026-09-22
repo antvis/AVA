@@ -1,26 +1,26 @@
 /**
- * MySQL load/schema 测试，测试库定义位于 __tests__/datasets/mysql。
- * 默认 skip：仅在 AVA_MYSQL_TEST=1 时执行，测试不会自动启动数据库。
+ * PostgreSQL load/schema 测试，测试库定义位于 __tests__/datasets/postgresql。
+ * 默认 skip：仅在 AVA_POSTGRESQL_TEST=1 时执行，测试不会自动启动数据库。
  *
  * 1. 启动测试库并等待就绪：
  *    open -a OrbStack
  *    docker info
- *    docker compose -f __tests__/datasets/mysql/compose.yaml up -d --wait
+ *    docker compose -f __tests__/datasets/postgresql/compose.yaml up -d --wait
  * 2. 启用并运行 schema 对比测试：
- *    AVA_MYSQL_TEST=1 npx vitest run __tests__/duckdb/loaders/mysql.test.ts
+ *    AVA_POSTGRESQL_TEST=1 npx vitest run __tests__/duckdb/loaders/postgresql.test.ts
  * 3. 可选：暂停测试库（保留数据，下次 up 即可复用）：
- *    docker compose -f __tests__/datasets/mysql/compose.yaml stop
+ *    docker compose -f __tests__/datasets/postgresql/compose.yaml stop
  * 4. 仅需重建测试库时才删除数据卷（例如修改了 init.sql）：
- *    docker compose -f __tests__/datasets/mysql/compose.yaml down -v
+ *    docker compose -f __tests__/datasets/postgresql/compose.yaml down -v
  *
- * 默认连接 127.0.0.1:13306；修改端口时，Compose 和测试须设置相同的 AVA_MYSQL_TEST_PORT。
+ * 默认连接 127.0.0.1:15432；修改端口时，Compose 和测试须设置相同的 AVA_POSTGRESQL_TEST_PORT。
  */
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
 
-describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
+describe.skipIf(process.env.AVA_POSTGRESQL_TEST !== '1')('loaders/postgresql', () => {
   let engine: DuckDBEngine | null = null;
 
   afterEach(async () => {
@@ -28,14 +28,14 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
     engine = null;
   });
 
-  it('loads MySQL with a complete schema', async () => {
+  it('loads PostgreSQL with a complete schema', async () => {
     engine = new DuckDBEngine(getLLMConfig());
     const schema = await engine.load({
-      type: 'mysql',
+      type: 'postgresql',
       options: {
         host: '127.0.0.1',
-        port: Number(process.env.AVA_MYSQL_TEST_PORT ?? 13306),
-        database: 'ava_mysql_test',
+        port: Number(process.env.AVA_POSTGRESQL_TEST_PORT ?? 15432),
+        database: 'ava_postgresql_test',
         user: 'ava_test',
         password: 'ava_test_password',
       },
@@ -47,15 +47,15 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
           name: 'customers',
           columnCount: 6,
           fields: [
-            { name: 'tenant_id', type: 'int', nullable: false },
-            { name: 'customer_id', type: 'int', nullable: false },
-            { name: 'name', type: 'varchar(100)', nullable: false },
-            { name: 'email', type: 'varchar(150)', nullable: true },
+            { name: 'tenant_id', type: 'integer', nullable: false },
+            { name: 'customer_id', type: 'integer', nullable: false },
+            { name: 'name', type: 'character varying(100)', nullable: false },
+            { name: 'email', type: 'character varying(150)', nullable: true },
             { name: 'created_on', type: 'date', nullable: false },
-            { name: 'profile', type: 'json', nullable: true },
+            { name: 'profile', type: 'jsonb', nullable: true },
           ],
           indexes: [
-            { name: 'PRIMARY', columns: ['tenant_id', 'customer_id'], unique: true, primary: true },
+            { name: 'customers_pkey', columns: ['tenant_id', 'customer_id'], unique: true, primary: true },
             { name: 'uq_customers_email', columns: ['tenant_id', 'email'], unique: true, primary: false },
           ],
         },
@@ -63,7 +63,7 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
           name: 'order notes',
           columnCount: 2,
           fields: [
-            { name: 'order_id', type: 'bigint unsigned', nullable: true },
+            { name: 'order_id', type: 'bigint', nullable: true },
             { name: 'note"text', type: 'text', nullable: true },
           ],
           indexes: [],
@@ -72,18 +72,18 @@ describe.skipIf(process.env.AVA_MYSQL_TEST !== '1')('loaders/mysql', () => {
           name: 'orders',
           columnCount: 7,
           fields: [
-            { name: 'order_id', type: 'bigint unsigned', nullable: false },
-            { name: 'tenant_id', type: 'int', nullable: false },
-            { name: 'customer_id', type: 'int', nullable: false },
-            { name: 'amount', type: 'decimal(10,2)', nullable: false },
-            { name: 'status', type: "enum('pending','paid','cancelled')", nullable: false },
-            { name: 'placed_at', type: 'datetime', nullable: false },
+            { name: 'order_id', type: 'bigint', nullable: false },
+            { name: 'tenant_id', type: 'integer', nullable: false },
+            { name: 'customer_id', type: 'integer', nullable: false },
+            { name: 'amount', type: 'numeric(10,2)', nullable: false },
+            { name: 'status', type: 'order_status', nullable: false },
+            { name: 'placed_at', type: 'timestamp without time zone', nullable: false },
             { name: 'note', type: 'text', nullable: true },
           ],
           indexes: [
             { name: 'idx_orders_customer', columns: ['tenant_id', 'customer_id'], unique: false, primary: false },
             { name: 'idx_orders_status_time', columns: ['status', 'placed_at'], unique: false, primary: false },
-            { name: 'PRIMARY', columns: ['order_id'], unique: true, primary: true },
+            { name: 'orders_pkey', columns: ['order_id'], unique: true, primary: true },
           ],
         },
       ],
