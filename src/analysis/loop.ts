@@ -169,9 +169,16 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
   const maxSteps = config.strategy?.type === 'loop' ? config.strategy.maxSteps ?? DEFAULT_MAX_STEPS : DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
-    const prompt = `${loopPrompt(engine.language)}\n\n# DATABASE CONTEXT\n\nSchema:\n${stringifySchema(
-      schema
-    )}\n\nUser Question: ${query}${transcript.length ? `\n\n# ITERATION HISTORY\n\n${transcript.join('\n\n')}` : ''}`;
+    const prompt = `${loopPrompt(engine.language)}
+
+    # DATABASE CONTEXT
+
+    Schema:
+    ${stringifySchema(schema)}
+
+    User Question: ${query}
+
+    ${transcript.length ? `\n\n# ITERATION HISTORY\n\n${transcript.join('\n\n')}` : ''}`;
 
     const response = await generateText({
       model: openai(llm.model) as any,
@@ -199,9 +206,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
     const queries = codeBlocks(text, engine.language.fence);
     if (queries.length === 0 || (action === 'SQL' && queries.length !== 1)) {
       throw new Error(
-        `Loop ${action} response must contain ${
-          action === 'SQL' ? 'exactly one' : 'at least one'
-        } ${engine.language.fence} code block`
+        `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} ${
+          engine.language.fence
+        } code block`
       );
     }
 
@@ -249,15 +256,15 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
       schema
     )}\n\nUser Question: ${query}\n\n# ITERATION HISTORY\n\n${transcript.join(
       '\n\n'
-    )}\n\n# FINAL ATTEMPT\n\nThe loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${engine.language.name} statement.`,
+    )}\n\n# FINAL ATTEMPT\n\nThe loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${
+      engine.language.name
+    } statement.`,
   });
   llm.onQueryUsage?.(finalResponse.usage);
 
   const proposals = codeBlocks(finalResponse.text.trim(), engine.language.fence);
   if (!finalResponse.text.trim().startsWith('[SQL]') || proposals.length !== 1) {
-    throw new Error(
-      `Loop final fallback response must contain exactly one ${engine.language.fence} code block`
-    );
+    throw new Error(`Loop final fallback response must contain exactly one ${engine.language.fence} code block`);
   }
 
   const proposal = proposals[0];
@@ -272,9 +279,9 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
     };
   } catch (error) {
     throw new Error(
-      `Loop final statement failed: ${
-        error instanceof Error ? error.message : String(error)
-      }\nLast attempted ${engine.language.name} statement:\n${statement}`
+      `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
+        engine.language.name
+      } statement:\n${statement}`
     );
   }
 };
