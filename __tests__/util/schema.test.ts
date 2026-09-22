@@ -21,12 +21,17 @@ describe('extractDataSchema', () => {
     expect(table.name).toBe('data');
     expect(table.rowCount).toBe(2);
     expect(table.columnCount).toBe(3);
-    expect(table.fields.find((f) => f.name === 'company')?.type).toBe('string');
-    expect(table.fields.find((f) => f.name === 'revenue')?.type).toBe('number');
+    expect(table.fields).toEqual([
+      { name: 'company', type: 'string' },
+      { name: 'region', type: 'string' },
+      { name: 'revenue', type: 'number' },
+    ]);
   });
 
   it('should handle empty data', () => {
-    expect(extractDataSchema([])).toEqual({ tables: [{ name: 'data', columnCount: 0, fields: [], indexes: [] }] });
+    expect(extractDataSchema([])).toEqual({
+      tables: [{ name: 'data', rowCount: 0, columnCount: 0, fields: [], indexes: [] }],
+    });
   });
 });
 
@@ -38,6 +43,12 @@ describe('stringifySchema', () => {
     expect(formatted).toContain('Dataset Info:');
     expect(formatted).toContain('company');
     expect(formatted).toContain('revenue');
+  });
+
+  it('should omit unknown row counts while preserving known zero counts', () => {
+    const table = { name: 'data', columnCount: 0, fields: [], indexes: [] };
+    expect(stringifySchema({ tables: [table] })).not.toContain('Rows:');
+    expect(stringifySchema({ tables: [{ ...table, rowCount: 0 }] })).toContain('Rows: 0');
   });
 
   it('should format arbitrary SQL identifiers without changing their names', () => {

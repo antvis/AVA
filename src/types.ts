@@ -391,8 +391,8 @@ export interface TableIndex {
 export interface TableSchema {
   /** Table/view name as registered in the engine */
   name: string;
-  /** Number of rows */
-  rowCount: number;
+  /** Number of rows, when known without scanning the data source. */
+  rowCount?: number;
   /** Number of columns */
   columnCount: number;
   /** Field metadata */

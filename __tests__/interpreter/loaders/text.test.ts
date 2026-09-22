@@ -15,5 +15,5 @@ describe.skipIf(skipLLMTests)('interpreter/loaders/text', () => {
     );
     expect(Array.isArray(rows)).toBe(true);
     expect(rows.length).toBeGreaterThan(0);
-  });
+  }, 30000);
 });

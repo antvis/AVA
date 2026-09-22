@@ -28,7 +28,7 @@ describe('AVA', () => {
 
       expect(schema.tables).toHaveLength(1);
       const table = schema.tables[0];
-      expect(table.rowCount).toBe(12);
+      expect(table).not.toHaveProperty('rowCount');
       expect(table.columnCount).toBe(3);
       expect(table.fields.find((f) => f.name === 'revenue')?.type).toBe('BIGINT');
     });

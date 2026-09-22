@@ -20,6 +20,7 @@ import type {
   DataSourceConfig,
   DuckDBEngineOptions,
   Schema,
+  FieldMetadata,
   TableSchema,
   TableIndex,
   LLMConfig,

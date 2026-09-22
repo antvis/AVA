@@ -5,10 +5,12 @@
 import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { DuckDBConnection } from '@duckdb/node-api';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
 import { maxRows } from '../../src/util/result';
+import { DuckDBQueryDialect } from '../../src/query/duckdb';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 describe('DuckDBEngine', () => {
@@ -19,6 +21,7 @@ describe('DuckDBEngine', () => {
   });
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     await engine.dispose();
   });
 
@@ -60,14 +63,15 @@ describe('DuckDBEngine', () => {
     expect(aggregated.data[0].count).toBe(3);
   });
 
-  describe('schema profiling', () => {
+  describe('structural schema', () => {
     it('should load a Parquet schema containing numeric arrays', async () => {
       const schema = await engine.load({
         type: 'parquet',
         options: { path: path.join(__dirname, '../datasets/041_Airline.parquet') },
       });
 
-      expect(schema.tables[0]).toMatchObject({ name: 'data', rowCount: 5 });
+      expect(schema.tables[0]).toMatchObject({ name: 'data', columnCount: 15 });
+      expect(schema.tables[0]).not.toHaveProperty('rowCount');
       const field = schema.tables[0].fields.find(({ name }) => name === 'tweet_coord');
       expect(field).toMatchObject({
         name: 'tweet_coord',
@@ -77,7 +81,7 @@ describe('DuckDBEngine', () => {
       expect(field).not.toHaveProperty('max');
     });
 
-    it('should skip profiling when every column is an array', async () => {
+    it('should return structural metadata when every column is an array', async () => {
       const schema = await engine.load({ type: 'json', options: { data: [{ values: ['a', 'b'] }] } });
 
       expect(schema.tables[0].fields[0]).toMatchObject({ type: 'VARCHAR[]' });
