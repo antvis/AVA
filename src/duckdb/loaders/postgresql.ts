@@ -4,13 +4,89 @@
  * https://duckdb.org/docs/lts/core_extensions/postgres
  */
 
-import { escapeSql, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
-
+import { escapeSql, sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
+import { rowObjects2Schema } from '../../util/schema';
 import { createSshTunnel } from '../util/ssh';
 
-import type { PostgreSQLSourceOptions, LoadedSource } from '../../types';
+import type { DuckDBConnection, PostgreSQLSourceOptions, LoadedSource, Schema } from '../../types';
 
 const ATTACH_ALIAS = 'pg_source';
+
+/** Restrict all branches to readable relations in the requested schema. */
+function exposedSQL(schema: string): string {
+  return `
+SELECT t.oid, t.relname
+FROM pg_catalog.pg_class t
+JOIN pg_catalog.pg_namespace n ON n.oid = t.relnamespace
+WHERE n.nspname = ${sqlStringLiteral(schema)}
+  AND t.relkind IN ('r', 'p', 'v', 'm', 'f')
+  AND has_table_privilege(t.oid, 'SELECT')`.trim();
+}
+
+function tablesSQL(): string {
+  return `
+SELECT
+  'table' AS kind,
+  relname AS table_name,
+  '{}'::text AS metadata
+FROM exposed`.trim();
+}
+
+/** Preserve native types and column order; exclude dropped/system columns. */
+function columnsSQL(): string {
+  return `
+SELECT
+  'column' AS kind,
+  t.relname AS table_name,
+  json_build_object(
+    'name', a.attname,
+    'type', pg_catalog.format_type(a.atttypid, a.atttypmod),
+    'nullable', NOT a.attnotnull,
+    'position', a.attnum
+  )::text AS metadata
+FROM exposed t
+JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid
+WHERE a.attnum > 0 AND NOT a.attisdropped`.trim();
+}
+
+/** Preserve index DDL and primary/unique flags. */
+function indexesSQL(): string {
+  return `
+SELECT
+  'index' AS kind,
+  t.relname AS table_name,
+  json_build_object(
+    'name', ic.relname,
+    'unique', i.indisunique,
+    'primary', i.indisprimary,
+    'definition', pg_catalog.pg_get_indexdef(i.indexrelid)
+  )::text AS metadata
+FROM exposed t
+JOIN pg_catalog.pg_index i ON i.indrelid = t.oid
+JOIN pg_catalog.pg_class ic ON ic.oid = i.indexrelid`.trim();
+}
+
+/** Pair composite FK columns by position; both tables must be exposed. */
+function foreignKeysSQL(): string {
+  return `
+SELECT
+  'foreign-key-column' AS kind,
+  t.relname AS table_name,
+  json_build_object(
+    'name', c.conname,
+    'column', a.attname,
+    'referencedTable', rt.relname,
+    'referencedColumn', ra.attname,
+    'position', k.ordinality
+  )::text AS metadata
+FROM pg_catalog.pg_constraint c
+JOIN exposed t ON t.oid = c.conrelid
+JOIN exposed rt ON rt.oid = c.confrelid
+CROSS JOIN LATERAL unnest(c.conkey, c.confkey) WITH ORDINALITY AS k(local_attnum, remote_attnum, ordinality)
+JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid AND a.attnum = k.local_attnum
+JOIN pg_catalog.pg_attribute ra ON ra.attrelid = rt.oid AND ra.attnum = k.remote_attnum
+WHERE c.contype = 'f'`.trim();
+}
 
 /** Build the space-separated `key=value` connection string DuckDB's postgres extension expects */
 function buildConnectionString(options: PostgreSQLSourceOptions): string {
@@ -26,12 +102,8 @@ function buildConnectionString(options: PostgreSQLSourceOptions): string {
 
 export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<LoadedSource> {
   // Open the SSH tunnel first; ATTACH then targets the local forwarded port
-  const tunnel = options.ssh
-    ? await createSshTunnel(options.ssh, options.host, options.port ?? 5432)
-    : undefined;
-  const attachOptions = tunnel
-    ? { ...options, host: '127.0.0.1', port: tunnel.localPort, ssh: undefined }
-    : options;
+  const tunnel = options.ssh ? await createSshTunnel(options.ssh, options.host, options.port ?? 5432) : undefined;
+  const attachOptions = tunnel ? { ...options, host: '127.0.0.1', port: tunnel.localPort, ssh: undefined } : options;
   const schema = options.schema ?? 'public';
 
   return {
@@ -50,9 +122,7 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
              AND table_schema = ${sqlStringLiteral(schema)}
            ORDER BY table_name`
         );
-        const tableNames = tablesReader
-          .getRowObjectsJson()
-          .map((row: any) => String(row.table_name));
+        const tableNames = tablesReader.getRowObjectsJson().map((row: any) => String(row.table_name));
 
         for (const table of tableNames) {
           await conn.run(
@@ -66,6 +136,19 @@ export async function loadPostgreSQL(options: PostgreSQLSourceOptions): Promise<
         await tunnel?.close();
         throw error;
       }
+    },
+    getSchema: async (conn) => {
+      const sql = `WITH exposed AS (\n${exposedSQL(schema)}\n)\n${sqlUnionAll([
+        tablesSQL(),
+        columnsSQL(),
+        indexesSQL(),
+        foreignKeysSQL(),
+      ])}`;
+
+      const reader = await conn.runAndReadAll(
+        `SELECT * FROM postgres_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(sql)})`
+      );
+      return rowObjects2Schema(reader.getRowObjectsJson());
     },
     // Pure remote source — no local file access needed after ATTACH
     allowedDirectories: [],

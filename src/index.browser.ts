@@ -20,6 +20,7 @@ export type {
   Schema,
   TableSchema,
   TableIndex,
+  TableRelationship,
   FieldMetadata,
   AnalysisEngine,
   QueryDialect,

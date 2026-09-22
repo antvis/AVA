@@ -336,11 +336,10 @@ export type FileFormat = 'csv' | 'json' | 'parquet';
  * register one view per discovered table.
  */
 export interface LoadedSource {
-  /**
-   * Register the source's view(s) on the given connection and return the
-   * names of all registered views (the engine exposes each to the LLM).
-   */
+  /** Register the source's table(s)/view(s) and return their exposed names. */
   register: (conn: DuckDBConnection) => Promise<string[]>;
+  /** */
+  getSchema: (conn: DuckDBConnection) => Promise<Schema>;
   /**
    * Directories the engine whitelists for file access after registering
    * (the data file's directory for file sources; empty for in-memory/remote sources).
@@ -367,7 +366,7 @@ export interface FieldMetadata {
  *
  * DuckDB: duckdb_constraints() for PK/UNIQUE + duckdb_indexes() for secondary indexes.
  * MySQL: INFORMATION_SCHEMA.STATISTICS (one row per column, grouped by index name).
- * PostgreSQL / Supabase: pg_indexes (indexdef parsed for column names).
+ * PostgreSQL / Supabase: pg_index + pg_constraint (source catalog metadata).
  */
 export interface TableIndex {
   /** Index name (e.g. "users_pkey", "idx_orders_user_id") */
@@ -380,9 +379,24 @@ export interface TableIndex {
    * Whether this index backs a PRIMARY KEY constraint.
    * DuckDB: duckdb_constraints().constraint_type = 'PRIMARY KEY'.
    * MySQL: INDEX_NAME = 'PRIMARY'.
-   * PostgreSQL: indexdef contains "PRIMARY KEY".
+   * PostgreSQL: pg_index.indisprimary.
    */
   primary?: boolean;
+}
+
+/**
+ * A database foreign-key relationship between tables exposed by a Schema.
+ * Supports composite keys, self-relations and multiple relations between tables.
+ */
+export interface TableRelationship {
+  /** Foreign-key constraint name, when available. */
+  name?: string;
+  /** Currently only database foreign-key constraints are supported. */
+  kind: 'foreign-key';
+  /** Referencing side for a foreign key; table is the exact TableSchema.name. */
+  from: { table: string; columns: string[] };
+  /** Referenced side for a foreign key; columns pair with from.columns by position. */
+  to: { table: string; columns: string[] };
 }
 
 /**
@@ -402,13 +416,13 @@ export interface TableSchema {
 }
 
 /**
- * Dataset schema — metadata describing the loaded data source.
- * A source may expose multiple tables (e.g. a MySQL database or a multi-sheet
- * Excel workbook); each is registered as its own view so the LLM can JOIN them.
+ * The overall schema of the loaded data source.
  */
 export interface Schema {
   /** All tables/views exposed by the data source */
   tables: TableSchema[];
+  /** Relationships between tables */
+  relationships?: TableRelationship[];
 }
 
 /**

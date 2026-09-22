@@ -20,9 +20,6 @@ import type {
   DataSourceConfig,
   DuckDBEngineOptions,
   Schema,
-  FieldMetadata,
-  TableSchema,
-  TableIndex,
   LLMConfig,
   ExecutionOptions,
   ExecutionResult,
@@ -59,8 +56,7 @@ export class QueryTimeoutError extends Error {
 export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
-  /** Names of all views registered by the loaded source (one per table) */
-  private tableNames: string[] = [];
+  private schema: Schema | null = null;
   private cleanup: (() => Promise<void>) | null = null;
   private readonly queryDialect: DuckDBQueryDialect;
 
@@ -114,9 +110,10 @@ export class DuckDBEngine implements AnalysisEngine {
     try {
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
-      this.tableNames = await source.register(conn);
-      await this.restrictAccess(conn, source.allowedDirectories);
       this.cleanup = source.cleanup;
+      await source.register(conn);
+      this.schema = await source.getSchema(conn);
+      await this.restrictAccess(conn, source.allowedDirectories);
     } catch (error) {
       await this.cleanup?.();
       this.cleanup = null;
@@ -124,11 +121,13 @@ export class DuckDBEngine implements AnalysisEngine {
       throw error;
     }
 
-    return this.getSchema();
+    return this.schema!;
   }
 
   async getDSL(query: string): Promise<string> {
-    return this.queryDialect.getDSL(query, await this.getSchema());
+    if (!this.schema) throw new Error('No data loaded. Please call load() first.');
+
+    return this.queryDialect.getDSL(query, this.schema);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -175,121 +174,6 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   /**
-   * Read column metadata and indexes for all registered views in catalog
-   * queries: `duckdb_columns()` for columns; `duckdb_constraints()` and
-   * `duckdb_indexes()` for constraints and secondary indexes.
-   * File-based sources simply have no constraint/index rows.
-   */
-  private async getSchema(): Promise<Schema> {
-    const conn = await this.getConnection();
-    const nameList = this.tableNames.map(sqlStringLiteral).join(', ');
-    const tableSet = new Set(this.tableNames);
-
-    // One query for all columns across every registered table.
-    const colReader = await conn.runAndReadAll(
-      `SELECT table_name, column_name, data_type, is_nullable
-         FROM duckdb_columns()
-        WHERE table_name IN (${nameList})
-        ORDER BY table_name, column_index`
-    );
-    const columnsByTable = new Map<string, FieldMetadata[]>();
-    for (const row of colReader.getRowObjectsJson()) {
-      const tableName = String(row.table_name);
-      if (!tableSet.has(tableName)) continue;
-      (columnsByTable.get(tableName) ?? columnsByTable.set(tableName, []).get(tableName)!).push({
-        name: String(row.column_name),
-        type: String(row.data_type),
-        nullable: Boolean(row.is_nullable),
-      });
-    }
-
-    // One query for all indexes across every registered table.
-    const indexMap = await this.getAllIndexes(conn, tableSet, nameList);
-
-    const tables: TableSchema[] = this.tableNames.map((name) => {
-      const fields = columnsByTable.get(name) ?? [];
-      return { name, columnCount: fields.length, fields, indexes: indexMap.get(name) ?? [] };
-    });
-    return { tables };
-  }
-
-  /**
-   * Query indexes for all registered tables from DuckDB's catalog in two queries:
-   *   1. duckdb_constraints() — PRIMARY KEY and UNIQUE constraints (with column names)
-   *   2. duckdb_indexes()     — secondary indexes (column names parsed from the `sql` column)
-   * Returns an empty array per table for file-based sources (no indexes).
-   */
-  private async getAllIndexes(
-    conn: DuckDBConnection,
-    tableSet: Set<string>,
-    nameList: string
-  ): Promise<Map<string, TableIndex[]>> {
-    const result = new Map<string, TableIndex[]>();
-    for (const name of tableSet) result.set(name, []);
-
-    // 1. Constraints (PK / UNIQUE) — has constraint_column_names directly.
-    try {
-      const reader = await conn.runAndReadAll(
-        `SELECT table_name, constraint_name, constraint_type, constraint_column_names
-           FROM duckdb_constraints()
-          WHERE table_name IN (${nameList})
-            AND constraint_type IN ('PRIMARY KEY', 'UNIQUE')`
-      );
-      for (const row of reader.getRowObjectsJson()) {
-        const tableName = String(row.table_name);
-        if (!tableSet.has(tableName)) continue;
-        const type = String(row.constraint_type);
-        const columns = Array.isArray(row.constraint_column_names) ? row.constraint_column_names.map(String) : [];
-        result.get(tableName)!.push({
-          name: String(row.constraint_name),
-          columns,
-          unique: true,
-          primary: type === 'PRIMARY KEY',
-        });
-      }
-    } catch {
-      // duckdb_constraints() unavailable — skip.
-    }
-
-    // 2. Secondary indexes — parse column names from the `sql` (CREATE INDEX) column.
-    try {
-      const reader = await conn.runAndReadAll(
-        `SELECT table_name, index_name, is_unique, sql
-           FROM duckdb_indexes()
-          WHERE table_name IN (${nameList})`
-      );
-      for (const row of reader.getRowObjectsJson()) {
-        const tableName = String(row.table_name);
-        if (!tableSet.has(tableName)) continue;
-        const sqlDef = String(row.sql ?? '');
-        const columns = this.parseIndexColumnsFromDDL(sqlDef);
-        result.get(tableName)!.push({
-          name: String(row.index_name),
-          columns,
-          unique: Boolean(row.is_unique),
-        });
-      }
-    } catch {
-      // duckdb_indexes() unavailable — skip.
-    }
-
-    return result;
-  }
-
-  /**
-   * Extract column names from a CREATE INDEX statement like
-   * `CREATE INDEX idx_name ON table (col1, col2)`.
-   */
-  private parseIndexColumnsFromDDL(sql: string): string[] {
-    const match = sql.match(/\(([^)]+)\)/);
-    if (!match) return [];
-    return match[1]
-      .split(',')
-      .map((col) => col.trim())
-      .filter(Boolean);
-  }
-
-  /**
    * Close the database connection and instance
    */
   private close(): void {
@@ -301,6 +185,7 @@ export class DuckDBEngine implements AnalysisEngine {
     }
     this.connection = null;
     this.instance = null;
+    this.schema = null;
   }
 
   async dispose(): Promise<void> {

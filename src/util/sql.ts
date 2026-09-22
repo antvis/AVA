@@ -21,6 +21,11 @@ export function sqlStringLiteral(value: string): string {
   return `'${escapeSql(value)}'`;
 }
 
+/** Combine compatible queries with UNION ALL, preserving duplicate rows. */
+export function sqlUnionAll(queries: readonly string[]): string {
+  return queries.join('\nUNION ALL\n');
+}
+
 /** Quote a SQL identifier (database/schema/table name) */
 export function sqlIdentifier(name: string): string {
   return `"${name.replace(/"/g, '""')}"`;

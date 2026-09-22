@@ -9,6 +9,7 @@ import { dirname } from 'node:path';
 import AdmZip from 'adm-zip';
 
 import { downloadToTempFile, removeTempFile } from '../util/file';
+import { getDuckDBSchema } from '../util/schema';
 import { escapeSql, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
 import type { ExcelSourceOptions, LoadedSource } from '../../types';
@@ -56,6 +57,7 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
       }
       return sheetNames;
     },
+    getSchema: (conn) => getDuckDBSchema(conn, readSheetNames(filePath)),
     allowedDirectories: [dirname(filePath)],
     cleanup,
   };
