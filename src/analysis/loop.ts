@@ -1,3 +1,14 @@
+/**
+ * Evidence-driven SQL analysis loop:
+ *
+ * [EXPLORE] queries the database to verify unknown values, formats, and relationships.
+ * [REFINE] turns observations or errors into a corrected understanding and query plan.
+ * [SQL] produces one candidate answer query, which the runtime translates and executes.
+ * [CONFIRM] checks the executed result against the original question before returning it.
+ *
+ * Every action and runtime observation is fed into the next step; a step limit and one
+ * final SQL attempt keep the loop bounded.
+ */
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
