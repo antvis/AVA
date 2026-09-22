@@ -9,7 +9,7 @@ import { DuckDBInstance } from '@duckdb/node-api';
 
 import { getDuckDBSchema } from '../../src/duckdb/util/schema';
 import { extractDataSchema, stringifySchema } from '../../src/util/schema';
-import { sqlIdentifier, sqlStringLiteral } from '../../src/util/sql';
+import { sqlStringLiteral } from '../../src/util/sql';
 
 describe('extractDataSchema', () => {
   it('should extract schema from an object array', () => {
@@ -78,7 +78,7 @@ Fields:
 
   it('should format arbitrary SQL identifiers without changing their names', () => {
     const schema = extractDataSchema([{ 'replies<gx:number>': 1, '<name>': 'A', 'say"hello': true }]);
-    const formatted = stringifySchema(schema, sqlIdentifier);
+    const formatted = stringifySchema(schema);
 
     expect(formatted).toContain('"replies<gx:number>"');
     expect(formatted).toContain('"<name>"');
