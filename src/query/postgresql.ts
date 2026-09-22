@@ -3,7 +3,6 @@ import { createOpenAI } from '@ai-sdk/openai';
 import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 
 import { stringifySchema } from '../util/schema';
-import { sqlIdentifier } from '../util/sql';
 
 import type { LLMConfig, QueryDialect, Schema } from '../types';
 
@@ -33,7 +32,7 @@ export class PostgreSQLQueryDialect implements QueryDialect {
     const prompt = `You are a SQL expert. Given the following table schema and user query, generate a SQL query to answer the question.
 
 Table Schema:
-${stringifySchema(schema, sqlIdentifier)}
+${stringifySchema(schema)}
 
 User Query: ${query}
 

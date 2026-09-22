@@ -3,7 +3,9 @@
  * format schemas for LLM prompts. Database queries belong to the engines.
  */
 
-import type { FieldMetadata, Schema, TableIndex, TableRelationship, TableSchema } from '../types';
+import { sqlIdentifier } from './sql';
+
+import type { FieldMetadata, Schema, TableIndex, TableRelation, TableSchema } from '../types';
 
 /**
  * Infer field type from sample values
@@ -65,87 +67,80 @@ export function extractDataSchema(data: any[]): Schema {
   return { tables: [table] };
 }
 
-/**
- * Stringify a table's indexes for LLM context.
- */
-function stringifyIndexes(
-  indexes: TableIndex[],
-  formatIdentifier?: (name: string) => string
-): string {
-  if (indexes.length === 0) return '';
+function isValidRelation({ from, to, kind }: TableRelation, tables: TableSchema[]): boolean {
+  const validEndpoints = [from, to].every((endpoint) => {
+    const table = tables.find((table) => table.name === endpoint?.table);
+    const columns = endpoint?.columns;
 
-  let result = 'Indexes:\n';
-  for (const index of indexes) {
-    const tag = index.primary ? 'PRIMARY KEY' : index.unique ? 'UNIQUE' : '';
-    const prefix = tag ? `${tag} ` : '';
-    const columns = index.columns.map((col) => formatIdentifier?.(col) ?? col).join(', ');
-    const name = formatIdentifier?.(index.name) ?? index.name;
-    result += `  - ${prefix}${name} (${columns})\n`;
-  }
-  return result;
+    return (
+      !!table &&
+      Array.isArray(columns) &&
+      columns.length > 0 &&
+      new Set(columns).size === columns.length &&
+      columns.every((column) => table.fields.some((field) => field.name === column))
+    );
+  });
+
+  return validEndpoints && kind === 'foreign-key' && from.columns.length === to.columns.length;
 }
 
-/**
- * Stringify a Schema as a multi-line description for LLM context.
- * Each table is described with its name and fields so the LLM can reference
- * and JOIN them. Include known row counts, nullability and indexes without
- * computing data statistics.
- */
-export function stringifySchema(
-  schema: Schema,
-  formatIdentifier?: (name: string) => string
-): string {
-  let result = `Dataset Info: ${schema.tables.length} table(s)\n`;
+/** Format table fields and indexes without computing statistics. */
+function stringifyTables(tables: TableSchema[]): string {
+  return tables
+    .map((table) => {
+      const fields = table.fields
+        .map(
+          (field) => `- ${sqlIdentifier(field.name)} (${field.type})${field.nullable === false ? ' NOT NULL' : ''}\n`
+        )
+        .join('');
+      const indexes = table.indexes
+        .map((index) => {
+          const prefix = index.primary ? 'PRIMARY KEY ' : index.unique ? 'UNIQUE ' : '';
+          return `  - ${prefix}${sqlIdentifier(index.name)} (${index.columns.map(sqlIdentifier).join(', ')})\n`;
+        })
+        .join('');
 
-  for (const table of schema.tables) {
-    result += `\nTable ${formatIdentifier ? formatIdentifier(table.name) : `"${table.name}"`}:\n`;
-    if (table.rowCount !== undefined) {
-      result += `- Rows: ${table.rowCount}\n`;
-    }
-    result += `- Columns: ${table.columnCount}\n`;
-    result += 'Fields:\n';
+      return `Table ${sqlIdentifier(table.name)}:
+${table.rowCount !== undefined ? `- Rows: ${table.rowCount}\n` : ''}- Columns: ${table.columnCount}
+Fields:
+${fields}${indexes ? `Indexes:\n${indexes}` : ''}`;
+    })
+    .join('');
+}
 
-    for (const field of table.fields) {
-      const nullable = field.nullable === false ? ' NOT NULL' : '';
-      result += `- ${formatIdentifier?.(field.name) ?? field.name} (${field.type})${nullable}\n`;
-    }
+/** Format declared relations and their usage notes. */
+function stringifyRelations(relations: TableRelation[], tables: TableSchema[]): string {
+  if (!relations.length) return '';
 
-    if (table.indexes.length > 0) {
-      result += stringifyIndexes(table.indexes, formatIdentifier);
-    }
-  }
+  const validRelations = relations.filter((relation) => isValidRelation(relation, tables));
+  if (validRelations.length === 0) return '';
 
-  if (schema.relationships?.length) {
-    const identifier = formatIdentifier ?? ((name: string) => name);
-    result += '\nRelationships (declared; pair columns by position):\n';
-    for (const relationship of schema.relationships) {
-      const source = schema.tables.find((table) => table.name === relationship.from?.table);
-      const target = schema.tables.find((table) => table.name === relationship.to?.table);
-      const from = relationship.from?.columns;
-      const to = relationship.to?.columns;
-      if (
-        !source ||
-        !target ||
-        !Array.isArray(from) ||
-        !Array.isArray(to) ||
-        !from.length ||
-        from.length !== to.length ||
-        relationship.kind !== 'foreign-key' ||
-        new Set(from).size !== from.length ||
-        new Set(to).size !== to.length ||
-        from.some((column) => !source.fields.some((field) => field.name === column)) ||
-        to.some((column) => !target.fields.some((field) => field.name === column))
-      ) {
-        throw new Error(`Invalid relationship ${relationship.name ?? '(unnamed)'}`);
-      }
-      const label = relationship.name ? `${identifier(relationship.name)}: ` : '';
-      result += `  - [${relationship.kind}] ${label}${identifier(source.name)} (${from
-        .map(identifier)
-        .join(', ')}) REFERENCES ${identifier(target.name)} (${to.map(identifier).join(', ')})\n`;
-    }
-  }
+  const relationText = validRelations
+    .map((relation) => {
+      const label = relation.name ? `${sqlIdentifier(relation.name)}: ` : '';
+      const endpoints = [relation.from, relation.to].map(
+        ({ table, columns }) => `${sqlIdentifier(table)} (${columns.map(sqlIdentifier).join(', ')})`
+      );
+      return `  - [${relation.kind}] ${label}${endpoints.join(' REFERENCES ')}\n`;
+    })
+    .join('');
 
-  return result;
+  return `Relations (declared; pair columns by position):
+${relationText}
+Notes:
+- For joins, prefer the declared relations and match ALL paired columns of composite relations.
+- These relations describe database foreign-key constraints, which do not imply one-to-one cardinality; avoid double-counting when aggregating across joins.
+- Choose the JOIN type according to the question and nullability.
+- Missing declarations mean relations are unknown, not that same-named columns are related.
+- Only reference tables exposed in this schema.
+`;
+}
+
+/** Combine table and relation descriptions for LLM context. */
+export function stringifySchema({ tables, relations = [] }: Schema): string {
+  return `Dataset Info: ${tables.length} table(s)
+${stringifyTables(tables)}
+${stringifyRelations(relations, tables)}`;
 }
 
 /** Parse plain column indexes only; never misrepresent expressions as column identifiers. */
@@ -153,10 +148,7 @@ function indexColumns(definition: string): string[] | undefined {
   // Capture the index key list after ON table [USING method], not parentheses in index/table names.
   const identifier = '(?:"(?:[^"]|"")*"|[^\\s"().]+)';
   const match = definition.match(
-    new RegExp(
-      `\\bON\\s+(?:ONLY\\s+)?${identifier}(?:\\.${identifier})*(?:\\s+USING\\s+\\w+)?\\s*\\((.*)`,
-      'i'
-    )
+    new RegExp(`\\bON\\s+(?:ONLY\\s+)?${identifier}(?:\\.${identifier})*(?:\\s+USING\\s+\\w+)?\\s*\\((.*)`, 'i')
   );
   if (!match) return undefined;
   const columns: string[] = [];
@@ -167,9 +159,7 @@ function indexColumns(definition: string): string[] | undefined {
       /^\s*("(?:[^"]|"")*"|[\w$]+)(?:\s+(?:ASC|DESC))?(?:\s+NULLS\s+(?:FIRST|LAST))?\s*([,)])/i
     );
     if (!column) return undefined;
-    columns.push(
-      column[1].startsWith('"') ? column[1].slice(1, -1).replace(/""/g, '"') : column[1]
-    );
+    columns.push(column[1].startsWith('"') ? column[1].slice(1, -1).replace(/""/g, '"') : column[1]);
     if (column[2] === ')') return columns;
     rest = rest.slice(column[0].length);
   }
@@ -179,20 +169,19 @@ function indexColumns(definition: string): string[] | undefined {
 type Metadata = Record<string, any>;
 const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
 
-/** Assemble in one place; only publish relationships between tables actually exposed to queries. */
+/** Assemble in one place; only publish relations between tables actually exposed to queries. */
 export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
   const names = [...new Set(rows.map((row) => String(row.table_name)))].sort();
   const tables = new Map<string, TableSchema>(
     names.map((name) => [name, { name, columnCount: 0, fields: [], indexes: [] }])
   );
-  const relationships: TableRelationship[] = [];
+  const relations: TableRelation[] = [];
   const columns = new Map<string, Metadata[]>();
   const parts = new Map<string, { table: TableSchema; kind: string; rows: Metadata[] }>();
   for (const row of rows) {
     const table = tables.get(String(row.table_name));
     if (!table) continue;
-    const meta: Metadata =
-      typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
+    const meta: Metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
     if (row.kind === 'column') {
       const fields = columns.get(table.name) ?? [];
       fields.push(meta);
@@ -208,7 +197,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
         primary: bool(meta.primary),
       });
     } else if (row.kind === 'foreign-key') {
-      relationships.push({
+      relations.push({
         name: meta.name,
         kind: 'foreign-key',
         from: { table: table.name, columns: meta.columns },
@@ -234,7 +223,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       };
       table.indexes.push(index);
     } else {
-      relationships.push({
+      relations.push({
         name: first.name,
         kind: 'foreign-key',
         from: { table: table.name, columns: entries.map((e) => e.column) },
@@ -249,12 +238,12 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
     table.columnCount = table.fields.length;
     table.indexes.sort((a, b) => a.name.localeCompare(b.name));
   }
-  const exposedRelationships = relationships
-    .filter((relationship) => {
-      const source = tables.get(relationship.from.table);
-      const target = tables.get(relationship.to.table);
-      const from = relationship.from.columns;
-      const to = relationship.to.columns;
+  const exposedRelations = relations
+    .filter((relation) => {
+      const source = tables.get(relation.from.table);
+      const target = tables.get(relation.to.table);
+      const from = relation.from.columns;
+      const to = relation.to.columns;
       return (
         source &&
         target &&
@@ -266,9 +255,6 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
         to.every((name) => target.fields.some((field) => field.name === name))
       );
     })
-    .sort(
-      (a, b) =>
-        a.from.table.localeCompare(b.from.table) || (a.name ?? '').localeCompare(b.name ?? '')
-    );
-  return { tables: [...tables.values()], relationships: exposedRelationships };
+    .sort((a, b) => a.from.table.localeCompare(b.from.table) || (a.name ?? '').localeCompare(b.name ?? ''));
+  return { tables: [...tables.values()], relations: exposedRelations };
 }
