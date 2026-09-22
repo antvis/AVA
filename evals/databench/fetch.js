@@ -10,6 +10,7 @@ const { DuckDBInstance } = require('@duckdb/node-api');
 
 const REPO = 'cardiffnlp/databench';
 const OUTPUT = join(__dirname, 'datasets');
+const EXCLUDED_DATASETS = new Set(['080_Books']);
 const VARIANTS = [
   { name: 'databench-lite', directory: 'lite', dataFile: 'sample.parquet', answerField: 'sample_answer' },
   { name: 'databench', directory: 'full', dataFile: 'all.parquet', answerField: 'answer' },
@@ -44,8 +45,10 @@ async function main() {
   const paths = JSON.parse(stdout)
     .map((entry) => entry.path)
     .filter((path) => /\/(?:all|sample|qa)\.parquet$/.test(path))
+    .filter((path) => !EXCLUDED_DATASETS.has(basename(dirname(path))))
     .sort();
-  if (paths.length !== 240) throw new Error(`Expected 240 DataBench files, found ${paths.length}.`);
+  if (paths.length !== 237) throw new Error(`Expected 237 DataBench files, found ${paths.length}.`);
+  const datasetCount = paths.filter((path) => path.endsWith('/qa.parquet')).length;
 
   const temporary = mkdtempSync(join(tmpdir(), 'databench-'));
   const targets = paths.map((path) => ({ path, target: join(temporary, path.replaceAll('/', '__')) }));
@@ -107,7 +110,7 @@ async function main() {
           .map((row) => row.map(csvCell).join(','))
           .join('\n')}\n`,
       );
-      process.stdout.write(`Wrote ${rows.length} questions and 80 Parquet files to ${variant.name}\n`);
+      process.stdout.write(`Wrote ${rows.length} questions and ${datasetCount} Parquet files to ${variant.name}\n`);
     }
   } finally {
     rmSync(temporary, { recursive: true, force: true });

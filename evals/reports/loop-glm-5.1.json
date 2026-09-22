@@ -1,66 +1,51 @@
 {
-  "generatedAt": "2026-09-22T02:43:38Z",
+  "generatedAt": "2026-09-22T03:17:04Z",
   "environment": {
-    "nodeVersion": "v22.22.0",
-    "pnpmVersion": "10.30.3",
+    "nodeVersion": "v20.19.5",
+    "pnpmVersion": "10.20.0",
     "operatingSystem": "Darwin 25.6.0",
     "architecture": "arm64",
-    "gitRevision": "8e21bccbcce6d1c446578b1dafdf1fd6cf58878f"
+    "gitRevision": "350be58a292d4d43a1e5df8a4a279deaf114c782"
   },
   "evaluation": {
-    "benchmark": "DataBench full",
+    "benchmark": "DataBench full (080_Books excluded)",
     "dataset": "databench",
     "strategy": "loop",
     "model": "GLM-5.1"
   },
   "summary": {
-    "samples": 1830,
-    "correct": 1484,
-    "wrong": 279,
-    "missing": 67,
-    "accuracy": 0.8109,
+    "samples": 1789,
+    "correct": 1504,
+    "wrong": 283,
+    "missing": 2,
+    "accuracy": 0.8407,
     "timingSeconds": {
-      "average": 85.2,
-      "minimum": 0.21,
+      "average": 82.52,
+      "minimum": 5.69,
       "maximum": 6514.57,
-      "median": 17.24
+      "median": 17.64
     },
     "tokens": {
-      "prompt": 8771068,
-      "completion": 344128,
-      "total": 9115196,
-      "average": 4981
+      "prompt": 8763642,
+      "completion": 340348,
+      "total": 9103990,
+      "average": 5089
     }
   },
   "errors": {
     "wrongOrMissing": {
-      "count": 346
+      "count": 285
     },
     "categories": [
       {
         "type": "wrongAnswer",
         "category": "Prediction did not match the gold answer",
-        "count": 279
-      },
-      {
-        "type": "missing",
-        "category": "Loop response did not begin with a supported action",
-        "count": 47
+        "count": 283
       },
       {
         "type": "missing",
         "category": "Loop SQL response did not contain exactly one SQL block",
-        "count": 17
-      },
-      {
-        "type": "missing",
-        "category": "Model API connection closed",
         "count": 2
-      },
-      {
-        "type": "missing",
-        "category": "DuckDB query timed out",
-        "count": 1
       }
     ]
   }
