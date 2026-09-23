@@ -8,6 +8,13 @@ import type { LoadedSource, SQLiteSourceOptions } from '../../types';
 
 const ATTACH_ALIAS = 'sqlite_source';
 
+type SQLiteColumn = { name: string; type: string; generated: boolean };
+
+/** Wrap native SQLite SQL as a DuckDB table function. */
+function sqliteQuerySQL(sql: string): string {
+  return `sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(sql)})`;
+}
+
 /** Preserve native types, column order and SQLite's primary-key nullability. */
 function columnsSQL(): string {
   return `
@@ -93,10 +100,10 @@ function duckDBType(type: string): string {
 }
 
 /** sqlite_query returns strings; restore types and transport blobs losslessly as hex. */
-function generatedTableSQL(table: string, fields: Record<string, unknown>[]): string {
-  const columns = fields.map((row) => ({
-    name: sqlIdentifier(String(row.name)),
-    type: duckDBType(String(row.type)),
+function generatedTableSQL(table: string, fields: SQLiteColumn[]): string {
+  const columns = fields.map(({ name, type }) => ({
+    name: sqlIdentifier(name),
+    type: duckDBType(type),
   }));
   const sourceColumns = columns.map(({ name, type }) =>
     type === 'BLOB' ? `CASE WHEN ${name} IS NULL THEN NULL ELSE hex(${name}) END AS ${name}` : name
@@ -105,7 +112,7 @@ function generatedTableSQL(table: string, fields: Record<string, unknown>[]): st
     type === 'BLOB' ? `unhex(${name}) AS ${name}` : `CAST(${name} AS ${type}) AS ${name}`
   );
   const query = `SELECT ${sourceColumns.join(', ')} FROM ${sqlIdentifier(table)}`;
-  return `SELECT ${typedColumns.join(', ')} FROM sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(query)})`;
+  return `SELECT ${typedColumns.join(', ')} FROM ${sqliteQuerySQL(query)}`;
 }
 
 export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSource> {
@@ -117,33 +124,27 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
       await conn.run('INSTALL sqlite');
       await conn.run('LOAD sqlite');
       await conn.run(`ATTACH ${sqlStringLiteral(filePath)} AS ${ATTACH_ALIAS} (TYPE sqlite, READ_ONLY)`);
-      const reader = await conn.runAndReadAll(
-        `SELECT table_name FROM information_schema.tables
-         WHERE table_catalog = ${sqlStringLiteral(ATTACH_ALIAS)} AND table_schema = 'main'
-           AND lower(substr(table_name, 1, 7)) <> 'sqlite_'
-         ORDER BY table_name`
-      );
-      tableNames = reader.getRowObjectsJson().map((row) => String(row.table_name));
       const columnsReader = await conn.runAndReadAll(
-        `SELECT * FROM sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(
+        `SELECT * FROM ${sqliteQuerySQL(
           `SELECT t.name AS table_name, c.name, c.type, c.hidden
-           FROM sqlite_schema t, pragma_table_xinfo(t.name) c
-           WHERE t.type = 'table' AND c.hidden != 1
-             AND t.name IN (${tableNames.map(sqlStringLiteral).join(', ') || 'NULL'})
+           FROM sqlite_schema t LEFT JOIN pragma_table_xinfo(t.name) c ON c.hidden != 1
+           WHERE t.type IN ('table', 'view') AND lower(substr(t.name, 1, 7)) <> 'sqlite_'
            ORDER BY t.name, c.cid`
-        )})`
+        )}`
       );
-      const columnsByTable = new Map<string, Record<string, unknown>[]>();
+      const columnsByTable = new Map<string, SQLiteColumn[]>();
       for (const row of columnsReader.getRowObjectsJson()) {
         const table = String(row.table_name);
         const columns = columnsByTable.get(table) ?? [];
-        columns.push(row);
+        if (row.name !== null) {
+          columns.push({ name: String(row.name), type: String(row.type), generated: Number(row.hidden) > 1 });
+        }
         columnsByTable.set(table, columns);
       }
-      for (const table of tableNames) {
-        const columns = columnsByTable.get(table) ?? [];
+      tableNames = [...columnsByTable.keys()];
+      for (const [table, columns] of columnsByTable) {
         // The attached catalog omits generated columns; native queries expose them.
-        const query = columns.some((column) => Number(column.hidden) > 1)
+        const query = columns.some((column) => column.generated)
           ? generatedTableSQL(table, columns)
           : `SELECT * FROM ${ATTACH_ALIAS}.main.${sqlIdentifier(table)}`;
         await conn.run(`CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS ${query}`);
@@ -151,9 +152,7 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
       return tableNames;
     },
     getSchema: async (conn) => {
-      const reader = await conn.runAndReadAll(
-        `SELECT * FROM sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(schemaSQL(tableNames))})`
-      );
+      const reader = await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(schemaSQL(tableNames))}`);
       return rowObjects2Schema(reader.getRowObjectsJson());
     },
     allowedDirectories: [dirname(filePath)],
