@@ -13,7 +13,7 @@ import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
 import { parseProfileOptions } from '../util/profile';
 
-import { DEFAULT_METRICS, BUILTIN_METRICS, profileTables } from './profile';
+import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
 
 import type { DuckDBConnection } from '@duckdb/node-api';

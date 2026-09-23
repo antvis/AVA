@@ -10,6 +10,7 @@ import type {
   MetricId,
   Profile,
   TableProfile,
+  TableSchema,
 } from '../types';
 import { validateMetricConfig } from '../util/profile';
 
@@ -152,6 +153,18 @@ function postProcessMetrics(
   }
 }
 
+function initTableProfile(table: TableSchema): TableProfile {
+  return {
+    ...table,
+    metrics: {},
+    fields: table.fields.map((field) => ({
+      ...field,
+      logicalType: logicalType(field.type),
+      metrics: {},
+    })),
+  };
+}
+
 /**
  * Build profiles for all tables.
  */
@@ -165,15 +178,7 @@ export async function profileTables(
 
   for (const table of schema.tables) {
     const { name } = table;
-    const profile: TableProfile = {
-      ...table,
-      metrics: {},
-      fields: table.fields.map((field) => ({
-        ...field,
-        logicalType: logicalType(field.type),
-        metrics: {},
-      })),
-    };
+    const profile = initTableProfile(table);
     profiles.push(profile);
 
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];

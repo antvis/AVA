@@ -11,7 +11,9 @@ export function validateMetricConfig(config: Exclude<MetricConfig, string>, defi
 
   // Check if option names are valid for the metric
   const options = definition.options ?? {};
-  const unknown = Object.keys(config).find((name) => !Object.prototype.hasOwnProperty.call(options, name));
+  const unknown = Object.keys(config).find(
+    (name) => name !== 'id' && !Object.prototype.hasOwnProperty.call(options, name)
+  );
   if (unknown) throw new Error(`Unknown option for ${definition.id}: ${unknown}`);
 
   // Check option value types and constraints after applying defaults
