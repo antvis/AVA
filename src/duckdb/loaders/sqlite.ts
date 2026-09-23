@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 
-import type { LoadedSource, SQLiteSourceOptions } from '../../types';
+import type { DuckDBConnection, LoadedSource, SQLiteSourceOptions } from '../../types';
 
 const ATTACH_ALIAS = 'sqlite_source';
 
@@ -34,12 +34,12 @@ FROM indexes i, pragma_index_xinfo(i.name) x
 WHERE x."key" = 1 AND i.partial = 0`.trim();
 }
 
-/** Rowid primary keys have no index entry; label them PRIMARY. */
+/** SQLite reserves sqlite_* names, so this label cannot collide with a user index. */
 function primaryKeysSQL(): string {
   return `
 SELECT 'index-column' AS kind, c.table_name,
   json_object(
-    'name', 'PRIMARY', 'column', c.name, 'position', c.pk,
+    'name', 'sqlite_primary_key_' || c.table_name, 'column', c.name, 'position', c.pk,
     'unique', 1, 'primary', 1
   )
 FROM columns c
@@ -81,6 +81,38 @@ WITH exposed AS (
 ${sqlUnionAll([columnsSQL(), indexesSQL(), primaryKeysSQL(), foreignKeysSQL()])}`;
 }
 
+/** Match the SQLite extension's declared-type mapping. */
+function duckDBType(type: string): string {
+  if (/INT/i.test(type)) return 'BIGINT';
+  if (/CHAR|CLOB|TEXT/i.test(type)) return 'VARCHAR';
+  if (!type || /BLOB/i.test(type)) return 'BLOB';
+  if (/REAL|FLOA|DOUB|DEC|NUM/i.test(type)) return 'DOUBLE';
+  if (/^DATE$/i.test(type)) return 'DATE';
+  if (/TIME/i.test(type)) return 'TIMESTAMP';
+  return 'VARCHAR';
+}
+
+/** sqlite_query returns strings; restore types and transport blobs losslessly as hex. */
+async function generatedTableSQL(conn: DuckDBConnection, table: string): Promise<string> {
+  const reader = await conn.runAndReadAll(
+    `SELECT * FROM sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(
+      `SELECT name, type FROM pragma_table_xinfo(${sqlStringLiteral(table)}) WHERE hidden != 1 ORDER BY cid`
+    )})`
+  );
+  const columns = reader.getRowObjectsJson().map((row) => ({
+    name: sqlIdentifier(String(row.name)),
+    type: duckDBType(String(row.type)),
+  }));
+  const sourceColumns = columns.map(({ name, type }) =>
+    type === 'BLOB' ? `CASE WHEN ${name} IS NULL THEN NULL ELSE hex(${name}) END AS ${name}` : name
+  );
+  const typedColumns = columns.map(({ name, type }) =>
+    type === 'BLOB' ? `unhex(${name}) AS ${name}` : `CAST(${name} AS ${type}) AS ${name}`
+  );
+  const query = `SELECT ${sourceColumns.join(', ')} FROM ${sqlIdentifier(table)}`;
+  return `SELECT ${typedColumns.join(', ')} FROM sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(query)})`;
+}
+
 export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSource> {
   const filePath = resolve(options.path);
   let tableNames: string[] = [];
@@ -105,10 +137,10 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
       const generatedTables = new Set(generatedReader.getRowObjectsJson().map((row) => String(row.name)));
       for (const table of tableNames) {
         // The attached catalog omits generated columns; native queries expose them.
-        const source = generatedTables.has(table)
-          ? `sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(`SELECT * FROM ${sqlIdentifier(table)}`)})`
-          : `${ATTACH_ALIAS}.main.${sqlIdentifier(table)}`;
-        await conn.run(`CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS SELECT * FROM ${source}`);
+        const query = generatedTables.has(table)
+          ? await generatedTableSQL(conn, table)
+          : `SELECT * FROM ${ATTACH_ALIAS}.main.${sqlIdentifier(table)}`;
+        await conn.run(`CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS ${query}`);
       }
       return tableNames;
     },

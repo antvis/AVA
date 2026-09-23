@@ -203,7 +203,7 @@ Core APIs in AVA:
   - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
-  - SQLite: `sqlite` (`{ path }`, local file) — all tables are exposed read-only, with DuckDB-mapped column types; source indexes and foreign keys are not included in the schema. Uses the [official SQLite extension](https://duckdb.org/docs/current/core_extensions/sqlite), installed on first use.
+  - SQLite: `sqlite` (`{ path }`, local file) — all tables are exposed read-only, with native SQLite column types, nullability, primary keys, ordinary/unique indexes, and foreign keys in the schema. Generated columns are queryable. Defaults, CHECK constraints, triggers, and partial/expression indexes are not represented. Uses the [official SQLite extension](https://duckdb.org/docs/current/core_extensions/sqlite), installed on first use.
 - `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query, config?)`: run data analysis using the `direct` (default) or `loop` strategy.

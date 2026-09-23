@@ -32,8 +32,9 @@ describe('loaders/sqlite', () => {
             { name: 'referrer_id', type: 'INTEGER', nullable: true },
           ],
           indexes: [
-            { name: 'PRIMARY', columns: ['id'], unique: true, primary: true },
+            { name: 'PRIMARY', columns: ['name'], unique: false, primary: false },
             { name: 'sqlite_autoindex_customers_1', columns: ['email'], unique: true, primary: false },
+            { name: 'sqlite_primary_key_customers', columns: ['id'], unique: true, primary: true },
           ],
         },
         {
@@ -51,11 +52,12 @@ describe('loaders/sqlite', () => {
         },
         {
           name: 'products',
-          columnCount: 3,
+          columnCount: 4,
           fields: [
             { name: 'category', type: 'TEXT', nullable: false },
             { name: 'product', type: 'TEXT', nullable: false },
             { name: 'label', type: 'TEXT', nullable: true },
+            { name: 'image', type: 'BLOB', nullable: true },
           ],
           indexes: [
             { name: 'sqlite_autoindex_products_1', columns: ['product', 'category'], unique: true, primary: true },
@@ -63,7 +65,7 @@ describe('loaders/sqlite', () => {
         },
         {
           name: 'sales',
-          columnCount: 13,
+          columnCount: 14,
           fields: [
             { name: 'order_id', type: 'TEXT', nullable: false },
             { name: 'order_date', type: 'TEXT', nullable: false },
@@ -78,6 +80,7 @@ describe('loaders/sqlite', () => {
             { name: 'cost', type: 'REAL', nullable: true },
             { name: 'profit', type: 'REAL', nullable: true },
             { name: 'customer_id', type: 'INTEGER', nullable: true },
+            { name: 'calculated_profit', type: 'REAL', nullable: true },
           ],
           indexes: [
             { name: 'idx_sales_region_date', columns: ['region', 'order_date'], unique: false, primary: false },
@@ -129,6 +132,7 @@ describe('loaders/sqlite', () => {
       cost: 165,
       profit: 59.1,
       customer_id: 1,
+      calculated_profit: expect.closeTo(59.1),
     });
     expect(result.data[239]).toMatchObject({ order_id: 'ORD-0240', order_date: '2025-12-31' });
     const joined = await ava.engine!.execute(`
@@ -143,5 +147,24 @@ describe('loaders/sqlite', () => {
       { order_id: 'ORD-0002', name: 'Bob', label: 'Furniture: Office Chair' },
     ]);
     expect((await ava.engine!.execute('SELECT * FROM "order notes"')).data).toEqual([]);
+    const totals = await ava.engine!.execute(`
+      SELECT SUM(sales) AS revenue, SUM(calculated_profit) AS profit, SUM(customer_id) AS customers
+      FROM sales WHERE order_id IN ('ORD-0001', 'ORD-0002')
+    `);
+    expect(totals.data).toEqual([{ revenue: expect.closeTo(904.3), profit: expect.closeTo(319.3), customers: 3 }]);
+    expect(totals.schema).toEqual([
+      { name: 'revenue', type: 'DOUBLE' },
+      { name: 'profit', type: 'DOUBLE' },
+      { name: 'customers', type: 'HUGEINT' },
+    ]);
+    const images = await ava.engine!.execute(`
+      SELECT product, CASE WHEN image IS NULL THEN NULL ELSE hex(image) END AS image
+      FROM products WHERE product IN ('Monitor', 'Office Chair', 'Laptop') ORDER BY product
+    `);
+    expect(images.data).toEqual([
+      { product: 'Laptop', image: null },
+      { product: 'Monitor', image: '00FF80' },
+      { product: 'Office Chair', image: '' },
+    ]);
   });
 });
