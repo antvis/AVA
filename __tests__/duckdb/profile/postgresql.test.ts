@@ -1,19 +1,19 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { AVA } from '../../../src';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
 
 describe.skipIf(process.env.AVA_POSTGRESQL_TEST !== '1')('profile/postgresql', () => {
-  let ava: AVA | null = null;
+  let engine: DuckDBEngine | null = null;
 
   afterEach(async () => {
-    await ava?.dispose();
-    ava = null;
+    await engine?.dispose();
+    engine = null;
   });
 
-  it('profiles loaded PostgreSQL tables through the public API', async () => {
-    ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({
+  it('profiles loaded PostgreSQL tables through the engine', async () => {
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({
       type: 'postgresql',
       options: {
         host: '127.0.0.1',
@@ -24,7 +24,7 @@ describe.skipIf(process.env.AVA_POSTGRESQL_TEST !== '1')('profile/postgresql', (
       },
     });
 
-    const profile = await ava.profile();
+    const profile = await engine.profile();
 
     expect(profile.tables.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
       { name: 'customers', metrics: { row_count: 3 } },

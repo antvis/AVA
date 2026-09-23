@@ -2,25 +2,25 @@ import * as path from 'path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { AVA } from '../../../src';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
 
 describe('profile/csv-file', () => {
-  let ava: AVA | null = null;
+  let engine: DuckDBEngine | null = null;
 
   afterEach(async () => {
-    await ava?.dispose();
-    ava = null;
+    await engine?.dispose();
+    engine = null;
   });
 
-  it('profiles a loaded CSV file through the public API', async () => {
-    ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({
+  it('profiles a loaded CSV file through the engine', async () => {
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({
       type: 'csv-file',
       options: { path: path.join(__dirname, '../../datasets/sales.csv') },
     });
 
-    const profile = await ava.profile({
+    const profile = await engine.profile({
       metrics: [
         'row_count',
         'null_count',
@@ -88,6 +88,6 @@ describe('profile/csv-file', () => {
         max: Date.UTC(2025, 11, 31),
       },
     });
-    await expect(ava.profile({ metrics: ['custom_metric'] })).rejects.toThrow('Unknown metric: custom_metric');
+    await expect(engine.profile({ metrics: ['custom_metric'] })).rejects.toThrow('Unknown metric: custom_metric');
   });
 });

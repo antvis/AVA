@@ -107,6 +107,50 @@ describe('SupabaseEngine', () => {
       await expect(engine.profile()).rejects.toThrow('No data loaded');
     });
 
+    it('discovers multiple tables and relations in one request and passes them to SQL generation', async () => {
+      const requests = stubApi([
+        {
+          rows: [
+            ...DISCOVERY_ROWS,
+            {
+              kind: 'column',
+              table_name: 'orders',
+              metadata: JSON.stringify({ name: 'buyer_id', type: 'bigint', nullable: true, position: 1 }),
+            },
+            {
+              kind: 'foreign-key-column',
+              table_name: 'orders',
+              metadata: JSON.stringify({
+                name: 'buyer_fk',
+                column: 'buyer_id',
+                referencedTable: 'users',
+                referencedColumn: 'id',
+                position: 1,
+              }),
+            },
+          ],
+        },
+      ]);
+      const engine = new SupabaseEngine(getLLMConfig());
+      const schema = await engine.load({ type: 'supabase', options: CONNECTION });
+      expect(requests).toHaveLength(1);
+      const parsed = await unwrapParseResult(new PgParser().parse(requests[0].body.query));
+      expect(parsed.stmts).toHaveLength(1);
+      expect(parsed.stmts![0].stmt).toHaveProperty('SelectStmt');
+      expect(schema.relations).toEqual([
+        {
+          name: 'buyer_fk',
+          kind: 'foreign-key',
+          from: { table: 'orders', columns: ['buyer_id'] },
+          to: { table: 'users', columns: ['id'] },
+        },
+      ]);
+      const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
+      await engine.getDSL('Orders by buyer');
+      expect(generate).toHaveBeenCalledWith('Orders by buyer', { schema });
+      expect(requests).toHaveLength(1);
+    });
+
     it('clears request timers on success and preserves HTTP errors', async () => {
       vi.useFakeTimers();
       stubApi([{ rows: [] }]);

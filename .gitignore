@@ -100,3 +100,6 @@ pnpm-lock.yaml
 # Downloaded/generated evaluation files
 /evals/*/datasets/
 /evals/*/results/
+
+# Debug files
+.debug

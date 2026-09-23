@@ -29,13 +29,14 @@ describe('directAnalysis', () => {
       'Give me one',
       { strategy: { type: 'direct' }, maxRows: 5, maxResultBytes: 1024 },
       {
-        schema: { tables: [] },
+        context: { schema: { tables: [] } },
         engine,
         llm: { model: 'test', apiKey: 'test' },
       }
     );
 
     expect(engine.getDSL).toHaveBeenCalledOnce();
+    expect(engine.getDSL).toHaveBeenCalledWith('Give me one');
     expect(engine.execute).toHaveBeenCalledWith('SELECT 1', {
       strategy: { type: 'direct' },
       maxRows: 5,

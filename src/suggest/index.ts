@@ -5,16 +5,16 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { stringifySchema } from '../util/schema';
+import { stringifyProfile, stringifySchema } from '../util/context';
 
-import type { LLMConfig, Schema, SuggestResult } from '../types';
+import type { LLMConfig, DataContext, SuggestResult } from '../types';
 
 /**
  * Generate suggested analysis queries based on dataset
  */
 export async function generateSuggestions(
   llmConfig: LLMConfig,
-  schema: Schema,
+  { schema, profile }: DataContext,
   count: number = 3
 ): Promise<SuggestResult[]> {
   const openai = createOpenAI({
@@ -22,11 +22,11 @@ export async function generateSuggestions(
     baseURL: llmConfig.baseURL,
   });
 
-  const schemaStr = stringifySchema(schema);
+  const profileStr = profile ? stringifyProfile(profile) : stringifySchema(schema);
 
   const prompt = `You are a data analysis expert. Based on the following dataset information, suggest ${count} most meaningful analysis queries that would provide valuable insights.
 
-${schemaStr}
+${profileStr}
 
 IMPORTANT: Detect the language of the dataset (from column names and sample values). You MUST write the "query" and "reason" fields in the SAME language as the dataset. For example, if column names or sample values are in Chinese, write queries and reasons in Chinese; if in English, write in English; if in Japanese, write in Japanese. If the dataset language is ambiguous, default to English.
 
