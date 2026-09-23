@@ -189,12 +189,13 @@ export async function profileTables(
           continue;
         }
 
-        const { id } = metric;
-        const definition = getMetric(id);
+        const definition = getMetric(metric.id);
 
-        if (!definition.enable({ target: field ? 'column' : 'table', field })) {
+        const target = field ? 'column' : 'table';
+        if (!definition.enable({ target, field })) {
           continue;
         }
+
         pending.push({
           expression: definition.expression({
             table: sqlIdentifier(name),
@@ -202,7 +203,7 @@ export async function profileTables(
             field,
             metric,
           }),
-          metricId: id,
+          metricId: metric.id,
           output,
         });
       }
