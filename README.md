@@ -231,7 +231,7 @@ Input:
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `query` | `string` | — | Natural-language analysis question. |
-| `config.strategy?` | `{ type: 'direct'; maxRetries?: number } \| { type: 'loop'; maxSteps?: number } \| { type: 'subset' }` | `{ type: 'direct' }` | Analysis strategy; direct `maxRetries` defaults to 2 correction retries after execution errors (0 disables retries); loop `maxSteps` defaults to 12. |
+| `config.strategy?` | `{ type: 'direct'; maxRetries?: number } \| { type: 'loop'; maxSteps?: number } \| { type: 'subset' }` | `{ type: 'direct' }` | Analysis strategy; direct `maxRetries` defaults to 2 correction retries after execution errors (0 disables retries); loop `maxSteps` defaults to 12; subset selects question-relevant profile statistics while preserving the complete schema. |
 | `config.includeSummary?` | `boolean` | `true` | Whether to include the natural-language summary in the output. |
 | `config.maxRows?` | `number` | `200` | Maximum returned rows; capped at 10,000. |
 | `config.maxResultBytes?` | `number` | `1 MiB` | Maximum serialized UTF-8 result size; individual fields over 1 MiB are rejected. |

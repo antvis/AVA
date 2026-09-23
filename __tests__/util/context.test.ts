@@ -282,7 +282,7 @@ Fields:
 
 Observation notes:
 - Field names and logical types help interpret the data; business meaning, units, and categorical roles are not declared by these statistics. Verify them when needed.
-- Missing metrics were not computed; null means no usable aggregate value. Zero and empty arrays are actual results.
+- Missing metrics were not computed or were omitted; null means no usable aggregate value. Zero and empty arrays are actual results.
 - Frequent values are observed examples, not an exhaustive list or an enum constraint. Their counts exclude nulls.
 - Numeric and date aggregates exclude nulls and non-finite values. Date bounds are displayed as UTC ISO timestamps, not a declaration of the source timezone.
 - Observed uniqueness does not establish a primary key or a join relationship; prefer declared constraints and relations.
@@ -330,7 +330,7 @@ it('preserves missing, null, zero and empty observations alongside declared cons
   );
   expect(text).toContain('Most frequent non-null values (value, row count): []');
   expect(text).toContain('custom_metric: 0');
-  expect(text).toContain('- "parent" (INTEGER)\n  Logical type: numeric\n  Observations: not computed.');
+  expect(text).toContain('- "parent" (INTEGER)\n  Logical type: numeric\n  Observations: not provided.');
   expect(text).toContain('PRIMARY KEY "items_pk" ("id")');
   expect(text).toContain('"items" ("parent") REFERENCES "items" ("id")');
   expect(text).not.toContain('Mean:');

@@ -4,6 +4,7 @@ import { experimental_evaluate as evaluate, generateText } from 'ai';
 import { analyze } from '../src/analysis';
 import { selectSubsetContext } from '../src/analysis/subset';
 import { DuckDBQueryDialect } from '../src/query/duckdb';
+import { stringifyProfile, stringifySchema } from '../src/util/context';
 
 import type { Experimental_EvaluationResult } from 'ai';
 import type { AnalysisEngine, Profile, Schema } from '../src/types';
@@ -60,7 +61,7 @@ function selection(ids: string[]) {
 beforeEach(() => vi.resetAllMocks());
 
 describe('Subset strategy', () => {
-  it('passes only schema to Jev and projects profile, join keys, and indexes without mutating context', async () => {
+  it('selects only statistics while preserving all profile structure without mutating context', async () => {
     vi.mocked(evaluate).mockResolvedValue(selection(['t0f1', 't1f1']));
     const before = JSON.stringify({ schema, profile });
     const context = await selectSubsetContext('Total amount by customer name', { schema, profile });
@@ -70,14 +71,15 @@ describe('Subset strategy', () => {
         state: { question: 'Total amount by customer name', schema: expect.not.stringContaining('123') },
       })
     );
-    expect(context.schema.tables.map((table) => table.fields.map((field) => field.name))).toEqual([
-      ['customer_id', 'amount'],
-      ['id', 'name'],
+    expect(context.schema).toBe(schema);
+    expect(stringifySchema(context.profile!)).toBe(stringifySchema(profile));
+    expect(context.profile?.tables.map((table) => table.metrics)).toEqual([{ row_count: 2 }, { row_count: 2 }, {}]);
+    expect(context.profile?.tables.map((table) => table.fields.map((field) => field.metrics))).toEqual([
+      [{}, { max: 123 }, {}],
+      [{}, { max: 123 }, {}],
+      [{}],
     ]);
-    expect(context.profile?.tables.map((table) => table.columnCount)).toEqual([2, 2]);
-    expect(context.profile?.tables[0].fields[1].metrics.max).toBe(123);
-    expect(context.profile?.tables[1].indexes.map((index) => index.name)).toEqual(['pk']);
-    expect(context.profile?.relations).toEqual(schema.relations);
+    expect(context.profile?.relations).toBe(profile.relations);
     expect(JSON.stringify({ schema, profile })).toBe(before);
   });
 
@@ -86,18 +88,27 @@ describe('Subset strategy', () => {
       .mockResolvedValueOnce(selection(['t0']))
       .mockResolvedValueOnce(selection([]));
     const context = { schema, profile };
-    expect((await selectSubsetContext('Count orders', context)).schema.tables).toEqual([
-      { ...schema.tables[0], fields: [], columnCount: 0 },
-    ]);
+    const selected = await selectSubsetContext('Count orders', context);
+    expect(stringifySchema(selected.profile!)).toBe(stringifySchema(profile));
+    expect(selected.profile?.tables[0].metrics).toEqual({ row_count: 2 });
+    expect(
+      selected.profile?.tables.flatMap((table) => table.fields).every((field) => !Object.keys(field.metrics).length)
+    ).toBe(true);
     expect(await selectSubsetContext('Unknown question', context)).toBe(context);
+  });
+
+  it('preserves schema without calling the evaluator when no profile is available', async () => {
+    const context = { schema };
+    expect(await selectSubsetContext('Question', context)).toBe(context);
+    expect(evaluate).not.toHaveBeenCalled();
   });
 
   it('rejects missing answers and propagates evaluator failures', async () => {
     vi.mocked(evaluate)
       .mockResolvedValueOnce({ answers: {} } as never)
       .mockRejectedValueOnce(new Error('Unavailable'));
-    await expect(selectSubsetContext('Question', { schema })).rejects.toThrow('Invalid subset selection');
-    await expect(selectSubsetContext('Question', { schema })).rejects.toThrow('Unavailable');
+    await expect(selectSubsetContext('Question', { schema, profile })).rejects.toThrow('Invalid subset selection');
+    await expect(selectSubsetContext('Question', { schema, profile })).rejects.toThrow('Unavailable');
     await expect(selectSubsetContext('Question', { schema: { tables: [] } })).rejects.toThrow('non-empty schema');
   });
 
@@ -122,9 +133,14 @@ describe('Subset strategy', () => {
       }
     );
     const prompt = vi.mocked(generateText).mock.calls[0][0].prompt as string;
-    expect(prompt).toContain('Dataset Profile: 1 table(s)');
+    expect(prompt).toContain('Dataset Profile: 3 table(s)');
     expect(prompt).toContain('Maximum: 123');
-    expect(prompt).not.toMatch(/private_note|customers|unrelated/);
+    expect(prompt).not.toContain('Dataset Info:');
+    expect(prompt).toContain('private_note');
+    expect(prompt).toContain('customers');
+    expect(prompt).toContain('unrelated');
+    expect(prompt.match(/Maximum: 123/g)).toHaveLength(1);
+    expect(prompt).toContain(stringifyProfile((engine.getDSL as ReturnType<typeof vi.fn>).mock.calls[0][1].profile));
     expect(engine.getDSL).toHaveBeenCalledOnce();
     expect(engine.execute).toHaveBeenCalledOnce();
     expect(generateText).toHaveBeenCalledTimes(includeSummary ? 2 : 1);

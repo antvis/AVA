@@ -613,7 +613,7 @@ export type AnalysisStrategyConfig =
 /** Dataset metadata supplied to model-facing consumers. */
 export interface DataContext {
   schema: Schema;
-  /** Optional statistics take priority over structural metadata. */
+  /** Complete structural metadata with optional statistics. */
   profile?: Profile;
 }
 
