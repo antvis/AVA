@@ -1,4 +1,4 @@
-/** Uses __tests__/datasets/sales.sqlite, generated from sales.csv. */
+/** Real SQLite fixture: sales.csv plus customers, products, indexes and foreign keys. */
 import { join } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
@@ -23,26 +23,94 @@ describe('loaders/sqlite', () => {
     expect(schema).toEqual({
       tables: [
         {
-          name: 'sales',
-          columnCount: 12,
+          name: 'customers',
+          columnCount: 4,
           fields: [
-            { name: 'order_id', type: 'VARCHAR', nullable: true },
-            { name: 'order_date', type: 'VARCHAR', nullable: true },
-            { name: 'region', type: 'VARCHAR', nullable: true },
-            { name: 'category', type: 'VARCHAR', nullable: true },
-            { name: 'product', type: 'VARCHAR', nullable: true },
-            { name: 'channel', type: 'VARCHAR', nullable: true },
-            { name: 'quantity', type: 'BIGINT', nullable: true },
-            { name: 'unit_price', type: 'DOUBLE', nullable: true },
-            { name: 'discount', type: 'DOUBLE', nullable: true },
-            { name: 'sales', type: 'DOUBLE', nullable: true },
-            { name: 'cost', type: 'DOUBLE', nullable: true },
-            { name: 'profit', type: 'DOUBLE', nullable: true },
+            { name: 'id', type: 'INTEGER', nullable: false },
+            { name: 'name', type: 'TEXT', nullable: false },
+            { name: 'email', type: 'TEXT', nullable: true },
+            { name: 'referrer_id', type: 'INTEGER', nullable: true },
           ],
-          indexes: [],
+          indexes: [
+            { name: 'PRIMARY', columns: ['id'], unique: true, primary: true },
+            { name: 'sqlite_autoindex_customers_1', columns: ['email'], unique: true, primary: false },
+          ],
+        },
+        {
+          name: 'order notes',
+          columnCount: 3,
+          fields: [
+            { name: 'id', type: 'INTEGER', nullable: true },
+            { name: 'order_id', type: 'TEXT', nullable: true },
+            { name: 'note"text', type: 'TEXT', nullable: true },
+          ],
+          indexes: [
+            { name: "idx_notes'order", columns: ['order_id'], unique: false, primary: false },
+            { name: 'sqlite_autoindex_order notes_1', columns: ['id'], unique: true, primary: true },
+          ],
+        },
+        {
+          name: 'products',
+          columnCount: 3,
+          fields: [
+            { name: 'category', type: 'TEXT', nullable: false },
+            { name: 'product', type: 'TEXT', nullable: false },
+            { name: 'label', type: 'TEXT', nullable: true },
+          ],
+          indexes: [
+            { name: 'sqlite_autoindex_products_1', columns: ['product', 'category'], unique: true, primary: true },
+          ],
+        },
+        {
+          name: 'sales',
+          columnCount: 13,
+          fields: [
+            { name: 'order_id', type: 'TEXT', nullable: false },
+            { name: 'order_date', type: 'TEXT', nullable: false },
+            { name: 'region', type: 'TEXT', nullable: true },
+            { name: 'category', type: 'TEXT', nullable: false },
+            { name: 'product', type: 'TEXT', nullable: false },
+            { name: 'channel', type: 'TEXT', nullable: true },
+            { name: 'quantity', type: 'INTEGER', nullable: true },
+            { name: 'unit_price', type: 'REAL', nullable: true },
+            { name: 'discount', type: 'REAL', nullable: true },
+            { name: 'sales', type: 'REAL', nullable: true },
+            { name: 'cost', type: 'REAL', nullable: true },
+            { name: 'profit', type: 'REAL', nullable: true },
+            { name: 'customer_id', type: 'INTEGER', nullable: true },
+          ],
+          indexes: [
+            { name: 'idx_sales_region_date', columns: ['region', 'order_date'], unique: false, primary: false },
+            { name: 'sqlite_autoindex_sales_1', columns: ['order_id'], unique: true, primary: true },
+          ],
         },
       ],
-      relations: [],
+      relations: [
+        {
+          name: 'fk_0',
+          kind: 'foreign-key',
+          from: { table: 'customers', columns: ['referrer_id'] },
+          to: { table: 'customers', columns: ['id'] },
+        },
+        {
+          name: 'fk_0',
+          kind: 'foreign-key',
+          from: { table: 'order notes', columns: ['order_id'] },
+          to: { table: 'sales', columns: ['order_id'] },
+        },
+        {
+          name: 'fk_0',
+          kind: 'foreign-key',
+          from: { table: 'sales', columns: ['product', 'category'] },
+          to: { table: 'products', columns: ['product', 'category'] },
+        },
+        {
+          name: 'fk_1',
+          kind: 'foreign-key',
+          from: { table: 'sales', columns: ['customer_id'] },
+          to: { table: 'customers', columns: ['id'] },
+        },
+      ],
     });
 
     const result = await ava.engine!.execute('SELECT * FROM sales ORDER BY order_id', { maxRows: 240 });
@@ -60,7 +128,20 @@ describe('loaders/sqlite', () => {
       sales: 224.1,
       cost: 165,
       profit: 59.1,
+      customer_id: 1,
     });
     expect(result.data[239]).toMatchObject({ order_id: 'ORD-0240', order_date: '2025-12-31' });
+    const joined = await ava.engine!.execute(`
+      SELECT s.order_id, c.name, p.label
+      FROM sales s
+      JOIN customers c ON c.id = s.customer_id
+      JOIN products p ON p.product = s.product AND p.category = s.category
+      ORDER BY s.order_id LIMIT 2
+    `);
+    expect(joined.data).toEqual([
+      { order_id: 'ORD-0001', name: 'Alice', label: 'Electronics: Monitor' },
+      { order_id: 'ORD-0002', name: 'Bob', label: 'Furniture: Office Chair' },
+    ]);
+    expect((await ava.engine!.execute('SELECT * FROM "order notes"')).data).toEqual([]);
   });
 });
