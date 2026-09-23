@@ -135,6 +135,9 @@ describe('source inference', () => {
     ['data.JSON', 'json-file'],
     ['data.parquet', 'parquet'],
     ['data.xlsx', 'excel'],
+    ['data.sqlite', 'sqlite'],
+    ['data.SQLITE3', 'sqlite'],
+    ['data.db', 'sqlite'],
   ])('infers %s as %s', (source, type) => {
     expect(inferSource(source)).toEqual({ type, options: { path: source } });
   });

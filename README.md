@@ -88,6 +88,9 @@ await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北�
 // or attach a database (every table is exposed to the LLM)
 await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 
+// Load every table in a local SQLite database (read-only).
+await ava.load({ type: 'sqlite', options: { path: 'data/sales.sqlite' } });
+
 // Profile the loaded data with the default metrics
 const profile = await ava.profile();
 console.log(profile.tables[0].metrics.row_count);
@@ -200,6 +203,7 @@ Core APIs in AVA:
   - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
+  - SQLite: `sqlite` (`{ path }`, local file) — all tables are exposed read-only, with DuckDB-mapped column types; source indexes and foreign keys are not included in the schema. Uses the [official SQLite extension](https://duckdb.org/docs/current/core_extensions/sqlite), installed on first use.
 - `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query, config?)`: run data analysis using the `direct` (default) or `loop` strategy.
@@ -291,7 +295,7 @@ ava analyze <source> <question> [options]
 | --- | --- | --- |
 | `<source>` | Yes | Local path or HTTP(S) URL to the data source |
 | `<question>` | Yes | Natural-language analysis question |
-| `-t, --type <type>` | No | Source type when it cannot be inferred: `csv-file`, `json-file`, `parquet`, or `excel` |
+| `-t, --type <type>` | No | Source type when it cannot be inferred: `csv-file`, `json-file`, `parquet`, `excel`, or `sqlite` (`.sqlite`, `.sqlite3`, `.db`) |
 | `-c, --chart` | No | Generate a chart |
 | `-o, --output <path>` | With `--chart` | Write the chart to a new HTML file |
 

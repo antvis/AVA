@@ -24,7 +24,7 @@ ${accent('Arguments:')}
   <question>                   Analysis question in natural language
 
 ${accent('Options:')}
-  -t, --type <type>            Source type: csv-file, json-file, parquet, or excel
+  -t, --type <type>            Source type: csv-file, json-file, parquet, excel, or sqlite
   -c, --chart                  Generate a visualization
   -o, --output <path>          Write chart HTML to a new file (requires --chart)
   -h, --help                   Show help

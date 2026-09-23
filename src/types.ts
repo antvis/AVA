@@ -71,7 +71,7 @@ export interface AnalysisConfig extends ExecutionOptions {
  * Data source types for load.
  * - inline types: `csv` (content string), `json` (object array), `text`
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
- * - database types: `mysql`, `postgresql` (ATTACH through DuckDB's extension)
+ * - database types: `mysql`, `postgresql`, `sqlite` (ATTACH through DuckDB's extension)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
@@ -84,6 +84,7 @@ export type SourceType =
   | 'excel'
   | 'mysql'
   | 'postgresql'
+  | 'sqlite'
   | 'supabase';
 
 /**
@@ -277,6 +278,12 @@ export interface MySQLSourceOptions {
   ssh?: SSHOptions;
 }
 
+/** Options for a local SQLite database (read-only ATTACH). */
+export interface SQLiteSourceOptions {
+  /** Local SQLite database file path. */
+  path: string;
+}
+
 /**
  * Options for PostgreSQL data sources (ATTACH through DuckDB's postgres extension)
  */
@@ -310,7 +317,7 @@ export interface SupabaseSourceOptions {
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
- * - database types (mysql/postgresql): ATTACH through DuckDB's extension
+ * - database types (mysql/postgresql/sqlite): ATTACH through DuckDB's extension
  * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
  */
 export type DataSourceConfig =
@@ -323,6 +330,7 @@ export type DataSourceConfig =
   | { type: 'excel'; options: ExcelSourceOptions }
   | { type: 'mysql'; options: MySQLSourceOptions }
   | { type: 'postgresql'; options: PostgreSQLSourceOptions }
+  | { type: 'sqlite'; options: SQLiteSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions };
 
 /**
