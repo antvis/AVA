@@ -23,7 +23,6 @@ describe('interpreter/engine', () => {
     expect(schema.tables[0].name).toBe('data');
     expect(schema.tables[0]).toEqual({
       name: 'data',
-      rowCount: 1,
       columnCount: 2,
       fields: [
         { name: 'name', type: 'string' },

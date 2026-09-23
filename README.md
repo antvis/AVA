@@ -30,6 +30,7 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - 💬 **Natural Language Queries**: Ask questions about your data in plain English
 - 💡 **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
 - 🤖 **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
+- 📊 **Data Profiling**: Compute deterministic table and field statistics without an LLM call
 - 🧩 **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
 - 🌐 **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (interpreter engine)
 
@@ -86,6 +87,15 @@ await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北�
 
 // or attach a database (every table is exposed to the LLM)
 await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
+
+// Profile the loaded data with the default metrics
+const profile = await ava.profile();
+console.log(profile.tables[0].metrics.row_count);
+
+// Or request only the metrics you need
+const focusedProfile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'min', 'max', 'mean', { id: 'top_values', limit: 5 }],
+});
 
 // Get suggested analysis queries
 const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
@@ -190,10 +200,40 @@ Core APIs in AVA:
   - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
+- `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query, config?)`: run data analysis using the `direct` (default) or `loop` strategy.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
+
+#### `profile(options?)`
+
+`profile()` preserves the loaded schema and adds `generatedAt`, table-level `metrics`, and a `logicalType` plus `metrics` for each field. Metrics that were not requested, do not apply to a field type, or are unavailable are omitted.
+
+The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Passing `metrics` replaces that list; passing an empty list returns only the enriched structure without scanning the data.
+
+| Metric | Applies to |
+| --- | --- |
+| `row_count` | Tables |
+| `null_count`, `duplicate_count` | All fields |
+| `distinct_count` | Numeric, string, boolean, and date fields |
+| `top_values` | String and boolean fields |
+| `min`, `max` | Numeric and date fields |
+| `min_length`, `max_length` | String fields |
+| `mean`, `sum`, `stddev`, `median` | Numeric fields |
+
+`top_values` accepts `limit` (default `3`) and `maxDistinctRatio` (default `0.5`). It is omitted when the field's non-null distinct count is greater than the configured share of all rows.
+
+```typescript
+const profile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'distinct_count', { id: 'top_values', limit: 5 }],
+});
+
+console.log(profile.generatedAt);
+console.log(profile.tables[0].metrics); // { row_count: ... }
+console.log(profile.tables[0].fields[0]);
+// { name, type, logicalType, metrics: { null_count, distinct_count, top_values? } }
+```
 
 #### `analysis(query, config?)`
 
@@ -281,7 +321,7 @@ AVA Instance
 └─────────────────┘
     ↓
 ┌──────────────────┐
-│ Metadata Extract │ → Type inference, statistics
+│ Metadata Extract │ → Type inference and structural schema
 └──────────────────┘
     ↓
 ┌─────────────────────────────────┐

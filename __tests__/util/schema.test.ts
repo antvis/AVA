@@ -25,7 +25,6 @@ describe('extractDataSchema', () => {
     expect(schema.tables).toHaveLength(1);
     const table = schema.tables[0];
     expect(table.name).toBe('data');
-    expect(table.rowCount).toBe(2);
     expect(table.columnCount).toBe(3);
     expect(table.fields).toEqual([
       { name: 'company', type: 'string' },
@@ -36,7 +35,7 @@ describe('extractDataSchema', () => {
 
   it('should handle empty data', () => {
     expect(extractDataSchema([])).toEqual({
-      tables: [{ name: 'data', rowCount: 0, columnCount: 0, fields: [], indexes: [] }],
+      tables: [{ name: 'data', columnCount: 0, fields: [], indexes: [] }],
     });
   });
 });
@@ -84,7 +83,6 @@ Fields:
       tables: [
         {
           name: 'customer"accounts',
-          rowCount: 3,
           columnCount: 4,
           fields: [
             { name: 'tenant id', type: 'INTEGER', nullable: false },
@@ -115,7 +113,6 @@ Fields:
         },
         {
           name: 'empty archive',
-          rowCount: 0,
           columnCount: 1,
           fields: [{ name: 'note', type: 'VARCHAR', nullable: true }],
           indexes: [],
@@ -170,7 +167,6 @@ Fields:
 
     expect(stringifySchema(schema)).toBe(`Dataset Info: 3 table(s)
 Table "customer""accounts":
-- Rows: 3
 - Columns: 4
 Fields:
 - "tenant id" (INTEGER) NOT NULL
@@ -193,7 +189,6 @@ Indexes:
   - PRIMARY KEY "orders_pkey" ("order_id")
   - "idx customer" ("tenant_id", "customer_id")
 Table "empty archive":
-- Rows: 0
 - Columns: 1
 Fields:
 - "note" (VARCHAR)
