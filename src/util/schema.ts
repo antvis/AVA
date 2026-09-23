@@ -5,7 +5,7 @@
 
 import { sqlIdentifier } from './sql';
 
-import type { FieldMetadata, Schema, TableIndex, TableRelation, TableSchema } from '../types';
+import type { Schema, TableIndex, TableRelation, TableSchema } from '../types';
 
 /**
  * Infer field type from sample values
@@ -44,7 +44,6 @@ function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' {
 export function extractDataSchema(data: any[]): Schema {
   const table: TableSchema = {
     name: 'data',
-    rowCount: 0,
     columnCount: 0,
     fields: [],
     indexes: [],
@@ -53,17 +52,12 @@ export function extractDataSchema(data: any[]): Schema {
     return { tables: [table] };
   }
 
-  const fields: FieldMetadata[] = [];
   const columns = Object.keys(data[0]);
-
-  for (const col of columns) {
-    const values = data.map((row) => row[col]);
-    fields.push({ name: col, type: inferType(values) });
-  }
-
-  table.rowCount = data.length;
   table.columnCount = columns.length;
-  table.fields = fields;
+  table.fields = columns.map((name) => ({
+    name,
+    type: inferType(data.map((row) => row[name])),
+  }));
   return { tables: [table] };
 }
 
@@ -84,7 +78,7 @@ function isValidRelation({ from, to, kind }: TableRelation, tables: TableSchema[
   return validEndpoints && kind === 'foreign-key' && from.columns.length === to.columns.length;
 }
 
-/** Format table fields and indexes without computing statistics. */
+/** Describe tables, fields, and indexes. */
 function stringifyTables(tables: TableSchema[]): string {
   return tables
     .map((table) => {
@@ -101,14 +95,14 @@ function stringifyTables(tables: TableSchema[]): string {
         .join('');
 
       return `Table ${sqlIdentifier(table.name)}:
-${table.rowCount !== undefined ? `- Rows: ${table.rowCount}\n` : ''}- Columns: ${table.columnCount}
+- Columns: ${table.columnCount}
 Fields:
 ${fields}${indexes ? `Indexes:\n${indexes}` : ''}`;
     })
     .join('');
 }
 
-/** Format declared relations and their usage notes. */
+/** Describe valid table relations. */
 function stringifyRelations(relations: TableRelation[], tables: TableSchema[]): string {
   if (!relations.length) return '';
 
@@ -136,14 +130,14 @@ Notes:
 `;
 }
 
-/** Combine table and relation descriptions for LLM context. */
+/** Describe a dataset for the language model. */
 export function stringifySchema({ tables, relations = [] }: Schema): string {
   return `Dataset Info: ${tables.length} table(s)
 ${stringifyTables(tables)}
 ${stringifyRelations(relations, tables)}`;
 }
 
-/** Parse plain column indexes only; never misrepresent expressions as column identifiers. */
+/** Read column names from a plain index. */
 function indexColumns(definition: string): string[] | undefined {
   // Capture the index key list after ON table [USING method], not parentheses in index/table names.
   const identifier = '(?:"(?:[^"]|"")*"|[^\\s"().]+)';
@@ -169,7 +163,7 @@ function indexColumns(definition: string): string[] | undefined {
 type Metadata = Record<string, any>;
 const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
 
-/** Assemble in one place; only publish relations between tables actually exposed to queries. */
+/** Build a schema from metadata rows. */
 export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
   const names = [...new Set(rows.map((row) => String(row.table_name)))].sort();
   const tables = new Map<string, TableSchema>(
@@ -188,7 +182,7 @@ export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
       columns.set(table.name, fields);
     } else if (row.kind === 'index') {
       const indexed = meta.columns ?? indexColumns(meta.definition ?? '');
-      // Expression indexes cannot be faithfully represented by TableIndex.columns.
+      // Skip indexes that do not contain plain columns.
       if (!indexed) continue;
       table.indexes.push({
         name: meta.name,

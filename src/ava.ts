@@ -7,6 +7,7 @@ import { extractDataSchema, stringifySchema } from './util/schema';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
+import { parseProfileOptions } from './profile/options';
 
 import type {
   AVAConfig,
@@ -19,6 +20,8 @@ import type {
   AnalysisConfig,
   VisualizeResponse,
   SuggestResult,
+  Profile,
+  ProfileOptions,
 } from './types';
 
 /**
@@ -142,9 +145,22 @@ export class AVA {
   }
 
   /**
-   * Suggest analysis queries based on loaded data
-   * @param count Number of queries to suggest (default: 3)
-   * @returns Array of suggested queries with scores and reasons
+   * Return statistics for the loaded dataset.
+   */
+  async profile(options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.engine || !this.schema) {
+      throw new Error('No data loaded. Please call load() first.');
+    }
+
+    if (!this.engine.profile) {
+      throw new Error('Profiling is not supported by the registered engine.');
+    }
+
+    return this.engine.profile(parseProfileOptions(options));
+  }
+
+  /**
+   * Suggest questions about the loaded data.
    */
   async suggest(count: number = 3): Promise<SuggestResult[]> {
     if (!this.schema) {

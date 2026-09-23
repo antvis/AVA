@@ -1,3 +1,17 @@
+import type { ParsedProfileOptions, Profile } from './profile';
+
+export type {
+  Profile,
+  TableProfile,
+  FieldProfile,
+  ProfileOptions,
+  ParsedProfileOptions,
+  Metric,
+  MetricId,
+  MetricConfig,
+  LogicalType,
+} from './profile';
+
 /**
  * Core type definitions for AVA v4
  */
@@ -405,8 +419,6 @@ export interface TableRelation {
 export interface TableSchema {
   /** Table/view name as registered in the engine */
   name: string;
-  /** Number of rows, when known without scanning the data source. */
-  rowCount?: number;
   /** Number of columns */
   columnCount: number;
   /** Field metadata */
@@ -444,6 +456,8 @@ export interface AnalysisEngine {
   readonly language: QueryLanguage;
   /** Load a data source config and return its schema */
   load(config: DataSourceConfig): Promise<Schema>;
+  /** Compute statistics for the loaded data. */
+  profile?(options: ParsedProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
   getDSL(query: string): Promise<string>;
   /** Execute one DSL statement with a bounded result. */

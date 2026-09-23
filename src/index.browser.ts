@@ -9,6 +9,7 @@ import { registerEngine } from './engines';
 registerEngine('interpreter', InterpreterEngine);
 
 export { AVA } from './ava';
+export { registerMetric, hasMetric } from './profile';
 export type { InterpreterEngine } from './interpreter';
 export type {
   LLMConfig,
@@ -23,6 +24,8 @@ export type {
   TableRelation,
   FieldMetadata,
   AnalysisEngine,
+  ExecutionOptions,
+  ExecutionResult,
   QueryLanguage,
   QueryDialect,
   AnalysisResponse,
@@ -32,4 +35,13 @@ export type {
   VisualizeResponse,
   SuggestResult,
   ChartType,
+  Profile,
+  TableProfile,
+  FieldProfile,
+  ProfileOptions,
+  ParsedProfileOptions,
+  Metric,
+  MetricId,
+  MetricConfig,
+  LogicalType,
 } from './types';
