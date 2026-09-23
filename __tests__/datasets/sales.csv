@@ -1,5 +1,5 @@
 order_id,order_date,region,category,product,channel,quantity,unit_price,discount,sales,cost,profit
-ORD-0001,2025-01-01,East,Electronics,Monitor,Retail,1,249.00,0.10,224.10,165.00,59.10
+ORD-0001,2025-01-01,,Electronics,Monitor,Retail,,249.00,0.10,224.10,165.00,59.10
 ORD-0002,2025-01-02,West,Furniture,Office Chair,Wholesale,4,179.00,0.05,680.20,420.00,260.20
 ORD-0003,2025-01-04,North,Electronics,Monitor,Online,11,249.00,0.20,2191.20,1815.00,376.20
 ORD-0004,2025-01-05,South,Electronics,Monitor,Retail,10,249.00,0.15,2116.50,1650.00,466.50

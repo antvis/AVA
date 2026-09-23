@@ -1,20 +1,3 @@
-/**
- * MySQL load/schema 测试，测试库定义位于 __tests__/datasets/mysql。
- * 默认 skip：仅在 AVA_MYSQL_TEST=1 时执行，测试不会自动启动数据库。
- *
- * 1. 启动测试库并等待就绪：
- *    open -a OrbStack
- *    docker info
- *    docker compose -f __tests__/datasets/mysql/compose.yaml up -d --wait
- * 2. 启用并运行 schema 对比测试：
- *    AVA_MYSQL_TEST=1 npx vitest run __tests__/duckdb/loaders/mysql.test.ts
- * 3. 可选：暂停测试库（保留数据，下次 up 即可复用）：
- *    docker compose -f __tests__/datasets/mysql/compose.yaml stop
- * 4. 仅需重建测试库时才删除数据卷（例如修改了 init.sql）：
- *    docker compose -f __tests__/datasets/mysql/compose.yaml down -v
- *
- * 默认连接 127.0.0.1:13306；修改端口时，Compose 和测试须设置相同的 AVA_MYSQL_TEST_PORT。
- */
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
