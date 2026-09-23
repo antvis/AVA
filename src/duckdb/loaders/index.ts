@@ -11,6 +11,7 @@ import { loadJSONFile } from './json-file';
 import { loadMySQL } from './mysql';
 import { loadParquetFile } from './parquet';
 import { loadPostgreSQL } from './postgresql';
+import { loadSQLite } from './sqlite';
 import { loadText } from './text';
 
 import type { DataSourceConfig, LLMConfig, LoadedSource } from '../../types';
@@ -40,6 +41,8 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       return loadMySQL(config.options);
     case 'postgresql':
       return loadPostgreSQL(config.options);
+    case 'sqlite':
+      return loadSQLite(config.options);
     case 'supabase':
       // Supabase is a SaaS source executed remotely — AVA routes it to
       // SupabaseEngine, so it must never reach the DuckDB loaders

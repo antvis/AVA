@@ -8,6 +8,9 @@ const SOURCE_TYPE_BY_EXTENSION: Record<string, string> = {
   '.json': 'json-file',
   '.parquet': 'parquet',
   '.xlsx': 'excel',
+  '.sqlite': 'sqlite',
+  '.sqlite3': 'sqlite',
+  '.db': 'sqlite',
 };
 
 /**
@@ -23,6 +26,7 @@ export function inferSource(source: string, type?: string): DataSourceConfig {
     case 'json-file':
     case 'parquet':
     case 'excel':
+    case 'sqlite':
       return { type: sourceType, options: { path: source } };
     default:
       throw new Error(`Cannot infer the source type for "${source}". Pass --type.`);
