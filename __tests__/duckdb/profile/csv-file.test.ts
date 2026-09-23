@@ -88,5 +88,6 @@ describe('profile/csv-file', () => {
         max: Date.UTC(2025, 11, 31),
       },
     });
+    await expect(ava.profile({ metrics: ['custom_metric'] })).rejects.toThrow('Unknown metric: custom_metric');
   });
 });

@@ -1,8 +1,8 @@
 import { sqlIdentifier } from '../util/sql';
-import { getMetric } from '../profile/registry';
 
-import type { DuckDBConnection, Schema } from '../types';
 import type {
+  DuckDBConnection,
+  Schema,
   ParsedProfileOptions,
   FieldProfile,
   LogicalType,
@@ -10,7 +10,7 @@ import type {
   MetricId,
   Profile,
   TableProfile,
-} from '../profile/types';
+} from '../types';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -127,6 +127,12 @@ export const DUCKDB_BUILTIN_METRICS: DuckDBMetric[] = [
 
 export const DEFAULT_METRICS = ['row_count', 'null_count', 'distinct_count', 'top_values', 'min', 'max', 'mean'];
 
+function getMetric(id: MetricId): DuckDBMetric {
+  const metric = DUCKDB_BUILTIN_METRICS.find((definition) => definition.id === id);
+  if (!metric) throw new Error(`Unknown metric: ${id}`);
+  return metric;
+}
+
 /**
  * Add query values to the metric results.
  */
@@ -177,7 +183,7 @@ export async function profileTables(
     const addMetrics = (output: Record<string, unknown>, field?: FieldProfile) => {
       for (const metric of metrics) {
         const { id } = metric;
-        const definition = getMetric<DuckDBMetric>('duckdb', id);
+        const definition = getMetric(id);
         if (!definition.enable({ target: field ? 'column' : 'table', field })) {
           continue;
         }

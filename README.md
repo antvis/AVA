@@ -235,8 +235,6 @@ console.log(profile.tables[0].fields[0]);
 // { name, type, logicalType, metrics: { null_count, distinct_count, top_values? } }
 ```
 
-Metric definitions can be added with `registerMetric()` and checked with `hasMetric()`.
-
 #### `analysis(query, config?)`
 
 Input:

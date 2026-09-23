@@ -3,7 +3,6 @@
 // TODO(profile, on demand): Build quality checks as a separate consumer of metric results, not part of profile computation.
 // These are future directions, not placeholder APIs or required parts of v1.
 export { parseProfileOptions } from './options';
-export { registerMetrics, hasMetric } from './registry';
 
 export type {
   ProfileOptions,
@@ -16,4 +15,4 @@ export type {
   MetricConfig,
   ParsedProfileOptions,
   LogicalType,
-} from './types';
+} from '../types';

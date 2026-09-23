@@ -145,8 +145,6 @@ console.log(profile.tables[0].fields[0].logicalType);
 console.log(profile.tables[0].fields[0].metrics);
 ```
 
-Metric definitions can be added with `registerMetric()` and checked with `hasMetric()`.
-
 ### Query Suggestions
 - `suggest(count?: number)` - Get AI-recommended analysis queries based on dataset characteristics (default: 3)
   - Returns: Array of `{ query: string, score: number, reason: string }`

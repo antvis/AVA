@@ -13,7 +13,7 @@ import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
 import { parseProfileOptions } from '../profile';
 
-import { DEFAULT_METRICS, profileTables } from './profile';
+import { DEFAULT_METRICS, DUCKDB_BUILTIN_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
@@ -145,7 +145,11 @@ export class DuckDBEngine implements AnalysisEngine {
       throw new Error('No data loaded. Please call load() first.');
     }
 
-    return profileTables(this.connection, this.schema, parseProfileOptions('duckdb', options, DEFAULT_METRICS));
+    return profileTables(
+      this.connection,
+      this.schema,
+      parseProfileOptions(options, DUCKDB_BUILTIN_METRICS, DEFAULT_METRICS)
+    );
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

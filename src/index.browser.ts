@@ -9,7 +9,6 @@ import { registerEngine } from './engines';
 registerEngine('interpreter', InterpreterEngine);
 
 export { AVA } from './ava';
-export { registerMetrics, hasMetric } from './profile';
 export type { InterpreterEngine } from './interpreter';
 export type {
   LLMConfig,
