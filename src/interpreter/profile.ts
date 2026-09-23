@@ -117,27 +117,46 @@ export function profileTables(data: Record<string, unknown>[], schema: Schema, o
           definition.enable({ target: field ? 'column' : 'table', field })
         );
         if (!applicable.length) continue;
-        const values = field
-          ? data
-              .map((row) => row[field.name])
-              .filter((value) => value != null)
-              .map((value) => {
-                if (field.logicalType === 'string') return String(value);
-                if (field.logicalType === 'numeric') return Number(value);
-                if (field.logicalType === 'date') return new Date(value as string).getTime();
-                if (field.logicalType === 'boolean') return value === true || String(value).toLowerCase() === 'true';
-                return value;
-              })
-          : [];
-        const distinct = new Map<unknown, number>();
-        for (const value of values) {
-          // ponytail: JSON equality is key-order sensitive; canonicalize if unordered object equality is needed.
-          const key = field?.logicalType === 'unknown' ? JSON.stringify(value) : value;
-          distinct.set(key, (distinct.get(key) ?? 0) + 1);
-        }
-        const numbers = values.filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+        let values: unknown[] | undefined;
+        let numbers: number[] | undefined;
+        let distinct: Map<unknown, number> | undefined;
+        // Each intermediate is computed once, only when a requested metric reads it.
+        const context: Context = {
+          rowCount: data.length,
+          metric: applicable[0].metric,
+          get values() {
+            return (values ??= field
+              ? data
+                  .map((row) => row[field.name])
+                  .filter((value) => value != null)
+                  .map((value) => {
+                    if (field.logicalType === 'string') return String(value);
+                    if (field.logicalType === 'numeric') return Number(value);
+                    if (field.logicalType === 'date') return new Date(value as string).getTime();
+                    if (field.logicalType === 'boolean')
+                      return value === true || String(value).toLowerCase() === 'true';
+                    return value;
+                  })
+              : []);
+          },
+          get numbers() {
+            return (numbers ??= this.values.filter((v): v is number => typeof v === 'number' && Number.isFinite(v)));
+          },
+          get distinct() {
+            if (!distinct) {
+              distinct = new Map<unknown, number>();
+              for (const value of this.values) {
+                // ponytail: JSON equality is key-order sensitive; canonicalize if unordered object equality is needed.
+                const key = field?.logicalType === 'unknown' ? JSON.stringify(value) : value;
+                distinct.set(key, (distinct.get(key) ?? 0) + 1);
+              }
+            }
+            return distinct;
+          },
+        };
         for (const { metric, definition } of applicable) {
-          const value = definition.expression({ rowCount: data.length, values, numbers, distinct, metric });
+          context.metric = metric;
+          const value = definition.expression(context);
           // A later request for the same metric replaces an earlier one, even when skipped.
           delete output[metric.id];
           if (value !== undefined)

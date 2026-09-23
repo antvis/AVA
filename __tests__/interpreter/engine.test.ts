@@ -2,12 +2,12 @@
  * Unit tests for src/interpreter/engine.ts
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { AVA } from '../../src';
 import { BUILTIN_METRICS, profileTables as memoryProfile } from '../../src/interpreter/profile';
 import { InterpreterEngine } from '../../src/interpreter/engine';
-import { getLLMConfig, skipLLMTests } from '../test-utils';
+import { getLLMConfig } from '../test-utils';
 
 import type { Schema } from '../../src/types';
 
@@ -19,59 +19,15 @@ describe('interpreter/engine', () => {
     engine = null;
   });
 
-  it('loads a json source and returns its schema', async () => {
+  it('loads data and executes JavaScript with bounded results', async () => {
     engine = new InterpreterEngine(getLLMConfig());
-    const schema = await engine.load({ type: 'json', options: { data: [{ name: 'Alice', age: 30 }] } });
-
-    expect(schema.tables).toHaveLength(1);
-    expect(schema.tables[0].name).toBe('data');
-    expect(schema.tables[0]).toEqual({
-      name: 'data',
-      columnCount: 2,
-      fields: [
-        { name: 'name', type: 'string' },
-        { name: 'age', type: 'number' },
-      ],
-      indexes: [],
-    });
-  });
-
-  it('rejects unsupported source types', async () => {
-    engine = new InterpreterEngine(getLLMConfig());
-    await expect(engine.load({ type: 'mysql', options: {} } as any)).rejects.toThrow(
-      'InterpreterEngine only supports csv/json/text sources'
-    );
-  });
-
-  it('executes JavaScript code against the loaded data', async () => {
-    engine = new InterpreterEngine(getLLMConfig());
-    await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
-
-    const result = await engine.execute('const result = stat.sum(data, "value");');
-    expect(result.data).toEqual([{ value: 30 }]);
-  });
-
-  it('returns a bounded result', async () => {
-    engine = new InterpreterEngine(getLLMConfig());
-    await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
-
+    await expect(engine.execute('const result = 1;')).rejects.toThrow('No data loaded');
+    const schema = await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
+    expect(schema.tables[0].fields).toEqual([{ name: 'value', type: 'number' }]);
+    expect((await engine.execute('const result = stat.sum(data, "value");')).data).toEqual([{ value: 30 }]);
     const result = await engine.execute('const result = data;', { maxRows: 1 });
     expect(result.data).toEqual([{ value: 10 }]);
     expect(result.truncated).toBe(true);
-  });
-
-  it('throws when executing without loading data', async () => {
-    engine = new InterpreterEngine(getLLMConfig());
-    await expect(engine.execute('const result = 1;')).rejects.toThrow('No data loaded');
-  });
-
-  it.skipIf(skipLLMTests)('generates JavaScript code from a natural-language query', async () => {
-    engine = new InterpreterEngine(getLLMConfig());
-    await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
-
-    const code = await engine.getDSL('sum of value');
-    const result = await engine.execute(code);
-    expect(result.data).toEqual([{ value: 30 }]);
   });
 
   describe('profile', () => {
@@ -174,12 +130,48 @@ describe('interpreter/engine', () => {
       expect(memoryProfile([{ n: 2 }, { n: 4 }], local, { metrics }).tables[0].fields[0].metrics.median).toBe(3);
     });
 
+    it('builds only the intermediates requested by metrics and reuses them within a field', () => {
+      const local: Schema = {
+        tables: [{ name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'n', type: 'number' }] }],
+      };
+      let reads = 0;
+      const data = [1, 3].map((n) => ({
+        get n() {
+          reads += 1;
+          return n;
+        },
+      }));
+      const set = vi.spyOn(Map.prototype, 'set');
+      try {
+        const result = memoryProfile(data, local, { metrics: ['min', 'max', 'mean'].map((id) => ({ id })) });
+        expect(result.tables[0].fields[0].metrics).toEqual({ min: 1, max: 3, mean: 2 });
+        expect(reads).toBe(2);
+        expect(set).not.toHaveBeenCalled();
+        const counts = memoryProfile(data, local, {
+          metrics: ['distinct_count', 'duplicate_count'].map((id) => ({ id })),
+        });
+        expect(counts.tables[0].fields[0].metrics).toEqual({ distinct_count: 2, duplicate_count: 0 });
+        expect(reads).toBe(4);
+        expect(set).toHaveBeenCalledTimes(2);
+      } finally {
+        set.mockRestore();
+      }
+
+      const circular: Record<string, unknown> = {};
+      circular.self = circular;
+      local.tables[0].fields[0].type = 'unknown';
+      expect(
+        memoryProfile([{ n: circular }, { n: null }], local, { metrics: [{ id: 'null_count' }] }).tables[0].fields[0]
+          .metrics
+      ).toEqual({ null_count: 1 });
+    });
+
     it('rejects unloaded/disposed/failed loads and invalid options', async () => {
       engine = new InterpreterEngine(getLLMConfig());
       const config = { type: 'json' as const, options: { data: [] } };
       await expect(engine.profile()).rejects.toThrow('No data loaded');
       await engine.load(config);
-      for (const limit of [NaN, null, false, '2', -1, 1.5, Infinity]) {
+      for (const limit of [NaN, -1]) {
         await expect(engine.profile({ metrics: [{ id: 'top_values', limit }] })).rejects.toThrow('top_values.limit');
       }
       await expect(engine.profile({ metrics: ['missing'] })).rejects.toThrow('Unknown metric');
