@@ -106,9 +106,8 @@ export class SupabaseEngine implements AnalysisEngine {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    let response: Response;
     try {
-      response = await fetch(
+      const response = await fetch(
         `${SUPABASE_API_BASE}/v1/projects/${encodeURIComponent(this.connection!.projectRef)}/database/query`,
         {
           method: 'POST',
@@ -120,19 +119,20 @@ export class SupabaseEngine implements AnalysisEngine {
           signal: controller.signal,
         }
       );
+
+      if (!response.ok) {
+        const detail = (await response.text().catch(() => '')).slice(0, 200);
+        throw new SupabaseApiError(`Supabase API request failed (${response.status}): ${detail}`, response.status);
+      }
+
+      const payload = (await response.json()) as unknown;
+      return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
     } catch (error) {
-      const isTimeout = error instanceof Error && error.name === 'AbortError';
+      const isTimeout = controller.signal.aborted || (error instanceof Error && error.name === 'AbortError');
+      if (!isTimeout && (error instanceof SupabaseApiError || error instanceof SyntaxError)) throw error;
       throw new SupabaseApiError(isTimeout ? 'Supabase API request timed out' : 'Supabase API network error', 0);
     } finally {
       clearTimeout(timer);
     }
-
-    if (!response.ok) {
-      const detail = (await response.text().catch(() => '')).slice(0, 200);
-      throw new SupabaseApiError(`Supabase API request failed (${response.status}): ${detail}`, response.status);
-    }
-
-    const payload = (await response.json()) as unknown;
-    return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
   }
 }
