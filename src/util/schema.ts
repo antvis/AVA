@@ -10,20 +10,22 @@ import type { Schema, TableIndex, TableRelation, TableSchema } from '../types';
 /**
  * Infer field type from sample values
  */
-function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' {
+function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' | 'unknown' {
   const nonNullValues = values.filter((v) => v != null && v !== '');
 
   if (nonNullValues.length === 0) return 'string';
 
-  // Check if all values are numbers
-  const allNumbers = nonNullValues.every((v) => typeof v === 'number' || !Number.isNaN(Number(v)));
-  if (allNumbers) return 'number';
+  if (nonNullValues.some((v) => typeof v === 'object')) return 'unknown';
 
   // Check if all values are booleans
   const allBooleans = nonNullValues.every(
     (v) => typeof v === 'boolean' || v === 'true' || v === 'false' || v === 'TRUE' || v === 'FALSE'
   );
   if (allBooleans) return 'boolean';
+
+  // Check if all values are numbers
+  const allNumbers = nonNullValues.every((v) => typeof v === 'number' || !Number.isNaN(Number(v)));
+  if (allNumbers) return 'number';
 
   // Check if values look like dates
   const allDates = nonNullValues.every((v) => {
