@@ -11,10 +11,13 @@ import { DuckDBQueryDialect } from '../query/duckdb';
 import { executionResult, limitedQuery, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
+import { parseProfileOptions } from '../profile/options';
 
+import { profileTables } from './profile';
 import { loadSource } from './loaders';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
+import type { Profile, ProfileOptions } from '../profile';
 import type {
   AnalysisEngine,
   DataSourceConfig,
@@ -112,6 +115,7 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   async load(config: DataSourceConfig): Promise<Schema> {
+    this.schema = null;
     try {
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
@@ -133,6 +137,16 @@ export class DuckDBEngine implements AnalysisEngine {
     if (!this.schema) throw new Error('No data loaded. Please call load() first.');
 
     return this.queryDialect.getDSL(query, this.schema);
+  }
+
+  // TODO(profile, on demand): Cache only with reliable data versions and request-based invalidation.
+  async profile(options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.schema || !this.connection) {
+      throw new Error('No data loaded. Please call load() first.');
+    }
+
+    const parsedOptions = parseProfileOptions(options);
+    return profileTables(this.connection, this.schema, parsedOptions);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
