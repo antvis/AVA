@@ -3,19 +3,21 @@
  */
 import type { Metric } from './types';
 
-const registry = new Map<string, Metric>();
+const registry = new Map<string, Map<string, Metric>>();
 
-export function registerMetric(definition: Metric): void {
-  registry.set(definition.id, definition);
+export function registerMetrics<T extends Metric>(engine: string, definitions: T[]): void {
+  const metrics = registry.get(engine) ?? new Map<string, Metric>();
+  definitions.forEach((definition) => metrics.set(definition.id, definition));
+  registry.set(engine, metrics);
 }
 
-export function hasMetric(id: string): boolean {
-  return registry.has(id);
+export function hasMetric(engine: string, id: string): boolean {
+  return registry.get(engine)?.has(id) ?? false;
 }
 
-export function getMetric(id: string): Metric {
-  const metric = registry.get(id);
+export function getMetric<T extends Metric = Metric>(engine: string, id: string): T {
+  const metric = registry.get(engine)?.get(id);
 
   if (!metric) throw new Error(`Unknown metric: ${id}`);
-  return metric;
+  return metric as T;
 }

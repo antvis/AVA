@@ -1,4 +1,4 @@
-import type { ParsedProfileOptions, Profile } from './profile';
+import type { Profile, ProfileOptions } from './profile';
 
 export type {
   Profile,
@@ -457,7 +457,7 @@ export interface AnalysisEngine {
   /** Load a data source config and return its schema */
   load(config: DataSourceConfig): Promise<Schema>;
   /** Compute statistics for the loaded data. */
-  profile?(options: ParsedProfileOptions): Promise<Profile>;
+  profile?(options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
   getDSL(query: string): Promise<string>;
   /** Execute one DSL statement with a bounded result. */

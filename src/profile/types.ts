@@ -23,11 +23,13 @@ export type MetricOption = {
 };
 
 /**
- * A metric and its rules.
+ * A metric, its rules, and its engine-specific implementation.
  */
-export type Metric = {
+export type Metric<Expression = unknown> = {
   /** The metric name. */
   id: MetricId;
+  /** The implementation interpreted by the registered engine. */
+  expression: Expression;
   /** Returns true if the metric applies to this target. */
   enable: (context: {
     /** The kind of target to check. */

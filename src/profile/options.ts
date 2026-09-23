@@ -1,4 +1,3 @@
-import { DEFAULT_METRICS } from './builtin';
 import { getMetric } from './registry';
 
 import type { MetricConfig, ProfileOptions, ParsedProfileOptions } from './types';
@@ -6,9 +5,9 @@ import type { MetricConfig, ProfileOptions, ParsedProfileOptions } from './types
 /**
  * Check one metric config and fill in default values.
  */
-export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {
+export function parseMetricConfig(engine: string, config: MetricConfig): Exclude<MetricConfig, string> {
   const { id, ...configured } = typeof config === 'string' ? { id: config } : config;
-  const definition = getMetric(id);
+  const definition = getMetric(engine, id);
   const options = definition.options ?? {};
 
   const unknown = Object.keys(configured).find((name) => !Object.prototype.hasOwnProperty.call(options, name));
@@ -32,8 +31,12 @@ export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, s
 /**
  * Resolve defaults and validate options before any metric computation.
  */
-export function parseProfileOptions(options: ProfileOptions = {}): ParsedProfileOptions {
+export function parseProfileOptions(
+  engine: string,
+  options: ProfileOptions = {},
+  defaultMetrics: MetricConfig[] = []
+): ParsedProfileOptions {
   return {
-    metrics: (options.metrics ?? DEFAULT_METRICS).map(parseMetricConfig),
+    metrics: (options.metrics ?? defaultMetrics).map((config) => parseMetricConfig(engine, config)),
   };
 }

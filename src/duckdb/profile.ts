@@ -6,6 +6,7 @@ import type {
   ParsedProfileOptions,
   FieldProfile,
   LogicalType,
+  Metric,
   MetricId,
   Profile,
   TableProfile,
@@ -34,6 +35,16 @@ interface ExpressionContext {
   readonly metric: ParsedProfileOptions['metrics'][number];
 }
 
+export type DuckDBMetricExpression = (context: ExpressionContext) => string;
+export type DuckDBMetric = Metric<DuckDBMetricExpression>;
+
+const table: Metric['enable'] = ({ target }) => target === 'table';
+const column: Metric['enable'] = ({ target }) => target === 'column';
+const logicalTypes =
+  (...types: LogicalType[]): Metric['enable'] =>
+  ({ target, field }) =>
+    target === 'column' && !!field && types.includes(field.logicalType);
+
 /** Build an aggregate for valid values. */
 function aggregate(fn: string, { column, field }: ExpressionContext): string {
   if (!field) throw new Error(`${fn} requires a column`);
@@ -46,31 +57,75 @@ function range(fn: string, context: ExpressionContext): string {
   return context.field?.logicalType === 'date' ? `epoch_ms(${expression})` : expression;
 }
 
-// Metrics supported by DuckDB.
 // TODO(profile): Add histograms and quartiles with clear result formats and boundary tests.
-const EXPRESSIONS: Readonly<Record<string, (context: ExpressionContext) => string>> = {
-  row_count: () => 'COUNT(*)',
-  null_count: ({ column }) => `COUNT(*) - COUNT(${column})`,
-  distinct_count: ({ column }) => `COUNT(DISTINCT ${column})`,
-  duplicate_count: ({ column }) => `COUNT(${column}) - COUNT(DISTINCT ${column})`,
-  top_values: ({ table, column, metric }) => {
-    const { limit, maxDistinctRatio } = metric;
-    // Return the most common values.
-    return `CASE WHEN COUNT(DISTINCT ${column}) > COUNT(*) * ${maxDistinctRatio}
+export const DUCKDB_BUILTIN_METRICS: DuckDBMetric[] = [
+  { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
+  { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
+  {
+    id: 'distinct_count',
+    enable: logicalTypes('numeric', 'string', 'boolean', 'date'),
+    expression: ({ column }) => `COUNT(DISTINCT ${column})`,
+  },
+  {
+    id: 'top_values',
+    enable: logicalTypes('string', 'boolean'),
+    options: {
+      limit: {
+        type: 'number',
+        default: 3,
+        validate: (value) => {
+          if (!Number.isSafeInteger(value) || value < 0) {
+            throw new Error('top_values.limit must be a non-negative safe integer');
+          }
+        },
+      },
+      maxDistinctRatio: {
+        type: 'number',
+        default: 0.5,
+        validate: (value) => {
+          if (!Number.isFinite(value) || value < 0 || value > 1) {
+            throw new Error('top_values.maxDistinctRatio must be between 0 and 1');
+          }
+        },
+      },
+    },
+    expression: ({ table, column, metric }) => {
+      const { limit, maxDistinctRatio } = metric;
+      return `CASE WHEN COUNT(DISTINCT ${column}) > COUNT(*) * ${maxDistinctRatio}
       THEN NULL ELSE COALESCE(first((SELECT list(struct_pack(value := v, count := CAST(n AS DOUBLE)) ORDER BY n DESC, v ASC)
         FROM (SELECT ${column} AS v, COUNT(*) AS n FROM ${table}
           WHERE ${column} IS NOT NULL GROUP BY ${column}
           ORDER BY n DESC, v ASC LIMIT ${limit}) AS ranked)), []) END`;
+    },
   },
-  min: (context) => range('min', context),
-  max: (context) => range('max', context),
-  mean: (context) => aggregate('avg', context),
-  sum: (context) => aggregate('sum', context),
-  stddev: (context) => aggregate('stddev_samp', context),
-  median: (context) => aggregate('median', context),
-  min_length: ({ column }) => `MIN(length(CAST(${column} AS VARCHAR)))`,
-  max_length: ({ column }) => `MAX(length(CAST(${column} AS VARCHAR)))`,
-};
+  {
+    id: 'duplicate_count',
+    enable: column,
+    expression: ({ column }) => `COUNT(${column}) - COUNT(DISTINCT ${column})`,
+  },
+  { id: 'min', enable: logicalTypes('numeric', 'date'), expression: (context) => range('min', context) },
+  { id: 'max', enable: logicalTypes('numeric', 'date'), expression: (context) => range('max', context) },
+  {
+    id: 'min_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `MIN(length(CAST(${column} AS VARCHAR)))`,
+  },
+  {
+    id: 'max_length',
+    enable: logicalTypes('string'),
+    expression: ({ column }) => `MAX(length(CAST(${column} AS VARCHAR)))`,
+  },
+  { id: 'mean', enable: logicalTypes('numeric'), expression: (context) => aggregate('avg', context) },
+  { id: 'sum', enable: logicalTypes('numeric'), expression: (context) => aggregate('sum', context) },
+  {
+    id: 'stddev',
+    enable: logicalTypes('numeric'),
+    expression: (context) => aggregate('stddev_samp', context),
+  },
+  { id: 'median', enable: logicalTypes('numeric'), expression: (context) => aggregate('median', context) },
+];
+
+export const DEFAULT_METRICS = ['row_count', 'null_count', 'distinct_count', 'top_values', 'min', 'max', 'mean'];
 
 /**
  * Add query values to the metric results.
@@ -122,12 +177,12 @@ export async function profileTables(
     const addMetrics = (output: Record<string, unknown>, field?: FieldProfile) => {
       for (const metric of metrics) {
         const { id } = metric;
-        const buildExpression = EXPRESSIONS[id];
-        if (!getMetric(id).enable({ target: field ? 'column' : 'table', field }) || !buildExpression) {
+        const definition = getMetric<DuckDBMetric>('duckdb', id);
+        if (!definition.enable({ target: field ? 'column' : 'table', field })) {
           continue;
         }
         pending.push({
-          expression: buildExpression({
+          expression: definition.expression({
             table: sqlIdentifier(name),
             column: field ? sqlIdentifier(field.name) : undefined,
             field,

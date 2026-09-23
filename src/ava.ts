@@ -7,7 +7,6 @@ import { extractDataSchema, stringifySchema } from './util/schema';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
-import { parseProfileOptions } from './profile/options';
 
 import type {
   AVAConfig,
@@ -156,7 +155,7 @@ export class AVA {
       throw new Error('Profiling is not supported by the registered engine.');
     }
 
-    return this.engine.profile(parseProfileOptions(options));
+    return this.engine.profile(options);
   }
 
   /**
