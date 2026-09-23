@@ -11,6 +11,7 @@ import type {
   Profile,
   TableProfile,
 } from '../types';
+import { validateMetricConfig } from '../util/profile';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -71,8 +72,6 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
     enable: logicalTypes('string', 'boolean'),
     options: {
       limit: {
-        type: 'number',
-        default: 3,
         validate: (value) => {
           if (!Number.isSafeInteger(value) || value < 0) {
             throw new Error('top_values.limit must be a non-negative safe integer');
@@ -80,8 +79,6 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
         },
       },
       maxDistinctRatio: {
-        type: 'number',
-        default: 0.5,
         validate: (value) => {
           if (!Number.isFinite(value) || value < 0 || value > 1) {
             throw new Error('top_values.maxDistinctRatio must be between 0 and 1');
@@ -90,7 +87,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
       },
     },
     expression: ({ table, column, metric }) => {
-      const { limit, maxDistinctRatio } = metric;
+      const { limit = 3, maxDistinctRatio = 0.5 } = metric;
       return `CASE WHEN COUNT(DISTINCT ${column}) > COUNT(*) * ${maxDistinctRatio}
       THEN NULL ELSE COALESCE(first((SELECT list(struct_pack(value := v, count := CAST(n AS DOUBLE)) ORDER BY n DESC, v ASC)
         FROM (SELECT ${column} AS v, COUNT(*) AS n FROM ${table}
@@ -180,10 +177,16 @@ export async function profileTables(
     profiles.push(profile);
 
     const pending: Array<{ expression: string; metricId: MetricId; output: Record<string, unknown> }> = [];
+
     const addMetrics = (output: Record<string, unknown>, field?: FieldProfile) => {
       for (const metric of metrics) {
+        if (!validateMetricConfig(metric, BUILTIN_METRICS)) {
+          continue;
+        }
+
         const { id } = metric;
         const definition = getMetric(id);
+
         if (!definition.enable({ target: field ? 'column' : 'table', field })) {
           continue;
         }
@@ -199,10 +202,18 @@ export async function profileTables(
         });
       }
     };
+
+    const addTableMetrics = (table: TableProfile) => {
+      addMetrics(table.metrics);
+    };
+    const addFieldMetrics = (field: FieldProfile) => {
+      addMetrics(field.metrics, field);
+    };
+
     // Add metrics for the table.
-    addMetrics(profile.metrics);
+    addTableMetrics(profile);
     // Add metrics for each field (column) in the table.
-    profile.fields.forEach((field) => addMetrics(field.metrics, field));
+    profile.fields.forEach(addFieldMetrics);
 
     if (!pending.length) continue;
 

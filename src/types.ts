@@ -437,10 +437,6 @@ export type MetricId = string;
  * The rules for one metric option.
  */
 export type MetricOption = {
-  /** The value type. */
-  type: 'number';
-  /** The value used when the option is not set. */
-  default: number;
   /** Throws if the value is not allowed. */
   validate(value: number): void;
 };
