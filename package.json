@@ -58,7 +58,7 @@
     "lib"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
     "lint": "eslint --ext .ts,.tsx src __tests__",
@@ -74,11 +74,11 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.0.0",
+    "@ai-sdk/openai": "^4.0.73",
     "@duckdb/node-api": "^1.5.5-r.5",
     "@supabase/pg-parser": "^0.1.7",
     "adm-zip": "^0.5.17",
-    "ai": "^3.4.33",
+    "ai": "^7.0.112",
     "csv-parse": "^5.6.0",
     "ssh2": "^1.17.0",
     "tslib": "^2.3.1",
@@ -86,7 +86,7 @@
   },
   "devDependencies": {
     "@types/adm-zip": "^0.5.8",
-    "@types/node": "^18.0.0",
+    "@types/node": "^22.20.4",
     "@types/ssh2": "^1.15.5",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
@@ -98,7 +98,7 @@
     "eslint-plugin-import": "^2.24.1",
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2",
-    "typescript": "^4.9.3",
+    "typescript": "^5.9.3",
     "vite": "^7.3.6",
     "vitest": "4.1.11"
   },

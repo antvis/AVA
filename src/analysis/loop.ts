@@ -10,8 +10,8 @@
  * final SQL attempt keep the loop bounded.
  */
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
 
+import { languageModel } from '../util/model';
 import { stringifyProfile, stringifySchema } from '../util/context';
 
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
@@ -25,7 +25,7 @@ function codeBlocks(response: string, language: string): string[] {
   );
 }
 
-function loopPrompt(language: QueryLanguage): string {
+function loopPrompt(language: QueryLanguage, includeSummary: boolean): string {
   return `You are a data analysis agent. Answer the user's question by querying the provided data source.
 
 # 1. RESPONSE PROTOCOL
@@ -43,17 +43,23 @@ Action-specific syntax:
 - [EXPLORE] must contain at least one fenced ${language.fence} code block. Multiple blocks are allowed.
 - [REFINE] must contain reasoning and a next-step plan, but no executable code block.
 - [SQL] must contain exactly one fenced ${language.fence} code block and no other code block.
-- [CONFIRM] must contain verification and a concise conclusion, but no executable code block.
+- [CONFIRM] must contain verification${
+    includeSummary ? ' and a concise conclusion' : ' only, without a summary or conclusion'
+  }, but no executable code block.
 
 # 2. EXECUTION DIALECT
 
-The runtime executes ${language.name}. Generate every executable statement directly in this language. The runtime will validate and execute it without translation.
+The runtime executes ${
+    language.name
+  }. Generate every executable statement directly in this language. The runtime will validate and execute it without translation.
 
 The protocol tag remains [SQL] for compatibility even when the execution dialect is not SQL.
 
 # 3. OBJECTIVE
 
-Produce the smallest correct ${language.name} statement that answers the original question. Use database evidence instead of guessing values, formats, relationships, or field meaning.
+Produce the smallest correct ${
+    language.name
+  } statement that answers the original question. Use database evidence instead of guessing values, formats, relationships, or field meaning.
 
 Execution success alone is not correctness. Verify that the result has the intended filters, granularity, aggregation, joins, and plausible values.
 
@@ -139,8 +145,7 @@ Format:
 [CONFIRM]
 Verification:
 - <what was checked>
-Conclusion:
-<concise answer based on the executed result>
+${includeSummary ? 'Conclusion:\n<concise answer based on the executed result>' : ''}
 
 # 6. FINAL SELF-CHECK
 
@@ -167,11 +172,6 @@ const transcriptPrompt = (transcript: string[]) => {
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
 export const loopAnalysis: AnalysisStrategy = async (query, config, { context: { schema, profile }, engine, llm }) => {
-  const openai = createOpenAI({
-    apiKey: llm.apiKey,
-    baseURL: llm.baseURL,
-  });
-
   const context = profile ? stringifyProfile(profile) : stringifySchema(schema);
   const transcript: string[] = [];
   let sql: string | undefined;
@@ -180,7 +180,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
   const maxSteps = (config.strategy as { maxSteps?: number })?.maxSteps ?? DEFAULT_MAX_STEPS;
 
   for (let step = 0; step < maxSteps; step += 1) {
-    const prompt = `${loopPrompt(engine.language)}
+    const prompt = `${loopPrompt(engine.language, config.includeSummary !== false)}
 
     # DATABASE CONTEXT
 
@@ -191,7 +191,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
     ${transcriptPrompt(transcript)}`;
 
     const response = await generateText({
-      model: openai(llm.model) as any,
+      model: languageModel(llm),
       maxRetries: llm.maxRetries ?? 3,
       prompt,
     });
@@ -210,7 +210,12 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
         transcript.push('Runtime:\nNo final SQL has executed successfully yet. Continue the loop.');
         continue;
       }
-      return { query, ...result, sql, text: text.replace(/^\[CONFIRM\]\s*/, '') };
+      return {
+        query,
+        ...result,
+        sql,
+        text: config.includeSummary === false ? '' : text.replace(/^\[CONFIRM\]\s*/, ''),
+      };
     }
 
     const queries = codeBlocks(text, engine.language.fence);
@@ -257,16 +262,19 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
       query,
       ...result,
       sql,
-      text: lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(result.data, null, 2),
+      text:
+        config.includeSummary === false
+          ? ''
+          : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(result.data, null, 2),
     };
   }
 
   // maxSteps limits the normal loop. If it ends without final SQL, allow exactly one
   // history-aware SQL-only turn and adopt its executed result without another CONFIRM.
   const finalResponse = await generateText({
-    model: openai(llm.model) as any,
+    model: languageModel(llm),
     maxRetries: llm.maxRetries ?? 3,
-    prompt: `${loopPrompt(engine.language)}
+    prompt: `${loopPrompt(engine.language, config.includeSummary !== false)}
 
     # DATABASE CONTEXT
 
@@ -297,7 +305,10 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
       query,
       ...execution,
       sql: statement,
-      text: lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
+      text:
+        config.includeSummary === false
+          ? ''
+          : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
     };
   } catch (error) {
     throw new Error(

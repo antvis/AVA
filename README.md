@@ -195,7 +195,7 @@ Core APIs in AVA:
 - `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
 - `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
-- `analysis(query, config?)`: run data analysis using the `direct` (default) or `loop` strategy.
+- `analysis(query, config?)`: run data analysis using various strategies.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 
@@ -231,7 +231,8 @@ Input:
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `query` | `string` | — | Natural-language analysis question. |
-| `config.strategy?` | `{ type: 'direct' } \| { type: 'loop'; maxSteps?: number }` | `{ type: 'direct' }` | Analysis strategy; loop `maxSteps` defaults to 12. |
+| `config.strategy?` | `{ type: 'direct' } \| { type: 'loop'; maxSteps?: number } \| { type: 'jev' }` | `{ type: 'direct' }` | Analysis strategy; loop `maxSteps` defaults to 12. |
+| `config.includeSummary?` | `boolean` | `true` | Whether to include the natural-language summary in the output. |
 | `config.maxRows?` | `number` | `200` | Maximum returned rows; capped at 10,000. |
 | `config.maxResultBytes?` | `number` | `1 MiB` | Maximum serialized UTF-8 result size; individual fields over 1 MiB are rejected. |
 
@@ -240,7 +241,7 @@ Output:
 | Field | Type | Description |
 | --- | --- | --- |
 | `query` | `string` | Original question. |
-| `text` | `string` | Natural-language summary. |
+| `text` | `string` | Natural-language summary; empty when `includeSummary` is false. |
 | `markdown?` | `string` | Markdown content. |
 | `data` | `Record<string, unknown>[]` | Result rows. |
 | `schema` | `QueryColumn[]` | Result columns. |

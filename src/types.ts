@@ -2,6 +2,8 @@
  * Core type definitions for AVA v4
  */
 
+import type { LanguageModelUsage } from 'ai';
+
 /**
  * Minimal structural type for a database connection used by LoadedSource.
  * Matches the subset of @duckdb/node-api's DuckDBConnection that loaders use,
@@ -16,16 +18,18 @@ export interface DuckDBConnection {
  * LLM configuration
  */
 export interface LLMConfig {
+  /** Defaults to OpenAI-compatible Chat Completions. Gateway reads AI_GATEWAY_API_KEY. */
+  provider?: 'openai' | 'gateway';
   /** Model name (e.g., 'gpt-4', 'gpt-3.5-turbo') */
   model: string;
   /** API key for the LLM provider */
-  apiKey: string;
+  apiKey?: string;
   /** Optional API base URL */
   baseURL?: string;
   /** Maximum retries for retryable model API failures. Default 3. */
   maxRetries?: number;
   /** Optional callback for SQL-generation token usage */
-  onQueryUsage?: (usage: { promptTokens: number; completionTokens: number; totalTokens: number }) => void;
+  onQueryUsage?: (usage: LanguageModelUsage) => void;
 }
 
 /**
@@ -63,6 +67,8 @@ export interface AVAConfig {
 
 /** Per-analysis options. */
 export interface AnalysisConfig extends ExecutionOptions {
+  /** Include a natural-language summary. Defaults to true; false returns empty text. */
+  includeSummary?: boolean;
   /** Strategy for this analysis (defaults to direct). */
   strategy?: AnalysisStrategyConfig;
 }
@@ -561,7 +567,7 @@ export interface AnalysisEngine {
   /** Compute statistics for the loaded data. */
   profile?(options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
-  getDSL(query: string): Promise<string>;
+  getDSL(query: string, context?: DataContext): Promise<string>;
   /** Execute one DSL statement with a bounded result. */
   execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
   /** Release resources (temp files, database connections) */
@@ -595,7 +601,7 @@ export interface ExecutionResult<T = Record<string, unknown>> {
 }
 
 /** Built-in analysis strategies. */
-export type AnalysisStrategyConfig = { type: 'direct' } | { type: 'loop'; maxSteps?: number };
+export type AnalysisStrategyConfig = { type: 'direct' } | { type: 'loop'; maxSteps?: number } | { type: 'jev' };
 
 /** Dataset metadata supplied to model-facing consumers. */
 export interface DataContext {
@@ -634,7 +640,7 @@ export interface QueryDialect<TContext = void> {
 export interface AnalysisResponse<T = Record<string, unknown>> extends ExecutionResult<T> {
   /** The original user query */
   query: string;
-  /** The analysis result as text */
+  /** The analysis result as text; empty when includeSummary is false. */
   text: string;
   /** Optional markdown content */
   markdown?: string;

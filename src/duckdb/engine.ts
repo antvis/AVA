@@ -21,6 +21,7 @@ import type {
   AnalysisEngine,
   Profile,
   ProfileOptions,
+  DataContext,
   DataSourceConfig,
   DuckDBEngineOptions,
   Schema,
@@ -136,10 +137,10 @@ export class DuckDBEngine implements AnalysisEngine {
     return this.schema!;
   }
 
-  async getDSL(query: string): Promise<string> {
+  async getDSL(query: string, context?: DataContext): Promise<string> {
     if (!this.schema) throw new Error('No data loaded. Please call load() first.');
 
-    return this.queryDialect.getDSL(query, { schema: this.schema, profile: this.dataProfile ?? undefined });
+    return this.queryDialect.getDSL(query, context ?? { schema: this.schema, profile: this.dataProfile ?? undefined });
   }
 
   // TODO(profile, on demand): Cache only with reliable data versions and request-based invalidation.
