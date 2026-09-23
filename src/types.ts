@@ -601,7 +601,14 @@ export interface ExecutionResult<T = Record<string, unknown>> {
 }
 
 /** Built-in analysis strategies. */
-export type AnalysisStrategyConfig = { type: 'direct' } | { type: 'loop'; maxSteps?: number } | { type: 'jev' };
+export type AnalysisStrategyConfig =
+  | {
+      type: 'direct';
+      /** Execution correction retries after the initial attempt. defaults to 2. */
+      maxRetries?: number;
+    }
+  | { type: 'loop'; maxSteps?: number }
+  | { type: 'jev' };
 
 /** Dataset metadata supplied to model-facing consumers. */
 export interface DataContext {
