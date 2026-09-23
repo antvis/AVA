@@ -19,6 +19,11 @@ import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 import type { AnalysisEngine, DataSourceConfig, LLMConfig, Schema, ExecutionOptions, ExecutionResult } from '../types';
 
 export class InterpreterEngine implements AnalysisEngine {
+  readonly language = {
+    name: 'JavaScript',
+    fence: 'javascript',
+  };
+
   private data: any[] | null = null;
 
   constructor(private readonly llmConfig: LLMConfig) {}

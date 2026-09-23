@@ -6,6 +6,7 @@ import type { AnalysisEngine } from '../src/types';
 
 vi.mock('ai', () => ({
   generateText: vi.fn().mockResolvedValue({ text: 'One result.' }),
+  experimental_evaluate: vi.fn(),
 }));
 
 vi.mock('@ai-sdk/openai', () => ({

@@ -191,9 +191,34 @@ Core APIs in AVA:
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
 - `suggest(count?)`: generate recommended analysis questions.
-- `analysis(query, config?)`: run data analysis and return `{ query, text, data, truncated?, truncatedBy?, schema, rowCount?, sql? }`; `truncated: true` and `truncatedBy` are present only when `maxRows` or `maxResultBytes` truncated the result. `data` is capped by `maxRows` (default 200, maximum 10,000) and `maxResultBytes` (default 1 MiB). Individual fields over 1 MiB are rejected. `config.strategy` selects the strategy (default: `direct`).
+- `analysis(query, config?)`: run data analysis using the `direct` (default) or `loop` strategy.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
+
+#### `analysis(query, config?)`
+
+Input:
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `query` | `string` | — | Natural-language analysis question. |
+| `config.strategy?` | `{ type: 'direct' } \| { type: 'loop'; maxSteps?: number }` | `{ type: 'direct' }` | Analysis strategy; loop `maxSteps` defaults to 12. |
+| `config.maxRows?` | `number` | `200` | Maximum returned rows; capped at 10,000. |
+| `config.maxResultBytes?` | `number` | `1 MiB` | Maximum serialized UTF-8 result size; individual fields over 1 MiB are rejected. |
+
+Output:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `query` | `string` | Original question. |
+| `text` | `string` | Natural-language summary. |
+| `markdown?` | `string` | Markdown content. |
+| `data` | `Record<string, unknown>[]` | Result rows. |
+| `schema` | `QueryColumn[]` | Result columns. |
+| `truncated?` | `true` | Whether the result was truncated. |
+| `truncatedBy?` | `'maxRows' \| 'maxResultBytes'` | Limit that truncated the result. |
+| `rowCount?` | `number` | Total rows, when known. |
+| `sql?` | `string` | Executed SQL, when available. |
 
 Minimal usage:
 

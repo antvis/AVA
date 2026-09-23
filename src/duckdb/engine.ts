@@ -54,6 +54,11 @@ export class QueryTimeoutError extends Error {
 }
 
 export class DuckDBEngine implements AnalysisEngine {
+  readonly language = {
+    name: 'DuckDB SQL dialect',
+    fence: 'sql',
+  };
+
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
   private schema: Schema | null = null;

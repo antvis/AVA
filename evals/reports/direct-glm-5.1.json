@@ -14,27 +14,27 @@
     "model": "GLM-5.1"
   },
   "summary": {
-    "samples": 1830,
+    "samples": 1789,
     "correct": 1514,
     "wrong": 233,
-    "missing": 83,
-    "accuracy": 0.8273,
+    "missing": 42,
+    "accuracy": 0.8463,
     "timingSeconds": {
-      "average": 18.98,
-      "minimum": 0.15,
+      "average": 19.41,
+      "minimum": 1.79,
       "maximum": 377.57,
-      "median": 11.53
+      "median": 11.79
     },
     "tokens": {
       "prompt": 5434408,
       "completion": 1025792,
       "total": 6460200,
-      "average": 3534
+      "average": 3611
     }
   },
   "errors": {
     "wrongOrMissing": {
-      "count": 316
+      "count": 275
     },
     "categories": [
       {
@@ -50,7 +50,7 @@
       {
         "type": "missing",
         "category": "DuckDB native callback failed",
-        "count": 45
+        "count": 4
       },
       {
         "type": "missing",

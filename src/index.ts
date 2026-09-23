@@ -26,6 +26,7 @@ export type {
   TableRelation,
   FieldMetadata,
   AnalysisEngine,
+  QueryLanguage,
   QueryDialect,
   AnalysisResponse,
   AnalysisStrategy,

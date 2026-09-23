@@ -106,6 +106,11 @@ export class SupabaseApiError extends Error {
 }
 
 export class SupabaseEngine implements AnalysisEngine {
+  readonly language = {
+    name: 'PostgreSQL SQL dialect',
+    fence: 'sql',
+  };
+
   private schema: Schema | null = null;
   private connection: { accessToken: string; projectRef: string } | null = null;
   private readonly queryDialect: PostgreSQLQueryDialect;
