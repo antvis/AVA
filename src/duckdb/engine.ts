@@ -151,10 +151,8 @@ export class DuckDBEngine implements AnalysisEngine {
     const defaultOptions = { metrics: DEFAULT_METRICS };
     const parsedOptions = parseProfileOptions(options, defaultOptions);
 
-    const schema = this.schema;
-    const profile = await profileTables(this.connection, schema, parsedOptions);
-    if (this.schema === schema) this.dataProfile = profile;
-    return profile;
+    this.dataProfile = await profileTables(this.connection, this.schema, parsedOptions);
+    return this.dataProfile;
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
