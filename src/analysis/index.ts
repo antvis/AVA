@@ -1,6 +1,6 @@
 import { directAnalysis } from './direct';
 import { loopAnalysis } from './loop';
-import { jevAnalysis } from './jev';
+import { subsetAnalysis } from './subset';
 
 import type { AnalysisConfig, AnalysisResponse, AnalysisRuntime } from '../types';
 
@@ -12,8 +12,8 @@ export function analyze(query: string, config: AnalysisConfig, runtime: Analysis
       return directAnalysis(query, config, runtime);
     case 'loop':
       return loopAnalysis(query, config, runtime);
-    case 'jev':
-      return jevAnalysis(query, config, runtime);
+    case 'subset':
+      return subsetAnalysis(query, config, runtime);
     default:
       throw new Error(`Unknown analysis strategy: ${strategy}`);
   }

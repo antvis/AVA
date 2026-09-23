@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { experimental_evaluate as evaluate, generateText } from 'ai';
 
 import { analyze } from '../src/analysis';
-import { selectJevContext } from '../src/analysis/jev';
+import { selectSubsetContext } from '../src/analysis/subset';
 import { DuckDBQueryDialect } from '../src/query/duckdb';
 
 import type { Experimental_EvaluationResult } from 'ai';
@@ -59,11 +59,11 @@ function selection(ids: string[]) {
 
 beforeEach(() => vi.resetAllMocks());
 
-describe('Jev strategy', () => {
+describe('Subset strategy', () => {
   it('passes only schema to Jev and projects profile, join keys, and indexes without mutating context', async () => {
     vi.mocked(evaluate).mockResolvedValue(selection(['t0f1', 't1f1']));
     const before = JSON.stringify({ schema, profile });
-    const context = await selectJevContext('Total amount by customer name', { schema, profile });
+    const context = await selectSubsetContext('Total amount by customer name', { schema, profile });
     expect(evaluate).toHaveBeenCalledWith(
       expect.objectContaining({
         model: 'typesafe-ai/jev',
@@ -86,19 +86,19 @@ describe('Jev strategy', () => {
       .mockResolvedValueOnce(selection(['t0']))
       .mockResolvedValueOnce(selection([]));
     const context = { schema, profile };
-    expect((await selectJevContext('Count orders', context)).schema.tables).toEqual([
+    expect((await selectSubsetContext('Count orders', context)).schema.tables).toEqual([
       { ...schema.tables[0], fields: [], columnCount: 0 },
     ]);
-    expect(await selectJevContext('Unknown question', context)).toBe(context);
+    expect(await selectSubsetContext('Unknown question', context)).toBe(context);
   });
 
   it('rejects missing answers and propagates evaluator failures', async () => {
     vi.mocked(evaluate)
       .mockResolvedValueOnce({ answers: {} } as never)
       .mockRejectedValueOnce(new Error('Unavailable'));
-    await expect(selectJevContext('Question', { schema })).rejects.toThrow('Invalid Jev selection');
-    await expect(selectJevContext('Question', { schema })).rejects.toThrow('Unavailable');
-    await expect(selectJevContext('Question', { schema: { tables: [] } })).rejects.toThrow('non-empty schema');
+    await expect(selectSubsetContext('Question', { schema })).rejects.toThrow('Invalid subset selection');
+    await expect(selectSubsetContext('Question', { schema })).rejects.toThrow('Unavailable');
+    await expect(selectSubsetContext('Question', { schema: { tables: [] } })).rejects.toThrow('non-empty schema');
   });
 
   it.each([true, false])('passes reduced profile through direct with includeSummary=%s', async (includeSummary) => {
@@ -114,7 +114,7 @@ describe('Jev strategy', () => {
     } as unknown as AnalysisEngine;
     const result = await analyze(
       'Total amount',
-      { strategy: { type: 'jev' }, maxRows: 10, includeSummary },
+      { strategy: { type: 'subset' }, maxRows: 10, includeSummary },
       {
         context: { schema },
         engine,

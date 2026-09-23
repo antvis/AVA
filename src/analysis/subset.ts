@@ -7,9 +7,9 @@ import { directAnalysis } from './direct';
 import type { AnalysisStrategy, DataContext, Schema, TableSchema } from '../types';
 
 /** Select schema metadata first; profile values never enter the evaluator. */
-export async function selectJevContext(query: string, context: DataContext, maxRetries = 3): Promise<DataContext> {
+export async function selectSubsetContext(query: string, context: DataContext, maxRetries = 3): Promise<DataContext> {
   const { schema, profile } = context;
-  if (!schema.tables.length) throw new Error('Jev requires a non-empty schema');
+  if (!schema.tables.length) throw new Error('Subset requires a non-empty schema');
 
   const questions: Record<string, { type: 'boolean'; instructions: string }> = {};
   schema.tables.forEach((table, i) => {
@@ -44,7 +44,7 @@ export async function selectJevContext(query: string, context: DataContext, maxR
       answer.probability < 0 ||
       answer.probability > 1
     ) {
-      throw new Error(`Invalid Jev selection for ${id}`);
+      throw new Error(`Invalid subset selection for ${id}`);
     }
     return answer.probability >= 0.5;
   };
@@ -88,8 +88,8 @@ export async function selectJevContext(query: string, context: DataContext, maxR
 }
 
 /** Run direct analysis with only the selected context. */
-export const jevAnalysis: AnalysisStrategy = async (query, config, runtime) => {
+export const subsetAnalysis: AnalysisStrategy = async (query, config, runtime) => {
   const profile = runtime.context.profile ?? (await runtime.engine.profile?.());
-  const context = await selectJevContext(query, { ...runtime.context, profile }, runtime.llm.maxRetries);
+  const context = await selectSubsetContext(query, { ...runtime.context, profile }, runtime.llm.maxRetries);
   return directAnalysis(query, config, { ...runtime, context });
 };

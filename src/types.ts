@@ -608,7 +608,7 @@ export type AnalysisStrategyConfig =
       maxRetries?: number;
     }
   | { type: 'loop'; maxSteps?: number }
-  | { type: 'jev' };
+  | { type: 'subset' };
 
 /** Dataset metadata supplied to model-facing consumers. */
 export interface DataContext {
