@@ -11,12 +11,23 @@ import { createOpenAI } from '@ai-sdk/openai';
 
 import { extractDataSchema, stringifySchema } from '../util/schema';
 import { executionResult, inferQuerySchema } from '../util/result';
+import { DEFAULT_METRICS, parseProfileOptions } from '../util/profile';
 
+import { profileTables } from './profile';
 import { executeCode } from './sandbox';
 import { loadSource } from './loaders';
 import { STAT_OPS_PROMPT, STAT_OPS_EXAMPLE } from './stat';
 
-import type { AnalysisEngine, DataSourceConfig, LLMConfig, Schema, ExecutionOptions, ExecutionResult } from '../types';
+import type {
+  Profile,
+  ProfileOptions,
+  AnalysisEngine,
+  DataSourceConfig,
+  LLMConfig,
+  Schema,
+  ExecutionOptions,
+  ExecutionResult,
+} from '../types';
 
 export class InterpreterEngine implements AnalysisEngine {
   readonly language = {
@@ -25,16 +36,20 @@ export class InterpreterEngine implements AnalysisEngine {
   };
 
   private data: any[] | null = null;
+  private schema: Schema | null = null;
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
   async load(config: DataSourceConfig): Promise<Schema> {
+    this.data = null;
+    this.schema = null;
     if (!['csv', 'json', 'text'].includes(config.type)) {
       throw new Error(`InterpreterEngine only supports csv/json/text sources, got: ${config.type}`);
     }
 
     this.data = await loadSource(config as any, this.llmConfig);
-    return extractDataSchema(this.data);
+    this.schema = extractDataSchema(this.data);
+    return this.schema;
   }
 
   /**
@@ -44,6 +59,11 @@ export class InterpreterEngine implements AnalysisEngine {
    */
   getData(): any[] | null {
     return this.data;
+  }
+
+  async profile(options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.data || !this.schema) throw new Error('No data loaded. Please call load() first.');
+    return profileTables(this.data, this.schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
   async getDSL(query: string): Promise<string> {
@@ -97,5 +117,6 @@ Now generate the code:`;
 
   async dispose(): Promise<void> {
     this.data = null;
+    this.schema = null;
   }
 }

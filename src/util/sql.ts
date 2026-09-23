@@ -1,5 +1,5 @@
 /**
- * SQL helpers for the DuckDB engine.
+ * Shared SQL quoting/composition helpers and DuckDB reader options.
  */
 
 import type { CSVReadOptions, FileFormat } from '../types';

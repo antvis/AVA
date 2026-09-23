@@ -8,93 +8,26 @@
  * obtains the access token and passes it in the data source config.
  */
 
-import { PostgreSQLQueryDialect } from '../query/postgresql';
-import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../util/result';
-import { rowObjects2Schema } from '../util/schema';
-import { sqlStringLiteral, sqlUnionAll } from '../util/sql';
+import { PostgreSQLQueryDialect } from '../../query/postgresql';
+import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
+import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
-import type { AnalysisEngine, DataSourceConfig, LLMConfig, Schema, ExecutionOptions, ExecutionResult } from '../types';
+import { profileTables } from './profile';
+import { getSupabaseSchema } from './schema';
 
-/** Restrict all branches to readable relations in the requested schema. */
-function exposedSQL(schema: string): string {
-  return `
-SELECT t.oid, t.relname
-FROM pg_catalog.pg_class t
-JOIN pg_catalog.pg_namespace n ON n.oid = t.relnamespace
-WHERE n.nspname = ${sqlStringLiteral(schema)}
-  AND t.relkind IN ('r', 'p', 'v', 'm', 'f')
-  AND has_table_privilege(t.oid, 'SELECT')`.trim();
-}
-
-function tablesSQL(): string {
-  return `
-SELECT
-  'table' AS kind,
-  relname AS table_name,
-  '{}'::text AS metadata
-FROM exposed`.trim();
-}
-
-/** Preserve native types and column order; exclude dropped/system columns. */
-function columnsSQL(): string {
-  return `
-SELECT
-  'column' AS kind,
-  t.relname AS table_name,
-  json_build_object(
-    'name', a.attname,
-    'type', pg_catalog.format_type(a.atttypid, a.atttypmod),
-    'nullable', NOT a.attnotnull,
-    'position', a.attnum
-  )::text AS metadata
-FROM exposed t
-JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid
-WHERE a.attnum > 0 AND NOT a.attisdropped`.trim();
-}
-
-/** Preserve index DDL and primary/unique flags. */
-function indexesSQL(): string {
-  return `
-SELECT
-  'index' AS kind,
-  t.relname AS table_name,
-  json_build_object(
-    'name', ic.relname,
-    'unique', i.indisunique,
-    'primary', i.indisprimary,
-    'definition', pg_catalog.pg_get_indexdef(i.indexrelid)
-  )::text AS metadata
-FROM exposed t
-JOIN pg_catalog.pg_index i ON i.indrelid = t.oid
-JOIN pg_catalog.pg_class ic ON ic.oid = i.indexrelid`.trim();
-}
-
-/** Pair composite FK columns by position; both tables must be exposed. */
-function foreignKeysSQL(): string {
-  return `
-SELECT
-  'foreign-key-column' AS kind,
-  t.relname AS table_name,
-  json_build_object(
-    'name', c.conname,
-    'column', a.attname,
-    'referencedTable', rt.relname,
-    'referencedColumn', ra.attname,
-    'position', k.ordinality
-  )::text AS metadata
-FROM pg_catalog.pg_constraint c
-JOIN exposed t ON t.oid = c.conrelid
-JOIN exposed rt ON rt.oid = c.confrelid
-CROSS JOIN LATERAL unnest(c.conkey, c.confkey) WITH ORDINALITY AS k(local_attnum, remote_attnum, ordinality)
-JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid AND a.attnum = k.local_attnum
-JOIN pg_catalog.pg_attribute ra ON ra.attrelid = rt.oid AND ra.attnum = k.remote_attnum
-WHERE c.contype = 'f'`.trim();
-}
+import type {
+  Profile,
+  ProfileOptions,
+  AnalysisEngine,
+  DataSourceConfig,
+  LLMConfig,
+  Schema,
+  ExecutionOptions,
+  ExecutionResult,
+} from '../../types';
 
 const SUPABASE_API_BASE = 'https://api.supabase.com';
 const REQUEST_TIMEOUT_MS = 30_000;
-/** Only the public schema is read — Supabase user tables live there by default. */
-const SUPABASE_SCHEMA = 'public';
 
 export class SupabaseApiError extends Error {
   constructor(message: string, status: number) {
@@ -120,12 +53,28 @@ export class SupabaseEngine implements AnalysisEngine {
   }
 
   async load(config: DataSourceConfig): Promise<Schema> {
+    this.schema = null;
+    this.connection = null;
     if (config.type !== 'supabase') {
       throw new Error(`SupabaseEngine only supports 'supabase' data sources, got '${config.type}'`);
     }
     this.connection = config.options;
-    this.schema = await this.getSchema();
+    try {
+      this.schema = await getSupabaseSchema((sql) => this.runQuery(sql));
+    } catch (error) {
+      this.connection = null;
+      throw error;
+    }
     return this.schema;
+  }
+
+  async profile(options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.schema || !this.connection) throw new Error('No data loaded. Please call load() first.');
+    return profileTables(
+      (sql) => this.runQuery(sql),
+      this.schema,
+      parseProfileOptions(options, { metrics: DEFAULT_METRICS })
+    );
   }
 
   async getDSL(query: string): Promise<string> {
@@ -144,8 +93,10 @@ export class SupabaseEngine implements AnalysisEngine {
     return executionResult(rows, inferQuerySchema(rows), options);
   }
 
-  /** Stateless — nothing to release. */
-  async dispose(): Promise<void> {}
+  async dispose(): Promise<void> {
+    this.schema = null;
+    this.connection = null;
+  }
 
   /**
    * Execute a read-only SQL query through the Management API and return the
@@ -183,18 +134,5 @@ export class SupabaseEngine implements AnalysisEngine {
 
     const payload = (await response.json()) as unknown;
     return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
-  }
-
-  /** One read-only catalog query for fields, indexes and foreign keys. */
-  private async getSchema(): Promise<Schema> {
-    const sql = `WITH exposed AS (\n${exposedSQL(SUPABASE_SCHEMA)}\n)\n${sqlUnionAll([
-      tablesSQL(),
-      columnsSQL(),
-      indexesSQL(),
-      foreignKeysSQL(),
-    ])}`;
-
-    const rows = await this.runQuery(sql);
-    return rowObjects2Schema(rows);
   }
 }

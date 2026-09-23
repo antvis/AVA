@@ -1,4 +1,5 @@
 import { sqlIdentifier } from '../util/sql';
+import { validateMetricConfig, table, column, logicalTypes, TOP_VALUES_OPTIONS } from '../util/profile';
 
 import type {
   DuckDBConnection,
@@ -12,7 +13,6 @@ import type {
   TableProfile,
   TableSchema,
 } from '../types';
-import { validateMetricConfig } from '../util/profile';
 
 /** Map a database type to a profile type. */
 export function logicalType(nativeType: string): LogicalType {
@@ -40,13 +40,6 @@ interface ExpressionContext {
 export type DuckDBMetricExpression = (context: ExpressionContext) => string;
 export type DuckDBMetric = Metric<DuckDBMetricExpression>;
 
-const table: Metric['enable'] = ({ target }) => target === 'table';
-const column: Metric['enable'] = ({ target }) => target === 'column';
-const logicalTypes =
-  (...types: LogicalType[]): Metric['enable'] =>
-  ({ target, field }) =>
-    target === 'column' && !!field && types.includes(field.logicalType);
-
 /** Build an aggregate for valid values. */
 function aggregate(fn: string, { column, field }: ExpressionContext): string {
   if (!field) throw new Error(`${fn} requires a column`);
@@ -71,22 +64,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   {
     id: 'top_values',
     enable: logicalTypes('string', 'boolean'),
-    options: {
-      limit: {
-        validate: (value) => {
-          if (!Number.isSafeInteger(value) || value < 0) {
-            throw new Error('top_values.limit must be a non-negative safe integer');
-          }
-        },
-      },
-      maxDistinctRatio: {
-        validate: (value) => {
-          if (!Number.isFinite(value) || value < 0 || value > 1) {
-            throw new Error('top_values.maxDistinctRatio must be between 0 and 1');
-          }
-        },
-      },
-    },
+    options: TOP_VALUES_OPTIONS,
     expression: ({ table, column, metric }) => {
       const { limit = 3, maxDistinctRatio = 0.5 } = metric;
       return `CASE WHEN COUNT(DISTINCT ${column}) > COUNT(*) * ${maxDistinctRatio}
@@ -123,7 +101,7 @@ export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'median', enable: logicalTypes('numeric'), expression: (context) => aggregate('median', context) },
 ];
 
-export const DEFAULT_METRICS = ['row_count', 'null_count', 'distinct_count', 'top_values', 'min', 'max', 'mean'];
+export { DEFAULT_METRICS } from '../util/profile';
 
 function getMetric(id: MetricId): DuckDBMetric {
   const metric = BUILTIN_METRICS.find((definition) => definition.id === id);
