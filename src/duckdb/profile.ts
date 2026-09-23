@@ -58,7 +58,7 @@ function range(fn: string, context: ExpressionContext): string {
 }
 
 // TODO(profile): Add histograms and quartiles with clear result formats and boundary tests.
-export const DUCKDB_BUILTIN_METRICS: DuckDBMetric[] = [
+export const BUILTIN_METRICS: DuckDBMetric[] = [
   { id: 'row_count', enable: table, expression: () => 'COUNT(*)' },
   { id: 'null_count', enable: column, expression: ({ column }) => `COUNT(*) - COUNT(${column})` },
   {
@@ -128,7 +128,7 @@ export const DUCKDB_BUILTIN_METRICS: DuckDBMetric[] = [
 export const DEFAULT_METRICS = ['row_count', 'null_count', 'distinct_count', 'top_values', 'min', 'max', 'mean'];
 
 function getMetric(id: MetricId): DuckDBMetric {
-  const metric = DUCKDB_BUILTIN_METRICS.find((definition) => definition.id === id);
+  const metric = BUILTIN_METRICS.find((definition) => definition.id === id);
   if (!metric) throw new Error(`Unknown metric: ${id}`);
   return metric;
 }

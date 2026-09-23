@@ -5,13 +5,17 @@ import type { Metric, MetricConfig, ProfileOptions, ParsedProfileOptions } from 
  */
 export function parseMetricConfig(definitions: Metric[], config: MetricConfig): Exclude<MetricConfig, string> {
   const { id, ...configured } = typeof config === 'string' ? { id: config } : config;
+
+  // Check if the metric is available
   const definition = definitions.find((metric) => metric.id === id);
   if (!definition) throw new Error(`Unknown metric: ${id}`);
-  const options = definition.options ?? {};
 
+  // Check if option names are valid for the metric
+  const options = definition.options ?? {};
   const unknown = Object.keys(configured).find((name) => !Object.prototype.hasOwnProperty.call(options, name));
   if (unknown) throw new Error(`Unknown option for ${definition.id}: ${unknown}`);
 
+  // Check option value types and constraints after applying defaults
   const resolved: Record<string, number> = {};
   for (const [name, option] of Object.entries(options)) {
     const value = configured[name] === undefined ? option.default : configured[name];
@@ -32,10 +36,14 @@ export function parseMetricConfig(definitions: Metric[], config: MetricConfig): 
  */
 export function parseProfileOptions(
   options: ProfileOptions = {},
-  definitions: Metric[] = [],
-  defaultMetrics: MetricConfig[] = []
+  defaultOptions: ProfileOptions,
+  definitions: Metric[] = []
 ): ParsedProfileOptions {
+  if (!options.metrics) {
+    options.metrics = defaultOptions.metrics;
+  }
+
   return {
-    metrics: (options.metrics ?? defaultMetrics).map((config) => parseMetricConfig(definitions, config)),
+    metrics: (options.metrics ?? []).map((config) => parseMetricConfig(definitions, config)),
   };
 }
