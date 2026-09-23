@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { sqlIdentifier, sqlStringLiteral, sqlUnionAll } from '../../util/sql';
 import { rowObjects2Schema } from '../../util/schema';
 
-import type { DuckDBConnection, LoadedSource, SQLiteSourceOptions } from '../../types';
+import type { LoadedSource, SQLiteSourceOptions } from '../../types';
 
 const ATTACH_ALIAS = 'sqlite_source';
 
@@ -93,13 +93,8 @@ function duckDBType(type: string): string {
 }
 
 /** sqlite_query returns strings; restore types and transport blobs losslessly as hex. */
-async function generatedTableSQL(conn: DuckDBConnection, table: string): Promise<string> {
-  const reader = await conn.runAndReadAll(
-    `SELECT * FROM sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(
-      `SELECT name, type FROM pragma_table_xinfo(${sqlStringLiteral(table)}) WHERE hidden != 1 ORDER BY cid`
-    )})`
-  );
-  const columns = reader.getRowObjectsJson().map((row) => ({
+function generatedTableSQL(table: string, fields: Record<string, unknown>[]): string {
+  const columns = fields.map((row) => ({
     name: sqlIdentifier(String(row.name)),
     type: duckDBType(String(row.type)),
   }));
@@ -129,16 +124,27 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
          ORDER BY table_name`
       );
       tableNames = reader.getRowObjectsJson().map((row) => String(row.table_name));
-      const generatedReader = await conn.runAndReadAll(
+      const columnsReader = await conn.runAndReadAll(
         `SELECT * FROM sqlite_query(${sqlStringLiteral(ATTACH_ALIAS)}, ${sqlStringLiteral(
-          "SELECT DISTINCT t.name FROM sqlite_schema t, pragma_table_xinfo(t.name) c WHERE t.type = 'table' AND c.hidden IN (2, 3)"
+          `SELECT t.name AS table_name, c.name, c.type, c.hidden
+           FROM sqlite_schema t, pragma_table_xinfo(t.name) c
+           WHERE t.type = 'table' AND c.hidden != 1
+             AND t.name IN (${tableNames.map(sqlStringLiteral).join(', ') || 'NULL'})
+           ORDER BY t.name, c.cid`
         )})`
       );
-      const generatedTables = new Set(generatedReader.getRowObjectsJson().map((row) => String(row.name)));
+      const columnsByTable = new Map<string, Record<string, unknown>[]>();
+      for (const row of columnsReader.getRowObjectsJson()) {
+        const table = String(row.table_name);
+        const columns = columnsByTable.get(table) ?? [];
+        columns.push(row);
+        columnsByTable.set(table, columns);
+      }
       for (const table of tableNames) {
+        const columns = columnsByTable.get(table) ?? [];
         // The attached catalog omits generated columns; native queries expose them.
-        const query = generatedTables.has(table)
-          ? await generatedTableSQL(conn, table)
+        const query = columns.some((column) => Number(column.hidden) > 1)
+          ? generatedTableSQL(table, columns)
           : `SELECT * FROM ${ATTACH_ALIAS}.main.${sqlIdentifier(table)}`;
         await conn.run(`CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS ${query}`);
       }
