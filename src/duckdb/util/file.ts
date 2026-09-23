@@ -11,26 +11,21 @@ import { dirname, join } from 'node:path';
 
 import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
 
+import { getDuckDBSchema } from './schema';
+
 import type { CSVReadOptions, FileFormat, LoadedSource } from '../../types';
 
 const noopCleanup = async (): Promise<void> => {};
 
 /** Write content to a unique temp file and return its path */
 export async function writeTempFile(content: string | Buffer, ext: string): Promise<string> {
-  const tmpFile = join(
-    os.tmpdir(),
-    `ava-source-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-  );
+  const tmpFile = join(os.tmpdir(), `ava-source-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`);
   await fs.writeFile(tmpFile, content);
   return tmpFile;
 }
 
 /** Download a remote URL to a temp file and return its path */
-export async function downloadToTempFile(
-  url: string,
-  ext: string,
-  headers?: Record<string, string>
-): Promise<string> {
+export async function downloadToTempFile(url: string, ext: string, headers?: Record<string, string>): Promise<string> {
   const response = await fetch(url, { headers });
   if (!response.ok) {
     throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
@@ -61,11 +56,10 @@ export function fileSource(
       // overrides it because DuckDB applies later duplicate options over earlier ones.
       const sniff =
         format === 'parquet' ? '' : `, auto_detect=true${format === 'csv' ? serializeOptions(options) : ''}`;
-      await conn.run(
-        `CREATE OR REPLACE VIEW data AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`
-      );
+      await conn.run(`CREATE OR REPLACE VIEW data AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`);
       return ['data'];
     },
+    getSchema: (conn) => getDuckDBSchema(conn, ['data']),
     allowedDirectories: [dirname(path)],
     cleanup,
   };

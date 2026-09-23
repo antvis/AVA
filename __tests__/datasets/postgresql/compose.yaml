@@ -1,0 +1,24 @@
+name: ava-postgresql-tests
+services:
+  postgresql:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ava_postgresql_test
+      POSTGRES_PASSWORD: local_fixture_root_password
+    ports:
+      - '127.0.0.1:${AVA_POSTGRESQL_TEST_PORT:-15432}:5432'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/01-fixture.sql:ro
+      - postgresql-data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "PGPASSWORD=ava_test_password psql -h 127.0.0.1 -U ava_test -d ava_postgresql_test -v ON_ERROR_STOP=1 -c 'SELECT COUNT(*) FROM orders'",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 20s
+volumes:
+  postgresql-data:

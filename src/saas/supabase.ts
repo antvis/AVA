@@ -10,18 +10,86 @@
 
 import { PostgreSQLQueryDialect } from '../query/postgresql';
 import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../util/result';
-import { sqlStringLiteral } from '../util/sql';
+import { rowObjects2Schema } from '../util/schema';
+import { sqlStringLiteral, sqlUnionAll } from '../util/sql';
 
-import type {
-  AnalysisEngine,
-  DataSourceConfig,
-  FieldMetadata,
-  LLMConfig,
-  Schema,
-  TableSchema,
-  ExecutionOptions,
-  ExecutionResult,
-} from '../types';
+import type { AnalysisEngine, DataSourceConfig, LLMConfig, Schema, ExecutionOptions, ExecutionResult } from '../types';
+
+/** Restrict all branches to readable relations in the requested schema. */
+function exposedSQL(schema: string): string {
+  return `
+SELECT t.oid, t.relname
+FROM pg_catalog.pg_class t
+JOIN pg_catalog.pg_namespace n ON n.oid = t.relnamespace
+WHERE n.nspname = ${sqlStringLiteral(schema)}
+  AND t.relkind IN ('r', 'p', 'v', 'm', 'f')
+  AND has_table_privilege(t.oid, 'SELECT')`.trim();
+}
+
+function tablesSQL(): string {
+  return `
+SELECT
+  'table' AS kind,
+  relname AS table_name,
+  '{}'::text AS metadata
+FROM exposed`.trim();
+}
+
+/** Preserve native types and column order; exclude dropped/system columns. */
+function columnsSQL(): string {
+  return `
+SELECT
+  'column' AS kind,
+  t.relname AS table_name,
+  json_build_object(
+    'name', a.attname,
+    'type', pg_catalog.format_type(a.atttypid, a.atttypmod),
+    'nullable', NOT a.attnotnull,
+    'position', a.attnum
+  )::text AS metadata
+FROM exposed t
+JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid
+WHERE a.attnum > 0 AND NOT a.attisdropped`.trim();
+}
+
+/** Preserve index DDL and primary/unique flags. */
+function indexesSQL(): string {
+  return `
+SELECT
+  'index' AS kind,
+  t.relname AS table_name,
+  json_build_object(
+    'name', ic.relname,
+    'unique', i.indisunique,
+    'primary', i.indisprimary,
+    'definition', pg_catalog.pg_get_indexdef(i.indexrelid)
+  )::text AS metadata
+FROM exposed t
+JOIN pg_catalog.pg_index i ON i.indrelid = t.oid
+JOIN pg_catalog.pg_class ic ON ic.oid = i.indexrelid`.trim();
+}
+
+/** Pair composite FK columns by position; both tables must be exposed. */
+function foreignKeysSQL(): string {
+  return `
+SELECT
+  'foreign-key-column' AS kind,
+  t.relname AS table_name,
+  json_build_object(
+    'name', c.conname,
+    'column', a.attname,
+    'referencedTable', rt.relname,
+    'referencedColumn', ra.attname,
+    'position', k.ordinality
+  )::text AS metadata
+FROM pg_catalog.pg_constraint c
+JOIN exposed t ON t.oid = c.conrelid
+JOIN exposed rt ON rt.oid = c.confrelid
+CROSS JOIN LATERAL unnest(c.conkey, c.confkey) WITH ORDINALITY AS k(local_attnum, remote_attnum, ordinality)
+JOIN pg_catalog.pg_attribute a ON a.attrelid = t.oid AND a.attnum = k.local_attnum
+JOIN pg_catalog.pg_attribute ra ON ra.attrelid = rt.oid AND ra.attnum = k.remote_attnum
+WHERE c.contype = 'f'`.trim();
+}
 
 const SUPABASE_API_BASE = 'https://api.supabase.com';
 const REQUEST_TIMEOUT_MS = 30_000;
@@ -51,7 +119,7 @@ export class SupabaseEngine implements AnalysisEngine {
       throw new Error(`SupabaseEngine only supports 'supabase' data sources, got '${config.type}'`);
     }
     this.connection = config.options;
-    this.schema = await this.discoverSchema();
+    this.schema = await this.getSchema();
     return this.schema;
   }
 
@@ -112,56 +180,16 @@ export class SupabaseEngine implements AnalysisEngine {
     return Array.isArray(payload) ? (payload as Record<string, unknown>[]) : [];
   }
 
-  /**
-   * Discover every BASE TABLE in the public schema (columns plus a row-count
-   * estimate from pg_class.reltuples) — one SQL round trip, no data materialized.
-   */
-  private async discoverSchema(): Promise<Schema> {
-    const rows = await this.runQuery(
-      `
-SELECT t.table_name,
-       c.column_name, c.data_type, c.ordinal_position,
-       cls.reltuples
-FROM information_schema.tables t
-LEFT JOIN information_schema.columns c
-  ON c.table_schema = t.table_schema AND c.table_name = t.table_name
-LEFT JOIN pg_class cls
-  ON cls.relnamespace = ${sqlStringLiteral(SUPABASE_SCHEMA)}::regnamespace
- AND cls.relname = t.table_name
-WHERE t.table_schema = ${sqlStringLiteral(SUPABASE_SCHEMA)}
-  AND t.table_type = 'BASE TABLE'
-ORDER BY t.table_name, c.ordinal_position
-`
-    );
+  /** One read-only catalog query for fields, indexes and foreign keys. */
+  private async getSchema(): Promise<Schema> {
+    const sql = `WITH exposed AS (\n${exposedSQL(SUPABASE_SCHEMA)}\n)\n${sqlUnionAll([
+      tablesSQL(),
+      columnsSQL(),
+      indexesSQL(),
+      foreignKeysSQL(),
+    ])}`;
 
-    const tables = new Map<string, { fields: FieldMetadata[]; rowCount: number }>();
-    for (const row of rows) {
-      const tableName = String(row.table_name ?? '');
-      if (!tableName) continue;
-
-      if (!tables.has(tableName)) {
-        const reltuples = Number(row.reltuples);
-        tables.set(tableName, {
-          fields: [],
-          rowCount: Number.isFinite(reltuples) && reltuples >= 0 ? Math.round(reltuples) : 0,
-        });
-      }
-      const table = tables.get(tableName)!;
-      if (typeof row.column_name === 'string' && row.column_name) {
-        const type = String(row.data_type ?? '');
-        table.fields.push({
-          name: row.column_name,
-          type,
-        });
-      }
-    }
-
-    const result: TableSchema[] = [...tables.entries()].map(([name, t]) => ({
-      name,
-      rowCount: t.rowCount,
-      columnCount: t.fields.length,
-      fields: t.fields,
-    }));
-    return { tables: result };
+    const rows = await this.runQuery(sql);
+    return rowObjects2Schema(rows);
   }
 }

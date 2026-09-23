@@ -1,34 +1,32 @@
 /**
- * Schema helpers: extract metadata from in-memory data and stringify a Schema
- * for LLM prompts.
+ * Schema helpers: assemble structural metadata, infer in-memory schemas, and
+ * format schemas for LLM prompts. Database queries belong to the engines.
  */
 
-import type { FieldMetadata, Schema, TableSchema } from '../types';
+import { sqlIdentifier } from './sql';
+
+import type { FieldMetadata, Schema, TableIndex, TableRelation, TableSchema } from '../types';
 
 /**
  * Infer field type from sample values
  */
 function inferType(values: any[]): 'number' | 'string' | 'date' | 'boolean' {
-  const nonNullValues = values.filter(v => v != null && v !== '');
+  const nonNullValues = values.filter((v) => v != null && v !== '');
 
   if (nonNullValues.length === 0) return 'string';
 
   // Check if all values are numbers
-  const allNumbers = nonNullValues.every(v => typeof v === 'number' || !Number.isNaN(Number(v)));
+  const allNumbers = nonNullValues.every((v) => typeof v === 'number' || !Number.isNaN(Number(v)));
   if (allNumbers) return 'number';
 
   // Check if all values are booleans
-  const allBooleans = nonNullValues.every(v =>
-    typeof v === 'boolean' ||
-    v === 'true' ||
-    v === 'false' ||
-    v === 'TRUE' ||
-    v === 'FALSE'
+  const allBooleans = nonNullValues.every(
+    (v) => typeof v === 'boolean' || v === 'true' || v === 'false' || v === 'TRUE' || v === 'FALSE'
   );
   if (allBooleans) return 'boolean';
 
   // Check if values look like dates
-  const allDates = nonNullValues.every(v => {
+  const allDates = nonNullValues.every((v) => {
     if (typeof v === 'string') {
       const date = new Date(v);
       return !Number.isNaN(date.getTime());
@@ -49,6 +47,7 @@ export function extractDataSchema(data: any[]): Schema {
     rowCount: 0,
     columnCount: 0,
     fields: [],
+    indexes: [],
   };
   if (!data || data.length === 0) {
     return { tables: [table] };
@@ -56,34 +55,10 @@ export function extractDataSchema(data: any[]): Schema {
 
   const fields: FieldMetadata[] = [];
   const columns = Object.keys(data[0]);
-  const MAX_DISTINCT = 20;
 
   for (const col of columns) {
-    const values = data.map(row => row[col]);
-    const nonNullValues = values.filter(v => v != null && v !== '');
-    const type = inferType(values);
-    const field: FieldMetadata = {
-      name: col,
-      type,
-      nullCount: values.length - nonNullValues.length,
-    };
-
-    if (type === 'string' || type === 'boolean') {
-      const distinct = [...new Set(nonNullValues)];
-      field.uniqueCount = distinct.length;
-      field.samples = distinct.slice(0, MAX_DISTINCT);
-    } else if (type === 'number') {
-      const nums = nonNullValues.map(Number).filter(n => !Number.isNaN(n));
-      field.min = Math.min(...nums);
-      field.max = Math.max(...nums);
-    } else {
-      // date: epoch milliseconds
-      const ts = nonNullValues.map(v => new Date(v).getTime()).filter(t => !Number.isNaN(t));
-      field.min = Math.min(...ts);
-      field.max = Math.max(...ts);
-    }
-
-    fields.push(field);
+    const values = data.map((row) => row[col]);
+    fields.push({ name: col, type: inferType(values) });
   }
 
   table.rowCount = data.length;
@@ -92,38 +67,194 @@ export function extractDataSchema(data: any[]): Schema {
   return { tables: [table] };
 }
 
-/**
- * Stringify a Schema as a multi-line description for LLM context.
- * Each table is described with its name and fields so the LLM can reference
- * and JOIN them. Categorical fields list distinct values; numeric/temporal
- * fields show min/max.
- */
-export function stringifySchema(schema: Schema, formatIdentifier?: (name: string) => string): string {
-  let result = `Dataset Info: ${schema.tables.length} table(s)\n`;
+function isValidRelation({ from, to, kind }: TableRelation, tables: TableSchema[]): boolean {
+  const validEndpoints = [from, to].every((endpoint) => {
+    const table = tables.find((table) => table.name === endpoint?.table);
+    const columns = endpoint?.columns;
 
-  for (const table of schema.tables) {
-    result += `\nTable ${formatIdentifier ? formatIdentifier(table.name) : `"${table.name}"`}:\n`;
-    result += `- Rows: ${table.rowCount}\n`;
-    result += `- Columns: ${table.columnCount}\n`;
-    result += 'Fields:\n';
+    return (
+      !!table &&
+      Array.isArray(columns) &&
+      columns.length > 0 &&
+      new Set(columns).size === columns.length &&
+      columns.every((column) => table.fields.some((field) => field.name === column))
+    );
+  });
 
-    for (const field of table.fields) {
-      result += `- ${formatIdentifier?.(field.name) ?? field.name} (${field.type}): `;
-      if (field.uniqueCount !== undefined) {
-        result += `${field.uniqueCount} unique values`;
-      }
-      if (field.min !== undefined && field.min !== null) {
-        result += `min ${field.min}, max ${field.max}`;
-      }
-      if (field.nullCount) {
-        result += `, ${field.nullCount} nulls`;
-      }
-      if (field.samples && field.samples.length > 0) {
-        result += `\n  Values: ${field.samples.join(', ')}`;
-      }
-      result += '\n';
+  return validEndpoints && kind === 'foreign-key' && from.columns.length === to.columns.length;
+}
+
+/** Format table fields and indexes without computing statistics. */
+function stringifyTables(tables: TableSchema[]): string {
+  return tables
+    .map((table) => {
+      const fields = table.fields
+        .map(
+          (field) => `- ${sqlIdentifier(field.name)} (${field.type})${field.nullable === false ? ' NOT NULL' : ''}\n`
+        )
+        .join('');
+      const indexes = table.indexes
+        .map((index) => {
+          const prefix = index.primary ? 'PRIMARY KEY ' : index.unique ? 'UNIQUE ' : '';
+          return `  - ${prefix}${sqlIdentifier(index.name)} (${index.columns.map(sqlIdentifier).join(', ')})\n`;
+        })
+        .join('');
+
+      return `Table ${sqlIdentifier(table.name)}:
+${table.rowCount !== undefined ? `- Rows: ${table.rowCount}\n` : ''}- Columns: ${table.columnCount}
+Fields:
+${fields}${indexes ? `Indexes:\n${indexes}` : ''}`;
+    })
+    .join('');
+}
+
+/** Format declared relations and their usage notes. */
+function stringifyRelations(relations: TableRelation[], tables: TableSchema[]): string {
+  if (!relations.length) return '';
+
+  const validRelations = relations.filter((relation) => isValidRelation(relation, tables));
+  if (validRelations.length === 0) return '';
+
+  const relationText = validRelations
+    .map((relation) => {
+      const label = relation.name ? `${sqlIdentifier(relation.name)}: ` : '';
+      const endpoints = [relation.from, relation.to].map(
+        ({ table, columns }) => `${sqlIdentifier(table)} (${columns.map(sqlIdentifier).join(', ')})`
+      );
+      return `  - [${relation.kind}] ${label}${endpoints.join(' REFERENCES ')}\n`;
+    })
+    .join('');
+
+  return `Relations (declared; pair columns by position):
+${relationText}
+Notes:
+- For joins, prefer the declared relations and match ALL paired columns of composite relations.
+- These relations describe database foreign-key constraints, which do not imply one-to-one cardinality; avoid double-counting when aggregating across joins.
+- Choose the JOIN type according to the question and nullability.
+- Missing declarations mean relations are unknown, not that same-named columns are related.
+- Only reference tables exposed in this schema.
+`;
+}
+
+/** Combine table and relation descriptions for LLM context. */
+export function stringifySchema({ tables, relations = [] }: Schema): string {
+  return `Dataset Info: ${tables.length} table(s)
+${stringifyTables(tables)}
+${stringifyRelations(relations, tables)}`;
+}
+
+/** Parse plain column indexes only; never misrepresent expressions as column identifiers. */
+function indexColumns(definition: string): string[] | undefined {
+  // Capture the index key list after ON table [USING method], not parentheses in index/table names.
+  const identifier = '(?:"(?:[^"]|"")*"|[^\\s"().]+)';
+  const match = definition.match(
+    new RegExp(`\\bON\\s+(?:ONLY\\s+)?${identifier}(?:\\.${identifier})*(?:\\s+USING\\s+\\w+)?\\s*\\((.*)`, 'i')
+  );
+  if (!match) return undefined;
+  const columns: string[] = [];
+  let rest = match[1];
+  while (rest) {
+    // Quoted names can contain commas/parentheses. ASC/DESC and NULLS order are not part of the name.
+    const column = rest.match(
+      /^\s*("(?:[^"]|"")*"|[\w$]+)(?:\s+(?:ASC|DESC))?(?:\s+NULLS\s+(?:FIRST|LAST))?\s*([,)])/i
+    );
+    if (!column) return undefined;
+    columns.push(column[1].startsWith('"') ? column[1].slice(1, -1).replace(/""/g, '"') : column[1]);
+    if (column[2] === ')') return columns;
+    rest = rest.slice(column[0].length);
+  }
+  return undefined;
+}
+
+type Metadata = Record<string, any>;
+const bool = (value: unknown): boolean => value === true || value === 1 || value === '1';
+
+/** Assemble in one place; only publish relations between tables actually exposed to queries. */
+export function rowObjects2Schema(rows: Record<string, unknown>[]): Schema {
+  const names = [...new Set(rows.map((row) => String(row.table_name)))].sort();
+  const tables = new Map<string, TableSchema>(
+    names.map((name) => [name, { name, columnCount: 0, fields: [], indexes: [] }])
+  );
+  const relations: TableRelation[] = [];
+  const columns = new Map<string, Metadata[]>();
+  const parts = new Map<string, { table: TableSchema; kind: string; rows: Metadata[] }>();
+  for (const row of rows) {
+    const table = tables.get(String(row.table_name));
+    if (!table) continue;
+    const meta: Metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : row.metadata;
+    if (row.kind === 'column') {
+      const fields = columns.get(table.name) ?? [];
+      fields.push(meta);
+      columns.set(table.name, fields);
+    } else if (row.kind === 'index') {
+      const indexed = meta.columns ?? indexColumns(meta.definition ?? '');
+      // Expression indexes cannot be faithfully represented by TableIndex.columns.
+      if (!indexed) continue;
+      table.indexes.push({
+        name: meta.name,
+        columns: indexed,
+        unique: bool(meta.unique),
+        primary: bool(meta.primary),
+      });
+    } else if (row.kind === 'foreign-key') {
+      relations.push({
+        name: meta.name,
+        kind: 'foreign-key',
+        from: { table: table.name, columns: meta.columns },
+        to: { table: meta.referencedTable, columns: meta.referencedColumns },
+      });
+    } else if (row.kind === 'index-column' || row.kind === 'foreign-key-column') {
+      const key = JSON.stringify([table.name, row.kind, meta.name]);
+      const group = parts.get(key) ?? { table, kind: String(row.kind), rows: [] };
+      group.rows.push(meta);
+      parts.set(key, group);
     }
   }
-
-  return result;
+  for (const { table, kind, rows: entries } of parts.values()) {
+    entries.sort((a, b) => Number(a.position) - Number(b.position));
+    if (entries.some((entry, i) => !entry.column || Number(entry.position) !== i + 1)) continue;
+    const first = entries[0];
+    if (kind === 'index-column') {
+      const index: TableIndex = {
+        name: first.name,
+        columns: entries.map((e) => e.column),
+        unique: bool(first.unique),
+        primary: bool(first.primary),
+      };
+      table.indexes.push(index);
+    } else {
+      relations.push({
+        name: first.name,
+        kind: 'foreign-key',
+        from: { table: table.name, columns: entries.map((e) => e.column) },
+        to: { table: first.referencedTable, columns: entries.map((e) => e.referencedColumn) },
+      });
+    }
+  }
+  for (const table of tables.values()) {
+    table.fields = (columns.get(table.name) ?? [])
+      .sort((a, b) => Number(a.position) - Number(b.position))
+      .map((field) => ({ name: field.name, type: field.type, nullable: bool(field.nullable) }));
+    table.columnCount = table.fields.length;
+    table.indexes.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  const exposedRelations = relations
+    .filter((relation) => {
+      const source = tables.get(relation.from.table);
+      const target = tables.get(relation.to.table);
+      const from = relation.from.columns;
+      const to = relation.to.columns;
+      return (
+        source &&
+        target &&
+        Array.isArray(from) &&
+        Array.isArray(to) &&
+        from.length > 0 &&
+        from.length === to.length &&
+        from.every((name) => source.fields.some((field) => field.name === name)) &&
+        to.every((name) => target.fields.some((field) => field.name === name))
+      );
+    })
+    .sort((a, b) => a.from.table.localeCompare(b.from.table) || (a.name ?? '').localeCompare(b.name ?? ''));
+  return { tables: [...tables.values()], relations: exposedRelations };
 }

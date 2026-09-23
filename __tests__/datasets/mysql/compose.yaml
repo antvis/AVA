@@ -1,0 +1,20 @@
+name: ava-mysql-tests
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: local_fixture_root_password
+    ports:
+      - '127.0.0.1:${AVA_MYSQL_TEST_PORT:-13306}:3306'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/01-fixture.sql:ro
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "MYSQL_PWD=ava_test_password mysql --protocol=TCP -h 127.0.0.1 -u ava_test ava_mysql_test -e 'SELECT COUNT(*) FROM orders'",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 20s

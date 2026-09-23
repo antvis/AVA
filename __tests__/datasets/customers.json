@@ -1,0 +1,22 @@
+[
+  {
+    "customer_id": 1,
+    "name": "Alice",
+    "active": true,
+    "balance": 120.5,
+    "created_on": "2025-01-01",
+    "tags": ["gold", "online"],
+    "profile": { "city": "Beijing", "score": 90 },
+    "note": "First customer"
+  },
+  {
+    "customer_id": 2,
+    "name": "小明",
+    "active": false,
+    "balance": 0.25,
+    "created_on": "2025-01-02",
+    "tags": [],
+    "profile": { "city": "Shanghai", "score": 80 },
+    "note": null
+  }
+]

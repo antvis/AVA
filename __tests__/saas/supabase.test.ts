@@ -4,16 +4,46 @@
  */
 
 import { describe, it, expect, afterEach, vi } from 'vitest';
+import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 
 import { SupabaseEngine } from '../../src/saas';
+import { PostgreSQLQueryDialect } from '../../src/query/postgresql';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 const CONNECTION = { accessToken: 'token-123', projectRef: 'demo-ref' };
 
-/** Discovery rows for one table, as returned by the information_schema query */
+/** Tagged catalog rows returned by the single metadata query. */
 const DISCOVERY_ROWS = [
-  { table_name: 'users', column_name: 'id', data_type: 'bigint', ordinal_position: 1, reltuples: 3 },
-  { table_name: 'users', column_name: 'name', data_type: 'text', ordinal_position: 2, reltuples: 3 },
+  {
+    kind: 'column',
+    table_name: 'users',
+    metadata: JSON.stringify({ name: 'id', type: 'bigint', nullable: false, position: 1 }),
+  },
+  {
+    kind: 'column',
+    table_name: 'users',
+    metadata: JSON.stringify({ name: 'name', type: 'text', nullable: true, position: 2 }),
+  },
+  {
+    kind: 'index',
+    table_name: 'users',
+    metadata: JSON.stringify({
+      name: 'users_pkey',
+      unique: true,
+      primary: true,
+      definition: 'CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)',
+    }),
+  },
+  {
+    kind: 'index',
+    table_name: 'users',
+    metadata: JSON.stringify({
+      name: 'idx_users_name',
+      unique: false,
+      primary: false,
+      definition: 'CREATE INDEX idx_users_name ON public.users USING btree (name)',
+    }),
+  },
 ];
 
 /** Stub global fetch to answer Management API calls; records request shapes */
@@ -31,11 +61,61 @@ function stubApi(payloads: Array<{ match?: RegExp; rows: unknown[] }>) {
   return requests;
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
+});
 
 describe('SupabaseEngine', () => {
+  it('discovers multiple tables and relations in one request and passes them to SQL generation', async () => {
+    const requests = stubApi([
+      {
+        rows: [
+          ...DISCOVERY_ROWS,
+          {
+            kind: 'column',
+            table_name: 'orders',
+            metadata: JSON.stringify({ name: 'buyer_id', type: 'bigint', nullable: true, position: 1 }),
+          },
+          {
+            kind: 'foreign-key-column',
+            table_name: 'orders',
+            metadata: JSON.stringify({
+              name: 'buyer_fk',
+              column: 'buyer_id',
+              referencedTable: 'users',
+              referencedColumn: 'id',
+              position: 1,
+            }),
+          },
+        ],
+      },
+    ]);
+    const engine = new SupabaseEngine(getLLMConfig());
+    const schema = await engine.load({ type: 'supabase', options: CONNECTION });
+    expect(requests).toHaveLength(1);
+    const parsed = await unwrapParseResult(new PgParser().parse(requests[0].body.query));
+    expect(parsed.stmts).toHaveLength(1);
+    expect(parsed.stmts![0].stmt).toHaveProperty('SelectStmt');
+    expect(schema.relations).toEqual([
+      {
+        name: 'buyer_fk',
+        kind: 'foreign-key',
+        from: { table: 'orders', columns: ['buyer_id'] },
+        to: { table: 'users', columns: ['id'] },
+      },
+    ]);
+    const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
+    await engine.getDSL('Orders by buyer');
+    expect(generate).toHaveBeenCalledWith('Orders by buyer', schema);
+    expect(requests).toHaveLength(1);
+  });
+
   it('loads the public-schema tables and executes SQL remotely', async () => {
-    const requests = stubApi([{ match: /information_schema/, rows: DISCOVERY_ROWS }, { rows: [{ name: 'Alice' }] }]);
+    const requests = stubApi([
+      { match: /pg_catalog.pg_constraint/, rows: DISCOVERY_ROWS },
+      { rows: [{ name: 'Alice' }] },
+    ]);
 
     const engine = new SupabaseEngine(getLLMConfig());
     const schema = await engine.load({ type: 'supabase', options: CONNECTION });
@@ -47,11 +127,14 @@ describe('SupabaseEngine', () => {
     expect(schema.tables).toEqual([
       {
         name: 'users',
-        rowCount: 3,
         columnCount: 2,
         fields: [
-          { name: 'id', type: 'bigint' },
-          { name: 'name', type: 'text' },
+          { name: 'id', type: 'bigint', nullable: false },
+          { name: 'name', type: 'text', nullable: true },
+        ],
+        indexes: [
+          { name: 'idx_users_name', columns: ['name'], unique: false, primary: false },
+          { name: 'users_pkey', columns: ['id'], unique: true, primary: true },
         ],
       },
     ]);
@@ -67,7 +150,7 @@ describe('SupabaseEngine', () => {
   });
 
   it('requires one read-only statement', async () => {
-    const requests = stubApi([{ rows: DISCOVERY_ROWS }]);
+    const requests = stubApi([{ match: /pg_catalog.pg_constraint/, rows: DISCOVERY_ROWS }, { rows: [] }]);
     const engine = new SupabaseEngine(getLLMConfig());
     await engine.load({ type: 'supabase', options: CONNECTION });
 
@@ -83,7 +166,7 @@ describe('SupabaseEngine', () => {
 
   describe.skipIf(skipLLMTests)('getDSL', () => {
     it('generates PostgreSQL-flavored SQL from a natural language query', async () => {
-      stubApi([{ rows: DISCOVERY_ROWS }]);
+      stubApi([{ match: /pg_catalog.pg_constraint/, rows: DISCOVERY_ROWS }, { rows: [] }]);
 
       const engine = new SupabaseEngine(getLLMConfig());
       await engine.load({ type: 'supabase', options: CONNECTION });

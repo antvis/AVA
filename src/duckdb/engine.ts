@@ -10,7 +10,7 @@ import { DuckDBInstance } from '@duckdb/node-api';
 import { DuckDBQueryDialect } from '../query/duckdb';
 import { executionResult, limitedQuery, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
-import { sqlIdentifier, sqlStringLiteral } from '../util/sql';
+import { sqlStringLiteral } from '../util/sql';
 
 import { loadSource } from './loaders';
 
@@ -20,8 +20,6 @@ import type {
   DataSourceConfig,
   DuckDBEngineOptions,
   Schema,
-  TableSchema,
-  FieldMetadata,
   LLMConfig,
   ExecutionOptions,
   ExecutionResult,
@@ -58,8 +56,7 @@ export class QueryTimeoutError extends Error {
 export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
-  /** Names of all views registered by the loaded source (one per table) */
-  private tableNames: string[] = [];
+  private schema: Schema | null = null;
   private cleanup: (() => Promise<void>) | null = null;
   private readonly queryDialect: DuckDBQueryDialect;
 
@@ -113,9 +110,10 @@ export class DuckDBEngine implements AnalysisEngine {
     try {
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
-      this.tableNames = await source.register(conn);
-      await this.restrictAccess(conn, source.allowedDirectories);
       this.cleanup = source.cleanup;
+      await source.register(conn);
+      this.schema = await source.getSchema(conn);
+      await this.restrictAccess(conn, source.allowedDirectories);
     } catch (error) {
       await this.cleanup?.();
       this.cleanup = null;
@@ -123,11 +121,13 @@ export class DuckDBEngine implements AnalysisEngine {
       throw error;
     }
 
-    return this.getSchema();
+    return this.schema!;
   }
 
   async getDSL(query: string): Promise<string> {
-    return this.queryDialect.getDSL(query, await this.getSchema());
+    if (!this.schema) throw new Error('No data loaded. Please call load() first.');
+
+    return this.queryDialect.getDSL(query, this.schema);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -174,76 +174,6 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   /**
-   * Derive the dataset schema from DuckDB without materializing the data:
-   * one TableSchema per registered view. Categorical fields get distinct
-   * values; numeric/temporal fields get min/max.
-   */
-  private async getSchema(): Promise<Schema> {
-    const conn = await this.getConnection();
-    const tables: TableSchema[] = [];
-    for (const name of this.tableNames) {
-      tables.push(await this.getTableSchema(conn, name));
-    }
-    return { tables };
-  }
-
-  /**
-   * Profile a single view: row count plus per-column stats.
-   */
-  private async getTableSchema(conn: DuckDBConnection, tableName: string): Promise<TableSchema> {
-    const colsReader = await conn.runAndReadAll(`DESCRIBE ${sqlIdentifier(tableName)}`);
-    const cols = colsReader.getRowObjectsJson();
-
-    // One aggregate query computes row count plus per-column stats
-    const MAX_DISTINCT = 20;
-    const stats = cols
-      .map((col: any, i: number) => {
-        const name = sqlIdentifier(String(col.column_name));
-        const type = String(col.column_type);
-        if (/\[[^\]]*\]$/.test(type)) {
-          return null;
-        }
-        const numeric = /INT|DOUBLE|FLOAT|REAL|DECIMAL|NUMERIC/i.test(type);
-        const temporal = /DATE|TIME/i.test(type);
-        if (!numeric && !temporal) {
-          return `struct_pack(distinct_count := COUNT(DISTINCT ${name}), items := COALESCE(min(DISTINCT ${name}, ${MAX_DISTINCT}), [])) AS "s${i}"`;
-        }
-        const finite = /^(DOUBLE|FLOAT|REAL)$/i.test(type) ? ` FILTER (WHERE isfinite(${name}))` : '';
-        // Numbers stay numeric; temporal columns become epoch milliseconds
-        const minExpr = temporal ? `epoch_ms(min(${name}))` : `min(${name})${finite}`;
-        const maxExpr = temporal ? `epoch_ms(max(${name}))` : `max(${name})${finite}`;
-        return `struct_pack(min := ${minExpr}, max := ${maxExpr}) AS "s${i}"`;
-      })
-      .filter((stat): stat is string => stat !== null);
-    const profileSql = `SELECT COUNT(*) AS "__rows"${stats.length ? `, ${stats.join(', ')}` : ''} FROM ${sqlIdentifier(
-      tableName
-    )}`;
-    const profileRow = (await conn.runAndReadAll(profileSql)).getRowObjectsJson()[0] as any;
-
-    const fields: FieldMetadata[] = cols.map((col: any, i: number) => {
-      const type = String(col.column_type);
-      const stat = profileRow[`s${i}`] as any;
-      const field: FieldMetadata = { name: col.column_name, type };
-      if (stat?.distinct_count !== undefined) {
-        field.uniqueCount = Number(stat?.distinct_count ?? 0);
-        field.samples = (stat?.items ?? []) as any[];
-      } else if (stat) {
-        // BIGINT/DECIMAL/epoch_ms come back as strings — coerce to numbers
-        field.min = stat?.min == null ? undefined : Number(stat.min);
-        field.max = stat?.max == null ? undefined : Number(stat.max);
-      }
-      return field;
-    });
-
-    return {
-      name: tableName,
-      rowCount: Number(profileRow?.__rows ?? 0),
-      columnCount: fields.length,
-      fields,
-    };
-  }
-
-  /**
    * Close the database connection and instance
    */
   private close(): void {
@@ -255,6 +185,7 @@ export class DuckDBEngine implements AnalysisEngine {
     }
     this.connection = null;
     this.instance = null;
+    this.schema = null;
   }
 
   async dispose(): Promise<void> {

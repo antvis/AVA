@@ -21,5 +21,5 @@ describe.skipIf(skipLLMTests)('loaders/text', () => {
 
     const rows = await engine.execute('SELECT * FROM "data"');
     expect(rows.data.length).toBeGreaterThan(0);
-  });
+  }, 30000);
 });

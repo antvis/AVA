@@ -18,13 +18,35 @@ describe('loaders/csv-file', () => {
     vi.unstubAllGlobals();
   });
 
-  it('registers a local csv file as a queryable view', async () => {
+  it('loads the sales CSV with a complete schema and original column order', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const localPath = path.join(__dirname, '../../../data/companies.csv');
-    await engine.load({ type: 'csv-file', options: { path: localPath } });
+    const csvPath = path.join(__dirname, '../../datasets/sales.csv');
+    const schema = await engine.load({ type: 'csv-file', options: { path: csvPath } });
 
-    const rows = await engine.execute('SELECT * FROM "data"');
-    expect(rows.data.length).toBeGreaterThan(0);
+    expect(schema).toEqual({
+      tables: [
+        {
+          name: 'data',
+          columnCount: 12,
+          fields: [
+            { name: 'order_id', type: 'VARCHAR', nullable: true },
+            { name: 'order_date', type: 'DATE', nullable: true },
+            { name: 'region', type: 'VARCHAR', nullable: true },
+            { name: 'category', type: 'VARCHAR', nullable: true },
+            { name: 'product', type: 'VARCHAR', nullable: true },
+            { name: 'channel', type: 'VARCHAR', nullable: true },
+            { name: 'quantity', type: 'BIGINT', nullable: true },
+            { name: 'unit_price', type: 'DOUBLE', nullable: true },
+            { name: 'discount', type: 'DOUBLE', nullable: true },
+            { name: 'sales', type: 'DOUBLE', nullable: true },
+            { name: 'cost', type: 'DOUBLE', nullable: true },
+            { name: 'profit', type: 'DOUBLE', nullable: true },
+          ],
+          indexes: [],
+        },
+      ],
+      relations: [],
+    });
   });
 
   it('downloads a remote file and registers it as a queryable view', async () => {

@@ -4,7 +4,7 @@
 
 import * as path from 'path';
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
@@ -19,6 +19,7 @@ describe('DuckDBEngine', () => {
   });
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     await engine.dispose();
   });
 
@@ -29,7 +30,20 @@ describe('DuckDBEngine', () => {
       { name: 'Charlie', age: 35, city: 'NYC' },
     ];
 
-    await engine.load({ type: 'json', options: { data: testData } });
+    const schema = await engine.load({ type: 'json', options: { data: testData } });
+    expect(schema.tables).toEqual([
+      {
+        name: 'data',
+        columnCount: 3,
+        fields: [
+          { name: 'name', type: 'VARCHAR', nullable: true },
+          { name: 'age', type: 'BIGINT', nullable: true },
+          { name: 'city', type: 'VARCHAR', nullable: true },
+        ],
+        indexes: [],
+      },
+    ]);
+    expect(schema.relations).toEqual([]);
 
     const all = await engine.execute('SELECT * FROM data');
     expect(all.data).toHaveLength(3);
@@ -41,14 +55,15 @@ describe('DuckDBEngine', () => {
     expect(aggregated.data[0].count).toBe(3);
   });
 
-  describe('schema profiling', () => {
+  describe('structural schema', () => {
     it('should load a Parquet schema containing numeric arrays', async () => {
       const schema = await engine.load({
         type: 'parquet',
         options: { path: path.join(__dirname, '../datasets/041_Airline.parquet') },
       });
 
-      expect(schema.tables[0]).toMatchObject({ name: 'data', rowCount: 5 });
+      expect(schema.tables[0]).toMatchObject({ name: 'data', columnCount: 15 });
+      expect(schema.tables[0]).not.toHaveProperty('rowCount');
       const field = schema.tables[0].fields.find(({ name }) => name === 'tweet_coord');
       expect(field).toMatchObject({
         name: 'tweet_coord',
@@ -58,7 +73,7 @@ describe('DuckDBEngine', () => {
       expect(field).not.toHaveProperty('max');
     });
 
-    it('should skip profiling when every column is an array', async () => {
+    it('should return structural metadata when every column is an array', async () => {
       const schema = await engine.load({ type: 'json', options: { data: [{ values: ['a', 'b'] }] } });
 
       expect(schema.tables[0].fields[0]).toMatchObject({ type: 'VARCHAR[]' });

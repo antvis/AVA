@@ -1,0 +1,241 @@
+order_id,order_date,region,category,product,channel,quantity,unit_price,discount,sales,cost,profit
+ORD-0001,2025-01-01,East,Electronics,Monitor,Retail,1,249.00,0.10,224.10,165.00,59.10
+ORD-0002,2025-01-02,West,Furniture,Office Chair,Wholesale,4,179.00,0.05,680.20,420.00,260.20
+ORD-0003,2025-01-04,North,Electronics,Monitor,Online,11,249.00,0.20,2191.20,1815.00,376.20
+ORD-0004,2025-01-05,South,Electronics,Monitor,Retail,10,249.00,0.15,2116.50,1650.00,466.50
+ORD-0005,2025-01-07,East,Electronics,Laptop,Wholesale,1,899.00,0.00,899.00,650.00,249.00
+ORD-0006,2025-01-08,West,Furniture,Office Chair,Online,4,179.00,0.20,572.80,420.00,152.80
+ORD-0007,2025-01-10,North,Electronics,Laptop,Retail,9,899.00,0.05,7686.45,5850.00,1836.45
+ORD-0008,2025-01-12,South,Office Supplies,Copy Paper,Wholesale,7,8.90,0.05,59.19,29.40,29.79
+ORD-0009,2025-01-13,East,Office Supplies,Pen Set,Online,10,12.90,0.10,116.10,55.00,61.10
+ORD-0010,2025-01-15,West,Electronics,Laptop,Retail,13,899.00,0.05,11102.65,8450.00,2652.65
+ORD-0011,2025-01-16,North,Office Supplies,Notebook,Wholesale,6,4.50,0.10,24.30,12.00,12.30
+ORD-0012,2025-01-18,South,Electronics,Keyboard,Online,4,59.90,0.10,215.64,120.00,95.64
+ORD-0013,2025-01-19,East,Electronics,Monitor,Retail,2,249.00,0.15,423.30,330.00,93.30
+ORD-0014,2025-01-21,West,Electronics,Monitor,Wholesale,6,249.00,0.10,1344.60,990.00,354.60
+ORD-0015,2025-01-23,North,Furniture,Standing Desk,Online,13,399.00,0.00,5187.00,3380.00,1807.00
+ORD-0016,2025-01-24,South,Office Supplies,Pen Set,Retail,9,12.90,0.00,116.10,49.50,66.60
+ORD-0017,2025-01-26,East,Office Supplies,Notebook,Wholesale,2,4.50,0.20,7.20,4.00,3.20
+ORD-0018,2025-01-27,West,Furniture,Standing Desk,Online,14,399.00,0.20,4468.80,3640.00,828.80
+ORD-0019,2025-01-29,North,Furniture,Bookshelf,Retail,10,129.00,0.05,1225.50,750.00,475.50
+ORD-0020,2025-01-31,South,Electronics,Monitor,Wholesale,1,249.00,0.05,236.55,165.00,71.55
+ORD-0021,2025-02-01,East,Furniture,Standing Desk,Wholesale,2,399.00,0.05,758.10,520.00,238.10
+ORD-0022,2025-02-02,West,Electronics,Monitor,Online,7,249.00,0.10,1568.70,1155.00,413.70
+ORD-0023,2025-02-03,North,Office Supplies,Pen Set,Retail,11,12.90,0.10,127.71,60.50,67.21
+ORD-0024,2025-02-05,South,Electronics,Keyboard,Wholesale,6,59.90,0.10,323.46,180.00,143.46
+ORD-0025,2025-02-06,East,Furniture,Office Chair,Online,11,179.00,0.10,1772.10,1155.00,617.10
+ORD-0026,2025-02-08,West,Electronics,Monitor,Retail,10,249.00,0.05,2365.50,1650.00,715.50
+ORD-0027,2025-02-09,North,Office Supplies,Copy Paper,Wholesale,12,8.90,0.05,101.46,50.40,51.06
+ORD-0028,2025-02-10,South,Electronics,Keyboard,Online,8,59.90,0.15,407.32,240.00,167.32
+ORD-0029,2025-02-12,East,Furniture,Standing Desk,Retail,15,399.00,0.20,4788.00,3900.00,888.00
+ORD-0030,2025-02-13,West,Furniture,Office Chair,Wholesale,11,179.00,0.10,1772.10,1155.00,617.10
+ORD-0031,2025-02-15,North,Electronics,Laptop,Online,4,899.00,0.00,3596.00,2600.00,996.00
+ORD-0032,2025-02-16,South,Furniture,Bookshelf,Retail,7,129.00,0.10,812.70,525.00,287.70
+ORD-0033,2025-02-18,East,Electronics,Monitor,Wholesale,4,249.00,0.20,796.80,660.00,136.80
+ORD-0034,2025-02-19,West,Furniture,Bookshelf,Online,4,129.00,0.15,438.60,300.00,138.60
+ORD-0035,2025-02-20,North,Office Supplies,Notebook,Retail,15,4.50,0.15,57.38,30.00,27.38
+ORD-0036,2025-02-22,South,Electronics,Keyboard,Wholesale,5,59.90,0.05,284.53,150.00,134.53
+ORD-0037,2025-02-23,East,Furniture,Office Chair,Online,12,179.00,0.20,1718.40,1260.00,458.40
+ORD-0038,2025-02-25,West,Office Supplies,Copy Paper,Retail,5,8.90,0.20,35.60,21.00,14.60
+ORD-0039,2025-02-26,North,Office Supplies,Notebook,Wholesale,15,4.50,0.20,54.00,30.00,24.00
+ORD-0040,2025-02-28,South,Office Supplies,Notebook,Online,6,4.50,0.05,25.65,12.00,13.65
+ORD-0041,2025-03-01,East,Electronics,Keyboard,Online,9,59.90,0.15,458.24,270.00,188.24
+ORD-0042,2025-03-02,West,Electronics,Monitor,Retail,13,249.00,0.00,3237.00,2145.00,1092.00
+ORD-0043,2025-03-04,North,Electronics,Monitor,Wholesale,3,249.00,0.05,709.65,495.00,214.65
+ORD-0044,2025-03-05,South,Office Supplies,Notebook,Online,10,4.50,0.00,45.00,20.00,25.00
+ORD-0045,2025-03-07,East,Office Supplies,Notebook,Retail,7,4.50,0.20,25.20,14.00,11.20
+ORD-0046,2025-03-08,West,Office Supplies,Pen Set,Wholesale,9,12.90,0.10,104.49,49.50,54.99
+ORD-0047,2025-03-10,North,Office Supplies,Copy Paper,Online,14,8.90,0.00,124.60,58.80,65.80
+ORD-0048,2025-03-12,South,Electronics,Monitor,Retail,11,249.00,0.20,2191.20,1815.00,376.20
+ORD-0049,2025-03-13,East,Furniture,Standing Desk,Wholesale,13,399.00,0.10,4668.30,3380.00,1288.30
+ORD-0050,2025-03-15,West,Electronics,Monitor,Online,5,249.00,0.15,1058.25,825.00,233.25
+ORD-0051,2025-03-16,North,Electronics,Keyboard,Retail,8,59.90,0.00,479.20,240.00,239.20
+ORD-0052,2025-03-18,South,Furniture,Standing Desk,Wholesale,9,399.00,0.05,3411.45,2340.00,1071.45
+ORD-0053,2025-03-19,East,Office Supplies,Copy Paper,Online,15,8.90,0.00,133.50,63.00,70.50
+ORD-0054,2025-03-21,West,Furniture,Standing Desk,Retail,14,399.00,0.20,4468.80,3640.00,828.80
+ORD-0055,2025-03-23,North,Furniture,Office Chair,Wholesale,3,179.00,0.10,483.30,315.00,168.30
+ORD-0056,2025-03-24,South,Electronics,Keyboard,Online,9,59.90,0.20,431.28,270.00,161.28
+ORD-0057,2025-03-26,East,Electronics,Laptop,Retail,10,899.00,0.10,8091.00,6500.00,1591.00
+ORD-0058,2025-03-27,West,Office Supplies,Pen Set,Wholesale,1,12.90,0.00,12.90,5.50,7.40
+ORD-0059,2025-03-29,North,Furniture,Bookshelf,Online,15,129.00,0.10,1741.50,1125.00,616.50
+ORD-0060,2025-03-31,South,Furniture,Office Chair,Retail,1,179.00,0.05,170.05,105.00,65.05
+ORD-0061,2025-04-01,East,Electronics,Monitor,Retail,2,249.00,0.15,423.30,330.00,93.30
+ORD-0062,2025-04-02,West,Electronics,Monitor,Wholesale,13,249.00,0.20,2589.60,2145.00,444.60
+ORD-0063,2025-04-04,North,Electronics,Keyboard,Online,3,59.90,0.15,152.75,90.00,62.75
+ORD-0064,2025-04-05,South,Office Supplies,Copy Paper,Retail,3,8.90,0.10,24.03,12.60,11.43
+ORD-0065,2025-04-07,East,Office Supplies,Copy Paper,Wholesale,14,8.90,0.20,99.68,58.80,40.88
+ORD-0066,2025-04-08,West,Office Supplies,Notebook,Online,4,4.50,0.20,14.40,8.00,6.40
+ORD-0067,2025-04-10,North,Furniture,Office Chair,Retail,12,179.00,0.10,1933.20,1260.00,673.20
+ORD-0068,2025-04-11,South,Office Supplies,Notebook,Wholesale,11,4.50,0.10,44.55,22.00,22.55
+ORD-0069,2025-04-13,East,Office Supplies,Pen Set,Online,15,12.90,0.20,154.80,82.50,72.30
+ORD-0070,2025-04-14,West,Office Supplies,Pen Set,Retail,2,12.90,0.05,24.51,11.00,13.51
+ORD-0071,2025-04-16,North,Furniture,Office Chair,Wholesale,2,179.00,0.10,322.20,210.00,112.20
+ORD-0072,2025-04-17,South,Electronics,Laptop,Online,10,899.00,0.20,7192.00,6500.00,692.00
+ORD-0073,2025-04-19,East,Furniture,Office Chair,Retail,10,179.00,0.05,1700.50,1050.00,650.50
+ORD-0074,2025-04-20,West,Electronics,Laptop,Wholesale,2,899.00,0.00,1798.00,1300.00,498.00
+ORD-0075,2025-04-22,North,Furniture,Office Chair,Online,2,179.00,0.00,358.00,210.00,148.00
+ORD-0076,2025-04-23,South,Furniture,Bookshelf,Retail,2,129.00,0.20,206.40,150.00,56.40
+ORD-0077,2025-04-25,East,Furniture,Office Chair,Wholesale,5,179.00,0.15,760.75,525.00,235.75
+ORD-0078,2025-04-26,West,Furniture,Office Chair,Online,9,179.00,0.05,1530.45,945.00,585.45
+ORD-0079,2025-04-28,North,Office Supplies,Pen Set,Retail,4,12.90,0.15,43.86,22.00,21.86
+ORD-0080,2025-04-30,South,Office Supplies,Notebook,Wholesale,4,4.50,0.00,18.00,8.00,10.00
+ORD-0081,2025-05-01,East,Electronics,Monitor,Wholesale,11,249.00,0.15,2328.15,1815.00,513.15
+ORD-0082,2025-05-02,West,Furniture,Bookshelf,Online,7,129.00,0.15,767.55,525.00,242.55
+ORD-0083,2025-05-04,North,Office Supplies,Pen Set,Retail,14,12.90,0.00,180.60,77.00,103.60
+ORD-0084,2025-05-05,South,Electronics,Monitor,Wholesale,1,249.00,0.15,211.65,165.00,46.65
+ORD-0085,2025-05-07,East,Furniture,Bookshelf,Online,13,129.00,0.00,1677.00,975.00,702.00
+ORD-0086,2025-05-08,West,Furniture,Office Chair,Retail,4,179.00,0.05,680.20,420.00,260.20
+ORD-0087,2025-05-10,North,Office Supplies,Copy Paper,Wholesale,8,8.90,0.05,67.64,33.60,34.04
+ORD-0088,2025-05-12,South,Office Supplies,Notebook,Online,3,4.50,0.10,12.15,6.00,6.15
+ORD-0089,2025-05-13,East,Office Supplies,Pen Set,Retail,4,12.90,0.00,51.60,22.00,29.60
+ORD-0090,2025-05-15,West,Office Supplies,Pen Set,Wholesale,13,12.90,0.20,134.16,71.50,62.66
+ORD-0091,2025-05-16,North,Electronics,Monitor,Online,1,249.00,0.20,199.20,165.00,34.20
+ORD-0092,2025-05-18,South,Electronics,Laptop,Retail,2,899.00,0.05,1708.10,1300.00,408.10
+ORD-0093,2025-05-19,East,Electronics,Keyboard,Wholesale,7,59.90,0.15,356.41,210.00,146.41
+ORD-0094,2025-05-21,West,Office Supplies,Pen Set,Online,4,12.90,0.15,43.86,22.00,21.86
+ORD-0095,2025-05-23,North,Electronics,Laptop,Retail,3,899.00,0.15,2292.45,1950.00,342.45
+ORD-0096,2025-05-24,South,Electronics,Laptop,Wholesale,7,899.00,0.10,5663.70,4550.00,1113.70
+ORD-0097,2025-05-26,East,Office Supplies,Pen Set,Online,5,12.90,0.15,54.83,27.50,27.33
+ORD-0098,2025-05-27,West,Office Supplies,Copy Paper,Retail,11,8.90,0.15,83.22,46.20,37.02
+ORD-0099,2025-05-29,North,Electronics,Keyboard,Wholesale,4,59.90,0.10,215.64,120.00,95.64
+ORD-0100,2025-05-31,South,Furniture,Office Chair,Online,1,179.00,0.20,143.20,105.00,38.20
+ORD-0101,2025-06-01,East,Office Supplies,Copy Paper,Online,1,8.90,0.10,8.01,4.20,3.81
+ORD-0102,2025-06-02,West,Electronics,Laptop,Retail,1,899.00,0.20,719.20,650.00,69.20
+ORD-0103,2025-06-04,North,Office Supplies,Pen Set,Wholesale,9,12.90,0.20,92.88,49.50,43.38
+ORD-0104,2025-06-05,South,Electronics,Keyboard,Online,1,59.90,0.20,47.92,30.00,17.92
+ORD-0105,2025-06-07,East,Electronics,Monitor,Retail,14,249.00,0.05,3311.70,2310.00,1001.70
+ORD-0106,2025-06-08,West,Electronics,Monitor,Wholesale,10,249.00,0.00,2490.00,1650.00,840.00
+ORD-0107,2025-06-10,North,Furniture,Office Chair,Online,7,179.00,0.00,1253.00,735.00,518.00
+ORD-0108,2025-06-11,South,Furniture,Office Chair,Retail,10,179.00,0.20,1432.00,1050.00,382.00
+ORD-0109,2025-06-13,East,Electronics,Laptop,Wholesale,10,899.00,0.00,8990.00,6500.00,2490.00
+ORD-0110,2025-06-14,West,Office Supplies,Notebook,Online,11,4.50,0.20,39.60,22.00,17.60
+ORD-0111,2025-06-16,North,Office Supplies,Copy Paper,Retail,6,8.90,0.10,48.06,25.20,22.86
+ORD-0112,2025-06-17,South,Furniture,Office Chair,Wholesale,11,179.00,0.10,1772.10,1155.00,617.10
+ORD-0113,2025-06-19,East,Furniture,Office Chair,Online,5,179.00,0.15,760.75,525.00,235.75
+ORD-0114,2025-06-20,West,Electronics,Keyboard,Retail,11,59.90,0.10,593.01,330.00,263.01
+ORD-0115,2025-06-22,North,Office Supplies,Pen Set,Wholesale,6,12.90,0.00,77.40,33.00,44.40
+ORD-0116,2025-06-23,South,Electronics,Laptop,Online,8,899.00,0.20,5753.60,5200.00,553.60
+ORD-0117,2025-06-25,East,Electronics,Monitor,Retail,2,249.00,0.20,398.40,330.00,68.40
+ORD-0118,2025-06-26,West,Furniture,Office Chair,Wholesale,9,179.00,0.10,1449.90,945.00,504.90
+ORD-0119,2025-06-28,North,Electronics,Keyboard,Online,15,59.90,0.10,808.65,450.00,358.65
+ORD-0120,2025-06-30,South,Electronics,Monitor,Retail,15,249.00,0.05,3548.25,2475.00,1073.25
+ORD-0121,2025-07-01,East,Furniture,Bookshelf,Retail,5,129.00,0.05,612.75,375.00,237.75
+ORD-0122,2025-07-02,West,Office Supplies,Pen Set,Wholesale,14,12.90,0.20,144.48,77.00,67.48
+ORD-0123,2025-07-04,North,Furniture,Standing Desk,Online,10,399.00,0.20,3192.00,2600.00,592.00
+ORD-0124,2025-07-05,South,Electronics,Laptop,Retail,11,899.00,0.20,7911.20,7150.00,761.20
+ORD-0125,2025-07-07,East,Furniture,Standing Desk,Wholesale,15,399.00,0.00,5985.00,3900.00,2085.00
+ORD-0126,2025-07-08,West,Electronics,Keyboard,Online,5,59.90,0.00,299.50,150.00,149.50
+ORD-0127,2025-07-10,North,Electronics,Monitor,Retail,12,249.00,0.20,2390.40,1980.00,410.40
+ORD-0128,2025-07-12,South,Electronics,Keyboard,Wholesale,5,59.90,0.10,269.55,150.00,119.55
+ORD-0129,2025-07-13,East,Furniture,Office Chair,Online,12,179.00,0.10,1933.20,1260.00,673.20
+ORD-0130,2025-07-15,West,Furniture,Office Chair,Retail,11,179.00,0.10,1772.10,1155.00,617.10
+ORD-0131,2025-07-16,North,Office Supplies,Copy Paper,Wholesale,8,8.90,0.10,64.08,33.60,30.48
+ORD-0132,2025-07-18,South,Electronics,Laptop,Online,2,899.00,0.15,1528.30,1300.00,228.30
+ORD-0133,2025-07-19,East,Furniture,Standing Desk,Retail,1,399.00,0.00,399.00,260.00,139.00
+ORD-0134,2025-07-21,West,Furniture,Bookshelf,Wholesale,13,129.00,0.05,1593.15,975.00,618.15
+ORD-0135,2025-07-23,North,Furniture,Standing Desk,Online,3,399.00,0.15,1017.45,780.00,237.45
+ORD-0136,2025-07-24,South,Office Supplies,Copy Paper,Retail,12,8.90,0.15,90.78,50.40,40.38
+ORD-0137,2025-07-26,East,Office Supplies,Copy Paper,Wholesale,1,8.90,0.00,8.90,4.20,4.70
+ORD-0138,2025-07-27,West,Electronics,Monitor,Online,15,249.00,0.05,3548.25,2475.00,1073.25
+ORD-0139,2025-07-29,North,Office Supplies,Copy Paper,Retail,1,8.90,0.10,8.01,4.20,3.81
+ORD-0140,2025-07-31,South,Office Supplies,Copy Paper,Wholesale,3,8.90,0.15,22.70,12.60,10.10
+ORD-0141,2025-08-01,East,Electronics,Keyboard,Wholesale,1,59.90,0.10,53.91,30.00,23.91
+ORD-0142,2025-08-02,West,Furniture,Bookshelf,Online,15,129.00,0.00,1935.00,1125.00,810.00
+ORD-0143,2025-08-04,North,Furniture,Bookshelf,Retail,4,129.00,0.05,490.20,300.00,190.20
+ORD-0144,2025-08-05,South,Electronics,Monitor,Wholesale,6,249.00,0.20,1195.20,990.00,205.20
+ORD-0145,2025-08-07,East,Office Supplies,Notebook,Online,10,4.50,0.05,42.75,20.00,22.75
+ORD-0146,2025-08-08,West,Furniture,Office Chair,Retail,14,179.00,0.05,2380.70,1470.00,910.70
+ORD-0147,2025-08-10,North,Electronics,Keyboard,Wholesale,15,59.90,0.15,763.73,450.00,313.73
+ORD-0148,2025-08-12,South,Electronics,Laptop,Online,3,899.00,0.10,2427.30,1950.00,477.30
+ORD-0149,2025-08-13,East,Office Supplies,Notebook,Retail,13,4.50,0.05,55.58,26.00,29.58
+ORD-0150,2025-08-15,West,Furniture,Standing Desk,Wholesale,3,399.00,0.00,1197.00,780.00,417.00
+ORD-0151,2025-08-16,North,Office Supplies,Notebook,Online,14,4.50,0.00,63.00,28.00,35.00
+ORD-0152,2025-08-18,South,Office Supplies,Pen Set,Retail,4,12.90,0.05,49.02,22.00,27.02
+ORD-0153,2025-08-19,East,Office Supplies,Pen Set,Wholesale,6,12.90,0.10,69.66,33.00,36.66
+ORD-0154,2025-08-21,West,Furniture,Office Chair,Online,4,179.00,0.00,716.00,420.00,296.00
+ORD-0155,2025-08-23,North,Furniture,Office Chair,Retail,7,179.00,0.10,1127.70,735.00,392.70
+ORD-0156,2025-08-24,South,Furniture,Standing Desk,Wholesale,14,399.00,0.00,5586.00,3640.00,1946.00
+ORD-0157,2025-08-26,East,Furniture,Standing Desk,Online,6,399.00,0.20,1915.20,1560.00,355.20
+ORD-0158,2025-08-27,West,Office Supplies,Notebook,Retail,11,4.50,0.20,39.60,22.00,17.60
+ORD-0159,2025-08-29,North,Furniture,Bookshelf,Wholesale,1,129.00,0.00,129.00,75.00,54.00
+ORD-0160,2025-08-31,South,Furniture,Standing Desk,Online,3,399.00,0.20,957.60,780.00,177.60
+ORD-0161,2025-09-01,East,Furniture,Standing Desk,Online,1,399.00,0.00,399.00,260.00,139.00
+ORD-0162,2025-09-02,West,Office Supplies,Notebook,Retail,6,4.50,0.10,24.30,12.00,12.30
+ORD-0163,2025-09-04,North,Office Supplies,Notebook,Wholesale,10,4.50,0.20,36.00,20.00,16.00
+ORD-0164,2025-09-05,South,Electronics,Monitor,Online,7,249.00,0.20,1394.40,1155.00,239.40
+ORD-0165,2025-09-07,East,Furniture,Office Chair,Retail,5,179.00,0.00,895.00,525.00,370.00
+ORD-0166,2025-09-08,West,Office Supplies,Notebook,Wholesale,1,4.50,0.20,3.60,2.00,1.60
+ORD-0167,2025-09-10,North,Office Supplies,Copy Paper,Online,11,8.90,0.05,93.01,46.20,46.81
+ORD-0168,2025-09-11,South,Furniture,Bookshelf,Retail,7,129.00,0.00,903.00,525.00,378.00
+ORD-0169,2025-09-13,East,Furniture,Bookshelf,Wholesale,10,129.00,0.10,1161.00,750.00,411.00
+ORD-0170,2025-09-14,West,Electronics,Monitor,Online,12,249.00,0.10,2689.20,1980.00,709.20
+ORD-0171,2025-09-16,North,Office Supplies,Copy Paper,Retail,5,8.90,0.15,37.83,21.00,16.83
+ORD-0172,2025-09-17,South,Furniture,Bookshelf,Wholesale,7,129.00,0.10,812.70,525.00,287.70
+ORD-0173,2025-09-19,East,Office Supplies,Copy Paper,Online,3,8.90,0.05,25.37,12.60,12.77
+ORD-0174,2025-09-20,West,Office Supplies,Notebook,Retail,11,4.50,0.15,42.08,22.00,20.08
+ORD-0175,2025-09-22,North,Electronics,Keyboard,Wholesale,10,59.90,0.20,479.20,300.00,179.20
+ORD-0176,2025-09-23,South,Furniture,Standing Desk,Online,7,399.00,0.20,2234.40,1820.00,414.40
+ORD-0177,2025-09-25,East,Electronics,Laptop,Retail,5,899.00,0.10,4045.50,3250.00,795.50
+ORD-0178,2025-09-26,West,Furniture,Office Chair,Wholesale,7,179.00,0.20,1002.40,735.00,267.40
+ORD-0179,2025-09-28,North,Furniture,Bookshelf,Online,8,129.00,0.15,877.20,600.00,277.20
+ORD-0180,2025-09-30,South,Office Supplies,Pen Set,Retail,11,12.90,0.05,134.81,60.50,74.31
+ORD-0181,2025-10-01,East,Office Supplies,Copy Paper,Retail,8,8.90,0.05,67.64,33.60,34.04
+ORD-0182,2025-10-02,West,Electronics,Monitor,Wholesale,5,249.00,0.20,996.00,825.00,171.00
+ORD-0183,2025-10-04,North,Furniture,Bookshelf,Online,2,129.00,0.05,245.10,150.00,95.10
+ORD-0184,2025-10-05,South,Furniture,Standing Desk,Retail,4,399.00,0.05,1516.20,1040.00,476.20
+ORD-0185,2025-10-07,East,Electronics,Keyboard,Wholesale,1,59.90,0.00,59.90,30.00,29.90
+ORD-0186,2025-10-08,West,Furniture,Office Chair,Online,8,179.00,0.20,1145.60,840.00,305.60
+ORD-0187,2025-10-10,North,Electronics,Monitor,Retail,8,249.00,0.15,1693.20,1320.00,373.20
+ORD-0188,2025-10-12,South,Furniture,Office Chair,Wholesale,12,179.00,0.15,1825.80,1260.00,565.80
+ORD-0189,2025-10-13,East,Office Supplies,Pen Set,Online,7,12.90,0.05,85.79,38.50,47.29
+ORD-0190,2025-10-15,West,Electronics,Keyboard,Retail,11,59.90,0.00,658.90,330.00,328.90
+ORD-0191,2025-10-16,North,Electronics,Monitor,Wholesale,13,249.00,0.15,2751.45,2145.00,606.45
+ORD-0192,2025-10-18,South,Furniture,Office Chair,Online,3,179.00,0.20,429.60,315.00,114.60
+ORD-0193,2025-10-19,East,Office Supplies,Pen Set,Retail,1,12.90,0.20,10.32,5.50,4.82
+ORD-0194,2025-10-21,West,Furniture,Office Chair,Wholesale,15,179.00,0.00,2685.00,1575.00,1110.00
+ORD-0195,2025-10-23,North,Office Supplies,Pen Set,Online,3,12.90,0.15,32.90,16.50,16.40
+ORD-0196,2025-10-24,South,Office Supplies,Copy Paper,Retail,9,8.90,0.20,64.08,37.80,26.28
+ORD-0197,2025-10-26,East,Furniture,Bookshelf,Wholesale,13,129.00,0.15,1425.45,975.00,450.45
+ORD-0198,2025-10-27,West,Office Supplies,Copy Paper,Online,7,8.90,0.20,49.84,29.40,20.44
+ORD-0199,2025-10-29,North,Office Supplies,Pen Set,Retail,15,12.90,0.05,183.83,82.50,101.33
+ORD-0200,2025-10-31,South,Office Supplies,Pen Set,Wholesale,8,12.90,0.10,92.88,44.00,48.88
+ORD-0201,2025-11-01,East,Furniture,Office Chair,Wholesale,14,179.00,0.10,2255.40,1470.00,785.40
+ORD-0202,2025-11-02,West,Office Supplies,Copy Paper,Online,8,8.90,0.05,67.64,33.60,34.04
+ORD-0203,2025-11-04,North,Furniture,Standing Desk,Retail,8,399.00,0.00,3192.00,2080.00,1112.00
+ORD-0204,2025-11-05,South,Furniture,Standing Desk,Wholesale,4,399.00,0.10,1436.40,1040.00,396.40
+ORD-0205,2025-11-07,East,Furniture,Bookshelf,Online,6,129.00,0.20,619.20,450.00,169.20
+ORD-0206,2025-11-08,West,Electronics,Monitor,Retail,3,249.00,0.05,709.65,495.00,214.65
+ORD-0207,2025-11-10,North,Furniture,Office Chair,Wholesale,7,179.00,0.05,1190.35,735.00,455.35
+ORD-0208,2025-11-11,South,Furniture,Office Chair,Online,2,179.00,0.15,304.30,210.00,94.30
+ORD-0209,2025-11-13,East,Office Supplies,Notebook,Retail,6,4.50,0.20,21.60,12.00,9.60
+ORD-0210,2025-11-14,West,Office Supplies,Pen Set,Wholesale,7,12.90,0.00,90.30,38.50,51.80
+ORD-0211,2025-11-16,North,Furniture,Office Chair,Online,14,179.00,0.15,2130.10,1470.00,660.10
+ORD-0212,2025-11-17,South,Office Supplies,Notebook,Retail,15,4.50,0.20,54.00,30.00,24.00
+ORD-0213,2025-11-19,East,Electronics,Laptop,Wholesale,14,899.00,0.20,10068.80,9100.00,968.80
+ORD-0214,2025-11-20,West,Office Supplies,Notebook,Online,8,4.50,0.00,36.00,16.00,20.00
+ORD-0215,2025-11-22,North,Furniture,Bookshelf,Retail,5,129.00,0.15,548.25,375.00,173.25
+ORD-0216,2025-11-23,South,Office Supplies,Notebook,Wholesale,9,4.50,0.20,32.40,18.00,14.40
+ORD-0217,2025-11-25,East,Furniture,Office Chair,Online,8,179.00,0.05,1360.40,840.00,520.40
+ORD-0218,2025-11-26,West,Furniture,Standing Desk,Retail,7,399.00,0.15,2374.05,1820.00,554.05
+ORD-0219,2025-11-28,North,Electronics,Laptop,Wholesale,7,899.00,0.10,5663.70,4550.00,1113.70
+ORD-0220,2025-11-30,South,Office Supplies,Notebook,Online,12,4.50,0.05,51.30,24.00,27.30
+ORD-0221,2025-12-01,East,Office Supplies,Pen Set,Online,15,12.90,0.05,183.83,82.50,101.33
+ORD-0222,2025-12-02,West,Office Supplies,Copy Paper,Retail,1,8.90,0.15,7.57,4.20,3.37
+ORD-0223,2025-12-04,North,Electronics,Laptop,Wholesale,2,899.00,0.15,1528.30,1300.00,228.30
+ORD-0224,2025-12-05,South,Electronics,Keyboard,Online,14,59.90,0.15,712.81,420.00,292.81
+ORD-0225,2025-12-07,East,Electronics,Keyboard,Retail,1,59.90,0.10,53.91,30.00,23.91
+ORD-0226,2025-12-08,West,Office Supplies,Notebook,Wholesale,6,4.50,0.05,25.65,12.00,13.65
+ORD-0227,2025-12-10,North,Office Supplies,Pen Set,Online,6,12.90,0.10,69.66,33.00,36.66
+ORD-0228,2025-12-12,South,Office Supplies,Notebook,Retail,5,4.50,0.15,19.13,10.00,9.13
+ORD-0229,2025-12-13,East,Furniture,Standing Desk,Wholesale,14,399.00,0.00,5586.00,3640.00,1946.00
+ORD-0230,2025-12-15,West,Office Supplies,Pen Set,Online,1,12.90,0.20,10.32,5.50,4.82
+ORD-0231,2025-12-16,North,Electronics,Laptop,Retail,6,899.00,0.05,5124.30,3900.00,1224.30
+ORD-0232,2025-12-18,South,Electronics,Monitor,Wholesale,13,249.00,0.00,3237.00,2145.00,1092.00
+ORD-0233,2025-12-19,East,Electronics,Laptop,Online,4,899.00,0.05,3416.20,2600.00,816.20
+ORD-0234,2025-12-21,West,Electronics,Laptop,Retail,10,899.00,0.05,8540.50,6500.00,2040.50
+ORD-0235,2025-12-23,North,Furniture,Office Chair,Wholesale,3,179.00,0.15,456.45,315.00,141.45
+ORD-0236,2025-12-24,South,Electronics,Monitor,Online,10,249.00,0.05,2365.50,1650.00,715.50
+ORD-0237,2025-12-26,East,Office Supplies,Pen Set,Retail,12,12.90,0.10,139.32,66.00,73.32
+ORD-0238,2025-12-27,West,Furniture,Bookshelf,Wholesale,3,129.00,0.20,309.60,225.00,84.60
+ORD-0239,2025-12-29,North,Electronics,Monitor,Online,13,249.00,0.05,3075.15,2145.00,930.15
+ORD-0240,2025-12-31,South,Furniture,Standing Desk,Retail,2,399.00,0.20,638.40,520.00,118.40
