@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-23T23:50:30.291Z",
+  "generatedAt": "2026-09-23T23:50:30.331Z",
   "environment": {
     "nodeVersion": "v20.19.5",
     "pnpmVersion": "10.20.0",
@@ -12,41 +12,41 @@
     "dataset": "databench",
     "strategy": "direct",
     "model": "GLM-5.1",
-    "profile": false
+    "profile": true
   },
   "summary": {
     "samples": 1789,
-    "correct": 1511,
-    "wrong": 276,
-    "missing": 2,
-    "accuracy": 0.8446,
+    "correct": 1550,
+    "wrong": 238,
+    "missing": 1,
+    "accuracy": 0.8664,
     "timingSeconds": {
-      "average": 18.44,
-      "minimum": 1.58,
-      "maximum": 454.34,
-      "median": 10.2
+      "average": 20.48,
+      "minimum": 1.47,
+      "maximum": 460.22,
+      "median": 11.17
     },
     "tokens": {
-      "prompt": 627231,
-      "completion": 987432,
-      "total": 1614663,
-      "average": 903
+      "prompt": 3116021,
+      "completion": 1026127,
+      "total": 4142148,
+      "average": 2315
     }
   },
   "errors": {
     "wrongOrMissing": {
-      "count": 278
+      "count": 239
     },
     "categories": [
       {
         "type": "wrongAnswer",
         "category": "Prediction did not match the gold answer",
-        "count": 276
+        "count": 238
       },
       {
         "type": "missing",
         "category": "Model API hostname resolution failed",
-        "count": 2
+        "count": 1
       }
     ]
   }
