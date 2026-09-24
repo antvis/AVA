@@ -3,8 +3,8 @@
  */
 
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
 
+import { languageModel } from '../util/model';
 import { stringifyProfile, stringifySchema } from '../util/context';
 
 import type { LLMConfig, DataContext, SuggestResult } from '../types';
@@ -17,11 +17,6 @@ export async function generateSuggestions(
   { schema, profile }: DataContext,
   count: number = 3
 ): Promise<SuggestResult[]> {
-  const openai = createOpenAI({
-    apiKey: llmConfig.apiKey,
-    baseURL: llmConfig.baseURL,
-  });
-
   const profileStr = profile ? stringifyProfile(profile) : stringifySchema(schema);
 
   const prompt = `You are a data analysis expert. Based on the following dataset information, suggest ${count} most meaningful analysis queries that would provide valuable insights.
@@ -56,7 +51,7 @@ Example format:
 Generate the JSON array now.`;
 
   const { text } = await generateText({
-    model: openai(llmConfig.model) as any,
+    model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
@@ -70,8 +65,8 @@ Generate the JSON array now.`;
     const suggestions = JSON.parse(jsonMatch[0]) as SuggestResult[];
 
     return suggestions
-      .filter(s => s.query && typeof s.score === 'number' && s.reason)
-      .map(s => ({
+      .filter((s) => s.query && typeof s.score === 'number' && s.reason)
+      .map((s) => ({
         query: s.query,
         score: Math.max(0, Math.min(1, s.score)),
         reason: s.reason,

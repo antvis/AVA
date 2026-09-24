@@ -4,15 +4,16 @@
  */
 
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+
+import { languageModel } from '../util/model';
 
 import { chartDefinitions } from './vis';
 
 import type { LLMConfig, ChartType } from '../types';
 
-const allChartTypes = chartDefinitions.map(d => d.type);
+const allChartTypes = chartDefinitions.map((d) => d.type);
 const chartTypeSet = new Set(allChartTypes);
-const chartTypeList = allChartTypes.map(t => `"${t}"`).join(', ');
+const chartTypeList = allChartTypes.map((t) => `"${t}"`).join(', ');
 const chartDescriptions = chartDefinitions
   .map((chart) => {
     const lines = [
@@ -73,20 +74,18 @@ export async function adviseChartType(
   dataInfoStr: string,
   llmConfig: LLMConfig
 ): Promise<ChartType | null> {
-  const openai = createOpenAI({
-    apiKey: llmConfig.apiKey,
-    baseURL: llmConfig.baseURL,
-  });
-
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
   const { text } = await generateText({
-    model: openai(llmConfig.model) as any,
+    model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });
 
-  const raw = text.trim().replace(/^["']|["']$/g, '').toLowerCase();
+  const raw = text
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .toLowerCase();
 
   if (!raw || raw === 'none') return null;
 

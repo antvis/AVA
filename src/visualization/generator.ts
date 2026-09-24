@@ -7,7 +7,8 @@
  */
 
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+
+import { languageModel } from '../util/model';
 
 import type { LLMConfig, ChartType } from '../types';
 
@@ -68,11 +69,6 @@ export async function generateVisualizationHTML(
   query: string,
   llmConfig: LLMConfig
 ): Promise<{ syntax: string; html: string }> {
-  const openai = createOpenAI({
-    apiKey: llmConfig.apiKey,
-    baseURL: llmConfig.baseURL,
-  });
-
   const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis 语法。
 
 ## 任务信息
@@ -441,7 +437,7 @@ title "2024 Q1 Sales Report"
 7. 直接输出语法内容，不要用代码块包裹，不要有任何说明文字`;
 
   const { text } = await generateText({
-    model: openai(llmConfig.model) as any,
+    model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });

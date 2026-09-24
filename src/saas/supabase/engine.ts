@@ -19,6 +19,7 @@ import type {
   Profile,
   ProfileOptions,
   AnalysisEngine,
+  DataContext,
   DataSourceConfig,
   LLMConfig,
   Schema,
@@ -77,11 +78,11 @@ export class SupabaseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string): Promise<string> {
+  async getDSL(query: string, context?: DataContext): Promise<string> {
     if (!this.schema) {
       throw new Error('No data loaded. Please call load() first.');
     }
-    return this.queryDialect.getDSL(query, { schema: this.schema });
+    return this.queryDialect.getDSL(query, context ?? { schema: this.schema });
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

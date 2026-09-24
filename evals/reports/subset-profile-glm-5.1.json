@@ -1,0 +1,53 @@
+{
+  "generatedAt": "2026-09-23T23:50:30.366Z",
+  "environment": {
+    "nodeVersion": "v20.19.5",
+    "pnpmVersion": "10.20.0",
+    "operatingSystem": "Darwin 25.6.0",
+    "architecture": "arm64",
+    "gitRevision": "e8aaa437b927cb54c52159ce8840e16a48018ba4"
+  },
+  "evaluation": {
+    "benchmark": "DataBench full (080_Books excluded)",
+    "dataset": "databench",
+    "strategy": "subset",
+    "model": "GLM-5.1",
+    "profile": true
+  },
+  "summary": {
+    "samples": 1789,
+    "correct": 1551,
+    "wrong": 236,
+    "missing": 2,
+    "accuracy": 0.867,
+    "timingSeconds": {
+      "average": 25.42,
+      "minimum": 2.28,
+      "maximum": 351.71,
+      "median": 12.87
+    },
+    "tokens": {
+      "prompt": 1100449,
+      "completion": 997641,
+      "total": 2098090,
+      "average": 1173
+    }
+  },
+  "errors": {
+    "wrongOrMissing": {
+      "count": 238
+    },
+    "categories": [
+      {
+        "type": "wrongAnswer",
+        "category": "Prediction did not match the gold answer",
+        "count": 236
+      },
+      {
+        "type": "missing",
+        "category": "Gateway request failed with invalid error response",
+        "count": 2
+      }
+    ]
+  }
+}

@@ -7,10 +7,10 @@
  */
 
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
 
+import { languageModel } from '../util/model';
 import { extractDataSchema } from '../util/schema';
-import { stringifySchema } from '../util/context';
+import { stringifyProfile, stringifySchema } from '../util/context';
 import { executionResult, inferQuerySchema } from '../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../util/profile';
 
@@ -23,6 +23,7 @@ import type {
   Profile,
   ProfileOptions,
   AnalysisEngine,
+  DataContext,
   DataSourceConfig,
   LLMConfig,
   Schema,
@@ -67,17 +68,14 @@ export class InterpreterEngine implements AnalysisEngine {
     return profileTables(this.data, this.schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string): Promise<string> {
+  async getDSL(query: string, context?: DataContext): Promise<string> {
     if (!this.data) {
       throw new Error('No data loaded. Please call load() first.');
     }
 
-    const datasetContext = stringifySchema(extractDataSchema(this.data));
-
-    const openai = createOpenAI({
-      apiKey: this.llmConfig.apiKey,
-      baseURL: this.llmConfig.baseURL,
-    });
+    const datasetContext = context?.profile
+      ? stringifyProfile(context.profile)
+      : stringifySchema(context?.schema ?? this.schema!);
 
     const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
 
@@ -95,7 +93,7 @@ ${STAT_OPS_EXAMPLE}
 Now generate the code:`;
 
     const { text } = await generateText({
-      model: openai(this.llmConfig.model) as any,
+      model: languageModel(this.llmConfig),
       maxRetries: this.llmConfig.maxRetries ?? 3,
       prompt,
     });

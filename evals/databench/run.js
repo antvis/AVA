@@ -17,8 +17,8 @@ const OUTPUT_COLUMNS = [
   'error',
   'model',
   'duration_ms',
-  'prompt_tokens',
-  'completion_tokens',
+  'input_tokens',
+  'output_tokens',
   'total_tokens',
 ];
 
@@ -31,7 +31,7 @@ Options:
   --offset <number>      Start offset after filtering (default: 0)
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
-  --strategy <name>      direct or loop (default: direct)
+  --strategy <name>      direct, loop or subset (default: direct)
   --output <path>        Prediction CSV (default: databench/results/<dataset>.csv)
   --help                 Show help
 `;
@@ -109,7 +109,7 @@ async function main(argv = process.argv.slice(2)) {
   if (!['databench-lite', 'databench'].includes(values.dataset)) {
     throw new Error('--dataset must be databench-lite or databench.');
   }
-  if (!['direct', 'loop'].includes(values.strategy)) throw new Error('--strategy must be direct or loop.');
+  if (!['direct', 'loop', 'subset'].includes(values.strategy)) throw new Error('--strategy must be direct, loop or subset.');
   const output = resolve(values.output ?? `databench/results/${values.dataset}.csv`);
   const completed = prepareOutput(output);
   const offset = integer(values.offset, 'offset', 0);
@@ -134,9 +134,13 @@ async function main(argv = process.argv.slice(2)) {
           usage = undefined;
           try {
             await ava.load({ type: 'parquet', options: { path: sample.dataPath } });
+            await ava.profile();
             const result = await ava.analysis(
               `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`,
-              { strategy: { type: values.strategy } },
+              {
+                includeSummary: false,
+                strategy: { type: values.strategy }
+              },
             );
             sql = result.sql ?? '';
             answer = answerFrom(result.data, sample.answerType);
@@ -152,8 +156,8 @@ async function main(argv = process.argv.slice(2)) {
               error,
               config.model,
               Date.now() - startedAt,
-              usage?.promptTokens ?? '',
-              usage?.completionTokens ?? '',
+              usage?.inputTokens ?? '',
+              usage?.outputTokens ?? '',
               usage?.totalTokens ?? '',
             ].map(csvCell).join(',')}\n`,
           );
@@ -172,7 +176,7 @@ async function main(argv = process.argv.slice(2)) {
   });
   process.stdout.write(
     `Accuracy: ${(report.metrics['databench-answer'].score * 100).toFixed(2)}% ` +
-      `(${report.metrics['databench-answer'].passed}/${report.total}), missing ${report.missing}\n`,
+    `(${report.metrics['databench-answer'].passed}/${report.total}), missing ${report.missing}\n`,
   );
   if (report.missing) process.exitCode = 1;
 }

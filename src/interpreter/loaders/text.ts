@@ -3,16 +3,12 @@
  */
 
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+
+import { languageModel } from '../../util/model';
 
 import type { LLMConfig, TextSourceOptions } from '../../types';
 
 export async function loadText(options: TextSourceOptions, llmConfig: LLMConfig): Promise<any[]> {
-  const openai = createOpenAI({
-    apiKey: llmConfig.apiKey,
-    baseURL: llmConfig.baseURL,
-  });
-
   const prompt = `You are a data extraction assistant. Extract structured data from the following text and return it as a JSON array of objects.
 
 The text may contain data in various formats (comma-separated, space-separated, tabular, etc.). Your task is to:
@@ -28,7 +24,7 @@ ${options.text}
 Return ONLY the JSON array, no additional text or explanation. The response must be valid JSON that can be parsed directly.`;
 
   const { text: responseText } = await generateText({
-    model: openai(llmConfig.model) as any,
+    model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
   });

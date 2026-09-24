@@ -1,14 +1,10 @@
 import { generateText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
 
-import type { AnalysisStrategy, LLMConfig } from '../types';
+import { languageModel } from '../util/model';
+
+import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
 
 async function summarizeResult(query: string, data: any, llm: LLMConfig): Promise<string> {
-  const openai = createOpenAI({
-    apiKey: llm.apiKey,
-    baseURL: llm.baseURL,
-  });
-
   const dataStr = typeof data === 'object' ? JSON.stringify(data, null, 2) : String(data);
 
   const prompt = `You are a data analysis assistant. Based on the following query and analysis result, provide a clear and concise summary.
@@ -23,7 +19,7 @@ IMPORTANT: Detect the language of the user query. You MUST write your summary in
 Provide a natural language summary of the result. If the result is tabular data, you can present it as a markdown table.`;
 
   const { text } = await generateText({
-    model: openai(llm.model) as any,
+    model: languageModel(llm),
     maxRetries: llm.maxRetries ?? 3,
     prompt,
   });
@@ -31,14 +27,36 @@ Provide a natural language summary of the result. If the result is tabular data,
   return text;
 }
 
-/** Generate and execute one query, then summarize its data. */
-export const directAnalysis: AnalysisStrategy = async (query, config, { engine, llm }) => {
-  const sql = await engine.getDSL(query);
-  const result = await engine.execute(sql, config);
+/** Generate and execute a query with bounded error correction, then summarize its data. */
+export const directAnalysis: AnalysisStrategy = async (query, config, { context, engine, llm }) => {
+  const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
+
+  let sql = await engine.getDSL(query, context);
+  let result: ExecutionResult;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      result = await engine.execute(sql, config);
+      break;
+    } catch (error) {
+      if (attempt >= maxRetries) throw error;
+      sql = await engine.getDSL(
+        `${query}
+
+        The previous DSL failed to execute. Correct it using the following diagnostic context:
+
+        Previous DSL:
+        ${sql}
+
+        Execution error:
+        ${error instanceof Error ? error.message : String(error)}`,
+        context
+      );
+    }
+  }
   const data = result.data;
 
   const summaryData = result.truncatedBy ? { data, truncated: true, truncatedBy: result.truncatedBy } : data;
-  const text = await summarizeResult(query, summaryData, llm);
+  const text = config.includeSummary === false ? '' : await summarizeResult(query, summaryData, llm);
 
   return {
     query,

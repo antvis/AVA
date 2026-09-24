@@ -20,7 +20,7 @@ const METRIC_LABELS: Record<string, string> = {
 
 /** Keep each observation next to its table or field, with explicit metric semantics. */
 function stringifyMetrics(metrics: Record<string, unknown>, logicalType?: LogicalType): string {
-  if (!Object.keys(metrics).length) return '  Observations: not computed.\n';
+  if (!Object.keys(metrics).length) return '  Observations: not provided.\n';
 
   return Object.entries(metrics)
     .map(([id, value]) => {
@@ -121,7 +121,7 @@ Observed at: ${new Date(profile.generatedAt).toISOString()}
 ${stringifyTables(profile.tables, true)}
 ${stringifyRelations(profile.relations ?? [], profile.tables)}Observation notes:
 - Field names and logical types help interpret the data; business meaning, units, and categorical roles are not declared by these statistics. Verify them when needed.
-- Missing metrics were not computed; null means no usable aggregate value. Zero and empty arrays are actual results.
+- Missing metrics were not computed or were omitted; null means no usable aggregate value. Zero and empty arrays are actual results.
 - Frequent values are observed examples, not an exhaustive list or an enum constraint. Their counts exclude nulls.
 - Numeric and date aggregates exclude nulls and non-finite values. Date bounds are displayed as UTC ISO timestamps, not a declaration of the source timezone.
 - Observed uniqueness does not establish a primary key or a join relationship; prefer declared constraints and relations.
