@@ -104,3 +104,4 @@ pnpm-lock.yaml
 
 # Debug files
 .debug
+docs/
