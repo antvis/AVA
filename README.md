@@ -175,6 +175,18 @@ Run one analysis:
 ava analyze data/companies.csv "What is the average revenue by region?"
 ```
 
+### Agent Skill
+
+Install the AVA skill in your agent workspace:
+
+```bash
+npx skills add antvis/AVA --skill ava
+```
+
+Follow the [setup guide](skills/ava/references/setup.md), then ask the agent:
+
+> Analyze `sales.csv`, summarize sales by region, and create a chart.
+
 ## 📘 Documentation
 
 ### SDK
