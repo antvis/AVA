@@ -31,6 +31,7 @@ export type {
   AnalysisStrategy,
   AnalysisStrategyConfig,
   AnalysisRuntime,
+  DataContext,
   VisualizeResponse,
   SuggestResult,
   ChartType,

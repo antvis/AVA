@@ -12,7 +12,7 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { stringifySchema } from '../util/schema';
+import { stringifyProfile, stringifySchema } from '../util/context';
 
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
 
@@ -61,7 +61,7 @@ Execution success alone is not correctness. Verify that the result has the inten
 
 Use this state flow:
 
-1. If the schema is sufficient, respond with [SQL].
+1. If the dataset profile is sufficient, respond with [SQL].
 2. If a required fact is unknown, respond with [EXPLORE].
 3. After new evidence or an execution error, respond with [REFINE].
 4. After a successful answer query, respond with [CONFIRM] only when its result answers the original question.
@@ -166,12 +166,13 @@ const transcriptPrompt = (transcript: string[]) => {
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
-export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, engine, llm }) => {
+export const loopAnalysis: AnalysisStrategy = async (query, config, { context: { schema, profile }, engine, llm }) => {
   const openai = createOpenAI({
     apiKey: llm.apiKey,
     baseURL: llm.baseURL,
   });
 
+  const context = profile ? stringifyProfile(profile) : stringifySchema(schema);
   const transcript: string[] = [];
   let sql: string | undefined;
   let result: ExecutionResult | undefined;
@@ -183,8 +184,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
 
     # DATABASE CONTEXT
 
-    Schema:
-    ${stringifySchema(schema)}
+    ${context}
 
     User Question: ${query}
 
@@ -270,8 +270,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { schema, en
 
     # DATABASE CONTEXT
 
-    Schema:
-    ${stringifySchema(schema)}
+    ${context}
 
     User Question: ${query}
 

@@ -176,7 +176,7 @@ describe('SupabaseEngine', () => {
       ]);
       const generate = vi.spyOn(PostgreSQLQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
       await engine.getDSL('Orders by buyer');
-      expect(generate).toHaveBeenCalledWith('Orders by buyer', schema);
+      expect(generate).toHaveBeenCalledWith('Orders by buyer', { schema });
       expect(requests).toHaveLength(1);
     });
   });

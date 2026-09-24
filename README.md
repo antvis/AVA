@@ -88,18 +88,6 @@ await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北�
 // or attach a database (every table is exposed to the LLM)
 await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 
-// Load every table in a local SQLite database (read-only).
-await ava.load({ type: 'sqlite', options: { path: 'data/sales.sqlite' } });
-
-// Profile the loaded data with the default metrics
-const profile = await ava.profile();
-console.log(profile.tables[0].metrics.row_count);
-
-// Or request only the metrics you need
-const focusedProfile = await ava.profile({
-  metrics: ['row_count', 'null_count', 'min', 'max', 'mean', { id: 'top_values', limit: 5 }],
-});
-
 // Get suggested analysis queries
 const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
 console.log(queries);
@@ -205,6 +193,7 @@ Core APIs in AVA:
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
   - SQLite: `sqlite` (`{ path }`, local file) — all tables are exposed read-only, with native SQLite column types, nullability, primary keys, ordinary/unique indexes, and foreign keys in the schema. Generated columns are queryable. Defaults, CHECK constraints, triggers, and partial/expression indexes are not represented. Uses the [official SQLite extension](https://duckdb.org/docs/current/core_extensions/sqlite), installed on first use.
 - `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
+- `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
 - `analysis(query, config?)`: run data analysis using the `direct` (default) or `loop` strategy.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
@@ -212,9 +201,16 @@ Core APIs in AVA:
 
 #### `profile(options?)`
 
-`profile()` preserves the loaded schema and adds `generatedAt`, table-level `metrics`, and a `logicalType` plus `metrics` for each field. Metrics that were not requested, do not apply to a field type, or are unavailable are omitted.
+`load()` only loads and returns the structural `Schema`; it does not compute a profile. Call `await ava.profile(options)` explicitly to compute, return, and retain statistics. The profile preserves the schema and adds `generatedAt`, table-level `metrics`, and a `logicalType` plus `metrics` for each field.
 
-The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Passing `metrics` replaces that list; passing an empty list returns only the enriched structure without scanning the data.
+`analysis()` (direct and loop) and `suggest()` receive `context: { schema, profile }`: they use `stringifyProfile(profile)` when a profile is available, otherwise `stringifySchema(schema)`. Neither computes statistics implicitly. Reloading or disposing clears the stored profile; call `profile()` again to refresh statistics after external data changes.
+
+The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Passing `metrics` replaces the defaults; an empty list returns structure without scanning data. Engines without profiling support can still analyze and suggest using schema, but explicit `profile()` calls report that profiling is unsupported.
+
+```typescript
+await ava.profile({ metrics: ['row_count', 'min', 'max', 'mean'] });
+const suggestions = await ava.suggest();
+```
 
 | Metric | Applies to |
 | --- | --- |
@@ -227,17 +223,6 @@ The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values
 | `mean`, `sum`, `stddev`, `median` | Numeric fields |
 
 `top_values` accepts `limit` (default `3`) and `maxDistinctRatio` (default `0.5`). It is omitted when the field's non-null distinct count is greater than the configured share of all rows.
-
-```typescript
-const profile = await ava.profile({
-  metrics: ['row_count', 'null_count', 'distinct_count', { id: 'top_values', limit: 5 }],
-});
-
-console.log(profile.generatedAt);
-console.log(profile.tables[0].metrics); // { row_count: ... }
-console.log(profile.tables[0].fields[0]);
-// { name, type, logicalType, metrics: { null_count, distinct_count, top_values? } }
-```
 
 #### `analysis(query, config?)`
 

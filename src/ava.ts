@@ -3,7 +3,8 @@
  */
 
 import { getEngineClass } from './engines';
-import { extractDataSchema, stringifySchema } from './util/schema';
+import { extractDataSchema } from './util/schema';
+import { stringifySchema } from './util/context';
 import { adviseChartType, generateVisualizationHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
@@ -44,6 +45,7 @@ export class AVA {
   private readonly engineConfig: EngineConfig;
   engine: AnalysisEngine | null = null;
   private schema: Schema | null = null;
+  private dataProfile: Profile | null = null;
 
   constructor(config: AVAConfig) {
     this.llmConfig = config.llm;
@@ -67,17 +69,20 @@ export class AVA {
    * Reloading disposes the previous engine and its resources.
    */
   async load(config: DataSourceConfig): Promise<Schema> {
+    this.schema = null;
+    this.dataProfile = null;
     await this.engine?.dispose();
+    this.engine = null;
 
     this.engine = await this.createEngine();
     try {
       this.schema = await this.engine.load(config);
+      return this.schema;
     } catch (error) {
       await this.engine.dispose();
       this.engine = null;
       throw error;
     }
-    return this.schema;
   }
 
   /**
@@ -91,7 +96,7 @@ export class AVA {
     }
 
     const runtime = {
-      schema: this.schema,
+      context: { schema: this.schema, profile: this.dataProfile ?? undefined },
       engine: this.engine,
       llm: this.llmConfig,
     };
@@ -143,19 +148,19 @@ export class AVA {
     }
   }
 
-  /**
-   * Return statistics for the loaded dataset.
-   */
+  /** Compute and retain a dataset profile for subsequent model context. */
   async profile(options: ProfileOptions = {}): Promise<Profile> {
     if (!this.engine || !this.schema) {
       throw new Error('No data loaded. Please call load() first.');
     }
-
     if (!this.engine.profile) {
       throw new Error('Profiling is not supported by the registered engine.');
     }
 
-    return this.engine.profile(options);
+    const engine = this.engine;
+    const profile = await engine.profile(options);
+    if (this.engine === engine) this.dataProfile = profile;
+    return profile;
   }
 
   /**
@@ -166,7 +171,11 @@ export class AVA {
       throw new Error('No data loaded. Please call load() first.');
     }
 
-    return generateSuggestions(this.llmConfig, this.schema, count);
+    return generateSuggestions(
+      this.llmConfig,
+      { schema: this.schema, profile: this.dataProfile ?? undefined },
+      count
+    );
   }
 
   /**
@@ -176,5 +185,6 @@ export class AVA {
     await this.engine?.dispose();
     this.engine = null;
     this.schema = null;
+    this.dataProfile = null;
   }
 }

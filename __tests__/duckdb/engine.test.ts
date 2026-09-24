@@ -8,6 +8,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
+import { DuckDBQueryDialect } from '../../src/query/duckdb';
 import { maxRows } from '../../src/util/result';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
@@ -21,6 +22,26 @@ describe('DuckDBEngine', () => {
   afterEach(async () => {
     vi.restoreAllMocks();
     await engine.dispose();
+  });
+
+  it('uses its own schema and explicitly computed profile when generating DSL', async () => {
+    const generate = vi.spyOn(DuckDBQueryDialect.prototype, 'getDSL').mockResolvedValue('SELECT 1');
+    const compute = vi.spyOn(engine, 'profile');
+    const schema = await engine.load({ type: 'json', options: { data: [{ value: 1 }] } });
+    await engine.getDSL('One');
+    expect(generate).toHaveBeenLastCalledWith('One', { schema, profile: undefined });
+    expect(compute).not.toHaveBeenCalled();
+
+    const profile = await engine.profile({ metrics: ['row_count'] });
+    await engine.getDSL('One');
+    expect(generate).toHaveBeenLastCalledWith('One', { schema, profile });
+    expect(compute).toHaveBeenCalledTimes(1);
+
+    await engine.dispose();
+    await expect(engine.getDSL('One')).rejects.toThrow('No data loaded');
+    const nextSchema = await engine.load({ type: 'json', options: { data: [{ other: 2 }] } });
+    await engine.getDSL('Two');
+    expect(generate).toHaveBeenLastCalledWith('Two', { schema: nextSchema, profile: undefined });
   });
 
   it('should load data and execute queries', async () => {

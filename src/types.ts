@@ -597,9 +597,16 @@ export interface ExecutionResult<T = Record<string, unknown>> {
 /** Built-in analysis strategies. */
 export type AnalysisStrategyConfig = { type: 'direct' } | { type: 'loop'; maxSteps?: number };
 
+/** Dataset metadata supplied to model-facing consumers. */
+export interface DataContext {
+  schema: Schema;
+  /** Optional statistics take priority over structural metadata. */
+  profile?: Profile;
+}
+
 /** Runtime dependencies available to an analysis strategy. */
 export interface AnalysisRuntime {
-  schema: Schema;
+  context: DataContext;
   engine: AnalysisEngine;
   llm: LLMConfig;
 }
@@ -616,7 +623,7 @@ export type AnalysisStrategy = (
  */
 export interface QueryDialect<TContext = void> {
   /** Generate the executable DSL (SQL) for a natural-language query. */
-  getDSL(query: string, schema: Schema): Promise<string>;
+  getDSL(query: string, context: DataContext): Promise<string>;
   /** Require exactly one read-only DSL statement before execution. */
   validateDSL(dsl: string, context: TContext): Promise<void>;
 }

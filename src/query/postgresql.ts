@@ -2,9 +2,9 @@ import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 
-import { stringifySchema } from '../util/schema';
+import { stringifyProfile, stringifySchema } from '../util/context';
 
-import type { LLMConfig, QueryDialect, Schema } from '../types';
+import type { LLMConfig, QueryDialect, DataContext } from '../types';
 
 const MUTATING_NODES = new Set(['InsertStmt', 'UpdateStmt', 'DeleteStmt', 'MergeStmt']);
 
@@ -23,16 +23,16 @@ export class PostgreSQLQueryDialect implements QueryDialect {
 
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, schema: Schema): Promise<string> {
+  async getDSL(query: string, { schema, profile }: DataContext): Promise<string> {
     const openai = createOpenAI({
       apiKey: this.llmConfig.apiKey,
       baseURL: this.llmConfig.baseURL,
     });
 
-    const prompt = `You are a SQL expert. Given the following table schema and user query, generate a SQL query to answer the question.
+    const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
-Table Schema:
-${stringifySchema(schema)}
+Dataset Context:
+${profile ? stringifyProfile(profile) : stringifySchema(schema)}
 
 User Query: ${query}
 

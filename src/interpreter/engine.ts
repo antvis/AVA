@@ -9,7 +9,8 @@
 import { generateText } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 
-import { extractDataSchema, stringifySchema } from '../util/schema';
+import { extractDataSchema } from '../util/schema';
+import { stringifySchema } from '../util/context';
 import { executionResult, inferQuerySchema } from '../util/result';
 import { DEFAULT_METRICS, parseProfileOptions } from '../util/profile';
 
@@ -71,7 +72,7 @@ export class InterpreterEngine implements AnalysisEngine {
       throw new Error('No data loaded. Please call load() first.');
     }
 
-    const schema = stringifySchema(extractDataSchema(this.data));
+    const datasetContext = stringifySchema(extractDataSchema(this.data));
 
     const openai = createOpenAI({
       apiKey: this.llmConfig.apiKey,
@@ -81,7 +82,7 @@ export class InterpreterEngine implements AnalysisEngine {
     const prompt = `You are a data analysis expert. Given the following dataset information and user query, generate JavaScript code to answer the question.
 
 Dataset Information:
-${schema}
+${datasetContext}
 
 User Query: ${query}
 

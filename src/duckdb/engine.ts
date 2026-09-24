@@ -66,6 +66,7 @@ export class DuckDBEngine implements AnalysisEngine {
   private instance: DuckDBInstance | null = null;
   private connection: DuckDBConnection | null = null;
   private schema: Schema | null = null;
+  private dataProfile: Profile | null = null;
   private cleanup: (() => Promise<void>) | null = null;
   private readonly queryDialect: DuckDBQueryDialect;
 
@@ -117,6 +118,7 @@ export class DuckDBEngine implements AnalysisEngine {
 
   async load(config: DataSourceConfig): Promise<Schema> {
     this.schema = null;
+    this.dataProfile = null;
     try {
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
@@ -137,7 +139,7 @@ export class DuckDBEngine implements AnalysisEngine {
   async getDSL(query: string): Promise<string> {
     if (!this.schema) throw new Error('No data loaded. Please call load() first.');
 
-    return this.queryDialect.getDSL(query, this.schema);
+    return this.queryDialect.getDSL(query, { schema: this.schema, profile: this.dataProfile ?? undefined });
   }
 
   // TODO(profile, on demand): Cache only with reliable data versions and request-based invalidation.
@@ -149,7 +151,8 @@ export class DuckDBEngine implements AnalysisEngine {
     const defaultOptions = { metrics: DEFAULT_METRICS };
     const parsedOptions = parseProfileOptions(options, defaultOptions);
 
-    return profileTables(this.connection, this.schema, parsedOptions);
+    this.dataProfile = await profileTables(this.connection, this.schema, parsedOptions);
+    return this.dataProfile;
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
@@ -208,6 +211,7 @@ export class DuckDBEngine implements AnalysisEngine {
     this.connection = null;
     this.instance = null;
     this.schema = null;
+    this.dataProfile = null;
   }
 
   async dispose(): Promise<void> {

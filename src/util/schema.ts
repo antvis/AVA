@@ -1,9 +1,7 @@
 /**
- * Schema helpers: assemble structural metadata, infer in-memory schemas, and
- * format schemas for LLM prompts. Database queries belong to the engines.
+ * Schema helpers: assemble structural metadata and infer in-memory schemas.
+ * Database queries belong to the engines; prompt formatting belongs to context.
  */
-
-import { sqlIdentifier } from './sql';
 
 import type { Schema, TableIndex, TableRelation, TableSchema } from '../types';
 
@@ -61,82 +59,6 @@ export function extractDataSchema(data: any[]): Schema {
     type: inferType(data.map((row) => row[name])),
   }));
   return { tables: [table] };
-}
-
-function isValidRelation({ from, to, kind }: TableRelation, tables: TableSchema[]): boolean {
-  const validEndpoints = [from, to].every((endpoint) => {
-    const table = tables.find((table) => table.name === endpoint?.table);
-    const columns = endpoint?.columns;
-
-    return (
-      !!table &&
-      Array.isArray(columns) &&
-      columns.length > 0 &&
-      new Set(columns).size === columns.length &&
-      columns.every((column) => table.fields.some((field) => field.name === column))
-    );
-  });
-
-  return validEndpoints && kind === 'foreign-key' && from.columns.length === to.columns.length;
-}
-
-/** Describe tables, fields, and indexes. */
-function stringifyTables(tables: TableSchema[]): string {
-  return tables
-    .map((table) => {
-      const fields = table.fields
-        .map(
-          (field) => `- ${sqlIdentifier(field.name)} (${field.type})${field.nullable === false ? ' NOT NULL' : ''}\n`
-        )
-        .join('');
-      const indexes = table.indexes
-        .map((index) => {
-          const prefix = index.primary ? 'PRIMARY KEY ' : index.unique ? 'UNIQUE ' : '';
-          return `  - ${prefix}${sqlIdentifier(index.name)} (${index.columns.map(sqlIdentifier).join(', ')})\n`;
-        })
-        .join('');
-
-      return `Table ${sqlIdentifier(table.name)}:
-- Columns: ${table.columnCount}
-Fields:
-${fields}${indexes ? `Indexes:\n${indexes}` : ''}`;
-    })
-    .join('');
-}
-
-/** Describe valid table relations. */
-function stringifyRelations(relations: TableRelation[], tables: TableSchema[]): string {
-  if (!relations.length) return '';
-
-  const validRelations = relations.filter((relation) => isValidRelation(relation, tables));
-  if (validRelations.length === 0) return '';
-
-  const relationText = validRelations
-    .map((relation) => {
-      const label = relation.name ? `${sqlIdentifier(relation.name)}: ` : '';
-      const endpoints = [relation.from, relation.to].map(
-        ({ table, columns }) => `${sqlIdentifier(table)} (${columns.map(sqlIdentifier).join(', ')})`
-      );
-      return `  - [${relation.kind}] ${label}${endpoints.join(' REFERENCES ')}\n`;
-    })
-    .join('');
-
-  return `Relations (declared; pair columns by position):
-${relationText}
-Notes:
-- For joins, prefer the declared relations and match ALL paired columns of composite relations.
-- These relations describe database foreign-key constraints, which do not imply one-to-one cardinality; avoid double-counting when aggregating across joins.
-- Choose the JOIN type according to the question and nullability.
-- Missing declarations mean relations are unknown, not that same-named columns are related.
-- Only reference tables exposed in this schema.
-`;
-}
-
-/** Describe a dataset for the language model. */
-export function stringifySchema({ tables, relations = [] }: Schema): string {
-  return `Dataset Info: ${tables.length} table(s)
-${stringifyTables(tables)}
-${stringifyRelations(relations, tables)}`;
 }
 
 /** Read column names from a plain index. */
