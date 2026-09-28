@@ -12,6 +12,7 @@ export const accent = (value: string, color = colorsEnabled(process.stdout.isTTY
 export const muted = (value: string, color = colorsEnabled(process.stdout.isTTY)) => (color ? ansi('2', value) : value);
 export const badge = (value: string, color = colorsEnabled(process.stdout.isTTY)) => {
   const label = ` ${value} `;
+
   return color ? ansi('1;30;46', label) : label;
 };
 const danger = (value: string, color = colorsEnabled(process.stderr.isTTY)) => (color ? ansi('1;31', value) : value);
@@ -22,5 +23,6 @@ const danger = (value: string, color = colorsEnabled(process.stderr.isTTY)) => (
 export function formatError(error: unknown, color = colorsEnabled(process.stderr.isTTY)): string {
   const message = error instanceof Error ? error.message : String(error);
   const label = danger('Error:', color);
+
   return `${label} ${message}`;
 }

@@ -155,14 +155,76 @@ ava.dispose();
 
 ### CLI
 
-The CLI currently provides help only:
-
 ```bash
 npm install -g @antv/ava
-ava --help
+ava source data/companies.csv
+# { "datasetId": "ds_..." }
+ava schema ds_...
+ava profile ds_... --metrics row_count,null_count,mean
+ava query ds_... --dsl 'SELECT * FROM "data" LIMIT 10'
+ava dispose ds_...
 ```
 
-Dataset-based commands are planned. Use the SDK for analysis in the meantime.
+Replace `ds_...` with the returned ID and use the table names reported by `schema`.
+Dataset sessions currently require macOS or Linux. Each dataset lives in a private background process;
+commands share the loaded source and computed profile. Sessions expire after 30 idle minutes or when
+explicitly disposed. IDs become invalid when their process exits; reload with `source`.
+
+| Command | Purpose | LLM required |
+| --- | --- | --- |
+| `source <dataset> [--type <type>]` | Load a source and return `{ datasetId }` | Only for `text` sources |
+| `schema <dataset-id>` | Return tables, fields and relations | No |
+| `profile <dataset-id> [--metrics <list>]` | Compute and retain statistics | No |
+| `suggest <dataset-id> [--count <n>]` | Recommend questions (default 3, maximum 100) | Yes |
+| `analyze <dataset-id> "<query>"` | Generate, execute and summarize a query | Yes |
+| `translate <dataset-id> "<query>"` | Return `{ dsl }` without executing it | Yes |
+| `query <dataset-id> --dsl <dsl>` | Execute a read-only query | No |
+| `visualize --query <text> --data <data> [--output <path>]` | Recommend and render a chart | Yes |
+| `recommend --query <text> --data <data>` | Return `{ chartType, syntax }` or `null` | Yes |
+| `viz --spec <spec> --output <path>` | Render a supplied spec to HTML | No |
+| `dispose <dataset-id>` | Release the dataset and its process | No |
+
+`quality` is not implemented. Each command supports `--help`.
+
+**Inputs and outputs:** `source` accepts a file path or HTTP(S) URL, with CSV, JSON, Parquet,
+Excel and local SQLite inferred from the extension. `--type` overrides inference. Use `@source.json`
+or `-` (stdin) for a full SDK `{ type, options }` configuration, including inline CSV/JSON/text,
+MySQL, PostgreSQL or Supabase. Relative source paths resolve against the CLI's working directory.
+Credentials in source configs pass to the worker in memory and are not persisted by the CLI.
+
+`--data`, `--spec` and `--dsl` accept inline content, `@file`, or `-` for stdin.
+Text inputs are limited to 16 MiB; files and stdin are read incrementally.
+Data is a JSON array of objects; a spec is `{ "chartType": "column", "syntax": "vis column\n..." }`.
+Commands return JSON on stdout. Errors go to stderr with exit code 1. HTML outputs never overwrite
+existing files; `viz` returns `{ output }`. `visualize` returns `{ chartType, syntax, html }` (plus
+`output` when supplied), or `null` when no chart is recommended. Model failures return an error.
+HTML rendering uses the existing GPT-Vis browser runtime loaded from a CDN.
+
+`query` and `analyze` accept `--max-rows` (default 200, maximum 10,000) and `--max-result-bytes`
+(default 1 MiB). Queries retain the engine's read-only validation and execution timeout.
+`analyze` also accepts `--strategy direct|loop|subset`. Dataset IPC requests are limited to 1 MiB,
+responses to 16 MiB, and each CLI request times out after 120 seconds. A timed-out CLI request
+does not automatically cancel the running operation; avoid blindly retrying it.
+`--metrics` is comma-separated; an empty string requests structure without statistics.
+
+Configure models only for AI commands:
+
+```bash
+export OPENAI_API_KEY=YOUR_API_KEY
+export OPENAI_MODEL=YOUR_MODEL
+export OPENAI_BASE_URL=https://your-provider.example.com/v1
+ava source data/companies.csv
+# Use the new datasetId returned above.
+ava suggest ds_... --count 3
+ava analyze ds_... "What is the average revenue by region?"
+ava recommend --query "Show revenue by region" --data @rows.json > chart.json
+ava viz --spec @chart.json --output chart.html
+```
+
+Dataset model configuration is fixed when `source` creates the session. Configure credentials before
+loading a dataset for AI commands; reload the source to change model settings. Standalone
+`visualize` and `recommend` commands read the current environment. `OPENAI_MODEL` defaults to `gpt-4o-mini`; `OPENAI_BASE_URL` is optional.
+The old one-shot analysis command accepting a source path is not supported.
 
 ## 📘 Documentation
 
@@ -185,7 +247,7 @@ Core APIs in AVA:
 - `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
 - `analyze(query, config?)`: run data analysis using various strategies.
-- `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
+- `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data; generation failures throw).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 
 #### `profile(options?)`
