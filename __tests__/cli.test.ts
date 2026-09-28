@@ -31,7 +31,7 @@ vi.mock('../src/index', () => ({
       if (state.failure === 'load') throw new Error('Load failed.');
     }
 
-    async analysis(query: string) {
+    async analyze(query: string) {
       state.query = query;
       if (state.failure === 'analysis') throw new Error('Analysis failed.');
       return state.analysis;

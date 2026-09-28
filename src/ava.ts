@@ -115,7 +115,7 @@ export class AVA {
    * The query is turned into SQL via LLM and executed by DuckDB.
    * Use visualize() separately to generate charts from the analysis result.
    */
-  async analysis(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
+  async analyze(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -131,9 +131,9 @@ export class AVA {
 
   /**
    * Visualize analysis data by recommending a chart type and generating chart HTML.
-   * Accepts the result from analysis() — the query and data are read from it.
+   * Accepts the result from analyze() — the query and data are read from it.
    *
-   * @param analysisResult - The result returned from analysis()
+   * @param analysisResult - The result returned from analyze()
    * @param options - Optional visualization options
    * @returns VisualizeResponse with chartType, syntax, and html, or null if no visualization is needed
    */

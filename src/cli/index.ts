@@ -38,7 +38,7 @@ export async function run(
   const ava = new AVA({ llm: llmConfig(env) });
   try {
     await ava.source(inferSource(source, option(options, 'type')));
-    const analysis = await ava.analysis(query);
+    const analysis = await ava.analyze(query);
     const visualization = chart ? await ava.visualize(analysis) : undefined;
     if (output && visualization) await writeOutput(output, visualization.html);
     write(JSON.stringify({ analysis, ...(chart ? { visualization } : {}) }, null, 2));

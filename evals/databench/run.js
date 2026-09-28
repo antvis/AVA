@@ -135,7 +135,7 @@ async function main(argv = process.argv.slice(2)) {
           try {
             await ava.source({ type: 'parquet', options: { path: sample.dataPath } });
             await ava.profile();
-            const result = await ava.analysis(
+            const result = await ava.analyze(
               `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`,
               {
                 includeSummary: false,

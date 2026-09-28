@@ -30,20 +30,20 @@ describe.skipIf(skipLLMTests)('cases/object-analysis', () => {
   });
 
   it('answers which city has the highest GDP', async () => {
-    const result = await ava.analysis('Which city has the highest GDP?');
+    const result = await ava.analyze('Which city has the highest GDP?');
     expect(typeof result.text).toBe('string');
     expect(result.text.length).toBeGreaterThan(0);
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers average population of the cities', async () => {
-    const result = await ava.analysis('What is the average population of these cities?');
+    const result = await ava.analyze('What is the average population of these cities?');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers sorting cities by GDP per capita', async () => {
-    const result = await ava.analysis(
+    const result = await ava.analyze(
       'Sort cities by GDP per capita, calculated as GDP divided by population'
     );
     expect(typeof result.text).toBe('string');

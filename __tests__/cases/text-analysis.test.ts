@@ -23,7 +23,7 @@ describe.skipIf(skipLLMTests)('cases/text-analysis', () => {
   it('extracts simple comma-separated text and sums values', async () => {
     await ava.source({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
 
-    const result = await ava.analysis('What is the sum of all values?');
+    const result = await ava.analyze('What is the sum of all values?');
     expect(typeof result.text).toBe('string');
     expect(result.text).toMatch(/600/);
   }, 90000);
@@ -38,7 +38,7 @@ describe.skipIf(skipLLMTests)('cases/text-analysis', () => {
     `;
     await ava.source({ type: 'text', options: { text } });
 
-    const result = await ava.analysis('Which region and quarter had the best completion rate?');
+    const result = await ava.analyze('Which region and quarter had the best completion rate?');
     expect(typeof result.text).toBe('string');
     expect(result.text.length).toBeGreaterThan(0);
     expect(result.data).toBeDefined();
@@ -54,7 +54,7 @@ describe.skipIf(skipLLMTests)('cases/text-analysis', () => {
     `;
     await ava.source({ type: 'text', options: { text } });
 
-    const result = await ava.analysis(
+    const result = await ava.analyze(
       'Calculate the total inventory value (price times stock for each product)'
     );
     expect(typeof result.text).toBe('string');
