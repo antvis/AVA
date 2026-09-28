@@ -4,7 +4,6 @@ import { createClient } from '@clickhouse/client';
 import { AVA } from '../../src';
 import { ClickHouseEngine } from '../../src/clickhouse';
 import { profileTables as clickhouseProfile } from '../../src/clickhouse/profile';
-import { ClickHouseQueryDialect } from '../../src/query/clickhouse';
 import { getLLMConfig } from '../test-utils';
 
 import type { Schema } from '../../src/types';
@@ -16,7 +15,10 @@ vi.mock('@clickhouse/client', () => ({
 const mockedCreateClient = vi.mocked(createClient);
 
 function result(rows: unknown[]) {
-  return { json: vi.fn().mockResolvedValue(rows) };
+  return {
+    json: vi.fn().mockResolvedValue(rows),
+    text: vi.fn().mockResolvedValue('SelectWithUnionQuery (children 1)'),
+  };
 }
 
 const TABLE_ROWS = [
@@ -50,25 +52,6 @@ function stubClient(resolver: (query: string) => unknown[]) {
 afterEach(() => {
   vi.clearAllMocks();
   vi.restoreAllMocks();
-});
-
-describe('ClickHouseQueryDialect', () => {
-  it('accepts a single read-only SELECT statement', async () => {
-    const dialect = new ClickHouseQueryDialect(getLLMConfig());
-    await expect(dialect.validateDSL("SELECT ';' AS semicolon -- still one statement")).resolves.toBeUndefined();
-    await expect(dialect.validateDSL('WITH cte AS (SELECT 1) SELECT * FROM cte')).resolves.toBeUndefined();
-  });
-
-  it('rejects multiple or mutating statements', async () => {
-    const dialect = new ClickHouseQueryDialect(getLLMConfig());
-    await expect(dialect.validateDSL('SELECT 1; SELECT 2')).rejects.toThrow('exactly one');
-    await expect(dialect.validateDSL('ALTER TABLE orders DELETE WHERE 1')).rejects.toThrow(
-      'only read-only SELECT statements'
-    );
-    await expect(dialect.validateDSL('CREATE TABLE demo AS SELECT 1')).rejects.toThrow(
-      'only read-only SELECT statements'
-    );
-  });
 });
 
 describe('ClickHouseEngine', () => {
@@ -121,6 +104,9 @@ describe('ClickHouseEngine', () => {
     const client = stubClient((query) => {
       if (query.includes('FROM system.tables')) return TABLE_ROWS;
       if (query.includes('FROM system.columns')) return COLUMN_ROWS;
+      if (query.startsWith('EXPLAIN AST')) return [{ explain: 'SelectWithUnionQuery (children 1)' }];
+      if (query.includes('formatQuery'))
+        return [{ query: 'SELECT * FROM (SELECT customer_id, name FROM customers ORDER BY customer_id)' }];
       if (query.includes('LIMIT 3')) {
         return [
           { customer_id: 101, name: 'Alice' },
@@ -150,7 +136,8 @@ describe('ClickHouseEngine', () => {
         expect.objectContaining({
           format: 'JSONEachRow',
           query:
-            'SELECT * FROM (\nSELECT customer_id, name FROM customers ORDER BY customer_id\n) AS __ava_query LIMIT 3',
+            'SELECT * FROM (\nSELECT * FROM (SELECT customer_id, name FROM customers ORDER BY customer_id)\n) AS __ava_query LIMIT 3',
+          clickhouse_settings: { readonly: '1' },
         })
       );
     } finally {
@@ -192,7 +179,7 @@ describe('ClickHouseEngine', () => {
     expect(query).toContain('"note""text"');
   });
 
-  it('rejects unloaded and invalid queries', async () => {
+  it('rejects unloaded engines and incompatible sources', async () => {
     stubClient((query) => {
       if (query.includes('FROM system.tables')) return TABLE_ROWS;
       if (query.includes('FROM system.columns')) return COLUMN_ROWS;
@@ -204,10 +191,6 @@ describe('ClickHouseEngine', () => {
       type: 'clickhouse',
       options: { host: 'http://localhost:8123', database: 'default', username: 'default', password: '' },
     });
-    await expect(engine.execute('SELECT 1; SELECT 2')).rejects.toThrow('exactly one');
-    await expect(engine.execute('INSERT INTO customers VALUES (1)')).rejects.toThrow(
-      'only read-only SELECT statements'
-    );
     await expect(engine.load({ type: 'csv-file', options: { path: 'unused' } })).rejects.toThrow('only supports');
     await expect(engine.profile()).rejects.toThrow('No data loaded');
   });

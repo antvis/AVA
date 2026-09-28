@@ -76,7 +76,11 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   async profile(options: ProfileOptions = {}): Promise<Profile> {
     if (!this.schema || !this.client) throw new Error('No data loaded. Please call load() first.');
-    return profileTables((sql) => this.runQuery(sql), this.schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
+    return profileTables(
+      (sql) => this.runQuery(sql),
+      this.schema,
+      parseProfileOptions(options, { metrics: DEFAULT_METRICS })
+    );
   }
 
   async getDSL(query: string, context?: DataContext): Promise<string> {
@@ -86,7 +90,7 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.client) throw new Error('No data loaded. Please call load() first.');
-    const query = this.queryDialect.prepareQuery(dsl);
+    const query = await this.queryDialect.prepareQuery(dsl, this.client);
     const rows = await this.runQuery<T>(limitedQuery(query, maxRows(options)));
     return executionResult(rows, inferQuerySchema(rows), options);
   }
@@ -101,7 +105,9 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   private async runQuery<T = Record<string, unknown>>(query: string): Promise<T[]> {
     if (!this.client) throw new Error('No data loaded. Please call load() first.');
-    const result = await this.client.query({ query, format: 'JSONEachRow' });
+    // Enforce on each request, including when source options specify readonly: 0.
+    // https://clickhouse.com/docs/operations/settings/permissions-for-queries#readonly
+    const result = await this.client.query({ query, format: 'JSONEachRow', clickhouse_settings: { readonly: '1' } });
     const rows = await result.json<unknown>();
     return Array.isArray(rows) ? (rows as T[]) : [];
   }
