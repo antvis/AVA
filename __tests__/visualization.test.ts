@@ -56,4 +56,14 @@ describe('chart recommendation', () => {
     expect(visualization?.html).toContain(syntax);
     expect(generateText).toHaveBeenCalledTimes(2);
   });
+
+  it('renders a supplied specification deterministically without calling the model', async () => {
+    const spec = { chartType: 'column' as const, syntax };
+    const html = await ava['viz'](spec);
+    expect(html).toContain('<!DOCTYPE html>');
+    expect(html).toContain(syntax);
+    expect(html).toContain('gptVis.render(visSyntax)');
+    expect(await ava['viz'](spec)).toBe(html);
+    expect(generateText).not.toHaveBeenCalled();
+  });
 });

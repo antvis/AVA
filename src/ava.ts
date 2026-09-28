@@ -169,7 +169,7 @@ export class AVA {
   async visualize(analysisResult: AnalysisResponse): Promise<VisualizeResponse | null> {
     try {
       const spec = await this.recommend(analysisResult);
-      return spec ? { ...spec, html: wrapSyntaxInHTML(spec.syntax) } : null;
+      return spec ? { ...spec, html: await this.viz(spec) } : null;
     } catch (error) {
       // Visualization is optional, don't fail if it fails
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -195,6 +195,13 @@ export class AVA {
 
     const syntax = await generateVisualizationSyntax(chartType, data, query, this.llmConfig);
     return { chartType, syntax };
+  }
+
+  /**
+   * Render a chart specification as standalone HTML.
+   */
+  private async viz(spec: Pick<VisualizeResponse, 'chartType' | 'syntax'>): Promise<string> {
+    return wrapSyntaxInHTML(spec.syntax);
   }
 
   /**
