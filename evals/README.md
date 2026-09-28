@@ -1,39 +1,94 @@
 # 评测
 
-执行对象与评测插件相互独立，通过各自的适配器接入：
+评测 AVA 在不同执行方式、分析策略和 Skill 条件下的数据分析表现。已有结果见[准确率记录](ACCURACY.md)。
 
-- [AVA Workflow](ava-workflow/README.md)：固定的 `source → profile → analyze` 编排。
-- [AVA Agent](ava-agent/README.md)：由模型决定执行步骤，使用 Eve 管理会话与沙箱。
-- [DataBench](databench/README.md)：共享题目、数据选择、答案格式和评分规则，不依赖执行对象。
+## 选择评测方式
 
-`cli.js` 是统一入口；`_shared/` 提供通用评测工具；`reports/` 保存比较报告。每个执行对象的 `evals/` 负责适配其输入、运行方式和输出。
+| 执行方式 | 说明 | 可比较的条件 | 环境要求 |
+| --- | --- | --- | --- |
+| [AVA Workflow](ava-workflow/README.md) | 按固定步骤加载数据、生成画像并分析 | `direct`、`loop`、`subset` 策略 | Node.js 22.18+ |
+| [AVA Agent](ava-agent/README.md) | 由模型选择工具和执行步骤 | 使用／不使用 AVA Skill | Node.js 24+、Docker |
 
-调用关系：`CLI 接入表 → 目标的评测适配器 → workflow / Eve`。CLI 只选择适配器，DataBench 插件只提供题目和评分。Agent 的 `databench.eval.ts` 统一处理参数、快照、Eve 配置和用例；`scripts/run.mjs` 只管理 Eve、沙箱和进程。
+目前支持 [DataBench](databench/README.md)，用于评测表格问答的答案准确率。它提供两种数据版本：`databench-lite` 使用采样表，`databench` 使用完整表。
 
-## 运行
+## 准备环境
 
-先按各执行对象的说明安装依赖、构建并配置模型。以下命令在仓库根目录执行：
+以下命令均在仓库根目录执行。
+
+安装依赖并构建 AVA：
+
+```bash
+npm install
+npm run build
+```
+
+运行 Agent 时，还需启动 Docker、安装 Agent 依赖并构建沙箱：
+
+```bash
+npm --prefix evals/ava-agent install
+npm --prefix evals/ava-agent run sandbox:build
+```
+
+在所选方式对应的 `.env` 文件中配置模型：Workflow 使用 `evals/ava-workflow/.env`，Agent 使用 `evals/ava-agent/.env`。
+
+```env
+OPENAI_API_KEY=your-api-key
+OPENAI_MODEL=your-model
+OPENAI_BASE_URL=https://your-provider.example.com/v1
+```
+
+Agent 要求以上三项均填写；Workflow 可省略 `OPENAI_BASE_URL`，默认使用 OpenAI。更多配置见各执行方式的说明。
+
+下载评测数据（需要 `curl`，只需下载一次）：
 
 ```bash
 node evals/databench/fetch.js
-node evals/cli.js run ava-workflow --benchmark databench --limit 20
-node evals/cli.js run ava-agent --benchmark databench --limit 20 --skill ava
-node evals/cli.js run ava-agent --benchmark databench --limit 20 --skill none
 ```
 
-两边共用 `--dataset`、`--suite`、`--offset` 和 `--limit` 的题目选择规则。Workflow 需要 Node.js 22.18+；Agent 需要 Node.js 24+ 和 Docker。
+## 运行评测
 
-比较时使用相同的数据版本、题目范围与模型，比较 DataBench 答案准确率。Agent 的 Skill 加载、工具调用等检查属于额外执行约束，不等同于答案准确率。
+通过执行对象和 `--benchmark` 选择评测组合：
 
-## 结果
+```bash
+# 固定编排：direct 策略
+node evals/cli.js run ava-workflow --benchmark databench --strategy direct --limit 20
 
-- Workflow：预测 CSV 位于 `ava-workflow/results/`，支持复用文件续跑。
-- Agent：每次创建独立的 `ava-agent/.runs/<id>/`，包含 `predictions.csv`、Eve 报告及运行快照。
+# Agent：使用 AVA Skill
+node evals/cli.js run ava-agent --benchmark databench --skill ava --limit 20
 
-两种预测 CSV 均可通过统一入口离线评分：
+# Agent：不使用 Skill
+node evals/cli.js run ava-agent --benchmark databench --skill none --limit 20
+```
+
+默认使用 `databench-lite`。两种执行方式均支持以下选题参数：
+
+| 参数 | 说明 | 默认值 |
+| --- | --- | --- |
+| `--dataset` | `databench-lite` 或 `databench` | `databench-lite` |
+| `--suite` | 指定子集，如 `002_Titanic` | 不筛选 |
+| `--offset` | 筛选后跳过的题目数 | `0` |
+| `--limit` | 题目数量，`all` 表示全部 | `20` |
+
+比较结果时，保持模型、数据版本和题目范围一致。Workflow 更换模型或策略时，应通过 `--output` 指定新的 CSV 文件，避免复用已有答案。
+
+查看各自的完整参数，不调用模型：
+
+```bash
+node evals/cli.js run ava-workflow --benchmark databench --help
+node evals/cli.js run ava-agent --benchmark databench --help
+```
+
+## 查看结果
+
+- **Workflow**：终端显示本次选题的准确率，预测结果默认保存到 `evals/ava-workflow/results/<dataset>.csv`。复用同一文件可续跑，已有非空答案的题目会被跳过。
+- **Agent**：每次独立运行，预测结果保存到 `evals/ava-agent/.runs/<id>/predictions.csv`，详细报告位于该目录的 `.eve/evals/`。报告同时检查答案、工具调用及 Skill 加载；比较答案准确率时，应与这些执行检查区分开。
+
+两种预测 CSV 均可离线评分，无需再次调用模型：
 
 ```bash
 node evals/cli.js score --dataset databench-lite --predictions <结果.csv> --output evals/reports/<报告名>.json
 ```
 
-离线评分默认覆盖所选数据集全部题目，部分预测会产生缺失项；`--output` 不覆盖已有报告。具体参数见 `node evals/cli.js --help` 或 `run <执行对象> --benchmark databench --help`。
+`--dataset` 应与预测结果匹配。离线评分默认覆盖所选数据集全部题目，未提供答案的题目计为缺失；`--output` 不覆盖已有报告，省略时只在终端显示结果。
+
+保留的评测报告位于 [`reports/`](reports/)，各条件的准确率、耗时和 token 用量汇总见[准确率记录](ACCURACY.md)。
