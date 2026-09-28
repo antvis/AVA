@@ -1,5 +1,19 @@
 # Evaluations
 
+Two independent evaluation targets:
+
+- **DataBench** evaluates AVA's internal tabular analysis strategies (existing workflow below).
+- **[AVA Agent](ava-agent/README.md)** uses Vercel Eve as a generic host, with a Python tool and optional AVA Skill. Its external evaluator scores real answers and artifacts; it does not change DataBench. Requires Node.js 24+ and Docker.
+
+```bash
+cd ava-agent
+npm install
+npm run sandbox:build
+# Configure .env using .env.example (OPENAI_MODEL, OPENAI_API_KEY, OPENAI_BASE_URL all required), then compare:
+npm run eval -- --skill ava
+npm run eval -- --skill none
+```
+
 ## DataBench
 
 DataBench evaluates tabular question answering. AVA generates SQL, executes it against Parquet data, converts the result to the expected answer type, and scores it.
