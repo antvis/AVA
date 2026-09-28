@@ -155,80 +155,36 @@ ava.dispose();
 
 ### CLI
 
+Requires Node.js 22.13+ on macOS or Linux. Save the [sample dataset](__tests__/datasets/sales.csv)
+as `sales.csv`, then run:
+
 ```bash
 npm install -g @antv/ava
-ava source data/companies.csv
-# Shows the dataset ID and next-step commands.
-ava schema ds_...
-ava profile ds_... --metrics row_count,null_count,mean
-ava query ds_... --dsl 'SELECT * FROM "data" LIMIT 10'
-ava dispose ds_...
+
+# Example: Claude via Anthropic's OpenAI-compatible endpoint
+export OPENAI_API_KEY='your-anthropic-api-key'
+export OPENAI_MODEL='claude-sonnet-4-6'
+export OPENAI_BASE_URL='https://api.anthropic.com/v1/'
+
+ava source sales.csv
 ```
 
-Replace `ds_...` with the returned ID and use the table names reported by `schema`.
-IDs include a sanitized source name and a random suffix, for example
-`ds_sales_a7c92e4f18b3` for `sales.csv`. Each load creates a separate session.
-Dataset sessions currently require macOS or Linux. Each dataset lives in a private background process;
-commands share the loaded source and computed profile. Sessions expire after 30 idle minutes or when
-explicitly disposed. IDs become invalid when their process exits; reload with `source`.
-
-| Command | Purpose | LLM required |
-| --- | --- | --- |
-| `source <dataset> [--type <type>]` | Load a source and show its ID (JSON when piped) | Only for `text` sources |
-| `schema <dataset-id>` | Return tables, fields and relations | No |
-| `profile <dataset-id> [--metrics <list>]` | Compute and retain statistics | No |
-| `suggest <dataset-id> [--count <n>]` | Recommend questions (default 3, maximum 100) | Yes |
-| `analyze <dataset-id> "<query>"` | Generate, execute and summarize a query | Yes |
-| `translate <dataset-id> "<query>"` | Return `{ dsl }` without executing it | Yes |
-| `query <dataset-id> --dsl <dsl>` | Execute a read-only query | No |
-| `visualize --query <text> --data <data> [--output <path>]` | Recommend and render a chart | Yes |
-| `recommend --query <text> --data <data>` | Return `{ chartType, syntax }` or `null` | Yes |
-| `viz --spec <spec> --output <path>` | Render a supplied spec to HTML | No |
-| `dispose <dataset-id>` | Release the dataset and its process | No |
-
-`quality` is not implemented. Each command supports `--help`.
-
-**Inputs and outputs:** `source` accepts a file path or HTTP(S) URL, with CSV, JSON, Parquet,
-Excel and local SQLite inferred from the extension. `--type` overrides inference. Use `@source.json`
-or `-` (stdin) for a full SDK `{ type, options }` configuration, including inline CSV/JSON/text,
-MySQL, PostgreSQL or Supabase. Relative source paths resolve against the CLI's working directory.
-Credentials in source configs pass to the worker in memory and are not persisted by the CLI.
-
-`--data`, `--spec` and `--dsl` accept inline content, `@file`, or `-` for stdin.
-Text inputs are limited to 16 MiB; files and stdin are read incrementally.
-Data is a JSON array of objects; a spec is `{ "chartType": "column", "syntax": "vis column\n..." }`.
-Commands return JSON on stdout. In an interactive terminal, `source` instead shows a styled
-dataset ID and next-step commands; piping or redirecting its output preserves JSON.
-Set `NO_COLOR` to disable colors. Errors go to stderr with exit code 1. HTML outputs never overwrite
-existing files; `viz` returns `{ output }`. `visualize` returns `{ chartType, syntax, html }` (plus
-`output` when supplied), or `null` when no chart is recommended. Model failures return an error.
-HTML rendering uses the existing GPT-Vis browser runtime loaded from a CDN.
-
-`query` and `analyze` accept `--max-rows` (default 200, maximum 10,000) and `--max-result-bytes`
-(default 1 MiB). Queries retain the engine's read-only validation and execution timeout.
-`analyze` also accepts `--strategy direct|loop|subset`. Dataset IPC requests are limited to 1 MiB,
-responses to 16 MiB, and each CLI request times out after 120 seconds. A timed-out CLI request
-does not automatically cancel the running operation; avoid blindly retrying it.
-`--metrics` is comma-separated; an empty string requests structure without statistics.
-
-Configure models only for AI commands:
+Copy the returned dataset ID and continue in the same terminal:
 
 ```bash
-export OPENAI_API_KEY=YOUR_API_KEY
-export OPENAI_MODEL=YOUR_MODEL
-export OPENAI_BASE_URL=https://your-provider.example.com/v1
-ava source data/companies.csv
-# Use the new datasetId returned above.
-ava suggest ds_... --count 3
-ava analyze ds_... "What is the average revenue by region?"
-ava recommend --query "Show revenue by region" --data @rows.json > chart.json
-ava viz --spec @chart.json --output chart.html
+DATASET_ID='ds_sales_your-id-here'
+
+ava suggest "$DATASET_ID" --count 5
+ava analyze "$DATASET_ID" "What is the average sales value by region?" | tee analysis.json
+
+# Chart the data rows from the analysis result
+node -p 'JSON.stringify(require("./analysis.json").data)' > rows.json
+ava visualize --query "Compare average sales by region" --data @rows.json --output chart.html
+
+ava dispose "$DATASET_ID"
 ```
 
-Dataset model configuration is fixed when `source` creates the session. Configure credentials before
-loading a dataset for AI commands; reload the source to change model settings. Standalone
-`visualize` and `recommend` commands read the current environment. `OPENAI_MODEL` defaults to `gpt-4o-mini`; `OPENAI_BASE_URL` is optional.
-The old one-shot analysis command accepting a source path is not supported.
+Open `chart.html` in your browser. See [CLI documentation](#cli-1) for more commands and settings.
 
 ## 📘 Documentation
 
@@ -323,6 +279,42 @@ if (viz) {
 
 ava.dispose();
 ```
+
+### CLI
+
+| Command | Purpose | Requires AI |
+| --- | --- | --- |
+| `source` | Load a file, URL or source config and return a dataset ID | Only for text sources |
+| `schema` | View tables and fields | No |
+| `profile` | Compute statistics | No |
+| `query` | Execute read-only SQL | No |
+| `suggest` | Suggest analysis questions | Yes |
+| `translate` | Generate a query without executing it | Yes |
+| `analyze` | Analyze data using natural language | Yes |
+| `recommend` | Generate a chart specification | Yes |
+| `visualize` | Generate a chart and HTML | Yes |
+| `viz` | Render a chart specification to HTML | No |
+| `dispose` | Release a dataset | No |
+
+Run `ava <command> --help` for usage. `--data`, `--spec`, and `--dsl` accept inline
+content, `@file`, or `-` for stdin. Output is JSON; `source` shows a guide when run in a terminal.
+Sessions expire after 30 idle minutes or when disposed.
+
+#### Model configuration
+
+Set environment variables before `source`; `.env` is not loaded automatically.
+
+| Variable | Purpose |
+| --- | --- |
+| `OPENAI_API_KEY` | API key for the selected provider |
+| `OPENAI_MODEL` | Model name; defaults to `gpt-4o-mini` |
+| `OPENAI_BASE_URL` | OpenAI-compatible endpoint; optional for OpenAI |
+
+The Quick Start uses [Anthropic's compatibility endpoint](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk)
+with a Claude model and Anthropic API key. The variable names remain `OPENAI_*`.
+
+Reload the dataset after changing model settings. `visualize` and `recommend`
+read the current environment on each run.
 
 ## 🏗️ Architecture
 
