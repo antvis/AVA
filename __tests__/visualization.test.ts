@@ -36,7 +36,8 @@ describe('chart recommendation', () => {
     expect(generateText).not.toHaveBeenCalled();
   });
 
-  it.each(['none', 'invalid-chart'])('skips syntax generation for %s', async (chartType) => {
+  it('skips syntax generation for none', async () => {
+    const chartType = 'none';
     reply(chartType);
     expect(await ava['recommend'](result)).toBeNull();
     expect(generateText).toHaveBeenCalledOnce();

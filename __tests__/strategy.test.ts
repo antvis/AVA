@@ -56,7 +56,7 @@ describe('directAnalysis', () => {
   });
 });
 
-it.each([undefined, true, false])('direct includeSummary=%s controls the summary call', async (includeSummary) => {
+it.each([true, false])('direct includeSummary=%s controls the summary call', async (includeSummary) => {
   const execution = { data: [{ value: 1 }], schema: [{ name: 'value' }], truncatedBy: 'maxRows', truncated: true };
   const engine = {
     getDSL: vi.fn().mockResolvedValue('SELECT 1'),

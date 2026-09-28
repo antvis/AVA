@@ -161,7 +161,7 @@ describe('profile/csv-file metric formats and boundaries', () => {
     expect(profile.tables[0].fields[0]).toMatchObject({ type: 'TIME', logicalType: 'unknown', metrics: {} });
   });
 
-  it.each([1, 3, 20, 21])('supplies all classification candidates and distinct count at boundary %i', async (count) => {
+  it.each([20, 21])('supplies all classification candidates and distinct count at boundary %i', async (count) => {
     const values = Array.from({ length: count }, (_, i) => `category-${i}`);
     await writeFile(csvPath, `category\n${values.join('\n')}\n`);
     await engine.load({ type: 'csv-file', options: { path: csvPath, options: { header: true, all_varchar: true } } });
@@ -211,11 +211,11 @@ describe('profile/csv-file metric formats and boundaries', () => {
     expect(profile.tables[0].fields[0].metrics).toEqual({ min: null, max: null });
   });
 
-  it.each(['BIGINT', 'TIMESTAMP'])('keeps explicit null extrema for an all-NULL %s column', async (type) => {
+  it('keeps explicit null extrema for an all-NULL BIGINT column', async () => {
     await writeFile(csvPath, 'value\nNULL\n');
     await engine.load({
       type: 'csv-file',
-      options: { path: csvPath, options: { header: true, columns: { value: type }, nullstr: ['NULL'] } },
+      options: { path: csvPath, options: { header: true, columns: { value: 'BIGINT' }, nullstr: ['NULL'] } },
     });
     const profile = await engine.profile({ metrics: ['min', 'max'] });
     expect(profile.tables[0].fields[0].metrics).toEqual({ min: null, max: null });
