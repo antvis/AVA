@@ -1,26 +1,227 @@
-import { describe, expect, it } from 'vitest';
+import { mkdtemp, readFile, rm, writeFile } from 'fs/promises';
+import { tmpdir } from 'os';
+import { join, resolve } from 'path';
 
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { AVA } from '../src/ava';
 import { run } from '../src/cli';
+import { createSession, request } from '../src/cli/session/client';
 import { accent, badge, bold, formatError, muted } from '../src/cli/util';
 
+vi.mock('../src/cli/session/client', () => ({ createSession: vi.fn(), request: vi.fn() }));
+vi.mock('../src/ava', () => ({
+  AVA: vi.fn(function () {
+    return { recommend: vi.fn(), visualize: vi.fn(), viz: vi.fn() };
+  }),
+}));
+
+const commands = [
+  'source',
+  'schema',
+  'profile',
+  'suggest',
+  'analyze',
+  'translate',
+  'query',
+  'visualize',
+  'recommend',
+  'viz',
+  'dispose',
+];
+const datasetId = 'ds_sales_012345abcdef';
+const ttyDescriptor = Object.getOwnPropertyDescriptor(process.stdout, 'isTTY');
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.stubEnv('OPENAI_API_KEY', undefined);
+  vi.stubEnv('OPENAI_MODEL', undefined);
+  vi.stubEnv('OPENAI_BASE_URL', undefined);
+  Object.defineProperty(process.stdout, 'isTTY', { configurable: true, value: false });
+  vi.mocked(createSession).mockResolvedValue({ datasetId });
+  vi.mocked(request).mockResolvedValue({ ok: true });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+  if (ttyDescriptor) Object.defineProperty(process.stdout, 'isTTY', ttyDescriptor);
+  else Reflect.deleteProperty(process.stdout, 'isTTY');
+});
+
+async function execute(argv: string[]): Promise<string> {
+  const write = vi.fn();
+  await run(argv, write);
+  expect(write).toHaveBeenCalledOnce();
+  return write.mock.calls[0][0];
+}
+
 describe('help and validation', () => {
-  it('prints root help', async () => {
+  it('prints root help with the current commands', async () => {
     for (const argv of [[], ['--help'], ['-h']]) {
-      const output: string[] = [];
-      await run(argv, (value) => output.push(value));
-      expect(output).toHaveLength(1);
-      expect(output[0]).toContain('Usage:\n  ava [--help]');
-      expect(output[0]).toContain('No commands are currently available.');
-      expect(output[0]).not.toContain('analyze');
+      const output = await execute(argv);
+      expect(output).toContain('ava <command> [options]');
+      for (const command of commands) expect(output).toMatch(new RegExp(`\\n  ${command} +`));
     }
   });
 
-  it('rejects removed commands and options', async () => {
-    await expect(run(['analyze', 'data.csv', 'summarize'])).rejects.toThrow('Unknown command "analyze".');
-    await expect(run(['analyze', '--help'])).rejects.toThrow('Unknown command "analyze".');
+  it.each(commands)('prints %s help without executing the command', async (command) => {
+    expect(await execute([command, '--help'])).toContain(`ava ${command}`);
+    expect(createSession).not.toHaveBeenCalled();
+    expect(request).not.toHaveBeenCalled();
+    expect(AVA).not.toHaveBeenCalled();
+  });
+
+  it('rejects unknown commands, unsupported options and invalid positionals', async () => {
     await expect(run(['unknown'])).rejects.toThrow('Unknown command "unknown".');
-    for (const option of ['--chart', '--output', '--type']) {
-      await expect(run([option])).rejects.toThrow('Unknown option');
+    await expect(run(['--chart'])).rejects.toThrow('Unknown option');
+    await expect(run(['schema', datasetId, '--output', 'out.json'])).rejects.toThrow('Unknown option');
+    for (const argv of [
+      ['source'],
+      ['schema', datasetId, 'extra'],
+      ['analyze', datasetId],
+      ['translate', datasetId, ' '],
+    ]) {
+      await expect(run(argv)).rejects.toThrow('Invalid arguments');
+    }
+    expect(request).not.toHaveBeenCalled();
+    expect(createSession).not.toHaveBeenCalled();
+  });
+});
+
+describe('source', () => {
+  it.each([
+    ['sales.CSV', [], 'csv-file', resolve('sales.CSV')],
+    ['https://example.com/sales.parquet?download=1', [], 'parquet', 'https://example.com/sales.parquet?download=1'],
+    ['sales.data', ['-t', 'json-file'], 'json-file', resolve('sales.data')],
+  ])('loads %s and returns the dataset ID as JSON', async (path, options, type, expectedPath) => {
+    expect(JSON.parse(await execute(['source', path, ...options]))).toEqual({ datasetId });
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      { type, options: { path: expectedPath } },
+      { model: 'gpt-4o-mini' }
+    );
+  });
+
+  it('loads a source config file and rejects a conflicting type override', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const file = join(directory, 'source.json');
+      const config = { type: 'json', options: { data: [{ sales: 10 }] } };
+      await writeFile(file, JSON.stringify(config));
+      await execute(['source', `@${file}`]);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' });
+      await expect(run(['source', `@${file}`, '--type', 'json-file'])).rejects.toThrow(
+        '--type cannot be combined with a source config.'
+      );
+      expect(createSession).toHaveBeenCalledOnce();
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('shows the dataset ID and next command in a terminal', async () => {
+    Object.defineProperty(process.stdout, 'isTTY', { configurable: true, value: true });
+    const output = await execute(['source', 'sales.csv']);
+    expect(output).toContain(datasetId);
+    expect(output).toContain(`ava schema ${datasetId}`);
+  });
+});
+
+describe('dataset commands', () => {
+  it.each([
+    { args: ['schema'], message: { command: 'schema' } },
+    { args: ['dispose'], message: { command: 'dispose' } },
+    { args: ['profile'], message: { command: 'profile', metrics: undefined } },
+    {
+      args: ['profile', '--metrics', 'row_count, mean'],
+      message: { command: 'profile', metrics: ['row_count', 'mean'] },
+    },
+    { args: ['profile', '--metrics', ''], message: { command: 'profile', metrics: [] } },
+    { args: ['suggest'], message: { command: 'suggest', count: 3 } },
+    { args: ['suggest', '--count', '5'], message: { command: 'suggest', count: 5 } },
+    { args: ['translate', 'Total sales?'], message: { command: 'translate', query: 'Total sales?' } },
+    {
+      args: ['analyze', 'Total sales?', '--strategy', 'loop', '--max-rows', '10', '--max-result-bytes', '1024'],
+      message: { command: 'analyze', query: 'Total sales?', strategy: 'loop', maxRows: 10, maxResultBytes: 1024 },
+    },
+    {
+      args: ['query', '--dsl', 'SELECT 1', '--max-rows', '10', '--max-result-bytes', '1024'],
+      message: { command: 'query', dsl: 'SELECT 1', maxRows: 10, maxResultBytes: 1024 },
+    },
+  ])('dispatches $args as a typed request and prints JSON', async ({ args: [command, ...args], message }) => {
+    expect(JSON.parse(await execute([command, datasetId, ...args]))).toEqual({ ok: true });
+    expect(request).toHaveBeenCalledExactlyOnceWith(datasetId, message);
+  });
+
+  it.each([
+    { args: ['query'], error: 'A non-empty --dsl is required.' },
+    { args: ['query', '--dsl', ' '], error: 'A non-empty --dsl is required.' },
+    { args: ['query', '--dsl', 'SELECT 1', '--max-rows', '10001'], error: '--max-rows must be an integer' },
+    { args: ['suggest', '--count', '0'], error: '--count must be an integer' },
+    { args: ['profile', '--metrics', 'mean,'], error: '--metrics contains an empty item.' },
+    { args: ['analyze', 'Total sales?', '--strategy', 'invalid'], error: 'Invalid enum value' },
+  ])('rejects invalid $args before sending a request', async ({ args: [command, ...args], error }) => {
+    await expect(run([command, datasetId, ...args])).rejects.toThrow(error);
+    expect(request).not.toHaveBeenCalled();
+  });
+
+  it('propagates session errors without writing a success result', async () => {
+    vi.mocked(request).mockRejectedValueOnce(new Error('Dataset unavailable.'));
+    const write = vi.fn();
+    await expect(run(['schema', datasetId], write)).rejects.toThrow('Dataset unavailable.');
+    expect(write).not.toHaveBeenCalled();
+  });
+});
+
+describe('chart commands', () => {
+  const data = [{ city: 'Hangzhou', sales: 10 }];
+  const spec = { chartType: 'column' as const, syntax: 'vis column\ndata\n  - Hangzhou 10' };
+  const html = '<!DOCTYPE html><html>chart</html>';
+
+  it.each(['recommend', 'visualize'] as const)(
+    'passes query, data and current model settings to %s',
+    async (command) => {
+      vi.stubEnv('OPENAI_API_KEY', 'test-key');
+      vi.stubEnv('OPENAI_MODEL', 'test-model');
+      vi.stubEnv('OPENAI_BASE_URL', 'https://example.com/v1');
+      const method = vi.fn().mockResolvedValue(command === 'recommend' ? spec : { ...spec, html });
+      vi.mocked(AVA).mockImplementationOnce(function () {
+        return { [command]: method } as unknown as AVA;
+      });
+      const output = await execute([command, '--query', 'Show sales', '--data', JSON.stringify(data)]);
+      expect(JSON.parse(output)).toEqual(command === 'recommend' ? spec : { ...spec, html });
+      expect(method).toHaveBeenCalledExactlyOnceWith({ query: 'Show sales', data });
+      expect(AVA).toHaveBeenCalledExactlyOnceWith({
+        llm: { apiKey: 'test-key', model: 'test-model', baseURL: 'https://example.com/v1' },
+      });
+    }
+  );
+
+  it('requires an API key for AI chart commands', async () => {
+    for (const command of ['recommend', 'visualize']) {
+      await expect(run([command, '--query', 'Show sales', '--data', JSON.stringify(data)])).rejects.toThrow(
+        'Set OPENAI_API_KEY for this command.'
+      );
+    }
+    expect(AVA).not.toHaveBeenCalled();
+  });
+
+  it('renders a spec without an API key and never overwrites an existing output file', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    const viz = vi.fn().mockResolvedValue(html);
+    vi.mocked(AVA).mockImplementation(function () {
+      return { viz } as unknown as AVA;
+    });
+    try {
+      const output = join(directory, 'chart.html');
+      const args = ['viz', '--spec', JSON.stringify(spec), '-o', output];
+      expect(JSON.parse(await execute(args))).toEqual({ output });
+      expect(viz).toHaveBeenCalledExactlyOnceWith(spec);
+      expect(await readFile(output, 'utf8')).toBe(html);
+      await expect(run(args)).rejects.toThrow('EEXIST');
+      expect(await readFile(output, 'utf8')).toBe(html);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
     }
   });
 });
