@@ -166,6 +166,8 @@ ava dispose ds_...
 ```
 
 Replace `ds_...` with the returned ID and use the table names reported by `schema`.
+IDs include a sanitized source name and a random suffix, for example
+`ds_sales_a7c92e4f18b3` for `sales.csv`. Each load creates a separate session.
 Dataset sessions currently require macOS or Linux. Each dataset lives in a private background process;
 commands share the loaded source and computed profile. Sessions expire after 30 idle minutes or when
 explicitly disposed. IDs become invalid when their process exits; reload with `source`.

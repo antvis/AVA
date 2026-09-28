@@ -69,7 +69,8 @@ Environment:
   OPENAI_BASE_URL    Optional API base URL.
   Model settings are fixed when the dataset is loaded.
 
-Returns JSON containing datasetId. Requires macOS or Linux.
+Returns JSON containing datasetId, e.g. ds_sales_a7c92e4f18b3.
+IDs use a sanitized source name plus a random suffix. Requires macOS or Linux.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 
 Examples:

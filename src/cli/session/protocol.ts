@@ -81,7 +81,7 @@ export const responseSchema = z.union([
 ]);
 
 export function sessionDirectory(id: string): string {
-  if (!/^ds_[a-f0-9]{24}$/.test(id)) throw new Error('Invalid dataset ID.');
+  if (!/^ds_(?:[a-f0-9]{24}|[a-z0-9][a-z0-9-]{0,15}_[a-f0-9]{12})$/.test(id)) throw new Error('Invalid dataset ID.');
 
   return join(tmpdir(), `ava-${id}`);
 }
