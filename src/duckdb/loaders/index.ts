@@ -50,5 +50,9 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       // Supabase is a SaaS source executed remotely — AVA routes it to
       // SupabaseEngine, so it must never reach the DuckDB loaders
       throw new Error('Supabase sources are handled by SupabaseEngine, not the DuckDB engine');
+    case 'clickhouse':
+      // ClickHouse is queried directly through ClickHouseEngine, not through
+      // DuckDB ATTACH loaders.
+      throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
   }
 }

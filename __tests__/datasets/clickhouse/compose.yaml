@@ -1,0 +1,21 @@
+name: ava-clickhouse-tests
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    ports:
+      - '127.0.0.1:${AVA_CLICKHOUSE_TEST_PORT:-13123}:8123'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/01-fixture.sql:ro
+      - clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "wget -qO- 'http://127.0.0.1:8123/?database=ava_clickhouse_test&user=ava_test&******' | grep -qx '4'",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 20s
+volumes:
+  clickhouse-data:

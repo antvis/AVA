@@ -2,6 +2,7 @@
  * Core type definitions for AVA v4
  */
 
+import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { LanguageModelUsage } from 'ai';
 
 /**
@@ -55,7 +56,11 @@ export interface DuckDBEngineOptions {
  * analysis engine; the remaining fields are the options for that engine.
  * Currently only the DuckDB engine has configurable options.
  */
-export type EngineConfig = ({ type: 'duckdb' } & DuckDBEngineOptions) | { type: 'interpreter' } | { type: 'supabase' };
+export type EngineConfig =
+  | ({ type: 'duckdb' } & DuckDBEngineOptions)
+  | { type: 'interpreter' }
+  | { type: 'supabase' }
+  | { type: 'clickhouse' };
 
 /**
  * AVA configuration
@@ -80,6 +85,7 @@ export interface AnalysisConfig extends ExecutionOptions {
  * - inline types: `csv` (content string), `json` (object array), `text`
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
  * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
+ * - direct query types: `clickhouse` (schema discovered and SQL executed through ClickHouse's HTTP API)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
@@ -94,7 +100,8 @@ export type SourceType =
   | 'postgresql'
   | 'sqlite'
   | 'mongodb'
-  | 'supabase';
+  | 'supabase'
+  | 'clickhouse';
 
 /**
  * DuckDB read_csv reader options.
@@ -366,10 +373,32 @@ export interface SupabaseSourceOptions {
 }
 
 /**
+ * Options for ClickHouse data sources (executed remotely through the official
+ * ClickHouse JS client rather than through DuckDB ATTACH).
+ */
+export type ClickHouseSourceOptions = Omit<ClickHouseClientConfigOptions, 'host' | 'url' | 'username' | 'database'> & {
+  /** ClickHouse server host or host:port pair. `url` takes precedence when both are set. */
+  host?: string;
+  /** Full ClickHouse server URL (for example `http://localhost:8123`). */
+  url?: string;
+  /** Override the port in `host`/`url`. */
+  port?: number;
+  /** Database name to query. */
+  database: string;
+  /** Official client field name for the username. */
+  username?: string;
+  /** Alias matching AVA's MySQL/PostgreSQL source options. */
+  user?: string;
+  /** Password for the ClickHouse user. */
+  password?: string;
+};
+
+/**
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
  * - database types (mysql/postgresql/sqlite/mongodb): ATTACH through DuckDB's extension
+ * - direct query types (clickhouse): schema/SQL over ClickHouse's HTTP API
  * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
  */
 export type DataSourceConfig =
@@ -384,7 +413,8 @@ export type DataSourceConfig =
   | { type: 'postgresql'; options: PostgreSQLSourceOptions }
   | { type: 'sqlite'; options: SQLiteSourceOptions }
   | { type: 'mongodb'; options: MongoDBSourceOptions }
-  | { type: 'supabase'; options: SupabaseSourceOptions };
+  | { type: 'supabase'; options: SupabaseSourceOptions }
+  | { type: 'clickhouse'; options: ClickHouseSourceOptions };
 
 /**
  * File formats readable by DuckDB's readers (csv-file maps to csv, json-file to json).

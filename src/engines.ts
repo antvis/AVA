@@ -41,7 +41,7 @@ export function getEngineClass(type: EngineConfig['type']): EngineClass {
     throw new Error(
       `Engine type "${type}" is not available in this environment. ` +
         'The browser build of @antv/ava only includes the interpreter engine; ' +
-        'use the Node.js build for DuckDB or Supabase.'
+        'use the Node.js build for DuckDB, Supabase, or ClickHouse.'
     );
   }
   return engineClass;

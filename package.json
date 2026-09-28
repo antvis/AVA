@@ -75,6 +75,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.73",
+    "@clickhouse/client": "^1.23.1",
     "@duckdb/node-api": "^1.5.5-r.5",
     "@supabase/pg-parser": "^0.1.7",
     "adm-zip": "^0.6.1",
