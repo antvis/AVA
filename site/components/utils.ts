@@ -1,5 +1,5 @@
 import type { LLMConfig } from '@antv/ava/browser';
-import * as XLSX from 'xlsx';
+import { readSheet } from 'read-excel-file/browser';
 
 // Default LLM config
 export const DEFAULT_LLM_CONFIG: LLMConfig = {
@@ -103,11 +103,9 @@ export const saveAppState = (state: Partial<AppState>) => {
   }
 };
 
-// Parse Excel file (.xlsx, .xls) to DataRow array
-export const parseExcel = (arrayBuffer: ArrayBuffer): DataRow[] => {
-  const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-  const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-  const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 }) as unknown[][];
+// Parse Excel file (.xlsx) to DataRow array
+export const parseExcel = async (arrayBuffer: ArrayBuffer): Promise<DataRow[]> => {
+  const jsonData = await readSheet(arrayBuffer);
 
   if (jsonData.length < 2) return [];
 
@@ -125,6 +123,10 @@ export const parseExcel = (arrayBuffer: ArrayBuffer): DataRow[] => {
         rowData[header] = '';
       } else if (typeof val === 'number') {
         rowData[header] = val;
+      } else if (typeof val === 'boolean') {
+        rowData[header] = val;
+      } else if (val instanceof Date) {
+        rowData[header] = val.toISOString();
       } else {
         const strVal = String(val).trim();
         const num = Number(strVal);
