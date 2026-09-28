@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const repo = resolve(root, '../..');
 
 if (Number(process.versions.node.split('.')[0]) < 24) {
-  throw new Error('ava-agent requires Node.js 24+. DataBench is unchanged.');
+  throw new Error('ava-agent requires Node.js 24+.');
 }
 
 // Package-local env has priority over the existing evals env; never print secrets.
