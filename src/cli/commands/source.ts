@@ -5,6 +5,7 @@ import { sourceConfig } from '../session/protocol';
 import { llmConfig } from '../config';
 import { readJSON } from '../io';
 import { option } from '../options';
+import { accent, badge, muted } from '../util';
 
 import type { Options } from '../options';
 
@@ -25,7 +26,7 @@ export const definition = {
   options: { type: { type: 'string', short: 't' } },
 } as const;
 
-export async function run([dataset]: string[], options: Options): Promise<unknown> {
+export async function run([dataset]: string[], options: Options): Promise<{ datasetId: string }> {
   let input: unknown;
 
   if (dataset.startsWith('@') || dataset === '-') {
@@ -45,6 +46,15 @@ export async function run([dataset]: string[], options: Options): Promise<unknow
   }
 
   return createSession(config, llmConfig(config.type === 'text'));
+}
+
+/**
+ * Guide terminal users through the next steps with their newly loaded dataset.
+ */
+export function formatResult({ datasetId }: { datasetId: string }): string {
+  return `${accent('✦')} ${badge('AVA')} Ready to explore · ${accent(datasetId)}
+
+${muted('View schema:')} ${accent(`ava schema ${datasetId}`)} ${muted('· More commands:')} ${accent('ava --help')}`;
 }
 
 export const help = `${description}.
@@ -69,7 +79,8 @@ Environment:
   OPENAI_BASE_URL    Optional API base URL.
   Model settings are fixed when the dataset is loaded.
 
-Returns JSON containing datasetId, e.g. ds_sales_a7c92e4f18b3.
+In a terminal, shows the dataset ID and suggested next commands.
+When piped or redirected, returns JSON containing datasetId.
 IDs use a sanitized source name plus a random suffix. Requires macOS or Linux.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
 

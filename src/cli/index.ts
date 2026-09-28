@@ -42,7 +42,8 @@ ${accent('Options:')}
   -h, --help                   Show help
 
 Run "ava <command> --help" for command-specific usage.
-Commands return JSON on stdout; errors go to stderr with exit code 1.
+Commands return JSON; source shows a guide in terminals and JSON when piped.
+Errors go to stderr with exit code 1.
 Sessions expire after 30 idle minutes and require macOS or Linux.`;
 
 type Write = (value: string) => void;
@@ -72,7 +73,14 @@ export async function run(argv: string[], write: Write = (value) => process.stdo
   if (args.length !== handler.definition.positionals || args.some((arg) => !arg.trim())) {
     throw new Error(`Invalid arguments for "${command}".\n\n${handler.help}`);
   }
-  write(JSON.stringify(await handler.run(args, options), null, 2));
+
+  if (command === 'source' && process.stdout.isTTY) {
+    write(source.formatResult(await source.run(args, options)));
+    return;
+  }
+
+  const result = await handler.run(args, options);
+  write(JSON.stringify(result, null, 2));
 }
 
 if (typeof require !== 'undefined' && require.main === module) {

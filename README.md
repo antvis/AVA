@@ -158,7 +158,7 @@ ava.dispose();
 ```bash
 npm install -g @antv/ava
 ava source data/companies.csv
-# { "datasetId": "ds_..." }
+# Shows the dataset ID and next-step commands.
 ava schema ds_...
 ava profile ds_... --metrics row_count,null_count,mean
 ava query ds_... --dsl 'SELECT * FROM "data" LIMIT 10'
@@ -174,7 +174,7 @@ explicitly disposed. IDs become invalid when their process exits; reload with `s
 
 | Command | Purpose | LLM required |
 | --- | --- | --- |
-| `source <dataset> [--type <type>]` | Load a source and return `{ datasetId }` | Only for `text` sources |
+| `source <dataset> [--type <type>]` | Load a source and show its ID (JSON when piped) | Only for `text` sources |
 | `schema <dataset-id>` | Return tables, fields and relations | No |
 | `profile <dataset-id> [--metrics <list>]` | Compute and retain statistics | No |
 | `suggest <dataset-id> [--count <n>]` | Recommend questions (default 3, maximum 100) | Yes |
@@ -197,7 +197,9 @@ Credentials in source configs pass to the worker in memory and are not persisted
 `--data`, `--spec` and `--dsl` accept inline content, `@file`, or `-` for stdin.
 Text inputs are limited to 16 MiB; files and stdin are read incrementally.
 Data is a JSON array of objects; a spec is `{ "chartType": "column", "syntax": "vis column\n..." }`.
-Commands return JSON on stdout. Errors go to stderr with exit code 1. HTML outputs never overwrite
+Commands return JSON on stdout. In an interactive terminal, `source` instead shows a styled
+dataset ID and next-step commands; piping or redirecting its output preserves JSON.
+Set `NO_COLOR` to disable colors. Errors go to stderr with exit code 1. HTML outputs never overwrite
 existing files; `viz` returns `{ output }`. `visualize` returns `{ chartType, syntax, html }` (plus
 `output` when supplied), or `null` when no chart is recommended. Model failures return an error.
 HTML rendering uses the existing GPT-Vis browser runtime loaded from a CDN.
