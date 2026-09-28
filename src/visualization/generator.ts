@@ -15,7 +15,7 @@ import type { LLMConfig, ChartType } from '../types';
 /**
  * Wrap GPT-Vis syntax into a standalone HTML file that can be opened in any browser
  */
-function wrapSyntaxInHTML(syntax: string): string {
+export function wrapSyntaxInHTML(syntax: string): string {
   // Escape backticks, dollar signs, and backslashes for JS template literal
   const escapedSyntax = syntax
     .replace(/\\/g, '\\\\')
@@ -55,20 +55,14 @@ function wrapSyntaxInHTML(syntax: string): string {
 }
 
 /**
- * Generate GPT-Vis syntax via LLM and wrap it into a standalone HTML file
- *
- * The LLM is instructed to return only pure GPT-Vis syntax (no HTML wrapper).
- * The HTML is then generated locally from a fixed template, ensuring:
- * 1. Syntax extraction is 100% reliable (the entire LLM output IS the syntax)
- * 2. The HTML is always well-formed regardless of LLM output variance
- * 3. Users without @antv/gpt-vis installed can still use the HTML directly
+ * Generate GPT-Vis syntax for the chart type, data, and user query.
  */
-export async function generateVisualizationHTML(
+export async function generateVisualizationSyntax(
   chartType: ChartType,
   data: any,
   query: string,
   llmConfig: LLMConfig
-): Promise<{ syntax: string; html: string }> {
+): Promise<string> {
   const prompt = `你是一个 GPT-Vis 可视化专家。根据图表类型、数据和用户查询，生成对应的 GPT-Vis 语法。
 
 ## 任务信息
@@ -444,14 +438,20 @@ title "2024 Q1 Sales Report"
 
   // The LLM returns pure GPT-Vis syntax directly
   // Remove possible markdown code block wrappers (LLM may still wrap in ```...```)
-  const syntax = text
+  return text
     .trim()
     .replace(/^```(?:vis|yaml|text)?\s*\n?/i, '')
     .replace(/\n?\s*```$/, '')
     .trim();
+}
 
-  // Wrap syntax into a standalone HTML file using a fixed template
-  const html = wrapSyntaxInHTML(syntax);
-
-  return { syntax, html };
+/** Generate GPT-Vis syntax and render it as standalone HTML. */
+export async function generateVisualizationHTML(
+  chartType: ChartType,
+  data: any,
+  query: string,
+  llmConfig: LLMConfig
+): Promise<{ syntax: string; html: string }> {
+  const syntax = await generateVisualizationSyntax(chartType, data, query, llmConfig);
+  return { syntax, html: wrapSyntaxInHTML(syntax) };
 }

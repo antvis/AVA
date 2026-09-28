@@ -5,7 +5,7 @@
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
 import { stringifySchema } from './util/context';
-import { adviseChartType, generateVisualizationHTML } from './visualization';
+import { adviseChartType, generateVisualizationSyntax, wrapSyntaxInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
 
@@ -167,32 +167,9 @@ export class AVA {
    * @returns VisualizeResponse with chartType, syntax, and html, or null if no visualization is needed
    */
   async visualize(analysisResult: AnalysisResponse): Promise<VisualizeResponse | null> {
-    const { data, query } = analysisResult;
-
-    if (!hasData(data)) {
-      return null;
-    }
-
     try {
-      // Describe the result data for the chart advisor; non-array data falls back to raw JSON
-      const analysisSchemaStr = Array.isArray(data)
-        ? stringifySchema(extractDataSchema(data))
-        : // TODO - Consider using a more structured schema for non-array data, e.g., object keys and types
-          JSON.stringify(data);
-
-      const chartType = await adviseChartType(query, analysisSchemaStr, this.llmConfig);
-
-      if (!chartType) {
-        return null;
-      }
-
-      const result = await generateVisualizationHTML(chartType, data, query, this.llmConfig);
-
-      return {
-        chartType,
-        syntax: result.syntax,
-        html: result.html,
-      };
+      const spec = await this.recommend(analysisResult);
+      return spec ? { ...spec, html: wrapSyntaxInHTML(spec.syntax) } : null;
     } catch (error) {
       // Visualization is optional, don't fail if it fails
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -200,6 +177,24 @@ export class AVA {
       console.warn('Failed to generate visualization:', errorMessage);
       return null;
     }
+  }
+
+  /**
+   * Recommend a chart specification for the analysis result.
+   * Combine a suitable chart type with GPT-Vis syntax for rendering.
+   */
+  private async recommend(
+    analysisResult: AnalysisResponse
+  ): Promise<Pick<VisualizeResponse, 'chartType' | 'syntax'> | null> {
+    const { data, query } = analysisResult;
+    if (!hasData(data)) return null;
+
+    const dataInfo = Array.isArray(data) ? stringifySchema(extractDataSchema(data)) : JSON.stringify(data);
+    const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
+    if (!chartType) return null;
+
+    const syntax = await generateVisualizationSyntax(chartType, data, query, this.llmConfig);
+    return { chartType, syntax };
   }
 
   /**
