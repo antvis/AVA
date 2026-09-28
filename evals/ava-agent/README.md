@@ -1,6 +1,6 @@
 # AVA Agent
 
-Evaluate a generic [Eve](https://github.com/vercel/eve) agent with and without the AVA Skill. Python executes the real AVA CLI in Docker.
+Evaluate a generic [Eve](https://github.com/vercel/eve) agent with and without the AVA Skill. Bash executes the real AVA CLI in Docker; Python remains available for calculations and data processing. Both tools share session files, run in fresh processes, and have a 60-second timeout and 32 KiB limit per output stream. Bash uses errexit and pipefail.
 
 ## Setup
 
@@ -28,6 +28,7 @@ Use an OpenAI-compatible **Chat Completions** API. `MODEL_CONTEXT_WINDOW` is opt
 
 ```bash
 npm run typecheck                         # Static check; no model call
+node scripts/check-tools.mjs              # Docker tool smoke check; no model call
 npm run eval -- --list                    # List cases; no model call
 npm run eval -- --limit 1 --skill ava     # Try one question
 npm run eval -- --skill ava               # Require AVA Skill (default)

@@ -20,10 +20,13 @@ export async function collect(stream, maxBytes) {
 /**
  * @param {import('eve/sandbox').SandboxSession} sandbox
  * @param {string} code
+ * @param {'python' | 'bash'} language
  * @param {{signal?: AbortSignal, timeoutMs?: number, maxBytes?: number}} options
  */
-export async function runPython(sandbox, code, { signal, timeoutMs = 60000, maxBytes = 32768 } = {}) {
-  const path = `/workspace/.python-${randomUUID()}.py`;
+export async function runScript(sandbox, code, language, { signal, timeoutMs = 60000, maxBytes = 32768 } = {}) {
+  const commands = { python: 'python3 -u', bash: 'bash -e -o pipefail' };
+  if (!Object.hasOwn(commands, language)) throw new Error(`Unsupported language: ${language}`);
+  const path = `/workspace/.${language}-${randomUUID()}`;
   const controller = new AbortController();
   const abort = () => controller.abort(signal.reason);
   let timedOut = false;
@@ -39,11 +42,11 @@ export async function runPython(sandbox, code, { signal, timeoutMs = 60000, maxB
 
     timer = setTimeout(() => {
       timedOut = true;
-      controller.abort(new Error('Python execution timed out'));
+      controller.abort(new Error(`${language} execution timed out`));
     }, timeoutMs);
 
     processHandle = await sandbox.spawn({
-      command: `python3 -u ${path}`,
+      command: `${commands[language]} ${path}`,
       workingDirectory: '/workspace',
       abortSignal: controller.signal,
     });
@@ -78,7 +81,7 @@ export async function runPython(sandbox, code, { signal, timeoutMs = 60000, maxB
     };
   } catch (cause) {
     if (signal?.aborted) throw signal.reason;
-    if (timedOut) return { stdout: '', stderr: 'Python execution timed out', exitCode: null, timedOut: true, truncated: false };
+    if (timedOut) return { stdout: '', stderr: `${language} execution timed out`, exitCode: null, timedOut: true, truncated: false };
     throw cause;
   } finally {
     clearTimeout(timer);

@@ -138,7 +138,8 @@ export function createEvals(directory: string) {
             { outputSchema }
           );
           t.succeeded();
-          t.calledTool('python');
+          t.check(turn.toolCalls.some((call) => call.name === 'python' || call.name === 'bash'), equals(true))
+            .label('execution tool called');
           t.maxToolCalls(30);
           if (process.env.AVA_AGENT_SKILL === 'ava') {
             t.loadedSkill('ava', { status: 'completed' }).gate();
