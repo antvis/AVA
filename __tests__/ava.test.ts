@@ -90,6 +90,44 @@ describe('AVA', () => {
     await expect(ava['translate']('Total value')).rejects.toThrow(message);
   });
 
+  it('executes bounded read-only queries and rejects writes', async () => {
+    const message = 'No data loaded. Please call source() first.';
+    await expect(ava['query']('SELECT 1')).rejects.toThrow(message);
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }] } });
+    const dsl = 'SELECT value FROM data ORDER BY value';
+    expect(await ava['query'](dsl)).toMatchObject({
+      data: [{ value: 2 }, { value: 4 }],
+      schema: [{ name: 'value' }],
+      rowCount: 2,
+    });
+    expect(await ava['query'](dsl, { maxRows: 1 })).toMatchObject({
+      data: [{ value: 2 }],
+      truncated: true,
+      truncatedBy: 'maxRows',
+    });
+    expect(await ava['query'](dsl, { maxResultBytes: 1 })).toMatchObject({
+      data: [],
+      truncated: true,
+      truncatedBy: 'maxResultBytes',
+    });
+    await expect(ava['query']('CREATE TABLE forbidden (value INTEGER)')).rejects.toThrow('read-only SELECT');
+    await expect(ava['query']('DELETE FROM data')).rejects.toThrow();
+    await expect(ava['query']('SELECT 1; SELECT 2')).rejects.toThrow('exactly one');
+    await expect(ava['query']('SELECT missing FROM data')).rejects.toThrow();
+    expect((await ava['query'](dsl)).data).toEqual([{ value: 2 }, { value: 4 }]);
+    await ava.dispose();
+    await expect(ava['query'](dsl)).rejects.toThrow(message);
+  });
+
+  it('delegates interpreter queries without changing the loaded data', async () => {
+    ava = new AVA({ llm: getLLMConfig(), engine: { type: 'interpreter' } });
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    const execute = vi.spyOn(ava.engine!, 'execute');
+    expect((await ava['query']('data.length = 0; const result = data;')).data).toEqual([]);
+    expect(execute).toHaveBeenCalledWith('data.length = 0; const result = data;', undefined);
+    expect((await ava['query']('const result = data;')).data).toEqual([{ value: 2 }]);
+  });
+
   describe('Data Loading', () => {
     it('should load a CSV file without returning a schema', async () => {
       await expect(ava.source({ type: 'csv-file', options: { path: testDataPath } })).resolves.toBeUndefined();

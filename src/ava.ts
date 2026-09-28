@@ -22,6 +22,8 @@ import type {
   SuggestResult,
   Profile,
   ProfileOptions,
+  ExecutionOptions,
+  ExecutionResult,
 } from './types';
 
 /**
@@ -131,7 +133,7 @@ export class AVA {
 
   /**
    * Translate a natural-language query into DSL.
-   * Use the data source structure and statistical profile to guide query generation.
+   * Use query() to execute the generated DSL.
    */
   // @ts-expect-error Internal API is not yet used by the analysis strategies.
   private async translate(query: string): Promise<string> {
@@ -142,6 +144,18 @@ export class AVA {
       schema: this.dataSchema,
       profile: this.dataProfile ?? undefined,
     });
+  }
+
+  /**
+   * Execute a read-only query against the data source.
+   * The DSL must match the current engine's query language.
+   */
+  // @ts-expect-error Internal API is not yet used by the analysis strategies.
+  private async query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult> {
+    if (!this.engine || !this.dataSchema) {
+      throw new Error('No data loaded. Please call source() first.');
+    }
+    return this.engine.execute(dsl, options);
   }
 
   /**

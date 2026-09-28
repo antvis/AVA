@@ -30,6 +30,23 @@ describe('interpreter/engine', () => {
     expect(result.truncated).toBe(true);
   });
 
+  it('isolates source data from query mutations, errors, and returned results', async () => {
+    engine = new InterpreterEngine(getLLMConfig());
+    const data = [{ value: 2, nested: { tags: ['original'] } }];
+    await engine.load({ type: 'json', options: { data } });
+    const before = structuredClone(data);
+    const mutation = 'data[0].nested.tags.push("changed"); data[0].value = 99;';
+    const result = await engine.execute(`${mutation} const result = data;`);
+    expect(result.data[0].value).toBe(99);
+    expect(engine.getData()).toEqual(before);
+    await expect(engine.execute(`${mutation} throw new Error("failed");`)).rejects.toThrow('failed');
+    const rows = await engine.execute('const result = data;');
+    expect(rows.data).toEqual(before);
+    rows.data[0].value = 100;
+    expect(engine.getData()).toEqual(before);
+    expect(data).toEqual(before);
+  });
+
   describe('profile', () => {
     const metrics = BUILTIN_METRICS.map(({ id }) => ({ id }));
 
