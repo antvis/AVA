@@ -130,6 +130,21 @@ export class AVA {
   }
 
   /**
+   * Translate a natural-language query into DSL.
+   * Use the data source structure and statistical profile to guide query generation.
+   */
+  // @ts-expect-error Internal API is not yet used by the analysis strategies.
+  private async translate(query: string): Promise<string> {
+    if (!this.engine || !this.dataSchema) {
+      throw new Error('No data loaded. Please call source() first.');
+    }
+    return this.engine.getDSL(query, {
+      schema: this.dataSchema,
+      profile: this.dataProfile ?? undefined,
+    });
+  }
+
+  /**
    * Visualize analysis data by recommending a chart type and generating chart HTML.
    * Accepts the result from analyze() — the query and data are read from it.
    *

@@ -4,7 +4,7 @@
 
 import * as path from 'path';
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { AVA } from '../src';
 
@@ -19,6 +19,7 @@ describe('AVA', () => {
   });
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     await ava?.dispose();
   });
 
@@ -66,6 +67,27 @@ describe('AVA', () => {
     expect((await ava.profile({ metrics: ['sum'] })).tables[0].fields[0].metrics).toEqual({ sum: 10 });
     await ava.dispose();
     await expect(ava.profile()).rejects.toThrow(message);
+  });
+
+  it('translates queries with schema and optional profile without executing them', async () => {
+    const message = 'No data loaded. Please call source() first.';
+    await expect(ava['translate']('Total value')).rejects.toThrow(message);
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    const schema = await ava.schema();
+    const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) FROM data');
+    const execute = vi.spyOn(ava.engine!, 'execute');
+
+    await expect(ava['translate']('Total value')).resolves.toBe('SELECT SUM(value) FROM data');
+    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: undefined });
+    const profile = await ava.profile();
+    await ava['translate']('Total value');
+    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile });
+    expect(execute).not.toHaveBeenCalled();
+
+    getDSL.mockRejectedValueOnce(new Error('Translation failed'));
+    await expect(ava['translate']('Total value')).rejects.toThrow('Translation failed');
+    await ava.dispose();
+    await expect(ava['translate']('Total value')).rejects.toThrow(message);
   });
 
   describe('Data Loading', () => {
