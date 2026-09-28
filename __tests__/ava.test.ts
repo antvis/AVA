@@ -128,6 +128,25 @@ describe('AVA', () => {
     expect((await ava['query']('const result = data;')).data).toEqual([{ value: 2 }]);
   });
 
+  it('disposes the previous CSV engine when source is called again', async () => {
+    const file = path.join(__dirname, '../data/semicolon.csv');
+    await ava.source({ type: 'csv-file', options: { path: file, options: { delim: ';' } } });
+    const dispose = vi.spyOn(ava.engine!, 'dispose');
+    await ava.source({
+      type: 'csv-file',
+      options: {
+        path: file,
+        options: { delim: ';', header: true, names: ['person', 'years'] },
+      },
+    });
+    expect(dispose).toHaveBeenCalledOnce();
+    expect((await ava.schema()).tables[0].fields.map(({ name }) => name)).toEqual(['person', 'years']);
+    expect((await ava.query('SELECT person FROM data ORDER BY person')).data).toEqual([
+      { person: 'Alice' },
+      { person: 'Bob' },
+    ]);
+  });
+
   describe('Data Loading', () => {
     it('should load a CSV file without returning a schema', async () => {
       await expect(ava.source({ type: 'csv-file', options: { path: testDataPath } })).resolves.toBeUndefined();
