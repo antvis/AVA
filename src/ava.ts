@@ -96,6 +96,21 @@ export class AVA {
   }
 
   /**
+   * Compute a statistical profile of the data source.
+   */
+  async profile(options: ProfileOptions = {}): Promise<Profile> {
+    if (!this.engine || !this.dataSchema) {
+      throw new Error('No data loaded. Please call source() first.');
+    }
+    if (!this.engine.profile) {
+      throw new Error('Profiling is not supported by the registered engine.');
+    }
+
+    this.dataProfile = await this.engine.profile(options);
+    return this.dataProfile;
+  }
+
+  /**
    * Analyze data using natural language query.
    * The query is turned into SQL via LLM and executed by DuckDB.
    * Use visualize() separately to generate charts from the analysis result.
@@ -156,21 +171,6 @@ export class AVA {
       console.warn('Failed to generate visualization:', errorMessage);
       return null;
     }
-  }
-
-  /** Compute and retain a dataset profile for subsequent model context. */
-  async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.engine || !this.dataSchema) {
-      throw new Error('No data loaded. Please call load() first.');
-    }
-    if (!this.engine.profile) {
-      throw new Error('Profiling is not supported by the registered engine.');
-    }
-
-    const engine = this.engine;
-    const profile = await engine.profile(options);
-    if (this.engine === engine) this.dataProfile = profile;
-    return profile;
   }
 
   /**

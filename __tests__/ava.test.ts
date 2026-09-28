@@ -44,6 +44,30 @@ describe('AVA', () => {
     await expect(ava.schema()).rejects.toThrow(message);
   });
 
+  it('profiles default and selected metrics for the loaded source', async () => {
+    const message = 'No data loaded. Please call source() first.';
+    await expect(ava.profile()).rejects.toThrow(message);
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }, { value: null }] } });
+
+    const profile = await ava.profile();
+    expect(profile.generatedAt).toEqual(expect.any(Number));
+    expect(profile.tables[0].metrics).toEqual({ row_count: 3 });
+    expect(profile.tables[0].fields[0].metrics).toMatchObject({ null_count: 1, min: 2, max: 4, mean: 3 });
+
+    const selected = await ava.profile({ metrics: ['row_count', 'sum'] });
+    expect(selected.tables[0].metrics).toEqual({ row_count: 3 });
+    expect(selected.tables[0].fields[0].metrics).toEqual({ sum: 6 });
+    const empty = await ava.profile({ metrics: [] });
+    expect(empty.tables[0].metrics).toEqual({});
+    expect(empty.tables[0].fields[0].metrics).toEqual({});
+    await expect(ava.profile({ metrics: ['missing'] })).rejects.toThrow('Unknown metric');
+
+    await ava.source({ type: 'json', options: { data: [{ value: 10 }] } });
+    expect((await ava.profile({ metrics: ['sum'] })).tables[0].fields[0].metrics).toEqual({ sum: 10 });
+    await ava.dispose();
+    await expect(ava.profile()).rejects.toThrow(message);
+  });
+
   describe('Data Loading', () => {
     it('should load a CSV file without returning a schema', async () => {
       await expect(ava.source({ type: 'csv-file', options: { path: testDataPath } })).resolves.toBeUndefined();
