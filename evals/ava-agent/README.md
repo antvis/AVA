@@ -52,9 +52,11 @@ node evals/cli.js run ava-agent --benchmark databench --limit 2 --list
 
 Selection matches AVA Workflow: `--dataset databench-lite|databench` (default: `databench-lite`), `--suite`, `--offset` (default: `0`), and `--limit <number|all>` (default: `20`). Other execution options are forwarded to Eve. `--help` lists adapter options without running a model.
 
+Use `--resume <csv>` (repeatable) to import matching completed rows into a new run and execute only missing IDs. Imported rows, including failed answers, retain their original values. Duplicate IDs or incompatible columns are rejected. `run.json` records source CSV paths and the imported row count; results may therefore combine historical and current agent versions.
+
 Each selected question gets its own session and Parquet attachment. Benchmark code, selected questions, and data files are snapshotted on the host; gold answers are never sent to the agent. The structured answer must match the question's answer type (or be null) and is scored using the shared `databench-answer` rule. Skill and tool checks remain separate assertions.
 
-During execution, predictions are written to `.runs/<id>/predictions.csv`. After all selected questions have result rows, the final CSV is copied to `results/<dataset>-<id>.csv`, including runs with failed answers. Interrupted or incomplete runs retain partial results only in `.runs/`; `--list` does not publish a result. Each invocation uses a unique filename and does not overwrite previous results or resume them.
+During execution, predictions are written to `.runs/<id>/predictions.csv`. After all selected questions have result rows, the final CSV is copied to `results/<dataset>-<id>.csv`, including runs with failed answers. Interrupted or incomplete runs retain partial results only in `.runs/`; `--list` does not publish a result. Each invocation uses a unique filename and does not overwrite previous results. Historical rows are imported only when `--resume` is supplied.
 
 CSV columns match AVA Workflow: `id`, `predicted_answer`, `sql`, `error`, `model`, `duration_ms`, `input_tokens`, `output_tokens`, `total_tokens`. Both writers share the same column definition. `sql` contains the agent-reported SQL used for the answer, or an empty string when no SQL was used. Duration covers the entire question, including tools. Tokens sum all model steps for the question; incomplete or unavailable usage stays empty rather than being reported as zero. Failed questions retain usage when reported by Eve.
 

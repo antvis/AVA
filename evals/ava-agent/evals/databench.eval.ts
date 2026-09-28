@@ -1,6 +1,6 @@
 import { appendFileSync, copyFileSync, constants, cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { basename, join } from 'node:path';
+import { basename, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { defineEval, defineEvalConfig, type EveEvalSession } from 'eve/evals';
@@ -13,7 +13,7 @@ import { hashTree } from '../lib/files.mjs';
 type Benchmark = typeof import('../../databench/index.js');
 const require = createRequire(import.meta.url);
 
-export const config = defineEvalConfig({ maxConcurrency: 1, timeoutMs: 180000 });
+export const config = defineEvalConfig({ maxConcurrency: 1, timeoutMs: 600000 });
 
 const evalsRoot = fileURLToPath(new URL('../../', import.meta.url));
 const HELP = `Usage (from repository root):
@@ -25,6 +25,7 @@ Options:
   --offset <number>      Start offset after filtering (default: 0)
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --skill <ava|none>     Require AVA Skill or run without it (default: ava)
+  --resume <csv>         Import completed rows and skip their IDs; repeatable
   --list                List selected cases without model calls
 
 Additional execution options are forwarded to Eve.
@@ -33,7 +34,9 @@ Additional execution options are forwarded to Eve.
 function prepareSnapshot(
   directory: string,
   samples: ReturnType<Benchmark['selectSamples']>,
-  selection: Parameters<Benchmark['selectSamples']>[0]
+  selection: Parameters<Benchmark['selectSamples']>[0],
+  previous: Record<string, string>[] = [],
+  resumedFrom: string[] = []
 ) {
   // Gold answers stay on the host; only Parquet files are attached to agent sessions.
   const benchmarkDirectory = join(directory, 'benchmarks');
@@ -56,30 +59,57 @@ function prepareSnapshot(
   }
   writeFileSync(join(benchmarkDirectory, 'samples.json'), JSON.stringify(samples));
   const { OUTPUT_COLUMNS, csvCell } = require('../../_shared/results.js');
-  writeFileSync(join(directory, 'predictions.csv'), `${OUTPUT_COLUMNS.map(csvCell).join(',')}\n`);
+  writeFileSync(join(directory, 'predictions.csv'),
+    [OUTPUT_COLUMNS, ...previous.map((row) => OUTPUT_COLUMNS.map((column: string) => row[column]))]
+      .map((row) => row.map(csvCell).join(',')).join('\n') + '\n');
   return {
     directory: benchmarkDirectory,
-    manifest: { benchmark: 'databench', selection, benchmarkHash: hashTree(benchmarkDirectory) },
+    manifest: { benchmark: 'databench', selection, resumedFrom, importedRows: previous.length, benchmarkHash: hashTree(benchmarkDirectory) },
   };
 }
 
 export async function main(argv: string[] = process.argv.slice(2)) {
   const { takeOptions } = require('../../_shared/args.js');
   const { selectSamples }: Benchmark = require('../../databench/index.js');
-  const { values: selection, rest } = takeOptions(argv, {
+  const { values: { resume = [], ...selection }, rest } = takeOptions(argv, {
     dataset: { type: 'string' },
     limit: { type: 'string' },
     offset: { type: 'string' },
     suite: { type: 'string' },
+    resume: { type: 'string', multiple: true },
   });
   if (rest.includes('--help')) return process.stdout.write(HELP);
   const samples = selectSamples(selection);
   if (!samples.length) throw new Error('No DataBench questions match the selection.');
+  const resumedFrom = resume.map((path: string) => resolve(path));
+  const previous = loadPreviousResults(resumedFrom, samples);
+  const completed = new Set(previous.map((row) => row.id));
+  const pending = samples.filter((sample) => !completed.has(sample.id));
+  if (!pending.length) return console.log('All selected questions already have result rows.');
+  console.error(`Selected ${samples.length}; imported ${previous.length}; remaining ${pending.length}`);
   const { run } = await import(new URL('../scripts/run.mjs', import.meta.url).href);
-  const result = await run('eval', ['databench', ...rest], (directory: string) => prepareSnapshot(directory, samples, selection));
+  const result = await run('eval', ['databench', ...rest], (directory: string) => prepareSnapshot(directory, pending, selection, previous, resumedFrom));
   if (!rest.includes('--list') && !result.signal) {
     saveResults(result.directory, samples, join(evalsRoot, 'ava-agent/results'));
   }
+}
+
+export function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>) {
+  const { readCsv } = require('../../_shared/datasets.js');
+  const { OUTPUT_COLUMNS } = require('../../_shared/results.js');
+  const selected = new Set(samples.map((sample) => sample.id));
+  const rows = new Map<string, Record<string, string>>();
+  for (const path of paths) {
+    for (const row of readCsv(path)) {
+      if (JSON.stringify(Object.keys(row)) !== JSON.stringify(OUTPUT_COLUMNS)) {
+        throw new Error(`Incompatible result columns: ${path}`);
+      }
+      if (!selected.has(row.id)) continue;
+      if (rows.has(row.id)) throw new Error(`Duplicate imported result: ${row.id}`);
+      rows.set(row.id, row);
+    }
+  }
+  return [...rows.values()];
 }
 
 export function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string) {
