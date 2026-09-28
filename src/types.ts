@@ -656,13 +656,19 @@ export interface AnalysisResponse<T = Record<string, unknown>> extends Execution
 }
 
 /**
- * Visualization response — chart generation results
+ * Chart specification for rendering.
  */
-export interface VisualizeResponse {
+export interface ChartSpec {
   /** Recommended chart type */
   chartType: ChartType;
   /** GPT-Vis syntax */
   syntax: string;
+}
+
+/**
+ * Visualization response — chart generation results
+ */
+export interface VisualizeResponse extends ChartSpec {
   /** Standalone HTML that renders the chart */
   html: string;
 }

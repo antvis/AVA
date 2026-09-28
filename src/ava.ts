@@ -19,6 +19,7 @@ import type {
   AnalysisResponse,
   AnalysisConfig,
   VisualizeResponse,
+  ChartSpec,
   SuggestResult,
   Profile,
   ProfileOptions,
@@ -183,9 +184,7 @@ export class AVA {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis syntax for rendering.
    */
-  private async recommend(
-    analysisResult: AnalysisResponse
-  ): Promise<Pick<VisualizeResponse, 'chartType' | 'syntax'> | null> {
+  private async recommend(analysisResult: AnalysisResponse): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -200,7 +199,7 @@ export class AVA {
   /**
    * Render a chart specification as standalone HTML.
    */
-  private async viz(spec: Pick<VisualizeResponse, 'chartType' | 'syntax'>): Promise<string> {
+  private async viz(spec: ChartSpec): Promise<string> {
     return wrapSyntaxInHTML(spec.syntax);
   }
 

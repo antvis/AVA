@@ -33,6 +33,7 @@ export type {
   AnalysisRuntime,
   DataContext,
   VisualizeResponse,
+  ChartSpec,
   SuggestResult,
   ChartType,
   Profile,
