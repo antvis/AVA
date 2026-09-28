@@ -24,4 +24,15 @@ describe('loaders/index', () => {
     expect(typeof source.getSchema).toBe('function');
     expect(typeof source.cleanup).toBe('function');
   });
+
+  it('dispatches mongodb source to a registerable source', async () => {
+    source = await loadSource(
+      { type: 'mongodb', options: { connection: 'host=localhost port=27017', database: 'sales' } },
+      getLLMConfig()
+    );
+
+    expect(typeof source.register).toBe('function');
+    expect(typeof source.getSchema).toBe('function');
+    expect(typeof source.cleanup).toBe('function');
+  });
 });

@@ -16,10 +16,11 @@
 | 内联 CSV | `{"type":"csv","options":{"csv":"region,sales\nEast,10"}}` |
 | 文件 | `{"type":"csv-file","options":{"path":"/data/sales.csv"}}`；type 也可为 `json-file`、`parquet`、`excel`、`sqlite` |
 | MySQL | `{"type":"mysql","options":{"host":"localhost","database":"sales","user":"reader","password":"REPLACE"}}` |
+| MongoDB | `{"type":"mongodb","options":{"connection":"host=localhost port=27017","database":"sales"}}` |
 | PostgreSQL | `{"type":"postgresql","options":{"host":"localhost","database":"sales","user":"reader","password":"REPLACE","schema":"public"}}` |
 | Supabase | `{"type":"supabase","options":{"accessToken":"REPLACE","projectRef":"REPLACE"}}` |
 
-除 SQLite 外，文件源支持 HTTP(S) URL，并可在 `options` 中添加 `headers`。MySQL/PostgreSQL 可添加数值 `port` 和 `ssh: { "host": "...", "user": "...", "port": 22, "password": "..." }`。
+除 SQLite 外，文件源支持 HTTP(S) URL，并可在 `options` 中添加 `headers`。MySQL/PostgreSQL 可添加数值 `port` 和 `ssh: { "host": "...", "user": "...", "port": 22, "password": "..." }`。MongoDB 走 DuckDB `mongo` community extension，`connection` 支持 DuckDB 的 attach 连接串，例如 `host=... port=...` 或 `mongodb://...`。
 
 使用用户授权的凭据，临时凭据文件仅供当前用户读取，加载后删除。
 

@@ -32,14 +32,13 @@ import type {
 
 /**
  * Process-level security baseline: DuckDB extensions run with the same
- * privileges as the host process, so disable auto-install/auto-load and
- * non-official extensions at instance creation. The mysql/postgres loaders
- * still work because those extensions are statically linked (built-in), so
- * an explicit `LOAD mysql`/`LOAD postgres` is unaffected by these flags.
+ * privileges as the host process, so disable auto-install/auto-load and keep
+ * community extensions off by default at instance creation. The mysql/postgres
+ * loaders still work because those extensions are statically linked (built-in),
+ * so an explicit `LOAD mysql`/`LOAD postgres` is unaffected by these flags.
  * https://duckdb.org/docs/current/operations_manual/securing_duckdb/securing_extensions
  */
 const EXTENSION_LOCKDOWN = {
-  allow_community_extensions: 'false',
   allow_unsigned_extensions: 'false',
   autoinstall_known_extensions: 'false',
   autoload_known_extensions: 'false',
@@ -70,6 +69,7 @@ export class DuckDBEngine implements AnalysisEngine {
   private dataProfile: Profile | null = null;
   private cleanup: (() => Promise<void>) | null = null;
   private readonly queryDialect: DuckDBQueryDialect;
+  private allowCommunityExtensions = false;
 
   constructor(private readonly llmConfig: LLMConfig, private readonly engineOptions: DuckDBEngineOptions = {}) {
     this.queryDialect = new DuckDBQueryDialect(llmConfig);
@@ -81,7 +81,11 @@ export class DuckDBEngine implements AnalysisEngine {
   private async getConnection(): Promise<DuckDBConnection> {
     if (this.connection) return this.connection;
 
-    this.instance = await DuckDBInstance.create(':memory:', { ...EXTENSION_LOCKDOWN });
+    this.instance = await DuckDBInstance.create(':memory:', {
+      ...EXTENSION_LOCKDOWN,
+      allow_community_extensions:
+        this.allowCommunityExtensions || this.engineOptions.allowCommunityExtensions ? 'true' : 'false',
+    });
     this.connection = await this.instance.connect();
     return this.connection;
   }
@@ -120,6 +124,17 @@ export class DuckDBEngine implements AnalysisEngine {
   async load(config: DataSourceConfig): Promise<Schema> {
     this.schema = null;
     this.dataProfile = null;
+    const nextAllowCommunityExtensions = config.type === 'mongodb';
+    if (
+      this.connection &&
+      !this.engineOptions.allowCommunityExtensions &&
+      nextAllowCommunityExtensions !== this.allowCommunityExtensions
+    ) {
+      await this.cleanup?.();
+      this.cleanup = null;
+      this.close();
+    }
+    this.allowCommunityExtensions = nextAllowCommunityExtensions;
     try {
       const source = await loadSource(config, this.llmConfig);
       const conn = await this.getConnection();
@@ -213,6 +228,7 @@ export class DuckDBEngine implements AnalysisEngine {
     this.instance = null;
     this.schema = null;
     this.dataProfile = null;
+    this.allowCommunityExtensions = false;
   }
 
   async dispose(): Promise<void> {
