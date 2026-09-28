@@ -1,5 +1,5 @@
 {
-  "name": "ava-agent-evals",
+  "name": "ava-agent",
   "private": true,
   "type": "module",
   "engines": { "node": ">=24" },
