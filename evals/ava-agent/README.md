@@ -30,10 +30,12 @@ Use an OpenAI-compatible **Chat Completions** API. `MODEL_CONTEXT_WINDOW` is opt
 npm run typecheck                         # Static check; no model call
 npm run eval -- --list                    # List cases; no model call
 npm run eval -- aggregate --skill ava     # Try one case
-npm run eval -- --skill ava               # All cases with Skill (default)
+npm run eval -- --skill ava               # Require AVA Skill (default)
 npm run eval -- --skill none              # Same cases without Skill
 npm run dev                              # Interactive UI; open the printed URL
 ```
+
+`--skill ava` instructs the agent to load AVA before other tools and follow the Skill using the CLI; evaluation fails if loading does not succeed. `--skill none` removes the Skill and its loading tool.
 
 Cases cover aggregation, distinct/null handling, and chart output. Each loads `evals/fixtures/sales.csv` as an attachment. Expected answers stay outside the sandbox; final JSON replies are scored directly. `dev` has no preloaded sample data or automatic scoring; use `--skill none` for a manual comparison without the Skill.
 

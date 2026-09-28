@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { appendFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn, execFileSync } from 'node:child_process';
@@ -83,8 +83,20 @@ if (existsSync(lockFile)) cpSync(lockFile, join(directory, 'package-lock.json'))
 symlinkSync(join(root, 'node_modules'), join(directory, 'node_modules'), 'dir');
 
 const skillSource = join(repo, 'skills/ava');
-if (skill === 'ava') cpSync(skillSource, join(directory, 'agent/skills/ava'), { recursive: true });
-else rmSync(join(directory, 'agent/tools/load_skill.ts'));
+if (skill === 'ava') {
+  cpSync(skillSource, join(directory, 'agent/skills/ava'), { recursive: true });
+
+  appendFileSync(
+    join(directory, 'agent/instructions.md'),
+    '\n## Required Skill\n\n' +
+    'At the start of every turn, before any other tool, call load_skill with {"skill":"ava"}. ' +
+    'Wait for it to succeed, then follow the AVA Skill and use the actual AVA CLI for supported analysis tasks. ' +
+    'Do not skip the Skill or substitute a Python/pandas-only solution. ' +
+    'If loading fails, report the failure instead of proceeding without the Skill.\n'
+  );
+} else {
+  rmSync(join(directory, 'agent/tools/load_skill.ts'));
+}
 
 const manifest = {
   id,

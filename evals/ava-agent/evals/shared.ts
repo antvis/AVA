@@ -8,9 +8,9 @@ export function checkAnswer(t: EveEvalContext, turn: EveEvalTurn, expected: unkn
   t.calledTool('python');
   t.maxToolCalls(30);
 
-  // Skill activation is diagnostic, not a requirement for a correct answer.
+  // The Skill variant must successfully load AVA, even if the answer is correct.
   if (process.env.AVA_AGENT_SKILL === 'ava') {
-    t.loadedSkill('ava').soft();
+    t.loadedSkill('ava', { status: 'completed' }).gate();
   } else {
     t.notCalledTool('load_skill');
   }
