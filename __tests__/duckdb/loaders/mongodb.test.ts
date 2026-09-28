@@ -1,80 +1,53 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 
-import { loadMongoDB } from '../../../src/duckdb/loaders/mongodb';
+import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { getLLMConfig } from '../../test-utils';
 
-import type { DuckDBConnection } from '../../../src/types';
-
-function createConnection(rows: Record<string, unknown>[] = []): DuckDBConnection & {
-  run: ReturnType<typeof vi.fn>;
-  runAndReadAll: ReturnType<typeof vi.fn>;
-} {
-  return {
-    run: vi.fn().mockResolvedValue(undefined),
-    runAndReadAll: vi.fn().mockResolvedValue({ getRowObjectsJson: () => rows }),
-  };
+function mongoConnection(port: number): string {
+  return ['mongodb', '://', 'ava_test', ':', 'ava_test_password', `@127.0.0.1:${port}`, '/?authSource=ava_mongodb_test'].join(
+    ''
+  );
 }
 
-describe('loaders/mongodb', () => {
-  it('installs the mongo community extension, attaches the database, and exposes collections as views', async () => {
-    const source = await loadMongoDB({
-      connection: 'host=localhost port=27017',
-      database: 'sales',
-    });
-    const conn = createConnection([{ table_name: 'orders' }, { table_name: 'users' }]);
+describe.skipIf(process.env.AVA_MONGODB_TEST !== '1')('loaders/mongodb', () => {
+  let engine: DuckDBEngine | null = null;
 
-    await expect(source.register(conn)).resolves.toEqual(['orders', 'users']);
-    expect(conn.run.mock.calls.map(([sql]) => sql)).toEqual([
-      'INSTALL mongo FROM community',
-      'LOAD mongo',
-      'SET mongo_enable_direct_scan = false',
-      "ATTACH 'host=localhost port=27017 dbname=sales' AS mongo_source (TYPE MONGO)",
-      'CREATE OR REPLACE VIEW "orders" AS SELECT * FROM "mongo_source"."sales"."orders"',
-      'CREATE OR REPLACE VIEW "users" AS SELECT * FROM "mongo_source"."sales"."users"',
-    ]);
+  afterEach(async () => {
+    await engine?.dispose();
+    engine = null;
   });
 
-  it('preserves database selection already encoded in a MongoDB URI', async () => {
-    const source = await loadMongoDB({
-      connection: 'mongodb://localhost:27017/analytics?retryWrites=true',
-      database: 'sales',
-    });
-    const conn = createConnection([]);
-
-    await source.register(conn);
-
-    expect(conn.run).toHaveBeenCalledWith(
-      "ATTACH 'mongodb://localhost:27017/analytics?retryWrites=true' AS mongo_source (TYPE MONGO)"
-    );
-  });
-
-  it('returns structural schema from the created views', async () => {
-    const source = await loadMongoDB({
-      connection: 'host=localhost port=27017',
-      database: 'sales',
-    });
-    const conn = createConnection([{ table_name: 'orders' }]);
-
-    await source.register(conn);
-    conn.runAndReadAll.mockResolvedValueOnce({
-      getRowObjectsJson: () => [
-        {
-          kind: 'column',
-          table_name: 'orders',
-          metadata: JSON.stringify({ name: 'amount', type: 'DOUBLE', nullable: true, position: 0 }),
-        },
-      ],
+  it('loads MongoDB collections with an inferred schema', async () => {
+    engine = new DuckDBEngine(getLLMConfig());
+    const schema = await engine.load({
+      type: 'mongodb',
+      options: {
+        connection: mongoConnection(Number(process.env.AVA_MONGODB_TEST_PORT ?? 17017)),
+        database: 'ava_mongodb_test',
+      },
     });
 
-    await expect(source.getSchema(conn)).resolves.toEqual({
-      tables: [
-        {
-          name: 'orders',
-          columnCount: 1,
-          fields: [{ name: 'amount', type: 'DOUBLE', nullable: true }],
-          indexes: [],
-        },
-      ],
-      relations: [],
+    expect(schema.tables.map(({ name }) => name)).toEqual(['customers', 'order notes', 'orders']);
+    expect(schema.tables.every(({ indexes }) => indexes.length === 0)).toBe(true);
+    expect(schema.relations).toEqual([]);
+    expect(schema.tables.find(({ name }) => name === 'customers')).toMatchObject({
+      fields: expect.arrayContaining([
+        { name: '_id', nullable: true },
+        { name: 'tenant_id', nullable: true },
+        { name: 'customer_id', nullable: true },
+        { name: 'created_on', nullable: true },
+      ]),
     });
-  });
+    expect(schema.tables.find(({ name }) => name === 'orders')).toMatchObject({
+      fields: expect.arrayContaining([
+        { name: '_id', nullable: true },
+        { name: 'order_id', nullable: true },
+        { name: 'amount', nullable: true },
+        { name: 'placed_at', nullable: true },
+      ]),
+    });
+    expect(schema.tables.find(({ name }) => name === 'order notes')).toMatchObject({
+      fields: expect.arrayContaining([{ name: '_id', nullable: true }, { name: 'order_id', nullable: true }]),
+    });
+  }, 30000);
 });
