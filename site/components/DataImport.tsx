@@ -77,20 +77,28 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       if (file.size > 25 * 1024 * 1024) {
         throw new Error('File size exceeds 25MB limit');
       }
-      const isExcel = fileName.endsWith('.xlsx') || fileName.endsWith('.xls');
+      const isXlsx = fileName.endsWith('.xlsx');
+      const isXls = fileName.endsWith('.xls');
+      const isCsv = fileName.endsWith('.csv');
 
       let parsedData: DataRow[];
 
-      if (isExcel) {
+      if (isXls) {
+        throw new Error('Legacy .xls files are not supported. Please convert the file to .xlsx or CSV.');
+      }
+
+      if (isXlsx) {
         const arrayBuffer = await file.arrayBuffer();
-        parsedData = parseExcel(arrayBuffer);
-      } else {
+        parsedData = await parseExcel(arrayBuffer);
+      } else if (isCsv) {
         const content = await file.text();
         parsedData = parseCSV(content);
+      } else {
+        throw new Error('Unsupported file type. Please upload a .xlsx or .csv file.');
       }
 
       if (parsedData.length === 0) {
-        throw new Error(`No valid data found in ${isExcel ? 'Excel' : 'CSV'} file`);
+        throw new Error(`No valid data found in ${isXlsx ? 'Excel' : 'CSV'} file`);
       }
 
       await avaInstance.source({ type: 'json', options: { data: parsedData } });
@@ -143,13 +151,13 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
             <svg className="w-8 h-8 text-[#78d3f8] mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
             </svg>
-            <p className="text-sm font-medium text-gray-700">Drag & Drop Excel or CSV</p>
+            <p className="text-sm font-medium text-gray-700">Drag & Drop .xlsx or .csv</p>
             <p className="text-xs text-[#78d3f8] mt-1">Maximum file size: 25MB</p>
           </div>
           <input
             ref={fileInputRef}
             type="file"
-            accept=".csv,.xlsx,.xls"
+            accept=".csv,.xlsx"
             onChange={handleFileUpload}
             className="hidden"
           />

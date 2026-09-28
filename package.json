@@ -77,9 +77,9 @@
     "@ai-sdk/openai": "^4.0.73",
     "@duckdb/node-api": "^1.5.5-r.5",
     "@supabase/pg-parser": "^0.1.7",
-    "adm-zip": "^0.5.17",
+    "adm-zip": "^0.6.1",
     "ai": "^7.0.112",
-    "csv-parse": "^5.6.0",
+    "csv-parse": "^7.0.3",
     "ssh2": "^1.17.0",
     "tslib": "^2.3.1",
     "zod": "^3.25.76"
