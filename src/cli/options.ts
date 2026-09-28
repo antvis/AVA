@@ -1,46 +1,42 @@
 import { parseArgs } from 'util';
 
-import type { LLMConfig } from '../types';
-
 export type Options = Record<string, string | boolean | undefined>;
-export type Env = Record<string, string | undefined>;
+export type OptionDefinitions = Record<string, { type: 'string' | 'boolean'; short?: string; multiple?: false }>;
 
-export function parse(argv: string[]): { values: string[]; options: Options } {
-  const { positionals, values } = parseArgs({
+export function parse(argv: string[], definitions: OptionDefinitions = {}): { values: string[]; options: Options } {
+  const parsed = parseArgs({
     args: argv,
     allowPositionals: true,
-    options: {
-      chart: { type: 'boolean', short: 'c' },
-      help: { type: 'boolean', short: 'h' },
-      output: { type: 'string', short: 'o' },
-      type: { type: 'string', short: 't' },
-    },
+    options: { ...definitions, help: { type: 'boolean', short: 'h' } },
   });
-  return { values: positionals, options: values };
+
+  return { values: parsed.positionals, options: parsed.values };
 }
 
 export function option(options: Options, name: string): string | undefined {
-  const value = options[name];
+  return options[name] as string | undefined;
+}
+
+export function list(options: Options, name: string): string[] | undefined {
+  const value = option(options, name);
+
   if (value === undefined) return undefined;
-  if (typeof value !== 'string') throw new Error(`--${name} requires a value.`);
-  return value;
+  if (!value.trim()) return [];
+  const values = value.split(',').map((item) => item.trim());
+
+  if (values.some((item) => !item)) throw new Error(`--${name} contains an empty item.`);
+
+  return values;
 }
 
-export function flag(options: Options, name: string): boolean {
-  const value = options[name];
-  if (value === undefined) return false;
-  if (typeof value !== 'boolean') throw new Error(`--${name} does not take a value.`);
+export function numberOption(options: Options, name: string, max = Number.MAX_SAFE_INTEGER): number | undefined {
+  const raw = option(options, name);
+
+  if (raw === undefined) return undefined;
+  const value = Number(raw);
+
+  if (!Number.isSafeInteger(value) || value <= 0 || value > max)
+    throw new Error(`--${name} must be an integer between 1 and ${max}.`);
+
   return value;
-}
-
-export function llmConfig(env: Env): LLMConfig {
-  const apiKey = env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error('Set OPENAI_API_KEY.');
-
-  const baseURL = env.OPENAI_BASE_URL;
-  return {
-    apiKey,
-    model: env.OPENAI_MODEL ?? 'gpt-4o-mini',
-    ...(baseURL ? { baseURL } : {}),
-  };
 }

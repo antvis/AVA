@@ -155,25 +155,36 @@ ava.dispose();
 
 ### CLI
 
-Install the CLI:
+Requires Node.js 22.13+ on macOS or Linux. Save the [sample dataset](__tests__/datasets/sales.csv)
+as `sales.csv`, then run:
 
 ```bash
 npm install -g @antv/ava
+
+# Example: Claude via Anthropic's OpenAI-compatible endpoint
+export OPENAI_API_KEY='your-anthropic-api-key'
+export OPENAI_MODEL='claude-sonnet-4-6'
+export OPENAI_BASE_URL='https://api.anthropic.com/v1/'
+
+ava source sales.csv
 ```
 
-Configure an OpenAI-compatible model service:
+Copy the returned dataset ID and continue in the same terminal:
 
 ```bash
-export OPENAI_API_KEY=YOUR_API_KEY
-export OPENAI_MODEL=YOUR_MODEL
-export OPENAI_BASE_URL=https://your-provider.example.com/v1
+DATASET_ID='ds_sales_your-id-here'
+
+ava suggest "$DATASET_ID" --count 5
+ava analyze "$DATASET_ID" "What is the average sales value by region?" | tee analysis.json
+
+# Chart the data rows from the analysis result
+node -p 'JSON.stringify(require("./analysis.json").data)' > rows.json
+ava visualize --query "Compare average sales by region" --data @rows.json --output chart.html
+
+ava dispose "$DATASET_ID"
 ```
 
-Run one analysis:
-
-```bash
-ava analyze data/companies.csv "What is the average revenue by region?"
-```
+Open `chart.html` in your browser. See [CLI documentation](#cli-1) for more commands and settings.
 
 ## 📘 Documentation
 
@@ -196,7 +207,7 @@ Core APIs in AVA:
 - `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
 - `analyze(query, config?)`: run data analysis using various strategies.
-- `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
+- `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data; generation failures throw).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 
 #### `profile(options?)`
@@ -271,26 +282,39 @@ ava.dispose();
 
 ### CLI
 
-Use the CLI to run one analysis without writing code:
-
-```bash
-ava analyze <source> <question> [options]
-```
-
-| Parameter | Required | Description |
+| Command | Purpose | Requires AI |
 | --- | --- | --- |
-| `<source>` | Yes | Local path or HTTP(S) URL to the data source |
-| `<question>` | Yes | Natural-language analysis question |
-| `-t, --type <type>` | No | Source type when it cannot be inferred: `csv-file`, `json-file`, `parquet`, `excel`, or `sqlite` (`.sqlite`, `.sqlite3`, `.db`) |
-| `-c, --chart` | No | Generate a chart |
-| `-o, --output <path>` | With `--chart` | Write the chart to a new HTML file |
+| `source` | Load a file, URL or source config and return a dataset ID | Only for text sources |
+| `schema` | View tables and fields | No |
+| `profile` | Compute statistics | No |
+| `query` | Execute read-only SQL | No |
+| `suggest` | Suggest analysis questions | Yes |
+| `translate` | Generate a query without executing it | Yes |
+| `analyze` | Analyze data using natural language | Yes |
+| `recommend` | Generate a chart specification | Yes |
+| `visualize` | Generate a chart and HTML | Yes |
+| `viz` | Render a chart specification to HTML | No |
+| `dispose` | Release a dataset | No |
 
-Examples:
+Run `ava <command> --help` for usage. `--data`, `--spec`, and `--dsl` accept inline
+content, `@file`, or `-` for stdin. Output is JSON; `source` shows a guide when run in a terminal.
+Sessions expire after 30 idle minutes or when disposed.
 
-```bash
-ava analyze data/companies.csv "What is the average revenue by region?"
-ava analyze data/companies.csv "Show revenue by region" --chart --output revenue.html
-```
+#### Model configuration
+
+Set environment variables before `source`; `.env` is not loaded automatically.
+
+| Variable | Purpose |
+| --- | --- |
+| `OPENAI_API_KEY` | API key for the selected provider |
+| `OPENAI_MODEL` | Model name; defaults to `gpt-4o-mini` |
+| `OPENAI_BASE_URL` | OpenAI-compatible endpoint; optional for OpenAI |
+
+The Quick Start uses [Anthropic's compatibility endpoint](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk)
+with a Claude model and Anthropic API key. The variable names remain `OPENAI_*`.
+
+Reload the dataset after changing model settings. `visualize` and `recommend`
+read the current environment on each run.
 
 ## 🏗️ Architecture
 

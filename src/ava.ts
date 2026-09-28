@@ -162,27 +162,18 @@ export class AVA {
    * Accepts the result from analyze() — the query and data are read from it.
    *
    * @param analysisResult - The result returned from analyze()
-   * @param options - Optional visualization options
-   * @returns VisualizeResponse with chartType, syntax, and html, or null if no visualization is needed
+   * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
-  async visualize(analysisResult: AnalysisResponse): Promise<VisualizeResponse | null> {
-    try {
-      const spec = await this.recommend(analysisResult);
-      return spec ? { ...spec, html: await this.viz(spec) } : null;
-    } catch (error) {
-      // Visualization is optional, don't fail if it fails
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      // eslint-disable-next-line no-console
-      console.warn('Failed to generate visualization:', errorMessage);
-      return null;
-    }
+  async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
+    const spec = await this.recommend(analysisResult);
+    return spec ? { ...spec, html: await this.viz(spec) } : null;
   }
 
   /**
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis syntax for rendering.
    */
-  async recommend(analysisResult: AnalysisResponse): Promise<ChartSpec | null> {
+  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 

@@ -1,50 +1,86 @@
 #!/usr/bin/env node
 
-import { AVA } from '../index';
+import * as source from './commands/source';
+import * as schema from './commands/schema';
+import * as profile from './commands/profile';
+import * as suggest from './commands/suggest';
+import * as analyze from './commands/analyze';
+import * as translate from './commands/translate';
+import * as query from './commands/query';
+import * as visualize from './commands/visualize';
+import * as recommend from './commands/recommend';
+import * as viz from './commands/viz';
+import * as dispose from './commands/dispose';
+import { parse } from './options';
+import { accent, badge, muted, formatError } from './util';
 
-import { ANALYZE_HELP, ROOT_HELP } from './help';
-import { flag, llmConfig, option, parse } from './options';
-import { formatError, inferSource, writeOutput } from './util';
+const commands = {
+  source,
+  schema,
+  profile,
+  suggest,
+  analyze,
+  translate,
+  query,
+  visualize,
+  recommend,
+  viz,
+  dispose,
+};
 
-import type { Env } from './options';
+const ROOT_HELP = `${accent('✦')} ${badge('AVA')} ${muted('AI-native Visual Analytics')}
+
+${accent('Usage:')}
+  ava <command> [options]
+
+${accent('Commands:')}
+${Object.entries(commands)
+  .map(([name, command]) => `  ${name.padEnd(12)} ${command.description}`)
+  .join('\n')}
+
+${accent('Options:')}
+  -h, --help                   Show help
+
+Run "ava <command> --help" for command-specific usage.
+Commands return JSON; source shows a guide in terminals and JSON when piped.
+Errors go to stderr with exit code 1.
+Sessions expire after 30 idle minutes and require macOS or Linux.`;
 
 type Write = (value: string) => void;
 
-export async function run(
-  argv: string[],
-  env: Env = process.env,
-  write: Write = (value) => process.stdout.write(`${value}\n`)
-): Promise<void> {
-  const { values, options } = parse(argv);
-  const [command, source, ...question] = values;
-  if (!command) {
+export async function run(argv: string[], write: Write = (value) => process.stdout.write(`${value}\n`)): Promise<void> {
+  const [command, ...input] = argv;
+
+  if (!command || command.startsWith('-')) {
+    const { values } = parse(argv);
+    if (values.length) throw new Error('Usage: ava <command> [options]');
     write(ROOT_HELP);
     return;
   }
-  if (command !== 'analyze') throw new Error(`Unknown command "${command}".\n\n${ROOT_HELP}`);
-  if (flag(options, 'help')) {
-    write(ANALYZE_HELP);
+
+  if (!Object.prototype.hasOwnProperty.call(commands, command)) {
+    throw new Error(`Unknown command "${command}".\n\n${ROOT_HELP}`);
+  }
+
+  const handler = commands[command as keyof typeof commands];
+  const { values: args, options } = parse(input, handler.definition.options);
+
+  if (options.help) {
+    write(handler.help);
     return;
   }
-  if (!source) throw new Error(`Missing required argument: <source>.\n\n${ANALYZE_HELP}`);
 
-  const query = question.join(' ').trim();
-  if (!query) throw new Error('A non-empty question is required.');
-
-  const chart = flag(options, 'chart');
-  const output = option(options, 'output');
-  if (output && !chart) throw new Error('--output requires --chart.');
-
-  const ava = new AVA({ llm: llmConfig(env) });
-  try {
-    await ava.source(inferSource(source, option(options, 'type')));
-    const analysis = await ava.analyze(query);
-    const visualization = chart ? await ava.visualize(analysis) : undefined;
-    if (output && visualization) await writeOutput(output, visualization.html);
-    write(JSON.stringify({ analysis, ...(chart ? { visualization } : {}) }, null, 2));
-  } finally {
-    await ava.dispose();
+  if (args.length !== handler.definition.positionals || args.some((arg) => !arg.trim())) {
+    throw new Error(`Invalid arguments for "${command}".\n\n${handler.help}`);
   }
+
+  if (command === 'source' && process.stdout.isTTY) {
+    write(source.formatResult(await source.run(args, options)));
+    return;
+  }
+
+  const result = await handler.run(args, options);
+  write(JSON.stringify(result, null, 2));
 }
 
 if (typeof require !== 'undefined' && require.main === module) {
