@@ -136,8 +136,7 @@ export class AVA {
    * Translate a natural-language query into DSL.
    * Use query() to execute the generated DSL.
    */
-  // @ts-expect-error Internal API is not yet used by the analysis strategies.
-  private async translate(query: string): Promise<string> {
+  async translate(query: string): Promise<string> {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -151,8 +150,7 @@ export class AVA {
    * Execute a read-only query against the data source.
    * The DSL must match the current engine's query language.
    */
-  // @ts-expect-error Internal API is not yet used by the analysis strategies.
-  private async query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult> {
+  async query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult> {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -184,7 +182,7 @@ export class AVA {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis syntax for rendering.
    */
-  private async recommend(analysisResult: AnalysisResponse): Promise<ChartSpec | null> {
+  async recommend(analysisResult: AnalysisResponse): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
@@ -199,7 +197,7 @@ export class AVA {
   /**
    * Render a chart specification as standalone HTML.
    */
-  private async viz(spec: ChartSpec): Promise<string> {
+  async viz(spec: ChartSpec): Promise<string> {
     return wrapSyntaxInHTML(spec.syntax);
   }
 
