@@ -126,7 +126,11 @@ export const parseExcel = async (arrayBuffer: ArrayBuffer): Promise<DataRow[]> =
       } else if (typeof val === 'boolean') {
         rowData[header] = val;
       } else if (val instanceof Date) {
-        rowData[header] = val.toISOString();
+        rowData[header] = [
+          val.getFullYear(),
+          String(val.getMonth() + 1).padStart(2, '0'),
+          String(val.getDate()).padStart(2, '0'),
+        ].join('-');
       } else {
         const strVal = String(val).trim();
         const num = Number(strVal);
