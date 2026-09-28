@@ -22,7 +22,7 @@ describe.skipIf(skipLLMTests)('cases/object-analysis', () => {
 
   beforeEach(async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({ type: 'json', options: { data: CITY_DATA } });
+    await ava.source({ type: 'json', options: { data: CITY_DATA } });
   });
 
   afterEach(async () => {

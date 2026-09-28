@@ -42,7 +42,10 @@ describe('interpreter/engine', () => {
         { n: null, category: null, flag: null, day: null },
       ];
       try {
-        const loaded = await ava.load({ type: 'json', options: { data } });
+        const load = vi.spyOn(InterpreterEngine.prototype, 'load');
+        await ava.source({ type: 'json', options: { data } });
+        const loaded = await load.mock.results[0].value;
+        load.mockRestore();
         const before = JSON.stringify({ loaded, data });
         const result = await ava.profile({ metrics });
         const [table] = result.tables;

@@ -41,7 +41,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
 
     try {
       // Extract structured data from text via LLM (text source)
-      await avaInstance.load({ type: 'text', options: { text: textInput } });
+      await avaInstance.source({ type: 'text', options: { text: textInput } });
 
       // Read the extracted data back from the interpreter engine
       const data = (avaInstance.engine as InterpreterEngine | null)?.getData() ?? null;
@@ -93,7 +93,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
         throw new Error(`No valid data found in ${isExcel ? 'Excel' : 'CSV'} file`);
       }
 
-      await avaInstance.load({ type: 'json', options: { data: parsedData } });
+      await avaInstance.source({ type: 'json', options: { data: parsedData } });
       saveAppState({ data: parsedData, textInput: '' });
       onDataLoaded(parsedData);
     } catch (err) {

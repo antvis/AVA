@@ -17,7 +17,7 @@ describe.skipIf(skipLLMTests)('cases/loan-payments-analysis', () => {
 
   beforeEach(async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({ type: 'csv-file', options: { path: dataPath } });
+    await ava.source({ type: 'csv-file', options: { path: dataPath } });
   });
 
   afterEach(async () => {

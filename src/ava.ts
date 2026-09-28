@@ -68,7 +68,7 @@ export class AVA {
    * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  async load(config: DataSourceConfig): Promise<Schema> {
+  async source(config: DataSourceConfig): Promise<void> {
     this.schema = null;
     this.dataProfile = null;
     await this.engine?.dispose();
@@ -77,7 +77,6 @@ export class AVA {
     this.engine = await this.createEngine();
     try {
       this.schema = await this.engine.load(config);
-      return this.schema;
     } catch (error) {
       await this.engine.dispose();
       this.engine = null;
@@ -92,7 +91,7 @@ export class AVA {
    */
   async analysis(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
     if (!this.engine || !this.schema) {
-      throw new Error('No data loaded. Please call load() first.');
+      throw new Error('No data loaded. Please call source() first.');
     }
 
     const runtime = {
@@ -171,11 +170,7 @@ export class AVA {
       throw new Error('No data loaded. Please call load() first.');
     }
 
-    return generateSuggestions(
-      this.llmConfig,
-      { schema: this.schema, profile: this.dataProfile ?? undefined },
-      count
-    );
+    return generateSuggestions(this.llmConfig, { schema: this.schema, profile: this.dataProfile ?? undefined }, count);
   }
 
   /**

@@ -133,7 +133,7 @@ async function main(argv = process.argv.slice(2)) {
           let error = '';
           usage = undefined;
           try {
-            await ava.load({ type: 'parquet', options: { path: sample.dataPath } });
+            await ava.source({ type: 'parquet', options: { path: sample.dataPath } });
             await ava.profile();
             const result = await ava.analysis(
               `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`,

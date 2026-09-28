@@ -285,7 +285,7 @@ describe('SupabaseEngine', () => {
       vi.stubGlobal('fetch', fetch);
       const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'supabase' } });
       try {
-        await ava.load({ type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } });
+        await ava.source({ type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } });
         expect((await ava.profile()).tables[0].metrics).toEqual({ row_count: 4 });
         expect(fetch).toHaveBeenCalledTimes(2);
         expect(JSON.parse(fetch.mock.calls[1][1].body)).toMatchObject({ read_only: true });
