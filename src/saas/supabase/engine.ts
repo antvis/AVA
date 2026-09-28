@@ -89,8 +89,8 @@ export class SupabaseEngine implements AnalysisEngine {
     if (!this.connection) {
       throw new Error('No data loaded. Please call load() first.');
     }
-    await this.queryDialect.validateDSL(sql);
-    const rows = (await this.runQuery(limitedQuery(sql, maxRows(options)))) as T[];
+    const query = await this.queryDialect.validateDSL(sql);
+    const rows = (await this.runQuery(limitedQuery(query, maxRows(options)))) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);
   }
 

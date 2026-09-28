@@ -30,17 +30,13 @@ Generate exactly one read-only SELECT query (WITH is allowed), without explanati
     return (trimmed.match(/^```(?:sql)?[ \t]*\r?\n([\s\S]*?)\r?\n```$/i)?.[1] ?? trimmed).trim();
   }
 
-  async validateDSL(sql: string, client: ClickHouseClient): Promise<void> {
-    await this.prepareQuery(sql, client);
-  }
-
   /** Parse and normalize on the server; SQL is a parameter, never an executable suffix.
    * formatQuery rejects invalid/multiple statements and removes comments/terminators.
    * Parsing the normalized SQL as a subquery excludes DDL/DML and output clauses.
    * https://clickhouse.com/docs/sql-reference/functions/other-functions#formatQuery
    * https://clickhouse.com/docs/sql-reference/statements/select#syntax
    */
-  async prepareQuery(sql: string, client: ClickHouseClient): Promise<string> {
+  async validateDSL(sql: string, client: ClickHouseClient): Promise<string> {
     const result = await client.query({
       query: "SELECT formatQuery(concat('SELECT * FROM (', formatQuery({sql:String}), ')')) AS query",
       query_params: { sql },

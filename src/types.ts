@@ -714,8 +714,8 @@ export type AnalysisStrategy = (
 export interface QueryDialect<TContext = void> {
   /** Generate the executable DSL (SQL) for a natural-language query. */
   getDSL(query: string, context: DataContext): Promise<string>;
-  /** Require exactly one read-only DSL statement before execution. */
-  validateDSL(dsl: string, context: TContext): Promise<void>;
+  /** Validate one read-only statement and return the DSL to execute, normalized if needed. */
+  validateDSL(dsl: string, context: TContext): Promise<string>;
 }
 
 /**

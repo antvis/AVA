@@ -173,8 +173,8 @@ export class DuckDBEngine implements AnalysisEngine {
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     const conn = await this.getConnection();
-    await this.queryDialect.validateDSL(sql, conn);
-    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(sql, maxRows(options))));
+    const query = await this.queryDialect.validateDSL(sql, conn);
+    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(query, maxRows(options))));
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),

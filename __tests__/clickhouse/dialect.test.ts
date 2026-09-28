@@ -20,7 +20,7 @@ describe('ClickHouse validation requests', () => {
       .mockResolvedValueOnce({ json: async () => [{ query: "SELECT * FROM (SELECT ';' AS value)" }] })
       .mockResolvedValue({ text: async () => 'SelectWithUnionQuery (children 1)' });
     const client = { query } as unknown as ClickHouseClient;
-    await expect(dialect.prepareQuery(sql, client)).resolves.toBe("SELECT * FROM (SELECT ';' AS value)");
+    await expect(dialect.validateDSL(sql, client)).resolves.toBe("SELECT * FROM (SELECT ';' AS value)");
     expect(query).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -38,7 +38,7 @@ describe('ClickHouse validation requests', () => {
     query.mockRejectedValueOnce(new Error('Syntax error'));
     await expect(dialect.validateDSL(sql, client)).rejects.toThrow('Syntax error');
     query.mockResolvedValueOnce({ json: async () => [] });
-    await expect(dialect.prepareQuery(sql, client)).rejects.toThrow('Missing ClickHouse SQL validation result');
+    await expect(dialect.validateDSL(sql, client)).rejects.toThrow('Missing ClickHouse SQL validation result');
   });
   it.each(['', 'AlterQuery', 'SelectWithUnionQuery (children 1)\n  Set'])(
     'fails closed for an unexpected or settings-bearing AST: %s',
@@ -47,7 +47,7 @@ describe('ClickHouse validation requests', () => {
         .fn()
         .mockResolvedValueOnce({ json: async () => [{ query: 'SELECT 1' }] })
         .mockResolvedValueOnce({ text: async () => tree });
-      await expect(dialect.prepareQuery('SELECT 1', { query } as unknown as ClickHouseClient)).rejects.toThrow();
+      await expect(dialect.validateDSL('SELECT 1', { query } as unknown as ClickHouseClient)).rejects.toThrow();
     }
   );
 });
