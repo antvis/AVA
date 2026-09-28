@@ -74,6 +74,21 @@ export const loadAppState = (): Partial<AppState> => {
 // localStorage has a ~5MB total quota; reserve most of it for other keys
 const MAX_DATA_SERIALIZED_SIZE = 3 * 1024 * 1024; // 3MB
 
+const excelDateFormatter = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'UTC',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+const formatExcelDate = (value: Date): string => {
+  const parts = excelDateFormatter.formatToParts(value);
+  const year = parts.find((part) => part.type === 'year')?.value ?? '';
+  const month = parts.find((part) => part.type === 'month')?.value ?? '';
+  const day = parts.find((part) => part.type === 'day')?.value ?? '';
+  return `${year}-${month}-${day}`;
+};
+
 // Save application state to localStorage
 // Large datasets are not persisted here — the AVA instance holds them
 // in memory, so duplicating them in localStorage would exceed its
@@ -126,11 +141,7 @@ export const parseExcel = async (arrayBuffer: ArrayBuffer): Promise<DataRow[]> =
       } else if (typeof val === 'boolean') {
         rowData[header] = val;
       } else if (val instanceof Date) {
-        rowData[header] = [
-          val.getUTCFullYear(),
-          String(val.getUTCMonth() + 1).padStart(2, '0'),
-          String(val.getUTCDate()).padStart(2, '0'),
-        ].join('-');
+        rowData[header] = formatExcelDate(val);
       } else {
         const strVal = String(val).trim();
         const num = Number(strVal);
