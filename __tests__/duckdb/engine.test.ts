@@ -2,6 +2,8 @@
  * Unit tests for DuckDBEngine
  */
 
+import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -11,6 +13,8 @@ import { QueryTimeoutError } from '../../src/duckdb/engine';
 import { DuckDBQueryDialect } from '../../src/query/duckdb';
 import { maxRows } from '../../src/util/result';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
+
+import { OFFLINE_LLM, nativeQuery } from './test-utils';
 
 describe('DuckDBEngine', () => {
   let engine: DuckDBEngine;
@@ -175,4 +179,151 @@ describe('DuckDBEngine', () => {
       expect(sql.toLowerCase()).toContain('from');
     }, 30000);
   });
+});
+
+// execute() returns a bounded result with native schema metadata and numeric
+// coercion. These tests use safely representable numbers; the API does not
+// expose a lossless numeric mode or an unbounded result option.
+describe('DuckDBEngine execution results', () => {
+  let engine: DuckDBEngine;
+  let directory: string;
+  let csvPath: string;
+  beforeEach(async () => {
+    engine = new DuckDBEngine(OFFLINE_LLM);
+    directory = await mkdtemp(path.join(tmpdir(), 'ava-csv-test-'));
+    csvPath = path.join(directory, 'source.csv');
+    await writeFile(csvPath, 'name\nAlice\n');
+    await engine.load({ type: 'csv-file', options: { path: csvPath } });
+  });
+  afterEach(async () => {
+    try {
+      await engine?.dispose();
+    } finally {
+      if (directory) await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each([
+    { expression: "'123'::VARCHAR", value: 123, type: 'VARCHAR' },
+    { expression: "'001'::VARCHAR", value: '001', type: 'VARCHAR' },
+    { expression: "'-0'::VARCHAR", value: -0, type: 'VARCHAR' },
+    { expression: "'1e3'::VARCHAR", value: '1e3', type: 'VARCHAR' },
+    { expression: '9007199254740991::BIGINT', value: Number.MAX_SAFE_INTEGER, type: 'BIGINT' },
+    { expression: '12345.125::DECIMAL(12,3)', value: 12345.125, type: 'DECIMAL(12,3)' },
+    { expression: '42::INTEGER', value: 42, type: 'INTEGER' },
+    { expression: 'true::BOOLEAN', value: true, type: 'BOOLEAN' },
+    { expression: 'NULL::VARCHAR', value: null, type: 'VARCHAR' },
+  ])('returns numeric values and native metadata for $expression', async ({ expression, value, type }) => {
+    const result = await engine.execute(`SELECT ${expression} AS value`);
+    expect(result.schema).toEqual([{ name: 'value', type }]);
+    expect(result.data).toEqual([{ value }]);
+    expect(result.rowCount).toBe(1);
+    expect(result.truncated).toBeUndefined();
+  });
+
+  it('preserves leading-zero strings while coercing numeric strings from a CSV file', async () => {
+    await engine.dispose();
+    await writeFile(csvPath, 'code\n123\n001\n');
+    await engine.load({ type: 'csv-file', options: { path: csvPath, options: { header: true, all_varchar: true } } });
+    const result = await engine.execute('SELECT * FROM data ORDER BY code');
+    expect(result.schema).toEqual([{ name: 'code', type: 'VARCHAR' }]);
+    expect(result.data).toEqual([{ code: '001' }, { code: 123 }]);
+  });
+
+  it.each([
+    'SELECT 1 AS x;',
+    'SELECT 1 AS x; -- trailing comment',
+    'SELECT 1 AS x; /* trailing comment */',
+    'SELECT 1 AS x\n-- no semicolon',
+  ])('executes one valid SELECT with comments: %s', async (sql) => {
+    // Valid single-statement SQL remains part of the current query contract.
+    // Do not assert rejection just because the result wrapper mishandles it.
+    expect((await engine.execute(sql)).data).toEqual((await nativeQuery(sql)).data);
+  });
+
+  it('keeps result schema names consistent with row keys for duplicate aliases', async () => {
+    const result = await engine.execute('SELECT 1 AS x, 2 AS x');
+    const names = result.schema.map(({ name }) => name);
+    expect(names).toHaveLength(2);
+    expect(new Set(names).size).toBe(2);
+    expect(Object.keys(result.data[0])).toEqual(names);
+    expect(Object.values(result.data[0])).toEqual([1, 2]);
+  });
+
+  it.each([0, 1, 200, 201, 10000, 10001])('applies explicit maxRows and the hard cap to %i rows', async (count) => {
+    const result = await engine.execute(`SELECT i::INTEGER AS n FROM range(${count}) t(i) ORDER BY n`, {
+      maxRows: Math.max(count, 1),
+      maxResultBytes: 4 * 1024 * 1024,
+    });
+    const returned = Math.min(count, 10000);
+    expect(result.data).toEqual(Array.from({ length: returned }, (_, n) => ({ n })));
+    if (count > 10000) {
+      expect(result.truncated).toBe(true);
+      expect(result.truncatedBy).toBe('maxRows');
+      expect(result.rowCount).toBeUndefined();
+    } else {
+      expect(result.truncated).toBeUndefined();
+      expect(result.rowCount).toBe(count);
+    }
+  });
+
+  it('defaults to 200 rows and leaves total rowCount unknown on truncation', async () => {
+    const result = await engine.execute('SELECT i::INTEGER AS n FROM range(201) t(i) ORDER BY n');
+    expect(result.data).toEqual(Array.from({ length: 200 }, (_, n) => ({ n })));
+    expect(result.truncated).toBe(true);
+    expect(result.truncatedBy).toBe('maxRows');
+    expect(result.rowCount).toBeUndefined();
+  });
+
+  it.each(['x', '中'])('honors a sufficient explicit byte budget for a multi-row %s result', async (char) => {
+    const result = await engine.execute(`SELECT repeat('${char}', 16384) AS value FROM range(100)`, {
+      maxRows: 100,
+      maxResultBytes: 8 * 1024 * 1024,
+    });
+    expect(result.truncated).toBeUndefined();
+    expect(result.rowCount).toBe(100);
+    expect(result.data).toEqual(Array.from({ length: 100 }, () => ({ value: char.repeat(16384) })));
+  });
+
+  it.each(['x', '中'])('reports byte truncation independently of row truncation for %s', async (char) => {
+    const row = { value: char.repeat(16384) };
+    const expectedCount = Math.floor((1024 * 1024) / Buffer.byteLength(JSON.stringify(row), 'utf8'));
+    const result = await engine.execute(`SELECT repeat('${char}', 16384) AS value FROM range(100)`, {
+      maxRows: 100,
+    });
+    expect(result.data).toEqual(Array.from({ length: expectedCount }, () => row));
+    expect(result.truncated).toBe(true);
+    expect(result.truncatedBy).toBe('maxResultBytes');
+    expect(result.rowCount).toBeUndefined();
+  });
+
+  it.each([1024 * 1024 - 3, 1024 * 1024 - 2, 1024 * 1024 - 1, 1024 * 1024 + 1])(
+    'enforces the serialized field-size limit for a %i-byte ASCII value',
+    async (length) => {
+      // JSON string quotes count toward the field limit; a larger overall byte
+      // budget does not override the independent per-field safety check.
+      const sql = `SELECT repeat('x', ${length}) AS value`;
+      const operation = engine.execute(sql, { maxRows: 1, maxResultBytes: 4 * 1024 * 1024 });
+      if (length + 2 > 1024 * 1024) {
+        await expect(operation).rejects.toThrow('Result field exceeds the 1 MiB limit');
+      } else {
+        const result = await operation;
+        expect(result.data).toEqual([{ value: 'x'.repeat(length) }]);
+        expect(result.truncated).toBeUndefined();
+      }
+    }
+  );
+
+  it('retains duplicate rows and explicit ordering', async () => {
+    const sql = "SELECT * FROM (VALUES ('Bob'), ('Alice'), ('Alice')) t(name) ORDER BY name";
+    expect((await engine.execute(sql)).data).toEqual((await nativeQuery(sql)).data);
+  });
+
+  it.each(['SELECT 1; SELECT 2', 'CREATE TABLE forbidden(x INTEGER)', 'SET threads=2'])(
+    'rejects non-single-read-only execution: %s',
+    async (sql) => {
+      await expect(engine.execute(sql)).rejects.toThrow();
+      expect((await engine.execute('SELECT name FROM data')).data).toEqual([{ name: 'Alice' }]);
+    }
+  );
 });
