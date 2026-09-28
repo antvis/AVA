@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { AVA } from '../../ava';
 import { chartDefinitions } from '../../visualization/vis';
 import { readJSON, writeHTML } from '../io';
 import { option } from '../options';
@@ -33,7 +34,6 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   if (!chartDefinitions.some((chart) => chart.type === spec.chartType)) throw new Error('Unknown chartType.');
 
-  const { AVA } = await import('../../ava');
   const ava = new AVA({ llm: { model: 'unused' } });
 
   return await writeHTML(output, await ava.viz(spec as ChartSpec));

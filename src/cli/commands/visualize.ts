@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { AVA } from '../../ava';
 import { llmConfig } from '../config';
 import { readJSON, writeHTML } from '../io';
 import { option } from '../options';
@@ -25,7 +26,6 @@ export async function run(_args: string[], options: Options): Promise<unknown> {
 
   const data = z.array(z.record(z.unknown())).parse(await readJSON(raw));
 
-  const { AVA } = await import('../../ava');
   const ava = new AVA({ llm: llmConfig(true) });
   const result = await ava.visualize({ query, data });
 
