@@ -44,7 +44,7 @@ export class AVA {
   private readonly llmConfig: LLMConfig;
   private readonly engineConfig: EngineConfig;
   engine: AnalysisEngine | null = null;
-  private schema: Schema | null = null;
+  private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
 
   constructor(config: AVAConfig) {
@@ -69,14 +69,14 @@ export class AVA {
    * Reloading disposes the previous engine and its resources.
    */
   async source(config: DataSourceConfig): Promise<void> {
-    this.schema = null;
+    this.dataSchema = null;
     this.dataProfile = null;
     await this.engine?.dispose();
     this.engine = null;
 
     this.engine = await this.createEngine();
     try {
-      this.schema = await this.engine.load(config);
+      this.dataSchema = await this.engine.load(config);
     } catch (error) {
       await this.engine.dispose();
       this.engine = null;
@@ -85,17 +85,28 @@ export class AVA {
   }
 
   /**
+   * Describe the data source structure.
+   * Include tables, fields, types, indexes, and relations.
+   */
+  async schema(): Promise<Schema> {
+    if (!this.dataSchema) {
+      throw new Error('No data loaded. Please call source() first.');
+    }
+    return this.dataSchema;
+  }
+
+  /**
    * Analyze data using natural language query.
    * The query is turned into SQL via LLM and executed by DuckDB.
    * Use visualize() separately to generate charts from the analysis result.
    */
   async analysis(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
-    if (!this.engine || !this.schema) {
+    if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
     const runtime = {
-      context: { schema: this.schema, profile: this.dataProfile ?? undefined },
+      context: { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
       engine: this.engine,
       llm: this.llmConfig,
     };
@@ -149,7 +160,7 @@ export class AVA {
 
   /** Compute and retain a dataset profile for subsequent model context. */
   async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.engine || !this.schema) {
+    if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call load() first.');
     }
     if (!this.engine.profile) {
@@ -166,11 +177,15 @@ export class AVA {
    * Suggest questions about the loaded data.
    */
   async suggest(count: number = 3): Promise<SuggestResult[]> {
-    if (!this.schema) {
+    if (!this.dataSchema) {
       throw new Error('No data loaded. Please call load() first.');
     }
 
-    return generateSuggestions(this.llmConfig, { schema: this.schema, profile: this.dataProfile ?? undefined }, count);
+    return generateSuggestions(
+      this.llmConfig,
+      { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
+      count
+    );
   }
 
   /**
@@ -179,7 +194,7 @@ export class AVA {
   async dispose(): Promise<void> {
     await this.engine?.dispose();
     this.engine = null;
-    this.schema = null;
+    this.dataSchema = null;
     this.dataProfile = null;
   }
 }

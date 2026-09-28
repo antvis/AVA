@@ -22,17 +22,32 @@ describe('AVA', () => {
     await ava?.dispose();
   });
 
-  it('rejects new API placeholders without creating an engine', async () => {
-    await expect(ava.schema()).rejects.toThrow('AVA.schema() is not implemented.');
-    await expect(ava.quality()).rejects.toThrow('AVA.quality() is not implemented.');
-    await expect(ava.analyze('test query')).rejects.toThrow('AVA.analyze() is not implemented.');
-    expect(ava.engine).toBeNull();
+  it('returns the current schema throughout the source lifecycle', async () => {
+    const message = 'No data loaded. Please call source() first.';
+    await expect(ava.schema()).rejects.toThrow(message);
+    await ava.source({ type: 'json', options: { data: [{ first: 1 }] } });
+    const first = await ava.schema();
+    expect(first.tables[0].fields.map((field) => field.name)).toEqual(['first']);
+    const before = JSON.stringify(first);
+    await ava.profile();
+    expect(JSON.stringify(await ava.schema())).toBe(before);
+    expect(first).not.toHaveProperty('generatedAt');
+    expect(first.tables[0].fields[0]).not.toHaveProperty('metrics');
+
+    await ava.source({ type: 'json', options: { data: [{ second: 'value' }] } });
+    expect((await ava.schema()).tables[0].fields.map((field) => field.name)).toEqual(['second']);
+    await expect(ava.source({ type: 'json', options: { data: null } })).rejects.toThrow();
+    await expect(ava.schema()).rejects.toThrow(message);
+
+    await ava.source({ type: 'json', options: { data: [{ third: true }] } });
+    await ava.dispose();
+    await expect(ava.schema()).rejects.toThrow(message);
   });
 
   describe('Data Loading', () => {
     it('should load a CSV file without returning a schema', async () => {
       await expect(ava.source({ type: 'csv-file', options: { path: testDataPath } })).resolves.toBeUndefined();
-      const schema = await ava.profile({ metrics: [] });
+      const schema = await ava.schema();
 
       expect(schema.tables).toHaveLength(1);
       const table = schema.tables[0];
