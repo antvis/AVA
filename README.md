@@ -155,25 +155,14 @@ ava.dispose();
 
 ### CLI
 
-Install the CLI:
+The CLI currently provides help only:
 
 ```bash
 npm install -g @antv/ava
+ava --help
 ```
 
-Configure an OpenAI-compatible model service:
-
-```bash
-export OPENAI_API_KEY=YOUR_API_KEY
-export OPENAI_MODEL=YOUR_MODEL
-export OPENAI_BASE_URL=https://your-provider.example.com/v1
-```
-
-Run one analysis:
-
-```bash
-ava analyze data/companies.csv "What is the average revenue by region?"
-```
+Dataset-based commands are planned. Use the SDK for analysis in the meantime.
 
 ## 📘 Documentation
 
@@ -267,29 +256,6 @@ if (viz) {
 }
 
 ava.dispose();
-```
-
-### CLI
-
-Use the CLI to run one analysis without writing code:
-
-```bash
-ava analyze <source> <question> [options]
-```
-
-| Parameter | Required | Description |
-| --- | --- | --- |
-| `<source>` | Yes | Local path or HTTP(S) URL to the data source |
-| `<question>` | Yes | Natural-language analysis question |
-| `-t, --type <type>` | No | Source type when it cannot be inferred: `csv-file`, `json-file`, `parquet`, `excel`, or `sqlite` (`.sqlite`, `.sqlite3`, `.db`) |
-| `-c, --chart` | No | Generate a chart |
-| `-o, --output <path>` | With `--chart` | Write the chart to a new HTML file |
-
-Examples:
-
-```bash
-ava analyze data/companies.csv "What is the average revenue by region?"
-ava analyze data/companies.csv "Show revenue by region" --chart --output revenue.html
 ```
 
 ## 🏗️ Architecture

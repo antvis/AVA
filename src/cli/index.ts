@@ -1,50 +1,19 @@
 #!/usr/bin/env node
 
-import { AVA } from '../index';
-
-import { ANALYZE_HELP, ROOT_HELP } from './help';
-import { flag, llmConfig, option, parse } from './options';
-import { formatError, inferSource, writeOutput } from './util';
-
-import type { Env } from './options';
+import { ROOT_HELP } from './help';
+import { parse } from './options';
+import { formatError } from './util';
 
 type Write = (value: string) => void;
 
 export async function run(
   argv: string[],
-  env: Env = process.env,
   write: Write = (value) => process.stdout.write(`${value}\n`)
 ): Promise<void> {
-  const { values, options } = parse(argv);
-  const [command, source, ...question] = values;
-  if (!command) {
-    write(ROOT_HELP);
-    return;
-  }
-  if (command !== 'analyze') throw new Error(`Unknown command "${command}".\n\n${ROOT_HELP}`);
-  if (flag(options, 'help')) {
-    write(ANALYZE_HELP);
-    return;
-  }
-  if (!source) throw new Error(`Missing required argument: <source>.\n\n${ANALYZE_HELP}`);
-
-  const query = question.join(' ').trim();
-  if (!query) throw new Error('A non-empty question is required.');
-
-  const chart = flag(options, 'chart');
-  const output = option(options, 'output');
-  if (output && !chart) throw new Error('--output requires --chart.');
-
-  const ava = new AVA({ llm: llmConfig(env) });
-  try {
-    await ava.source(inferSource(source, option(options, 'type')));
-    const analysis = await ava.analyze(query);
-    const visualization = chart ? await ava.visualize(analysis) : undefined;
-    if (output && visualization) await writeOutput(output, visualization.html);
-    write(JSON.stringify({ analysis, ...(chart ? { visualization } : {}) }, null, 2));
-  } finally {
-    await ava.dispose();
-  }
+  const { values } = parse(argv);
+  const [command] = values;
+  if (command) throw new Error(`Unknown command "${command}".\n\n${ROOT_HELP}`);
+  write(ROOT_HELP);
 }
 
 if (typeof require !== 'undefined' && require.main === module) {
