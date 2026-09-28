@@ -101,13 +101,13 @@ console.log(queries);
 // ]
 
 // Ask questions in natural language
-const result = await ava.analysis('What is the average revenue by region?');
+const result = await ava.analyze('What is the average revenue by region?');
 console.log(result.text);  // Natural language summary
 // result.data → bounded analysis result (truncatedBy identifies the limiting option)
 // result.sql  → the DuckDB SQL executed for the analysis
 
 // Analyze large results safely: cap the returned rows
-const rows = await ava.analysis('List companies ordered by revenue', {
+const rows = await ava.analyze('List companies ordered by revenue', {
   maxRows: 200,
   maxResultBytes: 1024 * 1024,
 });
@@ -121,7 +121,7 @@ console.log(viz.syntax);   // GPT-Vis chart syntax
 
 
 // Or use a suggested query
-const suggestedResult = await ava.analysis(queries[0].query);
+const suggestedResult = await ava.analyze(queries[0].query);
 console.log(suggestedResult);
 
 // Clean up
@@ -147,7 +147,7 @@ await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }]
 await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
 await ava.load({ type: 'text', options: { text: '杭州 100，上海 200' } });
 
-const result = await ava.analysis('What is the total GDP?');
+const result = await ava.analyze('What is the total GDP?');
 const viz = await ava.visualize(result);
 
 ava.dispose();
@@ -195,7 +195,7 @@ Core APIs in AVA:
 - `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
 - `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
 - `suggest(count?)`: generate recommended analysis questions.
-- `analysis(query, config?)`: run data analysis using various strategies.
+- `analyze(query, config?)`: run data analysis using various strategies.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 
@@ -203,7 +203,7 @@ Core APIs in AVA:
 
 `load()` only loads and returns the structural `Schema`; it does not compute a profile. Call `await ava.profile(options)` explicitly to compute, return, and retain statistics. The profile preserves the schema and adds `generatedAt`, table-level `metrics`, and a `logicalType` plus `metrics` for each field.
 
-`analysis()` (direct and loop) and `suggest()` receive `context: { schema, profile }`: they use `stringifyProfile(profile)` when a profile is available, otherwise `stringifySchema(schema)`. Neither computes statistics implicitly. Reloading or disposing clears the stored profile; call `profile()` again to refresh statistics after external data changes.
+`analyze()` (direct and loop) and `suggest()` receive `context: { schema, profile }`: they use `stringifyProfile(profile)` when a profile is available, otherwise `stringifySchema(schema)`. Neither computes statistics implicitly. Reloading or disposing clears the stored profile; call `profile()` again to refresh statistics after external data changes.
 
 The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Passing `metrics` replaces the defaults; an empty list returns structure without scanning data. Engines without profiling support can still analyze and suggest using schema, but explicit `profile()` calls report that profiling is unsupported.
 
@@ -224,7 +224,7 @@ const suggestions = await ava.suggest();
 
 `top_values` accepts `limit` (default `3`) and `maxDistinctRatio` (default `0.5`). It is omitted when the field's non-null distinct count is greater than the configured share of all rows.
 
-#### `analysis(query, config?)`
+#### `analyze(query, config?)`
 
 Input:
 
@@ -257,7 +257,7 @@ const ava = new AVA({ llm: { model, apiKey, baseURL } });
 
 await ava.load({ type: 'json', options: { data: [{ city: 'Hangzhou', gdp: 18753 }] } });
 
-const analysis = await ava.analysis('Show GDP by city');
+const analysis = await ava.analyze('Show GDP by city');
 console.log(analysis.text);
 
 const viz = await ava.visualize(analysis);

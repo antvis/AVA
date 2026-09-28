@@ -22,7 +22,7 @@ describe.skipIf(skipLLMTests)('cases/visualization', () => {
 
   beforeEach(async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({ type: 'json', options: { data: CITY_DATA } });
+    await ava.source({ type: 'json', options: { data: CITY_DATA } });
   });
 
   afterEach(async () => {
@@ -30,7 +30,7 @@ describe.skipIf(skipLLMTests)('cases/visualization', () => {
   });
 
   it('generates chart HTML from a visualization-intent analysis', async () => {
-    const analysis = await ava.analysis('Draw a bar chart of GDP for each city');
+    const analysis = await ava.analyze('Draw a bar chart of GDP for each city');
     expect(typeof analysis.text).toBe('string');
 
     const viz = await ava.visualize(analysis);

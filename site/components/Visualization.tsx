@@ -51,7 +51,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
     setVizResult(null);
 
     try {
-      const analysisResult = await avaInstance.analysis(query);
+      const analysisResult = await avaInstance.analyze(query);
       setResult(analysisResult);
       saveAppState({ query, analysisResult });
 

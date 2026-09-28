@@ -1,9 +1,10 @@
 /** Real SQLite fixture: sales.csv plus customers, products, indexes and foreign keys. */
 import { join } from 'node:path';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AVA } from '../../../src';
+import { DuckDBEngine } from '../../../src/duckdb';
 import { getLLMConfig } from '../../test-utils';
 
 describe('loaders/sqlite', () => {
@@ -11,14 +12,19 @@ describe('loaders/sqlite', () => {
 
   afterEach(async () => {
     await ava?.dispose();
+    vi.restoreAllMocks();
   });
 
   it('loads a SQLite file with a complete schema and queryable data', async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    const schema = await ava.load({
+    const load = vi.spyOn(DuckDBEngine.prototype, 'load');
+    await ava.source({
       type: 'sqlite',
       options: { path: join(__dirname, '../../datasets/sales.sqlite') },
     });
+
+    const schema = await load.mock.results[0].value;
+    load.mockRestore();
 
     expect(schema).toEqual({
       tables: [

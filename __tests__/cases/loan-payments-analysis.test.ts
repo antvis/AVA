@@ -17,7 +17,7 @@ describe.skipIf(skipLLMTests)('cases/loan-payments-analysis', () => {
 
   beforeEach(async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({ type: 'csv-file', options: { path: dataPath } });
+    await ava.source({ type: 'csv-file', options: { path: dataPath } });
   });
 
   afterEach(async () => {
@@ -25,26 +25,26 @@ describe.skipIf(skipLLMTests)('cases/loan-payments-analysis', () => {
   });
 
   it('answers loan status distribution', async () => {
-    const result = await ava.analysis('What is the distribution of loan status?');
+    const result = await ava.analyze('What is the distribution of loan status?');
     expect(typeof result.text).toBe('string');
     expect(result.text.length).toBeGreaterThan(0);
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers average principal by education level', async () => {
-    const result = await ava.analysis('What is the average principal by education level?');
+    const result = await ava.analyze('What is the average principal by education level?');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers loan count by gender', async () => {
-    const result = await ava.analysis('How many loans by gender?');
+    const result = await ava.analyze('How many loans by gender?');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers average age of borrowers', async () => {
-    const result = await ava.analysis('What is the average age of borrowers?');
+    const result = await ava.analyze('What is the average age of borrowers?');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);

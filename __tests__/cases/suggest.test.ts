@@ -1,7 +1,7 @@
 /**
  * Case: query suggestions.
  * Loads an object array via loadSource, then exercises the suggest() API and
- * runs the top suggested query through analysis() against the real LLM API.
+ * runs the top suggested query through analyze() against the real LLM API.
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -22,7 +22,7 @@ describe.skipIf(skipLLMTests)('cases/suggest', () => {
 
   beforeEach(async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({ type: 'json', options: { data: CITY_DATA } });
+    await ava.source({ type: 'json', options: { data: CITY_DATA } });
   });
 
   afterEach(async () => {
@@ -44,7 +44,7 @@ describe.skipIf(skipLLMTests)('cases/suggest', () => {
     }
 
     // The top suggested query should be analyzable
-    const result = await ava.analysis(suggestions[0].query);
+    const result = await ava.analyze(suggestions[0].query);
     expect(typeof result.text).toBe('string');
     expect(result.text.length).toBeGreaterThan(0);
   }, 120000);

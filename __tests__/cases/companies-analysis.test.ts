@@ -17,7 +17,7 @@ describe.skipIf(skipLLMTests)('cases/companies-analysis', () => {
 
   beforeEach(async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({ type: 'csv-file', options: { path: dataPath } });
+    await ava.source({ type: 'csv-file', options: { path: dataPath } });
   });
 
   afterEach(async () => {
@@ -25,7 +25,7 @@ describe.skipIf(skipLLMTests)('cases/companies-analysis', () => {
   });
 
   it('answers max revenue by region', async () => {
-    const result = await ava.analysis('What is the max revenue by region?');
+    const result = await ava.analyze('What is the max revenue by region?');
     expect(typeof result.text).toBe('string');
     expect(result.text.length).toBeGreaterThan(0);
     expect(result.data).toBeDefined();
@@ -33,13 +33,13 @@ describe.skipIf(skipLLMTests)('cases/companies-analysis', () => {
   }, 60000);
 
   it('answers average revenue by region', async () => {
-    const result = await ava.analysis('What is the average revenue by region?');
+    const result = await ava.analyze('What is the average revenue by region?');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers top 5 companies by revenue', async () => {
-    const result = await ava.analysis('Show top 5 companies by revenue');
+    const result = await ava.analyze('Show top 5 companies by revenue');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);

@@ -54,7 +54,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
       // Re-load the saved data into the AVA instance so analysis can continue
       if (avaInstance) {
-        avaInstance.load({ type: 'json', options: { data: savedState.data } }).catch((err) => {
+        avaInstance.source({ type: 'json', options: { data: savedState.data } }).catch((err) => {
           console.error('Failed to restore data to AVA instance:', err);
         });
       }

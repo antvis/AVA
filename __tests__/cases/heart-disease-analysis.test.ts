@@ -17,7 +17,7 @@ describe.skipIf(skipLLMTests)('cases/heart-disease-analysis', () => {
 
   beforeEach(async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    await ava.load({ type: 'csv-file', options: { path: dataPath } });
+    await ava.source({ type: 'csv-file', options: { path: dataPath } });
   });
 
   afterEach(async () => {
@@ -25,26 +25,26 @@ describe.skipIf(skipLLMTests)('cases/heart-disease-analysis', () => {
   });
 
   it('answers average age of patients', async () => {
-    const result = await ava.analysis('What is the average age of patients?');
+    const result = await ava.analyze('What is the average age of patients?');
     expect(typeof result.text).toBe('string');
     expect(result.text.length).toBeGreaterThan(0);
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers heart disease count by gender', async () => {
-    const result = await ava.analysis('How many patients with heart disease by gender?');
+    const result = await ava.analyze('How many patients with heart disease by gender?');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers heart disease prevalence percentage', async () => {
-    const result = await ava.analysis('What percentage of patients have heart disease?');
+    const result = await ava.analyze('What percentage of patients have heart disease?');
     expect(typeof result.text).toBe('string');
     expect(result.data).toBeDefined();
   }, 60000);
 
   it('answers average cholesterol for heart disease patients', async () => {
-    const result = await ava.analysis(
+    const result = await ava.analyze(
       'What is the average cholesterol level for patients with heart disease?'
     );
     expect(typeof result.text).toBe('string');
