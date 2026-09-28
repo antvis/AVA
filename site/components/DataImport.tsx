@@ -79,6 +79,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       }
       const isXlsx = fileName.endsWith('.xlsx');
       const isXls = fileName.endsWith('.xls');
+      const isCsv = fileName.endsWith('.csv');
 
       let parsedData: DataRow[];
 
@@ -89,9 +90,11 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       if (isXlsx) {
         const arrayBuffer = await file.arrayBuffer();
         parsedData = await parseExcel(arrayBuffer);
-      } else {
+      } else if (isCsv) {
         const content = await file.text();
         parsedData = parseCSV(content);
+      } else {
+        throw new Error('Unsupported file type. Please upload a .xlsx or .csv file.');
       }
 
       if (parsedData.length === 0) {
