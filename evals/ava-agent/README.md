@@ -29,7 +29,7 @@ Use an OpenAI-compatible **Chat Completions** API. `MODEL_CONTEXT_WINDOW` is opt
 ```bash
 npm run typecheck                         # Static check; no model call
 npm run eval -- --list                    # List cases; no model call
-npm run eval -- aggregate --skill ava     # Try one case
+npm run eval -- --limit 1 --skill ava     # Try one question
 npm run eval -- --skill ava               # Require AVA Skill (default)
 npm run eval -- --skill none              # Same cases without Skill
 npm run dev                              # Interactive UI; open the printed URL
@@ -37,11 +37,28 @@ npm run dev                              # Interactive UI; open the printed URL
 
 `--skill ava` instructs the agent to load AVA before other tools and follow the Skill using the CLI; evaluation fails if loading does not succeed. `--skill none` removes the Skill and its loading tool.
 
-Cases cover aggregation, distinct/null handling, and chart output. Each loads `evals/fixtures/sales.csv` as an attachment. Expected answers stay outside the sandbox; final JSON replies are scored directly. `dev` has no preloaded sample data or automatic scoring; use `--skill none` for a manual comparison without the Skill.
+DataBench is the only evaluation. Each case attaches a Parquet file; expected answers stay outside the sandbox and final JSON replies are scored directly. `dev` has no preloaded sample data or automatic scoring; use `--skill none` for a manual comparison without the Skill.
+
+## DataBench adapter
+
+The shared DataBench plugin provides question selection and answer scoring. `evals/` contains only `databench.eval.ts`, which handles command options, host snapshots, Eve configuration, and cases. Eve requires an `evals.config.ts` entry point; it is generated only inside each run snapshot and re-exports the configuration from `databench.eval.ts`. The shared `scripts/run.mjs` handles Eve and sandbox lifecycle without DataBench-specific logic. Download the dataset once and run from the repository root:
+
+```bash
+node evals/databench/fetch.js
+node evals/cli.js run ava-agent --benchmark databench --limit 20 --skill ava
+node evals/cli.js run ava-agent --benchmark databench --limit 20 --skill none
+node evals/cli.js run ava-agent --benchmark databench --limit 2 --list
+```
+
+Selection matches AVA Workflow: `--dataset databench-lite|databench` (default: `databench-lite`), `--suite`, `--offset` (default: `0`), and `--limit <number|all>` (default: `20`). Other execution options are forwarded to Eve. `--help` lists adapter options without running a model.
+
+Each selected question gets its own session and Parquet attachment. Benchmark code, selected questions, and data files are snapshotted on the host; gold answers are never sent to the agent. The final reply must be a JSON value and is scored using the shared `databench-answer` rule. Skill and tool checks remain separate assertions.
+
+Predictions are written to `.runs/<id>/predictions.csv` (`id`, `predicted_answer`, `error`) and can be scored by `node evals/cli.js score --predictions <file.csv>`. Each invocation is a fresh run; there is no resume support. `npm run eval -- [options]` calls the same DataBench adapter from this directory. Download DataBench before listing or running cases.
 
 ## Results and maintenance
 
-- Reports: `.runs/<id>/.eve/evals/`; collected charts: `.runs/<id>/artifacts/`.
-- Chart checks validate HTML structure, **not visual correctness**. These are smoke evaluations, not proof of Skill effectiveness.
+- Reports: `.runs/<id>/.eve/evals/`; predictions: `.runs/<id>/predictions.csv`.
+- DataBench measures tabular answer accuracy, not chart quality or open-ended analysis.
 - After changing AVA source or the sandbox Dockerfile, rerun `npm run sandbox:build`. Agent, Skill, and eval changes only require restarting.
 - Each invocation copies a new project into `.runs/`. Edit source files here, not generated copies. Sandbox execution has no network access.

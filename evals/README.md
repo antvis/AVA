@@ -1,68 +1,39 @@
-# Evaluations
+# 评测
 
-Two independent evaluation targets:
+执行对象与评测插件相互独立，通过各自的适配器接入：
 
-- **DataBench** evaluates AVA's internal tabular analysis strategies (existing workflow below).
-- **[AVA Agent](ava-agent/README.md)** uses Vercel Eve as a generic host, with a Python tool and optional AVA Skill. Its external evaluator scores real answers and artifacts; it does not change DataBench. Requires Node.js 24+ and Docker.
+- [AVA Workflow](ava-workflow/README.md)：固定的 `source → profile → analyze` 编排。
+- [AVA Agent](ava-agent/README.md)：由模型决定执行步骤，使用 Eve 管理会话与沙箱。
+- [DataBench](databench/README.md)：共享题目、数据选择、答案格式和评分规则，不依赖执行对象。
 
-```bash
-cd ava-agent
-npm install
-npm run sandbox:build
-# Configure .env using .env.example (OPENAI_MODEL, OPENAI_API_KEY, OPENAI_BASE_URL all required), then compare:
-npm run eval -- --skill ava
-npm run eval -- --skill none
-```
+`cli.js` 是统一入口；`_shared/` 提供通用评测工具；`reports/` 保存比较报告。每个执行对象的 `evals/` 负责适配其输入、运行方式和输出。
 
-## DataBench
+调用关系：`CLI 接入表 → 目标的评测适配器 → workflow / Eve`。CLI 只选择适配器，DataBench 插件只提供题目和评分。Agent 的 `databench.eval.ts` 统一处理参数、快照、Eve 配置和用例；`scripts/run.mjs` 只管理 Eve、沙箱和进程。
 
-DataBench evaluates tabular question answering. AVA generates SQL, executes it against Parquet data, converts the result to the expected answer type, and scores it.
+## 运行
 
-| Dataset | Data | Default |
-| --- | --- | --- |
-| `databench-lite` | Sample tables | Yes |
-| `databench` | Full tables | No |
-
-### Workflow
-
-Datasets and results stay local and are ignored by Git. Existing successful rows are reused when the same output file is run again.
-
-1. From the `evals` directory, download both dataset variants with `node cli.js databench:fetch` (no parameters).
-2. Configure the model in `evals/.env`:
-
-   ```env
-   OPENAI_API_KEY=your-api-key
-   OPENAI_MODEL=your-model
-   OPENAI_BASE_URL=https://your-provider.example.com/v1
-   ```
-
-   `OPENAI_BASE_URL` is optional and defaults to OpenAI.
-
-3. Run `node cli.js databench`. Available options:
-
-   - `--dataset <databench-lite|databench>` selects the dataset (default: `databench-lite`).
-   - `--limit <number|all>` limits questions (default: `20`).
-   - `--offset <number>` skips questions after filtering (default: `0`).
-   - `--suite <name>` runs one suite, such as `002_Titanic`.
-   - `--concurrency <number>` controls parallel model calls (default: `3`).
-   - `--output <path>` sets the result CSV path (default: `databench/results/<dataset>.csv`).
-
-4. AVA generates and executes SQL, scores the answer, and saves the result CSV.
-
-### Prediction files
-
-A prediction file is a CSV that maps each dataset question ID to AVA's answer. `node cli.js databench` creates one automatically at `databench/results/<dataset>.csv` unless `--output` sets another path.
-
-Only `id` and `predicted_answer` are required:
-
-```csv
-id,predicted_answer
-databench-lite:001_Forbes:01,false
-databench-lite:001_Forbes:02,191
-```
-
-Generated files also include SQL, errors, model, duration, and token usage for debugging; the scorer ignores those columns. To score an existing file without calling the model again:
+先按各执行对象的说明安装依赖、构建并配置模型。以下命令在仓库根目录执行：
 
 ```bash
-node cli.js --predictions <file.csv>
+node evals/databench/fetch.js
+node evals/cli.js run ava-workflow --benchmark databench --limit 20
+node evals/cli.js run ava-agent --benchmark databench --limit 20 --skill ava
+node evals/cli.js run ava-agent --benchmark databench --limit 20 --skill none
 ```
+
+两边共用 `--dataset`、`--suite`、`--offset` 和 `--limit` 的题目选择规则。Workflow 需要 Node.js 22.18+；Agent 需要 Node.js 24+ 和 Docker。
+
+比较时使用相同的数据版本、题目范围与模型，比较 DataBench 答案准确率。Agent 的 Skill 加载、工具调用等检查属于额外执行约束，不等同于答案准确率。
+
+## 结果
+
+- Workflow：预测 CSV 位于 `ava-workflow/results/`，支持复用文件续跑。
+- Agent：每次创建独立的 `ava-agent/.runs/<id>/`，包含 `predictions.csv`、Eve 报告及运行快照。
+
+两种预测 CSV 均可通过统一入口离线评分：
+
+```bash
+node evals/cli.js score --dataset databench-lite --predictions <结果.csv> --output evals/reports/<报告名>.json
+```
+
+离线评分默认覆盖所选数据集全部题目，部分预测会产生缺失项；`--output` 不覆盖已有报告。具体参数见 `node evals/cli.js --help` 或 `run <执行对象> --benchmark databench --help`。

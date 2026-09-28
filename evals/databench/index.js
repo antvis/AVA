@@ -14,6 +14,7 @@ function csvFiles(paths) {
   }).sort();
 }
 
+/** @returns {Array<{ id: string, dataset: string, suite: string, questionId: string, question: string, answerType: string, goldAnswer: string, dataPath: string, source: string }>} */
 function load(name, directory, paths = [join(__dirname, 'datasets', directory, 'questions.csv')]) {
   return csvFiles(paths).flatMap((path) =>
     readCsv(path).map((row, index) => {
@@ -41,7 +42,7 @@ function load(name, directory, paths = [join(__dirname, 'datasets', directory, '
 }
 
 function stripAnswer(value) {
-  return String(value ?? '').replace(/^[\[\]'" ]+|[\[\]'" ]+$/g, '');
+  return String(value ?? '').replace(/^[[\]'" ]+|[[\]'" ]+$/g, '');
 }
 
 function numberValue(value) {
@@ -107,4 +108,20 @@ const plugins = [
   load: (paths) => load(name, directory, paths),
 }));
 
-module.exports = { databenchAnswer, plugins };
+/** @param {{ dataset?: string, suite?: string, offset?: string, limit?: string }} options */
+function selectSamples({ dataset = 'databench-lite', suite, offset = '0', limit = '20' } = {}) {
+  const plugin = plugins.find((item) => item.name === dataset);
+  if (!plugin) throw new Error('--dataset must be databench-lite or databench.');
+  const start = Number(offset);
+  const count = limit === 'all' ? Infinity : Number(limit);
+  if (!Number.isInteger(start) || start < 0) throw new Error('--offset must be an integer >= 0.');
+  if (limit !== 'all' && (!Number.isInteger(count) || count < 1)) throw new Error('--limit must be an integer >= 1 or all.');
+  return plugin.load().filter((sample) => !suite || sample.suite === suite).slice(start, start + count);
+}
+
+function formatAnswer(value) {
+  if (Array.isArray(value)) return `[${value.map(formatAnswer).join(', ')}]`;
+  return value == null ? 'None' : String(value);
+}
+
+module.exports = { databenchAnswer, formatAnswer, plugins, selectSamples };

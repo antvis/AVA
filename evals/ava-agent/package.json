@@ -5,7 +5,7 @@
   "engines": { "node": ">=24" },
   "scripts": {
     "dev": "node scripts/run.mjs dev",
-    "eval": "node scripts/run.mjs eval",
+    "eval": "node evals/databench.eval.ts",
     "sandbox:build": "node scripts/build-sandbox.mjs",
     "typecheck": "tsc --noEmit"
   },

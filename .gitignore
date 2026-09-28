@@ -99,8 +99,8 @@ temp.diff
 pnpm-lock.yaml
 
 # Downloaded/generated evaluation files
-/evals/*/datasets/
-/evals/*/results/
+/evals/databench/datasets/
+/evals/ava-workflow/results/
 
 # Debug files
 .debug

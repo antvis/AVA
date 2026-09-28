@@ -1,8 +1,0 @@
-order_id,line_id,customer_id,region,amount,status
-o1,l1,c1,East,30,paid
-o1,l2,c1,East,20,paid
-o2,l3,c2,West,70,paid
-o3,l4,c1,East,40,refunded
-o4,l5,c3,West,10,paid
-o5,l6,,East,0,paid
-o6,l7,c2,West,,paid

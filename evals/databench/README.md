@@ -7,7 +7,7 @@
 本目录提供共享的数据下载、加载和评分逻辑：
 
 - `fetch.js`：下载 `databench-lite`（采样表）和 `databench`（完整表），排除 `080_Books`。
-- `index.js`：加载问题，使用 `databench-answer` 指标评分。
+- `index.js`：统一选择题目、格式化答案，使用 `databench-answer` 指标评分；供 workflow 和 agent 的评测适配器复用。
 - `datasets/lite/`、`datasets/full/`：存放下载的 `questions.csv` 和 Parquet 数据，已被 Git 忽略。
 
 安装仓库依赖后，在仓库根目录执行（需要 `curl`）：
@@ -16,4 +16,4 @@
 node evals/databench/fetch.js
 ```
 
-模型配置、评测运行和预测文件评分见 [AVA Workflow](../ava-workflow/README.md)。
+本插件不调用 workflow 或 agent。模型配置与运行方式见 [AVA Workflow](../ava-workflow/README.md)、[AVA Agent](../ava-agent/README.md)；统一入口与离线评分见[评测说明](../README.md)。

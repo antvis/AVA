@@ -1,14 +1,17 @@
-#!/usr/bin/env node
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { parseArgs } from 'node:util';
+import { fileURLToPath } from 'node:url';
 
-const { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } = require('node:fs');
-const { dirname, resolve } = require('node:path');
-const { parseArgs } = require('node:util');
+import { AVA } from '../../../lib/index.js';
+import { readCsv } from '../../_shared/datasets.js';
+import { evaluate, getDataset, predictionIndex } from '../../_shared/index.js';
+import { formatAnswer, selectSamples } from '../../databench/index.js';
+import { workflow } from '../workflow.ts';
 
-const { AVA } = require('../../lib');
+import type { LLMConfig } from '../../../lib/index.js';
 
-const { readCsv } = require('../_shared/datasets');
-
-const { evaluate, getDataset, loadDataset, predictionIndex } = require('../_shared');
+const root = fileURLToPath(new URL('../', import.meta.url));
 
 const OUTPUT_COLUMNS = [
   'id',
@@ -23,7 +26,7 @@ const OUTPUT_COLUMNS = [
 ];
 
 const HELP = `Usage:
-  node cli.js databench [options]
+  node evals/cli.js run ava-workflow --benchmark databench [options]
 
 Options:
   --dataset <name>       databench-lite or databench (default: databench-lite)
@@ -32,50 +35,43 @@ Options:
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
   --strategy <name>      direct, loop or subset (default: direct)
-  --output <path>        Prediction CSV (default: databench/results/<dataset>.csv)
+  --output <path>        Prediction CSV (default: evals/ava-workflow/results/<dataset>.csv)
   --help                 Show help
 `;
 
-function loadEnv(path = resolve('.env')) {
-  if (!existsSync(path)) return;
-  for (const line of readFileSync(path, 'utf8').split(/\r?\n/)) {
-    const match = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
-    if (match && process.env[match[1]] === undefined) process.env[match[1]] = match[2].trim();
-  }
-}
-
-function llmConfig() {
-  loadEnv();
+export function llmConfig(): LLMConfig {
+  const envPath = resolve(root, '.env');
+  if (existsSync(envPath)) process.loadEnvFile(envPath);
   const apiKey = process.env.OPENAI_API_KEY;
   const model = process.env.OPENAI_MODEL;
   const baseURL = process.env.OPENAI_BASE_URL;
-  if (!apiKey || !model) throw new Error('Set OPENAI_API_KEY and OPENAI_MODEL in .env.');
+  if (!apiKey || !model) throw new Error('Set OPENAI_API_KEY and OPENAI_MODEL in evals/ava-workflow/.env.');
   return { apiKey, model, ...(baseURL ? { baseURL } : {}) };
 }
 
-function integer(value, name, minimum) {
+function integer(value: string, name: string, minimum: number) {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < minimum) throw new Error(`--${name} must be an integer >= ${minimum}.`);
   return parsed;
 }
 
-function csvCell(value) {
+function csvCell(value: unknown) {
   return `"${String(value ?? '').replace(/"/g, '""')}"`;
 }
 
-function answerFrom(data, type) {
+export function answerFrom(data: unknown, type: string) {
   const rows = Array.isArray(data) ? data : [data];
   const values = rows.flatMap((row) =>
     row && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row],
   );
-  if (type.startsWith('list[')) return `[${values.map((value) => (value == null ? 'None' : value)).join(', ')}]`;
+  if (type.startsWith('list[')) return formatAnswer(values);
   const value = values[0];
   if (value == null) return 'None';
   if (type === 'boolean' && typeof value === 'number') return value === 0 ? 'False' : 'True';
-  return String(value);
+  return formatAnswer(value);
 }
 
-function prepareOutput(path) {
+function prepareOutput(path: string) {
   mkdirSync(dirname(path), { recursive: true });
   const header = OUTPUT_COLUMNS.map(csvCell).join(',');
   if (!existsSync(path)) {
@@ -89,7 +85,7 @@ function prepareOutput(path) {
   return new Set(rows.filter((row) => row.predicted_answer).map((row) => row.id));
 }
 
-async function main(argv = process.argv.slice(2)) {
+export async function main(argv = process.argv.slice(2)) {
   const { values } = parseArgs({
     args: argv,
     options: {
@@ -106,23 +102,20 @@ async function main(argv = process.argv.slice(2)) {
   if (values.help) return process.stdout.write(HELP);
 
   const config = llmConfig();
-  if (!['databench-lite', 'databench'].includes(values.dataset)) {
-    throw new Error('--dataset must be databench-lite or databench.');
+  const strategy = values.strategy;
+  if (strategy !== 'direct' && strategy !== 'loop' && strategy !== 'subset') {
+    throw new Error('--strategy must be direct, loop or subset.');
   }
-  if (!['direct', 'loop', 'subset'].includes(values.strategy)) throw new Error('--strategy must be direct, loop or subset.');
-  const output = resolve(values.output ?? `databench/results/${values.dataset}.csv`);
-  const completed = prepareOutput(output);
-  const offset = integer(values.offset, 'offset', 0);
   const concurrency = integer(values.concurrency, 'concurrency', 1);
-  const all = loadDataset(values.dataset).filter((sample) => !values.suite || sample.suite === values.suite);
-  const limit = values.limit === 'all' ? all.length : integer(values.limit, 'limit', 1);
-  const selected = all.slice(offset, offset + limit);
+  const selected = selectSamples(values);
+  const output = values.output ? resolve(values.output) : resolve(root, `results/${values.dataset}.csv`);
+  const completed = prepareOutput(output);
   const pending = selected.filter((sample) => !completed.has(sample.id));
   let cursor = 0;
 
   await Promise.all(
     Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
-      let usage;
+      let usage: Parameters<NonNullable<LLMConfig['onQueryUsage']>>[0] | undefined;
       const ava = new AVA({ llm: { ...config, onQueryUsage: (value) => (usage = value) } });
       try {
         while (cursor < pending.length) {
@@ -133,13 +126,13 @@ async function main(argv = process.argv.slice(2)) {
           let error = '';
           usage = undefined;
           try {
-            await ava.source({ type: 'parquet', options: { path: sample.dataPath } });
-            await ava.profile();
-            const result = await ava.analyze(
+            const result = await workflow(
+              ava,
+              { type: 'parquet', options: { path: sample.dataPath } },
               `${sample.question}\nReturn the ${sample.answerType} answer in one column named answer.`,
               {
                 includeSummary: false,
-                strategy: { type: values.strategy }
+                strategy: { type: strategy },
               },
             );
             sql = result.sql ?? '';
@@ -180,12 +173,3 @@ async function main(argv = process.argv.slice(2)) {
   );
   if (report.missing) process.exitCode = 1;
 }
-
-if (require.main === module) {
-  main().catch((error) => {
-    process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);
-    process.exitCode = 1;
-  });
-}
-
-module.exports = { answerFrom, llmConfig, main };
