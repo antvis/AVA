@@ -86,8 +86,8 @@ export class ClickHouseEngine implements AnalysisEngine {
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.client) throw new Error('No data loaded. Please call load() first.');
-    await this.queryDialect.validateDSL(dsl);
-    const rows = await this.runQuery<T>(limitedQuery(dsl, maxRows(options)));
+    const query = this.queryDialect.prepareQuery(dsl);
+    const rows = await this.runQuery<T>(limitedQuery(query, maxRows(options)));
     return executionResult(rows, inferQuerySchema(rows), options);
   }
 

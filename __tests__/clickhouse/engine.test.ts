@@ -1,9 +1,4 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-
-vi.mock('@clickhouse/client', () => ({
-  createClient: vi.fn(),
-}));
-
 import { createClient } from '@clickhouse/client';
 
 import { AVA } from '../../src';
@@ -14,6 +9,10 @@ import { getLLMConfig } from '../test-utils';
 
 import type { Schema } from '../../src/types';
 
+vi.mock('@clickhouse/client', () => ({
+  createClient: vi.fn(),
+}));
+
 const mockedCreateClient = vi.mocked(createClient);
 
 function result(rows: unknown[]) {
@@ -21,7 +20,12 @@ function result(rows: unknown[]) {
 }
 
 const TABLE_ROWS = [
-  { table_name: 'customers', engine: 'MergeTree', primary_key: '(tenant_id, customer_id)', sorting_key: '(tenant_id, customer_id)' },
+  {
+    table_name: 'customers',
+    engine: 'MergeTree',
+    primary_key: '(tenant_id, customer_id)',
+    sorting_key: '(tenant_id, customer_id)',
+  },
   { table_name: 'order notes', engine: 'MergeTree', primary_key: '', sorting_key: '' },
 ];
 
@@ -133,14 +137,21 @@ describe('ClickHouseEngine', () => {
         type: 'clickhouse',
         options: { url: 'http://localhost:8123', database: 'default', username: 'default', password: '' },
       });
-      const result = await ava.query('SELECT customer_id, name FROM customers ORDER BY customer_id', { maxRows: 2 });
+      const result = await ava.query(
+        'SELECT customer_id, name FROM customers ORDER BY customer_id; -- trailing comment',
+        { maxRows: 2 }
+      );
       expect(result.data).toEqual([
         { customer_id: 101, name: 'Alice' },
         { customer_id: 102, name: 'Bob' },
       ]);
       expect(result.truncatedBy).toBe('maxRows');
       expect(client.query).toHaveBeenLastCalledWith(
-        expect.objectContaining({ format: 'JSONEachRow', query: expect.stringContaining('LIMIT 3') })
+        expect.objectContaining({
+          format: 'JSONEachRow',
+          query:
+            'SELECT * FROM (\nSELECT customer_id, name FROM customers ORDER BY customer_id\n) AS __ava_query LIMIT 3',
+        })
       );
     } finally {
       await ava.dispose();
@@ -194,7 +205,9 @@ describe('ClickHouseEngine', () => {
       options: { host: 'http://localhost:8123', database: 'default', username: 'default', password: '' },
     });
     await expect(engine.execute('SELECT 1; SELECT 2')).rejects.toThrow('exactly one');
-    await expect(engine.execute('INSERT INTO customers VALUES (1)')).rejects.toThrow('only read-only SELECT statements');
+    await expect(engine.execute('INSERT INTO customers VALUES (1)')).rejects.toThrow(
+      'only read-only SELECT statements'
+    );
     await expect(engine.load({ type: 'csv-file', options: { path: 'unused' } })).rejects.toThrow('only supports');
     await expect(engine.profile()).rejects.toThrow('No data loaded');
   });
