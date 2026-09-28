@@ -81,7 +81,7 @@ node evals/cli.js run ava-agent --benchmark databench --help
 ## 查看结果
 
 - **Workflow**：终端显示本次选题的准确率，预测结果默认保存到 `evals/ava-workflow/results/<dataset>.csv`。复用同一文件可续跑，已有非空答案的题目会被跳过。
-- **Agent**：每次独立运行，预测结果保存到 `evals/ava-agent/.runs/<id>/predictions.csv`，详细报告位于该目录的 `.eve/evals/`。报告同时检查答案、工具调用及 Skill 加载；比较答案准确率时，应与这些执行检查区分开。
+- **Agent**：每次独立运行，最终预测结果保存到 `evals/ava-agent/results/<dataset>-<id>.csv`，字段与 Workflow 一致。运行中的结果位于 `.runs/<id>/predictions.csv`，详细报告位于该目录的 `.eve/evals/`；未完成的运行不生成最终结果文件。报告同时检查答案、工具调用及 Skill 加载；比较答案准确率时，应与这些执行检查区分开。
 
 两种预测 CSV 均可离线评分，无需再次调用模型：
 

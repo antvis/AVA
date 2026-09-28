@@ -6,24 +6,13 @@ import { fileURLToPath } from 'node:url';
 import { AVA } from '../../../lib/index.js';
 import { readCsv } from '../../_shared/datasets.js';
 import { evaluate, getDataset, predictionIndex } from '../../_shared/index.js';
+import { OUTPUT_COLUMNS, csvCell } from '../../_shared/results.js';
 import { formatAnswer, selectSamples } from '../../databench/index.js';
 import { workflow } from '../workflow.ts';
 
 import type { LLMConfig } from '../../../lib/index.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-
-const OUTPUT_COLUMNS = [
-  'id',
-  'predicted_answer',
-  'sql',
-  'error',
-  'model',
-  'duration_ms',
-  'input_tokens',
-  'output_tokens',
-  'total_tokens',
-];
 
 const HELP = `Usage:
   node evals/cli.js run ava-workflow --benchmark databench [options]
@@ -53,10 +42,6 @@ function integer(value: string, name: string, minimum: number) {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < minimum) throw new Error(`--${name} must be an integer >= ${minimum}.`);
   return parsed;
-}
-
-function csvCell(value: unknown) {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`;
 }
 
 export function answerFrom(data: unknown, type: string) {

@@ -155,6 +155,7 @@ export async function run(command, input, prepareEvaluation) {
       JSON.stringify({ code, signal, endedAt: new Date().toISOString() }) + '\n'
     );
     process.exitCode = code ?? 1;
+    return { directory, code, signal };
   } finally {
     process.off('SIGINT', interrupt);
     process.off('SIGTERM', terminate);

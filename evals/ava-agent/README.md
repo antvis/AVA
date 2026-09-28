@@ -37,7 +37,7 @@ npm run dev                              # Interactive UI; open the printed URL
 
 `--skill ava` instructs the agent to load AVA before other tools and follow the Skill using the CLI; evaluation fails if loading does not succeed. `--skill none` removes the Skill and its loading tool.
 
-DataBench is the only evaluation. Each case attaches a Parquet file; expected answers stay outside the sandbox and final JSON replies are scored directly. `dev` has no preloaded sample data or automatic scoring; use `--skill none` for a manual comparison without the Skill.
+DataBench is the only evaluation. Each case attaches a Parquet file; expected answers stay outside the sandbox. Eve requires a typed `{ answer: ..., sql: ... }` result for each turn, and the validated answer is scored directly. `dev` has no preloaded sample data or automatic scoring; use `--skill none` for a manual comparison without the Skill.
 
 ## DataBench adapter
 
@@ -52,13 +52,17 @@ node evals/cli.js run ava-agent --benchmark databench --limit 2 --list
 
 Selection matches AVA Workflow: `--dataset databench-lite|databench` (default: `databench-lite`), `--suite`, `--offset` (default: `0`), and `--limit <number|all>` (default: `20`). Other execution options are forwarded to Eve. `--help` lists adapter options without running a model.
 
-Each selected question gets its own session and Parquet attachment. Benchmark code, selected questions, and data files are snapshotted on the host; gold answers are never sent to the agent. The final reply must be a JSON value and is scored using the shared `databench-answer` rule. Skill and tool checks remain separate assertions.
+Each selected question gets its own session and Parquet attachment. Benchmark code, selected questions, and data files are snapshotted on the host; gold answers are never sent to the agent. The structured answer must match the question's answer type (or be null) and is scored using the shared `databench-answer` rule. Skill and tool checks remain separate assertions.
 
-Predictions are written to `.runs/<id>/predictions.csv` (`id`, `predicted_answer`, `error`) and can be scored by `node evals/cli.js score --predictions <file.csv>`. Each invocation is a fresh run; there is no resume support. `npm run eval -- [options]` calls the same DataBench adapter from this directory. Download DataBench before listing or running cases.
+During execution, predictions are written to `.runs/<id>/predictions.csv`. After all selected questions have result rows, the final CSV is copied to `results/<dataset>-<id>.csv`, including runs with failed answers. Interrupted or incomplete runs retain partial results only in `.runs/`; `--list` does not publish a result. Each invocation uses a unique filename and does not overwrite previous results or resume them.
+
+CSV columns match AVA Workflow: `id`, `predicted_answer`, `sql`, `error`, `model`, `duration_ms`, `input_tokens`, `output_tokens`, `total_tokens`. Both writers share the same column definition. `sql` contains the agent-reported SQL used for the answer, or an empty string when no SQL was used. Duration covers the entire question, including tools. Tokens sum all model steps for the question; incomplete or unavailable usage stays empty rather than being reported as zero. Failed questions retain usage when reported by Eve.
+
+Score a final CSV with `node evals/cli.js score --dataset <dataset> --predictions <file.csv>`. `npm run eval -- [options]` calls the same DataBench adapter from this directory. Download DataBench before listing or running cases.
 
 ## Results and maintenance
 
-- Reports: `.runs/<id>/.eve/evals/`; predictions: `.runs/<id>/predictions.csv`.
+- Final predictions: `results/<dataset>-<id>.csv`; detailed reports: `.runs/<id>/.eve/evals/`.
 - DataBench measures tabular answer accuracy, not chart quality or open-ended analysis.
 - After changing AVA source or the sandbox Dockerfile, rerun `npm run sandbox:build`. Agent, Skill, and eval changes only require restarting.
 - Each invocation copies a new project into `.runs/`. Edit source files here, not generated copies. Sandbox execution has no network access.
