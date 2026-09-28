@@ -127,9 +127,9 @@ export const parseExcel = async (arrayBuffer: ArrayBuffer): Promise<DataRow[]> =
         rowData[header] = val;
       } else if (val instanceof Date) {
         rowData[header] = [
-          val.getFullYear(),
-          String(val.getMonth() + 1).padStart(2, '0'),
-          String(val.getDate()).padStart(2, '0'),
+          val.getUTCFullYear(),
+          String(val.getUTCMonth() + 1).padStart(2, '0'),
+          String(val.getUTCDate()).padStart(2, '0'),
         ].join('-');
       } else {
         const strVal = String(val).trim();
