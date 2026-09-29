@@ -136,7 +136,7 @@ describe('Subset strategy', () => {
     );
     expect(emit.mock.calls.slice(0, 2).map(([event]) => event)).toEqual([
       { type: 'selectcontextstart', data: {} },
-      { type: 'selectcontextend', data: { tables: [{ name: 'orders', fields: ['amount'] }] } },
+      { type: 'selectcontextend', data: {} },
     ]);
     const prompt = vi.mocked(generateText).mock.calls[0][0].prompt as string;
     expect(prompt).toContain('Dataset Profile: 3 table(s)');

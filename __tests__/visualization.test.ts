@@ -48,9 +48,13 @@ describe('chart recommendation', () => {
   });
 
   it('renders the recommended specification through visualize', async () => {
+    const onStart = vi.fn();
+    ava.on('visualizestart', onStart);
     reply('column');
     reply(syntax);
     const visualization = await ava.visualize(result);
+    ava.off('visualizestart', onStart);
+    expect(onStart).toHaveBeenCalledExactlyOnceWith({ type: 'visualizestart', data: { query: result.query } });
     expect(visualization).toMatchObject({ chartType: 'column', syntax });
     expect(visualization?.html).toContain('<!DOCTYPE html>');
     expect(visualization?.html).toContain(syntax);

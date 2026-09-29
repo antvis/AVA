@@ -108,9 +108,10 @@ it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification 
   expect(result).toMatchObject({ data: [{ value: 1 }], sql: 'SELECT 1', text: '' });
   expect(emit.mock.calls.find(([event]) => event.type === 'querystart')?.[0].data).toEqual({
     dsl: 'SELECT 1',
+  });
+  expect(emit.mock.calls.find(([event]) => event.type === 'reasonend')?.[0].data).toMatchObject({
     step: 0,
     action: 'SQL',
-    ...(maxSteps === 0 ? { finalAttempt: true } : {}),
   });
   expect(engine.execute).toHaveBeenCalledOnce();
   expect(generateText).toHaveBeenCalledTimes(maxSteps === 2 ? 2 : 1);

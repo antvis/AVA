@@ -7,6 +7,7 @@ import * as path from 'path';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { AVA } from '../src';
+import * as suggestions from '../src/suggest';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
@@ -46,6 +47,8 @@ describe('AVA', () => {
   });
 
   it('profiles default and selected metrics for the loaded source', async () => {
+    const onStart = vi.fn();
+    ava.on('profilestart', onStart);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.profile()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }, { value: null }] } });
@@ -56,6 +59,7 @@ describe('AVA', () => {
     expect(profile.tables[0].fields[0].metrics).toMatchObject({ null_count: 1, min: 2, max: 4, mean: 3 });
 
     const selected = await ava.profile({ metrics: ['row_count', 'sum'] });
+    expect(onStart).toHaveBeenLastCalledWith({ type: 'profilestart', data: {} });
     expect(selected.tables[0].metrics).toEqual({ row_count: 3 });
     expect(selected.tables[0].fields[0].metrics).toEqual({ sum: 6 });
     const empty = await ava.profile({ metrics: [] });
@@ -83,7 +87,7 @@ describe('AVA', () => {
     const result = await ava.analyze(query, config);
     expect(result.data).toEqual([{ total: 2 }]);
     expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
-      { type: 'analyzestart', data: { query, config } },
+      { type: 'analyzestart', data: { query } },
       { type: 'analyzeend', data: result },
     ]);
     expect(onEvent.mock.calls[1][0].data).toBe(result);
@@ -93,9 +97,25 @@ describe('AVA', () => {
     vi.spyOn(ava.engine!, 'execute').mockRejectedValueOnce(error);
     await expect(ava.analyze(query, config)).rejects.toBe(error);
     expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
-      { type: 'analyzestart', data: { query, config } },
+      { type: 'analyzestart', data: { query } },
       { type: 'analyzeend', data: { error: { name: 'Error', message: error.message } } },
     ]);
+  });
+
+  it('emits suggestions without repeating the requested count', async () => {
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    const result = [{ query: 'Total value?', score: 1, reason: 'Useful' }];
+    vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValueOnce(result);
+    const onEvent = vi.fn();
+    ava.on('suggeststart', onEvent);
+    ava.on('suggestend', onEvent);
+
+    await expect(ava.suggest(1)).resolves.toBe(result);
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'suggeststart', data: {} },
+      { type: 'suggestend', data: result },
+    ]);
+    expect(suggestions.generateSuggestions).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), 1);
   });
 
   it('translates queries with schema and optional profile without executing them', async () => {

@@ -164,7 +164,7 @@ export class AVA extends EventEmitter {
       throw new Error('Profiling is not supported by the registered engine.');
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START, { options }));
+    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START));
 
     try {
       this.dataProfile = await this.engine.profile(options);
@@ -196,7 +196,7 @@ export class AVA extends EventEmitter {
       llm: this.llmConfig,
     };
 
-    emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_START, { query, config }));
+    emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_START, { query }));
 
     let result: AnalysisResponse;
     try {
@@ -271,7 +271,7 @@ export class AVA extends EventEmitter {
    * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
-    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_START, analysisResult));
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_START, { query: analysisResult.query }));
 
     let result: VisualizeResponse | null;
     try {
@@ -319,7 +319,7 @@ export class AVA extends EventEmitter {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_START, { count }));
+    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_START));
 
     let result: SuggestResult[];
     try {

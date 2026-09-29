@@ -255,7 +255,7 @@ export const loopAnalysis: AnalysisStrategy = async (
     for (const proposal of queries) {
       const statement = proposal;
 
-      emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement, step, action }));
+      emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement }));
 
       let execution: ExecutionResult;
       try {
@@ -363,14 +363,7 @@ export const loopAnalysis: AnalysisStrategy = async (
     })
   );
 
-  emit(
-    new AnalysisEvent(AnalysisEventType.QUERY_START, {
-      dsl: statement,
-      step: maxSteps,
-      action: 'SQL',
-      finalAttempt: true,
-    })
-  );
+  emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement }));
 
   let execution: ExecutionResult;
   try {

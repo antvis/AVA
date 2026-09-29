@@ -92,14 +92,7 @@ export const subsetAnalysis: AnalysisStrategy = async (query, config, runtime) =
     throw error;
   }
 
-  // Report the names of retained statistics without their values or the complete schema.
-  const tables =
-    context.profile?.tables.flatMap((table) => {
-      const fields = table.fields.filter((field) => Object.keys(field.metrics).length).map((field) => field.name);
-      return Object.keys(table.metrics).length || fields.length ? [{ name: table.name, fields }] : [];
-    }) ?? [];
-
-  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END, { tables }));
+  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END));
 
   return directAnalysis(query, config, { ...runtime, context });
 };
