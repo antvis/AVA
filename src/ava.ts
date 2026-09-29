@@ -77,14 +77,17 @@ export class AVA extends EventEmitter {
     const { type, ...options } = this.engineConfig;
 
     emit(this, new LifecycleEvent(LifecycleEventType.CREATE_START));
+
     let engine: AnalysisEngine;
     try {
       const EngineClass = getEngineClass(type);
       engine = new EngineClass(this.llmConfig, options);
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END, serializeError(error)));
+
       throw error;
     }
+
     emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END));
 
     return engine;
@@ -97,12 +100,15 @@ export class AVA extends EventEmitter {
     if (!this.engine) return;
 
     emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_START));
+
     try {
       await this.engine.dispose();
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_END, serializeError(error)));
+
       throw error;
     }
+
     emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_END));
   }
 
@@ -111,19 +117,29 @@ export class AVA extends EventEmitter {
    * Reloading disposes the previous engine and its resources.
    */
   async source(config: DataSourceConfig): Promise<void> {
-    this.dataSchema = null;
-    this.dataProfile = null;
-    await this.disposeEngine();
-    this.engine = null;
+    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
 
-    this.engine = await this.createEngine();
     try {
-      this.dataSchema = await this.engine.load(config);
-    } catch (error) {
+      this.dataSchema = null;
+      this.dataProfile = null;
       await this.disposeEngine();
       this.engine = null;
+
+      this.engine = await this.createEngine();
+      try {
+        this.dataSchema = await this.engine.load(config);
+      } catch (error) {
+        await this.disposeEngine();
+        this.engine = null;
+        throw error;
+      }
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END, { error: serializeError(error) }));
+
       throw error;
     }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END, this.dataSchema));
   }
 
   /**
@@ -148,7 +164,18 @@ export class AVA extends EventEmitter {
       throw new Error('Profiling is not supported by the registered engine.');
     }
 
-    this.dataProfile = await this.engine.profile(options);
+    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START, { options }));
+
+    try {
+      this.dataProfile = await this.engine.profile(options);
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, this.dataProfile));
+
     return this.dataProfile;
   }
 
@@ -175,10 +202,12 @@ export class AVA extends EventEmitter {
       result = await analyze(query, config, runtime);
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END, { error: serializeError(error) }));
+
       throw error;
     }
 
     emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END, result));
+
     return result;
   }
 
@@ -190,6 +219,7 @@ export class AVA extends EventEmitter {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
+
     emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query }));
 
     let dsl: string;
@@ -198,10 +228,12 @@ export class AVA extends EventEmitter {
       dsl = await this.engine.getDSL(query, context);
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
+
       throw error;
     }
 
     emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl }));
+
     return dsl;
   }
 
@@ -213,6 +245,7 @@ export class AVA extends EventEmitter {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
+
     emit(this, new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl, options }));
 
     let result: ExecutionResult;
@@ -220,10 +253,12 @@ export class AVA extends EventEmitter {
       result = await this.engine.execute(dsl, options);
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+
       throw error;
     }
 
     emit(this, new AnalysisEvent(AnalysisEventType.QUERY_END, result));
+
     return result;
   }
 
@@ -235,8 +270,21 @@ export class AVA extends EventEmitter {
    * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
-    const spec = await this.recommend(analysisResult);
-    return spec ? { ...spec, html: await this.viz(spec) } : null;
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_START, analysisResult));
+
+    let result: VisualizeResponse | null;
+    try {
+      const spec = await this.recommend(analysisResult);
+      result = spec ? { ...spec, html: await this.viz(spec) } : null;
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, result));
+
+    return result;
   }
 
   /**
@@ -270,11 +318,24 @@ export class AVA extends EventEmitter {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    return generateSuggestions(
-      this.llmConfig,
-      { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
-      count
-    );
+    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_START, { count }));
+
+    let result: SuggestResult[];
+    try {
+      result = await generateSuggestions(
+        this.llmConfig,
+        { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
+        count
+      );
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END, result));
+
+    return result;
   }
 
   /**
