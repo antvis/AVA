@@ -70,7 +70,7 @@ export class SupabaseEngine implements AnalysisEngine {
   }
 
   async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.schema || !this.connection) throw new Error('No data loaded. Please call load() first.');
+    if (!this.schema || !this.connection) throw new Error('No data loaded. Please call source() first.');
     return profileTables(
       (sql) => this.runQuery(sql),
       this.schema,
@@ -80,14 +80,14 @@ export class SupabaseEngine implements AnalysisEngine {
 
   async getDSL(query: string, context?: DataContext): Promise<string> {
     if (!this.schema) {
-      throw new Error('No data loaded. Please call load() first.');
+      throw new Error('No data loaded. Please call source() first.');
     }
     return this.queryDialect.getDSL(query, context ?? { schema: this.schema });
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.connection) {
-      throw new Error('No data loaded. Please call load() first.');
+      throw new Error('No data loaded. Please call source() first.');
     }
     const query = await this.queryDialect.validateDSL(sql);
     const rows = (await this.runQuery(limitedQuery(query, maxRows(options)))) as T[];

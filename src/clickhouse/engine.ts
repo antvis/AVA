@@ -75,7 +75,7 @@ export class ClickHouseEngine implements AnalysisEngine {
   }
 
   async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.schema || !this.client) throw new Error('No data loaded. Please call load() first.');
+    if (!this.schema || !this.client) throw new Error('No data loaded. Please call source() first.');
     return profileTables(
       (sql) => this.runQuery(sql),
       this.schema,
@@ -84,12 +84,12 @@ export class ClickHouseEngine implements AnalysisEngine {
   }
 
   async getDSL(query: string, context?: DataContext): Promise<string> {
-    if (!this.schema) throw new Error('No data loaded. Please call load() first.');
+    if (!this.schema) throw new Error('No data loaded. Please call source() first.');
     return this.queryDialect.getDSL(query, context ?? { schema: this.schema });
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
-    if (!this.client) throw new Error('No data loaded. Please call load() first.');
+    if (!this.client) throw new Error('No data loaded. Please call source() first.');
     const query = await this.queryDialect.validateDSL(dsl, this.client);
     const rows = await this.runQuery<T>(limitedQuery(query, maxRows(options)));
     return executionResult(rows, inferQuerySchema(rows), options);
@@ -104,7 +104,7 @@ export class ClickHouseEngine implements AnalysisEngine {
   }
 
   private async runQuery<T = Record<string, unknown>>(query: string): Promise<T[]> {
-    if (!this.client) throw new Error('No data loaded. Please call load() first.');
+    if (!this.client) throw new Error('No data loaded. Please call source() first.');
     // Enforce on each request, including when source options specify readonly: 0.
     // https://clickhouse.com/docs/operations/settings/permissions-for-queries#readonly
     const result = await this.client.query({ query, format: 'JSONEachRow', clickhouse_settings: { readonly: '1' } });
