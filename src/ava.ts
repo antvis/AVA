@@ -40,8 +40,8 @@ function hasData(data: unknown): boolean {
 
 /**
  * Main AVA class for AI-native visual analytics.
- * Data loading and analysis are backed by the DuckDB engine — natural-language
- * queries are turned into SQL via LLM and executed against an in-memory DuckDB.
+ * Data loading and analysis are backed by a pluggable engine — natural-language
+ * queries are turned into SQL via LLM and executed by the configured engine.
  */
 export class AVA {
   private readonly llmConfig: LLMConfig;
@@ -115,7 +115,7 @@ export class AVA {
 
   /**
    * Analyze data using natural language query.
-   * The query is turned into SQL via LLM and executed by DuckDB.
+   * The query is turned into SQL via LLM and executed by the configured engine.
    * Use visualize() separately to generate charts from the analysis result.
    */
   async analyze(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
@@ -197,7 +197,7 @@ export class AVA {
    */
   async suggest(count: number = 3): Promise<SuggestResult[]> {
     if (!this.dataSchema) {
-      throw new Error('No data loaded. Please call load() first.');
+      throw new Error('No data loaded. Please call source() first.');
     }
 
     return generateSuggestions(

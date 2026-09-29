@@ -65,29 +65,28 @@ const ava = new AVA({
   // engine: { type: 'duckdb' } is the default; no need to specify
 });
 
-// Load data from various sources — all through ava.load({ type, options })
+// Load data from various sources — all through ava.source({ type, options })
 
 // CSV file in Node.js (local path or http(s) URL)
-await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
+await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 
 // or load a local/remote file directly into DuckDB (csv-file/json-file/parquet/excel, e.g. OSS signed URL)
-await ava.load({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
-await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
+await ava.source({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
+await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 // an Excel workbook registers one view per sheet
-await ava.load({ type: 'excel', options: { path: 'data/report.xlsx' } });
+await ava.source({ type: 'excel', options: { path: 'data/report.xlsx' } });
 
 // or load inline CSV content
-await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
+await ava.source({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
 
 // or load from a JSON object array
-await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
+await ava.source({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
 
 // or extract from text
-await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
+await ava.source({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
 
 // or attach a database (every table is exposed to the LLM)
-await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
-await ava.load({ type: 'mongodb', options: { connection: 'host=localhost port=27017', database: 'mydb' } });
+await ava.source({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 
 // Get suggested analysis queries
 const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
@@ -144,9 +143,9 @@ const ava = new AVA({
 });
 
 // Browser supports inline data sources only
-await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
-await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
-await ava.load({ type: 'text', options: { text: '杭州 100，上海 200' } });
+await ava.source({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
+await ava.source({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
+await ava.source({ type: 'text', options: { text: '杭州 100，上海 200' } });
 
 const result = await ava.analyze('What is the total GDP?');
 const viz = await ava.visualize(result);
@@ -268,7 +267,7 @@ Minimal usage:
 ```typescript
 const ava = new AVA({ llm: { model, apiKey, baseURL } });
 
-await ava.load({ type: 'json', options: { data: [{ city: 'Hangzhou', gdp: 18753 }] } });
+await ava.source({ type: 'json', options: { data: [{ city: 'Hangzhou', gdp: 18753 }] } });
 
 const analysis = await ava.analyze('Show GDP by city');
 console.log(analysis.text);
