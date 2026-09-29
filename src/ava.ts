@@ -144,10 +144,19 @@ export class AVA extends EventEmitter {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.engine.getDSL(query, {
-      schema: this.dataSchema,
-      profile: this.dataProfile ?? undefined,
-    });
+    emit(this, new OperationEvent(ExecutionEventType.TRANSLATE_START, { query }));
+
+    let dsl: string;
+    try {
+      const context = { schema: this.dataSchema, profile: this.dataProfile ?? undefined };
+      dsl = await this.engine.getDSL(query, context);
+    } catch (error) {
+      emit(this, new OperationEvent(ExecutionEventType.TRANSLATE_END, { error: serializeError(error) }));
+      throw error;
+    }
+
+    emit(this, new OperationEvent(ExecutionEventType.TRANSLATE_END, { dsl }));
+    return dsl;
   }
 
   /**

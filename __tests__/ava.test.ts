@@ -70,24 +70,38 @@ describe('AVA', () => {
   });
 
   it('translates queries with schema and optional profile without executing them', async () => {
+    const onEvent = vi.fn();
+    ava.on('*', onEvent);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava['translate']('Total value')).rejects.toThrow(message);
+    expect(onEvent).not.toHaveBeenCalled();
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
     const schema = await ava.schema();
     const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) FROM data');
     const execute = vi.spyOn(ava.engine!, 'execute');
 
     await expect(ava['translate']('Total value')).resolves.toBe('SELECT SUM(value) FROM data');
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'translatestart', data: { query: 'Total value' } },
+      { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data' } },
+    ]);
     expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: undefined });
     const profile = await ava.profile();
     await ava['translate']('Total value');
     expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile });
     expect(execute).not.toHaveBeenCalled();
 
-    getDSL.mockRejectedValueOnce(new Error('Translation failed'));
-    await expect(ava['translate']('Total value')).rejects.toThrow('Translation failed');
+    const error = new Error('Translation failed');
+    getDSL.mockRejectedValueOnce(error);
+    await expect(ava['translate']('Total value')).rejects.toBe(error);
+    expect(onEvent).toHaveBeenNthCalledWith(5, { type: 'translatestart', data: { query: 'Total value' } });
+    expect(onEvent).toHaveBeenNthCalledWith(6, {
+      type: 'translateend',
+      data: { error: { name: 'Error', message: 'Translation failed' } },
+    });
     await ava.dispose();
     await expect(ava['translate']('Total value')).rejects.toThrow(message);
+    expect(onEvent).toHaveBeenCalledTimes(6);
   });
 
   it('executes bounded read-only queries and rejects writes', async () => {

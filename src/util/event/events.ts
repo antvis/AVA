@@ -1,4 +1,6 @@
 export enum ExecutionEventType {
+  TRANSLATE_START = 'translatestart',
+  TRANSLATE_END = 'translateend',
   QUERY_START = 'querystart',
   QUERY_END = 'queryend',
 }
@@ -8,10 +10,7 @@ export class BaseEvent {
 }
 
 export class OperationEvent extends BaseEvent {
-  constructor(
-    type: ExecutionEventType.QUERY_START | ExecutionEventType.QUERY_END,
-    readonly data: object = {}
-  ) {
+  constructor(type: ExecutionEventType, readonly data: object = {}) {
     super(type);
   }
 }
