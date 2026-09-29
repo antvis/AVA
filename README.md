@@ -89,16 +89,6 @@ await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北�
 await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 await ava.load({ type: 'mongodb', options: { connection: 'host=localhost port=27017', database: 'mydb' } });
 
-// or query ClickHouse directly with the ClickHouse engine
-const clickhouse = new AVA({
-  llm: { model: 'ling-1t', apiKey: 'YOUR_API_KEY', baseURL: 'LLM_BASE_URL' },
-  engine: { type: 'clickhouse' },
-});
-await clickhouse.source({
-  type: 'clickhouse',
-  options: { host: 'http://localhost:8123', database: 'default', username: 'default', password: '' },
-});
-
 // Get suggested analysis queries
 const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
 console.log(queries);
