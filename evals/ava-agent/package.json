@@ -1,0 +1,22 @@
+{
+  "name": "ava-agent",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24" },
+  "scripts": {
+    "dev": "node scripts/run.mjs dev",
+    "eval": "node evals/databench.eval.ts",
+    "sandbox:build": "node scripts/build-sandbox.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "4.0.73",
+    "ai": "7.0.112",
+    "eve": "0.67.2",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.0",
+    "typescript": "5.9.3"
+  }
+}
