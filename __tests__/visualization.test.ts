@@ -48,13 +48,18 @@ describe('chart recommendation', () => {
   });
 
   it('renders the recommended specification through visualize', async () => {
-    const onStart = vi.fn();
-    ava.on('visualizestart', onStart);
+    const onEvent = vi.fn();
+    ava.on('visualizestart', onEvent);
+    ava.on('visualizeend', onEvent);
     reply('column');
     reply(syntax);
     const visualization = await ava.visualize(result);
-    ava.off('visualizestart', onStart);
-    expect(onStart).toHaveBeenCalledExactlyOnceWith({ type: 'visualizestart', data: { query: result.query } });
+    ava.off('visualizestart', onEvent);
+    ava.off('visualizeend', onEvent);
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'visualizestart', data: { query: result.query } },
+      { type: 'visualizeend', data: {} },
+    ]);
     expect(visualization).toMatchObject({ chartType: 'column', syntax });
     expect(visualization?.html).toContain('<!DOCTYPE html>');
     expect(visualization?.html).toContain(syntax);

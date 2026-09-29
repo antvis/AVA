@@ -25,9 +25,12 @@ describe('AVA', () => {
   });
 
   it('returns the current schema throughout the source lifecycle', async () => {
+    const onEnd = vi.fn();
+    ava.on('loadend', onEnd);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.schema()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ first: 1 }] } });
+    expect(onEnd).toHaveBeenLastCalledWith({ type: 'loadend', data: {} });
     const first = await ava.schema();
     expect(first.tables[0].fields.map((field) => field.name)).toEqual(['first']);
     const before = JSON.stringify(first);
@@ -48,7 +51,9 @@ describe('AVA', () => {
 
   it('profiles default and selected metrics for the loaded source', async () => {
     const onStart = vi.fn();
+    const onEnd = vi.fn();
     ava.on('profilestart', onStart);
+    ava.on('profileend', onEnd);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.profile()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }, { value: null }] } });
@@ -60,6 +65,7 @@ describe('AVA', () => {
 
     const selected = await ava.profile({ metrics: ['row_count', 'sum'] });
     expect(onStart).toHaveBeenLastCalledWith({ type: 'profilestart', data: {} });
+    expect(onEnd).toHaveBeenLastCalledWith({ type: 'profileend', data: {} });
     expect(selected.tables[0].metrics).toEqual({ row_count: 3 });
     expect(selected.tables[0].fields[0].metrics).toEqual({ sum: 6 });
     const empty = await ava.profile({ metrics: [] });
@@ -73,10 +79,12 @@ describe('AVA', () => {
     await expect(ava.profile()).rejects.toThrow(message);
   });
 
-  it('emits analysis start and end events with results or errors', async () => {
+  it('emits analysis status and errors while returning the complete result', async () => {
     const onEvent = vi.fn();
+    const onQueryEnd = vi.fn();
     ava.on('analyzestart', onEvent);
     ava.on('analyzeend', onEvent);
+    ava.on('queryend', onQueryEnd);
     await expect(ava.analyze('Total value')).rejects.toThrow('No data loaded');
     expect(onEvent).not.toHaveBeenCalled();
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
@@ -88,9 +96,9 @@ describe('AVA', () => {
     expect(result.data).toEqual([{ total: 2 }]);
     expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
       { type: 'analyzestart', data: { query } },
-      { type: 'analyzeend', data: result },
+      { type: 'analyzeend', data: {} },
     ]);
-    expect(onEvent.mock.calls[1][0].data).toBe(result);
+    expect(onQueryEnd.mock.calls[0][0].data.data).toBe(result.data);
 
     onEvent.mockClear();
     const error = new Error('Analysis execution failed');
@@ -102,7 +110,7 @@ describe('AVA', () => {
     ]);
   });
 
-  it('emits suggestions without repeating the requested count', async () => {
+  it('emits suggestion status without repeating inputs or results', async () => {
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
     const result = [{ query: 'Total value?', score: 1, reason: 'Useful' }];
     vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValueOnce(result);
@@ -113,7 +121,7 @@ describe('AVA', () => {
     await expect(ava.suggest(1)).resolves.toBe(result);
     expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
       { type: 'suggeststart', data: {} },
-      { type: 'suggestend', data: result },
+      { type: 'suggestend', data: {} },
     ]);
     expect(suggestions.generateSuggestions).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), 1);
   });

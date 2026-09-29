@@ -139,7 +139,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END, this.dataSchema));
+    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END));
   }
 
   /**
@@ -174,7 +174,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, this.dataProfile));
+    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
 
     return this.dataProfile;
   }
@@ -207,7 +207,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END, result));
+    emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END));
 
     return result;
   }
@@ -283,7 +283,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, result));
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END));
 
     return result;
   }
@@ -334,7 +334,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END, result));
+    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END));
 
     return result;
   }
