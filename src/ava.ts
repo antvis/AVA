@@ -1,6 +1,7 @@
 /**
  * AVA v4 - A framework for AI-native Visual Analytics
  */
+import EventEmitter from '@antv/event-emitter';
 
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
@@ -8,6 +9,8 @@ import { stringifySchema } from './util/context';
 import { adviseChartType, generateVisualizationSyntax, wrapSyntaxInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
+import { ExecutionEventType, OperationEvent, emit } from './util/event';
+import { serializeError } from './util/error';
 
 import type {
   AVAConfig,
@@ -43,7 +46,7 @@ function hasData(data: unknown): boolean {
  * Data loading and analysis are backed by a pluggable engine — natural-language
  * queries are turned into SQL via LLM and executed by the configured engine.
  */
-export class AVA {
+export class AVA extends EventEmitter {
   private readonly llmConfig: LLMConfig;
   private readonly engineConfig: EngineConfig;
   engine: AnalysisEngine | null = null;
@@ -51,6 +54,7 @@ export class AVA {
   private dataProfile: Profile | null = null;
 
   constructor(config: AVAConfig) {
+    super();
     this.llmConfig = config.llm;
     this.engineConfig = config.engine ?? { type: 'duckdb' };
   }
@@ -154,7 +158,18 @@ export class AVA {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.engine.execute(dsl, options);
+    emit(this, new OperationEvent(ExecutionEventType.QUERY_START, { dsl, options }));
+
+    let result: ExecutionResult;
+    try {
+      result = await this.engine.execute(dsl, options);
+    } catch (error) {
+      emit(this, new OperationEvent(ExecutionEventType.QUERY_END, { error: serializeError(error) }));
+      throw error;
+    }
+
+    emit(this, new OperationEvent(ExecutionEventType.QUERY_END, result));
+    return result;
   }
 
   /**
