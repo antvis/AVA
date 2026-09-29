@@ -133,7 +133,18 @@ export class AVA extends EventEmitter {
       llm: this.llmConfig,
     };
 
-    return analyze(query, config, runtime);
+    emit(this, new OperationEvent(ExecutionEventType.ANALYZE_START, { query, config }));
+
+    let result: AnalysisResponse;
+    try {
+      result = await analyze(query, config, runtime);
+    } catch (error) {
+      emit(this, new OperationEvent(ExecutionEventType.ANALYZE_END, { error: serializeError(error) }));
+      throw error;
+    }
+
+    emit(this, new OperationEvent(ExecutionEventType.ANALYZE_END, result));
+    return result;
   }
 
   /**

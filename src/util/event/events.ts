@@ -1,4 +1,6 @@
 export enum ExecutionEventType {
+  ANALYZE_START = 'analyzestart',
+  ANALYZE_END = 'analyzeend',
   TRANSLATE_START = 'translatestart',
   TRANSLATE_END = 'translateend',
   QUERY_START = 'querystart',

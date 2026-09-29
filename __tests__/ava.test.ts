@@ -69,6 +69,34 @@ describe('AVA', () => {
     await expect(ava.profile()).rejects.toThrow(message);
   });
 
+  it('emits analysis start and end events with results or errors', async () => {
+    const onEvent = vi.fn();
+    ava.on('*', onEvent);
+    await expect(ava.analyze('Total value')).rejects.toThrow('No data loaded');
+    expect(onEvent).not.toHaveBeenCalled();
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) AS total FROM data');
+    const query = 'Total value';
+    const config = { includeSummary: false, strategy: { type: 'direct' as const, maxRetries: 0 } };
+
+    const result = await ava.analyze(query, config);
+    expect(result.data).toEqual([{ total: 2 }]);
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'analyzestart', data: { query, config } },
+      { type: 'analyzeend', data: result },
+    ]);
+    expect(onEvent.mock.calls[1][0].data).toBe(result);
+
+    onEvent.mockClear();
+    const error = new Error('Analysis execution failed');
+    vi.spyOn(ava.engine!, 'execute').mockRejectedValueOnce(error);
+    await expect(ava.analyze(query, config)).rejects.toBe(error);
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'analyzestart', data: { query, config } },
+      { type: 'analyzeend', data: { error: { name: 'Error', message: error.message } } },
+    ]);
+  });
+
   it('translates queries with schema and optional profile without executing them', async () => {
     const onEvent = vi.fn();
     ava.on('*', onEvent);
