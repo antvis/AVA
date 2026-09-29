@@ -33,6 +33,58 @@ describe('loaders/mongodb (unit)', () => {
     ]);
   });
 
+  it('builds a key-value connection string from structured fields', async () => {
+    const source = await loadMongoDB({
+      host: 'localhost',
+      port: 27017,
+      database: 'sales',
+    });
+    const conn = createConnection([]);
+
+    await source.register(conn);
+
+    expect(conn.run).toHaveBeenCalledWith(
+      "ATTACH 'host=localhost port=27017 dbname=sales' AS mongo_source (TYPE MONGO)"
+    );
+  });
+
+  it('builds a connection string with auth, TLS and SRV options', async () => {
+    const source = await loadMongoDB({
+      host: 'cluster0.xxxxx.mongodb.net',
+      port: 27017,
+      database: 'mydb',
+      user: 'myuser',
+      password: 'mypass',
+      authSource: 'admin',
+      srv: true,
+      tls: true,
+      tlsCAFile: '/path/to/ca.pem',
+    });
+    const conn = createConnection([]);
+
+    await source.register(conn);
+
+    expect(conn.run).toHaveBeenCalledWith(
+      "ATTACH 'host=cluster0.xxxxx.mongodb.net port=27017 user=myuser password=mypass dbname=mydb authsource=admin srv=true tls=true tls_ca_file=/path/to/ca.pem' AS mongo_source (TYPE MONGO)"
+    );
+  });
+
+  it('prefers connection string over structured fields when both are provided', async () => {
+    const source = await loadMongoDB({
+      connection: 'mongodb://user:pass@localhost:27017/customdb',
+      host: 'ignored-host',
+      port: 12345,
+      database: 'ignored-db',
+    });
+    const conn = createConnection([]);
+
+    await source.register(conn);
+
+    expect(conn.run).toHaveBeenCalledWith(
+      "ATTACH 'mongodb://user:pass@localhost:27017/customdb' AS mongo_source (TYPE MONGO)"
+    );
+  });
+
   it('preserves database selection already encoded in a MongoDB URI', async () => {
     const source = await loadMongoDB({
       connection: 'mongodb://localhost:27017/analytics?retryWrites=true',

@@ -12,16 +12,43 @@ import type { LoadedSource, MongoDBSourceOptions } from '../../types';
 const ATTACH_ALIAS = 'mongo_source';
 const noopCleanup = async (): Promise<void> => {};
 
+/**
+ * Build a DuckDB mongo connection string from structured fields.
+ * Produces the key-value format: `host=… port=… user=… password=… dbname=… …`
+ */
+function buildKeyValueString(options: MongoDBSourceOptions): string {
+  const parts: Array<[string, string]> = [['host', options.host ?? 'localhost']];
+  parts.push(['port', String(options.port ?? 27017)]);
+  if (options.user) parts.push(['user', options.user]);
+  if (options.password) parts.push(['password', options.password]);
+  parts.push(['dbname', options.database]);
+  if (options.authSource) parts.push(['authsource', options.authSource]);
+  if (options.srv) parts.push(['srv', 'true']);
+  if (options.tls || options.ssl) parts.push(['tls', 'true']);
+  if (options.tlsCAFile) parts.push(['tls_ca_file', options.tlsCAFile]);
+  if (options.tlsAllowInvalidCertificates) parts.push(['tls_allow_invalid_certificates', 'true']);
+  return parts.map(([key, value]) => `${key}=${value}`).join(' ');
+}
+
+/**
+ * Resolve a connection string from the two supported modes:
+ * 1. If `connection` (advanced string) is provided, use it directly —
+ *    appending `dbname=<database>` only when it doesn't already specify one.
+ * 2. Otherwise, build a key-value string from the structured fields.
+ */
 function buildConnectionString(options: MongoDBSourceOptions): string {
   const { connection, database } = options;
-  if (/(?:^|\s)(?:db|dbname|database)=/i.test(connection)) return connection;
-  if (/^mongodb(?:\+srv)?:\/\//i.test(connection)) {
-    const url = new URL(connection);
-    if (url.pathname && url.pathname !== '/') return connection;
-    url.pathname = `/${database}`;
-    return url.toString();
+  if (connection) {
+    if (/(?:^|\s)(?:db|dbname|database)=/i.test(connection)) return connection;
+    if (/^mongodb(?:\+srv)?:\/\//i.test(connection)) {
+      const url = new URL(connection);
+      if (url.pathname && url.pathname !== '/') return connection;
+      url.pathname = `/${database}`;
+      return url.toString();
+    }
+    return `${connection}${/\s$/.test(connection) ? '' : ' '}dbname=${database}`;
   }
-  return `${connection}${/\s$/.test(connection) ? '' : ' '}dbname=${database}`;
+  return buildKeyValueString(options);
 }
 
 export async function loadMongoDB(options: MongoDBSourceOptions): Promise<LoadedSource> {

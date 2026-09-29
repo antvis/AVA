@@ -310,12 +310,45 @@ export interface PostgreSQLSourceOptions {
 
 /**
  * Options for MongoDB data sources (ATTACH through DuckDB's mongo community extension)
+ *
+ * Supports two connection modes:
+ * - **Structured fields** (`host`, `port`, `user`, `password`, …) — the loader
+ *   builds a key-value connection string for the ATTACH.
+ * - **Advanced `connection` string** — a raw DuckDB mongo connection string or
+ *   a MongoDB URI (`mongodb://…` / `mongodb+srv://…`). When provided, it takes
+ *   precedence over all structured fields.
+ *
+ * See https://github.com/stephaniewang526/duckdb-mongo for the full parameter list.
  */
 export interface MongoDBSourceOptions {
-  /** DuckDB mongo connection string, e.g. `host=localhost port=27017` or `mongodb://localhost:27017` */
-  connection: string;
-  /** Database name to expose as DuckDB tables */
+  /**
+   * Advanced connection string, e.g. `host=localhost port=27017` or
+   * `mongodb://user:pass@host:27017/db`. Takes precedence over all structured
+   * fields when provided.
+   */
+  connection?: string;
+  /** MongoDB hostname or IP address (default `localhost`). */
+  host?: string;
+  /** MongoDB port number (default `27017`). */
+  port?: number;
+  /** Database name to expose as DuckDB tables (required). */
   database: string;
+  /** MongoDB username. */
+  user?: string;
+  /** MongoDB password. */
+  password?: string;
+  /** Authentication database (MongoDB `authSource`). */
+  authSource?: string;
+  /** Use SRV connection format (for MongoDB Atlas). */
+  srv?: boolean;
+  /** Enable TLS/SSL encryption. Alias: `ssl`. */
+  tls?: boolean;
+  /** Alias for `tls`. */
+  ssl?: boolean;
+  /** Path to CA certificate file for TLS. */
+  tlsCAFile?: string;
+  /** Allow invalid certificates (testing only, default false). */
+  tlsAllowInvalidCertificates?: boolean;
 }
 
 /**
