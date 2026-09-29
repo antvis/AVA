@@ -1,7 +1,5 @@
 import { LifecycleEventType, ExecutionEventType, AnalysisEventType } from './constant';
 
-import type { SerializedError } from '../error';
-
 export class BaseEvent {
   constructor(public type: string) {}
 }
@@ -13,7 +11,7 @@ export class LifecycleEvent extends BaseEvent {
       | LifecycleEventType.CREATE_END
       | LifecycleEventType.DISPOSE_START
       | LifecycleEventType.DISPOSE_END,
-    public error?: SerializedError
+    public data: object | null = {}
   ) {
     super(type);
   }

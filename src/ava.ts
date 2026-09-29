@@ -83,7 +83,7 @@ export class AVA extends EventEmitter {
       const EngineClass = getEngineClass(type);
       engine = new EngineClass(this.llmConfig, options);
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END, serializeError(error)));
+      emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END, { error: serializeError(error) }));
 
       throw error;
     }
@@ -104,7 +104,7 @@ export class AVA extends EventEmitter {
     try {
       await this.engine.dispose();
     } catch (error) {
-      emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_END, serializeError(error)));
+      emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_END, { error: serializeError(error) }));
 
       throw error;
     }
