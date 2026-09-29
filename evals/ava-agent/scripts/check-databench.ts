@@ -1,3 +1,4 @@
+import { readFixture } from '../lib/attachments.mjs';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -6,6 +7,12 @@ import { loadPreviousResults, saveResults } from '../evals/databench.eval.ts';
 
 const directory = mkdtempSync(join(tmpdir(), 'ava-databench-'));
 try {
+  mkdirSync(join(directory, 'evals/fixtures/databench'), { recursive: true });
+  writeFileSync(join(directory, 'evals/fixtures/databench/0.parquet'), 'fixture');
+  assert.equal((await readFixture('ava-fixture:0.parquet', directory)).toString(), 'fixture');
+  await assert.rejects(readFixture('ava-fixture:../../samples.json', directory));
+  await assert.rejects(readFixture('file:///etc/passwd', directory));
+  await assert.rejects(readFixture('ava-fixture:0.parquet', undefined));
   const source = join(directory, 'predictions.csv');
   const target = join(directory, 'original.csv');
   const destination = join(directory, 'results');

@@ -5,7 +5,6 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { defineEval, defineEvalConfig, type EveEvalSession } from 'eve/evals';
 import { equals } from 'eve/evals/expect';
-import { createTextWithFileContent } from 'eve/client';
 import { z } from 'zod';
 
 import { hashTree } from '../lib/files.mjs';
@@ -170,12 +169,15 @@ export function createEvals(directory: string) {
           const outputSchema = z.object({ answer: z.string().describe('DataBench answer text: a scalar or a JSON array; use None if unavailable'), sql: z.string() });
           session = await t.session();
           const turn = await session.send(
-            createTextWithFileContent({
+            [{
+              type: 'text',
               text: `${sample.question}\nAnalyze the attached Parquet file. Return the ${sample.answerType} answer as text inside the answer string of the required structured output. Use plain text for scalar answers, a JSON array for lists, and None if unavailable. Include the SQL actually executed to derive the answer in sql; use an empty string if no SQL was used.`,
-              bytes: readFileSync(sample.dataPath),
+            }, {
+              type: 'file',
+              data: new URL(`ava-fixture:${basename(sample.dataPath)}`),
               filename: basename(sample.dataPath),
               mediaType: 'application/vnd.apache.parquet',
-            }),
+            }],
             { outputSchema }
           );
           turn.expectOk();

@@ -59,7 +59,7 @@ Use `--retry-errors <csv>` with the original dataset and full selection to rerun
 
 Use `--resume <csv>` (repeatable) to import matching completed rows into a new run and execute only missing IDs. Imported rows, including failed answers, retain their original values. Duplicate IDs or incompatible columns are rejected. `run.json` records source CSV paths and the imported row count; results may therefore combine historical and current agent versions.
 
-Each selected question gets its own session and Parquet attachment. Benchmark code, selected questions, and data files are snapshotted on the host; gold answers are never sent to the agent. The answer is scored using the shared `databench-answer` rule. Skill and tool checks remain separate assertions.
+Each selected question gets its own session and Parquet attachment. Evaluation attachments use Eve URL references resolved from numbered Parquet files in the run snapshot, avoiding large base64 payloads in durable events. The resolver rejects arbitrary host paths and files over 100 MiB. Benchmark code, selected questions, and data files are snapshotted on the host; gold answers are never sent to the agent. The answer is scored using the shared `databench-answer` rule. Skill and tool checks remain separate assertions.
 
 During execution, predictions are written to `.runs/<id>/predictions.csv`. After all selected questions have result rows, the final CSV is copied to `results/<dataset>-<id>.csv`, including runs with failed answers. Interrupted or incomplete runs retain partial results only in `.runs/`; `--list` does not publish a result. Each invocation uses a unique filename and does not overwrite previous results. Historical rows are imported only when `--resume` is supplied.
 
