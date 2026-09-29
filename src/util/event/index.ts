@@ -1,7 +1,8 @@
 import type EventEmitter from '@antv/event-emitter';
 import type { BaseEvent } from './events';
 
-export { ExecutionEventType, BaseEvent, OperationEvent } from './events';
+export * from './constant';
+export * from './events';
 
 /**
  * Trigger event based on Event object
