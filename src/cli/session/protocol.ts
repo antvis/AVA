@@ -40,6 +40,27 @@ const sourceSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('json'), options: z.object({ data: z.array(z.record(z.unknown())) }).strict() }).strict(),
   z.object({ type: z.literal('text'), options: z.object({ text }).strict() }).strict(),
   z.object({ type: z.literal('mysql'), options: database }).strict(),
+  z
+    .object({
+      type: z.literal('mongodb'),
+      options: z
+        .object({
+          connection: text.optional(),
+          host: text.optional(),
+          database: text,
+          port,
+          user: z.string().optional(),
+          password: z.string().optional(),
+          authSource: z.string().optional(),
+          srv: z.boolean().optional(),
+          tls: z.boolean().optional(),
+          ssl: z.boolean().optional(),
+          tlsCAFile: z.string().optional(),
+          tlsAllowInvalidCertificates: z.boolean().optional(),
+        })
+        .strict(),
+    })
+    .strict(),
   z.object({ type: z.literal('postgresql'), options: database.extend({ schema: text.optional() }) }).strict(),
   z
     .object({ type: z.literal('supabase'), options: z.object({ accessToken: text, projectRef: text }).strict() })

@@ -5,6 +5,7 @@
 import * as path from 'path';
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { DuckDBInstance } from '@duckdb/node-api';
 
 import { DuckDBEngine } from '../../src/duckdb';
 import { QueryTimeoutError } from '../../src/duckdb/engine';
@@ -134,6 +135,34 @@ describe('DuckDBEngine', () => {
       expect(rows.data[0].total).toBe(3);
     } finally {
       await limited.dispose();
+    }
+  });
+
+  it('should keep community extensions disabled for ordinary sources', async () => {
+    const create = vi.spyOn(DuckDBInstance, 'create');
+    const basic = new DuckDBEngine(getLLMConfig());
+    try {
+      await basic.load({ type: 'json', options: { data: [{ a: 1 }] } });
+      expect(create).toHaveBeenLastCalledWith(
+        ':memory:',
+        expect.objectContaining({ allow_community_extensions: 'false' })
+      );
+    } finally {
+      await basic.dispose();
+    }
+  });
+
+  it('should allow community extensions when enabled for the engine', async () => {
+    const create = vi.spyOn(DuckDBInstance, 'create');
+    const mongo = new DuckDBEngine(getLLMConfig(), { allowCommunityExtensions: true });
+    try {
+      await mongo.load({ type: 'json', options: { data: [{ a: 1 }] } });
+      expect(create).toHaveBeenLastCalledWith(
+        ':memory:',
+        expect.objectContaining({ allow_community_extensions: 'true' })
+      );
+    } finally {
+      await mongo.dispose();
     }
   });
 

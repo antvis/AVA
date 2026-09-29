@@ -124,7 +124,7 @@ Engines are registered by the entry point, so the core `AVA` class never imports
 - `load(config)` - Load any data source; `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
   - inline types: `'csv'` (`{ csv }`, raw CSV content string), `'json'` (`{ data }`), `'text'` (`{ text }`, extracts data from unstructured text using LLM)
   - file types (`{ path, headers? }`, a local path or http(s) URL): `'csv-file'`, `'json-file'`, `'parquet'`, `'excel'` (one view per sheet) — Node.js only
-  - database types: `'mysql'` (`{ host, port?, database, user?, password?, ssh? }`), `'postgresql'` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed — Node.js only
+  - database types: `'mysql'` (`{ host, port?, database, user?, password?, ssh? }`), `'postgresql'` (`{ host, port?, database, user?, password?, schema?, ssh? }`), `'mongodb'` (`{ connection?, host?, port?, database, user?, password?, authSource?, srv?, tls?, ssl?, tlsCAFile?, tlsAllowInvalidCertificates? }` — `connection` advanced string takes precedence) — all tables/collections are auto-discovered and exposed — Node.js only
 
 ### Data Profiling
 - `profile(options?: ProfileOptions)` - Compute statistics for the loaded dataset without calling the LLM.

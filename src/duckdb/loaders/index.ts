@@ -9,6 +9,7 @@ import { loadExcel } from './excel';
 import { loadJson } from './json';
 import { loadJSONFile } from './json-file';
 import { loadMySQL } from './mysql';
+import { loadMongoDB } from './mongodb';
 import { loadParquetFile } from './parquet';
 import { loadPostgreSQL } from './postgresql';
 import { loadSQLite } from './sqlite';
@@ -39,6 +40,8 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       return loadExcel(config.options);
     case 'mysql':
       return loadMySQL(config.options);
+    case 'mongodb':
+      return loadMongoDB(config.options);
     case 'postgresql':
       return loadPostgreSQL(config.options);
     case 'sqlite':

@@ -46,6 +46,8 @@ export interface DuckDBEngineOptions {
   maxTempDirectorySize?: string;
   /** Per-query timeout in milliseconds. Default 30000. */
   queryTimeoutMs?: number;
+  /** Allow DuckDB community extensions during source loading when explicitly needed. */
+  allowCommunityExtensions?: boolean;
 }
 
 /**
@@ -77,7 +79,7 @@ export interface AnalysisConfig extends ExecutionOptions {
  * Data source types for load.
  * - inline types: `csv` (content string), `json` (object array), `text`
  * - file types: `csv-file`, `json-file`, `parquet` (read through DuckDB's readers)
- * - database types: `mysql`, `postgresql`, `sqlite` (ATTACH through DuckDB's extension)
+ * - database types: `mysql`, `postgresql`, `sqlite`, `mongodb` (ATTACH through DuckDB's extension)
  * - cloud types: `supabase` (schema discovered and SQL executed through the Supabase Management API — data never leaves the SaaS; handled by SaasDBEngine)
  */
 export type SourceType =
@@ -91,6 +93,7 @@ export type SourceType =
   | 'mysql'
   | 'postgresql'
   | 'sqlite'
+  | 'mongodb'
   | 'supabase';
 
 /**
@@ -306,6 +309,49 @@ export interface PostgreSQLSourceOptions {
 }
 
 /**
+ * Options for MongoDB data sources (ATTACH through DuckDB's mongo community extension)
+ *
+ * Supports two connection modes:
+ * - **Structured fields** (`host`, `port`, `user`, `password`, …) — the loader
+ *   builds a key-value connection string for the ATTACH.
+ * - **Advanced `connection` string** — a raw DuckDB mongo connection string or
+ *   a MongoDB URI (`mongodb://…` / `mongodb+srv://…`). When provided, it takes
+ *   precedence over all structured fields.
+ *
+ * See https://github.com/stephaniewang526/duckdb-mongo for the full parameter list.
+ */
+export interface MongoDBSourceOptions {
+  /**
+   * Advanced connection string, e.g. `host=localhost port=27017` or
+   * `mongodb://user:pass@host:27017/db`. Takes precedence over all structured
+   * fields when provided.
+   */
+  connection?: string;
+  /** MongoDB hostname or IP address (default `localhost`). */
+  host?: string;
+  /** MongoDB port number (default `27017`). */
+  port?: number;
+  /** Database name to expose as DuckDB tables (required). */
+  database: string;
+  /** MongoDB username. */
+  user?: string;
+  /** MongoDB password. */
+  password?: string;
+  /** Authentication database (MongoDB `authSource`). */
+  authSource?: string;
+  /** Use SRV connection format (for MongoDB Atlas). */
+  srv?: boolean;
+  /** Enable TLS/SSL encryption. Alias: `ssl`. */
+  tls?: boolean;
+  /** Alias for `tls`. */
+  ssl?: boolean;
+  /** Path to CA certificate file for TLS. */
+  tlsCAFile?: string;
+  /** Allow invalid certificates (testing only, default false). */
+  tlsAllowInvalidCertificates?: boolean;
+}
+
+/**
  * Options for Supabase data sources (handled by SaasDBEngine, not the DuckDB
  * engine). Schema is discovered and SQL is executed through the Supabase
  * Management API — data never leaves the SaaS. The OAuth handshake
@@ -323,7 +369,7 @@ export interface SupabaseSourceOptions {
  * External data source configuration for loadSource.
  * - inline types (csv/json/text): data is materialized into JS memory
  * - file types (csv-file/json-file/parquet): loaded through DuckDB's readers
- * - database types (mysql/postgresql/sqlite): ATTACH through DuckDB's extension
+ * - database types (mysql/postgresql/sqlite/mongodb): ATTACH through DuckDB's extension
  * - cloud types (supabase): schema/SQL over the Management API (SaasDBEngine)
  */
 export type DataSourceConfig =
@@ -337,6 +383,7 @@ export type DataSourceConfig =
   | { type: 'mysql'; options: MySQLSourceOptions }
   | { type: 'postgresql'; options: PostgreSQLSourceOptions }
   | { type: 'sqlite'; options: SQLiteSourceOptions }
+  | { type: 'mongodb'; options: MongoDBSourceOptions }
   | { type: 'supabase'; options: SupabaseSourceOptions };
 
 /**
