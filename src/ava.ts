@@ -17,6 +17,7 @@ import {
   AnalysisEventType,
   AnalysisEvent,
   emit,
+  EventCollector,
 } from './util/event';
 import { serializeError } from './util/error';
 
@@ -347,5 +348,24 @@ export class AVA extends EventEmitter {
     this.engine = null;
     this.dataSchema = null;
     this.dataProfile = null;
+  }
+
+  /**
+   * Create an EventCollector bound to this instance and start collecting.
+   * The collector records every lifecycle, execution, and analysis event
+   * with timestamps, forming an evidence trail of the full session.
+   *
+   * @example
+   * const collector = ava.collectEvents();
+   * await ava.source(config);
+   * await ava.analyze('What is the average revenue?');
+   * collector.trail();   // readonly EvidenceRecord[]
+   * collector.filter('analysis');  // analysis-phase events only
+   * collector.toJSON();  // serialized trail
+   */
+  collectEvents(): EventCollector {
+    const collector = new EventCollector();
+    collector.attach(this);
+    return collector;
   }
 }
