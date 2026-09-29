@@ -28,7 +28,6 @@ Use an OpenAI-compatible **Chat Completions** API. `MODEL_CONTEXT_WINDOW` is opt
 
 ```bash
 npm run typecheck                         # Static check; no model call
-node scripts/check-cleanup.mjs            # Docker cleanup check; no model call
 npm run eval -- --list                    # List cases; no model call
 npm run eval -- --limit 1 --skill ava     # Try one question
 npm run eval -- --skill ava               # Require AVA Skill (default)
