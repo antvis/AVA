@@ -213,7 +213,7 @@ Core APIs in AVA:
   - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
   - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
-  - direct-query type: `clickhouse` (`{ host? | url?, port?, database, username? | user?, password?, ...@clickhouse/client options }`) — use `engine: { type: 'clickhouse' }` to query ClickHouse remotely through the official JS client. Requires ClickHouse 23.10+ (`formatQuery`); SQL validation uses the server parser and adds two requests per query (`formatQuery` and `EXPLAIN AST`). SQL-level `SETTINGS` are rejected to prevent subquery overrides; put tuning settings in the source connection options. Every request uses `readonly=1`; connect with an account granted only the required SELECT permissions
+  - direct-query type: `clickhouse` (`{ host? | url?, port?, database, username? | user?, password? }`) — use `engine: { type: 'clickhouse' }` to query ClickHouse remotely in read-only mode. Requires ClickHouse 23.10+; connect with an account granted only the required SELECT permissions.
   - SQLite: `sqlite` (`{ path }`, local file) — all tables are exposed read-only, with native SQLite column types, nullability, primary keys, ordinary/unique indexes, and foreign keys in the schema. Generated columns are queryable. Defaults, CHECK constraints, triggers, and partial/expression indexes are not represented. Uses the [official SQLite extension](https://duckdb.org/docs/current/core_extensions/sqlite), installed on first use.
 - `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
 - `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
@@ -395,7 +395,7 @@ Full feature set backed by an in-memory DuckDB instance (LLM generates SQL):
 - Data is never materialized into JS memory for file sources — DuckDB reads them directly
 - Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
 - Supabase engine for remote SQL execution via Supabase Management API
-- ClickHouse engine for remote SQL execution via the official `@clickhouse/client`
+- ClickHouse engine for remote SQL execution via the official client
 
 ### Browser
 
