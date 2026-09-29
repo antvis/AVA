@@ -190,6 +190,7 @@ export class AVA extends EventEmitter {
     }
 
     const runtime = {
+      emit: (event: AnalysisEvent) => emit(this, event),
       context: { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
       engine: this.engine,
       llm: this.llmConfig,

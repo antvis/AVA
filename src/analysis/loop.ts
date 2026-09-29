@@ -13,6 +13,8 @@ import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyProfile, stringifySchema } from '../util/context';
+import { AnalysisEvent, AnalysisEventType } from '../util/event';
+import { serializeError } from '../util/error';
 
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';
 
@@ -171,7 +173,11 @@ const transcriptPrompt = (transcript: string[]) => {
 /**
  * Explore, refine, execute, and verify SQL before returning an answer.
  */
-export const loopAnalysis: AnalysisStrategy = async (query, config, { context: { schema, profile }, engine, llm }) => {
+export const loopAnalysis: AnalysisStrategy = async (
+  query,
+  config,
+  { context: { schema, profile }, engine, llm, emit }
+) => {
   const context = profile ? stringifyProfile(profile) : stringifySchema(schema);
   const transcript: string[] = [];
   let sql: string | undefined;
@@ -190,16 +196,41 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
 
     ${transcriptPrompt(transcript)}`;
 
-    const response = await generateText({
-      model: languageModel(llm),
-      maxRetries: llm.maxRetries ?? 3,
-      prompt,
-    });
-    llm.onQueryUsage?.(response.usage);
+    emit(new AnalysisEvent(AnalysisEventType.REASON_START, { step }));
 
-    const text = response.text.trim();
-    const action = text.match(/^\[(EXPLORE|REFINE|SQL|CONFIRM)\]/)?.[1];
-    if (!action) throw new Error('Loop response must begin with [EXPLORE], [REFINE], [SQL], or [CONFIRM]');
+    let text: string;
+    let action: string;
+    let queries: string[] = [];
+    try {
+      const response = await generateText({
+        model: languageModel(llm),
+        maxRetries: llm.maxRetries ?? 3,
+        prompt,
+      });
+      llm.onQueryUsage?.(response.usage);
+
+      text = response.text.trim();
+      action = text.match(/^\[(EXPLORE|REFINE|SQL|CONFIRM)\]/)?.[1];
+      if (!action) throw new Error('Loop response must begin with [EXPLORE], [REFINE], [SQL], or [CONFIRM]');
+
+      if (action === 'EXPLORE' || action === 'SQL') {
+        queries = codeBlocks(text, engine.language.fence);
+        if (queries.length === 0 || (action === 'SQL' && queries.length !== 1)) {
+          throw new Error(
+            `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} ${
+              engine.language.fence
+            } code block`
+          );
+        }
+      }
+    } catch (error) {
+      emit(new AnalysisEvent(AnalysisEventType.REASON_END, { step, error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(new AnalysisEvent(AnalysisEventType.REASON_END, { step, action, text }));
+
     transcript.push(`Assistant:\n${text}`);
 
     if (action === 'REFINE') continue;
@@ -210,6 +241,7 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
         transcript.push('Runtime:\nNo final SQL has executed successfully yet. Continue the loop.');
         continue;
       }
+
       return {
         query,
         ...result,
@@ -218,40 +250,46 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
       };
     }
 
-    const queries = codeBlocks(text, engine.language.fence);
-    if (queries.length === 0 || (action === 'SQL' && queries.length !== 1)) {
-      throw new Error(
-        `Loop ${action} response must contain ${action === 'SQL' ? 'exactly one' : 'at least one'} ${
-          engine.language.fence
-        } code block`
-      );
-    }
-
     const observations: string[] = [];
+
     for (const proposal of queries) {
       const statement = proposal;
+
+      emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: statement, options: config, step, action }));
+
+      let execution: ExecutionResult;
       try {
-        const execution = await engine.execute(statement, config);
-        observations.push(
-          `Proposed statement (${engine.language.name}):
-          ${proposal}
-          Result:
-          ${JSON.stringify(execution)}`
-        );
-        if (action === 'SQL') {
-          sql = statement;
-          result = execution;
-        }
+        execution = await engine.execute(statement, config);
       } catch (error) {
+        emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+
         if (action === 'SQL') result = undefined;
+
         observations.push(
           `Proposed statement (${engine.language.name}):
           ${proposal}
           Error:
           ${error instanceof Error ? error.message : String(error)}`
         );
+
+        continue;
+      }
+
+      emit(new AnalysisEvent(AnalysisEventType.QUERY_END, execution));
+
+      observations.push(
+        `Proposed statement (${engine.language.name}):
+          ${proposal}
+          Result:
+          ${JSON.stringify(execution)}`
+      );
+
+      if (action === 'SQL') {
+        sql = statement;
+        result = execution;
       }
     }
+
     transcript.push(`Runtime:\n${observations.join('\n\n')}`);
   }
 
@@ -271,10 +309,15 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
 
   // maxSteps limits the normal loop. If it ends without final SQL, allow exactly one
   // history-aware SQL-only turn and adopt its executed result without another CONFIRM.
-  const finalResponse = await generateText({
-    model: languageModel(llm),
-    maxRetries: llm.maxRetries ?? 3,
-    prompt: `${loopPrompt(engine.language, config.includeSummary !== false)}
+  emit(new AnalysisEvent(AnalysisEventType.REASON_START, { step: maxSteps, finalAttempt: true }));
+
+  let finalText: string;
+  let statement: string;
+  try {
+    const finalResponse = await generateText({
+      model: languageModel(llm),
+      maxRetries: llm.maxRetries ?? 3,
+      prompt: `${loopPrompt(engine.language, config.includeSummary !== false)}
 
     # DATABASE CONTEXT
 
@@ -289,32 +332,69 @@ export const loopAnalysis: AnalysisStrategy = async (query, config, { context: {
     The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${
       engine.language.name
     } statement.`,
-  });
-  llm.onQueryUsage?.(finalResponse.usage);
+    });
+    llm.onQueryUsage?.(finalResponse.usage);
 
-  const proposals = codeBlocks(finalResponse.text.trim(), engine.language.fence);
-  if (!finalResponse.text.trim().startsWith('[SQL]') || proposals.length !== 1) {
-    throw new Error(`Loop final fallback response must contain exactly one ${engine.language.fence} code block`);
+    finalText = finalResponse.text.trim();
+    const proposals = codeBlocks(finalText, engine.language.fence);
+    if (!finalText.startsWith('[SQL]') || proposals.length !== 1) {
+      throw new Error(`Loop final fallback response must contain exactly one ${engine.language.fence} code block`);
+    }
+
+    statement = proposals[0];
+  } catch (error) {
+    emit(
+      new AnalysisEvent(AnalysisEventType.REASON_END, {
+        step: maxSteps,
+        finalAttempt: true,
+        error: serializeError(error),
+      })
+    );
+
+    throw error;
   }
 
-  const proposal = proposals[0];
-  const statement = proposal;
+  emit(
+    new AnalysisEvent(AnalysisEventType.REASON_END, {
+      step: maxSteps,
+      finalAttempt: true,
+      action: 'SQL',
+      text: finalText,
+    })
+  );
+
+  emit(
+    new AnalysisEvent(AnalysisEventType.QUERY_START, {
+      dsl: statement,
+      options: config,
+      step: maxSteps,
+      action: 'SQL',
+      finalAttempt: true,
+    })
+  );
+
+  let execution: ExecutionResult;
   try {
-    const execution = await engine.execute(statement, config);
-    return {
-      query,
-      ...execution,
-      sql: statement,
-      text:
-        config.includeSummary === false
-          ? ''
-          : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
-    };
+    execution = await engine.execute(statement, config);
   } catch (error) {
+    emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+
     throw new Error(
       `Loop final statement failed: ${error instanceof Error ? error.message : String(error)}\nLast attempted ${
         engine.language.name
       } statement:\n${statement}`
     );
   }
+
+  emit(new AnalysisEvent(AnalysisEventType.QUERY_END, execution));
+
+  return {
+    query,
+    ...execution,
+    sql: statement,
+    text:
+      config.includeSummary === false
+        ? ''
+        : lastConfirmation?.replace(/^\[CONFIRM\]\s*/, '') ?? JSON.stringify(execution.data, null, 2),
+  };
 };

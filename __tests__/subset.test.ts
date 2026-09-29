@@ -127,6 +127,7 @@ describe('Subset strategy', () => {
       'Total amount',
       { strategy: { type: 'subset' }, maxRows: 10, includeSummary },
       {
+        emit: vi.fn(),
         context: { schema },
         engine,
         llm: { provider: 'gateway', model: 'openai/gpt-5.5' },

@@ -4,7 +4,7 @@
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { LanguageModelUsage } from 'ai';
-import type EventEmitter from '@antv/event-emitter';
+import type { AnalysisEvent } from './util/event';
 
 /**
  * Minimal structural type for a database connection used by LoadedSource.
@@ -697,8 +697,8 @@ export interface DataContext {
 
 /** Runtime dependencies available to an analysis strategy. */
 export interface AnalysisRuntime {
-  /** Optional target for analysis stage events. */
-  emitter?: EventEmitter;
+  /** Dispatch an analysis stage event. */
+  emit: (event: AnalysisEvent) => void;
   context: DataContext;
   engine: AnalysisEngine;
   llm: LLMConfig;

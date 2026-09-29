@@ -32,6 +32,7 @@ describe('directAnalysis', () => {
       'Give me one',
       { strategy: { type: 'direct' }, maxRows: 5, maxResultBytes: 1024 },
       {
+        emit: vi.fn(),
         context: { schema: { tables: [] } },
         engine,
         llm: { model: 'test', apiKey: 'test' },
@@ -66,6 +67,7 @@ it.each([undefined, true, false])('direct includeSummary=%s controls the summary
     'Give me one',
     { includeSummary },
     {
+      emit: vi.fn(),
       context: { schema: { tables: [] } },
       engine,
       llm: { model: 'test' },
@@ -87,6 +89,7 @@ it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification 
     'Give me one',
     { strategy: { type: 'loop', maxSteps }, includeSummary: false },
     {
+      emit: vi.fn(),
       context: { schema: { tables: [] } },
       engine,
       llm: { model: 'test' },

@@ -1,6 +1,8 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { AnalysisEvent, AnalysisEventType } from '../util/event';
+import { serializeError } from '../util/error';
 
 import type { AnalysisStrategy, ExecutionResult, LLMConfig } from '../types';
 
@@ -28,19 +30,36 @@ Provide a natural language summary of the result. If the result is tabular data,
 }
 
 /** Generate and execute a query with bounded error correction, then summarize its data. */
-export const directAnalysis: AnalysisStrategy = async (query, config, { context, engine, llm }) => {
+export const directAnalysis: AnalysisStrategy = async (query, config, { context, engine, llm, emit }) => {
   const maxRetries = Math.max(config.strategy?.type === 'direct' ? config.strategy.maxRetries ?? 2 : 10, 0);
 
-  let sql = await engine.getDSL(query, context);
+  let translationQuery = query;
+  let sql: string;
   let result: ExecutionResult;
+
   for (let attempt = 0; ; attempt++) {
+    emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query: translationQuery }));
+
+    try {
+      sql = await engine.getDSL(translationQuery, context);
+    } catch (error) {
+      emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl: sql }));
+
+    emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: sql, options: config }));
+
     try {
       result = await engine.execute(sql, config);
-      break;
     } catch (error) {
+      emit(new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+
       if (attempt >= maxRetries) throw error;
-      sql = await engine.getDSL(
-        `${query}
+
+      translationQuery = `${query}
 
         The previous DSL failed to execute. Correct it using the following diagnostic context:
 
@@ -48,15 +67,35 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { context,
         ${sql}
 
         Execution error:
-        ${error instanceof Error ? error.message : String(error)}`,
-        context
-      );
+        ${error instanceof Error ? error.message : String(error)}`;
+
+      continue;
     }
+
+    emit(new AnalysisEvent(AnalysisEventType.QUERY_END, result));
+
+    break;
   }
+
   const data = result.data;
 
-  const summaryData = result.truncatedBy ? { data, truncated: true, truncatedBy: result.truncatedBy } : data;
-  const text = config.includeSummary === false ? '' : await summarizeResult(query, summaryData, llm);
+  let text = '';
+
+  if (config.includeSummary !== false) {
+    const summaryData = result.truncatedBy ? { data, truncated: true, truncatedBy: result.truncatedBy } : data;
+
+    emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_START, { query, data: summaryData }));
+
+    try {
+      text = await summarizeResult(query, summaryData, llm);
+    } catch (error) {
+      emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_END, { text }));
+  }
 
   return {
     query,
