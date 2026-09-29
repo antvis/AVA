@@ -1,16 +1,16 @@
 import EventEmitter from '@antv/event-emitter';
 import { expect, it, vi } from 'vitest';
 
-import { ExecutionEventType, OperationEvent, emit } from '../../src/util/event';
+import { AnalysisEventType, AnalysisEvent, emit } from '../../src/util/event';
 
 it('dispatches type and data to named and wildcard listeners', () => {
   const emitter = new EventEmitter();
   const listener = vi.fn();
   const collector = vi.fn();
-  emitter.on(ExecutionEventType.QUERY_START, listener);
+  emitter.on(AnalysisEventType.QUERY_START, listener);
   emitter.on('*', collector);
 
-  const event = new OperationEvent(ExecutionEventType.QUERY_START, { dsl: 'SELECT 1' });
+  const event = new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: 'SELECT 1' });
   emit(emitter, event);
 
   expect(listener).toHaveBeenCalledExactlyOnceWith(event);
@@ -19,7 +19,7 @@ it('dispatches type and data to named and wildcard listeners', () => {
     type: 'querystart',
     data: { dsl: 'SELECT 1' },
   });
-  emitter.off(ExecutionEventType.QUERY_START, listener);
+  emitter.off(AnalysisEventType.QUERY_START, listener);
   emit(emitter, event);
   expect(listener).toHaveBeenCalledOnce();
 });
@@ -27,8 +27,8 @@ it('dispatches type and data to named and wildcard listeners', () => {
 it('propagates synchronous listener errors unchanged', () => {
   const emitter = new EventEmitter();
   const error = new Error('Cannot collect');
-  emitter.on(ExecutionEventType.QUERY_START, () => {
+  emitter.on(AnalysisEventType.QUERY_START, () => {
     throw error;
   });
-  expect(() => emit(emitter, new OperationEvent(ExecutionEventType.QUERY_START))).toThrow(error);
+  expect(() => emit(emitter, new AnalysisEvent(AnalysisEventType.QUERY_START))).toThrow(error);
 });

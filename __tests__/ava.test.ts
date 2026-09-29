@@ -71,7 +71,8 @@ describe('AVA', () => {
 
   it('emits analysis start and end events with results or errors', async () => {
     const onEvent = vi.fn();
-    ava.on('*', onEvent);
+    ava.on('analyzestart', onEvent);
+    ava.on('analyzeend', onEvent);
     await expect(ava.analyze('Total value')).rejects.toThrow('No data loaded');
     expect(onEvent).not.toHaveBeenCalled();
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
@@ -99,7 +100,8 @@ describe('AVA', () => {
 
   it('translates queries with schema and optional profile without executing them', async () => {
     const onEvent = vi.fn();
-    ava.on('*', onEvent);
+    ava.on('translatestart', onEvent);
+    ava.on('translateend', onEvent);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava['translate']('Total value')).rejects.toThrow(message);
     expect(onEvent).not.toHaveBeenCalled();
