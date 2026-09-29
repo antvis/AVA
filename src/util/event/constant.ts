@@ -39,13 +39,3 @@ export enum ExecutionEventType {
   SUGGEST_START = 'suggeststart',
   SUGGEST_END = 'suggestend',
 }
-
-/**
- * Visualization events.
- */
-export enum VisualizationEventType {
-  RECOMMEND_START = 'recommendstart',
-  RECOMMEND_END = 'recommendend',
-  RENDER_START = 'renderstart',
-  RENDER_END = 'renderend',
-}

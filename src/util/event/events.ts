@@ -1,4 +1,4 @@
-import { LifecycleEventType, ExecutionEventType, AnalysisEventType, VisualizationEventType } from './constant';
+import { LifecycleEventType, ExecutionEventType, AnalysisEventType } from './constant';
 
 import type { SerializedError } from '../error';
 
@@ -51,19 +51,6 @@ export class AnalysisEvent extends BaseEvent {
       | AnalysisEventType.SELECT_CONTEXT_END
       | AnalysisEventType.REASON_START
       | AnalysisEventType.REASON_END,
-    public data: object | null = {}
-  ) {
-    super(type);
-  }
-}
-
-export class VisualizationEvent extends BaseEvent {
-  constructor(
-    type:
-      | VisualizationEventType.RECOMMEND_START
-      | VisualizationEventType.RECOMMEND_END
-      | VisualizationEventType.RENDER_START
-      | VisualizationEventType.RENDER_END,
     public data: object | null = {}
   ) {
     super(type);
