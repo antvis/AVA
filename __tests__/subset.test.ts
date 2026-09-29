@@ -123,16 +123,21 @@ describe('Subset strategy', () => {
       execute: vi.fn().mockResolvedValue({ data: [{ total: 246 }], schema: [{ name: 'total' }] }),
       getDSL: vi.fn((query, context) => dialect.getDSL(query, context)),
     } as unknown as AnalysisEngine;
+    const emit = vi.fn();
     const result = await analyze(
       'Total amount',
       { strategy: { type: 'subset' }, maxRows: 10, includeSummary },
       {
-        emit: vi.fn(),
+        emit,
         context: { schema },
         engine,
         llm: { provider: 'gateway', model: 'openai/gpt-5.5' },
       }
     );
+    expect(emit.mock.calls.slice(0, 2).map(([event]) => event)).toEqual([
+      { type: 'selectcontextstart', data: {} },
+      { type: 'selectcontextend', data: { tables: [{ name: 'orders', fields: ['amount'] }] } },
+    ]);
     const prompt = vi.mocked(generateText).mock.calls[0][0].prompt as string;
     expect(prompt).toContain('Dataset Profile: 3 table(s)');
     expect(prompt).toContain('Maximum: 123');

@@ -135,6 +135,8 @@ describe('AVA', () => {
   });
 
   it('executes bounded read-only queries and rejects writes', async () => {
+    const onStart = vi.fn();
+    ava.on('querystart', onStart);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava['query']('SELECT 1')).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }] } });
@@ -149,6 +151,7 @@ describe('AVA', () => {
       truncated: true,
       truncatedBy: 'maxRows',
     });
+    expect(onStart).toHaveBeenLastCalledWith({ type: 'querystart', data: { dsl } });
     expect(await ava['query'](dsl, { maxResultBytes: 1 })).toMatchObject({
       data: [],
       truncated: true,

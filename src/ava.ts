@@ -247,7 +247,7 @@ export class AVA extends EventEmitter {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    emit(this, new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl, options }));
+    emit(this, new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl }));
 
     let result: ExecutionResult;
     try {

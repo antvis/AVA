@@ -38,7 +38,7 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { context,
   let result: ExecutionResult;
 
   for (let attempt = 0; ; attempt++) {
-    emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query: translationQuery }));
+    emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }));
 
     try {
       sql = await engine.getDSL(translationQuery, context);
@@ -50,7 +50,7 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { context,
 
     emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl: sql }));
 
-    emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: sql, options: config }));
+    emit(new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl: sql }));
 
     try {
       result = await engine.execute(sql, config);
@@ -84,7 +84,7 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { context,
   if (config.includeSummary !== false) {
     const summaryData = result.truncatedBy ? { data, truncated: true, truncatedBy: result.truncatedBy } : data;
 
-    emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_START, { query, data: summaryData }));
+    emit(new AnalysisEvent(AnalysisEventType.SUMMARIZE_START));
 
     try {
       text = await summarizeResult(query, summaryData, llm);

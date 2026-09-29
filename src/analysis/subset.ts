@@ -80,7 +80,7 @@ export async function selectSubsetContext(query: string, context: DataContext, m
 export const subsetAnalysis: AnalysisStrategy = async (query, config, runtime) => {
   const { emit } = runtime;
 
-  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_START, { query }));
+  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_START));
 
   let context: DataContext;
   try {
@@ -92,7 +92,14 @@ export const subsetAnalysis: AnalysisStrategy = async (query, config, runtime) =
     throw error;
   }
 
-  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END, { context }));
+  // Report the names of retained statistics without their values or the complete schema.
+  const tables =
+    context.profile?.tables.flatMap((table) => {
+      const fields = table.fields.filter((field) => Object.keys(field.metrics).length).map((field) => field.name);
+      return Object.keys(table.metrics).length || fields.length ? [{ name: table.name, fields }] : [];
+    }) ?? [];
+
+  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END, { tables }));
 
   return directAnalysis(query, config, { ...runtime, context });
 };
