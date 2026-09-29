@@ -1,7 +1,20 @@
 /**
- * MongoDB loader: ATTACH a MongoDB database through DuckDB's mongo community
- * extension and register one view per collection.
+ * MongoDB loader: ATTACH a MongoDB database through the DuckDB mongo community
+ * extension and register one view per collection so the LLM can query it with
+ * SQL just like any other DuckDB data source.
  * https://duckdb.org/community_extensions/extensions/mongo
+ *
+ * Known limitations:
+ * - **No indexes or constraints**: The extension does not map MongoDB indexes to
+ *   duckdb_indexes()/duckdb_constraints(), so schema.indexes and schema.relations
+ *   are always empty. Pushed-down filters still use indexes server-side; the gap
+ *   is that the LLM cannot see them for query planning.
+ * - **No remote catalog query**: The extension exposes only mongo_scan (data) and
+ *   mongo_clear_cache — no listIndexes/listCollections equivalent. Validator
+ *   $jsonSchema and collection options are unreachable from DuckDB SQL.
+ * - **Schema is inferred, not declared**: Fields and types are inferred by sampling
+ *   documents (default 100), so all columns are nullable=true and rarely-occurring
+ *   fields may be missed.
  */
 
 import { getDuckDBSchema } from '../util/schema';
