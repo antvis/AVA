@@ -15,6 +15,7 @@ import { randomUUID } from 'node:crypto';
 
 import { takeOptions } from '../../_shared/args.js';
 import { hashTree } from '../lib/files.mjs';
+import { removeRunContainers } from '../lib/cleanup.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const repo = resolve(root, '../..');
@@ -159,6 +160,11 @@ export async function run(command, input, prepareEvaluation) {
   } finally {
     process.off('SIGINT', interrupt);
     process.off('SIGTERM', terminate);
+    if (command === 'eval' && !listing) {
+      await removeRunContainers(directory).catch((error) => {
+        console.error(`Run sandbox cleanup failed: ${error.message}`);
+      });
+    }
   }
 }
 

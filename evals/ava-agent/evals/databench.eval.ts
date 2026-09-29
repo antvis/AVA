@@ -1,4 +1,4 @@
-import { appendFileSync, copyFileSync, constants, cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, constants, cpSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -9,6 +9,7 @@ import { createTextWithFileContent } from 'eve/client';
 import { z } from 'zod';
 
 import { hashTree } from '../lib/files.mjs';
+import { removeSessionContainers } from '../lib/cleanup.mjs';
 
 type Benchmark = typeof import('../../databench/index.js');
 const require = createRequire(import.meta.url);
@@ -26,6 +27,7 @@ Options:
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --skill <ava|none>     Require AVA Skill or run without it (default: ava)
   --resume <csv>         Import completed rows and skip their IDs; repeatable
+  --retry-errors <csv>   Rerun only error rows and atomically replace that CSV
   --list                List selected cases without model calls
 
 Additional execution options are forwarded to Eve.
@@ -71,30 +73,39 @@ function prepareSnapshot(
 export async function main(argv: string[] = process.argv.slice(2)) {
   const { takeOptions } = require('../../_shared/args.js');
   const { selectSamples }: Benchmark = require('../../databench/index.js');
-  const { values: { resume = [], ...selection }, rest } = takeOptions(argv, {
+  const { values: { resume = [], 'retry-errors': retryErrors, ...selection }, rest } = takeOptions(argv, {
     dataset: { type: 'string' },
     limit: { type: 'string' },
     offset: { type: 'string' },
     suite: { type: 'string' },
     resume: { type: 'string', multiple: true },
+    'retry-errors': { type: 'string' },
   });
   if (rest.includes('--help')) return process.stdout.write(HELP);
   const samples = selectSamples(selection);
   if (!samples.length) throw new Error('No DataBench questions match the selection.');
-  const resumedFrom = resume.map((path: string) => resolve(path));
-  const previous = loadPreviousResults(resumedFrom, samples);
+  if (retryErrors && resume.length) throw new Error('--retry-errors cannot be combined with --resume.');
+  const resumedFrom = (retryErrors ? [retryErrors] : resume).map((path: string) => resolve(path));
+  const imported = loadPreviousResults(resumedFrom, samples, !!retryErrors);
+  if (retryErrors && imported.length !== samples.length) {
+    throw new Error('--retry-errors requires a CSV matching the complete selection.');
+  }
+  const previous = retryErrors ? imported.filter((row) => !row.error) : imported;
   const completed = new Set(previous.map((row) => row.id));
   const pending = samples.filter((sample) => !completed.has(sample.id));
   if (!pending.length) return console.log('All selected questions already have result rows.');
   console.error(`Selected ${samples.length}; imported ${previous.length}; remaining ${pending.length}`);
   const { run } = await import(new URL('../scripts/run.mjs', import.meta.url).href);
-  const result = await run('eval', ['databench', ...rest], (directory: string) => prepareSnapshot(directory, pending, selection, previous, resumedFrom));
+  const result = await run('eval', ['databench', ...rest], (directory: string) => {
+    if (retryErrors) copyFileSync(resolve(retryErrors), join(directory, 'original.csv'));
+    return prepareSnapshot(directory, pending, selection, previous, resumedFrom);
+  });
   if (!rest.includes('--list') && !result.signal) {
-    saveResults(result.directory, samples, join(evalsRoot, 'ava-agent/results'));
+    saveResults(result.directory, samples, join(evalsRoot, 'ava-agent/results'), retryErrors ? resolve(retryErrors) : undefined);
   }
 }
 
-export function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>) {
+export function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>, exact = false) {
   const { readCsv } = require('../../_shared/datasets.js');
   const { OUTPUT_COLUMNS } = require('../../_shared/results.js');
   const selected = new Set(samples.map((sample) => sample.id));
@@ -104,7 +115,10 @@ export function loadPreviousResults(paths: string[], samples: ReturnType<Benchma
       if (JSON.stringify(Object.keys(row)) !== JSON.stringify(OUTPUT_COLUMNS)) {
         throw new Error(`Incompatible result columns: ${path}`);
       }
-      if (!selected.has(row.id)) continue;
+      if (!selected.has(row.id)) {
+        if (exact) throw new Error(`Result outside retry selection: ${row.id}`);
+        continue;
+      }
       if (rows.has(row.id)) throw new Error(`Duplicate imported result: ${row.id}`);
       rows.set(row.id, row);
     }
@@ -112,7 +126,7 @@ export function loadPreviousResults(paths: string[], samples: ReturnType<Benchma
   return [...rows.values()];
 }
 
-export function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string) {
+export function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string, replace?: string) {
   const { readCsv } = require('../../_shared/datasets.js');
   const source = join(directory, 'predictions.csv');
   const rows = readCsv(source);
@@ -123,18 +137,16 @@ export function saveResults(directory: string, samples: ReturnType<Benchmark['se
   }
   mkdirSync(destination, { recursive: true });
   const output = join(destination, `${samples[0].dataset}-${basename(directory)}.csv`);
+  if (replace) {
+    copyFileSync(source, `${replace}.tmp`, constants.COPYFILE_EXCL);
+    renameSync(`${replace}.tmp`, replace);
+    console.error(`Replaced: ${replace}`);
+    return replace;
+  }
   copyFileSync(source, output, constants.COPYFILE_EXCL);
   console.error(`Results: ${output}`);
   return output;
 }
-
-const answerTypes: Record<string, z.ZodType> = {
-  boolean: z.boolean(),
-  number: z.number(),
-  category: z.string(),
-  'list[category]': z.array(z.string()),
-  'list[number]': z.array(z.number()),
-};
 
 export function createEvals(directory: string) {
   const { csvCell } = require(join(directory, '_shared/results.js'));
@@ -154,19 +166,22 @@ export function createEvals(directory: string) {
         let error = '';
         let session: EveEvalSession | undefined;
         try {
-          const answerType = answerTypes[sample.answerType];
-          if (!answerType) throw new Error(`Unsupported DataBench answer type: ${sample.answerType}`);
-          const outputSchema = z.object({ answer: answerType.nullable(), sql: z.string() });
+          // A string transport avoids provider coercion of nullable scalar/array tool arguments.
+          const outputSchema = z.object({ answer: z.string().describe('DataBench answer text: a scalar or a JSON array; use None if unavailable'), sql: z.string() });
           session = await t.session();
           const turn = await session.send(
             createTextWithFileContent({
-              text: `${sample.question}\nAnalyze the attached Parquet file. Return the ${sample.answerType} answer in the required structured output. Include the SQL actually executed to derive the answer in sql; use an empty string if no SQL was used.`,
+              text: `${sample.question}\nAnalyze the attached Parquet file. Return the ${sample.answerType} answer as text inside the answer string of the required structured output. Use plain text for scalar answers, a JSON array for lists, and None if unavailable. Include the SQL actually executed to derive the answer in sql; use an empty string if no SQL was used.`,
               bytes: readFileSync(sample.dataPath),
               filename: basename(sample.dataPath),
               mediaType: 'application/vnd.apache.parquet',
             }),
             { outputSchema }
           );
+          turn.expectOk();
+          if (turn.data === undefined) {
+            throw new Error(`Agent turn ${turn.status}: ${turn.inputRequests.map((request) => request.prompt).join('; ') || turn.message || 'session parked without a result; see session trace'}`);
+          }
           t.succeeded();
           t.check(turn.toolCalls.some((call) => call.name === 'python' || call.name === 'bash'), equals(true))
             .label('execution tool called');
@@ -178,7 +193,7 @@ export function createEvals(directory: string) {
           }
           const result = outputSchema.parse(turn.data);
           sql = result.sql;
-          prediction = benchmark.formatAnswer(result.answer);
+          prediction = result.answer === 'null' ? 'None' : result.answer;
           t.check(benchmark.databenchAnswer(prediction, sample), equals(true)).label('answer correctness');
         } catch (cause) {
           error = cause instanceof Error ? cause.message : String(cause);
@@ -192,7 +207,16 @@ export function createEvals(directory: string) {
           const totalTokens = inputTokens !== '' && outputTokens !== '' ? inputTokens + outputTokens : '';
           const row = [sample.id, prediction, sql, error, process.env.OPENAI_MODEL,
             Date.now() - startedAt, inputTokens, outputTokens, totalTokens].map(csvCell).join(',');
-          appendFileSync(join(directory, '../predictions.csv'), `${row}\n`);
+          try {
+            appendFileSync(join(directory, '../predictions.csv'), `${row}\n`);
+          } finally {
+            if (session) {
+              const sessionId = session.sessionId;
+              await removeSessionContainers(sessionId).catch((cause) => {
+                console.error(`Sandbox cleanup failed for ${sessionId}: ${cause.message}`);
+              });
+            }
+          }
         }
       },
     })
