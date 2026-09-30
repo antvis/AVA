@@ -59,7 +59,7 @@ describe('chart recommendation', () => {
     const events = onEvent.mock.calls.map(([event]) => ({ type: event.type, data: event.data }));
     expect(events).toEqual([
       { type: 'visualizestart', data: { query: result.query } },
-      { type: 'visualizeend', data: { chartType: 'column', chartSyntax: syntax } },
+      { type: 'visualizeend', data: { chartType: 'column', syntax } },
     ]);
     expect(visualization).toMatchObject({ chartType: 'column', syntax });
     expect(visualization?.html).toContain('<!DOCTYPE html>');

@@ -273,8 +273,9 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_START, { query: analysisResult.query }));
 
     let result: VisualizeResponse | null;
+    let spec: ChartSpec | null = null;
     try {
-      const spec = await this.recommend(analysisResult);
+      spec = await this.recommend(analysisResult);
       result = spec ? { ...spec, html: await this.viz(spec) } : null;
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, { error: serializeError(error) }));
@@ -282,18 +283,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(
-      this,
-      new ExecutionEvent(
-        ExecutionEventType.VISUALIZE_END,
-        result
-          ? {
-              chartType: result.chartType,
-              chartSyntax: result.syntax,
-            }
-          : {}
-      )
-    );
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, spec ?? {}));
 
     return result;
   }
