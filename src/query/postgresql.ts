@@ -46,7 +46,7 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
       .trim();
   }
 
-  async validateDSL(sql: string): Promise<void> {
+  async validateDSL(sql: string): Promise<string> {
     const { stmts: statements = [] } = await unwrapParseResult(this.parser.parse(sql));
     if (statements.length === 0) {
       throw new Error('PostgreSQL query must contain exactly one read-only SELECT statement');
@@ -59,5 +59,6 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
     if (statements.length !== 1) {
       throw new Error('PostgreSQL query must contain exactly one read-only SELECT statement');
     }
+    return sql;
   }
 }

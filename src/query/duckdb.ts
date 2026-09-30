@@ -33,7 +33,7 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
       .trim();
   }
 
-  async validateDSL(sql: string, connection: DuckDBConnection): Promise<void> {
+  async validateDSL(sql: string, connection: DuckDBConnection): Promise<string> {
     const statements = await connection.extractStatements(sql);
     if (statements.count === 0) {
       throw new Error('DuckDB query must contain exactly one read-only SELECT statement');
@@ -52,5 +52,6 @@ Generate ONLY the SQL query without any explanation or markdown formatting. Refe
     if (statements.count !== 1) {
       throw new Error('DuckDB query must contain exactly one read-only SELECT statement');
     }
+    return sql;
   }
 }

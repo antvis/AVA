@@ -1,0 +1,28 @@
+name: ava-clickhouse-tests
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    environment:
+      CLICKHOUSE_PASSWORD: ava_test_admin_password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: '1'
+    ports:
+      - '127.0.0.1:${AVA_CLICKHOUSE_TEST_PORT:-13123}:8123'
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/01-fixture.sql:ro
+      - clickhouse-data:/var/lib/clickhouse
+    healthcheck:
+      test:
+        - CMD
+        - clickhouse-client
+        - --user
+        - ava_test
+        - --password
+        - ava_test_password
+        - --query
+        - SELECT count() FROM ava_clickhouse_test.orders
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 20s
+volumes:
+  clickhouse-data:

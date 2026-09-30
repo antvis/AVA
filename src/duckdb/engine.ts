@@ -153,7 +153,7 @@ export class DuckDBEngine implements AnalysisEngine {
   }
 
   async getDSL(query: string, context?: DataContext): Promise<string> {
-    if (!this.schema) throw new Error('No data loaded. Please call load() first.');
+    if (!this.schema) throw new Error('No data loaded. Please call source() first.');
 
     return this.queryDialect.getDSL(query, context ?? { schema: this.schema, profile: this.dataProfile ?? undefined });
   }
@@ -161,7 +161,7 @@ export class DuckDBEngine implements AnalysisEngine {
   // TODO(profile, on demand): Cache only with reliable data versions and request-based invalidation.
   async profile(options: ProfileOptions = {}): Promise<Profile> {
     if (!this.schema || !this.connection) {
-      throw new Error('No data loaded. Please call load() first.');
+      throw new Error('No data loaded. Please call source() first.');
     }
 
     const defaultOptions = { metrics: DEFAULT_METRICS };
@@ -173,8 +173,8 @@ export class DuckDBEngine implements AnalysisEngine {
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     const conn = await this.getConnection();
-    await this.queryDialect.validateDSL(sql, conn);
-    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(sql, maxRows(options))));
+    const query = await this.queryDialect.validateDSL(sql, conn);
+    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(query, maxRows(options))));
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),

@@ -50,7 +50,7 @@ yarn add @antv/ava
 
 - Then run the code below
 
-**Node.js** (full feature set with DuckDB engine):
+**Node.js** (full feature set with DuckDB/ClickHouse/Supabase engines):
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -65,29 +65,28 @@ const ava = new AVA({
   // engine: { type: 'duckdb' } is the default; no need to specify
 });
 
-// Load data from various sources — all through ava.load({ type, options })
+// Load data from various sources — all through ava.source({ type, options })
 
 // CSV file in Node.js (local path or http(s) URL)
-await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
+await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 
 // or load a local/remote file directly into DuckDB (csv-file/json-file/parquet/excel, e.g. OSS signed URL)
-await ava.load({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
-await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } });
+await ava.source({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
+await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 // an Excel workbook registers one view per sheet
-await ava.load({ type: 'excel', options: { path: 'data/report.xlsx' } });
+await ava.source({ type: 'excel', options: { path: 'data/report.xlsx' } });
 
 // or load inline CSV content
-await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
+await ava.source({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
 
 // or load from a JSON object array
-await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
+await ava.source({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
 
 // or extract from text
-await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
+await ava.source({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
 
 // or attach a database (every table is exposed to the LLM)
-await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
-await ava.load({ type: 'mongodb', options: { connection: 'host=localhost port=27017', database: 'mydb' } });
+await ava.source({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
 
 // Get suggested analysis queries
 const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
@@ -144,9 +143,9 @@ const ava = new AVA({
 });
 
 // Browser supports inline data sources only
-await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
-await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
-await ava.load({ type: 'text', options: { text: '杭州 100，上海 200' } });
+await ava.source({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
+await ava.source({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
+await ava.source({ type: 'text', options: { text: '杭州 100，上海 200' } });
 
 const result = await ava.analyze('What is the total GDP?');
 const viz = await ava.visualize(result);
@@ -195,14 +194,15 @@ Create an AVA instance:
 
 - `new AVA(config)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'interpreter' }`, or `{ type: 'supabase' }`
+  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'interpreter' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
 
 Core APIs in AVA:
 
-- `load(config)`: load any data source — `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
+- `source(config)`: load any data source — `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
   - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
   - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
-  - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`), `mongodb` (`{ connection?, host?, port?, database, user?, password?, authSource?, srv?, tls?, ssl?, tlsCAFile?, tlsAllowInvalidCertificates? }` — `connection` is an advanced string that takes precedence over structured fields) — all tables/collections are auto-discovered and exposed
+  - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
+  - direct-query type: `clickhouse` (`{ host? | url?, port?, database, username? | user?, password? }`) — use `engine: { type: 'clickhouse' }` to query ClickHouse remotely in read-only mode. Requires ClickHouse 23.10+; connect with an account granted only the required SELECT permissions.
   - SQLite: `sqlite` (`{ path }`, local file) — all tables are exposed read-only, with native SQLite column types, nullability, primary keys, ordinary/unique indexes, and foreign keys in the schema. Generated columns are queryable. Defaults, CHECK constraints, triggers, and partial/expression indexes are not represented. Uses the [official SQLite extension](https://duckdb.org/docs/current/core_extensions/sqlite), installed on first use.
 - `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
 - `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
@@ -267,7 +267,7 @@ Minimal usage:
 ```typescript
 const ava = new AVA({ llm: { model, apiKey, baseURL } });
 
-await ava.load({ type: 'json', options: { data: [{ city: 'Hangzhou', gdp: 18753 }] } });
+await ava.source({ type: 'json', options: { data: [{ city: 'Hangzhou', gdp: 18753 }] } });
 
 const analysis = await ava.analyze('Show GDP by city');
 console.log(analysis.text);
@@ -332,7 +332,7 @@ AVA Instance
 │                 │   • JSON object array (json)
 │                 │   • Text (text + LLM)
 │                 │   • Local/remote file (csv-file/json-file/parquet/excel) [Node.js]
-│                 │   • Database (mysql/postgresql) [Node.js]
+│                 │   • Database (mysql/postgresql/clickhouse) [Node.js]
 └─────────────────┘
     ↓
 ┌──────────────────┐
@@ -343,7 +343,8 @@ AVA Instance
 │  Engine Registry                │
 │  ├─ DuckDB Engine (Node.js)     │ → SQL via in-memory DuckDB
 │  ├─ Interpreter Engine (Browser)│ → JavaScript sandbox execution
-│  └─ Supabase Engine (Node.js)   │ → Remote SQL via Supabase API
+│  ├─ Supabase Engine (Node.js)   │ → Remote SQL via Supabase API
+│  └─ ClickHouse Engine (Node.js) │ → Remote SQL via ClickHouse API
 └─────────────────────────────────┘
     ↓
 ┌──────────────────┐
@@ -367,9 +368,9 @@ User Response
 
 ### Engine Registry
 
-Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase) out of browser bundles.
+Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase, ClickHouse) out of browser bundles.
 
-- **Node.js** (`@antv/ava`): registers `duckdb`, `supabase`, and `interpreter` engines
+- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, and `interpreter` engines
 - **Browser** (`@antv/ava/browser`): registers only the `interpreter` engine
 
 ## 🌐 Environment Support
@@ -378,11 +379,12 @@ Engines are registered by the entry point, so the core `AVA` class never imports
 
 Full feature set backed by an in-memory DuckDB instance (LLM generates SQL):
 
-- Inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), and databases (mysql/postgresql) via `load`
+- Inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), DuckDB-attached databases (mysql/postgresql), and direct ClickHouse sources via `load`
 - File system access for CSV loading, plus remote files such as OSS signed URLs
 - Data is never materialized into JS memory for file sources — DuckDB reads them directly
 - Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
 - Supabase engine for remote SQL execution via Supabase Management API
+- ClickHouse engine for remote SQL execution via the official client
 
 ### Browser
 

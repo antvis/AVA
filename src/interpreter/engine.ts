@@ -64,13 +64,13 @@ export class InterpreterEngine implements AnalysisEngine {
   }
 
   async profile(options: ProfileOptions = {}): Promise<Profile> {
-    if (!this.data || !this.schema) throw new Error('No data loaded. Please call load() first.');
+    if (!this.data || !this.schema) throw new Error('No data loaded. Please call source() first.');
     return profileTables(this.data, this.schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
   async getDSL(query: string, context?: DataContext): Promise<string> {
     if (!this.data) {
-      throw new Error('No data loaded. Please call load() first.');
+      throw new Error('No data loaded. Please call source() first.');
     }
 
     const datasetContext = context?.profile
@@ -106,7 +106,7 @@ Now generate the code:`;
 
   async execute<T = Record<string, unknown>>(code: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     if (!this.data) {
-      throw new Error('No data loaded. Please call load() first.');
+      throw new Error('No data loaded. Please call source() first.');
     }
 
     const result = executeCode(structuredClone(this.data), code);

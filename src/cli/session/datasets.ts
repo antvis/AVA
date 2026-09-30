@@ -22,7 +22,10 @@ export function disposeDataset(): Promise<void> {
 export async function createDataset(source: DataSourceConfig, llm: LLMConfig): Promise<void> {
   if (ava || disposal) throw new Error('Dataset process has already been initialized.');
 
-  ava = new AVA({ llm, engine: { type: source.type === 'supabase' ? 'supabase' : 'duckdb' } });
+  ava = new AVA({
+    llm,
+    engine: { type: source.type === 'supabase' || source.type === 'clickhouse' ? source.type : 'duckdb' },
+  });
   const loading = ava.source(source);
   queue = loading.catch(() => undefined);
   try {

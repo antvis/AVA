@@ -1,7 +1,7 @@
 /**
  * AVA v4 - Browser entry point
  * Only registers the interpreter engine, so Node-only engines (DuckDB,
- * Supabase) and their dependencies are never traced into browser bundles.
+ * Supabase, ClickHouse) and their dependencies are never traced into browser bundles.
  */
 import { InterpreterEngine } from './interpreter';
 import { registerEngine } from './engines';
@@ -17,6 +17,7 @@ export type {
   EngineConfig,
   DuckDBEngineOptions,
   DataSourceConfig,
+  ClickHouseSourceOptions,
   Schema,
   TableSchema,
   TableIndex,
