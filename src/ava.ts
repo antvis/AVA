@@ -18,6 +18,7 @@ import {
   AnalysisEvent,
   emit,
   EventCollector,
+  EvidenceChain,
 } from './util/event';
 import { serializeError } from './util/error';
 
@@ -38,6 +39,11 @@ import type {
   ExecutionOptions,
   ExecutionResult,
 } from './types';
+
+/** Escape HTML special characters to prevent injection in the evidence report. */
+function escapeHTML(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 /**
  * Check if analysis result has meaningful data for visualization.
@@ -61,11 +67,13 @@ export class AVA extends EventEmitter {
   engine: AnalysisEngine | null = null;
   private dataSchema: Schema | null = null;
   private dataProfile: Profile | null = null;
+  private readonly collector = new EventCollector();
 
   constructor(config: AVAConfig) {
     super();
     this.llmConfig = config.llm;
     this.engineConfig = config.engine ?? { type: 'duckdb' };
+    this.collector.attach(this);
   }
 
   /**
@@ -118,7 +126,7 @@ export class AVA extends EventEmitter {
    * Reloading disposes the previous engine and its resources.
    */
   async source(config: DataSourceConfig): Promise<void> {
-    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
+    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, config));
 
     try {
       this.dataSchema = null;
@@ -284,7 +292,10 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END));
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, result ? {
+      chartType: result.chartType,
+      chartSyntax: result.syntax,
+    } : {}));
 
     return result;
   }
@@ -351,21 +362,128 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Create an EventCollector bound to this instance and start collecting.
-   * The collector records every lifecycle, execution, and analysis event
-   * with timestamps, forming an evidence trail of the full session.
+   * Export the evidence chain to a file (Node.js only).
+   *
+   * `outputFormat: 'json'` (default) writes two files:
+   * - `<path>` — the structured evidence chain
+   * - `<path>.trail.json` — the raw event trail
+   *
+   * `outputFormat: 'html'` writes a single self-contained HTML report.
    *
    * @example
-   * const collector = ava.collectEvents();
    * await ava.source(config);
    * await ava.analyze('What is the average revenue?');
-   * collector.trail();   // readonly EvidenceRecord[]
-   * collector.filter('analysis');  // analysis-phase events only
-   * collector.toJSON();  // serialized trail
+ * await ava.exportEvidence('./.tmp/evidence/revenue.json');
+   * await ava.exportEvidence('./.tmp/evidence/revenue.html', { outputFormat: 'html' });
    */
-  collectEvents(): EventCollector {
-    const collector = new EventCollector();
-    collector.attach(this);
-    return collector;
+  async exportEvidence(path: string, options?: { outputFormat?: 'json' | 'html' }): Promise<void> {
+    const outputFormat = options?.outputFormat ?? 'json';
+    const chain = new EvidenceChain(this.collector.trail());
+    const data = chain.build();
+
+    const { writeFile, mkdir } = await import('node:fs/promises');
+    const { dirname } = await import('node:path');
+    await mkdir(dirname(path), { recursive: true });
+
+    if (outputFormat === 'html') {
+      await writeFile(path, this.renderEvidenceHTML(data), 'utf8');
+    } else {
+      await writeFile(path, JSON.stringify(data, null, 2), 'utf8');
+      const trailPath = path.endsWith('.json') ? `${path.slice(0, -5)}.trail.json` : `${path}.trail.json`;
+      await writeFile(trailPath, this.collector.toJSON(), 'utf8');
+    }
+  }
+
+  /** Render the evidence chain as a self-contained HTML report. */
+  private renderEvidenceHTML(data: import('./util/event').EvidenceChainData): string {
+    const sections: string[] = [];
+
+    if (data.source) {
+      sections.push(`      <section class="layer">
+        <h2>1. Source</h2>
+        <table><tbody>
+          <tr><th>Type</th><td>${data.source.type}</td></tr>
+          <tr><th>Options</th><td><pre>${JSON.stringify(data.source.options, null, 2)}</pre></td></tr>
+          <tr><th>Loaded At</th><td>${new Date(data.source.timestamp).toISOString()}</td></tr>
+        </tbody></table>
+      </section>`);
+    }
+
+    if (data.definitions.length) {
+      const rows = data.definitions
+        .map((d) => `          <tr><td>${d.seq}</td><td><code>${escapeHTML(d.dsl)}</code></td><td>${new Date(d.timestamp).toISOString()}</td></tr>`)
+        .join('\n');
+      sections.push(`      <section class="layer">
+        <h2>2. Definitions</h2>
+        <table><thead><tr><th>Seq</th><th>DSL</th><th>Timestamp</th></tr></thead><tbody>
+${rows}
+        </tbody></table>
+      </section>`);
+    }
+
+    if (data.executions.length) {
+      const rows = data.executions
+        .map(
+          (e) => `          <tr><td>${e.id}</td><td><code>${escapeHTML(e.sql)}</code></td><td class="${e.status}">${e.status}</td><td>${e.exploratory ? 'explore' : 'answer'}</td><td>${e.truncated ?? ''}</td>${e.error ? `<td>${escapeHTML(e.error)}</td>` : ''}</tr>`
+        )
+        .join('\n');
+      sections.push(`      <section class="layer">
+        <h2>3. Executions</h2>
+        <table><thead><tr><th>ID</th><th>SQL</th><th>Status</th><th>Type</th><th>Truncated</th><th>Error</th></tr></thead><tbody>
+${rows}
+        </tbody></table>
+      </section>`);
+    }
+
+    if (data.results.length) {
+      for (const r of data.results) {
+        const cols = r.columns.map((c) => `<th>${c.name}${c.type ? ` <span class="type">${c.type}</span>` : ''}</th>`).join('');
+        const rows = r.rows.map((row) => `<tr>${r.columns.map((c) => `<td>${escapeHTML(String(row[c.name] ?? ''))}</td>`).join('')}</tr>`).join('\n');
+        sections.push(`      <section class="layer">
+        <h2>4. Result (execution #${r.executionId})</h2>
+        <table><thead><tr>${cols}</tr></thead><tbody>
+${rows}
+        </tbody></table>
+      </section>`);
+      }
+    }
+
+    if (data.presentation) {
+      sections.push(`      <section class="layer">
+        <h2>5. Presentation</h2>
+        <table><tbody>
+          <tr><th>Query</th><td>${escapeHTML(data.presentation.query)}</td></tr>
+          <tr><th>Summary</th><td>${escapeHTML(data.presentation.text)}</td></tr>
+          <tr><th>Chart Type</th><td>${data.presentation.chartType ?? ''}</td></tr>
+${data.presentation.chartSyntax ? `          <tr><th>Chart Syntax</th><td><pre>${escapeHTML(data.presentation.chartSyntax)}</pre></td></tr>\n` : ''}        </tbody></table>
+      </section>`);
+    }
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evidence Chain</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; margin: 24px; color: #333; }
+    h1 { border-bottom: 1px solid #ddd; padding-bottom: 8px; }
+    .layer { margin-bottom: 24px; }
+    .layer h2 { font-size: 16px; color: #666; margin-bottom: 8px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; font-size: 13px; }
+    th { background: #f5f5f5; }
+    .type { color: #999; font-size: 11px; }
+    .success { color: #52c41a; }
+    .error { color: #ff4d4f; }
+    pre { margin: 0; white-space: pre-wrap; word-break: break-all; }
+    code { font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Evidence Chain</h1>
+${sections.join('\n\n')}
+</body>
+</html>`;
   }
 }
