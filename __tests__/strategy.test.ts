@@ -28,10 +28,12 @@ describe('directAnalysis', () => {
       execute: vi.fn().mockResolvedValue(queryResult),
     } as unknown as AnalysisEngine;
 
+    const emit = vi.fn();
     const result = await analyze(
       'Give me one',
       { strategy: { type: 'direct' }, maxRows: 5, maxResultBytes: 1024 },
       {
+        emit,
         context: { schema: { tables: [] } },
         engine,
         llm: { model: 'test', apiKey: 'test' },
@@ -39,6 +41,14 @@ describe('directAnalysis', () => {
     );
 
     expect(engine.getDSL).toHaveBeenCalledOnce();
+    expect(emit.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'translatestart', data: { query: 'Give me one', attempt: 0 } },
+      { type: 'translateend', data: { dsl: 'SELECT 1' } },
+      { type: 'querystart', data: { dsl: 'SELECT 1' } },
+      { type: 'queryend', data: queryResult },
+      { type: 'summarizestart', data: {} },
+      { type: 'summarizeend', data: { text: result.text } },
+    ]);
     expect(engine.getDSL).toHaveBeenCalledWith('Give me one', { schema: { tables: [] } });
     expect(engine.execute).toHaveBeenCalledWith('SELECT 1', {
       strategy: { type: 'direct' },
@@ -66,6 +76,7 @@ it.each([undefined, true, false])('direct includeSummary=%s controls the summary
     'Give me one',
     { includeSummary },
     {
+      emit: vi.fn(),
       context: { schema: { tables: [] } },
       engine,
       llm: { model: 'test' },
@@ -83,16 +94,25 @@ it.each([0, 1, 2])('loop omits summary with maxSteps=%s, retaining verification 
     language: { name: 'SQL', fence: 'sql' },
     execute: vi.fn().mockResolvedValue({ data: [{ value: 1 }], schema: [{ name: 'value' }] }),
   } as unknown as AnalysisEngine;
+  const emit = vi.fn();
   const result = await analyze(
     'Give me one',
     { strategy: { type: 'loop', maxSteps }, includeSummary: false },
     {
+      emit,
       context: { schema: { tables: [] } },
       engine,
       llm: { model: 'test' },
     }
   );
   expect(result).toMatchObject({ data: [{ value: 1 }], sql: 'SELECT 1', text: '' });
+  expect(emit.mock.calls.find(([event]) => event.type === 'querystart')?.[0].data).toEqual({
+    dsl: 'SELECT 1',
+  });
+  expect(emit.mock.calls.find(([event]) => event.type === 'reasonend')?.[0].data).toMatchObject({
+    step: 0,
+    action: 'SQL',
+  });
   expect(engine.execute).toHaveBeenCalledOnce();
   expect(generateText).toHaveBeenCalledTimes(maxSteps === 2 ? 2 : 1);
   expect(vi.mocked(generateText).mock.calls[0][0].prompt).toContain('without a summary or conclusion');

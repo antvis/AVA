@@ -1,6 +1,7 @@
 /**
  * AVA v4 - A framework for AI-native Visual Analytics
  */
+import EventEmitter from '@antv/event-emitter';
 
 import { getEngineClass } from './engines';
 import { extractDataSchema } from './util/schema';
@@ -8,6 +9,16 @@ import { stringifySchema } from './util/context';
 import { adviseChartType, generateVisualizationSyntax, wrapSyntaxInHTML } from './visualization';
 import { generateSuggestions } from './suggest';
 import { analyze } from './analysis';
+import {
+  LifecycleEventType,
+  LifecycleEvent,
+  ExecutionEventType,
+  ExecutionEvent,
+  AnalysisEventType,
+  AnalysisEvent,
+  emit,
+} from './util/event';
+import { serializeError } from './util/error';
 
 import type {
   AVAConfig,
@@ -43,7 +54,7 @@ function hasData(data: unknown): boolean {
  * Data loading and analysis are backed by a pluggable engine — natural-language
  * queries are turned into SQL via LLM and executed by the configured engine.
  */
-export class AVA {
+export class AVA extends EventEmitter {
   private readonly llmConfig: LLMConfig;
   private readonly engineConfig: EngineConfig;
   engine: AnalysisEngine | null = null;
@@ -51,6 +62,7 @@ export class AVA {
   private dataProfile: Profile | null = null;
 
   constructor(config: AVAConfig) {
+    super();
     this.llmConfig = config.llm;
     this.engineConfig = config.engine ?? { type: 'duckdb' };
   }
@@ -63,8 +75,41 @@ export class AVA {
    */
   private async createEngine(): Promise<AnalysisEngine> {
     const { type, ...options } = this.engineConfig;
-    const EngineClass = getEngineClass(type);
-    return new EngineClass(this.llmConfig, options);
+
+    emit(this, new LifecycleEvent(LifecycleEventType.CREATE_START));
+
+    let engine: AnalysisEngine;
+    try {
+      const EngineClass = getEngineClass(type);
+      engine = new EngineClass(this.llmConfig, options);
+    } catch (error) {
+      emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END));
+
+    return engine;
+  }
+
+  /**
+   * Release the current engine, including replacement and failed-load cleanup.
+   */
+  private async disposeEngine(): Promise<void> {
+    if (!this.engine) return;
+
+    emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_START));
+
+    try {
+      await this.engine.dispose();
+    } catch (error) {
+      emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new LifecycleEvent(LifecycleEventType.DISPOSE_END));
   }
 
   /**
@@ -72,19 +117,29 @@ export class AVA {
    * Reloading disposes the previous engine and its resources.
    */
   async source(config: DataSourceConfig): Promise<void> {
-    this.dataSchema = null;
-    this.dataProfile = null;
-    await this.engine?.dispose();
-    this.engine = null;
+    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
 
-    this.engine = await this.createEngine();
     try {
-      this.dataSchema = await this.engine.load(config);
-    } catch (error) {
-      await this.engine.dispose();
+      this.dataSchema = null;
+      this.dataProfile = null;
+      await this.disposeEngine();
       this.engine = null;
+
+      this.engine = await this.createEngine();
+      try {
+        this.dataSchema = await this.engine.load(config);
+      } catch (error) {
+        await this.disposeEngine();
+        this.engine = null;
+        throw error;
+      }
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END, { error: serializeError(error) }));
+
       throw error;
     }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_END));
   }
 
   /**
@@ -109,7 +164,18 @@ export class AVA {
       throw new Error('Profiling is not supported by the registered engine.');
     }
 
-    this.dataProfile = await this.engine.profile(options);
+    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START));
+
+    try {
+      this.dataProfile = await this.engine.profile(options);
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
+
     return this.dataProfile;
   }
 
@@ -124,12 +190,26 @@ export class AVA {
     }
 
     const runtime = {
+      emit: (event: AnalysisEvent) => emit(this, event),
       context: { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
       engine: this.engine,
       llm: this.llmConfig,
     };
 
-    return analyze(query, config, runtime);
+    emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_START, { query }));
+
+    let result: AnalysisResponse;
+    try {
+      result = await analyze(query, config, runtime);
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END));
+
+    return result;
   }
 
   /**
@@ -140,10 +220,22 @@ export class AVA {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.engine.getDSL(query, {
-      schema: this.dataSchema,
-      profile: this.dataProfile ?? undefined,
-    });
+
+    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query }));
+
+    let dsl: string;
+    try {
+      const context = { schema: this.dataSchema, profile: this.dataProfile ?? undefined };
+      dsl = await this.engine.getDSL(query, context);
+    } catch (error) {
+      emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { dsl }));
+
+    return dsl;
   }
 
   /**
@@ -154,7 +246,21 @@ export class AVA {
     if (!this.engine || !this.dataSchema) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.engine.execute(dsl, options);
+
+    emit(this, new AnalysisEvent(AnalysisEventType.QUERY_START, { dsl }));
+
+    let result: ExecutionResult;
+    try {
+      result = await this.engine.execute(dsl, options);
+    } catch (error) {
+      emit(this, new AnalysisEvent(AnalysisEventType.QUERY_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new AnalysisEvent(AnalysisEventType.QUERY_END, result));
+
+    return result;
   }
 
   /**
@@ -165,8 +271,21 @@ export class AVA {
    * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
   async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
-    const spec = await this.recommend(analysisResult);
-    return spec ? { ...spec, html: await this.viz(spec) } : null;
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_START, { query: analysisResult.query }));
+
+    let result: VisualizeResponse | null;
+    try {
+      const spec = await this.recommend(analysisResult);
+      result = spec ? { ...spec, html: await this.viz(spec) } : null;
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END));
+
+    return result;
   }
 
   /**
@@ -200,18 +319,31 @@ export class AVA {
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    return generateSuggestions(
-      this.llmConfig,
-      { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
-      count
-    );
+    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_START));
+
+    let result: SuggestResult[];
+    try {
+      result = await generateSuggestions(
+        this.llmConfig,
+        { schema: this.dataSchema, profile: this.dataProfile ?? undefined },
+        count
+      );
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END, { error: serializeError(error) }));
+
+      throw error;
+    }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END));
+
+    return result;
   }
 
   /**
    * Clean up resources (engine storage, temp files)
    */
   async dispose(): Promise<void> {
-    await this.engine?.dispose();
+    await this.disposeEngine();
     this.engine = null;
     this.dataSchema = null;
     this.dataProfile = null;

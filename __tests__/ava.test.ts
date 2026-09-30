@@ -7,6 +7,7 @@ import * as path from 'path';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 import { AVA } from '../src';
+import * as suggestions from '../src/suggest';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
@@ -24,9 +25,12 @@ describe('AVA', () => {
   });
 
   it('returns the current schema throughout the source lifecycle', async () => {
+    const onEnd = vi.fn();
+    ava.on('loadend', onEnd);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.schema()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ first: 1 }] } });
+    expect(onEnd).toHaveBeenLastCalledWith({ type: 'loadend', data: {} });
     const first = await ava.schema();
     expect(first.tables[0].fields.map((field) => field.name)).toEqual(['first']);
     const before = JSON.stringify(first);
@@ -46,6 +50,10 @@ describe('AVA', () => {
   });
 
   it('profiles default and selected metrics for the loaded source', async () => {
+    const onStart = vi.fn();
+    const onEnd = vi.fn();
+    ava.on('profilestart', onStart);
+    ava.on('profileend', onEnd);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava.profile()).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }, { value: null }] } });
@@ -56,6 +64,8 @@ describe('AVA', () => {
     expect(profile.tables[0].fields[0].metrics).toMatchObject({ null_count: 1, min: 2, max: 4, mean: 3 });
 
     const selected = await ava.profile({ metrics: ['row_count', 'sum'] });
+    expect(onStart).toHaveBeenLastCalledWith({ type: 'profilestart', data: {} });
+    expect(onEnd).toHaveBeenLastCalledWith({ type: 'profileend', data: {} });
     expect(selected.tables[0].metrics).toEqual({ row_count: 3 });
     expect(selected.tables[0].fields[0].metrics).toEqual({ sum: 6 });
     const empty = await ava.profile({ metrics: [] });
@@ -69,28 +79,92 @@ describe('AVA', () => {
     await expect(ava.profile()).rejects.toThrow(message);
   });
 
+  it('emits analysis status and errors while returning the complete result', async () => {
+    const onEvent = vi.fn();
+    const onQueryEnd = vi.fn();
+    ava.on('analyzestart', onEvent);
+    ava.on('analyzeend', onEvent);
+    ava.on('queryend', onQueryEnd);
+    await expect(ava.analyze('Total value')).rejects.toThrow('No data loaded');
+    expect(onEvent).not.toHaveBeenCalled();
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) AS total FROM data');
+    const query = 'Total value';
+    const config = { includeSummary: false, strategy: { type: 'direct' as const, maxRetries: 0 } };
+
+    const result = await ava.analyze(query, config);
+    expect(result.data).toEqual([{ total: 2 }]);
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'analyzestart', data: { query } },
+      { type: 'analyzeend', data: {} },
+    ]);
+    expect(onQueryEnd.mock.calls[0][0].data.data).toBe(result.data);
+
+    onEvent.mockClear();
+    const error = new Error('Analysis execution failed');
+    vi.spyOn(ava.engine!, 'execute').mockRejectedValueOnce(error);
+    await expect(ava.analyze(query, config)).rejects.toBe(error);
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'analyzestart', data: { query } },
+      { type: 'analyzeend', data: { error: { name: 'Error', message: error.message } } },
+    ]);
+  });
+
+  it('emits suggestion status without repeating inputs or results', async () => {
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    const result = [{ query: 'Total value?', score: 1, reason: 'Useful' }];
+    vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValueOnce(result);
+    const onEvent = vi.fn();
+    ava.on('suggeststart', onEvent);
+    ava.on('suggestend', onEvent);
+
+    await expect(ava.suggest(1)).resolves.toBe(result);
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'suggeststart', data: {} },
+      { type: 'suggestend', data: {} },
+    ]);
+    expect(suggestions.generateSuggestions).toHaveBeenCalledWith(expect.any(Object), expect.any(Object), 1);
+  });
+
   it('translates queries with schema and optional profile without executing them', async () => {
+    const onEvent = vi.fn();
+    ava.on('translatestart', onEvent);
+    ava.on('translateend', onEvent);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava['translate']('Total value')).rejects.toThrow(message);
+    expect(onEvent).not.toHaveBeenCalled();
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
     const schema = await ava.schema();
     const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('SELECT SUM(value) FROM data');
     const execute = vi.spyOn(ava.engine!, 'execute');
 
     await expect(ava['translate']('Total value')).resolves.toBe('SELECT SUM(value) FROM data');
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'translatestart', data: { query: 'Total value' } },
+      { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data' } },
+    ]);
     expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: undefined });
     const profile = await ava.profile();
     await ava['translate']('Total value');
     expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile });
     expect(execute).not.toHaveBeenCalled();
 
-    getDSL.mockRejectedValueOnce(new Error('Translation failed'));
-    await expect(ava['translate']('Total value')).rejects.toThrow('Translation failed');
+    const error = new Error('Translation failed');
+    getDSL.mockRejectedValueOnce(error);
+    await expect(ava['translate']('Total value')).rejects.toBe(error);
+    expect(onEvent).toHaveBeenNthCalledWith(5, { type: 'translatestart', data: { query: 'Total value' } });
+    expect(onEvent).toHaveBeenNthCalledWith(6, {
+      type: 'translateend',
+      data: { error: { name: 'Error', message: 'Translation failed' } },
+    });
     await ava.dispose();
     await expect(ava['translate']('Total value')).rejects.toThrow(message);
+    expect(onEvent).toHaveBeenCalledTimes(6);
   });
 
   it('executes bounded read-only queries and rejects writes', async () => {
+    const onStart = vi.fn();
+    ava.on('querystart', onStart);
     const message = 'No data loaded. Please call source() first.';
     await expect(ava['query']('SELECT 1')).rejects.toThrow(message);
     await ava.source({ type: 'json', options: { data: [{ value: 2 }, { value: 4 }] } });
@@ -105,6 +179,7 @@ describe('AVA', () => {
       truncated: true,
       truncatedBy: 'maxRows',
     });
+    expect(onStart).toHaveBeenLastCalledWith({ type: 'querystart', data: { dsl } });
     expect(await ava['query'](dsl, { maxResultBytes: 1 })).toMatchObject({
       data: [],
       truncated: true,

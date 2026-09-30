@@ -1,6 +1,8 @@
 import { experimental_evaluate as evaluate } from 'ai';
 
 import { stringifySchema } from '../util/context';
+import { AnalysisEvent, AnalysisEventType } from '../util/event';
+import { serializeError } from '../util/error';
 
 import { directAnalysis } from './direct';
 
@@ -76,7 +78,21 @@ export async function selectSubsetContext(query: string, context: DataContext, m
 
 /** Run direct analysis with the complete schema and selected profile details. */
 export const subsetAnalysis: AnalysisStrategy = async (query, config, runtime) => {
-  const profile = runtime.context.profile ?? (await runtime.engine.profile?.());
-  const context = await selectSubsetContext(query, { ...runtime.context, profile }, runtime.llm.maxRetries);
+  const { emit } = runtime;
+
+  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_START));
+
+  let context: DataContext;
+  try {
+    const profile = runtime.context.profile ?? (await runtime.engine.profile?.());
+    context = await selectSubsetContext(query, { ...runtime.context, profile }, runtime.llm.maxRetries);
+  } catch (error) {
+    emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END, { error: serializeError(error) }));
+
+    throw error;
+  }
+
+  emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END));
+
   return directAnalysis(query, config, { ...runtime, context });
 };
