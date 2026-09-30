@@ -379,29 +379,21 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Build A2A-compatible Artifacts from the event trail collected by an `EventCollector`
-   * and write them to a single JSON file.
-   *
-   * The file contains an array of A2A `Artifact` objects:
-   * 1. `evidence-chain` — the structured five-layer evidence chain (as a `data` part)
-   * 2. `event-trail` — the raw event records (as a `data` part)
-   *
-   * @param collector - The collector returned by `collectEvents()`.
-   * @param path     - Destination file path. Parent directories are created automatically.
+   * Build A2A-compatible Artifacts from the event trail collected by an `EventCollector`.
    *
    * @example
    * const collector = ava.collectEvents();
    * await ava.source(config);
    * await ava.analyze('What is the average revenue?');
-   * await ava.exportEvidence(collector, './.tmp/evidence/revenue.json');
+   * const artifacts = ava.exportEvidence(collector);
    */
-  async exportEvidence(collector: EventCollector, path: string): Promise<void> {
+  exportEvidence(collector: EventCollector): Artifact[] {
     const trail = collector.trail();
     const chain = new EvidenceChain(trail);
     const evidenceData = chain.build();
     const trailData = trail.map((r) => ({ ...r }));
 
-    const artifacts: Artifact[] = [
+    return [
       {
         artifactId: 'evidence-chain',
         name: 'evidence-chain',
@@ -415,10 +407,5 @@ export class AVA extends EventEmitter {
         parts: [{ kind: 'data', data: trailData, mediaType: 'application/json' }],
       },
     ];
-
-    const { writeFile, mkdir } = await import('node:fs/promises');
-    const { dirname } = await import('node:path');
-    await mkdir(dirname(path), { recursive: true });
-    await writeFile(path, JSON.stringify(artifacts, null, 2), 'utf8');
   }
 }

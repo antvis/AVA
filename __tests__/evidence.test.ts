@@ -1,8 +1,8 @@
 /**
- * End-to-end test: real AVA pipeline → evidence chain → A2A artifacts file
+ * End-to-end test: real AVA pipeline → evidence chain → A2A artifacts → temp file
  */
 import * as path from 'path';
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
 
 import { describe, it, expect } from 'vitest';
 
@@ -17,7 +17,7 @@ const companiesCsv = path.join(__dirname, '../data/companies.csv');
 const outputDir = path.join(__dirname, '../.tmp/evidence');
 
 describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
-  it('exports A2A artifacts from a real analyze + visualize run', async () => {
+  it('exports A2A artifacts and writes them to a temp file', async () => {
     await mkdir(outputDir, { recursive: true });
 
     const ava = new AVA({ llm: getLLMConfig() });
@@ -36,15 +36,20 @@ describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
         // not critical for evidence
       }
 
-      const outputPath = path.join(outputDir, 'companies-revenue.json');
-      await ava.exportEvidence(collector, outputPath);
-
-      // ── Verify output file ───────────────────────────────
-      const artifacts: Artifact[] = JSON.parse(await readFile(outputPath, 'utf8'));
+      // ── Build artifacts ───────────────────────────────────
+      const artifacts = ava.exportEvidence(collector);
       expect(artifacts).toHaveLength(2);
 
-      const chainArtifact = artifacts.find((a) => a.name === 'evidence-chain');
-      const trailArtifact = artifacts.find((a) => a.name === 'event-trail');
+      // ── Write to temp file ─────────────────────────────────
+      const outputPath = path.join(outputDir, 'companies-revenue.json');
+      await writeFile(outputPath, JSON.stringify(artifacts, null, 2), 'utf8');
+
+      // ── Read back and verify ───────────────────────────────
+      const readBack: Artifact[] = JSON.parse(await readFile(outputPath, 'utf8'));
+      expect(readBack).toHaveLength(2);
+
+      const chainArtifact = readBack.find((a) => a.name === 'evidence-chain');
+      const trailArtifact = readBack.find((a) => a.name === 'event-trail');
       expect(chainArtifact).toBeDefined();
       expect(trailArtifact).toBeDefined();
       expect(chainArtifact!.parts[0].kind).toBe('data');
