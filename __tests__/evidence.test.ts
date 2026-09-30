@@ -22,6 +22,7 @@ describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
     await mkdir(outputDir, { recursive: true });
 
     const ava = new AVA({ llm: getLLMConfig() });
+    const collector = ava.collectEvents();
 
     try {
       await ava.source({ type: 'csv-file', options: { path: companiesCsv } });
@@ -38,11 +39,11 @@ describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
 
       // Export JSON
       const jsonPath = path.join(outputDir, 'companies-revenue.json');
-      await ava.exportEvidence(jsonPath);
+      await ava.exportEvidence(jsonPath, { collector });
 
       // Export HTML
       const htmlPath = path.join(outputDir, 'companies-revenue.html');
-      await ava.exportEvidence(htmlPath, { outputFormat: 'html' });
+      await ava.exportEvidence(htmlPath, { outputFormat: 'html', collector });
 
       // ── Verify JSON output ───────────────────────────────
       const evidence: EvidenceChainData = JSON.parse(await readFile(jsonPath, 'utf8'));
