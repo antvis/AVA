@@ -807,3 +807,27 @@ export interface SuggestResult {
   /** Reason for the score */
   reason: string;
 }
+
+// ── A2A Protocol Types ────────────────────────────────────
+// Subset of the Agent2Agent protocol (https://github.com/a2aproject/A2A)
+// for producing structured, interoperable artifacts from AVA.
+
+/** A single content part within an A2A Artifact or Message. */
+export type ArtifactPart =
+  | { kind: 'text'; text: string; mediaType?: string }
+  | { kind: 'data'; data: unknown; mediaType?: string }
+  | { kind: 'file'; uri: string; mediaType?: string; filename?: string };
+
+/** A tangible output artifact, compatible with the A2A protocol. */
+export interface Artifact {
+  /** Unique identifier for this artifact. */
+  artifactId: string;
+  /** Human-readable name. */
+  name: string;
+  /** Optional description. */
+  description?: string;
+  /** Content parts — at least one. */
+  parts: ArtifactPart[];
+  /** Optional metadata. */
+  metadata?: Record<string, unknown>;
+}

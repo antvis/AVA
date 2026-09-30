@@ -3,6 +3,8 @@ import type { BaseEvent } from './events';
 
 export * from './constant';
 export * from './events';
+export * from './collector';
+export * from './analysis';
 
 /**
  * Trigger event based on Event object

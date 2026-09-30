@@ -80,6 +80,7 @@ yarn.lock
 # temp
 temp.diff
 .DS_Store
+.tmp/
 
 # exception
 !packages/torch/lib

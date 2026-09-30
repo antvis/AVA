@@ -17,6 +17,9 @@ import {
   AnalysisEventType,
   AnalysisEvent,
   emit,
+  EventCollector,
+  AnalysisBuilder,
+  renderReportHTML,
 } from './util/event';
 import { serializeError } from './util/error';
 
@@ -36,12 +39,9 @@ import type {
   ProfileOptions,
   ExecutionOptions,
   ExecutionResult,
+  Artifact,
 } from './types';
 
-/**
- * Check if analysis result has meaningful data for visualization.
- * Accepts arrays (non-empty), objects (non-empty), and non-null/non-undefined primitives.
- */
 function hasData(data: unknown): boolean {
   if (data == null) return false;
   if (Array.isArray(data)) return data.length > 0;
@@ -117,7 +117,7 @@ export class AVA extends EventEmitter {
    * Reloading disposes the previous engine and its resources.
    */
   async source(config: DataSourceConfig): Promise<void> {
-    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
+    emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, config));
 
     try {
       this.dataSchema = null;
@@ -274,8 +274,9 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_START, { query: analysisResult.query }));
 
     let result: VisualizeResponse | null;
+    let spec: ChartSpec | null = null;
     try {
-      const spec = await this.recommend(analysisResult);
+      spec = await this.recommend(analysisResult);
       result = spec ? { ...spec, html: await this.viz(spec) } : null;
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, { error: serializeError(error) }));
@@ -283,7 +284,7 @@ export class AVA extends EventEmitter {
       throw error;
     }
 
-    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END));
+    emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, spec ?? {}));
 
     return result;
   }
@@ -347,5 +348,53 @@ export class AVA extends EventEmitter {
     this.engine = null;
     this.dataSchema = null;
     this.dataProfile = null;
+  }
+
+  /**
+   * Create an EventCollector bound to this instance and start collecting.
+   * The collector records every lifecycle, execution, and analysis event
+   * with timestamps, forming an analysis trail of the full session.
+   *
+   * @example
+   * const collector = ava.collectEvents();
+   * await ava.source(config);
+   * await ava.analyze('What is the average revenue?');
+   * collector.trail();       // readonly AnalysisRecord[]
+   * collector.filter('analysis'); // analysis-phase events only
+   * collector.toJSON();     // serialized trail
+   */
+  collectEvents(): EventCollector {
+    const collector = new EventCollector();
+    collector.attach(this);
+    return collector;
+  }
+
+  /**
+   * Build A2A-compatible Artifacts from the event trail collected by an `EventCollector`.
+   *
+   * @example
+   * const collector = ava.collectEvents();
+   * await ava.source(config);
+   * await ava.analyze('What is the average revenue?');
+   * const artifacts = ava.exportAnalysis(collector);
+   */
+  exportAnalysis(collector: EventCollector): Artifact[] {
+    const builder = new AnalysisBuilder(collector.trail());
+    const analysisData = builder.build();
+
+    return [
+      {
+        artifactId: 'analysis',
+        name: 'analysis',
+        description: 'Five-layer structured analysis record (JSON)',
+        parts: [{ kind: 'data', data: analysisData, mediaType: 'application/json' }],
+      },
+      {
+        artifactId: 'report',
+        name: 'report',
+        description: 'Human-readable HTML report of the analysis',
+        parts: [{ kind: 'text', text: renderReportHTML(analysisData), mediaType: 'text/html' }],
+      },
+    ];
   }
 }
