@@ -261,8 +261,8 @@ export function renderReportHTML(data: AnalysisData): string {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analysis Report</title>
-  ${hasChart ? '<script src="https://jsmirror.com/@antv/gpt-vis/dist/umd/index.min.js"></script>' : ''}
-  <script src="https://jsmirror.com/npm/marked/marked.min.js"></script>
+  ${hasChart ? '<script src="https://cdn.jsdmirror.com/npm/@antv/gpt-vis/dist/umd/index.min.js"></script>' : ''}
+  <script src="https://cdn.jsdmirror.com/npm/marked/marked.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {

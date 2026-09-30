@@ -28,7 +28,7 @@ export function wrapSyntaxInHTML(syntax: string): string {
   <head>
     <meta charset="UTF-8">
     <title>Data Visualization</title>
-    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdmirror.com/npm/@antv/gpt-vis/dist/umd/index.min.js"></script>
     <style>
       html, body, #container {
         margin: 0;
