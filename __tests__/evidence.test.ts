@@ -1,7 +1,5 @@
 /**
- * End-to-end test: real AVA pipeline → evidence chain → file export
- *
- * Generated files are written to .tmp/evidence/ and kept after the run.
+ * End-to-end test: real AVA pipeline → evidence chain → A2A artifacts file
  */
 import * as path from 'path';
 import { mkdir, readFile } from 'node:fs/promises';
@@ -12,13 +10,14 @@ import { AVA } from '../src';
 
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
+import type { Artifact } from '../src/types';
 import type { EvidenceChainData } from '../src/util/event';
 
 const companiesCsv = path.join(__dirname, '../data/companies.csv');
 const outputDir = path.join(__dirname, '../.tmp/evidence');
 
 describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
-  it('exports evidence as JSON and HTML from a real analyze + visualize run', async () => {
+  it('exports A2A artifacts from a real analyze + visualize run', async () => {
     await mkdir(outputDir, { recursive: true });
 
     const ava = new AVA({ llm: getLLMConfig() });
@@ -37,16 +36,22 @@ describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
         // not critical for evidence
       }
 
-      // Export JSON
-      const jsonPath = path.join(outputDir, 'companies-revenue.json');
-      await ava.exportEvidence(collector, jsonPath);
+      const outputPath = path.join(outputDir, 'companies-revenue.json');
+      await ava.exportEvidence(collector, outputPath);
 
-      // Export HTML
-      const htmlPath = path.join(outputDir, 'companies-revenue.html');
-      await ava.exportEvidence(collector, htmlPath, { format: 'html' });
+      // ── Verify output file ───────────────────────────────
+      const artifacts: Artifact[] = JSON.parse(await readFile(outputPath, 'utf8'));
+      expect(artifacts).toHaveLength(2);
 
-      // ── Verify JSON output ───────────────────────────────
-      const evidence: EvidenceChainData = JSON.parse(await readFile(jsonPath, 'utf8'));
+      const chainArtifact = artifacts.find((a) => a.name === 'evidence-chain');
+      const trailArtifact = artifacts.find((a) => a.name === 'event-trail');
+      expect(chainArtifact).toBeDefined();
+      expect(trailArtifact).toBeDefined();
+      expect(chainArtifact!.parts[0].kind).toBe('data');
+      expect(trailArtifact!.parts[0].kind).toBe('data');
+
+      const evidence: EvidenceChainData = (chainArtifact!.parts[0] as { data: EvidenceChainData }).data;
+      const trail = (trailArtifact!.parts[0] as { data: unknown[] }).data;
 
       // Layer 1: source
       expect(evidence.source).not.toBeNull();
@@ -74,22 +79,12 @@ describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
         expect(evidence.presentation!.chartType).toBeTruthy();
       }
 
-      // ── Verify trail file ──────────────────────────────────
-      const trailPath = jsonPath.replace(/\.json$/, '.trail.json');
-      const trail = JSON.parse(await readFile(trailPath, 'utf8'));
+      // ── Verify trail artifact ────────────────────────────
       expect(trail).toBeInstanceOf(Array);
       expect(trail.length).toBeGreaterThanOrEqual(4);
 
       const phases = new Set(trail.map((r: { phase: string }) => r.phase));
       expect(phases.has('execution')).toBe(true);
-
-      // ── Verify HTML output ────────────────────────────────
-      const html = await readFile(htmlPath, 'utf8');
-      expect(html).toContain('<!DOCTYPE html>');
-      expect(html).toContain('Evidence Chain');
-      expect(html).toContain('csv-file');
-      expect(html).toContain('SELECT');
-      expect(html).toContain(query);
     } finally {
       await ava.dispose();
     }
