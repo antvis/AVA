@@ -39,11 +39,11 @@ describe.skipIf(skipLLMTests)('Evidence chain — full pipeline', () => {
 
       // Export JSON
       const jsonPath = path.join(outputDir, 'companies-revenue.json');
-      await ava.exportEvidence(jsonPath, { collector });
+      await ava.exportEvidence(collector, jsonPath);
 
       // Export HTML
       const htmlPath = path.join(outputDir, 'companies-revenue.html');
-      await ava.exportEvidence(htmlPath, { outputFormat: 'html', collector });
+      await ava.exportEvidence(collector, htmlPath, { format: 'html' });
 
       // ── Verify JSON output ───────────────────────────────
       const evidence: EvidenceChainData = JSON.parse(await readFile(jsonPath, 'utf8'));

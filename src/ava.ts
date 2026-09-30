@@ -387,31 +387,27 @@ export class AVA extends EventEmitter {
   }
 
   /**
-   * Export the evidence chain to a file (Node.js only).
+   * Export the evidence chain collected by an `EventCollector` to a file.
    *
-   * `outputFormat: 'json'` (default) writes two files:
+   * `format: 'json'` (default) writes two files:
    * - `<path>` — the structured evidence chain
    * - `<path>.trail.json` — the raw event trail
    *
-   * `outputFormat: 'html'` writes a single self-contained HTML report.
-   *
-   * Pass a `collector` from `collectEvents()` to export events collected
-   * during a specific interval. Without one, a fresh collector is created
-   * (capturing only events from this call onward).
+   * `format: 'html'` writes a single self-contained HTML report.
    *
    * @example
    * const collector = ava.collectEvents();
    * await ava.source(config);
    * await ava.analyze('What is the average revenue?');
-   * await ava.exportEvidence('./.tmp/evidence/revenue.json', { collector });
-   * await ava.exportEvidence('./.tmp/evidence/revenue.html', { outputFormat: 'html', collector });
+   * await ava.exportEvidence(collector, './.tmp/evidence/revenue.json');
+   * await ava.exportEvidence(collector, './.tmp/evidence/revenue.html', { format: 'html' });
    */
   async exportEvidence(
+    collector: EventCollector,
     path: string,
-    options?: { outputFormat?: 'json' | 'html'; collector?: EventCollector }
+    options?: { format?: 'json' | 'html' }
   ): Promise<void> {
-    const outputFormat = options?.outputFormat ?? 'json';
-    const collector = options?.collector ?? this.collectEvents();
+    const format = options?.format ?? 'json';
     const chain = new EvidenceChain(collector.trail());
     const data = chain.build();
 
@@ -419,7 +415,7 @@ export class AVA extends EventEmitter {
     const { dirname } = await import('node:path');
     await mkdir(dirname(path), { recursive: true });
 
-    if (outputFormat === 'html') {
+    if (format === 'html') {
       await writeFile(path, this.renderEvidenceHTML(data), 'utf8');
     } else {
       await writeFile(path, JSON.stringify(data, null, 2), 'utf8');
