@@ -1,5 +1,5 @@
 /**
- * Evidence collector — subscribes to all AVA events via the EventEmitter's
+ * Event collector — subscribes to all AVA events via the EventEmitter's
  * wildcard channel and builds a timestamped, ordered trail of everything
  * that happened during a session.
  */
@@ -11,8 +11,8 @@ import type { BaseEvent } from './events';
 /** Phase an event belongs to. */
 export type EventPhase = 'lifecycle' | 'execution' | 'analysis';
 
-/** A single record in the evidence trail. */
-export interface EvidenceRecord {
+/** A single record in the analysis trail. */
+export interface AnalysisRecord {
   /** Sequential index, starting at 0. */
   seq: number;
   /** Event type string (e.g. 'querystart', 'analyzestart'). */
@@ -42,10 +42,10 @@ function isErrorData(data: object | null): boolean {
 
 /**
  * Collects every event emitted by an AVA instance into an ordered,
- * timestamped evidence trail.
+ * timestamped analysis trail.
  */
 export class EventCollector {
-  private records: EvidenceRecord[] = [];
+  private records: AnalysisRecord[] = [];
   private seq = 0;
   private lastTime = 0;
   private emitter: EventEmitter | null = null;
@@ -88,18 +88,18 @@ export class EventCollector {
     return this;
   }
 
-  /** Read-only access to the full evidence trail. */
-  trail(): readonly EvidenceRecord[] {
+  /** Read-only access to the full analysis trail. */
+  trail(): readonly AnalysisRecord[] {
     return this.records;
   }
 
   /** Filter the trail by phase. */
-  filter(phase: EventPhase): EvidenceRecord[] {
+  filter(phase: EventPhase): AnalysisRecord[] {
     return this.records.filter((r) => r.phase === phase);
   }
 
   /** Return records flagged as errors. */
-  errors(): EvidenceRecord[] {
+  errors(): AnalysisRecord[] {
     return this.records.filter((r) => r.isError);
   }
 

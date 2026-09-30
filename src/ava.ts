@@ -18,7 +18,8 @@ import {
   AnalysisEvent,
   emit,
   EventCollector,
-  EvidenceChain,
+  AnalysisBuilder,
+  renderReportHTML,
 } from './util/event';
 import { serializeError } from './util/error';
 
@@ -352,13 +353,13 @@ export class AVA extends EventEmitter {
   /**
    * Create an EventCollector bound to this instance and start collecting.
    * The collector records every lifecycle, execution, and analysis event
-   * with timestamps, forming an evidence trail of the full session.
+   * with timestamps, forming an analysis trail of the full session.
    *
    * @example
    * const collector = ava.collectEvents();
    * await ava.source(config);
    * await ava.analyze('What is the average revenue?');
-   * collector.trail();       // readonly EvidenceRecord[]
+   * collector.trail();       // readonly AnalysisRecord[]
    * collector.filter('analysis'); // analysis-phase events only
    * collector.toJSON();     // serialized trail
    */
@@ -375,26 +376,24 @@ export class AVA extends EventEmitter {
    * const collector = ava.collectEvents();
    * await ava.source(config);
    * await ava.analyze('What is the average revenue?');
-   * const artifacts = ava.exportEvidence(collector);
+   * const artifacts = ava.exportAnalysis(collector);
    */
-  exportEvidence(collector: EventCollector): Artifact[] {
-    const trail = collector.trail();
-    const chain = new EvidenceChain(trail);
-    const evidenceData = chain.build();
-    const trailData = trail.map((r) => ({ ...r }));
+  exportAnalysis(collector: EventCollector): Artifact[] {
+    const builder = new AnalysisBuilder(collector.trail());
+    const analysisData = builder.build();
 
     return [
       {
-        artifactId: 'evidence-chain',
-        name: 'evidence-chain',
-        description: 'Five-layer structured evidence chain: source → definitions → executions → results → presentation',
-        parts: [{ kind: 'data', data: evidenceData, mediaType: 'application/json' }],
+        artifactId: 'analysis',
+        name: 'analysis',
+        description: 'Five-layer structured analysis record (JSON)',
+        parts: [{ kind: 'data', data: analysisData, mediaType: 'application/json' }],
       },
       {
-        artifactId: 'event-trail',
-        name: 'event-trail',
-        description: 'Raw event trail with timestamps, phases, and payloads',
-        parts: [{ kind: 'data', data: trailData, mediaType: 'application/json' }],
+        artifactId: 'report',
+        name: 'report',
+        description: 'Human-readable HTML report of the analysis',
+        parts: [{ kind: 'text', text: renderReportHTML(analysisData), mediaType: 'text/html' }],
       },
     ];
   }
