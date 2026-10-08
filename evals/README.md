@@ -11,6 +11,8 @@
 
 目前支持 [DataBench](databench/README.md)，用于评测表格问答的答案准确率。它提供两种数据版本：`databench-lite` 使用采样表，`databench` 使用完整表。
 
+[AVA Bench 自研评测集](ava-bench)的 [Sales 场景](ava-bench/sales/README.md) 提供订单与退款的三个完整快照，以及业务口径、分析方法和重算的 20 项问题与标答。
+
 ## 准备环境
 
 以下命令均在仓库根目录执行。

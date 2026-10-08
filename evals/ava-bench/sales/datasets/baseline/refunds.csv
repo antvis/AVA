@@ -1,0 +1,5 @@
+refund_id,order_id,status,succeeded_at,amount_cents
+R1,J1,succeeded,2026-02-02T04:00:00Z,10000
+R2,F1,succeeded,2026-02-15T04:00:00Z,5000
+R3,F1,succeeded,2026-02-18T04:00:00Z,15000
+R4,F2,pending,,10000

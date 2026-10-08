@@ -1,0 +1,36 @@
+{
+  "name": "ava-bench-sales",
+  "reference_date": "2026-03-16",
+  "timezone": "Asia/Shanghai",
+  "currency": "CNY",
+  "amount_unit": "cent",
+  "orders_coverage_end_exclusive": "2026-03-16",
+  "business_context": [
+    "仅 status=paid 的订单计入支付金额、支付订单数和支付用户数。订单按 paid_at 的北京时间归属统计周期；取消和未支付订单排除。",
+    "仅扣除截至当前快照 as_of 已成功的退款。退款按原订单支付月份、地区归属，不按退款发生月份归属。",
+    "净销售额=支付金额-成功退款金额。同一订单可多次退款，汇总退款后关联订单，避免重复累计订单金额。",
+    "支付订单数按 order_id 去重；支付用户数按 user_id 去重；净客单价=净销售额/支付订单数。",
+    "退款金额率=归属于该支付周期的成功退款金额/该周期支付金额。",
+    "变化量=本期-基期；变化率=变化量/基期。基期为零时变化率为 null，并说明原因。",
+    "地区贡献率=地区净销售额变化量/总体净销售额变化量；可超过100%或为负。总体变化为零时贡献率为 null。贡献分解不等于因果解释。",
+    "3月只有1日至15日订单数据；同期比较使用2月1日至15日。没有数据的完整覆盖地区视为零，不把尚未覆盖的日期视为零。",
+    "所有时间区间采用北京时间左闭右开边界。报告参考日期固定，不随运行当天日期或快照版本改变。"
+  ],
+  "snapshots": {
+    "baseline": {
+      "as_of": "2026-03-15T16:00:00Z",
+      "orders": "datasets/baseline/orders.csv",
+      "refunds": "datasets/baseline/refunds.csv"
+    },
+    "late-order": {
+      "as_of": "2026-03-16T04:00:00Z",
+      "orders": "datasets/late-order/orders.csv",
+      "refunds": "datasets/late-order/refunds.csv"
+    },
+    "late-refund": {
+      "as_of": "2026-03-16T16:00:00Z",
+      "orders": "datasets/late-refund/orders.csv",
+      "refunds": "datasets/late-refund/refunds.csv"
+    }
+  }
+}
