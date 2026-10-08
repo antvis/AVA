@@ -82,9 +82,29 @@ export const sourceSchema = z
   });
 
 /** Return table metadata through the same bounded ExecutionResult protocol as queries. */
-export const SCHEMA_CODE = `result = [
+export const SCHEMA_CODE = `import numpy as np
+
+def field_type(series):
+    dtype = str(series.dtype)
+    if not pd.api.types.is_object_dtype(series.dtype):
+        return dtype
+
+    observed = set()
+    has_arrays = False
+    # Bounded observations describe actual cell containers, not an exhaustive schema.
+    for value in series.dropna().head(32):
+        kind = type(value).__module__ + '.' + type(value).__name__
+        if isinstance(value, (np.ndarray, list, tuple)):
+            has_arrays = True
+            items = pd.api.types.infer_dtype(list(value)[:32], skipna=True)
+            kind += '[items: ' + items + ']'
+        observed.add(kind)
+
+    return dtype + ' (observed cell types, up to 32 non-null cells: ' + ', '.join(sorted(observed)) + ')' if has_arrays else dtype
+
+result = [
     {'name': name, 'columnCount': len(frame.columns), 'indexes': [],
-     'fields': [{'name': column, 'type': str(dtype)} for column, dtype in frame.dtypes.items()]}
+     'fields': [{'name': column, 'type': field_type(frame[column])} for column in frame.columns]}
     for name, frame in tables.items()
 ]`;
 
