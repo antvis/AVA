@@ -13,7 +13,7 @@ import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyProfile, stringifySchema } from '../util/context';
-import { AnalysisEvent, AnalysisEventType } from '../util/event';
+import { AnalysisEvent, AnalysisEventType } from '../event';
 import { serializeError } from '../util/error';
 
 import type { AnalysisStrategy, QueryLanguage, ExecutionResult } from '../types';

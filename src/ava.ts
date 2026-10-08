@@ -17,7 +17,7 @@ import {
   AnalysisEventType,
   AnalysisEvent,
   emit,
-} from './util/event';
+} from './event';
 import { serializeError } from './util/error';
 
 import type {
