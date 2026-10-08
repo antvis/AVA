@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { generateText } from 'ai';
 
-import { ClickHouseQueryDialect } from '../../src/query/clickhouse';
+import { ClickHouseQueryDialect } from '../../../src/query/clickhouse';
 
 import type { ClickHouseClient } from '@clickhouse/client';
 
 vi.mock('ai', () => ({ generateText: vi.fn() }));
-vi.mock('../../src/util/model', () => ({ languageModel: vi.fn(() => 'test-model') }));
+vi.mock('../../../src/util/model', () => ({ languageModel: vi.fn(() => 'test-model') }));
 
 afterEach(() => vi.clearAllMocks());
 

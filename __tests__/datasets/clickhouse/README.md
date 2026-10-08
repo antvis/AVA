@@ -9,7 +9,7 @@ open -a OrbStack
 docker info
 docker compose -f __tests__/datasets/clickhouse/compose.yaml up -d --wait
 
-AVA_CLICKHOUSE_TEST=1 npx vitest run __tests__/clickhouse
+AVA_CLICKHOUSE_TEST=1 npx vitest run __tests__/remote/clickhouse
 ```
 
 默认连接 `127.0.0.1:13123`。修改端口时，Compose 和测试须设置相同的 `AVA_CLICKHOUSE_TEST_PORT`。

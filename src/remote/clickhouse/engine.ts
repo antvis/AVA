@@ -1,8 +1,8 @@
 import { createClient } from '@clickhouse/client';
 
-import { ClickHouseQueryDialect } from '../query/clickhouse';
-import { DEFAULT_METRICS, parseProfileOptions } from '../util/profile';
-import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../util/result';
+import { ClickHouseQueryDialect } from '../../query/clickhouse';
+import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
+import { executionResult, inferQuerySchema, limitedQuery, maxRows } from '../../util/result';
 
 import { profileTables } from './profile';
 import { getClickHouseSchema } from './schema';
@@ -19,7 +19,7 @@ import type {
   Profile,
   ProfileOptions,
   Schema,
-} from '../types';
+} from '../../types';
 
 function normalizeUrl(hostOrUrl: string, port?: number): string {
   const base = /^[a-z]+:\/\//i.test(hostOrUrl) ? hostOrUrl : `http://${hostOrUrl}`;

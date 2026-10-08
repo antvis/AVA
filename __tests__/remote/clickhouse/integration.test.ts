@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { ClickHouseEngine } from '../../src/clickhouse';
-import { getLLMConfig } from '../test-utils';
+import { ClickHouseEngine } from '../../../src/remote/clickhouse';
+import { getLLMConfig } from '../../test-utils';
 
 describe.skipIf(process.env.AVA_CLICKHOUSE_TEST !== '1')('clickhouse/engine', () => {
   let engine: ClickHouseEngine | null = null;

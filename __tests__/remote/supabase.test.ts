@@ -1,5 +1,5 @@
 /**
- * Unit test for src/saas/supabase/engine.ts (SupabaseEngine).
+ * Unit test for src/remote/supabase/engine.ts (SupabaseEngine).
  * Global fetch is stubbed — the Management API is never actually called.
  */
 
@@ -7,8 +7,8 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 import { PgParser, unwrapParseResult } from '@supabase/pg-parser';
 
 import { AVA } from '../../src';
-import { BUILTIN_METRICS as PG_METRICS, profileTables as pgProfile } from '../../src/saas/supabase/profile';
-import { SupabaseEngine } from '../../src/saas';
+import { BUILTIN_METRICS as PG_METRICS, profileTables as pgProfile } from '../../src/remote/supabase/profile';
+import { SupabaseEngine } from '../../src/remote';
 import { PostgreSQLQueryDialect } from '../../src/query/postgresql';
 import { getLLMConfig } from '../test-utils';
 
