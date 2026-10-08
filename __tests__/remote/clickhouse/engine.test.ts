@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createClient } from '@clickhouse/client';
 
-import { AVA } from '../../src';
-import { ClickHouseEngine } from '../../src/clickhouse';
-import { profileTables as clickhouseProfile } from '../../src/clickhouse/profile';
-import { getLLMConfig } from '../test-utils';
+import { AVA } from '../../../src';
+import { ClickHouseEngine } from '../../../src/remote/clickhouse';
+import { profileTables as clickhouseProfile } from '../../../src/remote/clickhouse/profile';
+import { getLLMConfig } from '../../test-utils';
 
-import type { Schema } from '../../src/types';
+import type { Schema } from '../../../src/types';
 
 vi.mock('@clickhouse/client', () => ({
   createClient: vi.fn(),

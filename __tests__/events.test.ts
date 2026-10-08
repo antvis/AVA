@@ -1,7 +1,7 @@
 import EventEmitter from '@antv/event-emitter';
 import { expect, it, vi } from 'vitest';
 
-import { AnalysisEventType, AnalysisEvent, emit } from '../../src/util/event';
+import { AnalysisEventType, AnalysisEvent, emit } from '../src/event';
 
 it('dispatches type and data to named and wildcard listeners', () => {
   const emitter = new EventEmitter();

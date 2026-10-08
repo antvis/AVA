@@ -1,4 +1,4 @@
-import type { Schema, TableIndex } from '../types';
+import type { Schema, TableIndex } from '../../types';
 
 interface TableRow {
   table_name: string;

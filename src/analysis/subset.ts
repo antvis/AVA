@@ -1,7 +1,7 @@
 import { experimental_evaluate as evaluate } from 'ai';
 
 import { stringifySchema } from '../util/context';
-import { AnalysisEvent, AnalysisEventType } from '../util/event';
+import { AnalysisEvent, AnalysisEventType } from '../event';
 import { serializeError } from '../util/error';
 
 import { directAnalysis } from './direct';

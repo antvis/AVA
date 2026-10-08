@@ -1,7 +1,7 @@
-import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../util/profile';
-import { sqlIdentifier } from '../util/sql';
+import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
+import { sqlIdentifier } from '../../util/sql';
 
-import type { FieldProfile, LogicalType, Metric, ParsedProfileOptions, Profile, Schema, TableProfile } from '../types';
+import type { FieldProfile, LogicalType, Metric, ParsedProfileOptions, Profile, Schema, TableProfile } from '../../types';
 
 interface Context {
   table: string;

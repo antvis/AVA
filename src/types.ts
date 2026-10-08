@@ -4,7 +4,7 @@
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { LanguageModelUsage } from 'ai';
-import type { AnalysisEvent } from './util/event';
+import type { AnalysisEvent } from './event';
 
 /**
  * Minimal structural type for a database connection used by LoadedSource.
