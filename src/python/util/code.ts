@@ -22,7 +22,7 @@ function sourceCode(source: DataSourceConfig): string {
         thousands: read.thousands,
         encoding: read.encoding,
         names: read.names,
-        header: read.header === false ? null : 0,
+        header: read.header === false || (read.names !== undefined && read.header !== true) ? null : 0,
         keep_default_na: read.nullstr === undefined ? undefined : false,
         dtype: read.all_varchar ? 'str' : undefined,
         compression: read.compression === 'none' ? null : read.compression,
