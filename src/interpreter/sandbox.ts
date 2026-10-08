@@ -2,7 +2,7 @@
  * Execute LLM-generated JavaScript analysis code.
  */
 
-import { stat } from './stat';
+import { stat, STAT_SOURCE } from './stat';
 
 declare const document: any;
 declare const window: any;
@@ -38,11 +38,14 @@ function executeInBrowser(data: any[], code: string): Promise<any> {
     iframe.style.display = 'none';
     iframe.srcdoc = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; style-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <script>
+      const toClonable = (value) => value === undefined ? value : JSON.parse(JSON.stringify(value));
+
       window.addEventListener('message', (event) => {
         try {
-          const { data, stat, code } = event.data;
+          const { data, code, stat: statSource } = event.data;
+          const stat = new Function(statSource + '\\nreturn stat;')();
           const func = new Function('data', 'stat', code + '\\nreturn result;');
-          parent.postMessage({ result: func(data, stat) }, '*');
+          parent.postMessage({ result: toClonable(func(data, stat)) }, '*');
         } catch (error) {
           parent.postMessage({ error: error instanceof Error ? error.message : String(error) }, '*');
         }
@@ -55,7 +58,7 @@ function executeInBrowser(data: any[], code: string): Promise<any> {
     }, EXECUTION_TIMEOUT);
 
     iframe.onload = () => {
-      iframe.contentWindow?.postMessage({ data, stat, code }, '*');
+      iframe.contentWindow?.postMessage({ data, code, stat: STAT_SOURCE }, '*');
     };
 
     window.addEventListener('message', onMessage);
