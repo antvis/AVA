@@ -380,20 +380,20 @@ export class AVA extends EventEmitter {
    */
   exportAnalysis(collector: EventCollector): Artifact[] {
     const builder = new AnalysisBuilder(collector.trail());
-    const analysisData = builder.build();
+    const snapshot = builder.build();
 
     return [
       {
         artifactId: 'analysis',
         name: 'analysis',
-        description: 'Five-layer structured analysis record (JSON)',
-        parts: [{ kind: 'data', data: analysisData, mediaType: 'application/json' }],
+        description: 'Five-layer structured analysis snapshot (JSON)',
+        parts: [{ kind: 'data', data: snapshot, mediaType: 'application/json' }],
       },
       {
         artifactId: 'report',
         name: 'report',
         description: 'Human-readable HTML report of the analysis',
-        parts: [{ kind: 'text', text: renderReportHTML(analysisData), mediaType: 'text/html' }],
+        parts: [{ kind: 'text', text: renderReportHTML(snapshot), mediaType: 'text/html' }],
       },
     ];
   }

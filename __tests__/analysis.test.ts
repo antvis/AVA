@@ -11,7 +11,7 @@ import { AVA } from '../src';
 import { getLLMConfig, skipLLMTests } from './test-utils';
 
 import type { Artifact } from '../src/types';
-import type { AnalysisData } from '../src/util/event';
+import type { AnalysisSnapshot } from '../src/util/event';
 
 const companiesCsv = path.join(__dirname, '../data/companies.csv');
 const outputDir = path.join(__dirname, '../.tmp/analysis');
@@ -56,7 +56,7 @@ describe.skipIf(skipLLMTests)('Analysis — full pipeline', () => {
       expect(reportArtifact!.parts[0].kind).toBe('text');
       expect(reportArtifact!.parts[0]).toHaveProperty('mediaType', 'text/html');
 
-      const analysis: AnalysisData = (analysisArtifact!.parts[0] as { data: AnalysisData }).data;
+      const analysis: AnalysisSnapshot = (analysisArtifact!.parts[0] as { data: AnalysisSnapshot }).data;
       const html = (reportArtifact!.parts[0] as { text: string }).text;
 
       // Layer 1: source
@@ -80,7 +80,7 @@ describe.skipIf(skipLLMTests)('Analysis — full pipeline', () => {
       // Layer 5: presentation
       expect(analysis.presentation).not.toBeNull();
       expect(analysis.presentation!.query).toBe(query);
-      expect(analysis.presentation!.text).toBeTruthy();
+      expect(analysis.presentation!.summary).toBeTruthy();
       if (viz) {
         expect(analysis.presentation!.chartSyntax).toBeTruthy();
       }

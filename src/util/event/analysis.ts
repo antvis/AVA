@@ -33,7 +33,7 @@ export interface ExecutionLayer {
   /** Unique id within this analysis. */
   id: number;
   /** The DSL/SQL statement that was executed. */
-  sql: string;
+  dsl: string;
   /** 'success' or 'error'. */
   status: 'success' | 'error';
   /** Error message if status is 'error'. */
@@ -65,7 +65,7 @@ export interface ResultLayer {
 /** Layer 5: Presentation — the final output the user sees. */
 export interface PresentationLayer {
   /** The natural-language summary text. */
-  text: string;
+  summary: string;
   /** Chart syntax (GPT-Vis) if produced. */
   chartSyntax?: string;
   /** The query that started this analysis. */
@@ -74,8 +74,8 @@ export interface PresentationLayer {
   seq: number;
 }
 
-/** The complete five-layer analysis record. */
-export interface AnalysisData {
+/** The complete five-layer analysis snapshot. */
+export interface AnalysisSnapshot {
   source: SourceLayer | null;
   definitions: DefinitionLayer[];
   executions: ExecutionLayer[];
@@ -90,7 +90,7 @@ export interface AnalysisData {
  * Only collects what each layer actually produced — no heuristic inference.
  */
 export class AnalysisBuilder {
-  private data: AnalysisData = {
+  private record: AnalysisSnapshot = {
     source: null,
     definitions: [],
     executions: [],
@@ -101,12 +101,13 @@ export class AnalysisBuilder {
   constructor(private trail: readonly AnalysisRecord[]) {}
 
   /** Build the full analysis from the event trail. */
-  build(): AnalysisData {
+  build(): AnalysisSnapshot {
     this.buildSource();
     this.buildDefinitions();
     this.buildExecutions();
+    this.buildResults();
     this.buildPresentation();
-    return this.data;
+    return this.record;
   }
 
   private buildSource(): void {
@@ -117,7 +118,7 @@ export class AnalysisBuilder {
     const source = (loadStart?.data as DataSourceConfig | null) ?? null;
     if (!source) return;
 
-    this.data.source = {
+    this.record.source = {
       ...source,
       timestamp: loadEnd.timestamp,
       seq: loadEnd.seq,
@@ -129,7 +130,7 @@ export class AnalysisBuilder {
 
     for (const record of translateEnds) {
       const dsl = (record.data as { dsl?: string })?.dsl ?? '';
-      this.data.definitions.push({
+      this.record.definitions.push({
         dsl,
         seq: record.seq,
         timestamp: record.timestamp,
@@ -162,7 +163,7 @@ export class AnalysisBuilder {
 
       const exec: ExecutionLayer = {
         id: executionId,
-        sql: dsl,
+        dsl,
         status: isError ? 'error' : 'success',
         error,
         truncated: (end?.data as { truncated?: boolean })?.truncated,
@@ -175,25 +176,39 @@ export class AnalysisBuilder {
         endSeq: end?.seq ?? -1,
       };
 
-      this.data.executions.push(exec);
-
-      // Collect result for successful executions
-      if (!isError && end) {
-        const resultData = end.data as {
-          schema?: { name: string; type?: string }[];
-          data?: Record<string, unknown>[];
-          rowCount?: number;
-        } | null;
-
-        this.data.results.push({
-          executionId,
-          columns: resultData?.schema ?? [],
-          rows: resultData?.data ?? [],
-          rowCount: resultData?.rowCount,
-        });
-      }
+      this.record.executions.push(exec);
 
       executionId++;
+    }
+  }
+
+  private buildResults(): void {
+    const queryEnds = this.trail.filter((r) => r.type === 'queryend' && !r.isError);
+
+    for (const end of queryEnds) {
+      // Find the matching execution by matching the closest preceding querystart
+      const start = this.trail
+        .filter((r) => r.type === 'querystart' && r.seq < end.seq)
+        .pop();
+      if (!start) continue;
+
+      const execution = this.record.executions.find(
+        (e) => e.startSeq === start.seq,
+      );
+      if (!execution) continue;
+
+      const resultData = end.data as {
+        schema?: { name: string; type?: string }[];
+        data?: Record<string, unknown>[];
+        rowCount?: number;
+      } | null;
+
+      this.record.results.push({
+        executionId: execution.id,
+        columns: resultData?.schema ?? [],
+        rows: resultData?.data ?? [],
+        rowCount: resultData?.rowCount,
+      });
     }
   }
 
@@ -203,7 +218,7 @@ export class AnalysisBuilder {
       .pop();
     const analyzeStart = this.trail.find((r) => r.type === 'analyzestart');
     const query = (analyzeStart?.data as { query?: string })?.query ?? '';
-    const text = (summarizeEnd?.data as { text?: string })?.text ?? '';
+    const summary = (summarizeEnd?.data as { text?: string })?.text ?? '';
 
     const visualizeEnd = this.trail
       .filter((r) => r.type === 'visualizeend' && !r.isError)
@@ -211,10 +226,10 @@ export class AnalysisBuilder {
 
     const chartSyntax = (visualizeEnd?.data as { syntax?: string })?.syntax;
 
-    if (!text && !chartSyntax && !analyzeStart) return;
+    if (!summary && !chartSyntax && !analyzeStart) return;
 
-    this.data.presentation = {
-      text,
+    this.record.presentation = {
+      summary,
       chartSyntax,
       query,
       seq: summarizeEnd?.seq ?? analyzeStart?.seq ?? 0,
@@ -223,7 +238,7 @@ export class AnalysisBuilder {
 
   /** Serialize the analysis to JSON. */
   toJSON(): string {
-    return JSON.stringify(this.data, null, 2);
+    return JSON.stringify(this.record, null, 2);
   }
 }
 
@@ -240,13 +255,13 @@ function escapeTemplateLiteral(s: string): string {
 }
 
 /** Render the analysis as a minimal, Vercel-style report. */
-export function renderReportHTML(data: AnalysisData): string {
+export function renderReportHTML(data: AnalysisSnapshot): string {
   const p = data.presentation;
   if (!p) return '<!DOCTYPE html><html><body><p>No presentation data.</p></body></html>';
 
   const hasChart = !!p.chartSyntax;
   const chartSyntaxEscaped = hasChart ? escapeTemplateLiteral(p.chartSyntax!) : '';
-  const summaryEscaped = escapeHTML(p.text);
+  const summaryEscaped = escapeHTML(p.summary);
 
   // Build data table from the first result set
   const result = data.results[0];
