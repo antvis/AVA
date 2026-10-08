@@ -5,6 +5,7 @@ const { parseArgs } = require('node:util');
 
 const { evaluate, getDataset, loadPlugin, predictionIndex } = require('./_shared');
 const { takeOptions } = require('./_shared/args');
+const { buildReport } = require('./_shared/report');
 
 const adapters = {
   'ava-workflow': { databench: () => import('./ava-workflow/evals/databench.eval.ts') },
@@ -24,6 +25,7 @@ Score options:
   --data <path>          CSV file or directory; repeatable
   --predictions <path>   Prediction CSV; repeatable
   --metrics <names>      Comma-separated metrics (default depends on dataset)
+  --metadata <path>      JSON with environment, evaluation, provenance metadata
   --output <path>        Write a new JSON report
   --help                Show help
 `;
@@ -40,6 +42,7 @@ async function score(args) {
       dataset: { type: 'string', default: 'databench-lite' },
       help: { type: 'boolean' },
       metrics: { type: 'string' },
+      metadata: { type: 'string' },
       output: { type: 'string' },
       plugin: { type: 'string', multiple: true },
       predictions: { type: 'string', multiple: true },
@@ -52,7 +55,7 @@ async function score(args) {
   const plugin = getDataset(values.dataset);
   const samples = plugin.load(values.data?.length ? values.data : undefined);
 
-  const report = await evaluate({
+  const scores = await evaluate({
     samples,
     predictions: predictionIndex(values.predictions),
     metricNames: (values.metrics ?? plugin.defaultMetrics?.join(',') ?? 'databench-answer')
@@ -60,6 +63,7 @@ async function score(args) {
       .map((name) => name.trim())
       .filter(Boolean),
   });
+  const report = buildReport(scores, samples, values);
   if (values.output) writeNew(values.output, `${JSON.stringify(report, null, 2)}\n`);
 
   process.stdout.write(`Samples: ${report.total}\nPredicted: ${report.predicted}\nMissing: ${report.missing}\n`);
