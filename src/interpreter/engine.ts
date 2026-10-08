@@ -109,7 +109,7 @@ Now generate the code:`;
       throw new Error('No data loaded. Please call source() first.');
     }
 
-    const result = executeCode(structuredClone(this.data), code);
+    const result = await executeCode(structuredClone(this.data), code);
     const rows = (Array.isArray(result) ? result : [{ value: result }]) as T[];
     return executionResult(rows, inferQuerySchema(rows), options);
   }
