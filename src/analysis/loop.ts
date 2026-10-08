@@ -57,6 +57,8 @@ The runtime executes ${
 
 The protocol tag remains [SQL] for compatibility even when the execution dialect is not SQL.
 
+${language.instructions ?? ''}
+
 # 3. OBJECTIVE
 
 Produce the smallest correct ${
@@ -90,7 +92,7 @@ Use [EXPLORE] only to resolve a concrete uncertainty, such as:
 - join keys or relationships
 - unexpected results from an earlier query
 
-Prefer the smallest query that resolves the uncertainty. Use LIMIT for raw sample rows and avoid retrieving large datasets.
+Prefer the smallest query that resolves the uncertainty. Limit raw sample rows using the execution language and avoid retrieving large datasets.
 
 Format:
 
