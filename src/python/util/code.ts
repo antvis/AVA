@@ -84,7 +84,7 @@ with contextlib.redirect_stdout(sys.stderr):
         raise ValueError('Result column names must be unique')
     limits = request['limits']
     rows = json.loads(frame.head(limits['maxRows']).to_json(
-        orient='records', date_format='iso', double_precision=15
+        orient='records', date_format='iso', double_precision=2
     ))
     output = {'schema': [{'name': name, 'type': str(dtype)} for name, dtype in frame.dtypes.items()], 'data': []}
     size = 0
