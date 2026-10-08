@@ -26,13 +26,9 @@ Score options:
   --predictions <path>   Prediction CSV; repeatable
   --metrics <names>      Comma-separated metrics (default depends on dataset)
   --metadata <path>      JSON with environment, evaluation, provenance metadata
-  --output <path>        Write a new JSON report
+  --output <path>        Write a JSON report, overwriting an existing file
   --help                Show help
 `;
-
-function writeNew(path, content) {
-  writeFileSync(path, content, { encoding: 'utf8', flag: 'wx' });
-}
 
 async function score(args) {
   const { values } = parseArgs({
@@ -64,7 +60,7 @@ async function score(args) {
       .filter(Boolean),
   });
   const report = buildReport(scores, samples, values);
-  if (values.output) writeNew(values.output, `${JSON.stringify(report, null, 2)}\n`);
+  if (values.output) writeFileSync(values.output, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 
   process.stdout.write(`Samples: ${report.total}\nPredicted: ${report.predicted}\nMissing: ${report.missing}\n`);
   for (const [name, result] of Object.entries(report.metrics)) {

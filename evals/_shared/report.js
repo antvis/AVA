@@ -40,6 +40,7 @@ function buildReport(scores, samples, options) {
   const models = [...new Set(rows.map((row) => row.model).filter(Boolean))];
   const hashes = options.predictions.map((path) => createHash('sha256').update(readFileSync(path)).digest('hex'));
   const metric = scores.metrics['databench-answer'] ?? Object.values(scores.metrics)[0];
+  if (!metric) throw new Error('At least one scoring metric is required.');
   return {
     generatedAt: new Date().toISOString(),
     // This is the scoring runtime; original execution versions must be supplied.
