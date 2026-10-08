@@ -12,6 +12,7 @@ import { executionResult, limitedQuery, maxRows } from '../util/result';
 import { coerceNumbers } from '../util/coerce';
 import { sqlStringLiteral } from '../util/sql';
 import { parseProfileOptions } from '../util/profile';
+import { runWithTimeout } from '../util/timeout';
 
 import { DEFAULT_METRICS, profileTables } from './profile';
 import { loadSource } from './loaders';
@@ -174,44 +175,19 @@ export class DuckDBEngine implements AnalysisEngine {
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
     const conn = await this.getConnection();
     const query = await this.queryDialect.validateDSL(sql, conn);
-    const reader = await this.runWithTimeout(conn, conn.runAndReadAll(limitedQuery(query, maxRows(options))));
+    const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
+    const reader = await runWithTimeout(conn.runAndReadAll(limitedQuery(query, maxRows(options))), timeoutMs, {
+      onTimeout: () => {
+        conn.interrupt();
+        return new QueryTimeoutError(timeoutMs);
+      },
+      unref: true,
+    });
     const schema = Array.from({ length: reader.columnCount }, (_, index) => ({
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),
     }));
     return executionResult(coerceNumbers(reader.getRowObjectsJson()) as T[], schema, options);
-  }
-
-  /**
-   * Race a query against the configured timeout. On timeout, interrupt the
-   * connection (cancels the running query) and reject with QueryTimeoutError,
-   * so a slow/pathological LLM-generated query cannot hang the session.
-   */
-  private async runWithTimeout<T>(conn: DuckDBConnection, operation: Promise<T>): Promise<T> {
-    const timeoutMs = this.engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS;
-    if (timeoutMs <= 0) return operation;
-
-    const timeoutMarker = Symbol('duckdb-query-timeout');
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
-    try {
-      const result = await Promise.race([
-        operation,
-        new Promise<typeof timeoutMarker>((resolve) => {
-          timeoutId = setTimeout(() => resolve(timeoutMarker), timeoutMs);
-          // Don't keep the process alive solely for this timer.
-          timeoutId.unref?.();
-        }),
-      ]);
-      if (result === timeoutMarker) {
-        conn.interrupt();
-        // Swallow the interrupted query's rejection so it isn't unhandled.
-        void operation.catch(() => undefined);
-        throw new QueryTimeoutError(timeoutMs);
-      }
-      return result;
-    } finally {
-      if (timeoutId) clearTimeout(timeoutId);
-    }
   }
 
   /**

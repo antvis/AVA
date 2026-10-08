@@ -37,12 +37,14 @@ export function hasEngine(type: EngineConfig['type']): boolean {
  */
 export function getEngineClass(type: EngineConfig['type']): EngineClass {
   const engineClass = registry.get(type);
+
   if (!engineClass) {
     throw new Error(
       `Engine type "${type}" is not available in this environment. ` +
         'The browser build of @antv/ava only includes the interpreter engine; ' +
-        'use the Node.js build for DuckDB, Supabase, or ClickHouse.'
+        'use the Node.js build for DuckDB, Supabase, ClickHouse, or Python.'
     );
   }
+
   return engineClass;
 }

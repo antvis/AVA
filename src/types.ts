@@ -53,12 +53,27 @@ export interface DuckDBEngineOptions {
 }
 
 /**
+ * Python engine options.
+ */
+export interface PythonEngineOptions {
+  /**
+   * Override local python3 execution with a custom environment. Local execution is not sandboxed.
+   * Run the complete Python script and return its JSON output as ExecutionResult.
+   * Source loading and result limits are included in the script; configure remote execution deadlines separately.
+   */
+  execute?: (code: string) => Promise<ExecutionResult>;
+  /** Client wait limit and local process execution deadline. Default 30000 ms. */
+  queryTimeoutMs?: number;
+}
+
+/**
  * Engine selection and per-engine options. The `type` discriminant picks the
  * analysis engine; the remaining fields are the options for that engine.
- * Currently only the DuckDB engine has configurable options.
+ * Python defaults to local python3 execution; callers can supply their own execution environment.
  */
 export type EngineConfig =
   | ({ type: 'duckdb' } & DuckDBEngineOptions)
+  | ({ type: 'python' } & PythonEngineOptions)
   | { type: 'interpreter' }
   | { type: 'supabase' }
   | { type: 'clickhouse' };
@@ -627,8 +642,12 @@ export interface ParsedProfileOptions {
 export interface QueryLanguage {
   /** Human-readable language or dialect name included in analysis prompts. */
   name: string;
+
   /** Markdown code-fence language used for executable statements. */
   fence: string;
+
+  /** Environment bindings and result conventions needed when generating code. */
+  instructions?: string;
 }
 
 /**

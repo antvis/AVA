@@ -35,12 +35,13 @@ export function limitedQuery(sql: string, limit: number): string {
 }
 
 /**
- * Create a bounded execution result.
+ * Create a bounded execution result, preserving upstream truncation unless a local limit truncates further.
  */
 export function executionResult<T>(
   rows: T[],
   schema: QueryColumn[],
-  options: ExecutionOptions = {}
+  options: ExecutionOptions = {},
+  upstreamTruncatedBy?: ExecutionResult<T>['truncatedBy']
 ): ExecutionResult<T> {
   const limit = maxRows(options);
   const limitedRows = rows.slice(0, limit);
@@ -65,7 +66,7 @@ export function executionResult<T>(
     bytes += rowBytes;
   }
 
-  truncatedBy ??= rows.length > limit ? 'maxRows' : undefined;
+  truncatedBy ??= rows.length > limit ? 'maxRows' : upstreamTruncatedBy;
   return {
     data,
     ...(truncatedBy ? { truncated: true as const, truncatedBy } : {}),

@@ -194,7 +194,7 @@ Create an AVA instance:
 
 - `new AVA(config)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'interpreter' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
+  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'python', execute?, queryTimeoutMs? }`, `{ type: 'interpreter' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
 
 Core APIs in AVA:
 
@@ -210,6 +210,16 @@ Core APIs in AVA:
 - `analyze(query, config?)`: run data analysis using various strategies.
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data; generation failures throw).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
+
+The Python engine defaults to local `python3` execution when `execute` is omitted.
+It requires pandas (and openpyxl for `.xlsx`). Complete scripts use stdin without temporary script files;
+each call starts a fresh process. The executor kills that process on timeout and limits captured output.
+This is **not a security sandbox**: it inherits host file/network permissions, has no Python memory limit,
+and does not isolate child processes. Supply `execute: (code: string) => Promise<ExecutionResult>`
+to use your own isolated execution service. The engine generates a complete script including source loading,
+analysis, result limits and JSON output. The callback only runs the script and returns its parsed JSON output;
+configure its execution timeout in your service. The engine also applies the shared `executionResult` limits
+and preserves any truncation already reported by Python.
 
 #### `profile(options?)`
 
@@ -370,7 +380,7 @@ User Response
 
 Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase, ClickHouse) out of browser bundles.
 
-- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, and `interpreter` engines
+- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `interpreter`, and `python` engines
 - **Browser** (`@antv/ava/browser`): registers only the `interpreter` engine
 
 ## 🌐 Environment Support

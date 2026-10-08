@@ -34,6 +34,26 @@ describe('executionResult', () => {
     expect(result).not.toHaveProperty('truncatedBy');
   });
 
+  it.each(['maxRows', 'maxResultBytes'] as const)('preserves upstream %s truncation', (reason) => {
+    const result = executionResult([{ value: 1 }], [], {}, reason);
+
+    expect(result.truncated).toBe(true);
+    expect(result.truncatedBy).toBe(reason);
+    expect(result.rowCount).toBeUndefined();
+  });
+
+  it('reports the local limit when it truncates an upstream result further', () => {
+    const rows = [{ value: 1 }, { value: 2 }];
+    const rowLimited = executionResult(rows, [], { maxRows: 1 }, 'maxResultBytes');
+    expect(rowLimited.data).toEqual([rows[0]]);
+    expect(rowLimited.truncatedBy).toBe('maxRows');
+
+    const byteLimited = executionResult(rows, [], { maxResultBytes: 1 }, 'maxRows');
+    expect(byteLimited.data).toEqual([]);
+    expect(byteLimited.truncatedBy).toBe('maxResultBytes');
+    expect(byteLimited.rowCount).toBeUndefined();
+  });
+
   it('rejects a field larger than 1 MiB', () => {
     expect(() => executionResult([{ value: 'x'.repeat(1024 * 1024) }], [])).toThrow(
       'Result field exceeds the 1 MiB limit'
