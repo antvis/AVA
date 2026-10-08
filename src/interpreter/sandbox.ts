@@ -13,8 +13,16 @@ function executeInBrowser(data: any[], code: string): Promise<any> {
   return new Promise((resolve, reject) => {
     const iframe = document.createElement('iframe');
     let timer: ReturnType<typeof setTimeout>;
+    let onMessage: (event: MessageEvent) => void;
 
-    const onMessage = (event: MessageEvent) => {
+    const cleanup = () => {
+      clearTimeout(timer);
+      window.removeEventListener('message', onMessage);
+      iframe.onload = null;
+      iframe.remove();
+    };
+
+    onMessage = (event: MessageEvent) => {
       if (event.source !== iframe.contentWindow) return;
       cleanup();
 
@@ -24,13 +32,6 @@ function executeInBrowser(data: any[], code: string): Promise<any> {
       }
 
       resolve(event.data?.result);
-    };
-
-    const cleanup = () => {
-      clearTimeout(timer);
-      window.removeEventListener('message', onMessage);
-      iframe.onload = null;
-      iframe.remove();
     };
 
     iframe.setAttribute('sandbox', 'allow-scripts');
