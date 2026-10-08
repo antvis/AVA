@@ -211,16 +211,6 @@ Core APIs in AVA:
 - `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data; generation failures throw).
 - `dispose()`: release engine resources (DuckDB instance, temp files).
 
-The Python engine defaults to local `python3` execution when `execute` is omitted.
-It requires pandas (and openpyxl for `.xlsx`). Complete scripts use stdin without temporary script files;
-each call starts a fresh process. The executor kills that process on timeout and limits captured output.
-This is **not a security sandbox**: it inherits host file/network permissions, has no Python memory limit,
-and does not isolate child processes. Supply `execute: (code: string) => Promise<ExecutionResult>`
-to use your own isolated execution service. The engine generates a complete script including source loading,
-analysis, result limits and JSON output. The callback only runs the script and returns its parsed JSON output;
-configure its execution timeout in your service. The engine also applies the shared `executionResult` limits
-and preserves any truncation already reported by Python.
-
 #### `profile(options?)`
 
 `load()` only loads and returns the structural `Schema`; it does not compute a profile. Call `await ava.profile(options)` explicitly to compute, return, and retain statistics. The profile preserves the schema and adds `generatedAt`, table-level `metrics`, and a `logicalType` plus `metrics` for each field.

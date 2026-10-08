@@ -9,6 +9,8 @@ function sourceCode(source: DataSourceConfig): string {
       return "tables = {'data': pd.read_json(options['path'], orient='records', storage_options=options.get('headers') or None)}";
     case 'excel':
       return "tables = pd.read_excel(options['path'], sheet_name=None, storage_options=options.get('headers') or None)";
+    case 'parquet':
+      return "tables = {'data': pd.read_parquet(options['path'], storage_options=options.get('headers') or None)}";
     case 'csv':
     case 'csv-file': {
       const read = source.options.options ?? {};

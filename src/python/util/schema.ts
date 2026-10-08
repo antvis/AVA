@@ -52,6 +52,7 @@ export const sourceSchema = z
     z.object({ type: z.literal('csv-file'), options: fileOptions.extend({ options: csvOptions.optional() }) }),
     z.object({ type: z.literal('json-file'), options: fileOptions }),
     z.object({ type: z.literal('excel'), options: fileOptions }),
+    z.object({ type: z.literal('parquet'), options: fileOptions }),
   ])
   .superRefine(({ options }, ctx) => {
     if (!('path' in options)) return;
