@@ -36,7 +36,7 @@ function executeInBrowser(data: any[], code: string): Promise<any> {
 
     iframe.setAttribute('sandbox', 'allow-scripts');
     iframe.style.display = 'none';
-    iframe.srcdoc = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; connect-src 'none'; img-src 'none'; style-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+    iframe.srcdoc = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; connect-src 'none'; img-src 'none'; style-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <script>
       const toClonable = (value) => value === undefined ? value : JSON.parse(JSON.stringify(value));
 
