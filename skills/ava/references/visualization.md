@@ -1,40 +1,40 @@
-# 可视化
+# Visualization
 
-使用用户提供的数据或查询结果的 `data` 构造图表，所有引擎共用同一条制图路径。
+Build charts from user-provided data or the `data` in query results. All engines use the same charting workflow.
 
-## 选择图表与字段
+## Choose a Chart and Map Fields
 
-按用户意图选择类型，将实际字段映射为下表要求的字段。除特殊说明外，字段均位于 `data` 数组的每一项中，`value`、`x`、`y` 使用数值。
+Choose a chart type based on the user's intent, then map actual fields to the required fields below. Unless noted otherwise, fields belong to each item in the `data` array; `value`, `x`, and `y` are numeric.
 
-| 用途 | `chartType` | 数据字段或结构 |
+| Use case | `chartType` | Data fields or structure |
 | --- | --- | --- |
-| 类别比较 | `column`, `bar` | `category`, `value`；长标签优先 bar |
-| 时间趋势 | `line`, `area` | `time`, `value`；`stack` 仅 area 支持 |
-| 部分占整体 | `pie` | `category`, `value`；类别较少且数值非负，`innerRadius 0.6` 为环图 |
-| 两个数值变量的关系 | `scatter` | `x`, `y` |
-| 数值分布 | `histogram` | 原始观测的数值数组 |
-| 分组分布 | `boxplot`, `violin` | `category`, `value`；每类多个观测 |
-| 多维指标比较 | `radar` | `name`, `value` |
-| 阶段转化 | `funnel` | 按阶段顺序排列的 `category`, `value` |
-| 累计增减 | `waterfall` | `category`, `value`；总计项用 `category` 和 `isTotal true` |
-| 单个进度 | `liquid` | 顶层 `percent`，范围 0–1，无 `data` 数组 |
-| 词频 | `word-cloud` | `text`, `value` |
-| 集合交集 | `venn` | `sets`, `value`；交集写作 `sets A,B` |
-| 层级组成 | `treemap` | `name`, `value`，可嵌套 `children` 数组 |
-| 流向 | `sankey` | `source`, `target`, `value` |
-| 精确查值 | `table` | 原始行字段 |
-| 不同量级的序列 | `dual-axes` | 顶层 `categories`、`series` 数组；每个 series 含 `type`（column/line）、`axisYTitle`、与 categories 对齐的数值 `data` |
+| Category comparison | `column`, `bar` | `category`, `value`; prefer `bar` for long labels |
+| Time trend | `line`, `area` | `time`, `value`; only `area` supports `stack` |
+| Part-to-whole | `pie` | `category`, `value`; use for a small number of non-negative values; `innerRadius 0.6` creates a donut chart |
+| Relationship between two numeric variables | `scatter` | `x`, `y` |
+| Numeric distribution | `histogram` | Array of raw numeric observations |
+| Grouped distribution | `boxplot`, `violin` | `category`, `value`; include multiple observations per category |
+| Compare multiple metrics | `radar` | `name`, `value` |
+| Stage conversion | `funnel` | `category`, `value`, ordered by stage |
+| Cumulative increase or decrease | `waterfall` | `category`, `value`; mark the total item with `category` and `isTotal true` |
+| Single progress value | `liquid` | Top-level `percent`, from 0 to 1; no `data` array |
+| Word frequency | `word-cloud` | `text`, `value` |
+| Set intersections | `venn` | `sets`, `value`; write intersections as `sets A,B` |
+| Hierarchical composition | `treemap` | `name`, `value`, optionally nested in a `children` array |
+| Flow | `sankey` | `source`, `target`, `value` |
+| Exact value lookup | `table` | Fields from the original rows |
+| Series with different scales | `dual-axes` | Top-level `categories` and `series` arrays; each series has `type` (`column` or `line`), `axisYTitle`, and numeric `data` aligned with `categories` |
 
-## 构造 Spec
+## Build the Spec
 
-Spec 仅含两个字符串：`chartType` 为图表类型，`syntax` 为 GPT-Vis 语法文本。
+A Spec contains exactly two strings: `chartType`, the chart type, and `syntax`, the GPT-Vis syntax text.
 
-- 首行是 `vis <chartType>`，与 Spec 的类型一致。
-- 属性写作 `key value`，不用冒号；嵌套缩进两空格，数组项以 `- ` 开头。
-- 数据写在标题和轴属性之前；数值用纯数字，单位放在标题或轴标题中。
-- 含空格的字段名或字符串加引号。图表尺寸由容器自适应，无需设置 `width`、`height`。
+- The first line must be `vis <chartType>` and match the Spec's chart type.
+- Write properties as `key value`, without colons. Indent nested content by two spaces and start array items with `- `.
+- Put data before title and axis properties. Use plain numbers for numeric values; put units in the title or axis title.
+- Quote field names or strings that contain spaces. The chart size adapts to its container, so do not set `width` or `height`.
 
-例如地区总额数据 `[{"region":"East","total":25},{"region":"West","total":20}]`，映射 `region → category`、`total → value`，保存为 `chart.json`：
+For example, given regional totals `[{"region":"East","total":25},{"region":"West","total":20}]`, map `region → category` and `total → value`, then save as `chart.json`:
 
 ```json
 {
@@ -43,16 +43,16 @@ Spec 仅含两个字符串：`chartType` 为图表类型，`syntax` 为 GPT-Vis 
 }
 ```
 
-用 JSON 序列化器处理 `syntax` 中的换行、引号和反斜杠。
+Use a JSON serializer to escape newlines, quotes, and backslashes in `syntax`.
 
-## 渲染与检查
+## Render and Inspect
 
 ```sh
 ava viz --spec @chart.json --output chart.html
 ```
 
-返回的 `output` 为 HTML 绝对路径，已有文件不会被覆盖。打开 HTML 时需联网加载 GPT-Vis。
+The returned `output` is the absolute path to the HTML file. Existing files are not overwritten. The HTML requires an internet connection to load GPT-Vis.
 
-CLI 只校验 Spec 结构和图表类型，不验证语法能否正确渲染。有浏览器时预览图形，并核对字段映射、顺序、标题、单位和数据范围；未预览时明确说明。Top N 或汇总后的类别应在图中标明。
+The CLI validates only the Spec structure and chart type; it does not verify that the syntax renders correctly. If a browser is available, preview the chart and check the field mappings, ordering, title, units, and data range. If you do not preview it, say so. Label Top N selections and aggregated categories in the chart.
 
-渲染失败时根据报错修正，最多两次；仍失败则交付结果表并说明原因。
+If rendering fails, fix the error and retry up to two times. If it still fails, provide the results table and explain why the chart could not be rendered.
