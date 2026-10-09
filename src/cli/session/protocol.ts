@@ -89,6 +89,7 @@ const sourceSchema = z.discriminatedUnion('type', [
 
 export const sourceConfig = sourceSchema.transform((value) => value as DataSourceConfig);
 export const modelSchema = z.object({ model: text, apiKey: text.optional(), baseURL: text.optional() }).strict();
+export const engineTypeSchema = z.enum(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse']);
 
 const execution = {
   maxRows: z.number().int().positive().max(10000).optional(),
@@ -114,7 +115,9 @@ export const requestSchema = z.discriminatedUnion('command', [
 
 export type Request = z.infer<typeof requestSchema>;
 
-export const startupSchema = z.object({ source: sourceConfig, llm: modelSchema }).strict();
+export const startupSchema = z
+  .object({ source: sourceConfig, llm: modelSchema, engine: engineTypeSchema.optional() })
+  .strict();
 
 export const responseSchema = z.union([
   z.object({ ok: z.literal(true), result: z.unknown() }).strict(),

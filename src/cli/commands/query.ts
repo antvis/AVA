@@ -4,7 +4,7 @@ import { numberOption, option } from '../options';
 
 import type { Options } from '../options';
 
-export const description = 'Execute a read-only query';
+export const description = "Execute a query in the dataset engine's language";
 
 export const definition = {
   positionals: 1,
@@ -36,13 +36,15 @@ export async function run([datasetId]: string[], options: Options): Promise<unkn
 export const help = `${description}.
 
 Usage:
-  ava query <dataset-id> --dsl <sql|@file|-> [options]
+  ava query <dataset-id> --dsl <code|@file|-> [options]
 
 Use the datasetId returned by ava source. Returns query results as JSON.
-Use ava schema to find table and field names. No API key is required.
+Use ava schema to find the query language, table and field names. No API key is required.
+SQL engines require a read-only SELECT; Python/JavaScript execute analysis code.
+Local Python execution is not sandboxed. Engine selection is fixed by ava source.
 
 Options:
-  --dsl <sql|@file|->      Required SQL text, @file, or - for stdin (max: 512 KiB).
+  --dsl <code|@file|->     Required SQL, Python or JavaScript, @file, or - for stdin (max: 512 KiB).
   --max-rows <n>          Maximum result rows, 1-10000 (default: 200).
   --max-result-bytes <n>  Positive integer byte limit for result data
                          (default: 1048576, or 1 MiB).

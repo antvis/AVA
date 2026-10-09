@@ -1,7 +1,7 @@
 import { extname, resolve } from 'path';
 
 import { createSession } from '../session/client';
-import { sourceConfig } from '../session/protocol';
+import { engineTypeSchema, sourceConfig } from '../session/protocol';
 import { llmConfig } from '../config';
 import { readJSON } from '../io';
 import { option } from '../options';
@@ -23,10 +23,11 @@ export const description = 'Load a source and return a dataset ID';
 
 export const definition = {
   positionals: 1,
-  options: { type: { type: 'string', short: 't' } },
+  options: { type: { type: 'string', short: 't' }, engine: { type: 'string' } },
 } as const;
 
 export async function run([dataset]: string[], options: Options): Promise<{ datasetId: string }> {
+  const engine = engineTypeSchema.optional().parse(option(options, 'engine'));
   let input: unknown;
 
   if (dataset.startsWith('@') || dataset === '-') {
@@ -45,7 +46,7 @@ export async function run([dataset]: string[], options: Options): Promise<{ data
     config.options.path = resolve(config.options.path);
   }
 
-  return createSession(config, llmConfig(config.type === 'text'));
+  return createSession(config, llmConfig(config.type === 'text'), engine);
 }
 
 /**
@@ -71,6 +72,9 @@ Options:
   -t, --type <type>  Override the type inferred from the file extension.
                     Types: csv-file, json-file, parquet, excel, sqlite.
                     Cannot be used with @file or stdin configs.
+  --engine <type>    duckdb, python, javascript, supabase, or clickhouse.
+                    Default: supabase/clickhouse for those sources, otherwise duckdb.
+                    Fixed for the session; source support depends on the engine.
   -h, --help         Show help.
 
 Environment:
@@ -83,8 +87,11 @@ In a terminal, shows the dataset ID and suggested next commands.
 When piped or redirected, returns JSON containing datasetId.
 IDs use a sanitized source name plus a random suffix. Requires macOS or Linux.
 Sessions expire after 30 idle minutes; dispose releases them immediately.
+Python requires python3 and pandas; local Python execution is not sandboxed.
+JavaScript accepts inline csv/json/text configs. Use ava schema to inspect the query language.
 
 Examples:
   ava source sales.csv
+  ava source sales.csv --engine python
   ava source @source.json
   echo '{ "type": "json", "options": { "data": [{ "sales": 10 }] } }' | ava source -`;
