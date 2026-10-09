@@ -286,9 +286,9 @@ ava.dispose();
 | Command | Purpose | Requires AI |
 | --- | --- | --- |
 | `source` | Load a file, URL or source config and return a dataset ID | Only for text sources |
-| `schema` | View tables and fields | No |
+| `schema` | View tables, fields and the session's query language | No |
 | `profile` | Compute statistics | No |
-| `query` | Execute read-only SQL | No |
+| `query` | Execute SQL, Python or JavaScript for the selected engine | No |
 | `suggest` | Suggest analysis questions | Yes |
 | `translate` | Generate a query without executing it | Yes |
 | `analyze` | Analyze data using natural language | Yes |
@@ -300,6 +300,31 @@ ava.dispose();
 Run `ava <command> --help` for usage. `--data`, `--spec`, and `--dsl` accept inline
 content, `@file`, or `-` for stdin. Output is JSON; `source` shows a guide when run in a terminal.
 Sessions expire after 30 idle minutes or when disposed.
+
+#### Execution engines
+
+Select an engine when loading a source with `--engine duckdb|python|javascript|supabase|clickhouse`.
+By default, ClickHouse and Supabase sources use their corresponding engines; other sources use DuckDB.
+The selection stays fixed for the session. `schema` includes `language.name`, `language.fence`, and
+optional `language.instructions` alongside the tables and fields, so callers can discover the required DSL.
+
+Python uses `python3` from the session's PATH and requires pandas, plus an appropriate reader for
+Parquet or Excel (for example, pyarrow or openpyxl). It supports inline CSV/JSON and CSV, JSON,
+Parquet and Excel files or HTTP(S) URLs. Local Python execution is not sandboxed.
+
+```sh
+ava source sales.csv --engine python > session.json
+DATASET_ID=$(node -p 'JSON.parse(require("fs").readFileSync("session.json", "utf8")).datasetId')
+ava schema "$DATASET_ID"
+ava query "$DATASET_ID" --dsl 'result = df.groupby("region", dropna=False, as_index=False)["sales"].sum(min_count=1)'
+ava dispose "$DATASET_ID"
+```
+
+Python queries receive `pd`, `tables` keyed by schema table name, and `df` when there is one table.
+Assign the output to `result`; use `reset_index()` or `as_index=False` to retain group keys.
+Every execution reloads the input, so variables and DataFrame mutations do not persist between queries.
+SQL, Python and JavaScript share the bounded `data`/`schema` result format and the same chart rendering flow.
+Neither `query` nor `viz` calls a model. See the [AVA skill](skills/ava/SKILL.md) for the agent workflow.
 
 #### Model configuration
 

@@ -6,6 +6,12 @@
 pnpm exec vitest run __tests__/interpreter/python
 ```
 
+本地结果序列化测试（需要 PATH 中的 `python3` 和 pandas，无需 Docker 或模型密钥）：
+
+```sh
+AVA_PYTHON_LOCAL_TEST=1 pnpm exec vitest run __tests__/interpreter/python/serialization.test.ts
+```
+
 Docker 集成与沙箱测试（默认跳过，需先启动 Docker）：
 
 ```sh
