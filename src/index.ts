@@ -1,9 +1,11 @@
 /**
  * AVA v4 - Node.js entry point
- * Registers all engines (DuckDB, ClickHouse, Supabase, interpreter) before exporting AVA.
+ * Registers all engines before exporting AVA.
  */
+
 import { DuckDBEngine } from './duckdb';
 import { InterpreterEngine } from './interpreter';
+import { PythonEngine } from './python';
 import { ClickHouseEngine, SupabaseEngine } from './remote';
 import { registerEngine } from './engines';
 
@@ -11,8 +13,10 @@ registerEngine('duckdb', DuckDBEngine);
 registerEngine('clickhouse', ClickHouseEngine);
 registerEngine('supabase', SupabaseEngine);
 registerEngine('interpreter', InterpreterEngine);
+registerEngine('python', PythonEngine);
 
 export { AVA } from './ava';
+
 export type { InterpreterEngine } from './interpreter';
 export type {
   LLMConfig,
@@ -20,6 +24,7 @@ export type {
   AnalysisConfig,
   EngineConfig,
   DuckDBEngineOptions,
+  PythonEngineOptions,
   DataSourceConfig,
   ClickHouseSourceOptions,
   Schema,

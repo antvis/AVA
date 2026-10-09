@@ -194,7 +194,7 @@ Create an AVA instance:
 
 - `new AVA(config)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'interpreter' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
+  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'python', execute?, queryTimeoutMs? }`, `{ type: 'interpreter' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
 
 Core APIs in AVA:
 
@@ -370,7 +370,7 @@ User Response
 
 Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase, ClickHouse) out of browser bundles.
 
-- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, and `interpreter` engines
+- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `interpreter`, and `python` engines
 - **Browser** (`@antv/ava/browser`): registers only the `interpreter` engine
 
 ## 🌐 Environment Support

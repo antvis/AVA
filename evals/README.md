@@ -86,9 +86,11 @@ node evals/cli.js run ava-agent --benchmark databench --help
 两种预测 CSV 均可离线评分，无需再次调用模型：
 
 ```bash
-node evals/cli.js score --dataset databench-lite --predictions <结果.csv> --output evals/reports/<报告名>.json
+node evals/cli.js score \
+  --dataset databench \
+  --predictions evals/ava-workflow/results/1008-python-direct-GLM-5.1.csv \
+  --metadata <(echo '{"evaluation":{"runner":"ava-workflow","engine":"python","strategy":"direct","model":"GLM-5.1"}}') \
+  --output evals/reports/2026-10-08-python-direct-glm-5.1.json
 ```
-
-`--dataset` 应与预测结果匹配。离线评分默认覆盖所选数据集全部题目，未提供答案的题目计为缺失；`--output` 不覆盖已有报告，省略时只在终端显示结果。
 
 保留的评测报告位于 [`reports/`](reports/)，各条件的准确率、耗时和 token 用量汇总见[准确率记录](ACCURACY.md)。

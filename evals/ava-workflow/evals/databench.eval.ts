@@ -24,6 +24,7 @@ Options:
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
   --strategy <name>      direct, loop or subset (default: direct)
+  --engine <name>        duckdb or python (default: duckdb)
   --output <path>        Prediction CSV (default: evals/ava-workflow/results/<dataset>.csv)
   --help                 Show help
 `;
@@ -76,6 +77,7 @@ export async function main(argv = process.argv.slice(2)) {
     options: {
       concurrency: { type: 'string', default: '3' },
       dataset: { type: 'string', default: 'databench-lite' },
+      engine: { type: 'string', default: 'duckdb' },
       help: { type: 'boolean' },
       limit: { type: 'string', default: '20' },
       offset: { type: 'string', default: '0' },
@@ -87,6 +89,10 @@ export async function main(argv = process.argv.slice(2)) {
   if (values.help) return process.stdout.write(HELP);
 
   const config = llmConfig();
+  const engine = values.engine;
+  if (engine !== 'duckdb' && engine !== 'python') {
+    throw new Error('--engine must be duckdb or python.');
+  }
   const strategy = values.strategy;
   if (strategy !== 'direct' && strategy !== 'loop' && strategy !== 'subset') {
     throw new Error('--strategy must be direct, loop or subset.');
@@ -101,7 +107,7 @@ export async function main(argv = process.argv.slice(2)) {
   await Promise.all(
     Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
       let usage: Parameters<NonNullable<LLMConfig['onQueryUsage']>>[0] | undefined;
-      const ava = new AVA({ llm: { ...config, onQueryUsage: (value) => (usage = value) } });
+      const ava = new AVA({ engine: { type: engine }, llm: { ...config, onQueryUsage: (value) => (usage = value) } });
       try {
         while (cursor < pending.length) {
           const sample = pending[cursor++];
