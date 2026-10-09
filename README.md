@@ -40,14 +40,54 @@ How accurately can AVA answer questions about your data? We evaluate it on [Data
 
 Using **GLM 5.1** on **1,789 questions**:
 
-| Analysis approach | Answer accuracy | Avg. time / question | Avg. tokens / question |
-| --- | --- | --- | --- |
-| AVA Workflow: default analysis | 84.46% | 18.44 s | 903 |
-| AVA Workflow: with dataset statistics | 86.64% | 20.48 s | 2,315 |
-| AVA Workflow: with question-relevant dataset statistics | **86.70%** | 25.42 s | 1,173 |
-| AVA Workflow: iterative, multi-step analysis | 84.07% | 82.52 s | 5,089 |
-| AVA Workflow: Python analysis with dataset statistics | 85.41% | 22.03 s | 2,002 |
-| AVA Agent + AVA Skill | 84.46% | 40.93 s | 23,384 |
+<table>
+  <thead>
+    <tr>
+      <th><small>Analysis approach</small></th>
+      <th><small>Answer accuracy</small></th>
+      <th><small>Avg. time / question</small></th>
+      <th><small>Avg. tokens / question</small></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><small>AVA Workflow: default analysis</small></td>
+      <td><small>84.46%</small></td>
+      <td><small>18.44 s</small></td>
+      <td><small>903</small></td>
+    </tr>
+    <tr>
+      <td><small>AVA Workflow: with dataset statistics</small></td>
+      <td><small>86.64%</small></td>
+      <td><small>20.48 s</small></td>
+      <td><small>2,315</small></td>
+    </tr>
+    <tr>
+      <td><small>AVA Workflow: with question-relevant dataset statistics</small></td>
+      <td><small><strong>86.70%</strong></small></td>
+      <td><small>25.42 s</small></td>
+      <td><small>1,173</small></td>
+    </tr>
+    <tr>
+      <td><small>AVA Workflow: iterative, multi-step analysis</small></td>
+      <td><small>84.07%</small></td>
+      <td><small>82.52 s</small></td>
+      <td><small>5,089</small></td>
+    </tr>
+    <tr>
+      <td><small>AVA Workflow: Python analysis with dataset statistics</small></td>
+      <td><small>85.41%</small></td>
+      <td><small>22.03 s</small></td>
+      <td><small>2,002</small></td>
+    </tr>
+    <tr>
+      <td><small>AVA Agent + AVA Skill</small></td>
+      <td><small>84.46%</small></td>
+      <td><small>40.93 s</small></td>
+      <td><small>23,384</small></td>
+    </tr>
+  </tbody>
+</table>
 
 [AVA Workflow](evals/ava-workflow/README.md) follows a predefined analysis process; [AVA Agent](evals/ava-agent/README.md) lets the model choose tools and steps, guided by the AVA Skill. Dataset statistics give the model additional context, such as value ranges and common values. Workflow results use DuckDB unless Python is specified.
 
