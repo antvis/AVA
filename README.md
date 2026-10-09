@@ -34,6 +34,25 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - 🧩 **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
 - 🌐 **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (JavaScript interpreter engine)
 
+## 🎯 Analysis Accuracy
+
+How accurately can AVA answer questions about your data? We evaluate it on [DataBench](evals/databench/README.md), a benchmark for questions that require filtering, aggregating, and sorting table data.
+
+Using **GLM 5.1** on **1,789 questions**:
+
+| Analysis approach | Answer accuracy | Avg. time / question | Avg. tokens / question |
+| --- | --- | --- | --- |
+| AVA Workflow: default analysis | 84.46% | 18.44 s | 903 |
+| AVA Workflow: with dataset statistics | 86.64% | 20.48 s | 2,315 |
+| AVA Workflow: with question-relevant dataset statistics | **86.70%** | 25.42 s | 1,173 |
+| AVA Workflow: iterative, multi-step analysis | 84.07% | 82.52 s | 5,089 |
+| AVA Workflow: Python analysis with dataset statistics | 85.41% | 22.03 s | 2,002 |
+| AVA Agent + AVA Skill | 84.46% | 40.93 s | 23,384 |
+
+[AVA Workflow](evals/ava-workflow/README.md) follows a predefined analysis process; [AVA Agent](evals/ava-agent/README.md) lets the model choose tools and steps, guided by the AVA Skill. Dataset statistics give the model additional context, such as value ranges and common values. Workflow results use DuckDB unless Python is specified.
+
+See [evaluation results and methodology](evals/ACCURACY.md) for configurations, timing, token usage, evaluation dates, and raw reports.
+
 ## 📖 Quick Start
 
 ### SDK
