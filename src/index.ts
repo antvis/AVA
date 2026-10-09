@@ -11,8 +11,8 @@ import { registerEngine } from './engines';
 registerEngine('duckdb', DuckDBEngine);
 registerEngine('clickhouse', ClickHouseEngine);
 registerEngine('supabase', SupabaseEngine);
-registerEngine('javascript-interpreter', JavaScriptEngine);
-registerEngine('python-interpreter', PythonEngine);
+registerEngine('javascript', JavaScriptEngine);
+registerEngine('python', PythonEngine);
 
 export { AVA } from './ava';
 

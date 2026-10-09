@@ -51,7 +51,7 @@ describe('interpreter/javascript/engine', () => {
     const metrics = BUILTIN_METRICS.map(({ id }) => ({ id }));
 
     it('computes the DuckDB metrics through AVA, without changing schema or rows', async () => {
-      const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript-interpreter' } });
+      const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
       const data = [
         { n: 1, category: 'B', flag: true, day: '2024-01-01' },
         { n: 3, category: 'A', flag: false, day: '2024-01-03' },

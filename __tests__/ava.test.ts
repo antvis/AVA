@@ -195,7 +195,7 @@ describe('AVA', () => {
   });
 
   it('delegates interpreter queries without changing the loaded data', async () => {
-    ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript-interpreter' } });
+    ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
     await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
     const execute = vi.spyOn(ava.engine!, 'execute');
     expect((await ava['query']('data.length = 0; const result = data;')).data).toEqual([]);

@@ -13,7 +13,7 @@ const source: DataSourceConfig = { type: 'json', options: { data: [{ value: 2 },
 // Explicit opt-in; missing Docker or image fails the suite once enabled.
 describe.skipIf(process.env.AVA_PYTHON_DOCKER_TEST !== '1')('python Docker integration', () => {
   it('loads JSON through AVA, analyzes and profiles it, and isolates query mutations', async () => {
-    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'python-interpreter', execute: executeDocker } });
+    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'python', execute: executeDocker } });
     try {
       await ava.source(source);
       expect((await ava.engine!.execute("print('diagnostic')\nresult = df['value'].sum()")).data).toEqual([

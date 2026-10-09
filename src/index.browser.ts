@@ -6,7 +6,7 @@
 import { JavaScriptEngine } from './interpreter/javascript';
 import { registerEngine } from './engines';
 
-registerEngine('javascript-interpreter', JavaScriptEngine);
+registerEngine('javascript', JavaScriptEngine);
 
 export { AVA } from './ava';
 export type { JavaScriptEngine } from './interpreter/javascript';
