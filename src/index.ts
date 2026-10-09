@@ -4,20 +4,19 @@
  */
 
 import { DuckDBEngine } from './duckdb';
-import { InterpreterEngine } from './interpreter';
-import { PythonEngine } from './python';
+import { JavaScriptEngine, PythonEngine } from './interpreter';
 import { ClickHouseEngine, SupabaseEngine } from './remote';
 import { registerEngine } from './engines';
 
 registerEngine('duckdb', DuckDBEngine);
 registerEngine('clickhouse', ClickHouseEngine);
 registerEngine('supabase', SupabaseEngine);
-registerEngine('interpreter', InterpreterEngine);
+registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
 export { AVA } from './ava';
 
-export type { InterpreterEngine } from './interpreter';
+export type { JavaScriptEngine } from './interpreter';
 export type {
   LLMConfig,
   AVAConfig,

@@ -8,11 +8,11 @@
 
 import { generateText } from 'ai';
 
-import { languageModel } from '../util/model';
-import { extractDataSchema } from '../util/schema';
-import { stringifyProfile, stringifySchema } from '../util/context';
-import { executionResult, inferQuerySchema } from '../util/result';
-import { DEFAULT_METRICS, parseProfileOptions } from '../util/profile';
+import { languageModel } from '../../util/model';
+import { extractDataSchema } from '../../util/schema';
+import { stringifyProfile, stringifySchema } from '../../util/context';
+import { executionResult, inferQuerySchema } from '../../util/result';
+import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
 
 import { profileTables } from './profile';
 import { executeCode } from './sandbox';
@@ -29,9 +29,9 @@ import type {
   Schema,
   ExecutionOptions,
   ExecutionResult,
-} from '../types';
+} from '../../types';
 
-export class InterpreterEngine implements AnalysisEngine {
+export class JavaScriptEngine implements AnalysisEngine {
   readonly language = {
     name: 'JavaScript',
     fence: 'javascript',
@@ -46,7 +46,7 @@ export class InterpreterEngine implements AnalysisEngine {
     this.data = null;
     this.schema = null;
     if (!['csv', 'json', 'text'].includes(config.type)) {
-      throw new Error(`InterpreterEngine only supports csv/json/text sources, got: ${config.type}`);
+      throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
     }
 
     this.data = await loadSource(config as any, this.llmConfig);
@@ -56,7 +56,7 @@ export class InterpreterEngine implements AnalysisEngine {
 
   /**
    * Return the loaded in-memory rows (null when nothing is loaded).
-   * Only the interpreter engine keeps data as a plain single-table array,
+   * Only the JavaScript interpreter engine keeps data as a plain single-table array,
    * so it is the only engine that can expose it directly.
    */
   getData(): any[] | null {

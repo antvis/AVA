@@ -1,12 +1,12 @@
 /**
- * Unit tests for src/interpreter/sandbox.ts
+ * Unit tests for src/interpreter/javascript/sandbox.ts
  */
 
 import { describe, it, expect } from 'vitest';
 
-import { executeCode } from '../../src/interpreter/sandbox';
+import { executeCode } from '../../../src/interpreter/javascript/sandbox';
 
-describe('interpreter/sandbox', () => {
+describe('interpreter/javascript/sandbox', () => {
   it('executes code with data and stat helpers', async () => {
     const data = [{ value: 10 }, { value: 20 }];
     const result = await executeCode(data, 'const result = stat.sum(data, "value");');

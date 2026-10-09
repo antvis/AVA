@@ -74,7 +74,7 @@ export interface PythonEngineOptions {
 export type EngineConfig =
   | ({ type: 'duckdb' } & DuckDBEngineOptions)
   | ({ type: 'python' } & PythonEngineOptions)
-  | { type: 'interpreter' }
+  | { type: 'javascript' }
   | { type: 'supabase' }
   | { type: 'clickhouse' };
 

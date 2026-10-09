@@ -1,6 +1,6 @@
-import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../util/profile';
+import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 
-import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../types';
+import type { LogicalType, Metric, ParsedProfileOptions, Profile, Schema } from '../../types';
 
 interface Context {
   rowCount: number;

@@ -5,8 +5,8 @@ import { join } from 'node:path';
 
 import { expect, it } from 'vitest';
 
-import { PythonEngine } from '../../src/python/engine';
-import { stringifyProfile, stringifySchema } from '../../src/util/context';
+import { PythonEngine } from '../../../src/interpreter/python/engine';
+import { stringifyProfile, stringifySchema } from '../../../src/util/context';
 
 it.skipIf(process.env.AVA_PYTHON_LOCAL_TEST !== '1')('loads and profiles Parquet without losing types or nulls', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'ava-parquet-'));

@@ -1,10 +1,10 @@
 /**
- * Unit tests for src/interpreter/stat.ts
+ * Unit tests for src/interpreter/javascript/stat.ts
  */
 
 import { describe, it, expect } from 'vitest';
 
-import { stat } from '../../src/interpreter/stat';
+import { stat } from '../../../src/interpreter/javascript/stat';
 
 const data = [
   { region: 'east', revenue: 100 },
@@ -12,7 +12,7 @@ const data = [
   { region: 'west', revenue: 300 },
 ];
 
-describe('interpreter/stat', () => {
+describe('interpreter/javascript/stat', () => {
   it('groupBy groups rows by key', () => {
     const grouped = stat.groupBy(data, 'region');
     expect(grouped.east).toHaveLength(2);

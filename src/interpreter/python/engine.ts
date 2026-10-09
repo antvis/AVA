@@ -3,11 +3,11 @@
 import { generateText } from 'ai';
 import { z } from 'zod';
 
-import { languageModel } from '../util/model';
-import { stringifyProfile, stringifySchema } from '../util/context';
-import { executionResult, maxRows, maxResultBytes } from '../util/result';
-import { DEFAULT_METRICS, parseProfileOptions } from '../util/profile';
-import { runWithTimeout } from '../util/timeout';
+import { languageModel } from '../../util/model';
+import { stringifyProfile, stringifySchema } from '../../util/context';
+import { executionResult, maxRows, maxResultBytes } from '../../util/result';
+import { DEFAULT_METRICS, parseProfileOptions } from '../../util/profile';
+import { runWithTimeout } from '../../util/timeout';
 
 import { SCHEMA_CODE, sourceSchema, tableSchema, profileSchema, resultSchema } from './util/schema';
 import { profileCode } from './profile';
@@ -25,7 +25,7 @@ import type {
   ProfileOptions,
   PythonEngineOptions,
   Schema,
-} from '../types';
+} from '../../types';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 

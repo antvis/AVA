@@ -1,18 +1,18 @@
 /**
- * Unit tests for src/interpreter/engine.ts
+ * Unit tests for src/interpreter/javascript/engine.ts
  */
 
 import { describe, it, expect, afterEach, vi } from 'vitest';
 
-import { AVA } from '../../src';
-import { BUILTIN_METRICS, profileTables as memoryProfile } from '../../src/interpreter/profile';
-import { InterpreterEngine } from '../../src/interpreter/engine';
-import { getLLMConfig } from '../test-utils';
+import { AVA } from '../../../src';
+import { BUILTIN_METRICS, profileTables as memoryProfile } from '../../../src/interpreter/javascript/profile';
+import { JavaScriptEngine } from '../../../src/interpreter/javascript/engine';
+import { getLLMConfig } from '../../test-utils';
 
-import type { Schema } from '../../src/types';
+import type { Schema } from '../../../src/types';
 
-describe('interpreter/engine', () => {
-  let engine: InterpreterEngine | null = null;
+describe('interpreter/javascript/engine', () => {
+  let engine: JavaScriptEngine | null = null;
 
   afterEach(async () => {
     await engine?.dispose();
@@ -20,7 +20,7 @@ describe('interpreter/engine', () => {
   });
 
   it('loads data and executes JavaScript with bounded results', async () => {
-    engine = new InterpreterEngine(getLLMConfig());
+    engine = new JavaScriptEngine(getLLMConfig());
     await expect(engine.execute('const result = 1;')).rejects.toThrow('No data loaded');
     const schema = await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
     expect(schema.tables[0].fields).toEqual([{ name: 'value', type: 'number' }]);
@@ -31,7 +31,7 @@ describe('interpreter/engine', () => {
   });
 
   it('isolates source data from query mutations, errors, and returned results', async () => {
-    engine = new InterpreterEngine(getLLMConfig());
+    engine = new JavaScriptEngine(getLLMConfig());
     const data = [{ value: 2, nested: { tags: ['original'] } }];
     await engine.load({ type: 'json', options: { data } });
     const before = structuredClone(data);
@@ -51,7 +51,7 @@ describe('interpreter/engine', () => {
     const metrics = BUILTIN_METRICS.map(({ id }) => ({ id }));
 
     it('computes the DuckDB metrics through AVA, without changing schema or rows', async () => {
-      const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'interpreter' } });
+      const ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
       const data = [
         { n: 1, category: 'B', flag: true, day: '2024-01-01' },
         { n: 3, category: 'A', flag: false, day: '2024-01-03' },
@@ -59,7 +59,7 @@ describe('interpreter/engine', () => {
         { n: null, category: null, flag: null, day: null },
       ];
       try {
-        const load = vi.spyOn(InterpreterEngine.prototype, 'load');
+        const load = vi.spyOn(JavaScriptEngine.prototype, 'load');
         await ava.source({ type: 'json', options: { data } });
         const loaded = await load.mock.results[0].value;
         load.mockRestore();
@@ -187,7 +187,7 @@ describe('interpreter/engine', () => {
     });
 
     it('rejects unloaded/disposed/failed loads and invalid options', async () => {
-      engine = new InterpreterEngine(getLLMConfig());
+      engine = new JavaScriptEngine(getLLMConfig());
       const config = { type: 'json' as const, options: { data: [] } };
       await expect(engine.profile()).rejects.toThrow('No data loaded');
       await engine.load(config);

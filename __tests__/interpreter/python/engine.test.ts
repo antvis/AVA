@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { PythonEngine } from '../../src/python/engine';
-import * as pythonExecutor from '../../src/python/util/execute';
+import { PythonEngine } from '../../../src/interpreter/python/engine';
+import * as pythonExecutor from '../../../src/interpreter/python/util/execute';
 
 const source = { type: 'json' as const, options: { data: [{ value: 2 }] } };
 const table = { name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'value', type: 'int64' }] };

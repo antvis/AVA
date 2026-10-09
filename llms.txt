@@ -13,7 +13,7 @@ AVA, a complete rewrite focused on **AI-native Visual Analytics**. The first **A
 - **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - **Data Profiling**: Compute deterministic table and field statistics without an LLM call
 - **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (interpreter engine)
+- **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (JavaScript interpreter engine)
 
 ## Quick Start
 
@@ -75,7 +75,7 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  engine: { type: 'interpreter' },
+  engine: { type: 'javascript' },
 });
 
 // Browser supports inline data sources only
@@ -107,8 +107,8 @@ AVA uses a modular pipeline architecture with a pluggable engine registry:
 
 Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase) out of browser bundles.
 
-- **Node.js** (`@antv/ava`): registers `duckdb`, `supabase`, and `interpreter` engines
-- **Browser** (`@antv/ava/browser`): registers only the `interpreter` engine
+- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `javascript`, and `python` engines
+- **Browser** (`@antv/ava/browser`): registers only the `javascript` engine
 
 ## API Reference
 
@@ -117,8 +117,10 @@ Engines are registered by the entry point, so the core `AVA` class never imports
   - `llm`: required model config `{ model, apiKey, baseURL? }`
   - `engine?`: engine selection and options
     - `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default, Node.js only)
-    - `{ type: 'interpreter' }` (browser-compatible)
+    - `{ type: 'python', execute?, queryTimeoutMs? }` (Node.js only)
+    - `{ type: 'javascript' }` (browser-compatible)
     - `{ type: 'supabase' }` (Node.js only)
+    - `{ type: 'clickhouse' }` (Node.js only)
 
 ### Data Loading
 - `load(config)` - Load any data source; `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
@@ -174,7 +176,7 @@ console.log(profile.tables[0].fields[0].metrics);
 
 ### Browser
 
-- Lightweight interpreter engine for client-side analytics
+- Lightweight JavaScript interpreter engine for client-side analytics
 - Inline data sources only: `csv`, `json`, `text`
 - JavaScript sandbox execution with `stat` helper functions
 - No file system or database access

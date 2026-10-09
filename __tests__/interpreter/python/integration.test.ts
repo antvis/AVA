@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { AVA } from '../../src';
-import { PythonEngine } from '../../src/python/engine';
-import { executionCode } from '../../src/python/util/code';
+import { AVA } from '../../../src';
+import { PythonEngine } from '../../../src/interpreter/python/engine';
+import { executionCode } from '../../../src/interpreter/python/util/code';
 
 import { executeDocker } from './sandbox/execute';
 
-import type { DataSourceConfig } from '../../src/types';
+import type { DataSourceConfig } from '../../../src/types';
 
 const source: DataSourceConfig = { type: 'json', options: { data: [{ value: 2 }, { value: 4 }, { value: null }] } };
 

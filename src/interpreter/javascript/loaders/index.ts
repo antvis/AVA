@@ -1,12 +1,12 @@
 /**
- * Data source loaders for the interpreter engine.
+ * Data source loaders for the JavaScript interpreter engine.
  */
 
 import { loadCSV } from './csv';
 import { loadJson } from './json';
 import { loadText } from './text';
 
-import type { CSVSourceOptions, JsonSourceOptions, LLMConfig, TextSourceOptions } from '../../types';
+import type { CSVSourceOptions, JsonSourceOptions, LLMConfig, TextSourceOptions } from '../../../types';
 
 export type InterpreterSourceConfig =
   | { type: 'csv'; options: CSVSourceOptions }
@@ -25,6 +25,6 @@ export async function loadSource(
     case 'text':
       return loadText(config.options, llmConfig);
     default:
-      throw new Error(`Unsupported source type for interpreter engine: ${(config as any).type}`);
+      throw new Error(`Unsupported source type for JavaScript interpreter engine: ${(config as any).type}`);
   }
 }
