@@ -23,13 +23,13 @@ import type {
   LLMConfig,
   Profile,
   ProfileOptions,
-  PythonInterpreterEngineOptions,
+  PythonEngineOptions,
   Schema,
 } from '../../types';
 
 const DEFAULT_QUERY_TIMEOUT_MS = 30_000;
 
-export class PythonInterpreterEngine implements AnalysisEngine {
+export class PythonEngine implements AnalysisEngine {
   readonly language = {
     name: 'Python (pandas)',
     fence: 'python',
@@ -47,7 +47,7 @@ Do not read files, access the network, install packages, or print the answer.`,
   private readonly timeoutMs: number;
   private readonly executor: ReturnType<typeof createPythonExecutor>;
 
-  constructor(private readonly llmConfig: LLMConfig, engineOptions: PythonInterpreterEngineOptions = {}) {
+  constructor(private readonly llmConfig: LLMConfig, engineOptions: PythonEngineOptions = {}) {
     if (engineOptions.execute !== undefined && typeof engineOptions.execute !== 'function') {
       throw new Error('Python execute must be a function');
     }

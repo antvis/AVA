@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
 import { AVA } from '@antv/ava/browser';
-import type { JavaScriptInterpreterEngine } from '@antv/ava/browser';
+import type { JavaScriptEngine } from '@antv/ava/browser';
 import type { DataRow } from './types';
 import { parseCSV, parseExcel, loadAppState, saveAppState } from './utils';
 
@@ -44,7 +44,7 @@ const DataImport: React.FC<DataImportProps> = ({ avaInstance, onDataLoaded, isIn
       await avaInstance.source({ type: 'text', options: { text: textInput } });
 
       // Read the extracted data back from the interpreter engine
-      const data = (avaInstance.engine as JavaScriptInterpreterEngine | null)?.getData() ?? null;
+      const data = (avaInstance.engine as JavaScriptEngine | null)?.getData() ?? null;
       if (!data) throw new Error('No data extracted');
 
       // Save to localStorage

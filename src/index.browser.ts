@@ -3,13 +3,13 @@
  * Only registers the JavaScript interpreter engine, so Node-only engines (DuckDB,
  * Supabase, ClickHouse) and their dependencies are never traced into browser bundles.
  */
-import { JavaScriptInterpreterEngine } from './interpreter/javascript';
+import { JavaScriptEngine } from './interpreter/javascript';
 import { registerEngine } from './engines';
 
-registerEngine('javascript-interpreter', JavaScriptInterpreterEngine);
+registerEngine('javascript-interpreter', JavaScriptEngine);
 
 export { AVA } from './ava';
-export type { JavaScriptInterpreterEngine } from './interpreter/javascript';
+export type { JavaScriptEngine } from './interpreter/javascript';
 export type {
   LLMConfig,
   AVAConfig,

@@ -1,2 +1,2 @@
-export { JavaScriptInterpreterEngine } from './javascript';
-export { PythonInterpreterEngine } from './python';
+export { JavaScriptEngine } from './javascript';
+export { PythonEngine } from './python';

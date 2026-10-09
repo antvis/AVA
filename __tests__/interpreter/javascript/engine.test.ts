@@ -6,13 +6,13 @@ import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { AVA } from '../../../src';
 import { BUILTIN_METRICS, profileTables as memoryProfile } from '../../../src/interpreter/javascript/profile';
-import { JavaScriptInterpreterEngine } from '../../../src/interpreter/javascript/engine';
+import { JavaScriptEngine } from '../../../src/interpreter/javascript/engine';
 import { getLLMConfig } from '../../test-utils';
 
 import type { Schema } from '../../../src/types';
 
 describe('interpreter/javascript/engine', () => {
-  let engine: JavaScriptInterpreterEngine | null = null;
+  let engine: JavaScriptEngine | null = null;
 
   afterEach(async () => {
     await engine?.dispose();
@@ -20,7 +20,7 @@ describe('interpreter/javascript/engine', () => {
   });
 
   it('loads data and executes JavaScript with bounded results', async () => {
-    engine = new JavaScriptInterpreterEngine(getLLMConfig());
+    engine = new JavaScriptEngine(getLLMConfig());
     await expect(engine.execute('const result = 1;')).rejects.toThrow('No data loaded');
     const schema = await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
     expect(schema.tables[0].fields).toEqual([{ name: 'value', type: 'number' }]);
@@ -31,7 +31,7 @@ describe('interpreter/javascript/engine', () => {
   });
 
   it('isolates source data from query mutations, errors, and returned results', async () => {
-    engine = new JavaScriptInterpreterEngine(getLLMConfig());
+    engine = new JavaScriptEngine(getLLMConfig());
     const data = [{ value: 2, nested: { tags: ['original'] } }];
     await engine.load({ type: 'json', options: { data } });
     const before = structuredClone(data);
@@ -59,7 +59,7 @@ describe('interpreter/javascript/engine', () => {
         { n: null, category: null, flag: null, day: null },
       ];
       try {
-        const load = vi.spyOn(JavaScriptInterpreterEngine.prototype, 'load');
+        const load = vi.spyOn(JavaScriptEngine.prototype, 'load');
         await ava.source({ type: 'json', options: { data } });
         const loaded = await load.mock.results[0].value;
         load.mockRestore();
@@ -187,7 +187,7 @@ describe('interpreter/javascript/engine', () => {
     });
 
     it('rejects unloaded/disposed/failed loads and invalid options', async () => {
-      engine = new JavaScriptInterpreterEngine(getLLMConfig());
+      engine = new JavaScriptEngine(getLLMConfig());
       const config = { type: 'json' as const, options: { data: [] } };
       await expect(engine.profile()).rejects.toThrow('No data loaded');
       await engine.load(config);

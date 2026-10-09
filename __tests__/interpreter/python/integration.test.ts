@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { AVA } from '../../../src';
-import { PythonInterpreterEngine } from '../../../src/interpreter/python/engine';
+import { PythonEngine } from '../../../src/interpreter/python/engine';
 import { executionCode } from '../../../src/interpreter/python/util/code';
 
 import { executeDocker } from './sandbox/execute';
@@ -44,7 +44,7 @@ describe.skipIf(process.env.AVA_PYTHON_DOCKER_TEST !== '1')('python Docker integ
   ] as [string, DataSourceConfig][])(
     'loads %s with the expected tables and data',
     async (kind, config) => {
-      const engine = new PythonInterpreterEngine({ model: 'unused' }, { execute: executeDocker });
+      const engine = new PythonEngine({ model: 'unused' }, { execute: executeDocker });
       try {
         const schema = await engine.load(config);
         expect(schema.tables.map((table) => table.name)).toEqual(kind === 'Excel' ? ['First', 'Second'] : ['data']);

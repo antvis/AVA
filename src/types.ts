@@ -55,7 +55,7 @@ export interface DuckDBEngineOptions {
 /**
  * Python engine options.
  */
-export interface PythonInterpreterEngineOptions {
+export interface PythonEngineOptions {
   /**
    * Override local python3 execution with a custom environment. Local execution is not sandboxed.
    * Run the complete Python script and return its JSON output as ExecutionResult.
@@ -73,7 +73,7 @@ export interface PythonInterpreterEngineOptions {
  */
 export type EngineConfig =
   | ({ type: 'duckdb' } & DuckDBEngineOptions)
-  | ({ type: 'python-interpreter' } & PythonInterpreterEngineOptions)
+  | ({ type: 'python-interpreter' } & PythonEngineOptions)
   | { type: 'javascript-interpreter' }
   | { type: 'supabase' }
   | { type: 'clickhouse' };

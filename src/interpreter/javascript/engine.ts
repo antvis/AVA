@@ -31,7 +31,7 @@ import type {
   ExecutionResult,
 } from '../../types';
 
-export class JavaScriptInterpreterEngine implements AnalysisEngine {
+export class JavaScriptEngine implements AnalysisEngine {
   readonly language = {
     name: 'JavaScript',
     fence: 'javascript',
@@ -46,7 +46,7 @@ export class JavaScriptInterpreterEngine implements AnalysisEngine {
     this.data = null;
     this.schema = null;
     if (!['csv', 'json', 'text'].includes(config.type)) {
-      throw new Error(`JavaScriptInterpreterEngine only supports csv/json/text sources, got: ${config.type}`);
+      throw new Error(`JavaScriptEngine only supports csv/json/text sources, got: ${config.type}`);
     }
 
     this.data = await loadSource(config as any, this.llmConfig);
