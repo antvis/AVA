@@ -45,20 +45,19 @@ Do not read files, access the network, install packages, or print the answer.`,
   private source: DataSourceConfig | null = null;
   private schema: Schema | null = null;
   private readonly timeoutMs: number;
-  private readonly executor: PythonEngineOptions['execute'];
+  private readonly executor: ReturnType<typeof createPythonExecutor>;
 
   constructor(private readonly llmConfig: LLMConfig, engineOptions: PythonEngineOptions = {}) {
     if (engineOptions.execute !== undefined && typeof engineOptions.execute !== 'function') {
       throw new Error('Python execute must be a function');
     }
-    this.executor = engineOptions.execute;
-
     this.timeoutMs = z
       .number()
       .int()
       .positive()
       .max(2_147_483_647)
       .parse(engineOptions.queryTimeoutMs ?? DEFAULT_QUERY_TIMEOUT_MS);
+    this.executor = engineOptions.execute ?? createPythonExecutor(this.timeoutMs);
   }
 
   async load(config: DataSourceConfig): Promise<Schema> {
@@ -128,12 +127,16 @@ Return ONLY executable Python code without explanation.`,
       maxRows: z.number().int().positive().parse(maxRows(options)),
       maxResultBytes: maxResultBytes(options),
     };
-    const execute = this.executor ?? createPythonExecutor(this.timeoutMs, limits.maxResultBytes + 1024 * 1024);
 
     // Bound client waiting; the executor must terminate remote work on timeout.
-    const response = await runWithTimeout(execute(executionCode(code, this.source, limits)), this.timeoutMs, {
-      onTimeout: () => new Error(`Python execution timed out after ${this.timeoutMs}ms`),
-    });
+    const maxBuffer = limits.maxResultBytes + 1024 * 1024;
+    const response = await runWithTimeout(
+      this.executor(executionCode(code, this.source, limits), maxBuffer),
+      this.timeoutMs,
+      {
+        onTimeout: () => new Error(`Python execution timed out after ${this.timeoutMs}ms`),
+      }
+    );
     const result = resultSchema.parse(response) as ExecutionResult<T>;
     return executionResult(result.data, result.schema, limits, result.truncatedBy);
   }

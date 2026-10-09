@@ -1,10 +1,10 @@
 import { execFile } from 'node:child_process';
 
-import type { PythonEngineOptions } from '../../types';
+import type { ExecutionResult } from '../../types';
 
 /** Local subprocess execution, not a security sandbox. Requires python3 and pandas. */
-export const createPythonExecutor = (timeoutMs: number, maxBuffer: number): NonNullable<PythonEngineOptions['execute']> =>
-  (code) => new Promise((resolve, reject) => {
+export const createPythonExecutor = (timeoutMs: number) =>
+  (code: string, maxBuffer: number): Promise<ExecutionResult> => new Promise((resolve, reject) => {
     const child = execFile(
       'python3',
       ['-'],
