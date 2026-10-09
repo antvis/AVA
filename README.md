@@ -40,14 +40,14 @@ How accurately can AVA answer questions about your data? We evaluate it on [Data
 
 Using **GLM 5.1** on **1,789 questions**:
 
-| **Analysis approach** | **Answer accuracy** | **Avg. time / question** | **Avg. tokens / question** |
+| <sup><sub>**Analysis approach**</sub></sup> | <sup><sub>**Answer accuracy**</sub></sup> | <sup><sub>**Avg. time / question**</sub></sup> | <sup><sub>**Avg. tokens / question**</sub></sup> |
 | :---: | :---: | :---: | :---: |
-| AVA Workflow: default analysis | 84.46% | 18.44 s | 903 |
-| AVA Workflow: with dataset statistics | 86.64% | 20.48 s | 2,315 |
-| AVA Workflow: with question-relevant dataset statistics | **86.70%** | 25.42 s | 1,173 |
-| AVA Workflow: iterative, multi-step analysis | 84.07% | 82.52 s | 5,089 |
-| AVA Workflow: Python analysis with dataset statistics | 85.41% | 22.03 s | 2,002 |
-| AVA Agent + AVA Skill | 84.46% | 40.93 s | 23,384 |
+| <sup><sub>AVA Workflow: default analysis</sub></sup> | <sup><sub>84.46%</sub></sup> | <sup><sub>18.44 s</sub></sup> | <sup><sub>903</sub></sup> |
+| <sup><sub>AVA Workflow: with dataset statistics</sub></sup> | <sup><sub>86.64%</sub></sup> | <sup><sub>20.48 s</sub></sup> | <sup><sub>2,315</sub></sup> |
+| <sup><sub>AVA Workflow: with question-relevant dataset statistics</sub></sup> | <sup><sub>**86.70%**</sub></sup> | <sup><sub>25.42 s</sub></sup> | <sup><sub>1,173</sub></sup> |
+| <sup><sub>AVA Workflow: iterative, multi-step analysis</sub></sup> | <sup><sub>84.07%</sub></sup> | <sup><sub>82.52 s</sub></sup> | <sup><sub>5,089</sub></sup> |
+| <sup><sub>AVA Workflow: Python analysis with dataset statistics</sub></sup> | <sup><sub>85.41%</sub></sup> | <sup><sub>22.03 s</sub></sup> | <sup><sub>2,002</sub></sup> |
+| <sup><sub>AVA Agent + AVA Skill</sub></sup> | <sup><sub>84.46%</sub></sup> | <sup><sub>40.93 s</sub></sup> | <sup><sub>23,384</sub></sup> |
 
 [AVA Workflow](evals/ava-workflow/README.md) follows a predefined analysis process; [AVA Agent](evals/ava-agent/README.md) lets the model choose tools and steps, guided by the AVA Skill. Dataset statistics give the model additional context, such as value ranges and common values. Workflow results use DuckDB unless Python is specified.
 
