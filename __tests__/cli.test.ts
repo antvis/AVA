@@ -98,7 +98,8 @@ describe('source', () => {
     expect(JSON.parse(await execute(['source', path, ...options]))).toEqual({ datasetId });
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
       { type, options: { path: expectedPath } },
-      { model: 'gpt-4o-mini' }
+      { model: 'gpt-4o-mini' },
+      undefined
     );
   });
 
@@ -109,7 +110,7 @@ describe('source', () => {
       const config = { type: 'json', options: { data: [{ sales: 10 }] } };
       await writeFile(file, JSON.stringify(config));
       await execute(['source', `@${file}`]);
-      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' });
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
       await expect(run(['source', `@${file}`, '--type', 'json-file'])).rejects.toThrow(
         '--type cannot be combined with a source config.'
       );
@@ -118,6 +119,39 @@ describe('source', () => {
       await rm(directory, { recursive: true, force: true });
     }
   });
+
+  it.each(['duckdb', 'python', 'javascript', 'supabase', 'clickhouse'])(
+    'passes an explicit %s engine with a source config',
+    async (engine) => {
+      const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+      try {
+        const file = join(directory, 'source.json');
+        const config = { type: 'json', options: { data: [{ sales: 10 }] } };
+        await writeFile(file, JSON.stringify(config));
+        await execute(['source', `@${file}`, '--engine', engine]);
+        expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, engine);
+      } finally {
+        await rm(directory, { recursive: true, force: true });
+      }
+    }
+  );
+
+  it('selects Python for a file without changing its source type', async () => {
+    await execute(['source', 'sales.csv', '--engine', 'python']);
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      { type: 'csv-file', options: { path: resolve('sales.csv') } },
+      { model: 'gpt-4o-mini' },
+      'python'
+    );
+  });
+
+  it.each(['invalid', '', '{"type":"python","execute":"custom"}'])(
+    'rejects invalid engine %s before creating a session',
+    async (engine) => {
+      await expect(run(['source', 'sales.csv', '--engine', engine])).rejects.toThrow('Invalid enum value');
+      expect(createSession).not.toHaveBeenCalled();
+    }
+  );
 
   it('shows the dataset ID and next command in a terminal', async () => {
     Object.defineProperty(process.stdout, 'isTTY', { configurable: true, value: true });
@@ -148,6 +182,15 @@ describe('dataset commands', () => {
       args: ['query', '--dsl', 'SELECT 1', '--max-rows', '10', '--max-result-bytes', '1024'],
       message: { command: 'query', dsl: 'SELECT 1', maxRows: 10, maxResultBytes: 1024 },
     },
+    {
+      args: ['query', '--dsl', "result = df.groupby('region', as_index=False)['sales'].sum()"],
+      message: {
+        command: 'query',
+        dsl: "result = df.groupby('region', as_index=False)['sales'].sum()",
+        maxRows: undefined,
+        maxResultBytes: undefined,
+      },
+    },
   ])('dispatches $args as a typed request and prints JSON', async ({ args: [command, ...args], message }) => {
     expect(JSON.parse(await execute([command, datasetId, ...args]))).toEqual({ ok: true });
     expect(request).toHaveBeenCalledExactlyOnceWith(datasetId, message);
@@ -157,6 +200,7 @@ describe('dataset commands', () => {
     { args: ['query'], error: 'A non-empty --dsl is required.' },
     { args: ['query', '--dsl', ' '], error: 'A non-empty --dsl is required.' },
     { args: ['query', '--dsl', 'SELECT 1', '--max-rows', '10001'], error: '--max-rows must be an integer' },
+    { args: ['query', '--dsl', 'result = 1', '--engine', 'python'], error: 'Unknown option' },
     { args: ['suggest', '--count', '0'], error: '--count must be an integer' },
     { args: ['profile', '--metrics', 'mean,'], error: '--metrics contains an empty item.' },
     { args: ['analyze', 'Total sales?', '--strategy', 'invalid'], error: 'Invalid enum value' },

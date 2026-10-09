@@ -15,7 +15,7 @@ import {
 } from './protocol';
 
 import type { Request } from './protocol';
-import type { DataSourceConfig, LLMConfig } from '../../types';
+import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
 
 /**
  * Require a platform where Unix sockets inherit the private directory's access restrictions.
@@ -40,7 +40,11 @@ function createDatasetId(config: DataSourceConfig): string {
   return `ds_${name}_${randomBytes(6).toString('hex')}`;
 }
 
-export async function createSession(config: DataSourceConfig, llm: LLMConfig): Promise<{ datasetId: string }> {
+export async function createSession(
+  config: DataSourceConfig,
+  llm: LLMConfig,
+  engine?: EngineConfig['type']
+): Promise<{ datasetId: string }> {
   checkEnvironment();
 
   const datasetId = createDatasetId(config);
@@ -92,7 +96,7 @@ export async function createSession(config: DataSourceConfig, llm: LLMConfig): P
       worker.once('message', onMessage);
 
       try {
-        worker.send({ source: config, llm }, (error) => {
+        worker.send({ source: config, llm, engine }, (error) => {
           if (error) finish(error);
         });
       } catch (error) {

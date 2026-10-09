@@ -1,6 +1,6 @@
 {
   "name": "@antv/ava",
-  "version": "4.0.0-alpha.1",
+  "version": "4.0.0-alpha.2",
   "description": "A framework for AI-native Visual Analytics",
   "author": {
     "name": "AntV",
@@ -68,6 +68,7 @@
     "build:cjs": "tsc --module commonjs --outDir lib",
     "build:esm": "tsc --module es2020 --outDir esm --declarationDir esm",
     "build": "npm run clean && npm run build:cjs && npm run build:esm",
+    "prepublishOnly": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",

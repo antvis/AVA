@@ -1,7 +1,7 @@
 import { rm } from 'fs/promises';
 import { createServer } from 'net';
 
-import { createDataset, disposeDataset, withDataset } from './datasets';
+import { createDataset, describeDataset, disposeDataset, withDataset } from './datasets';
 import {
   IPC_TIMEOUT_MS,
   IPC_MAX_REQUEST_BYTES,
@@ -57,14 +57,14 @@ async function dispatch(message: Request): Promise<unknown> {
     return { datasetId: id, disposed: true };
   }
 
+  if (message.command === 'schema') return describeDataset();
+
   if (['suggest', 'analyze', 'translate'].includes(message.command) && !hasModel) {
     throw new Error('Set OPENAI_API_KEY before ava source, then load the dataset again.');
   }
 
   return withDataset(async (ava) => {
     switch (message.command) {
-      case 'schema':
-        return ava.schema();
       case 'profile':
         return ava.profile({ metrics: message.metrics });
       case 'suggest':
@@ -135,7 +135,7 @@ process.once('message', (message) => {
   void (async () => {
     const startup = startupSchema.parse(message);
     hasModel = Boolean(startup.llm.apiKey);
-    await createDataset(startup.source, { ...startup.llm, model: startup.llm.model });
+    await createDataset(startup.source, { ...startup.llm, model: startup.llm.model }, startup.engine);
     if (closing) return;
 
     server.listen(socketPath(id), () => {
