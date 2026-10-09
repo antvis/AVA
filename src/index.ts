@@ -4,27 +4,26 @@
  */
 
 import { DuckDBEngine } from './duckdb';
-import { InterpreterEngine } from './interpreter';
-import { PythonEngine } from './python';
+import { JavaScriptInterpreterEngine, PythonInterpreterEngine } from './interpreter';
 import { ClickHouseEngine, SupabaseEngine } from './remote';
 import { registerEngine } from './engines';
 
 registerEngine('duckdb', DuckDBEngine);
 registerEngine('clickhouse', ClickHouseEngine);
 registerEngine('supabase', SupabaseEngine);
-registerEngine('interpreter', InterpreterEngine);
-registerEngine('python', PythonEngine);
+registerEngine('javascript-interpreter', JavaScriptInterpreterEngine);
+registerEngine('python-interpreter', PythonInterpreterEngine);
 
 export { AVA } from './ava';
 
-export type { InterpreterEngine } from './interpreter';
+export type { JavaScriptInterpreterEngine } from './interpreter';
 export type {
   LLMConfig,
   AVAConfig,
   AnalysisConfig,
   EngineConfig,
   DuckDBEngineOptions,
-  PythonEngineOptions,
+  PythonInterpreterEngineOptions,
   DataSourceConfig,
   ClickHouseSourceOptions,
   Schema,

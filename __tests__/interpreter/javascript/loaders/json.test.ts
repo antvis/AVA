@@ -1,12 +1,12 @@
 /**
- * Unit tests for src/interpreter/loaders/json.ts
+ * Unit tests for src/interpreter/javascript/loaders/json.ts
  */
 
 import { describe, it, expect } from 'vitest';
 
-import { loadJson } from '../../../src/interpreter/loaders/json';
+import { loadJson } from '../../../../src/interpreter/javascript/loaders/json';
 
-describe('interpreter/loaders/json', () => {
+describe('interpreter/javascript/loaders/json', () => {
   it('returns a valid object array as-is', async () => {
     const data = [{ name: 'Alice', age: 30 }];
     expect(await loadJson({ data })).toEqual(data);

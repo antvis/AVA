@@ -1,19 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
-import { AVA } from '../../src';
-import { PythonEngine } from '../../src/python/engine';
-import { executionCode } from '../../src/python/util/code';
+import { AVA } from '../../../src';
+import { PythonInterpreterEngine } from '../../../src/interpreter/python/engine';
+import { executionCode } from '../../../src/interpreter/python/util/code';
 
 import { executeDocker } from './sandbox/execute';
 
-import type { DataSourceConfig } from '../../src/types';
+import type { DataSourceConfig } from '../../../src/types';
 
 const source: DataSourceConfig = { type: 'json', options: { data: [{ value: 2 }, { value: 4 }, { value: null }] } };
 
 // Explicit opt-in; missing Docker or image fails the suite once enabled.
 describe.skipIf(process.env.AVA_PYTHON_DOCKER_TEST !== '1')('python Docker integration', () => {
   it('loads JSON through AVA, analyzes and profiles it, and isolates query mutations', async () => {
-    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'python', execute: executeDocker } });
+    const ava = new AVA({ llm: { model: 'unused' }, engine: { type: 'python-interpreter', execute: executeDocker } });
     try {
       await ava.source(source);
       expect((await ava.engine!.execute("print('diagnostic')\nresult = df['value'].sum()")).data).toEqual([
@@ -44,7 +44,7 @@ describe.skipIf(process.env.AVA_PYTHON_DOCKER_TEST !== '1')('python Docker integ
   ] as [string, DataSourceConfig][])(
     'loads %s with the expected tables and data',
     async (kind, config) => {
-      const engine = new PythonEngine({ model: 'unused' }, { execute: executeDocker });
+      const engine = new PythonInterpreterEngine({ model: 'unused' }, { execute: executeDocker });
       try {
         const schema = await engine.load(config);
         expect(schema.tables.map((table) => table.name)).toEqual(kind === 'Excel' ? ['First', 'Second'] : ['data']);

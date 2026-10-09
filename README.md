@@ -32,7 +32,7 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - 🤖 **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - 📊 **Data Profiling**: Compute deterministic table and field statistics without an LLM call
 - 🧩 **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- 🌐 **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (interpreter engine)
+- 🌐 **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (JavaScript interpreter engine)
 
 ## 📖 Quick Start
 
@@ -128,7 +128,7 @@ console.log(suggestedResult);
 ava.dispose();
 ```
 
-**Browser** (interpreter engine, inline data only):
+**Browser** (JavaScript interpreter engine, inline data only):
 
 ```typescript
 import { AVA } from '@antv/ava/browser';
@@ -139,7 +139,7 @@ const ava = new AVA({
     apiKey: 'YOUR_API_KEY',
     baseURL: 'LLM_BASE_URL',
   },
-  engine: { type: 'interpreter' },
+  engine: { type: 'javascript-interpreter' },
 });
 
 // Browser supports inline data sources only
@@ -194,7 +194,7 @@ Create an AVA instance:
 
 - `new AVA(config)`: initialize runtime and LLM configuration.
   - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'python', execute?, queryTimeoutMs? }`, `{ type: 'interpreter' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
+  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'python-interpreter', execute?, queryTimeoutMs? }`, `{ type: 'javascript-interpreter' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
 
 Core APIs in AVA:
 
@@ -370,8 +370,8 @@ User Response
 
 Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase, ClickHouse) out of browser bundles.
 
-- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `interpreter`, and `python` engines
-- **Browser** (`@antv/ava/browser`): registers only the `interpreter` engine
+- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `javascript-interpreter`, and `python-interpreter` engines
+- **Browser** (`@antv/ava/browser`): registers only the `javascript-interpreter` engine
 
 ## 🌐 Environment Support
 
@@ -388,7 +388,7 @@ Full feature set backed by an in-memory DuckDB instance (LLM generates SQL):
 
 ### Browser
 
-Lightweight interpreter engine for client-side analytics:
+Lightweight JavaScript interpreter engine for client-side analytics:
 
 - Inline data sources only: `csv`, `json`, `text`
 - JavaScript sandbox execution with `stat` helper functions

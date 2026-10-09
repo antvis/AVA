@@ -31,7 +31,7 @@ function Home({ isConfigOpen, onCloseConfig }: HomeProps) {
 
     return new AVA({
       llm: llmConfig,
-      engine: { type: 'interpreter' },
+      engine: { type: 'javascript-interpreter' },
     });
   }, [llmConfig]);
 

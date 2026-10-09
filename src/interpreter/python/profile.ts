@@ -1,10 +1,10 @@
-import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../util/profile';
+import { column, logicalTypes, table, TOP_VALUES_OPTIONS, validateMetricConfig } from '../../util/profile';
 
 import { SCHEMA_CODE } from './util/schema';
 
-import type { LogicalType, Metric, ParsedProfileOptions } from '../types';
+import type { LogicalType, Metric, ParsedProfileOptions } from '../../types';
 
-/** Python expressions receive the same per-target context as interpreter metrics. */
+/** Python expressions receive the same per-target context as JavaScript interpreter metrics. */
 export const BUILTIN_METRICS: Metric<string>[] = [
   { id: 'row_count', enable: table, expression: 'ctx.row_count' },
   { id: 'null_count', enable: column, expression: 'ctx.row_count - len(ctx.values)' },
@@ -103,7 +103,7 @@ class Context:
     def distinct(self):
         values = self.values.tolist()
         if self.kind == 'unknown':
-            # Like the interpreter, object equality remains key-order sensitive.
+            # Like the JavaScript interpreter, object equality remains key-order sensitive.
             values = [json.dumps(value, ensure_ascii=False, separators=(',', ':')) for value in values]
 
         return Counter(values)

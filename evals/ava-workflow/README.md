@@ -66,7 +66,7 @@ node evals/cli.js run ava-workflow --benchmark databench
 | --- | --- | --- |
 | `--dataset` | `databench-lite` 采样表或 `databench` 完整表 | `databench-lite` |
 | `--strategy` | `direct`、`loop` 或 `subset` | `direct` |
-| `--engine` | `duckdb` 或 `python`；Python 需要本地 `python3`、pandas 和 pyarrow | `duckdb` |
+| `--engine` | `duckdb` 或 `python-interpreter`；Python 需要本地 `python3`、pandas 和 pyarrow | `duckdb` |
 | `--limit` | 题目数量，`all` 表示全部 | `20` |
 | `--offset` | 筛选后跳过的题目数 | `0` |
 | `--suite` | 指定子集，如 `002_Titanic` | 不筛选 |

@@ -1,4 +1,2 @@
-/**
- * Interpreter engine: JavaScript analysis over in-memory data.
- */
-export { InterpreterEngine } from './engine';
+export { JavaScriptInterpreterEngine } from './javascript';
+export { PythonInterpreterEngine } from './python';

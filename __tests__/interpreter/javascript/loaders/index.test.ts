@@ -1,13 +1,13 @@
 /**
- * Unit tests for src/interpreter/loaders/index.ts
+ * Unit tests for src/interpreter/javascript/loaders/index.ts
  */
 
 import { describe, it, expect } from 'vitest';
 
-import { loadSource } from '../../../src/interpreter/loaders';
-import { getLLMConfig } from '../../test-utils';
+import { loadSource } from '../../../../src/interpreter/javascript/loaders';
+import { getLLMConfig } from '../../../test-utils';
 
-describe('interpreter/loaders', () => {
+describe('interpreter/javascript/loaders', () => {
   it('dispatches csv sources', async () => {
     const rows = await loadSource(
       { type: 'csv', options: { csv: 'a,b\n1,2' } },

@@ -1,4 +1,4 @@
-import type { DataSourceConfig, ExecutionOptions } from '../../types';
+import type { DataSourceConfig, ExecutionOptions } from '../../../types';
 
 /** Generate only the loader needed for this source. */
 function sourceCode(source: DataSourceConfig): string {

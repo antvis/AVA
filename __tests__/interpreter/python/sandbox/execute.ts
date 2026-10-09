@@ -2,7 +2,7 @@ import { execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { promisify } from 'node:util';
 
-import type { ExecutionResult } from '../../../src/types';
+import type { ExecutionResult } from '../../../../src/types';
 
 export const docker = promisify(execFile);
 export const image = process.env.AVA_PYTHON_DOCKER_IMAGE || 'ava-python-test:local';

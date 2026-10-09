@@ -24,7 +24,7 @@ Options:
   --suite <name>         Run one dataset, e.g. 002_Titanic
   --concurrency <number> Parallel model calls (default: 3)
   --strategy <name>      direct, loop or subset (default: direct)
-  --engine <name>        duckdb or python (default: duckdb)
+  --engine <name>        duckdb or python-interpreter (default: duckdb)
   --output <path>        Prediction CSV (default: evals/ava-workflow/results/<dataset>.csv)
   --help                 Show help
 `;
@@ -90,8 +90,8 @@ export async function main(argv = process.argv.slice(2)) {
 
   const config = llmConfig();
   const engine = values.engine;
-  if (engine !== 'duckdb' && engine !== 'python') {
-    throw new Error('--engine must be duckdb or python.');
+  if (engine !== 'duckdb' && engine !== 'python-interpreter') {
+    throw new Error('--engine must be duckdb or python-interpreter.');
   }
   const strategy = values.strategy;
   if (strategy !== 'direct' && strategy !== 'loop' && strategy !== 'subset') {
