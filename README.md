@@ -205,6 +205,28 @@ ava dispose "$DATASET_ID"
 
 Open `chart.html` in your browser. See [CLI documentation](#cli-1) for more commands and settings.
 
+### Skill
+
+Use the [AVA Skill](skills/ava/SKILL.md) to analyze data with your AI agent. The agent plans the analysis and writes queries; AVA loads data, runs calculations, and renders charts. This workflow uses the agent's own reasoning and does not require a separate model API key for AVA.
+
+Add this marketplace to Claude Code:
+
+```text
+/plugin marketplace add antvis/AVA
+```
+
+Or you can directly install the skills for your multiple agents:
+
+```bash
+npx skills add antvis/AVA
+```
+
+Start a new agent session and ask:
+
+```text
+Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart.
+```
+
 ## 📘 Documentation
 
 ### SDK

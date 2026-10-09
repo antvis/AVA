@@ -1,0 +1,19 @@
+{
+  "name": "ava-skills",
+  "owner": {
+    "name": "AntV Visualization Team"
+  },
+  "metadata": {
+    "description": "AVA skills for data analysis and visualization",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ava",
+      "description": "Explore, query, analyze, and visualize structured data with the AVA CLI.",
+      "source": "./",
+      "strict": false,
+      "skills": ["./skills/ava"]
+    }
+  ]
+}
