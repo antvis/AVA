@@ -32,7 +32,7 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - 🤖 **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
 - 📊 **Data Profiling**: Compute deterministic table and field statistics without an LLM call
 - 🧩 **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- 🌐 **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (JavaScript interpreter engine)
+- 🌐 **Dual Environment**: Runs in both Node.js (DuckDB, Python/pandas, and remote database engines) and browsers (JavaScript interpreter engine)
 
 ## 🎯 Analysis Accuracy
 
@@ -69,7 +69,7 @@ yarn add @antv/ava
 
 - Then run the code below
 
-**Node.js** (full feature set with DuckDB/ClickHouse/Supabase engines):
+**Node.js** (DuckDB by default; Python, ClickHouse, and Supabase engines also available):
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -147,6 +147,17 @@ console.log(suggestedResult);
 ava.dispose();
 ```
 
+**Python engine (Node.js)**:
+
+Use Python/pandas to analyze inline CSV/JSON or CSV, JSON, Parquet, and Excel files. Requires `python3` and pandas in your runtime environment. Select the engine in the Node.js example above:
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'ling-1t', apiKey: 'YOUR_API_KEY', baseURL: 'LLM_BASE_URL' },
+  engine: { type: 'python' },
+});
+```
+
 **Browser** (JavaScript interpreter engine, inline data only):
 
 ```typescript
@@ -186,6 +197,8 @@ export OPENAI_MODEL='claude-sonnet-4-6'
 export OPENAI_BASE_URL='https://api.anthropic.com/v1/'
 
 ava source sales.csv
+# Or use Python (requires python3 and pandas):
+# ava source sales.csv --engine python
 ```
 
 Copy the returned dataset ID and continue in the same terminal:
@@ -204,6 +217,28 @@ ava dispose "$DATASET_ID"
 ```
 
 Open `chart.html` in your browser. See [CLI documentation](#cli-1) for more commands and settings.
+
+### Skill
+
+Use the [AVA Skill](skills/ava/SKILL.md) to analyze data with your AI agent. The agent plans the analysis and writes queries; AVA loads data, runs calculations, and renders charts. This workflow uses the agent's own reasoning and does not require a separate model API key for AVA.
+
+Add this marketplace to Claude Code:
+
+```text
+/plugin marketplace add antvis/AVA
+```
+
+Or you can directly install the skills for your multiple agents:
+
+```bash
+npx skills add antvis/AVA
+```
+
+Start a new agent session and ask:
+
+```text
+Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart.
+```
 
 ## 📘 Documentation
 
@@ -361,6 +396,7 @@ AVA Instance
 ┌─────────────────────────────────┐
 │  Engine Registry                │
 │  ├─ DuckDB Engine (Node.js)     │ → SQL via in-memory DuckDB
+│  ├─ Python Engine (Node.js)     │ → Python/pandas via local or custom execution
 │  ├─ Interpreter Engine (Browser)│ → JavaScript sandbox execution
 │  ├─ Supabase Engine (Node.js)   │ → Remote SQL via Supabase API
 │  └─ ClickHouse Engine (Node.js) │ → Remote SQL via ClickHouse API
@@ -387,7 +423,7 @@ User Response
 
 ### Engine Registry
 
-Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase, ClickHouse) out of browser bundles.
+Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Python, Supabase, ClickHouse) out of browser bundles.
 
 - **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `javascript`, and `python` engines
 - **Browser** (`@antv/ava/browser`): registers only the `javascript` engine
@@ -396,14 +432,15 @@ Engines are registered by the entry point, so the core `AVA` class never imports
 
 ### Node.js
 
-Full feature set backed by an in-memory DuckDB instance (LLM generates SQL):
+Uses DuckDB by default, with optional Python and remote database engines:
 
 - Inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), DuckDB-attached databases (mysql/postgresql), and direct ClickHouse sources via `load`
 - File system access for CSV loading, plus remote files such as OSS signed URLs
-- Data is never materialized into JS memory for file sources — DuckDB reads them directly
+- With DuckDB, file data is read directly by the engine without materializing it in JavaScript memory
 - Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
 - Supabase engine for remote SQL execution via Supabase Management API
 - ClickHouse engine for remote SQL execution via the official client
+- Python engine for pandas analysis of inline CSV/JSON and file sources; requires `python3` and pandas for local execution
 
 ### Browser
 
