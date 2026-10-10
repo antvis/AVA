@@ -1,14 +1,124 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+/* ── AVA 4.0 typography system ── */
+:root {
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.hero-title {
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+}
+
+code, pre {
+  font-family: var(--font-code);
+}
+
+/* Tailwind v4 removed the default pointer cursor for buttons — restore it */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+/* Whisper-quiet scrollbars for the Playground panels */
+@layer utilities {
+  /* Firefox only: modern scrollbar-* properties would make Chromium
+     ignore the fine-grained ::-webkit-scrollbar rules below */
+  @supports (-moz-appearance: none) {
+    .soft-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    .soft-scroll:hover {
+      scrollbar-color: rgba(24, 24, 27, 0.1) transparent;
+    }
+  }
+  .soft-scroll::-webkit-scrollbar {
+    width: 2px;
+  }
+  .soft-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .soft-scroll::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 9999px;
+    transition: background 200ms;
+  }
+  .soft-scroll:hover::-webkit-scrollbar-thumb {
+    background: rgba(24, 24, 27, 0.1);
+  }
+  .soft-scroll:hover::-webkit-scrollbar-thumb:hover {
+    background: rgba(24, 24, 27, 0.18);
+  }
+  .soft-scroll::-webkit-scrollbar-thumb:active {
+    background: rgba(24, 24, 27, 0.3);
+  }
+}
+
+/* beautifului.dev Tool Chips design tokens (1:1 with upstream component) */
+@theme {
+  /* Typography tokens — keep tailwind's font-sans / font-mono utilities in sync
+     with the AVA font system declared in :root above */
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-ink: #18181b;
+  --color-ink-2: #6b6b76;
+  --color-ink-3: #a1a1aa;
+  --color-field: #f4f4f5;
+  --color-hover: #fafafa;
+  --color-hover-2: #f4f4f5;
+  --color-surface: #ffffff;
+  --color-inset: #f4f4f5;
+  --color-line: #e4e4e7;
+  --color-green: #059669;
+  --color-red: #ef4444;
+  --color-green-tint: #ecfdf5;
+  --color-red-tint: #fef2f2;
+
+  --radius-control: 6px;
+  --radius-chip: 8px;
+  --radius-card: 10px;
+
+  --shadow-xs: 0 1px 2px 0 #0000000d;
+  --shadow-sm: 0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a;
+  --shadow-md: 0 4px 6px -1px #0000001a, 0 2px 4px -2px #0000001a;
+  --shadow-lg: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
+  --shadow-xl: 0 20px 25px -5px #0000001a, 0 8px 10px -6px #0000001a;
+  --shadow-2xl: 0 25px 50px -12px #00000040;
+
+  --shadow-hairline: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --shadow-btn: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+}
 
 :root {
-  --color-primary: #78d3f8;
-  --color-primary-light: #a8e5ff;
-  --color-primary-dark: #4ec4ef;
+  --color-primary: #7ce2ff;
+  --color-primary-light: #a9ecff;
+  --color-primary-dark: #3bc9f2;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Noto Sans', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8fbfc;
@@ -107,5 +217,377 @@ body {
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ---- Playground (codex-style agent run) ---- */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* beautifului.dev pixel-grid loader dot */
+.pixel-dot {
+  width: 5px;
+  height: 5px;
+  display: inline-block;
+  background: #18181b;
+  box-shadow: 0 5px 0 #18181b, 5px 0 0 #18181b, 10px 0 0 #18181b, -5px 5px 0 #18181b, 0 10px 0 #18181b,
+    10px 10px 0 #18181b, 0 -5px 0 #18181b, 10px -5px 0 #18181b, -5px 0 0 #18181b;
+  animation: pixel-shimmer 4s linear infinite alternate;
+}
+
+@keyframes pixel-shimmer {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* Step row entrance — used by Playground steps trace */
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-step-in {
+  animation: step-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-in {
+    animation: none;
+  }
+}
+
+/* ---- Tool Chips (beautifului.dev) entrance animations ---- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Dictation equalizer bars (Prompt Bar) */
+@keyframes eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* ---- Loading state (beautifului.dev pixel-grid loader) ---- */
+@keyframes pixel-on {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: none;
+  }
+  45%,
+  55% {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer-text {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-dot,
+  .animate-pulse,
+  .animate-ping {
+    animation: none !important;
+  }
+}
+
+/* ── Playground hero entrance motion ─────────────────────── */
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-draw {
+  from {
+    stroke-dashoffset: 140;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-axis {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes hero-tick {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+/* one gentle overlapped highlight sweep across the headline */
+@keyframes hero-sheen {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-axis,
+  .hero-tick,
+  .hero-draw-path,
+  .hero-sheen-text,
+  .hero-verse-anim,
+  .hero-char-anim,
+  .hero-spark-anim {
+    animation: none !important;
+  }
+  [style*='hero-drift'] {
+    animation: none !important;
+  }
+}
+
+@keyframes hero-verse {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(5px);
+  }
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(5px);
+  }
+}
+
+@keyframes hero-char {
+  0% {
+    opacity: 0;
+    transform: translateY(26px) rotate(4deg) scale(1.08);
+    filter: blur(8px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  75% {
+    transform: translateY(-4px) rotate(-1.2deg) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-spark {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.14) rotate(10deg);
+    opacity: 1;
+  }
+}
+
+@keyframes hero-drift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  100% {
+    translate: 0 -6px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Landing sections — shared motion & marquee primitives               */
+/* ------------------------------------------------------------------ */
+
+/* Scroll reveal (applied by <Reveal />) */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Content swap for tabs / stage previews */
+@keyframes fade-swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Data source marquee — single row, seamless loop */
+.marquee-outer {
+  /* soft fade on both edges */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 36s linear infinite;
+}
+.marquee-outer:hover .marquee-track,
+.marquee-outer:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 1.25rem;
+  white-space: nowrap;
+}
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-outer {
+    mask-image: none;
+    -webkit-mask-image: none;
+    overflow-x: auto;
+  }
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Animated data-flow line in the architecture diagram */
+.flow-line {
+  stroke-dasharray: 4 5;
+  animation: flow-dash 1.6s linear infinite;
+}
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -9;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-line {
+    animation: none;
   }
 }

@@ -7,3 +7,5 @@ export { default as Visualization } from './Visualization';
 export * from './types';
 export * from './utils';
 export { default as SuggestionCards } from './SuggestionCards';
+export { default as Playground } from './Playground';
+export { default as Banner } from './Banner';

@@ -22,20 +22,20 @@ const SuggestionCards: React.FC<SuggestionCardsProps> = ({ suggestions, onSelect
             onClick={() => { onSelect(s.query); onDismiss(); }}
             onMouseEnter={() => setHoveredIdx(i)}
             onMouseLeave={() => setHoveredIdx(null)}
-            className="h-full w-full text-left px-3.5 py-3 bg-white hover:bg-gradient-to-br hover:from-[#78d3f8]/8 hover:to-[#e8f8ff] border border-gray-200/80 hover:border-[#78d3f8]/40 rounded-xl transition-all duration-200 cursor-pointer group shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(120,211,248,0.15)]"
+            className="h-full w-full text-left px-3.5 py-3 bg-white hover:bg-gradient-to-br hover:from-[color:var(--color-primary)]/8 hover:to-[#e8f8ff] border border-gray-200/80 hover:border-[color:var(--color-primary)]/40 rounded-xl transition-all duration-200 cursor-pointer group shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(120,211,248,0.15)]"
           >
             <div className="flex items-start gap-2">
-              <span aria-hidden="true" className="shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center rounded-md bg-[#78d3f8]/10 text-[11px] group-hover:bg-[#78d3f8]/20 transition-colors">💡</span>
+              <span aria-hidden="true" className="shrink-0 mt-0.5 w-5 h-5 flex items-center justify-center rounded-md bg-[color:var(--color-primary)]/10 text-[11px] group-hover:bg-[color:var(--color-primary)]/20 transition-colors">💡</span>
               <span className="text-[13px] text-gray-600 group-hover:text-[#0c8fb4] leading-relaxed transition-colors line-clamp-2">{s.query}</span>
             </div>
             <div className="mt-2 flex items-center gap-1.5">
               <div className="flex-1 h-[3px] bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all duration-500"
-                  style={{ width: `${Math.round(s.score * 100)}%`, background: 'linear-gradient(90deg, #78d3f8, #4ec4ef)' }}
+                  style={{ width: `${Math.round(s.score * 100)}%`, background: 'linear-gradient(90deg, var(--color-primary), var(--color-primary-dark))' }}
                 />
               </div>
-              <span className="text-[10px] font-semibold text-gray-300 group-hover:text-[#78d3f8] transition-colors tabular-nums">{Math.round(s.score * 100)}%</span>
+              <span className="text-[10px] font-semibold text-gray-300 group-hover:text-[color:var(--color-primary)] transition-colors tabular-nums">{Math.round(s.score * 100)}%</span>
             </div>
           </button>
           {hoveredIdx === i && s.reason && (

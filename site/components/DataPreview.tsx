@@ -77,14 +77,14 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data, isLoading }) => {
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center w-6 h-6 bg-[#78d3f8]/20 text-[#78d3f8] text-sm font-semibold rounded-full">2</span>
+          <span className="flex items-center justify-center w-6 h-6 bg-[color:var(--color-primary)]/20 text-[color:var(--color-primary)] text-sm font-semibold rounded-full">2</span>
           <h2 className="text-lg font-semibold text-gray-800">Structured Data Preview</h2>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => downloadCSV(data)}
             disabled={data.length === 0 || isLoading}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-[#78d3f8] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400 hover:text-[color:var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
             title="Download as CSV"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,7 +128,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({ data, isLoading }) => {
               <thead>
                 <tr className="border-b border-gray-100">
                   {columns.map(col => (
-                    <th key={col} className="text-left py-2 px-4 font-medium text-[#78d3f8]">
+                    <th key={col} className="text-left py-2 px-4 font-medium text-[color:var(--color-primary)]">
                       {col}
                     </th>
                   ))}

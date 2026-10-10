@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -10,25 +10,67 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
   const pathname = usePathname();
-  
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const EASE = 'transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]';
+
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1">
-          <img 
-            src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original" 
-            alt="AVA ChartGenie Logo" 
-            className="w-8 h-8 flex-shrink-0"
+    <header className="sticky top-0 z-50 w-full">
+      <div
+        className={`grid grid-cols-[1fr_auto_1fr] origin-top items-center ${EASE}
+          ${
+            scrolled
+              ? // 滚动后：矮胶囊吸顶，只保留必要高度
+                'h-11 mx-[max(12px,calc((100%-1280px)/2))] translate-y-[14px] scale-95 rounded-[100px] border border-[rgba(0,0,0,0.06)] bg-[rgba(255,255,255,0.72)] px-[18px] py-0 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.1)] backdrop-blur-md overflow-hidden'
+              : // 默认：宽屏通栏（保持原始高度 h-16）
+                'h-16 w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-12'
+          }`}
+      >
+        {/* Logo */}
+        <Link
+          href="/"
+          className="col-start-1 flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 justify-self-start"
+        >
+          <img
+            src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
+            alt="AVA ChartGenie Logo"
+            className={`w-20 flex-shrink-0 ${scrolled ? 'h-8' : 'h-12'} transition-all duration-500`}
           />
-          <span className="text-lg font-semibold text-gray-800 truncate">AVA, AI-Native Visual Analytics</span>
+          <span className="text-lg text-gray-800 truncate">AVA</span>
         </Link>
-        <div className="flex items-center gap-4">
+
+        {/* in-page navigation */}
+        <nav className="col-start-2 hidden items-center gap-1 justify-self-center md:flex">
+          {[
+            { href: '/#playground', label: 'Examples', pathnamePrefix: null },
+            { href: '/#analytics', label: 'Features', pathnamePrefix: null },
+            { href: '/#benchmarks', label: 'Benchmarks', pathnamePrefix: null },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+
+        {/* 右侧操作区 */}
+        <div className="col-start-3 flex items-center gap-4 justify-self-end">
           <Link
             href="/documentation"
             className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
               pathname === '/documentation' || pathname === '/documentation/'
-                ? 'text-[#78d3f8] bg-[#78d3f8]/10'
-                : 'text-gray-600 hover:text-[#78d3f8] hover:bg-[#78d3f8]/10'
+                ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
+                : 'text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
             }`}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,9 +78,27 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
             </svg>
             Documentation
           </Link>
+          <Link
+            href="/ai-playground"
+            className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
+              pathname === '/ai-playground' || pathname === '/ai-playground/'
+                ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
+                : 'text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+            AI Playground
+          </Link>
           <button
             onClick={onOpenConfig}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-[#78d3f8] hover:bg-[#78d3f8]/10 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10 rounded-lg transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
