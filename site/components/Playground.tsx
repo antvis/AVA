@@ -35,7 +35,6 @@ type LiveMessage = Message & { live?: LiveState };
 /* ------------------------------------------------------------------ */
 
 const CHUNK_MS = 24;
-const PLAYBACK_STORAGE_KEY = 'ava-playground-playback-v1';
 
 function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => void, replayKey: number) {
   const [visible, setVisible] = useState<LiveMessage[]>([]);
@@ -65,14 +64,10 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
       timeoutRef.current.clear();
     };
 
+    // Always replay from scratch on every mount / page refresh — no
+    // cross-reload persistence for the completed state.
     if (runRef.current?.key !== replayKey) {
-      let completed = false;
-      try {
-        completed = replayKey === 0 && localStorage.getItem(PLAYBACK_STORAGE_KEY) === 'completed';
-      } catch {
-        // Storage may be unavailable; keep playback usable in memory.
-      }
-      runRef.current = { key: replayKey, completed };
+      runRef.current = { key: replayKey, completed: false };
     }
 
     setStreamingIdx(null);
@@ -89,11 +84,6 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
       if (runRef.current) runRef.current.completed = true;
       setStreamingIdx(null);
       setFinished(true);
-      try {
-        localStorage.setItem(PLAYBACK_STORAGE_KEY, 'completed');
-      } catch {
-        // The current run still stops when browser storage is unavailable.
-      }
     };
 
     const patchLive = (patch: LiveState) => {
