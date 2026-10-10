@@ -3,24 +3,24 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import GPTVisRenderer from './GPTVisRenderer';
+import type { Message } from './playground/types';
+import {
+  PRESET_MESSAGES,
+  CHART_SYNTAX,
+  PROMPT_SOURCES,
+  PROMPT_COMMANDS,
+  PROMPT_MODELS,
+  ATTACH_FILES,
+  DICTATION_TEXT,
+  SESSION,
+  CHART_CAPTION,
+} from './playground/mockData';
+
+export type { ToolDetailLine, ToolStep, ToolDiff, ToolDiffLine } from './playground/types';
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
 /* ------------------------------------------------------------------ */
-
-export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
-export type ToolStep = { icon: string; label: string; chip: string; mono?: boolean; detailMono?: boolean; detail: ToolDetailLine[] };
-export type ToolDiff = { file: string; add: number; del?: number };
-export type ToolDiffLine = { text: string; tone: 'add' | 'del' | 'ctx' };
-
-interface Message {
-  role: 'user' | 'assistant';
-  text: string;
-  steps?: ToolStep[];
-  diffs?: ToolDiff[];
-  diffLines?: Record<string, ToolDiffLine[]>;
-  artifact?: { title: string; description: string; chart?: boolean };
-}
 
 /** Live playback state applied to a message as it streams in. */
 interface LiveState {
@@ -31,130 +31,16 @@ interface LiveState {
 type LiveMessage = Message & { live?: LiveState };
 
 /* ------------------------------------------------------------------ */
-/* Fixture data — a simulated AVA agent run                            */
-/* ------------------------------------------------------------------ */
-
-const RUN_STEPS: ToolStep[] = [
-  {
-    icon: 'think',
-    label: 'Thinking',
-    chip: 'Planning the regional trend analysis…',
-    detail: [{ text: 'Compare four regions across Jun–Sep on total sales.' }, { text: 'Keep profit in scope, but lead with the trend.' }],
-  },
-  {
-    icon: 'read',
-    label: 'Loaded sales dataset',
-    chip: 'sales-2026.xlsx',
-    mono: true,
-    detail: [{ text: '12 rows · 4 columns — region, month, sales, profit' }, { text: 'Schema validated, no nulls in key fields.' }],
-  },
-  {
-    icon: 'run',
-    label: 'Wrote analysis program',
-    chip: 'ava.analyze("regional trend")',
-    mono: true,
-    detailMono: true,
-    detail: [
-      { text: '+ const trend = groupBy(data, "region", sum("sales"))', tone: 'add' },
-      { text: '+ const growth = delta(trend, "month")', tone: 'add' },
-    ],
-  },
-  {
-    icon: 'run',
-    label: 'Executed javascript engine',
-    chip: 'exit code 0',
-    mono: true,
-    detailMono: true,
-    detail: [{ text: '✓ 48 records aggregated into 4 series' }, { text: '✓ chartable shape: month ÷ region stacked' }],
-  },
-  {
-    icon: 'think',
-    label: 'Selected chart type',
-    chip: 'stacked bar, month × region',
-    detail: [{ text: 'Monthly trend across regions reads best stacked.' }, { text: 'West dominates — call it out in the summary.' }],
-  },
-  {
-    icon: 'write',
-    label: 'Drafted report artifact',
-    chip: 'regional-sales-report.md',
-    mono: true,
-    detail: [
-      { text: '+ # Regional Sales Report — Jun–Sep 2026', tone: 'add' },
-      { text: '+ West leads at 6,100 total sales, up strongly every month.', tone: 'add' },
-    ],
-  },
-];
-
-const RUN_DIFFS: ToolDiff[] = [
-  { file: 'regional-sales-report.md', add: 18 },
-  { file: 'chart-spec.json', add: 12 },
-  { file: 'analysis.sql', add: 9 },
-];
-
-const RUN_DIFF_LINES: Record<string, ToolDiffLine[]> = {
-  'regional-sales-report.md': [
-    { text: '# Regional Sales Report — Jun–Sep 2026', tone: 'ctx' },
-    { text: 'West leads at 6,100 total sales.', tone: 'add' },
-    { text: 'South recovered from July, closed at 1,900.', tone: 'add' },
-    { text: 'East grows steadily; North flattened.', tone: 'add' },
-  ],
-  'chart-spec.json': [
-    { text: '"type": "bar",', tone: 'ctx' },
-    { text: '"stack": true,', tone: 'add' },
-    { text: '"encode": { "x": "month",', tone: 'add' },
-    { text: '  "y": ["West","East","South","North"] }', tone: 'add' },
-  ],
-  'analysis.sql': [
-    { text: 'SELECT region, month,', tone: 'ctx' },
-    { text: '       SUM(sales) AS total_sales', tone: 'add' },
-    { text: 'FROM sales_2026 GROUP BY 1, 2;', tone: 'add' },
-  ],
-};
-
-const ASSISTANT_TEXT = `I analyzed the sales dataset (12 rows across 4 regions). Here's what stands out:\n\n- **West** is the clear leader — 6,100 in total sales, up strongly June→Sep.\n- **South** recovered from a July dip and closed at its highest point (1,900).\n- **East** shows healthy, steady growth every single month.\n- **North** flattened out in Aug–Sep after a fast start.\n\nI've saved the full report and chart as an artifact.`;
-
-const PRESET_MESSAGES: Message[] = [
-  { role: 'user', text: 'Analyze the sales data and show me the regional trend.' },
-  {
-    role: 'assistant',
-    steps: RUN_STEPS,
-    diffs: RUN_DIFFS,
-    diffLines: RUN_DIFF_LINES,
-    text: ASSISTANT_TEXT,
-    artifact: { title: 'regional-sales-report.md', description: 'Sales & profit by region, Jun–Sep 2026 · stacked bar trend', chart: true },
-  },
-];
-
-/** GPT-vis markdown syntax for a stacked bar chart. */
-const CHART_SYNTAX = [
-  '```vis-chart',
-  JSON.stringify(
-    {
-      type: 'bar',
-      data: [
-        { month: 'Jun', West: 1200, East: 900, South: 700, North: 1000 },
-        { month: 'Jul', West: 1500, East: 1000, South: 600, North: 1400 },
-        { month: 'Aug', West: 1600, East: 1100, South: 1000, North: 1450 },
-        { month: 'Sep', West: 1800, East: 1250, South: 1900, North: 1450 },
-      ],
-      encode: { x: 'month', y: ['West', 'East', 'South', 'North'] },
-      stack: true,
-      axis: [{ orient: 'left', title: { visible: true, text: 'Sales' } }, { orient: 'bottom', grid: 'line' }],
-    },
-    null,
-    2
-  ),
-  '```',
-].join('\n');
-
-/* ------------------------------------------------------------------ */
 /* Streaming engine                                                    */
 /* ------------------------------------------------------------------ */
 
 const CHUNK_MS = 24;
+const PLAYBACK_STORAGE_KEY = 'ava-playground-playback-v1';
 
-function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => void) {
+function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => void, replayKey: number) {
   const [visible, setVisible] = useState<LiveMessage[]>([]);
+  const [finished, setFinished] = useState(false);
+  const runRef = useRef<{ key: number; completed: boolean } | null>(null);
   const [streamingIdx, setStreamingIdx] = useState<number | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timeoutRef = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
@@ -164,11 +50,6 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
   useEffect(() => {
     let cancelled = false;
 
-    /* full reset: every engine start begins from a clean slate, so
-     * effect re-runs (HMR identity changes, StrictMode) can never stack
-     * another run on top of already-revealed messages. */
-    setVisible([]);
-    setStreamingIdx(null);
     if (timerRef.current) clearInterval(timerRef.current);
     timeoutRef.current.forEach(clearTimeout);
     timeoutRef.current.clear();
@@ -184,6 +65,37 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
       timeoutRef.current.clear();
     };
 
+    if (runRef.current?.key !== replayKey) {
+      let completed = false;
+      try {
+        completed = replayKey === 0 && localStorage.getItem(PLAYBACK_STORAGE_KEY) === 'completed';
+      } catch {
+        // Storage may be unavailable; keep playback usable in memory.
+      }
+      runRef.current = { key: replayKey, completed };
+    }
+
+    setStreamingIdx(null);
+    setFinished(runRef.current.completed);
+    if (runRef.current.completed) {
+      setVisible(messages);
+      const artifact = [...messages].reverse().find((message) => message.artifact);
+      if (artifact) onArtifactRef.current(artifact);
+      return cancelAll;
+    }
+    setVisible([]);
+
+    const finish = () => {
+      if (runRef.current) runRef.current.completed = true;
+      setStreamingIdx(null);
+      setFinished(true);
+      try {
+        localStorage.setItem(PLAYBACK_STORAGE_KEY, 'completed');
+      } catch {
+        // The current run still stops when browser storage is unavailable.
+      }
+    };
+
     const patchLive = (patch: LiveState) => {
       setVisible((v) => {
         const copy = [...v];
@@ -193,7 +105,7 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
       });
     };
 
-    const beginTextStream = (msg: Message, msgIdx: number) => {
+    const beginTextStream = (msg: Message) => {
       patchLive({ runningRow: null });
       const full = msg.text;
       let pos = 0;
@@ -220,7 +132,7 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
     };
 
     /** Reveal tool rows one-by-one (running → done), then stream the body text. */
-    const playRowsThenText = (msg: Message, msgIdx: number) => {
+    const playRowsThenText = (msg: Message) => {
       const total = msg.steps?.length ?? 0;
 
       const idx = { i: 0 };
@@ -228,7 +140,7 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
         if (cancelled) return;
         if (idx.i >= total) {
           patchLive({ runningRow: null });
-          track(setTimeout(() => beginTextStream(msg, msgIdx), 350));
+          track(setTimeout(() => beginTextStream(msg), 350));
           return;
         }
         patchLive({ rowsShown: idx.i + 1, runningRow: idx.i });
@@ -247,8 +159,9 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
     let msgIdx = 0;
 
     const playNextMessage = () => {
-      if (cancelled || msgIdx >= messages.length) {
-        setStreamingIdx(null);
+      if (cancelled) return;
+      if (msgIdx >= messages.length) {
+        finish();
         return;
       }
       const msg = messages[msgIdx];
@@ -262,23 +175,23 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
 
       setVisible((v) => [
         ...v,
-        { ...msg, text: msg.steps ? '' : msg.text, live: { rowsShown: msg.steps ? 0 : undefined, runningRow: null } },
+        { ...msg, text: '', live: { rowsShown: msg.steps ? 0 : undefined, runningRow: null } },
       ]);
       setStreamingIdx(msgIdx);
 
       if (msg.steps && msg.steps.length > 0) {
-        track(setTimeout(() => playRowsThenText(msg, msgIdx), 300));
+        track(setTimeout(() => playRowsThenText(msg), 300));
       } else {
-        track(setTimeout(() => beginTextStream(msg, msgIdx), 200));
+        track(setTimeout(() => beginTextStream(msg), 200));
       }
     };
 
     track(setTimeout(playNextMessage, 500));
 
     return cancelAll;
-  }, [messages]);
+  }, [messages, replayKey]);
 
-  return { visible, streamingIdx };
+  return { visible, streamingIdx, finished };
 }
 
 /* ------------------------------------------------------------------ */
@@ -623,28 +536,6 @@ const P_GLYPHS: Record<string, React.ReactNode> = {
     </g>
   ),
 };
-
-const PROMPT_SOURCES = [
-  { key: 'attach', name: 'Add photos & files', desc: 'Upload from your computer', glyph: 'clip', attach: true },
-  { key: 'data', name: 'Sales data', desc: 'sales-2026.xlsx · 12 rows', glyph: 'chart' },
-  { key: 'docs', name: 'Docs knowledge base', desc: 'Analysis notes & reports', glyph: 'layers' },
-  { key: 'web', name: 'Web search', desc: 'Real-time news and info', glyph: 'globe' },
-];
-
-const PROMPT_COMMANDS = [
-  { key: 'analyze', name: '/analyze', desc: 'Run a full analysis pass' },
-  { key: 'chart', name: '/chart', desc: 'Visualize the current dataset' },
-  { key: 'summarize', name: '/summarize', desc: 'Digest the thread so far' },
-  { key: 'export', name: '/export', desc: 'Export the report artifact' },
-];
-
-const PROMPT_MODELS = [
-  { key: 'ava-2', name: 'AVA 2', tag: 'Flagship' },
-  { key: 'ava-2-mini', name: 'AVA 2 mini', tag: 'Fast' },
-];
-
-const ATTACH_FILES = ['sales-2026.xlsx', 'pos-export.csv', 'summer-menu.pdf'];
-const DICTATION_TEXT = 'Analyze the sales data and show me the regional trend';
 
 /** the last @word or /word being typed, if any */
 function parseToken(draft: string): { kind: 'at' | 'slash'; query: string; start: number } | null {
@@ -1079,24 +970,16 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
 };
 
 /* ------------------------------------------------------------------ */
-/* Chat panel — owns one simulated run lifetime. Remounting (key change)
- * restarts the playback from scratch; once finished it stays finished
- * (no auto-loop) until the user clicks Re-run.                       */
+/* Chat panel — replays only when the user explicitly requests it.     */
 /* ------------------------------------------------------------------ */
 
-const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => void }> = ({ onArtifact, onRerun }) => {
+const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => void; replayKey: number }> = ({
+  onArtifact,
+  onRerun,
+  replayKey,
+}) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const { visible, streamingIdx } = useSimulatedStream(PRESET_MESSAGES, onArtifact);
-
-  /* Finished is derived purely from revealed content — every message is
-   * visible and the last assistant reply has streamed to full length — so
-   * it can't get stuck on a mid-flight flag. */
-  const lastPreset = PRESET_MESSAGES[PRESET_MESSAGES.length - 1];
-  const streamingFinished =
-    visible.length >= PRESET_MESSAGES.length &&
-    visible[visible.length - 1].role === 'assistant' &&
-    visible[visible.length - 1].text === lastPreset.text;
+  const { visible, streamingIdx, finished } = useSimulatedStream(PRESET_MESSAGES, onArtifact, replayKey);
 
   // Auto-scroll chat to bottom while streaming
   useEffect(() => {
@@ -1109,11 +992,11 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
       <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-[640px]">
         <header className="flex items-center gap-2.5 px-5 py-3.5 border-b border-zinc-100">
           <span className="relative flex w-2 h-2">
-            <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
+            {!finished && <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-60 animate-ping" />}
             <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
           </span>
-          <span className="text-sm font-semibold text-zinc-800">ava-session</span>
-          <span className="text-[11px] text-zinc-400 font-mono">~/.playground/sales-analysis</span>
+          <span className="text-sm font-semibold text-zinc-800">{SESSION.name}</span>
+          <span className="text-[11px] text-zinc-400 font-mono">{SESSION.path}</span>
           <button
             onClick={onRerun}
             className="ml-auto text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 text-zinc-500 hover:bg-zinc-50 hover:text-zinc-700 transition-colors"
@@ -1126,10 +1009,37 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
           {visible.map((msg, i) => {
             if (msg.role === 'user')
               return (
-                <div key={i} className="flex justify-end">
+                <div key={i} className="flex flex-col items-end gap-1.5">
                   <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-md bg-zinc-900 text-white text-[13px] leading-relaxed shadow-sm">
                     {msg.text}
                   </div>
+                  {msg.attachments && msg.attachments.length > 0 && (
+                    <div className="flex max-w-full flex-wrap justify-end gap-1.5">
+                      {msg.attachments.map((file, j) => {
+                        const ext = file.slice(file.lastIndexOf('.') + 1).toUpperCase();
+                        const tone = /XLS|CSV/.test(ext) ? 'bg-green' : /PDF/.test(ext) ? 'bg-red' : 'bg-ink-3';
+                        return (
+                          <span
+                            key={file}
+                            className="inline-flex h-6 items-center gap-1.5 rounded-full bg-inset px-2
+                              text-[12px] font-medium text-ink-2 shadow-btn
+                              transition-[background-color] duration-300 hover:bg-hover"
+                            style={{ animation: `pop-in 200ms cubic-bezier(0.23,1,0.32,1) ${j * 80}ms both` }}
+                          >
+                            <span
+                              className={`flex size-3.5 items-center justify-center rounded-[4px] ${tone} text-[7px] font-bold text-white`}
+                            >
+                              {ext}
+                            </span>
+                            <span className="min-w-0 truncate">{file}</span>
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M7 17L17 7M7 7h10v10" />
+                            </svg>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             return (
@@ -1148,9 +1058,8 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
 
         <footer className="border-t border-zinc-50 px-5 py-4">
           <PromptBar
-            placeholder={streamingFinished ? 'Ask a follow-up…' : 'Agent is working…'}
-            busy={!streamingFinished}
-            onSend={() => onRerun()}
+            placeholder={finished ? 'Demo complete — click Re-run to replay' : 'Agent is working…'}
+            busy
           />
         </footer>
       </section>
@@ -1163,7 +1072,7 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
 /* ------------------------------------------------------------------ */
 
 const Playground: React.FC = () => {
-  // bumping replayKey remounts ChatPanel → a fresh simulated run
+  // Only an explicit replay starts another simulated run.
   const [replayKey, setReplayKey] = useState(0);
   const [artifactMsg, setArtifactMsg] = useState<Message | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -1187,7 +1096,16 @@ const Playground: React.FC = () => {
           panelOpen && artifactMsg ? 'lg:grid-cols-[minmax(0,1fr)_460px]' : 'grid-cols-1'
         }`}
       >
-        <ChatPanel key={replayKey} onArtifact={onArtifact} onRerun={() => setReplayKey((k) => k + 1)} />
+        <ChatPanel
+          key={replayKey}
+          replayKey={replayKey}
+          onArtifact={onArtifact}
+          onRerun={() => {
+            setArtifactMsg(null);
+            setPanelOpen(false);
+            setReplayKey((k) => k + 1);
+          }}
+        />
 
         {/* ---------------- Right artifact panel ---------------- */}
         {panelOpen && artifactMsg?.artifact && (
@@ -1217,7 +1135,7 @@ const Playground: React.FC = () => {
               <div className="h-[420px] rounded-xl border border-zinc-100 bg-gradient-to-b from-zinc-50/60 to-white">
                 <GPTVisRenderer syntax={CHART_SYNTAX} />
               </div>
-              <p className="text-[11px] text-zinc-400 mt-3 font-mono">generated by ava.visualize · gpt-vis · stacked bar</p>
+              <p className="text-[11px] text-zinc-400 mt-3 font-mono">{CHART_CAPTION}</p>
             </div>
           </section>
         )}
