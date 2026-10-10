@@ -78,6 +78,24 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
             </svg>
             Documentation
           </Link>
+          <Link
+            href="/ai-playground"
+            className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
+              pathname === '/ai-playground' || pathname === '/ai-playground/'
+                ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
+                : 'text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>
+            AI Playground
+          </Link>
           <button
             onClick={onOpenConfig}
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10 rounded-lg transition-colors"

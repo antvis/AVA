@@ -12,6 +12,7 @@ import {
   OpenSource,
   FinalCTA,
 } from '../components/landing'
+import PageShell from '../components/PageShell'
 
 /* The little brand orb — pure JSX/ Tailwind (was `.orb` + `.orb::after` in CSS) */
 const Orb: React.FC = () => (
@@ -37,22 +38,8 @@ export default function Home() {
 
   return (
     <>
-      {/* canvas — was `.canvas`: min-height, ink color, body font, DM Sans headings */}
-      <div className="min-h-screen font-sans text-[#24212d] [--font-heading:'DM Sans',sans-serif]">
-        {/* sheet — was `.sheet`: page rhythm, anchor focus ring, scroll offset */}
-        <div
-          className="w-full bg-white
-            [&_[id]]:scroll-mt-[110px]
-            [&_:is(a,button,textarea)]:focus-visible:outline-2
-            [&_:is(a,button,textarea)]:focus-visible:outline-offset-4
-            [&_:is(a,button,textarea)]:focus-visible:outline-[color:var(--color-primary-dark)]
-            motion-reduce:[&_*]:transition-none
-            [&>header>div]:h-[84px] [&>header>div]:px-10
-            [&>header_a:hover]:text-[color:var(--color-primary-dark)]
-            [&>header_button]:rounded-[9px] [&>header_button]:bg-[#24212d] [&>header_button]:text-white
-            [&>header_button:hover]:bg-[color:var(--color-primary-dark)] [&>header_button:hover]:text-white
-            max-md:[&>header>div]:h-[70px] max-md:[&>header>div]:px-[18px]"
-        >
+      {/* canvas + sheet — shared with other pages via PageShell */}
+      <PageShell>
           <Header onOpenConfig={() => setIsConfigOpen(true)} />
 
           {/* hero — was `.hero`: bordered plate with layered light-blue gradients */}
@@ -114,8 +101,7 @@ export default function Home() {
             <FinalCTA />
             <Footer />
           </div>
-        </div>
-      </div>
+      </PageShell>
       <ConfigModal
         isOpen={isConfigOpen}
         onClose={() => setIsConfigOpen(false)}

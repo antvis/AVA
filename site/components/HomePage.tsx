@@ -14,7 +14,6 @@ import {
 import type { DataRow } from '../components';
 
 interface HomeProps {
-  onOpenConfig: () => void;
   isConfigOpen: boolean;
   onCloseConfig: () => void;
 }
