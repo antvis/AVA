@@ -209,7 +209,7 @@ const ADAPTERS: DiagramBlock[] = [
   {
     title: 'Engine Layer',
     color: '#14b8a6',
-    items: ['DuckDB · Remote SQL', 'Browser Execution'],
+    items: ['DuckDB · Python · Remote SQL', 'Browser Execution'],
   },
 ];
 
