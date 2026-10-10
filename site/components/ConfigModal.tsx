@@ -48,7 +48,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
               type="text"
               value={localConfig.model}
               onChange={e => setLocalConfig({ ...localConfig, model: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
               placeholder="e.g., ling-1t, gpt-4"
             />
           </div>
@@ -59,7 +59,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
               type="password"
               value={localConfig.apiKey}
               onChange={e => setLocalConfig({ ...localConfig, apiKey: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
               placeholder="Your API key"
             />
           </div>
@@ -70,7 +70,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
               type="text"
               value={localConfig.baseURL || ''}
               onChange={e => setLocalConfig({ ...localConfig, baseURL: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
               placeholder="https://api.example.com/v1"
             />
           </div>
@@ -85,7 +85,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 px-4 py-2.5 bg-[#78d3f8] hover:bg-[#4ec4ef] text-white rounded-xl transition-colors"
+            className="flex-1 px-4 py-2.5 bg-[color:var(--color-primary)] hover:bg-[color:var(--color-primary-dark)] text-white rounded-xl transition-colors"
           >
             Save
           </button>

@@ -96,7 +96,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
       <div className="flex items-center gap-3 mb-5">
-        <span className="flex items-center justify-center w-6 h-6 bg-[#78d3f8]/20 text-[#78d3f8] text-sm font-semibold rounded-full">
+        <span className="flex items-center justify-center w-6 h-6 bg-[color:var(--color-primary)]/20 text-[color:var(--color-primary)] text-sm font-semibold rounded-full">
           3
         </span>
         <h2 className="text-lg font-semibold text-gray-800">Visualize with AI</h2>
@@ -111,13 +111,13 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
             onChange={(e) => { setQuery(e.target.value); setSuggestions([]); }}
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             placeholder="Create a trend line comparing North America and Europe sales growth"
-            className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#78d3f8]/50 focus:border-[#78d3f8] transition-all text-sm"
+            className="w-full px-4 py-3 pr-12 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all text-sm"
             disabled={isLoading || isSuggesting}
           />
           <button
             onClick={handleSuggest}
             disabled={isSuggesting || isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 bg-white hover:bg-[#78d3f8]/10 disabled:bg-gray-100 disabled:cursor-not-allowed text-[#78d3f8] rounded-lg transition-colors shadow-sm border border-gray-200"
+            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 bg-white hover:bg-[color:var(--color-primary)]/10 disabled:bg-gray-100 disabled:cursor-not-allowed text-[color:var(--color-primary)] rounded-lg transition-colors shadow-sm border border-gray-200"
             title="Get AI-suggested query"
           >
             {isSuggesting ? (
@@ -144,7 +144,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
         <button
           onClick={handleGenerate}
           disabled={isLoading || !query.trim() || isSuggesting}
-          className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-[#78d3f8] hover:bg-[#4ec4ef] disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl transition-colors whitespace-nowrap"
+          className="flex items-center justify-center gap-2 px-4 sm:px-6 py-3 bg-[color:var(--color-primary)] hover:bg-[color:var(--color-primary-dark)] disabled:bg-gray-200 disabled:cursor-not-allowed text-white rounded-xl transition-colors whitespace-nowrap"
         >
           {isLoading ? (
             <>
@@ -193,7 +193,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
               <button
                 onClick={() => setShowCode(!showCode)}
                 className={`p-1.5 rounded-lg transition-colors ${
-                  showCode ? 'bg-[#78d3f8]/20 text-[#78d3f8]' : 'hover:bg-gray-200 text-gray-500'
+                  showCode ? 'bg-[color:var(--color-primary)]/20 text-[color:var(--color-primary)]' : 'hover:bg-gray-200 text-gray-500'
                 }`}
                 title={showCode ? 'Hide code' : 'View code'}
               >
@@ -225,23 +225,23 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
 
       {/* Visualization Area - Only show when chart syntax exists */}
       {vizResult?.syntax && (
-        <div className="relative min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        <div className="relative min-h-[400px] border-2 border-dashed border-[color:var(--color-primary)]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
           <GPTVisRenderer syntax={vizResult.syntax} />
         </div>
       )}
 
       {/* Placeholder - Only show when no result yet */}
       {!result && (
-        <div className="min-h-[400px] border-2 border-dashed border-[#78d3f8]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
+        <div className="min-h-[400px] border-2 border-dashed border-[color:var(--color-primary)]/20 rounded-xl overflow-hidden bg-gradient-to-b from-gray-50 to-white">
           <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-gray-400">
             <div className="relative mb-4">
               {/* Background bars */}
               <div className="flex items-end gap-2 opacity-30">
-                <div className="w-8 h-16 bg-[#78d3f8] rounded-t-lg" />
-                <div className="w-8 h-24 bg-[#78d3f8] rounded-t-lg" />
-                <div className="w-8 h-20 bg-[#78d3f8] rounded-t-lg" />
-                <div className="w-8 h-28 bg-[#78d3f8] rounded-t-lg" />
-                <div className="w-8 h-[88px] bg-[#78d3f8] rounded-t-lg" />
+                <div className="w-8 h-16 bg-[color:var(--color-primary)] rounded-t-lg" />
+                <div className="w-8 h-24 bg-[color:var(--color-primary)] rounded-t-lg" />
+                <div className="w-8 h-20 bg-[color:var(--color-primary)] rounded-t-lg" />
+                <div className="w-8 h-28 bg-[color:var(--color-primary)] rounded-t-lg" />
+                <div className="w-8 h-[88px] bg-[color:var(--color-primary)] rounded-t-lg" />
               </div>
               {/* Sparkle icon */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl">✨</div>
@@ -250,7 +250,7 @@ const Visualization: React.FC<VisualizationProps> = ({ avaInstance, data, isInit
             <p className="text-sm text-center max-w-xs">
               Your generated interactive chart will appear here after clicking 'Generate'
             </p>
-            <div className="flex items-center gap-4 mt-4 text-xs text-[#78d3f8]">
+            <div className="flex items-center gap-4 mt-4 text-xs text-[color:var(--color-primary)]">
               <span>🎨 Customize</span>
               <span>📤 Share</span>
               <span>{'</>'} Embed</span>

@@ -213,49 +213,67 @@ const PlatformChip: React.FC<{ label: string }> = ({ label }) => (
   </span>
 );
 
-const CAPABILITIES = [
-  { name: 'Modular Architecture', state: 'Shipped', detail: 'pluggable engine registry, composable pipeline' },
-  { name: 'Controlled Execution', state: 'Shipped', detail: 'row limits, result-size caps, query timeouts, auto-retry' },
-  { name: 'Safe by Design', state: 'Shipped', detail: 'read-only database access, isolated execution engines' },
-] as const;
-
-const DiagramPillar: React.FC<{ block: DiagramBlock; accent?: boolean }> = ({ block, accent }) => (
+const DiagramPillar: React.FC<{ block: DiagramBlock; accent?: boolean; inline?: boolean }> = ({
+  block,
+  accent,
+  inline,
+}) => (
   <div
-    className="flex-1 rounded-lg border bg-white px-3 py-2.5"
+    className="flex-1 rounded-lg border bg-white px-3 py-2"
     style={
       accent
         ? { borderColor: 'color-mix(in srgb, var(--color-primary-dark) 35%, #e4e4e7)' }
         : undefined
     }
   >
-    <div className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-700">
-      {block.title}
+    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+      <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-700">
+        {block.title}
+      </span>
+      {inline && (
+        <span className="font-mono text-[9px] text-zinc-300" aria-hidden>
+          /
+        </span>
+      )}
     </div>
-    <ul className="mt-1.5 flex flex-col gap-1">
-      {block.items.map((item) => (
-        <li key={item} className="text-[11px] leading-snug text-zinc-500">
-          {item}
-        </li>
-      ))}
-    </ul>
+    {inline ? (
+      <ul className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+        {block.items.map((item, i) => (
+          <li key={item} className="flex items-center gap-2 text-[11px] leading-snug text-zinc-500">
+            {i > 0 && (
+              <span className="h-3 w-px bg-zinc-200" aria-hidden />
+            )}
+            {item}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <ul className="mt-1 flex flex-col gap-0.5">
+        {block.items.map((item) => (
+          <li key={item} className="text-[11px] leading-snug text-zinc-500">
+            {item}
+          </li>
+        ))}
+      </ul>
+    )}
   </div>
 );
 
 const VerticalFlowArrow: React.FC<{ label: string }> = ({ label }) => (
-  <div aria-hidden className="flex flex-col items-center py-2">
-    <svg width="12" height="34" viewBox="0 0 12 34" fill="none">
+  <div aria-hidden className="flex flex-col items-center py-1.5">
+    <svg width="12" height="24" viewBox="0 0 12 24" fill="none">
       <line
         x1="6"
         y1="0"
         x2="6"
-        y2="26"
+        y2="16"
         stroke="rgba(120,211,248,0.7)"
         strokeWidth="1.5"
         className="flow-line"
       />
-      <path d="M1 25l5 7 5-7z" fill="var(--color-primary-dark)" opacity="0.8" />
+      <path d="M1 15l5 7 5-7z" fill="var(--color-primary-dark)" opacity="0.8" />
     </svg>
-    <span className="mt-1 font-mono text-[10px] text-zinc-400">{label}</span>
+    <span className="font-mono text-[10px] text-zinc-400">{label}</span>
   </div>
 );
 
@@ -298,16 +316,16 @@ const Architecture: React.FC = () => (
             · Trusted Execution Boundary
           </span>
         </div>
-        <div className="mx-auto mt-3.5 flex max-w-xl flex-col gap-2.5">
+        <div className="mt-3 flex flex-col gap-2">
           {/* row 1 — Execution Contract */}
-          <DiagramPillar block={RUNTIME_PILLARS[0]} accent />
+          <DiagramPillar block={RUNTIME_PILLARS[0]} accent inline />
           {/* row 2 — Execution Control | Observability */}
-          <div className="flex gap-2.5">
+          <div className="flex gap-2">
             <DiagramPillar block={RUNTIME_PILLARS[1]} accent />
             <DiagramPillar block={RUNTIME_PILLARS[2]} accent />
           </div>
           {/* row 3 — Execution Orchestration */}
-          <DiagramPillar block={RUNTIME_PILLARS[3]} accent />
+          <DiagramPillar block={RUNTIME_PILLARS[3]} accent inline />
         </div>
       </div>
 
@@ -318,7 +336,7 @@ const Architecture: React.FC = () => (
         <div className="text-center font-mono text-[11px] uppercase tracking-wider text-zinc-400">
           Source &amp; Engine Adapters
         </div>
-        <div className="mx-auto mt-3 flex max-w-xl gap-2.5">
+        <div className="mt-2.5 flex gap-2">
           {ADAPTERS.map((block) => (
             <DiagramPillar key={block.title} block={block} />
           ))}
@@ -373,23 +391,6 @@ const RealWorldData: React.FC<{ id?: string }> = ({ id = 'data' }) => (
         <div className="mt-5">
           <Architecture />
         </div>
-        <Reveal delay={80}>
-          <ul className="mt-6 flex flex-wrap justify-center gap-2">
-            {CAPABILITIES.map((c) => (
-              <li
-                key={c.name}
-                className="flex items-center gap-3 rounded-full border border-zinc-200 bg-white px-4 py-2"
-              >
-                <span className="text-[13px] font-medium text-zinc-800">{c.name}</span>
-                <span className="h-3 w-px bg-zinc-200" aria-hidden />
-                <span className="font-mono text-[11px] text-zinc-400">{c.detail}</span>
-                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-medium text-emerald-600">
-                  {c.state}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Reveal>
       </div>
     </div>
   </section>

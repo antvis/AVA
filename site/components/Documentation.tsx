@@ -23,21 +23,21 @@ const Documentation: React.FC = () => {
         {/* Features Grid */}
         <div className="grid md:grid-cols-3 gap-6 mb-16">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 bg-[#78d3f8]/10 rounded-lg flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-[color:var(--color-primary)]/10 rounded-lg flex items-center justify-center mb-4">
               <span className="text-2xl">💬</span>
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">Natural Language</h3>
             <p className="text-sm text-gray-600">Ask questions about your data in plain English</p>
           </div>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 bg-[#78d3f8]/10 rounded-lg flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-[color:var(--color-primary)]/10 rounded-lg flex items-center justify-center mb-4">
               <span className="text-2xl">🤖</span>
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">LLM-Powered</h3>
             <p className="text-sm text-gray-600">Leverages large language models for intelligent analysis</p>
           </div>
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="w-12 h-12 bg-[#78d3f8]/10 rounded-lg flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-[color:var(--color-primary)]/10 rounded-lg flex items-center justify-center mb-4">
               <span className="text-2xl">⚡</span>
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">Smart Processing</h3>
@@ -52,13 +52,13 @@ const Documentation: React.FC = () => {
             <div className="sticky top-24 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
               <h3 className="text-sm font-semibold text-gray-800 mb-4 uppercase tracking-wide">Contents</h3>
               <nav className="space-y-2 text-sm">
-                <a href="#installation" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Installation</a>
-                <a href="#quick-start" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Quick Start</a>
-                <a href="#architecture" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Architecture</a>
-                <a href="#api-reference" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">API Reference</a>
-                <a href="#examples" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Examples</a>
-                <a href="#configuration" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Configuration</a>
-                <a href="#best-practices" className="block text-gray-600 hover:text-[#78d3f8] transition-colors py-1">Best Practices</a>
+                <a href="#installation" className="block text-gray-600 hover:text-[color:var(--color-primary)] transition-colors py-1">Installation</a>
+                <a href="#quick-start" className="block text-gray-600 hover:text-[color:var(--color-primary)] transition-colors py-1">Quick Start</a>
+                <a href="#architecture" className="block text-gray-600 hover:text-[color:var(--color-primary)] transition-colors py-1">Architecture</a>
+                <a href="#api-reference" className="block text-gray-600 hover:text-[color:var(--color-primary)] transition-colors py-1">API Reference</a>
+                <a href="#examples" className="block text-gray-600 hover:text-[color:var(--color-primary)] transition-colors py-1">Examples</a>
+                <a href="#configuration" className="block text-gray-600 hover:text-[color:var(--color-primary)] transition-colors py-1">Configuration</a>
+                <a href="#best-practices" className="block text-gray-600 hover:text-[color:var(--color-primary)] transition-colors py-1">Best Practices</a>
               </nav>
             </div>
           </div>
@@ -134,50 +134,50 @@ ava.dispose();`}</pre>
               </h2>
               <div className="space-y-6">
                 <p className="text-gray-600">AVA uses a modular pipeline architecture:</p>
-                <div className="bg-gradient-to-r from-[#78d3f8]/10 to-transparent rounded-lg p-6 border-l-4 border-[#78d3f8]">
+                <div className="bg-gradient-to-r from-[color:var(--color-primary)]/10 to-transparent rounded-lg p-6 border-l-4 border-[color:var(--color-primary)]">
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">1</div>
+                      <div className="w-8 h-8 rounded-full bg-[color:var(--color-primary)] text-white flex items-center justify-center font-semibold">1</div>
                       <div>
                         <div className="font-semibold text-gray-800">Data Module</div>
                         <div className="text-gray-600">Load from CSV, JSON, URL, or text</div>
                       </div>
                     </div>
-                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="ml-4 border-l-2 border-[color:var(--color-primary)]/30 h-6"></div>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">2</div>
+                      <div className="w-8 h-8 rounded-full bg-[color:var(--color-primary)] text-white flex items-center justify-center font-semibold">2</div>
                       <div>
                         <div className="font-semibold text-gray-800">Metadata Extract</div>
                         <div className="text-gray-600">Type inference and statistics</div>
                       </div>
                     </div>
-                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="ml-4 border-l-2 border-[color:var(--color-primary)]/30 h-6"></div>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">3</div>
+                      <div className="w-8 h-8 rounded-full bg-[color:var(--color-primary)] text-white flex items-center justify-center font-semibold">3</div>
                       <div>
                         <div className="font-semibold text-gray-800">Size Check</div>
                         <div className="text-gray-600">&lt;10MB: JavaScript | ≥10MB: SQLite</div>
                       </div>
                     </div>
-                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="ml-4 border-l-2 border-[color:var(--color-primary)]/30 h-6"></div>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">4</div>
+                      <div className="w-8 h-8 rounded-full bg-[color:var(--color-primary)] text-white flex items-center justify-center font-semibold">4</div>
                       <div>
                         <div className="font-semibold text-gray-800">Analysis Module</div>
                         <div className="text-gray-600">Generate & execute code/SQL</div>
                       </div>
                     </div>
-                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="ml-4 border-l-2 border-[color:var(--color-primary)]/30 h-6"></div>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">5</div>
+                      <div className="w-8 h-8 rounded-full bg-[color:var(--color-primary)] text-white flex items-center justify-center font-semibold">5</div>
                       <div>
                         <div className="font-semibold text-gray-800">LLM Summary</div>
                         <div className="text-gray-600">Natural language response</div>
                       </div>
                     </div>
-                    <div className="ml-4 border-l-2 border-[#78d3f8]/30 h-6"></div>
+                    <div className="ml-4 border-l-2 border-[color:var(--color-primary)]/30 h-6"></div>
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#78d3f8] text-white flex items-center justify-center font-semibold">6</div>
+                      <div className="w-8 h-8 rounded-full bg-[color:var(--color-primary)] text-white flex items-center justify-center font-semibold">6</div>
                       <div>
                         <div className="font-semibold text-gray-800">Visualization</div>
                         <div className="text-gray-600">Chart advisor + chart generation</div>
@@ -199,7 +199,7 @@ ava.dispose();`}</pre>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Constructor</h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <code className="text-sm text-[#78d3f8]">new AVA(options: AVAOptions)</code>
+                    <code className="text-sm text-[color:var(--color-primary)]">new AVA(options: AVAOptions)</code>
                     <div className="mt-4 space-y-2 text-sm">
                       <div className="flex gap-2">
                         <span className="text-gray-500 font-mono">llm</span>
@@ -221,7 +221,7 @@ ava.dispose();`}</pre>
                       { method: 'loadSource(config: { type, options })', desc: 'Load any data source (inline csv/object/url/text, or csv-file/json/parquet files)' },
                     ].map((item, idx) => (
                       <div key={idx} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <code className="text-sm text-[#78d3f8] block mb-2">{item.method}</code>
+                        <code className="text-sm text-[color:var(--color-primary)] block mb-2">{item.method}</code>
                         <p className="text-sm text-gray-600">{item.desc}</p>
                       </div>
                     ))}
@@ -232,7 +232,7 @@ ava.dispose();`}</pre>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Analysis</h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <code className="text-sm text-[#78d3f8] block mb-2">analyze(query: string)</code>
+                    <code className="text-sm text-[color:var(--color-primary)] block mb-2">analyze(query: string)</code>
                     <p className="text-sm text-gray-600 mb-3">Analyze data with natural language query. Returns text summary + structured data + code/SQL.</p>
                     <div className="text-xs text-gray-500 space-y-1">
                       <div className="font-semibold mb-2">Returns object with:</div>
@@ -248,7 +248,7 @@ ava.dispose();`}</pre>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Visualization</h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <code className="text-sm text-[#78d3f8] block mb-2">visualize(analysisResult: AnalysisResponse)</code>
+                    <code className="text-sm text-[color:var(--color-primary)] block mb-2">visualize(analysisResult: AnalysisResponse)</code>
                     <p className="text-sm text-gray-600 mb-3">Generate chart from analysis result. Must be called after <code className="bg-white px-1 rounded text-xs">analyze()</code>.</p>
                     <div className="text-xs text-gray-500 space-y-1">
                       <div className="font-semibold mb-2">Returns object with (or null if no visualization needed):</div>
@@ -263,7 +263,7 @@ ava.dispose();`}</pre>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 mb-3">Query Suggestions</h3>
                   <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <code className="text-sm text-[#78d3f8] block mb-2">suggest(count?: number)</code>
+                    <code className="text-sm text-[color:var(--color-primary)] block mb-2">suggest(count?: number)</code>
                     <p className="text-sm text-gray-600 mb-3">Get AI-recommended analysis queries based on dataset characteristics (default: 3)</p>
                     <div className="text-xs text-gray-500 space-y-1">
                       <div className="font-semibold mb-2">Returns array of objects with:</div>
@@ -283,7 +283,7 @@ ava.dispose();`}</pre>
                 Usage Examples
               </h2>
               <div className="space-y-6">
-                <div className="border-l-4 border-[#78d3f8] pl-4">
+                <div className="border-l-4 border-[color:var(--color-primary)] pl-4">
                   <h4 className="font-semibold text-gray-800 mb-2">Query Suggestions</h4>
                   <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
                     <pre className="whitespace-pre">{`await ava.loadObject([
@@ -302,7 +302,7 @@ console.log(suggestions[0]);
 const result = await ava.analyze(suggestions[0].query);`}</pre>
                   </div>
                 </div>
-                <div className="border-l-4 border-[#78d3f8] pl-4">
+                <div className="border-l-4 border-[color:var(--color-primary)] pl-4">
                   <h4 className="font-semibold text-gray-800 mb-2">Browser File Upload</h4>
                   <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
                     <pre className="whitespace-pre">{`const fileInput = document.querySelector('input[type="file"]');
@@ -314,7 +314,7 @@ fileInput.addEventListener('change', async (e) => {
 });`}</pre>
                   </div>
                 </div>
-                <div className="border-l-4 border-[#78d3f8] pl-4">
+                <div className="border-l-4 border-[color:var(--color-primary)] pl-4">
                   <h4 className="font-semibold text-gray-800 mb-2">API Data Analysis</h4>
                   <div className="bg-gray-900 text-gray-100 rounded-lg p-4 font-mono text-xs overflow-x-auto">
                     <pre className="whitespace-pre">{`await ava.loadURL(
@@ -368,7 +368,7 @@ const result = await ava.analyze('Compare by region');`}</pre>
                   'Never expose API keys in client-side code',
                 ].map((practice, idx) => (
                   <div key={idx} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                    <span className="text-[#78d3f8] mt-0.5">✓</span>
+                    <span className="text-[color:var(--color-primary)] mt-0.5">✓</span>
                     <span className="text-sm text-gray-700">{practice}</span>
                   </div>
                 ))}
@@ -376,16 +376,16 @@ const result = await ava.analyze('Compare by region');`}</pre>
             </section>
 
             {/* Links */}
-            <section className="bg-gradient-to-r from-[#78d3f8]/10 to-transparent rounded-xl p-8 border border-[#78d3f8]/20">
+            <section className="bg-gradient-to-r from-[color:var(--color-primary)]/10 to-transparent rounded-xl p-8 border border-[color:var(--color-primary)]/20">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Resources</h2>
               <div className="grid md:grid-cols-3 gap-4">
-                <a href="https://github.com/antvis/AVA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#78d3f8] hover:underline">
+                <a href="https://github.com/antvis/AVA" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[color:var(--color-primary)] hover:underline">
                   <span>→</span> GitHub Repository
                 </a>
-                <a href="https://github.com/antvis/AVA/issues" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#78d3f8] hover:underline">
+                <a href="https://github.com/antvis/AVA/issues" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[color:var(--color-primary)] hover:underline">
                   <span>→</span> Report Issues
                 </a>
-                <a href="https://antv.vision/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[#78d3f8] hover:underline">
+                <a href="https://antv.vision/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[color:var(--color-primary)] hover:underline">
                   <span>→</span> AntV Community
                 </a>
               </div>

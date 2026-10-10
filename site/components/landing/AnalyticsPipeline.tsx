@@ -221,7 +221,7 @@ const GptVisColumn: React.FC<{ data: ColumnConfig['data']; height?: number }> = 
       type: 'column',
       data,
       // East (the top region) is highlighted via its own color entry
-      style: { palette: ['#4ec4ef', '#a8e5ff'] },
+      style: { palette: ['var(--color-primary-dark)', 'var(--color-primary-light)'] },
       // no axis titles — maximize plot area in the small card
     });
     return () => chart.destroy();

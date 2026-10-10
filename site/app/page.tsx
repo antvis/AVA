@@ -18,7 +18,7 @@ const Orb: React.FC = () => (
   <div
     aria-hidden="true"
     className="relative mx-auto mb-5 h-11 w-11 rounded-full border border-[#ffffffc0]
-      bg-[radial-gradient(circle_at_30%_20%,#efffff,transparent_32%),conic-gradient(from_35deg,#2996cf,#a8e5ff,#d5f5ff,#67bddf,#247ab9,#c8f0ff,#2996cf)]
+      bg-[radial-gradient(circle_at_30%_20%,#efffff,transparent_32%),conic-gradient(from_35deg,#2996cf,var(--color-primary-light),#d5f5ff,#67bddf,#247ab9,#c8f0ff,#2996cf)]
       shadow-[inset_-5px_-7px_10px_#245c9440,inset_2px_2px_4px_#fff9,0_12px_20px_#539ac430]"
   >
     <div className="absolute inset-x-[-3px] inset-y-[7px] rotate-[-32deg] rounded-full border-2 border-[#e4faffb3] shadow-[0_1px_2px_#4889b2]" />
@@ -45,12 +45,12 @@ export default function Home() {
             [&_[id]]:scroll-mt-[110px]
             [&_:is(a,button,textarea)]:focus-visible:outline-2
             [&_:is(a,button,textarea)]:focus-visible:outline-offset-4
-            [&_:is(a,button,textarea)]:focus-visible:outline-[#4ec4ef]
+            [&_:is(a,button,textarea)]:focus-visible:outline-[color:var(--color-primary-dark)]
             motion-reduce:[&_*]:transition-none
             [&>header>div]:h-[84px] [&>header>div]:px-10
-            [&>header_a:hover]:text-[#4ec4ef]
+            [&>header_a:hover]:text-[color:var(--color-primary-dark)]
             [&>header_button]:rounded-[9px] [&>header_button]:bg-[#24212d] [&>header_button]:text-white
-            [&>header_button:hover]:bg-[#4ec4ef] [&>header_button:hover]:text-white
+            [&>header_button:hover]:bg-[color:var(--color-primary-dark)] [&>header_button:hover]:text-white
             max-md:[&>header>div]:h-[70px] max-md:[&>header>div]:px-[18px]"
         >
           <Header onOpenConfig={() => setIsConfigOpen(true)} />
@@ -103,8 +103,8 @@ export default function Home() {
           {/* closing — was `.closing`: radial brand washes over a light gradient */}
           <div
             className="overflow-hidden
-              bg-[radial-gradient(ellipse_at_12%_0%,color-mix(in_srgb,#78d3f8_26%,transparent),transparent_45%),
-                radial-gradient(ellipse_at_90%_100%,color-mix(in_srgb,#a8e5ff_45%,transparent),transparent_55%),
+              bg-[radial-gradient(ellipse_at_12%_0%,color-mix(in_srgb,var(--color-primary)_26%,transparent),transparent_45%),
+                radial-gradient(ellipse_at_90%_100%,color-mix(in_srgb,var(--color-primary-light)_45%,transparent),transparent_55%),
                 linear-gradient(150deg,#f4fbfe,#f8fcfe_55%,#f2fafe)]
               [&>footer>div]:py-0 [&>footer>div]:pt-10 [&>footer>div]:pb-7
               max-md:[&>footer>div>div:first-child]:grid-cols-2

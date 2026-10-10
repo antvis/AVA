@@ -956,7 +956,7 @@ const PromptBar: React.FC<{
               aria-pressed={listening}
               onClick={() => setListening((current) => !current)}
               className={`flex size-7 shrink-0 items-center justify-center transition-[background-color,color,transform] duration-150 active:scale-[0.94] rounded-[8px] ${
-                listening ? 'bg-[#78d3f8]/20 text-[#3bb3e0]' : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700'
+                listening ? 'bg-[color:var(--color-primary)]/20 text-[#3bb3e0]' : 'text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700'
               } ${expanded ? 'col-start-4 row-start-2' : 'col-start-4 row-start-1'}`}
             >
               {listening ? (

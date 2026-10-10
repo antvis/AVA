@@ -18,7 +18,7 @@ const FinalCTA: React.FC<{ id?: string }> = ({ id = 'get-started' }) => (
     </div>
 
     <div className="relative mx-auto max-w-3xl px-6 text-center">
-      <div aria-hidden className="mb-5 text-center text-[32px] leading-none text-[#4ec4ef]">
+      <div aria-hidden className="mb-5 text-center text-[32px] leading-none text-[color:var(--color-primary-dark)]">
         ✦
       </div>
       <Reveal>
