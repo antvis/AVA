@@ -58,9 +58,9 @@ const SkillCode: React.FC = () => (
   <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.75] text-zinc-300">
     <code>
       <span className="text-zinc-500">{'# install the skills for your agents'}</span>{'\n'}
-      <span className="text-[#82aaff]">npx</span> skills add antvis/AVA{'\n\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npx</span> skills add antvis/AVA{'\n\n'}
       <span className="text-zinc-500">{'# or add the marketplace in Claude Code'}</span>{'\n'}
-      <span className="text-[#82aaff]">/plugin</span> marketplace add antvis/AVA{'\n\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">/plugin</span> marketplace add antvis/AVA{'\n\n'}
       <span className="text-zinc-500">{'# then, in a new agent session:'}</span>{'\n'}
       <span className="text-[#c3e88d]">
         &quot;Use the AVA skill to analyze /absolute/path/sales.csv,{'\n'}
@@ -74,12 +74,12 @@ const CliCode: React.FC = () => (
   <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.75] text-zinc-300">
     <code>
       <span className="text-zinc-500">{'# install (Node.js 22.13+, macOS / Linux)'}</span>{'\n'}
-      <span className="text-[#82aaff]">npm</span> install -g @antv/ava{'\n\n'}
-      <span className="text-[#82aaff]">ava</span> source sales.csv{'\n'}
-      <span className="text-[#82aaff]">ava</span> suggest &quot;$DATASET_ID&quot; --count 5{'\n'}
-      <span className="text-[#82aaff]">ava</span> analyze &quot;$DATASET_ID&quot; \{'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npm</span> install -g @antv/ava{'\n\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> source sales.csv{'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> suggest &quot;$DATASET_ID&quot; --count 5{'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> analyze &quot;$DATASET_ID&quot; \{'\n'}
       &nbsp;&nbsp;<span className="text-[#f78c6c]">&quot;What is the average sales value by region?&quot;</span>{'\n'}
-      <span className="text-[#82aaff]">ava</span> visualize --query <span className="text-[#f78c6c]">&quot;Compare average sales by region&quot;</span> \{'\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> visualize --query <span className="text-[#f78c6c]">&quot;Compare average sales by region&quot;</span> \{'\n'}
       &nbsp;&nbsp;--data @rows.json --output chart.html{'\n\n'}
       <span className="text-zinc-500">{'# output is JSON · sessions expire after 30 min idle'}</span>
     </code>
@@ -243,14 +243,14 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                 </div>
               </div>
               <div className="min-w-0 overflow-hidden border-t border-zinc-100 sm:border-l sm:border-t-0">
-                <div className="flex items-center gap-2 border-b border-zinc-800/60 px-4 py-2.5">
-                  <span className="flex gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
+                <div className="flex items-center gap-2 bg-[#161e2e] px-4 py-2.5">
+                  <span className="flex gap-1.5" aria-hidden>
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
                   </span>
-                  <span className="font-mono text-[11px] text-zinc-500">
-                    {active.language === 'bash' ? 'terminal' : 'agent.ts'}
+                  <span className="font-mono text-[11px] text-zinc-400">
+                    {active.language === 'bash' ? 'bash' : 'agent.ts'}
                   </span>
                 </div>
                 <div className="bg-[#0d1420] p-4" key={`${tab}-code`} style={{ animation: 'fade-swap 280ms ease-out both' }}>
