@@ -73,10 +73,10 @@ const ConnectPreview: React.FC = () => {
 const UnderstandPreview: React.FC = () => {
   /* Realistic profile() output for the sales dataset — meaningful stats per field */
   const fields = [
-    { name: 'region', type: 'VARCHAR', bar: 1, note: '4 distinct · 0% null' },
-    { name: 'category', type: 'VARCHAR', bar: 0.72, note: 'top: Electronics (31%)' },
-    { name: 'amount', type: 'DECIMAL', bar: 0.58, note: '42 – 9,120 · μ 486' },
-    { name: 'date', type: 'DATE', bar: 0.36, note: 'Jan 2 → Sep 30' },
+    { name: 'region', type: 'VARCHAR', note: '4 distinct · 0% null' },
+    { name: 'category', type: 'VARCHAR', note: 'top: Electronics (31%)' },
+    { name: 'amount', type: 'DECIMAL', note: '42 – 9,120 · μ 486' },
+    { name: 'date', type: 'DATE', note: 'Jan 2 → Sep 30' },
   ];
   return (
     <div className="flex min-w-0 flex-col rounded-lg border border-zinc-200/80 bg-white p-2.5">
@@ -106,15 +106,6 @@ const UnderstandPreview: React.FC = () => {
             <div className="flex min-w-0 items-center gap-2">
               <span className="shrink-0 font-mono text-[11.5px] text-zinc-800">{f.name}</span>
               <span className="shrink-0 font-mono text-[9px] uppercase text-slate-400">{f.type}</span>
-              <div className="h-[4px] min-w-0 flex-1 overflow-hidden rounded-full bg-zinc-100">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${f.bar * 100}%`,
-                    background: 'linear-gradient(90deg, var(--color-primary), var(--color-primary-dark))',
-                  }}
-                />
-              </div>
             </div>
             <div className="mt-0.5 truncate font-mono text-[9.5px] text-slate-500">{f.note}</div>
           </li>
@@ -148,7 +139,7 @@ const AnalyzePreview: React.FC = () => {
               onClick={() => setTab(t)}
               className={`rounded-md px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-wide transition-colors ${
                 tab === t
-                  ? 'bg-blue-50 text-blue-700 shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
+                  ? 'bg-[color:var(--color-primary)]/15 text-[#0ea5e9] shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
                   : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
@@ -156,18 +147,17 @@ const AnalyzePreview: React.FC = () => {
             </button>
           ))}
         </div>
-        <span className="font-mono text-[10px] text-zinc-400">DuckDB · 18 ms</span>
       </div>
 
       <div key={tab} className="mt-2" style={{ animation: 'fade-swap 240ms ease-out both' }}>
         {tab === 'sql' ? (
           <pre className="whitespace-pre-wrap break-words rounded-md bg-[#f8fafc] p-2.5 font-mono text-[11px] leading-relaxed text-slate-700">
             <code>
-              <span className="text-blue-600">SELECT</span> region, <span className="text-violet-600">SUM</span>(amount) <span className="text-blue-600">AS</span> total{'\n'}
-              <span className="text-blue-600">FROM</span> sales{'\n'}
-              <span className="text-blue-600">WHERE</span> <span className="text-violet-600">YEAR</span>(date) = <span className="text-orange-600">2025</span>{'\n'}
-              <span className="text-blue-600">GROUP BY</span> region{'\n'}
-              <span className="text-blue-600">ORDER BY</span> total <span className="text-blue-600">DESC</span>;
+              <span className="text-[#0ea5e9]">SELECT</span> region, <span className="text-violet-600">SUM</span>(amount) <span className="text-[#0ea5e9]">AS</span> total{'\n'}
+              <span className="text-[#0ea5e9]">FROM</span> sales{'\n'}
+              <span className="text-[#0ea5e9]">WHERE</span> <span className="text-violet-600">YEAR</span>(date) = <span className="text-orange-600">2025</span>{'\n'}
+              <span className="text-[#0ea5e9]">GROUP BY</span> region{'\n'}
+              <span className="text-[#0ea5e9]">ORDER BY</span> total <span className="text-[#0ea5e9]">DESC</span>;
             </code>
           </pre>
         ) : (
@@ -195,7 +185,7 @@ const AnalyzePreview: React.FC = () => {
       </div>
 
       {/* footer — mirrors the A line in Visualize */}
-      <p className="mt-2 border-t border-zinc-100 pt-2 font-mono text-[10.5px] text-emerald-600">
+      <p className="mt-2 border-t border-zinc-100 pt-2 font-mono text-[10.5px] text-slate-400">
         ✓ 4 rows · no hallucination · answer grounded in data
       </p>
     </div>
@@ -214,7 +204,8 @@ const GptVisColumn: React.FC<{ data: ColumnConfig['data']; height?: number }> = 
       type: 'column',
       data,
       // East (the top region) is highlighted via its own color entry
-      style: { palette: ['var(--color-primary-dark)', 'var(--color-primary-light)'] },
+      // G2 renders to canvas — CSS variables can't resolve there, so use hex
+      style: { palette: ['#3bc9f2', '#a9ecff'] },
       // no axis titles — maximize plot area in the small card
     });
     return () => chart.destroy();
@@ -265,7 +256,7 @@ const PREVIEWS: Record<string, React.FC> = {
 const AnalyticsPipeline: React.FC<{ id?: string }> = ({ id = 'analytics' }) => (
   <section
     id={id}
-    className="relative px-6 py-[88px] max-md:px-1 max-md:py-14"
+    className="relative px-6 pb-[140px] pt-[88px] max-md:px-1 max-md:pb-20 max-md:pt-14"
     aria-label="End-to-end analytics"
   >
     <div className="mx-auto max-w-[1440px] px-6 sm:px-8">
@@ -288,7 +279,7 @@ const AnalyticsPipeline: React.FC<{ id?: string }> = ({ id = 'analytics' }) => (
               >
                 <div className="mb-6">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-lg font-semibold text-blue-600">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-primary)]/15 text-lg font-semibold text-[color:var(--color-primary-dark)]">
                       {i + 1}
                     </span>
                     <h3 className="font-heading text-lg tracking-tight text-slate-950">{stage.name}</h3>
@@ -304,7 +295,7 @@ const AnalyticsPipeline: React.FC<{ id?: string }> = ({ id = 'analytics' }) => (
                     aria-hidden
                     viewBox="0 0 28 20"
                     fill="none"
-                    className="absolute -right-[27px] top-1/2 z-10 hidden h-5 w-7 text-blue-500 xl:block"
+                    className="absolute -right-[27px] top-1/2 z-10 hidden h-5 w-7 text-[color:var(--color-primary-dark)] xl:block"
                   >
                     <path d="M1 10h23m-7-7 7 7-7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
