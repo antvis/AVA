@@ -91,27 +91,33 @@ export const PRESET_MESSAGES: Message[] = [
   },
 ];
 
-/** GPT-vis markdown syntax for a stacked bar chart. */
-export const CHART_SYNTAX = [
-  '```vis-chart',
-  JSON.stringify(
-    {
-      type: 'bar',
-      data: [
-        { month: 'Jun', West: 1200, East: 900, South: 700, North: 1000 },
-        { month: 'Jul', West: 1500, East: 1000, South: 600, North: 1400 },
-        { month: 'Aug', West: 1600, East: 1100, South: 1000, North: 1450 },
-        { month: 'Sep', West: 1800, East: 1250, South: 1900, North: 1450 },
-      ],
-      encode: { x: 'month', y: ['West', 'East', 'South', 'North'] },
-      stack: true,
-      axis: [{ orient: 'left', title: { visible: true, text: 'Sales' } }, { orient: 'bottom', grid: 'line' }],
-    },
-    null,
-    2
-  ),
-  '```',
+/** The raw chart config — shared by the chart render and the data table. */
+export const CHART_CONFIG = {
+  type: 'bar',
+  data: [
+    { month: 'Jun', West: 1200, East: 900, South: 700, North: 1000 },
+    { month: 'Jul', West: 1500, East: 1000, South: 600, North: 1400 },
+    { month: 'Aug', West: 1600, East: 1100, South: 1000, North: 1450 },
+    { month: 'Sep', West: 1800, East: 1250, South: 1900, North: 1450 },
+  ],
+  encode: { x: 'month', y: ['West', 'East', 'South', 'North'] },
+  stack: true,
+  axis: [{ orient: 'left', title: { visible: true, text: 'Sales' } }, { orient: 'bottom', grid: 'line' }],
+};
+
+/** The analysis SQL behind the artifact. */
+export const ARTIFACT_SQL = [
+  'SELECT region, month,',
+  '       SUM(sales)  AS total_sales,',
+  '       SUM(profit) AS total_profit',
+  'FROM   sales_2026',
+  'WHERE  month BETWEEN \'2026-06\' AND \'2026-09\'',
+  'GROUP  BY region, month',
+  'ORDER  BY month, region;',
 ].join('\n');
+
+/** GPT-vis markdown syntax for a stacked bar chart. */
+export const CHART_SYNTAX = ['```vis-chart', JSON.stringify(CHART_CONFIG, null, 2), '```'].join('\n');
 
 export const PROMPT_SOURCES = [
   { key: 'attach', name: 'Add photos & files', desc: 'Upload from your computer', glyph: 'clip', attach: true },

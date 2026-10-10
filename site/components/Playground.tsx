@@ -14,6 +14,8 @@ import {
   DICTATION_TEXT,
   SESSION,
   CHART_CAPTION,
+  CHART_CONFIG,
+  ARTIFACT_SQL,
 } from './playground/mockData';
 
 export type { ToolDetailLine, ToolStep, ToolDiff, ToolDiffLine } from './playground/types';
@@ -163,10 +165,7 @@ function useSimulatedStream(messages: Message[], onArtifact: (m: Message) => voi
         return;
       }
 
-      setVisible((v) => [
-        ...v,
-        { ...msg, text: '', live: { rowsShown: msg.steps ? 0 : undefined, runningRow: null } },
-      ]);
+      setVisible((v) => [...v, { ...msg, text: '', live: { rowsShown: msg.steps ? 0 : undefined, runningRow: null } }]);
       setStreamingIdx(msgIdx);
 
       if (msg.steps && msg.steps.length > 0) {
@@ -245,7 +244,8 @@ const AgentRun: React.FC<{ msg: Message; live: LiveState | undefined }> = ({ msg
 
   if (steps.length === 0) return null;
 
-  const headerText = running !== null ? `${steps.length} tool calls — running…` : `${steps.length} tool calls, 1 message`;
+  const headerText =
+    running !== null ? `${steps.length} tool calls — running…` : `${steps.length} tool calls, 1 message`;
 
   return (
     <div className="min-h-[220px] w-full pb-1">
@@ -302,9 +302,9 @@ const AgentRun: React.FC<{ msg: Message; live: LiveState | undefined }> = ({ msg
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        className={`transition-opacity duration-100 group-hover/row:opacity-0 ${rowOpen ? 'opacity-0' : ''} ${
-                          isRunning ? 'animate-pulse text-ink' : ''
-                        }`}
+                        className={`transition-opacity duration-100 group-hover/row:opacity-0 ${
+                          rowOpen ? 'opacity-0' : ''
+                        } ${isRunning ? 'animate-pulse text-ink' : ''}`}
                       >
                         {Icons[row.icon]}
                       </svg>
@@ -368,7 +368,13 @@ const AgentRun: React.FC<{ msg: Message; live: LiveState | undefined }> = ({ msg
           {allRowsDone && diffs.length > 0 && (
             <div className="mt-2.5 flex max-w-full flex-wrap gap-1.5 border-t border-line pt-2.5">
               {diffs.map((d, i) => (
-                <span key={d.file} data-diffchip className="relative" onMouseEnter={openPreview(d.file)} onMouseLeave={closePreview(d.file)}>
+                <span
+                  key={d.file}
+                  data-diffchip
+                  className="relative"
+                  onMouseEnter={openPreview(d.file)}
+                  onMouseLeave={closePreview(d.file)}
+                >
                   <button
                     type="button"
                     aria-expanded={preview?.file === d.file}
@@ -399,42 +405,50 @@ const AgentRun: React.FC<{ msg: Message; live: LiveState | undefined }> = ({ msg
       </div>
 
       {/* hovering a file chip opens its diff — green added, red removed */}
-      {preview && typeof document !== 'undefined' && createPortal(
-        <div
-          className="fixed z-50 w-72 overflow-hidden rounded-[10px] bg-surface shadow-overlay"
-          style={{
-            left: preview.x,
-            top: preview.top,
-            bottom: preview.bottom,
-            animation: 'pop-in 160ms cubic-bezier(0.23,1,0.32,1) both',
-            transformOrigin: preview.top === undefined ? 'bottom left' : 'top left',
-          }}
-        >
-          <div className="flex items-center justify-between border-b border-line px-2.5 py-1.5 font-mono text-[11px]">
-            <span className="min-w-0 truncate text-ink-2">{preview.file}</span>
-            <span className="shrink-0 tabular-nums">
-              <span className="text-green">+{diffs.find((diff) => diff.file === preview.file)?.add}</span>
-              {(diffs.find((diff) => diff.file === preview.file)?.del ?? 0) > 0 && (
-                <span className="text-red"> −{diffs.find((diff) => diff.file === preview.file)?.del}</span>
-              )}
-            </span>
-          </div>
-          <div className="py-1 font-mono text-[11px] leading-[1.8]">
-            {(diffLines[preview.file] ?? []).map((line, index) => (
-              <div
-                key={index}
-                className={`flex gap-2 px-2.5 whitespace-pre ${
-                  line.tone === 'add' ? 'bg-green-tint text-green' : line.tone === 'del' ? 'bg-red-tint text-red' : 'text-ink-2'
-                }`}
-              >
-                <span className="w-3 shrink-0 select-none">{line.tone === 'add' ? '+' : line.tone === 'del' ? '−' : ' '}</span>
-                <span className="min-w-0 truncate">{line.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>,
-        document.body
-      )}
+      {preview &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className="fixed z-50 w-72 overflow-hidden rounded-[10px] bg-surface shadow-overlay"
+            style={{
+              left: preview.x,
+              top: preview.top,
+              bottom: preview.bottom,
+              animation: 'pop-in 160ms cubic-bezier(0.23,1,0.32,1) both',
+              transformOrigin: preview.top === undefined ? 'bottom left' : 'top left',
+            }}
+          >
+            <div className="flex items-center justify-between border-b border-line px-2.5 py-1.5 font-mono text-[11px]">
+              <span className="min-w-0 truncate text-ink-2">{preview.file}</span>
+              <span className="shrink-0 tabular-nums">
+                <span className="text-green">+{diffs.find((diff) => diff.file === preview.file)?.add}</span>
+                {(diffs.find((diff) => diff.file === preview.file)?.del ?? 0) > 0 && (
+                  <span className="text-red"> −{diffs.find((diff) => diff.file === preview.file)?.del}</span>
+                )}
+              </span>
+            </div>
+            <div className="py-1 font-mono text-[11px] leading-[1.8]">
+              {(diffLines[preview.file] ?? []).map((line, index) => (
+                <div
+                  key={index}
+                  className={`flex gap-2 px-2.5 whitespace-pre ${
+                    line.tone === 'add'
+                      ? 'bg-green-tint text-green'
+                      : line.tone === 'del'
+                      ? 'bg-red-tint text-red'
+                      : 'text-ink-2'
+                  }`}
+                >
+                  <span className="w-3 shrink-0 select-none">
+                    {line.tone === 'add' ? '+' : line.tone === 'del' ? '−' : ' '}
+                  </span>
+                  <span className="min-w-0 truncate">{line.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
@@ -472,7 +486,11 @@ const StreamText: React.FC<{ text: string; streaming: boolean }> = ({ text, stre
 };
 
 /* Artifact chip (context-card style) */
-const ArtifactChip: React.FC<{ title: string; description: string; onOpen: () => void }> = ({ title, description, onOpen }) => (
+const ArtifactChip: React.FC<{ title: string; description: string; onOpen: () => void }> = ({
+  title,
+  description,
+  onOpen,
+}) => (
   <button
     onClick={onOpen}
     className="group w-full text-left rounded-2xl border border-zinc-200/70 bg-white p-4 hover:border-zinc-300 hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] transition-all"
@@ -492,7 +510,11 @@ const ArtifactChip: React.FC<{ title: string; description: string; onOpen: () =>
 /* Prompt bar (beautifului.dev Prompt Bar style, adapted)               */
 /* ------------------------------------------------------------------ */
 
-const PIcon: React.FC<{ children: React.ReactNode; size?: number; strokeWidth?: number }> = ({ children, size = 15, strokeWidth = 1.8 }) => (
+const PIcon: React.FC<{ children: React.ReactNode; size?: number; strokeWidth?: number }> = ({
+  children,
+  size = 15,
+  strokeWidth = 1.8,
+}) => (
   <svg
     width={size}
     height={size}
@@ -531,13 +553,19 @@ const P_GLYPHS: Record<string, React.ReactNode> = {
 function parseToken(draft: string): { kind: 'at' | 'slash'; query: string; start: number } | null {
   const match = /(^|\s)([@/])([\w-]*)$/.exec(draft);
   if (!match) return null;
-  return { kind: match[2] === '@' ? 'at' : 'slash', query: match[3].toLowerCase(), start: match.index + match[1].length };
+  return {
+    kind: match[2] === '@' ? 'at' : 'slash',
+    query: match[3].toLowerCase(),
+    start: match.index + match[1].length,
+  };
 }
 
-const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => void; busy?: boolean }> = ({
+const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => void; busy?: boolean; onRerun?: () => void; replayReady?: boolean }> = ({
   placeholder,
   onSend,
   busy,
+  onRerun,
+  replayReady,
 }) => {
   const [draft, setDraft] = useState('');
   const [dismissed, setDismissed] = useState(false);
@@ -569,8 +597,8 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
     menu === 'at'
       ? PROMPT_SOURCES.filter((s) => s.name.toLowerCase().includes(query))
       : menu === 'slash'
-        ? PROMPT_COMMANDS.filter((c) => c.name.slice(1).startsWith(query))
-        : [];
+      ? PROMPT_COMMANDS.filter((c) => c.name.slice(1).startsWith(query))
+      : [];
 
   useEffect(() => {
     setActive(0);
@@ -641,8 +669,18 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
         setPlusOpen(false);
       }
     };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setModelOpen(false);
+        setPlusOpen(false);
+      }
+    };
     document.addEventListener('pointerdown', close);
-    return () => document.removeEventListener('pointerdown', close);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('keydown', onKey);
+    };
   }, [modelOpen, plusOpen]);
 
   const closeMenus = () => {
@@ -691,7 +729,8 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
                 top: rowBox?.top ?? 0,
                 height: rowBox?.height ?? 0,
                 opacity: rowBox && engaged && rows.length > 0 ? 1 : 0,
-                transition: 'top 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), opacity 150ms ease',
+                transition:
+                  'top 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), opacity 150ms ease',
               }}
             />
             {rows.map((row, i) => {
@@ -749,7 +788,8 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
                 top: modelBox?.top ?? 0,
                 height: modelBox?.height ?? 0,
                 opacity: modelBox && modelHovered !== null ? 1 : 0,
-                transition: 'top 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), opacity 150ms ease',
+                transition:
+                  'top 220ms cubic-bezier(0.23,1,0.32,1), height 220ms cubic-bezier(0.23,1,0.32,1), opacity 150ms ease',
               }}
             />
             {PROMPT_MODELS.map((m, i) => (
@@ -782,9 +822,13 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
 
         {/* ── composer ─────────────────────────────── */}
         <div
-          className={`relative flex flex-col overflow-hidden border border-zinc-200 bg-white shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-[border-color,border-radius] duration-150 focus-within:border-zinc-400 gap-1.5 p-1.5 rounded-[14px]`}
+          className={`relative flex flex-col overflow-hidden bg-zinc-50 transition-[border-radius] duration-150 gap-1.5 p-1.5 rounded-[14px]`}
         >
-          <span ref={measureRef} aria-hidden className="pointer-events-none absolute invisible whitespace-pre text-[13px] leading-[18px]">
+          <span
+            ref={measureRef}
+            aria-hidden
+            className="pointer-events-none absolute invisible whitespace-pre text-[13px] leading-[18px]"
+          >
             {draft}
           </span>
 
@@ -793,7 +837,7 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
               {attachments.map((file, i) => (
                 <span
                   key={`${file}-${i}`}
-                  className="flex h-[22px] items-center gap-1.5 bg-zinc-100 border border-zinc-200/60 py-1 pr-1 pl-1.5 text-[11.5px] text-zinc-500 rounded-md"
+                  className="flex h-[22px] items-center gap-1.5 bg-zinc-200/70 py-1 pr-1 pl-1.5 text-[11.5px] text-zinc-500 rounded-md"
                   style={{ animation: 'pop-in 200ms cubic-bezier(0.23,1,0.32,1) both' }}
                 >
                   <PIcon size={12}>
@@ -820,7 +864,9 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
 
           <div
             className={`grid items-end gap-x-1 gap-y-1.5 ${
-              expanded ? 'grid-cols-[28px_auto_minmax(0,1fr)_28px_28px]' : 'grid-cols-[28px_minmax(0,1fr)_auto_28px_28px]'
+              expanded
+                ? 'grid-cols-[28px_auto_minmax(0,1fr)_28px_28px]'
+                : 'grid-cols-[28px_minmax(0,1fr)_auto_28px_28px]'
             }`}
           >
             <button
@@ -891,7 +937,7 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
                 setPlusOpen(false);
                 setModelOpen((current) => !current);
               }}
-              className={`flex h-7 shrink-0 items-center gap-1 px-1.5 text-[12px] font-medium text-zinc-500 transition-colors duration-150 hover:bg-zinc-100 hover:text-zinc-700 rounded-[8px] ${
+              className={`flex h-7 shrink-0 items-center gap-1 rounded-[8px] bg-zinc-100 px-1.5 text-[12px] font-medium text-zinc-600 transition-colors duration-150 hover:bg-zinc-200/70 hover:text-zinc-800 ${
                 expanded ? 'col-start-2 row-start-2 justify-self-start' : 'col-start-3 row-start-1'
               }`}
             >
@@ -933,24 +979,31 @@ const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => voi
               )}
             </button>
 
-            {/* send */}
+            {/* send — doubles as re-run once the run is finished */}
             <button
               type="button"
-              aria-label="Send"
-              disabled={!canSend}
-              onClick={send}
+              aria-label={onRerun && replayReady ? 'Re-run' : 'Send'}
+              disabled={!onRerun && !replayReady && !canSend}
+              onClick={onRerun && replayReady ? onRerun : send}
               className={`flex size-7 shrink-0 items-center justify-center transition-[background-color,color,transform] duration-200 enabled:active:scale-[0.94] rounded-[8px] ${
                 expanded ? 'col-start-5 row-start-2' : 'col-start-5 row-start-1'
               }`}
               style={{
-                background: canSend ? '#18181b' : '#e4e4e7',
-                color: canSend ? '#fff' : '#a1a1aa',
-                cursor: canSend ? undefined : 'not-allowed',
+                background: canSend || replayReady ? '#18181b' : '#e4e4e7',
+                color: canSend || replayReady ? '#fff' : '#a1a1aa',
+                cursor: canSend || replayReady ? undefined : 'not-allowed',
               }}
             >
-              <PIcon size={16} strokeWidth={2.4}>
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </PIcon>
+              {onRerun && replayReady ? (
+                <PIcon size={16} strokeWidth={2.4}>
+                  <path d="M21 12a9 9 0 1 1-2.64-6.36" strokeLinecap="round" />
+                  <path d="M21 3v6h-6" strokeLinecap="round" strokeLinejoin="round" />
+                </PIcon>
+              ) : (
+                <PIcon size={16} strokeWidth={2.4}>
+                  <path d="M12 19V5M5 12l7-7 7 7" />
+                </PIcon>
+              )}
             </button>
           </div>
         </div>
@@ -979,23 +1032,22 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
 
   return (
     <>
-      <section className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-[640px]">
+      <section className="overflow-hidden flex flex-col h-[clamp(480px,calc(100vh-200px),760px)]">
         <header className="flex items-center gap-2.5 px-5 py-3.5 border-b border-zinc-100">
           <span className="relative flex w-2 h-2">
-            {!finished && <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-60 animate-ping" />}
+            {!finished && (
+              <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
+            )}
             <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
           </span>
           <span className="text-sm font-semibold text-zinc-800">{SESSION.name}</span>
           <span className="text-[11px] text-zinc-400 font-mono">{SESSION.path}</span>
-          <button
-            onClick={onRerun}
-            className="ml-auto text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 text-zinc-500 hover:bg-zinc-50 hover:text-zinc-700 transition-colors"
-          >
-            ↻ Re-run
-          </button>
         </header>
 
-        <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/40">
+        <div
+          ref={scrollRef}
+          className="soft-scroll flex-1 overflow-y-auto px-5 py-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/40"
+        >
           {visible.map((msg, i) => {
             if (msg.role === 'user')
               return (
@@ -1022,7 +1074,16 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
                               {ext}
                             </span>
                             <span className="min-w-0 truncate">{file}</span>
-                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <svg
+                              width="9"
+                              height="9"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
                               <path d="M7 17L17 7M7 7h10v10" />
                             </svg>
                           </span>
@@ -1039,17 +1100,23 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
                   <StreamText text={msg.text} streaming={streamingIdx === i} />
                 </div>
                 {msg.artifact && streamingIdx !== i && (
-                  <ArtifactChip title={msg.artifact.title} description={msg.artifact.description} onOpen={() => onArtifact(msg)} />
+                  <ArtifactChip
+                    title={msg.artifact.title}
+                    description={msg.artifact.description}
+                    onOpen={() => onArtifact(msg)}
+                  />
                 )}
               </div>
             );
           })}
         </div>
 
-        <footer className="border-t border-zinc-50 px-5 py-4">
+        <footer className="border-t border-zinc-50 px-5 pt-4 pb-2">
           <PromptBar
-            placeholder={finished ? 'Demo complete — click Re-run to replay' : 'Agent is working…'}
+            placeholder={finished ? 'Demo complete — hit ↻ to replay' : 'Agent is working…'}
             busy
+            onRerun={onRerun}
+            replayReady={finished}
           />
         </footer>
       </section>
@@ -1066,13 +1133,15 @@ const Playground: React.FC = () => {
   const [replayKey, setReplayKey] = useState(0);
   const [artifactMsg, setArtifactMsg] = useState<Message | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [artifactTab, setArtifactTab] = useState<'chart' | 'data' | 'sql'>('chart');
+
   const onArtifact = useCallback((m: Message) => {
     setArtifactMsg(m);
     setPanelOpen(true);
   }, []);
 
   return (
-    <main className="max-w-6xl mx-auto px-6 py-8">
+    <main className="mx-[max(12px,calc((100%-1120px)/2))] py-8">
       {/* Hero */}
       <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-gray-800 mb-3">
@@ -1081,54 +1150,103 @@ const Playground: React.FC = () => {
         <p className="text-gray-500">A simulated codex-style agent run — tool chips, streaming, artifacts.</p>
       </div>
 
-      <div
-        className={`grid gap-6 transition-all duration-500 ${
-          panelOpen && artifactMsg ? 'lg:grid-cols-[minmax(0,1fr)_460px]' : 'grid-cols-1'
-        }`}
-      >
-        <ChatPanel
-          key={replayKey}
-          replayKey={replayKey}
-          onArtifact={onArtifact}
-          onRerun={() => {
-            setArtifactMsg(null);
-            setPanelOpen(false);
-            setReplayKey((k) => k + 1);
-          }}
-        />
+      <div className="overflow-hidden rounded-[23.1429px] bg-white border border-[rgb(233,231,226)] shadow-[0px_16px_36px_rgba(24,24,27,0.08),0px_3px_8px_rgba(24,24,27,0.04)]">
+        <div
+          className={`grid gap-4 p-2 transition-all duration-500 ${
+            panelOpen && artifactMsg ? 'lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)] sm:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]' : 'grid-cols-1'
+          }`}
+        >
+          <ChatPanel
+            key={replayKey}
+            replayKey={replayKey}
+            onArtifact={onArtifact}
+            onRerun={() => {
+              setArtifactMsg(null);
+              setPanelOpen(false);
+              setReplayKey((k) => k + 1);
+            }}
+          />
 
-        {/* ---------------- Right artifact panel ---------------- */}
-        {panelOpen && artifactMsg?.artifact && (
-          <section
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-[640px]"
-            style={{ animation: 'slide-in .4s ease-out' }}
-            aria-label="Artifact panel"
-          >
-            <header className="flex items-center gap-2 px-5 py-3.5 border-b border-zinc-100">
-              <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-zinc-900/[0.05] text-xs font-mono">📄</span>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-zinc-800 truncate">{artifactMsg.artifact.title}</p>
-                <p className="text-[11px] text-zinc-400 truncate">{artifactMsg.artifact.description}</p>
+          {/* ---------------- Right artifact panel ---------------- */}
+          {panelOpen && artifactMsg?.artifact && (
+            <section
+              className="overflow-hidden flex flex-col h-[clamp(480px,calc(100vh-200px),760px)] border border-[rgb(242,242,237)] rounded-xl shadow-xs"
+              style={{ animation: 'slide-in .4s ease-out' }}
+              aria-label="Artifact panel"
+            >
+              <header className="flex items-center gap-2 px-4 py-2 border-b border-zinc-100">
+                <p className="min-w-0 flex-1 truncate text-[13px] font-medium text-zinc-800 font-mono">
+                  {artifactMsg.artifact.title}
+                </p>
+                <button
+                  onClick={() => setPanelOpen(false)}
+                  className="shrink-0 flex size-6 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
+                  aria-label="Close panel"
+                >
+                  <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
+                    <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </header>
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="flex items-center gap-1 border-b border-zinc-100 px-3 py-1.5">
+                  {(['chart', 'data', 'sql'] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setArtifactTab(t)}
+                      className={`rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
+                        artifactTab === t ? 'bg-zinc-100 text-zinc-800' : 'text-zinc-400 hover:text-zinc-600'
+                      }`}
+                    >
+                      {t === 'sql' ? 'SQL' : t[0].toUpperCase() + t.slice(1)}
+                    </button>
+                  ))}
+                </div>
+                <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
+                  {artifactTab === 'chart' && (
+                    <>
+                      <div className="h-[420px]">
+                        <GPTVisRenderer syntax={CHART_SYNTAX} />
+                      </div>
+                      <p className="text-[11px] text-zinc-400 mt-3 font-mono">{CHART_CAPTION}</p>
+                    </>
+                  )}
+                  {artifactTab === 'data' && (
+                    <table className="w-full text-left text-[12px] tabular-nums">
+                      <thead>
+                        <tr className="border-b border-zinc-100 text-zinc-400 font-medium">
+                          <th className="py-1.5 pr-3 font-medium">month</th>
+                          {CHART_CONFIG.encode.y.map((r) => (
+                            <th key={r} className="py-1.5 pr-3 font-medium capitalize">
+                              {r}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {CHART_CONFIG.data.map((row) => (
+                          <tr key={row.month} className="border-b border-zinc-50 text-zinc-700">
+                            <td className="py-1.5 pr-3">{row.month}</td>
+                            {CHART_CONFIG.encode.y.map((r) => (
+                              <td key={r} className="py-1.5 pr-3">
+                                {(row as Record<string, string | number>)[r].toLocaleString()}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                  {artifactTab === 'sql' && (
+                    <pre className="rounded-lg bg-zinc-50 p-3 font-mono text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap">
+                      {ARTIFACT_SQL}
+                    </pre>
+                  )}
+                </div>
               </div>
-              <button
-                onClick={() => setPanelOpen(false)}
-                className="ml-auto w-7 h-7 flex items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
-                aria-label="Close panel"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
-                </svg>
-              </button>
-            </header>
-            <div className="flex-1 overflow-y-auto p-5">
-              <p className="text-sm font-semibold text-zinc-700 mb-3">Interactive chart</p>
-              <div className="h-[420px] rounded-xl border border-zinc-100 bg-gradient-to-b from-zinc-50/60 to-white">
-                <GPTVisRenderer syntax={CHART_SYNTAX} />
-              </div>
-              <p className="text-[11px] text-zinc-400 mt-3 font-mono">{CHART_CAPTION}</p>
-            </div>
-          </section>
-        )}
+            </section>
+          )}
+        </div>
       </div>
     </main>
   );

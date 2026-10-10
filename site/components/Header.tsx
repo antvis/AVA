@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -10,19 +10,47 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
   const pathname = usePathname();
-  
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  const EASE = 'transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]';
+
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 flex-1">
-          <img 
-            src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original" 
-            alt="AVA ChartGenie Logo" 
+    <header className="sticky top-0 z-50 w-full">
+      <div
+        className={`grid grid-cols-[1fr_auto_1fr] h-16 origin-top items-center ${EASE}
+          ${
+            scrolled
+              ? // 滚动后：胶囊吸顶
+                'mx-[max(12px,calc((100%-1280px)/2))] translate-y-[20px] scale-[0.95] rounded-[100px] border border-[rgba(0,0,0,0.06)] bg-[rgba(255,255,255,0.72)] px-[20px] shadow-[4px_4px_10px_0px_rgba(0,0,0,0.1)] backdrop-blur-md'
+              : // 默认：宽屏通栏
+                'w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-6'
+          }`}
+      >
+        {/* Logo */}
+        <Link
+          href="/"
+          className="col-start-1 flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 justify-self-start"
+        >
+          <img
+            src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"
+            alt="AVA ChartGenie Logo"
             className="w-8 h-8 flex-shrink-0"
           />
           <span className="text-lg font-semibold text-gray-800 truncate">AVA, AI-Native Visual Analytics</span>
         </Link>
-        <div className="flex items-center gap-4">
+
+        {/* 导航（暂空，保持三栏布局） */}
+        <nav className="col-start-2 hidden items-center gap-5 justify-self-center md:flex" />
+
+        {/* 右侧操作区 */}
+        <div className="col-start-3 flex items-center gap-4 justify-self-end">
           <Link
             href="/documentation"
             className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
