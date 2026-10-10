@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Column } from '@antv/gpt-vis';
+import type { ColumnConfig } from '@antv/gpt-vis';
 import Reveal from './Reveal';
 import { SectionHeading } from './Section';
 
@@ -89,11 +91,7 @@ const UnderstandPreview: React.FC = () => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between rounded-lg border border-zinc-200/80 bg-white px-3 py-2 font-mono text-[11px] text-slate-500">
-        <span>profile() · sales · 12,480 rows</span>
-        <span className="flex items-center gap-1.5 text-emerald-600">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          computed · no LLM
-        </span>
+        <span className="min-w-0 truncate">profile() · sales · 12,480 rows</span>
       </div>
       {/* amount distribution — right-skewed like real revenue */}
       <div className="rounded-lg border border-zinc-200/80 bg-white px-3 py-2">
@@ -115,13 +113,13 @@ const UnderstandPreview: React.FC = () => {
         </div>
       </div>
       {fields.map((f) => (
-        <div
-          key={f.name}
-          className="flex items-center gap-2.5 rounded-lg border border-zinc-200/80 bg-white px-3 py-1.5"
-        >
-          <span className="w-16 shrink-0 truncate font-mono text-[11.5px] text-zinc-800">{f.name}</span>
-          <span className="w-14 shrink-0 font-mono text-[9.5px] uppercase text-slate-400">{f.type}</span>
-          <div className="h-[4px] min-w-0 flex-1 overflow-hidden rounded-full bg-zinc-100">
+        <div key={f.name} className="rounded-lg border border-zinc-200/80 bg-white px-3 py-1.5">
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="min-w-0 shrink truncate font-mono text-[11.5px] text-zinc-800">{f.name}</span>
+            <span className="shrink-0 font-mono text-[9.5px] uppercase text-slate-400">{f.type}</span>
+            <span className="min-w-0 shrink truncate font-mono text-[9.5px] text-slate-500">{f.note}</span>
+          </div>
+          <div className="mt-1 h-[4px] w-full overflow-hidden rounded-full bg-zinc-100">
             <div
               className="h-full rounded-full"
               style={{
@@ -130,7 +128,6 @@ const UnderstandPreview: React.FC = () => {
               }}
             />
           </div>
-          <span className="shrink-0 font-mono text-[9.5px] text-slate-500">{f.note}</span>
         </div>
       ))}
     </div>
@@ -212,62 +209,50 @@ const AnalyzePreview: React.FC = () => {
   );
 };
 
+/** Renders the analyze() result through the real gpt-vis column chart. */
+const GptVisColumn: React.FC<{ data: ColumnConfig['data']; height?: number }> = ({ data, height = 160 }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const chart = Column({ container: node, width: node.clientWidth || 240, height });
+    chart.render({
+      type: 'column',
+      data,
+      // East (the top region) is highlighted via its own color entry
+      style: { palette: ['#4ec4ef', '#a8e5ff'] },
+      // no axis titles — maximize plot area in the small card
+    });
+    return () => chart.destroy();
+  }, [data, height]);
+
+  return <div ref={ref} className="w-full" />;
+};
+
 const VisualizePreview: React.FC = () => {
-  const bars = [1, 0.71, 0.64, 0.41];
-  const labels = ['East', 'South', 'North', 'West'];
-  const points = [10, 88, 40, 74, 32, 66, 95, 60, 82, 46];
-  const max = Math.max(...points);
-  const path = points
-    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${(i / (points.length - 1)) * 100} ${40 - (p / max) * 34}`)
-    .join(' ');
+  // values expressed in $k so the axis ticks stay short (10 / 20 / 30 / 40)
+  const rows = [
+    { category: 'East', value: 45.4, group: 'Top region' },
+    { category: 'South', value: 32.2, group: 'Others' },
+    { category: 'North', value: 29.0, group: 'Others' },
+    { category: 'West', value: 18.8, group: 'Others' },
+  ];
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2 font-mono text-[11px] text-slate-500">
-        <span>visualize(result) → </span>
-        <span className="rounded-full bg-[color:var(--color-primary)]/15 px-2 py-0.5 font-mono text-[10.5px] font-medium text-[color:var(--color-primary-dark)]">
-          column
-        </span>
-      </div>
-      <div className="rounded-lg border border-zinc-200/80 bg-white p-3">
-        <div className="flex h-28 items-end gap-3">
-          {bars.slice(0, 4).map((h, i) => (
-            <div key={i} className="flex h-full flex-1 flex-col items-center justify-end gap-1.5">
-              <div
-                className="w-full rounded-t-sm"
-                style={{
-                  height: `${h * 88}%`,
-                  background:
-                    i === 0
-                      ? 'var(--color-primary-dark)'
-                      : 'color-mix(in srgb, var(--color-primary) 50%, white)',
-                }}
-              />
-              <span className="text-[10px] text-slate-500">{labels[i]}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="rounded-lg border border-zinc-200/80 bg-white p-3">
-        <svg viewBox="0 0 100 44" className="h-20 w-full" preserveAspectRatio="none" aria-hidden>
-          <path d={`${path} L 100 44 L 0 44 Z`} fill="color-mix(in srgb, var(--color-primary) 18%, transparent)" />
-          <path
-            d={path}
-            fill="none"
-            stroke="var(--color-primary-dark)"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          {points.map((p, i) => (
-            <circle
-              key={i}
-              cx={(i / (points.length - 1)) * 100}
-              cy={40 - (p / max) * 34}
-              r="1"
-              fill="var(--color-primary-dark)"
-            />
-          ))}
-        </svg>
+    <div className="flex min-w-0 flex-col rounded-lg border border-zinc-200/80 bg-white p-2.5">
+      {/* the query */}
+      <p className="text-[11.5px] leading-relaxed text-slate-500">
+        <span className="mr-1.5 font-semibold text-[color:var(--color-primary-dark)]">Q:</span>
+        “Which region drives the most revenue?”
+      </p>
+      {/* the answer */}
+      <p className="mt-1 text-[12px] leading-relaxed text-slate-600">
+        <span className="mr-1.5 font-semibold text-emerald-600">A:</span>
+        East is driving the most revenue ($45,382 — about 1.4× the next region).
+      </p>
+      {/* the chart */}
+      <div className="mt-2 border-t border-zinc-100 pt-2">
+        <GptVisColumn data={rows} height={140} />
       </div>
     </div>
   );
@@ -308,14 +293,15 @@ const AnalyticsPipeline: React.FC<{ id?: string }> = ({ id = 'analytics' }) => (
                 key={stage.id}
                 className="relative flex min-w-0 flex-col rounded-[22px] border border-white/90 bg-white p-5 shadow-[0_16px_48px_-20px_rgba(49,110,180,0.25)]"
               >
-                <div className="mb-6 flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-lg font-semibold text-blue-600">
-                    {i + 1}
-                  </span>
-                  <div>
-                    <h3 className="text-lg tracking-tight text-slate-950">{stage.name}</h3>
-                    <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{stage.blurb}</p>
+                <div className="mb-6">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-lg font-semibold text-blue-600">
+                      {i + 1}
+                    </span>
+                    <h3 className="font-heading text-lg tracking-tight text-slate-950">{stage.name}</h3>
                   </div>
+                  {/* description on its own line, aligned with the number */}
+                  <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{stage.blurb}</p>
                 </div>
                 <div className="min-w-0 flex-1">
                   <Preview />

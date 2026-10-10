@@ -14,7 +14,8 @@
 }
 
 .sheet > header {
-  background: #fff;
+  /* keep the sticky bar itself transparent — only the pill is visible when scrolled */
+  background: transparent;
 }
 
 .sheet > header > div {
