@@ -78,8 +78,16 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
 
   return (
     <section id={id} className="relative py-24 sm:py-28" aria-label="Trusted analytics">
-      {/* faint plate background to vary the rhythm */}
-      <div aria-hidden className="absolute inset-x-0 top-0 h-full bg-[#f8fbfc]" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+        style={{
+          background: 'radial-gradient(ellipse at 18% 0%, #a8d4ff 0%, transparent 58%), radial-gradient(ellipse at 90% 35%, #bddfff 0%, transparent 55%), linear-gradient(180deg, #d3eaff 0%, #eaf6ff 100%)',
+        }}
+      >
+        <div className="absolute -left-32 top-16 h-96 w-96 -rotate-20 rounded-[80px] bg-white/20" />
+        <div className="absolute -right-20 top-24 h-80 w-80 rounded-full bg-blue-300/15" />
+      </div>
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
           <SectionHeading
@@ -92,7 +100,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
         <div className="mt-14 grid items-stretch gap-5 lg:grid-cols-[5fr_4fr]">
           {/* ── left: benchmark ── */}
           <Reveal className="h-full">
-            <div className="flex h-full flex-col rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-8">
+            <div className="flex h-full flex-col rounded-2xl bg-white p-6 sm:p-8">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-zinc-400">
@@ -197,7 +205,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               {MECHANISMS.map((mech) => (
                 <li
                   key={mech.title}
-                  className="group flex-1 rounded-2xl border border-zinc-200/90 bg-white p-6 transition-all duration-200 hover:border-[color:var(--color-primary-dark)]/35 hover:shadow-[0_4px_16px_rgba(120,211,248,0.12)]"
+                  className="group flex-1 rounded-2xl bg-white p-6 transition-shadow duration-200 hover:shadow-[0_4px_16px_rgba(120,211,248,0.12)]"
                 >
                   <h3 className="text-[15.5px] font-semibold text-zinc-900">{mech.title}</h3>
                   <p className="mt-1.5 text-[13.5px] leading-relaxed text-zinc-500">{mech.desc}</p>

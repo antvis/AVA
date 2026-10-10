@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import styles from './landing.module.css'
 import { Header, Footer, ConfigModal, loadLLMConfig, saveLLMConfig } from '../components'
 import { Banner, Playground } from '../components'
 import type { LLMConfig } from '@antv/ava/browser'
@@ -25,26 +26,27 @@ export default function Home() {
 
   return (
     <>
-      {/* 01 — Navigation */}
-      <Header onOpenConfig={() => setIsConfigOpen(true)} />
-      {/* 02 — Hero Banner (existing implementation, preserved) */}
-      <Banner />
-      {/* 03 — Interactive Examples (existing agent demo, preserved) */}
-      <Playground />
-      {/* 04 — End-to-End Analytics */}
-      <AnalyticsPipeline />
-      {/* 05 — Trusted by Design */}
-      <TrustedAnalytics />
-      {/* 06 — Built for Real-World Data */}
-      <RealWorldData />
-      {/* 07 — Integrate Your Way */}
-      <Integrate />
-      {/* 08 — Open Source & Extensible */}
-      <OpenSource />
-      {/* 09 — Final CTA */}
-      <FinalCTA />
-      {/* 10 — Footer */}
-      <Footer />
+      <div className={styles.canvas}>
+        <div className={styles.sheet}>
+          <Header onOpenConfig={() => setIsConfigOpen(true)} />
+          <div className={styles.hero}>
+            <div className={styles.orb} aria-hidden="true" />
+            <Banner />
+            <Playground />
+          </div>
+          <div className={styles.features}>
+            <AnalyticsPipeline />
+            <TrustedAnalytics />
+            <RealWorldData />
+            <Integrate />
+            <OpenSource />
+          </div>
+          <div className={styles.closing}>
+            <FinalCTA />
+            <Footer />
+          </div>
+        </div>
+      </div>
       <ConfigModal
         isOpen={isConfigOpen}
         onClose={() => setIsConfigOpen(false)}

@@ -24,13 +24,13 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
   return (
     <header className="sticky top-0 z-50 w-full">
       <div
-        className={`grid grid-cols-[1fr_auto_1fr] h-16 origin-top items-center ${EASE}
+        className={`grid grid-cols-[1fr_auto_1fr] origin-top items-center ${EASE}
           ${
             scrolled
-              ? // 滚动后：胶囊吸顶
-                'mx-[max(12px,calc((100%-1280px)/2))] translate-y-[20px] scale-[0.95] rounded-[100px] border border-[rgba(0,0,0,0.06)] bg-[rgba(255,255,255,0.72)] px-[20px] shadow-[4px_4px_10px_0px_rgba(0,0,0,0.1)] backdrop-blur-md'
-              : // 默认：宽屏通栏
-                'w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-12'
+              ? // 滚动后：矮胶囊吸顶，只保留必要高度
+                'h-11 mx-[max(12px,calc((100%-1280px)/2))] translate-y-[14px] scale-95 rounded-[100px] border border-[rgba(0,0,0,0.06)] bg-[rgba(255,255,255,0.72)] px-[18px] py-0 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.1)] backdrop-blur-md overflow-hidden'
+              : // 默认：宽屏通栏（保持原始高度 h-16）
+                'h-16 w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-12'
           }`}
       >
         {/* Logo */}
@@ -41,7 +41,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
           <img
             src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
             alt="AVA ChartGenie Logo"
-            className="w-20 h-12 flex-shrink-0"
+            className={`w-20 flex-shrink-0 ${scrolled ? 'h-8' : 'h-12'} transition-all duration-500`}
           />
           <span className="text-lg text-gray-800 truncate">AVA</span>
         </Link>

@@ -1,0 +1,152 @@
+.canvas {
+  --color-primary: #78d3f8;
+  --color-primary-light: #a8e5ff;
+  --color-primary-dark: #4ec4ef;
+  --font-heading: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  color: #24212d;
+  font-family: var(--font-body);
+}
+
+.sheet {
+  width: 100%;
+  background: #fff;
+}
+
+.sheet > header {
+  background: #fff;
+}
+
+.sheet > header > div {
+  height: 84px;
+  padding-inline: 40px;
+}
+
+.sheet > header a:hover { color: #4ec4ef; }
+.sheet > header button { background: #24212d; color: white; border-radius: 9px; }
+.sheet > header button:hover { background: #4ec4ef; }
+.sheet :is(a, button, textarea):focus-visible { outline: 2px solid #4ec4ef; outline-offset: 4px; }
+.sheet :global([id]) { scroll-margin-top: 110px; }
+
+.hero {
+  position: relative;
+  margin: 0 24px 64px;
+  padding: 36px 28px 52px;
+  border: 1px solid #edf7fc;
+  border-radius: 28px;
+  background: radial-gradient(ellipse at 85% 80%, #cceaf680, transparent 50%),
+    linear-gradient(150deg, #eef8ff, #f8fcfe 55%, #edfaff);
+}
+
+.orb {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 20px;
+  border: 1px solid #ffffffc0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 20%, #efffff, transparent 32%),
+    conic-gradient(from 35deg, #2996cf, #a8e5ff, #d5f5ff, #67bddf, #247ab9, #c8f0ff, #2996cf);
+  box-shadow: inset -5px -7px 10px #245c9440, inset 2px 2px 4px #fff9, 0 12px 20px #539ac430;
+}
+
+.orb::after {
+  content: '';
+  position: absolute;
+  inset: 7px -3px;
+  border: 2px solid #e4faffb3;
+  border-radius: 50%;
+  transform: rotate(-32deg);
+  box-shadow: 0 1px 2px #4889b2;
+}
+
+.hero > section { margin-top: 0; }
+.hero > section > div[aria-hidden] { display: none; }
+.hero > section > div:last-child { margin: 0; padding-bottom: 0; }
+.hero > section > div:last-child > div { padding: 0 0 38px; gap: 20px; }
+.hero h1 { font-size: clamp(30px, 4.5vw, 58px); line-height: 1.14; letter-spacing: -0.045em; }
+.hero h1 > span:last-child { color: #4ec4ef; }
+.hero h1 > span:last-child > svg { display: none; }
+.hero p { max-width: 520px; font-size: 14px; line-height: 1.7; }
+.hero :global(.hero-rise) a { border-radius: 9px; }
+.hero a[href^='/documentation'] {
+  background: var(--color-primary-dark);
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--color-primary-dark) 28%, transparent);
+}
+
+.hero > main { max-width: 1040px; margin: 0 auto; padding-bottom: 0; }
+.hero :global(#playground) {
+  border: 2px solid transparent;
+  border-radius: 25px;
+  background: linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(125deg, #c9e3f1, #d7eff8 55%, #bce8fb) border-box;
+  box-shadow: 0 16px 45px #589db312, 0 3px 7px #38749310;
+}
+.hero :global(#playground) > div { padding: 12px; }
+.hero :global(#playground) section { height: 510px; }
+
+.features > section { padding: 88px 24px; }
+.features > section > div:not([aria-hidden]) { max-width: 1160px; }
+.features h2 { font-size: clamp(28px, 3vw, 38px); line-height: 1.18; letter-spacing: -0.035em; }
+.features :global(#analytics) > div:last-child { max-width: 1440px; }
+.features :global(#integrate) > div[aria-hidden] { background: #f6fbfe; }
+.features :global(#benchmarks) { margin-inline: 24px; border-radius: 24px; overflow: hidden; }
+.features :global(#data) { padding-block: 96px; }
+.features :global(#data) :global(.grid) > * { min-width: 0; }
+.features :global(#integrate) { margin-inline: 24px; border-radius: 24px; overflow: hidden; }
+.features :global(#open-source) { padding-bottom: 100px; }
+
+.closing {
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 12% 0%, color-mix(in srgb, var(--color-primary) 26%, transparent), transparent 45%),
+    radial-gradient(ellipse at 90% 100%, color-mix(in srgb, var(--color-primary-light) 45%, transparent), transparent 55%),
+    linear-gradient(150deg, #f4fbfe, #f8fcfe 55%, #f2fafe);
+}
+.closing > section { padding-block: 76px 64px; }
+.closing > section::before {
+  content: '✦';
+  display: block;
+  margin-bottom: 20px;
+  color: var(--color-primary-dark);
+  font-size: 32px;
+  text-align: center;
+}
+.closing h2 { max-width: 580px; margin: 0 auto; font-size: clamp(30px, 3.6vw, 44px); }
+
+.closing > section a { border-radius: 8px; }
+
+
+
+.closing footer > div { padding-top: 40px; padding-bottom: 28px; }
+
+
+
+
+
+@media (max-width: 767px) {
+  .sheet > header > div { height: 70px; padding-inline: 18px; }
+  .hero { margin-inline: 10px; padding: 28px 14px 24px; border-radius: 18px; }
+  .hero h1 { font-size: clamp(27px, 5vw, 38px); }
+  .hero h1 > span:first-child { white-space: normal; }
+  .hero h1 > span:first-child > span:first-child { display: block; min-width: 0 !important; margin-bottom: 4px; }
+  .hero h1 > span:first-child > span:last-child { white-space: nowrap; }
+  .hero p { font-size: 13px; }
+  .hero > section > div:last-child > div { gap: 17px; padding-bottom: 28px; }
+  .hero :global(.hero-rise) { gap: 8px; }
+  .hero :global(.hero-rise) a { padding-inline: 16px; font-size: 12px; }
+  .hero :global(#playground) { border-radius: 18px; }
+  .hero :global(#playground) > div { padding: 4px; }
+  .hero :global(#playground) section { height: 460px; }
+  .features > section { padding: 56px 4px; }
+  .features :global(#benchmarks), .features :global(#integrate) { margin-inline: 10px; }
+  .features :global(#data), .features :global(#open-source) { padding-block: 56px; }
+  .features :global(#data) :global(.reveal) > :global(.relative) > div:first-child { flex-direction: column; align-items: stretch; }
+  .closing > section { padding-block: 56px 40px; }
+  .closing footer > div > div:first-child { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+  .closing footer > div > div:first-child > div { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet *, .sheet *::before, .sheet *::after { transition: none !important; }
+}
