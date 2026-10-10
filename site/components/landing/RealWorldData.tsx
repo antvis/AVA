@@ -241,22 +241,45 @@ const DiagramPillar: React.FC<{ block: DiagramBlock; accent?: boolean }> = ({ bl
   </div>
 );
 
+const VerticalFlowArrow: React.FC<{ label: string }> = ({ label }) => (
+  <div aria-hidden className="flex flex-col items-center py-2">
+    <svg width="12" height="34" viewBox="0 0 12 34" fill="none">
+      <line
+        x1="6"
+        y1="0"
+        x2="6"
+        y2="26"
+        stroke="rgba(120,211,248,0.7)"
+        strokeWidth="1.5"
+        className="flow-line"
+      />
+      <path d="M1 25l5 7 5-7z" fill="var(--color-primary-dark)" opacity="0.8" />
+    </svg>
+    <span className="mt-1 font-mono text-[10px] text-zinc-400">{label}</span>
+  </div>
+);
+
 const Architecture: React.FC = () => (
   <Reveal className="mt-20">
     <div className="relative rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-8">
-      {/* Layer 1 — AI Agents & Applications */}
-      <div className="flex items-center justify-center gap-2">
-        <div className="rounded-xl border border-zinc-200 bg-[#f8fbfc] px-5 py-2.5 text-center">
-          <div className="font-mono text-[11px] uppercase tracking-wider text-zinc-400">
-            AI Agents &amp; Applications
-          </div>
-          <div className="mt-0.5 text-[12.5px] font-medium text-zinc-800">
-            SDK · CLI · Agent Skill
-          </div>
+      {/* Layer 1 — AI Agents & Applications (primary) */}
+      <div
+        className="rounded-xl border px-6 py-3.5 text-center"
+        style={{
+          borderColor: 'color-mix(in srgb, var(--color-primary-dark) 45%, #e4e4e7)',
+          background:
+            'linear-gradient(180deg, color-mix(in srgb, var(--color-primary) 16%, white), white)',
+        }}
+      >
+        <div className="text-[15px] font-semibold text-zinc-900">
+          AI Agents &amp; Applications
+        </div>
+        <div className="mt-1 font-mono text-[11px] uppercase tracking-wider text-zinc-500">
+          SDK · CLI · Agent Skill
         </div>
       </div>
 
-      <FlowArrow label="structured execution requests" mono />
+      <VerticalFlowArrow label="structured execution requests" />
 
       {/* Layer 2 — AVA Runtime (Trusted Execution Boundary) */}
       <div
@@ -264,7 +287,7 @@ const Architecture: React.FC = () => (
         style={{
           borderColor: 'color-mix(in srgb, var(--color-primary-dark) 45%, #e4e4e7)',
           background:
-            'linear-gradient(180deg, color-mix(in srgb, var(--color-primary) 14%, white), white)',
+            'linear-gradient(180deg, color-mix(in srgb, var(--color-primary) 8%, white), white)',
         }}
       >
         <div className="flex items-baseline justify-center gap-2">
@@ -275,21 +298,27 @@ const Architecture: React.FC = () => (
             · Trusted Execution Boundary
           </span>
         </div>
-        <div className="mt-3.5 flex flex-col gap-2.5 sm:flex-row">
-          {RUNTIME_PILLARS.map((pillar) => (
-            <DiagramPillar key={pillar.title} block={pillar} accent />
-          ))}
+        <div className="mx-auto mt-3.5 flex max-w-xl flex-col gap-2.5">
+          {/* row 1 — Execution Contract */}
+          <DiagramPillar block={RUNTIME_PILLARS[0]} accent />
+          {/* row 2 — Execution Control | Observability */}
+          <div className="flex gap-2.5">
+            <DiagramPillar block={RUNTIME_PILLARS[1]} accent />
+            <DiagramPillar block={RUNTIME_PILLARS[2]} accent />
+          </div>
+          {/* row 3 — Execution Orchestration */}
+          <DiagramPillar block={RUNTIME_PILLARS[3]} accent />
         </div>
       </div>
 
-      <FlowArrow label="source & engine adapters" mono />
+      <VerticalFlowArrow label="source & engine adapters" />
 
       {/* Layer 3 — Source & Engine adapters */}
       <div className="rounded-xl border border-zinc-200/90 bg-[#fafafa] p-4">
         <div className="text-center font-mono text-[11px] uppercase tracking-wider text-zinc-400">
           Source &amp; Engine Adapters
         </div>
-        <div className="mt-3 flex flex-col gap-2.5 sm:flex-row">
+        <div className="mx-auto mt-3 flex max-w-xl gap-2.5">
           {ADAPTERS.map((block) => (
             <DiagramPillar key={block.title} block={block} />
           ))}
@@ -304,22 +333,6 @@ const Architecture: React.FC = () => (
       </div>
     </div>
   </Reveal>
-);
-
-const FlowArrow: React.FC<{ label: string; mono?: boolean }> = ({ label, mono }) => (
-  <div aria-hidden className="flex min-w-0 flex-1 flex-col items-center px-1">
-    <svg width="52" height="10" viewBox="0 0 52 10" fill="none" className="w-full max-w-[56px]">
-      <line x1="0" y1="5" x2="42" y2="5" stroke="rgba(120,211,248,0.7)" strokeWidth="1.5" className="flow-line" />
-      <path d="M43 1l7 4-7 4z" fill="var(--color-primary-dark)" opacity="0.8" />
-    </svg>
-    <span
-      className={`mt-1 w-full truncate text-center text-[10px] text-zinc-400 ${
-        mono ? 'font-mono' : ''
-      }`}
-    >
-      {label}
-    </span>
-  </div>
 );
 
 /* ------------------------------------------------------------------ */
