@@ -1,4 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
+
+/* ── AVA 4.0 typography system ── */
+:root {
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.hero-title {
+  font-weight: 700;
+  letter-spacing: -0.055em;
+  line-height: 1.05;
+}
+
+code, pre {
+  font-family: var(--font-code);
+}
 
 /* Tailwind v4 removed the default pointer cursor for buttons — restore it */
 @layer base {
@@ -45,6 +73,12 @@
 
 /* beautifului.dev Tool Chips design tokens (1:1 with upstream component) */
 @theme {
+  /* Typography tokens — keep tailwind's font-sans / font-mono utilities in sync
+     with the AVA font system declared in :root above */
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
   --color-ink: #18181b;
   --color-ink-2: #6b6b76;
   --color-ink-3: #a1a1aa;
@@ -449,5 +483,111 @@ body {
   }
   100% {
     translate: 0 -6px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Landing sections — shared motion & marquee primitives               */
+/* ------------------------------------------------------------------ */
+
+/* Scroll reveal (applied by <Reveal />) */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 400ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Content swap for tabs / stage previews */
+@keyframes fade-swap {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Data source marquee — single row, seamless loop */
+.marquee-outer {
+  /* soft fade on both edges */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 36s linear infinite;
+}
+.marquee-outer:hover .marquee-track,
+.marquee-outer:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+.marquee-item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 1.25rem;
+  white-space: nowrap;
+}
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-outer {
+    mask-image: none;
+    -webkit-mask-image: none;
+    overflow-x: auto;
+  }
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Animated data-flow line in the architecture diagram */
+.flow-line {
+  stroke-dasharray: 4 5;
+  animation: flow-dash 1.6s linear infinite;
+}
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -9;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flow-line {
+    animation: none;
   }
 }

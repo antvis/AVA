@@ -46,8 +46,22 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
           <span className="text-lg text-gray-800 truncate">AVA</span>
         </Link>
 
-        {/* 导航（暂空，保持三栏布局） */}
-        <nav className="col-start-2 hidden items-center gap-5 justify-self-center md:flex" />
+        {/* in-page navigation */}
+        <nav className="col-start-2 hidden items-center gap-1 justify-self-center md:flex">
+          {[
+            { href: '/#playground', label: 'Examples', pathnamePrefix: null },
+            { href: '/#analytics', label: 'Features', pathnamePrefix: null },
+            { href: '/#benchmarks', label: 'Benchmarks', pathnamePrefix: null },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:text-[#78d3f8] hover:bg-[#78d3f8]/10"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
 
         {/* 右侧操作区 */}
         <div className="col-start-3 flex items-center gap-4 justify-self-end">

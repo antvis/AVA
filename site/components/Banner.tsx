@@ -126,7 +126,7 @@ const RotatingVerse: React.FC = () => {
       }}
     >
       {/* invisible measuring row — measures each verse at real rendered size */}
-      <span aria-hidden ref={measureRef} className="invisible absolute flex">
+      <span aria-hidden ref={measureRef} className="invisible absolute flex -translate-x-[220%]">
         {TITLE_VERSES.map((word) => (
           <span key={word} className="inline-block whitespace-pre">
             {verseContent(word)}
@@ -173,11 +173,7 @@ const Banner: React.FC = () => (
           className="inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.18em] text-zinc-400"
           style={{ animation: 'hero-rise 700ms cubic-bezier(0.22,1,0.36,1) 0.1s both' }}
         >
-          <span>AntV</span>
-          <span aria-hidden className="text-zinc-300">
-            /
-          </span>
-          <span>Open Source</span>
+          <span>AVA 4.0</span>
           <GitHubStars />
         </span>
 
@@ -243,12 +239,12 @@ const Banner: React.FC = () => (
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
           </Link>
-          <a
-            href="#playground"
+          <Link
+            href="/ai-playground"
             className="inline-flex h-10 items-center gap-2 rounded-full border border-zinc-300 bg-white/80 px-7 text-[13.5px] font-medium text-zinc-700 backdrop-blur-sm transition-all duration-200 hover:border-[color:var(--color-primary-dark)]/60 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
           >
             Try it Now
-          </a>
+          </Link>
           <a
             href="https://github.com/antvis/AVA"
             target="_blank"
