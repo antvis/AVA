@@ -1,5 +1,28 @@
 @import "tailwindcss";
 
+/* beautifului.dev Tool Chips design tokens (1:1 with upstream component) */
+@theme {
+  --color-ink: #18181b;
+  --color-ink-2: #6b6b76;
+  --color-ink-3: #a1a1aa;
+  --color-field: #f4f4f5;
+  --color-hover: #fafafa;
+  --color-hover-2: #f4f4f5;
+  --color-surface: #ffffff;
+  --color-line: #e4e4e7;
+  --color-green: #059669;
+  --color-red: #ef4444;
+  --color-green-tint: #ecfdf5;
+  --color-red-tint: #fef2f2;
+
+  --radius-control: 6px;
+  --radius-chip: 8px;
+
+  --shadow-hairline: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  --shadow-btn: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
 :root {
   --color-primary: #78d3f8;
   --color-primary-light: #a8e5ff;
@@ -209,5 +232,43 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+  }
+}
+
+/* Dictation equalizer bars (Prompt Bar) */
+@keyframes eq-bounce {
+  0%, 100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* ---- Loading state (beautifului.dev pixel-grid loader) ---- */
+@keyframes pixel-on {
+  0%, 100% {
+    opacity: 0.15;
+    transform: none;
+  }
+  45%, 55% {
+    opacity: 1;
+  }
+}
+
+@keyframes shimmer-text {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-dot,
+  .animate-pulse,
+  .animate-ping {
+    animation: none !important;
   }
 }
