@@ -75,7 +75,7 @@ const StaggerChars: React.FC<{ text: string; startMs: number; stepMs?: number }>
 /* Rotating verse in the headline                                       */
 /* ------------------------------------------------------------------ */
 
-const TITLE_VERSES = ['AI native', 'Automated', 'Augmented'];
+const TITLE_VERSES = ['AI Native', 'Automated', 'Augmented'];
 const VERSE_MS = 2600;
 
 /* AI-native gets a bespoke mark: a two-star sparkle instead of an emoji */
@@ -102,7 +102,7 @@ const Spark: React.FC = () => (
 const verseContent = (word: string) => (
   <>
     {word}
-    {word === 'AI native' && <Spark />}
+    {word === 'AI Native' && <Spark />}
   </>
 );
 
