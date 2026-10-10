@@ -1,17 +1,17 @@
-# 环境准备
+# Environment Setup
 
 ## CLI
 
-需要 AVA CLI ≥4.0.0-alpha、Node.js ≥22.13 和 macOS/Linux。运行环境须支持持续运行的后台进程和 Unix socket，各次调用共享用户、运行环境和临时目录。
+Requires AVA CLI ≥4.0.0-alpha, Node.js ≥22.13, and macOS or Linux. The runtime must support long-lived background processes and Unix sockets. Calls must share the same user, runtime environment, and temporary directory.
 
-先检查 Node.js 版本和 CLI 是否可用：
+Check the Node.js version and confirm that the CLI is available:
 
 ```sh
 node --version
 ava source --help
 ```
 
-优先使用项目已有安装或构建；独立环境未安装时运行：
+Prefer an installation or build already available in the project. In a standalone environment where AVA is not installed, run:
 
 ```sh
 npm install -g '@antv/ava@>=4.0.0-alpha'
@@ -19,14 +19,14 @@ npm install -g '@antv/ava@>=4.0.0-alpha'
 
 ## Python
 
-使用 `--engine python` 时，先选择已有虚拟环境或本任务的 Python 环境，将其 `python3` 放入 PATH。
+When using `--engine python`, select an existing virtual environment or a Python environment for the current task, and put its `python3` on `PATH`.
 
-在该环境检查依赖：pandas 必需；Parquet 还需可用的读取引擎（如 `pyarrow`），XLSX 需 `openpyxl`。例如：
+Check the dependencies in that environment. pandas is required; Parquet also requires a supported reader (such as `pyarrow`), and XLSX requires `openpyxl`. For example:
 
 ```sh
 python3 -c 'import pandas; print(pandas.__version__)'
 ```
 
-缺包时在同一环境安装，依赖就绪后再创建会话。切换 Python 环境需新建会话。
+Install any missing packages in the same environment, then create the session. Switching Python environments requires a new session.
 
-默认执行为本地子进程，具有当前用户的文件和网络权限，并非安全沙箱。需要隔离时，在宿主的隔离环境中运行整个 CLI。
+By default, execution runs in a local subprocess with the current user's file and network permissions; it is not a security sandbox. For isolation, run the entire CLI inside a sandbox provided by the host.
