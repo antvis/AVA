@@ -1126,6 +1126,28 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
 };
 
 /* ------------------------------------------------------------------ */
+/* Headline — character-by-character reveal                            */
+/* ------------------------------------------------------------------ */
+
+const StaggerChars: React.FC<{ text: string; startMs: number; stepMs?: number }> = ({ text, startMs, stepMs = 34 }) => (
+  <span aria-label={text} className="inline">
+    {text.split('').map((ch, i) => (
+      <span
+        key={i}
+        aria-hidden
+        className="hero-char-anim inline-block"
+        style={{
+          animation: `hero-char 720ms cubic-bezier(0.22,1,0.36,1) ${startMs + i * stepMs}ms both`,
+          whiteSpace: 'pre',
+        }}
+      >
+        {ch}
+      </span>
+    ))}
+  </span>
+);
+
+/* ------------------------------------------------------------------ */
 /* Rotating verse in the headline                                       */
 /* ------------------------------------------------------------------ */
 
@@ -1229,32 +1251,29 @@ const Playground: React.FC = () => {
 
   return (
     <main className="relative -mt-16">
-      {/* background — quiet editorial backdrop */}
+      {/* background — quiet editorial backdrop, styled like a chart plate */}
       <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-[#f8fbfc]">
-        {/* a single hairline axis underneath the hero — sweeps in on load */}
+        {/* figure caption — bottom right, journal style */}
         <div
-          className="absolute inset-x-0 bottom-24 origin-left"
-          style={{ animation: 'hero-axis 1.1s cubic-bezier(0.22,1,0.36,1) 0.55s both' }}
+          className="absolute bottom-[72px] right-6 font-mono text-[10px] tracking-[0.12em] text-zinc-300"
+          style={{ animation: 'fade-in 600ms ease-out 1.65s both' }}
         >
-          <div className="relative h-px w-full bg-zinc-200/80">
-            <div className="absolute inset-x-0 top-0 flex justify-between">
-              {Array.from({ length: 24 }).map((_, i) => (
-                <span
-                  key={i}
-                  className={`w-px origin-top ${i % 4 === 0 ? 'h-2.5 bg-zinc-300' : 'h-1.5 bg-zinc-200'}`}
-                  style={{
-                    animation: `hero-tick 240ms cubic-bezier(0.22,1,0.36,1) ${(1.2 + i * 0.028).toFixed(3)}s both`,
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+          fig. 01 — simulated agent run
         </div>
+
+        {/* a barely-there wash behind the headline for depth */}
+        <span
+          className="absolute left-1/2 top-[150px] h-80 w-[52rem] max-w-[90vw] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
+          style={{
+            background:
+              'radial-gradient(closest-side, color-mix(in srgb, var(--color-primary) 22%, transparent), transparent)',
+          }}
+        />
       </div>
 
       <div className="relative mx-[max(12px,calc((100%-1120px)/2))] pb-12">
         {/* ── hero content ── */}
-        <div className="flex flex-col items-center gap-5 px-6 pb-10 pt-28 text-center sm:pt-32">
+        <div className="flex flex-col items-center gap-6 px-6 pb-12 pt-28 text-center sm:pt-32">
           {/* kicker — quiet monogram instead of a pulsing badge */}
           <span
             className="font-mono text-[12px] uppercase tracking-[0.18em] text-zinc-400"
@@ -1263,17 +1282,14 @@ const Playground: React.FC = () => {
             AntV<span className="mx-2 text-zinc-300">/</span>Open Source
           </span>
 
-          <h1
-            className="text-[clamp(24px,6.6vw,56px)] font-semibold leading-[1.08] tracking-[-0.025em] text-zinc-900"
-            style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.25s both' }}
-          >
+          <h1 className="text-[clamp(24px,6.6vw,56px)] font-semibold leading-[1.08] tracking-[-0.025em] text-zinc-900">
             <span className="whitespace-nowrap">
-              <RotatingVerse /> Visual Analytics.
+              <RotatingVerse /> <StaggerChars text="Visual Analytics." startMs={430} />
             </span>
             <br />
-            Built for{' '}
+            <StaggerChars text="Built for " startMs={900} />{' '}
             <span className="relative whitespace-nowrap">
-              Agents.
+              <StaggerChars text="Agents." startMs={1000} />
               {/* a single crafted accent: hand-drawn underline */}
               <svg
                 aria-hidden
@@ -1290,7 +1306,7 @@ const Playground: React.FC = () => {
                   strokeDasharray="140"
                   style={{
                     stroke: 'var(--color-primary-dark)',
-                    animation: 'hero-draw 600ms cubic-bezier(0.22,1,0.36,1) 1.05s both',
+                    animation: 'hero-draw 600ms cubic-bezier(0.22,1,0.36,1) 1.95s both',
                   }}
                 />
               </svg>

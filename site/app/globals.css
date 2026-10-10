@@ -382,7 +382,11 @@ body {
   .hero-draw-path,
   .hero-sheen-text,
   .hero-verse-anim,
+  .hero-char-anim,
   .hero-spark-anim {
+    animation: none !important;
+  }
+  [style*='hero-drift'] {
     animation: none !important;
   }
 }
@@ -406,6 +410,26 @@ body {
   }
 }
 
+@keyframes hero-char {
+  0% {
+    opacity: 0;
+    transform: translateY(26px) rotate(4deg) scale(1.08);
+    filter: blur(8px);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+  }
+  75% {
+    transform: translateY(-4px) rotate(-1.2deg) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+    filter: blur(0);
+  }
+}
+
 @keyframes hero-spark {
   0%,
   100% {
@@ -415,5 +439,15 @@ body {
   50% {
     transform: scale(1.14) rotate(10deg);
     opacity: 1;
+  }
+}
+
+@keyframes hero-drift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  100% {
+    translate: 0 -6px;
   }
 }
