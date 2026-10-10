@@ -560,13 +560,13 @@ function parseToken(draft: string): { kind: 'at' | 'slash'; query: string; start
   };
 }
 
-const PromptBar: React.FC<{ placeholder?: string; onSend?: (text: string) => void; busy?: boolean; onRerun?: () => void; replayReady?: boolean }> = ({
-  placeholder,
-  onSend,
-  busy,
-  onRerun,
-  replayReady,
-}) => {
+const PromptBar: React.FC<{
+  placeholder?: string;
+  onSend?: (text: string) => void;
+  busy?: boolean;
+  onRerun?: () => void;
+  replayReady?: boolean;
+}> = ({ placeholder, onSend, busy, onRerun, replayReady }) => {
   const [draft, setDraft] = useState('');
   const [dismissed, setDismissed] = useState(false);
   const [plusOpen, setPlusOpen] = useState(false);
@@ -1141,112 +1141,171 @@ const Playground: React.FC = () => {
   }, []);
 
   return (
-    <main className="mx-[max(12px,calc((100%-1120px)/2))] py-8">
-      {/* Hero */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-gray-800 mb-3">
-          Playground <span className="text-[#78d3f8] ava-pulse">AVA</span> <span>✨</span>
-        </h1>
-        <p className="text-gray-500">A simulated codex-style agent run — tool chips, streaming, artifacts.</p>
+    <main className="relative -mt-16">
+      {/* ── full-bleed hero backdrop — flows behind the sticky header ── */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-gradient-to-b from-[#eaf6fc] via-[#f4fafd] to-[#f8fbfc]"
+      >
+        {/* ambient glows */}
+        <div
+          className="absolute -top-40 left-1/2 h-96 w-[48rem] -translate-x-1/2 rounded-full blur-3xl"
+          style={{ background: 'radial-gradient(closest-side, rgba(120,211,248,0.4), transparent)' }}
+        />
+        <div
+          className="absolute top-24 -right-24 h-96 w-96 rounded-full blur-3xl"
+          style={{ background: 'radial-gradient(closest-side, rgba(165,180,252,0.3), transparent)' }}
+        />
+        {/* faint grid texture */}
+        <div
+          className="absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(120,211,248,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(120,211,248,0.3) 1px, transparent 1px)',
+            backgroundSize: '44px 44px',
+            maskImage: 'radial-gradient(ellipse 75% 65% at 50% 35%, #000 30%, transparent 75%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 75% 65% at 50% 35%, #000 30%, transparent 75%)',
+          }}
+        />
       </div>
 
-      <div className="overflow-hidden rounded-[23.1429px] bg-white border border-[rgb(233,231,226)] shadow-[0px_16px_36px_rgba(24,24,27,0.08),0px_3px_8px_rgba(24,24,27,0.04)]">
-        <div
-          className={`grid gap-4 p-2 transition-all duration-500 ${
-            panelOpen && artifactMsg ? 'lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)] sm:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]' : 'grid-cols-1'
-          }`}
-        >
-          <ChatPanel
-            key={replayKey}
-            replayKey={replayKey}
-            onArtifact={onArtifact}
-            onRerun={() => {
-              setArtifactMsg(null);
-              setPanelOpen(false);
-              setReplayKey((k) => k + 1);
-            }}
-          />
+      <div className="relative mx-[max(12px,calc((100%-1120px)/2))] pb-12">
+        {/* ── hero content ── */}
+        <div className="flex flex-col items-center gap-5 px-6 pb-10 pt-28 text-center sm:pt-32">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#78d3f8]/40 bg-[#78d3f8]/10 px-3 py-1 text-[12px] font-medium text-sky-700">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#78d3f8] opacity-70" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#78d3f8]" />
+            </span>
+            Open-source framework
+          </span>
 
-          {/* ---------------- Right artifact panel ---------------- */}
-          {panelOpen && artifactMsg?.artifact && (
-            <section
-              className="overflow-hidden flex flex-col h-[clamp(480px,calc(100vh-200px),760px)] border border-[rgb(242,242,237)] rounded-xl shadow-xs"
-              style={{ animation: 'slide-in .4s ease-out' }}
-              aria-label="Artifact panel"
-            >
-              <header className="flex items-center gap-2 px-4 py-2 border-b border-zinc-100">
-                <p className="min-w-0 flex-1 truncate text-[13px] font-medium text-zinc-800 font-mono">
-                  {artifactMsg.artifact.title}
-                </p>
-                <button
-                  onClick={() => setPanelOpen(false)}
-                  className="shrink-0 flex size-6 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
-                  aria-label="Close panel"
-                >
-                  <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6">
-                    <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
-                  </svg>
-                </button>
-              </header>
-              <div className="flex-1 min-h-0 flex flex-col">
-                <div className="flex items-center gap-1 border-b border-zinc-100 px-3 py-1.5">
-                  {(['chart', 'data', 'sql'] as const).map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setArtifactTab(t)}
-                      className={`rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
-                        artifactTab === t ? 'bg-zinc-100 text-zinc-800' : 'text-zinc-400 hover:text-zinc-600'
-                      }`}
+          <h1 className="max-w-2xl text-4xl font-bold leading-[1.15] tracking-tight text-zinc-900 sm:text-5xl">
+            Visual Analytics.
+            <br />
+            <span className="bg-gradient-to-r from-[#4ec4ef] via-[#78d3f8] to-[#6366f1] bg-clip-text text-transparent">
+              Built for Agents.
+            </span>
+          </h1>
+
+          <p className="max-w-xl text-[15px] leading-relaxed text-zinc-500">
+            The open-source framework that gives AI agents the power to explore, analyze, and visualize data.
+          </p>
+
+          <div className="mt-1 flex flex-wrap items-center justify-center gap-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-[12.5px] text-zinc-700 shadow-sm">
+              Interactive playground
+              <span className="text-[#4ec4ef]">✦</span>
+            </span>
+            <span className="text-[12px] text-zinc-400">No setup — just watch the agent run</span>
+          </div>
+        </div>
+        <div className="overflow-hidden rounded-[23.1429px] bg-white border border-[rgb(233,231,226)] shadow-[0px_16px_36px_rgba(24,24,27,0.08),0px_3px_8px_rgba(24,24,27,0.04)]">
+          <div
+            className={`grid gap-4 p-2 transition-all duration-500 ${
+              panelOpen && artifactMsg
+                ? 'lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)] sm:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]'
+                : 'grid-cols-1'
+            }`}
+          >
+            <ChatPanel
+              key={replayKey}
+              replayKey={replayKey}
+              onArtifact={onArtifact}
+              onRerun={() => {
+                setArtifactMsg(null);
+                setPanelOpen(false);
+                setReplayKey((k) => k + 1);
+              }}
+            />
+
+            {/* ---------------- Right artifact panel ---------------- */}
+            {panelOpen && artifactMsg?.artifact && (
+              <section
+                className="overflow-hidden flex flex-col h-[clamp(480px,calc(100vh-200px),760px)] border border-[rgb(242,242,237)] rounded-xl shadow-xs"
+                style={{ animation: 'slide-in .4s ease-out' }}
+                aria-label="Artifact panel"
+              >
+                <header className="flex items-center gap-2 px-4 py-2 border-b border-zinc-100">
+                  <p className="min-w-0 flex-1 truncate text-[13px] font-medium text-zinc-800 font-mono">
+                    {artifactMsg.artifact.title}
+                  </p>
+                  <button
+                    onClick={() => setPanelOpen(false)}
+                    className="shrink-0 flex size-6 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors"
+                    aria-label="Close panel"
+                  >
+                    <svg
+                      className="w-3.5 h-3.5"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
                     >
-                      {t === 'sql' ? 'SQL' : t[0].toUpperCase() + t.slice(1)}
-                    </button>
-                  ))}
-                </div>
-                <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
-                  {artifactTab === 'chart' && (
-                    <>
-                      <div className="h-[420px]">
-                        <GPTVisRenderer syntax={CHART_SYNTAX} />
-                      </div>
-                      <p className="text-[11px] text-zinc-400 mt-3 font-mono">{CHART_CAPTION}</p>
-                    </>
-                  )}
-                  {artifactTab === 'data' && (
-                    <table className="w-full text-left text-[12px] tabular-nums">
-                      <thead>
-                        <tr className="border-b border-zinc-100 text-zinc-400 font-medium">
-                          <th className="py-1.5 pr-3 font-medium">month</th>
-                          {CHART_CONFIG.encode.y.map((r) => (
-                            <th key={r} className="py-1.5 pr-3 font-medium capitalize">
-                              {r}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {CHART_CONFIG.data.map((row) => (
-                          <tr key={row.month} className="border-b border-zinc-50 text-zinc-700">
-                            <td className="py-1.5 pr-3">{row.month}</td>
+                      <path d="M4 4l8 8M12 4l-8 8" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </header>
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <div className="flex items-center gap-1 border-b border-zinc-100 px-3 py-1.5">
+                    {(['chart', 'data', 'sql'] as const).map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setArtifactTab(t)}
+                        className={`rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
+                          artifactTab === t ? 'bg-zinc-100 text-zinc-800' : 'text-zinc-400 hover:text-zinc-600'
+                        }`}
+                      >
+                        {t === 'sql' ? 'SQL' : t[0].toUpperCase() + t.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
+                    {artifactTab === 'chart' && (
+                      <>
+                        <div className="h-[420px]">
+                          <GPTVisRenderer syntax={CHART_SYNTAX} />
+                        </div>
+                        <p className="text-[11px] text-zinc-400 mt-3 font-mono">{CHART_CAPTION}</p>
+                      </>
+                    )}
+                    {artifactTab === 'data' && (
+                      <table className="w-full text-left text-[12px] tabular-nums">
+                        <thead>
+                          <tr className="border-b border-zinc-100 text-zinc-400 font-medium">
+                            <th className="py-1.5 pr-3 font-medium">month</th>
                             {CHART_CONFIG.encode.y.map((r) => (
-                              <td key={r} className="py-1.5 pr-3">
-                                {(row as Record<string, string | number>)[r].toLocaleString()}
-                              </td>
+                              <th key={r} className="py-1.5 pr-3 font-medium capitalize">
+                                {r}
+                              </th>
                             ))}
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
-                  {artifactTab === 'sql' && (
-                    <pre className="rounded-lg bg-zinc-50 p-3 font-mono text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap">
-                      {ARTIFACT_SQL}
-                    </pre>
-                  )}
+                        </thead>
+                        <tbody>
+                          {CHART_CONFIG.data.map((row) => (
+                            <tr key={row.month} className="border-b border-zinc-50 text-zinc-700">
+                              <td className="py-1.5 pr-3">{row.month}</td>
+                              {CHART_CONFIG.encode.y.map((r) => (
+                                <td key={r} className="py-1.5 pr-3">
+                                  {(row as Record<string, string | number>)[r].toLocaleString()}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                    {artifactTab === 'sql' && (
+                      <pre className="rounded-lg bg-zinc-50 p-3 font-mono text-[12px] leading-relaxed text-zinc-700 whitespace-pre-wrap">
+                        {ARTIFACT_SQL}
+                      </pre>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </section>
-          )}
-        </div>
+              </section>
+            )}
+          </div>
+        </div>{' '}
       </div>
     </main>
   );
