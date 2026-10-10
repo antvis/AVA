@@ -80,11 +80,6 @@ const UnderstandPreview: React.FC = () => {
   ];
   return (
     <div className="flex min-w-0 flex-col rounded-lg border border-zinc-200/80 bg-white p-2.5">
-      {/* unified header */}
-      <div className="flex items-center justify-between border-b border-zinc-100 pb-2 font-mono text-[11px] text-slate-500">
-        <span>profile()</span>
-        <span className="text-[10px]">sales · 12,480 rows</span>
-      </div>
       {/* amount distribution — right-skewed like real revenue */}
       <div className="pt-2">
         <div className="mb-1 flex items-baseline justify-between font-mono text-[10px] text-slate-400">
