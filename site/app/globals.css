@@ -109,3 +109,105 @@ body {
     transform: translateX(-50%) translateY(0);
   }
 }
+
+/* ---- Playground (codex-style agent run) ---- */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* beautifului.dev pixel-grid loader dot */
+.pixel-dot {
+  width: 5px;
+  height: 5px;
+  display: inline-block;
+  background: #18181b;
+  box-shadow:
+    0 5px 0 #18181b,
+    5px 0 0 #18181b,
+    10px 0 0 #18181b,
+    -5px 5px 0 #18181b,
+    0 10px 0 #18181b,
+    10px 10px 0 #18181b,
+    0 -5px 0 #18181b,
+    10px -5px 0 #18181b,
+    -5px 0 0 #18181b;
+  animation: pixel-shimmer 4s linear infinite alternate;
+}
+
+@keyframes pixel-shimmer {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+/* Step row entrance — used by Playground steps trace */
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-step-in {
+  animation: step-in 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-in {
+    animation: none;
+  }
+}
+
+/* ---- Tool Chips (beautifului.dev) entrance animations ---- */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+  }
+}
