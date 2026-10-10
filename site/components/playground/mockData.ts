@@ -1,146 +1,203 @@
+import type { DualAxesConfig } from '@antv/gpt-vis';
 import type { Message, ToolStep, ToolDiff, ToolDiffLine } from './types';
+
+// Illustrative monthly source data; the playground replays a demo, not a live analysis.
+const MONTHLY_SALES = [
+  { month: '2026-01-01', revenue: 120000, gross_profit: 36000 },
+  { month: '2026-02-01', revenue: 135000, gross_profit: 41850 },
+  { month: '2026-03-01', revenue: 148000, gross_profit: 44400 },
+  { month: '2026-04-01', revenue: 166000, gross_profit: 46480 },
+  { month: '2026-05-01', revenue: 182000, gross_profit: 47320 },
+  { month: '2026-06-01', revenue: 210000, gross_profit: 46200 },
+  { month: '2026-07-01', revenue: 238000, gross_profit: 45220 },
+  { month: '2026-08-01', revenue: 225000, gross_profit: 51750 },
+  { month: '2026-09-01', revenue: 260000, gross_profit: 70200 },
+];
+
+/** One result set for the chart and its inspectable data table. */
+export const ARTIFACT_DATA = MONTHLY_SALES.map(({ month, revenue, gross_profit }) => ({
+  month: new Date(month).toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }),
+  revenueK: revenue / 1000,
+  grossProfitK: gross_profit / 1000,
+  marginPct: Number(((100 * gross_profit) / revenue).toFixed(1)),
+}));
+
+export const CHART_CONFIG = {
+  type: 'dual-axes',
+  categories: ARTIFACT_DATA.map((row) => row.month),
+  series: [
+    { type: 'column', axisYTitle: 'Revenue ($k)', data: ARTIFACT_DATA.map((row) => row.revenueK) },
+    { type: 'line', axisYTitle: 'Gross margin (%)', data: ARTIFACT_DATA.map((row) => row.marginPct) },
+  ],
+  title: 'Revenue & gross margin',
+  axisXTitle: '2026',
+  theme: 'default',
+  style: { palette: ['#0891b2', '#e88245'], backgroundColor: '#ffffff', startAtZero: true },
+} satisfies DualAxesConfig;
+
+/** Native GPT-Vis syntax, matching the format returned by ava.recommend(). */
+export const CHART_SYNTAX = [
+  'vis dual-axes',
+  `title "${CHART_CONFIG.title}"`,
+  `axisXTitle "${CHART_CONFIG.axisXTitle}"`,
+  `theme ${CHART_CONFIG.theme}`,
+  'categories',
+  ...CHART_CONFIG.categories.map((month) => `  - ${month}`),
+  'series',
+  ...CHART_CONFIG.series.flatMap((series) => [
+    `  - type ${series.type}`,
+    `    axisYTitle "${series.axisYTitle}"`,
+    '    data',
+    ...series.data.map((value) => `      - ${value}`),
+  ]),
+  'style',
+  `  backgroundColor ${CHART_CONFIG.style.backgroundColor}`,
+  '  startAtZero true',
+  '  palette',
+  ...CHART_CONFIG.style.palette.map((color) => `    - ${color}`),
+].join('\n');
+
+/** DuckDB file sources are registered as the `data` view. */
+export const ARTIFACT_SQL = [
+  'SELECT',
+  "  strftime(CAST(month AS DATE), '%b') AS month,",
+  '  ROUND(SUM(revenue) / 1000.0, 2) AS revenue_k,',
+  '  ROUND(SUM(gross_profit) / 1000.0, 2) AS gross_profit_k,',
+  '  ROUND(100.0 * SUM(gross_profit)',
+  '    / NULLIF(SUM(revenue), 0), 1) AS margin_pct',
+  'FROM data',
+  "WHERE CAST(month AS DATE) >= DATE '2026-01-01'",
+  "  AND CAST(month AS DATE) < DATE '2026-10-01'",
+  'GROUP BY CAST(month AS DATE)',
+  'ORDER BY CAST(month AS DATE);',
+].join('\n');
 
 const RUN_STEPS: ToolStep[] = [
   {
-    icon: 'think',
-    label: 'Thinking',
-    chip: 'Planning the regional trend analysis…',
-    detail: [{ text: 'Compare four regions across Jun–Sep on total sales.' }, { text: 'Keep profit in scope, but lead with the trend.' }],
+    icon: 'read',
+    label: 'Loaded monthly sales',
+    chip: 'ava.source({ type: "csv-file", … })',
+    mono: true,
+    detail: [
+      { text: 'monthly-sales-2026.csv → DuckDB view: data' },
+      { text: '9 monthly records · Jan–Sep 2026 · revenue and gross_profit in USD.' },
+    ],
   },
   {
     icon: 'read',
-    label: 'Loaded sales dataset',
-    chip: 'sales-2026.xlsx',
+    label: 'Inspected schema & data quality',
+    chip: 'ava.schema() · ava.profile()',
     mono: true,
-    detail: [{ text: '12 rows · 4 columns — region, month, sales, profit' }, { text: 'Schema validated, no nulls in key fields.' }],
-  },
-  {
-    icon: 'run',
-    label: 'Wrote analysis program',
-    chip: 'ava.analyze("regional trend")',
-    mono: true,
-    detailMono: true,
     detail: [
-      { text: '+ const trend = groupBy(data, "region", sum("sales"))', tone: 'add' },
-      { text: '+ const growth = delta(trend, "month")', tone: 'add' },
+      { text: 'month: DATE · revenue: BIGINT · gross_profit: BIGINT' },
+      { text: '9 distinct months; no missing values; revenue is positive throughout.' },
+      { text: 'The profile is passed into analysis as context.' },
     ],
-  },
-  {
-    icon: 'run',
-    label: 'Executed javascript engine',
-    chip: 'exit code 0',
-    mono: true,
-    detailMono: true,
-    detail: [{ text: '✓ 48 records aggregated into 4 series' }, { text: '✓ chartable shape: month ÷ region stacked' }],
   },
   {
     icon: 'think',
-    label: 'Selected chart type',
-    chip: 'stacked bar, month × region',
-    detail: [{ text: 'Monthly trend across regions reads best stacked.' }, { text: 'West dominates — call it out in the summary.' }],
+    label: 'Translated the question into SQL',
+    chip: 'ava.analyze(question)',
+    mono: true,
+    detail: [
+      { text: 'Direct strategy: translate the question using the schema and profile.' },
+      { text: 'Compare monthly revenue, gross profit and gross margin; retain time order.' },
+      { text: 'Margin = SUM(gross_profit) / SUM(revenue), not an average of percentages.' },
+    ],
+  },
+  {
+    icon: 'run',
+    label: 'Executed read-only SQL',
+    chip: 'DuckDB · 9 result rows',
+    mono: true,
+    detail: [
+      { text: 'Revenue grows from $120k in January to $260k in September.' },
+      { text: 'July: $238k revenue, $45.22k gross profit, 19% gross margin.' },
+      { text: 'Returned query results and SQL for inspection.' },
+    ],
+  },
+  {
+    icon: 'think',
+    label: 'Summarized the growth trade-off',
+    chip: 'Revenue ↑ does not always mean profit ↑',
+    detail: [
+      { text: 'Jun → Jul: revenue +13.3%, but gross profit −2.1%; margin falls 3 pp.' },
+      { text: 'Sep: gross margin recovers to 27%, still 3 pp below January.' },
+      { text: 'Monthly totals show where to investigate, not whether discounts or costs caused it.' },
+    ],
   },
   {
     icon: 'write',
-    label: 'Drafted report artifact',
-    chip: 'regional-sales-report.md',
+    label: 'Created a dual-axis visualization',
+    chip: 'ava.visualize(result)',
     mono: true,
     detail: [
-      { text: '+ # Regional Sales Report — Jun–Sep 2026', tone: 'add' },
-      { text: '+ West leads at 6,100 total sales, up strongly every month.', tone: 'add' },
+      { text: 'recommend() selects dual-axes and generates native GPT-Vis syntax.' },
+      { text: 'viz() wraps the syntax in HTML; visualize() returns chartType, syntax and html.' },
+      { text: 'Revenue columns ($k) + gross-margin line (%), with labeled axes starting at zero.' },
     ],
   },
 ];
 
-const RUN_DIFFS: ToolDiff[] = [
-  { file: 'regional-sales-report.md', add: 18 },
-  { file: 'chart-spec.json', add: 12 },
-  { file: 'analysis.sql', add: 9 },
-];
+const ASSISTANT_TEXT = `Revenue more than doubled, but profitability did not improve at the same pace.\n\n- **Growth:** $120k → $260k revenue from Jan to Sep (**+116.7%**).\n- **Watch July:** revenue rose **13.3%** from June, yet gross profit fell **2.1%**. Gross margin hit **19%**, the period low.\n- **Recovery:** September reached **27% margin** and **$70.2k gross profit**; margin was still 3 percentage points below January.\n\n**Next step:** inspect July’s discounts, product mix and unit costs before scaling the same sales tactics. These totals flag the issue, but do not establish its cause.`;
 
 const RUN_DIFF_LINES: Record<string, ToolDiffLine[]> = {
-  'regional-sales-report.md': [
-    { text: '# Regional Sales Report — Jun–Sep 2026', tone: 'ctx' },
-    { text: 'West leads at 6,100 total sales.', tone: 'add' },
-    { text: 'South recovered from July, closed at 1,900.', tone: 'add' },
-    { text: 'East grows steadily; North flattened.', tone: 'add' },
-  ],
-  'chart-spec.json': [
-    { text: '"type": "bar",', tone: 'ctx' },
-    { text: '"stack": true,', tone: 'add' },
-    { text: '"encode": { "x": "month",', tone: 'add' },
-    { text: '  "y": ["West","East","South","North"] }', tone: 'add' },
-  ],
-  'analysis.sql': [
-    { text: 'SELECT region, month,', tone: 'ctx' },
-    { text: '       SUM(sales) AS total_sales', tone: 'add' },
-    { text: 'FROM sales_2026 GROUP BY 1, 2;', tone: 'add' },
-  ],
+  'analysis.sql': ARTIFACT_SQL.split('\n').map((text) => ({ text, tone: 'add' })),
+  'growth-quality.vis': CHART_SYNTAX.split('\n')
+    .slice(0, 6)
+    .map((text) => ({ text, tone: 'add' })),
 };
 
-const ASSISTANT_TEXT = `I analyzed the sales dataset (12 rows across 4 regions). Here's what stands out:\n\n- **West** is the clear leader — 6,100 in total sales, up strongly June→Sep.\n- **South** recovered from a July dip and closed at its highest point (1,900).\n- **East** shows healthy, steady growth every single month.\n- **North** flattened out in Aug–Sep after a fast start.\n\nI've saved the full report and chart as an artifact.`;
+const RUN_DIFFS: ToolDiff[] = [
+  { file: 'analysis.sql', add: ARTIFACT_SQL.split('\n').length },
+  { file: 'growth-quality.vis', add: CHART_SYNTAX.split('\n').length },
+];
+
+const QUESTION =
+  'Is our revenue growth profitable? Compare monthly revenue and gross margin for Jan–Sep 2026, flag the weakest month, and show the trend in a dual-axis chart.';
 
 export const PRESET_MESSAGES: Message[] = [
-  { role: 'user', text: 'Analyze the sales data and show me the regional trend.', attachments: ['sales-2026.xlsx'] },
+  { role: 'user', text: QUESTION, attachments: ['monthly-sales-2026.csv'] },
   {
     role: 'assistant',
     steps: RUN_STEPS,
     diffs: RUN_DIFFS,
     diffLines: RUN_DIFF_LINES,
     text: ASSISTANT_TEXT,
-    artifact: { title: 'regional-sales-report.md', description: 'Sales & profit by region, Jun–Sep 2026 · stacked bar trend', chart: true },
+    artifact: {
+      title: 'growth-quality.html',
+      description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
+      chart: true,
+    },
   },
 ];
 
-/** The raw chart config — shared by the chart render and the data table. */
-export const CHART_CONFIG = {
-  type: 'bar',
-  data: [
-    { month: 'Jun', West: 1200, East: 900, South: 700, North: 1000 },
-    { month: 'Jul', West: 1500, East: 1000, South: 600, North: 1400 },
-    { month: 'Aug', West: 1600, East: 1100, South: 1000, North: 1450 },
-    { month: 'Sep', West: 1800, East: 1250, South: 1900, North: 1450 },
-  ],
-  encode: { x: 'month', y: ['West', 'East', 'South', 'North'] },
-  stack: true,
-  axis: [{ orient: 'left', title: { visible: true, text: 'Sales' } }, { orient: 'bottom', grid: 'line' }],
-};
-
-/** The analysis SQL behind the artifact. */
-export const ARTIFACT_SQL = [
-  'SELECT region, month,',
-  '       SUM(sales)  AS total_sales,',
-  '       SUM(profit) AS total_profit',
-  'FROM   sales_2026',
-  'WHERE  month BETWEEN \'2026-06\' AND \'2026-09\'',
-  'GROUP  BY region, month',
-  'ORDER  BY month, region;',
-].join('\n');
-
-/** GPT-vis markdown syntax for a stacked bar chart. */
-export const CHART_SYNTAX = ['```vis-chart', JSON.stringify(CHART_CONFIG, null, 2), '```'].join('\n');
+export const ARTIFACT_METRICS = [
+  { label: 'Revenue growth', value: '+116.7%', detail: 'Jan → Sep' },
+  { label: 'Lowest margin', value: '19%', detail: 'July · period low' },
+  { label: 'Margin recovery', value: '+8 pp', detail: 'Jul → Sep' },
+];
 
 export const PROMPT_SOURCES = [
-  { key: 'attach', name: 'Add photos & files', desc: 'Upload from your computer', glyph: 'clip', attach: true },
-  { key: 'data', name: 'Sales data', desc: 'sales-2026.xlsx · 12 rows', glyph: 'chart' },
-  { key: 'docs', name: 'Docs knowledge base', desc: 'Analysis notes & reports', glyph: 'layers' },
-  { key: 'web', name: 'Web search', desc: 'Real-time news and info', glyph: 'globe' },
+  { key: 'attach', name: 'Add data files', desc: 'CSV, Excel, JSON or Parquet', glyph: 'clip', attach: true },
+  { key: 'data', name: 'Monthly sales', desc: 'monthly-sales-2026.csv · 9 rows', glyph: 'chart' },
+  { key: 'schema', name: 'Data schema', desc: 'Fields and types · ava.schema()', glyph: 'layers' },
+  { key: 'profile', name: 'Data profile', desc: 'Statistics and missing values · ava.profile()', glyph: 'chart' },
 ];
 
 export const PROMPT_COMMANDS = [
-  { key: 'analyze', name: '/analyze', desc: 'Run a full analysis pass' },
-  { key: 'chart', name: '/chart', desc: 'Visualize the current dataset' },
-  { key: 'summarize', name: '/summarize', desc: 'Digest the thread so far' },
-  { key: 'export', name: '/export', desc: 'Export the report artifact' },
+  { key: 'suggest', name: '/suggest', desc: 'Suggest questions about the loaded data' },
+  { key: 'analyze', name: '/analyze', desc: 'Translate, execute and summarize a question' },
+  { key: 'visualize', name: '/visualize', desc: 'Create a chart from analysis results' },
+  { key: 'profile', name: '/profile', desc: 'Inspect column statistics and data quality' },
 ];
 
 export const PROMPT_MODELS = [
-  { key: 'ava-2', name: 'AVA 2', tag: 'Flagship' },
-  { key: 'ava-2-mini', name: 'AVA 2 mini', tag: 'Fast' },
+  { key: 'configured', name: 'Configured LLM', tag: 'Custom' },
+  { key: 'demo', name: 'Demo playback', tag: 'Preview' },
 ];
 
-export const ATTACH_FILES = ['sales-2026.xlsx', 'pos-export.csv', 'summer-menu.pdf'];
-export const DICTATION_TEXT = 'Analyze the sales data and show me the regional trend';
-
-export const SESSION = { name: 'AVA Agent Session', path: 'dataset: sales.csv' };
-
-export const CHART_CAPTION = 'generated by ava.visualize · gpt-vis · stacked bar';
+export const ATTACH_FILES = ['monthly-sales-2026.csv', 'product-margins.xlsx', 'order-lines.parquet'];
+export const DICTATION_TEXT = QUESTION;
+export const SESSION = { name: 'AVA · Growth quality', path: 'Demo dataset · Jan–Sep 2026' };
+export const CHART_CAPTION = 'Illustrative data · Revenue ($k, left) · Gross margin (%, right)';
