@@ -119,7 +119,7 @@ const RotatingVerse: React.FC = () => {
 
   return (
     <span
-      className="relative inline-block"
+      className="relative inline-block max-md:mb-1 max-md:block max-md:min-w-0!"
       style={{
         minWidth: slot,
         transition: 'min-width 640ms cubic-bezier(0.22,1,0.36,1)',
@@ -152,9 +152,9 @@ const RotatingVerse: React.FC = () => {
 /* ------------------------------------------------------------------ */
 
 const Banner: React.FC = () => (
-  <section className="relative -mt-16">
+  <section className="relative">
     {/* background — quiet editorial backdrop, styled like a chart plate */}
-    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 bg-[#f8fbfc]">
+    <div aria-hidden className="hidden">
       {/* a barely-there wash behind the headline for depth */}
       <span
         className="absolute left-1/2 top-[150px] h-80 w-[52rem] max-w-[90vw] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
@@ -165,9 +165,9 @@ const Banner: React.FC = () => (
       />
     </div>
 
-    <div className="relative mx-[max(12px,calc((100%-1120px)/2))] pb-12">
+    <div className="relative">
       {/* ── hero content ── */}
-      <div className="flex flex-col items-center gap-6 px-6 pb-12 pt-28 text-center sm:pt-32">
+      <div className="flex flex-col items-center gap-5 pb-[38px] text-center max-md:gap-[17px] max-md:pb-7">
         {/* kicker — quiet monogram plus live GitHub stars */}
         <span
           className="inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.18em] text-zinc-400"
@@ -177,18 +177,18 @@ const Banner: React.FC = () => (
           <GitHubStars />
         </span>
 
-        <h1 className="text-[clamp(24px,6.6vw,56px)] font-semibold leading-[1.08] tracking-[-0.025em] text-zinc-900">
-          <span className="whitespace-nowrap">
+        <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.14] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
+          <span className="whitespace-nowrap max-md:whitespace-normal">
             <RotatingVerse /> <StaggerChars text="Visual Analytics." startMs={430} />
           </span>
           <br />
           <StaggerChars text="Built for " startMs={900} />{' '}
-          <span className="relative whitespace-nowrap">
+          <span className="relative whitespace-nowrap text-[#4ec4ef]">
             <StaggerChars text="Agents." startMs={1000} />
             {/* a single crafted accent: hand-drawn underline */}
             <svg
               aria-hidden
-              className="absolute -bottom-1 left-0 w-full"
+              className="absolute -bottom-1 left-0 hidden w-full"
               viewBox="0 0 120 8"
               preserveAspectRatio="none"
               fill="none"
@@ -209,7 +209,7 @@ const Banner: React.FC = () => (
         </h1>
 
         <p
-          className="hero-rise max-w-xl text-[15px] leading-relaxed text-zinc-500"
+          className="hero-rise max-w-[520px] text-[14px] leading-[1.7] text-zinc-500 max-md:text-[13px]"
           style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.55s both' }}
         >
           The open-source framework that gives AI agents the power to explore, analyze, and visualize data.
@@ -217,12 +217,12 @@ const Banner: React.FC = () => (
 
         {/* actions */}
         <div
-          className="hero-rise mt-3 flex flex-wrap items-center justify-center gap-3"
+          className="hero-rise mt-3 flex flex-wrap items-center justify-center gap-3 max-md:gap-2"
           style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.8s both' }}
         >
           <Link
             href="/documentation"
-            className="group inline-flex h-10 items-center gap-2 rounded-full bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
+            className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
           >
             Get Started
             <svg
@@ -243,7 +243,7 @@ const Banner: React.FC = () => (
             href="https://github.com/antvis/AVA"
             target="_blank"
             rel="noopener noreferrer"
-            className="group inline-flex h-10 items-center gap-2 rounded-full border border-zinc-300 bg-white/80 px-7 text-[13.5px] font-medium text-zinc-700 backdrop-blur-sm transition-all duration-200 hover:border-[color:var(--color-primary-dark)]/60 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
+            className="group inline-flex h-10 items-center gap-2 rounded-[9px] border border-zinc-300 bg-white/80 px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-zinc-700 backdrop-blur-sm transition-all duration-200 hover:border-[color:var(--color-primary-dark)]/60 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
           >
             <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
               <path
@@ -270,7 +270,7 @@ const Banner: React.FC = () => (
           </a>
           <Link
             href="/ai-playground"
-            className="group inline-flex h-10 items-center gap-1.5 rounded-full px-4 text-[13.5px] font-medium text-zinc-500 transition-colors duration-200 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
+            className="group inline-flex h-10 items-center gap-1.5 rounded-[9px] px-4 text-[13.5px] max-md:text-xs font-medium text-zinc-500 transition-colors duration-200 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
           >
             AI Playground
             <svg

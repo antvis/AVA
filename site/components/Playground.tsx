@@ -13,8 +13,8 @@ import {
   ATTACH_FILES,
   DICTATION_TEXT,
   SESSION,
-  CHART_CAPTION,
-  CHART_CONFIG,
+  ARTIFACT_DATA,
+  ARTIFACT_METRICS,
   ARTIFACT_SQL,
 } from './playground/mockData';
 
@@ -1021,14 +1021,34 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
   onRerun,
   replayKey,
 }) => {
+  /* Auto-scroll chat to bottom while streaming — but never fight the user:
+     once they scroll away from the bottom, following pauses until they
+     scroll back near the bottom. */
   const scrollRef = useRef<HTMLDivElement>(null);
+  const pinnedRef = useRef(true);
   const { visible, streamingIdx, finished } = useSimulatedStream(PRESET_MESSAGES, onArtifact, replayKey);
 
-  // Auto-scroll chat to bottom while streaming
+  const onChatScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    pinnedRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+  }, []);
+
+  // smooth follow while the replay is running (content grows char-by-char)
+  useEffect(() => {
+    if (finished) return;
+    const id = window.setInterval(() => {
+      const el = scrollRef.current;
+      if (el && pinnedRef.current) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    }, 180);
+    return () => window.clearInterval(id);
+  }, [finished]);
+
+  // jump to the latest message boundary, but only if the user is pinned
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [visible]);
+    if (el && pinnedRef.current) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+  }, [visible, streamingIdx]);
 
   return (
     <>
@@ -1046,6 +1066,7 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
 
         <div
           ref={scrollRef}
+          onScroll={onChatScroll}
           className="soft-scroll flex-1 overflow-y-auto px-5 py-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/40"
         >
           {visible.map((msg, i) => {
@@ -1202,33 +1223,42 @@ const Playground: React.FC = () => {
                 <div className="soft-scroll flex-1 min-h-0 overflow-y-auto p-5">
                   {artifactTab === 'chart' && (
                     <>
-                      <div className="h-[420px]">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-cyan-700">Growth quality · Jan–Sep 2026</p>
+                      <h3 className="mt-1 text-lg font-semibold tracking-tight text-zinc-900">More revenue. Thinner margins.</h3>
+                      <div className="my-4 grid grid-cols-3 gap-2">
+                        {ARTIFACT_METRICS.map((metric) => (
+                          <div key={metric.label} className="border-l-2 border-cyan-600/30 pl-2">
+                            <p className="text-[10px] text-zinc-500">{metric.label}</p>
+                            <p className="my-1 text-xl font-semibold tracking-tight text-zinc-900 tabular-nums">{metric.value}</p>
+                            <p className="text-[10px] text-zinc-400">{metric.detail}</p>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="h-[320px]" role="img" aria-label="Monthly revenue rises from 120 to 260 thousand dollars. Gross margin falls from 30 percent in January to 19 percent in July, then recovers to 27 percent in September.">
                         <GPTVisRenderer syntax={CHART_SYNTAX} />
                       </div>
-                      <p className="text-[11px] text-zinc-400 mt-3 font-mono">{CHART_CAPTION}</p>
+                      <p className="mt-3 rounded-lg border border-orange-100 bg-orange-50/60 px-3 py-2 text-[12px] leading-relaxed text-zinc-700">
+                        <strong className="font-semibold text-orange-800">July is the inflection point.</strong> Revenue rose while gross profit fell. Review discounts, product mix and unit costs.
+                      </p>
                     </>
                   )}
                   {artifactTab === 'data' && (
                     <table className="w-full text-left text-[12px] tabular-nums">
                       <thead>
                         <tr className="border-b border-zinc-100 text-zinc-400 font-medium">
-                          <th className="py-1.5 pr-3 font-medium">month</th>
-                          {CHART_CONFIG.encode.y.map((r) => (
-                            <th key={r} className="py-1.5 pr-3 font-medium capitalize">
-                              {r}
-                            </th>
-                          ))}
+                          <th className="py-1.5 pr-3 font-medium">Month</th>
+                          <th className="py-1.5 pr-3 font-medium">Revenue ($k)</th>
+                          <th className="py-1.5 pr-3 font-medium">Gross profit ($k)</th>
+                          <th className="py-1.5 font-medium">Margin (%)</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {CHART_CONFIG.data.map((row) => (
+                        {ARTIFACT_DATA.map((row) => (
                           <tr key={row.month} className="border-b border-zinc-50 text-zinc-700">
                             <td className="py-1.5 pr-3">{row.month}</td>
-                            {CHART_CONFIG.encode.y.map((r) => (
-                              <td key={r} className="py-1.5 pr-3">
-                                {(row as Record<string, string | number>)[r].toLocaleString()}
-                              </td>
-                            ))}
+                            <td className="py-1.5 pr-3">{row.revenueK.toLocaleString('en-US')}</td>
+                            <td className="py-1.5 pr-3">{row.grossProfitK.toLocaleString('en-US')}</td>
+                            <td className="py-1.5">{row.marginPct}%</td>
                           </tr>
                         ))}
                       </tbody>

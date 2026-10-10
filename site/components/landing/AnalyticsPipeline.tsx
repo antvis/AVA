@@ -272,7 +272,7 @@ const PREVIEWS: Record<string, React.FC> = {
 const AnalyticsPipeline: React.FC<{ id?: string }> = ({ id = 'analytics' }) => (
   <section
     id={id}
-    className="relative py-24 sm:py-28"
+    className="relative px-6 py-[88px] max-md:px-1 max-md:py-14"
     aria-label="End-to-end analytics"
   >
     <div className="mx-auto max-w-[1440px] px-6 sm:px-8">

@@ -77,7 +77,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
   const max = Math.max(...values);
 
   return (
-    <section id={id} className="relative py-24 sm:py-28" aria-label="Trusted analytics">
+    <section id={id} className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14" aria-label="Trusted analytics">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 overflow-hidden"

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Reveal from './Reveal';
 
 const FinalCTA: React.FC<{ id?: string }> = ({ id = 'get-started' }) => (
-  <section id={id} className="relative overflow-hidden py-28 sm:py-36" aria-label="Get started">
+  <section id={id} className="relative overflow-hidden pb-16 pt-[76px] max-md:pb-10 max-md:pt-14" aria-label="Get started">
     {/* quiet brand glow — barely-there, just enough to close the page */}
     <div aria-hidden className="pointer-events-none absolute inset-0">
       <span
@@ -18,8 +18,11 @@ const FinalCTA: React.FC<{ id?: string }> = ({ id = 'get-started' }) => (
     </div>
 
     <div className="relative mx-auto max-w-3xl px-6 text-center">
+      <div aria-hidden className="mb-5 text-center text-[32px] leading-none text-[#4ec4ef]">
+        ✦
+      </div>
       <Reveal>
-        <h2 className="text-[clamp(28px,5vw,48px)] font-semibold leading-[1.12] tracking-[-0.025em] text-zinc-900">
+        <h2 className="mx-auto max-w-[580px] text-[length:clamp(30px,3.6vw,44px)] font-semibold leading-[1.12] tracking-[-0.025em] text-zinc-900">
           Give Your Agents the Power of Data.
         </h2>
       </Reveal>
@@ -32,7 +35,7 @@ const FinalCTA: React.FC<{ id?: string }> = ({ id = 'get-started' }) => (
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/documentation"
-            className="inline-flex h-11 items-center gap-2 rounded-full px-8 text-[14px] font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
+            className="inline-flex h-11 items-center gap-2 rounded-lg px-8 text-[14px] font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
             style={{ background: 'var(--color-primary-dark)' }}
           >
             Get Started

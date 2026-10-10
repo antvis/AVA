@@ -200,4 +200,3 @@ export const PROMPT_MODELS = [
 export const ATTACH_FILES = ['monthly-sales-2026.csv', 'product-margins.xlsx', 'order-lines.parquet'];
 export const DICTATION_TEXT = QUESTION;
 export const SESSION = { name: 'AVA · Growth quality', path: 'Demo dataset · Jan–Sep 2026' };
-export const CHART_CAPTION = 'Illustrative data · Revenue ($k, left) · Gross margin (%, right)';

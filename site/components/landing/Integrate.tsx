@@ -163,8 +163,8 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
   };
 
   return (
-    <section id={id} className="relative py-24 sm:py-28" aria-label="Integrate your way">
-      <div aria-hidden className="absolute inset-x-0 top-0 h-full bg-[#f8fbfc]" />
+    <section id={id} className="relative mx-6 overflow-hidden rounded-[24px] px-6 py-[88px] max-md:mx-2.5 max-md:px-1 max-md:py-14" aria-label="Integrate your way">
+      <div aria-hidden className="absolute inset-x-0 top-0 h-full bg-[#f6fbfe]" />
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
           <SectionHeading

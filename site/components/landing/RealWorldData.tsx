@@ -167,27 +167,51 @@ const Marquee: React.FC = () => {
   );
 };
 
-/* Architecture — Source / Engine / Runtime, faithful to the real      */
-/* engine registry (duckdb · python · javascript · clickhouse · supabase) */
+/* Architecture — AVA · Trusted Execution Architecture          */
 /* ------------------------------------------------------------------ */
 
-const MODULES = [
+interface DiagramBlock {
+  title: string;
+  items: string[];
+}
+
+const RUNTIME_PILLARS: DiagramBlock[] = [
   {
-    name: 'Source',
-    desc: 'Uniform loading and schema discovery from files, inline data, and databases.',
-    api: 'ava.source({ type, options }) → Schema',
+    title: 'Execution Contract',
+    items: ['Request', 'Result', 'Error', 'Status'],
   },
   {
-    name: 'Engine',
-    desc: 'Query and computation execution: DuckDB SQL, Python/pandas, or a browser JavaScript sandbox.',
-    api: 'engine: { type: "duckdb" | "python" | "javascript" }',
+    title: 'Execution Control',
+    items: ['Read-only policies', 'Timeout & cancellation', 'Resource limits'],
   },
   {
-    name: 'Runtime',
-    desc: 'Execution context and resource lifecycle — timeouts, memory limits, and disposal.',
-    api: '{ queryTimeoutMs, memoryLimit, threads }',
+    title: 'Observability',
+    items: ['Execution events', 'Metrics & diagnostics', 'Trace correlation'],
+  },
+  {
+    title: 'Execution Orchestration',
+    items: ['Session Lifecycle', 'Engine Selection', 'Result Handling'],
   },
 ];
+
+const ADAPTERS: DiagramBlock[] = [
+  {
+    title: 'Source Layer',
+    items: ['CSV · Parquet · SQL Databases', 'Schema · Data Access'],
+  },
+  {
+    title: 'Engine Layer',
+    items: ['DuckDB · Remote SQL', 'Browser Execution'],
+  },
+];
+
+const PLATFORMS = ['Node.js', 'Browser', 'Custom Adapters'];
+
+const PlatformChip: React.FC<{ label: string }> = ({ label }) => (
+  <span className="rounded-full border border-zinc-200 bg-white px-3.5 py-1 font-mono text-[11.5px] text-zinc-600">
+    {label}
+  </span>
+);
 
 const CAPABILITIES = [
   { name: 'Modular Architecture', state: 'Shipped', detail: 'pluggable engine registry, composable pipeline' },
@@ -195,87 +219,91 @@ const CAPABILITIES = [
   { name: 'Safe by Design', state: 'Shipped', detail: 'read-only database access, isolated execution engines' },
 ] as const;
 
-const Architecture: React.FC = () => (
-  <div className="mt-20 grid items-center gap-6 lg:grid-cols-3">
-    {/* diagram */}
-    <Reveal className="lg:col-span-2">
-      <div className="relative rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-8">
-        {/* agent node */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="rounded-xl border border-zinc-200 bg-[#f8fbfc] px-4 py-3">
-            <div className="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Agent</div>
-            <div className="mt-0.5 text-[13px] font-medium text-zinc-800">natural-language intent</div>
-          </div>
-          <FlowArrow label="Skill / SDK / CLI" />
-          <div
-            className="rounded-xl border px-4 py-3"
-            style={{
-              borderColor: 'color-mix(in srgb, var(--color-primary-dark) 45%, #e4e4e7)',
-              background:
-                'linear-gradient(180deg, color-mix(in srgb, var(--color-primary) 14%, white), white)',
-            }}
-          >
-            <div className="font-mono text-[11px] uppercase tracking-wider text-[color:var(--color-primary-dark)]">
-              AVA Runtime
-            </div>
-            <div className="mt-0.5 text-[13px] font-medium text-zinc-800">
-              context · execution · lifecycle
-            </div>
-          </div>
-          <FlowArrow label="profile · suggest · analyze · visualize" mono />
-        </div>
+const DiagramPillar: React.FC<{ block: DiagramBlock; accent?: boolean }> = ({ block, accent }) => (
+  <div
+    className="flex-1 rounded-lg border bg-white px-3 py-2.5"
+    style={
+      accent
+        ? { borderColor: 'color-mix(in srgb, var(--color-primary-dark) 35%, #e4e4e7)' }
+        : undefined
+    }
+  >
+    <div className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-700">
+      {block.title}
+    </div>
+    <ul className="mt-1.5 flex flex-col gap-1">
+      {block.items.map((item) => (
+        <li key={item} className="text-[11px] leading-snug text-zinc-500">
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
-        {/* engine row */}
-        <div className="mt-6 border-t border-dashed border-zinc-200 pt-5">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400">
-              Engine registry
-            </span>
-            {['DuckDB', 'Python / pandas', 'JavaScript', 'ClickHouse', 'Supabase'].map((e) => (
-              <span
-                key={e}
-                className="rounded-full border border-zinc-200 bg-white px-3 py-1 font-mono text-[11.5px] text-zinc-600"
-              >
-                {e}
-              </span>
-            ))}
+const Architecture: React.FC = () => (
+  <Reveal className="mt-20">
+    <div className="relative rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-8">
+      {/* Layer 1 — AI Agents & Applications */}
+      <div className="flex items-center justify-center gap-2">
+        <div className="rounded-xl border border-zinc-200 bg-[#f8fbfc] px-5 py-2.5 text-center">
+          <div className="font-mono text-[11px] uppercase tracking-wider text-zinc-400">
+            AI Agents &amp; Applications
           </div>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-400">Sources</span>
-            {SOURCES.map((s) => (
-              <span
-                key={s.name}
-                className="flex items-center gap-1.5 rounded-full bg-[#f4f4f5] px-3 py-1 text-[12px] text-zinc-600"
-              >
-                <Monogram source={s} size={15} />
-                {s.name}
-              </span>
-            ))}
+          <div className="mt-0.5 text-[12.5px] font-medium text-zinc-800">
+            SDK · CLI · Agent Skill
           </div>
         </div>
       </div>
-    </Reveal>
 
-    {/* modules */}
-    <div className="flex flex-col gap-3">
-      {MODULES.map((m, i) => (
-        <Reveal key={m.name} delay={i * 80}>
-          <div className="rounded-xl border border-zinc-200/90 bg-white p-4 transition-colors duration-200 hover:border-[color:var(--color-primary-dark)]/35">
-            <div className="flex items-baseline justify-between gap-2">
-              <h3 className="text-[14px] font-semibold text-zinc-900">{m.name}</h3>
-              <span className="font-mono text-[10.5px] text-[color:var(--color-primary-dark)]" style={{ opacity: 0.8 }}>
-                0{i + 1}
-              </span>
-            </div>
-            <p className="mt-1.5 text-[12.5px] leading-relaxed text-zinc-500">{m.desc}</p>
-            <code className="mt-2 block truncate rounded bg-[#f4f4f5] px-2 py-1 font-mono text-[11px] text-zinc-500">
-              {m.api}
-            </code>
-          </div>
-        </Reveal>
-      ))}
+      <FlowArrow label="structured execution requests" mono />
+
+      {/* Layer 2 — AVA Runtime (Trusted Execution Boundary) */}
+      <div
+        className="rounded-xl border p-4"
+        style={{
+          borderColor: 'color-mix(in srgb, var(--color-primary-dark) 45%, #e4e4e7)',
+          background:
+            'linear-gradient(180deg, color-mix(in srgb, var(--color-primary) 14%, white), white)',
+        }}
+      >
+        <div className="flex items-baseline justify-center gap-2">
+          <span className="font-mono text-[12px] font-semibold uppercase tracking-wider text-[color:var(--color-primary-dark)]">
+            AVA Runtime
+          </span>
+          <span className="font-mono text-[10.5px] uppercase tracking-wider text-zinc-400">
+            · Trusted Execution Boundary
+          </span>
+        </div>
+        <div className="mt-3.5 flex flex-col gap-2.5 sm:flex-row">
+          {RUNTIME_PILLARS.map((pillar) => (
+            <DiagramPillar key={pillar.title} block={pillar} accent />
+          ))}
+        </div>
+      </div>
+
+      <FlowArrow label="source & engine adapters" mono />
+
+      {/* Layer 3 — Source & Engine adapters */}
+      <div className="rounded-xl border border-zinc-200/90 bg-[#fafafa] p-4">
+        <div className="text-center font-mono text-[11px] uppercase tracking-wider text-zinc-400">
+          Source &amp; Engine Adapters
+        </div>
+        <div className="mt-3 flex flex-col gap-2.5 sm:flex-row">
+          {ADAPTERS.map((block) => (
+            <DiagramPillar key={block.title} block={block} />
+          ))}
+        </div>
+      </div>
+
+      {/* Layer 4 — Execution platforms */}
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        {PLATFORMS.map((p) => (
+          <PlatformChip key={p} label={p} />
+        ))}
+      </div>
     </div>
-  </div>
+  </Reveal>
 );
 
 const FlowArrow: React.FC<{ label: string; mono?: boolean }> = ({ label, mono }) => (
@@ -299,7 +327,7 @@ const FlowArrow: React.FC<{ label: string; mono?: boolean }> = ({ label, mono })
 /* ------------------------------------------------------------------ */
 
 const RealWorldData: React.FC<{ id?: string }> = ({ id = 'data' }) => (
-  <section id={id} className="relative py-24 sm:py-28" aria-label="Built for real-world data">
+  <section id={id} className="relative px-6 py-24 [&_.grid>*]:min-w-0 max-md:px-1 max-md:py-14" aria-label="Built for real-world data">
     <div className="mx-auto max-w-6xl px-6">
       <Reveal>
         <SectionHeading
@@ -326,7 +354,7 @@ const RealWorldData: React.FC<{ id?: string }> = ({ id = 'data' }) => (
       <div className="mt-14">
         <Reveal>
           <h3 className="font-mono text-[11.5px] uppercase tracking-[0.18em] text-zinc-400">
-            Runtime architecture
+            AVA · Trusted Execution Architecture
           </h3>
         </Reveal>
         <div className="mt-5">

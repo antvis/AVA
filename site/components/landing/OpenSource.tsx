@@ -161,7 +161,7 @@ const GitHubPanel: React.FC = () => {
 /* ------------------------------------------------------------------ */
 
 const OpenSource: React.FC<{ id?: string }> = ({ id = 'open-source' }) => (
-  <section id={id} className="py-24 sm:py-28" aria-label="Open source and extensibility">
+  <section id={id} className="px-6 pb-[100px] pt-[88px] max-md:px-1 max-md:pb-14 max-md:pt-14" aria-label="Open source and extensibility">
     <div className="mx-auto max-w-6xl px-6">
       <Reveal>
         <SectionHeading
