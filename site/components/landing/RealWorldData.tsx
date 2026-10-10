@@ -10,21 +10,26 @@ import { SectionHeading, SectionLink } from './Section';
 /*  excel · databases: sqlite, mysql, postgresql, clickhouse)          */
 /* ------------------------------------------------------------------ */
 
+type GlyphKind = 'csv' | 'json' | 'parquet' | 'text' | 'excel';
+
 interface SourceInfo {
   name: string;
   tag: string; // file / database / inline
+  /** real product logo (Simple Icons CDN) or a crafted file glyph */
+  logo?: string;
+  glyph?: GlyphKind;
 }
 
 const SOURCES: SourceInfo[] = [
-  { name: 'CSV', tag: 'file' },
-  { name: 'JSON', tag: 'file' },
-  { name: 'Parquet', tag: 'file' },
-  { name: 'Excel', tag: 'file' },
-  { name: 'Text', tag: 'inline · LLM extraction' },
-  { name: 'SQLite', tag: 'database' },
-  { name: 'MySQL', tag: 'database' },
-  { name: 'PostgreSQL', tag: 'database' },
-  { name: 'ClickHouse', tag: 'database' },
+  { name: 'CSV', tag: 'file', glyph: 'csv' },
+  { name: 'JSON', tag: 'file', glyph: 'json' },
+  { name: 'Parquet', tag: 'file', glyph: 'parquet' },
+  { name: 'Excel', tag: 'file', glyph: 'excel' },
+  { name: 'Text', tag: 'inline · LLM extraction', glyph: 'text' },
+  { name: 'SQLite', tag: 'database', logo: '/logos/sqlite.svg' },
+  { name: 'MySQL', tag: 'database', logo: '/logos/mysql.svg' },
+  { name: 'PostgreSQL', tag: 'database', logo: '/logos/postgresql.svg' },
+  { name: 'ClickHouse', tag: 'database', logo: '/logos/clickhouse.svg' },
 ];
 
 const SOURCE_PATHS: Record<string, string> = {
@@ -39,8 +44,79 @@ const SOURCE_PATHS: Record<string, string> = {
   ClickHouse: 'clickhouse',
 };
 
-const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 22 }) => {
-  const letters = name.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || 'DB';
+/* Colors per file glyph — restrained, consistent sat */
+const GLYPH_COLORS: Record<GlyphKind, string> = {
+  csv: '#16a34a',
+  json: '#eab308',
+  parquet: '#50a14f',
+  excel: '#217346',
+  text: '#94a3b8',
+};
+
+/* Document glyph — folded-corner file icon with cell/table marks */
+const FileGlyph: React.FC<{ kind: GlyphKind; size?: number }> = ({ kind, size = 24 }) => {
+  const color = GLYPH_COLORS[kind];
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M6 2.5h7l5 5v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1z"
+        fill="#fff"
+        stroke={color}
+        strokeWidth="1.5"
+      />
+      <path d="M13 2.5l5 5h-5v-5z" fill={color} opacity="0.18" stroke={color} strokeWidth="1.5" />
+      <g stroke={color} strokeWidth="1.6" strokeLinecap="round">
+        {kind === 'excel' ? (
+          <>
+            <path d="M8.2 11h7.6M8.2 14.2h7.6M8.2 17.4h7.6" />
+            <path d="M10.8 11v6.4" />
+          </>
+        ) : kind === 'json' ? (
+          <>
+            <path d="M10 12.5c-.5-2.5-1.6-3.8-2-5.5 1.9.7 2.9 2 3.4 3.6.6-1.9 1.8-3.3 3.6-4-.3 2-1.4 3.5-2.8 5.2" />
+            <path d="M11.4 12c.8 2 1.2 3.4 1.1 5.4-1.4-1.3-2.2-2.8-2.6-4.7" />
+            <path d="M8.6 17.9c1.8.6 4 .4 5.6-.6" />
+          </>
+        ) : kind === 'parquet' ? (
+          <>
+            <path d="M8.2 10.5h3.2M8.2 13.6h3.2M8.2 16.6h3.2" />
+            <path d="M13 10.5h3.2M13 13.6h3.2M13 16.6h3.2" opacity="0.55" />
+            <path d="M10.5 10.5v6.1M10.5 13.6h5.7" />
+          </>
+        ) : kind === 'csv' ? (
+          <>
+            <path d="M10.7 12.1c-.9-.9-2.6-.6-2.6.9 0 1.6 1.7 1.9 2.6.9" />
+            <path d="M13.3 12.1c.9-.9 2.6-.6 2.6.9 0 1.6-1.7 1.9-2.6.9" />
+          </>
+        ) : (
+          <>
+            <path d="M8.4 11.5h7.2M8.4 14.3h7.2M8.4 17.1h4.4" />
+          </>
+        )}
+      </g>
+    </svg>
+  );
+};
+
+const Monogram: React.FC<{ source?: SourceInfo; size?: number }> = ({ source, size = 22 }) => {
+  const [failed, setFailed] = React.useState(false);
+  if (!source) return null;
+  if (source.logo && !failed) {
+    return (
+      <img
+        src={source.logo}
+        alt=""
+        width={size}
+        height={size}
+        aria-hidden
+        loading="lazy"
+        onError={() => setFailed(true)}
+        className="shrink-0 object-contain"
+      />
+    );
+  }
+  if (source.glyph) return <FileGlyph kind={source.glyph} size={Math.round(size * 1.1)} />;
+  // graceful fallback: neutral database mark
   return (
     <span
       aria-hidden
@@ -49,11 +125,10 @@ const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 22 }
         width: size,
         height: size,
         fontSize: size * 0.36,
-        letterSpacing: '0.02em',
         color: 'var(--color-primary-dark)',
       }}
     >
-      {letters}
+      {source.name.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase()}
     </span>
   );
 };
@@ -63,35 +138,35 @@ const Monogram: React.FC<{ name: string; size?: number }> = ({ name, size = 22 }
 /* ------------------------------------------------------------------ */
 
 const Marquee: React.FC = () => {
-  // duplicate the row so the translate loop has no seam
-  const doubled = [...SOURCES, ...SOURCES];
+  const renderRow = (sources: SourceInfo[]) =>
+    // duplicate the row so the -50% translate loop has no seam
+    [...sources, ...sources].map((s, i) => (
+      <div
+        key={`${s.name}-${i}`}
+        className="marquee-item"
+        title={`ava.source({ type: '${SOURCE_PATHS[s.name]}' })`}
+      >
+        <Monogram source={s} />
+        <span className="text-[14px] font-medium text-zinc-700">{s.name}</span>
+        <span className="font-mono text-[11px] text-zinc-400">{s.tag}</span>
+        <span aria-hidden className="h-4 w-px shrink-0 bg-zinc-200" />
+      </div>
+    ));
+
   return (
     <div
       className="marquee-outer relative overflow-hidden"
+      role="list"
+      aria-label="Supported data sources"
       // pause on hover / keyboard focus within; silent for reduced motion
       onMouseEnter={(e) => (e.currentTarget.dataset.hover = '1')}
       onMouseLeave={(e) => delete e.currentTarget.dataset.hover}
     >
-      <div className="marquee-track" role="list" aria-label="Supported data sources">
-        {doubled.map((s, i) => (
-          <div
-            key={`${s.name}-${i}`}
-            role="listitem"
-            className="marquee-item"
-            title={`ava.source({ type: '${SOURCE_PATHS[s.name]}' })`}
-          >
-            <Monogram name={s.name} />
-            <span className="text-[14px] font-medium text-zinc-700">{s.name}</span>
-            <span className="font-mono text-[11px] text-zinc-400">{s.tag}</span>
-            <span aria-hidden className="h-4 w-px shrink-0 bg-zinc-200" />
-          </div>
-        ))}
-      </div>
+      <div className="marquee-track">{renderRow(SOURCES)}</div>
     </div>
   );
 };
 
-/* ------------------------------------------------------------------ */
 /* Architecture — Source / Engine / Runtime, faithful to the real      */
 /* engine registry (duckdb · python · javascript · clickhouse · supabase) */
 /* ------------------------------------------------------------------ */
@@ -172,7 +247,7 @@ const Architecture: React.FC = () => (
                 key={s.name}
                 className="flex items-center gap-1.5 rounded-full bg-[#f4f4f5] px-3 py-1 text-[12px] text-zinc-600"
               >
-                <Monogram name={s.name} size={16} />
+                <Monogram source={s} size={15} />
                 {s.name}
               </span>
             ))}
