@@ -45,37 +45,27 @@ const STAGES: Stage[] = [
 
 const ConnectPreview: React.FC = () => {
   const rows = [
-    { name: 'sales.csv', kind: 'CSV · loaded in 0.8 s', logo: '/logos/csv.svg', meta: '12,480 rows' },
-    { name: 'report.xlsx', kind: 'Excel · 3 sheets as views', logo: '/logos/excel.svg', meta: '3 tables' },
-    { name: 'inventory.db', kind: 'SQLite · read-only', logo: '/logos/sqlite.svg', meta: '6 tables' },
-    { name: 'prod-mysql', kind: 'MySQL · auto-discovered', logo: '/logos/mysql.svg', meta: '12 tables' },
+    { name: 'sales.csv', kind: 'CSV · text', logo: '/logos/csv.svg', meta: '12,480 rows' },
+    { name: 'report.xlsx', kind: 'Excel · 3 sheets', logo: '/logos/excel.svg', meta: '3 tables' },
+    { name: 'inventory.db', kind: 'SQLite · files', logo: '/logos/sqlite.svg', meta: '6 tables' },
+    { name: 'prod-mysql', kind: 'MySQL · database', logo: '/logos/mysql.svg', meta: '12 tables' },
   ];
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between font-mono text-[11px] text-slate-500">
-        <span className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-emerald-400" />
-          ava.source() · connected
-        </span>
-        <span>22 objects</span>
-      </div>
-      {rows.map((r) => (
-        <div
-          key={r.name}
-          className="flex items-center justify-between rounded-lg border border-zinc-200/80 bg-white px-3 py-2.5"
-        >
-          <div className="flex min-w-0 items-center gap-2.5">
-            <img src={r.logo} alt="" width={28} height={28} className="h-7 w-7 shrink-0 object-contain" />
-            <div className="min-w-0">
-              <div className="truncate font-mono text-[12.5px] text-zinc-800">{r.name}</div>
-              <div className="truncate text-[11px] text-slate-500">{r.kind}</div>
+    <div className="flex min-w-0 flex-col rounded-lg border border-zinc-200/80 bg-white p-2.5">
+      <ul className="divide-y divide-zinc-100/80">
+        {rows.map((r) => (
+          <li key={r.name} className="flex min-w-0 items-center justify-between gap-2.5 py-[7px]">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <img src={r.logo} alt="" width={22} height={22} className="h-[22px] w-[22px] shrink-0 object-contain" />
+              <div className="min-w-0">
+                <div className="truncate font-mono text-[12px] text-zinc-800">{r.name}</div>
+                <div className="truncate text-[10.5px] text-slate-400">{r.kind}</div>
+              </div>
             </div>
-          </div>
-          <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-medium text-emerald-600">
-            {r.meta}
-          </span>
-        </div>
-      ))}
+            <span className="shrink-0 font-mono text-[10.5px] text-[color:var(--color-primary-dark)]">{r.meta}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
@@ -89,17 +79,19 @@ const UnderstandPreview: React.FC = () => {
     { name: 'date', type: 'DATE', bar: 0.36, note: 'Jan 2 → Sep 30' },
   ];
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between rounded-lg border border-zinc-200/80 bg-white px-3 py-2 font-mono text-[11px] text-slate-500">
-        <span className="min-w-0 truncate">profile() · sales · 12,480 rows</span>
+    <div className="flex min-w-0 flex-col rounded-lg border border-zinc-200/80 bg-white p-2.5">
+      {/* unified header */}
+      <div className="flex items-center justify-between border-b border-zinc-100 pb-2 font-mono text-[11px] text-slate-500">
+        <span>profile()</span>
+        <span className="text-[10px]">sales · 12,480 rows</span>
       </div>
       {/* amount distribution — right-skewed like real revenue */}
-      <div className="rounded-lg border border-zinc-200/80 bg-white px-3 py-2">
-        <div className="mb-1.5 flex items-baseline justify-between font-mono text-[10.5px] text-slate-500">
+      <div className="pt-2">
+        <div className="mb-1 flex items-baseline justify-between font-mono text-[10px] text-slate-400">
           <span>amount · distribution</span>
-          <span className="text-[10px]">μ 486 · σ 712</span>
+          <span>μ 486 · σ 712</span>
         </div>
-        <div className="flex h-10 items-end gap-[3px]">
+        <div className="flex h-9 items-end gap-[3px]">
           {[0.62, 1, 0.78, 0.5, 0.34, 0.24, 0.18, 0.13, 0.09, 0.06, 0.05, 0.04, 0.03, 0.02].map((h, i) => (
             <div
               key={i}
@@ -112,24 +104,27 @@ const UnderstandPreview: React.FC = () => {
           ))}
         </div>
       </div>
-      {fields.map((f) => (
-        <div key={f.name} className="rounded-lg border border-zinc-200/80 bg-white px-3 py-1.5">
-          <div className="flex min-w-0 items-center gap-2">
-            <span className="min-w-0 shrink truncate font-mono text-[11.5px] text-zinc-800">{f.name}</span>
-            <span className="shrink-0 font-mono text-[9.5px] uppercase text-slate-400">{f.type}</span>
-            <span className="min-w-0 shrink truncate font-mono text-[9.5px] text-slate-500">{f.note}</span>
-          </div>
-          <div className="mt-1 h-[4px] w-full overflow-hidden rounded-full bg-zinc-100">
-            <div
-              className="h-full rounded-full"
-              style={{
-                width: `${f.bar * 100}%`,
-                background: 'linear-gradient(90deg, var(--color-primary), var(--color-primary-dark))',
-              }}
-            />
-          </div>
-        </div>
-      ))}
+      {/* field stat rows — two compact lines per field, no horizontal overflow */}
+      <ul className="mt-2 divide-y divide-zinc-100/80 border-t border-zinc-100/80">
+        {fields.map((f) => (
+          <li key={f.name} className="py-[6.5px]">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="shrink-0 font-mono text-[11.5px] text-zinc-800">{f.name}</span>
+              <span className="shrink-0 font-mono text-[9px] uppercase text-slate-400">{f.type}</span>
+              <div className="h-[4px] min-w-0 flex-1 overflow-hidden rounded-full bg-zinc-100">
+                <div
+                  className="h-full rounded-full"
+                  style={{
+                    width: `${f.bar * 100}%`,
+                    background: 'linear-gradient(90deg, var(--color-primary), var(--color-primary-dark))',
+                  }}
+                />
+              </div>
+            </div>
+            <div className="mt-0.5 truncate font-mono text-[9.5px] text-slate-500">{f.note}</div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
@@ -137,17 +132,17 @@ const UnderstandPreview: React.FC = () => {
 const AnalyzePreview: React.FC = () => {
   const [tab, setTab] = useState<'sql' | 'result'>('sql');
   return (
-    <div className="flex flex-col gap-2">
-      <div className="rounded-lg border border-zinc-200/80 bg-white px-3 py-2 font-mono text-[11px] text-slate-600">
-        <span className="text-slate-400">query:</span>{' '}
-        <span className="text-[10.5px]">&quot;Which region drives the most revenue?&quot;</span>
-      </div>
-
+    <div className="flex min-w-0 flex-col rounded-lg border border-zinc-200/80 bg-white p-2.5">
+      {/* unified header — query on the first line, like the Q/A in Visualize */}
+      <p className="border-b border-zinc-100 pb-2 text-[11.5px] leading-relaxed text-slate-500">
+        <span className="mr-1.5 font-semibold text-[color:var(--color-primary-dark)]">Q:</span>
+        “Which region drives the most revenue?”
+      </p>
       {/* SQL ⇄ Result tabs — keeps the card compact */}
       <div
         role="tablist"
         aria-label="Analysis artifacts"
-        className="flex items-center justify-between rounded-lg border border-zinc-200/80 bg-blue-50/50 px-2.5 py-1.5"
+        className="mt-2 flex items-center justify-between"
       >
         <div className="flex gap-1">
           {(['sql', 'result'] as const).map((t) => (
@@ -157,19 +152,21 @@ const AnalyzePreview: React.FC = () => {
               aria-selected={tab === t}
               onClick={() => setTab(t)}
               className={`rounded-md px-2.5 py-1 font-mono text-[10.5px] uppercase tracking-wide transition-colors ${
-                tab === t ? 'bg-white text-emerald-700 shadow-[0_1px_2px_rgba(0,0,0,0.08)]' : 'text-zinc-500 hover:text-zinc-700'
+                tab === t
+                  ? 'bg-blue-50 text-blue-700 shadow-[0_1px_2px_rgba(0,0,0,0.08)]'
+                  : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
               {t === 'sql' ? 'SQL' : 'Result'}
             </button>
           ))}
         </div>
-        <span className="font-mono text-[10px] text-zinc-500">DuckDB · 18 ms</span>
+        <span className="font-mono text-[10px] text-zinc-400">DuckDB · 18 ms</span>
       </div>
 
-      <div key={tab} style={{ animation: 'fade-swap 240ms ease-out both' }}>
+      <div key={tab} className="mt-2" style={{ animation: 'fade-swap 240ms ease-out both' }}>
         {tab === 'sql' ? (
-          <pre className="whitespace-pre-wrap break-words rounded-lg border border-zinc-200/80 bg-white p-3 font-mono text-[11.5px] leading-relaxed text-slate-700">
+          <pre className="whitespace-pre-wrap break-words rounded-md bg-[#f8fafc] p-2.5 font-mono text-[11px] leading-relaxed text-slate-700">
             <code>
               <span className="text-blue-600">SELECT</span> region, <span className="text-violet-600">SUM</span>(amount) <span className="text-blue-600">AS</span> total{'\n'}
               <span className="text-blue-600">FROM</span> sales{'\n'}
@@ -179,8 +176,8 @@ const AnalyzePreview: React.FC = () => {
             </code>
           </pre>
         ) : (
-          <div className="rounded-lg border border-zinc-200/80 bg-white">
-            <div className="grid grid-cols-[1fr_auto] gap-x-3 border-b border-zinc-100 px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-wide text-slate-500">
+          <div className="rounded-md border border-zinc-100">
+            <div className="grid grid-cols-[1fr_auto] gap-x-3 border-b border-zinc-100 bg-[#f8fafc] px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-slate-500">
               <span>region</span>
               <span>total</span>
             </div>
@@ -192,7 +189,7 @@ const AnalyzePreview: React.FC = () => {
             ].map(([a, b]) => (
               <div
                 key={a}
-                className="grid grid-cols-[1fr_auto] items-center gap-x-3 border-b border-zinc-100/70 px-3 py-1.5 font-mono text-[12px] last:border-0"
+                className="grid grid-cols-[1fr_auto] items-center gap-x-3 border-b border-zinc-100/70 px-2.5 py-1.5 font-mono text-[11.5px] last:border-0"
               >
                 <span className="text-zinc-800">{a}</span>
                 <span className="tabular-nums text-[color:var(--color-primary-dark)]">{b}</span>
@@ -202,9 +199,10 @@ const AnalyzePreview: React.FC = () => {
         )}
       </div>
 
-      <div className="flex items-center gap-2 font-mono text-[11px] text-emerald-600">
-        <span>✓</span> 4 rows · no hallucination · answer grounded in data
-      </div>
+      {/* footer — mirrors the A line in Visualize */}
+      <p className="mt-2 border-t border-zinc-100 pt-2 font-mono text-[10.5px] text-emerald-600">
+        ✓ 4 rows · no hallucination · answer grounded in data
+      </p>
     </div>
   );
 };

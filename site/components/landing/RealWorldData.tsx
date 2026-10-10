@@ -173,23 +173,29 @@ const Marquee: React.FC = () => {
 interface DiagramBlock {
   title: string;
   items: string[];
+  /** solid tint per module — coordinated accents beyond the primary blue */
+  color?: string;
 }
 
 const RUNTIME_PILLARS: DiagramBlock[] = [
   {
     title: 'Execution Contract',
+    color: '#3bc9f2',
     items: ['Request', 'Result', 'Error', 'Status'],
   },
   {
     title: 'Execution Control',
+    color: '#10b981',
     items: ['Read-only policies', 'Timeout & cancellation', 'Resource limits'],
   },
   {
     title: 'Observability',
+    color: '#f59e0b',
     items: ['Execution events', 'Metrics & diagnostics', 'Trace correlation'],
   },
   {
     title: 'Execution Orchestration',
+    color: '#8b5cf6',
     items: ['Session Lifecycle', 'Engine Selection', 'Result Handling'],
   },
 ];
@@ -197,10 +203,12 @@ const RUNTIME_PILLARS: DiagramBlock[] = [
 const ADAPTERS: DiagramBlock[] = [
   {
     title: 'Source Layer',
+    color: '#0ea5e9',
     items: ['CSV · Parquet · SQL Databases', 'Schema · Data Access'],
   },
   {
     title: 'Engine Layer',
+    color: '#14b8a6',
     items: ['DuckDB · Remote SQL', 'Browser Execution'],
   },
 ];
@@ -215,19 +223,24 @@ const PlatformChip: React.FC<{ label: string }> = ({ label }) => (
 
 const DiagramPillar: React.FC<{ block: DiagramBlock; accent?: boolean; inline?: boolean }> = ({
   block,
-  accent,
   inline,
 }) => (
   <div
-    className="flex-1 rounded-lg border bg-white px-3 py-2"
+    className="flex-1 rounded-lg border px-3 py-2"
     style={
-      accent
-        ? { borderColor: 'color-mix(in srgb, var(--color-primary-dark) 35%, #e4e4e7)' }
+      block.color
+        ? {
+            borderColor: `color-mix(in srgb, ${block.color} 45%, #e4e4e7)`,
+            background: `color-mix(in srgb, ${block.color} 12%, white)`,
+          }
         : undefined
     }
   >
     <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-      <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wider text-zinc-700">
+      <span
+        className="font-mono text-[10.5px] font-semibold uppercase tracking-wider"
+        style={{ color: block.color ?? 'var(--color-primary-dark)' }}
+      >
         {block.title}
       </span>
       {inline && (
@@ -239,9 +252,9 @@ const DiagramPillar: React.FC<{ block: DiagramBlock; accent?: boolean; inline?: 
     {inline ? (
       <ul className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
         {block.items.map((item, i) => (
-          <li key={item} className="flex items-center gap-2 text-[11px] leading-snug text-zinc-500">
+          <li key={item} className="flex items-center gap-2 text-[11px] leading-snug text-zinc-600">
             {i > 0 && (
-              <span className="h-3 w-px bg-zinc-200" aria-hidden />
+              <span className="h-3 w-px bg-zinc-300" aria-hidden />
             )}
             {item}
           </li>
@@ -260,8 +273,8 @@ const DiagramPillar: React.FC<{ block: DiagramBlock; accent?: boolean; inline?: 
 );
 
 const VerticalFlowArrow: React.FC<{ label: string }> = ({ label }) => (
-  <div aria-hidden className="flex flex-col items-center py-1.5">
-    <svg width="12" height="24" viewBox="0 0 12 24" fill="none">
+  <div aria-hidden className="flex items-center justify-center gap-2 py-1.5">
+    <svg width="12" height="24" viewBox="0 0 12 24" fill="none" className="shrink-0">
       <line
         x1="6"
         y1="0"
@@ -275,10 +288,10 @@ const VerticalFlowArrow: React.FC<{ label: string }> = ({ label }) => (
     </svg>
     <span className="font-mono text-[10px] text-zinc-400">{label}</span>
   </div>
-);
+);;
 
 const Architecture: React.FC = () => (
-  <Reveal className="mt-20">
+  <Reveal className="mx-auto mt-20 max-w-[800px]">
     <div className="relative rounded-2xl border border-zinc-200/90 bg-white p-6 shadow-[0_1px_3px_rgba(0,0,0,0.04)] sm:p-8">
       {/* Layer 1 — AI Agents & Applications (primary) */}
       <div
@@ -321,8 +334,8 @@ const Architecture: React.FC = () => (
           <DiagramPillar block={RUNTIME_PILLARS[0]} accent inline />
           {/* row 2 — Execution Control | Observability */}
           <div className="flex gap-2">
-            <DiagramPillar block={RUNTIME_PILLARS[1]} accent />
-            <DiagramPillar block={RUNTIME_PILLARS[2]} accent />
+            <DiagramPillar block={RUNTIME_PILLARS[1]} accent inline />
+            <DiagramPillar block={RUNTIME_PILLARS[2]} accent inline />
           </div>
           {/* row 3 — Execution Orchestration */}
           <DiagramPillar block={RUNTIME_PILLARS[3]} accent inline />

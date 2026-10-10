@@ -44,11 +44,15 @@ const GitHubPanel: React.FC = () => {
   const [forks, setForks] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/antvis/AVA')
+    // shields.io aggregates server-side with caching; avoids GitHub API rate limits
+    fetch('https://img.shields.io/github/stars/antvis/AVA.json')
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (typeof data?.stargazers_count === 'number') setStars(data.stargazers_count);
-        if (typeof data?.forks_count === 'number') setForks(data.forks_count);
+        const m = typeof data?.message === 'string' ? data.message.match(/[\d.,]+/) : null;
+        if (m) {
+          const n = parseFloat(m[0].replace(/,/g, ''));
+          if (!Number.isNaN(n)) setStars(data.message.toLowerCase().includes('k') ? Math.round(n * 1000) : n);
+        }
       })
       .catch(() => {});
   }, []);
