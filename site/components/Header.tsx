@@ -30,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
               ? // 滚动后：胶囊吸顶
                 'mx-[max(12px,calc((100%-1280px)/2))] translate-y-[20px] scale-[0.95] rounded-[100px] border border-[rgba(0,0,0,0.06)] bg-[rgba(255,255,255,0.72)] px-[20px] shadow-[4px_4px_10px_0px_rgba(0,0,0,0.1)] backdrop-blur-md'
               : // 默认：宽屏通栏
-                'w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-6'
+                'w-full translate-y-0 scale-100 backdrop-blur-sm border-none border-gray-100 px-12'
           }`}
       >
         {/* Logo */}
@@ -39,11 +39,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
           className="col-start-1 flex items-center gap-2 hover:opacity-80 transition-opacity min-w-0 justify-self-start"
         >
           <img
-            src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"
+            src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
             alt="AVA ChartGenie Logo"
-            className="w-8 h-8 flex-shrink-0"
+            className="w-20 h-12 flex-shrink-0"
           />
-          <span className="text-lg font-semibold text-gray-800 truncate">AVA, AI-Native Visual Analytics</span>
+          <span className="text-lg text-gray-800 truncate">AVA</span>
         </Link>
 
         {/* 导航（暂空，保持三栏布局） */}

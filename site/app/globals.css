@@ -320,3 +320,100 @@ body {
     animation: none !important;
   }
 }
+
+/* ── Playground hero entrance motion ─────────────────────── */
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes hero-draw {
+  from {
+    stroke-dashoffset: 140;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-axis {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes hero-tick {
+  from {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+/* one gentle overlapped highlight sweep across the headline */
+@keyframes hero-sheen {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rise,
+  .hero-axis,
+  .hero-tick,
+  .hero-draw-path,
+  .hero-sheen-text,
+  .hero-verse-anim,
+  .hero-spark-anim {
+    animation: none !important;
+  }
+}
+
+@keyframes hero-verse {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(5px);
+  }
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(5px);
+  }
+}
+
+@keyframes hero-spark {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.14) rotate(10deg);
+    opacity: 1;
+  }
+}

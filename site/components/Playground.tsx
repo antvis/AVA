@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import Link from 'next/link';
 import GPTVisRenderer from './GPTVisRenderer';
 import type { Message } from './playground/types';
 import {
@@ -1125,6 +1126,92 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
 };
 
 /* ------------------------------------------------------------------ */
+/* Rotating verse in the headline                                       */
+/* ------------------------------------------------------------------ */
+
+const TITLE_VERSES = ['AI native', 'Automated', 'Augmented'];
+const VERSE_MS = 2600;
+
+/* AI-native gets a bespoke mark: a two-star sparkle instead of an emoji */
+const Spark: React.FC = () => (
+  <svg
+    aria-hidden
+    className="hero-spark-anim ml-[0.18em] inline-block translate-y-[0.02em]"
+    width="0.5em"
+    height="0.5em"
+    viewBox="0 0 24 24"
+    style={{ animation: 'hero-spark 3.4s ease-in-out infinite' }}
+  >
+    <path
+      d="M11 3c.6 4.2 2.6 6.2 6.8 6.8-4.2.6-6.2 2.6-6.8 6.8-.6-4.2-2.6-6.2-6.8-6.8C8.4 9.2 10.4 7.2 11 3z"
+      style={{ fill: 'var(--color-primary-dark)' }}
+    />
+    <path
+      d="M17.5 13.5c.28 1.96 1.22 2.9 3.18 3.18-1.96.28-2.9 1.22-3.18 3.18-.28-1.96-1.22-2.9-3.18-3.18 1.96-.28 2.9-1.22 3.18-3.18z"
+      style={{ fill: 'var(--color-primary-light)' }}
+    />
+  </svg>
+);
+
+const verseContent = (word: string) => (
+  <>
+    {word}
+    {word === 'AI native' && <Spark />}
+  </>
+);
+
+const RotatingVerse: React.FC = () => {
+  const [idx, setIdx] = useState(0);
+  const [widths, setWidths] = useState<number[]>([]);
+  const measureRef = useRef<HTMLSpanElement | null>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => setIdx((i) => (i + 1) % TITLE_VERSES.length), VERSE_MS);
+    return () => clearInterval(timer);
+  }, []);
+
+  /* measure every verse (incl. the sparkle) at real rendered size */
+  useEffect(() => {
+    const row = measureRef.current;
+    if (!row) return;
+    setWidths(Array.from(row.children).map((c) => (c as HTMLElement).offsetWidth));
+  }, []);
+
+  // the slot hugs the CURRENT word, so the headline re-centers every turn;
+  // the width tween runs while the word is mid-swap, so it reads as motion
+  const slot = widths.length ? widths[idx] : undefined;
+
+  return (
+    <span
+      className="relative inline-block"
+      style={{
+        minWidth: slot,
+        transition: 'min-width 640ms cubic-bezier(0.22,1,0.36,1)',
+      }}
+    >
+      {/* invisible measuring row — measures each verse at real rendered size */}
+      <span aria-hidden ref={measureRef} className="invisible absolute flex">
+        {TITLE_VERSES.map((word) => (
+          <span key={word} className="inline-block whitespace-pre">
+            {verseContent(word)}
+          </span>
+        ))}
+      </span>
+      {/* the visible verse flows inline, so it baseline-aligns with the rest
+          of the headline instead of floating on the line box's middle */}
+      <span
+        key={idx}
+        aria-hidden
+        className="hero-verse-anim inline-block whitespace-pre text-[color:var(--color-primary-dark)]"
+        style={{ animation: `hero-verse ${VERSE_MS}ms cubic-bezier(0.22,1,0.36,1) both` }}
+      >
+        {verseContent(TITLE_VERSES[idx])}
+      </span>
+    </span>
+  );
+};
+
+/* ------------------------------------------------------------------ */
 /* Main Playground                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -1142,65 +1229,132 @@ const Playground: React.FC = () => {
 
   return (
     <main className="relative -mt-16">
-      {/* ── full-bleed hero backdrop — flows behind the sticky header ── */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-gradient-to-b from-[#eaf6fc] via-[#f4fafd] to-[#f8fbfc]"
-      >
-        {/* ambient glows */}
+      {/* background — quiet editorial backdrop */}
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[600px] bg-[#f8fbfc]">
+        {/* a single hairline axis underneath the hero — sweeps in on load */}
         <div
-          className="absolute -top-40 left-1/2 h-96 w-[48rem] -translate-x-1/2 rounded-full blur-3xl"
-          style={{ background: 'radial-gradient(closest-side, rgba(120,211,248,0.4), transparent)' }}
-        />
-        <div
-          className="absolute top-24 -right-24 h-96 w-96 rounded-full blur-3xl"
-          style={{ background: 'radial-gradient(closest-side, rgba(165,180,252,0.3), transparent)' }}
-        />
-        {/* faint grid texture */}
-        <div
-          className="absolute inset-0 opacity-[0.35]"
-          style={{
-            backgroundImage:
-              'linear-gradient(rgba(120,211,248,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(120,211,248,0.3) 1px, transparent 1px)',
-            backgroundSize: '44px 44px',
-            maskImage: 'radial-gradient(ellipse 75% 65% at 50% 35%, #000 30%, transparent 75%)',
-            WebkitMaskImage: 'radial-gradient(ellipse 75% 65% at 50% 35%, #000 30%, transparent 75%)',
-          }}
-        />
+          className="absolute inset-x-0 bottom-24 origin-left"
+          style={{ animation: 'hero-axis 1.1s cubic-bezier(0.22,1,0.36,1) 0.55s both' }}
+        >
+          <div className="relative h-px w-full bg-zinc-200/80">
+            <div className="absolute inset-x-0 top-0 flex justify-between">
+              {Array.from({ length: 24 }).map((_, i) => (
+                <span
+                  key={i}
+                  className={`w-px origin-top ${i % 4 === 0 ? 'h-2.5 bg-zinc-300' : 'h-1.5 bg-zinc-200'}`}
+                  style={{
+                    animation: `hero-tick 240ms cubic-bezier(0.22,1,0.36,1) ${(1.2 + i * 0.028).toFixed(3)}s both`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="relative mx-[max(12px,calc((100%-1120px)/2))] pb-12">
         {/* ── hero content ── */}
         <div className="flex flex-col items-center gap-5 px-6 pb-10 pt-28 text-center sm:pt-32">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#78d3f8]/40 bg-[#78d3f8]/10 px-3 py-1 text-[12px] font-medium text-sky-700">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#78d3f8] opacity-70" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#78d3f8]" />
-            </span>
-            Open-source framework
+          {/* kicker — quiet monogram instead of a pulsing badge */}
+          <span
+            className="font-mono text-[12px] uppercase tracking-[0.18em] text-zinc-400"
+            style={{ animation: 'hero-rise 700ms cubic-bezier(0.22,1,0.36,1) 0.1s both' }}
+          >
+            AntV<span className="mx-2 text-zinc-300">/</span>Open Source
           </span>
 
-          <h1 className="max-w-2xl text-4xl font-bold leading-[1.15] tracking-tight text-zinc-900 sm:text-5xl">
-            Visual Analytics.
+          <h1
+            className="text-[clamp(24px,6.6vw,56px)] font-semibold leading-[1.08] tracking-[-0.025em] text-zinc-900"
+            style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.25s both' }}
+          >
+            <span className="whitespace-nowrap">
+              <RotatingVerse /> Visual Analytics.
+            </span>
             <br />
-            <span className="bg-gradient-to-r from-[#4ec4ef] via-[#78d3f8] to-[#6366f1] bg-clip-text text-transparent">
-              Built for Agents.
+            Built for{' '}
+            <span className="relative whitespace-nowrap">
+              Agents.
+              {/* a single crafted accent: hand-drawn underline */}
+              <svg
+                aria-hidden
+                className="absolute -bottom-1 left-0 w-full"
+                viewBox="0 0 120 8"
+                preserveAspectRatio="none"
+                fill="none"
+              >
+                <path
+                  d="M2 5.5C24 2.5 62 2 118 3.8"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  opacity="0.9"
+                  strokeDasharray="140"
+                  style={{
+                    stroke: 'var(--color-primary-dark)',
+                    animation: 'hero-draw 600ms cubic-bezier(0.22,1,0.36,1) 1.05s both',
+                  }}
+                />
+              </svg>
             </span>
           </h1>
 
-          <p className="max-w-xl text-[15px] leading-relaxed text-zinc-500">
+          <p
+            className="hero-rise max-w-xl text-[15px] leading-relaxed text-zinc-500"
+            style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.55s both' }}
+          >
             The open-source framework that gives AI agents the power to explore, analyze, and visualize data.
           </p>
 
-          <div className="mt-1 flex flex-wrap items-center justify-center gap-3">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-[12.5px] text-zinc-700 shadow-sm">
-              Interactive playground
-              <span className="text-[#4ec4ef]">✦</span>
-            </span>
-            <span className="text-[12px] text-zinc-400">No setup — just watch the agent run</span>
+          {/* actions */}
+          <div
+            className="hero-rise mt-3 flex flex-wrap items-center justify-center gap-3"
+            style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.8s both' }}
+          >
+            <Link
+              href="/documentation"
+              className="group inline-flex h-10 items-center gap-2 rounded-full bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
+            >
+              Get Started
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="transition-transform duration-200 group-hover:translate-x-[1px]"
+              >
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </Link>
+            <a
+              href="#playground"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-zinc-300 bg-white/80 px-7 text-[13.5px] font-medium text-zinc-700 backdrop-blur-sm transition-all duration-200 hover:border-[color:var(--color-primary-dark)]/60 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
+            >
+              Try it Now
+            </a>
+            <a
+              href="https://github.com/antv/AVA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex h-10 items-center gap-2 rounded-full px-6 text-[13.5px] font-medium text-zinc-500 transition-colors duration-200 hover:text-zinc-800"
+            >
+              <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+                />
+              </svg>
+              <span className="font-mono text-[12.5px]">GitHub</span>
+            </a>
           </div>
         </div>
-        <div className="overflow-hidden rounded-[23.1429px] bg-white border border-[rgb(233,231,226)] shadow-[0px_16px_36px_rgba(24,24,27,0.08),0px_3px_8px_rgba(24,24,27,0.04)]">
+        <div
+          id="playground"
+          className="scroll-mt-24 overflow-hidden rounded-[23.1429px] bg-white border border-[rgb(233,231,226)] shadow-[0px_16px_36px_rgba(24,24,27,0.08),0px_3px_8px_rgba(24,24,27,0.04)]"
+        >
           <div
             className={`grid gap-4 p-2 transition-all duration-500 ${
               panelOpen && artifactMsg
