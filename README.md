@@ -23,7 +23,7 @@
   </a>
 </p>
 
-## 🚀 Features
+## 01. What Can AVA Do?
 
 AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 
@@ -34,7 +34,41 @@ AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
 - 🧩 **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
 - 🌐 **Dual Environment**: Runs in both Node.js (DuckDB, Python/pandas, and remote database engines) and browsers (JavaScript interpreter engine)
 
-## 🎯 Analysis Accuracy
+## 02. Connect to Your Data — Data Source Matrix
+
+**Built-in data sources** (verified against the [`ai` branch implementation](https://github.com/antvis/AVA/tree/ai/src)):
+
+<table>
+  <thead>
+    <tr>
+      <th>Local files</th>
+      <th>Databases</th>
+      <th>Cloud / remote platforms</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">
+        <img src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/svgs/regular/file-lines.svg" width="20" alt="File icon" /><br />
+        CSV · JSON<br />Parquet · Excel
+      </td>
+      <td>
+        <img src="https://cdn.simpleicons.org/mysql/4479A1" width="18" alt="MySQL" /> MySQL<br />
+        <img src="https://cdn.simpleicons.org/postgresql/4169E1" width="18" alt="PostgreSQL" /> PostgreSQL<br />
+        <img src="https://cdn.simpleicons.org/sqlite/003B57" width="18" alt="SQLite" /> SQLite<br />
+        <img src="https://cdn.simpleicons.org/mongodb/47A248" width="18" alt="MongoDB" /> MongoDB
+      </td>
+      <td>
+        <img src="https://cdn.simpleicons.org/clickhouse/FFCC01" width="18" alt="ClickHouse" /> ClickHouse<br />
+        <img src="https://cdn.simpleicons.org/supabase/3FCF8E" width="18" alt="Supabase" /> Supabase
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Only shipped integrations are listed as built in; planned integrations are not presented as available. See [Data Sources](skills/ava/references/sources.md) for connection options, credentials, and environment compatibility.
+
+## 03. Analysis Accuracy
 
 How accurately can AVA answer questions about your data? We evaluate it on [DataBench](evals/databench/README.md), a benchmark for questions that require filtering, aggregating, and sorting table data.
 
@@ -53,7 +87,7 @@ Using **GLM 5.1** on **1,789 questions**:
 
 See [evaluation results and methodology](evals/ACCURACY.md) for configurations, timing, token usage, evaluation dates, and raw reports.
 
-## 📖 Quick Start
+## 04. Quick Start
 
 ### SDK
 
@@ -240,7 +274,7 @@ Start a new agent session and ask:
 Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart.
 ```
 
-## 📘 Documentation
+## 05. Documentation
 
 ### SDK
 
@@ -371,7 +405,7 @@ with a Claude model and Anthropic API key. The variable names remain `OPENAI_*`.
 Reload the dataset after changing model settings. `visualize` and `recommend`
 read the current environment on each run.
 
-## 🏗️ Architecture
+## 06. Architecture
 
 AVA uses a modular pipeline architecture with a pluggable engine registry. Data is loaded from multiple sources via `load`, then analyzed by the selected engine, summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
 
@@ -428,7 +462,7 @@ Engines are registered by the entry point, so the core `AVA` class never imports
 - **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `javascript`, and `python` engines
 - **Browser** (`@antv/ava/browser`): registers only the `javascript` engine
 
-## 🌐 Environment Support
+## 07. Environment Support
 
 ### Node.js
 
@@ -451,7 +485,7 @@ Lightweight JavaScript interpreter engine for client-side analytics:
 - No file system or database access
 - Import from `@antv/ava/browser` to avoid bundling Node.js dependencies
 
-## 🤝 Developer Contributions
+## 08. Developer Contributions
 
 This is an experimental branch. Contributions are welcome! Please ensure:
 
@@ -464,18 +498,18 @@ This is an experimental branch. Contributions are welcome! Please ensure:
 
 Copy `.env.example` to `.env` and fill in `OPENAI_API_KEY` (optionally `OPENAI_MODEL` / `OPENAI_BASE_URL`). Vitest loads `.env` through `vitest.setup.ts`, so `npm test` picks it up with no extra flags. Without a key the LLM-dependent suites are reported as **skipped**, and the rest of the suite still runs offline.
 
-## 🔗 Related Projects
+## 09. Related Projects
 
 - [GPT-Vis](https://github.com/antvis/GPT-Vis) - Visualization components
 - [Chart Visualization Skills](https://github.com/antvis/chart-visualization-skills) - LLM skills for charts
 - [Vercel AI SDK](https://sdk.vercel.ai/) - LLM integration
 
-## 📚 Papers
+## 10. Papers
 
 [VizLinter](https://vegalite-linter.idvxlab.com/) - Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. *IEEE transactions on visualization and computer graphics*, 28(1), pp.206-216.
 
 [《数据可视化设计的类型学实践》（Exploring the Typology of Visualization Design）](https://oversea.cnki.net/KCMS/detail/detail.aspx?dbcode=CJFD&dbname=CJFDAUTO&filename=MSDG202203021&uniplatform=OVERSEAS_EN&v=HcZsiecIxauSoKEB1s92_BImgnrMiazYsfZUpb-gcl0zXYx_MEwv5alz1UgtPjz1) - 蓝星宇, 王嘉喆. 数据可视化设计的类型学实践, 《美术大观》, 2022(3), 149-152.
 
-## 📄 License
+## 11. License
 
 MIT
