@@ -104,7 +104,7 @@ node evals/cli.js score --help
 
 ## Spider 2.0-Lite 评测器
 
-通过 DuckDB 的 SQLite 扩展读取数据库并执行模型生成的 SQL，再由未经修改的官方 Python 评分器使用 SQLite 重跑并评分。数据准备、依赖、结果口径和离线重评见 [Spider 2.0-Lite](../spider2lite/README.md)。
+通过 DuckDB 的 SQLite 扩展读取数据库并执行模型生成的 SQL，将 AVA 返回的数据直接写成 CSV，再由未经修改的官方 Python 评分器使用 `exec_result` 模式比较标准答案。评测结果上限为 10,000 行、64 MiB，仍被截断则记录失败；不重跑 SQL、不切换执行引擎。数据准备、依赖、结果口径和离线重评见 [Spider 2.0-Lite](../spider2lite/README.md)。
 
 ```bash
 node evals/cli.js run ava-workflow --benchmark spider2lite --check --limit all

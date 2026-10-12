@@ -86,27 +86,25 @@ node evals/cli.js run ava-workflow --benchmark spider2lite --limit all \
 
 每道题均执行 `source → profile → analyze`，使用 DuckDB 引擎，通过官方 SQLite 扩展只读加载数据库，输入仅包括 AVA 数据库画像、原始问题和题目指定的外部知识；不向模型提供官方 `DDL.csv` 或表描述 JSON，预检也不再要求这些描述文件。输入条件记录在运行清单中，与旧版结果比较时需注意这一变化。gold 和评分条件不传给模型。
 
-输出目录包含 `manifest.json`（题目、资源哈希、运行配置）、`sql/<id>.sql`（最终 SQL）、`records/<id>.json`（耗时、用量、错误）、`exec_result/<id>.csv`（官方执行结果）和 `report.json`。同一目录可断点续跑，成功题目跳过；模型、策略、资源或实现变化时须使用新目录。
+输出目录包含 `manifest.json`（题目、资源哈希、运行配置）、`sql/<id>.sql`（最终 SQL）、`records/<id>.json`（耗时、用量、错误）、`exec_result/<id>.csv`（DuckDB 完整执行结果）和 `report.json`。同一目录可断点续跑，成功题目跳过；模型、策略、资源或实现变化时须使用新目录。
 
 ## 与官方评分保持一致
 
 当前 DuckDB 加载 `stacking.sqlite` 的 `stack_ok` 视图会报语法错误，包含该库的预检会失败。
 
-模型生成和 AVA 执行使用 DuckDB SQL 方言，官方评分使用 SQLite；DuckDB 专有语法可能在官方重跑时失败，不做自动方言转换。
+模型生成和执行均使用 DuckDB，评测直接将 AVA 返回的数据写成 CSV，不重跑 SQL。评测结果上限提高为 10,000 行、64 MiB；若仍被截断，该题记录为失败，不提交不完整结果。SQL 保留用于诊断。
 
-适配器直接调用下载的、未经修改的官方 `evaluate.py`：`sql` 模式重新执行最终 SQL，然后按官方规则比较完整 CSV；不会用 AVA 的 200 行预览评分。`condition_cols`、`ignore_order`、多份参考结果、空值和数值容差均由官方代码处理，不另写比较算法。
+适配器直接调用下载的、未经修改的官方 `evaluate.py`，通过 `exec_result` 模式比较 DuckDB 完整结果 CSV；不会用 AVA 的 200 行预览评分。`condition_cols`、`ignore_order`、多份参考结果、空值和数值容差均由官方代码处理，不另写比较算法。
 
 ```bash
 # 对本次运行的全部题目离线重评，不调用模型
 node evals/cli.js score --dataset spider2lite \
   --predictions evals/ava-workflow/results/spider2lite-smoke
 
-# 同一运行的官方执行结果也可按官方 CSV 模式重评
-node evals/cli.js score --dataset spider2lite --mode exec_result \
-  --predictions evals/ava-workflow/results/spider2lite-smoke \
-  --output evals/ava-workflow/results/spider2lite-smoke/report-csv.json
 ```
 
 报告的 `accuracy` 以本次所选题目数为分母，缺失答案计零；`submittedAccuracy` 以实际提交数为分母，对应官方 CLI 的 `Final score` 口径。只跑 SQLite 子集时，不得把结果称为完整 Spider 2.0-Lite 分数。运行失败或缺失答案会返回非零退出码，单纯答错不会。
 
-执行限制单独记录：默认 DuckDB 查询超时 30 秒、官方单题评分超时 60 秒；查询只允许只读 SQL，禁止 ATTACH、写入和扩展加载。上游 CLI 的 SQLite 路径与其 README 有差异，桥接层按官方 README 将数据库目录明确传入评分函数，不改写评分代码。
+执行限制单独记录：默认 DuckDB 查询超时 30 秒、官方单题评分超时 60 秒；查询只允许只读 SQL，禁止 ATTACH、写入和扩展加载。评分器只读取提交 CSV 和标准答案，不连接数据库、不执行 SQL。
+
+评分入口只支持结果 CSV，可传运行目录或 CSV 目录，无需选择模式。断点续跑校验 SQL 和 CSV 的哈希。旧运行的 CSV 来自 SQLite 重跑，不能视为 DuckDB 的历史结果；重新评测 AVA 请使用新的输出目录。

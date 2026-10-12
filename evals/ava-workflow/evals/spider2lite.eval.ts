@@ -14,6 +14,7 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
 import { AVA } from '../../../lib/index.js';
+import { csvCell } from '../../_shared/results.js';
 import {
   ROOT,
   integer,
@@ -30,10 +31,11 @@ import { llmConfig } from './databench.eval.ts';
 import type { AnalysisStrategyConfig, LLMConfig } from '../../../lib/index.js';
 
 type Sample = { instance_id: string; db: string; question: string; external_knowledge?: string };
+const resultLimits = { maxRows: 10_000, maxResultBytes: 64 * 1024 * 1024 };
 const workflowRoot = fileURLToPath(new URL('../', import.meta.url));
 
 const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark spider2lite [options]
-  SQLite subset only. DuckDB SQLite extension; official SQLite result scoring.
+  SQLite subset only. DuckDB execution; official CSV result comparison.
   --check                 Preflight only: no model calls, no run directory
   --root <path>           Dataset directory (default evals/spider2lite)
   --limit <number|all>    Questions to run (default 20)
@@ -64,7 +66,7 @@ export async function runSample(
     ava,
     { type: 'sqlite', options: { path: join(root, 'resource/databases/spider2-localdb', `${sample.db}.sqlite`) } },
     modelQuestion(sample, root, maxContextBytes),
-    { includeSummary: false, strategy }
+    { includeSummary: false, strategy, ...resultLimits }
   );
 }
 
@@ -123,9 +125,7 @@ export async function main(argv = process.argv.slice(2)) {
   } finally {
     await probe.dispose();
   }
-  process.stdout.write(
-    `Preflight OK: ${samples.length} SQLite questions, DuckDB SQLite extension; scorer SQLite ${runtime.sqlite}\n`
-  );
+  process.stdout.write(`Preflight OK: ${samples.length} SQLite questions, DuckDB execution; official CSV comparison\n`);
   if (values.check) return;
 
   const config = llmConfig();
@@ -144,6 +144,9 @@ export async function main(argv = process.argv.slice(2)) {
     thinking: false,
     strategy,
     engine: 'duckdb-sqlite',
+    mode: 'exec_result',
+    resultSource: 'ava-result',
+    resultLimits,
     modelContext: 'ava-profile + question + external-knowledge',
     timeoutMs: timeout,
     scoreTimeoutMs: scoreTimeout,
@@ -156,6 +159,7 @@ export async function main(argv = process.argv.slice(2)) {
         join(workflowRoot, 'workflow.ts'),
         join(workflowRoot, 'evals/databench.eval.ts'),
         join(workflowRoot, '../spider2lite/index.js'),
+        join(workflowRoot, '../spider2lite/score.js'),
         ...[
           'duckdb/engine.js',
           'duckdb/loaders/sqlite.js',
@@ -181,14 +185,19 @@ export async function main(argv = process.argv.slice(2)) {
     }
     const sqlDir = join(output, 'sql');
     const records = join(output, 'records');
+    const resultDir = join(output, 'exec_result');
     mkdirSync(sqlDir, { recursive: true });
     mkdirSync(records, { recursive: true });
+    mkdirSync(resultDir, { recursive: true });
     const pending = samples.filter((sample) => {
       const record = join(records, `${sample.instance_id}.json`);
       if (!existsSync(record) || readJson(record).status !== 'success') return true;
       const sql = join(sqlDir, `${sample.instance_id}.sql`);
       if (!existsSync(sql) || sha256(sql) !== readJson(record).sql_sha256)
         throw new Error(`Prediction changed: ${sample.instance_id}. Use a new output directory.`);
+      const csv = join(resultDir, `${sample.instance_id}.csv`);
+      if (!existsSync(csv) || sha256(csv) !== readJson(record).result_sha256)
+        throw new Error(`Result changed: ${sample.instance_id}. Use a new output directory.`);
       return false;
     });
     let cursor = 0;
@@ -223,7 +232,9 @@ export async function main(argv = process.argv.slice(2)) {
             });
           }
           const sqlPath = join(sqlDir, `${sample.instance_id}.sql`);
+          const resultPath = join(resultDir, `${sample.instance_id}.csv`);
           if (existsSync(sqlPath)) unlinkSync(sqlPath);
+          if (existsSync(resultPath)) unlinkSync(resultPath);
           let record: Record<string, unknown>;
           try {
             const result = await runSample(ava, sample, root, strategy, maxContextBytes);
@@ -231,7 +242,19 @@ export async function main(argv = process.argv.slice(2)) {
             const temp = sqlPath + '.tmp';
             writeFileSync(temp, result.sql + '\n');
             renameSync(temp, sqlPath);
-            record = { status: 'success', sql_sha256: sha256(sqlPath), previewTruncated: !!result.truncated };
+            if (result.truncated) throw new Error(`Workflow result truncated by ${result.truncatedBy}`);
+            const columns = result.schema.map((column) => column.name);
+            const csv = [columns, ...result.data.map((row) => columns.map((name) => row[name]))]
+              .map((row) => row.map(csvCell).join(','))
+              .join('\n');
+            writeFileSync(resultPath + '.tmp', csv + '\n');
+            renameSync(resultPath + '.tmp', resultPath);
+            record = {
+              status: 'success',
+              sql_sha256: sha256(sqlPath),
+              result_sha256: sha256(resultPath),
+              rowCount: result.data.length,
+            };
           } catch (cause) {
             const message = cause instanceof Error ? cause.message : String(cause);
             record = {
@@ -259,7 +282,7 @@ export async function main(argv = process.argv.slice(2)) {
     const report = await scoreSamples({
       samples,
       root,
-      predictions: sqlDir,
+      predictions: resultDir,
       output: join(output, 'report.json'),
       python,
       timeout: scoreTimeout,

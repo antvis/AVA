@@ -1,5 +1,5 @@
 const { execFile } = require('node:child_process');
-const { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } = require('node:fs');
+const { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } = require('node:fs');
 const { dirname, join, resolve } = require('node:path');
 const { parseArgs } = require('node:util');
 const { ROOT, integer, inspectResources, loadQuestions, readJson, selectSamples, sha256 } = require('./index');
@@ -58,7 +58,6 @@ async function scoreSamples({
   predictions,
   output,
   root = ROOT,
-  mode = 'sql',
   python,
   timeout = 60_000,
   concurrency = 1,
@@ -66,26 +65,21 @@ async function scoreSamples({
 }) {
   predictions = resolve(predictions);
   output = resolve(output);
-  const results = join(dirname(output), 'exec_result');
-  if (mode === 'sql') mkdirSync(results, { recursive: true });
   const items = new Array(samples.length);
   let cursor = 0;
   await Promise.all(
     Array.from({ length: Math.min(concurrency, samples.length) }, async () => {
       while (cursor < samples.length) {
         const i = cursor++;
-        const sample = samples[i];
-        const id = sample.instance_id;
-        const path = join(predictions, `${id}.${mode === 'sql' ? 'sql' : 'csv'}`);
-        const resultPath = join(results, `${id}.csv`);
-        if (mode === 'sql' && existsSync(resultPath)) unlinkSync(resultPath);
+        const id = samples[i].instance_id;
+        const path = join(predictions, `${id}.csv`);
         if (!existsSync(path) || !readFileSync(path, 'utf8').trim()) {
           items[i] = { instance_id: id, score: 0, status: 'missing', error_info: 'No prediction' };
           continue;
         }
         try {
           const result = await official(
-            { root: resolve(root), action: 'score', mode, sample, predictions, results },
+            { root: resolve(root), action: 'score', instance_id: id, predictions },
             { python, timeout }
           );
           items[i] = {
@@ -111,7 +105,7 @@ async function scoreSamples({
   const report = {
     benchmark: 'spider2lite',
     scope: 'SQLite subset',
-    mode,
+    mode: 'exec_result',
     evaluatedAt: new Date().toISOString(),
     total: samples.length,
     predicted: samples.length - missing,
@@ -136,8 +130,7 @@ async function scoreSamples({
   return report;
 }
 
-const HELP = `Usage: node evals/cli.js score --dataset spider2lite --predictions <run-dir|sql-dir|csv-dir> [options]
-  --mode <sql|exec_result>  Native SQLite execution or official CSV comparison (default sql)
+const HELP = `Usage: node evals/cli.js score --dataset spider2lite --predictions <run-dir|csv-dir> [options]
   --limit <number|all>     Default all SQLite questions; run manifest selects its exact IDs
   --offset <number>        Offset after filters (default 0)
   --suite <database>       Filter a SQLite database
@@ -157,7 +150,6 @@ async function main(argv = process.argv.slice(2)) {
       dataset: { type: 'string' },
       predictions: { type: 'string' },
       output: { type: 'string' },
-      mode: { type: 'string', default: 'sql' },
       root: { type: 'string', default: ROOT },
       python: { type: 'string' },
       timeout: { type: 'string', default: '60000' },
@@ -171,7 +163,6 @@ async function main(argv = process.argv.slice(2)) {
   });
   if (values.help) return process.stdout.write(HELP);
   if (!values.predictions) throw new Error('--predictions is required');
-  if (!['sql', 'exec_result'].includes(values.mode)) throw new Error('--mode must be sql or exec_result');
   const timeout = integer(values.timeout, 'timeout');
   const concurrency = integer(values.concurrency, 'concurrency');
   const input = resolve(values.predictions);
@@ -186,14 +177,13 @@ async function main(argv = process.argv.slice(2)) {
     manifest ? { id: manifest.ids, limit: 'all' } : { ...values, limit: values.limit ?? 'all' },
     values.root
   );
-  inspectResources(samples, values.root, { databases: values.mode === 'sql' });
+  inspectResources(samples, values.root, { databases: false });
   const runtime = await checkScorer(values.root, { python: values.python, timeout });
   const report = await scoreSamples({
     samples,
-    predictions: manifest ? join(input, values.mode === 'sql' ? 'sql' : 'exec_result') : input,
+    predictions: manifest ? join(input, 'exec_result') : input,
     output: values.output ?? join(input, 'report.json'),
     root: values.root,
-    mode: values.mode,
     python: values.python,
     timeout,
     concurrency,
