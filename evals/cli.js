@@ -11,6 +11,7 @@ const adapters = {
   'ava-workflow': {
     databench: () => import('./ava-workflow/evals/databench.eval.ts'),
     spider2lite: () => import('./ava-workflow/evals/spider2lite.eval.ts'),
+    bird: () => import('./ava-workflow/evals/bird.eval.ts'),
   },
   'ava-agent': { databench: () => import('./ava-agent/evals/databench.eval.ts') },
 };
@@ -19,9 +20,11 @@ const HELP = `Usage (from repository root):
   node evals/cli.js run <ava-workflow|ava-agent> --benchmark <name> [options]
   node evals/cli.js score --predictions <file.csv> [options]
 
-Use run <target> --benchmark <databench|spider2lite> --help for target options.
+Use run <target> --benchmark <databench|spider2lite|bird> --help for target options.
 Download DataBench separately: node evals/databench/fetch.js
 Download Spider2-Lite resources: node evals/spider2lite/fetch.js
+Download BIRD dev: node evals/BIRD/fetch.js
+BIRD scoring: score --dataset bird --predictions <run-dir> --help
 Spider2-Lite scoring: score --dataset spider2lite --predictions <run-dir> --help
 
 Score options:
@@ -97,6 +100,7 @@ async function main(argv = process.argv.slice(2)) {
   if (command === 'score') {
     const { values } = takeOptions(args, { dataset: { type: 'string' } });
     if (values.dataset === 'spider2lite') return require('./spider2lite/score').main(args);
+    if (values.dataset === 'bird') return require('./BIRD/score').main(args);
     return score(args);
   }
   throw new Error(`Unknown command: ${command}.\n\n${HELP}`);

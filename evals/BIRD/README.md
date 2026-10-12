@@ -46,3 +46,42 @@ evals/BIRD/
 | `superhero` | 超级英雄 | 10 / 31 | 10,614 | 0.2 | 属性与能力的多对多关系 |
 | `thrombosis_prediction` | 血栓预测 | 3 / 64 | 15,952 | 7.0 | 医疗缩写、检验指标与条件理解 |
 | `toxicology` | 分子毒理学 | 4 / 11 | 49,813 | 2.6 | 原子、化学键与连接关系的图结构 |
+
+## 运行 AVA Workflow 评测
+
+需要 Node.js **22.18+** 和带有 `sqlite3` 标准库的 Python 3，无额外 Python 依赖。模型使用 `evals/ava-workflow/.env` 或已有环境变量中的 `OPENAI_API_KEY`、`OPENAI_MODEL`、`OPENAI_BASE_URL`；请求固定携带 `chat_template_kwargs.enable_thinking: false`，与其他 workflow 评测一致，服务端需支持该参数。
+
+```bash
+npm run build
+
+# 检查全部数据库能否加载和生成画像，不调用模型
+node evals/cli.js run ava-workflow --benchmark bird --check --limit all
+
+# 先跑 3 道题
+node evals/cli.js run ava-workflow --benchmark bird --limit 3 \
+  --output evals/ava-workflow/results/bird-smoke
+
+# 全量开发集
+node evals/cli.js run ava-workflow --benchmark bird --limit all --concurrency 3 \
+  --output evals/ava-workflow/results/bird-full
+
+# 离线重评已有结果，不调用模型
+node evals/cli.js score --dataset bird \
+  --predictions evals/ava-workflow/results/bird-smoke
+```
+
+默认 `direct` 策略、20 题、并发 1。支持 `--strategy direct|loop|subset`、`--suite <数据库名>`、`--id <question_id>`（可重复，支持 ID 0）、`--offset` 和 `--limit`。其他参数见 `--help`。每次运行使用新的或空的输出目录，不支持断点续跑，避免混用不同条件的答案。
+
+每道题执行 `source → profile → analyze`，使用 DuckDB 只读加载 SQLite 数据库。模型输入为 AVA 数据画像、原始问题和官方 `evidence`；不提供参考 SQL 或官方表描述。输出目录包含：
+
+- `manifest.json`：题目 ID、模型、关闭思考的请求参数、运行配置、数据与适配器哈希。
+- `sql/<id>.sql`、`exec_result/<id>.json`：最终 SQL 与 AVA 实际返回的有类型、按列排列的结果。
+- `records/<id>.json`、`report.json`：单题耗时、token 用量、失败原因，以及总体、各难度和各数据库准确率。
+
+## 评分口径
+
+采用 [BIRD 官方 EX 的行集合比较规则](https://github.com/AlibabaResearch/DAMO-ConvAI/blob/main/bird/llm/src/evaluation.py)：忽略行顺序和重复行，保留列顺序，数值比较不加误差容忍。根据结果字段类型还原 DuckDB 序列化为字符串的数值；文本字段不转换。
+
+本适配器比较 **AVA 在 DuckDB 上的实际结果**与**参考 SQL 在原始 SQLite 上的结果**，不重跑模型 SQL。因此报告标记为 `ava-result-vs-sqlite-gold`，不等同于官方将两份 SQL 都在 SQLite 执行的 EX，也不计算效率指标 VES/R-VES。
+
+每个 workflow 的 DuckDB 内存上限默认 2 GB，可用 `--memory-limit` 调整（欧洲足球库的画像会超过 512 MB）。查询默认超时 30 秒，单题评分默认超时 60 秒。AVA 结果最多 10,000 行、64 MiB，截断则记为失败；失败、缺失和评分错误均计零，保留在所选题目的分母中，并返回非零退出码。单纯答案不匹配不影响退出码。离线重评沿用运行清单中的题目，并校验数据哈希。

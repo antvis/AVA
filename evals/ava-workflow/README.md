@@ -7,7 +7,7 @@ AVA 的固定编排实现，按 `source → profile → analyze` 执行数据分
 ## 目录职责
 
 - `workflow.ts`：纯编排，返回分析结果，不处理评测集和评分。
-- `evals/`：外置评测器，负责数据加载、运行和评分；当前包含 `databench.eval.ts` 和 `spider2lite.eval.ts`。
+- `evals/`：外置评测器，负责数据加载、运行和评分；当前包含 `databench.eval.ts`、`spider2lite.eval.ts` 和 `bird.eval.ts`。
 - `package.json`：声明 ESM，无独立依赖。
 
 共享评测集与本目录平级，通用评测工具位于 `../_shared/`，报告位于 `../reports/`。新增评测器时，在 `evals/` 中实现输入适配和评分，复用 `workflow.ts`，并接入顶层 `evals/cli.js`。
@@ -113,4 +113,14 @@ export SPIDER2LITE_OUTPUT="evals/ava-workflow/results/spider2lite-$(date +%Y%m%d
 node evals/cli.js run ava-workflow --benchmark spider2lite --limit all --concurrency 3 --output $SPIDER2LITE_OUTPUT
 
 node evals/cli.js run ava-workflow --benchmark spider2lite --help
+```
+
+## BIRD
+
+使用 DuckDB 执行 AVA 分析，将实际结果与 SQLite 上执行的参考 SQL 结果按 BIRD 行集合规则比较。模型关闭思考，输入为 AVA 数据画像、问题和官方 evidence。数据准备、评分边界及完整参数见 [BIRD](../BIRD/README.md)。
+
+```bash
+node evals/cli.js run ava-workflow --benchmark bird --check --limit all
+node evals/cli.js run ava-workflow --benchmark bird --limit 3 --output evals/ava-workflow/results/bird-smoke
+node evals/cli.js run ava-workflow --benchmark bird --help
 ```
