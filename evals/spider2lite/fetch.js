@@ -4,11 +4,13 @@ const { copyFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync,
 const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { execFile } = require('node:child_process');
-const { promisify } = require('node:util');
+const { promisify, parseArgs } = require('node:util');
+const { createHash } = require('node:crypto');
+const { writeFileSync } = require('node:fs');
 
 const REPO = 'https://github.com/xlang-ai/Spider2.git';
 const exec = promisify(execFile);
-const HELP = 'Usage: node evals/spider2lite/fetch.js\nDownloads GitHub resources only. Download and extract SQLite databases manually; see evals/spider2lite/README.md.\n';
+const HELP = 'Usage: node evals/spider2lite/fetch.js [--revision <commit>]\nDownloads GitHub resources and the official evaluator. Download and extract SQLite databases manually; see evals/spider2lite/README.md.\n';
 
 function readJsonl(path) {
   const rows = readFileSync(path, 'utf8').trim().split(/\r?\n/).map((line) => JSON.parse(line));
@@ -23,8 +25,9 @@ function readJsonl(path) {
 }
 
 async function main(args = process.argv.slice(2)) {
-  if (args.length === 1 && args[0] === '--help') return process.stdout.write(HELP);
-  if (args.length) throw new Error(HELP);
+  const { values } = parseArgs({ args, options: { help: { type: 'boolean' }, revision: { type: 'string' } } });
+  if (values.help) return process.stdout.write(HELP);
+  if (values.revision && !/^[a-f0-9]{40}$/i.test(values.revision)) throw new Error('--revision must be a full Git commit SHA.');
 
   const temporary = mkdtempSync(join(tmpdir(), 'spider2lite-'));
   const repository = join(temporary, 'repo');
@@ -34,9 +37,14 @@ async function main(args = process.argv.slice(2)) {
     await exec('git', ['-C', repository, 'sparse-checkout', 'set', '--no-cone',
       '/spider2-lite/spider2-lite.jsonl',
       '/spider2-lite/resource/',
-      '/spider2-lite/evaluation_suite/gold/',
+      '/spider2-lite/evaluation_suite/',
     ]);
-    await exec('git', ['-C', repository, 'checkout']);
+    if (values.revision) {
+      await exec('git', ['-C', repository, 'fetch', '--depth', '1', 'origin', values.revision]);
+      await exec('git', ['-C', repository, 'checkout', '--detach', 'FETCH_HEAD']);
+    } else {
+      await exec('git', ['-C', repository, 'checkout']);
+    }
     const { stdout: revision } = await exec('git', ['-C', repository, 'rev-parse', 'HEAD']);
     const source = join(repository, 'spider2-lite');
     const resource = join(source, 'resource');
@@ -58,11 +66,26 @@ async function main(args = process.argv.slice(2)) {
     const results = readdirSync(join(gold, 'exec_result')).filter((name) => name.endsWith('.csv'));
     if (!results.length) throw new Error('No gold execution results found.');
 
+    const evaluator = join(source, 'evaluation_suite', 'evaluate.py');
+    if (!readFileSync(evaluator, 'utf8').includes('def compare_pandas_table(')) {
+      throw new Error('Unsupported upstream evaluator: compare_pandas_table missing.');
+    }
+    const files = {};
+    function fingerprint(directory, prefix = '') {
+      for (const entry of readdirSync(directory, { withFileTypes: true })) {
+        const name = prefix ? `${prefix}/${entry.name}` : entry.name;
+        if (entry.isDirectory()) fingerprint(join(directory, entry.name), name);
+        else if (entry.isFile()) files[name] = createHash('sha256').update(readFileSync(join(directory, entry.name))).digest('hex');
+      }
+    }
+    fingerprint(source);
+
     // Publish only after downloads and validation succeed. Keep unrelated local files intact.
     cpSync(resource, join(__dirname, 'resource'), { recursive: true });
     mkdirSync(join(__dirname, 'evaluation_suite'), { recursive: true });
-    cpSync(gold, join(__dirname, 'evaluation_suite', 'gold'), { recursive: true });
+    cpSync(join(source, 'evaluation_suite'), join(__dirname, 'evaluation_suite'), { recursive: true });
     copyFileSync(questionsPath, join(__dirname, 'spider2-lite.jsonl'));
+    writeFileSync(join(__dirname, 'upstream.json'), JSON.stringify({ repository: REPO, revision: revision.trim(), fetchedAt: new Date().toISOString(), files }, null, 2) + '\n');
     process.stdout.write(`Fetched ${questions.length} questions and ${results.length} gold CSV files, plus the complete resource directory.\nUpstream revision: ${revision.trim()}\n`);
     process.stdout.write('SQLite databases must be downloaded and extracted manually to resource/databases/spider2-localdb/; see evals/spider2lite/README.md.\n');
   } finally {
