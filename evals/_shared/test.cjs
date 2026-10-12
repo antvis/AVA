@@ -78,3 +78,19 @@ test('Agent fixtures use a benchmark-independent directory and reject host paths
   await assert.rejects(readFixture('file:///etc/passwd', directory), /Unsupported/);
   await assert.rejects(readFixture('ava-fixture:0.parquet', undefined), /Unsupported/);
 });
+
+test('model config comes only from the env file, ignoring inherited values', (t) => {
+  const { readModelEnv } = require('./model-env');
+  const path = join(temporary(t), '.env');
+  const expected = { OPENAI_MODEL: 'file-model', OPENAI_BASE_URL: 'https://file.example/v1', OPENAI_API_KEY: 'file-key' };
+  writeFileSync(path, Object.entries(expected).map(([key, value]) => `${key}="${value}"`).join('\n'));
+  const previous = { ...process.env };
+  t.after(() => { process.env = previous; });
+  Object.assign(process.env, { OPENAI_MODEL: 'inherited-model', OPENAI_BASE_URL: 'https://inherited.example/v1', OPENAI_API_KEY: 'inherited-key' });
+  assert.deepEqual(readModelEnv(path), expected);
+  for (const missing of Object.keys(expected)) {
+    writeFileSync(path, Object.entries(expected).filter(([key]) => key !== missing).map(([key, value]) => `${key}=${value}`).join('\n'));
+    assert.throws(() => readModelEnv(path), new RegExp(`${missing} is required`));
+  }
+  assert.throws(() => readModelEnv(`${path}.missing`), /ENOENT/);
+});

@@ -11,7 +11,7 @@ npm install
 npm run build
 ```
 
-在 `evals/ava-workflow/.env` 中配置模型，也可使用优先级更高的进程环境变量：
+在仓库根目录 `.env` 中配置模型。模型名、地址和 API key 只从此文件读取，忽略进程环境变量及评测子目录的 `.env`：
 
 ```env
 OPENAI_API_KEY=your-api-key
@@ -19,7 +19,7 @@ OPENAI_MODEL=your-model
 OPENAI_BASE_URL=https://your-provider.example.com/v1
 ```
 
-`OPENAI_BASE_URL` 可省略，默认使用 OpenAI。请求固定携带 `chat_template_kwargs.enable_thinking: false`，服务端需支持该参数。修改 AVA 源码后需重新构建，修改编排或评测文件后可直接运行。
+以上三项均必填，没有默认模型或地址；启动时会打印实际模型、地址和配置文件路径，不输出 API key。请求固定携带 `chat_template_kwargs.enable_thinking: false`，服务端需支持该参数。修改 AVA 源码后需重新构建，修改编排或评测文件后可直接运行。
 
 按需下载数据并准备依赖：
 

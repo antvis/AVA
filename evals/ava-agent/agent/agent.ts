@@ -7,7 +7,7 @@ const provider = createOpenAI({
 });
 
 export default defineAgent({
-  model: provider.chat(process.env.OPENAI_MODEL ?? 'gpt-4o-mini'),
+  model: provider.chat(process.env.OPENAI_MODEL!),
   defaultTools: false,
   modelContextWindowTokens: Number(process.env.MODEL_CONTEXT_WINDOW ?? 128000),
   limits: {

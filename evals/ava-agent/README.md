@@ -11,10 +11,10 @@ cd evals/ava-agent
 nvm use
 npm install
 npm run sandbox:build
-test -f .env || cp .env.example .env
+test -f ../../.env || cp ../../.env.example ../../.env
 ```
 
-Fill in all three required variables in `.env`:
+Fill in all three required variables in the repository root `.env`:
 
 ```dotenv
 OPENAI_MODEL=your-model
@@ -22,7 +22,7 @@ OPENAI_API_KEY=your-key
 OPENAI_BASE_URL=https://your-provider.example.com/v1
 ```
 
-Use an OpenAI-compatible **Chat Completions** API. `MODEL_CONTEXT_WINDOW` is optional (default: `128000`). Configuration priority: process environment → `.env` → `../.env`. Do not commit credentials or lock files.
+Use an OpenAI-compatible **Chat Completions** API. `MODEL_CONTEXT_WINDOW` is optional (default: `128000`). Model name, API key and base URL are read only from the repository root `.env`; inherited process values and package-local `.env` files are ignored. Do not commit credentials or lock files.
 
 ## Run
 

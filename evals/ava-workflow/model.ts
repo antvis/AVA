@@ -1,15 +1,9 @@
-import { existsSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { readModelEnv } from '../_shared/model-env.js';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { LLMConfig } from '../../lib/index.js';
 
 export function llmConfig(): LLMConfig {
-  const envPath = fileURLToPath(new URL('./.env', import.meta.url));
-  if (existsSync(envPath)) process.loadEnvFile(envPath);
-  const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL;
-  const baseURL = process.env.OPENAI_BASE_URL;
-  if (!apiKey || !model) throw new Error('Set OPENAI_API_KEY and OPENAI_MODEL in evals/ava-workflow/.env.');
+  const { OPENAI_API_KEY: apiKey, OPENAI_MODEL: model, OPENAI_BASE_URL: baseURL } = readModelEnv();
   const provider = createOpenAI({
     apiKey,
     baseURL,
