@@ -13,7 +13,11 @@ const adapters = {
     spider2lite: () => import('./ava-workflow/evals/spider2lite.eval.ts'),
     bird: () => import('./ava-workflow/evals/bird.eval.ts'),
   },
-  'ava-agent': { databench: () => import('./ava-agent/evals/databench.eval.ts') },
+  'ava-agent': {
+    databench: () => import('./ava-agent/evals/databench.eval.ts'),
+    bird: () => import('./ava-agent/evals/bird.eval.ts'),
+    spider2lite: () => import('./ava-agent/evals/spider2lite.eval.ts'),
+  },
 };
 
 const HELP = `Usage (from repository root):

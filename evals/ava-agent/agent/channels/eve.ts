@@ -1,11 +1,11 @@
 import { defineChannel } from 'eve/channels';
-import { readFixture } from '../../lib/attachments.mjs';
+import { MAX_ATTACHMENT_BYTES, readFixture } from '../../lib/attachments.mjs';
 import { eveChannel } from 'eve/channels/eve';
 import { localDev, placeholderAuth, vercelOidc } from 'eve/channels/auth';
 
 const http = eveChannel({
   auth: [vercelOidc(), localDev(), placeholderAuth()],
-  uploadPolicy: { maxBytes: 100 * 1024 * 1024 },
+  uploadPolicy: { maxBytes: MAX_ATTACHMENT_BYTES },
 });
 
 export default defineChannel({
