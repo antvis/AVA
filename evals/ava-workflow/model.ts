@@ -2,7 +2,7 @@ import { readModelEnv } from '../_shared/model-env.js';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { LLMConfig } from '../../lib/index.js';
 
-export function llmConfig(): LLMConfig {
+export function llmConfig(): LLMConfig & { baseURL: string } {
   const { OPENAI_API_KEY: apiKey, OPENAI_MODEL: model, OPENAI_BASE_URL: baseURL } = readModelEnv();
   const provider = createOpenAI({
     apiKey,
@@ -19,6 +19,6 @@ export function llmConfig(): LLMConfig {
   return {
     apiKey,
     model: provider.chat(model),
-    ...(baseURL ? { baseURL } : {}),
+    baseURL,
   };
 }

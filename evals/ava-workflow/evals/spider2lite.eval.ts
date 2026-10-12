@@ -143,7 +143,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   const config = llmConfig();
   const output = resolve(values.output ?? join(workflowRoot, `results/spider2lite-${values.strategy}`));
-  const endpoint = new URL(config.baseURL ?? 'https://api.openai.com/v1');
+  const endpoint = new URL(config.baseURL);
   endpoint.username = '';
   endpoint.password = '';
   endpoint.search = '';
@@ -172,6 +172,7 @@ export async function main(argv = process.argv.slice(2)) {
         join(workflowRoot, '../_shared/resume.js'),
         join(workflowRoot, 'workflow.ts'),
         join(workflowRoot, 'model.ts'),
+        join(workflowRoot, '../_shared/model-env.js'),
         join(workflowRoot, '../_shared/usage.js'),
         join(workflowRoot, '../_shared/files.js'),
         join(workflowRoot, '../_shared/args.js'),

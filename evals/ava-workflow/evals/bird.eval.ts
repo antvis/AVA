@@ -127,7 +127,7 @@ export async function main(argv = process.argv.slice(2)) {
   if (!values.resume && existsSync(output) && readdirSync(output).length)
     throw new Error('Choose a new or empty --output directory.');
   mkdirSync(output, { recursive: true });
-  const endpoint = new URL(config.baseURL ?? 'https://api.openai.com/v1');
+  const endpoint = new URL(config.baseURL);
   endpoint.username = '';
   endpoint.password = '';
   endpoint.search = '';
@@ -159,6 +159,7 @@ export async function main(argv = process.argv.slice(2)) {
         join(workflowRoot, '../_shared/resume.js'),
         join(workflowRoot, 'workflow.ts'),
         join(workflowRoot, 'model.ts'),
+        join(workflowRoot, '../_shared/model-env.js'),
         join(workflowRoot, '../_shared/usage.js'),
         join(workflowRoot, '../_shared/files.js'),
         join(workflowRoot, '../_shared/args.js'),
