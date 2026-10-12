@@ -64,7 +64,9 @@ export BIRD_OUTPUT="evals/ava-workflow/results/bird-$(date +%Y%m%d-%H%M%S)"
 node evals/cli.js run ava-workflow --benchmark bird --limit all --concurrency 4 --output "$BIRD_OUTPUT"
 ```
 
-Spider2-Lite 和 BIRD 默认并发 1，可用 `--suite` 或 `--id` 筛选题目。查询默认超时 30 秒、单题评分超时 60 秒；结果上限为 10,000 行、64 MiB，截断视为失败。BIRD 每个 workflow 默认内存上限 2 GB，可用 `--memory-limit` 调整。
+Spider2-Lite 和 BIRD 默认并发 1，可用 `--suite` 或 `--id` 筛选题目。查询默认超时 30 秒、单题评分超时 60 秒；Spider2-Lite 结果上限为 10,000 行，BIRD 为 1,000,000 行，两者均限制 64 MiB，截断视为失败。BIRD 每个 workflow 默认内存上限 2 GB，可用 `--memory-limit` 调整。
+
+BIRD 可加 `--database-description`，将所选数据库 `database_description/` 下的 CSV 字段说明加入模型上下文；默认不加入。说明文件的哈希会记录在 manifest 中。对比实验请使用新的结果目录。
 
 ## 中断后续跑
 
