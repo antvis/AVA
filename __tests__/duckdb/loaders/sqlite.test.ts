@@ -1,8 +1,5 @@
 /** Real SQLite fixture: sales.csv plus customers, products, indexes and foreign keys. */
 import { join } from 'node:path';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { DatabaseSync } from 'node:sqlite';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -180,23 +177,7 @@ describe('loaders/sqlite', () => {
 
 // These values are legal SQLite data regardless of the column's declared affinity.
 it('profiles and queries actual storage types without dropping mixed values', async () => {
-  const directory = mkdtempSync(join(tmpdir(), 'ava-sqlite-types-'));
-  const path = join(directory, 'mixed.sqlite');
-  const db = new DatabaseSync(path);
-  db.exec(`
-    CREATE TABLE measurements (
-      id INTEGER PRIMARY KEY, amount NUMERIC, location POINT, flexible,
-      payload BLOB, mixed_blob, calculated NUMERIC GENERATED ALWAYS AS (amount) VIRTUAL
-    );
-    INSERT INTO measurements (id, amount, location, flexible, payload, mixed_blob) VALUES
-      (1, 42, '(1,2)', 9007199254740993, X'00FF80', X'00FF80'),
-      (2, '', '(3,4)', 7, X'', 'hello'),
-      (3, NULL, NULL, NULL, NULL, 42),
-      (4, 2.5, '(5,6)', -3, X'AB', 2.5);
-    CREATE TABLE empty_table (value INTEGER);
-    CREATE VIEW measurement_view AS SELECT amount, location FROM measurements;
-  `);
-  db.close();
+  const path = join(__dirname, '../../datasets/mixed.sqlite');
   const ava = new AVA({ llm: { model: 'no-model-call' } });
   try {
     await ava.source({ type: 'sqlite', options: { path } });
@@ -224,6 +205,5 @@ it('profiles and queries actual storage types without dropping mixed values', as
     expect((await ava.engine!.execute('SELECT * FROM measurement_view')).data).toHaveLength(4);
   } finally {
     await ava.dispose();
-    rmSync(directory, { recursive: true, force: true });
   }
 });
