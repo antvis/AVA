@@ -673,7 +673,7 @@ export interface AnalysisEngine {
 
 /** Controls the maximum size of a bounded execution result. */
 export interface ExecutionOptions {
-  /** Maximum rows returned. Default 200; hard limit 10,000. */
+  /** Maximum rows returned. Default 200; hard limit 1,000,000. */
   maxRows?: number;
   /** Maximum serialized UTF-8 bytes returned. Default 1 MiB. */
   maxResultBytes?: number;

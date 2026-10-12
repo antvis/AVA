@@ -132,6 +132,7 @@ test('workflow passes only question and evidence; model request disables thinkin
       assert(!question.includes('SECRET GOLD'));
       assert.match(question, /Evidence/);
       assert.equal(options.includeSummary, false);
+      assert.equal(options.maxRows, 1_000_000);
       return {};
     },
   };

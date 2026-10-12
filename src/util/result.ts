@@ -3,7 +3,7 @@ import { utf8ByteLength } from './bytes';
 import type { ExecutionOptions, ExecutionResult, QueryColumn } from '../types';
 
 const DEFAULT_MAX_ROWS = 200;
-const MAX_ROWS = 10_000;
+const MAX_ROWS = 1_000_000;
 const DEFAULT_MAX_RESULT_BYTES = 1024 * 1024; // 1M
 const MAX_FIELD_BYTES = 1024 * 1024; // 1M
 

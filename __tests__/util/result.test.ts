@@ -1,8 +1,24 @@
 import { describe, expect, it } from 'vitest';
 
-import { executionResult, maxResultBytes } from '../../src/util/result';
+import { executionResult, maxResultBytes, maxRows } from '../../src/util/result';
 
 describe('executionResult', () => {
+  it('allows larger row limits up to the fixed one-million-row cap', () => {
+    expect(maxRows()).toBe(200);
+    expect(maxRows({ maxRows: 300_000 })).toBe(300_000);
+    expect(maxRows({ maxRows: 2_000_000 })).toBe(1_000_000);
+    const rows = Array.from({ length: 10_001 }, (_, value) => ({ value }));
+    expect(executionResult(rows, [], { maxRows: 20_000 }).data).toHaveLength(10_001);
+  });
+
+  it('normalizes row limits to positive integers and defaults invalid numbers', () => {
+    expect(maxRows({ maxRows: 2.9 })).toBe(2);
+    expect(maxRows({ maxRows: 0 })).toBe(1);
+    expect(maxRows({ maxRows: -1 })).toBe(1);
+    for (const maxRowsValue of [NaN, Infinity, -Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+      expect(maxRows({ maxRows: maxRowsValue })).toBe(200);
+    }
+  });
   it('defaults the result limit to 1 MiB', () => {
     expect(maxResultBytes()).toBe(1024 * 1024);
     expect(maxResultBytes({ maxResultBytes: 0 })).toBe(1);

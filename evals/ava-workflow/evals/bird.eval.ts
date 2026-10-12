@@ -16,7 +16,7 @@ import type { AnalysisStrategyConfig, LLMConfig } from '../../../lib/index.js';
 
 type Sample = { question_id: number; db_id: string; question: string; evidence?: string };
 const workflowRoot = fileURLToPath(new URL('../', import.meta.url));
-const resultLimits = { maxRows: 10_000, maxResultBytes: 64 * 1024 * 1024 };
+const resultLimits = { maxRows: 1_000_000, maxResultBytes: 64 * 1024 * 1024 };
 const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark bird [options]
   DuckDB results compared with SQLite gold; thinking disabled.
   --check                 Load and profile selected databases without calling the model
@@ -42,7 +42,8 @@ export async function runSample(ava: AVA, sample: Sample, root: string, strategy
   return workflow(
     ava,
     { type: 'sqlite', options: { path: databasePath(sample, root) } },
-    modelQuestion({ question: sample.question, evidence: sample.evidence }),
+    modelQuestion({ question: sample.question, evidence: sample.evidence }) +
+      '\nReturn scalar result cells (numbers, strings, booleans or null). Express durations as numbers in the units requested by the question, not INTERVAL values. Cast text dates before using DuckDB date functions.',
     { includeSummary: false, strategy, ...resultLimits }
   );
 }
