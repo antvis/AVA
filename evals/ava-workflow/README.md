@@ -124,7 +124,7 @@ node evals/cli.js run ava-workflow --benchmark spider2lite --help
 node evals/cli.js run ava-workflow --benchmark bird --check --limit all
 
 export BIRD_OUTPUT="evals/ava-workflow/results/bird-$(date +%Y%m%d-%H%M%S)"
-node evals/cli.js run ava-workflow --benchmark bird --limit 3 --output $BIRD_OUTPUT
+node evals/cli.js run ava-workflow --benchmark bird --limit all --concurrency 10 --output $BIRD_OUTPUT
 
 node evals/cli.js run ava-workflow --benchmark bird --help
 ```
