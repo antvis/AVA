@@ -121,6 +121,7 @@ export async function main(argv = process.argv.slice(2)) {
         type: 'sqlite',
         options: { path: join(root, 'resource/databases/spider2-localdb', `${db}.sqlite`) },
       });
+      await probe.profile();
     }
   } finally {
     await probe.dispose();
@@ -220,7 +221,7 @@ export async function main(argv = process.argv.slice(2)) {
             engine: { type: 'duckdb', queryTimeoutMs: timeout },
           });
           // Capture executable DSL and diagnostics, not raw reasoning transcripts or gold.
-          for (const eventName of ['translateend', 'querystart', 'queryend']) {
+          for (const eventName of ['querystart', 'queryend']) {
             ava.on(eventName, (event: { data?: { dsl?: string; error?: unknown; truncated?: boolean } }) => {
               if (event.data?.dsl) lastSQL = event.data.dsl;
               traces.push({

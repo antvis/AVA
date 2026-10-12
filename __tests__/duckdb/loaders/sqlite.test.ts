@@ -1,5 +1,8 @@
 /** Real SQLite fixture: sales.csv plus customers, products, indexes and foreign keys. */
 import { join } from 'node:path';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { DatabaseSync } from 'node:sqlite';
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -173,4 +176,54 @@ describe('loaders/sqlite', () => {
       { product: 'Office Chair', image: '' },
     ]);
   });
+});
+
+// These values are legal SQLite data regardless of the column's declared affinity.
+it('profiles and queries actual storage types without dropping mixed values', async () => {
+  const directory = mkdtempSync(join(tmpdir(), 'ava-sqlite-types-'));
+  const path = join(directory, 'mixed.sqlite');
+  const db = new DatabaseSync(path);
+  db.exec(`
+    CREATE TABLE measurements (
+      id INTEGER PRIMARY KEY, amount NUMERIC, location POINT, flexible,
+      payload BLOB, mixed_blob, calculated NUMERIC GENERATED ALWAYS AS (amount) VIRTUAL
+    );
+    INSERT INTO measurements (id, amount, location, flexible, payload, mixed_blob) VALUES
+      (1, 42, '(1,2)', 9007199254740993, X'00FF80', X'00FF80'),
+      (2, '', '(3,4)', 7, X'', 'hello'),
+      (3, NULL, NULL, NULL, NULL, 42),
+      (4, 2.5, '(5,6)', -3, X'AB', 2.5);
+    CREATE TABLE empty_table (value INTEGER);
+    CREATE VIEW measurement_view AS SELECT amount, location FROM measurements;
+  `);
+  db.close();
+  const ava = new AVA({ llm: { model: 'no-model-call' } });
+  try {
+    await ava.source({ type: 'sqlite', options: { path } });
+    const profile = await ava.profile();
+    const table = profile.tables.find((table) => table.name === 'measurements')!;
+    expect(table.fields.find((field) => field.name === 'amount')).toMatchObject({ type: 'VARCHAR', logicalType: 'string' });
+    expect(table.fields.find((field) => field.name === 'location')).toMatchObject({ type: 'VARCHAR', logicalType: 'string' });
+    expect(table.fields.find((field) => field.name === 'flexible')).toMatchObject({ type: 'BIGINT', logicalType: 'numeric' });
+    expect((await ava.engine!.execute(`
+      SELECT amount, location, CAST(flexible AS VARCHAR) AS flexible,
+             hex(payload) AS payload, calculated,
+             union_tag(mixed_blob) AS tag,
+             hex(union_extract(mixed_blob, 'blob_value')) AS blob_value,
+             union_extract(mixed_blob, 'text_value') AS text_value,
+             union_extract(mixed_blob, 'integer_value') AS integer_value,
+             union_extract(mixed_blob, 'real_value') AS real_value
+      FROM measurements ORDER BY id
+    `)).data).toEqual([
+      { amount: '42', location: '(1,2)', flexible: '9007199254740993', payload: '00FF80', calculated: '42', tag: 'blob_value', blob_value: '00FF80', text_value: null, integer_value: null, real_value: null },
+      { amount: '', location: '(3,4)', flexible: '7', payload: '', calculated: '', tag: 'text_value', blob_value: null, text_value: 'hello', integer_value: null, real_value: null },
+      { amount: null, location: null, flexible: null, payload: null, calculated: null, tag: 'integer_value', blob_value: null, text_value: null, integer_value: 42, real_value: null },
+      { amount: '2.5', location: '(5,6)', flexible: '-3', payload: 'AB', calculated: '2.5', tag: 'real_value', blob_value: null, text_value: null, integer_value: null, real_value: 2.5 },
+    ]);
+    expect((await ava.engine!.execute('SELECT * FROM empty_table')).data).toEqual([]);
+    expect((await ava.engine!.execute('SELECT * FROM measurement_view')).data).toHaveLength(4);
+  } finally {
+    await ava.dispose();
+    rmSync(directory, { recursive: true, force: true });
+  }
 });

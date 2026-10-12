@@ -8,7 +8,9 @@ import type { LoadedSource, SQLiteSourceOptions } from '../../types';
 
 const ATTACH_ALIAS = 'sqlite_source';
 
-type SQLiteColumn = { name: string; type: string; generated: boolean };
+type SQLiteColumn = { name: string; type: string; storageTypes: string[]; resolvedType: string };
+
+const MIXED_BLOB_TYPE = 'UNION(integer_value BIGINT, real_value DOUBLE, text_value VARCHAR, blob_value BLOB)';
 
 /** Wrap native SQLite SQL as a DuckDB table function. */
 function sqliteQuerySQL(sql: string): string {
@@ -99,18 +101,39 @@ function duckDBType(type: string): string {
   return 'VARCHAR';
 }
 
-/** sqlite_query returns strings; restore types and transport blobs losslessly as hex. */
-function generatedTableSQL(table: string, fields: SQLiteColumn[]): string {
-  const columns = fields.map(({ name, type }) => ({
-    name: sqlIdentifier(name),
-    type: duckDBType(type),
-  }));
-  const sourceColumns = columns.map(({ name, type }) =>
-    type === 'BLOB' ? `CASE WHEN ${name} IS NULL THEN NULL ELSE hex(${name}) END AS ${name}` : name
-  );
-  const typedColumns = columns.map(({ name, type }) =>
-    type === 'BLOB' ? `unhex(${name}) AS ${name}` : `CAST(${name} AS ${type}) AS ${name}`
-  );
+/** SQLite declarations are affinities, not constraints. Inspect every row, not a sample. */
+function resolvedType(declared: string, storageTypes: string[]): string {
+  if (!storageTypes.length) return duckDBType(declared);
+  if (storageTypes.includes('blob')) return storageTypes.length === 1 ? 'BLOB' : MIXED_BLOB_TYPE;
+  if (storageTypes.includes('text')) return 'VARCHAR';
+  if (storageTypes.includes('real') || duckDBType(declared) === 'DOUBLE') return 'DOUBLE';
+  return 'BIGINT';
+}
+
+/** Native queries bypass the extension's affinity casts, including for generated columns. */
+function tableSQL(table: string, fields: SQLiteColumn[]): string {
+  const sourceColumns: string[] = [];
+  const typedColumns = fields.map(({ name, resolvedType: type, storageTypes }, i) => {
+    const column = sqlIdentifier(name);
+    const value = sqlIdentifier(`v${i}`);
+    const tag = sqlIdentifier(`t${i}`);
+
+    if (type === MIXED_BLOB_TYPE) {
+      sourceColumns.push(`typeof(${column}) AS ${tag}`);
+      sourceColumns.push(`CASE WHEN typeof(${column}) = 'blob' THEN hex(${column}) ELSE ${column} END AS ${value}`);
+      const members = { integer: 'BIGINT', real: 'DOUBLE', text: 'VARCHAR', blob: 'BLOB' };
+      const branches = storageTypes.map((storage) => {
+        const expression = storage === 'blob' ? `unhex(${value})` : `CAST(${value} AS ${members[storage]})`;
+        return `WHEN ${sqlStringLiteral(storage)} THEN CAST(union_value(${storage}_value := ${expression}) AS ${type})`;
+      });
+      return `CASE ${tag} ${branches.join(' ')} END AS ${column}`;
+    }
+
+    sourceColumns.push(
+      `${type === 'BLOB' ? `CASE WHEN ${column} IS NULL THEN NULL ELSE hex(${column}) END` : column} AS ${value}`
+    );
+    return `${type === 'BLOB' ? `unhex(${value})` : `CAST(${value} AS ${type})`} AS ${column}`;
+  });
   const query = `SELECT ${sourceColumns.join(', ')} FROM ${sqlIdentifier(table)}`;
   return `SELECT ${typedColumns.join(', ')} FROM ${sqliteQuerySQL(query)}`;
 }
@@ -118,6 +141,7 @@ function generatedTableSQL(table: string, fields: SQLiteColumn[]): string {
 export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSource> {
   const filePath = resolve(options.path);
   let tableNames: string[] = [];
+  const columnsByTable = new Map<string, SQLiteColumn[]>();
 
   return {
     register: async (conn) => {
@@ -132,28 +156,44 @@ export async function loadSQLite(options: SQLiteSourceOptions): Promise<LoadedSo
            ORDER BY t.name, c.cid`
         )}`
       );
-      const columnsByTable = new Map<string, SQLiteColumn[]>();
+      columnsByTable.clear();
       for (const row of columnsReader.getRowObjectsJson()) {
         const table = String(row.table_name);
         const columns = columnsByTable.get(table) ?? [];
         if (row.name !== null) {
-          columns.push({ name: String(row.name), type: String(row.type), generated: Number(row.hidden) > 1 });
+          columns.push({ name: String(row.name), type: String(row.type), storageTypes: [], resolvedType: '' });
         }
         columnsByTable.set(table, columns);
       }
       tableNames = [...columnsByTable.keys()];
       for (const [table, columns] of columnsByTable) {
-        // The attached catalog omits generated columns; native queries expose them.
-        const query = columns.some((column) => column.generated)
-          ? generatedTableSQL(table, columns)
-          : `SELECT * FROM ${ATTACH_ALIAS}.main.${sqlIdentifier(table)}`;
-        await conn.run(`CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS ${query}`);
+        const storageQuery = `SELECT ${columns
+          .map(({ name }, i) => `group_concat(DISTINCT typeof(${sqlIdentifier(name)})) AS ${sqlIdentifier(`c${i}`)}`)
+          .join(', ')} FROM ${sqlIdentifier(table)}`;
+        const observed = (
+          await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(storageQuery)}`)
+        ).getRowObjectsJson()[0];
+        columns.forEach((column, i) => {
+          column.storageTypes = String(observed[`c${i}`] ?? '')
+            .split(',')
+            .filter((type) => type && type !== 'null');
+          column.resolvedType = resolvedType(column.type, column.storageTypes);
+        });
+        await conn.run(`CREATE OR REPLACE VIEW ${sqlIdentifier(table)} AS ${tableSQL(table, columns)}`);
       }
       return tableNames;
     },
     getSchema: async (conn) => {
       const reader = await conn.runAndReadAll(`SELECT * FROM ${sqliteQuerySQL(schemaSQL(tableNames))}`);
-      return rowObjects2Schema(reader.getRowObjectsJson());
+      const schema = rowObjects2Schema(reader.getRowObjectsJson());
+      for (const table of schema.tables) {
+        for (const field of table.fields) {
+          const column = columnsByTable.get(table.name)!.find((column) => column.name === field.name)!;
+          // Retain native spelling only when it describes the exposed execution type.
+          if (duckDBType(field.type) !== column.resolvedType) field.type = column.resolvedType;
+        }
+      }
+      return schema;
     },
     allowedDirectories: [dirname(filePath)],
     // The engine closes the attached database when its connection is disposed.
