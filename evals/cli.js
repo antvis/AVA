@@ -63,10 +63,7 @@ async function score(args) {
   const scores = await evaluate({
     samples,
     predictions: predictionIndex(values.predictions),
-    metricNames: (values.metrics ?? plugin.defaultMetrics?.join(',') ?? '')
-      .split(',')
-      .map((name) => name.trim())
-      .filter(Boolean),
+    metricNames: values.metrics === undefined ? plugin.defaultMetrics : values.metrics.split(',').map((name) => name.trim()).filter(Boolean),
   });
   const report = buildReport(scores, samples, values, plugin);
   if (values.output) writeFileSync(values.output, `${JSON.stringify(report, null, 2)}\n`, 'utf8');

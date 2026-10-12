@@ -30,12 +30,12 @@ test('shared evaluator has no implicit benchmark and requires explicit metrics',
   await assert.rejects(evaluate({ samples: [], predictions: new Map() }), /metric/);
 });
 
-test('CLI custom plugin controls report title and primary metric', (t) => {
+test('CLI custom plugin uses its title and first selected metric', (t) => {
   const directory = temporary(t);
   const plugin = join(directory, 'plugin.cjs');
   writeFileSync(plugin, `module.exports = {
-    name: 'custom', title: 'Custom benchmark', primaryMetric: 'exact',
-    defaultMetrics: ['always', 'exact'],
+    name: 'custom', title: 'Custom benchmark',
+    defaultMetrics: ['exact', 'always'],
     metrics: { always: () => true, exact: (answer, sample) => answer === sample.goldAnswer },
     load: () => [{ id: 'one', suite: 'demo', goldAnswer: 'right' }]
   };`);

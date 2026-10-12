@@ -1,7 +1,7 @@
-const { createHash } = require('node:crypto');
+const { sha256 } = require('./files');
 const { readFileSync } = require('node:fs');
 
-const { readCsv } = require('./datasets');
+const { readCsv } = require('./results');
 
 function buildReport(scores, samples, options, plugin = {}) {
   const metadata = options.metadata ? JSON.parse(readFileSync(options.metadata, 'utf8')) : {};
@@ -38,10 +38,8 @@ function buildReport(scores, samples, options, plugin = {}) {
   const tokens = numbers('total_tokens');
   const execution = rows.filter((row) => row.error);
   const models = [...new Set(rows.map((row) => row.model).filter(Boolean))];
-  const hashes = options.predictions.map((path) => createHash('sha256').update(readFileSync(path)).digest('hex'));
-  const primaryMetric = Object.hasOwn(scores.metrics, plugin.primaryMetric) ? plugin.primaryMetric : Object.keys(scores.metrics)[0];
-  const metric = scores.metrics[primaryMetric];
-  if (!metric) throw new Error('At least one scoring metric is required.');
+  const hashes = options.predictions.map(sha256);
+  const [primaryMetric, metric] = Object.entries(scores.metrics)[0];
   return {
     generatedAt: new Date().toISOString(),
     // This is the scoring runtime; original execution versions must be supplied.

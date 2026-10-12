@@ -188,4 +188,4 @@ async function main(argv = process.argv.slice(2)) {
   return report;
 }
 
-module.exports = { main, official, checkScorer, scoreSamples, pythonPath };
+module.exports = { main, checkScorer, scoreSamples, pythonPath };

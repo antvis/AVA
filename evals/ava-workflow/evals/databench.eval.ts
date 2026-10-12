@@ -9,9 +9,8 @@ import { integer } from '../../_shared/args.js';
 import { atomicJson, readJson } from '../../_shared/files.js';
 
 import { AVA } from '../../../lib/index.js';
-import { readCsv } from '../../_shared/datasets.js';
 import { evaluate, getDataset, predictionIndex, registerPlugin } from '../../_shared/index.js';
-import { OUTPUT_COLUMNS, csvCell } from '../../_shared/results.js';
+import { OUTPUT_COLUMNS, csvCell, readCsv } from '../../_shared/results.js';
 import { formatAnswer, selectSamples, plugins } from '../../databench/index.js';
 import { workflow } from '../workflow.ts';
 
@@ -32,7 +31,7 @@ Options:
   --help                 Show help
 `;
 
-export function answerFrom(data: unknown, type: string) {
+function answerFrom(data: unknown, type: string) {
   const rows = Array.isArray(data) ? data : [data];
   const values = rows.flatMap((row) =>
     row && typeof row === 'object' && !Array.isArray(row) ? Object.values(row) : [row],

@@ -132,11 +132,8 @@ function inspectResources(samples, root = ROOT, { databases = true, maxContextBy
 
 module.exports = {
   ROOT,
-  readJsonl,
   loadQuestions,
   selectSamples,
-  contextFiles,
   modelQuestion,
-  goldFiles,
   inspectResources,
 };

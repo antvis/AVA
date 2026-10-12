@@ -1,4 +1,4 @@
-import { appendFileSync, copyFileSync, constants, cpSync, readdirSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, constants, cpSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -45,10 +45,8 @@ function prepareSnapshot(
   mkdirSync(join(benchmarkDirectory, 'databench'), { recursive: true });
   mkdirSync(join(benchmarkDirectory, '_shared'), { recursive: true });
   writeFileSync(join(benchmarkDirectory, 'package.json'), '{"type":"commonjs"}\n');
-  for (const name of ['databench', '_shared']) {
-    for (const file of readdirSync(join(evalsRoot, name))) {
-      if (file.endsWith('.js')) cpSync(join(evalsRoot, name, file), join(benchmarkDirectory, name, file));
-    }
+  for (const file of ['databench/index.js', '_shared/results.js']) {
+    cpSync(join(evalsRoot, file), join(benchmarkDirectory, file));
   }
   const files = new Map();
   for (const sample of samples) {
@@ -106,9 +104,8 @@ export async function main(argv: string[] = process.argv.slice(2)) {
   }
 }
 
-export function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>, exact = false) {
-  const { readCsv } = require('../../_shared/datasets.js');
-  const { OUTPUT_COLUMNS } = require('../../_shared/results.js');
+function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>, exact = false) {
+  const { readCsv, OUTPUT_COLUMNS } = require('../../_shared/results.js');
   const selected = new Set(samples.map((sample) => sample.id));
   const rows = new Map<string, Record<string, string>>();
   for (const path of paths) {
@@ -127,8 +124,8 @@ export function loadPreviousResults(paths: string[], samples: ReturnType<Benchma
   return [...rows.values()];
 }
 
-export function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string, replace?: string) {
-  const { readCsv } = require('../../_shared/datasets.js');
+function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string, replace?: string) {
+  const { readCsv } = require('../../_shared/results.js');
   const source = join(directory, 'predictions.csv');
   const rows = readCsv(source);
   const ids = new Set(rows.map((row: { id: string }) => row.id));
@@ -149,7 +146,7 @@ export function saveResults(directory: string, samples: ReturnType<Benchmark['se
   return output;
 }
 
-export function createEvals(directory: string) {
+function createEvals(directory: string) {
   const { csvCell } = require(join(directory, '_shared/results.js'));
   const benchmark: Benchmark = require(join(directory, 'databench/index.js'));
   const samples: ReturnType<typeof benchmark.selectSamples> = JSON.parse(
