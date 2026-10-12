@@ -6,7 +6,6 @@ import {
   existsSync,
   mkdirSync,
   openSync,
-  readFileSync,
   renameSync,
   unlinkSync,
   writeFileSync,
@@ -17,13 +16,9 @@ import { fileURLToPath } from 'node:url';
 
 import { AVA } from '../../../lib/index.js';
 import { csvCell } from '../../_shared/results.js';
-import {
-  ROOT,
-  inspectResources,
-  modelQuestion,
-  selectSamples,
-} from '../../spider2lite/index.js';
+import { ROOT, inspectResources, modelQuestion, selectSamples } from '../../spider2lite/index.js';
 import { checkScorer, pythonPath, scoreSamples } from '../../spider2lite/score.js';
+import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { workflow } from '../workflow.ts';
 import { llmConfig } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
@@ -50,6 +45,7 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark spider2lite 
   --timeout <ms>          DuckDB query deadline (default 30000)
   --score-timeout <ms>    Per-question scoring deadline (default 60000)
   --max-context-bytes <n> Fail rather than truncate reference material (default 4194304)
+  --resume                Resume an existing --output directory
   --output <directory>    Run directory (default results/spider2lite-<strategy>)
   --help                 Show help without loading model/data
 `;
@@ -76,6 +72,7 @@ export async function main(argv = process.argv.slice(2)) {
     options: {
       help: { type: 'boolean' },
       check: { type: 'boolean' },
+      resume: { type: 'boolean' },
       root: { type: 'string', default: ROOT },
       limit: { type: 'string', default: '20' },
       offset: { type: 'string', default: '0' },
@@ -93,6 +90,8 @@ export async function main(argv = process.argv.slice(2)) {
     },
   });
   if (values.help) return process.stdout.write(HELP);
+  if (values.resume && (!values.output || values.check))
+    throw new Error('--resume requires --output and cannot use --check');
   if (!['direct', 'loop', 'subset'].includes(values.strategy))
     throw new Error('--strategy must be direct, loop or subset');
   const strategy: AnalysisStrategyConfig =
@@ -170,6 +169,7 @@ export async function main(argv = process.argv.slice(2)) {
     implementation: Object.fromEntries(
       [
         fileURLToPath(import.meta.url),
+        join(workflowRoot, '../_shared/resume.js'),
         join(workflowRoot, 'workflow.ts'),
         join(workflowRoot, 'model.ts'),
         join(workflowRoot, '../_shared/usage.js'),
@@ -194,34 +194,50 @@ export async function main(argv = process.argv.slice(2)) {
   closeSync(lock);
   try {
     const manifestPath = join(output, 'manifest.json');
-    if (existsSync(manifestPath)) {
-      if (JSON.stringify(readJson(manifestPath).spec) !== JSON.stringify(spec))
-        throw new Error('Run configuration/resources changed. Choose a new --output directory.');
-    } else {
-      atomicJson(manifestPath, { ...spec, spec, createdAt: new Date().toISOString() });
-    }
+    if (values.resume && !existsSync(manifestPath)) throw new Error('No manifest found in --output directory.');
+    const previous = existsSync(manifestPath) ? readJson(manifestPath) : undefined;
+    if (previous)
+      validateResume(previous.spec, spec, [
+        // The previous runner already supported automatic resume with identical selections.
+        {
+          'evals/ava-workflow/evals/spider2lite.eval.ts':
+            '879a256700b57908afd24e40944c82253389f87d1686b85406f56685c05b81ea',
+          'evals/_shared/resume.js': undefined,
+        },
+      ]);
     const sqlDir = join(output, 'sql');
     const records = join(output, 'records');
     const resultDir = join(output, 'exec_result');
     mkdirSync(sqlDir, { recursive: true });
     mkdirSync(records, { recursive: true });
     mkdirSync(resultDir, { recursive: true });
-    const pending = samples.filter((sample) => {
-      const record = join(records, `${sample.instance_id}.json`);
-      if (!existsSync(record) || readJson(record).status !== 'success') return true;
-      const sql = join(sqlDir, `${sample.instance_id}.sql`);
-      if (!existsSync(sql) || sha256(sql) !== readJson(record).sql_sha256)
-        throw new Error(`Prediction changed: ${sample.instance_id}. Use a new output directory.`);
-      const csv = join(resultDir, `${sample.instance_id}.csv`);
-      if (!existsSync(csv) || sha256(csv) !== readJson(record).result_sha256)
-        throw new Error(`Result changed: ${sample.instance_id}. Use a new output directory.`);
-      return false;
+    const pending = pendingSamples(samples, output, {
+      idKey: 'instance_id',
+      databaseKey: 'db',
+      resultExtension: 'csv',
+    });
+    atomicJson(manifestPath, {
+      ...spec,
+      spec,
+      createdAt: previous?.createdAt ?? new Date().toISOString(),
+      ...(previous
+        ? {
+            resumes: [
+              ...(previous.resumes ?? []),
+              {
+                resumedAt: new Date().toISOString(),
+                previousImplementation: previous.spec.implementation,
+                concurrency,
+              },
+            ],
+          }
+        : {}),
     });
     process.stdout.write(
       `Run: ${pending.length} pending, ${samples.length - pending.length} completed, concurrency ${concurrency}\n`
     );
     let cursor = 0;
-    await Promise.all(
+    const workers = await Promise.allSettled(
       Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
         while (cursor < pending.length) {
           const sample = pending[cursor++];
@@ -302,6 +318,8 @@ export async function main(argv = process.argv.slice(2)) {
         }
       })
     );
+    const failedWorker = workers.find((worker) => worker.status === 'rejected');
+    if (failedWorker?.status === 'rejected') throw failedWorker.reason;
     const report = await scoreSamples({
       samples,
       root,

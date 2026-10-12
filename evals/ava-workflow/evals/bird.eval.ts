@@ -1,20 +1,14 @@
-import { atomicJson, sha256 } from '../../_shared/files.js';
+import { atomicJson, readJson, sha256 } from '../../_shared/files.js';
 import { integer } from '../../_shared/args.js';
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, writeFileSync, unlinkSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
 import { AVA } from '../../../lib/index.js';
-import {
-  ROOT,
-  selectSamples,
-  databasePath,
-  modelQuestion,
-  inspectResources,
-  resultPayload,
-} from '../../BIRD/index.js';
+import { ROOT, selectSamples, databasePath, modelQuestion, inspectResources, resultPayload } from '../../BIRD/index.js';
 import { compare, scoreSamples } from '../../BIRD/score.js';
+import { pendingSamples, validateResume } from '../../_shared/resume.js';
 import { workflow } from '../workflow.ts';
 import { llmConfig } from '../model.ts';
 import { createUsage } from '../../_shared/usage.js';
@@ -39,7 +33,8 @@ const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark bird [option
   --memory-limit <size>   DuckDB memory per workflow (default 2GB)
   --score-timeout <ms>    Per-question scoring deadline (default 60000)
   --python <path>         Python 3 with built-in sqlite3 (default python3)
-  --output <directory>    New/empty run directory (default results/bird-<timestamp>)
+  --resume                Resume --output, skipping verified successful results
+  --output <directory>    Run directory (new/empty unless --resume)
   --help                 Show help
 `;
 
@@ -58,6 +53,7 @@ export async function main(argv = process.argv.slice(2)) {
     options: {
       help: { type: 'boolean' },
       check: { type: 'boolean' },
+      resume: { type: 'boolean' },
       root: { type: 'string', default: ROOT },
       limit: { type: 'string', default: '20' },
       offset: { type: 'string', default: '0' },
@@ -75,6 +71,8 @@ export async function main(argv = process.argv.slice(2)) {
     },
   });
   if (values.help) return process.stdout.write(HELP);
+  if (values.resume && (!values.output || values.check))
+    throw new Error('--resume requires --output and cannot use --check');
   if (!['direct', 'loop', 'subset'].includes(values.strategy))
     throw new Error('--strategy must be direct, loop or subset');
   const strategy: AnalysisStrategyConfig =
@@ -112,7 +110,8 @@ export async function main(argv = process.argv.slice(2)) {
 
   const config = llmConfig();
   const output = resolve(values.output ?? join(workflowRoot, `results/bird-${Date.now()}`));
-  if (existsSync(output) && readdirSync(output).length) throw new Error('Choose a new or empty --output directory.');
+  if (!values.resume && existsSync(output) && readdirSync(output).length)
+    throw new Error('Choose a new or empty --output directory.');
   mkdirSync(output, { recursive: true });
   const endpoint = new URL(config.baseURL ?? 'https://api.openai.com/v1');
   endpoint.username = '';
@@ -142,6 +141,7 @@ export async function main(argv = process.argv.slice(2)) {
     implementation: Object.fromEntries(
       [
         fileURLToPath(import.meta.url),
+        join(workflowRoot, '../_shared/resume.js'),
         join(workflowRoot, 'workflow.ts'),
         join(workflowRoot, 'model.ts'),
         join(workflowRoot, '../_shared/usage.js'),
@@ -151,69 +151,117 @@ export async function main(argv = process.argv.slice(2)) {
       ].map((file) => [relative(resolve(workflowRoot, '../..'), file), sha256(file)])
     ),
   };
-  // Exclusive creation prevents two runs from sharing the same output directory.
-  writeFileSync(join(output, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx' });
-  for (const folder of ['sql', 'exec_result', 'records']) mkdirSync(join(output, folder));
-  let cursor = 0;
-  await Promise.all(
-    Array.from({ length: Math.min(concurrency, samples.length) }, async () => {
-      while (cursor < samples.length) {
-        const sample = samples[cursor++];
-        const id = String(sample.question_id);
-        const startedAt = Date.now();
-        const usage = createUsage();
-        const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
-        const ava = new AVA({
-          llm: { ...config, onQueryUsage },
-          engine: { type: 'duckdb', queryTimeoutMs: timeout, memoryLimit: values['memory-limit'] },
-        });
-        for (const [event, stage] of [
-          ['loadstart', 'loading'],
-          ['profilestart', 'profiling'],
-          ['analyzestart', 'analyzing'],
-        ])
-          ava.on(event, () => process.stdout.write(`${id} (${sample.db_id}): ${stage}\n`));
-        let record: Record<string, unknown>;
-        try {
-          const result = await runSample(ava, sample, root, strategy);
-          if (!result.sql?.trim()) throw new Error('Workflow returned no final SQL');
-          const sql = join(output, 'sql', `${id}.sql`);
-          writeFileSync(sql, result.sql + '\n');
-          const prediction = join(output, 'exec_result', `${id}.json`);
-          atomicJson(prediction, resultPayload(result));
-          record = {
-            status: 'success',
-            sql_sha256: sha256(sql),
-            result_sha256: sha256(prediction),
-            rowCount: result.data.length,
-          };
-        } catch (cause) {
-          const message = cause instanceof Error ? cause.message : String(cause);
-          record = {
-            status: 'failed',
-            error: config.apiKey ? message.split(config.apiKey).join('[REDACTED]') : message,
-          };
-        } finally {
-          await ava.dispose();
+  const lock = join(output, '.run.lock');
+  writeFileSync(lock, String(process.pid), { flag: 'wx' });
+  try {
+    const manifestPath = join(output, 'manifest.json');
+    const previous = values.resume ? readJson(manifestPath) : undefined;
+    if (previous)
+      validateResume(previous, manifest, [
+        // Known runners before the shared resume helper; inference/scoring are unchanged.
+        {
+          'evals/ava-workflow/evals/bird.eval.ts': 'd683044863969b089b853a154be5b1aaed1f72dc2252f1d341ef87858d45268c',
+          'evals/ava-workflow/evals/bird-resume.js': undefined,
+          'evals/_shared/resume.js': undefined,
+        },
+        {
+          'evals/ava-workflow/evals/bird.eval.ts': '1d7aa5fd1ff0a8fae1dcfe6ec9b7d54d2e75dab51ba0d6101b30a5188c80f169',
+          'evals/ava-workflow/evals/bird-resume.js': 'ae20e3e1383bc48771def4ba4d21cd8b24c78a304ae953a05c5840a3a3362d5b',
+          'evals/_shared/resume.js': undefined,
+        },
+      ]);
+    const pending = previous
+      ? pendingSamples(samples, output, { idKey: 'question_id', databaseKey: 'db_id', resultExtension: 'json' })
+      : samples;
+    if (previous) {
+      atomicJson(manifestPath, {
+        ...manifest,
+        createdAt: previous.createdAt,
+        resumes: [
+          ...(previous.resumes ?? []),
+          {
+            resumedAt: manifest.createdAt,
+            previousImplementation: previous.implementation,
+            concurrency,
+          },
+        ],
+      });
+    } else {
+      writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n', { flag: 'wx' });
+    }
+    for (const folder of ['sql', 'exec_result', 'records']) mkdirSync(join(output, folder), { recursive: true });
+    process.stdout.write(
+      `Run: ${pending.length} pending, ${samples.length - pending.length} completed, concurrency ${concurrency}\n`
+    );
+    let cursor = 0;
+    const workers = await Promise.allSettled(
+      Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
+        while (cursor < pending.length) {
+          const sample = pending[cursor++];
+          const id = String(sample.question_id);
+          // Discard artifacts from interrupted/failed attempts before retrying.
+          for (const file of [join(output, 'sql', `${id}.sql`), join(output, 'exec_result', `${id}.json`)]) {
+            if (existsSync(file)) unlinkSync(file);
+          }
+          const startedAt = Date.now();
+          const usage = createUsage();
+          const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
+          const ava = new AVA({
+            llm: { ...config, onQueryUsage },
+            engine: { type: 'duckdb', queryTimeoutMs: timeout, memoryLimit: values['memory-limit'] },
+          });
+          for (const [event, stage] of [
+            ['loadstart', 'loading'],
+            ['profilestart', 'profiling'],
+            ['analyzestart', 'analyzing'],
+          ])
+            ava.on(event, () => process.stdout.write(`${id} (${sample.db_id}): ${stage}\n`));
+          let record: Record<string, unknown>;
+          try {
+            const result = await runSample(ava, sample, root, strategy);
+            if (!result.sql?.trim()) throw new Error('Workflow returned no final SQL');
+            const sql = join(output, 'sql', `${id}.sql`);
+            writeFileSync(sql, result.sql + '\n');
+            const prediction = join(output, 'exec_result', `${id}.json`);
+            atomicJson(prediction, resultPayload(result));
+            record = {
+              status: 'success',
+              sql_sha256: sha256(sql),
+              result_sha256: sha256(prediction),
+              rowCount: result.data.length,
+            };
+          } catch (cause) {
+            const message = cause instanceof Error ? cause.message : String(cause);
+            record = {
+              status: 'failed',
+              error: config.apiKey ? message.split(config.apiKey).join('[REDACTED]') : message,
+            };
+          } finally {
+            await ava.dispose();
+          }
+          atomicJson(join(output, 'records', `${id}.json`), {
+            ...record,
+            question_id: sample.question_id,
+            db_id: sample.db_id,
+            elapsedMs: Date.now() - startedAt,
+            usage: usage.value,
+          });
+          process.stdout.write(`${record.status} ${id}\n`);
         }
-        atomicJson(join(output, 'records', `${id}.json`), {
-          ...record,
-          question_id: sample.question_id,
-          db_id: sample.db_id,
-          elapsedMs: Date.now() - startedAt,
-          usage: usage.value,
-        });
-        process.stdout.write(`${record.status} ${id}\n`);
-      }
-    })
-  );
-  const report = await scoreSamples({
-    samples,
-    root,
-    predictions: join(output, 'exec_result'),
-    output: join(output, 'report.json'),
-    python: values.python,
-    timeout: scoreTimeout,
-  });
-  if (report.missing || report.errors) process.exitCode = 1;
+      })
+    );
+    const failedWorker = workers.find((worker) => worker.status === 'rejected');
+    if (failedWorker?.status === 'rejected') throw failedWorker.reason;
+    const report = await scoreSamples({
+      samples,
+      root,
+      predictions: join(output, 'exec_result'),
+      output: join(output, 'report.json'),
+      python: values.python,
+      timeout: scoreTimeout,
+    });
+    if (report.missing || report.errors) process.exitCode = 1;
+  } finally {
+    unlinkSync(lock);
+  }
 }
