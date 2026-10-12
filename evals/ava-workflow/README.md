@@ -2,12 +2,12 @@
 
 AVA 的固定编排实现，按 `source → profile → analyze` 执行数据分析，支持 `direct`、`loop`、`subset` 三种分析策略。
 
-编排与评测分离：`workflow(ava, source, query, config)` 接收 AVA 实例、数据源、问题和分析配置，返回分析结果；外置评测器负责准备输入、调用编排并评分。DataBench 是目前接入的一个评测器。
+编排与评测分离：`workflow(ava, source, query, config)` 接收 AVA 实例、数据源、问题和分析配置，返回分析结果；外置评测器负责准备输入、调用编排并评分。目前接入 DataBench 和 Spider 2.0-Lite 的 SQLite 子集。
 
 ## 目录职责
 
 - `workflow.ts`：纯编排，返回分析结果，不处理评测集和评分。
-- `evals/`：外置评测器，负责数据加载、运行和评分；当前包含 `databench.eval.ts`。
+- `evals/`：外置评测器，负责数据加载、运行和评分；当前包含 `databench.eval.ts` 和 `spider2lite.eval.ts`。
 - `package.json`：声明 ESM，无独立依赖。
 
 共享评测集与本目录平级，通用评测工具位于 `../_shared/`，报告位于 `../reports/`。新增评测器时，在 `evals/` 中实现输入适配和评分，复用 `workflow.ts`，并接入顶层 `evals/cli.js`。
@@ -100,4 +100,14 @@ node evals/cli.js score --dataset databench-lite --predictions evals/ava-workflo
 node evals/cli.js --help
 node evals/cli.js run ava-workflow --benchmark databench --help
 node evals/cli.js score --help
+```
+
+## Spider 2.0-Lite 评测器
+
+通过 DuckDB 的 SQLite 扩展读取数据库并执行模型生成的 SQL，再由未经修改的官方 Python 评分器使用 SQLite 重跑并评分。数据准备、依赖、结果口径和离线重评见 [Spider 2.0-Lite](../spider2lite/README.md)。
+
+```bash
+node evals/cli.js run ava-workflow --benchmark spider2lite --check --limit all
+node evals/cli.js run ava-workflow --benchmark spider2lite --limit 3 --output evals/ava-workflow/results/spider2lite-smoke
+node evals/cli.js run ava-workflow --benchmark spider2lite --help
 ```

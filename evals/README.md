@@ -9,7 +9,7 @@
 | [AVA Workflow](ava-workflow/README.md) | 按固定步骤加载数据、生成画像并分析 | `direct`、`loop`、`subset` 策略 | Node.js 22.18+ |
 | [AVA Agent](ava-agent/README.md) | 由模型选择工具和执行步骤 | 使用／不使用 AVA Skill | Node.js 24+、Docker |
 
-目前支持 [DataBench](databench/README.md)，用于评测表格问答的答案准确率。它提供两种数据版本：`databench-lite` 使用采样表，`databench` 使用完整表。
+目前支持 [Spider 2.0-Lite 的 SQLite 子集](spider2lite/README.md)（Workflow、官方 SQL 评分）及 [DataBench](databench/README.md)。DataBench 用于评测表格问答的答案准确率。它提供两种数据版本：`databench-lite` 使用采样表，`databench` 使用完整表。
 
 ## 准备环境
 
