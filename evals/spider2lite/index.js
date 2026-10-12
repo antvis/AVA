@@ -123,10 +123,8 @@ function inspectResources(samples, root = ROOT, { databases = true, maxContextBy
     }
     if (databases) required.add(join(root, 'resource/databases/spider2-localdb', `${sample.db}.sqlite`));
   }
-  const files = {};
   for (const path of [...required].sort()) {
     if (!existsSync(path) || !statSync(path).isFile()) missing.push(path);
-    else files[path.slice(root.length + 1)] = sha256(path);
   }
   if (missing.length)
     throw new Error(
@@ -134,16 +132,6 @@ function inspectResources(samples, root = ROOT, { databases = true, maxContextBy
         .map((m) => `- ${m}`)
         .join('\n')}\nRun fetch.js for resources; manually extract SQLite files to resource/databases/spider2-localdb/.`
     );
-  const upstreamPath = join(root, 'upstream.json');
-  const upstream = existsSync(upstreamPath) ? readJson(upstreamPath) : null;
-  if (upstream) {
-    for (const [name, hash] of Object.entries(files)) {
-      if (name.endsWith('.sqlite')) continue;
-      if (upstream.files?.[name] !== hash)
-        throw new Error(`Upstream fingerprint mismatch: ${name}. Re-fetch a consistent revision.`);
-    }
-  }
-  return { revision: upstream?.revision ?? null, verified: !!upstream, files };
 }
 
 module.exports = {

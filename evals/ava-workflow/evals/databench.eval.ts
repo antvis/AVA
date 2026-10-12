@@ -3,6 +3,8 @@ import { dirname, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
+import { createOpenAI } from '@ai-sdk/openai';
+
 import { AVA } from '../../../lib/index.js';
 import { readCsv } from '../../_shared/datasets.js';
 import { evaluate, getDataset, predictionIndex } from '../../_shared/index.js';
@@ -36,7 +38,23 @@ export function llmConfig(): LLMConfig {
   const model = process.env.OPENAI_MODEL;
   const baseURL = process.env.OPENAI_BASE_URL;
   if (!apiKey || !model) throw new Error('Set OPENAI_API_KEY and OPENAI_MODEL in evals/ava-workflow/.env.');
-  return { apiKey, model, ...(baseURL ? { baseURL } : {}) };
+  const provider = createOpenAI({
+    apiKey,
+    baseURL,
+    fetch: (input, init) =>
+      fetch(input, {
+        ...init,
+        body: JSON.stringify({
+          ...JSON.parse(init!.body as string),
+          chat_template_kwargs: { enable_thinking: false },
+        }),
+      }),
+  });
+  return {
+    apiKey,
+    model: provider.chat(model),
+    ...(baseURL ? { baseURL } : {}),
+  };
 }
 
 function integer(value: string, name: string, minimum: number) {
@@ -138,7 +156,7 @@ export async function main(argv = process.argv.slice(2)) {
               answer,
               sql,
               error,
-              config.model,
+              typeof config.model === 'string' ? config.model : config.model.modelId,
               Date.now() - startedAt,
               usage?.inputTokens ?? '',
               usage?.outputTokens ?? '',

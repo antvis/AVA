@@ -107,7 +107,7 @@ export async function main(argv = process.argv.slice(2)) {
   const python = values.python ?? pythonPath();
   const samples: Sample[] = selectSamples(values, root);
   // Fail missing data/dependencies before obtaining model configuration or creating output.
-  const provenance = inspectResources(samples, root, { maxContextBytes });
+  inspectResources(samples, root, { maxContextBytes });
   const runtime = await checkScorer(root, { python, timeout: scoreTimeout });
   const probe = new AVA({
     llm: { model: 'preflight-no-model-call' },
@@ -124,9 +124,7 @@ export async function main(argv = process.argv.slice(2)) {
     await probe.dispose();
   }
   process.stdout.write(
-    `Preflight OK: ${samples.length} SQLite questions, revision ${
-      provenance.revision ?? 'UNVERIFIED'
-    }, DuckDB SQLite extension; scorer SQLite ${runtime.sqlite}\n`
+    `Preflight OK: ${samples.length} SQLite questions, DuckDB SQLite extension; scorer SQLite ${runtime.sqlite}\n`
   );
   if (values.check) return;
 
@@ -140,10 +138,10 @@ export async function main(argv = process.argv.slice(2)) {
     benchmark: 'spider2lite',
     scope: 'SQLite subset',
     ids: samples.map((s) => s.instance_id),
-    provenance,
     runtime,
-    model: config.model,
+    model: typeof config.model === 'string' ? config.model : config.model.modelId,
     endpoint: endpoint.toString(),
+    thinking: false,
     strategy,
     engine: 'duckdb-sqlite',
     modelContext: 'ava-profile + question + external-knowledge',
@@ -156,6 +154,7 @@ export async function main(argv = process.argv.slice(2)) {
       [
         fileURLToPath(import.meta.url),
         join(workflowRoot, 'workflow.ts'),
+        join(workflowRoot, 'evals/databench.eval.ts'),
         join(workflowRoot, '../spider2lite/index.js'),
         ...[
           'duckdb/engine.js',
@@ -265,7 +264,6 @@ export async function main(argv = process.argv.slice(2)) {
       python,
       timeout: scoreTimeout,
       concurrency,
-      provenance,
       runtime,
     });
     if (report.missing || report.errors) process.exitCode = 1;

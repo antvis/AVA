@@ -365,6 +365,16 @@ Set environment variables before `source`; `.env` is not loaded automatically.
 | `OPENAI_MODEL` | Model name; defaults to `gpt-4o-mini` |
 | `OPENAI_BASE_URL` | OpenAI-compatible endpoint; optional for OpenAI |
 
+Set `llm.model` to a model name or a preconfigured AI SDK model instance. When an instance is supplied, `provider`, `apiKey`, and `baseURL` are ignored.
+
+```ts
+const ava = new AVA({
+  llm: { model: yourConfiguredModel },
+});
+```
+
+AVA continues to call `generateText({ model: languageModel(llmConfig), ... })`. Configure service-specific behavior, such as disabling thinking, on the supplied model. With a model name, AVA uses its default provider configuration. The workflow evaluations supply a model configured to disable thinking.
+
 The Quick Start uses [Anthropic's compatibility endpoint](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk)
 with a Claude model and Anthropic API key. The variable names remain `OPENAI_*`.
 

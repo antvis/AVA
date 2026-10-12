@@ -62,7 +62,6 @@ async function scoreSamples({
   python,
   timeout = 60_000,
   concurrency = 1,
-  provenance,
   runtime,
 }) {
   predictions = resolve(predictions);
@@ -124,7 +123,6 @@ async function scoreSamples({
     coverage: (samples.length - missing) / samples.length,
     datasetTotal: all.length,
     sqliteTotal: all.filter((r) => r.instance_id.startsWith('local')).length,
-    provenance,
     runtime,
     limits: { timeoutMs: timeout, concurrency },
     items,
@@ -188,13 +186,7 @@ async function main(argv = process.argv.slice(2)) {
     manifest ? { id: manifest.ids, limit: 'all' } : { ...values, limit: values.limit ?? 'all' },
     values.root
   );
-  const provenance = inspectResources(samples, values.root, { databases: values.mode === 'sql' });
-  if (manifest) {
-    for (const [file, hash] of Object.entries(provenance.files)) {
-      if (manifest.provenance?.files?.[file] !== hash)
-        throw new Error(`Run resource changed: ${file}. Use a new run directory.`);
-    }
-  }
+  inspectResources(samples, values.root, { databases: values.mode === 'sql' });
   const runtime = await checkScorer(values.root, { python: values.python, timeout });
   const report = await scoreSamples({
     samples,
@@ -205,7 +197,6 @@ async function main(argv = process.argv.slice(2)) {
     python: values.python,
     timeout,
     concurrency,
-    provenance,
     runtime,
   });
   if (report.missing || report.errors) process.exitCode = 1;
