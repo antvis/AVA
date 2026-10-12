@@ -110,7 +110,7 @@ node evals/cli.js score --help
 node evals/cli.js run ava-workflow --benchmark spider2lite --check --limit all
 
 export SPIDER2LITE_OUTPUT="evals/ava-workflow/results/spider2lite-$(date +%Y%m%d-%H%M%S)"
-node evals/cli.js run ava-workflow --benchmark spider2lite --limit 10 --concurrency 3 --output $SPIDER2LITE_OUTPUT
+node evals/cli.js run ava-workflow --benchmark spider2lite --limit all --concurrency 3 --output $SPIDER2LITE_OUTPUT
 
 node evals/cli.js run ava-workflow --benchmark spider2lite --help
 ```
