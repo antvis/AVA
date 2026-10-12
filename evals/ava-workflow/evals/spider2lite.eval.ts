@@ -1,3 +1,5 @@
+import { atomicJson, readJson, sha256 } from '../../_shared/files.js';
+import { integer } from '../../_shared/args.js';
 import {
   appendFileSync,
   closeSync,
@@ -17,16 +19,14 @@ import { AVA } from '../../../lib/index.js';
 import { csvCell } from '../../_shared/results.js';
 import {
   ROOT,
-  integer,
   inspectResources,
   modelQuestion,
-  readJson,
   selectSamples,
-  sha256,
 } from '../../spider2lite/index.js';
-import { atomicJson, checkScorer, pythonPath, scoreSamples } from '../../spider2lite/score.js';
+import { checkScorer, pythonPath, scoreSamples } from '../../spider2lite/score.js';
 import { workflow } from '../workflow.ts';
-import { llmConfig } from './databench.eval.ts';
+import { llmConfig } from '../model.ts';
+import { createUsage } from '../../_shared/usage.js';
 
 import type { AnalysisStrategyConfig, LLMConfig } from '../../../lib/index.js';
 
@@ -171,7 +171,10 @@ export async function main(argv = process.argv.slice(2)) {
       [
         fileURLToPath(import.meta.url),
         join(workflowRoot, 'workflow.ts'),
-        join(workflowRoot, 'evals/databench.eval.ts'),
+        join(workflowRoot, 'model.ts'),
+        join(workflowRoot, '../_shared/usage.js'),
+        join(workflowRoot, '../_shared/files.js'),
+        join(workflowRoot, '../_shared/args.js'),
         join(workflowRoot, '../spider2lite/index.js'),
         join(workflowRoot, '../spider2lite/score.js'),
         ...[
@@ -223,15 +226,10 @@ export async function main(argv = process.argv.slice(2)) {
         while (cursor < pending.length) {
           const sample = pending[cursor++];
           const startedAt = Date.now();
-          const usage = { inputTokens: 0, outputTokens: 0, totalTokens: 0, calls: 0 };
+          const usage = createUsage();
           let lastSQL = '';
           const traces: unknown[] = [];
-          const onQueryUsage: LLMConfig['onQueryUsage'] = (value) => {
-            usage.inputTokens += value.inputTokens ?? 0;
-            usage.outputTokens += value.outputTokens ?? 0;
-            usage.totalTokens += value.totalTokens ?? 0;
-            usage.calls++;
-          };
+          const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
           const ava = new AVA({
             llm: { ...config, onQueryUsage },
             engine: { type: 'duckdb', queryTimeoutMs: timeout },
@@ -295,7 +293,7 @@ export async function main(argv = process.argv.slice(2)) {
             instance_id: sample.instance_id,
             db: sample.db,
             elapsedMs: Date.now() - startedAt,
-            usage,
+            usage: usage.value,
             traces,
           };
           atomicJson(join(records, `${sample.instance_id}.json`), record);

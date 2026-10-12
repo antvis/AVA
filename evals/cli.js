@@ -3,7 +3,7 @@
 const { writeFileSync } = require('node:fs');
 const { parseArgs } = require('node:util');
 
-const { evaluate, getDataset, loadPlugin, predictionIndex } = require('./_shared');
+const { evaluate, getDataset, loadPlugin, predictionIndex, registerPlugin } = require('./_shared');
 const { takeOptions } = require('./_shared/args');
 const { buildReport } = require('./_shared/report');
 
@@ -54,6 +54,7 @@ async function score(args) {
   });
   if (values.help) return process.stdout.write(HELP);
 
+  require('./databench').plugins.forEach(registerPlugin);
   values.plugin?.forEach(loadPlugin);
   if (!values.predictions?.length) throw new Error(`--predictions is required.\n\n${HELP}`);
   const plugin = getDataset(values.dataset);
@@ -62,12 +63,12 @@ async function score(args) {
   const scores = await evaluate({
     samples,
     predictions: predictionIndex(values.predictions),
-    metricNames: (values.metrics ?? plugin.defaultMetrics?.join(',') ?? 'databench-answer')
+    metricNames: (values.metrics ?? plugin.defaultMetrics?.join(',') ?? '')
       .split(',')
       .map((name) => name.trim())
       .filter(Boolean),
   });
-  const report = buildReport(scores, samples, values);
+  const report = buildReport(scores, samples, values, plugin);
   if (values.output) writeFileSync(values.output, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 
   process.stdout.write(`Samples: ${report.total}\nPredicted: ${report.predicted}\nMissing: ${report.missing}\n`);

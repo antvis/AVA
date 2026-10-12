@@ -103,6 +103,8 @@ const plugins = [
   ['databench', 'full'],
 ].map(([name, directory]) => ({
   name,
+  title: `DataBench ${directory} (080_Books excluded)`,
+  primaryMetric: 'databench-answer',
   defaultMetrics: ['databench-answer'],
   metrics: { 'databench-answer': databenchAnswer },
   load: (paths) => load(name, directory, paths),

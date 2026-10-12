@@ -20,8 +20,6 @@ function loadPlugin(path) {
   return plugins.map(registerPlugin);
 }
 
-for (const plugin of require('../databench').plugins) registerPlugin(plugin);
-
 function predictionIndex(paths) {
   const predictions = new Map();
   for (const path of paths) {
@@ -34,7 +32,8 @@ function predictionIndex(paths) {
   return predictions;
 }
 
-async function evaluate({ samples, predictions, metricNames = ['databench-answer'] }) {
+async function evaluate({ samples, predictions, metricNames }) {
+  if (!Array.isArray(metricNames) || !metricNames.length) throw new Error('At least one scoring metric is required.');
   const selectedMetrics = getMetrics(metricNames);
   const newSummary = () => ({
     total: 0,

@@ -7,6 +7,7 @@ AVA 的固定编排实现，按 `source → profile → analyze` 执行数据分
 ## 目录职责
 
 - `workflow.ts`：纯编排，返回分析结果，不处理评测集和评分。
+- `model.ts`：所有 Workflow 评测器共享的模型配置。
 - `evals/`：外置评测器，负责数据加载、运行和评分；当前包含 `databench.eval.ts`、`spider2lite.eval.ts` 和 `bird.eval.ts`。
 - `package.json`：声明 ESM，无独立依赖。
 
@@ -73,7 +74,7 @@ node evals/cli.js run ava-workflow --benchmark databench
 | `--concurrency` | 并发数 | `3` |
 | `--output` | 预测结果 CSV 路径 | `evals/ava-workflow/results/<dataset>.csv` |
 
-复用结果文件时，已有非空答案的题目会被跳过，包括答错的题目；没有答案的题目会重试。更换模型、策略或题目范围时，请使用不同的输出文件：
+复用结果文件时，先校验同名 `.csv.manifest.json` 中的数据集、模型、端点、引擎和策略配置；已有非空答案的题目会被跳过，包括答错的题目，没有答案的题目会重试。旧 CSV 没有 manifest 时仍可离线评分，但续跑须选择新的输出路径。更换模型、策略或题目范围时，请使用不同的输出文件：
 
 ```bash
 node evals/cli.js run ava-workflow --benchmark databench --strategy direct --output evals/ava-workflow/results/lite-direct.csv
@@ -92,7 +93,7 @@ node evals/cli.js score --dataset databench-lite --predictions evals/ava-workflo
 
 - `--dataset` 须与预测结果匹配。
 - 离线评分默认覆盖所选数据集全部题目，未提供答案的题目计为缺失；运行评测时只评分本次选中的题目。
-- 离线评分的 `--output` 写入 JSON 报告，不覆盖已有文件；省略时只在终端显示结果。
+- 离线评分的 `--output` 写入 JSON 报告，覆盖已有报告文件；省略时只在终端显示结果。
 
 查看完整参数，不调用模型：
 
@@ -121,6 +122,11 @@ node evals/cli.js run ava-workflow --benchmark spider2lite --help
 
 ```bash
 node evals/cli.js run ava-workflow --benchmark bird --check --limit all
-node evals/cli.js run ava-workflow --benchmark bird --limit 3 --output evals/ava-workflow/results/bird-smoke
+
+export BIRD_OUTPUT="evals/ava-workflow/results/bird-$(date +%Y%m%d-%H%M%S)"
+node evals/cli.js run ava-workflow --benchmark bird --limit 3 --output $BIRD_OUTPUT
+
 node evals/cli.js run ava-workflow --benchmark bird --help
 ```
+
+三个 Workflow 评测器共用 `_shared/usage.js`，累计单题所有 `onQueryUsage` 回调。任一调用缺失的 token 字段记为未知（CSV 留空，JSON 为 null）；subset 辅助选择器未上报的用量不包含在内。

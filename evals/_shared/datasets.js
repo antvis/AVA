@@ -30,6 +30,7 @@ function loadDataset(name, paths) {
   return getDataset(name).load(paths?.length ? paths : undefined);
 }
 
+/** @returns {Record<string, string>[]} */
 function readCsv(path) {
   return parse(readFileSync(path, 'utf8'), { bom: true, columns: true, skip_empty_lines: true });
 }

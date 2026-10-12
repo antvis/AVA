@@ -1,6 +1,7 @@
 const { existsSync, statSync } = require('node:fs');
 const { join } = require('node:path');
-const { integer, readJson, sha256 } = require('../spider2lite');
+const { integer } = require('../_shared/args');
+const { readJson } = require('../_shared/files');
 
 const ROOT = join(__dirname, 'datasets/dev');
 
@@ -85,9 +86,6 @@ function resultPayload(result) {
 
 module.exports = {
   ROOT,
-  integer,
-  readJson,
-  sha256,
   selectSamples,
   databasePath,
   modelQuestion,

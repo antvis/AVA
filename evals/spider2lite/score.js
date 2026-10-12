@@ -1,19 +1,14 @@
+const { atomicJson, readJson, sha256 } = require('../_shared/files');
+const { integer } = require('../_shared/args');
 const { execFile } = require('node:child_process');
-const { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } = require('node:fs');
-const { dirname, join, resolve } = require('node:path');
+const { existsSync, readFileSync } = require('node:fs');
+const { join, resolve } = require('node:path');
 const { parseArgs } = require('node:util');
-const { ROOT, integer, inspectResources, loadQuestions, readJson, selectSamples, sha256 } = require('./index');
+const { ROOT, inspectResources, loadQuestions, selectSamples } = require('./index');
 
 function pythonPath() {
   const venv = join(ROOT, '.venv/bin/python');
   return existsSync(venv) ? venv : 'python3';
-}
-
-function atomicJson(path, value) {
-  mkdirSync(dirname(path), { recursive: true });
-  const temp = `${path}.${process.pid}.tmp`;
-  writeFileSync(temp, JSON.stringify(value, null, 2) + '\n');
-  renameSync(temp, path);
 }
 
 function official(request, { python = pythonPath(), timeout = 60_000 } = {}) {
@@ -193,4 +188,4 @@ async function main(argv = process.argv.slice(2)) {
   return report;
 }
 
-module.exports = { main, official, checkScorer, scoreSamples, atomicJson, pythonPath };
+module.exports = { main, official, checkScorer, scoreSamples, pythonPath };

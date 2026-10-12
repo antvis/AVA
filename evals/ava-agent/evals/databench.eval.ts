@@ -1,4 +1,4 @@
-import { appendFileSync, copyFileSync, constants, cpSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, constants, cpSync, readdirSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -45,14 +45,16 @@ function prepareSnapshot(
   mkdirSync(join(benchmarkDirectory, 'databench'), { recursive: true });
   mkdirSync(join(benchmarkDirectory, '_shared'), { recursive: true });
   writeFileSync(join(benchmarkDirectory, 'package.json'), '{"type":"commonjs"}\n');
-  cpSync(join(evalsRoot, 'databench/index.js'), join(benchmarkDirectory, 'databench/index.js'));
-  cpSync(join(evalsRoot, '_shared/datasets.js'), join(benchmarkDirectory, '_shared/datasets.js'));
-  cpSync(join(evalsRoot, '_shared/results.js'), join(benchmarkDirectory, '_shared/results.js'));
+  for (const name of ['databench', '_shared']) {
+    for (const file of readdirSync(join(evalsRoot, name))) {
+      if (file.endsWith('.js')) cpSync(join(evalsRoot, name, file), join(benchmarkDirectory, name, file));
+    }
+  }
   const files = new Map();
   for (const sample of samples) {
     if (!files.has(sample.dataPath)) {
-      const attachment = `evals/fixtures/databench/${files.size}.parquet`;
-      mkdirSync(join(directory, 'evals/fixtures/databench'), { recursive: true });
+      const attachment = `evals/fixtures/${files.size}.parquet`;
+      mkdirSync(join(directory, 'evals/fixtures'), { recursive: true });
       cpSync(sample.dataPath, join(directory, attachment));
       files.set(sample.dataPath, attachment);
     }

@@ -142,7 +142,7 @@ test('workflow passes only question and evidence; model request disables thinkin
     { type: 'direct' }
   );
   assert.deepEqual(events, ['source', 'profile', 'analyze']);
-  const { llmConfig } = await import('../ava-workflow/evals/databench.eval.ts');
+  const { llmConfig } = await import('../ava-workflow/model.ts');
   const { generateText } = require('ai');
   const previous = { fetch: global.fetch, key: process.env.OPENAI_API_KEY, model: process.env.OPENAI_MODEL };
   try {

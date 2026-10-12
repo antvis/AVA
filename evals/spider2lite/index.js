@@ -1,11 +1,8 @@
-const { createHash } = require('node:crypto');
+const { integer } = require('../_shared/args');
 const { existsSync, readFileSync, readdirSync, statSync } = require('node:fs');
 const { basename, join, resolve } = require('node:path');
 
 const ROOT = __dirname;
-const sha256 = (path) => createHash('sha256').update(readFileSync(path)).digest('hex');
-const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
-
 function readJsonl(path) {
   const records = readFileSync(path, 'utf8')
     .split(/\r?\n/)
@@ -18,12 +15,6 @@ function readJsonl(path) {
     ids.add(row.instance_id);
   }
   return records;
-}
-
-function integer(value, name, min = 1) {
-  const n = Number(value);
-  if (!Number.isSafeInteger(n) || n < min) throw new Error(`--${name} must be an integer >= ${min}`);
-  return n;
 }
 
 function loadQuestions(root = ROOT) {
@@ -100,6 +91,11 @@ function goldFiles(id, root = ROOT) {
     .map((name) => join(folder, name));
 }
 
+/**
+ * @param {ReturnType<typeof selectSamples>} samples
+ * @param {string} root
+ * @param {{ databases?: boolean, maxContextBytes?: number }} options
+ */
 function inspectResources(samples, root = ROOT, { databases = true, maxContextBytes } = {}) {
   root = resolve(root);
   const required = new Set(
@@ -136,10 +132,7 @@ function inspectResources(samples, root = ROOT, { databases = true, maxContextBy
 
 module.exports = {
   ROOT,
-  sha256,
-  readJson,
   readJsonl,
-  integer,
   loadQuestions,
   selectSamples,
   contextFiles,

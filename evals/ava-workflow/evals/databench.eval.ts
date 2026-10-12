@@ -3,16 +3,17 @@ import { dirname, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 
-import { createOpenAI } from '@ai-sdk/openai';
+import { llmConfig } from '../model.ts';
+import { createUsage } from '../../_shared/usage.js';
+import { integer } from '../../_shared/args.js';
+import { atomicJson, readJson } from '../../_shared/files.js';
 
 import { AVA } from '../../../lib/index.js';
 import { readCsv } from '../../_shared/datasets.js';
-import { evaluate, getDataset, predictionIndex } from '../../_shared/index.js';
+import { evaluate, getDataset, predictionIndex, registerPlugin } from '../../_shared/index.js';
 import { OUTPUT_COLUMNS, csvCell } from '../../_shared/results.js';
-import { formatAnswer, selectSamples } from '../../databench/index.js';
+import { formatAnswer, selectSamples, plugins } from '../../databench/index.js';
 import { workflow } from '../workflow.ts';
-
-import type { LLMConfig } from '../../../lib/index.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 
@@ -31,38 +32,6 @@ Options:
   --help                 Show help
 `;
 
-export function llmConfig(): LLMConfig {
-  const envPath = resolve(root, '.env');
-  if (existsSync(envPath)) process.loadEnvFile(envPath);
-  const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL;
-  const baseURL = process.env.OPENAI_BASE_URL;
-  if (!apiKey || !model) throw new Error('Set OPENAI_API_KEY and OPENAI_MODEL in evals/ava-workflow/.env.');
-  const provider = createOpenAI({
-    apiKey,
-    baseURL,
-    fetch: (input, init) =>
-      fetch(input, {
-        ...init,
-        body: JSON.stringify({
-          ...JSON.parse(init!.body as string),
-          chat_template_kwargs: { enable_thinking: false },
-        }),
-      }),
-  });
-  return {
-    apiKey,
-    model: provider.chat(model),
-    ...(baseURL ? { baseURL } : {}),
-  };
-}
-
-function integer(value: string, name: string, minimum: number) {
-  const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed < minimum) throw new Error(`--${name} must be an integer >= ${minimum}.`);
-  return parsed;
-}
-
 export function answerFrom(data: unknown, type: string) {
   const rows = Array.isArray(data) ? data : [data];
   const values = rows.flatMap((row) =>
@@ -75,11 +44,16 @@ export function answerFrom(data: unknown, type: string) {
   return formatAnswer(value);
 }
 
-function prepareOutput(path: string) {
+export function prepareOutput(path: string, spec: object) {
+  const manifest = `${path}.manifest.json`;
+  if (existsSync(path) && (!existsSync(manifest) || JSON.stringify(readJson(manifest)) !== JSON.stringify(spec))) {
+    throw new Error("Run configuration changed or manifest missing; choose a new --output path.");
+  }
   mkdirSync(dirname(path), { recursive: true });
   const header = OUTPUT_COLUMNS.map(csvCell).join(',');
   if (!existsSync(path)) {
-    writeFileSync(path, `${header}\n`);
+    writeFileSync(path, `${header}\n`, { flag: 'wx' });
+    atomicJson(manifest, spec);
     return new Set();
   }
   if (readFileSync(path, 'utf8').split(/\r?\n/, 1)[0] !== header) {
@@ -118,14 +92,22 @@ export async function main(argv = process.argv.slice(2)) {
   const concurrency = integer(values.concurrency, 'concurrency', 1);
   const selected = selectSamples(values);
   const output = values.output ? resolve(values.output) : resolve(root, `results/${values.dataset}.csv`);
-  const completed = prepareOutput(output);
+  const endpoint = new URL(config.baseURL ?? 'https://api.openai.com/v1');
+  endpoint.username = '';
+  endpoint.password = '';
+  endpoint.search = '';
+  const completed = prepareOutput(output, {
+    dataset: values.dataset,
+    model: typeof config.model === 'string' ? config.model : config.model.modelId,
+    endpoint: endpoint.toString(), engine, strategy, thinking: false,
+  });
   const pending = selected.filter((sample) => !completed.has(sample.id));
   let cursor = 0;
 
   await Promise.all(
     Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
-      let usage: Parameters<NonNullable<LLMConfig['onQueryUsage']>>[0] | undefined;
-      const ava = new AVA({ engine: { type: engine }, llm: { ...config, onQueryUsage: (value) => (usage = value) } });
+      let usage = createUsage();
+      const ava = new AVA({ engine: { type: engine }, llm: { ...config, onQueryUsage: (value) => usage.add(value) } });
       try {
         while (cursor < pending.length) {
           const sample = pending[cursor++];
@@ -133,7 +115,7 @@ export async function main(argv = process.argv.slice(2)) {
           let sql = '';
           let answer = '';
           let error = '';
-          usage = undefined;
+          usage = createUsage();
           try {
             const result = await workflow(
               ava,
@@ -158,9 +140,9 @@ export async function main(argv = process.argv.slice(2)) {
               error,
               typeof config.model === 'string' ? config.model : config.model.modelId,
               Date.now() - startedAt,
-              usage?.inputTokens ?? '',
-              usage?.outputTokens ?? '',
-              usage?.totalTokens ?? '',
+              usage.value.inputTokens ?? '',
+              usage.value.outputTokens ?? '',
+              usage.value.totalTokens ?? '',
             ].map(csvCell).join(',')}\n`,
           );
           process.stdout.write(`${answer ? 'done' : 'failed'} ${sample.id}\n`);
@@ -171,6 +153,7 @@ export async function main(argv = process.argv.slice(2)) {
     }),
   );
 
+  plugins.forEach(registerPlugin);
   const report = await evaluate({
     samples: selected,
     predictions: predictionIndex([output]),

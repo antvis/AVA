@@ -1,3 +1,5 @@
+import { atomicJson, sha256 } from '../../_shared/files.js';
+import { integer } from '../../_shared/args.js';
 import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,17 +8,16 @@ import { parseArgs } from 'node:util';
 import { AVA } from '../../../lib/index.js';
 import {
   ROOT,
-  integer,
-  sha256,
   selectSamples,
   databasePath,
   modelQuestion,
   inspectResources,
   resultPayload,
 } from '../../BIRD/index.js';
-import { atomicJson, compare, scoreSamples } from '../../BIRD/score.js';
+import { compare, scoreSamples } from '../../BIRD/score.js';
 import { workflow } from '../workflow.ts';
-import { llmConfig } from './databench.eval.ts';
+import { llmConfig } from '../model.ts';
+import { createUsage } from '../../_shared/usage.js';
 import type { AnalysisStrategyConfig, LLMConfig } from '../../../lib/index.js';
 
 type Sample = { question_id: number; db_id: string; question: string; evidence?: string };
@@ -142,7 +143,10 @@ export async function main(argv = process.argv.slice(2)) {
       [
         fileURLToPath(import.meta.url),
         join(workflowRoot, 'workflow.ts'),
-        join(workflowRoot, 'evals/databench.eval.ts'),
+        join(workflowRoot, 'model.ts'),
+        join(workflowRoot, '../_shared/usage.js'),
+        join(workflowRoot, '../_shared/files.js'),
+        join(workflowRoot, '../_shared/args.js'),
         ...['index.js', 'score.js', 'compare.py'].map((file) => join(workflowRoot, '../BIRD', file)),
       ].map((file) => [relative(resolve(workflowRoot, '../..'), file), sha256(file)])
     ),
@@ -157,13 +161,8 @@ export async function main(argv = process.argv.slice(2)) {
         const sample = samples[cursor++];
         const id = String(sample.question_id);
         const startedAt = Date.now();
-        const usage = { inputTokens: 0, outputTokens: 0, totalTokens: 0, calls: 0 };
-        const onQueryUsage: LLMConfig['onQueryUsage'] = (value) => {
-          usage.inputTokens += value.inputTokens ?? 0;
-          usage.outputTokens += value.outputTokens ?? 0;
-          usage.totalTokens += value.totalTokens ?? 0;
-          usage.calls++;
-        };
+        const usage = createUsage();
+        const onQueryUsage: LLMConfig['onQueryUsage'] = usage.add;
         const ava = new AVA({
           llm: { ...config, onQueryUsage },
           engine: { type: 'duckdb', queryTimeoutMs: timeout, memoryLimit: values['memory-limit'] },
@@ -202,7 +201,7 @@ export async function main(argv = process.argv.slice(2)) {
           question_id: sample.question_id,
           db_id: sample.db_id,
           elapsedMs: Date.now() - startedAt,
-          usage,
+          usage: usage.value,
         });
         process.stdout.write(`${record.status} ${id}\n`);
       }

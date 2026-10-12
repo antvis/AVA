@@ -2,8 +2,9 @@ const { execFile } = require('node:child_process');
 const { existsSync } = require('node:fs');
 const { join, resolve } = require('node:path');
 const { parseArgs } = require('node:util');
-const { ROOT, integer, readJson, sha256, selectSamples, databasePath, inspectResources } = require('./index');
-const { atomicJson } = require('../spider2lite/score');
+const { ROOT, selectSamples, databasePath, inspectResources } = require('./index');
+const { atomicJson, readJson, sha256 } = require('../_shared/files');
+const { integer } = require('../_shared/args');
 
 function compare(request, { python = 'python3', timeout = 60_000 } = {}) {
   return new Promise((resolveResult, reject) => {
@@ -127,4 +128,4 @@ async function main(argv = process.argv.slice(2)) {
   return report;
 }
 
-module.exports = { main, compare, scoreSamples, atomicJson };
+module.exports = { main, compare, scoreSamples };
