@@ -36,7 +36,7 @@ const workflowRoot = fileURLToPath(new URL('../', import.meta.url));
 
 const HELP = `Usage: node evals/cli.js run ava-workflow --benchmark spider2lite [options]
   SQLite subset only. DuckDB execution; official CSV result comparison.
-  --check                 Preflight only: no model calls, no run directory
+  --check                 Full load/profile check: no model calls, no run directory
   --root <path>           Dataset directory (default evals/spider2lite)
   --limit <number|all>    Questions to run (default 20)
   --offset <number>       Start after filtering (default 0)
@@ -108,26 +108,39 @@ export async function main(argv = process.argv.slice(2)) {
   const root = resolve(values.root);
   const python = values.python ?? pythonPath();
   const samples: Sample[] = selectSamples(values, root);
-  // Fail missing data/dependencies before obtaining model configuration or creating output.
+  const databases = [...new Set(samples.map((sample) => sample.db))];
+  process.stdout.write(
+    `Preflight: checking resources for ${samples.length} questions, ${databases.length} databases\n`
+  );
+  // Normal runs validate resources without scanning every database before the first case.
   inspectResources(samples, root, { maxContextBytes });
+  process.stdout.write('Preflight: checking official scorer dependencies\n');
   const runtime = await checkScorer(root, { python, timeout: scoreTimeout });
-  const probe = new AVA({
-    llm: { model: 'preflight-no-model-call' },
-    engine: { type: 'duckdb', queryTimeoutMs: timeout },
-  });
-  try {
-    for (const db of new Set(samples.map((s) => s.db))) {
-      await probe.source({
-        type: 'sqlite',
-        options: { path: join(root, 'resource/databases/spider2-localdb', `${db}.sqlite`) },
-      });
-      await probe.profile();
+  if (values.check) {
+    const probe = new AVA({
+      llm: { model: 'preflight-no-model-call' },
+      engine: { type: 'duckdb', queryTimeoutMs: timeout },
+    });
+    try {
+      for (const [index, db] of databases.entries()) {
+        const label = `Check ${index + 1}/${databases.length} ${db}`;
+        const startedAt = Date.now();
+        process.stdout.write(`${label}: loading\n`);
+        await probe.source({
+          type: 'sqlite',
+          options: { path: join(root, 'resource/databases/spider2-localdb', `${db}.sqlite`) },
+        });
+        process.stdout.write(`${label}: profiling\n`);
+        await probe.profile();
+        process.stdout.write(`${label}: OK (${Date.now() - startedAt}ms)\n`);
+      }
+    } finally {
+      await probe.dispose();
     }
-  } finally {
-    await probe.dispose();
+    process.stdout.write('Full database check OK\n');
+    return;
   }
-  process.stdout.write(`Preflight OK: ${samples.length} SQLite questions, DuckDB execution; official CSV comparison\n`);
-  if (values.check) return;
+  process.stdout.write('Preflight OK: resources and scorer ready; databases load during each case\n');
 
   const config = llmConfig();
   const output = resolve(values.output ?? join(workflowRoot, `results/spider2lite-${values.strategy}`));
@@ -201,6 +214,9 @@ export async function main(argv = process.argv.slice(2)) {
         throw new Error(`Result changed: ${sample.instance_id}. Use a new output directory.`);
       return false;
     });
+    process.stdout.write(
+      `Run: ${pending.length} pending, ${samples.length - pending.length} completed, concurrency ${concurrency}\n`
+    );
     let cursor = 0;
     await Promise.all(
       Array.from({ length: Math.min(concurrency, pending.length) }, async () => {
@@ -220,6 +236,14 @@ export async function main(argv = process.argv.slice(2)) {
             llm: { ...config, onQueryUsage },
             engine: { type: 'duckdb', queryTimeoutMs: timeout },
           });
+          // Stage progress is console-only; records retain query events only.
+          for (const [event, stage] of [
+            ['loadstart', 'loading'],
+            ['profilestart', 'profiling'],
+            ['analyzestart', 'analyzing'],
+          ]) {
+            ava.on(event, () => process.stdout.write(`${sample.instance_id} (${sample.db}): ${stage}\n`));
+          }
           // Capture executable DSL and diagnostics, not raw reasoning transcripts or gold.
           for (const eventName of ['querystart', 'queryend']) {
             ava.on(eventName, (event: { data?: { dsl?: string; error?: unknown; truncated?: boolean } }) => {
