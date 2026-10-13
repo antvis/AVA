@@ -74,6 +74,10 @@ for (const source of sources) {
   const route = slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`;
   const html = await readFile(join(site, 'out', route, 'index.html'), 'utf8');
   assert.equal([...html.matchAll(/<h1(?:\s|>)/g)].length, 1, `${route}: one page title`);
+  assert.ok(
+    !/<p(?:\s[^>]*)?>(?:(?!<\/p>)[\s\S])*?<p(?:\s|>)/.test(html),
+    `${route}: no nested paragraphs that cause hydration errors`
+  );
   assert.equal(
     [...html.matchAll(/aria-label="Copy Markdown"/g)].length,
     1,
