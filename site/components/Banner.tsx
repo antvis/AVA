@@ -250,7 +250,7 @@ const Banner: React.FC = () => (
             </svg>
           </Link>
           <a
-            href="https://sive.antv.antgroup.com/"
+            href="https://sive.antv.antgroup.com/?type=analysis"
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex h-10 items-center gap-2.5 whitespace-nowrap rounded-[9px] border border-zinc-300 bg-white/80 px-5 text-zinc-700 transition-colors hover:border-cyan-400 hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-600"

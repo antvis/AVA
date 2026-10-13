@@ -21,7 +21,7 @@
   <a href="https://ava.antv.vision/llms.txt">
     <img src="https://img.shields.io/badge/LLMS-FA8C16?style=for-the-badge" alt="llms" />
   </a>
-  <a href="https://sive.antv.antgroup.com/" title="A data analysis app built with AVA">
+  <a href="https://sive.antv.antgroup.com/?type=analysis" title="A data analysis app built with AVA">
     <img src="https://img.shields.io/badge/Try%20Sive-13A8A8?style=for-the-badge" alt="Try Sive" />
   </a>
 </p>
