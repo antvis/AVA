@@ -72,12 +72,6 @@ export const docs = [
     description: 'Run SQL analysis against inline data, files, and attached databases.',
   },
   {
-    slug: 'engines/javascript',
-    title: 'JavaScript',
-    group: 'Execution engines',
-    description: 'Execute JavaScript against an in-memory dataset in Node.js or the browser.',
-  },
-  {
     slug: 'engines/python',
     title: 'Python',
     group: 'Execution engines',
@@ -88,6 +82,12 @@ export const docs = [
     title: 'Supabase & ClickHouse',
     group: 'Execution engines',
     description: 'Discover schemas and execute queries in a remote database.',
+  },
+  {
+    slug: 'engines/javascript',
+    title: 'JavaScript',
+    group: 'Execution engines',
+    description: 'Execute JavaScript against an in-memory dataset in Node.js or the browser.',
   },
   {
     slug: 'engines/custom',
