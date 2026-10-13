@@ -1,8 +1,14 @@
 AVA is a TypeScript framework for asking questions about data and turning the answers into visualizations. Use it through an Agent Skill, the JavaScript API, or the command line, with an execution engine that fits your environment.
 
+{/* Keep custom layouts in JSX expressions so formatting cannot introduce Markdown paragraphs. */}
+
+{
+
 <div className="docs-cards">
   <a href="/documentation/agent-skill/">
-    <span className="docs-card-icon" aria-hidden="true">↗</span>
+    <span className="docs-card-icon" aria-hidden="true">
+      ↗
+    </span>
     <strong>Use with your agent</strong>
     <span>Install the Agent Skill and try a complete data analysis demo.</span>
   </a>
@@ -21,15 +27,20 @@ AVA is a TypeScript framework for asking questions about data and turning the an
     <span>Bring analytics into your frontend with the JavaScript engine.</span>
   </a>
   <a href="/documentation/reference/cli/">
-    <span className="docs-card-icon" aria-hidden="true">›_</span>
+    <span className="docs-card-icon" aria-hidden="true">
+      ›_
+    </span>
     <strong>Use the command line</strong>
     <span>Inspect datasets, execute queries, and render charts from your terminal.</span>
   </a>
 </div>
+}
 
 ## The core workflow
 
 Connect a data source, inspect its structure, ask a question, and optionally generate a chart.
+
+{
 
 <div className="docs-pipeline">
   <span>Source</span>
@@ -38,6 +49,7 @@ Connect a data source, inspect its structure, ask a question, and optionally gen
   <span aria-hidden="true">→</span>
   <span>Visualize</span>
 </div>
+}
 
 - **Understand your data.** `schema()` describes tables and fields; `profile()` computes statistics without an LLM call.
 - **Ask better questions.** `suggest()` recommends questions using the schema and available profile.
@@ -59,6 +71,8 @@ The [engine guide](/documentation/engines/overview/) explains supported sources 
 ## Explore the documentation
 
 Follow the workflow from your first dataset to a visual answer, then explore more control when you need it.
+
+{
 
 <ol className="docs-timeline" role="list" aria-label="Documentation reading path">
   <li>
@@ -112,6 +126,7 @@ Follow the workflow from your first dataset to a visual answer, then explore mor
     </p>
   </li>
 </ol>
+}
 
 Keep the [API Reference](/documentation/reference/api/) handy for parameters. The [architecture guide](/documentation/reference/architecture/) maps public capabilities to their source modules.
 
