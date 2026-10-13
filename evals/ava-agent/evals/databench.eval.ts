@@ -45,14 +45,14 @@ function prepareSnapshot(
   mkdirSync(join(benchmarkDirectory, 'databench'), { recursive: true });
   mkdirSync(join(benchmarkDirectory, '_shared'), { recursive: true });
   writeFileSync(join(benchmarkDirectory, 'package.json'), '{"type":"commonjs"}\n');
-  cpSync(join(evalsRoot, 'databench/index.js'), join(benchmarkDirectory, 'databench/index.js'));
-  cpSync(join(evalsRoot, '_shared/datasets.js'), join(benchmarkDirectory, '_shared/datasets.js'));
-  cpSync(join(evalsRoot, '_shared/results.js'), join(benchmarkDirectory, '_shared/results.js'));
+  for (const file of ['databench/index.js', '_shared/results.js']) {
+    cpSync(join(evalsRoot, file), join(benchmarkDirectory, file));
+  }
   const files = new Map();
   for (const sample of samples) {
     if (!files.has(sample.dataPath)) {
-      const attachment = `evals/fixtures/databench/${files.size}.parquet`;
-      mkdirSync(join(directory, 'evals/fixtures/databench'), { recursive: true });
+      const attachment = `evals/fixtures/${files.size}.parquet`;
+      mkdirSync(join(directory, 'evals/fixtures'), { recursive: true });
       cpSync(sample.dataPath, join(directory, attachment));
       files.set(sample.dataPath, attachment);
     }
@@ -104,9 +104,8 @@ export async function main(argv: string[] = process.argv.slice(2)) {
   }
 }
 
-export function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>, exact = false) {
-  const { readCsv } = require('../../_shared/datasets.js');
-  const { OUTPUT_COLUMNS } = require('../../_shared/results.js');
+function loadPreviousResults(paths: string[], samples: ReturnType<Benchmark['selectSamples']>, exact = false) {
+  const { readCsv, OUTPUT_COLUMNS } = require('../../_shared/results.js');
   const selected = new Set(samples.map((sample) => sample.id));
   const rows = new Map<string, Record<string, string>>();
   for (const path of paths) {
@@ -125,8 +124,8 @@ export function loadPreviousResults(paths: string[], samples: ReturnType<Benchma
   return [...rows.values()];
 }
 
-export function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string, replace?: string) {
-  const { readCsv } = require('../../_shared/datasets.js');
+function saveResults(directory: string, samples: ReturnType<Benchmark['selectSamples']>, destination: string, replace?: string) {
+  const { readCsv } = require('../../_shared/results.js');
   const source = join(directory, 'predictions.csv');
   const rows = readCsv(source);
   const ids = new Set(rows.map((row: { id: string }) => row.id));
@@ -147,7 +146,7 @@ export function saveResults(directory: string, samples: ReturnType<Benchmark['se
   return output;
 }
 
-export function createEvals(directory: string) {
+function createEvals(directory: string) {
   const { csvCell } = require(join(directory, '_shared/results.js'));
   const benchmark: Benchmark = require(join(directory, 'databench/index.js'));
   const samples: ReturnType<typeof benchmark.selectSamples> = JSON.parse(

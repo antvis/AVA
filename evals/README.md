@@ -9,7 +9,7 @@
 | [AVA Workflow](ava-workflow/README.md) | 按固定步骤加载数据、生成画像并分析 | `direct`、`loop`、`subset` 策略 | Node.js 22.18+ |
 | [AVA Agent](ava-agent/README.md) | 由模型选择工具和执行步骤 | 使用／不使用 AVA Skill | Node.js 24+、Docker |
 
-目前支持 [DataBench](databench/README.md)，用于评测表格问答的答案准确率。它提供两种数据版本：`databench-lite` 使用采样表，`databench` 使用完整表。
+目前支持 [Spider 2.0-Lite 的 SQLite 子集](spider2lite/README.md)（Workflow／Agent、官方结果评分）、[BIRD 开发集](BIRD/README.md)（Workflow／Agent、执行结果与 SQLite 参考结果比较）及 [DataBench](databench/README.md)。DataBench 用于评测表格问答的答案准确率。它提供两种数据版本：`databench-lite` 使用采样表，`databench` 使用完整表。
 
 ## 准备环境
 
@@ -56,11 +56,17 @@ node evals/cli.js run ava-workflow --benchmark databench --strategy direct --lim
 # Agent：使用 AVA Skill
 node evals/cli.js run ava-agent --benchmark databench --skill ava --limit 20
 
+# Agent：BIRD 和 Spider2-Lite
+node evals/cli.js run ava-agent --benchmark bird --skill ava --limit 20
+node evals/cli.js run ava-agent --benchmark spider2lite --skill ava --limit 20
+
 # Agent：不使用 Skill
 node evals/cli.js run ava-agent --benchmark databench --skill none --limit 20
 ```
 
-默认使用 `databench-lite`。两种执行方式均支持以下选题参数：
+BIRD 和 Spider2-Lite 的数据准备、结果目录和评分方式见 [Agent 说明](ava-agent/README.md#bird-and-spider2-lite)。以下 CSV 说明适用于 DataBench。
+
+DataBench 默认使用 `databench-lite`。两种执行方式均支持以下选题参数：
 
 | 参数 | 说明 | 默认值 |
 | --- | --- | --- |

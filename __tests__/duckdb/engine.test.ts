@@ -118,9 +118,9 @@ describe('DuckDBEngine', () => {
     expect(result.schema).toEqual([{ name: 'id', type: 'BIGINT' }]);
   });
 
-  it('should clamp result limits', () => {
+  it('should normalize result limits with a one-million-row cap', () => {
     expect(maxRows({ maxRows: 0 })).toBe(1);
-    expect(maxRows({ maxRows: 10_001 })).toBe(10_000);
+    expect(maxRows({ maxRows: 1_000_001 })).toBe(1_000_000);
   });
 
   it('should apply resource limits and still run normal queries', async () => {

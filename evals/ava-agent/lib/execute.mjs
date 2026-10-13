@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 
 // Consume the entire stream, but retain only a bounded prefix in host memory.
-export async function collect(stream, maxBytes) {
+async function collect(stream, maxBytes) {
   const chunks = [];
   let retained = 0;
   let total = 0;

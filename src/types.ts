@@ -3,7 +3,7 @@
  */
 
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
-import type { LanguageModelUsage } from 'ai';
+import type { LanguageModelUsage, LanguageModel } from 'ai';
 import type { AnalysisEvent } from './event';
 
 /**
@@ -22,8 +22,8 @@ export interface DuckDBConnection {
 export interface LLMConfig {
   /** Defaults to OpenAI-compatible Chat Completions. Gateway reads AI_GATEWAY_API_KEY. */
   provider?: 'openai' | 'gateway';
-  /** Model name (e.g., 'gpt-4', 'gpt-3.5-turbo') */
-  model: string;
+  /** Model name or a preconfigured AI SDK model instance. */
+  model: string | LanguageModel;
   /** API key for the LLM provider */
   apiKey?: string;
   /** Optional API base URL */
@@ -673,7 +673,7 @@ export interface AnalysisEngine {
 
 /** Controls the maximum size of a bounded execution result. */
 export interface ExecutionOptions {
-  /** Maximum rows returned. Default 200; hard limit 10,000. */
+  /** Maximum rows returned. Default 200; hard limit 1,000,000. */
   maxRows?: number;
   /** Maximum serialized UTF-8 bytes returned. Default 1 MiB. */
   maxResultBytes?: number;

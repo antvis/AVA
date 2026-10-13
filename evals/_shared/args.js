@@ -20,4 +20,10 @@ function takeOptions(args, options) {
   };
 }
 
-module.exports = { takeOptions };
+function integer(value, name, min = 1) {
+  const n = Number(value);
+  if (!Number.isSafeInteger(n) || n < min) throw new Error(`--${name} must be an integer >= ${min}`);
+  return n;
+}
+
+module.exports = { takeOptions, integer };

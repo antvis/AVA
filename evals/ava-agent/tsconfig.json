@@ -9,6 +9,7 @@
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },
   "include": ["agent/**/*.ts", "evals/**/*.ts", "lib/**/*.mjs"]

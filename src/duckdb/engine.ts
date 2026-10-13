@@ -187,7 +187,7 @@ export class DuckDBEngine implements AnalysisEngine {
       name: reader.columnName(index),
       type: reader.columnType(index).toString(),
     }));
-    return executionResult(coerceNumbers(reader.getRowObjectsJson()) as T[], schema, options);
+    return executionResult(coerceNumbers(reader.getRowObjectsJson(), schema) as T[], schema, options);
   }
 
   /**

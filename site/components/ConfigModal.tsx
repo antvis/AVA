@@ -46,7 +46,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
             <label className="block text-sm font-medium text-gray-700 mb-2">Model</label>
             <input
               type="text"
-              value={localConfig.model}
+              value={typeof localConfig.model === 'string' ? localConfig.model : localConfig.model.modelId}
               onChange={e => setLocalConfig({ ...localConfig, model: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
               placeholder="e.g., ling-1t, gpt-4"

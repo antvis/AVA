@@ -1,7 +1,7 @@
 const { readdirSync, statSync } = require('node:fs');
 const { dirname, extname, join, resolve } = require('node:path');
 
-const { readCsv } = require('../_shared/datasets');
+const { readCsv } = require('../_shared/results');
 
 function csvFiles(paths) {
   return paths.flatMap((input) => {
@@ -14,7 +14,7 @@ function csvFiles(paths) {
   }).sort();
 }
 
-/** @returns {Array<{ id: string, dataset: string, suite: string, questionId: string, question: string, answerType: string, goldAnswer: string, dataPath: string, source: string }>} */
+/** @returns {Array<{ id: string, dataset: string, suite: string, question: string, answerType: string, goldAnswer: string, dataPath: string }>} */
 function load(name, directory, paths = [join(__dirname, 'datasets', directory, 'questions.csv')]) {
   return csvFiles(paths).flatMap((path) =>
     readCsv(path).map((row, index) => {
@@ -30,12 +30,10 @@ function load(name, directory, paths = [join(__dirname, 'datasets', directory, '
         id: `${name}:${id}`,
         dataset: name,
         suite,
-        questionId: id,
         question,
         answerType,
         goldAnswer: String(row.answer ?? ''),
         dataPath,
-        source: path,
       };
     }),
   );
@@ -103,6 +101,7 @@ const plugins = [
   ['databench', 'full'],
 ].map(([name, directory]) => ({
   name,
+  title: `DataBench ${directory} (080_Books excluded)`,
   defaultMetrics: ['databench-answer'],
   metrics: { 'databench-answer': databenchAnswer },
   load: (paths) => load(name, directory, paths),

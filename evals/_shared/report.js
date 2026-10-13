@@ -1,9 +1,9 @@
-const { createHash } = require('node:crypto');
+const { sha256 } = require('./files');
 const { readFileSync } = require('node:fs');
 
-const { readCsv } = require('./datasets');
+const { readCsv } = require('./results');
 
-function buildReport(scores, samples, options) {
+function buildReport(scores, samples, options, plugin = {}) {
   const metadata = options.metadata ? JSON.parse(readFileSync(options.metadata, 'utf8')) : {};
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) {
     throw new Error('--metadata must contain a JSON object.');
@@ -38,16 +38,14 @@ function buildReport(scores, samples, options) {
   const tokens = numbers('total_tokens');
   const execution = rows.filter((row) => row.error);
   const models = [...new Set(rows.map((row) => row.model).filter(Boolean))];
-  const hashes = options.predictions.map((path) => createHash('sha256').update(readFileSync(path)).digest('hex'));
-  const metric = scores.metrics['databench-answer'] ?? Object.values(scores.metrics)[0];
-  if (!metric) throw new Error('At least one scoring metric is required.');
+  const hashes = options.predictions.map(sha256);
+  const [primaryMetric, metric] = Object.entries(scores.metrics)[0];
   return {
     generatedAt: new Date().toISOString(),
     // This is the scoring runtime; original execution versions must be supplied.
     environment: { scoringNodeVersion: process.version, ...metadata.environment },
     evaluation: {
-      benchmark: options.dataset === 'databench' ? 'DataBench full (080_Books excluded)'
-        : options.dataset === 'databench-lite' ? 'DataBench lite (080_Books excluded)' : options.dataset,
+      benchmark: plugin.title ?? options.dataset,
       ...metadata.evaluation,
       dataset: options.dataset,
       model: models.length === 1 ? models[0] : models.length ? models : metadata.evaluation?.model ?? null,
@@ -76,7 +74,7 @@ function buildReport(scores, samples, options) {
     provenance: {
       ...metadata.provenance,
       statisticsScope: 'Final retained CSV rows matching scored samples, including failed executions; excludes superseded attempts and retry overhead. Each timing/token statistic uses only rows with a recorded nonnegative finite value.',
-      scoringScope: `Shared ${Object.keys(scores.metrics).join(', ')} metrics only; skill/tool assertions are separate. Summary uses ${scores.metrics['databench-answer'] ? 'databench-answer' : Object.keys(scores.metrics)[0]}.`,
+      scoringScope: `Shared ${Object.keys(scores.metrics).join(', ')} metrics only; skill/tool assertions are separate. Summary uses ${primaryMetric}.`,
       recordedRows: { duration: durations.length, inputTokens: inputs.length, outputTokens: outputs.length, totalTokens: tokens.length },
     },
     errors: {

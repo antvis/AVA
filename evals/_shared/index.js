@@ -1,16 +1,26 @@
 const { resolve } = require('node:path');
 
-const { getDataset, loadDataset, readCsv, registerDataset } = require('./datasets');
-const { getMetrics, registerMetric } = require('./metrics');
+const { readCsv } = require('./results');
+
+const datasets = new Map();
+const metrics = new Map();
+
+function getDataset(name) {
+  const plugin = datasets.get(name);
+  if (!plugin) throw new Error(`Unknown dataset "${name}". Available: ${[...datasets.keys()].join(', ')}`);
+  return plugin;
+}
 
 function registerPlugin(plugin) {
   if (!plugin || typeof plugin !== 'object') throw new Error('Plugin must export an object.');
-  const metrics = Object.entries(plugin.metrics ?? {});
-  for (const [name, metric] of metrics) {
+  if (!plugin.name || typeof plugin.load !== 'function') throw new Error('Dataset plugin requires a name and load function.');
+  if (plugin.defaultMetrics && !Array.isArray(plugin.defaultMetrics)) throw new Error('defaultMetrics must be an array.');
+  const entries = Object.entries(plugin.metrics ?? {});
+  for (const [name, metric] of entries) {
     if (!name || typeof metric !== 'function') throw new Error('Plugin metrics must be named functions.');
   }
-  registerDataset(plugin);
-  for (const [name, metric] of metrics) registerMetric(name, metric);
+  datasets.set(plugin.name, plugin);
+  for (const [name, metric] of entries) metrics.set(name, metric);
   return plugin;
 }
 
@@ -19,8 +29,6 @@ function loadPlugin(path) {
   const plugins = Array.isArray(exported) ? exported : [exported.default ?? exported];
   return plugins.map(registerPlugin);
 }
-
-for (const plugin of require('../databench').plugins) registerPlugin(plugin);
 
 function predictionIndex(paths) {
   const predictions = new Map();
@@ -34,8 +42,13 @@ function predictionIndex(paths) {
   return predictions;
 }
 
-async function evaluate({ samples, predictions, metricNames = ['databench-answer'] }) {
-  const selectedMetrics = getMetrics(metricNames);
+async function evaluate({ samples, predictions, metricNames }) {
+  if (!Array.isArray(metricNames) || !metricNames.length) throw new Error('At least one scoring metric is required.');
+  const selectedMetrics = metricNames.map((name) => {
+    const metric = metrics.get(name);
+    if (!metric) throw new Error(`Unknown metric "${name}". Available: ${[...metrics.keys()].join(', ')}`);
+    return [name, metric];
+  });
   const newSummary = () => ({
     total: 0,
     predicted: 0,
@@ -100,10 +113,7 @@ async function evaluate({ samples, predictions, metricNames = ['databench-answer
 module.exports = {
   evaluate,
   getDataset,
-  loadDataset,
   loadPlugin,
   predictionIndex,
-  registerDataset,
-  registerMetric,
   registerPlugin,
 };

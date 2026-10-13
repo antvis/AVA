@@ -101,7 +101,17 @@ pnpm-lock.yaml
 # Downloaded/generated evaluation files
 /evals/*/datasets/
 /evals/*/results/
+/evals/*/*.jsonl
+/evals/spider2lite/resource/
+/evals/spider2lite/evaluation_suite/
+/evals/spider2lite/upstream.json
+/evals/spider2lite/.venv/
+/evals/spider2lite/__pycache__/
 
 # Debug files
 .debug
 docs/
+
+# BIRD scoring runtime
+/evals/BIRD/.venv/
+/evals/reports/BIRD/

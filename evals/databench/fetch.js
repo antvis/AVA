@@ -7,6 +7,7 @@ const { execFile } = require('node:child_process');
 const { promisify } = require('node:util');
 
 const { DuckDBInstance } = require('@duckdb/node-api');
+const { csvCell } = require('../_shared/results');
 
 const REPO = 'cardiffnlp/databench';
 const OUTPUT = join(__dirname, 'datasets');
@@ -16,10 +17,6 @@ const VARIANTS = [
   { name: 'databench', directory: 'full', dataFile: 'all.parquet', answerField: 'answer' },
 ];
 const exec = promisify(execFile);
-
-function csvCell(value) {
-  return `"${String(value ?? '').replace(/"/g, '""')}"`;
-}
 
 function sqlString(value) {
   return `'${value.replace(/'/g, "''")}'`;

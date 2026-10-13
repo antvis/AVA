@@ -3,28 +3,40 @@
 const { writeFileSync } = require('node:fs');
 const { parseArgs } = require('node:util');
 
-const { evaluate, getDataset, loadPlugin, predictionIndex } = require('./_shared');
+const { evaluate, getDataset, loadPlugin, predictionIndex, registerPlugin } = require('./_shared');
 const { takeOptions } = require('./_shared/args');
 const { buildReport } = require('./_shared/report');
 
 const adapters = {
-  'ava-workflow': { databench: () => import('./ava-workflow/evals/databench.eval.ts') },
-  'ava-agent': { databench: () => import('./ava-agent/evals/databench.eval.ts') },
+  'ava-workflow': {
+    databench: () => import('./ava-workflow/evals/databench.eval.ts'),
+    spider2lite: () => import('./ava-workflow/evals/spider2lite.eval.ts'),
+    bird: () => import('./ava-workflow/evals/bird.eval.ts'),
+  },
+  'ava-agent': {
+    databench: () => import('./ava-agent/evals/databench.eval.ts'),
+    bird: () => import('./ava-agent/evals/bird.eval.ts'),
+    spider2lite: () => import('./ava-agent/evals/spider2lite.eval.ts'),
+  },
 };
 
 const HELP = `Usage (from repository root):
   node evals/cli.js run <ava-workflow|ava-agent> --benchmark <name> [options]
   node evals/cli.js score --predictions <file.csv> [options]
 
-Use run <target> --benchmark databench --help for target options.
+Use run <target> --benchmark <databench|spider2lite|bird> --help for target options.
 Download DataBench separately: node evals/databench/fetch.js
+Download Spider2-Lite resources: node evals/spider2lite/fetch.js
+Download BIRD dev: node evals/BIRD/fetch.js
+BIRD scoring: score --dataset bird --predictions <run-dir> --help
+Spider2-Lite scoring: score --dataset spider2lite --predictions <run-dir> --help
 
 Score options:
   --dataset <name>       Dataset plugin name (default: databench-lite)
   --plugin <path>        Load a CommonJS dataset plugin; repeatable
   --data <path>          CSV file or directory; repeatable
   --predictions <path>   Prediction CSV; repeatable
-  --metrics <names>      Comma-separated metrics (default depends on dataset)
+  --metrics <names>      Comma-separated metrics; first is summary metric (default depends on dataset)
   --metadata <path>      JSON with environment, evaluation, provenance metadata
   --output <path>        Write a JSON report, overwriting an existing file
   --help                Show help
@@ -46,6 +58,7 @@ async function score(args) {
   });
   if (values.help) return process.stdout.write(HELP);
 
+  require('./databench').plugins.forEach(registerPlugin);
   values.plugin?.forEach(loadPlugin);
   if (!values.predictions?.length) throw new Error(`--predictions is required.\n\n${HELP}`);
   const plugin = getDataset(values.dataset);
@@ -54,12 +67,9 @@ async function score(args) {
   const scores = await evaluate({
     samples,
     predictions: predictionIndex(values.predictions),
-    metricNames: (values.metrics ?? plugin.defaultMetrics?.join(',') ?? 'databench-answer')
-      .split(',')
-      .map((name) => name.trim())
-      .filter(Boolean),
+    metricNames: values.metrics === undefined ? plugin.defaultMetrics : values.metrics.split(',').map((name) => name.trim()).filter(Boolean),
   });
-  const report = buildReport(scores, samples, values);
+  const report = buildReport(scores, samples, values, plugin);
   if (values.output) writeFileSync(values.output, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
 
   process.stdout.write(`Samples: ${report.total}\nPredicted: ${report.predicted}\nMissing: ${report.missing}\n`);
@@ -89,7 +99,12 @@ async function main(argv = process.argv.slice(2)) {
     const { main: run } = await available[values.benchmark]();
     return run(rest);
   }
-  if (command === 'score') return score(args);
+  if (command === 'score') {
+    const { values } = takeOptions(args, { dataset: { type: 'string' } });
+    if (values.dataset === 'spider2lite') return require('./spider2lite/score').main(args);
+    if (values.dataset === 'bird') return require('./BIRD/score').main(args);
+    return score(args);
+  }
   throw new Error(`Unknown command: ${command}.\n\n${HELP}`);
 }
 

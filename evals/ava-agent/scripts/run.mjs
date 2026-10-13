@@ -14,6 +14,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 
 import { takeOptions } from '../../_shared/args.js';
+import { readModelEnv } from '../../_shared/model-env.js';
 import { hashTree } from '../lib/files.mjs';
 import { removeRunContainers } from '../lib/cleanup.mjs';
 
@@ -24,11 +25,6 @@ const repo = resolve(root, '../..');
 export async function run(command, input, prepareEvaluation) {
   if (Number(process.versions.node.split('.')[0]) < 24) {
     throw new Error('ava-agent requires Node.js 24+.');
-  }
-
-  // Package-local env has priority over the existing evals env; never print secrets.
-  for (const path of [join(root, '.env'), resolve(root, '../.env')]) {
-    if (existsSync(path)) process.loadEnvFile(path);
   }
 
   if (!['dev', 'eval'].includes(command)) throw new Error('Use npm run dev or npm run eval.');
@@ -51,9 +47,8 @@ export async function run(command, input, prepareEvaluation) {
   const image = existsSync(imageFile) ? JSON.parse(readFileSync(imageFile, 'utf8')) : null;
 
   if (!listing) {
-    if (['OPENAI_MODEL', 'OPENAI_API_KEY', 'OPENAI_BASE_URL'].some((name) => !process.env[name]?.trim())) {
-      throw new Error('OPENAI_MODEL, OPENAI_API_KEY, and OPENAI_BASE_URL are all required.');
-    }
+    // Eve subprocesses receive only the model configuration selected from the root .env.
+    Object.assign(process.env, readModelEnv());
 
     if (!image) throw new Error('Run npm run sandbox:build first.');
 
