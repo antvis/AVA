@@ -36,7 +36,7 @@
 - 📊 **[Visualization](https://ava.antv.vision/documentation/visualization/overview/)** — Recommend chart types and generate chart specifications and HTML.
 - 🔍 **[Data profiling](https://ava.antv.vision/documentation/data/schema/#profile-a-dataset)** — Inspect tables and calculate missing-value counts, ranges, and averages.
 - 💡 **[Question suggestions](https://ava.antv.vision/documentation/analysis/overview/#suggest-questions)** — Discover useful questions based on your data's structure and available statistics.
-- 🔌 **[App and agent integration](https://ava.antv.vision/documentation/reference/cli/#use-with-an-agent)** — Use AVA through its SDK, CLI, or agent skill.
+- 🔌 **[App and agent integration](https://ava.antv.vision/documentation/agent-skill/)** — Use AVA through its SDK, CLI, or agent skill.
 - ⚙️ **[Multiple execution engines](https://ava.antv.vision/documentation/engines/overview/)** — Use DuckDB, Python/pandas, or remote databases in Node.js, and JavaScript in browsers.
 - 🧩 **[Composable workflows](https://ava.antv.vision/documentation/analysis/overview/#translate-and-execute-separately)** — Combine data loading, query generation, direct queries, and chart rendering.
 
@@ -224,7 +224,7 @@ Use the AVA skill to analyze ./sales.csv. Compare January and February 2025
 sales, identify the products contributing most to the change, and save a chart.
 ```
 
-This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/reference/cli/#use-with-an-agent).
+This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/agent-skill/).
 
 ### Use from the CLI
 

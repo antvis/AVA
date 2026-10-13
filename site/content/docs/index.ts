@@ -1,5 +1,6 @@
 export const content = {
   introduction: () => import('./introduction.mdx'),
+  'agent-skill': () => import('./agent-skill.mdx'),
   quickstart: () => import('./quickstart.mdx'),
   'data/sources': () => import('./data/sources.mdx'),
   'data/schema': () => import('./data/schema.mdx'),

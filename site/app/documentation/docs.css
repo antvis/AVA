@@ -413,6 +413,107 @@
   font-weight: bold;
   margin-top: 4px;
 }
+.docs-skill-install {
+  margin: 0 0 36px;
+  padding: clamp(20px, 3vw, 28px);
+  border: 1px solid var(--color-primary-light);
+  border-radius: 12px;
+  background: var(--docs-tint);
+}
+.docs-skill-install-eyebrow {
+  display: block;
+  margin-bottom: 12px;
+  font-family: var(--font-code);
+  color: var(--docs-link);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.docs-skill-install h2 {
+  margin: 0 0 12px;
+}
+.docs-skill-install p {
+  margin: 12px 0 0;
+}
+.docs-skill-install-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+.docs-skill-install-action .docs-copy {
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 7px;
+  background: var(--color-primary);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+}
+.docs-skill-install-action .docs-copy:hover {
+  background: var(--color-primary-dark);
+}
+.docs-skill-install-action > span {
+  color: var(--docs-muted);
+  font-size: 12px;
+}
+.docs-skill-install details {
+  padding-top: 14px;
+  border-top: 1px solid var(--color-primary-light);
+}
+.docs-skill-install summary {
+  cursor: pointer;
+  color: var(--docs-link);
+  font-size: 13px;
+}
+.docs-skill-install .docs-code-block {
+  background: var(--color-surface);
+  margin: 20px 0 16px;
+}
+.docs-skill-install pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.docs-skill-install code {
+  min-width: 0;
+}
+.docs-skill-demo {
+  overflow: hidden;
+  border: 1px solid var(--docs-border);
+  border-radius: 10px;
+}
+.docs-skill-demo-summary {
+  padding: 22px 24px;
+  background: var(--color-hover);
+  border-bottom: 1px solid var(--docs-border);
+}
+.docs-skill-demo-summary > span {
+  display: block;
+  color: var(--docs-muted);
+  font-family: var(--font-code);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.docs-skill-demo-summary > strong {
+  display: block;
+  margin: 6px 0;
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: -0.04em;
+}
+.docs-skill-demo iframe {
+  display: block;
+  width: 100%;
+  height: 380px;
+  border: 0;
+  background: var(--color-surface);
+}
+.docs-skill-demo figcaption {
+  padding: 12px 20px;
+  border-top: 1px solid var(--docs-border);
+  color: var(--docs-muted);
+  font-size: 12px;
+}
 .docs-source-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

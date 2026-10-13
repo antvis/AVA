@@ -27,7 +27,7 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
       { label: 'AI Playground', href: '/ai-playground' },
       { label: 'SDK', href: '/documentation/quickstart/' },
       { label: 'CLI', href: '/documentation/reference/cli/' },
-      { label: 'Agent Skill', href: '/documentation/reference/cli/#use-with-an-agent' },
+      { label: 'Agent Skill', href: '/documentation/agent-skill/' },
     ],
   },
   {

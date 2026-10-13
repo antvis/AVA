@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-export default function CopyCode() {
+export default function CopyCode({ label }: { label?: string }) {
   const button = useRef<HTMLButtonElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [status, setStatus] = useState('');
@@ -22,8 +22,8 @@ export default function CopyCode() {
   }
 
   return (
-    <button ref={button} type="button" className="docs-copy" onClick={copy} aria-label="Copy code">
-      <span aria-live="polite">{status || 'Copy'}</span>
+    <button ref={button} type="button" className="docs-copy" onClick={copy} aria-label={label || 'Copy code'}>
+      <span aria-live="polite">{status || label || 'Copy'}</span>
       <svg
         width="14"
         height="14"

@@ -14,18 +14,6 @@ import {
 } from '../components/landing'
 import PageShell from '../components/PageShell'
 
-/* The little brand orb — pure JSX/ Tailwind (was `.orb` + `.orb::after` in CSS) */
-const Orb: React.FC = () => (
-  <div
-    aria-hidden="true"
-    className="relative mx-auto mb-5 h-11 w-11 rounded-full border border-[#ffffffc0]
-      bg-[radial-gradient(circle_at_30%_20%,#efffff,transparent_32%),conic-gradient(from_35deg,#2996cf,var(--color-primary-light),#d5f5ff,#67bddf,#247ab9,#c8f0ff,#2996cf)]
-      shadow-[inset_-5px_-7px_10px_#245c9440,inset_2px_2px_4px_#fff9,0_12px_20px_#539ac430]"
-  >
-    <div className="absolute inset-x-[-3px] inset-y-[7px] rotate-[-32deg] rounded-full border-2 border-[#e4faffb3] shadow-[0_1px_2px_#4889b2]" />
-  </div>
-)
-
 export default function Home() {
   // LLM settings modal (shared with the interactive examples below)
   const [isConfigOpen, setIsConfigOpen] = useState(false)
@@ -44,13 +32,12 @@ export default function Home() {
 
           {/* hero — was `.hero`: bordered plate with layered light-blue gradients */}
           <div
-            className="relative mx-6 mb-16 rounded-[28px] border border-[#edf7fc] px-7 pb-[52px] pt-9
+            className="relative mx-6 mb-16 rounded-[28px] border border-[#edf7fc] px-7 pb-[52px] pt-14
               bg-[radial-gradient(ellipse_at_85%_80%,#cceaf680,transparent_50%),linear-gradient(150deg,#eef8ff,#f8fcfe_55%,#edfaff)]
               [&>section]:mt-0
               [&>section>div[aria-hidden]]:hidden
               [&>section>div:last-child]:m-0 [&>section>div:last-child]:pb-0
-              [&>section>div:last-child>div]:gap-5 [&>section>div:last-child>div]:pb-[38px]
-              [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7]
+              [&>main_p]:max-w-[520px] [&>main_p]:text-[14px] [&>main_p]:leading-[1.7]
               [&_.hero-rise_a]:rounded-[9px]
               [&>main]:mx-auto [&>main]:max-w-[1040px] [&>main]:pb-0
               [&_#playground]:rounded-[25px] [&_#playground]:border-2 [&_#playground]:border-transparent
@@ -68,12 +55,9 @@ export default function Home() {
               max-md:[&_h1>span:first-child>span:first-child]:mb-1
               max-md:[&_h1>span:first-child>span:first-child]:block
               max-md:[&_h1>span:first-child>span:last-child]:whitespace-nowrap
-              max-md:mx-2.5 max-md:rounded-[18px] max-md:px-3.5 max-md:pb-6 max-md:pt-7
-              max-md:[&>section>div:last-child>div]:gap-[17px]
-              max-md:[&>section>div:last-child>div]:pb-7
+              max-md:mx-2.5 max-md:rounded-[18px] max-md:px-3.5 max-md:pb-6 max-md:pt-10
               max-md:[&_.hero-rise_a]:px-4 max-md:[&_.hero-rise_a]:text-xs"
           >
-            <Orb />
             <Banner />
             <Playground />
           </div>

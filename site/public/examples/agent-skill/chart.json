@@ -1,0 +1,4 @@
+{
+  "chartType": "bar",
+  "syntax": "vis bar\ndata\n  - category Analytics\n    value 6000\n  - category Automation\n    value 2000\n  - category Support\n    value 500\n  - category Reporting\n    value -1000\ntitle \"Revenue change by product\"\naxisXTitle Product\naxisYTitle \"Change (USD)\""
+}

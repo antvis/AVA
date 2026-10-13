@@ -1,0 +1,151 @@
+import CopyCode from '../../components/docs/CopyCode';
+
+<section className="docs-skill-install docs-code-block" aria-labelledby="install-with-your-agent">
+
+<span className="docs-skill-install-eyebrow">START WITH YOUR AGENT</span>
+
+## Install with your agent
+
+One prompt to get ready. Your agent checks the environment, installs AVA and the skill, and verifies that everything works.
+
+<div className="docs-skill-install-action">
+  <CopyCode label="Copy install prompt" />
+  <span>Paste into your terminal-based AI agent.</span>
+</div>
+
+<details>
+<summary>View installation prompt</summary>
+
+```text
+Install AVA's Agent Skill in the current project so you can analyze data and create charts for me.
+
+1. Check that this environment runs macOS or Linux, with Node.js 22.13 or later and npm available. Use an existing Node version manager if an upgrade is needed. If you cannot meet these requirements, explain what is missing.
+2. Install the CLI with `npm install -g @antv/ava@alpha`. Verify that `ava --help` and `ava source --help` work.
+3. Install the skill for the detected agents in this project with `npx --yes skills add antvis/AVA --skill ava --yes`.
+4. Read the installed ava/SKILL.md and its environment setup reference. Verify the installed skill with `npx --yes skills list`.
+5. Smoke-test the CLI using a tiny CSV in a new temporary directory: load it with `ava source`, inspect it with `ava schema`, and execute a simple aggregate with `ava query`. Use the returned dataset ID and the actual table name from the schema. Dispose of this test session afterward.
+
+Use your own reasoning for analysis; do not ask me for an additional AVA model API key. Report the installed CLI version, skill location, and verification results. If anything fails, explain the error instead of claiming success. Tell me whether I need to start a new agent session to load the skill.
+```
+
+</details>
+
+Prefer shell commands? Follow the [manual installation](#manual-installation).
+
+</section>
+
+## What the skill does
+
+The **agent** understands your question, plans the analysis, writes queries, and explains the results. **AVA** connects to your data, executes those queries, and renders charts. The skill teaches the agent how to use these tools together.
+
+Ask it to compare periods, explore a dataset, investigate changes, or create a chart from verified results. You can start with a local CSV, JSON, Parquet, Excel, or SQLite file, or a configured [database connection](/documentation/data/sources/).
+
+<Callout>
+  The skill's core workflow uses your agent's existing model. Loading structured data, inspecting schema,
+  profiling, executing queries, and rendering a chart spec do not require a separate AVA model key.
+  Your agent's own usage still follows its provider's pricing.
+</Callout>
+
+## Demo: explain a revenue change
+
+This reproducible example uses **8 synthetic rows**: January and February 2025 revenue for four products, in USD. The results below are computed from that sample; this is an example of the deliverable, not a recorded agent conversation.
+
+### 1. Get the data
+
+<a href="/examples/agent-skill/sales.csv" download="sales.csv">Download sales.csv</a> and save it in your working folder.
+
+### 2. Ask your agent
+
+Start a new agent session after installation, then paste this prompt. Use the actual file path if you saved the CSV elsewhere.
+
+```text
+Use the AVA skill to analyze ./sales.csv.
+
+Compare total revenue in January and February 2025, in USD.
+Calculate the absolute and percentage change. Break down the change by product,
+identify the largest contributor, and check that the product changes add up
+to the overall change. Do not infer causes that are not in the data.
+
+Save a horizontal bar chart of each product's revenue change as revenue-change.html
+in a new output folder. Include a short explanation, the results table,
+and the query used so I can reproduce the analysis.
+```
+
+### 3. Explore the result
+
+<figure className="docs-skill-demo">
+  <div className="docs-skill-demo-summary">
+    <span>JAN → FEB 2025 · SAMPLE REVENUE</span>
+    <strong>$30,000 → $37,500</strong>
+    <p>Revenue grew <b>25%</b> (+$7,500). Analytics contributed $6,000, or 80% of the net increase.</p>
+  </div>
+  <iframe
+    src="/examples/agent-skill/revenue-change.html"
+    title="Revenue change by product: Analytics +6000, Automation +2000, Support +500, Reporting -1000 USD"
+    loading="lazy"
+    sandbox="allow-scripts"
+  />
+  <figcaption>Interactive chart rendered with AVA. Hover to inspect each product. The chart loads GPT-Vis from a CDN.</figcaption>
+</figure>
+
+Reporting declined by $1,000, partly offsetting growth elsewhere. These figures show **where** the change occurred; the sample does not explain **why**.
+
+| Product | January (USD) | February (USD) | Change (USD) |
+| --- | --- | --- | --- |
+| Analytics | 12,000 | 18,000 | +6,000 |
+| Automation | 8,000 | 10,000 | +2,000 |
+| Support | 4,000 | 4,500 | +500 |
+| Reporting | 6,000 | 5,000 | −1,000 |
+| **Total** | **30,000** | **37,500** | **+7,500** |
+
+<p>
+  <a href="/examples/agent-skill/revenue-change.html" target="_blank" rel="noopener noreferrer">Open chart ↗</a>
+  {' · '}
+  <a href="/examples/agent-skill/revenue-change.html" download="revenue-change.html">Download HTML</a>
+  {' · '}
+  <a href="/examples/agent-skill/revenue-change.sql" download="revenue-change.sql">Download SQL</a>
+  {' · '}
+  <a href="/examples/agent-skill/chart.json" download="chart.json">Download chart spec</a>
+</p>
+
+The sample query uses `data`, the table exposed by AVA's DuckDB CSV loader. For your own sources, have the agent inspect `ava schema` before writing a query. To render the saved chart spec yourself, download it and run:
+
+```bash
+ava viz --spec @chart.json --output revenue-change.html
+```
+
+Choose a new output path if that file already exists. The exported HTML needs internet access to load its chart renderer. Your agent's wording and chart design may differ; the calculations for this sample should match the table above.
+
+## Manual installation
+
+The CLI requires **Node.js 22.13 or later**, **macOS or Linux**, and an environment that supports background processes and Unix sockets. Install both the CLI and the skill:
+
+```bash
+npm install -g @antv/ava@alpha
+npx --yes skills add antvis/AVA --skill ava --yes
+```
+
+This installs the CLI globally and the skill into the current project for detected agents. The [skills installer](https://github.com/vercel-labs/skills#options) also supports selecting an agent with `--agent` or installing the skill across projects with `--global`.
+
+Check the installation, then start a new agent session if needed to discover the skill:
+
+```bash
+ava --help
+ava source --help
+npx --yes skills list
+```
+
+## Model configuration
+
+The agent can perform the demo with `source`, `schema`, `query`, and `viz`, using its own reasoning. No separate AVA model configuration is needed for this path.
+
+AVA commands that call a model directly — `analyze`, `suggest`, `translate`, `recommend`, and `visualize` — and text extraction require [model configuration](/documentation/configuration/). For dataset sessions, set those model variables **before** running `ava source`.
+
+## Troubleshooting
+
+- **The agent cannot find the skill.** Run `npx --yes skills list` from the project where you installed it. Check that your agent was selected, and start a new session.
+- **`ava` is not found.** Confirm the global npm installation succeeded and its binary directory is on the agent's `PATH`.
+- **The dataset is unavailable.** Sessions expire after 30 idle minutes. Reload the source and use the new dataset ID. Commands must run as the same user in the same runtime and temporary directory.
+- **The chart is blank.** Check internet access to the chart renderer, inspect the chart spec, and use the results table to verify its values.
+
+See the [CLI reference](/documentation/reference/cli/) for command options, or read the [skill source](https://github.com/antvis/AVA/blob/ai/skills/ava/SKILL.md) for the agent's full workflow instructions.

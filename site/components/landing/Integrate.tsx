@@ -27,8 +27,8 @@ const TABS: {
     description:
       'Equip compatible agents with a reusable workflow for exploring, analyzing, and visualizing data — using the agent’s own reasoning, with no separate model key.',
     language: 'bash',
-    docHref: '/documentation/reference/cli/#use-with-an-agent',
-    docLabel: 'Agent setup',
+    docHref: '/documentation/agent-skill/',
+    docLabel: 'Agent Skill guide & demo',
   },
   {
     id: 'cli',

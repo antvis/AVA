@@ -6,6 +6,12 @@ export const docs = [
     description: 'AI-native visual analytics, from question to insight.',
   },
   {
+    slug: 'agent-skill',
+    title: 'Agent Skill',
+    group: 'Get started',
+    description: 'Give your agent data analysis tools, from the first question to a shareable chart.',
+  },
+  {
     slug: 'quickstart',
     title: 'Installation & Quickstart',
     group: 'Get started',
