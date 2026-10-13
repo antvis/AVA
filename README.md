@@ -21,31 +21,155 @@
   <a href="https://github.com/antvis/AVA/blob/ai/llms.txt">
     <img src="https://img.shields.io/badge/LLMS-FA8C16?style=for-the-badge" alt="llms" />
   </a>
-</p>
-
-<a href="https://gw.alipayobjects.com/v/huamei_qa8qxu/afts/video/A*6Mf-SpWDar0AAAAAiPAAAAgAemJ7AQ">
-  <img width="1236" alt="Watch the AVA demo video" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*X7EmQKOrfmsAAAAAgGAAAAgAemJ7AQ/original" />
-</a>
-
-<p align="center">
-  <a href="https://sive.antv.antgroup.com/">
-    <img src="https://img.shields.io/badge/Try_Sive-2F54EB?style=for-the-badge" height="32" alt="Try Sive" />
+  <a href="https://sive.antv.antgroup.com/" title="A data analysis app built with AVA">
+    <img src="https://img.shields.io/badge/Try%20Sive-13A8A8?style=for-the-badge" alt="Try Sive" />
   </a>
-  <br />
-  <sub>Built with AVA</sub>
 </p>
 
-With AVA, you can:
+<img width="1236" alt="Watch the AVA demo video" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*8eV4SacwH9IAAAAAgCAAAAgAemJ7AQ/original" />
 
-- 🤖 **Agent and SDK Integration**: Bring data analysis to your agents and applications through the AVA Skill, CLI, or TypeScript SDK.
-- 💬 **Natural Language Analysis**: Turn questions into executable queries, structured results, and natural-language summaries.
-- 📊 **Visualization**: Recommend chart types and generate GPT-Vis specifications and HTML visualizations from analysis results.
-- 🔎 **Data Profiling**: Inspect tables and fields, and compute statistics such as missing-value counts, value ranges, and averages without an LLM call.
-- 💡 **Query Suggestions**: Discover useful analysis questions based on your data's schema and optional statistics.
-- 🌐 **Multiple Execution Environments**: Use DuckDB, Python/pandas, or remote database engines in Node.js, and JavaScript for inline data in browsers.
-- 🧩 **Composable Workflows**: Combine data loading, schema inspection, direct queries, and chart rendering, with a custom Python executor when needed.
+## ✨ Features
 
-**🔌 Data Sources** — Connect files and databases, or load inline data.
+- 💬 **Natural-language analysis** — Turn questions into executable queries, computed results, and summaries.
+- 📊 **Visualization** — Recommend chart types and generate chart specifications and HTML.
+- 🔍 **Data profiling** — Inspect tables and calculate missing-value counts, ranges, and averages.
+- 💡 **Question suggestions** — Discover useful questions based on your data's structure and available statistics.
+- 🔌 **App and agent integration** — Use AVA through its SDK, CLI, or agent skill.
+- ⚙️ **Multiple execution engines** — Use DuckDB, Python/pandas, or remote databases in Node.js, and JavaScript in browsers.
+- 🧩 **Composable workflows** — Combine data loading, query generation, direct queries, and chart rendering.
+
+## 🚀 Getting started
+
+### 📦 Installation
+
+Install the v4 alpha with Node.js 22.13+:
+
+```bash
+npm install @antv/ava@alpha
+```
+
+### 💻 Usage
+
+Investigate a monthly sales decline: measure the change, identify the largest contributors, and visualize the breakdown.
+
+#### Load data
+
+Download [sales.csv](__tests__/datasets/sales.csv) to your working directory. The sample contains 240 orders across 2025, with products, regions, channels, sales, and profit.
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: '<your-model>',
+    apiKey: '<your-api-key>',
+    // baseURL: '<your-provider-api-url>',
+  },
+});
+
+await ava.source({ type: 'csv-file', options: { path: './sales.csv' } });
+```
+
+#### Ask questions
+
+Measure the overall change using `sales`, the amount after discounts:
+
+```typescript
+const overview = await ava.analyze(`
+  Compare total sales in January and February 2025 using the sales column.
+  Include the change and percentage change.
+`);
+console.log(overview.text);
+```
+
+Expected: sales fell from **38,897.18 to 21,804.11**, down **17,093.07 (43.94%)**.
+
+Find the products contributing to the decline:
+
+```typescript
+const result = await ava.analyze(`
+  Compare January and February 2025 sales by product using the sales column.
+  Show both months and the change, ordered by the largest decline.
+`);
+console.log(result.text);
+console.table(result.data);
+```
+
+Expected breakdown:
+
+| Product | January sales | February sales | Change |
+| --- | ---: | ---: | ---: |
+| Laptop | 19,688.10 | 3,596.00 | −16,092.10 |
+| Standing Desk | 9,655.80 | 5,546.10 | −4,109.70 |
+| Monitor | 6,536.25 | 4,731.00 | −1,805.25 |
+| Pen Set | 232.20 | 127.71 | −104.49 |
+| Bookshelf | 1,225.50 | 1,251.30 | +25.80 |
+| Copy Paper | 59.19 | 137.06 | +77.87 |
+| Notebook | 31.50 | 137.03 | +105.53 |
+| Keyboard | 215.64 | 1,015.31 | +799.67 |
+| Office Chair | 1,253.00 | 5,262.60 | +4,009.60 |
+
+Laptops contributed the largest decline, while office chairs delivered the largest increase.
+
+<!-- Image placeholder: monthly sales comparison, 43.94% decline, and product contribution table. -->
+
+#### Visualize charts
+
+Chart each product's contribution to the sales change:
+
+```typescript
+import { writeFile } from 'node:fs/promises';
+
+const chart = await ava.visualize({
+  query: 'Plot the sales change by product from January to February 2025 as a bar chart.',
+  data: result.data,
+});
+if (chart) {
+  await writeFile('sales-change.html', chart.html);
+}
+```
+
+Open `sales-change.html` in a browser with internet access.
+
+![Sales change by product from January to February 2025, with decreases in red and increases in green.](https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*UPh7SrxzXjoAAAAARqAAAAgAemJ7AQ/original)
+
+#### Find questions to explore
+
+Get suggested questions for your data:
+
+```typescript
+const suggestions = await ava.suggest();
+console.log(suggestions);
+```
+
+> 💡 **Suggested questions**
+>
+> How do sales change month by month?
+>
+> Which products contribute the most profit?
+>
+> How do sales compare across channels?
+
+#### Understand your data
+
+Check missing values and sales ranges:
+
+```typescript
+console.log(await ava.schema());
+console.log(await ava.profile({ metrics: ['row_count', 'null_count', 'min', 'max'] }));
+```
+
+The sample has one missing `region` and one missing `quantity`.
+
+Release resources when finished:
+
+```typescript
+await ava.dispose();
+```
+
+### 🔌 Connect your data
+
+Connect files and databases, or load inline data.
 
 <table width="100%">
   <tr>
@@ -68,138 +192,74 @@ With AVA, you can:
   </tr>
 </table>
 
-Support varies by engine. See the [data source guide](skills/ava/references/sources.md) for connection details.
-
-## 🚀 Quick Start
-
-Start with the TypeScript library below, or use AVA [with an agent](#use-with-an-agent) or [from the CLI](#use-from-the-cli).
-Full configuration and method details are in the [API Reference](API_REFERENCE.md).
-Replace placeholders such as `<your-data.csv>` with your own data, fields, and model settings.
-
-### Installation
-
-Requires Node.js 22.13+ for the examples below:
-
-```bash
-npm install @antv/ava@alpha
-```
-
-### Usage
-
-Load your data, ask a question, and generate a chart:
+Load an Excel workbook with `source()`:
 
 ```typescript
-import { writeFile } from 'node:fs/promises';
-import { AVA } from '@antv/ava';
-
-const ava = new AVA({
-  llm: {
-    model: '<your-model>',
-    apiKey: '<your-api-key>',
-    baseURL: '<your-model-api-base-url>', // Omit for OpenAI.
-  },
-});
-
-try {
-  await ava.source({ type: 'csv-file', options: { path: '<your-data.csv>' } });
-
-  // Ask a question about your data.
-  const result = await ava.analyze('Compare <your-metric> by <your-dimension>');
-  console.log(result.text);
-
-  // Visualize the analysis result.
-  const chart = await ava.visualize(result);
-  if (chart) await writeFile('chart.html', chart.html);
-} finally {
-  await ava.dispose();
-}
+await ava.source({ type: 'excel', options: { path: './sales.xlsx' } });
 ```
 
-Open `chart.html` in your browser if a chart was generated.
-See [API Reference](API_REFERENCE.md#sdk-reference) for other data sources and execution environments.
+See the [data source guide](skills/ava/references/sources.md) for connection settings and engine support.
 
-### Use with an Agent
+For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/).
 
-Give your AI agent access to AVA:
+### 🧩 More ways to use AVA
+
+The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
+
+#### Use with an Agent
+
+Your agent plans the analysis; AVA runs queries and creates charts.
 
 ```bash
+npm install -g @antv/ava@alpha
 npx skills add antvis/AVA
 ```
 
-Start a new agent session and ask:
+In a new agent session, ask:
 
 ```text
-Use the AVA skill to analyze <your-data.csv>, compare <your-metric> by <your-dimension>, and generate a chart.
+Use the AVA skill to analyze ./sales.csv. Compare January and February 2025
+sales, identify the products contributing most to the change, and save a chart.
 ```
 
-The agent uses its own reasoning; AVA does not need a separate model API key for this workflow.
-See [agent setup](API_REFERENCE.md#-use-with-ai-agents) for more details.
+This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/).
 
-### Use from the CLI
+#### Use from the CLI
 
-Requires Node.js 22.13+ on macOS or Linux. Install AVA and configure a model for natural-language analysis:
+Configure your model and load a CSV:
 
 ```bash
 npm install -g @antv/ava@alpha
 
 export OPENAI_API_KEY='<your-api-key>'
 export OPENAI_MODEL='<your-model>'
-# Set this when using another OpenAI-compatible provider:
-export OPENAI_BASE_URL='<your-model-api-base-url>'
+# export OPENAI_BASE_URL='<your-provider-api-url>'
 
-ava source '<your-data.csv>'
+ava source ./sales.csv
+```
 
-# Replace <your-dataset-id> with the ID returned by ava source.
-ava analyze '<your-dataset-id>' 'Compare <your-metric> by <your-dimension>'
+Use the dataset ID returned by `source`:
+
+```bash
+ava analyze '<your-dataset-id>' 'Compare January and February 2025 sales by product, including the change.'
 ava dispose '<your-dataset-id>'
 ```
 
-The result includes the computed data and a natural-language summary.
-See the [CLI reference](API_REFERENCE.md#cli-reference) for direct queries, charts, and other commands.
+`analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/).
 
 ## 📚 Resources
 
-- [Documentation](https://ava.antv.vision/documentation/) for guides to getting started and building with AVA.
-- [API Reference](API_REFERENCE.md) for a comprehensive technical reference.
-- [Playground](https://ava.antv.vision/#playground) for exploring AVA through interactive examples.
-- [Issues](https://github.com/antvis/AVA/issues) for bug reports and feature requests.
-- [Benchmarks](evals/ACCURACY.md) for evaluation results and methodology.
-
-## 🌐 Environment Support
-
-### Node.js
-
-Uses DuckDB by default, with optional Python and remote database engines:
-
-- Inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), DuckDB-attached databases (mysql/postgresql), and direct ClickHouse sources via `load`
-- File system access for CSV loading, plus remote files such as OSS signed URLs
-- With DuckDB, file data is read directly by the engine without materializing it in JavaScript memory
-- Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
-- Supabase engine for remote SQL execution via Supabase Management API
-- ClickHouse engine for remote SQL execution via the official client
-- Python engine for pandas analysis of inline CSV/JSON and file sources; requires `python3` and pandas for local execution
-
-### Browser
-
-Lightweight JavaScript interpreter engine for client-side analytics:
-
-- Inline data sources only: `csv`, `json`, `text`
-- JavaScript sandbox execution with `stat` helper functions
-- No file system or database access
-- Import from `@antv/ava/browser` to avoid bundling Node.js dependencies
+- [Documentation](https://ava.antv.vision/documentation/) — Guides and examples
+- [API Reference](https://ava.antv.vision/documentation/#api-reference) — Methods and configuration
+- [Playground](https://ava.antv.vision/ai-playground/) — Try out AVA in the browser environment
+- [Benchmarks](evals/ACCURACY.md) — Evaluation results
+- [Issues](https://github.com/antvis/AVA/issues) — Bug reports and feature requests
 
 ## 🤝 Developer Contributions
 
-This is an experimental branch. Contributions are welcome! Please ensure:
+Contributions are welcome. Include tests, examples, and documentation with new features.
 
-- Code is clean and well-documented
-- TypeScript types are properly defined
-- New features include examples, and tests
-- READMEs are updated as needed
-
-### Running tests with an LLM
-
-Copy `.env.example` to `.env` and fill in `OPENAI_API_KEY` (optionally `OPENAI_MODEL` / `OPENAI_BASE_URL`). Vitest loads `.env` through `vitest.setup.ts`, so `npm test` picks it up with no extra flags. Without a key the LLM-dependent suites are reported as **skipped**, and the rest of the suite still runs offline.
+Run `npm test` to test your changes. For model-backed tests, copy `.env.example` to `.env` and add your model settings.
 
 ## 🔗 Related Projects
 
@@ -207,12 +267,12 @@ Copy `.env.example` to `.env` and fill in `OPENAI_API_KEY` (optionally `OPENAI_M
 - [Chart Visualization Skills](https://github.com/antvis/chart-visualization-skills) - LLM skills for charts
 - [Vercel AI SDK](https://sdk.vercel.ai/) - LLM integration
 
-## 📚 Papers
+## 📑 Papers
 
 [VizLinter](https://vegalite-linter.idvxlab.com/) - Chen, Q., Sun, F., Xu, X., Chen, Z., Wang, J. and Cao, N., 2021. VizLinter: A Linter and Fixer Framework for Data Visualization. *IEEE transactions on visualization and computer graphics*, 28(1), pp.206-216.
 
 [《数据可视化设计的类型学实践》（Exploring the Typology of Visualization Design）](https://oversea.cnki.net/KCMS/detail/detail.aspx?dbcode=CJFD&dbname=CJFDAUTO&filename=MSDG202203021&uniplatform=OVERSEAS_EN&v=HcZsiecIxauSoKEB1s92_BImgnrMiazYsfZUpb-gcl0zXYx_MEwv5alz1UgtPjz1) - 蓝星宇, 王嘉喆. 数据可视化设计的类型学实践, 《美术大观》, 2022(3), 149-152.
 
-## 📄 License
+## ⚖️ License
 
 MIT
