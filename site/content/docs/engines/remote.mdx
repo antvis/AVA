@@ -1,0 +1,43 @@
+## Supabase
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'supabase' },
+});
+await ava.source({
+  type: 'supabase',
+  options: {
+    projectRef: 'YOUR_PROJECT_REF',
+    accessToken: process.env.SUPABASE_ACCESS_TOKEN!,
+  },
+});
+```
+
+The engine discovers the schema and executes PostgreSQL queries through the Supabase Management API using read-only requests. Your application handles obtaining and refreshing the access token. Query results are returned to AVA and can be sent to the model for analysis summaries.
+
+## ClickHouse
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'clickhouse' },
+});
+await ava.source({
+  type: 'clickhouse',
+  options: {
+    url: 'http://localhost:8123',
+    database: 'analytics',
+    username: 'reader',
+    password: process.env.CLICKHOUSE_PASSWORD,
+  },
+});
+```
+
+Use `url` or `host`, with a required `database`. `username` takes precedence over the `user` alias. Queries use the official ClickHouse client with read-only settings.
+
+## Shared workflow
+
+Both engines support `schema()`, `profile()`, `translate()`, `query()`, and `analyze()`. Set the matching source and engine types in the JavaScript API. Release resources with `await ava.dispose()` after use.
+
+See [Supabase parameters](/documentation/data/sources/#supabase) and [ClickHouse options](/documentation/data/sources/#clickhouse) for complete configuration tables.

@@ -1,0 +1,33 @@
+## Engine selection
+
+Set the engine in the `AVA` constructor. In the JavaScript API, omitting it always selects DuckDB; source type does not change this selection automatically.
+
+| Engine                                                  | Sources                                                | Runtime                    |
+| ------------------------------------------------------- | ------------------------------------------------------ | -------------------------- |
+| [DuckDB](/documentation/engines/duckdb/)                | Inline data, files, MySQL, PostgreSQL, SQLite, MongoDB | Node.js                    |
+| [JavaScript](/documentation/engines/javascript/)        | Inline CSV, JSON, text                                 | Node.js and browser        |
+| [Python](/documentation/engines/python/)                | Inline CSV / JSON; CSV / JSON / Parquet / Excel files  | Node.js + Python executor  |
+| [Supabase](/documentation/engines/remote/#supabase)     | Supabase project                                       | Node.js; remote PostgreSQL |
+| [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse database                                    | Node.js; remote ClickHouse |
+
+## Engine configuration
+
+| Field         | Type                                                                                         | Required                  | Default / behavior                |
+| ------------- | -------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
+| `engine.type` | `'duckdb'` / `'javascript'` / `'python'` / `'supabase'` / `'clickhouse'` / a registered name | When `engine` is provided | Omitting `engine` selects DuckDB. |
+
+Additional fields depend on `type`: [DuckDB options](/documentation/engines/duckdb/#engine-options) and [Python options](/documentation/engines/python/#engine-options). JavaScript, Supabase, and ClickHouse accept no additional constructor engine fields. Database credentials belong to [source parameters](/documentation/data/sources/#connect-a-source).
+
+To run Python in your own service, see [Supply a Python executor](/documentation/engines/python/#supply-a-python-executor). To supply an engine from your application, see [Custom engines](/documentation/engines/custom/).
+
+## Shared contract
+
+All engines implement `AnalysisEngine`: `language`, `load()`, `getDSL()`, `execute()`, and `dispose()`. `profile()` is optional in the interface and implemented by the built-in engines.
+
+These are engine-level methods. Application code normally uses `AVA.source()`, `AVA.translate()`, and `AVA.query()` rather than calling the engine directly.
+
+## Registration
+
+The Node.js entry point registers all five engines; the browser entry point registers JavaScript only. The registry keeps the core `AVA` class independent of platform-specific imports.
+
+For SDK extensions, call `registerEngine('sales', SalesEngine)`, then select `engine: { type: 'sales' }`. See [Custom engines](/documentation/engines/custom/) for the contract and a complete example. The CLI accepts only built-in engine names.

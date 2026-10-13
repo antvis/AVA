@@ -1,210 +1,48 @@
-# AVA - AI-Native Visual Analytics
+# AVA - AI-native Visual Analytics
 
-> AVA is a technology framework designed for more convenient visual analytics, powered by AI.
+> AVA is an AntV TypeScript framework for loading data, answering natural-language questions, and generating visualizations through an SDK, CLI, or Agent Skill.
 
-## Overview
+This documentation covers AVA v4 alpha. Install `@antv/ava@alpha` with Node.js 22.13.0 or later. Use `@antv/ava` in Node.js and `@antv/ava/browser` in browsers.
 
-AVA, a complete rewrite focused on **AI-native Visual Analytics**. The first **A** has multiple meanings: AI native, Automated, Augmented, and **VA** stands for Visual Analytics. It can assist users in unstructured data loading, data processing and analysis, as well as visualization code generation.
+The core workflow is `source()` → `analyze()` → `visualize()`. `source()` replaces the current dataset and returns no value; use `schema()` to inspect it and `profile()` for statistics. Use `suggest()` to discover questions, `translate()` and `query()` to control query execution, or `recommend()` and `viz()` to control chart generation. Always await `dispose()` when finished.
 
-## Key Features
+DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; Python, Supabase, and ClickHouse provide additional Node.js execution options. Follow the linked guides for source support, configuration, and complete API signatures.
 
-- **Natural Language Queries**: Ask questions about your data in plain English
-- **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
-- **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
-- **Data Profiling**: Compute deterministic table and field statistics without an LLM call
-- **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- **Dual Environment**: Runs in both Node.js (DuckDB engine) and browsers (JavaScript interpreter engine)
+## Get started
 
-## Quick Start
+- [Introduction](https://ava.antv.vision/documentation/): Core workflow and ways to use AVA.
+- [Installation and quickstart](https://ava.antv.vision/documentation/quickstart/): Install the v4 alpha, configure a model, and run a complete Node.js example.
+- [Agent Skill](https://ava.antv.vision/documentation/agent-skill/): Install AVA's agent skill and analyze data with an AI coding agent.
+- [Command-line interface](https://ava.antv.vision/documentation/reference/cli/): Inspect datasets, run queries, and render charts using persistent local sessions.
 
-### Node.js
+## Data, analysis, and visualization
 
-```typescript
-import { AVA } from '@antv/ava';
+- [Data sources](https://ava.antv.vision/documentation/data/sources/): Source types and parameters for inline data, files, and databases.
+- [Schema and profiling](https://ava.antv.vision/documentation/data/schema/): Inspect tables and relationships and compute deterministic profiling metrics.
+- [Analyze data](https://ava.antv.vision/documentation/analysis/overview/): Ask questions, get suggestions, and translate or execute queries separately.
+- [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/): Choose direct analysis, iterative reasoning, or selected profile context.
+- [Generate visualizations](https://ava.antv.vision/documentation/visualization/overview/): Recommend charts and generate GPT-Vis syntax and HTML.
 
-// Initialize with LLM config
-const ava = new AVA({
-  llm: {
-    model: 'ling-1t',
-    apiKey: 'YOUR_API_KEY',
-    baseURL: 'LLM_BASE_URL',
-  },
-  // engine: { type: 'duckdb' } is the default; no need to specify
-});
+## Configuration and execution engines
 
-// Load data from various sources — all through ava.load({ type, options })
-await ava.load({ type: 'csv-file', options: { path: 'data/companies.csv' } }); // Node.js
-await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
-await ava.load({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
-await ava.load({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
+- [Model configuration](https://ava.antv.vision/documentation/configuration/): Configure an OpenAI-compatible provider, AI Gateway, or an AI SDK model.
+- [Browser usage](https://ava.antv.vision/documentation/browser/): Use the browser entry point and JavaScript engine with inline data.
+- [Engine overview](https://ava.antv.vision/documentation/engines/overview/): Compare execution environments, query languages, and supported sources.
+- [DuckDB](https://ava.antv.vision/documentation/engines/duckdb/): Run SQL against inline data, files, and attached databases.
+- [JavaScript](https://ava.antv.vision/documentation/engines/javascript/): Execute JavaScript against an in-memory dataset.
+- [Python](https://ava.antv.vision/documentation/engines/python/): Analyze with pandas using local Python or an application-provided executor.
+- [Supabase and ClickHouse](https://ava.antv.vision/documentation/engines/remote/): Discover schemas and execute queries in remote databases.
+- [Custom engines](https://ava.antv.vision/documentation/engines/custom/): Implement and register a custom analysis engine.
 
-// Profile the loaded data with the default metrics
-const profile = await ava.profile();
-console.log(profile.tables[0].metrics.row_count);
+## API reference
 
-// Or request only the metrics you need
-const focusedProfile = await ava.profile({
-  metrics: ['row_count', 'null_count', 'min', 'max', 'mean', { id: 'top_values', limit: 5 }],
-});
+- [AVA API](https://ava.antv.vision/documentation/reference/api/): Constructor options, method signatures, parameters, defaults, and return values.
+- [Events and lifecycle](https://ava.antv.vision/documentation/reference/events/): Observe source loading, model work, query execution, and cleanup.
 
-// Get AI-suggested queries
-const suggestions = await ava.suggest(5); // Get top 5 suggestions (default: 3)
-console.log(suggestions[0]);
-// { query: "What is the average GDP by city?", score: 0.95, reason: "Reveals economic patterns across cities" }
+## Optional
 
-// Ask questions in natural language
-const result = await ava.analyze('What is the average revenue by region?');
-console.log(result);
-
-// Or use a suggested query
-const suggestedResult = await ava.analyze(suggestions[0].query);
-console.log(suggestedResult);
-
-// Clean up
-ava.dispose();
-```
-
-### Browser
-
-```typescript
-import { AVA } from '@antv/ava/browser';
-
-const ava = new AVA({
-  llm: {
-    model: 'ling-1t',
-    apiKey: 'YOUR_API_KEY',
-    baseURL: 'LLM_BASE_URL',
-  },
-  engine: { type: 'javascript' },
-});
-
-// Browser supports inline data sources only
-await ava.load({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
-await ava.load({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
-await ava.load({ type: 'text', options: { text: '杭州 100，上海 200' } });
-
-const result = await ava.analyze('What is the total GDP?');
-const viz = await ava.visualize(result);
-
-ava.dispose();
-```
-
-## Architecture
-
-AVA uses a modular pipeline architecture with a pluggable engine registry:
-
-1. **Data Module**: Load from multiple sources (inline CSV/JSON/text, local/remote files, or databases via load)
-2. **Metadata Extract**: Type inference and structural schema
-3. **Engine Registry**: Pluggable analysis engines
-   - **DuckDB Engine** (Node.js): SQL via in-memory DuckDB
-   - **Interpreter Engine** (Browser): JavaScript sandbox execution
-   - **Supabase Engine** (Node.js): Remote SQL via Supabase API
-4. **Analysis Module**: Generate & Execute Query
-5. **LLM Summary**: Natural Language Response
-6. **Visualization Module (Optional)**: Chart generation with type detection and recommendation
-
-### Engine Registry
-
-Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Supabase) out of browser bundles.
-
-- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `javascript`, and `python` engines
-- **Browser** (`@antv/ava/browser`): registers only the `javascript` engine
-
-## API Reference
-
-### Constructor
-- `new AVA(config: AVAConfig)` - Initialize AVA instance with LLM configuration and options
-  - `llm`: required model config `{ model, apiKey, baseURL? }`
-  - `engine?`: engine selection and options
-    - `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default, Node.js only)
-    - `{ type: 'python', execute?, queryTimeoutMs? }` (Node.js only)
-    - `{ type: 'javascript' }` (browser-compatible)
-    - `{ type: 'supabase' }` (Node.js only)
-    - `{ type: 'clickhouse' }` (Node.js only)
-
-### Data Loading
-- `load(config)` - Load any data source; `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
-  - inline types: `'csv'` (`{ csv }`, raw CSV content string), `'json'` (`{ data }`), `'text'` (`{ text }`, extracts data from unstructured text using LLM)
-  - file types (`{ path, headers? }`, a local path or http(s) URL): `'csv-file'`, `'json-file'`, `'parquet'`, `'excel'` (one view per sheet) — Node.js only
-  - database types: `'mysql'` (`{ host, port?, database, user?, password?, ssh? }`), `'postgresql'` (`{ host, port?, database, user?, password?, schema?, ssh? }`), `'mongodb'` (`{ connection?, host?, port?, database, user?, password?, authSource?, srv?, tls?, ssl?, tlsCAFile?, tlsAllowInvalidCertificates? }` — `connection` advanced string takes precedence) — all tables/collections are auto-discovered and exposed — Node.js only
-
-### Data Profiling
-- `profile(options?: ProfileOptions)` - Compute statistics for the loaded dataset without calling the LLM.
-  - Default metrics: `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`
-  - Passing `metrics` replaces the defaults; `metrics: []` returns the enriched structure without scanning data
-  - Other built-ins: `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`
-  - `top_values` accepts `limit` (default `3`) and `maxDistinctRatio` (default `0.5`)
-  - Returns the loaded schema plus `generatedAt`; every table has `metrics`, and every field has `logicalType` and `metrics`
-  - Missing metric keys mean the metric was not requested, did not apply to that field type, or was unavailable
-
-```typescript
-const profile = await ava.profile({
-  metrics: ['row_count', 'null_count', 'distinct_count', { id: 'top_values', limit: 5 }],
-});
-
-console.log(profile.tables[0].metrics.row_count);
-console.log(profile.tables[0].fields[0].logicalType);
-console.log(profile.tables[0].fields[0].metrics);
-```
-
-### Query Suggestions
-- `suggest(count?: number)` - Get AI-recommended analysis queries based on dataset characteristics (default: 3)
-  - Returns: Array of `{ query: string, score: number, reason: string }`
-  - Queries are sorted by score in descending order
-  - Score ranges from 0 to 1, indicating meaningfulness
-
-### Analysis
-- `analyze(query: string, config?: AnalysisConfig)` - Analyze data with natural language query; `config.strategy` selects `direct` (default) or `{ type: 'loop', maxSteps?: number }` (`maxSteps` defaults to 12)
-  - Returns: `{ query, text, data, sql? }` (`sql` is the DuckDB SQL executed for the analysis, DuckDB engine only)
-
-### Visualization
-- `visualize(analysisResult)` - Generate chart output from analysis result
-  - Returns: `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data)
-
-### Cleanup
-- `dispose()` - Clean up resources and close database connections
-
-## Environment Support
-
-### Node.js
-
-- Full feature set backed by an in-memory DuckDB instance (LLM generates SQL)
-- Inline data (csv/json/text), local/remote files (csv-file/json-file/parquet/excel), and databases (mysql/postgresql) via `load`
-- File system access for CSV loading, plus remote files such as OSS signed URLs
-- Database sources ATTACH through DuckDB's mysql/postgres extensions; every table is auto-discovered and exposed to the LLM (with optional SSH tunneling)
-- Supabase engine for remote SQL execution via Supabase Management API
-
-### Browser
-
-- Lightweight JavaScript interpreter engine for client-side analytics
-- Inline data sources only: `csv`, `json`, `text`
-- JavaScript sandbox execution with `stat` helper functions
-- No file system or database access
-- Import from `@antv/ava/browser` to avoid bundling Node.js dependencies
-
-## Best Practices
-
-- Always call `ava.dispose()` when done to free resources
-- Wrap async calls in try-catch blocks for error handling
-- Validate data format before loading
-- Never expose API keys in client-side code
-- Use `@antv/ava/browser` in browser environments to avoid bundling Node.js dependencies
-
-## Resources
-
-- GitHub Repository: https://github.com/antvis/AVA
-- Documentation: https://ava.antv.vision/documentation
-- Issues: https://github.com/antvis/AVA/issues
-- Related Projects:
-  - GPT-Vis: https://github.com/antvis/GPT-Vis
-  - Chart Visualization Skills: https://github.com/antvis/chart-visualization-skills
-  - Vercel AI SDK: https://sdk.vercel.ai/
-
-## License
-
-MIT License - Copyright (c) AntV
-
----
-
-For full documentation, visit: https://ava.antv.vision/documentation
-For the complete README, see: https://github.com/antvis/AVA/blob/ai/README.md
+- [Architecture and source map](https://ava.antv.vision/documentation/reference/architecture/): Map public capabilities to implementation modules.
+- [Benchmarks](https://ava.antv.vision/documentation/reference/benchmarks/): Evaluation results and instructions for reproducing them.
+- [AI Playground](https://ava.antv.vision/ai-playground/): Try browser-based visual analytics.
+- [GitHub repository](https://github.com/antvis/AVA): Source code and contribution information.
+- [Issues](https://github.com/antvis/AVA/issues): Bug reports and feature requests.

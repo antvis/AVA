@@ -12,13 +12,13 @@
   <a href="https://ava.antv.vision">
     <img src="https://img.shields.io/badge/Website-2F54EB?style=for-the-badge" alt="Website" />
   </a>
-  <a href="https://ava.antv.vision/documentation">
+  <a href="https://ava.antv.vision/documentation/">
     <img src="https://img.shields.io/badge/Docs-722ED1?style=for-the-badge" alt="Documentation" />
   </a>
-  <a href="https://ava.antv.vision/">
+  <a href="https://ava.antv.vision/ai-playground/">
     <img src="https://img.shields.io/badge/AI%20Agent-EB2F96?style=for-the-badge" alt="AI Agent" />
   </a>
-  <a href="https://github.com/antvis/AVA/blob/ai/llms.txt">
+  <a href="https://ava.antv.vision/llms.txt">
     <img src="https://img.shields.io/badge/LLMS-FA8C16?style=for-the-badge" alt="llms" />
   </a>
   <a href="https://sive.antv.antgroup.com/" title="A data analysis app built with AVA">
@@ -32,13 +32,13 @@
 
 ## ✨ Features
 
-- 💬 **Natural-language analysis** — Turn questions into executable queries, computed results, and summaries.
-- 📊 **Visualization** — Recommend chart types and generate chart specifications and HTML.
-- 🔍 **Data profiling** — Inspect tables and calculate missing-value counts, ranges, and averages.
-- 💡 **Question suggestions** — Discover useful questions based on your data's structure and available statistics.
-- 🔌 **App and agent integration** — Use AVA through its SDK, CLI, or agent skill.
-- ⚙️ **Multiple execution engines** — Use DuckDB, Python/pandas, or remote databases in Node.js, and JavaScript in browsers.
-- 🧩 **Composable workflows** — Combine data loading, query generation, direct queries, and chart rendering.
+- 💬 **[Natural-language analysis](https://ava.antv.vision/documentation/analysis/overview/)** — Turn questions into executable queries, computed results, and summaries.
+- 📊 **[Visualization](https://ava.antv.vision/documentation/visualization/overview/)** — Recommend chart types and generate chart specifications and HTML.
+- 🔍 **[Data profiling](https://ava.antv.vision/documentation/data/schema/#profile-a-dataset)** — Inspect tables and calculate missing-value counts, ranges, and averages.
+- 💡 **[Question suggestions](https://ava.antv.vision/documentation/analysis/overview/#suggest-questions)** — Discover useful questions based on your data's structure and available statistics.
+- 🔌 **[App and agent integration](https://ava.antv.vision/documentation/agent-skill/)** — Use AVA through its SDK, CLI, or agent skill.
+- ⚙️ **[Multiple execution engines](https://ava.antv.vision/documentation/engines/overview/)** — Use DuckDB, Python/pandas, or remote databases in Node.js, and JavaScript in browsers.
+- 🧩 **[Composable workflows](https://ava.antv.vision/documentation/analysis/overview/#translate-and-execute-separately)** — Combine data loading, query generation, direct queries, and chart rendering.
 
 ## 🚀 Getting started
 
@@ -175,22 +175,22 @@ Connect files and databases, or load inline data.
 
 <table width="100%">
   <tr>
-    <td align="center" width="25%"><img src="site/public/logos/csv.svg" width="32" height="32" alt="CSV" /><br />CSV</td>
-    <td align="center" width="25%"><img src="site/public/logos/json.svg" width="32" height="32" alt="JSON" /><br />JSON</td>
-    <td align="center" width="25%"><img src="site/public/logos/parquet.svg" width="32" height="32" alt="Parquet" /><br />Parquet</td>
-    <td align="center" width="25%"><img src="site/public/logos/excel.svg" width="32" height="32" alt="Excel" /><br />Excel</td>
+    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#csv"><img src="site/public/logos/csv.svg" width="32" height="32" alt="CSV" /><br />CSV</a></td>
+    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#json"><img src="site/public/logos/json.svg" width="32" height="32" alt="JSON" /><br />JSON</a></td>
+    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#parquet"><img src="site/public/logos/parquet.svg" width="32" height="32" alt="Parquet" /><br />Parquet</a></td>
+    <td align="center" width="25%"><a href="https://ava.antv.vision/documentation/data/sources/#excel"><img src="site/public/logos/excel.svg" width="32" height="32" alt="Excel" /><br />Excel</a></td>
   </tr>
   <tr>
-    <td align="center"><img src="site/public/logos/sqlite.svg" width="32" height="32" alt="SQLite" /><br />SQLite</td>
-    <td align="center"><img src="site/public/logos/mysql.svg" width="32" height="32" alt="MySQL" /><br />MySQL</td>
-    <td align="center"><img src="site/public/logos/postgresql.svg" width="32" height="32" alt="PostgreSQL" /><br />PostgreSQL</td>
-    <td align="center"><img src="site/public/logos/mongodb.svg" width="32" height="32" alt="MongoDB" /><br />MongoDB</td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#sqlite"><img src="site/public/logos/sqlite.svg" width="32" height="32" alt="SQLite" /><br />SQLite</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#mysql"><img src="site/public/logos/mysql.svg" width="32" height="32" alt="MySQL" /><br />MySQL</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#postgresql"><img src="site/public/logos/postgresql.svg" width="32" height="32" alt="PostgreSQL" /><br />PostgreSQL</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#mongodb"><img src="site/public/logos/mongodb.svg" width="32" height="32" alt="MongoDB" /><br />MongoDB</a></td>
   </tr>
   <tr>
-    <td align="center"><img src="site/public/logos/clickhouse.svg" width="32" height="32" alt="ClickHouse" /><br />ClickHouse</td>
-    <td align="center"><img src="site/public/logos/supabase.svg" width="32" height="32" alt="Supabase" /><br />Supabase</td>
-    <td align="center"><img src="site/public/logos/text.svg" width="32" height="32" alt="Text extraction" /><br />Text (LLM)</td>
-    <td align="center"><a href="#-developer-contributions"><img src="site/public/logos/contribute.svg" width="32" height="32" alt="Contribute a data source" /><br />Contribute</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#clickhouse"><img src="site/public/logos/clickhouse.svg" width="32" height="32" alt="ClickHouse" /><br />ClickHouse</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#supabase"><img src="site/public/logos/supabase.svg" width="32" height="32" alt="Supabase" /><br />Supabase</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/data/sources/#text"><img src="site/public/logos/text.svg" width="32" height="32" alt="Text extraction" /><br />Text (LLM)</a></td>
+    <td align="center"><a href="https://ava.antv.vision/documentation/engines/custom/"><img src="site/public/logos/contribute.svg" width="32" height="32" alt="Custom engine" /><br />Custom engine</a></td>
   </tr>
 </table>
 
@@ -200,9 +200,9 @@ Load an Excel workbook with `source()`:
 await ava.source({ type: 'excel', options: { path: './sales.xlsx' } });
 ```
 
-See the [data source guide](skills/ava/references/sources.md) for connection settings and engine support.
+See the [data source guide](https://ava.antv.vision/documentation/data/sources/) for connection settings and engine support.
 
-For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/).
+For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/browser/).
 
 ## 🧩 More ways to use AVA
 
@@ -224,7 +224,7 @@ Use the AVA skill to analyze ./sales.csv. Compare January and February 2025
 sales, identify the products contributing most to the change, and save a chart.
 ```
 
-This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/).
+This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/agent-skill/).
 
 ### Use from the CLI
 
@@ -247,14 +247,15 @@ ava analyze '<your-dataset-id>' 'Compare January and February 2025 sales by prod
 ava dispose '<your-dataset-id>'
 ```
 
-`analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/).
+`analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/reference/cli/).
 
 ## 📚 Resources
 
 - [Documentation](https://ava.antv.vision/documentation/) — Guides and examples
-- [API Reference](https://ava.antv.vision/documentation/#api-reference) — Methods and configuration
+- [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/) — Direct, loop, and subset execution
+- [API Reference](https://ava.antv.vision/documentation/reference/api/) — Methods and configuration
 - [Playground](https://ava.antv.vision/ai-playground/) — Try out AVA in the browser environment
-- [Benchmarks](evals/ACCURACY.md) — Evaluation results
+- [Benchmarks](https://ava.antv.vision/documentation/reference/benchmarks/) — Evaluation results
 - [Issues](https://github.com/antvis/AVA/issues) — Bug reports and feature requests
 
 ## 🤝 Developer Contributions

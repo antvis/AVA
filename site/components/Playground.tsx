@@ -1021,9 +1021,8 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
   onRerun,
   replayKey,
 }) => {
-  /* Auto-scroll chat to bottom while streaming — but never fight the user:
-     once they scroll away from the bottom, following pauses until they
-     scroll back near the bottom. */
+  /* Follow new content until the user scrolls away from the bottom;
+     scrolling back to the bottom resumes following. */
   const scrollRef = useRef<HTMLDivElement>(null);
   const pinnedRef = useRef(true);
   const { visible, streamingIdx, finished } = useSimulatedStream(PRESET_MESSAGES, onArtifact, replayKey);
@@ -1031,23 +1030,23 @@ const ChatPanel: React.FC<{ onArtifact: (m: Message) => void; onRerun: () => voi
   const onChatScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    pinnedRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 48;
+    pinnedRef.current = el.scrollHeight - el.scrollTop - el.clientHeight <= 1;
   }, []);
 
-  // smooth follow while the replay is running (content grows char-by-char)
+  // Instant updates leave no smooth-scroll animation competing with user input.
   useEffect(() => {
     if (finished) return;
     const id = window.setInterval(() => {
       const el = scrollRef.current;
-      if (el && pinnedRef.current) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+      if (el && pinnedRef.current) el.scrollTop = el.scrollHeight;
     }, 180);
     return () => window.clearInterval(id);
   }, [finished]);
 
-  // jump to the latest message boundary, but only if the user is pinned
+  // Follow message updates only while the user is at the bottom.
   useEffect(() => {
     const el = scrollRef.current;
-    if (el && pinnedRef.current) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    if (el && pinnedRef.current) el.scrollTop = el.scrollHeight;
   }, [visible, streamingIdx]);
 
   return (

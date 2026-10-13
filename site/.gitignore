@@ -39,3 +39,8 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Documentation source (the root ignores build/debug directories with these names).
+!/components/docs/
+!/content/docs/
+!/lib/

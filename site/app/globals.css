@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
+html {
+  /* Prevent vertical overscroll from revealing blank space at the page edges. */
+  overscroll-behavior-y: none;
+}
+
 /* ── AVA 4.0 typography system ── */
 :root {
   --font-heading: 'Space Grotesk', sans-serif;

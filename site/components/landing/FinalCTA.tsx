@@ -34,7 +34,7 @@ const FinalCTA: React.FC<{ id?: string }> = ({ id = 'get-started' }) => (
       <Reveal delay={140}>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
-            href="/documentation"
+            href="/documentation/quickstart/"
             className="inline-flex h-11 items-center gap-2 rounded-lg px-8 text-[14px] font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
             style={{ background: 'var(--color-primary-dark)' }}
           >

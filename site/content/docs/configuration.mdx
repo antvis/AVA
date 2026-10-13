@@ -1,0 +1,52 @@
+## Constructor
+
+```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: 'YOUR_MODEL',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+    maxRetries: 3,
+  },
+  engine: { type: 'duckdb' },
+});
+```
+
+`llm` is required. Omitting `engine` selects DuckDB; frontend applications must explicitly select `javascript`.
+
+## Model options
+
+| Field          | Type                                  | Required | Meaning / default                                                                 |
+| -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `provider`     | `'openai' \| 'gateway'`               | No       | Defaults to OpenAI-compatible Chat Completions. Gateway reads AI_GATEWAY_API_KEY. |
+| `model`        | `string \| LanguageModel`             | Yes      | Model name or a preconfigured AI SDK model instance.                              |
+| `apiKey`       | `string`                              | No       | API key for the LLM provider                                                      |
+| `baseURL`      | `string`                              | No       | Optional API base URL                                                             |
+| `maxRetries`   | `number`                              | No       | Maximum retries for retryable model API failures. Default 3.                      |
+| `onQueryUsage` | `(usage: LanguageModelUsage) => void` | No       | Optional callback for SQL-generation token usage                                  |
+
+String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly. Usage callbacks are not a complete accounting stream for every LLM request.
+
+## AI Gateway
+
+```typescript
+const ava = new AVA({
+  llm: {
+    provider: 'gateway',
+    model: 'openai/gpt-4o-mini',
+    apiKey: process.env.AI_GATEWAY_API_KEY,
+  },
+});
+```
+
+The gateway provider can also read `AI_GATEWAY_API_KEY` from the environment when an explicit key is omitted.
+
+## Separate retry controls
+
+`llm.maxRetries` controls model API retries. The `direct` analysis strategy has a separate `maxRetries` option for correcting failed executable queries. See [analysis strategies](/documentation/analysis/strategies/).
+
+## Credentials in frontend apps
+
+Keep shared provider secrets on the server. For browser-only experiments, obtain credentials at runtime rather than including them in source code or the frontend bundle.

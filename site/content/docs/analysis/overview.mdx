@@ -1,0 +1,220 @@
+Use `analyze()` to answer questions about loaded data, `suggest()` to discover useful questions, and `translate()` / `query()` when you want to generate and execute queries separately.
+
+The examples assume `ava` is configured and a source has been loaded with `source()`. For installation and a complete setup example, see [Installation & Quickstart](/documentation/quickstart/).
+
+The examples use the same small sales dataset as Quickstart:
+
+| region | revenue |
+| ------ | ------- |
+| East   | 120     |
+| West   | 90      |
+| East   | 80      |
+
+## Analyze a question
+
+Pass a natural-language question to `analyze()`:
+
+```typescript
+const result = await ava.analyze('What is total revenue by region?');
+console.log(result.text);
+console.table(result.data);
+```
+
+`analyze()` uses the loaded schema and any cached profile to generate a query, execute it, and summarize the answer. It returns data and text; it does not generate a chart.
+
+## Read the result
+
+An illustrative response for the question above looks like this. Summary wording, generated queries, and column aliases can vary with the model.
+
+```json
+{
+  "query": "What is total revenue by region?",
+  "text": "East has total revenue of 200, compared with 90 for West.",
+  "schema": [{ "name": "region" }, { "name": "total_revenue" }],
+  "data": [
+    { "region": "East", "total_revenue": 200 },
+    { "region": "West", "total_revenue": 90 }
+  ],
+  "rowCount": 2
+}
+```
+
+| Field         | Type                                        | What it tells you                                                                            |
+| ------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `query`       | `string`                                    | The original question.                                                                       |
+| `text`        | `string`                                    | The generated summary; empty when `includeSummary` is false.                                 |
+| `schema`      | `QueryColumn[]`                             | Returned columns, each with `name: string` and optional `type: string`.                      |
+| `data`        | `Record<string, unknown>[]`                 | Rows to display, export, or visualize.                                                       |
+| `rowCount`    | `number`, optional                          | Row count when the result is complete. Do not treat it as the size of the input dataset.     |
+| `sql`         | `string`, optional                          | The executed query. This name is also used for Python or JavaScript code with those engines. |
+| `markdown`    | `string`, optional                          | Markdown content, when supplied.                                                             |
+| `truncated`   | `true`, optional                            | More data existed than the result limits allowed.                                            |
+| `truncatedBy` | `'maxRows'` or `'maxResultBytes'`, optional | The limit that stopped the result.                                                           |
+
+Use `schema` to inspect returned column names instead of assuming the model will always choose `total_revenue`.
+
+## Configure an analysis
+
+`analyze(query: string, config?: AnalysisConfig)` accepts the following inputs:
+
+| Parameter               | Type                     | Required | Default / behavior                                                                             |
+| ----------------------- | ------------------------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `query`                 | `string`                 | Yes      | Natural-language question.                                                                     |
+| `config`                | `AnalysisConfig`         | No       | `{}`.                                                                                          |
+| `config.includeSummary` | `boolean`                | No       | `true`; set to `false` to skip summarization.                                                  |
+| `config.maxRows`        | `number`                 | No       | `200`; bounds returned rows.                                                                   |
+| `config.maxResultBytes` | `number`                 | No       | `1048576` (1 MiB); bounds serialized result data.                                              |
+| `config.strategy`       | `AnalysisStrategyConfig` | No       | Direct analysis; see [strategy options](/documentation/analysis/strategies/#strategy-options). |
+
+For example, return at most 100 rows and skip the summary:
+
+```typescript
+const result = await ava.analyze('What is total revenue by region?', {
+  includeSummary: false,
+  maxRows: 100,
+  maxResultBytes: 1048576,
+});
+
+console.log(result.text); // ''
+console.table(result.data);
+```
+
+### Handle partial results
+
+Suppose the two-region answer is requested with `maxRows: 1`. A simplified returned result could be:
+
+```json
+{
+  "schema": [{ "name": "region" }, { "name": "total_revenue" }],
+  "data": [{ "region": "East", "total_revenue": 200 }],
+  "truncated": true,
+  "truncatedBy": "maxRows"
+}
+```
+
+This is a partial answer. Check the truncation fields before presenting it as complete:
+
+```typescript
+if (result.truncated) {
+  console.log(`Showing a partial result: ${result.truncatedBy} was reached.`);
+}
+```
+
+`maxRows` is rounded down and clamped to `1`–`1000000`; values outside the safe integer range after rounding use the default. `maxResultBytes` is rounded down and clamped to at least `1`; non-finite values use the default. Both limits also apply to `query()` below. They bound the returned data, not the query's total processing time or memory use.
+
+## Suggest questions
+
+Use `suggest()` when you want ideas for what to ask. Computing a profile first is optional: it adds dataset statistics to the context and does not call a model.
+
+```typescript
+await ava.profile();
+const suggestions = await ava.suggest(2);
+console.log(suggestions);
+```
+
+| Parameter | Type     | Required | Default / behavior                    |
+| --------- | -------- | -------- | ------------------------------------- |
+| `count`   | `number` | No       | `3`; requested number of suggestions. |
+
+`suggest()` requires a loaded source and calls the configured model. It uses the latest profile when available, otherwise the schema.
+
+### Suggestion results
+
+For the sales dataset, the returned array might look like this:
+
+```json
+[
+  {
+    "query": "What is total revenue by region?",
+    "score": 0.95,
+    "reason": "Compare each region's contribution to overall revenue."
+  },
+  {
+    "query": "What is average revenue per record in each region?",
+    "score": 0.82,
+    "reason": "Compare typical record values across regions with different record counts."
+  }
+]
+```
+
+These are illustrative suggestions, not fixed output. In your interface, use the fields as follows:
+
+| Field    | Type     | Example use                                                                                                                          |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `query`  | `string` | Show as a selectable question and pass it to `analyze()`.                                                                            |
+| `score`  | `number` | Prioritize suggestions. Values are clamped to 0–1 and sorted highest first; this is a usefulness score, not confidence in an answer. |
+| `reason` | `string` | Explain why the question may be useful, for example as text beneath the question.                                                    |
+
+At most `count` suggestions are returned; the array can be empty. The model is prompted to use the dataset's language for both the question and reason.
+
+### Analyze a suggestion
+
+```typescript
+if (suggestions.length > 0) {
+  const selected = suggestions[0];
+  const answer = await ava.analyze(selected.query);
+  console.log(selected.reason);
+  console.table(answer.data);
+}
+```
+
+## Analysis strategies
+
+`analyze()` uses direct analysis by default. Choose a strategy per call when your question needs a different approach:
+
+| Strategy | Use it for                                                          |
+| -------- | ------------------------------------------------------------------- |
+| `direct` | A focused question answered by generating and executing a query.    |
+| `loop`   | Questions that benefit from intermediate exploration.               |
+| `subset` | Selecting relevant statistics from a large profile before analysis. |
+
+See [Analysis strategies](/documentation/analysis/strategies/) for examples, retry controls, step limits, and subset requirements.
+
+## Translate and execute separately
+
+Use `translate()` to inspect generated code before deciding to execute it with `query()`:
+
+```typescript
+const dsl = await ava.translate('What is total revenue by region?');
+console.log(dsl); // Display the generated query for review.
+
+// Run this step when your application is ready to execute the query.
+const rows = await ava.query(dsl, {
+  maxRows: 100,
+  maxResultBytes: 1048576,
+});
+console.table(rows.data);
+```
+
+| Method                 | Parameter                | Type               | Required / default                                              |
+| ---------------------- | ------------------------ | ------------------ | --------------------------------------------------------------- |
+| `translate(query)`     | `query`                  | `string`           | Required natural-language question.                             |
+| `query(dsl, options?)` | `dsl`                    | `string`           | Required executable statement in the current engine's language. |
+| `query(dsl, options?)` | `options`                | `ExecutionOptions` | Optional; defaults below.                                       |
+| `query(dsl, options?)` | `options.maxRows`        | `number`           | Optional; `200`. Same bounds as `analyze()`.                    |
+| `query(dsl, options?)` | `options.maxResultBytes` | `number`           | Optional; `1048576`. Same bounds as `analyze()`.                |
+
+Both methods require a loaded source. `translate()` uses the model, schema, and available profile, then returns a string. `query()` executes the supplied statement without model-based translation, summarization, or automatic correction.
+
+The default Node.js setup produces SQL. Other engines use their own SQL dialect, Python, or JavaScript. SQL engines validate read-only queries; execution restrictions for Python and JavaScript depend on their environments.
+
+`query()` returns the same `schema`, `data`, and optional truncation metadata described above, without the analysis `query`, `text`, or `sql` fields.
+
+## Errors and cleanup
+
+Calls reject on errors such as a missing source, a model request failure, an unparseable suggestion response, or failed execution after the available retries. Do not interpret an error as an empty answer.
+
+Handle errors around your analysis calls and release the instance when you have finished using it:
+
+```typescript
+try {
+  const result = await ava.analyze('What is total revenue by region?');
+  console.table(result.data);
+} catch (error) {
+  console.error('Analysis failed:', error);
+} finally {
+  await ava.dispose();
+}
+```
+
+Always await cleanup. Calling `source()` again replaces the dataset and clears its cached schema and profile; run `profile()` again if you want statistics for the new source.

@@ -177,7 +177,7 @@ const Banner: React.FC = () => (
 
     <div className="relative">
       {/* ── hero content ── */}
-      <div className="flex flex-col items-center gap-5 pb-[38px] text-center max-md:gap-[17px] max-md:pb-7">
+      <div className="flex flex-col items-center gap-6 pb-11 text-center max-md:gap-5 max-md:pb-8">
         {/* kicker — quiet monogram plus live GitHub stars */}
         <span
           className="inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.18em] text-zinc-400"
@@ -187,7 +187,7 @@ const Banner: React.FC = () => (
           <GitHubStars />
         </span>
 
-        <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.14] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
+        <h1 className="text-[length:clamp(30px,4.5vw,58px)] font-semibold leading-[1.22] max-md:leading-[1.25] tracking-[-0.045em] text-zinc-900 max-md:text-[length:clamp(27px,5vw,38px)]">
           <span className="whitespace-nowrap max-md:whitespace-normal">
             <RotatingVerse /> <StaggerChars text="Visual Analytics." startMs={430} />
           </span>
@@ -219,7 +219,7 @@ const Banner: React.FC = () => (
         </h1>
 
         <p
-          className="hero-rise max-w-[520px] text-[14px] leading-[1.7] text-zinc-500 max-md:text-[13px]"
+          className="hero-rise max-w-[520px] text-[14px] leading-[1.85] text-zinc-500 max-md:text-[13px]"
           style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.55s both' }}
         >
           The open-source framework that gives AI agents the power to explore, analyze, and visualize data.
@@ -231,7 +231,7 @@ const Banner: React.FC = () => (
           style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.8s both' }}
         >
           <Link
-            href="/documentation"
+            href="/documentation/quickstart/"
             className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
           >
             Get Started

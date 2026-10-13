@@ -18,7 +18,7 @@ const BENCHMARK = {
   dataset: 'DataBench',
   questions: '1,789 questions',
   model: 'GLM 5.1',
-  link: 'https://github.com/antvis/AVA/blob/main/evals/ACCURACY.md',
+  link: '/documentation/reference/benchmarks/',
   strategies: [
     {
       id: 'default',
@@ -192,7 +192,7 @@ const TrustedAnalytics: React.FC<{ id?: string }> = ({ id = 'benchmarks' }) => {
               </div>
 
               <div className="mt-6 flex justify-end border-t border-zinc-100 pt-4">
-                <SectionLink href={BENCHMARK.link} external>
+                <SectionLink href={BENCHMARK.link}>
                   Read the full evaluation
                 </SectionLink>
               </div>

@@ -1,0 +1,73 @@
+## Configure
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'python', queryTimeoutMs: 30000 },
+});
+```
+
+Local execution requires `python3` and pandas. Additional file readers may need optional pandas dependencies for Excel or Parquet.
+
+<Callout>
+  Local Python execution is not sandboxed. Use the <code>execute</code> callback with your own isolated environment when
+  that boundary is required.
+</Callout>
+
+## Engine options
+
+Set `engine.type` to `python`. These are all additional fields accepted on `engine`.
+
+| Field            | Type                                         | Required | Meaning / default                                                                                                                                                                                                                                                                         |
+| ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `execute`        | `(code: string) => Promise<ExecutionResult>` | No       | Override local python3 execution with a custom environment. Local execution is not sandboxed. Run the complete Python script and return its JSON output as ExecutionResult. Source loading and result limits are included in the script; configure remote execution deadlines separately. |
+| `queryTimeoutMs` | `number`                                     | No       | Client wait limit and local process execution deadline. Default 30000 ms.                                                                                                                                                                                                                 |
+
+## Supported sources
+
+Inline CSV and JSON, plus CSV, JSON, Excel, and Parquet files are supported. Files can be local or HTTP(S) URLs. This engine does not accept text extraction or database sources.
+
+## Query bindings
+
+`pd` provides pandas. DataFrames are available in `tables`, keyed by schema table name. For a single table, `df` is also provided. Assign the final value to `result`.
+
+```typescript
+const result = await ava.query("result = df.groupby('region', as_index=False)['revenue'].sum()");
+```
+
+DataFrame and Series indexes are not returned automatically; use `reset_index()` when those values matter. Each execution starts from fresh input data, so mutations and variables do not persist between calls.
+
+## Supply a Python executor
+
+Keep AVA's Python query generation and source handling, and replace where the complete script runs:
+
+```typescript
+import { AVA, type ExecutionResult } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: {
+    type: 'python',
+    queryTimeoutMs: 30000,
+    execute: async (code: string): Promise<ExecutionResult> => {
+      const response = await fetch('https://YOUR_EXECUTOR/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+        signal: AbortSignal.timeout(30000),
+      });
+      if (!response.ok) throw new Error(`Python execution failed: ${response.status}`);
+      return (await response.json()) as ExecutionResult;
+    },
+  },
+});
+```
+
+`YOUR_EXECUTOR` is an application-owned service, not an AVA endpoint. It must execute the supplied script with Python and pandas, parse its JSON output, and return an `ExecutionResult`. Validate that response at the service boundary. A local file path in the script must also exist in the executor environment; alternatively use inline data or accessible URLs.
+
+| Callback parameter / result | Type                       | Required | Meaning                                                                                   |
+| --------------------------- | -------------------------- | -------- | ----------------------------------------------------------------------------------------- |
+| `code`                      | `string`                   | Yes      | Complete script, including source loading and result limits.                              |
+| Returned promise            | `Promise<ExecutionResult>` | Yes      | Resolve with `schema` and `data`, plus applicable truncation metadata; reject on failure. |
+
+See [engine options](#engine-options) for all engine fields and [execution results](/documentation/reference/api/#executionresult) for the result shape. Enforce deadlines and resource limits in the service itself: aborting the HTTP request only stops the client waiting.
