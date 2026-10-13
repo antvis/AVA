@@ -13,29 +13,24 @@ import { SectionHeading } from './Section';
 interface Stage {
   id: string;
   name: string;
-  blurb: string;
 }
 
 const STAGES: Stage[] = [
   {
     id: 'connect',
     name: 'Connect',
-    blurb: 'Access files and databases through a unified interface.',
   },
   {
     id: 'understand',
     name: 'Understand',
-    blurb: 'Explore schemas, data profiles, and statistical characteristics.',
   },
   {
     id: 'analyze',
     name: 'Analyze',
-    blurb: 'Execute queries and explore analytical questions with real data.',
   },
   {
     id: 'visualize',
     name: 'Visualize',
-    blurb: 'Turn analytical results into meaningful visualizations.',
   },
 ];
 
@@ -269,25 +264,21 @@ const AnalyticsPipeline: React.FC<{ id?: string }> = ({ id = 'analytics' }) => (
       </Reveal>
 
       <Reveal delay={120} className="mx-auto mt-12 max-w-[1160px]">
-        <ol className="grid min-w-0 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <ol className="grid min-w-0 gap-5 md:grid-cols-2 xl:grid-cols-4">
           {STAGES.map((stage, i) => {
             const Preview = PREVIEWS[stage.id];
             return (
               <li
                 key={stage.id}
-                className="relative flex min-w-0 flex-col rounded-[22px] border border-white/90 bg-white p-5 shadow-[0_16px_48px_-20px_rgba(49,110,180,0.25)]"
+                className="relative flex min-w-0 flex-col rounded-[20px] border border-[#dcebf1] bg-[linear-gradient(160deg,#f0f9fd,white_65%)] p-3.5 shadow-[0_4px_6px_-4px_#35647a0a,0_16px_32px_-24px_#35647a33]"
               >
-                <div className="mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[color:var(--color-primary)]/15 text-lg font-semibold text-[color:var(--color-primary-dark)]">
-                      {i + 1}
-                    </span>
-                    <h3 className="font-heading text-lg tracking-tight text-slate-950">{stage.name}</h3>
-                  </div>
-                  {/* description on its own line, aligned with the number */}
-                  <p className="mt-1 text-[13px] leading-relaxed text-slate-500">{stage.blurb}</p>
+                <div className="flex items-center gap-3 px-1 pb-4 pt-1">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-[#c8e8f3] bg-white/80 font-mono text-[12px] tracking-tight text-[#3283a0] shadow-[0_1px_2px_#347e9810]">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <h3 className="font-heading text-[19px] font-semibold tracking-[-0.03em] text-[#233c49]">{stage.name}</h3>
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 [&>div]:h-full [&>div]:rounded-xl [&>div]:border-[#e9eff3] [&>div]:shadow-[0_2px_6px_#203e4d04]">
                   <Preview />
                 </div>
                 {i < STAGES.length - 1 && (
@@ -295,7 +286,7 @@ const AnalyticsPipeline: React.FC<{ id?: string }> = ({ id = 'analytics' }) => (
                     aria-hidden
                     viewBox="0 0 28 20"
                     fill="none"
-                    className="absolute -right-[27px] top-1/2 z-10 hidden h-5 w-7 text-[color:var(--color-primary-dark)] xl:block"
+                    className="absolute -right-[21px] top-6 z-10 hidden h-5 w-5 text-[#90bfce] xl:block"
                   >
                     <path d="M1 10h23m-7-7 7 7-7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
