@@ -18,7 +18,7 @@
   <a href="https://ava.antv.vision/ai-playground/">
     <img src="https://img.shields.io/badge/AI%20Agent-EB2F96?style=for-the-badge" alt="AI Agent" />
   </a>
-  <a href="https://github.com/antvis/AVA/blob/ai/llms.txt">
+  <a href="https://ava.antv.vision/llms.txt">
     <img src="https://img.shields.io/badge/LLMS-FA8C16?style=for-the-badge" alt="llms" />
   </a>
   <a href="https://sive.antv.antgroup.com/" title="A data analysis app built with AVA">
