@@ -26,9 +26,9 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
     links: [
       { label: 'Documentation', href: '/documentation' },
       { label: 'AI Playground', href: '/ai-playground' },
-      { label: 'SDK', href: `${GITHUB}#sdk` , external: true },
-      { label: 'CLI', href: `${GITHUB}#cli`, external: true },
-      { label: 'Agent Skill', href: `${GITHUB}/blob/main/skills/ava/SKILL.md`, external: true },
+      { label: 'SDK', href: '/documentation/quickstart/' },
+      { label: 'CLI', href: '/documentation/reference/cli/' },
+      { label: 'Agent Skill', href: `${GITHUB}/blob/ai/skills/ava/SKILL.md`, external: true },
     ],
   },
   {

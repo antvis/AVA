@@ -11,7 +11,7 @@ const result = await ava.analyze('What is total revenue by region?', {
 console.log(result.text, result.data);
 ```
 
-`analyze(query, config?)` passes the loaded schema and latest profile to the selected [analysis strategy](/documentation/analysis/strategies/). It does not generate a chart; call `visualize(result)` separately.
+`analyze(query, config?)` passes the loaded schema and latest profile to the selected [analysis strategy](#analysis-strategies). It does not generate a chart; call `visualize(result)` separately.
 
 ## Options
 
@@ -38,6 +38,111 @@ if (result.truncated) {
 
 A result limit bounds the returned rows or bytes, not necessarily all work performed by a query. Configure engine resource limits separately.
 
-## Implementation
+## Suggest questions
 
-[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`analysis/index.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/index.ts), [`analysis/direct.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/direct.ts), [`util/result.ts`](https://github.com/antvis/AVA/blob/ai/src/util/result.ts)
+```typescript
+const suggestions = await ava.suggest(5);
+for (const item of suggestions) {
+  console.log(item.query, item.score, item.reason);
+}
+```
+
+`suggest(count = 3)` uses the latest profile if available, otherwise the schema. It requires a loaded source and calls the configured model.
+
+### Suggestion results
+
+Each suggestion contains `query`, `score`, and `reason`. Scores are clamped to the range 0–1, results are sorted in descending order, and at most `count` entries are returned. The model is prompted to match the dataset's language.
+
+### Follow a suggestion
+
+```typescript
+await ava.profile();
+const suggestions = await ava.suggest(3);
+if (suggestions.length > 0) {
+  const result = await ava.analyze(suggestions[0].query);
+  console.log(result.text);
+}
+```
+
+An invalid model response rejects the call. Handle errors as you would for other model-facing operations.
+
+See [suggest parameters](/documentation/reference/api/#suggest) for the input and return contract.
+
+## Analysis strategies
+
+### Direct
+
+Direct analysis generates a query, executes it, and optionally summarizes the result. Execution errors can be fed back to the model to correct the next attempt.
+
+```typescript
+const result = await ava.analyze('Total revenue by region', {
+  strategy: { type: 'direct', maxRetries: 2 },
+});
+```
+
+Explicit `type: 'direct'` defaults to 2 correction retries after the initial attempt. In the current implementation, omitting the strategy entirely follows the direct path with 10 correction retries; set `maxRetries` explicitly when a predictable retry budget matters.
+
+### Loop
+
+Loop analysis explores data, refines its reasoning, executes a final query, and confirms the answer. It uses the selected engine's query language.
+
+```typescript
+const result = await ava.analyze('Find and explain unusual revenue patterns', {
+  strategy: { type: 'loop', maxSteps: 6 },
+});
+```
+
+`maxSteps` defaults to 12. Each step can involve model calls and query execution. [Reasoning events](/documentation/reference/events/) expose progress.
+
+### Subset
+
+Subset analysis keeps the complete structural schema while selecting relevant profile statistics, then runs direct analysis. It creates a profile when one is not already available and the engine supports profiling.
+
+```typescript
+const result = await ava.analyze('Compare revenue by region', {
+  strategy: { type: 'subset' },
+});
+```
+
+<Callout>
+  The current subset selector calls AI SDK's evaluator with <code>typesafe-ai/jev</code>. This selection step requires
+  that service's model access in addition to the main analysis model; it does not use your configured{' '}
+  <code>llm.model</code>.
+</Callout>
+
+If no profile is available, selection retains the original context. If no positive selections are returned, it retains all profile details.
+
+See [strategy parameters](/documentation/reference/api/#analyze) for the complete configuration table.
+
+## Translate a question
+
+```typescript
+const dsl = await ava.translate('Total revenue by region');
+console.log(dsl);
+```
+
+`translate(query): Promise<string>` uses the selected engine, loaded schema, and available profile to generate DSL without executing it. The language is DuckDB SQL, PostgreSQL SQL, ClickHouse SQL, Python, or JavaScript depending on the engine.
+
+## Execute a query
+
+```typescript
+const result = await ava.query(dsl, {
+  maxRows: 100,
+  maxResultBytes: 1048576,
+});
+console.log(result.schema, result.data);
+```
+
+`query(dsl, options?)` executes the supplied DSL without asking the LLM to translate or summarize it. It does not automatically correct failed queries.
+
+## Execution results
+
+`ExecutionResult` contains result column `schema` and `data`. Truncated results include `truncated: true` and `truncatedBy` (`maxRows` or `maxResultBytes`). A complete result can include `rowCount`.
+
+SQL engines validate read-only queries. Python and JavaScript execute analysis code using their respective execution environments; see their engine pages for the boundaries and expected bindings.
+
+## Inspect before executing
+
+Separating translation from execution lets your application display or review the generated query before running it. Call `schema()` for exact table and field names when writing a query yourself.
+
+See [translate](/documentation/reference/api/#translate) and [query parameters](/documentation/reference/api/#query) for signatures and execution limits.

@@ -387,7 +387,7 @@ const RealWorldData: React.FC<{ id?: string }> = ({ id = 'data' }) => (
           <Marquee />
           <div className="mt-6 flex flex-col items-center gap-2">
             <p className="font-mono text-[12px] text-zinc-400">One interface. Multiple data sources.</p>
-            <SectionLink href="https://github.com/antvis/AVA#-quick-start" external>
+            <SectionLink href="/documentation/data/sources/">
               Explore all data sources
             </SectionLink>
           </div>

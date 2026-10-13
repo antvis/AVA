@@ -1,26 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { docs, docHref, legacyDocs } from '../../lib/docs';
+import { usePathname } from 'next/navigation';
+import { docs, docHref } from '../../lib/docs';
 
 export default function DocsNavigation({ mobile = false }: { mobile?: boolean }) {
   const pathname = usePathname();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (mobile || pathname.replace(/\/$/, '') !== '/documentation') return;
-    // Preserve section links from the former single-page documentation.
-    const followLegacyAnchor = () => {
-      const destination = legacyDocs[window.location.hash.slice(1)];
-      if (destination) router.replace(docHref(destination));
-    };
-    followLegacyAnchor();
-    window.addEventListener('hashchange', followLegacyAnchor);
-    return () => window.removeEventListener('hashchange', followLegacyAnchor);
-  }, [mobile, pathname, router]);
-
   const navigation = (
     <nav aria-label={mobile ? 'Mobile documentation' : 'Documentation chapters'}>
       {Array.from(new Set(docs.map((doc) => doc.group))).map((group) => (

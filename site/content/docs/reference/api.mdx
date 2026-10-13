@@ -1,0 +1,205 @@
+Use this reference to look up inputs after following the [quickstart](/documentation/quickstart/). Types and defaults below follow the current `src/ava.ts` implementation. All instance methods listed here are asynchronous.
+
+## Constructor
+
+`new AVA(config: AVAConfig)`
+
+| Parameter       | Type           | Required | Default / behavior                                            |
+| --------------- | -------------- | -------- | ------------------------------------------------------------- |
+| `config`        | `AVAConfig`    | Yes      | Configuration object.                                         |
+| `config.llm`    | `LLMConfig`    | Yes      | [Model fields below](#model-options).                         |
+| `config.engine` | `EngineConfig` | No       | `{ type: 'duckdb' }`; [engine fields below](#engine-options). |
+
+The constructor does not load data. Engine creation happens on `source()`.
+
+### Model options
+
+Fields below belong to `config.llm`.
+
+| Field          | Type                                  | Required | Meaning / default                                                                 |
+| -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `provider`     | `'openai' \| 'gateway'`               | No       | Defaults to OpenAI-compatible Chat Completions. Gateway reads AI_GATEWAY_API_KEY. |
+| `model`        | `string \| LanguageModel`             | Yes      | Model name or a preconfigured AI SDK model instance.                              |
+| `apiKey`       | `string`                              | No       | API key for the LLM provider                                                      |
+| `baseURL`      | `string`                              | No       | Optional API base URL                                                             |
+| `maxRetries`   | `number`                              | No       | Maximum retries for retryable model API failures. Default 3.                      |
+| `onQueryUsage` | `(usage: LanguageModelUsage) => void` | No       | Optional callback for SQL-generation token usage                                  |
+
+String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly. Usage callbacks are not a complete accounting stream for every LLM request.
+
+### Engine options
+
+`config.engine.type` is required when `engine` is supplied. Supported values are `duckdb`, `python`, `javascript`, `supabase`, and `clickhouse`. Omitting `engine` selects DuckDB. JavaScript, Supabase, and ClickHouse accept no additional engine fields; connection credentials belong to `source()`.
+
+#### DuckDB
+
+Set `engine.type` to `duckdb`. These are all additional fields accepted on `engine`.
+
+| Field                      | Type      | Required | Meaning / default                                                               |
+| -------------------------- | --------- | -------- | ------------------------------------------------------------------------------- |
+| `memoryLimit`              | `string`  | No       | Memory limit, e.g. '512MB'. Default '512MB'.                                    |
+| `threads`                  | `number`  | No       | Number of worker threads. Default 1.                                            |
+| `maxTempDirectorySize`     | `string`  | No       | Max size of the spill (temp) directory, e.g. '1GB'. Unset = unlimited.          |
+| `queryTimeoutMs`           | `number`  | No       | Per-query timeout in milliseconds. Default 30000.                               |
+| `allowCommunityExtensions` | `boolean` | No       | Allow DuckDB community extensions during source loading when explicitly needed. |
+
+#### Python
+
+Set `engine.type` to `python`. These are all additional fields accepted on `engine`.
+
+| Field            | Type                                         | Required | Meaning / default                                                                                                                                                                                                                                                                         |
+| ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `execute`        | `(code: string) => Promise<ExecutionResult>` | No       | Override local python3 execution with a custom environment. Local execution is not sandboxed. Run the complete Python script and return its JSON output as ExecutionResult. Source loading and result limits are included in the script; configure remote execution deadlines separately. |
+| `queryTimeoutMs` | `number`                                     | No       | Client wait limit and local process execution deadline. Default 30000 ms.                                                                                                                                                                                                                 |
+
+## source
+
+`source(config: DataSourceConfig): Promise<void>`
+
+| Parameter        | Type                   | Required | Default / behavior                                                                                                           |
+| ---------------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `config`         | `DataSourceConfig`     | Yes      | Replaces the current source and disposes its engine.                                                                         |
+| `config.type`    | `SourceType`           | Yes      | One of the [13 source types](/documentation/data/sources/#connect-a-source).                                                 |
+| `config.options` | Source-specific object | Yes      | [Complete source parameter tables](/documentation/data/sources/#connect-a-source), including CSV and database configuration. |
+
+Returns no value. Call `schema()` to inspect the loaded source. Reloading clears the cached schema and profile.
+
+## schema
+
+`schema(): Promise<Schema>` takes no parameters. Requires a loaded source. Returns tables and optional relations; see [schema and metadata](/documentation/data/schema/).
+
+## profile
+
+`profile(options?: ProfileOptions): Promise<Profile>`
+
+| Parameter                            | Type                                | Required              | Default / behavior                                                                                                       |
+| ------------------------------------ | ----------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `options`                            | `ProfileOptions`                    | No                    | `{}`.                                                                                                                    |
+| `options.metrics`                    | `MetricConfig[]`                    | No                    | `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`. A supplied array replaces the defaults. |
+| `options.metrics[]`                  | Metric name or `{ id, ...options }` | When provided         | Supported names are listed below.                                                                                        |
+| `options.metrics[].id`               | `string`                            | For object form       | Metric name.                                                                                                             |
+| `options.metrics[].limit`            | `number`                            | No; `top_values` only | `3`; non-negative safe integer.                                                                                          |
+| `options.metrics[].maxDistinctRatio` | `number`                            | No; `top_values` only | `0.5`; finite number from `0` to `1`.                                                                                    |
+
+Supported built-in metric names: `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`, `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`. Other metrics accept no additional options. Unknown metrics and unknown option names are rejected. Availability depends on the engine's definitions and the field type.
+
+Requires a loaded source and an engine with `profile()`. Returns and caches a `Profile`; `metrics: []` skips metric computation. See [profiling](/documentation/data/schema/#profile-a-dataset) for the output format.
+
+## analyze
+
+`analyze(query: string, config?: AnalysisConfig): Promise<AnalysisResponse>`
+
+| Parameter                    | Type                               | Required                  | Default / behavior                                                                                                              |
+| ---------------------------- | ---------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `query`                      | `string`                           | Yes                       | Natural-language question.                                                                                                      |
+| `config`                     | `AnalysisConfig`                   | No                        | `{}`.                                                                                                                           |
+| `config.includeSummary`      | `boolean`                          | No                        | `true`; `false` returns empty `text`.                                                                                           |
+| `config.maxRows`             | `number`                           | No                        | `200`; see [execution limits](#executionoptions).                                                                               |
+| `config.maxResultBytes`      | `number`                           | No                        | `1048576`; see [execution limits](#executionoptions).                                                                           |
+| `config.strategy`            | `AnalysisStrategyConfig`           | No                        | Direct analysis.                                                                                                                |
+| `config.strategy.type`       | `'direct'` / `'loop'` / `'subset'` | When strategy is provided | Selects the strategy.                                                                                                           |
+| `config.strategy.maxRetries` | `number`                           | No; `direct` only         | `2` with explicit `type: 'direct'`; currently `10` when the strategy is omitted. Correction attempts after the first execution. |
+| `config.strategy.maxSteps`   | `number`                           | No; `loop` only           | `12`; maximum reasoning steps.                                                                                                  |
+
+`subset` has no additional options. These retry controls differ from `llm.maxRetries`. See [strategy behavior and requirements](/documentation/analysis/overview/#analysis-strategies).
+
+Requires a loaded source. Returns an [ExecutionResult](#executionresult) plus:
+
+| Result field | Type     | Presence | Meaning                                                                   |
+| ------------ | -------- | -------- | ------------------------------------------------------------------------- |
+| `query`      | `string` | Always   | Original question.                                                        |
+| `text`       | `string` | Always   | Summary, or empty when disabled.                                          |
+| `markdown`   | `string` | Optional | Markdown content.                                                         |
+| `sql`        | `string` | Optional | Executed query or DSL; the property name is retained for non-SQL engines. |
+
+## translate
+
+`translate(query: string): Promise<string>`
+
+| Parameter | Type     | Required | Meaning                    |
+| --------- | -------- | -------- | -------------------------- |
+| `query`   | `string` | Yes      | Natural-language question. |
+
+Requires a loaded source. Returns generated DSL without executing it; use `query()` to execute that string.
+
+## query
+
+`query(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult>`
+
+| Parameter                | Type               | Required | Default / behavior                                      |
+| ------------------------ | ------------------ | -------- | ------------------------------------------------------- |
+| `dsl`                    | `string`           | Yes      | Executable statement in the selected engine's language. |
+| `options`                | `ExecutionOptions` | No       | Default execution limits below.                         |
+| `options.maxRows`        | `number`           | No       | `200`.                                                  |
+| `options.maxResultBytes` | `number`           | No       | `1048576` bytes.                                        |
+
+Requires a loaded source. Does not generate or summarize a query with the model.
+
+### ExecutionOptions
+
+| Field            | Type     | Default           | Accepted values / behavior                                                                                       |
+| ---------------- | -------- | ----------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `maxRows`        | `number` | `200`             | Rounded down and bounded to `1`–`1000000`; values outside the safe integer range after rounding use the default. |
+| `maxResultBytes` | `number` | `1048576` (1 MiB) | Finite values are rounded down and clamped to at least `1`; non-finite values use the default.                   |
+
+These limits bound returned data; they are separate from engine execution timeouts.
+
+### ExecutionResult
+
+| Field           | Type                             | Presence       | Meaning                                                 |
+| --------------- | -------------------------------- | -------------- | ------------------------------------------------------- |
+| `schema`        | `QueryColumn[]`                  | Always         | Returned column metadata.                               |
+| `schema[].name` | `string`                         | Always         | Column name.                                            |
+| `schema[].type` | `string`                         | Optional       | Native type name, if available.                         |
+| `data`          | `T[]`                            | Always         | Returned rows.                                          |
+| `truncated`     | `true`                           | When truncated | Result was bounded.                                     |
+| `truncatedBy`   | `'maxRows'` / `'maxResultBytes'` | When truncated | Limit that stopped the result.                          |
+| `rowCount`      | `number`                         | When known     | Row count when execution reaches the end of the result. |
+
+## suggest
+
+`suggest(count?: number): Promise<SuggestResult[]>`
+
+| Parameter | Type     | Required | Default / behavior                  |
+| --------- | -------- | -------- | ----------------------------------- |
+| `count`   | `number` | No       | `3`; requested number of questions. |
+
+Requires a loaded source. Returns suggestions sorted by descending score, each with `query: string`, `score: number` (0–1), and `reason: string`.
+
+## visualize and recommend
+
+`visualize(analysisResult): Promise<VisualizeResponse | null>`
+
+`recommend(analysisResult): Promise<ChartSpec | null>`
+
+Both methods accept the same input:
+
+| Parameter              | Type                                        | Required | Meaning                                                          |
+| ---------------------- | ------------------------------------------- | -------- | ---------------------------------------------------------------- |
+| `analysisResult`       | `Pick<AnalysisResponse, 'query' \| 'data'>` | Yes      | An analysis result or an object containing the two fields below. |
+| `analysisResult.query` | `string`                                    | Yes      | Question or visualization intent.                                |
+| `analysisResult.data`  | `Record<string, unknown>[]`                 | Yes      | Rows to visualize.                                               |
+
+Neither requires a loaded source. Both use the model and return `null` for empty data or when no chart is recommended. Generation errors propagate. `recommend()` returns a `ChartSpec`; `visualize()` additionally returns `html: string` containing a standalone chart page.
+
+## viz
+
+`viz(spec: ChartSpec): Promise<string>`
+
+| Parameter        | Type        | Required | Meaning                                                                                             |
+| ---------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `spec`           | `ChartSpec` | Yes      | Chart specification.                                                                                |
+| `spec.chartType` | `ChartType` | Yes      | One of the chart types below. Part of the shared spec; the current renderer uses `syntax` directly. |
+| `spec.syntax`    | `string`    | Yes      | GPT-Vis chart syntax to embed in HTML.                                                              |
+
+`ChartType` values: `line`, `column`, `bar`, `pie`, `area`, `scatter`, `dual-axes`, `histogram`, `boxplot`, `radar`, `funnel`, `waterfall`, `liquid`, `word-cloud`, `violin`, `venn`, `treemap`, `sankey`, `table`, `summary`.
+
+Returns a standalone HTML string. Does not require a loaded source or call a model. See [chart specifications](/documentation/visualization/overview/#recommend).
+
+## dispose
+
+`dispose(): Promise<void>` takes no parameters. Releases the current engine and clears the schema and profile. Await it in a `finally` block.
+
+## Event methods
+
+AVA inherits synchronous `on`, `once`, `off`, `emit`, and `getEvents` methods from the AntV event emitter. See [event method parameters](/documentation/reference/events/#listener-parameters).

@@ -41,7 +41,3 @@ Configure your provider before using `analyze()`, `translate()`, `suggest()`, or
 ## Execution behavior
 
 Generated JavaScript reads `data` and `stat`, and assigns its final output to `result`. The browser executes code in an iframe with `sandbox="allow-scripts"` and a restrictive content security policy. See [JavaScript engine](/documentation/engines/javascript/) for the execution contract.
-
-## Implementation
-
-[`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts), [`interpreter/javascript/engine.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/engine.ts), [`interpreter/javascript/sandbox.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/sandbox.ts)

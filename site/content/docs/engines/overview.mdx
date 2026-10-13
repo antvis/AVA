@@ -10,6 +10,16 @@ Set the engine in the `AVA` constructor. In the JavaScript API, omitting it alwa
 | [Supabase](/documentation/engines/remote/#supabase)     | Supabase project                                       | Node.js; remote PostgreSQL |
 | [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse database                                    | Node.js; remote ClickHouse |
 
+## Engine configuration
+
+| Field         | Type                                                                     | Required                  | Default / behavior                |
+| ------------- | ------------------------------------------------------------------------ | ------------------------- | --------------------------------- |
+| `engine.type` | `'duckdb'` / `'javascript'` / `'python'` / `'supabase'` / `'clickhouse'` | When `engine` is provided | Omitting `engine` selects DuckDB. |
+
+Additional fields depend on `type`: [DuckDB options](/documentation/engines/duckdb/#engine-options) and [Python options](/documentation/engines/python/#engine-options). JavaScript, Supabase, and ClickHouse accept no additional constructor engine fields. Database credentials belong to [source parameters](/documentation/data/sources/#connect-a-source).
+
+To run Python in your own service, see [Supply a Python executor](/documentation/engines/python/#supply-a-python-executor). To add an engine in the AVA source, see [Custom engines](/documentation/engines/custom/).
+
 ## Shared contract
 
 All engines implement `AnalysisEngine`: `language`, `load()`, `getDSL()`, `execute()`, and `dispose()`. `profile()` is optional in the interface and implemented by the built-in engines.
@@ -21,7 +31,3 @@ These are engine-level methods. Application code normally uses `AVA.source()`, `
 The Node.js entry point registers all five engines; the browser entry point registers JavaScript only. The registry keeps the core `AVA` class independent of platform-specific imports.
 
 The registry functions are internal modules and are not exported from the package's public entry points.
-
-## Implementation
-
-[`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts), [`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts), [`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts)

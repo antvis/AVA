@@ -231,7 +231,7 @@ const Banner: React.FC = () => (
           style={{ animation: 'hero-rise 800ms cubic-bezier(0.22,1,0.36,1) 0.8s both' }}
         >
           <Link
-            href="/documentation"
+            href="/documentation/quickstart/"
             className="group inline-flex h-10 items-center gap-2 rounded-[9px] bg-[color:var(--color-primary-dark)] px-7 text-[13.5px] max-md:px-4 max-md:text-xs font-medium text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--color-primary-dark)_28%,transparent)] transition-all duration-200 hover:shadow-[0_8px_20px_color-mix(in_srgb,var(--color-primary-dark)_38%,transparent)] hover:brightness-95 active:scale-[0.97]"
           >
             Get Started

@@ -13,6 +13,24 @@ ava.on('queryend', (event) => {
 
 Each emitted event has `type` and `data`. End events can include a serialized `error`; receiving an end event alone does not imply success.
 
+## Listener parameters
+
+These inherited methods are synchronous. `on()`, `once()`, and `off()` return the emitter.
+
+| Method                     | Parameter  | Type       | Required / default                                        |
+| -------------------------- | ---------- | ---------- | --------------------------------------------------------- |
+| `on(evt, callback, once?)` | `evt`      | `string`   | Required event name.                                      |
+| `on(evt, callback, once?)` | `callback` | `Function` | Required listener; receives the emitted event.            |
+| `on(evt, callback, once?)` | `once`     | `boolean`  | Optional; `false`; remove after one invocation when true. |
+| `once(evt, callback)`      | `evt`      | `string`   | Required event name.                                      |
+| `once(evt, callback)`      | `callback` | `Function` | Required one-time listener.                               |
+| `off(evt?, callback?)`     | `evt`      | `string`   | Optional; omit to remove all listeners.                   |
+| `off(evt?, callback?)`     | `callback` | `Function` | Optional; omit to remove every listener for the event.    |
+| `emit(evt, ...args)`       | `evt`      | `string`   | Required event name to emit manually.                     |
+| `emit(evt, ...args)`       | `args`     | `any[]`    | Optional rest arguments passed to listeners.              |
+
+`emit()` returns no value. `getEvents()` takes no parameters and returns the emitter's listener registry. Use `off()` with the same function reference that was passed to `on()` to remove a particular listener.
+
 ## Event pairs
 
 | Stage            | Start / end                               |
@@ -35,7 +53,3 @@ Each emitted event has `type` and `data`. End events can include a serialized `e
 Engine creation happens when `source()` is called, not in the constructor. Replacing a source disposes the previous engine. `dispose()` clears the engine, schema, and latest profile.
 
 Translation events may include `query`, `attempt`, or generated `dsl`; query events include the DSL or execution result. Reasoning events expose the loop step and action. These are useful for progress UI and diagnostics.
-
-## Implementation
-
-[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`event/constant.ts`](https://github.com/antvis/AVA/blob/ai/src/event/constant.ts), [`event/events.ts`](https://github.com/antvis/AVA/blob/ai/src/event/events.ts)

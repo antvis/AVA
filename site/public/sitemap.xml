@@ -4,23 +4,21 @@
   <url><loc>https://ava.antv.vision/ai-playground/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/quickstart/</loc></url>
-  <url><loc>https://ava.antv.vision/documentation/configuration/</loc></url>
-  <url><loc>https://ava.antv.vision/documentation/browser/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/data/sources/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/data/schema/</loc></url>
-  <url><loc>https://ava.antv.vision/documentation/data/profiling/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/analysis/overview/</loc></url>
-  <url><loc>https://ava.antv.vision/documentation/analysis/strategies/</loc></url>
-  <url><loc>https://ava.antv.vision/documentation/analysis/queries/</loc></url>
-  <url><loc>https://ava.antv.vision/documentation/analysis/suggestions/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/visualization/overview/</loc></url>
-  <url><loc>https://ava.antv.vision/documentation/visualization/chart-specs/</loc></url>
+  <url><loc>https://ava.antv.vision/documentation/configuration/</loc></url>
+  <url><loc>https://ava.antv.vision/documentation/browser/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/engines/overview/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/engines/duckdb/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/engines/javascript/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/engines/python/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/engines/remote/</loc></url>
+  <url><loc>https://ava.antv.vision/documentation/engines/custom/</loc></url>
+  <url><loc>https://ava.antv.vision/documentation/reference/api/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/reference/events/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/reference/cli/</loc></url>
   <url><loc>https://ava.antv.vision/documentation/reference/architecture/</loc></url>
+  <url><loc>https://ava.antv.vision/documentation/reference/benchmarks/</loc></url>
 </urlset>

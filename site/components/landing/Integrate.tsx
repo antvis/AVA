@@ -27,7 +27,7 @@ const TABS: {
     description:
       'Equip compatible agents with a reusable workflow for exploring, analyzing, and visualizing data — using the agent’s own reasoning, with no separate model key.',
     language: 'bash',
-    docHref: 'https://github.com/antvis/AVA/blob/main/skills/ava/SKILL.md',
+    docHref: 'https://github.com/antvis/AVA/blob/ai/skills/ava/SKILL.md',
     docLabel: 'View the AVA Skill',
   },
   {
@@ -37,7 +37,7 @@ const TABS: {
     description:
       'Explore data, execute queries, and generate visualizations directly from your terminal.',
     language: 'bash',
-    docHref: 'https://github.com/antvis/AVA#cli',
+    docHref: '/documentation/reference/cli/',
     docLabel: 'CLI documentation',
   },
   {
@@ -47,8 +47,8 @@ const TABS: {
     description:
       'Compose data analysis capabilities directly in your TypeScript applications.',
     language: 'typescript',
-    docHref: 'https://ava.antv.vision/documentation',
-    docLabel: 'SDK reference',
+    docHref: '/documentation/quickstart/',
+    docLabel: 'SDK quickstart',
   },
 ];
 
@@ -74,7 +74,7 @@ const CliCode: React.FC = () => (
   <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.75] text-zinc-300">
     <code>
       <span className="text-zinc-500">{'# install (Node.js 22.13+, macOS / Linux)'}</span>{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npm</span> install -g @antv/ava{'\n\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npm</span> install -g @antv/ava@alpha{'\n\n'}
       <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> source sales.csv{'\n'}
       <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> suggest &quot;$DATASET_ID&quot; --count 5{'\n'}
       <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> analyze &quot;$DATASET_ID&quot; \{'\n'}
@@ -94,11 +94,11 @@ const SdkCode: React.FC = () => (
       &nbsp;&nbsp;llm: {'{'} model: <span className="text-[#f78c6c]">&apos;ling-1t&apos;</span>, apiKey, baseURL {'}'},{'\n'}
       &nbsp;&nbsp;<span className="text-zinc-500">{'// engine: { type: \'duckdb\' } is the default'}</span>{'\n'}
       {'}'});{'\n\n'}
-      <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">source</span>({'{'} <span className="text-[#f78c6c]">&apos;csv-file&apos;</span>, options: {'{'} path: <span className="text-[#f78c6c]">&apos;data/companies.csv&apos;</span> {'}'} {'}'});{'\n'}
+      <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">source</span>({'{'} type: <span className="text-[#f78c6c]">&apos;csv-file&apos;</span>, options: {'{'} path: <span className="text-[#f78c6c]">&apos;data/companies.csv&apos;</span> {'}'} {'}'});{'\n'}
       <span className="text-[#c792ea]">const</span> result = <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">analyze</span>(<span className="text-[#f78c6c]">&apos;What is the average revenue by region?&apos;</span>);{'\n'}
       <span className="text-[#c792ea]">const</span> viz = <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">visualize</span>(result);{'\n'}
-      console.<span className="text-[#82aaff]">log</span>(viz.chartType); <span className="text-zinc-500">{'// e.g. \'column\''}</span>{'\n\n'}
-      ava.<span className="text-[#82aaff]">dispose</span>();
+      console.<span className="text-[#82aaff]">log</span>(viz?.chartType); <span className="text-zinc-500">{'// e.g. \'column\''}</span>{'\n\n'}
+      <span className="text-[#c792ea]">await</span> ava.<span className="text-[#82aaff]">dispose</span>();
     </code>
   </pre>
 );
@@ -115,7 +115,7 @@ npx skills add antvis/AVA
 # then, in a new agent session:
 "Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart."`,
   cli: `# install (Node.js 22.13+, macOS / Linux)
-npm install -g @antv/ava
+npm install -g @antv/ava@alpha
 
 ava source sales.csv
 ava suggest "$DATASET_ID" --count 5
@@ -135,9 +135,9 @@ const ava = new AVA({
 await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
 const result = await ava.analyze('What is the average revenue by region?');
 const viz = await ava.visualize(result);
-console.log(viz.chartType); // e.g. 'column'
+console.log(viz?.chartType); // e.g. 'column'
 
-ava.dispose();`,
+await ava.dispose();`,
 };
 
 /* ------------------------------------------------------------------ */
@@ -236,7 +236,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                     {active.description}
                   </p>
                   <div className="mt-5">
-                    <SectionLink href={active.docHref} external>
+                    <SectionLink href={active.docHref} external={active.docHref.startsWith('https://')}>
                       {active.docLabel}
                     </SectionLink>
                   </div>

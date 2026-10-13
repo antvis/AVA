@@ -1,0 +1,74 @@
+AVA is evaluated on tabular question answering and text-to-SQL tasks. The results below are recorded in the repository's [benchmark results](https://github.com/antvis/AVA/blob/ai/evals/ACCURACY.md). They measure answer or query-result correctness; they do not measure visualization quality.
+
+## DataBench
+
+The recorded evaluation uses **1,789 questions on full tables**, excluding `080_Books`, with **GLM-5.1**.
+
+| Execution mode    | Strategy / context   | Accuracy |
+| ----------------- | -------------------- | -------: |
+| Workflow · Python | Direct + Profile     |   85.41% |
+| Agent + AVA Skill | Agent-selected steps |   84.46% |
+| Workflow          | Direct               |   84.46% |
+| Workflow          | Direct + Profile     |   86.64% |
+| Workflow          | Subset + Profile     |   86.70% |
+| Workflow          | Loop                 |   84.07% |
+
+`Profile` means dataset statistics are supplied as context. `Subset` selects relevant profile statistics before analysis. The agent workflow lets the model choose its tools and steps using the AVA Skill.
+
+## BIRD New Dev
+
+This evaluation uses **1,534 questions across 11 databases** from `dev_20251106`, executed through AVA Workflow. It covers schema understanding, joins, and SQL result correctness.
+
+| Model     | Direct |   Loop |
+| --------- | -----: | -----: |
+| GLM-5.1   | 63.10% | 65.84% |
+| GLM-5.2   | 65.38% | 67.14% |
+| GLM-5.3   | 68.12% |      — |
+| Kimi-K2.5 | 61.34% | 59.00% |
+| Kimi-K3   | 66.10% | 64.73% |
+
+A dash means no result is recorded for that combination.
+
+## Spider2-Lite
+
+The recorded run uses the **135-question SQLite subset**, with execution results compared by the official scorer.
+
+| Model   | Execution mode | Strategy | Accuracy |
+| ------- | -------------- | -------- | -------: |
+| GLM-5.1 | Workflow       | Direct   |   27.41% |
+
+This subset targets complex, enterprise-style SQL tasks. Its score is not directly comparable to DataBench or BIRD because the datasets and scoring protocols differ.
+
+## Run an evaluation
+
+From the repository root, install dependencies and build AVA. Workflow evaluations require **Node.js 22.18 or newer** and `curl` for downloading DataBench.
+
+```bash
+npm install
+npm run build
+node evals/databench/fetch.js
+```
+
+Configure the model in `evals/ava-workflow/.env`:
+
+```bash
+OPENAI_API_KEY=YOUR_API_KEY
+OPENAI_MODEL=YOUR_MODEL
+# Optional: use an OpenAI-compatible provider endpoint
+OPENAI_BASE_URL=https://YOUR_PROVIDER/v1
+```
+
+Start with a 20-question run on the full-table DataBench dataset:
+
+```bash
+node evals/cli.js run ava-workflow \
+  --benchmark databench \
+  --dataset databench \
+  --strategy direct \
+  --limit 20 \
+  --output evals/ava-workflow/results/my-databench-run.csv
+```
+
+This small run checks your setup; it does not reproduce the full benchmark score. Keep the model, dataset version, question range, engine, and strategy consistent when comparing runs. Use a new output path when changing conditions: existing answers can be reused when resuming a workflow run.
+
+The [evaluation guide](https://github.com/antvis/AVA/blob/ai/evals/README.md) covers full runs, offline scoring, and saved reports. [Agent evaluations](https://github.com/antvis/AVA/blob/ai/evals/ava-agent/README.md) additionally require Node.js 24 or newer and Docker. These commands call your configured model and incur its usage costs.

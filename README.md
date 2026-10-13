@@ -202,7 +202,7 @@ await ava.source({ type: 'excel', options: { path: './sales.xlsx' } });
 
 See the [data source guide](skills/ava/references/sources.md) for connection settings and engine support.
 
-For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/).
+For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/browser/).
 
 ## 🧩 More ways to use AVA
 
@@ -247,12 +247,12 @@ ava analyze '<your-dataset-id>' 'Compare January and February 2025 sales by prod
 ava dispose '<your-dataset-id>'
 ```
 
-`analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/).
+`analyze` returns the answer as JSON. `dispose` releases the dataset. See [all CLI commands](https://ava.antv.vision/documentation/reference/cli/).
 
 ## 📚 Resources
 
 - [Documentation](https://ava.antv.vision/documentation/) — Guides and examples
-- [API Reference](https://ava.antv.vision/documentation/#api-reference) — Methods and configuration
+- [API Reference](https://ava.antv.vision/documentation/reference/api/) — Methods and configuration
 - [Playground](https://ava.antv.vision/ai-playground/) — Try out AVA in the browser environment
 - [Benchmarks](evals/ACCURACY.md) — Evaluation results
 - [Issues](https://github.com/antvis/AVA/issues) — Bug reports and feature requests

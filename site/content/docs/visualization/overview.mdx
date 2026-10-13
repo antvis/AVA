@@ -1,3 +1,7 @@
+AVA uses [GPT-Vis](https://gpt-vis.antv.vision/), AntV's AI-native visualization library, to render charts. GPT-Vis accepts a declarative, Markdown-like syntax that describes chart types, data, and presentation.
+
+**AVA handles chart recommendation and syntax generation; GPT-Vis renders the resulting visualization.**
+
 ## Visualize an answer
 
 ```typescript
@@ -24,14 +28,71 @@ const chart = await ava.visualize({
 
 ## Return values
 
-A successful response contains `chartType`, GPT-Vis `syntax`, and standalone `html`. The HTML loads the GPT-Vis runtime from a CDN, so rendering it requires access to that runtime.
+A successful response contains:
+
+| Field       | Meaning                                                              | How to use it                                                                   |
+| ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `chartType` | The recommended chart type.                                          | Inspect the selected visualization.                                             |
+| `syntax`    | GPT-Vis chart instructions as a string.                              | Store or edit the specification, or render it in your application with GPT-Vis. |
+| `html`      | A standalone HTML document containing the syntax and renderer setup. | Save it as an HTML file and open it in a browser.                               |
+
+The generated HTML loads GPT-Vis from a CDN and calls its renderer. Viewing that HTML requires access to the CDN.
 
 The result is `null` for empty data or when no chart is recommended. Chart generation errors reject the call instead of being converted to `null`.
 
+## Understanding GPT-Vis syntax
+
+For example, a column chart specification can look like this:
+
+```text
+vis column
+data
+  - category East
+    value 120
+  - category West
+    value 90
+```
+
+The first line selects the chart type; the indented `data` block supplies its values. AVA returns this text in `syntax`. To embed it in your own interface, pass it to a GPT-Vis instance with `gptVis.render(chart.syntax)`.
+
+- [GPT-Vis documentation](https://gpt-vis.antv.vision/docs) — syntax, rendering API, themes, and application integration.
+- [GPT-Vis repository](https://github.com/antvis/GPT-Vis) — source code, releases, and issue tracking.
+
 ## Separate recommendation and rendering
 
-Use [chart specifications](/documentation/visualization/chart-specs/) when you want to store a spec or control when HTML is produced.
+Store a chart specification or control when HTML is produced by calling the two steps separately.
 
-## Implementation
+## Recommend
 
-[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`visualization/advisor.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/advisor.ts), [`visualization/generator.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/generator.ts)
+```typescript
+const spec = await ava.recommend({
+  query: 'Plot sales by month',
+  data: [{ month: 'January', sales: 120 }],
+});
+```
+
+`recommend({ query, data })` returns `{ chartType, syntax }` or `null`. It checks for usable data, recommends a chart type, and generates GPT-Vis syntax with the model. It does not require a loaded source.
+
+## Render
+
+```typescript
+if (spec) {
+  const html = await ava.viz(spec);
+  console.log(html);
+}
+```
+
+`viz(spec: ChartSpec): Promise<string>` wraps the syntax in HTML without an LLM call. The generated document loads the GPT-Vis runtime from a CDN.
+
+## Supported chart types
+
+| Family                       | Types                                                       |
+| ---------------------------- | ----------------------------------------------------------- |
+| Trends & comparisons         | `line`, `column`, `bar`, `area`, `dual-axes`                |
+| Distribution & relationships | `scatter`, `histogram`, `boxplot`, `violin`                 |
+| Composition & flow           | `pie`, `treemap`, `sankey`, `waterfall`, `funnel`           |
+| Other                        | `radar`, `liquid`, `word-cloud`, `venn`, `table`, `summary` |
+
+A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies these definitions to the model.
+
+See [recommend parameters](/documentation/reference/api/#visualize-and-recommend) and [viz parameters](/documentation/reference/api/#viz) for all fields and chart types.

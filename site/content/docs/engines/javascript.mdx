@@ -30,7 +30,3 @@ Input data is cloned before execution. Non-array results are normalized to a row
 In Node.js, code runs in a `node:vm` context with a 10-second timeout. In browsers, it runs in a sandboxed iframe with a restrictive CSP and a 10-second response timeout.
 
 These mechanisms have different isolation properties. A Node.js VM is not a security boundary for hostile code; deploy an appropriate isolation boundary if your application accepts untrusted executable code.
-
-## Implementation
-
-[`interpreter/javascript/engine.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/engine.ts), [`interpreter/javascript/sandbox.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/sandbox.ts), [`interpreter/javascript/stat.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/stat.ts)

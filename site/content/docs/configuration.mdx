@@ -18,14 +18,14 @@ const ava = new AVA({
 
 ## Model options
 
-| Option         | Behavior                                                      |
-| -------------- | ------------------------------------------------------------- |
-| `model`        | Required model name or a preconfigured AI SDK `LanguageModel` |
-| `provider`     | `openai` (default) or `gateway` when `model` is a string      |
-| `apiKey`       | Optional provider API key                                     |
-| `baseURL`      | Optional provider endpoint                                    |
-| `maxRetries`   | Model API retry count; defaults to 3                          |
-| `onQueryUsage` | Optional usage callback on supported query-generation paths   |
+| Field          | Type                                  | Required | Meaning / default                                                                 |
+| -------------- | ------------------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `provider`     | `'openai' \| 'gateway'`               | No       | Defaults to OpenAI-compatible Chat Completions. Gateway reads AI_GATEWAY_API_KEY. |
+| `model`        | `string \| LanguageModel`             | Yes      | Model name or a preconfigured AI SDK model instance.                              |
+| `apiKey`       | `string`                              | No       | API key for the LLM provider                                                      |
+| `baseURL`      | `string`                              | No       | Optional API base URL                                                             |
+| `maxRetries`   | `number`                              | No       | Maximum retries for retryable model API failures. Default 3.                      |
+| `onQueryUsage` | `(usage: LanguageModelUsage) => void` | No       | Optional callback for SQL-generation token usage                                  |
 
 String model names use OpenAI-compatible **Chat Completions** by default. A supplied model object is used directly. Usage callbacks are not a complete accounting stream for every LLM request.
 
@@ -45,12 +45,8 @@ The gateway provider can also read `AI_GATEWAY_API_KEY` from the environment whe
 
 ## Separate retry controls
 
-`llm.maxRetries` controls model API retries. The `direct` analysis strategy has a separate `maxRetries` option for correcting failed executable queries. See [analysis strategies](/documentation/analysis/strategies/).
+`llm.maxRetries` controls model API retries. The `direct` analysis strategy has a separate `maxRetries` option for correcting failed executable queries. See [analysis strategies](/documentation/analysis/overview/#analysis-strategies).
 
 ## Credentials in frontend apps
 
 Keep shared provider secrets on the server. For browser-only experiments, obtain credentials at runtime rather than including them in source code or the frontend bundle.
-
-## Implementation
-
-[`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts), [`util/model.ts`](https://github.com/antvis/AVA/blob/ai/src/util/model.ts)

@@ -1,0 +1,50 @@
+## Extension contract
+
+The published package exports the [AnalysisEngine contract](https://github.com/antvis/AVA/blob/ai/src/types.ts), but does not export [registerEngine](https://github.com/antvis/AVA/blob/ai/src/engines.ts). `EngineConfig` accepts only the five built-in engine names. Passing a custom engine instance or an arbitrary `type` to `new AVA()` is not a supported public API.
+
+## Implement a new engine in AVA
+
+This is a source-level extension. Follow an existing engine such as [`remote/clickhouse/engine.ts`](https://github.com/antvis/AVA/blob/ai/src/remote/clickhouse/engine.ts) and implement the exported `AnalysisEngine` interface.
+
+| Member                    | Input parameters                                                                                     | Returns / behavior                                                   |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Constructor               | `llmConfig: LLMConfig`, `options?: Record<string, unknown>`                                          | Must match the internal `EngineClass` constructor contract.          |
+| `language`                | None; readonly property                                                                              | `QueryLanguage`, used by analysis prompts.                           |
+| `load(config)`            | Required `DataSourceConfig`; see [source parameters](/documentation/data/sources/#connect-a-source). | `Promise<Schema>`; load data and expose tables and metadata.         |
+| `profile(options?)`       | Optional `ProfileOptions`; see [profiling parameters](/documentation/reference/api/#profile).        | Optional method returning `Promise<Profile>`.                        |
+| `getDSL(query, context?)` | Required natural-language `query: string`; optional `DataContext`.                                   | `Promise<string>` in the engine's language.                          |
+| `execute(dsl, options?)`  | Required `dsl: string`; optional [ExecutionOptions](/documentation/reference/api/#executionoptions). | `Promise<ExecutionResult<T>>`; enforce validation and result bounds. |
+| `dispose()`               | No parameters.                                                                                       | `Promise<void>`; release connections, files, and other resources.    |
+
+| `QueryLanguage` field | Type     | Required | Meaning                                                  |
+| --------------------- | -------- | -------- | -------------------------------------------------------- |
+| `name`                | `string` | Yes      | Language or dialect name included in prompts.            |
+| `fence`               | `string` | Yes      | Markdown code-fence language, such as `sql` or `python`. |
+| `instructions`        | `string` | No       | Available bindings and result conventions.               |
+
+| `DataContext` field | Type      | Required | Meaning                                     |
+| ------------------- | --------- | -------- | ------------------------------------------- |
+| `schema`            | `Schema`  | Yes      | Tables, fields, indexes, and relationships. |
+| `profile`           | `Profile` | No       | Cached statistics, when available.          |
+
+Then integrate the implementation:
+
+1. Add the engine module under `src/`.
+2. Extend `EngineConfig` in [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) with the new `type` and its options. If the engine introduces a new source shape, extend `DataSourceConfig` as well.
+3. Import and register the implementation in [`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts). Register it in [`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts) only if all its dependencies support browsers.
+4. Build AVA and select the new engine type through the constructor.
+
+For example, after adding a `custom` branch to `EngineConfig` and implementing `CustomEngine`, the registration **inside [`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts)** is:
+
+```typescript
+import { CustomEngine } from './custom/engine';
+
+registerEngine('custom', CustomEngine);
+```
+
+| Internal registration parameter | Type                   | Required | Meaning                                      |
+| ------------------------------- | ---------------------- | -------- | -------------------------------------------- |
+| `type`                          | `EngineConfig['type']` | Yes      | Type name added to the source union.         |
+| `engineClass`                   | `EngineClass`          | Yes      | Constructor implementing the contract above. |
+
+AVA creates the engine on `source()`, disposes it before replacement, and calls `dispose()` after a failed load. Check those paths along with query validation, bounded results, and the optional profiling path when implementing an engine.

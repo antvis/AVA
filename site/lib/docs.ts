@@ -1,130 +1,118 @@
 export const docs = [
   {
-    "slug": "introduction",
-    "title": "Introduction to AVA",
-    "group": "Overview",
-    "description": "AI-native visual analytics, from question to insight."
+    slug: 'introduction',
+    title: 'Introduction to AVA',
+    group: 'Get started',
+    description: 'AI-native visual analytics, from question to insight.',
   },
   {
-    "slug": "quickstart",
-    "title": "Installation & Quickstart",
-    "group": "Get started",
-    "description": "Install AVA and go from your first dataset to a visual answer."
+    slug: 'quickstart',
+    title: 'Installation & Quickstart',
+    group: 'Get started',
+    description: 'Install AVA and go from your first dataset to a visual answer.',
   },
   {
-    "slug": "configuration",
-    "title": "Model configuration",
-    "group": "Get started",
-    "description": "Connect an OpenAI-compatible provider, AI Gateway, or an AI SDK model."
+    slug: 'data/sources',
+    title: 'Data sources',
+    group: 'Working with data',
+    description: 'Load inline data, local or remote files, and database tables.',
   },
   {
-    "slug": "browser",
-    "title": "Browser usage",
-    "group": "Get started",
-    "description": "Use the JavaScript engine without bundling Node.js dependencies."
+    slug: 'data/schema',
+    title: 'Understand your data',
+    group: 'Working with data',
+    description: 'Inspect schema and relationships, then compute profiling metrics.',
   },
   {
-    "slug": "data/sources",
-    "title": "Data sources",
-    "group": "Working with data",
-    "description": "Load inline data, local or remote files, and database tables."
+    slug: 'analysis/overview',
+    title: 'Analyze data',
+    group: 'Analysis & visualization',
+    description: 'Turn a natural language question into a bounded data result and summary.',
   },
   {
-    "slug": "data/schema",
-    "title": "Schema & metadata",
-    "group": "Working with data",
-    "description": "Inspect tables, field types, indexes, and relationships."
+    slug: 'visualization/overview',
+    title: 'Generate visualizations',
+    group: 'Analysis & visualization',
+    description: 'Turn an analysis result or your own rows into a chart.',
   },
   {
-    "slug": "data/profiling",
-    "title": "Data profiling",
-    "group": "Working with data",
-    "description": "Compute statistics without an LLM request and enrich analysis context."
+    slug: 'configuration',
+    title: 'Model configuration',
+    group: 'Advanced usage',
+    description: 'Connect an OpenAI-compatible provider, AI Gateway, or an AI SDK model.',
   },
   {
-    "slug": "analysis/overview",
-    "title": "Analyze data",
-    "group": "Analysis",
-    "description": "Turn a natural language question into a bounded data result and summary."
+    slug: 'browser',
+    title: 'Browser usage',
+    group: 'Advanced usage',
+    description: 'Use the JavaScript engine without bundling Node.js dependencies.',
   },
   {
-    "slug": "analysis/strategies",
-    "title": "Analysis strategies",
-    "group": "Analysis",
-    "description": "Choose direct execution, iterative reasoning, or selected profile context."
+    slug: 'engines/overview',
+    title: 'Engine overview',
+    group: 'Execution engines',
+    description: 'Choose where data is loaded and how generated queries are executed.',
   },
   {
-    "slug": "analysis/queries",
-    "title": "Translate & query",
-    "group": "Analysis",
-    "description": "Generate executable code separately from running it."
+    slug: 'engines/duckdb',
+    title: 'DuckDB',
+    group: 'Execution engines',
+    description: 'Run SQL analysis against inline data, files, and attached databases.',
   },
   {
-    "slug": "analysis/suggestions",
-    "title": "Query suggestions",
-    "group": "Analysis",
-    "description": "Discover questions worth asking about the loaded dataset."
+    slug: 'engines/javascript',
+    title: 'JavaScript',
+    group: 'Execution engines',
+    description: 'Execute JavaScript against an in-memory dataset in Node.js or the browser.',
   },
   {
-    "slug": "visualization/overview",
-    "title": "Generate visualizations",
-    "group": "Visualization",
-    "description": "Turn an analysis result or your own rows into a chart."
+    slug: 'engines/python',
+    title: 'Python',
+    group: 'Execution engines',
+    description: 'Use pandas through local Python or an executor supplied by your application.',
   },
   {
-    "slug": "visualization/chart-specs",
-    "title": "Chart specifications",
-    "group": "Visualization",
-    "description": "Recommend a chart with the model, then render an existing spec locally."
+    slug: 'engines/remote',
+    title: 'Supabase & ClickHouse',
+    group: 'Execution engines',
+    description: 'Discover schemas and execute queries in a remote database.',
   },
   {
-    "slug": "engines/overview",
-    "title": "Engine overview",
-    "group": "Execution engines",
-    "description": "Choose where data is loaded and how generated queries are executed."
+    slug: 'engines/custom',
+    title: 'Custom engines',
+    description: 'Implement and register a new engine inside the AVA source.',
+    group: 'Execution engines',
   },
   {
-    "slug": "engines/duckdb",
-    "title": "DuckDB",
-    "group": "Execution engines",
-    "description": "Run SQL analysis against inline data, files, and attached databases."
+    slug: 'reference/api',
+    title: 'AVA API',
+    description: 'Method signatures, complete input tables, defaults, and returned values.',
+    group: 'API Reference',
   },
   {
-    "slug": "engines/javascript",
-    "title": "JavaScript",
-    "group": "Execution engines",
-    "description": "Execute JavaScript against an in-memory dataset in Node.js or the browser."
+    slug: 'reference/events',
+    title: 'Events & lifecycle',
+    group: 'API Reference',
+    description: 'Observe data loading, model work, query execution, and cleanup.',
   },
   {
-    "slug": "engines/python",
-    "title": "Python",
-    "group": "Execution engines",
-    "description": "Use pandas through local Python or an executor supplied by your application."
+    slug: 'reference/cli',
+    title: 'Command-line interface',
+    group: 'More resources',
+    description: 'Explore datasets from the terminal using persistent local sessions.',
   },
   {
-    "slug": "engines/remote",
-    "title": "Supabase & ClickHouse",
-    "group": "Execution engines",
-    "description": "Discover schemas and execute queries in a remote database."
+    slug: 'reference/benchmarks',
+    title: 'Benchmarks',
+    group: 'More resources',
+    description: 'Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests.',
   },
   {
-    "slug": "reference/events",
-    "title": "Events & lifecycle",
-    "group": "Reference",
-    "description": "Observe data loading, model work, query execution, and cleanup."
+    slug: 'reference/architecture',
+    title: 'Architecture & source map',
+    group: 'More resources',
+    description: 'Understand how the public API connects to the implementation.',
   },
-  {
-    "slug": "reference/cli",
-    "title": "Command-line interface",
-    "group": "Reference",
-    "description": "Explore datasets from the terminal using persistent local sessions."
-  },
-  {
-    "slug": "reference/architecture",
-    "title": "Architecture & source map",
-    "group": "Reference",
-    "description": "Understand how the public API connects to the implementation."
-  }
 ] as const;
 
 export type Doc = (typeof docs)[number];
@@ -132,14 +120,3 @@ export type Doc = (typeof docs)[number];
 export function docHref(slug: string) {
   return slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`;
 }
-
-export const legacyDocs: Record<string, string> = {
-  "installation": "quickstart",
-  "quick-start-node": "quickstart",
-  "quick-start-browser": "browser",
-  "architecture": "reference/architecture",
-  "api-reference": "reference/architecture",
-  "examples": "analysis/overview",
-  "configuration": "configuration",
-  "best-practices": "quickstart"
-};

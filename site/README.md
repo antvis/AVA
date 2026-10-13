@@ -20,11 +20,11 @@ content/docs/
 ├── quickstart.mdx
 ├── configuration.mdx
 ├── browser.mdx
-├── data/              # Sources, schema, profiling
-├── analysis/          # Analysis, strategies, queries, suggestions
-├── visualization/     # Visualizations and chart specs
-├── engines/           # Engine selection and runtime behavior
-└── reference/         # Events, CLI, source architecture
+├── data/              # Sources and parameters; schema and profiling
+├── analysis/          # One analysis guide: suggestions, strategies, queries
+├── visualization/     # One visualization guide: recommend and render
+├── engines/           # Engine selection, runtime behavior, source extensions
+└── reference/         # API, events, CLI, architecture
 ```
 
 To add a chapter:
@@ -40,3 +40,5 @@ To add a chapter:
 `mdx-components.tsx` supplies shared headings, tables, callouts, and code blocks. Fenced code is highlighted at build time; only the copy control is a client component. The page outline is derived from rendered headings, so it stays synchronized with MDX content. Presentation lives in `app/documentation/docs.css` and `components/docs/`.
 
 Use `<Callout>...</Callout>` for contextual notes. Link to other chapters with their full `/documentation/.../` path. Keep examples aligned with `src/`, and keep secrets out of snippets.
+
+The reading order is introduction → quickstart → data → analysis → visualization → advanced usage → execution engines → API Reference. Keep each workflow self-contained: source parameter tables live with the source guide; analysis includes suggestions, strategies, and direct queries; visualization includes recommendation and rendering. The API reference lists constructor fields directly. Use in-page anchors for related sections rather than splitting each option into its own chapter.

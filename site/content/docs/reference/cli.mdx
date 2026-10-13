@@ -42,12 +42,37 @@ ava visualize --query "Plot revenue by region" --data @rows.json
 
 `recommend` and `visualize` require the model. `viz` renders a spec without an API key and requires a new output file; existing files are not overwritten. Check that recommendation returned a spec rather than `null` before rendering it.
 
+## Command parameters
+
+All commands accept `-h` / `--help` (boolean; optional). Every positional argument shown below is required.
+
+| Command     | Positional inputs                      | Flags and defaults                                                                                                                                                                                    |
+| ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source`    | `dataset`: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`; inferred from extension. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`; inferred as described above. |
+| `schema`    | `dataset-id`                           | No additional flags.                                                                                                                                                                                  |
+| `profile`   | `dataset-id`                           | `--metrics`: comma-separated names; defaults to the [standard metric set](/documentation/reference/api/#profile). Empty string selects no metrics.                                                    |
+| `suggest`   | `dataset-id`                           | `--count`: integer `1`–`100`; default `3`.                                                                                                                                                            |
+| `analyze`   | `dataset-id`, natural-language `query` | `--strategy`: `direct` (default), `loop`, `subset`; `--max-rows` and `--max-result-bytes` below.                                                                                                      |
+| `translate` | `dataset-id`, natural-language `query` | No additional flags.                                                                                                                                                                                  |
+| `query`     | `dataset-id`                           | Required `--dsl`: code, `@file`, or `-`; non-empty and at most 512 KiB. Optional `--max-rows` and `--max-result-bytes` below.                                                                         |
+| `visualize` | None                                   | Required `--query`: text; required `--data`: JSON array of objects, `@file`, or `-`; optional `-o` / `--output`: new HTML file path.                                                                  |
+| `recommend` | None                                   | Required `--query`: text; required `--data`: JSON array of objects, `@file`, or `-`.                                                                                                                  |
+| `viz`       | None                                   | Required `--spec`: JSON, `@file`, or `-`, containing `chartType` and non-empty `syntax`; required `-o` / `--output`: new HTML file path.                                                              |
+| `dispose`   | `dataset-id`                           | No additional flags.                                                                                                                                                                                  |
+
+| Shared execution flag | Type    | Default   | Accepted range         |
+| --------------------- | ------- | --------- | ---------------------- |
+| `--max-rows`          | Integer | `200`     | `1`–`10000`.           |
+| `--max-result-bytes`  | Integer | `1048576` | Positive safe integer. |
+
+| Environment variable | Required                            | Default / behavior                                                                                                 |
+| -------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `OPENAI_API_KEY`     | For AI commands and text extraction | Read before source creation for dataset sessions; read at command time for standalone `recommend` and `visualize`. |
+| `OPENAI_MODEL`       | No                                  | `gpt-4o-mini`.                                                                                                     |
+| `OPENAI_BASE_URL`    | No                                  | Provider default endpoint.                                                                                         |
+
 ## Session lifecycle
 
 Sessions expire after 30 idle minutes. `dispose` releases them immediately. Most commands return JSON; `source` prints a guide in terminals and JSON when piped. Errors go to standard error with exit code 1.
 
 Run `ava --help` or `ava <command> --help` for command-specific options.
-
-## Implementation
-
-[`cli/index.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/index.ts), [`cli/commands/source.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/commands/source.ts), [`cli/config.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/config.ts), [`cli/session/datasets.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/session/datasets.ts)

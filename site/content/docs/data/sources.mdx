@@ -1,21 +1,101 @@
+<nav className="docs-source-grid" aria-label="Choose a data source">
+  <a href="#csv">
+    <img src="/logos/csv.svg" alt="" width="28" height="28" />
+    <strong>CSV</strong>
+    <span>Inline &amp; file</span>
+  </a>
+  <a href="#json">
+    <img src="/logos/json.svg" alt="" width="28" height="28" />
+    <strong>JSON</strong>
+    <span>Inline &amp; file</span>
+  </a>
+  <a href="#parquet">
+    <img src="/logos/parquet.svg" alt="" width="28" height="28" />
+    <strong>Parquet</strong>
+    <span>Columnar file</span>
+  </a>
+  <a href="#excel">
+    <img src="/logos/excel.svg" alt="" width="28" height="28" />
+    <strong>Excel</strong>
+    <span>Workbook sheets</span>
+  </a>
+  <a href="#text">
+    <img src="/logos/text.svg" alt="" width="28" height="28" />
+    <strong>Text</strong>
+    <span>LLM extraction</span>
+  </a>
+  <a href="#sqlite">
+    <img src="/logos/sqlite.svg" alt="" width="28" height="28" />
+    <strong>SQLite</strong>
+    <span>Local database</span>
+  </a>
+  <a href="#mysql">
+    <img src="/logos/mysql.svg" alt="" width="28" height="28" />
+    <strong>MySQL</strong>
+    <span>Database</span>
+  </a>
+  <a href="#postgresql">
+    <img src="/logos/postgresql.svg" alt="" width="28" height="28" />
+    <strong>PostgreSQL</strong>
+    <span>Database</span>
+  </a>
+  <a href="#mongodb">
+    <img src="/logos/mongodb.svg" alt="" width="28" height="28" />
+    <strong>MongoDB</strong>
+    <span>Document database</span>
+  </a>
+  <a href="#supabase">
+    <img src="/logos/supabase.svg" alt="" width="28" height="28" />
+    <strong>Supabase</strong>
+    <span>Cloud database</span>
+  </a>
+  <a href="#clickhouse">
+    <img src="/logos/clickhouse.svg" alt="" width="28" height="28" />
+    <strong>ClickHouse</strong>
+    <span>Analytics database</span>
+  </a>
+  <a href="/documentation/engines/custom/">
+    <img src="/logos/contribute.svg" alt="" width="28" height="28" />
+    <strong>Custom extension</strong>
+    <span>Extend AVA in source</span>
+  </a>
+</nav>
+
+Choose a data source above, then use its example and parameter table below. CSV and JSON each support inline content and files.
+
 ## Connect a source
 
+Create an AVA instance, then call `source({ type, options })`:
+
 ```typescript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+});
+
 await ava.source({
   type: 'json',
   options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
 });
+
+const schema = await ava.schema();
 ```
 
-`source(config: DataSourceConfig): Promise<void>` creates the configured engine and loads one source. It clears the previous schema and profile, and disposes the previous engine. A database or Excel source can expose multiple tables.
+| Parameter | Type                   | Required | Meaning                                                                                                                                      |
+| --------- | ---------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, or `clickhouse`. |
+| `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
-## Inline data
+`source()` returns no value. Calling it again replaces the current source and clears its cached schema and profile. Use `schema()` to inspect the actual table and field names, and call `await ava.dispose()` when finished.
 
-| Type   | Options           | Engines                            |
-| ------ | ----------------- | ---------------------------------- |
-| `json` | `{ data: [...] }` | DuckDB, JavaScript, Python         |
-| `csv`  | `{ csv: '...' }`  | DuckDB, JavaScript, Python         |
-| `text` | `{ text: '...' }` | DuckDB, JavaScript; LLM extraction |
+The examples use Node.js. Supabase and ClickHouse include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
+
+## CSV
+
+### Inline CSV
+
+Pass the CSV content as a string with `type: 'csv'`.
 
 ```typescript
 await ava.source({
@@ -24,11 +104,14 @@ await ava.source({
 });
 ```
 
-DuckDB CSV sources also accept reader configuration in `options.options`, such as `delim`, `header`, and `nullstr`. Python accepts a validated subset of these options.
+| Field     | Type             | Required | Meaning / default                          |
+| --------- | ---------------- | -------- | ------------------------------------------ |
+| `csv`     | `string`         | Yes      | Raw CSV content string                     |
+| `options` | `CSVReadOptions` | No       | [CSV reader options](#csv-reader-options). |
 
-## Files
+### CSV files
 
-`csv-file`, `json-file`, `parquet`, and `excel` accept `options.path` as a local path or an HTTP(S) URL. Remote requests can include `options.headers`. These sources are available with DuckDB and Python, subject to their runtime dependencies.
+Use `type: 'csv-file'` with a local path or HTTP(S) URL. For a protected URL, supply request headers in `options.headers`.
 
 ```typescript
 await ava.source({
@@ -36,20 +119,185 @@ await ava.source({
   options: {
     path: 'https://example.com/sales.csv',
     headers: { Authorization: 'Bearer YOUR_TOKEN' },
+    options: { header: true, delim: ';' },
   },
 });
 ```
 
-Excel exposes each sheet separately. Use `schema()` for the actual table and field names.
+| Field     | Type                     | Required | Meaning / default                                    |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
+| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+| `options` | `CSVReadOptions`         | No       | [CSV reader options](#csv-reader-options).           |
 
-## Databases through DuckDB
+### CSV reader options
 
-| Type         | Connection options                                                                   |
-| ------------ | ------------------------------------------------------------------------------------ |
-| `mysql`      | `host`, `database`, optional `port`, `user`, `password`, `ssh`                       |
-| `postgresql` | MySQL-style fields plus optional `schema` (default `public`)                         |
-| `sqlite`     | Local database `path`                                                                |
-| `mongodb`    | Required `database`; structured connection fields or an advanced `connection` string |
+Use these fields in `options.options` for `csv` and `csv-file` sources with DuckDB. Every field is optional. AVA forwards supplied values to `read_csv`; omitted values use DuckDB reader defaults or detection. Defaults below describe individual reader settings; automatic detection can determine the effective header, delimiter, and types.
+
+| Field                  | Type                                 | Required | Meaning / default                                                                               |
+| ---------------------- | ------------------------------------ | -------- | ----------------------------------------------------------------------------------------------- |
+| `header`               | `boolean`                            | No       | First line of each file contains the column names. Default false                                |
+| `names`                | `string[]`                           | No       | Column names, as a list                                                                         |
+| `columns`              | `Record<string, string>`             | No       | Column names → types struct, e.g. &#123; col1: 'INTEGER' &#125;. Disables schema auto-detection |
+| `types`                | `string[] \| Record<string, string>` | No       | Column types, by position (list) or by name (struct)                                            |
+| `all_varchar`          | `boolean`                            | No       | Skip type detection and read all columns as VARCHAR. Default false                              |
+| `normalize_names`      | `boolean`                            | No       | Remove non-alphanumeric chars from column names; prefix reserved keywords with \_               |
+| `force_not_null`       | `string[]`                           | No       | Columns that must not be matched against the NULL string                                        |
+| `delim`                | `string`                             | No       | Field delimiter (up to 4 bytes). Default ','                                                    |
+| `quote`                | `string`                             | No       | Quote character. Default '"'                                                                    |
+| `escape`               | `string`                             | No       | Escape character for the quote within quoted values. Default '"'                                |
+| `comment`              | `string`                             | No       | Character used to initiate comments                                                             |
+| `new_line`             | `string`                             | No       | New line character(s): '\r' \| '\n' \| '\r\n'                                                   |
+| `auto_detect`          | `boolean`                            | No       | Auto detect CSV parameters. Default true                                                        |
+| `auto_type_candidates` | `string[]`                           | No       | Types the sniffer considers when detecting column types, e.g. ['BIGINT', 'DATE']                |
+| `dateformat`           | `string`                             | No       | Date format used when parsing dates                                                             |
+| `timestampformat`      | `string`                             | No       | Timestamp format used when parsing timestamps                                                   |
+| `decimal_separator`    | `string`                             | No       | Decimal separator for numbers. Default '.'                                                      |
+| `thousands`            | `string`                             | No       | Thousands separator (single char, different from decimal_separator)                             |
+| `nullstr`              | `string \| string[]`                 | No       | String(s) that represent a NULL value                                                           |
+| `allow_quoted_nulls`   | `boolean`                            | No       | Allow the conversion of quoted values to NULL. Default true                                     |
+| `sample_size`          | `number`                             | No       | Number of sample lines for auto detection. Default 20480                                        |
+| `buffer_size`          | `number`                             | No       | Size of the read buffers in bytes. Default 16 \* max_line_size                                  |
+| `files_to_sniff`       | `number`                             | No       | Files used by the sniffer for multi-file schema detection; -1 = all. Default 10                 |
+| `max_line_size`        | `number`                             | No       | Maximum line size in bytes. Default 2000000                                                     |
+| `parallel`             | `boolean`                            | No       | Use the parallel CSV reader. Default true                                                       |
+| `skip`                 | `number`                             | No       | Number of lines to skip at the start of each file. Default 0                                    |
+| `ignore_errors`        | `boolean`                            | No       | Ignore any parsing errors encountered. Default false                                            |
+| `null_padding`         | `boolean`                            | No       | Pad short rows with NULL values on the right. Default false                                     |
+| `strict_mode`          | `boolean`                            | No       | Throw an error upon encountering any issue. Default true                                        |
+| `store_rejects`        | `boolean`                            | No       | Skip faulty lines and store them in the rejects table. Default false                            |
+| `rejects_table`        | `string`                             | No       | Temp table name for faulty lines. Default 'reject_errors'                                       |
+| `rejects_scan`         | `string`                             | No       | Temp table name for faulty scans. Default 'reject_scans'                                        |
+| `rejects_limit`        | `number`                             | No       | Upper limit on faulty lines recorded per file; 0 = no limit. Default 0                          |
+| `encoding`             | `string`                             | No       | File encoding: 'utf-8' \| 'utf-16' \| 'latin-1'. Default 'utf-8'                                |
+| `compression`          | `string`                             | No       | Compression method: 'none' \| 'gzip' \| 'zstd'. Default auto (from file extension)              |
+| `union_by_name`        | `boolean`                            | No       | Align columns from different files by name instead of position. Default false                   |
+| `hive_partitioning`    | `boolean`                            | No       | Interpret the path as a Hive partitioned path. Default auto-detected                            |
+| `filename`             | `boolean`                            | No       | Add the source file path to each row as a `filename` column. Default false                      |
+
+## JSON
+
+### Inline JSON
+
+Pass an array of objects with `type: 'json'`.
+
+```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+});
+```
+
+| Field  | Type    | Required | Meaning / default      |
+| ------ | ------- | -------- | ---------------------- |
+| `data` | `any[]` | Yes      | Array of rows to load. |
+
+### JSON files
+
+Use `type: 'json-file'` with a local path or HTTP(S) URL.
+
+```typescript
+await ava.source({
+  type: 'json-file',
+  options: { path: './sales.json' },
+});
+```
+
+| Field     | Type                     | Required | Meaning / default                                    |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
+| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+
+## Parquet
+
+Read a Parquet file from a local path or HTTP(S) URL.
+
+```typescript
+await ava.source({
+  type: 'parquet',
+  options: { path: './sales.parquet' },
+});
+```
+
+| Field     | Type                     | Required | Meaning / default                                    |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
+| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+
+## Excel
+
+Read a workbook from a local path or HTTP(S) URL. Each sheet becomes a separate table; call `schema()` to discover their names.
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: { path: './sales.xlsx' },
+});
+```
+
+| Field     | Type                     | Required | Meaning / default                                    |
+| --------- | ------------------------ | -------- | ---------------------------------------------------- |
+| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
+| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+
+## Text
+
+Extract structured rows from unstructured text. This source calls your configured model.
+
+```typescript
+await ava.source({
+  type: 'text',
+  options: { text: 'Hangzhou revenue was 120. Shanghai revenue was 200.' },
+});
+```
+
+| Field  | Type     | Required | Meaning / default                                        |
+| ------ | -------- | -------- | -------------------------------------------------------- |
+| `text` | `string` | Yes      | Unstructured text to extract using the configured model. |
+
+## SQLite
+
+Open a local SQLite database in read-only mode.
+
+```typescript
+await ava.source({
+  type: 'sqlite',
+  options: { path: './analytics.sqlite' },
+});
+```
+
+| Field  | Type     | Required | Meaning / default                |
+| ------ | -------- | -------- | -------------------------------- |
+| `path` | `string` | Yes      | Local SQLite database file path. |
+
+## MySQL
+
+Connect to a database and discover its tables.
+
+```typescript
+await ava.source({
+  type: 'mysql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.MYSQL_PASSWORD,
+  },
+});
+```
+
+| Field      | Type         | Required | Meaning / default                           |
+| ---------- | ------------ | -------- | ------------------------------------------- |
+| `host`     | `string`     | Yes      | Database hostname.                          |
+| `port`     | `number`     | No       | Default: `3306`.                            |
+| `database` | `string`     | Yes      | Database to expose.                         |
+| `user`     | `string`     | No       | Database user; omitted if not supplied.     |
+| `password` | `string`     | No       | Database password; omitted if not supplied. |
+| `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).        |
+
+## PostgreSQL
+
+Connect to a database and discover its tables.
 
 ```typescript
 await ava.source({
@@ -58,17 +306,168 @@ await ava.source({
     host: 'localhost',
     database: 'analytics',
     user: 'reader',
-    password: process.env.DB_PASSWORD,
+    password: process.env.POSTGRES_PASSWORD,
   },
 });
 ```
 
-Loaders discover tables or collections. MongoDB uses a DuckDB community extension. MySQL and PostgreSQL also support an SSH tunnel through the `ssh` option.
+| Field      | Type         | Required | Meaning / default                                |
+| ---------- | ------------ | -------- | ------------------------------------------------ |
+| `host`     | `string`     | Yes      | Database hostname.                               |
+| `port`     | `number`     | No       | Default: `5432`.                                 |
+| `database` | `string`     | Yes      | Database to expose.                              |
+| `user`     | `string`     | No       | Database user; omitted if not supplied.          |
+| `password` | `string`     | No       | Database password; omitted if not supplied.      |
+| `schema`   | `string`     | No       | Schema the tables live in (defaults to `public`) |
+| `ssh`      | `SSHOptions` | No       | Optional [SSH tunnel](#ssh-options).             |
 
-## Remote engines
+## MongoDB
 
-Supabase and ClickHouse use their own engines. In the JavaScript API, explicitly match `engine.type` to the source type; the constructor does not infer an engine from a later `source()` call. See [remote engines](/documentation/engines/remote/).
+Load collections from the specified database. Use structured connection fields or supply `connection`, which takes precedence over them.
 
-## Implementation
+```typescript
+await ava.source({
+  type: 'mongodb',
+  options: {
+    connection: process.env.MONGODB_URI!,
+    database: 'analytics',
+  },
+});
+```
 
-[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts), [`duckdb/loaders/index.ts`](https://github.com/antvis/AVA/blob/ai/src/duckdb/loaders/index.ts)
+| Field                         | Type      | Required | Meaning / default                                                                                                                                               |
+| ----------------------------- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `connection`                  | `string`  | No       | Advanced connection string, e.g. `host=localhost port=27017` or `mongodb://user:pass@host:27017/db`. Takes precedence over all structured fields when provided. |
+| `host`                        | `string`  | No       | MongoDB hostname or IP address (default `localhost`).                                                                                                           |
+| `port`                        | `number`  | No       | MongoDB port number (default `27017`).                                                                                                                          |
+| `database`                    | `string`  | Yes      | Database containing the collections to load.                                                                                                                    |
+| `user`                        | `string`  | No       | MongoDB username.                                                                                                                                               |
+| `password`                    | `string`  | No       | MongoDB password.                                                                                                                                               |
+| `authSource`                  | `string`  | No       | Authentication database (MongoDB `authSource`).                                                                                                                 |
+| `srv`                         | `boolean` | No       | Use SRV connection format (for MongoDB Atlas).                                                                                                                  |
+| `tls`                         | `boolean` | No       | Enable TLS/SSL encryption. Alias: `ssl`.                                                                                                                        |
+| `ssl`                         | `boolean` | No       | Alias for `tls`.                                                                                                                                                |
+| `tlsCAFile`                   | `string`  | No       | Path to CA certificate file for TLS.                                                                                                                            |
+| `tlsAllowInvalidCertificates` | `boolean` | No       | Allow invalid certificates (testing only, default false).                                                                                                       |
+
+## Supabase
+
+Provide your project reference and a Supabase Management API access token. Your application obtains and refreshes the token.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'supabase' },
+});
+await ava.source({
+  type: 'supabase',
+  options: {
+    projectRef: 'YOUR_PROJECT_REF',
+    accessToken: process.env.SUPABASE_ACCESS_TOKEN!,
+  },
+});
+```
+
+| Field         | Type     | Required | Meaning / default                                                           |
+| ------------- | -------- | -------- | --------------------------------------------------------------------------- |
+| `accessToken` | `string` | Yes      | OAuth access token from the Supabase Management API OAuth flow              |
+| `projectRef`  | `string` | Yes      | Project reference (as returned by GET https://api.supabase.com/v1/projects) |
+
+## ClickHouse
+
+Provide a server endpoint and database. Use `url` or `host`; `url` takes precedence when both are present.
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'clickhouse' },
+});
+await ava.source({
+  type: 'clickhouse',
+  options: {
+    url: 'http://localhost:8123',
+    database: 'analytics',
+    username: 'reader',
+    password: process.env.CLICKHOUSE_PASSWORD,
+  },
+});
+```
+
+### Connection fields
+
+| Field      | Type     | Required        | Meaning / default                                                         |
+| ---------- | -------- | --------------- | ------------------------------------------------------------------------- |
+| `host`     | `string` | `host` or `url` | Host or host:port; AVA adds `http://` if the scheme is absent.            |
+| `url`      | `string` | `host` or `url` | Full server URL; takes precedence over `host`.                            |
+| `port`     | `number` | No              | Overrides the endpoint's port.                                            |
+| `database` | `string` | Yes             | Database to discover and query.                                           |
+| `username` | `string` | No              | Client username; takes precedence over `user`. Client default: `default`. |
+| `user`     | `string` | No              | Alias for `username`.                                                     |
+| `password` | `string` | No              | Client password; empty by default.                                        |
+
+AVA requires an endpoint even though the underlying client has a localhost default.
+
+### Forwarded client fields
+
+`ClickHouseSourceOptions` also accepts the following fields from `@clickhouse/client`. This table follows the installed client type declarations (1.23.1); these fields are owned by that dependency. AVA forwards them when creating the client.
+
+| Field                          | Type                          | Default / meaning                                                                                          |
+| ------------------------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `pathname`                     | `string`                      | Empty; extra proxy path.                                                                                   |
+| `request_timeout`              | `number`                      | `30000` milliseconds.                                                                                      |
+| `max_open_connections`         | `number`                      | `10` sockets per host.                                                                                     |
+| `compression`                  | Object                        | Request and response compression; nested fields below.                                                     |
+| `access_token`                 | `string`                      | Unset; ClickHouse Cloud JWT. Do not combine with username/password.                                        |
+| `application`                  | `string`                      | Empty; application name.                                                                                   |
+| `clickhouse_settings`          | `ClickHouseSettings`          | Empty; server settings map. AVA enforces `readonly: '1'` on every query, overriding a conflicting setting. |
+| `log`                          | Object                        | Client logging options below.                                                                              |
+| `session_id`                   | `string`                      | Empty; no explicit server session.                                                                         |
+| `role`                         | `string \| string[]`          | Unset; server roles.                                                                                       |
+| `http_headers`                 | `Record<string, string>`      | Empty; additional request headers.                                                                         |
+| `additional_headers`           | `Record<string, string>`      | Deprecated client alias; use `http_headers`.                                                               |
+| `keep_alive`                   | Object                        | Socket reuse options below.                                                                                |
+| `json`                         | `Partial<JSONHandling>`       | Native `JSON.parse` / `JSON.stringify`; callbacks below.                                                   |
+| `tracer`                       | `ClickHouseTracer`            | Unset; client tracing implementation.                                                                      |
+| `use_multipart_params`         | `boolean`                     | `false`; always send query parameters as multipart data.                                                   |
+| `use_multipart_params_auto`    | `boolean`                     | `false`; use multipart when encoded parameters exceed 4096 characters.                                     |
+| `tls`                          | TLS options object            | Unset; certificate fields below.                                                                           |
+| `http_agent`                   | `http.Agent \| https.Agent`   | Unset; a custom agent supersedes `max_open_connections`, `tls`, and `keep_alive`. Experimental client API. |
+| `set_basic_auth_header`        | `boolean`                     | `true`; send a Basic Authorization header. Experimental.                                                   |
+| `capture_enhanced_stack_trace` | `boolean`                     | `false`; capture extended client stacks. Experimental.                                                     |
+| `max_response_headers_size`    | `number`                      | Unset; Node.js response header byte limit applies.                                                         |
+| `connection`                   | `Connection<Stream.Readable>` | Unset; experimental client backend connection. Overrides the default HTTP transport and its options.       |
+
+All forwarded fields are optional. Server settings are an extensible, server-version-dependent map rather than an AVA-defined finite list. The dependency's `ClickHouseSettings` type and your server determine accepted keys. Tracer, agent, logger, and connection objects implement the corresponding client contracts; they are not plain AVA configuration objects.
+
+### Nested client options
+
+| Field                                      | Type                                             | Required / default                                                          |
+| ------------------------------------------ | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| `compression.response`                     | `boolean \| { codec: 'gzip' \| 'zstd' \| 'br' }` | Optional; `false`. `true` selects gzip.                                     |
+| `compression.request`                      | `boolean \| RequestCompression`                  | Optional; `false`. `true` selects gzip.                                     |
+| `compression.request.codec`                | `'gzip' \| 'zstd' \| 'br'`                       | Required in the object form.                                                |
+| `compression.request.level`                | `number`                                         | Optional for gzip/zstd; codec default.                                      |
+| `compression.request.quality`              | `number`                                         | Optional for Brotli; default `4`.                                           |
+| `log.LoggerClass`                          | `new () => Logger`                               | Optional; client's default logger.                                          |
+| `log.level`                                | `ClickHouseLogLevel`                             | Optional; `WARN`. Values: `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `OFF`. |
+| `keep_alive.enabled`                       | `boolean`                                        | Optional; `true`.                                                           |
+| `keep_alive.idle_socket_ttl`               | `number`                                         | Optional; `2500` ms; `0` disables idle socket management.                   |
+| `keep_alive.eagerly_destroy_stale_sockets` | `boolean`                                        | Optional; `false`.                                                          |
+| `tls.ca_cert`                              | `Buffer`                                         | Required when `tls` is supplied.                                            |
+| `tls.cert`                                 | `Buffer`                                         | Required for mutual TLS.                                                    |
+| `tls.key`                                  | `Buffer`                                         | Required for mutual TLS.                                                    |
+| `json.parse`                               | `<T>(input: string) => T`                        | Optional; parses a JSON string.                                             |
+| `json.stringify`                           | `<T>(input: T) => string`                        | Optional; serializes a value.                                               |
+
+Zstd compression requires Node.js 22.15 or newer in this client. Response compression may conflict with the engine's enforced read-only server settings; leave it disabled unless the server permits it.
+
+## SSH options
+
+Nested under `options.ssh` for MySQL and PostgreSQL.
+
+| Field      | Type     | Required | Meaning / default                                      |
+| ---------- | -------- | -------- | ------------------------------------------------------ |
+| `host`     | `string` | Yes      | SSH server hostname.                                   |
+| `port`     | `number` | No       | Default: `22`.                                         |
+| `user`     | `string` | Yes      | SSH login user.                                        |
+| `password` | `string` | No       | SSH login password; no password supplied when omitted. |
