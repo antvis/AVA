@@ -33,5 +33,5 @@ jobs:
           elif [[ "${{ github.ref_name }}" == *"-beta"* ]]; then
             npm publish --access public --tag beta
           else
-            npm publish --access public
+            npm publish --access public --tag latest
           fi

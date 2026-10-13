@@ -74,7 +74,7 @@ const CliCode: React.FC = () => (
   <pre className="overflow-x-auto font-mono text-[12.5px] leading-[1.75] text-zinc-300">
     <code>
       <span className="text-zinc-500">{'# install (Node.js 22.13+, macOS / Linux)'}</span>{'\n'}
-      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npm</span> install -g @antv/ava@alpha{'\n\n'}
+      <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">npm</span> install -g @antv/ava@beta{'\n\n'}
       <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> source sales.csv{'\n'}
       <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> suggest &quot;$DATASET_ID&quot; --count 5{'\n'}
       <span className="text-[#89ddff]">{'$ '}</span><span className="text-[#82aaff]">ava</span> analyze &quot;$DATASET_ID&quot; \{'\n'}
@@ -115,7 +115,7 @@ npx skills add antvis/AVA
 # then, in a new agent session:
 "Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart."`,
   cli: `# install (Node.js 22.13+, macOS / Linux)
-npm install -g @antv/ava@alpha
+npm install -g @antv/ava@beta
 
 ava source sales.csv
 ava suggest "$DATASET_ID" --count 5
