@@ -1,148 +1,240 @@
-## Ask a question
+Use `analyze()` to answer a question about loaded data. This guide follows one small sales dataset through analysis, suggested questions, and direct query execution.
 
-The snippets in this section assume you have created `ava` and loaded a source as shown in the [quick start](/documentation/quickstart/).
+## Run your first analysis
+
+Use Node.js 22.13 or newer and install AVA:
+
+```bash
+npm install @antv/ava@alpha
+```
+
+Set `OPENAI_API_KEY` and `OPENAI_MODEL` for your provider. Set `OPENAI_BASE_URL` as well if you use a custom OpenAI-compatible endpoint. Run this example in a JavaScript ES module:
+
+```javascript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: process.env.OPENAI_MODEL,
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+  },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: {
+      data: [
+        { region: 'East', revenue: 120 },
+        { region: 'West', revenue: 90 },
+        { region: 'East', revenue: 80 },
+      ],
+    },
+  });
+
+  const result = await ava.analyze('What is total revenue by region?');
+  console.log(result.text);
+  console.table(result.data);
+} finally {
+  await ava.dispose();
+}
+```
+
+`analyze()` uses the loaded schema and any cached profile to generate a query, execute it, and summarize the answer. It returns data and text; it does not generate a chart.
+
+The snippets below use the same dataset. Place them **inside the `try` block, after `source()` and before `dispose()`**, replacing or extending the analysis call.
+
+## Read the result
+
+An illustrative response for the question above looks like this. Summary wording, generated queries, and column aliases can vary with the model.
+
+```json
+{
+  "query": "What is total revenue by region?",
+  "text": "East has total revenue of 200, compared with 90 for West.",
+  "schema": [{ "name": "region" }, { "name": "total_revenue" }],
+  "data": [
+    { "region": "East", "total_revenue": 200 },
+    { "region": "West", "total_revenue": 90 }
+  ],
+  "rowCount": 2
+}
+```
+
+| Field         | Type                                        | What it tells you                                                                            |
+| ------------- | ------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `query`       | `string`                                    | The original question.                                                                       |
+| `text`        | `string`                                    | The generated summary; empty when `includeSummary` is false.                                 |
+| `schema`      | `QueryColumn[]`                             | Returned columns, each with `name: string` and optional `type: string`.                      |
+| `data`        | `Record<string, unknown>[]`                 | Rows to display, export, or visualize.                                                       |
+| `rowCount`    | `number`, optional                          | Row count when the result is complete. Do not treat it as the size of the input dataset.     |
+| `sql`         | `string`, optional                          | The executed query. This name is also used for Python or JavaScript code with those engines. |
+| `markdown`    | `string`, optional                          | Markdown content, when supplied.                                                             |
+| `truncated`   | `true`, optional                            | More data existed than the result limits allowed.                                            |
+| `truncatedBy` | `'maxRows'` or `'maxResultBytes'`, optional | The limit that stopped the result.                                                           |
+
+Use `schema` to inspect returned column names instead of assuming the model will always choose `total_revenue`.
+
+## Configure an analysis
+
+`analyze(query: string, config?: AnalysisConfig)` accepts the following inputs:
+
+| Parameter               | Type                     | Required | Default / behavior                                                                             |
+| ----------------------- | ------------------------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `query`                 | `string`                 | Yes      | Natural-language question.                                                                     |
+| `config`                | `AnalysisConfig`         | No       | `{}`.                                                                                          |
+| `config.includeSummary` | `boolean`                | No       | `true`; set to `false` to skip summarization.                                                  |
+| `config.maxRows`        | `number`                 | No       | `200`; bounds returned rows.                                                                   |
+| `config.maxResultBytes` | `number`                 | No       | `1048576` (1 MiB); bounds serialized result data.                                              |
+| `config.strategy`       | `AnalysisStrategyConfig` | No       | Direct analysis; see [strategy options](/documentation/analysis/strategies/#strategy-options). |
+
+For example, return at most 100 rows and skip the summary:
 
 ```typescript
 const result = await ava.analyze('What is total revenue by region?', {
-  includeSummary: true,
+  includeSummary: false,
   maxRows: 100,
   maxResultBytes: 1048576,
 });
-console.log(result.text, result.data);
+
+console.log(result.text); // ''
+console.table(result.data);
 ```
 
-`analyze(query, config?)` passes the loaded schema and latest profile to the selected [analysis strategy](#analysis-strategies). It does not generate a chart; call `visualize(result)` separately.
+### Handle partial results
 
-## Options
+Suppose the two-region answer is requested with `maxRows: 1`. A simplified returned result could be:
 
-| Option           | Behavior                                              |
-| ---------------- | ----------------------------------------------------- |
-| `includeSummary` | Defaults to `true`; `false` returns an empty `text`   |
-| `strategy`       | Object with `type: 'direct'`, `'loop'`, or `'subset'` |
-| `maxRows`        | Default 200; API hard limit 1,000,000                 |
-| `maxResultBytes` | Default 1 MiB of serialized result data               |
+```json
+{
+  "schema": [{ "name": "region" }, { "name": "total_revenue" }],
+  "data": [{ "region": "East", "total_revenue": 200 }],
+  "truncated": true,
+  "truncatedBy": "maxRows"
+}
+```
 
-## Result structure
-
-The result includes `query`, `text`, `schema` (result columns), and `data` (rows). It may also include `sql`, `truncated`, `truncatedBy`, and `rowCount`.
-
-Despite its name, the current `sql` field contains the executed DSL for the selected engine, including generated Python or JavaScript. `rowCount` is present only when the bounded query reaches the end of its result.
-
-## Handle bounded results
+This is a partial answer. Check the truncation fields before presenting it as complete:
 
 ```typescript
 if (result.truncated) {
-  console.log('Result stopped at:', result.truncatedBy);
+  console.log(`Showing a partial result: ${result.truncatedBy} was reached.`);
 }
 ```
 
-A result limit bounds the returned rows or bytes, not necessarily all work performed by a query. Configure engine resource limits separately.
+`maxRows` is rounded down and clamped to `1`–`1000000`; values outside the safe integer range after rounding use the default. `maxResultBytes` is rounded down and clamped to at least `1`; non-finite values use the default. Both limits also apply to `query()` below. They bound the returned data, not the query's total processing time or memory use.
 
 ## Suggest questions
 
-```typescript
-const suggestions = await ava.suggest(5);
-for (const item of suggestions) {
-  console.log(item.query, item.score, item.reason);
-}
-```
-
-`suggest(count = 3)` uses the latest profile if available, otherwise the schema. It requires a loaded source and calls the configured model.
-
-### Suggestion results
-
-Each suggestion contains `query`, `score`, and `reason`. Scores are clamped to the range 0–1, results are sorted in descending order, and at most `count` entries are returned. The model is prompted to match the dataset's language.
-
-### Follow a suggestion
+Use `suggest()` when you want ideas for what to ask. Computing a profile first is optional: it adds dataset statistics to the context and does not call a model.
 
 ```typescript
 await ava.profile();
-const suggestions = await ava.suggest(3);
+const suggestions = await ava.suggest(2);
+console.log(suggestions);
+```
+
+| Parameter | Type     | Required | Default / behavior                    |
+| --------- | -------- | -------- | ------------------------------------- |
+| `count`   | `number` | No       | `3`; requested number of suggestions. |
+
+`suggest()` requires a loaded source and calls the configured model. It uses the latest profile when available, otherwise the schema.
+
+### Suggestion results
+
+For the sales dataset, the returned array might look like this:
+
+```json
+[
+  {
+    "query": "What is total revenue by region?",
+    "score": 0.95,
+    "reason": "Compare each region's contribution to overall revenue."
+  },
+  {
+    "query": "What is average revenue per record in each region?",
+    "score": 0.82,
+    "reason": "Compare typical record values across regions with different record counts."
+  }
+]
+```
+
+These are illustrative suggestions, not fixed output. In your interface, use the fields as follows:
+
+| Field    | Type     | Example use                                                                                                                          |
+| -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `query`  | `string` | Show as a selectable question and pass it to `analyze()`.                                                                            |
+| `score`  | `number` | Prioritize suggestions. Values are clamped to 0–1 and sorted highest first; this is a usefulness score, not confidence in an answer. |
+| `reason` | `string` | Explain why the question may be useful, for example as text beneath the question.                                                    |
+
+At most `count` suggestions are returned; the array can be empty. The model is prompted to use the dataset's language for both the question and reason.
+
+### Analyze a suggestion
+
+```typescript
 if (suggestions.length > 0) {
-  const result = await ava.analyze(suggestions[0].query);
-  console.log(result.text);
+  const selected = suggestions[0];
+  const answer = await ava.analyze(selected.query);
+  console.log(selected.reason);
+  console.table(answer.data);
 }
 ```
 
-An invalid model response rejects the call. Handle errors as you would for other model-facing operations.
-
-See [suggest parameters](/documentation/reference/api/#suggest) for the input and return contract.
-
 ## Analysis strategies
 
-### Direct
+`analyze()` uses direct analysis by default. Choose a strategy per call when your question needs a different approach:
 
-Direct analysis generates a query, executes it, and optionally summarizes the result. Execution errors can be fed back to the model to correct the next attempt.
+| Strategy | Use it for                                                          |
+| -------- | ------------------------------------------------------------------- |
+| `direct` | A focused question answered by generating and executing a query.    |
+| `loop`   | Questions that benefit from intermediate exploration.               |
+| `subset` | Selecting relevant statistics from a large profile before analysis. |
 
-```typescript
-const result = await ava.analyze('Total revenue by region', {
-  strategy: { type: 'direct', maxRetries: 2 },
-});
-```
+See [Analysis strategies](/documentation/analysis/strategies/) for examples, retry controls, step limits, and subset requirements.
 
-Explicit `type: 'direct'` defaults to 2 correction retries after the initial attempt. In the current implementation, omitting the strategy entirely follows the direct path with 10 correction retries; set `maxRetries` explicitly when a predictable retry budget matters.
+## Translate and execute separately
 
-### Loop
-
-Loop analysis explores data, refines its reasoning, executes a final query, and confirms the answer. It uses the selected engine's query language.
+Use `translate()` to inspect generated code before deciding to execute it with `query()`:
 
 ```typescript
-const result = await ava.analyze('Find and explain unusual revenue patterns', {
-  strategy: { type: 'loop', maxSteps: 6 },
-});
-```
+const dsl = await ava.translate('What is total revenue by region?');
+console.log(dsl); // Display the generated query for review.
 
-`maxSteps` defaults to 12. Each step can involve model calls and query execution. [Reasoning events](/documentation/reference/events/) expose progress.
-
-### Subset
-
-Subset analysis keeps the complete structural schema while selecting relevant profile statistics, then runs direct analysis. It creates a profile when one is not already available and the engine supports profiling.
-
-```typescript
-const result = await ava.analyze('Compare revenue by region', {
-  strategy: { type: 'subset' },
-});
-```
-
-<Callout>
-  The current subset selector calls AI SDK's evaluator with <code>typesafe-ai/jev</code>. This selection step requires
-  that service's model access in addition to the main analysis model; it does not use your configured{' '}
-  <code>llm.model</code>.
-</Callout>
-
-If no profile is available, selection retains the original context. If no positive selections are returned, it retains all profile details.
-
-See [strategy parameters](/documentation/reference/api/#analyze) for the complete configuration table.
-
-## Translate a question
-
-```typescript
-const dsl = await ava.translate('Total revenue by region');
-console.log(dsl);
-```
-
-`translate(query): Promise<string>` uses the selected engine, loaded schema, and available profile to generate DSL without executing it. The language is DuckDB SQL, PostgreSQL SQL, ClickHouse SQL, Python, or JavaScript depending on the engine.
-
-## Execute a query
-
-```typescript
-const result = await ava.query(dsl, {
+// Run this step when your application is ready to execute the query.
+const rows = await ava.query(dsl, {
   maxRows: 100,
   maxResultBytes: 1048576,
 });
-console.log(result.schema, result.data);
+console.table(rows.data);
 ```
 
-`query(dsl, options?)` executes the supplied DSL without asking the LLM to translate or summarize it. It does not automatically correct failed queries.
+| Method                 | Parameter                | Type               | Required / default                                              |
+| ---------------------- | ------------------------ | ------------------ | --------------------------------------------------------------- |
+| `translate(query)`     | `query`                  | `string`           | Required natural-language question.                             |
+| `query(dsl, options?)` | `dsl`                    | `string`           | Required executable statement in the current engine's language. |
+| `query(dsl, options?)` | `options`                | `ExecutionOptions` | Optional; defaults below.                                       |
+| `query(dsl, options?)` | `options.maxRows`        | `number`           | Optional; `200`. Same bounds as `analyze()`.                    |
+| `query(dsl, options?)` | `options.maxResultBytes` | `number`           | Optional; `1048576`. Same bounds as `analyze()`.                |
 
-## Execution results
+Both methods require a loaded source. `translate()` uses the model, schema, and available profile, then returns a string. `query()` executes the supplied statement without model-based translation, summarization, or automatic correction.
 
-`ExecutionResult` contains result column `schema` and `data`. Truncated results include `truncated: true` and `truncatedBy` (`maxRows` or `maxResultBytes`). A complete result can include `rowCount`.
+The default Node.js setup produces SQL. Other engines use their own SQL dialect, Python, or JavaScript. SQL engines validate read-only queries; execution restrictions for Python and JavaScript depend on their environments.
 
-SQL engines validate read-only queries. Python and JavaScript execute analysis code using their respective execution environments; see their engine pages for the boundaries and expected bindings.
+`query()` returns the same `schema`, `data`, and optional truncation metadata described above, without the analysis `query`, `text`, or `sql` fields.
 
-## Inspect before executing
+## Errors and cleanup
 
-Separating translation from execution lets your application display or review the generated query before running it. Call `schema()` for exact table and field names when writing a query yourself.
+Calls reject on errors such as a missing source, a model request failure, an unparseable suggestion response, or failed execution after the available retries. Do not interpret an error as an empty answer.
 
-See [translate](/documentation/reference/api/#translate) and [query parameters](/documentation/reference/api/#query) for signatures and execution limits.
+To handle failures in the first example, add a `catch` before its `finally` block:
+
+```typescript
+} catch (error) {
+  console.error('Analysis failed:', error);
+} finally {
+  await ava.dispose();
+}
+```
+
+Always await cleanup. Calling `source()` again replaces the dataset and clears its cached schema and profile; run `profile()` again if you want statistics for the new source.

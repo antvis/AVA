@@ -30,6 +30,12 @@ export const docs = [
     description: 'Turn a natural language question into a bounded data result and summary.',
   },
   {
+    slug: 'analysis/strategies',
+    title: 'Analysis strategies',
+    group: 'Analysis & visualization',
+    description: 'Choose direct queries, iterative reasoning, or selected profile context.',
+  },
+  {
     slug: 'visualization/overview',
     title: 'Generate visualizations',
     group: 'Analysis & visualization',

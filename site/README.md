@@ -21,7 +21,7 @@ content/docs/
 ├── configuration.mdx
 ├── browser.mdx
 ├── data/              # Sources and parameters; schema and profiling
-├── analysis/          # One analysis guide: suggestions, strategies, queries
+├── analysis/          # Analysis workflow and advanced strategies
 ├── visualization/     # One visualization guide: recommend and render
 ├── engines/           # Engine selection, runtime behavior, source extensions
 └── reference/         # API, events, CLI, architecture
@@ -41,4 +41,4 @@ To add a chapter:
 
 Use `<Callout>...</Callout>` for contextual notes. Link to other chapters with their full `/documentation/.../` path. Keep examples aligned with `src/`, and keep secrets out of snippets.
 
-The reading order is introduction → quickstart → data → analysis → visualization → advanced usage → execution engines → API Reference. Keep each workflow self-contained: source parameter tables live with the source guide; analysis includes suggestions, strategies, and direct queries; visualization includes recommendation and rendering. The API reference lists constructor fields directly. Use in-page anchors for related sections rather than splitting each option into its own chapter.
+The reading order is introduction → quickstart → data → analysis → visualization → advanced usage → execution engines → API Reference. Keep each workflow self-contained: source parameter tables live with the source guide; analysis includes suggestions and direct queries, with advanced strategies in their own chapter; visualization includes recommendation and rendering. The API reference lists constructor fields directly. Use in-page anchors for related sections rather than splitting each option into its own chapter.

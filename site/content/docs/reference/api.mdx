@@ -101,7 +101,7 @@ Requires a loaded source and an engine with `profile()`. Returns and caches a `P
 | `config.strategy.maxRetries` | `number`                           | No; `direct` only         | `2` with explicit `type: 'direct'`; currently `10` when the strategy is omitted. Correction attempts after the first execution. |
 | `config.strategy.maxSteps`   | `number`                           | No; `loop` only           | `12`; maximum reasoning steps.                                                                                                  |
 
-`subset` has no additional options. These retry controls differ from `llm.maxRetries`. See [strategy behavior and requirements](/documentation/analysis/overview/#analysis-strategies).
+`subset` has no additional options. These retry controls differ from `llm.maxRetries`. See [strategy behavior and requirements](/documentation/analysis/strategies/).
 
 Requires a loaded source. Returns an [ExecutionResult](#executionresult) plus:
 
