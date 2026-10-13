@@ -76,3 +76,21 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 Sessions expire after 30 idle minutes. `dispose` releases them immediately. Most commands return JSON; `source` prints a guide in terminals and JSON when piped. Errors go to standard error with exit code 1.
 
 Run `ava --help` or `ava <command> --help` for command-specific options.
+
+## Use with an agent
+
+Install the CLI and add the AVA skill to your agent:
+
+```bash
+npm install -g @antv/ava@alpha
+npx skills add antvis/AVA
+```
+
+In a new agent session, ask:
+
+```text
+Use the AVA skill to analyze ./sales.csv. Compare January and February 2025
+sales, identify the products contributing most to the change, and save a chart.
+```
+
+The skill uses your agent's model to plan the analysis and write queries. The CLI loads the data, executes those queries, and renders chart specifications. This workflow does not need a separate AVA model key for `schema`, `profile`, `query`, or `viz`. Calling model-backed CLI commands such as `analyze`, `suggest`, or `recommend` still requires the model settings described above.

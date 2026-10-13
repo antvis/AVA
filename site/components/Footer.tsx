@@ -16,19 +16,18 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
     title: 'Product',
     links: [
       { label: 'Features', href: '/#analytics' },
-      { label: 'Examples', href: '/#playground' },
+      { label: 'Integrations', href: '/#integrate' },
       { label: 'Benchmarks', href: '/#benchmarks' },
-      { label: 'Integration', href: '/#integrate' },
     ],
   },
   {
     title: 'Developers',
     links: [
-      { label: 'Documentation', href: '/documentation' },
+      { label: 'Documentation', href: '/documentation/' },
       { label: 'AI Playground', href: '/ai-playground' },
       { label: 'SDK', href: '/documentation/quickstart/' },
       { label: 'CLI', href: '/documentation/reference/cli/' },
-      { label: 'Agent Skill', href: `${GITHUB}/blob/ai/skills/ava/SKILL.md`, external: true },
+      { label: 'Agent Skill', href: '/documentation/reference/cli/#use-with-an-agent' },
     ],
   },
   {

@@ -27,8 +27,8 @@ const TABS: {
     description:
       'Equip compatible agents with a reusable workflow for exploring, analyzing, and visualizing data — using the agent’s own reasoning, with no separate model key.',
     language: 'bash',
-    docHref: 'https://github.com/antvis/AVA/blob/ai/skills/ava/SKILL.md',
-    docLabel: 'View the AVA Skill',
+    docHref: '/documentation/reference/cli/#use-with-an-agent',
+    docLabel: 'Agent setup',
   },
   {
     id: 'cli',
@@ -236,7 +236,7 @@ const Integrate: React.FC<{ id?: string }> = ({ id = 'integrate' }) => {
                     {active.description}
                   </p>
                   <div className="mt-5">
-                    <SectionLink href={active.docHref} external={active.docHref.startsWith('https://')}>
+                    <SectionLink href={active.docHref}>
                       {active.docLabel}
                     </SectionLink>
                   </div>

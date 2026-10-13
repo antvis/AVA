@@ -14,8 +14,8 @@ export default function DocumentationLayout({ children }: { children: React.Reac
             <img
               src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
               alt=""
-              width="55"
-              height="32"
+              width="80"
+              height="48"
             />
             <strong>AVA</strong>
             <span>Documentation</span>

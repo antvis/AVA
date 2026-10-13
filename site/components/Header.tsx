@@ -46,11 +46,11 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
           <span className="text-lg text-gray-800 truncate">AVA</span>
         </Link>
 
-        {/* in-page navigation */}
+        {/* homepage section navigation */}
         <nav className="col-start-2 hidden items-center gap-1 justify-self-center md:flex">
           {[
-            { href: '/#playground', label: 'Examples', pathnamePrefix: null },
             { href: '/#analytics', label: 'Features', pathnamePrefix: null },
+            { href: '/#integrate', label: 'Integrations', pathnamePrefix: null },
             { href: '/#benchmarks', label: 'Benchmarks', pathnamePrefix: null },
           ].map((item) => (
             <Link
@@ -66,7 +66,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
         {/* 右侧操作区 */}
         <div className="col-start-3 flex items-center gap-4 justify-self-end">
           <Link
-            href="/documentation"
+            href="/documentation/"
             className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
               pathname === '/documentation' || pathname.startsWith('/documentation/')
                 ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'

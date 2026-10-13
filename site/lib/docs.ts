@@ -86,7 +86,7 @@ export const docs = [
   {
     slug: 'engines/custom',
     title: 'Custom engines',
-    description: 'Implement and register a new engine inside the AVA source.',
+    description: 'Implement an engine in your application and register it with the SDK.',
     group: 'Execution engines',
   },
   {
