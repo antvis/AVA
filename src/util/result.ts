@@ -11,7 +11,8 @@ const MAX_FIELD_BYTES = 1024 * 1024; // 1M
  * Get the bounded maximum row count.
  */
 export function maxRows(options: ExecutionOptions = {}): number {
-  return Math.min(Math.max(options.maxRows ?? DEFAULT_MAX_ROWS, 1), MAX_ROWS);
+  const value = Math.floor(options.maxRows ?? DEFAULT_MAX_ROWS);
+  return Number.isSafeInteger(value) ? Math.min(Math.max(value, 1), MAX_ROWS) : DEFAULT_MAX_ROWS;
 }
 
 /**
