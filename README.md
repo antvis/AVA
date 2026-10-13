@@ -27,6 +27,14 @@
   <img width="1236" alt="Watch the AVA demo video" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*X7EmQKOrfmsAAAAAgGAAAAgAemJ7AQ/original" />
 </a>
 
+<p align="center">
+  <a href="https://sive.antv.antgroup.com/">
+    <img src="https://img.shields.io/badge/Try_Sive-2F54EB?style=for-the-badge" height="32" alt="Try Sive" />
+  </a>
+  <br />
+  <sub>Built with AVA</sub>
+</p>
+
 With AVA, you can:
 
 - 🤖 **Agent and SDK Integration**: Bring data analysis to your agents and applications through the AVA Skill, CLI, or TypeScript SDK.
@@ -39,12 +47,12 @@ With AVA, you can:
 
 **🔌 Data Sources** — Connect files and databases, or load inline data.
 
-<table>
+<table width="100%">
   <tr>
-    <td align="center" width="160"><img src="site/public/logos/csv.svg" width="32" height="32" alt="CSV" /><br />CSV</td>
-    <td align="center" width="160"><img src="site/public/logos/json.svg" width="32" height="32" alt="JSON" /><br />JSON</td>
-    <td align="center" width="160"><img src="site/public/logos/parquet.svg" width="32" height="32" alt="Parquet" /><br />Parquet</td>
-    <td align="center" width="160"><img src="site/public/logos/excel.svg" width="32" height="32" alt="Excel" /><br />Excel</td>
+    <td align="center" width="25%"><img src="site/public/logos/csv.svg" width="32" height="32" alt="CSV" /><br />CSV</td>
+    <td align="center" width="25%"><img src="site/public/logos/json.svg" width="32" height="32" alt="JSON" /><br />JSON</td>
+    <td align="center" width="25%"><img src="site/public/logos/parquet.svg" width="32" height="32" alt="Parquet" /><br />Parquet</td>
+    <td align="center" width="25%"><img src="site/public/logos/excel.svg" width="32" height="32" alt="Excel" /><br />Excel</td>
   </tr>
   <tr>
     <td align="center"><img src="site/public/logos/sqlite.svg" width="32" height="32" alt="SQLite" /><br />SQLite</td>
@@ -62,183 +70,57 @@ With AVA, you can:
 
 Support varies by engine. See the [data source guide](skills/ava/references/sources.md) for connection details.
 
+## 🚀 Quick Start
 
-## 📖 Quick Start
+Start with the TypeScript library below, or use AVA [with an agent](#use-with-an-agent) or [from the CLI](#use-from-the-cli).
+Full configuration and method details are in the [API Reference](API_REFERENCE.md).
+Replace placeholders such as `<your-data.csv>` with your own data, fields, and model settings.
 
-### SDK
+### Installation
 
-- Install `AVA` by npm
+Requires Node.js 22.13+ for the examples below:
 
 ```bash
-npm install @antv/ava
-
-pnpm install @antv/ava
-
-yarn add @antv/ava
+npm install @antv/ava@alpha
 ```
 
-- Then run the code below
+### Usage
 
-**Node.js** (DuckDB by default; Python, ClickHouse, and Supabase engines also available):
+Load your data, ask a question, and generate a chart:
 
 ```typescript
+import { writeFile } from 'node:fs/promises';
 import { AVA } from '@antv/ava';
 
-// Initialize with LLM config
 const ava = new AVA({
   llm: {
-    model: 'ling-1t',
-    apiKey: 'YOUR_API_KEY',
-    baseURL: 'LLM_BASE_URL',
+    model: '<your-model>',
+    apiKey: '<your-api-key>',
+    baseURL: '<your-model-api-base-url>', // Omit for OpenAI.
   },
-  // engine: { type: 'duckdb' } is the default; no need to specify
 });
 
-// Load data from various sources — all through ava.source({ type, options })
+try {
+  await ava.source({ type: 'csv-file', options: { path: '<your-data.csv>' } });
 
-// CSV file in Node.js (local path or http(s) URL)
-await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
+  // Ask a question about your data.
+  const result = await ava.analyze('Compare <your-metric> by <your-dimension>');
+  console.log(result.text);
 
-// or load a local/remote file directly into DuckDB (csv-file/json-file/parquet/excel, e.g. OSS signed URL)
-await ava.source({ type: 'parquet', options: { path: 'https://example.com/data.parquet' } });
-await ava.source({ type: 'csv-file', options: { path: 'data/companies.csv' } });
-// an Excel workbook registers one view per sheet
-await ava.source({ type: 'excel', options: { path: 'data/report.xlsx' } });
-
-// or load inline CSV content
-await ava.source({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
-
-// or load from a JSON object array
-await ava.source({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }, { city: '上海', gdp: 43214 }] } });
-
-// or extract from text
-await ava.source({ type: 'text', options: { text: '杭州 100，上海 200，北京 300' } });
-
-// or attach a database (every table is exposed to the LLM)
-await ava.source({ type: 'mysql', options: { host: 'localhost', database: 'mydb', user: 'root', password: 'secret' } });
-
-// Get suggested analysis queries
-const queries = await ava.suggest(5); // Get top 5 suggested queries (default: 3)
-console.log(queries);
-// [
-//   {
-//     query: 'What is the average revenue by region?',
-//     score: 0.95,
-//     reason: 'Understanding revenue distribution across regions helps identify high-performing areas'
-//   },
-//   ...
-// ]
-
-// Ask questions in natural language
-const result = await ava.analyze('What is the average revenue by region?');
-console.log(result.text);  // Natural language summary
-// result.data → bounded analysis result (truncatedBy identifies the limiting option)
-// result.sql  → the DuckDB SQL executed for the analysis
-
-// Analyze large results safely: cap the returned rows
-const rows = await ava.analyze('List companies ordered by revenue', {
-  maxRows: 200,
-  maxResultBytes: 1024 * 1024,
-});
-console.log(rows.data, rows.truncated);
-
-// Generate chart visualization from analysis result
-const viz = await ava.visualize(result);
-console.log(viz.chartType); // e.g. 'column'
-console.log(viz.syntax);   // GPT-Vis chart syntax
-// viz.html → standalone HTML that renders the chart
-
-
-// Or use a suggested query
-const suggestedResult = await ava.analyze(queries[0].query);
-console.log(suggestedResult);
-
-// Clean up
-ava.dispose();
+  // Visualize the analysis result.
+  const chart = await ava.visualize(result);
+  if (chart) await writeFile('chart.html', chart.html);
+} finally {
+  await ava.dispose();
+}
 ```
 
-**Python engine (Node.js)**:
+Open `chart.html` in your browser if a chart was generated.
+See [API Reference](API_REFERENCE.md#sdk-reference) for other data sources and execution environments.
 
-Use Python/pandas to analyze inline CSV/JSON or CSV, JSON, Parquet, and Excel files. Requires `python3` and pandas in your runtime environment. Select the engine in the Node.js example above:
+### Use with an Agent
 
-```typescript
-const ava = new AVA({
-  llm: { model: 'ling-1t', apiKey: 'YOUR_API_KEY', baseURL: 'LLM_BASE_URL' },
-  engine: { type: 'python' },
-});
-```
-
-**Browser** (JavaScript interpreter engine, inline data only):
-
-```typescript
-import { AVA } from '@antv/ava/browser';
-
-const ava = new AVA({
-  llm: {
-    model: 'ling-1t',
-    apiKey: 'YOUR_API_KEY',
-    baseURL: 'LLM_BASE_URL',
-  },
-  engine: { type: 'javascript' },
-});
-
-// Browser supports inline data sources only
-await ava.source({ type: 'json', options: { data: [{ city: '杭州', gdp: 18753 }] } });
-await ava.source({ type: 'csv', options: { csv: 'city,gdp\n杭州,18753\n上海,43214' } });
-await ava.source({ type: 'text', options: { text: '杭州 100，上海 200' } });
-
-const result = await ava.analyze('What is the total GDP?');
-const viz = await ava.visualize(result);
-
-ava.dispose();
-```
-
-### CLI
-
-Requires Node.js 22.13+ on macOS or Linux. Save the [sample dataset](__tests__/datasets/sales.csv)
-as `sales.csv`, then run:
-
-```bash
-npm install -g @antv/ava
-
-# Example: Claude via Anthropic's OpenAI-compatible endpoint
-export OPENAI_API_KEY='your-anthropic-api-key'
-export OPENAI_MODEL='claude-sonnet-4-6'
-export OPENAI_BASE_URL='https://api.anthropic.com/v1/'
-
-ava source sales.csv
-# Or use Python (requires python3 and pandas):
-# ava source sales.csv --engine python
-```
-
-Copy the returned dataset ID and continue in the same terminal:
-
-```bash
-DATASET_ID='ds_sales_your-id-here'
-
-ava suggest "$DATASET_ID" --count 5
-ava analyze "$DATASET_ID" "What is the average sales value by region?" | tee analysis.json
-
-# Chart the data rows from the analysis result
-node -p 'JSON.stringify(require("./analysis.json").data)' > rows.json
-ava visualize --query "Compare average sales by region" --data @rows.json --output chart.html
-
-ava dispose "$DATASET_ID"
-```
-
-Open `chart.html` in your browser. See [CLI documentation](#cli-1) for more commands and settings.
-
-### Skill
-
-Use the [AVA Skill](skills/ava/SKILL.md) to analyze data with your AI agent. The agent plans the analysis and writes queries; AVA loads data, runs calculations, and renders charts. This workflow uses the agent's own reasoning and does not require a separate model API key for AVA.
-
-Add this marketplace to Claude Code:
-
-```text
-/plugin marketplace add antvis/AVA
-```
-
-Or you can directly install the skills for your multiple agents:
+Give your AI agent access to AVA:
 
 ```bash
 npx skills add antvis/AVA
@@ -247,196 +129,41 @@ npx skills add antvis/AVA
 Start a new agent session and ask:
 
 ```text
-Use the AVA skill to analyze /absolute/path/sales.csv, compare sales by region, and generate a chart.
+Use the AVA skill to analyze <your-data.csv>, compare <your-metric> by <your-dimension>, and generate a chart.
 ```
 
-## 📘 Documentation
+The agent uses its own reasoning; AVA does not need a separate model API key for this workflow.
+See [agent setup](API_REFERENCE.md#-use-with-ai-agents) for more details.
 
-### SDK
+### Use from the CLI
 
-Create an AVA instance:
+Requires Node.js 22.13+ on macOS or Linux. Install AVA and configure a model for natural-language analysis:
 
-- `new AVA(config)`: initialize runtime and LLM configuration.
-  - `llm`: required model config, e.g. `{ model, apiKey, baseURL }`
-  - `engine?`: engine selection and options — `{ type: 'duckdb', memoryLimit?, threads?, maxTempDirectorySize?, queryTimeoutMs? }` (default), `{ type: 'python', execute?, queryTimeoutMs? }`, `{ type: 'javascript' }`, `{ type: 'supabase' }`, or `{ type: 'clickhouse' }`
+```bash
+npm install -g @antv/ava@alpha
 
-Core APIs in AVA:
+export OPENAI_API_KEY='<your-api-key>'
+export OPENAI_MODEL='<your-model>'
+# Set this when using another OpenAI-compatible provider:
+export OPENAI_BASE_URL='<your-model-api-base-url>'
 
-- `source(config)`: load any data source — `{ type, options }`. Returns the dataset `Schema` (`{ tables: TableSchema[] }`; a source may expose multiple tables, e.g. a MySQL database, each registered as its own view).
-  - inline types: `csv` (`{ csv }`, raw CSV content string), `json` (`{ data }`), `text` (`{ text }`)
-  - file types (`{ path, headers? }`, a local path or http(s) URL such as OSS signed links): `csv-file`, `json-file`, `parquet`, `excel` (one view per sheet)
-  - database types: `mysql` (`{ host, port?, database, user?, password?, ssh? }`), `postgresql` (`{ host, port?, database, user?, password?, schema?, ssh? }`) — all tables are auto-discovered and exposed
-  - direct-query type: `clickhouse` (`{ host? | url?, port?, database, username? | user?, password? }`) — use `engine: { type: 'clickhouse' }` to query ClickHouse remotely in read-only mode. Requires ClickHouse 23.10+; connect with an account granted only the required SELECT permissions.
-  - SQLite: `sqlite` (`{ path }`, local file) — all tables are exposed read-only, with native SQLite column types, nullability, primary keys, ordinary/unique indexes, and foreign keys in the schema. Generated columns are queryable. Defaults, CHECK constraints, triggers, and partial/expression indexes are not represented. Uses the [official SQLite extension](https://duckdb.org/docs/current/core_extensions/sqlite), installed on first use.
-- `profile(options?)`: compute statistics for the loaded dataset without calling the LLM.
-- `profile(options?)`: explicitly compute and retain statistics for model context without calling the LLM.
-- `suggest(count?)`: generate recommended analysis questions.
-- `analyze(query, config?)`: run data analysis using various strategies.
-- `visualize(analysisResult)`: generate chart output from analysis result, returns `{ chartType, syntax, html } | null` (`null` when no visualization intent or no usable data; generation failures throw).
-- `dispose()`: release engine resources (DuckDB instance, temp files).
+ava source '<your-data.csv>'
 
-#### `profile(options?)`
-
-`load()` only loads and returns the structural `Schema`; it does not compute a profile. Call `await ava.profile(options)` explicitly to compute, return, and retain statistics. The profile preserves the schema and adds `generatedAt`, table-level `metrics`, and a `logicalType` plus `metrics` for each field.
-
-`analyze()` (direct and loop) and `suggest()` receive `context: { schema, profile }`: they use `stringifyProfile(profile)` when a profile is available, otherwise `stringifySchema(schema)`. Neither computes statistics implicitly. Reloading or disposing clears the stored profile; call `profile()` again to refresh statistics after external data changes.
-
-The default metrics are `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, and `mean`. Passing `metrics` replaces the defaults; an empty list returns structure without scanning data. Engines without profiling support can still analyze and suggest using schema, but explicit `profile()` calls report that profiling is unsupported.
-
-```typescript
-await ava.profile({ metrics: ['row_count', 'min', 'max', 'mean'] });
-const suggestions = await ava.suggest();
+# Replace <your-dataset-id> with the ID returned by ava source.
+ava analyze '<your-dataset-id>' 'Compare <your-metric> by <your-dimension>'
+ava dispose '<your-dataset-id>'
 ```
 
-| Metric | Applies to |
-| --- | --- |
-| `row_count` | Tables |
-| `null_count`, `duplicate_count` | All fields |
-| `distinct_count` | Numeric, string, boolean, and date fields |
-| `top_values` | String and boolean fields |
-| `min`, `max` | Numeric and date fields |
-| `min_length`, `max_length` | String fields |
-| `mean`, `sum`, `stddev`, `median` | Numeric fields |
+The result includes the computed data and a natural-language summary.
+See the [CLI reference](API_REFERENCE.md#cli-reference) for direct queries, charts, and other commands.
 
-`top_values` accepts `limit` (default `3`) and `maxDistinctRatio` (default `0.5`). It is omitted when the field's non-null distinct count is greater than the configured share of all rows.
+## 📚 Resources
 
-#### `analyze(query, config?)`
-
-Input:
-
-| Parameter | Type | Default | Description |
-| --- | --- | --- | --- |
-| `query` | `string` | — | Natural-language analysis question. |
-| `config.strategy?` | `{ type: 'direct'; maxRetries?: number } \| { type: 'loop'; maxSteps?: number } \| { type: 'subset' }` | `{ type: 'direct' }` | Analysis strategy; direct `maxRetries` defaults to 2 correction retries after execution errors (0 disables retries); loop `maxSteps` defaults to 12; subset selects question-relevant profile statistics while preserving the complete schema. |
-| `config.includeSummary?` | `boolean` | `true` | Whether to include the natural-language summary in the output. |
-| `config.maxRows?` | `number` | `200` | Maximum returned rows; capped at 10,000. |
-| `config.maxResultBytes?` | `number` | `1 MiB` | Maximum serialized UTF-8 result size; individual fields over 1 MiB are rejected. |
-
-Output:
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `query` | `string` | Original question. |
-| `text` | `string` | Natural-language summary; empty when `includeSummary` is false. |
-| `markdown?` | `string` | Markdown content. |
-| `data` | `Record<string, unknown>[]` | Result rows. |
-| `schema` | `QueryColumn[]` | Result columns. |
-| `truncated?` | `true` | Whether the result was truncated. |
-| `truncatedBy?` | `'maxRows' \| 'maxResultBytes'` | Limit that truncated the result. |
-| `rowCount?` | `number` | Total rows, when known. |
-| `sql?` | `string` | Executed SQL, when available. |
-
-Minimal usage:
-
-```typescript
-const ava = new AVA({ llm: { model, apiKey, baseURL } });
-
-await ava.source({ type: 'json', options: { data: [{ city: 'Hangzhou', gdp: 18753 }] } });
-
-const analysis = await ava.analyze('Show GDP by city');
-console.log(analysis.text);
-
-const viz = await ava.visualize(analysis);
-if (viz) {
-  console.log(viz.chartType);
-  console.log(viz.html);
-}
-
-ava.dispose();
-```
-
-### CLI
-
-| Command | Purpose | Requires AI |
-| --- | --- | --- |
-| `source` | Load a file, URL or source config and return a dataset ID | Only for text sources |
-| `schema` | View tables, fields and the session's query language | No |
-| `profile` | Compute statistics | No |
-| `query` | Execute SQL, Python or JavaScript for the selected engine | No |
-| `suggest` | Suggest analysis questions | Yes |
-| `translate` | Generate a query without executing it | Yes |
-| `analyze` | Analyze data using natural language | Yes |
-| `recommend` | Generate a chart specification | Yes |
-| `visualize` | Generate a chart and HTML | Yes |
-| `viz` | Render a chart specification to HTML | No |
-| `dispose` | Release a dataset | No |
-
-Run `ava <command> --help` for usage. `--data`, `--spec`, and `--dsl` accept inline
-content, `@file`, or `-` for stdin. Output is JSON; `source` shows a guide when run in a terminal.
-Sessions expire after 30 idle minutes or when disposed.
-
-#### Model configuration
-
-Set environment variables before `source`; `.env` is not loaded automatically.
-
-| Variable | Purpose |
-| --- | --- |
-| `OPENAI_API_KEY` | API key for the selected provider |
-| `OPENAI_MODEL` | Model name; defaults to `gpt-4o-mini` |
-| `OPENAI_BASE_URL` | OpenAI-compatible endpoint; optional for OpenAI |
-
-The Quick Start uses [Anthropic's compatibility endpoint](https://platform.claude.com/docs/en/cli-sdks-libraries/libraries/openai-sdk)
-with a Claude model and Anthropic API key. The variable names remain `OPENAI_*`.
-
-Reload the dataset after changing model settings. `visualize` and `recommend`
-read the current environment on each run.
-
-## 🏗️ Architecture
-
-AVA uses a modular pipeline architecture with a pluggable engine registry. Data is loaded from multiple sources via `load`, then analyzed by the selected engine, summarized using LLM into natural language responses, and optionally visualized with chart recommendations.
-
-```
-User Query
-    ↓
-AVA Instance
-    ↓
-┌─────────────────┐
-│  Data Module    │ → Load from multiple sources (load):
-│                 │   • Inline CSV (csv)
-│                 │   • JSON object array (json)
-│                 │   • Text (text + LLM)
-│                 │   • Local/remote file (csv-file/json-file/parquet/excel) [Node.js]
-│                 │   • Database (mysql/postgresql/clickhouse) [Node.js]
-└─────────────────┘
-    ↓
-┌──────────────────┐
-│ Metadata Extract │ → Type inference and structural schema
-└──────────────────┘
-    ↓
-┌─────────────────────────────────┐
-│  Engine Registry                │
-│  ├─ DuckDB Engine (Node.js)     │ → SQL via in-memory DuckDB
-│  ├─ Python Engine (Node.js)     │ → Python/pandas via local or custom execution
-│  ├─ Interpreter Engine (Browser)│ → JavaScript sandbox execution
-│  ├─ Supabase Engine (Node.js)   │ → Remote SQL via Supabase API
-│  └─ ClickHouse Engine (Node.js) │ → Remote SQL via ClickHouse API
-└─────────────────────────────────┘
-    ↓
-┌──────────────────┐
-│ Analysis Module  │ → Generate & Execute Query
-└──────────────────┘
-    ↓
-┌──────────────┐
-│ LLM Summary  │ → Natural Language Response
-└──────────────┘
-    ↓
-┌─────────────────────┐
-│ Visualization       │ → Optional chart generation:
-│ Module (Optional)   │   • Detect visualization intent
-│                     │   • Recommend chart type
-│                     │   • Generate chart syntax & HTML
-└─────────────────────┘
-    ↓
-User Response
-(Text + Data + Chart)
-```
-
-### Engine Registry
-
-Engines are registered by the entry point, so the core `AVA` class never imports any engine implementation directly. This keeps Node-only engines (DuckDB, Python, Supabase, ClickHouse) out of browser bundles.
-
-- **Node.js** (`@antv/ava`): registers `duckdb`, `clickhouse`, `supabase`, `javascript`, and `python` engines
-- **Browser** (`@antv/ava/browser`): registers only the `javascript` engine
+- [Documentation](https://ava.antv.vision/documentation/) for guides to getting started and building with AVA.
+- [API Reference](API_REFERENCE.md) for a comprehensive technical reference.
+- [Playground](https://ava.antv.vision/#playground) for exploring AVA through interactive examples.
+- [Issues](https://github.com/antvis/AVA/issues) for bug reports and feature requests.
+- [Benchmarks](evals/ACCURACY.md) for evaluation results and methodology.
 
 ## 🌐 Environment Support
 
