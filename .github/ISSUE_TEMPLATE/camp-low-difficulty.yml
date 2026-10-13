@@ -1,0 +1,111 @@
+name: "蚂蚁开源轻训营：低难度任务"
+description: "发布适合学生认领的单点改进、文档优化或小特性任务"
+title: "【2026 开源轻训营专属 Issue】"
+labels:
+  - "蚂蚁开源轻训营专属"
+  - "轻训营-低难度"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请将任务控制在适合学生完成的范围内，并给出明确、可复现的验收标准。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+      description: 说明现状、痛点以及解决该问题的价值；尽量提供数据、日志、截图或对比结果。
+      placeholder: |
+        当前……
+        这会导致……
+        完成该任务后……
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvements
+    attributes:
+      label: 期望内容或功能改进
+      description: 将目标拆分为 3 至 5 项可执行子任务，并说明建议的技术路径。
+      placeholder: |
+        1. ……
+        2. ……
+        3. ……
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      description: 给出可量化、可复现的完成判据，包括测试方式和预期结果。
+      placeholder: |
+        1. ……功能可在……环境复现；
+        2. 补充……测试并通过项目现有检查；
+        3. 其他同学可按照文档在……分钟内完成验证。
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: 完成方式与交付物
+      description: 代码类任务应向 oss-camp2026 分支提交 PR；也可按任务需要要求报告、Discussion、截图或演示视频。
+      placeholder: |
+        - 目标分支：oss-camp2026
+        - 交付物：PR、README、测试结果……
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: 参考资料
+      description: 提供相关代码、文档、原始项目、参考实现或同类 Issue 链接，帮助认领者快速开始。
+      placeholder: "- https://github.com/..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: parallel
+    attributes:
+      label: 是否支持多人并行认领
+      description: 模板、示例和生态共建类任务应优先允许多人选择不同方向并行贡献。
+      options:
+        - "否，本任务仅限一人或一个团队认领"
+        - "是，可按不同方向并行认领并增量合入"
+    validations:
+      required: true
+
+  - type: textarea
+    id: parallel_scope
+    attributes:
+      label: 并行认领范围
+      description: 若支持多人认领，请列出可选方向、去重规则和登记方式。
+      placeholder: "例如：每位同学选择一个不重复的工具集成方向，并在评论区登记。"
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: publish_check
+    attributes:
+      label: 发布前确认
+      options:
+        - label: 我已确认该任务范围适合学生，且标题补充了一句话任务描述。
+          required: true
+        - label: 我已确认验收标准可量化、可复现。
+          required: true
+
+  - type: textarea
+    id: claim
+    attributes:
+      label: 认领方式
+      description: 以下为活动统一说明，请勿修改。
+      value: |
+        本 Issue 为【2026 蚂蚁开源轻训营 · 高校行】专属 Issue，仅供已报名参与活动的同学认领。
+
+        【认领方式】在云燕平台注册并点击认领按钮即认领成功。
+
+        【活动报名】注册云燕平台并加入“蚂蚁开源轻训营”实验室，信息收集将仅用于活动登记和奖励发放。
+    validations:
+      required: true

@@ -1,0 +1,132 @@
+name: "蚂蚁开源轻训营：中高难度任务"
+description: "发布端到端功能、性能优化、模型移植或技术方案任务"
+title: "【2026 开源轻训营专属 Issue】"
+labels:
+  - "蚂蚁开源轻训营专属"
+  - "轻训营-中高难度"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请明确技术边界、基线与验收环境，使任务具有挑战性但仍适合学生在活动周期内完成。
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+      description: 说明现状、痛点、任务价值和必要的技术背景；性能任务必须给出当前基线与对标对象。
+      placeholder: |
+        当前……
+        在……环境下，当前基线为……，对标结果为……
+        该问题会导致……
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvements
+    attributes:
+      label: 期望内容或功能改进
+      description: 将目标拆分为 3 至 5 项可执行子任务，写明技术路径、范围边界以及不要求完成的内容。
+      placeholder: |
+        1. ……
+        2. ……
+        3. ……
+
+        范围边界：……
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      description: 给出可量化、可复现的判据，明确测试环境、输入、预期输出和性能指标。
+      placeholder: |
+        1. 在……环境下……指标达到……；
+        2. 相同输入下，输出与……保持一致；
+        3. 在 Linux 和 Windows 上均可构建运行；
+        4. 核心逻辑测试通过项目现有检查。
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: 完成方式与交付物
+      description: 代码类任务应向 oss-camp2026 分支提交 PR，并按任务需要提供报告、Discussion、演示或视频。
+      placeholder: |
+        - 目标分支：oss-camp2026
+        - 代码与测试：……
+        - 文档或报告：……
+        - 演示视频：不超过 2 分钟（如适用）
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: 参考资料与环境
+      description: 提供相关代码、文档、原始项目、参考实现，以及推荐的开发和验收环境。
+      placeholder: |
+        - 原项目：https://github.com/...
+        - 参考实现：https://github.com/...
+        - 验收环境：……
+    validations:
+      required: true
+
+  - type: dropdown
+    id: parallel
+    attributes:
+      label: 是否支持多人并行认领
+      description: 开放选题或生态任务可允许多人选择不同方向并行贡献。
+      options:
+        - "否，本任务仅限一人或一个团队认领"
+        - "是，可按不同方向并行认领并增量合入"
+    validations:
+      required: true
+
+  - type: textarea
+    id: parallel_scope
+    attributes:
+      label: 并行认领范围
+      description: 若支持多人认领，请列出可选方向、去重规则和登记方式。
+      placeholder: "例如：可分别实现研究助手、代码评审、RAG 问答等方向，认领前须在评论区登记。"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: ai_report
+    attributes:
+      label: 是否要求 AI 使用策略报告
+      description: 报告可说明使用的工具、验证输出的方法，以及被拒绝的 AI 建议与原因。
+      options:
+        - "要求"
+        - "不要求"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: publish_check
+    attributes:
+      label: 发布前确认
+      options:
+        - label: 我已确认任务边界清晰，且适合学生在活动周期内完成。
+          required: true
+        - label: 我已提供基线或参考实现，并确认验收标准可量化、可复现。
+          required: true
+        - label: 我已在标题前缀后补充一句话任务描述。
+          required: true
+
+  - type: textarea
+    id: claim
+    attributes:
+      label: 认领方式
+      description: 以下为活动统一说明，请勿修改。
+      value: |
+        本 Issue 为【2026 蚂蚁开源轻训营 · 高校行】专属 Issue，仅供已报名参与活动的同学认领。
+
+        【认领方式】在云燕平台注册并点击认领按钮即认领成功。
+
+        【活动报名】注册云燕平台并加入“蚂蚁开源轻训营”实验室，信息收集将仅用于活动登记和奖励发放。
+    validations:
+      required: true

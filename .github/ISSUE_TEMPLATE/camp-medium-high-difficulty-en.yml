@@ -1,0 +1,132 @@
+name: "Ant Open Source Camp: Medium/High-Difficulty Task (English)"
+description: "Create an end-to-end feature, performance optimization, model port, or technical design task"
+title: "[2026 Open Source Camp Exclusive Issue] "
+labels:
+  - "蚂蚁开源轻训营专属"
+  - "轻训营-中高难度"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Define the technical boundaries, baseline, and validation environment so the task is challenging but achievable by students during the event.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: Describe the current situation, pain points, value, and required technical context. Performance tasks must include a baseline and comparison target.
+      placeholder: |
+        Currently, ...
+        In the ... environment, the current baseline is ..., compared with ...
+        This causes ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvements
+    attributes:
+      label: Expected Improvements or Features
+      description: Break the goal into three to five actionable subtasks. State the technical approach, scope boundaries, and work that is explicitly out of scope.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+
+        Scope boundaries: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Define measurable and reproducible criteria, including the test environment, inputs, expected outputs, and performance targets.
+      placeholder: |
+        1. In the ... environment, the ... metric reaches ...
+        2. Given the same input, the output matches ...
+        3. The project builds and runs on both Linux and Windows.
+        4. Tests for the core logic pass the project's existing checks.
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: Submission Method and Deliverables
+      description: Code contributions should open a PR against the oss-camp2026 branch. Reports, Discussions, demos, or videos may also be required where appropriate.
+      placeholder: |
+        - Target branch: oss-camp2026
+        - Code and tests: ...
+        - Documentation or report: ...
+        - Demo video: no longer than two minutes, if applicable
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References and Environment
+      description: Link relevant code, documentation, upstream projects, and reference implementations, and specify the recommended development and validation environment.
+      placeholder: |
+        - Upstream project: https://github.com/...
+        - Reference implementation: https://github.com/...
+        - Validation environment: ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: parallel
+    attributes:
+      label: Can Multiple Contributors Claim This Task in Parallel?
+      description: Open-ended or ecosystem tasks may allow contributors to work on distinct directions in parallel.
+      options:
+        - "No. This task may be claimed by only one person or team."
+        - "Yes. Distinct directions may be claimed in parallel and merged incrementally."
+    validations:
+      required: true
+
+  - type: textarea
+    id: parallel_scope
+    attributes:
+      label: Scope for Parallel Claims
+      description: If parallel claims are allowed, list the available directions, deduplication rules, and registration process.
+      placeholder: "Example: Contributors may choose a research assistant, code review, or RAG Q&A direction and must register it in the comments first."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: ai_report
+    attributes:
+      label: Is an AI Usage Strategy Report Required?
+      description: The report may cover the tools used, how outputs were verified, and which AI suggestions were rejected and why.
+      options:
+        - "Required"
+        - "Not required"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: publish_check
+    attributes:
+      label: Pre-Publication Checklist
+      options:
+        - label: I have confirmed that the task has clear boundaries and can be completed by students during the event.
+          required: true
+        - label: I have provided a baseline or reference implementation and confirmed that the acceptance criteria are measurable and reproducible.
+          required: true
+        - label: I have added a concise task description after the title prefix.
+          required: true
+
+  - type: textarea
+    id: claim
+    attributes:
+      label: How to Claim This Issue
+      description: This is the event's standard notice. Please do not modify it.
+      value: |
+        This Issue is exclusively for the 2026 Ant Open Source Camp University Tour and may only be claimed by students who have registered for the event.
+
+        [How to Claim] Register on the Yunyan platform and click the claim button. The task is successfully claimed once the action is confirmed.
+
+        [Event Registration] Register on the Yunyan platform and join the "Ant Open Source Camp" lab. Collected information will be used only for event registration and reward distribution.
+    validations:
+      required: true

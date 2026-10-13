@@ -1,0 +1,111 @@
+name: "Ant Open Source Camp: Low-Difficulty Task (English)"
+description: "Create a student-friendly task for a focused improvement, documentation update, or small feature"
+title: "[2026 Open Source Camp Exclusive Issue] "
+labels:
+  - "蚂蚁开源轻训营专属"
+  - "轻训营-低难度"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keep the task manageable for students and provide clear, reproducible acceptance criteria.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: Describe the current situation, pain points, and why this work matters. Include data, logs, screenshots, or comparisons whenever possible.
+      placeholder: |
+        Currently, ...
+        This causes ...
+        After this task is completed, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: improvements
+    attributes:
+      label: Expected Improvements or Features
+      description: Break the goal into three to five actionable subtasks and describe the suggested technical approach.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Define measurable and reproducible completion criteria, including how to test the result and the expected outcome.
+      placeholder: |
+        1. The ... feature can be reproduced in the ... environment.
+        2. Add ... tests and pass the project's existing checks.
+        3. Another student can follow the documentation and verify the result within ... minutes.
+    validations:
+      required: true
+
+  - type: textarea
+    id: deliverables
+    attributes:
+      label: Submission Method and Deliverables
+      description: Code contributions should open a PR against the oss-camp2026 branch. Reports, Discussions, screenshots, or demo videos may also be required where appropriate.
+      placeholder: |
+        - Target branch: oss-camp2026
+        - Deliverables: PR, README, test results, ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Link relevant code, documentation, upstream projects, reference implementations, or similar issues to help contributors get started.
+      placeholder: "- https://github.com/..."
+    validations:
+      required: false
+
+  - type: dropdown
+    id: parallel
+    attributes:
+      label: Can Multiple Contributors Claim This Task in Parallel?
+      description: Template, example, and ecosystem tasks should preferably allow contributors to work on distinct directions in parallel.
+      options:
+        - "No. This task may be claimed by only one person or team."
+        - "Yes. Distinct directions may be claimed in parallel and merged incrementally."
+    validations:
+      required: true
+
+  - type: textarea
+    id: parallel_scope
+    attributes:
+      label: Scope for Parallel Claims
+      description: If parallel claims are allowed, list the available directions, deduplication rules, and registration process.
+      placeholder: "Example: Each contributor selects a unique tool integration and registers it in the comments."
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: publish_check
+    attributes:
+      label: Pre-Publication Checklist
+      options:
+        - label: I have confirmed that this task is suitable for students and added a concise task description after the title prefix.
+          required: true
+        - label: I have confirmed that the acceptance criteria are measurable and reproducible.
+          required: true
+
+  - type: textarea
+    id: claim
+    attributes:
+      label: How to Claim This Issue
+      description: This is the event's standard notice. Please do not modify it.
+      value: |
+        This Issue is exclusively for the 2026 Ant Open Source Camp University Tour and may only be claimed by students who have registered for the event.
+
+        [How to Claim] Register on the Yunyan platform and click the claim button. The task is successfully claimed once the action is confirmed.
+
+        [Event Registration] Register on the Yunyan platform and join the "Ant Open Source Camp" lab. Collected information will be used only for event registration and reward distribution.
+    validations:
+      required: true
