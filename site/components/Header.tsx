@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ onOpenConfig }) => {
           <Link
             href="/documentation"
             className={`hidden md:flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-colors ${
-              pathname === '/documentation' || pathname === '/documentation/'
+              pathname === '/documentation' || pathname.startsWith('/documentation/')
                 ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
                 : 'text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
             }`}

@@ -1,0 +1,43 @@
+## Ask a question
+
+The snippets in this section assume you have created `ava` and loaded a source as shown in the [quick start](/documentation/quickstart/).
+
+```typescript
+const result = await ava.analyze('What is total revenue by region?', {
+  includeSummary: true,
+  maxRows: 100,
+  maxResultBytes: 1048576,
+});
+console.log(result.text, result.data);
+```
+
+`analyze(query, config?)` passes the loaded schema and latest profile to the selected [analysis strategy](/documentation/analysis/strategies/). It does not generate a chart; call `visualize(result)` separately.
+
+## Options
+
+| Option           | Behavior                                              |
+| ---------------- | ----------------------------------------------------- |
+| `includeSummary` | Defaults to `true`; `false` returns an empty `text`   |
+| `strategy`       | Object with `type: 'direct'`, `'loop'`, or `'subset'` |
+| `maxRows`        | Default 200; API hard limit 1,000,000                 |
+| `maxResultBytes` | Default 1 MiB of serialized result data               |
+
+## Result structure
+
+The result includes `query`, `text`, `schema` (result columns), and `data` (rows). It may also include `sql`, `truncated`, `truncatedBy`, and `rowCount`.
+
+Despite its name, the current `sql` field contains the executed DSL for the selected engine, including generated Python or JavaScript. `rowCount` is present only when the bounded query reaches the end of its result.
+
+## Handle bounded results
+
+```typescript
+if (result.truncated) {
+  console.log('Result stopped at:', result.truncatedBy);
+}
+```
+
+A result limit bounds the returned rows or bytes, not necessarily all work performed by a query. Configure engine resource limits separately.
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`analysis/index.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/index.ts), [`analysis/direct.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/direct.ts), [`util/result.ts`](https://github.com/antvis/AVA/blob/ai/src/util/result.ts)

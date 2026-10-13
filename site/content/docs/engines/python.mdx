@@ -1,0 +1,37 @@
+## Configure
+
+```typescript
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL', apiKey: process.env.OPENAI_API_KEY },
+  engine: { type: 'python', queryTimeoutMs: 30000 },
+});
+```
+
+Local execution requires `python3` and pandas. Additional file readers may need optional pandas dependencies for Excel or Parquet.
+
+<Callout>
+  Local Python execution is not sandboxed. Use the <code>execute</code> callback with your own isolated environment when
+  that boundary is required.
+</Callout>
+
+## Supported sources
+
+Inline CSV and JSON, plus CSV, JSON, Excel, and Parquet files are supported. Files can be local or HTTP(S) URLs. This engine does not accept text extraction or database sources.
+
+## Query bindings
+
+`pd` provides pandas. DataFrames are available in `tables`, keyed by schema table name. For a single table, `df` is also provided. Assign the final value to `result`.
+
+```typescript
+const result = await ava.query("result = df.groupby('region', as_index=False)['revenue'].sum()");
+```
+
+DataFrame and Series indexes are not returned automatically; use `reset_index()` when those values matter. Each execution starts from fresh input data, so mutations and variables do not persist between calls.
+
+## Custom executor
+
+`engine.execute` accepts the complete generated Python script and returns an `ExecutionResult`. The script includes source loading and result limits. Configure deadlines in a remote executor as well: the client timeout only bounds how long AVA waits for remote work.
+
+## Implementation
+
+[`interpreter/python/engine.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/python/engine.ts), [`interpreter/python/util/execute.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/python/util/execute.ts), [`interpreter/python/util/schema.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/python/util/schema.ts)

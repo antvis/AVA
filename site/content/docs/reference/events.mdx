@@ -1,0 +1,41 @@
+## Listen to events
+
+`AVA` extends the AntV event emitter. Listen with string event names; event constants are not re-exported by the public package entry points.
+
+```typescript
+ava.on('translatestart', (event) => {
+  console.log('Translating:', event.data);
+});
+ava.on('queryend', (event) => {
+  console.log('Query completed:', event.data);
+});
+```
+
+Each emitted event has `type` and `data`. End events can include a serialized `error`; receiving an end event alone does not imply success.
+
+## Event pairs
+
+| Stage            | Start / end                               |
+| ---------------- | ----------------------------------------- |
+| Engine creation  | `createstart` / `createend`               |
+| Engine cleanup   | `disposestart` / `disposeend`             |
+| Source loading   | `loadstart` / `loadend`                   |
+| Profiling        | `profilestart` / `profileend`             |
+| Analysis         | `analyzestart` / `analyzeend`             |
+| Translation      | `translatestart` / `translateend`         |
+| Query execution  | `querystart` / `queryend`                 |
+| Summarization    | `summarizestart` / `summarizeend`         |
+| Subset selection | `selectcontextstart` / `selectcontextend` |
+| Loop reasoning   | `reasonstart` / `reasonend`               |
+| Visualization    | `visualizestart` / `visualizeend`         |
+| Suggestions      | `suggeststart` / `suggestend`             |
+
+## Lifecycle
+
+Engine creation happens when `source()` is called, not in the constructor. Replacing a source disposes the previous engine. `dispose()` clears the engine, schema, and latest profile.
+
+Translation events may include `query`, `attempt`, or generated `dsl`; query events include the DSL or execution result. Reasoning events expose the loop step and action. These are useful for progress UI and diagnostics.
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`event/constant.ts`](https://github.com/antvis/AVA/blob/ai/src/event/constant.ts), [`event/events.ts`](https://github.com/antvis/AVA/blob/ai/src/event/events.ts)

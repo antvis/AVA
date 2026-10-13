@@ -1,0 +1,47 @@
+## Import the browser build
+
+The browser entry point registers only the JavaScript engine. Select it explicitly: the `AVA` constructor otherwise defaults to DuckDB.
+
+```typescript
+import { AVA } from '@antv/ava/browser';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL' },
+  engine: { type: 'javascript' },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: { data: [{ region: 'East', revenue: 120 }] },
+  });
+
+  // Profiling and direct execution do not require a model request.
+  const profile = await ava.profile();
+  const result = await ava.query('const result = data;');
+  console.log(profile, result.data);
+} finally {
+  await ava.dispose();
+}
+```
+
+## Supported sources
+
+Inline `json`, `csv`, and `text` are supported. Text extraction calls the configured model. File paths and direct database connections require a Node.js engine.
+
+## Natural language analysis
+
+Configure your provider before using `analyze()`, `translate()`, `suggest()`, or chart recommendations. A model name alone does not supply credentials for those operations.
+
+<Callout>
+  Keep shared API keys on the server. If you use a browser workflow with user-provided credentials, obtain them at
+  runtime.
+</Callout>
+
+## Execution behavior
+
+Generated JavaScript reads `data` and `stat`, and assigns its final output to `result`. The browser executes code in an iframe with `sandbox="allow-scripts"` and a restrictive content security policy. See [JavaScript engine](/documentation/engines/javascript/) for the execution contract.
+
+## Implementation
+
+[`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts), [`interpreter/javascript/engine.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/engine.ts), [`interpreter/javascript/sandbox.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/sandbox.ts)

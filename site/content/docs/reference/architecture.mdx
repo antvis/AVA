@@ -1,0 +1,53 @@
+## Public entry points
+
+`src/index.ts` registers all Node.js engines and exports `AVA` plus public types. `src/index.browser.ts` registers only JavaScript. `src/ava.ts` coordinates source state, model context, events, and engine lifecycle.
+
+## Source directory map
+
+```text
+src/
+├── ava.ts                 Public API and lifecycle
+├── types.ts               Shared configuration and result contracts
+├── engines.ts             Internal engine registry
+├── analysis/              Direct, loop, and subset strategies
+├── duckdb/                SQL engine, source loaders, and profiling
+├── interpreter/
+│   ├── javascript/        In-memory data and JavaScript execution
+│   └── python/            pandas execution and source validation
+├── remote/
+│   ├── supabase/          Management API, schema, and profiling
+│   └── clickhouse/        Remote SQL, schema, and profiling
+├── query/                 SQL generation and dialect validation
+├── visualization/         Chart advice, syntax, and HTML generation
+├── suggest/               Suggested analysis questions
+├── event/                 Event types and payloads
+├── cli/                   Commands and local dataset sessions
+└── util/                  Model resolution, schemas, and result limits
+```
+
+## Method to module
+
+| Public method                         | Responsibility / implementation                                    |
+| ------------------------------------- | ------------------------------------------------------------------ |
+| `source()` / `schema()` / `dispose()` | Source state and engine lifecycle in `ava.ts`                      |
+| `profile()`                           | Per-engine profiling; shared metric contracts in `util/profile.ts` |
+| `analyze()`                           | Dispatch to `analysis/direct.ts`, `loop.ts`, or `subset.ts`        |
+| `translate()` / `query()`             | Engine `getDSL()` / `execute()`                                    |
+| `suggest()`                           | `suggest/index.ts`                                                 |
+| `recommend()`                         | `visualization/advisor.ts` and syntax generation                   |
+| `viz()`                               | HTML wrapping in `visualization/generator.ts`                      |
+| `visualize()`                         | Compose `recommend()` and `viz()`                                  |
+
+## Context and state
+
+An AVA instance holds one source configuration's active engine, schema, and latest profile. A source may contain multiple tables. Loading a new source clears existing context; profiling enriches later model calls.
+
+Analysis strategies share a runtime containing the engine, model configuration, schema/profile context, and event emitter. Query result limits are normalized through shared utilities.
+
+## Documentation organization
+
+Each topic is a separate MDX file under `site/content/docs/`, grouped into `data/`, `analysis/`, `visualization/`, `engines/`, and `reference/`. This mirrors the public capabilities without exposing every internal helper as a separate user-facing page.
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts), [`analysis/index.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/index.ts)

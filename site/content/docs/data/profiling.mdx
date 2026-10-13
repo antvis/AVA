@@ -1,0 +1,35 @@
+## Profile a dataset
+
+```typescript
+const profile = await ava.profile();
+console.log(profile.tables[0].metrics.row_count);
+console.log(profile.tables[0].fields[0].logicalType);
+console.log(profile.generatedAt);
+```
+
+`profile(options?: ProfileOptions): Promise<Profile>` requires a loaded source. It computes metrics in the selected engine and retains the latest profile for analysis, translation, and query suggestions.
+
+## Select metrics
+
+```typescript
+const profile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'distinct_count', { id: 'top_values', limit: 5, maxDistinctRatio: 0.5 }],
+});
+```
+
+| Selection  | Metrics                                                                         |
+| ---------- | ------------------------------------------------------------------------------- |
+| Default    | `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean` |
+| Additional | `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`        |
+
+A supplied `metrics` array replaces the defaults. `metrics: []` returns enriched structural metadata without computing statistics. Metrics apply only to compatible targets and field types.
+
+## Profile format
+
+A profile contains the schema plus table-level and field-level `metrics`. Fields also expose `logicalType`: `numeric`, `string`, `boolean`, `date`, or `unknown`. `generatedAt` is a Unix timestamp in milliseconds.
+
+`top_values` defaults to a limit of 3 and maximum distinct ratio of 0.5. Options and availability are checked by the engine's metric definitions.
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`util/profile.ts`](https://github.com/antvis/AVA/blob/ai/src/util/profile.ts), [`duckdb/profile.ts`](https://github.com/antvis/AVA/blob/ai/src/duckdb/profile.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts)

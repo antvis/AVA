@@ -1,3 +1,5 @@
+import createMDX from '@next/mdx';
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
@@ -12,6 +14,13 @@ const nextConfig = {
     // for @antv/ava points to the repo root).
     root: new URL('..', import.meta.url).pathname,
   },
-}
+};
 
-export default nextConfig
+const withMDX = createMDX({
+  options: {
+    remarkPlugins: ['remark-gfm'],
+    rehypePlugins: ['rehype-slug', ['rehype-pretty-code', { theme: 'github-light', keepBackground: false }]],
+  },
+});
+
+export default withMDX(nextConfig);

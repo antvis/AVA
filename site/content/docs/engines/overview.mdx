@@ -1,0 +1,27 @@
+## Engine selection
+
+Set the engine in the `AVA` constructor. In the JavaScript API, omitting it always selects DuckDB; source type does not change this selection automatically.
+
+| Engine                                                  | Sources                                                | Runtime                    |
+| ------------------------------------------------------- | ------------------------------------------------------ | -------------------------- |
+| [DuckDB](/documentation/engines/duckdb/)                | Inline data, files, MySQL, PostgreSQL, SQLite, MongoDB | Node.js                    |
+| [JavaScript](/documentation/engines/javascript/)        | Inline CSV, JSON, text                                 | Node.js and browser        |
+| [Python](/documentation/engines/python/)                | Inline CSV / JSON; CSV / JSON / Parquet / Excel files  | Node.js + Python executor  |
+| [Supabase](/documentation/engines/remote/#supabase)     | Supabase project                                       | Node.js; remote PostgreSQL |
+| [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse database                                    | Node.js; remote ClickHouse |
+
+## Shared contract
+
+All engines implement `AnalysisEngine`: `language`, `load()`, `getDSL()`, `execute()`, and `dispose()`. `profile()` is optional in the interface and implemented by the built-in engines.
+
+These are engine-level methods. Application code normally uses `AVA.source()`, `AVA.translate()`, and `AVA.query()` rather than calling the engine directly.
+
+## Registration
+
+The Node.js entry point registers all five engines; the browser entry point registers JavaScript only. The registry keeps the core `AVA` class independent of platform-specific imports.
+
+The registry functions are internal modules and are not exported from the package's public entry points.
+
+## Implementation
+
+[`engines.ts`](https://github.com/antvis/AVA/blob/ai/src/engines.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts), [`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts), [`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts)

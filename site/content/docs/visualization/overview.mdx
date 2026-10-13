@@ -1,0 +1,37 @@
+## Visualize an answer
+
+```typescript
+const result = await ava.analyze('Show revenue by region as a bar chart');
+const chart = await ava.visualize(result);
+if (chart) {
+  console.log(chart.chartType, chart.syntax, chart.html);
+}
+```
+
+`visualize()` first recommends a chart specification, then renders it to HTML. It accepts an object with `query` and `data`; you can also supply your own rows without loading a source.
+
+## Bring your own data
+
+```typescript
+const chart = await ava.visualize({
+  query: 'Show revenue by region as a column chart',
+  data: [
+    { region: 'East', revenue: 120 },
+    { region: 'West', revenue: 90 },
+  ],
+});
+```
+
+## Return values
+
+A successful response contains `chartType`, GPT-Vis `syntax`, and standalone `html`. The HTML loads the GPT-Vis runtime from a CDN, so rendering it requires access to that runtime.
+
+The result is `null` for empty data or when no chart is recommended. Chart generation errors reject the call instead of being converted to `null`.
+
+## Separate recommendation and rendering
+
+Use [chart specifications](/documentation/visualization/chart-specs/) when you want to store a spec or control when HTML is produced.
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`visualization/advisor.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/advisor.ts), [`visualization/generator.ts`](https://github.com/antvis/AVA/blob/ai/src/visualization/generator.ts)

@@ -1,29 +1,54 @@
-import type { Metadata } from 'next'
+import Link from 'next/link';
+import DocsNavigation from '../../components/docs/DocsNavigation';
+import './docs.css';
 
-export const metadata: Metadata = {
-  title: 'AVA Documentation - AI-Native Visual Analytics | AntV',
-  description: 'Complete documentation for AVA - AI-Native Visual Analytics. Learn about installation, quick start, architecture, API reference, and best practices for using AVA in your projects.',
-  openGraph: {
-    type: 'website',
-    url: 'https://ava.antv.vision/documentation/',
-    title: 'AVA Documentation - AI-Native Visual Analytics | AntV',
-    description: 'Complete documentation for AVA - AI-Native Visual Analytics. Learn about installation, quick start, architecture, API reference, and best practices for using AVA in your projects.',
-    images: [{
-      url: 'https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original',
-    }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AVA Documentation - AI-Native Visual Analytics | AntV',
-    description: 'Complete documentation for AVA - AI-Native Visual Analytics. Learn about installation, quick start, architecture, API reference, and best practices for using AVA in your projects.',
-    images: ['https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*yOHIQ48aRwgAAAAAAAAAAAAADmJ7AQ/original'],
-  },
-}
-
-export default function DocumentationLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return children
+export default function DocumentationLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="docs-site">
+      <a className="docs-skip" href="#docs-content">
+        Skip to content
+      </a>
+      <header className="docs-header">
+        <div className="docs-header-inner">
+          <Link href="/" className="docs-brand" aria-label="AVA home">
+            <img
+              src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original"
+              alt=""
+              width="55"
+              height="32"
+            />
+            <strong>AVA</strong>
+            <span>Documentation</span>
+          </Link>
+          <nav aria-label="Main navigation" className="docs-header-links">
+            <Link href="/" className="docs-website">
+              Website <span aria-hidden="true">↗</span>
+            </Link>
+            <a href="https://github.com/antvis/AVA" className="docs-github">
+              GitHub <span aria-hidden="true">↗</span>
+            </a>
+            <Link href="/ai-playground/" className="docs-playground">
+              Playground <span aria-hidden="true">→</span>
+            </Link>
+          </nav>
+        </div>
+      </header>
+      <DocsNavigation mobile />
+      <div className="docs-layout">
+        <aside className="docs-sidebar">
+          <Link href="/documentation/" className="docs-sidebar-label">
+            <span className="docs-book-icon" aria-hidden="true">
+              ▤
+            </span>{' '}
+            Documentation
+          </Link>
+          <DocsNavigation />
+          <div className="docs-sidebar-footer">
+            <span className="docs-status-dot" /> TypeScript · Open source
+          </div>
+        </aside>
+        {children}
+      </div>
+    </div>
+  );
 }

@@ -1,0 +1,75 @@
+## Install
+
+Use Node.js **22.13.0 or later**, as required by the package. Install the v4 alpha with your preferred package manager:
+
+```bash
+npm install @antv/ava@alpha
+# or
+pnpm add @antv/ava@alpha
+# or
+yarn add @antv/ava@alpha
+```
+
+## Configure your model
+
+The example below reads `OPENAI_API_KEY` and optional `OPENAI_MODEL` / `OPENAI_BASE_URL` from your process environment. Set these before running it. AVA also accepts a preconfigured AI SDK model; see [model configuration](/documentation/configuration/).
+
+## Run your first analysis
+
+This complete Node.js example uses the default DuckDB engine. Save it as an ES module in a project with `@antv/ava` installed.
+
+```javascript
+import { AVA } from '@antv/ava';
+
+const ava = new AVA({
+  llm: {
+    model: process.env.OPENAI_MODEL || 'gpt-4o-mini',
+    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.OPENAI_BASE_URL,
+  },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: {
+      data: [
+        { region: 'East', revenue: 120 },
+        { region: 'West', revenue: 90 },
+        { region: 'East', revenue: 80 },
+      ],
+    },
+  });
+
+  const schema = await ava.schema();
+  const profile = await ava.profile();
+  console.log(schema.tables, profile.tables[0].metrics);
+
+  const result = await ava.analyze('Show total revenue by region');
+  console.log(result.text, result.data);
+
+  const chart = await ava.visualize(result);
+  if (chart) console.log(chart.syntax);
+} finally {
+  await ava.dispose();
+}
+```
+
+<Callout>
+  The public data-loading method is <code>source()</code>. It returns no value; call <code>schema()</code> separately to
+  inspect the loaded dataset.
+</Callout>
+
+## Cleanup and errors
+
+`source()` replaces the current dataset and releases the previous engine. `dispose()` releases connections and engine resources and clears the schema and cached profile. Always await cleanup, including after a failed analysis.
+
+## Next steps
+
+- [Data sources](/documentation/data/sources/) — connect files, inline data, and databases.
+- [Browser usage](/documentation/browser/) — use the frontend entry point.
+- [CLI](/documentation/reference/cli/) — work from your terminal.
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts)

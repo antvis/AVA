@@ -1,0 +1,63 @@
+AVA is a TypeScript framework for asking questions about data and turning the answers into visualizations. Use it through the JavaScript API or the command line, with an execution engine that fits your environment.
+
+<div className="docs-cards">
+  <a href="/documentation/quickstart/">
+    <span className="docs-card-icon" aria-hidden="true">
+      ↗
+    </span>
+    <strong>Start building</strong>
+    <span>Install AVA and run your first analysis in Node.js.</span>
+  </a>
+  <a href="/documentation/browser/">
+    <span className="docs-card-icon" aria-hidden="true">
+      ⌘
+    </span>
+    <strong>Build for the browser</strong>
+    <span>Bring analytics into your frontend with the JavaScript engine.</span>
+  </a>
+</div>
+
+## The core workflow
+
+Connect a data source, inspect its structure, ask a question, and optionally generate a chart.
+
+<div className="docs-pipeline">
+  <span>Source</span>
+  <span aria-hidden="true">→</span>
+  <span>Analyze</span>
+  <span aria-hidden="true">→</span>
+  <span>Visualize</span>
+</div>
+
+- **Understand your data.** `schema()` describes tables and fields; `profile()` computes statistics without an LLM call.
+- **Ask better questions.** `suggest()` recommends questions using the schema and available profile.
+- **Analyze in natural language.** `analyze()` translates, executes, and summarizes a question using the selected strategy.
+- **Control individual steps.** Use `translate()` and `query()` separately, or `recommend()` and `viz()` for chart generation.
+
+## Choose an execution engine
+
+| Engine     | Query language  | Environment                    |
+| ---------- | --------------- | ------------------------------ |
+| DuckDB     | SQL             | Node.js; default               |
+| JavaScript | JavaScript      | Browser and Node.js            |
+| Python     | Python / pandas | Node.js with a Python executor |
+| Supabase   | PostgreSQL SQL  | Node.js; remote execution      |
+| ClickHouse | ClickHouse SQL  | Node.js; remote execution      |
+
+The [engine guide](/documentation/engines/overview/) explains supported sources and configuration.
+
+## Explore the documentation
+
+Start with [Installation & Quickstart](/documentation/quickstart/). Then follow the workflow through [data sources](/documentation/data/sources/), [analysis](/documentation/analysis/overview/), and [visualization](/documentation/visualization/overview/).
+
+The [architecture guide](/documentation/reference/architecture/) maps these capabilities to their source modules.
+
+## Resources
+
+- [GitHub repository](https://github.com/antvis/AVA)
+- [Report an issue](https://github.com/antvis/AVA/issues)
+- [AntV community](https://antv.vision/)
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts), [`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts)

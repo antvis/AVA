@@ -1,0 +1,53 @@
+## Start a session
+
+After installing `@antv/ava`, use the `ava` binary (or `npx ava` for a local npm installation). Persistent sessions require macOS or Linux.
+
+```bash
+export OPENAI_API_KEY="YOUR_API_KEY"
+export OPENAI_MODEL="gpt-4o-mini"
+ava source sales.csv
+```
+
+The source command prints a dataset ID. Use that returned ID in subsequent commands. Model settings are fixed when the dataset is loaded; set them before `source` if you plan to use AI commands.
+
+## Explore and analyze
+
+Replace `DATASET_ID` below with the ID from `ava source`.
+
+```bash
+ava schema DATASET_ID
+ava profile DATASET_ID --metrics row_count,null_count,mean
+ava suggest DATASET_ID
+ava translate DATASET_ID "Total revenue by region"
+ava analyze DATASET_ID "Total revenue by region" --strategy direct
+ava query DATASET_ID --dsl @query.sql --max-rows 100
+ava dispose DATASET_ID
+```
+
+The CLI supports `direct`, `loop`, and `subset`. Its `--max-rows` accepts 1–10,000 (default 200), while the JavaScript API allows a higher hard limit.
+
+## Source inputs and engines
+
+`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Override with `--type` when needed.
+
+Use `--engine` to select an execution engine. The CLI infers Supabase and ClickHouse for matching source configurations; otherwise it defaults to DuckDB. This CLI inference differs from the JavaScript constructor.
+
+## Charts without a dataset session
+
+```bash
+ava recommend --query "Plot revenue by region" --data @rows.json > chart.json
+ava viz --spec @chart.json --output chart.html
+ava visualize --query "Plot revenue by region" --data @rows.json
+```
+
+`recommend` and `visualize` require the model. `viz` renders a spec without an API key and requires a new output file; existing files are not overwritten. Check that recommendation returned a spec rather than `null` before rendering it.
+
+## Session lifecycle
+
+Sessions expire after 30 idle minutes. `dispose` releases them immediately. Most commands return JSON; `source` prints a guide in terminals and JSON when piped. Errors go to standard error with exit code 1.
+
+Run `ava --help` or `ava <command> --help` for command-specific options.
+
+## Implementation
+
+[`cli/index.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/index.ts), [`cli/commands/source.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/commands/source.ts), [`cli/config.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/config.ts), [`cli/session/datasets.ts`](https://github.com/antvis/AVA/blob/ai/src/cli/session/datasets.ts)

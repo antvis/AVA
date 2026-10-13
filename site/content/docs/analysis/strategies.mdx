@@ -1,0 +1,45 @@
+## Direct
+
+Direct analysis generates a query, executes it, and optionally summarizes the result. Execution errors can be fed back to the model to correct the next attempt.
+
+```typescript
+const result = await ava.analyze('Total revenue by region', {
+  strategy: { type: 'direct', maxRetries: 2 },
+});
+```
+
+Explicit `type: 'direct'` defaults to 2 correction retries after the initial attempt. In the current implementation, omitting the strategy entirely follows the direct path with 10 correction retries; set `maxRetries` explicitly when a predictable retry budget matters.
+
+## Loop
+
+Loop analysis explores data, refines its reasoning, executes a final query, and confirms the answer. It uses the selected engine's query language.
+
+```typescript
+const result = await ava.analyze('Find and explain unusual revenue patterns', {
+  strategy: { type: 'loop', maxSteps: 6 },
+});
+```
+
+`maxSteps` defaults to 12. Each step can involve model calls and query execution. [Reasoning events](/documentation/reference/events/) expose progress.
+
+## Subset
+
+Subset analysis keeps the complete structural schema while selecting relevant profile statistics, then runs direct analysis. It creates a profile when one is not already available and the engine supports profiling.
+
+```typescript
+const result = await ava.analyze('Compare revenue by region', {
+  strategy: { type: 'subset' },
+});
+```
+
+<Callout>
+  The current subset selector calls AI SDK's evaluator with <code>typesafe-ai/jev</code>. This selection step requires
+  that service's model access in addition to the main analysis model; it does not use your configured{' '}
+  <code>llm.model</code>.
+</Callout>
+
+If no profile is available, selection retains the original context. If no positive selections are returned, it retains all profile details.
+
+## Implementation
+
+[`analysis/direct.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/direct.ts), [`analysis/loop.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/loop.ts), [`analysis/subset.ts`](https://github.com/antvis/AVA/blob/ai/src/analysis/subset.ts)

@@ -1,0 +1,36 @@
+## Configure
+
+```typescript
+import { AVA } from '@antv/ava/browser';
+
+const ava = new AVA({
+  llm: { model: 'YOUR_MODEL' },
+  engine: { type: 'javascript' },
+});
+```
+
+The JavaScript engine supports inline CSV, JSON, and text. Text loading requires the model. It keeps data as one in-memory array.
+
+## Query bindings
+
+Queries receive `data` and the `stat` helper, and must assign the output to `result`.
+
+```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ revenue: 120 }, { revenue: 90 }] },
+});
+const result = await ava.query('const result = [{ revenue: data.reduce((sum, row) => sum + row.revenue, 0) }];');
+```
+
+Input data is cloned before execution. Non-array results are normalized to a row with a `value` field, then result limits are applied.
+
+## Execution environments
+
+In Node.js, code runs in a `node:vm` context with a 10-second timeout. In browsers, it runs in a sandboxed iframe with a restrictive CSP and a 10-second response timeout.
+
+These mechanisms have different isolation properties. A Node.js VM is not a security boundary for hostile code; deploy an appropriate isolation boundary if your application accepts untrusted executable code.
+
+## Implementation
+
+[`interpreter/javascript/engine.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/engine.ts), [`interpreter/javascript/sandbox.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/sandbox.ts), [`interpreter/javascript/stat.ts`](https://github.com/antvis/AVA/blob/ai/src/interpreter/javascript/stat.ts)

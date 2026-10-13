@@ -1,0 +1,37 @@
+## Read the schema
+
+After calling `source()`, retrieve structural metadata without an LLM call:
+
+```typescript
+const schema = await ava.schema();
+for (const table of schema.tables) {
+  console.log(table.name, table.columnCount);
+  console.log(table.fields, table.indexes);
+}
+console.log(schema.relations);
+```
+
+`schema(): Promise<Schema>` throws when no source is loaded.
+
+## Schema structure
+
+| Property               | Contents                                                                   |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `tables`               | All exposed tables or views                                                |
+| `tables[].name`        | Engine-registered table name                                               |
+| `tables[].columnCount` | Number of columns                                                          |
+| `tables[].fields`      | Field `name`, native `type`, and optional `nullable`                       |
+| `tables[].indexes`     | Index name, columns, uniqueness, and optional primary-key flag             |
+| `relations`            | Optional foreign-key relationships with `from` and `to` table/column pairs |
+
+Metadata availability depends on the source and engine. File sources have no database indexes; not every source exposes foreign-key relations.
+
+## Schema versus profile
+
+`schema()` describes structure. [Profiling](/documentation/data/profiling/) adds table and column metrics, a shared logical type, and a timestamp. Calling `profile()` retains those statistics for subsequent model-facing operations.
+
+Always use returned names when writing a direct query instead of guessing a table name from the source filename.
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts), [`util/schema.ts`](https://github.com/antvis/AVA/blob/ai/src/util/schema.ts)

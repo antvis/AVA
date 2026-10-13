@@ -1,0 +1,74 @@
+## Connect a source
+
+```typescript
+await ava.source({
+  type: 'json',
+  options: { data: [{ city: 'Hangzhou', revenue: 120 }] },
+});
+```
+
+`source(config: DataSourceConfig): Promise<void>` creates the configured engine and loads one source. It clears the previous schema and profile, and disposes the previous engine. A database or Excel source can expose multiple tables.
+
+## Inline data
+
+| Type   | Options           | Engines                            |
+| ------ | ----------------- | ---------------------------------- |
+| `json` | `{ data: [...] }` | DuckDB, JavaScript, Python         |
+| `csv`  | `{ csv: '...' }`  | DuckDB, JavaScript, Python         |
+| `text` | `{ text: '...' }` | DuckDB, JavaScript; LLM extraction |
+
+```typescript
+await ava.source({
+  type: 'csv',
+  options: { csv: 'city,revenue\nHangzhou,120\nShanghai,200' },
+});
+```
+
+DuckDB CSV sources also accept reader configuration in `options.options`, such as `delim`, `header`, and `nullstr`. Python accepts a validated subset of these options.
+
+## Files
+
+`csv-file`, `json-file`, `parquet`, and `excel` accept `options.path` as a local path or an HTTP(S) URL. Remote requests can include `options.headers`. These sources are available with DuckDB and Python, subject to their runtime dependencies.
+
+```typescript
+await ava.source({
+  type: 'csv-file',
+  options: {
+    path: 'https://example.com/sales.csv',
+    headers: { Authorization: 'Bearer YOUR_TOKEN' },
+  },
+});
+```
+
+Excel exposes each sheet separately. Use `schema()` for the actual table and field names.
+
+## Databases through DuckDB
+
+| Type         | Connection options                                                                   |
+| ------------ | ------------------------------------------------------------------------------------ |
+| `mysql`      | `host`, `database`, optional `port`, `user`, `password`, `ssh`                       |
+| `postgresql` | MySQL-style fields plus optional `schema` (default `public`)                         |
+| `sqlite`     | Local database `path`                                                                |
+| `mongodb`    | Required `database`; structured connection fields or an advanced `connection` string |
+
+```typescript
+await ava.source({
+  type: 'postgresql',
+  options: {
+    host: 'localhost',
+    database: 'analytics',
+    user: 'reader',
+    password: process.env.DB_PASSWORD,
+  },
+});
+```
+
+Loaders discover tables or collections. MongoDB uses a DuckDB community extension. MySQL and PostgreSQL also support an SSH tunnel through the `ssh` option.
+
+## Remote engines
+
+Supabase and ClickHouse use their own engines. In the JavaScript API, explicitly match `engine.type` to the source type; the constructor does not infer an engine from a later `source()` call. See [remote engines](/documentation/engines/remote/).
+
+## Implementation
+
+[`ava.ts`](https://github.com/antvis/AVA/blob/ai/src/ava.ts), [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts), [`duckdb/loaders/index.ts`](https://github.com/antvis/AVA/blob/ai/src/duckdb/loaders/index.ts)
