@@ -169,7 +169,7 @@ Release resources when finished:
 await ava.dispose();
 ```
 
-### 🔌 Connect your data
+## 🔌 Connect your data
 
 Connect files and databases, or load inline data.
 
@@ -204,11 +204,11 @@ See the [data source guide](skills/ava/references/sources.md) for connection set
 
 For browser applications, use `@antv/ava/browser` with inline data. See [runtime configuration](https://ava.antv.vision/documentation/).
 
-### 🧩 More ways to use AVA
+## 🧩 More ways to use AVA
 
 The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
 
-#### Use with an Agent
+### Use with an Agent
 
 Your agent plans the analysis; AVA runs queries and creates charts.
 
@@ -226,7 +226,7 @@ sales, identify the products contributing most to the change, and save a chart.
 
 This workflow uses your agent's existing model. See [agent setup](https://ava.antv.vision/documentation/).
 
-#### Use from the CLI
+### Use from the CLI
 
 Configure your model and load a CSV:
 
