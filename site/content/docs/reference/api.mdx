@@ -29,7 +29,7 @@ String model names use OpenAI-compatible **Chat Completions** by default. A supp
 
 ### Engine options
 
-`config.engine.type` is required when `engine` is supplied. Supported values are `duckdb`, `python`, `javascript`, `supabase`, and `clickhouse`. Omitting `engine` selects DuckDB. JavaScript, Supabase, and ClickHouse accept no additional engine fields; connection credentials belong to `source()`.
+`config.engine.type` is required when `engine` is supplied. Supported values are `duckdb`, `python`, `javascript`, `supabase`, and `clickhouse`, plus names registered through `registerEngine()`. Omitting `engine` selects DuckDB. JavaScript, Supabase, and ClickHouse accept no additional engine fields; connection credentials belong to `source()`.
 
 #### DuckDB
 
@@ -51,6 +51,28 @@ Set `engine.type` to `python`. These are all additional fields accepted on `engi
 | ---------------- | -------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `execute`        | `(code: string) => Promise<ExecutionResult>` | No       | Override local python3 execution with a custom environment. Local execution is not sandboxed. Run the complete Python script and return its JSON output as ExecutionResult. Source loading and result limits are included in the script; configure remote execution deadlines separately. |
 | `queryTimeoutMs` | `number`                                     | No       | Client wait limit and local process execution deadline. Default 30000 ms.                                                                                                                                                                                                                 |
+
+#### Registered engines
+
+Set `engine.type` to the name passed to `registerEngine()`. Additional fields are forwarded to the engine constructor as `options`. This is an SDK-only capability; the CLI supports built-in engine names.
+
+| Field        | Type            | Required          | Meaning / default                          |
+| ------------ | --------------- | ----------------- | ------------------------------------------ |
+| `type`       | `string`        | Yes               | Registered engine name, such as `'sales'`. |
+| Other fields | Engine-specific | Depends on engine | Validated by the registered engine.        |
+
+## registerEngine
+
+`registerEngine(type: string, engineClass: EngineClass): void`
+
+Exported by both SDK entry points. Register an engine implemented in your own application before loading a source.
+
+| Parameter     | Type                                                                              | Required | Meaning                                                                                             |
+| ------------- | --------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `type`        | `string`                                                                          | Yes      | Engine name. Re-registering replaces the constructor used for future loads.                         |
+| `engineClass` | `new (llmConfig: LLMConfig, options?: Record<string, unknown>) => AnalysisEngine` | Yes      | Engine class. AVA passes its model configuration and remaining engine options to each new instance. |
+
+Registration affects the loaded SDK module only. See [Custom engines](/documentation/engines/custom/) for a complete external implementation and lifecycle details.
 
 ## source
 
@@ -203,3 +225,18 @@ Returns a standalone HTML string. Does not require a loaded source or call a mod
 ## Event methods
 
 AVA inherits synchronous `on`, `once`, `off`, `emit`, and `getEvents` methods from the AntV event emitter. See [event method parameters](/documentation/reference/events/#listener-parameters).
+
+## executionResult helper
+
+`executionResult<T>(rows: T[], schema: QueryColumn[], options?: ExecutionOptions, upstreamTruncatedBy?: 'maxRows' | 'maxResultBytes'): ExecutionResult<T>`
+
+A synchronous helper exported by both SDK entry points for custom engine implementations. Import it from `@antv/ava` or `@antv/ava/browser`.
+
+| Parameter             | Type                              | Required | Meaning / default                                                                                    |
+| --------------------- | --------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `rows`                | `T[]`                             | Yes      | Rows produced by the engine.                                                                         |
+| `schema`              | `QueryColumn[]`                   | Yes      | Output columns; each has `name: string` and optional `type: string`.                                 |
+| `options`             | `ExecutionOptions`                | No       | `{}`; uses the [execution limits](#executionoptions) above.                                          |
+| `upstreamTruncatedBy` | `'maxRows'` or `'maxResultBytes'` | No       | Preserve truncation already reported by an upstream executor unless a local limit truncates further. |
+
+Returns bounded `data`, `schema`, and either `rowCount` for a complete result or truncation metadata for a partial result. Throws if an individual result field exceeds 1 MiB. The helper bounds already-produced rows; it does not limit query execution or input memory use.

@@ -15,6 +15,9 @@ registerEngine('javascript', JavaScriptEngine);
 registerEngine('python', PythonEngine);
 
 export { AVA } from './ava';
+export { registerEngine } from './engines';
+export type { EngineClass } from './engines';
+export { executionResult } from './util/result';
 
 export type { JavaScriptEngine } from './interpreter';
 export type {
@@ -34,6 +37,7 @@ export type {
   AnalysisEngine,
   ExecutionOptions,
   ExecutionResult,
+  QueryColumn,
   QueryLanguage,
   QueryDialect,
   AnalysisResponse,

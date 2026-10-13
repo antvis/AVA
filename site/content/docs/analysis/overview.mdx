@@ -1,49 +1,26 @@
-Use `analyze()` to answer a question about loaded data. This guide follows one small sales dataset through analysis, suggested questions, and direct query execution.
+Use `analyze()` to answer questions about loaded data, `suggest()` to discover useful questions, and `translate()` / `query()` when you want to generate and execute queries separately.
 
-## Run your first analysis
+The examples assume `ava` is configured and a source has been loaded with `source()`. For installation and a complete setup example, see [Installation & Quickstart](/documentation/quickstart/).
 
-Use Node.js 22.13 or newer and install AVA:
+The examples use the same small sales dataset as Quickstart:
 
-```bash
-npm install @antv/ava@alpha
-```
+| region | revenue |
+| ------ | ------- |
+| East   | 120     |
+| West   | 90      |
+| East   | 80      |
 
-Set `OPENAI_API_KEY` and `OPENAI_MODEL` for your provider. Set `OPENAI_BASE_URL` as well if you use a custom OpenAI-compatible endpoint. Run this example in a JavaScript ES module:
+## Analyze a question
 
-```javascript
-import { AVA } from '@antv/ava';
+Pass a natural-language question to `analyze()`:
 
-const ava = new AVA({
-  llm: {
-    model: process.env.OPENAI_MODEL,
-    apiKey: process.env.OPENAI_API_KEY,
-    baseURL: process.env.OPENAI_BASE_URL,
-  },
-});
-
-try {
-  await ava.source({
-    type: 'json',
-    options: {
-      data: [
-        { region: 'East', revenue: 120 },
-        { region: 'West', revenue: 90 },
-        { region: 'East', revenue: 80 },
-      ],
-    },
-  });
-
-  const result = await ava.analyze('What is total revenue by region?');
-  console.log(result.text);
-  console.table(result.data);
-} finally {
-  await ava.dispose();
-}
+```typescript
+const result = await ava.analyze('What is total revenue by region?');
+console.log(result.text);
+console.table(result.data);
 ```
 
 `analyze()` uses the loaded schema and any cached profile to generate a query, execute it, and summarize the answer. It returns data and text; it does not generate a chart.
-
-The snippets below use the same dataset. Place them **inside the `try` block, after `source()` and before `dispose()`**, replacing or extending the analysis call.
 
 ## Read the result
 
@@ -227,9 +204,12 @@ The default Node.js setup produces SQL. Other engines use their own SQL dialect,
 
 Calls reject on errors such as a missing source, a model request failure, an unparseable suggestion response, or failed execution after the available retries. Do not interpret an error as an empty answer.
 
-To handle failures in the first example, add a `catch` before its `finally` block:
+Handle errors around your analysis calls and release the instance when you have finished using it:
 
 ```typescript
+try {
+  const result = await ava.analyze('What is total revenue by region?');
+  console.table(result.data);
 } catch (error) {
   console.error('Analysis failed:', error);
 } finally {

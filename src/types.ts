@@ -69,6 +69,7 @@ export interface PythonEngineOptions {
 /**
  * Engine selection and per-engine options. The `type` discriminant picks the
  * analysis engine; the remaining fields are the options for that engine.
+ * External SDK engines use their registered name and validate their own options.
  * Python defaults to local python3 execution; callers can supply their own execution environment.
  */
 export type EngineConfig =
@@ -76,7 +77,8 @@ export type EngineConfig =
   | ({ type: 'python' } & PythonEngineOptions)
   | { type: 'javascript' }
   | { type: 'supabase' }
-  | { type: 'clickhouse' };
+  | { type: 'clickhouse' }
+  | { type: string; [option: string]: unknown };
 
 /**
  * AVA configuration

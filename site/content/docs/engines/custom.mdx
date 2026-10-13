@@ -1,20 +1,47 @@
-## Extension contract
+Implement an engine in your own application or package, register it with the SDK, then select it by name. Custom engine registration is available in the SDK only; the CLI accepts built-in engine names.
 
-The published package exports the [AnalysisEngine contract](https://github.com/antvis/AVA/blob/ai/src/types.ts), but does not export [registerEngine](https://github.com/antvis/AVA/blob/ai/src/engines.ts). `EngineConfig` accepts only the five built-in engine names. Passing a custom engine instance or an arbitrary `type` to `new AVA()` is not a supported public API.
+## Register an engine
 
-## Implement a new engine in AVA
+```typescript
+import { AVA, registerEngine } from '@antv/ava';
+import { SalesEngine } from './sales-engine';
 
-This is a source-level extension. Follow an existing engine such as [`remote/clickhouse/engine.ts`](https://github.com/antvis/AVA/blob/ai/src/remote/clickhouse/engine.ts) and implement the exported `AnalysisEngine` interface.
+registerEngine('sales', SalesEngine);
 
-| Member                    | Input parameters                                                                                     | Returns / behavior                                                   |
-| ------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Constructor               | `llmConfig: LLMConfig`, `options?: Record<string, unknown>`                                          | Must match the internal `EngineClass` constructor contract.          |
-| `language`                | None; readonly property                                                                              | `QueryLanguage`, used by analysis prompts.                           |
-| `load(config)`            | Required `DataSourceConfig`; see [source parameters](/documentation/data/sources/#connect-a-source). | `Promise<Schema>`; load data and expose tables and metadata.         |
-| `profile(options?)`       | Optional `ProfileOptions`; see [profiling parameters](/documentation/reference/api/#profile).        | Optional method returning `Promise<Profile>`.                        |
-| `getDSL(query, context?)` | Required natural-language `query: string`; optional `DataContext`.                                   | `Promise<string>` in the engine's language.                          |
-| `execute(dsl, options?)`  | Required `dsl: string`; optional [ExecutionOptions](/documentation/reference/api/#executionoptions). | `Promise<ExecutionResult<T>>`; enforce validation and result bounds. |
-| `dispose()`               | No parameters.                                                                                       | `Promise<void>`; release connections, files, and other resources.    |
+const ava = new AVA({
+  llm: { model },
+  engine: { type: 'sales' },
+});
+```
+
+Here `model` is a configured AI SDK model; the complete example below shows its setup. The implementation stays in your application. Register the engine before calling `source()`; no changes to AVA's source are needed.
+
+| Input                                               | Type            | Required          | Behavior                                                                                                   |
+| --------------------------------------------------- | --------------- | ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| `registerEngine(type, engineClass)` → `type`        | `string`        | Yes               | Name used to select the engine. Registering the same name again replaces its constructor for future loads. |
+| `registerEngine(type, engineClass)` → `engineClass` | `EngineClass`   | Yes               | Class implementing `AnalysisEngine`; constructor receives `llmConfig` and optional engine options.         |
+| `engine.type`                                       | `string`        | Yes               | A built-in or registered engine name, such as `'sales'`.                                                   |
+| Other `engine` fields                               | Engine-specific | Depends on engine | Passed as `options` to the constructor; the engine validates them.                                         |
+
+Registration returns no value and applies to the loaded SDK module in the current process. It does not register an engine in a separate CLI process. An unregistered name fails when `source()` tries to create the engine.
+
+AVA creates a new instance on each `source()` call. It disposes the previous engine before replacement, disposes an engine whose `load()` fails, and releases the active engine on `ava.dispose()`. Open connections in `load()` so failed loads can be cleaned up.
+
+The browser SDK exports the same `registerEngine` API from `@antv/ava/browser`; the supplied engine and its dependencies must support the browser runtime. Use a build that exports this API; older package versions with an internal-only registry need to be upgraded.
+
+## Engine contract
+
+Implement the exported [AnalysisEngine interface](https://github.com/antvis/AVA/blob/ai/src/types.ts). AVA's [lifecycle coordinator](https://github.com/antvis/AVA/blob/ai/src/ava.ts) calls these members:
+
+| Member                    | Input parameters                                                                                     | Returns / behavior                                                      |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Constructor               | `llmConfig: LLMConfig`, `options?: Record<string, unknown>`                                          | AVA passes its model configuration and all engine fields except `type`. |
+| `language`                | None; readonly property                                                                              | `QueryLanguage`, used by analysis prompts.                              |
+| `load(config)`            | Required `DataSourceConfig`; see [source parameters](/documentation/data/sources/#connect-a-source). | `Promise<Schema>`; load data and expose tables and metadata.            |
+| `profile(options?)`       | Optional `ProfileOptions`; see [profiling parameters](/documentation/reference/api/#profile).        | Optional method returning `Promise<Profile>`.                           |
+| `getDSL(query, context?)` | Required natural-language `query: string`; optional `DataContext`.                                   | `Promise<string>` in the engine's language.                             |
+| `execute(dsl, options?)`  | Required `dsl: string`; optional [ExecutionOptions](/documentation/reference/api/#executionoptions). | `Promise<ExecutionResult<T>>`; enforce validation and result bounds.    |
+| `dispose()`               | No parameters.                                                                                       | `Promise<void>`; release connections, files, and other resources.       |
 
 | `QueryLanguage` field | Type     | Required | Meaning                                                  |
 | --------------------- | -------- | -------- | -------------------------------------------------------- |
@@ -27,24 +54,197 @@ This is a source-level extension. Follow an existing engine such as [`remote/cli
 | `schema`            | `Schema`  | Yes      | Tables, fields, indexes, and relationships. |
 | `profile`           | `Profile` | No       | Cached statistics, when available.          |
 
-Then integrate the implementation:
+## Example: a sales metrics engine
 
-1. Add the engine module under `src/`.
-2. Extend `EngineConfig` in [`types.ts`](https://github.com/antvis/AVA/blob/ai/src/types.ts) with the new `type` and its options. If the engine introduces a new source shape, extend `DataSourceConfig` as well.
-3. Import and register the implementation in [`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts). Register it in [`index.browser.ts`](https://github.com/antvis/AVA/blob/ai/src/index.browser.ts) only if all its dependencies support browsers.
-4. Build AVA and select the new engine type through the constructor.
+Suppose your application exposes two sales reports: total revenue and revenue by region. This engine translates a question into a small JSON command and calculates the report in memory. It does not execute model-generated JavaScript or SQL.
 
-For example, after adding a `custom` branch to `EngineConfig` and implementing `CustomEngine`, the registration **inside [`index.ts`](https://github.com/antvis/AVA/blob/ai/src/index.ts)** is:
+The example reuses the existing inline JSON source shape. For a remote engine, pass connection settings as engine options and let `load()` interpret a supported `DataSourceConfig` shape.
+
+| Input                    | Type                                       | Required | Supported values / behavior                                  |
+| ------------------------ | ------------------------------------------ | -------- | ------------------------------------------------------------ |
+| `SalesEngine(llmConfig)` | `LLMConfig` with a model object            | Yes      | Configured model used to generate metric commands.           |
+| `source.type`            | `'json'`                                   | Yes      | Only inline arrays are supported in this example.            |
+| `source.options.data`    | `Sale[]`                                   | Yes      | Rows with the two fields below; an empty array is allowed.   |
+| `data[].region`          | `string`                                   | Yes      | Region to group by.                                          |
+| `data[].revenue`         | `number`                                   | Yes      | Finite revenue value.                                        |
+| Command `metric`         | `'total_revenue'` or `'revenue_by_region'` | Yes      | The only allowed command key; other operations are rejected. |
+
+### Implement the engine
+
+Create `sales-engine.ts` in **your application**. This example uses `ai` for model calls and only public exports from `@antv/ava`.
 
 ```typescript
-import { CustomEngine } from './custom/engine';
+import { generateText, type LanguageModel } from 'ai';
+import { executionResult } from '@antv/ava';
+import type { AnalysisEngine, DataSourceConfig, ExecutionOptions, ExecutionResult, LLMConfig, Schema } from '@antv/ava';
 
-registerEngine('custom', CustomEngine);
+type Sale = { region: string; revenue: number };
+
+export class SalesEngine implements AnalysisEngine {
+  readonly language = {
+    name: 'Sales metrics JSON',
+    fence: 'json',
+    instructions:
+      'Return exactly {"metric":"total_revenue"} or {"metric":"revenue_by_region"}. No other keys or operations are supported.',
+  };
+  private sales: Sale[] | null = null;
+
+  private readonly model: LanguageModel;
+
+  constructor(private readonly llm: LLMConfig) {
+    if (typeof llm.model === 'string') {
+      throw new Error('SalesEngine expects a configured AI SDK model object.');
+    }
+    this.model = llm.model;
+  }
+
+  async load(config: DataSourceConfig): Promise<Schema> {
+    await this.dispose();
+    if (config.type !== 'json' || !Array.isArray(config.options.data)) {
+      throw new Error('SalesEngine requires an inline JSON array.');
+    }
+    this.sales = config.options.data.map((row) => {
+      if (
+        !row ||
+        typeof row !== 'object' ||
+        typeof row.region !== 'string' ||
+        typeof row.revenue !== 'number' ||
+        !Number.isFinite(row.revenue)
+      ) {
+        throw new Error('Each sale requires a region string and finite revenue number.');
+      }
+      return { region: row.region, revenue: row.revenue };
+    });
+    return {
+      tables: [
+        {
+          name: 'sales',
+          columnCount: 2,
+          indexes: [],
+          fields: [
+            { name: 'region', type: 'string' },
+            { name: 'revenue', type: 'number' },
+          ],
+        },
+      ],
+    };
+  }
+
+  async getDSL(query: string): Promise<string> {
+    if (!this.sales) throw new Error('Load a source first.');
+    const { text, usage } = await generateText({
+      model: this.model,
+      maxRetries: this.llm.maxRetries ?? 3,
+      system: `Convert a question into a sales metric. ${this.language.instructions}
+Return raw JSON without Markdown. If neither metric answers the question, return {"metric":"unsupported"}.`,
+      prompt: query,
+    });
+    this.llm.onQueryUsage?.(usage);
+    return text.trim();
+  }
+
+  async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {
+    if (!this.sales) throw new Error('Load a source first.');
+    const command = JSON.parse(dsl);
+    if (
+      !command ||
+      Array.isArray(command) ||
+      Object.keys(command).length !== 1 ||
+      !['total_revenue', 'revenue_by_region'].includes(command.metric)
+    ) {
+      throw new Error('Expected one supported metric and no additional keys.');
+    }
+
+    let rows: Record<string, unknown>[];
+    if (command.metric === 'total_revenue') {
+      rows = [{ total_revenue: this.sales.reduce((sum, row) => sum + row.revenue, 0) }];
+    } else {
+      const totals = new Map<string, number>();
+      for (const row of this.sales) {
+        totals.set(row.region, (totals.get(row.region) ?? 0) + row.revenue);
+      }
+      rows = Array.from(totals, ([region, total_revenue]) => ({ region, total_revenue }));
+    }
+    if (rows.some((row) => !Number.isFinite(row.total_revenue))) {
+      throw new Error('Revenue total exceeds the numeric range.');
+    }
+    const schema =
+      command.metric === 'total_revenue'
+        ? [{ name: 'total_revenue', type: 'number' }]
+        : [
+            { name: 'region', type: 'string' },
+            { name: 'total_revenue', type: 'number' },
+          ];
+    return executionResult(rows as T[], schema, options);
+  }
+
+  async dispose(): Promise<void> {
+    this.sales = null;
+  }
+}
 ```
 
-| Internal registration parameter | Type                   | Required | Meaning                                      |
-| ------------------------------- | ---------------------- | -------- | -------------------------------------------- |
-| `type`                          | `EngineConfig['type']` | Yes      | Type name added to the source union.         |
-| `engineClass`                   | `EngineClass`          | Yes      | Constructor implementing the contract above. |
+`execute()` validates commands even when called directly through `query()`. The exported `executionResult(rows, schema, options?)` helper applies AVA's row and byte limits; its [parameters](/documentation/reference/api/#executionresult-helper) are also listed in the API reference.
 
-AVA creates the engine on `source()`, disposes it before replacement, and calls `dispose()` after a failed load. Check those paths along with query validation, bounded results, and the optional profiling path when implementing an engine.
+This engine has a fixed schema, so `getDSL()` does not need the optional `context` argument. It omits `profile()`; `analyze()`, `suggest()`, and `query()` still work, but `ava.profile()` reports that profiling is unsupported. The sample holds all input rows in memory; result limits bound the returned data, not the input size or aggregation work.
+
+### Register and use it
+
+The application needs `@antv/ava`, `ai`, and `@ai-sdk/openai`. Configure `OPENAI_API_KEY` and `OPENAI_MODEL`, then run this with your project's TypeScript runner. Register the class once during application startup, then select it by name. AVA passes the configured model to each new engine instance:
+
+```typescript
+import { createOpenAI } from '@ai-sdk/openai';
+import { AVA, registerEngine } from '@antv/ava';
+import { SalesEngine } from './sales-engine';
+
+registerEngine('sales', SalesEngine);
+
+const model = createOpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL,
+}).chat(process.env.OPENAI_MODEL || 'gpt-4o-mini');
+
+const ava = new AVA({
+  llm: { model },
+  engine: { type: 'sales' },
+});
+
+try {
+  await ava.source({
+    type: 'json',
+    options: {
+      data: [
+        { region: 'East', revenue: 120 },
+        { region: 'West', revenue: 90 },
+        { region: 'East', revenue: 80 },
+      ],
+    },
+  });
+
+  const answer = await ava.analyze('What is total revenue by region?', {
+    strategy: { type: 'direct', maxRetries: 0 },
+    includeSummary: false,
+  });
+  console.log(answer.sql); // Expected command: {"metric":"revenue_by_region"}
+  console.table(answer.data);
+
+  // Execute a known command directly, without calling the model.
+  const total = await ava.query('{"metric":"total_revenue"}');
+  console.table(total.data); // [{ total_revenue: 290 }]
+} finally {
+  await ava.dispose();
+}
+```
+
+When the model selects `revenue_by_region`, `answer.data` is:
+
+```json
+[
+  { "region": "East", "total_revenue": 200 },
+  { "region": "West", "total_revenue": 90 }
+]
+```
+
+`answer.sql` contains the JSON command despite the field name. `answer.text` is empty because the example disables summarization. Running `revenue_by_region` with `maxRows: 1` through `analyze()` or `query()` returns only the first region and marks the result with `truncated: true` and `truncatedBy: 'maxRows'`.
+
+For an unsupported question, the model is instructed to return an unsupported metric, which `execute()` rejects. This example disables correction retries so the error surfaces immediately. Model interpretation can still be wrong; use `query()` with a known command when your interface already determines the required report.
