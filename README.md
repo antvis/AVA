@@ -26,7 +26,7 @@
   </a>
 </p>
 
-<img width="1236" alt="Watch the AVA demo video" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*8eV4SacwH9IAAAAAgCAAAAgAemJ7AQ/original" />
+<img width="1236" alt="AVA demo" src=".github/assets/ava-demo.gif" />
 
 ## ✨ Features
 
@@ -131,7 +131,7 @@ if (chart) {
 
 Open `sales-change.html` in a browser with internet access.
 
-![Sales change by product from January to February 2025, with decreases in red and increases in green.](https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*UPh7SrxzXjoAAAAARqAAAAgAemJ7AQ/original)
+<img src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*UPh7SrxzXjoAAAAARqAAAAgAemJ7AQ/original" width="600" alt="Sales change by product from January to February 2025, with decreases in red and increases in green.">
 
 #### Find questions to explore
 
