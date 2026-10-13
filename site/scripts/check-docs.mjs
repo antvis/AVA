@@ -74,6 +74,11 @@ for (const source of sources) {
   const route = slug === 'introduction' ? '/documentation/' : `/documentation/${slug}/`;
   const html = await readFile(join(site, 'out', route, 'index.html'), 'utf8');
   assert.equal([...html.matchAll(/<h1(?:\s|>)/g)].length, 1, `${route}: one page title`);
+  assert.equal(
+    [...html.matchAll(/aria-label="Copy Markdown"/g)].length,
+    1,
+    `${route}: one page-level Markdown copy control`
+  );
   assert.ok(html.includes(`href="https://ava.antv.vision${route}"`), `${route}: canonical URL`);
   const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, `${route}: unique anchors`);

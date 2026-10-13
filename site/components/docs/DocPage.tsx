@@ -1,8 +1,11 @@
 import Link from 'next/link';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import type { Metadata } from 'next';
 import { docs, docHref, type Doc } from '../../lib/docs';
 import { content } from '../../content/docs';
 import DocsToc from './DocsToc';
+import CopyCode from './CopyCode';
 
 export function docMetadata(doc: Doc): Metadata {
   const title = `${doc.title} — AVA Docs`;
@@ -17,14 +20,21 @@ export function docMetadata(doc: Doc): Metadata {
 }
 
 export default async function DocPage({ doc }: { doc: Doc }) {
-  const { default: Content } = await content[doc.slug]();
+  const [{ default: Content }, source] = await Promise.all([
+    content[doc.slug](),
+    readFile(join(process.cwd(), 'content/docs', `${doc.slug}.mdx`), 'utf8'),
+  ]);
+  const markdown = `# ${doc.title}\n\n${doc.description}\n\n${source}`;
   const index = docs.findIndex((entry) => entry.slug === doc.slug);
   const previous = docs[index - 1];
   const next = docs[index + 1];
   return (
     <>
       <main className="docs-main" id="docs-content">
-        <div className="docs-eyebrow">{doc.group}</div>
+        <div className="docs-page-toolbar">
+          <div className="docs-eyebrow">{doc.group}</div>
+          <CopyCode key={doc.slug} label="Copy Markdown" text={markdown} />
+        </div>
         <h1>{doc.title}</h1>
         <p className="docs-description">{doc.description}</p>
         <article className="docs-prose">

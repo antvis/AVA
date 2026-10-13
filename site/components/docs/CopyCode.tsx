@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 
-export default function CopyCode({ label }: { label?: string }) {
+export default function CopyCode({ label, text }: { label?: string; text?: string }) {
   const button = useRef<HTMLButtonElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [status, setStatus] = useState('');
@@ -10,12 +10,13 @@ export default function CopyCode({ label }: { label?: string }) {
 
   async function copy() {
     const code = button.current?.closest('.docs-code-block')?.querySelector('code');
-    if (!code) return;
+    const value = text ?? code?.textContent;
+    if (value == null) return;
     try {
-      await navigator.clipboard.writeText(code.textContent || '');
+      await navigator.clipboard.writeText(value);
       setStatus('Copied');
     } catch {
-      setStatus('Select code to copy');
+      setStatus(text === undefined ? 'Select code to copy' : 'Copy failed. Try again');
     }
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setStatus(''), 2500);

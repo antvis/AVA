@@ -202,7 +202,24 @@
   color: var(--docs-link);
   font-size: 13px;
   font-weight: 600;
+}
+.docs-page-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 12px;
+}
+.docs-page-toolbar .docs-copy {
+  gap: 5px;
+  padding: 3px 0 3px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.docs-page-toolbar .docs-copy svg {
+  width: 12px;
+  height: 12px;
 }
 .docs-main h1 {
   font-family: var(--font-body);
