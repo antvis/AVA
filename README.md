@@ -23,35 +23,45 @@
   </a>
 </p>
 
-## 🚀 Features
+<a href="https://gw.alipayobjects.com/v/huamei_qa8qxu/afts/video/A*6Mf-SpWDar0AAAAAiPAAAAgAemJ7AQ">
+  <img width="1236" alt="Watch the AVA demo video" src="https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*X7EmQKOrfmsAAAAAgGAAAAgAemJ7AQ/original" />
+</a>
 
-AVA is a fundamental shift from rule-based analytics to AI-native capabilities:
+With AVA, you can:
 
-- 💬 **Natural Language Queries**: Ask questions about your data in plain English
-- 💡 **Query Suggestions**: Get AI-recommended analysis queries based on your data characteristics
-- 🤖 **LLM-Powered Analysis**: Leverages large language models for intelligent data analysis
-- 📊 **Data Profiling**: Compute deterministic table and field statistics without an LLM call
-- 🧩 **Modular Architecture**: Clean separation of concerns with data, analysis, and visualization modules
-- 🌐 **Dual Environment**: Runs in both Node.js (DuckDB, Python/pandas, and remote database engines) and browsers (JavaScript interpreter engine)
+- 🤖 **Agent and SDK Integration**: Bring data analysis to your agents and applications through the AVA Skill, CLI, or TypeScript SDK.
+- 💬 **Natural Language Analysis**: Turn questions into executable queries, structured results, and natural-language summaries.
+- 📊 **Visualization**: Recommend chart types and generate GPT-Vis specifications and HTML visualizations from analysis results.
+- 🔎 **Data Profiling**: Inspect tables and fields, and compute statistics such as missing-value counts, value ranges, and averages without an LLM call.
+- 💡 **Query Suggestions**: Discover useful analysis questions based on your data's schema and optional statistics.
+- 🌐 **Multiple Execution Environments**: Use DuckDB, Python/pandas, or remote database engines in Node.js, and JavaScript for inline data in browsers.
+- 🧩 **Composable Workflows**: Combine data loading, schema inspection, direct queries, and chart rendering, with a custom Python executor when needed.
 
-## 🎯 Analysis Accuracy
+**🔌 Data Sources** — Connect files and databases, or load inline data.
 
-How accurately can AVA answer questions about your data? We evaluate it on [DataBench](evals/databench/README.md), a benchmark for questions that require filtering, aggregating, and sorting table data.
+<table>
+  <tr>
+    <td align="center" width="160"><img src="site/public/logos/csv.svg" width="32" height="32" alt="CSV" /><br />CSV</td>
+    <td align="center" width="160"><img src="site/public/logos/json.svg" width="32" height="32" alt="JSON" /><br />JSON</td>
+    <td align="center" width="160"><img src="site/public/logos/parquet.svg" width="32" height="32" alt="Parquet" /><br />Parquet</td>
+    <td align="center" width="160"><img src="site/public/logos/excel.svg" width="32" height="32" alt="Excel" /><br />Excel</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="site/public/logos/sqlite.svg" width="32" height="32" alt="SQLite" /><br />SQLite</td>
+    <td align="center"><img src="site/public/logos/mysql.svg" width="32" height="32" alt="MySQL" /><br />MySQL</td>
+    <td align="center"><img src="site/public/logos/postgresql.svg" width="32" height="32" alt="PostgreSQL" /><br />PostgreSQL</td>
+    <td align="center"><img src="site/public/logos/mongodb.svg" width="32" height="32" alt="MongoDB" /><br />MongoDB</td>
+  </tr>
+  <tr>
+    <td align="center"><img src="site/public/logos/clickhouse.svg" width="32" height="32" alt="ClickHouse" /><br />ClickHouse</td>
+    <td align="center"><img src="site/public/logos/supabase.svg" width="32" height="32" alt="Supabase" /><br />Supabase</td>
+    <td align="center"><img src="site/public/logos/text.svg" width="32" height="32" alt="Text extraction" /><br />Text (LLM)</td>
+    <td align="center"><a href="#-developer-contributions"><img src="site/public/logos/contribute.svg" width="32" height="32" alt="Contribute a data source" /><br />Contribute</a></td>
+  </tr>
+</table>
 
-Using **GLM 5.1** on **1,789 questions**:
+Support varies by engine. See the [data source guide](skills/ava/references/sources.md) for connection details.
 
-| Analysis approach | Answer accuracy | Avg. time / question | Avg. tokens / question |
-| --- | --- | --- | --- |
-| AVA Workflow: default analysis | 84.46% | 18.44 s | 903 |
-| AVA Workflow: with dataset statistics | 86.64% | 20.48 s | 2,315 |
-| AVA Workflow: with question-relevant dataset statistics | **86.70%** | 25.42 s | 1,173 |
-| AVA Workflow: iterative, multi-step analysis | 84.07% | 82.52 s | 5,089 |
-| AVA Workflow: Python analysis with dataset statistics | 85.41% | 22.03 s | 2,002 |
-| AVA Agent + AVA Skill | 84.46% | 40.93 s | 23,384 |
-
-[AVA Workflow](evals/ava-workflow/README.md) follows a predefined analysis process; [AVA Agent](evals/ava-agent/README.md) lets the model choose tools and steps, guided by the AVA Skill. Dataset statistics give the model additional context, such as value ranges and common values. Workflow results use DuckDB unless Python is specified.
-
-See [evaluation results and methodology](evals/ACCURACY.md) for configurations, timing, token usage, evaluation dates, and raw reports.
 
 ## 📖 Quick Start
 
