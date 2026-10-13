@@ -22,8 +22,6 @@
 | Kimi-K2.5 | 61.34% | 59.00% |
 | Kimi-K3 | 66.10% | 64.73% |
 
-以上为按参考评分筛选题目后重试的合并准确率，并非首次运行成绩；Direct 与 Loop 的重试条件不同，不能直接与官方榜单比较。`—` 表示暂无报告。
-
 [官方榜单](https://bird-bench.github.io/) · [原始报告](reports/BIRD/newdev-20261012/)
 
 ## Spider2-Lite SQLite 子集
@@ -33,7 +31,5 @@
 | 模型 | Workflow · Direct |
 | --- | ---: |
 | GLM-5.1 | 27.41% |
-
-本次提前停止，答对 37/135 题，22 题失败或未完成计零分；仅代表 SQLite 子集，不代表完整榜单成绩。原始报告仅保存在本地。
 
 [官方榜单](https://spider2-sql.github.io/)
