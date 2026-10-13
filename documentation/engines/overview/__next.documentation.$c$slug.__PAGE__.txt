@@ -1,0 +1,89 @@
+1:"$Sreact.fragment"
+2:"/_next/static/chunks/3x799ho6-3r0n.js"
+3:I[936064,["$2"],"default"]
+4:I[481497,["$2"],"default"]
+8:"/_next/static/chunks/3nr_g8_0gg61j.js"
+9:"/_next/static/chunks/1x8d6-5zpdrg-.js"
+a:I[769197,["$2","$8","$9"],""]
+b:I[474333,["$2","$8"],"default"]
+11:I[5138,["$2","$8","$9"],"default"]
+1d:"ViewportBoundary"
+1e:I[675049,["$2"],"$1d"]
+1f:"MetadataBoundary"
+20:I[675049,["$2"],"$1f"]
+21:"$Sreact.suspense"
+22:I[934035,["$2"],"IconMark"]
+:HL["/_next/static/chunks/07wl9p5n7cxlm.css","style"]
+:HL["/_next/static/chunks/2wu9hl9hwguo2.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+6:X
+f:X
+f:C
+12:Tca3,# Engine overview
+
+Choose where data is loaded and how generated queries are executed.
+
+## Engine selection
+
+Set the engine in the `AVA` constructor. In the JavaScript API, omitting it always selects DuckDB; source type does not change this selection automatically.
+
+| Engine                                                  | Sources                                                | Runtime                    |
+| ------------------------------------------------------- | ------------------------------------------------------ | -------------------------- |
+| [DuckDB](/documentation/engines/duckdb/)                | Inline data, files, MySQL, PostgreSQL, SQLite, MongoDB | Node.js                    |
+| [JavaScript](/documentation/engines/javascript/)        | Inline CSV, JSON, text                                 | Node.js and browser        |
+| [Python](/documentation/engines/python/)                | Inline CSV / JSON; CSV / JSON / Parquet / Excel files  | Node.js + Python executor  |
+| [Supabase](/documentation/engines/remote/#supabase)     | Supabase project                                       | Node.js; remote PostgreSQL |
+| [ClickHouse](/documentation/engines/remote/#clickhouse) | ClickHouse database                                    | Node.js; remote ClickHouse |
+
+## Engine configuration
+
+| Field         | Type                                                                                         | Required                  | Default / behavior                |
+| ------------- | -------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- |
+| `engine.type` | `'duckdb'` / `'javascript'` / `'python'` / `'supabase'` / `'clickhouse'` / a registered name | When `engine` is provided | Omitting `engine` selects DuckDB. |
+
+Additional fields depend on `type`: [DuckDB options](/documentation/engines/duckdb/#engine-options) and [Python options](/documentation/engines/python/#engine-options). JavaScript, Supabase, and ClickHouse accept no additional constructor engine fields. Database credentials belong to [source parameters](/documentation/data/sources/#connect-a-source).
+
+To run Python in your own service, see [Supply a Python executor](/documentation/engines/python/#supply-a-python-executor). To supply an engine from your application, see [Custom engines](/documentation/engines/custom/).
+
+## Shared contract
+
+All engines implement `AnalysisEngine`: `language`, `load()`, `getDSL()`, `execute()`, and `dispose()`. `profile()` is optional in the interface and implemented by the built-in engines.
+
+These are engine-level methods. Application code normally uses `AVA.source()`, `AVA.translate()`, and `AVA.query()` rather than calling the engine directly.
+
+## Registration
+
+The Node.js entry point registers all five engines; the browser entry point registers JavaScript only. The registry keeps the core `AVA` class independent of platform-specific imports.
+
+For SDK extensions, call `registerEngine('sales', SalesEngine)`, then select `engine: { type: 'sales' }`. See [Custom engines](/documentation/engines/custom/) for the contract and a complete example. The CLI accepts only built-in engine names.
+10:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Execution engines"}],["$","$L11","engines/overview",{"label":"Copy Markdown","text":"$12"}]]}],"$L13","$L14","$L15","$L16","$L17","$L18"]}],"$L19"],["$L1a"],"$L1b"]}],"p":"$@1c","v":null,"s":"$6"}}]]
+d:[["children",{"s":{"n":"slug","t":"c","k":"engines/overview","s":[]},"h":65632,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}],"p":"$@e","v":"$f","s":"$6"},"c":"$Q10"}]]
+7:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2wu9hl9hwguo2.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3nr_g8_0gg61j.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$La",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$La",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{"href":"/ai-playground/","className":"docs-playground","children":["Playground ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$La",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}]]}]]}],"p":"$@c","v":null,"s":"$6"},"c":"$Qd"}]]
+0:{"t":{"t":{"s":"","h":131152,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/07wl9p5n7cxlm.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1e",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L20",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$21",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Engine overview — AVA Docs"}],["$","meta","1",{"name":"description","content":"Choose where data is loaded and how generated queries are executed."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/engines/overview/"}],["$","meta","5",{"property":"og:title","content":"Engine overview — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"Choose where data is loaded and how generated queries are executed."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/engines/overview/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Engine overview — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"Choose where data is loaded and how generated queries are executed."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L22","13",{}]]}]}],null]}],null]}],"p":"$@23","v":null,"s":"$6"}},"a":"$@24","u":"$@25","b":"szZ03hv1ZSn-v12eCYopG"}
+2c:I[754170,["$2","$8","$9"],"default"]
+2d:I[675049,["$2"],"OutletBoundary"]
+13:["$","h1",null,{"children":"Engine overview"}]
+14:["$","p",null,{"className":"docs-description","children":"Choose where data is loaded and how generated queries are executed."}]
+15:["$","article",null,{"className":"docs-prose","children":[["$","h2",null,{"id":"engine-selection","children":["$","a",null,{"href":"#engine-selection","className":"docs-heading-link","children":"Engine selection"}]}],"\n",["$","p",null,{"children":["Set the engine in the ",["$","code",null,{"children":"AVA"}]," constructor. In the JavaScript API, omitting it always selects DuckDB; source type does not change this selection automatically."]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Engine"}],["$","th",null,{"children":"Sources"}],["$","th",null,{"children":"Runtime"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","a",null,{"href":"/documentation/engines/duckdb/","children":"DuckDB"}]}],["$","td",null,{"children":"Inline data, files, MySQL, PostgreSQL, SQLite, MongoDB"}],["$","td",null,{"children":"Node.js"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","a",null,{"href":"/documentation/engines/javascript/","children":"JavaScript"}]}],["$","td",null,{"children":"Inline CSV, JSON, text"}],["$","td",null,{"children":"Node.js and browser"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","a",null,{"href":"/documentation/engines/python/","children":"Python"}]}],["$","td",null,{"children":"Inline CSV / JSON; CSV / JSON / Parquet / Excel files"}],["$","td",null,{"children":"Node.js + Python executor"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","a",null,{"href":"/documentation/engines/remote/#supabase","children":"Supabase"}]}],["$","td",null,{"children":"Supabase project"}],["$","td",null,{"children":"Node.js; remote PostgreSQL"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","a",null,{"href":"/documentation/engines/remote/#clickhouse","children":"ClickHouse"}]}],["$","td",null,{"children":"ClickHouse database"}],["$","td",null,{"children":"Node.js; remote ClickHouse"}]]}]]}]]}]}],"\n",["$","h2",null,{"id":"engine-configuration","children":["$","a",null,{"href":"#engine-configuration","className":"docs-heading-link","children":"Engine configuration"}]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Field"}],["$","th",null,{"children":"Type"}],["$","th",null,{"children":"Required"}],["$","th",null,{"children":"Default / behavior"}]]}]}],["$","tbody",null,{"children":["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"engine.type"}]}],["$","td",null,{"children":[["$","code",null,{"children":"'duckdb'"}]," / ",["$","code",null,{"children":"'javascript'"}]," / ",["$","code",null,{"children":"'python'"}]," / ",["$","code",null,{"children":"'supabase'"}]," / ",["$","code",null,{"children":"'clickhouse'"}]," / a registered name"]}],["$","td",null,{"children":["When ",["$","code",null,{"children":"engine"}]," is provided"]}],["$","td",null,{"children":["Omitting ",["$","code",null,{"children":"engine"}]," selects DuckDB."]}]]}]}]]}]}],"\n",["$","p",null,{"children":["Additional fields depend on ",["$","code",null,{"children":"type"}],": ",["$","a",null,{"href":"/documentation/engines/duckdb/#engine-options","children":"DuckDB options"}]," and ",["$","a",null,{"href":"/documentation/engines/python/#engine-options","children":"Python options"}],". JavaScript, Supabase, and ClickHouse accept no additional constructor engine fields. Database credentials belong to ",["$","a",null,{"href":"/documentation/data/sources/#connect-a-source","children":"source parameters"}],"."]}],"\n",["$","p",null,{"children":["To run Python in your own service, see ",["$","a",null,{"href":"/documentation/engines/python/#supply-a-python-executor","children":"Supply a Python executor"}],". To supply an engine from your application, see ",["$","a",null,{"href":"/documentation/engines/custom/","children":"Custom engines"}],"."]}],"\n",["$","h2",null,{"id":"shared-contract","children":["$","a",null,{"href":"#shared-contract","className":"docs-heading-link","children":"Shared contract"}]}],"\n",["$","p",null,{"children":["All engines implement ",["$","code",null,{"children":"AnalysisEngine"}],": ",["$","code",null,{"children":"language"}],", ",["$","code",null,{"children":"load()"}],", ",["$","code",null,{"children":"getDSL()"}],", ",["$","code",null,{"children":"execute()"}],", and ",["$","code",null,{"children":"dispose()"}],". ",["$","code",null,{"children":"profile()"}]," is optional in the interface and implemented by the built-in engines."]}],"\n",["$","p",null,{"children":["These are engine-level methods. Application code normally uses ","$L26",", ","$L27",", and ","$L28"," rather than calling the engine directly."]}],"\n","$L29","\n","$L2a","\n","$L2b"]}]
+16:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/engines/overview.mdx","children":["Edit this page on GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+17:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$La",null,{"href":"/documentation/browser/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Browser usage"}]]}],["$","$La",null,{"href":"/documentation/engines/duckdb/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"DuckDB"}]]}]]}]
+18:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+19:["$","$L2c","engines/overview",{}]
+1a:["$","script","script-0",{"src":"/_next/static/chunks/1x8d6-5zpdrg-.js","async":true}]
+1b:["$","$L2d",null,{"children":["$","$21",null,{"name":"Next.MetadataOutlet","children":"$@2e"}]}]
+6:300
+26:["$","code",null,{"children":"AVA.source()"}]
+27:["$","code",null,{"children":"AVA.translate()"}]
+28:["$","code",null,{"children":"AVA.query()"}]
+29:["$","h2",null,{"id":"registration","children":["$","a",null,{"href":"#registration","className":"docs-heading-link","children":"Registration"}]}]
+2a:["$","p",null,{"children":["The Node.js entry point registers all five engines; the browser entry point registers JavaScript only. The registry keeps the core ",["$","code",null,{"children":"AVA"}]," class independent of platform-specific imports."]}]
+2b:["$","p",null,{"children":["For SDK extensions, call ",["$","code",null,{"children":"registerEngine('sales', SalesEngine)"}],", then select ",["$","code",null,{"children":"engine: { type: 'sales' }"}],". See ",["$","a",null,{"href":"/documentation/engines/custom/","children":"Custom engines"}]," for the contract and a complete example. The CLI accepts only built-in engine names."]}]
+2e:null
+25:true
+6:C
+24:0
+e:"$undefined"
+c:"$undefined"
+5:"$undefined"
+23:"$undefined"
+1c:"$undefined"

@@ -1,0 +1,130 @@
+1:"$Sreact.fragment"
+2:"/_next/static/chunks/3x799ho6-3r0n.js"
+3:I[936064,["$2"],"default"]
+4:I[481497,["$2"],"default"]
+8:"/_next/static/chunks/3nr_g8_0gg61j.js"
+9:"/_next/static/chunks/1x8d6-5zpdrg-.js"
+a:I[769197,["$2","$8","$9"],""]
+b:I[474333,["$2","$8"],"default"]
+11:I[5138,["$2","$8","$9"],"default"]
+1d:"ViewportBoundary"
+1e:I[675049,["$2"],"$1d"]
+1f:"MetadataBoundary"
+20:I[675049,["$2"],"$1f"]
+21:"$Sreact.suspense"
+22:I[934035,["$2"],"IconMark"]
+:HL["/_next/static/chunks/07wl9p5n7cxlm.css","style"]
+:HL["/_next/static/chunks/2wu9hl9hwguo2.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+6:X
+f:X
+f:C
+12:Tdb4,# Understand your data
+
+Inspect schema and relationships, then compute profiling metrics.
+
+## Read the schema
+
+After calling `source()`, retrieve structural metadata without an LLM call:
+
+```typescript
+const schema = await ava.schema();
+for (const table of schema.tables) {
+  console.log(table.name, table.columnCount);
+  console.log(table.fields, table.indexes);
+}
+console.log(schema.relations);
+```
+
+`schema(): Promise<Schema>` throws when no source is loaded.
+
+## Schema structure
+
+| Property               | Contents                                                                   |
+| ---------------------- | -------------------------------------------------------------------------- |
+| `tables`               | All exposed tables or views                                                |
+| `tables[].name`        | Engine-registered table name                                               |
+| `tables[].columnCount` | Number of columns                                                          |
+| `tables[].fields`      | Field `name`, native `type`, and optional `nullable`                       |
+| `tables[].indexes`     | Index name, columns, uniqueness, and optional primary-key flag             |
+| `relations`            | Optional foreign-key relationships with `from` and `to` table/column pairs |
+
+Metadata availability depends on the source and engine. File sources have no database indexes; not every source exposes foreign-key relations.
+
+## Schema versus profile
+
+`schema()` describes structure. [Profiling](#profile-a-dataset) adds table and column metrics, a shared logical type, and a timestamp. Calling `profile()` retains those statistics for subsequent model-facing operations.
+
+Always use returned names when writing a direct query instead of guessing a table name from the source filename.
+
+## Profile a dataset
+
+```typescript
+const profile = await ava.profile();
+console.log(profile.tables[0].metrics.row_count);
+console.log(profile.tables[0].fields[0].logicalType);
+console.log(profile.generatedAt);
+```
+
+`profile(options?: ProfileOptions): Promise<Profile>` requires a loaded source. It computes metrics in the selected engine and retains the latest profile for analysis, translation, and query suggestions.
+
+## Select metrics
+
+```typescript
+const profile = await ava.profile({
+  metrics: ['row_count', 'null_count', 'distinct_count', { id: 'top_values', limit: 5, maxDistinctRatio: 0.5 }],
+});
+```
+
+| Selection  | Metrics                                                                         |
+| ---------- | ------------------------------------------------------------------------------- |
+| Default    | `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean` |
+| Additional | `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`        |
+
+A supplied `metrics` array replaces the defaults. `metrics: []` returns enriched structural metadata without computing statistics. Metrics apply only to compatible targets and field types.
+
+## Profile format
+
+A profile contains the schema plus table-level and field-level `metrics`. Fields also expose `logicalType`: `numeric`, `string`, `boolean`, `date`, or `unknown`. `generatedAt` is a Unix timestamp in milliseconds.
+
+`top_values` defaults to a limit of 3 and maximum distinct ratio of 0.5. Options and availability are checked by the engine's metric definitions.
+
+See [profile parameters](/documentation/reference/api/#profile) for all metric options and their accepted values.
+10:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Working with data"}],["$","$L11","data/schema",{"label":"Copy Markdown","text":"$12"}]]}],"$L13","$L14","$L15","$L16","$L17","$L18"]}],"$L19"],["$L1a"],"$L1b"]}],"p":"$@1c","v":null,"s":"$6"}}]]
+d:[["children",{"s":{"n":"slug","t":"c","k":"data/schema","s":[]},"h":65632,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}],"p":"$@e","v":"$f","s":"$6"},"c":"$Q10"}]]
+7:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2wu9hl9hwguo2.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3nr_g8_0gg61j.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$La",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$La",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{"href":"/ai-playground/","className":"docs-playground","children":["Playground ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$La",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}]]}]]}],"p":"$@c","v":null,"s":"$6"},"c":"$Qd"}]]
+0:{"t":{"t":{"s":"","h":131152,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/07wl9p5n7cxlm.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1e",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L20",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$21",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Understand your data — AVA Docs"}],["$","meta","1",{"name":"description","content":"Inspect schema and relationships, then compute profiling metrics."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/data/schema/"}],["$","meta","5",{"property":"og:title","content":"Understand your data — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"Inspect schema and relationships, then compute profiling metrics."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/data/schema/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Understand your data — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"Inspect schema and relationships, then compute profiling metrics."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L22","13",{}]]}]}],null]}],null]}],"p":"$@23","v":null,"s":"$6"}},"a":"$@24","u":"$@25","b":"szZ03hv1ZSn-v12eCYopG"}
+33:I[754170,["$2","$8","$9"],"default"]
+34:I[675049,["$2"],"OutletBoundary"]
+13:["$","h1",null,{"children":"Understand your data"}]
+14:["$","p",null,{"className":"docs-description","children":"Inspect schema and relationships, then compute profiling metrics."}]
+15:["$","article",null,{"className":"docs-prose","children":[["$","h2",null,{"id":"read-the-schema","children":["$","a",null,{"href":"#read-the-schema","className":"docs-heading-link","children":"Read the schema"}]}],"\n",["$","p",null,{"children":["After calling ",["$","code",null,{"children":"source()"}],", retrieve structural metadata without an LLM call:"]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" schema"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"schema"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"for"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ("}],["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" table"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" of"}],["$","span",null,{"style":{"color":"#24292E"},"children":" schema.tables) {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(table.name, table.columnCount);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(table.fields, table.indexes);"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(schema.relations);"}]]}]]}]}]]}]}],"\n",["$","p",null,{"children":[["$","code",null,{"children":"schema(): Promise<Schema>"}]," throws when no source is loaded."]}],"\n",["$","h2",null,{"id":"schema-structure","children":["$","a",null,{"href":"#schema-structure","className":"docs-heading-link","children":"Schema structure"}]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Property"}],["$","th",null,{"children":"Contents"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tables"}]}],["$","td",null,{"children":"All exposed tables or views"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tables[].name"}]}],["$","td",null,{"children":"Engine-registered table name"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tables[].columnCount"}]}],["$","td",null,{"children":"Number of columns"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tables[].fields"}]}],["$","td",null,{"children":["Field ",["$","code",null,{"children":"name"}],", native ",["$","code",null,{"children":"type"}],", and optional ",["$","code",null,{"children":"nullable"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"tables[].indexes"}]}],["$","td",null,{"children":"Index name, columns, uniqueness, and optional primary-key flag"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"relations"}]}],["$","td",null,{"children":["Optional foreign-key relationships with ",["$","code",null,{"children":"from"}]," and ",["$","code",null,{"children":"to"}]," table/column pairs"]}]]}]]}]]}]}],"\n",["$","p",null,{"children":"Metadata availability depends on the source and engine. File sources have no database indexes; not every source exposes foreign-key relations."}],"\n",["$","h2",null,{"id":"schema-versus-profile","children":["$","a",null,{"href":"#schema-versus-profile","className":"docs-heading-link","children":"Schema versus profile"}]}],"\n",["$","p",null,{"children":[["$","code",null,{"children":"schema()"}]," describes structure. ",["$","a",null,{"href":"#profile-a-dataset","children":"Profiling"}]," adds table and column metrics, a shared logical type, and a timestamp. Calling ","$L26"," retains those statistics for subsequent model-facing operations."]}],"\n","$L27","\n","$L28","\n","$L29","\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32"]}]
+16:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/data/schema.mdx","children":["Edit this page on GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+17:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$La",null,{"href":"/documentation/data/sources/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Data sources"}]]}],["$","$La",null,{"href":"/documentation/analysis/overview/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Analyze data"}]]}]]}]
+18:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+19:["$","$L33","data/schema",{}]
+1a:["$","script","script-0",{"src":"/_next/static/chunks/1x8d6-5zpdrg-.js","async":true}]
+1b:["$","$L34",null,{"children":["$","$21",null,{"name":"Next.MetadataOutlet","children":"$@35"}]}]
+6:300
+26:["$","code",null,{"children":"profile()"}]
+27:["$","p",null,{"children":"Always use returned names when writing a direct query instead of guessing a table name from the source filename."}]
+28:["$","h2",null,{"id":"profile-a-dataset","children":["$","a",null,{"href":"#profile-a-dataset","className":"docs-heading-link","children":"Profile a dataset"}]}]
+29:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" profile"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"profile"}],["$","span",null,{"style":{"color":"#24292E"},"children":"();"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(profile.tables["}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0"}],["$","span",null,{"style":{"color":"#24292E"},"children":"].metrics.row_count);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(profile.tables["}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0"}],["$","span",null,{"style":{"color":"#24292E"},"children":"].fields["}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0"}],["$","span",null,{"style":{"color":"#24292E"},"children":"].logicalType);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(profile.generatedAt);"}]]}]]}]}]]}]}]
+2a:["$","p",null,{"children":[["$","code",null,{"children":"profile(options?: ProfileOptions): Promise<Profile>"}]," requires a loaded source. It computes metrics in the selected engine and retains the latest profile for analysis, translation, and query suggestions."]}]
+2b:["$","h2",null,{"id":"select-metrics","children":["$","a",null,{"href":"#select-metrics","className":"docs-heading-link","children":"Select metrics"}]}]
+2c:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" profile"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"profile"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  metrics: ["}],["$","span",null,{"style":{"color":"#032F62"},"children":"'row_count'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'null_count'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'distinct_count'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", { id: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'top_values'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", limit: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"5"}],["$","span",null,{"style":{"color":"#24292E"},"children":", maxDistinctRatio: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"0.5"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+2d:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Selection"}],["$","th",null,{"children":"Metrics"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Default"}],["$","td",null,{"children":[["$","code",null,{"children":"row_count"}],", ",["$","code",null,{"children":"null_count"}],", ",["$","code",null,{"children":"distinct_count"}],", ",["$","code",null,{"children":"top_values"}],", ",["$","code",null,{"children":"min"}],", ",["$","code",null,{"children":"max"}],", ",["$","code",null,{"children":"mean"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Additional"}],["$","td",null,{"children":[["$","code",null,{"children":"duplicate_count"}],", ",["$","code",null,{"children":"min_length"}],", ",["$","code",null,{"children":"max_length"}],", ",["$","code",null,{"children":"sum"}],", ",["$","code",null,{"children":"stddev"}],", ",["$","code",null,{"children":"median"}]]}]]}]]}]]}]}]
+2e:["$","p",null,{"children":["A supplied ",["$","code",null,{"children":"metrics"}]," array replaces the defaults. ",["$","code",null,{"children":"metrics: []"}]," returns enriched structural metadata without computing statistics. Metrics apply only to compatible targets and field types."]}]
+2f:["$","h2",null,{"id":"profile-format","children":["$","a",null,{"href":"#profile-format","className":"docs-heading-link","children":"Profile format"}]}]
+30:["$","p",null,{"children":["A profile contains the schema plus table-level and field-level ",["$","code",null,{"children":"metrics"}],". Fields also expose ",["$","code",null,{"children":"logicalType"}],": ",["$","code",null,{"children":"numeric"}],", ",["$","code",null,{"children":"string"}],", ",["$","code",null,{"children":"boolean"}],", ",["$","code",null,{"children":"date"}],", or ",["$","code",null,{"children":"unknown"}],". ",["$","code",null,{"children":"generatedAt"}]," is a Unix timestamp in milliseconds."]}]
+31:["$","p",null,{"children":[["$","code",null,{"children":"top_values"}]," defaults to a limit of 3 and maximum distinct ratio of 0.5. Options and availability are checked by the engine's metric definitions."]}]
+32:["$","p",null,{"children":["See ",["$","a",null,{"href":"/documentation/reference/api/#profile","children":"profile parameters"}]," for all metric options and their accepted values."]}]
+35:null
+25:true
+6:C
+24:0
+e:"$undefined"
+c:"$undefined"
+5:"$undefined"
+23:"$undefined"
+1c:"$undefined"

@@ -1,0 +1,135 @@
+1:"$Sreact.fragment"
+2:"/_next/static/chunks/3x799ho6-3r0n.js"
+3:I[936064,["$2"],"default"]
+4:I[481497,["$2"],"default"]
+8:"/_next/static/chunks/3nr_g8_0gg61j.js"
+9:"/_next/static/chunks/1x8d6-5zpdrg-.js"
+a:I[769197,["$2","$8","$9"],""]
+b:I[474333,["$2","$8"],"default"]
+11:I[5138,["$2","$8","$9"],"default"]
+1d:"ViewportBoundary"
+1e:I[675049,["$2"],"$1d"]
+1f:"MetadataBoundary"
+20:I[675049,["$2"],"$1f"]
+21:"$Sreact.suspense"
+22:I[934035,["$2"],"IconMark"]
+:HL["/_next/static/chunks/07wl9p5n7cxlm.css","style"]
+:HL["/_next/static/chunks/2wu9hl9hwguo2.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+6:X
+f:X
+f:C
+12:Td91,# Benchmarks
+
+Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests.
+
+AVA is evaluated on tabular question answering and text-to-SQL tasks. The results below are recorded in the repository's [benchmark results](https://github.com/antvis/AVA/blob/ai/evals/ACCURACY.md). They measure answer or query-result correctness; they do not measure visualization quality.
+
+## DataBench
+
+The recorded evaluation uses **1,789 questions on full tables**, excluding `080_Books`, with **GLM-5.1**.
+
+| Execution mode    | Strategy / context   | Accuracy |
+| ----------------- | -------------------- | -------: |
+| Workflow · Python | Direct + Profile     |   85.41% |
+| Agent + AVA Skill | Agent-selected steps |   84.46% |
+| Workflow          | Direct               |   84.46% |
+| Workflow          | Direct + Profile     |   86.64% |
+| Workflow          | Subset + Profile     |   86.70% |
+| Workflow          | Loop                 |   84.07% |
+
+`Profile` means dataset statistics are supplied as context. `Subset` selects relevant profile statistics before analysis. The agent workflow lets the model choose its tools and steps using the AVA Skill.
+
+## BIRD New Dev
+
+This evaluation uses **1,534 questions across 11 databases** from `dev_20251106`, executed through AVA Workflow. It covers schema understanding, joins, and SQL result correctness.
+
+| Model     | Direct |   Loop |
+| --------- | -----: | -----: |
+| GLM-5.1   | 63.10% | 65.84% |
+| GLM-5.2   | 65.38% | 67.14% |
+| GLM-5.3   | 68.12% |      — |
+| Kimi-K2.5 | 61.34% | 59.00% |
+| Kimi-K3   | 66.10% | 64.73% |
+
+A dash means no result is recorded for that combination.
+
+## Spider2-Lite
+
+The recorded run uses the **135-question SQLite subset**, with execution results compared by the official scorer.
+
+| Model   | Execution mode | Strategy | Accuracy |
+| ------- | -------------- | -------- | -------: |
+| GLM-5.1 | Workflow       | Direct   |   27.41% |
+
+This subset targets complex, enterprise-style SQL tasks. Its score is not directly comparable to DataBench or BIRD because the datasets and scoring protocols differ.
+
+## Run an evaluation
+
+From the repository root, install dependencies and build AVA. Workflow evaluations require **Node.js 22.18 or newer** and `curl` for downloading DataBench.
+
+```bash
+npm install
+npm run build
+node evals/databench/fetch.js
+```
+
+Configure the model in `evals/ava-workflow/.env`:
+
+```bash
+OPENAI_API_KEY=YOUR_API_KEY
+OPENAI_MODEL=YOUR_MODEL
+# Optional: use an OpenAI-compatible provider endpoint
+OPENAI_BASE_URL=https://YOUR_PROVIDER/v1
+```
+
+Start with a 20-question run on the full-table DataBench dataset:
+
+```bash
+node evals/cli.js run ava-workflow \
+  --benchmark databench \
+  --dataset databench \
+  --strategy direct \
+  --limit 20 \
+  --output evals/ava-workflow/results/my-databench-run.csv
+```
+
+This small run checks your setup; it does not reproduce the full benchmark score. Keep the model, dataset version, question range, engine, and strategy consistent when comparing runs. Use a new output path when changing conditions: existing answers can be reused when resuming a workflow run.
+
+The [evaluation guide](https://github.com/antvis/AVA/blob/ai/evals/README.md) covers full runs, offline scoring, and saved reports. [Agent evaluations](https://github.com/antvis/AVA/blob/ai/evals/ava-agent/README.md) additionally require Node.js 24 or newer and Docker. These commands call your configured model and incur its usage costs.
+10:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"More resources"}],["$","$L11","reference/benchmarks",{"label":"Copy Markdown","text":"$12"}]]}],"$L13","$L14","$L15","$L16","$L17","$L18"]}],"$L19"],["$L1a"],"$L1b"]}],"p":"$@1c","v":null,"s":"$6"}}]]
+d:[["children",{"s":{"n":"slug","t":"c","k":"reference/benchmarks","s":[]},"h":65632,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}],"p":"$@e","v":"$f","s":"$6"},"c":"$Q10"}]]
+7:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2wu9hl9hwguo2.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3nr_g8_0gg61j.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$La",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$La",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{"href":"/ai-playground/","className":"docs-playground","children":["Playground ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$La",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}]]}]]}],"p":"$@c","v":null,"s":"$6"},"c":"$Qd"}]]
+0:{"t":{"t":{"s":"","h":131152,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/07wl9p5n7cxlm.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1e",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L20",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$21",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Benchmarks — AVA Docs"}],["$","meta","1",{"name":"description","content":"Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/reference/benchmarks/"}],["$","meta","5",{"property":"og:title","content":"Benchmarks — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/reference/benchmarks/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Benchmarks — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L22","13",{}]]}]}],null]}],null]}],"p":"$@23","v":null,"s":"$6"}},"a":"$@24","u":"$@25","b":"szZ03hv1ZSn-v12eCYopG"}
+31:I[754170,["$2","$8","$9"],"default"]
+32:I[675049,["$2"],"OutletBoundary"]
+13:["$","h1",null,{"children":"Benchmarks"}]
+14:["$","p",null,{"className":"docs-description","children":"Evaluation results on DataBench, BIRD, and Spider2-Lite, with instructions to run your own tests."}]
+15:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["AVA is evaluated on tabular question answering and text-to-SQL tasks. The results below are recorded in the repository's ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/ACCURACY.md","children":"benchmark results"}],". They measure answer or query-result correctness; they do not measure visualization quality."]}],"\n",["$","h2",null,{"id":"databench","children":["$","a",null,{"href":"#databench","className":"docs-heading-link","children":"DataBench"}]}],"\n",["$","p",null,{"children":["The recorded evaluation uses ",["$","strong",null,{"children":"1,789 questions on full tables"}],", excluding ",["$","code",null,{"children":"080_Books"}],", with ",["$","strong",null,{"children":"GLM-5.1"}],"."]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Execution mode"}],["$","th",null,{"children":"Strategy / context"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Accuracy"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Workflow · Python"}],["$","td",null,{"children":"Direct + Profile"}],["$","td",null,{"style":{"textAlign":"right"},"children":"85.41%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Agent + AVA Skill"}],["$","td",null,{"children":"Agent-selected steps"}],["$","td",null,{"style":{"textAlign":"right"},"children":"84.46%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Workflow"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"style":{"textAlign":"right"},"children":"84.46%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Workflow"}],["$","td",null,{"children":"Direct + Profile"}],["$","td",null,{"style":{"textAlign":"right"},"children":"86.64%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Workflow"}],["$","td",null,{"children":"Subset + Profile"}],["$","td",null,{"style":{"textAlign":"right"},"children":"86.70%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Workflow"}],["$","td",null,{"children":"Loop"}],["$","td",null,{"style":{"textAlign":"right"},"children":"84.07%"}]]}]]}]]}]}],"\n",["$","p",null,{"children":[["$","code",null,{"children":"Profile"}]," means dataset statistics are supplied as context. ",["$","code",null,{"children":"Subset"}]," selects relevant profile statistics before analysis. The agent workflow lets the model choose its tools and steps using the AVA Skill."]}],"\n",["$","h2",null,{"id":"bird-new-dev","children":["$","a",null,{"href":"#bird-new-dev","className":"docs-heading-link","children":"BIRD New Dev"}]}],"\n",["$","p",null,{"children":["This evaluation uses ",["$","strong",null,{"children":"1,534 questions across 11 databases"}]," from ",["$","code",null,{"children":"dev_20251106"}],", executed through AVA Workflow. It covers schema understanding, joins, and SQL result correctness."]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Model"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Direct"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Loop"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.1"}],["$","td",null,{"style":{"textAlign":"right"},"children":"63.10%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"65.84%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.2"}],["$","td",null,{"style":{"textAlign":"right"},"children":"65.38%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"67.14%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.3"}],["$","td",null,{"style":{"textAlign":"right"},"children":"68.12%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"—"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Kimi-K2.5"}],["$","td",null,{"style":{"textAlign":"right"},"children":"61.34%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"59.00%"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Kimi-K3"}],["$","td",null,{"style":{"textAlign":"right"},"children":"66.10%"}],["$","td",null,{"style":{"textAlign":"right"},"children":"64.73%"}]]}]]}]]}]}],"\n",["$","p",null,{"children":"A dash means no result is recorded for that combination."}],"\n",["$","h2",null,{"id":"spider2-lite","children":["$","a",null,{"href":"#spider2-lite","className":"docs-heading-link","children":"Spider2-Lite"}]}],"\n",["$","p",null,{"children":["The recorded run uses the ",["$","strong",null,{"children":"135-question SQLite subset"}],", with execution results compared by the official scorer."]}],"\n",["$","div",null,{"className":"docs-table","children":"$L26"}],"\n","$L27","\n","$L28","\n","$L29","\n","$L2a","\n","$L2b","\n","$L2c","\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30"]}]
+16:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/reference/benchmarks.mdx","children":["Edit this page on GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+17:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$La",null,{"href":"/documentation/reference/cli/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Command-line interface"}]]}],["$","$La",null,{"href":"/documentation/reference/architecture/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Architecture & source map"}]]}]]}]
+18:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+19:["$","$L31","reference/benchmarks",{}]
+1a:["$","script","script-0",{"src":"/_next/static/chunks/1x8d6-5zpdrg-.js","async":true}]
+1b:["$","$L32",null,{"children":["$","$21",null,{"name":"Next.MetadataOutlet","children":"$@33"}]}]
+6:300
+26:["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Model"}],["$","th",null,{"children":"Execution mode"}],["$","th",null,{"children":"Strategy"}],["$","th",null,{"style":{"textAlign":"right"},"children":"Accuracy"}]]}]}],["$","tbody",null,{"children":["$","tr",null,{"children":[["$","td",null,{"children":"GLM-5.1"}],["$","td",null,{"children":"Workflow"}],["$","td",null,{"children":"Direct"}],["$","td",null,{"style":{"textAlign":"right"},"children":"27.41%"}]]}]}]]}]
+27:["$","p",null,{"children":"This subset targets complex, enterprise-style SQL tasks. Its score is not directly comparable to DataBench or BIRD because the datasets and scoring protocols differ."}]
+28:["$","h2",null,{"id":"run-an-evaluation","children":["$","a",null,{"href":"#run-an-evaluation","className":"docs-heading-link","children":"Run an evaluation"}]}]
+29:["$","p",null,{"children":["From the repository root, install dependencies and build AVA. Workflow evaluations require ",["$","strong",null,{"children":"Node.js 22.18 or newer"}]," and ",["$","code",null,{"children":"curl"}]," for downloading DataBench."]}]
+2a:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"npm"}],["$","span",null,{"style":{"color":"#032F62"},"children":" install"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"npm"}],["$","span",null,{"style":{"color":"#032F62"},"children":" run"}],["$","span",null,{"style":{"color":"#032F62"},"children":" build"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"node"}],["$","span",null,{"style":{"color":"#032F62"},"children":" evals/databench/fetch.js"}]]}]]}]}]]}]}]
+2b:["$","p",null,{"children":["Configure the model in ",["$","code",null,{"children":"evals/ava-workflow/.env"}],":"]}]
+2c:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"OPENAI_API_KEY"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#032F62"},"children":"YOUR_API_KEY"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"OPENAI_MODEL"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#032F62"},"children":"YOUR_MODEL"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#6A737D"},"children":"# Optional: use an OpenAI-compatible provider endpoint"}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"OPENAI_BASE_URL"}],["$","span",null,{"style":{"color":"#D73A49"},"children":"="}],["$","span",null,{"style":{"color":"#032F62"},"children":"https://YOUR_PROVIDER/v1"}]]}]]}]}]]}]}]
+2d:["$","p",null,{"children":"Start with a 20-question run on the full-table DataBench dataset:"}]
+2e:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"bash"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"bash","data-theme":"github-light","children":["$","code",null,{"data-language":"bash","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#6F42C1"},"children":"node"}],["$","span",null,{"style":{"color":"#032F62"},"children":" evals/cli.js"}],["$","span",null,{"style":{"color":"#032F62"},"children":" run"}],["$","span",null,{"style":{"color":"#032F62"},"children":" ava-workflow"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" \\"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  --benchmark"}],["$","span",null,{"style":{"color":"#032F62"},"children":" databench"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" \\"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  --dataset"}],["$","span",null,{"style":{"color":"#032F62"},"children":" databench"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" \\"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  --strategy"}],["$","span",null,{"style":{"color":"#032F62"},"children":" direct"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" \\"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  --limit"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" 20"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" \\"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#005CC5"},"children":"  --output"}],["$","span",null,{"style":{"color":"#032F62"},"children":" evals/ava-workflow/results/my-databench-run.csv"}]]}]]}]}]]}]}]
+2f:["$","p",null,{"children":"This small run checks your setup; it does not reproduce the full benchmark score. Keep the model, dataset version, question range, engine, and strategy consistent when comparing runs. Use a new output path when changing conditions: existing answers can be reused when resuming a workflow run."}]
+30:["$","p",null,{"children":["The ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/README.md","children":"evaluation guide"}]," covers full runs, offline scoring, and saved reports. ",["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/evals/ava-agent/README.md","children":"Agent evaluations"}]," additionally require Node.js 24 or newer and Docker. These commands call your configured model and incur its usage costs."]}]
+33:null
+25:true
+6:C
+24:0
+e:"$undefined"
+c:"$undefined"
+5:"$undefined"
+23:"$undefined"
+1c:"$undefined"

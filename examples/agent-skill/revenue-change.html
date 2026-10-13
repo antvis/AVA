@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Data Visualization</title>
+    <script src="https://unpkg.com/@antv/gpt-vis/dist/umd/index.min.js"></script>
+    <style>
+      html, body, #container {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script>
+      const gptVis = new GPTVis.GPTVis({
+        container: '#container',
+      });
+
+      const visSyntax = `vis bar
+data
+  - category Analytics
+    value 6000
+  - category Automation
+    value 2000
+  - category Support
+    value 500
+  - category Reporting
+    value -1000
+title "Revenue change by product"
+axisXTitle Product
+axisYTitle "Change (USD)"`;
+
+      gptVis.render(visSyntax);
+    </script>
+  </body>
+</html>

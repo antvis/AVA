@@ -1,0 +1,177 @@
+1:"$Sreact.fragment"
+2:"/_next/static/chunks/3x799ho6-3r0n.js"
+3:I[936064,["$2"],"default"]
+4:I[481497,["$2"],"default"]
+8:"/_next/static/chunks/3nr_g8_0gg61j.js"
+9:"/_next/static/chunks/1x8d6-5zpdrg-.js"
+a:I[769197,["$2","$8","$9"],""]
+b:I[474333,["$2","$8"],"default"]
+11:I[5138,["$2","$8","$9"],"default"]
+1d:"ViewportBoundary"
+1e:I[675049,["$2"],"$1d"]
+1f:"MetadataBoundary"
+20:I[675049,["$2"],"$1f"]
+21:"$Sreact.suspense"
+22:I[934035,["$2"],"IconMark"]
+:HL["/_next/static/chunks/07wl9p5n7cxlm.css","style"]
+:HL["/_next/static/chunks/2wu9hl9hwguo2.css","style"]
+:HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
+6:X
+f:X
+f:C
+12:T119d,# Generate visualizations
+
+Turn an analysis result or your own rows into a chart.
+
+AVA uses [GPT-Vis](https://gpt-vis.antv.vision/), AntV's AI-native visualization library, to render charts. GPT-Vis accepts a declarative, Markdown-like syntax that describes chart types, data, and presentation.
+
+**AVA handles chart recommendation and syntax generation; GPT-Vis renders the resulting visualization.**
+
+## Visualize an answer
+
+```typescript
+const result = await ava.analyze('Show revenue by region as a bar chart');
+const chart = await ava.visualize(result);
+if (chart) {
+  console.log(chart.chartType, chart.syntax, chart.html);
+}
+```
+
+`visualize()` first recommends a chart specification, then renders it to HTML. It accepts an object with `query` and `data`; you can also supply your own rows without loading a source.
+
+## Bring your own data
+
+```typescript
+const chart = await ava.visualize({
+  query: 'Show revenue by region as a column chart',
+  data: [
+    { region: 'East', revenue: 120 },
+    { region: 'West', revenue: 90 },
+  ],
+});
+```
+
+## Return values
+
+A successful response contains:
+
+| Field       | Meaning                                                              | How to use it                                                                   |
+| ----------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `chartType` | The recommended chart type.                                          | Inspect the selected visualization.                                             |
+| `syntax`    | GPT-Vis chart instructions as a string.                              | Store or edit the specification, or render it in your application with GPT-Vis. |
+| `html`      | A standalone HTML document containing the syntax and renderer setup. | Save it as an HTML file and open it in a browser.                               |
+
+The generated HTML loads GPT-Vis from a CDN and calls its renderer. Viewing that HTML requires access to the CDN.
+
+The result is `null` for empty data or when no chart is recommended. Chart generation errors reject the call instead of being converted to `null`.
+
+## Understanding GPT-Vis syntax
+
+For example, a column chart specification can look like this:
+
+```text
+vis column
+data
+  - category East
+    value 120
+  - category West
+    value 90
+```
+
+The first line selects the chart type; the indented `data` block supplies its values. AVA returns this text in `syntax`. To embed it in your own interface, pass it to a GPT-Vis instance with `gptVis.render(chart.syntax)`.
+
+- [GPT-Vis documentation](https://gpt-vis.antv.vision/docs) — syntax, rendering API, themes, and application integration.
+- [GPT-Vis repository](https://github.com/antvis/GPT-Vis) — source code, releases, and issue tracking.
+
+## Separate recommendation and rendering
+
+Store a chart specification or control when HTML is produced by calling the two steps separately.
+
+## Recommend
+
+```typescript
+const spec = await ava.recommend({
+  query: 'Plot sales by month',
+  data: [{ month: 'January', sales: 120 }],
+});
+```
+
+`recommend({ query, data })` returns `{ chartType, syntax }` or `null`. It checks for usable data, recommends a chart type, and generates GPT-Vis syntax with the model. It does not require a loaded source.
+
+## Render
+
+```typescript
+if (spec) {
+  const html = await ava.viz(spec);
+  console.log(html);
+}
+```
+
+`viz(spec: ChartSpec): Promise<string>` wraps the syntax in HTML without an LLM call. The generated document loads the GPT-Vis runtime from a CDN.
+
+## Supported chart types
+
+| Family                       | Types                                                       |
+| ---------------------------- | ----------------------------------------------------------- |
+| Trends & comparisons         | `line`, `column`, `bar`, `area`, `dual-axes`                |
+| Distribution & relationships | `scatter`, `histogram`, `boxplot`, `violin`                 |
+| Composition & flow           | `pie`, `treemap`, `sankey`, `waterfall`, `funnel`           |
+| Other                        | `radar`, `liquid`, `word-cloud`, `venn`, `table`, `summary` |
+
+A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies these definitions to the model.
+
+See [recommend parameters](/documentation/reference/api/#visualize-and-recommend) and [viz parameters](/documentation/reference/api/#viz) for all fields and chart types.
+10:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Analysis & visualization"}],["$","$L11","visualization/overview",{"label":"Copy Markdown","text":"$12"}]]}],"$L13","$L14","$L15","$L16","$L17","$L18"]}],"$L19"],["$L1a"],"$L1b"]}],"p":"$@1c","v":null,"s":"$6"}}]]
+d:[["children",{"s":{"n":"slug","t":"c","k":"visualization/overview","s":[]},"h":65632,"d":{"r":["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}],"p":"$@e","v":"$f","s":"$6"},"c":"$Q10"}]]
+7:[["children",{"s":"documentation","h":131168,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2wu9hl9hwguo2.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3nr_g8_0gg61j.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$La",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$La",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{"href":"/ai-playground/","className":"docs-playground","children":["Playground ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$La",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}]]}]]}],"p":"$@c","v":null,"s":"$6"},"c":"$Qd"}]]
+0:{"t":{"t":{"s":"","h":131152,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/07wl9p5n7cxlm.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1e",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L20",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$21",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Generate visualizations — AVA Docs"}],["$","meta","1",{"name":"description","content":"Turn an analysis result or your own rows into a chart."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/visualization/overview/"}],["$","meta","5",{"property":"og:title","content":"Generate visualizations — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"Turn an analysis result or your own rows into a chart."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/visualization/overview/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Generate visualizations — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"Turn an analysis result or your own rows into a chart."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L22","13",{}]]}]}],null]}],null]}],"p":"$@23","v":null,"s":"$6"}},"a":"$@24","u":"$@25","b":"szZ03hv1ZSn-v12eCYopG"}
+43:I[754170,["$2","$8","$9"],"default"]
+44:I[675049,["$2"],"OutletBoundary"]
+13:["$","h1",null,{"children":"Generate visualizations"}]
+14:["$","p",null,{"className":"docs-description","children":"Turn an analysis result or your own rows into a chart."}]
+15:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":["AVA uses ",["$","a",null,{"href":"https://gpt-vis.antv.vision/","children":"GPT-Vis"}],", AntV's AI-native visualization library, to render charts. GPT-Vis accepts a declarative, Markdown-like syntax that describes chart types, data, and presentation."]}],"\n",["$","p",null,{"children":["$","strong",null,{"children":"AVA handles chart recommendation and syntax generation; GPT-Vis renders the resulting visualization."}]}],"\n",["$","h2",null,{"id":"visualize-an-answer","children":["$","a",null,{"href":"#visualize-an-answer","className":"docs-heading-link","children":"Visualize an answer"}]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" result"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"analyze"}],["$","span",null,{"style":{"color":"#24292E"},"children":"("}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Show revenue by region as a bar chart'"}],["$","span",null,{"style":{"color":"#24292E"},"children":");"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" chart"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"visualize"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(result);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"if"}],["$","span",null,{"style":{"color":"#24292E"},"children":" (chart) {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(chart.chartType, chart.syntax, chart.html);"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}],"\n",["$","p",null,{"children":[["$","code",null,{"children":"visualize()"}]," first recommends a chart specification, then renders it to HTML. It accepts an object with ",["$","code",null,{"children":"query"}]," and ",["$","code",null,{"children":"data"}],"; you can also supply your own rows without loading a source."]}],"\n",["$","h2",null,{"id":"bring-your-own-data","children":["$","a",null,{"href":"#bring-your-own-data","className":"docs-heading-link","children":"Bring your own data"}]}],"\n",["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" chart"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"visualize"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  query: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Show revenue by region as a column chart'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  data: ["}]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    { region: "}],"$L26","$L27","$L28","$L29"]}],"\n","$L2a","\n","$L2b","\n","$L2c"]}]}]]}]}],"\n","$L2d","\n","$L2e","\n","$L2f","\n","$L30","\n","$L31","\n","$L32","\n","$L33","\n","$L34","\n","$L35","\n","$L36","\n","$L37","\n","$L38","\n","$L39","\n","$L3a","\n","$L3b","\n","$L3c","\n","$L3d","\n","$L3e","\n","$L3f","\n","$L40","\n","$L41","\n","$L42"]}]
+16:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/visualization/overview.mdx","children":["Edit this page on GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
+17:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","$La",null,{"href":"/documentation/analysis/strategies/","children":[["$","span",null,{"children":"← Previous"}],["$","strong",null,{"children":"Analysis strategies"}]]}],["$","$La",null,{"href":"/documentation/configuration/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Model configuration"}]]}]]}]
+18:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
+19:["$","$L43","visualization/overview",{}]
+1a:["$","script","script-0",{"src":"/_next/static/chunks/1x8d6-5zpdrg-.js","async":true}]
+1b:["$","$L44",null,{"children":["$","$21",null,{"name":"Next.MetadataOutlet","children":"$@45"}]}]
+6:300
+26:["$","span",null,{"style":{"color":"#032F62"},"children":"'East'"}]
+27:["$","span",null,{"style":{"color":"#24292E"},"children":", revenue: "}]
+28:["$","span",null,{"style":{"color":"#005CC5"},"children":"120"}]
+29:["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]
+2a:["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"    { region: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'West'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", revenue: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"90"}],["$","span",null,{"style":{"color":"#24292E"},"children":" },"}]]}]
+2b:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"  ],"}]}]
+2c:["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]
+2d:["$","h2",null,{"id":"return-values","children":["$","a",null,{"href":"#return-values","className":"docs-heading-link","children":"Return values"}]}]
+2e:["$","p",null,{"children":"A successful response contains:"}]
+2f:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Field"}],["$","th",null,{"children":"Meaning"}],["$","th",null,{"children":"How to use it"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"chartType"}]}],["$","td",null,{"children":"The recommended chart type."}],["$","td",null,{"children":"Inspect the selected visualization."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"syntax"}]}],["$","td",null,{"children":"GPT-Vis chart instructions as a string."}],["$","td",null,{"children":"Store or edit the specification, or render it in your application with GPT-Vis."}]]}],["$","tr",null,{"children":[["$","td",null,{"children":["$","code",null,{"children":"html"}]}],["$","td",null,{"children":"A standalone HTML document containing the syntax and renderer setup."}],["$","td",null,{"children":"Save it as an HTML file and open it in a browser."}]]}]]}]]}]}]
+30:["$","p",null,{"children":"The generated HTML loads GPT-Vis from a CDN and calls its renderer. Viewing that HTML requires access to the CDN."}]
+31:["$","p",null,{"children":["The result is ",["$","code",null,{"children":"null"}]," for empty data or when no chart is recommended. Chart generation errors reject the call instead of being converted to ",["$","code",null,{"children":"null"}],"."]}]
+32:["$","h2",null,{"id":"understanding-gpt-vis-syntax","children":["$","a",null,{"href":"#understanding-gpt-vis-syntax","className":"docs-heading-link","children":"Understanding GPT-Vis syntax"}]}]
+33:["$","p",null,{"children":"For example, a column chart specification can look like this:"}]
+34:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"text"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"text","data-theme":"github-light","children":["$","code",null,{"data-language":"text","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":["$","span",null,{"children":"vis column"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"data"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"  - category East"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"    value 120"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"  - category West"}]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"children":"    value 90"}]}]]}]}]]}]}]
+35:["$","p",null,{"children":["The first line selects the chart type; the indented ",["$","code",null,{"children":"data"}]," block supplies its values. AVA returns this text in ",["$","code",null,{"children":"syntax"}],". To embed it in your own interface, pass it to a GPT-Vis instance with ",["$","code",null,{"children":"gptVis.render(chart.syntax)"}],"."]}]
+36:["$","ul",null,{"children":["\n",["$","li",null,{"children":[["$","a",null,{"href":"https://gpt-vis.antv.vision/docs","children":"GPT-Vis documentation"}]," — syntax, rendering API, themes, and application integration."]}],"\n",["$","li",null,{"children":[["$","a",null,{"href":"https://github.com/antvis/GPT-Vis","children":"GPT-Vis repository"}]," — source code, releases, and issue tracking."]}],"\n"]}]
+37:["$","h2",null,{"id":"separate-recommendation-and-rendering","children":["$","a",null,{"href":"#separate-recommendation-and-rendering","className":"docs-heading-link","children":"Separate recommendation and rendering"}]}]
+38:["$","p",null,{"children":"Store a chart specification or control when HTML is produced by calling the two steps separately."}]
+39:["$","h2",null,{"id":"recommend","children":["$","a",null,{"href":"#recommend","className":"docs-heading-link","children":"Recommend"}]}]
+3a:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" spec"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"recommend"}],["$","span",null,{"style":{"color":"#24292E"},"children":"({"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  query: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'Plot sales by month'"}],["$","span",null,{"style":{"color":"#24292E"},"children":","}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  data: [{ month: "}],["$","span",null,{"style":{"color":"#032F62"},"children":"'January'"}],["$","span",null,{"style":{"color":"#24292E"},"children":", sales: "}],["$","span",null,{"style":{"color":"#005CC5"},"children":"120"}],["$","span",null,{"style":{"color":"#24292E"},"children":" }],"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"});"}]}]]}]}]]}]}]
+3b:["$","p",null,{"children":[["$","code",null,{"children":"recommend({ query, data })"}]," returns ",["$","code",null,{"children":"{ chartType, syntax }"}]," or ",["$","code",null,{"children":"null"}],". It checks for usable data, recommends a chart type, and generates GPT-Vis syntax with the model. It does not require a loaded source."]}]
+3c:["$","h2",null,{"id":"render","children":["$","a",null,{"href":"#render","className":"docs-heading-link","children":"Render"}]}]
+3d:["$","figure",null,{"data-rehype-pretty-code-figure":"","children":["$","div",null,{"className":"docs-code-block","children":[["$","div",null,{"className":"docs-code-toolbar","children":[["$","span",null,{"children":"typescript"}],["$","$L11",null,{}]]}],["$","pre",null,{"tabIndex":"0","data-language":"typescript","data-theme":"github-light","children":["$","code",null,{"data-language":"typescript","data-theme":"github-light","style":{"display":"grid"},"children":[["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"if"}],["$","span",null,{"style":{"color":"#24292E"},"children":" (spec) {"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#D73A49"},"children":"  const"}],["$","span",null,{"style":{"color":"#005CC5"},"children":" html"}],["$","span",null,{"style":{"color":"#D73A49"},"children":" ="}],["$","span",null,{"style":{"color":"#D73A49"},"children":" await"}],["$","span",null,{"style":{"color":"#24292E"},"children":" ava."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"viz"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(spec);"}]]}],"\n",["$","span",null,{"data-line":"","children":[["$","span",null,{"style":{"color":"#24292E"},"children":"  console."}],["$","span",null,{"style":{"color":"#6F42C1"},"children":"log"}],["$","span",null,{"style":{"color":"#24292E"},"children":"(html);"}]]}],"\n",["$","span",null,{"data-line":"","children":["$","span",null,{"style":{"color":"#24292E"},"children":"}"}]}]]}]}]]}]}]
+3e:["$","p",null,{"children":[["$","code",null,{"children":"viz(spec: ChartSpec): Promise<string>"}]," wraps the syntax in HTML without an LLM call. The generated document loads the GPT-Vis runtime from a CDN."]}]
+3f:["$","h2",null,{"id":"supported-chart-types","children":["$","a",null,{"href":"#supported-chart-types","className":"docs-heading-link","children":"Supported chart types"}]}]
+40:["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Family"}],["$","th",null,{"children":"Types"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"Trends & comparisons"}],["$","td",null,{"children":[["$","code",null,{"children":"line"}],", ",["$","code",null,{"children":"column"}],", ",["$","code",null,{"children":"bar"}],", ",["$","code",null,{"children":"area"}],", ",["$","code",null,{"children":"dual-axes"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Distribution & relationships"}],["$","td",null,{"children":[["$","code",null,{"children":"scatter"}],", ",["$","code",null,{"children":"histogram"}],", ",["$","code",null,{"children":"boxplot"}],", ",["$","code",null,{"children":"violin"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Composition & flow"}],["$","td",null,{"children":[["$","code",null,{"children":"pie"}],", ",["$","code",null,{"children":"treemap"}],", ",["$","code",null,{"children":"sankey"}],", ",["$","code",null,{"children":"waterfall"}],", ",["$","code",null,{"children":"funnel"}]]}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Other"}],["$","td",null,{"children":[["$","code",null,{"children":"radar"}],", ",["$","code",null,{"children":"liquid"}],", ",["$","code",null,{"children":"word-cloud"}],", ",["$","code",null,{"children":"venn"}],", ",["$","code",null,{"children":"table"}],", ",["$","code",null,{"children":"summary"}]]}]]}]]}]]}]}]
+41:["$","p",null,{"children":"A chart's suitability depends on its data requirements and the user's question. The recommendation module supplies these definitions to the model."}]
+42:["$","p",null,{"children":["See ",["$","a",null,{"href":"/documentation/reference/api/#visualize-and-recommend","children":"recommend parameters"}]," and ",["$","a",null,{"href":"/documentation/reference/api/#viz","children":"viz parameters"}]," for all fields and chart types."]}]
+45:null
+25:true
+6:C
+24:0
+e:"$undefined"
+c:"$undefined"
+5:"$undefined"
+23:"$undefined"
+1c:"$undefined"

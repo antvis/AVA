@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="604" viewBox="0 0 680 604" role="img" aria-labelledby="title desc">
+<title id="title">Direct analysis flow</title>
+<desc id="desc">Generate and execute a query. Execution errors feed back into generation while correction retries remain. On success, optionally summarize and return the result. Otherwise throw the execution error.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#7a909b"/></marker></defs>
+<style>
+.label, .branch { font-family: system-ui, -apple-system, sans-serif; text-anchor: middle; fill: #203c4a; font-size: 14px; }
+.branch { font-size: 12px; fill: #526e7c; paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }
+.node { fill: #f8fafb; stroke: #cbd7de; stroke-width: 1.3; }
+.accent, .decision { fill: #edf9fc; stroke: #73b9c9; stroke-width: 1.3; }
+.error { fill: #fff6f3; stroke: #e3b8a8; }
+.edge { fill: none; stroke: #7a909b; stroke-width: 1.5; stroke-linejoin: round; }
+</style>
+<path d="M180 72 V112" class="edge" marker-end="url(#arrow)"/>
+<path d="M180 168 V208" class="edge" marker-end="url(#arrow)"/>
+<path d="M180 264 V298" class="edge" marker-end="url(#arrow)"/>
+<path d="M310 344 H380" class="edge" marker-end="url(#arrow)"/>
+<path d="M510 298 V168" class="edge" marker-end="url(#arrow)"/>
+<path d="M400 140 H320" class="edge" marker-end="url(#arrow)"/>
+<path d="M510 390 V434" class="edge" marker-end="url(#arrow)"/>
+<path d="M180 390 V434" class="edge" marker-end="url(#arrow)"/>
+<path d="M180 490 V534" class="edge" marker-end="url(#arrow)"/>
+<rect x="40" y="24" width="280" height="48" rx="10" class="node accent"/><text x="180.0" y="53.0" class="label"><tspan x="180.0" dy="0">Question + data context</tspan></text>
+<rect x="40" y="112" width="280" height="56" rx="10" class="node "/><text x="180.0" y="145.0" class="label"><tspan x="180.0" dy="0">Generate a query</tspan></text>
+<rect x="40" y="208" width="280" height="56" rx="10" class="node "/><text x="180.0" y="241.0" class="label"><tspan x="180.0" dy="0">Execute the query</tspan></text>
+<path d="M180 298 L310 344 L180 390 L50 344 Z" class="decision"/><text x="180" y="349" class="label"><tspan x="180" dy="0">Execution succeeded?</tspan></text>
+<path d="M510 298 L640 344 L510 390 L380 344 Z" class="decision"/><text x="510" y="339" class="label"><tspan x="510" dy="0">Correction retries</tspan><tspan x="510" dy="20">remaining?</tspan></text>
+<rect x="400" y="112" width="220" height="56" rx="10" class="node "/><text x="510.0" y="135.0" class="label"><tspan x="510.0" dy="0">Add failed query</tspan><tspan x="510.0" dy="20">and error to the question</tspan></text>
+<rect x="400" y="434" width="220" height="56" rx="10" class="node error"/><text x="510.0" y="467.0" class="label"><tspan x="510.0" dy="0">Throw execution error</tspan></text>
+<rect x="40" y="434" width="280" height="56" rx="10" class="node "/><text x="180.0" y="457.0" class="label"><tspan x="180.0" dy="0">Summarize the data</tspan><tspan x="180.0" dy="20">unless includeSummary is false</tspan></text>
+<rect x="40" y="534" width="280" height="48" rx="10" class="node accent"/><text x="180.0" y="563.0" class="label"><tspan x="180.0" dy="0">Return result</tspan></text>
+<text x="344" y="332" class="branch"><tspan x="344" dy="0">No</tspan></text>
+<text x="195" y="418" class="branch"><tspan x="195" dy="0">Yes</tspan></text>
+<text x="530" y="238" class="branch"><tspan x="530" dy="0">Yes</tspan></text>
+<text x="527" y="418" class="branch"><tspan x="527" dy="0">No</tspan></text>
+</svg>
