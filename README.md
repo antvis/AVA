@@ -28,11 +28,11 @@ AVA is an open-source framework for giving AI agents and developers a practical 
 | Remote query | <img src="site/public/logos/clickhouse.svg" alt="" width="18"> ClickHouse · <img src="https://cdn.simpleicons.org/supabase/3FCF8E" alt="" width="18"> Supabase | Yes | No |
 | Inline data | CSV · JSON · text | Yes | Yes |
 
-*MongoDB uses DuckDB's community extension and infers collection schemas from sampled documents. Browser builds support inline CSV, JSON, and text only. Text extraction uses an LLM. See [data source and engine details](skills/ava/references/sources.md).
+<sup>*</sup> MongoDB uses DuckDB's community extension and infers collection schemas from sampled documents. Browser builds support inline CSV, JSON, and text only. Text extraction uses an LLM. See [data source and engine details](skills/ava/references/sources.md).
 
 ## Quick Start
 
-Install AVA and run a local query over inline data. This example uses no database or LLM request:
+Requires Node.js 22.13+. Install AVA and run a local query over inline data. DuckDB is the default Node.js engine; this example makes no LLM request:
 
 ```bash
 npm install @antv/ava
@@ -146,9 +146,10 @@ flowchart LR
     SDK --> Load
     Load --> Engine["Selected engine"]
     Engine --> Query["Query / analysis"]
-    LLM["Configured LLM"] -. "query generation, suggestions, chart recommendation" .-> Query
+    LLM["Configured LLM"] -. SQL generation .-> Query
     Query --> Result["Data and summary"]
     Result --> Viz["Optional visualization"]
+    LLM -. chart recommendation .-> Viz
 ```
 
 Node.js registers DuckDB, Python, JavaScript, ClickHouse, and Supabase engines; the browser entry registers only JavaScript. Sources, engines, and analysis strategies are defined by public types and implementations—see the [engine registry](src/engines.ts) and [analysis strategies](src/analysis/).
