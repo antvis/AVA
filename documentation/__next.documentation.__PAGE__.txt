@@ -17,38 +17,53 @@ e:I[5138,["$2","$8","$9"],"default"]
 :HL["/_next/static/chunks/2wu9hl9hwguo2.css","style"]
 :HL["https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","image"]
 6:X
-f:T12a2,# Introduction to AVA
+f:T13a4,# Introduction to AVA
 
 AI-native visual analytics, from question to insight.
 
 AVA is a TypeScript framework for asking questions about data and turning the answers into visualizations. Use it through an Agent Skill, the JavaScript API, or the command line, with an execution engine that fits your environment.
 
+{/* Keep custom layouts in JSX expressions so formatting cannot introduce Markdown paragraphs. */}
+
+{
+
 <div className="docs-cards">
   <a href="/documentation/agent-skill/">
-    <span className="docs-card-icon" aria-hidden="true">↗</span>
+    <span className="docs-card-icon" aria-hidden="true">
+      ↗
+    </span>
     <strong>Use with your agent</strong>
     <span>Install the Agent Skill and try a complete data analysis demo.</span>
   </a>
   <a href="/documentation/quickstart/">
-    <span className="docs-card-icon" aria-hidden="true">↗</span>
+    <span className="docs-card-icon" aria-hidden="true">
+      ↗
+    </span>
     <strong>Start building</strong>
     <span>Install AVA and run your first analysis in Node.js.</span>
   </a>
   <a href="/documentation/browser/">
-    <span className="docs-card-icon" aria-hidden="true">⌘</span>
+    <span className="docs-card-icon" aria-hidden="true">
+      ⌘
+    </span>
     <strong>Build for the browser</strong>
     <span>Bring analytics into your frontend with the JavaScript engine.</span>
   </a>
   <a href="/documentation/reference/cli/">
-    <span className="docs-card-icon" aria-hidden="true">›_</span>
+    <span className="docs-card-icon" aria-hidden="true">
+      ›_
+    </span>
     <strong>Use the command line</strong>
     <span>Inspect datasets, execute queries, and render charts from your terminal.</span>
   </a>
 </div>
+}
 
 ## The core workflow
 
 Connect a data source, inspect its structure, ask a question, and optionally generate a chart.
+
+{
 
 <div className="docs-pipeline">
   <span>Source</span>
@@ -57,6 +72,7 @@ Connect a data source, inspect its structure, ask a question, and optionally gen
   <span aria-hidden="true">→</span>
   <span>Visualize</span>
 </div>
+}
 
 - **Understand your data.** `schema()` describes tables and fields; `profile()` computes statistics without an LLM call.
 - **Ask better questions.** `suggest()` recommends questions using the schema and available profile.
@@ -79,43 +95,61 @@ The [engine guide](/documentation/engines/overview/) explains supported sources 
 
 Follow the workflow from your first dataset to a visual answer, then explore more control when you need it.
 
+{
+
 <ol className="docs-timeline" role="list" aria-label="Documentation reading path">
   <li>
-    <span className="docs-timeline-marker" aria-hidden="true">01</span>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      01
+    </span>
     <strong>
       <a href="/documentation/quickstart/">Install and run AVA</a>
     </strong>
     <p>Set up your model and complete your first analysis with the quickstart.</p>
   </li>
   <li>
-    <span className="docs-timeline-marker" aria-hidden="true">02</span>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      02
+    </span>
     <strong>
       <a href="/documentation/data/sources/">Connect and understand your data</a>
     </strong>
-    <p>Load files or databases, then inspect <a href="/documentation/data/schema/">schema and profiling results</a>.</p>
+    <p>
+      Load files or databases, then inspect <a href="/documentation/data/schema/">schema and profiling results</a>.
+    </p>
   </li>
   <li>
-    <span className="docs-timeline-marker" aria-hidden="true">03</span>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      03
+    </span>
     <strong>
       <a href="/documentation/analysis/overview/">Ask questions and analyze</a>
     </strong>
     <p>Discover useful questions, get answers, and choose an analysis strategy.</p>
   </li>
   <li>
-    <span className="docs-timeline-marker" aria-hidden="true">04</span>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      04
+    </span>
     <strong>
       <a href="/documentation/visualization/overview/">Turn answers into charts</a>
     </strong>
     <p>Generate a visualization or control chart recommendation and rendering separately.</p>
   </li>
   <li>
-    <span className="docs-timeline-marker" aria-hidden="true">05</span>
+    <span className="docs-timeline-marker" aria-hidden="true">
+      05
+    </span>
     <strong>
       <a href="/documentation/configuration/">Configure and extend</a>
     </strong>
-    <p>Adjust your model setup, choose an <a href="/documentation/engines/overview/">execution engine</a>, or implement a <a href="/documentation/engines/custom/">custom engine</a>.</p>
+    <p>
+      Adjust your model setup, choose an <a href="/documentation/engines/overview/">execution engine</a>, or implement a{' '}
+      <a href="/documentation/engines/custom/">custom engine</a>.
+    </p>
   </li>
 </ol>
+}
 
 Keep the [API Reference](/documentation/reference/api/) handy for parameters. The [architecture guide](/documentation/reference/architecture/) maps public capabilities to their source modules.
 
@@ -126,12 +160,12 @@ Keep the [API Reference](/documentation/reference/api/) handy for parameters. Th
 - [AntV community](https://antv.vision/)
 d:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$","main",null,{"className":"docs-main","id":"docs-content","children":[["$","div",null,{"className":"docs-page-toolbar","children":[["$","div",null,{"className":"docs-eyebrow","children":"Get started"}],["$","$Le","introduction",{"label":"Copy Markdown","text":"$f"}]]}],"$L10","$L11","$L12","$L13","$L14","$L15"]}],"$L16"],["$L17"],"$L18"]}],"p":"$@19","v":null,"s":"$6"}}]]
 7:[["children",{"s":"documentation","h":96,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/2wu9hl9hwguo2.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3nr_g8_0gg61j.js","async":true}]],["$","div",null,{"className":"docs-site","children":[["$","a",null,{"className":"docs-skip","href":"#docs-content","children":"Skip to content"}],["$","header",null,{"className":"docs-header","children":["$","div",null,{"className":"docs-header-inner","children":[["$","$La",null,{"href":"/","className":"docs-brand","aria-label":"AVA home","children":[["$","img",null,{"src":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*A-lcQbVTpjwAAAAAAAAAAAAADmJ7AQ/original","alt":"","width":"80","height":"48"}],["$","strong",null,{"children":"AVA"}],["$","span",null,{"children":"Documentation"}]]}],["$","nav",null,{"aria-label":"Main navigation","className":"docs-header-links","children":[["$","$La",null,{"href":"/","className":"docs-website","children":["Website ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","a",null,{"href":"https://github.com/antvis/AVA","className":"docs-github","children":["GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}],["$","$La",null,{"href":"/ai-playground/","className":"docs-playground","children":["Playground ",["$","span",null,{"aria-hidden":"true","children":"→"}]]}]]}]]}]}],["$","$Lb",null,{"mobile":true}],["$","div",null,{"className":"docs-layout","children":[["$","aside",null,{"className":"docs-sidebar","children":[["$","$La",null,{"href":"/documentation/","className":"docs-sidebar-label","children":[["$","span",null,{"className":"docs-book-icon","aria-hidden":"true","children":"▤"}]," ","Documentation"]}],["$","$Lb",null,{}],["$","div",null,{"className":"docs-sidebar-footer","children":[["$","span",null,{"className":"docs-status-dot"}]," TypeScript · Open source"]}]]}],["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}]}]]}]]}]]}],"p":"$@c","v":null,"s":"$6"},"c":"$Qd"}]]
-0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/07wl9p5n7cxlm.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1b",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L1d",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$1e",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Introduction to AVA — AVA Docs"}],["$","meta","1",{"name":"description","content":"AI-native visual analytics, from question to insight."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/"}],["$","meta","5",{"property":"og:title","content":"Introduction to AVA — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"AI-native visual analytics, from question to insight."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Introduction to AVA — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"AI-native visual analytics, from question to insight."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L1f","13",{}]]}]}],null]}],null]}],"p":"$@20","v":null,"s":"$6"}},"a":"$@21","u":"$@22","b":"FaVNhTHdWB60WynpCnSt_"}
+0:{"t":{"t":{"s":"","h":80,"d":{"r":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/07wl9p5n7cxlm.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3x799ho6-3r0n.js","async":true}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":["$","script",null,{"dangerouslySetInnerHTML":{"__html":"\n            // Buffer polyfill for browser compatibility with csv-parse\n            window.Buffer = window.Buffer || {\n              isBuffer: function() { return false; },\n              from: function(str) { return new TextEncoder().encode(str); },\n              alloc: function(size) { return new Uint8Array(size); },\n            };\n          "}}]}],["$","body",null,{"className":"min-h-screen bg-[#f8fbfc]","children":["$","$L3",null,{"parallelRouterKey":"children","template":["$","$L4",null,{}],"notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]]}]}]]}]]}],"p":"$@5","v":null,"s":"$6"},"c":"$Q7"},"h":{"r":["$","$1","h",{"children":[null,["$","$L1b",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","$L1d",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$1e",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"Introduction to AVA — AVA Docs"}],["$","meta","1",{"name":"description","content":"AI-native visual analytics, from question to insight."}],["$","meta","2",{"name":"author","content":"AntV"}],["$","meta","3",{"name":"keywords","content":"AVA, visual analytics, AI-native, LLM, data visualization, natural language, data analysis, AntV, chart generation"}],["$","link","4",{"rel":"canonical","href":"https://ava.antv.vision/documentation/"}],["$","meta","5",{"property":"og:title","content":"Introduction to AVA — AVA Docs"}],["$","meta","6",{"property":"og:description","content":"AI-native visual analytics, from question to insight."}],["$","meta","7",{"property":"og:url","content":"https://ava.antv.vision/documentation/"}],["$","meta","8",{"property":"og:type","content":"article"}],["$","meta","9",{"name":"twitter:card","content":"summary"}],["$","meta","10",{"name":"twitter:title","content":"Introduction to AVA — AVA Docs"}],["$","meta","11",{"name":"twitter:description","content":"AI-native visual analytics, from question to insight."}],["$","link","12",{"rel":"icon","href":"https://mdn.alipayobjects.com/huamei_qa8qxu/afts/img/A*FBLnQIAzx6cAAAAAQDAAAAgAemJ7AQ/original"}],["$","$L1f","13",{}]]}]}],null]}],null]}],"p":"$@20","v":null,"s":"$6"}},"a":"$@21","u":"$@22","b":"PqLB7Xw9vi-65G9e0rAnS"}
 29:I[754170,["$2","$8","$9"],"default"]
 2a:I[675049,["$2"],"OutletBoundary"]
 10:["$","h1",null,{"children":"Introduction to AVA"}]
 11:["$","p",null,{"className":"docs-description","children":"AI-native visual analytics, from question to insight."}]
-12:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":"AVA is a TypeScript framework for asking questions about data and turning the answers into visualizations. Use it through an Agent Skill, the JavaScript API, or the command line, with an execution engine that fits your environment."}],"\n",["$","div",null,{"className":"docs-cards","children":[["$","a",null,{"href":"/documentation/agent-skill/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"↗"}],["$","strong",null,{"children":"Use with your agent"}],["$","span",null,{"children":"Install the Agent Skill and try a complete data analysis demo."}]]}],["$","a",null,{"href":"/documentation/quickstart/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"↗"}],["$","strong",null,{"children":"Start building"}],["$","span",null,{"children":"Install AVA and run your first analysis in Node.js."}]]}],["$","a",null,{"href":"/documentation/browser/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"⌘"}],["$","strong",null,{"children":"Build for the browser"}],["$","span",null,{"children":"Bring analytics into your frontend with the JavaScript engine."}]]}],["$","a",null,{"href":"/documentation/reference/cli/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"›_"}],["$","strong",null,{"children":"Use the command line"}],["$","span",null,{"children":"Inspect datasets, execute queries, and render charts from your terminal."}]]}]]}],"\n",["$","h2",null,{"id":"the-core-workflow","children":["$","a",null,{"href":"#the-core-workflow","className":"docs-heading-link","children":"The core workflow"}]}],"\n",["$","p",null,{"children":"Connect a data source, inspect its structure, ask a question, and optionally generate a chart."}],"\n",["$","div",null,{"className":"docs-pipeline","children":[["$","span",null,{"children":"Source"}],["$","span",null,{"aria-hidden":"true","children":"→"}],["$","span",null,{"children":"Analyze"}],["$","span",null,{"aria-hidden":"true","children":"→"}],["$","span",null,{"children":"Visualize"}]]}],"\n",["$","ul",null,{"children":["\n",["$","li",null,{"children":[["$","strong",null,{"children":"Understand your data."}]," ",["$","code",null,{"children":"schema()"}]," describes tables and fields; ",["$","code",null,{"children":"profile()"}]," computes statistics without an LLM call."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Ask better questions."}]," ",["$","code",null,{"children":"suggest()"}]," recommends questions using the schema and available profile."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Analyze in natural language."}]," ",["$","code",null,{"children":"analyze()"}]," translates, executes, and summarizes a question using the selected strategy."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Control individual steps."}]," Use ",["$","code",null,{"children":"translate()"}]," and ",["$","code",null,{"children":"query()"}]," separately, or ",["$","code",null,{"children":"recommend()"}]," and ",["$","code",null,{"children":"viz()"}]," for chart generation."]}],"\n"]}],"\n",["$","h2",null,{"id":"choose-an-execution-engine","children":["$","a",null,{"href":"#choose-an-execution-engine","className":"docs-heading-link","children":"Choose an execution engine"}]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Engine"}],["$","th",null,{"children":"Query language"}],["$","th",null,{"children":"Environment"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"DuckDB"}],["$","td",null,{"children":"SQL"}],["$","td",null,{"children":"Node.js; default"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"JavaScript"}],["$","td",null,{"children":"JavaScript"}],["$","td",null,{"children":"Browser and Node.js"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Python"}],["$","td",null,{"children":"Python / pandas"}],["$","td",null,{"children":"Node.js with a Python executor"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Supabase"}],["$","td",null,{"children":"PostgreSQL SQL"}],["$","td",null,{"children":"Node.js; remote execution"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"ClickHouse"}],["$","td",null,{"children":"ClickHouse SQL"}],["$","td",null,{"children":"Node.js; remote execution"}]]}]]}]]}]}],"\n",["$","p",null,{"children":["The ",["$","a",null,{"href":"/documentation/engines/overview/","children":"engine guide"}]," explains supported sources and configuration."]}],"\n","$L23","\n","$L24","\n","$L25","\n","$L26","\n","$L27","\n","$L28"]}]
+12:["$","article",null,{"className":"docs-prose","children":[["$","p",null,{"children":"AVA is a TypeScript framework for asking questions about data and turning the answers into visualizations. Use it through an Agent Skill, the JavaScript API, or the command line, with an execution engine that fits your environment."}],"\n","\n",["$","div",null,{"className":"docs-cards","children":[["$","a",null,{"href":"/documentation/agent-skill/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"↗"}],["$","strong",null,{"children":"Use with your agent"}],["$","span",null,{"children":"Install the Agent Skill and try a complete data analysis demo."}]]}],["$","a",null,{"href":"/documentation/quickstart/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"↗"}],["$","strong",null,{"children":"Start building"}],["$","span",null,{"children":"Install AVA and run your first analysis in Node.js."}]]}],["$","a",null,{"href":"/documentation/browser/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"⌘"}],["$","strong",null,{"children":"Build for the browser"}],["$","span",null,{"children":"Bring analytics into your frontend with the JavaScript engine."}]]}],["$","a",null,{"href":"/documentation/reference/cli/","children":[["$","span",null,{"className":"docs-card-icon","aria-hidden":"true","children":"›_"}],["$","strong",null,{"children":"Use the command line"}],["$","span",null,{"children":"Inspect datasets, execute queries, and render charts from your terminal."}]]}]]}],"\n",["$","h2",null,{"id":"the-core-workflow","children":["$","a",null,{"href":"#the-core-workflow","className":"docs-heading-link","children":"The core workflow"}]}],"\n",["$","p",null,{"children":"Connect a data source, inspect its structure, ask a question, and optionally generate a chart."}],"\n",["$","div",null,{"className":"docs-pipeline","children":[["$","span",null,{"children":"Source"}],["$","span",null,{"aria-hidden":"true","children":"→"}],["$","span",null,{"children":"Analyze"}],["$","span",null,{"aria-hidden":"true","children":"→"}],["$","span",null,{"children":"Visualize"}]]}],"\n",["$","ul",null,{"children":["\n",["$","li",null,{"children":[["$","strong",null,{"children":"Understand your data."}]," ",["$","code",null,{"children":"schema()"}]," describes tables and fields; ",["$","code",null,{"children":"profile()"}]," computes statistics without an LLM call."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Ask better questions."}]," ",["$","code",null,{"children":"suggest()"}]," recommends questions using the schema and available profile."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Analyze in natural language."}]," ",["$","code",null,{"children":"analyze()"}]," translates, executes, and summarizes a question using the selected strategy."]}],"\n",["$","li",null,{"children":[["$","strong",null,{"children":"Control individual steps."}]," Use ",["$","code",null,{"children":"translate()"}]," and ",["$","code",null,{"children":"query()"}]," separately, or ",["$","code",null,{"children":"recommend()"}]," and ",["$","code",null,{"children":"viz()"}]," for chart generation."]}],"\n"]}],"\n",["$","h2",null,{"id":"choose-an-execution-engine","children":["$","a",null,{"href":"#choose-an-execution-engine","className":"docs-heading-link","children":"Choose an execution engine"}]}],"\n",["$","div",null,{"className":"docs-table","children":["$","table",null,{"children":[["$","thead",null,{"children":["$","tr",null,{"children":[["$","th",null,{"children":"Engine"}],["$","th",null,{"children":"Query language"}],["$","th",null,{"children":"Environment"}]]}]}],["$","tbody",null,{"children":[["$","tr",null,{"children":[["$","td",null,{"children":"DuckDB"}],["$","td",null,{"children":"SQL"}],["$","td",null,{"children":"Node.js; default"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"JavaScript"}],["$","td",null,{"children":"JavaScript"}],["$","td",null,{"children":"Browser and Node.js"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Python"}],["$","td",null,{"children":"Python / pandas"}],["$","td",null,{"children":"Node.js with a Python executor"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"Supabase"}],["$","td",null,{"children":"PostgreSQL SQL"}],["$","td",null,{"children":"Node.js; remote execution"}]]}],["$","tr",null,{"children":[["$","td",null,{"children":"ClickHouse"}],["$","td",null,{"children":"ClickHouse SQL"}],["$","td",null,{"children":"Node.js; remote execution"}]]}]]}]]}]}],"\n",["$","p",null,{"children":["The ",["$","a",null,{"href":"/documentation/engines/overview/","children":"engine guide"}]," explains supported sources and configuration."]}],"\n","$L23","\n","$L24","\n","$L25","\n","$L26","\n","$L27","\n","$L28"]}]
 13:["$","div",null,{"className":"docs-page-meta","children":["$","a",null,{"href":"https://github.com/antvis/AVA/blob/ai/site/content/docs/introduction.mdx","children":["Edit this page on GitHub ",["$","span",null,{"aria-hidden":"true","children":"↗"}]]}]}]
 14:["$","nav",null,{"className":"docs-pagination","aria-label":"Chapter navigation","children":[["$","div",null,{}],["$","$La",null,{"href":"/documentation/agent-skill/","className":"docs-next","children":[["$","span",null,{"children":"Next →"}],["$","strong",null,{"children":"Agent Skill"}]]}]]}]
 15:["$","footer",null,{"className":"docs-footer","children":[["$","span",null,{"children":"AVA · An AntV project"}],["$","a",null,{"href":"https://github.com/antvis/AVA","children":"Open source on GitHub ↗"}]]}]
@@ -141,7 +175,7 @@ d:[["children",{"s":"__PAGE__","h":160,"d":{"r":["$","$1","c",{"children":[[["$"
 6:300
 23:["$","h2",null,{"id":"explore-the-documentation","children":["$","a",null,{"href":"#explore-the-documentation","className":"docs-heading-link","children":"Explore the documentation"}]}]
 24:["$","p",null,{"children":"Follow the workflow from your first dataset to a visual answer, then explore more control when you need it."}]
-25:["$","ol",null,{"className":"docs-timeline","role":"list","aria-label":"Documentation reading path","children":[["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"01"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/quickstart/","children":"Install and run AVA"}]}],["$","p",null,{"children":"Set up your model and complete your first analysis with the quickstart."}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"02"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/data/sources/","children":"Connect and understand your data"}]}],["$","p",null,{"children":["Load files or databases, then inspect ",["$","a",null,{"href":"/documentation/data/schema/","children":"schema and profiling results"}],"."]}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"03"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/analysis/overview/","children":"Ask questions and analyze"}]}],["$","p",null,{"children":"Discover useful questions, get answers, and choose an analysis strategy."}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"04"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/visualization/overview/","children":"Turn answers into charts"}]}],["$","p",null,{"children":"Generate a visualization or control chart recommendation and rendering separately."}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"05"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/configuration/","children":"Configure and extend"}]}],["$","p",null,{"children":["Adjust your model setup, choose an ",["$","a",null,{"href":"/documentation/engines/overview/","children":"execution engine"}],", or implement a ",["$","a",null,{"href":"/documentation/engines/custom/","children":"custom engine"}],"."]}]]}]]}]
+25:["$","ol",null,{"className":"docs-timeline","role":"list","aria-label":"Documentation reading path","children":[["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"01"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/quickstart/","children":"Install and run AVA"}]}],["$","p",null,{"children":"Set up your model and complete your first analysis with the quickstart."}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"02"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/data/sources/","children":"Connect and understand your data"}]}],["$","p",null,{"children":["Load files or databases, then inspect ",["$","a",null,{"href":"/documentation/data/schema/","children":"schema and profiling results"}],"."]}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"03"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/analysis/overview/","children":"Ask questions and analyze"}]}],["$","p",null,{"children":"Discover useful questions, get answers, and choose an analysis strategy."}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"04"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/visualization/overview/","children":"Turn answers into charts"}]}],["$","p",null,{"children":"Generate a visualization or control chart recommendation and rendering separately."}]]}],["$","li",null,{"children":[["$","span",null,{"className":"docs-timeline-marker","aria-hidden":"true","children":"05"}],["$","strong",null,{"children":["$","a",null,{"href":"/documentation/configuration/","children":"Configure and extend"}]}],["$","p",null,{"children":["Adjust your model setup, choose an ",["$","a",null,{"href":"/documentation/engines/overview/","children":"execution engine"}],", or implement a"," ",["$","a",null,{"href":"/documentation/engines/custom/","children":"custom engine"}],"."]}]]}]]}]
 26:["$","p",null,{"children":["Keep the ",["$","a",null,{"href":"/documentation/reference/api/","children":"API Reference"}]," handy for parameters. The ",["$","a",null,{"href":"/documentation/reference/architecture/","children":"architecture guide"}]," maps public capabilities to their source modules."]}]
 27:["$","h2",null,{"id":"resources","children":["$","a",null,{"href":"#resources","className":"docs-heading-link","children":"Resources"}]}]
 28:["$","ul",null,{"children":["\n",["$","li",null,{"children":["$","a",null,{"href":"https://github.com/antvis/AVA","children":"GitHub repository"}]}],"\n",["$","li",null,{"children":["$","a",null,{"href":"https://github.com/antvis/AVA/issues","children":"Report an issue"}]}],"\n",["$","li",null,{"children":["$","a",null,{"href":"https://antv.vision/","children":"AntV community"}]}],"\n"]}]
