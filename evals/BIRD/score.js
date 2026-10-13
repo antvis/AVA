@@ -6,7 +6,10 @@ const { ROOT, selectSamples, databasePath, inspectResources } = require('./index
 const { atomicJson, readJson, sha256 } = require('../_shared/files');
 const { integer } = require('../_shared/args');
 
-function compare(request, { python = 'python3', timeout = 60_000 } = {}) {
+const localPython = join(__dirname, '.venv', 'bin', 'python3');
+const PYTHON = existsSync(localPython) ? localPython : 'python3';
+
+function compare(request, { python = PYTHON, timeout = 60_000 } = {}) {
   return new Promise((resolveResult, reject) => {
     const child = execFile(
       python,
@@ -97,7 +100,7 @@ async function main(argv = process.argv.slice(2)) {
       predictions: { type: 'string' },
       output: { type: 'string' },
       root: { type: 'string', default: ROOT },
-      python: { type: 'string', default: 'python3' },
+      python: { type: 'string', default: PYTHON },
       timeout: { type: 'string', default: '60000' },
       help: { type: 'boolean' },
     },
@@ -128,4 +131,4 @@ async function main(argv = process.argv.slice(2)) {
   return report;
 }
 
-module.exports = { main, compare, scoreSamples };
+module.exports = { PYTHON, main, compare, scoreSamples };

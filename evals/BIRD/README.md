@@ -1,10 +1,10 @@
 # BIRD
 
-[BIRD](https://bird-bench.github.io/) 是面向真实数据库的 Text-to-SQL 基准，要求结合自然语言问题、数据库结构和外部知识生成 SQL。本目录使用官方开发集 `dev_20240627`，共 **1,534 道题、11 个 SQLite 数据库**，覆盖金融、教育、体育、医疗等领域。
+[BIRD](https://bird-bench.github.io/) 是面向真实数据库的 Text-to-SQL 基准，要求结合自然语言问题、数据库结构和外部知识生成 SQL。本目录使用官方 New Dev 开发集 [`dev_20251106`](https://huggingface.co/datasets/birdsql/bird_sql_dev_20251106)，共 **1,534 道题、11 个 SQLite 数据库**，覆盖金融、教育、体育、医疗等领域。
 
 ## 数据库概览
 
-以下为 `dev_20240627` 的本地统计，总行数为各表行数之和；主要特点用于理解数据，不代表官方难度评级。
+New Dev 复用原有数据库，以下为共用数据库的本地统计，总行数为各表行数之和；主要特点用于理解数据，不代表官方难度评级。
 
 | 数据库 | 领域 | 表数 / 字段数 | 总行数 | 大小（MiB） | 主要特点 |
 | --- | --- | ---: | ---: | ---: | --- |
@@ -28,12 +28,23 @@
 node evals/BIRD/fetch.js
 ```
 
-脚本从官方下载约 330 MiB 的压缩包，校验并解压到 `evals/BIRD/datasets/dev/`，建议预留 4 GiB 空间。重复下载会覆盖同名文件；数据目录已被 Git 忽略。
+脚本从官方 Hugging Face 下载 New Dev 题目（约 947 kB），校验 SHA-256、1,534 个唯一题目及 11 个数据库。已有数据库直接复用；首次安装额外下载约 330 MiB 数据库压缩包，建议预留 4 GiB 空间。仅从压缩包提取共用数据库，不导入旧版题目。
+
+数据安装到 `evals/BIRD/datasets/dev/`。校验成功后原子替换 `dev.json`，删除旧版 SQL、补充题目和不再使用的表结构 JSON；schema 从数据库读取。数据目录已被 Git 忽略。旧结果与新版题目不可混用，续跑及离线评分会通过资源哈希拒绝跨版本使用。
+
+评分所用 Python 的 `sqlite3` 需为 **SQLite 3.39+**：新版第 196 题使用无 `GROUP BY` 的聚合 `HAVING`（[SQLite 3.39 发布说明](https://www.sqlite.org/releaselog/3_39_0.html)）。用 `python3 -c "import sqlite3; print(sqlite3.sqlite_version)"` 检查；Workflow、Agent 和离线评分默认优先使用 `evals/BIRD/.venv/bin/python3`，没有专用环境时使用 `python3`；也可通过 `--python` 显式指定。评分器会拒绝 SQLite 3.39 以下版本。
+
+用已确认附带 SQLite 3.39+ 的 Python 创建专用环境（无需安装第三方包）：
+
+```bash
+/path/to/compatible/python3 -m venv evals/BIRD/.venv
+evals/BIRD/.venv/bin/python3 -c "import sqlite3; print(sqlite3.sqlite_version)"
+```
 
 ## 数据内容
 
 - `dev.json`：问题、外部知识（`evidence`）、参考 SQL 和难度标签。
-- `dev_tables.json`：数据库结构；`dev.sql`：参考 SQL。
+- `dataset.json`：New Dev 版本、官方来源及下载文件哈希。
 - `dev_databases/<db_id>/`：SQLite 数据库及 `database_description/` 字段说明。
 
 使用该数据集运行 AVA 评测，见 [Workflow BIRD 评测器](../ava-workflow/README.md#bird-评测器)。

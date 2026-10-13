@@ -15,7 +15,7 @@ export async function main(argv: string[] = process.argv.slice(2)) {
   if (!options) return;
   const { values, rest } = options;
   const { ROOT, selectSamples, inspectResources, modelQuestion, databasePath } = require('../../BIRD/index.js');
-  const { compare, scoreSamples } = require('../../BIRD/score.js');
+  const { PYTHON, compare, scoreSamples } = require('../../BIRD/score.js');
   const { integer } = require('../../_shared/args.js');
   const root = resolve(values.root ?? ROOT);
   const timeout = integer(values['score-timeout'], 'score-timeout');
@@ -29,7 +29,7 @@ export async function main(argv: string[] = process.argv.slice(2)) {
     for (const sample of samples) console.log(`${sample.id} [${sample.suite}] ${sample.question}`);
     return;
   }
-  const python = values.python ?? 'python3';
+  const python = values.python ?? PYTHON;
   const runtime = await compare({ action: 'check' }, { python, timeout });
   if (values.check) return console.log(`bird preflight OK: ${samples.length} questions; scorer ready`);
   const directory = await runEvaluation('bird', samples, root, 'dev.json', argv, rest, runtime);

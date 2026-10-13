@@ -11,6 +11,11 @@ from pathlib import Path
 
 
 def compare(request):
+    if sqlite3.sqlite_version_info < (3, 39, 0):
+        raise RuntimeError(
+            f'BIRD New Dev requires SQLite 3.39+, found {sqlite3.sqlite_version}. '
+            'Use --python with a newer Python/SQLite runtime or create evals/BIRD/.venv.'
+        )
     if request.get('action') == 'check':
         return {'python': sys.version.split()[0], 'sqlite': sqlite3.sqlite_version}
     payload = json.loads(Path(request['prediction']).read_text())

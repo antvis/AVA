@@ -111,3 +111,6 @@ pnpm-lock.yaml
 # Debug files
 .debug
 docs/
+
+# BIRD scoring runtime
+/evals/BIRD/.venv/

@@ -174,3 +174,46 @@ test('workflow passes only question and evidence; model request disables thinkin
     else process.env.OPENAI_MODEL = previous.model;
   }
 });
+
+test('New Dev scorer supports aggregate HAVING and rejects old SQLite before scoring', async () => {
+  const { PYTHON } = require('./score');
+  const runtime = await compare({ action: 'check' });
+  const [major, minor] = runtime.sqlite.split('.').map(Number);
+  assert(major > 3 || (major === 3 && minor >= 39));
+  execFileSync(PYTHON, ['-I', '-c', `
+import runpy, sqlite3, sys
+assert sqlite3.connect(':memory:').execute('SELECT COUNT(*) HAVING COUNT(*) > 0').fetchone() == (1,)
+compare = runpy.run_path(sys.argv[1])['compare']
+sqlite3.sqlite_version_info = (3, 38, 0)
+for request in ({'action': 'check'}, {}):
+    try:
+        compare(request)
+    except RuntimeError as error:
+        assert 'requires SQLite 3.39+' in str(error)
+    else:
+        raise AssertionError('Old SQLite was accepted')
+`, join(__dirname, 'compare.py')]);
+});
+
+test('BIRD passes every table CSV including full column/value descriptions and legacy encoding', async () => {
+  const { runSample } = await import('../ava-workflow/evals/bird.eval.ts');
+  const root = mkdtempSync(join(tmpdir(), 'bird-descriptions-'));
+  try {
+    const directory = join(root, 'dev_databases/demo/database_description');
+    mkdirSync(directory, { recursive: true });
+    const longValue = 'value description '.repeat(2000) + 'END_VALUE';
+    writeFileSync(join(directory, 'table_a.csv'), '\uFEFForiginal_column_name,column_description,value_description\nx,column details,' + longValue);
+    writeFileSync(join(directory, 'table_b.csv'), Buffer.from('original_column_name,column_description,value_description\ny,second column,0\x96100', 'latin1'));
+    let prompt;
+    await runSample({ source: async () => {}, profile: async () => {}, analyze: async (question) => { prompt = question; return {}; } },
+      { question_id: 0, db_id: 'demo', question: 'Question', evidence: 'Evidence', SQL: 'SECRET GOLD' }, root, { type: 'direct' }, true);
+    assert.match(prompt, /Table: table_a/);
+    assert.match(prompt, /Table: table_b/);
+    assert(prompt.includes(longValue));
+    assert(prompt.includes('second column,0–100'));
+    assert(!prompt.includes('\uFFFD'));
+    assert(!prompt.includes('SECRET GOLD'));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
