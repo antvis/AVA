@@ -20,7 +20,7 @@ One prompt to get ready. Your agent checks the environment, installs AVA and the
 Install AVA's Agent Skill in the current project so you can analyze data and create charts for me.
 
 1. Check that this environment runs macOS or Linux, with Node.js 22.13 or later and npm available. Use an existing Node version manager if an upgrade is needed. If you cannot meet these requirements, explain what is missing.
-2. Install the CLI with `npm install -g @antv/ava@alpha`. Verify that `ava --help` and `ava source --help` work.
+2. Install the CLI with `npm install -g @antv/ava@beta`. Verify that `ava --help` and `ava source --help` work.
 3. Install the skill for the detected agents in this project with `npx --yes skills add antvis/AVA --skill ava --yes`.
 4. Read the installed ava/SKILL.md and its environment setup reference. Verify the installed skill with `npx --yes skills list`.
 5. Smoke-test the CLI using a tiny CSV in a new temporary directory: load it with `ava source`, inspect it with `ava schema`, and execute a simple aggregate with `ava query`. Use the returned dataset ID and the actual table name from the schema. Dispose of this test session afterward.
@@ -121,7 +121,7 @@ Choose a new output path if that file already exists. The exported HTML needs in
 The CLI requires **Node.js 22.13 or later**, **macOS or Linux**, and an environment that supports background processes and Unix sockets. Install both the CLI and the skill:
 
 ```bash
-npm install -g @antv/ava@alpha
+npm install -g @antv/ava@beta
 npx --yes skills add antvis/AVA --skill ava --yes
 ```
 

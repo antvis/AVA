@@ -44,10 +44,10 @@
 
 ### 📦 Installation
 
-Install the v4 alpha with Node.js 22.13+:
+Install the v4 beta with Node.js 22.13+:
 
 ```bash
-npm install @antv/ava@alpha
+npm install @antv/ava@beta
 ```
 
 ### 💻 Usage
@@ -213,7 +213,7 @@ The agent and CLI workflows run on Node.js 22.13+ on macOS or Linux.
 Your agent plans the analysis; AVA runs queries and creates charts.
 
 ```bash
-npm install -g @antv/ava@alpha
+npm install -g @antv/ava@beta
 npx skills add antvis/AVA
 ```
 
@@ -231,7 +231,7 @@ This workflow uses your agent's existing model. See [agent setup](https://ava.an
 Configure your model and load a CSV:
 
 ```bash
-npm install -g @antv/ava@alpha
+npm install -g @antv/ava@beta
 
 export OPENAI_API_KEY='<your-api-key>'
 export OPENAI_MODEL='<your-model>'

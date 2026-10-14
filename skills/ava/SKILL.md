@@ -1,11 +1,11 @@
 ---
 name: ava
-description: Use the AVA CLI to explore, query, analyze, and visualize structured data. Supports local files such as CSV, JSON, Parquet, Excel, and SQLite, as well as databases such as MySQL, PostgreSQL, ClickHouse, Snowflake, and BigQuery. Use it for data questions, metric calculations, trend and change analysis, analysis recommendations, query generation and execution, and charts based on data or query results.
+description: Use the AVA CLI for data access, exploration, querying, analysis, and visualization. Load files or connect to databases, inspect schemas and data quality, generate and execute SQL/Python/JavaScript queries, transform and aggregate data, analyze metrics and trends, recommend analysis directions and chart types, and create interactive HTML charts.
 ---
 
-# AVA Data Analysis
+# AVA Data Analysis and Visualization
 
-AVA loads data, explores its structure, runs queries, and renders visualizations.
+Use AVA to connect and explore data, inspect schemas and data quality, transform and aggregate data, calculate and investigate metrics, recommend analysis directions and chart types, and deliver verified findings and interactive HTML charts.
 
 **The agent understands the question, plans the analysis, writes queries, and interprets results. AVA accesses data, performs computations, and renders charts.**
 
