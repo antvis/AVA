@@ -39,8 +39,13 @@ export async function removeTempFile(filePath: string): Promise<void> {
 }
 
 /**
- * Determine if the CSV encoding is extended and requires the 'encodings' extension.
- * for example, 'GB18030'.
+ * Determine whether a CSV encoding requires the 'encodings' extension.
+ * Built-in encodings: 'utf-8', 'utf-16', 'latin-1'.
+ * Extended encodings include 'gb18030', 'big5', 'shift_jis', 'EUC_CN',
+ * 'EUC_JP', 'EUC_KR', 'EUC_TW', 'windows-1251-2000', and 'windows-1252-2000'.
+ * The extension supports 1,000+ encodings; see the complete list:
+ * https://duckdb.org/docs/current/core_extensions/encodings#all-supported-encodings
+ * This predicate selects extension loading; it does not validate encoding names.
  */
 function isExtendedCSVEncoding(format: FileFormat, encoding?: string): boolean {
   return format === 'csv' && !!encoding && !['utf-8', 'utf-16', 'latin-1'].includes(encoding);
