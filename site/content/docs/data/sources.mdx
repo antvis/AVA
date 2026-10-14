@@ -191,6 +191,7 @@ await ava.source({
 | Field  | Type    | Required | Meaning / default      |
 | ------ | ------- | -------- | ---------------------- |
 | `data` | `any[]` | Yes      | Array of rows to load. |
+| `options` | `JSONReadOptions` | No | DuckDB reader parameters below. |
 
 ### JSON files
 
@@ -199,7 +200,10 @@ Use `type: 'json-file'` with a local path or HTTP(S) URL.
 ```typescript
 await ava.source({
   type: 'json-file',
-  options: { path: './sales.json' },
+  options: {
+    path: './sales.json',
+    options: { columns: { city: 'VARCHAR', revenue: 'DOUBLE' }, sample_size: -1 },
+  },
 });
 ```
 
@@ -207,6 +211,35 @@ await ava.source({
 | --------- | ------------------------ | -------- | ---------------------------------------------------- |
 | `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
 | `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+| `options` | `JSONReadOptions` | No | DuckDB reader parameters below. |
+
+### JSON reader options
+
+Both JSON source types accept `options.options` when using the DuckDB engine. All fields are optional.
+The complete [DuckDB JSON reader parameter list](https://duckdb.org/docs/current/data/json/loading_json) is exposed as `JSONReadOptions`:
+
+| Parameter | Type | Default | Meaning |
+| --- | --- | --- | --- |
+| `auto_detect` | `boolean` | `true` | Infer schema |
+| `columns` | `Record<string, string>` | Unset | Names → DuckDB types; selects columns |
+| `compression` | `'auto_detect' \| 'none' \| 'gzip' \| 'zstd'` | `'auto_detect'` | Codec |
+| `dateformat` | `string` | `'iso'` | Date pattern |
+| `field_appearance_threshold` | `number` | `0.1` | Sparse-object MAP threshold |
+| `filename` | `boolean` | `false` | Include filename in `SELECT *` |
+| `format` | `'auto' \| 'unstructured' \| 'newline_delimited' \| 'array'` | `'auto'` | Input layout for `read_json` |
+| `hive_partitioning` | `boolean` | Auto-detected | Path partitions |
+| `ignore_errors` | `boolean` | `false` | Skip errors; NDJSON only |
+| `map_inference_threshold` | `number` | `200` | STRUCT subfield limit; `-1` disables MAP inference |
+| `maximum_depth` | `number` | `-1` | Inference depth; `-1` unlimited |
+| `maximum_object_size` | `number` | `16777216` | Bytes per object |
+| `maximum_sample_files` | `number` | `32` | Files sampled |
+| `records` | `'auto' \| 'true' \| 'false'` | `'auto'` | Unpack objects |
+| `sample_size` | `number` | `20480` | Objects sampled; `-1` scans all |
+| `timestampformat` | `string` | `'iso'` | Timestamp pattern |
+| `union_by_name` | `boolean` | `false` | Merge schemas |
+
+Inline data is serialized as an uncompressed JSON array; choose compatible reader options.
+Remote files are downloaded to temporary paths, so set `compression` explicitly for compressed URLs.
 
 ## Parquet
 

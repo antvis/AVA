@@ -16,7 +16,7 @@ describe('duckdb/util/file', () => {
     expect(conn.run.mock.calls.map(([sql]) => sql)).toEqual([
       'INSTALL encodings',
       'LOAD encodings',
-      "CREATE OR REPLACE VIEW data AS SELECT * FROM read_csv('/tmp/data.csv', auto_detect=true, encoding='gb18030')",
+      "CREATE OR REPLACE VIEW data AS SELECT * FROM read_csv('/tmp/data.csv', auto_detect=true, \"encoding\"='gb18030')",
     ]);
   });
 
