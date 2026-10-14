@@ -8,10 +8,12 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 
 import AdmZip from 'adm-zip';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeAll, afterAll } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
+
+import type { ExcelSourceOptions } from '../../../src/types';
 
 describe('loaders/excel', () => {
   let engine: DuckDBEngine | null = null;
@@ -137,10 +139,24 @@ describe('loaders/excel', () => {
     { sheets: [{ name: 'Missing' }] },
     { sheets: [{ name: 'Sales', range: 'B3:A1' }] },
     { sheets: [{ name: 'Sales', range: 'A0:B3' }] },
+    { sheets: [{ name: 'Sales', range: 'A1:XFE3' }] },
+    { sheets: [{ name: 'Sales', range: 'A1:A1048577' }] },
+    { sheets: [{ name: 'Sales', range: 'Sales!A1:B3' }] },
+    { sheets: [{ name: 'Sales' }, { name: 'Sales', header: false }] },
   ])('rejects invalid selection %j instead of reading all sheets', async (selection) => {
     engine = new DuckDBEngine(getLLMConfig());
     await expect(engine.load({ type: 'excel', options: { path: xlsxPath, ...selection } })).rejects.toThrow();
   });
+
+  it.each([{ sheets: ['Sales'] }, { range: 'A1:B3' }, { header: false }, { skip: 2 }])(
+    'rejects obsolete or unsupported configuration %j',
+    async (options) => {
+      engine = new DuckDBEngine(getLLMConfig());
+      await expect(
+        engine.load({ type: 'excel', options: { path: xlsxPath, ...options } as ExcelSourceOptions })
+      ).rejects.toThrow();
+    }
+  );
 
   it.each([
     ['销售 & "收入"', '销售 &amp; &quot;收入&quot;'],
@@ -195,5 +211,74 @@ describe('loaders/excel', () => {
     await expect(
       engine.load({ type: 'excel', options: { path: path.join(__dirname, '../../../data/companies.csv') } })
     ).rejects.toThrow();
+  });
+  describe('per-sheet read settings', () => {
+    let directory: string;
+    let file: string;
+    beforeAll(async () => {
+      directory = await mkdtemp(path.join(tmpdir(), 'ava-excel-selection-'));
+      file = path.join(directory, 'selection.xlsx');
+      const zip = new AdmZip(path.join(__dirname, '../../datasets/sales.xlsx'));
+      zip.updateFile(
+        'xl/worksheets/sheet1.xml',
+        Buffer.from(`<?xml version="1.0"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>
+<row r="1"><c r="A1" t="inlineStr"><is><t>Report title</t></is></c></row>
+<row r="3"><c r="B3"><v>101</v></c><c r="C3"><v>202</v></c></row>
+<row r="4"><c r="B4"><v>1</v></c><c r="C4"><v>2</v></c></row>
+<row r="6"><c r="B6"><v>3</v></c><c r="C6"><v>4</v></c></row>
+<row r="7"><c r="B7" t="inlineStr"><is><t>Private notes</t></is></c></row>
+</sheetData></worksheet>`)
+      );
+      zip.writeZip(file);
+    });
+    afterAll(async () => {
+      await rm(directory, { recursive: true, force: true });
+    });
+
+    it.each([undefined, true, false])('respects range, blank rows, and header=%s', async (header) => {
+      const instance = new DuckDBEngine(getLLMConfig());
+      try {
+        const options: ExcelSourceOptions = { path: file, sheets: [{ name: 'Sales', range: 'b3:c6', header }] };
+        const schema = await instance.load({ type: 'excel', options });
+        expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
+        if (header !== false) expect(schema.tables[0].fields.map((field) => field.name)).toEqual(['101', '202']);
+        const result = await instance.execute('SELECT * FROM "Sales"');
+        expect(result.data.map((row) => Object.values(row))).toEqual([
+          ...(header === false ? [[101, 202]] : []),
+          [1, 2],
+          [null, null],
+          [3, 4],
+        ]);
+      } finally {
+        await instance.dispose();
+      }
+    });
+
+    it('applies independent ranges and headers to two sheets', async () => {
+      const instance = new DuckDBEngine(getLLMConfig());
+      try {
+        const schema = await instance.load({
+          type: 'excel',
+          options: {
+            path: file,
+            sheets: [
+              { name: 'Sales', range: 'B3:C4', header: true },
+              { name: 'Costs', range: 'A2:B3', header: false },
+            ],
+          },
+        });
+        expect(schema.tables.map((table) => table.name).sort()).toEqual(['Costs', 'Sales']);
+        const sales = await instance.execute('SELECT * FROM "Sales"');
+        expect(sales.data).toEqual([{ '101': 1, '202': 2 }]);
+        const costs = await instance.execute('SELECT * FROM "Costs"');
+        expect(costs.data.map((row) => Object.values(row))).toEqual([
+          ['ORD-0001', 165],
+          ['ORD-0002', 420],
+        ]);
+      } finally {
+        await instance.dispose();
+      }
+    });
   });
 });
