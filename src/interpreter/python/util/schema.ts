@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { excelOptionsSchema } from '../../../util/excel';
+
 export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
   z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue)])
 );
@@ -51,7 +53,7 @@ export const sourceSchema = z
     z.object({ type: z.literal('json'), options: z.object({ data: z.array(z.record(jsonValue)) }).strict() }),
     z.object({ type: z.literal('csv-file'), options: fileOptions.extend({ options: csvOptions.optional() }) }),
     z.object({ type: z.literal('json-file'), options: fileOptions }),
-    z.object({ type: z.literal('excel'), options: fileOptions }),
+    z.object({ type: z.literal('excel'), options: excelOptionsSchema }),
     z.object({ type: z.literal('parquet'), options: fileOptions }),
   ])
   .superRefine(({ options }, ctx) => {

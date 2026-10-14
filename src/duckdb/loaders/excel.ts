@@ -7,7 +7,9 @@
 import { dirname } from 'node:path';
 
 import AdmZip from 'adm-zip';
+import { SaxesParser } from 'saxes';
 
+import { excelOptionsSchema } from '../../util/excel';
 import { downloadToTempFile, removeTempFile } from '../util/file';
 import { getDuckDBSchema } from '../util/schema';
 import { escapeSql, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
@@ -22,8 +24,18 @@ function readSheetNames(filePath: string): string[] {
   if (!workbookEntry) {
     throw new Error(`Not a valid .xlsx file (missing xl/workbook.xml): ${filePath}`);
   }
-  const xml = workbookEntry.getData().toString('utf8');
-  const names = [...xml.matchAll(/<sheet\b[^>]*\bname="([^"]*)"/g)].map((m) => m[1]);
+  const names: string[] = [];
+  const parser = new SaxesParser({ xmlns: true });
+  parser.on('doctype', () => {
+    throw new Error('Excel workbook XML must not contain a DOCTYPE');
+  });
+  parser.on('opentag', (tag) => {
+    if (tag.local !== 'sheet' || tag.uri !== 'http://schemas.openxmlformats.org/spreadsheetml/2006/main') return;
+    const name = tag.attributes.name?.value;
+    if (!name) throw new Error('Excel sheet is missing its name');
+    names.push(name);
+  });
+  parser.write(workbookEntry.getData().toString('utf8')).close();
   if (names.length === 0) {
     throw new Error(`Excel workbook has no sheets: ${filePath}`);
   }
@@ -31,13 +43,14 @@ function readSheetNames(filePath: string): string[] {
 }
 
 export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSource> {
-  const { path: sourcePath, headers } = options;
+  const { path: sourcePath, headers, sheets } = excelOptionsSchema.parse(options);
 
   // Remote file — download to a temp file first (DuckDB stays offline)
   const isRemote = /^https?:\/\//.test(sourcePath);
   const filePath = isRemote ? await downloadToTempFile(sourcePath, 'xlsx', headers) : sourcePath;
   const cleanup = isRemote ? () => removeTempFile(filePath) : noopCleanup;
 
+  let sheetNames: string[] = [];
   return {
     register: async (conn) => {
       // The excel extension is dynamically loaded, not statically linked like
@@ -47,17 +60,31 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
       // keeps CI (fresh ~/.duckdb) working the same as a local machine.
       await conn.run('INSTALL excel');
       await conn.run('LOAD excel');
-      const sheetNames = readSheetNames(filePath);
+      const available = readSheetNames(filePath);
+      const selected = sheets ?? available.map((name) => ({ name, range: undefined, header: true }));
+      sheetNames = selected.map((sheet) => sheet.name);
       for (const sheet of sheetNames) {
+        if (!available.includes(sheet)) throw new Error(`Excel sheet not found: ${sheet}`);
+      }
+      for (const sheet of available) {
+        // shortcut: Until DuckDB fixes double decoding, reject ambiguous workbooks, including unselected sheets.
+        if (/&(?:amp|lt|gt|quot|apos|#\d+|#x[\da-f]+);/i.test(sheet)) {
+          throw new Error(
+            `DuckDB cannot safely read Excel sheet "${sheet}": rename it to remove XML entity text or use the Python engine`
+          );
+        }
+      }
+      for (const { name: sheet, range, header } of selected) {
+        const rangeStr = range === undefined ? '' : `, range=${sqlStringLiteral(range)}`;
         await conn.run(
           `CREATE OR REPLACE VIEW ${sqlIdentifier(sheet)} AS SELECT * FROM read_xlsx('${escapeSql(
             filePath
-          )}', sheet=${sqlStringLiteral(sheet)})`
+          )}', sheet=${sqlStringLiteral(sheet)}${rangeStr}, header=${header})`
         );
       }
       return sheetNames;
     },
-    getSchema: (conn) => getDuckDBSchema(conn, readSheetNames(filePath)),
+    getSchema: (conn) => getDuckDBSchema(conn, sheetNames),
     allowedDirectories: [dirname(filePath)],
     cleanup,
   };

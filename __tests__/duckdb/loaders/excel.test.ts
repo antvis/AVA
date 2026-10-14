@@ -4,7 +4,10 @@
  */
 
 import * as path from 'path';
+import { mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 
+import AdmZip from 'adm-zip';
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
@@ -96,6 +99,95 @@ describe('loaders/excel', () => {
       { order_id: 'ORD-0002', profit: 260.2 },
       { order_id: 'ORD-0003', profit: 376.2 },
     ]);
+  });
+
+  it('only exposes the selected sheet and inclusive range', async () => {
+    engine = new DuckDBEngine(getLLMConfig());
+    const schema = await engine.load({
+      type: 'excel',
+      options: {
+        path: xlsxPath,
+        sheets: [{ name: 'Sales', range: 'A1:B3', header: true }],
+      },
+    });
+    expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
+    expect(schema.tables[0].fields.map((field) => field.name)).toEqual(['order_id', 'order_date']);
+    expect((await engine.execute('SELECT * FROM "Sales"')).data).toHaveLength(2);
+    await expect(engine.execute('SELECT * FROM "Costs"')).rejects.toThrow();
+  });
+
+  it('does not consume the first data row when header is false', async () => {
+    engine = new DuckDBEngine(getLLMConfig());
+    await engine.load({
+      type: 'excel',
+      options: {
+        path: xlsxPath,
+        sheets: [{ name: 'Costs', range: 'A2:B3', header: false }],
+      },
+    });
+    const result = await engine.execute('SELECT * FROM "Costs"');
+    expect(result.data.map((row) => Object.values(row))).toEqual([
+      ['ORD-0001', 165],
+      ['ORD-0002', 420],
+    ]);
+  });
+
+  it.each([
+    { sheets: [] },
+    { sheets: [{ name: 'Missing' }] },
+    { sheets: [{ name: 'Sales', range: 'B3:A1' }] },
+    { sheets: [{ name: 'Sales', range: 'A0:B3' }] },
+  ])('rejects invalid selection %j instead of reading all sheets', async (selection) => {
+    engine = new DuckDBEngine(getLLMConfig());
+    await expect(engine.load({ type: 'excel', options: { path: xlsxPath, ...selection } })).rejects.toThrow();
+  });
+
+  it.each([
+    ['销售 & "收入"', '销售 &amp; &quot;收入&quot;'],
+    ["O'Brien <2026>", 'O&apos;Brien &lt;2026&gt;'],
+    ['销售 & 😀', '&#x9500;&#21806; &amp; &#x1F600;'],
+  ])('decodes XML sheet name %s exactly once', async (name, encoded) => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'ava-excel-'));
+    try {
+      const zip = new AdmZip(xlsxPath);
+      const xml = zip
+        .readAsText('xl/workbook.xml')
+        .replace('name="Sales"', `name='${encoded}'`)
+        .replace('<sheets>', '<!-- <sheet name="Not a sheet"/> --><sheets>');
+      zip.updateFile('xl/workbook.xml', Buffer.from(xml));
+      const file = path.join(directory, 'names.xlsx');
+      zip.writeZip(file);
+      engine = new DuckDBEngine(getLLMConfig());
+      const schema = await engine.load({ type: 'excel', options: { path: file, sheets: [{ name }] } });
+      expect(schema.tables.map((table) => table.name)).toEqual([name]);
+      expect((await engine.execute(`SELECT * FROM "${name.replace(/"/g, '""')}" LIMIT 1`)).data).toHaveLength(1);
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it.each(['Sales &amp; Tax', 'Sales & Tax'])('rejects ambiguous workbooks when selecting %s', async (sheet) => {
+    const directory = await mkdtemp(path.join(tmpdir(), 'ava-excel-'));
+    try {
+      const zip = new AdmZip(xlsxPath);
+      const xml = zip
+        .readAsText('xl/workbook.xml')
+        .replace('name="Sales"', 'name="Sales &amp;amp; Tax"')
+        .replace('name="Costs"', 'name="Sales &amp; Tax"');
+      zip.updateFile('xl/workbook.xml', Buffer.from(xml));
+      const file = path.join(directory, 'names.xlsx');
+      zip.writeZip(file);
+      engine = new DuckDBEngine(getLLMConfig());
+      await expect(engine.load({ type: 'excel', options: { path: file, sheets: [{ name: sheet }] } })).rejects.toThrow(
+        'cannot safely read Excel sheet'
+      );
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 
   it('throws for a non-xlsx file', async () => {

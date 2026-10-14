@@ -319,13 +319,25 @@ export interface ParquetSourceOptions {
 
 /**
  * Options for Excel file sources: a local file path or an http(s) URL.
- * Every sheet in the workbook is registered as its own view.
+ * Selected sheets are registered as separate views (all sheets when omitted).
  */
 export interface ExcelSourceOptions {
   /** Local file path or http(s) URL */
   path: string;
   /** HTTP headers for remote sources (e.g. Authorization) */
   headers?: Record<string, string>;
+  /** Per-sheet selections; omitted selects all, an empty list is invalid. */
+  sheets?: ExcelSheetOptions[];
+}
+
+/** Read settings for one Excel worksheet. */
+export interface ExcelSheetOptions {
+  /** Exact worksheet name. */
+  name: string;
+  /** Inclusive A1 rectangle, e.g. B3:F100. */
+  range?: string;
+  /** Whether the first row contains column names. Defaults to true. */
+  header?: boolean;
 }
 
 /**

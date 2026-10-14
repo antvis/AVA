@@ -264,7 +264,13 @@ Read a workbook from a local path or HTTP(S) URL. Each sheet becomes a separate 
 ```typescript
 await ava.source({
   type: 'excel',
-  options: { path: './sales.xlsx' },
+  options: {
+    path: './sales.xlsx',
+    sheets: [
+      { name: 'Sales', range: 'A3:F100', header: true },
+      { name: 'Costs', range: 'B2:C50', header: false },
+    ],
+  },
 });
 ```
 
@@ -272,6 +278,12 @@ await ava.source({
 | --------- | ------------------------ | -------- | ---------------------------------------------------- |
 | `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
 | `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+
+`sheets` is an optional non-empty list of `{ name, range?, header? }` objects. Each `name` must match an exact worksheet name and appear only once. Omit `sheets` to load all sheets with `header: true`; unknown names, duplicates, and empty selections fail instead of falling back to the entire workbook.
+
+Each sheet has its own optional `range`, an inclusive A1 rectangle (for example, `B3:F100`). `header: true` uses its first row as column names; `false` keeps that row as data. When omitted, both engines use the first row as column names (`header: true`). File-level `range`/`header`, string-only sheet selections, unsupported options, and invalid ranges are rejected.
+
+DuckDB rejects workbooks with sheet names containing literal XML entity text (such as `Sales &amp; Tax`) because its Excel extension can confuse them with another sheet. Rename these sheets or use the Python engine. Ordinary ampersands, quotes, and Unicode names are supported.
 
 ## Text
 

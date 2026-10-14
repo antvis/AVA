@@ -3,6 +3,8 @@ import { join } from 'path';
 
 import { z } from 'zod';
 
+import { excelOptionsSchema } from '../../util/excel';
+
 import type { DataSourceConfig } from '../../types';
 
 export const IPC_TIMEOUT_MS = 120_000;
@@ -50,7 +52,7 @@ const sourceSchema = z.discriminatedUnion('type', [
     .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.unknown()).optional() }) })
     .strict(),
   z.object({ type: z.literal('parquet'), options: file }).strict(),
-  z.object({ type: z.literal('excel'), options: file }).strict(),
+  z.object({ type: z.literal('excel'), options: excelOptionsSchema }).strict(),
   z.object({ type: z.literal('sqlite'), options: z.object({ path: text }).strict() }).strict(),
   z
     .object({

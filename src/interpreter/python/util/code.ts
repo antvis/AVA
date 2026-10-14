@@ -1,3 +1,5 @@
+import { excelRange } from '../../../util/excel';
+
 import type { DataSourceConfig, ExecutionOptions } from '../../../types';
 
 /** Generate only the loader needed for this source. */
@@ -7,8 +9,27 @@ function sourceCode(source: DataSourceConfig): string {
       return "tables = {'data': pd.DataFrame(options['data'])}";
     case 'json-file':
       return "tables = {'data': pd.read_json(options['path'], orient='records', storage_options=options.get('headers') or None)}";
-    case 'excel':
-      return "tables = pd.read_excel(options['path'], sheet_name=None, storage_options=options.get('headers') or None)";
+    case 'excel': {
+      const selected = source.options.sheets?.map(({ name, range, header }) => {
+        const bounds = range === undefined ? undefined : excelRange(range);
+        return {
+          name,
+          read: {
+            header: header === false ? null : 0,
+            ...(bounds && {
+              usecols: `${bounds.firstColumn}:${bounds.lastColumn}`,
+              skiprows: bounds.firstRow - 1,
+              nrows: bounds.lastRow - bounds.firstRow + (header === false ? 1 : 0),
+            }),
+          },
+        };
+      });
+      return `with pd.ExcelFile(options['path'], storage_options=options.get('headers') or None) as workbook:
+        selected = json.loads(${JSON.stringify(JSON.stringify(selected ?? null))})
+        if selected is None:
+            selected = [{'name': name, 'read': {'header': 0}} for name in workbook.sheet_names]
+        tables = {sheet['name']: workbook.parse(sheet_name=sheet['name'], **sheet['read']) for sheet in selected}`;
+    }
     case 'parquet':
       return "tables = {'data': pd.read_parquet(options['path'], storage_options=options.get('headers') or None)}";
     case 'csv':
