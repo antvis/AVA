@@ -2,7 +2,7 @@
 
 > AVA is an AntV TypeScript framework for loading data, answering natural-language questions, and generating visualizations through an SDK, CLI, or Agent Skill.
 
-This documentation covers AVA v4 alpha. Install `@antv/ava@alpha` with Node.js 22.13.0 or later. Use `@antv/ava` in Node.js and `@antv/ava/browser` in browsers.
+This documentation covers AVA v4 beta. Install `@antv/ava@beta` with Node.js 22.13.0 or later. Use `@antv/ava` in Node.js and `@antv/ava/browser` in browsers.
 
 The core workflow is `source()` → `analyze()` → `visualize()`. `source()` replaces the current dataset and returns no value; use `schema()` to inspect it and `profile()` for statistics. Use `suggest()` to discover questions, `translate()` and `query()` to control query execution, or `recommend()` and `viz()` to control chart generation. Always await `dispose()` when finished.
 
@@ -11,7 +11,7 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 ## Get started
 
 - [Introduction](https://ava.antv.vision/documentation/): Core workflow and ways to use AVA.
-- [Installation and quickstart](https://ava.antv.vision/documentation/quickstart/): Install the v4 alpha, configure a model, and run a complete Node.js example.
+- [Installation and quickstart](https://ava.antv.vision/documentation/quickstart/): Install the v4 beta, configure a model, and run a complete Node.js example.
 - [Agent Skill](https://ava.antv.vision/documentation/agent-skill/): Install AVA's agent skill and analyze data with an AI coding agent.
 - [Command-line interface](https://ava.antv.vision/documentation/reference/cli/): Inspect datasets, run queries, and render charts using persistent local sessions.
 
