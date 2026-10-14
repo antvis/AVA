@@ -7,6 +7,7 @@ import * as path from 'path';
 import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { DuckDBEngine } from '../../../src/duckdb/engine';
+import { writeTempFile, removeTempFile } from '../../../src/duckdb/util/file';
 import { getLLMConfig } from '../../test-utils';
 
 describe('loaders/csv-file', () => {
@@ -76,5 +77,20 @@ describe('loaders/csv-file', () => {
       { name: 'Alice', age: 30 },
       { name: 'Bob', age: 25 },
     ]);
+  });
+
+  it('reads GB18030 Chinese with automatic extension loading disabled', async () => {
+    // GB18030 bytes for "name\n中文\n".
+    const csvPath = await writeTempFile(Buffer.from('6e616d650ad6d0cec40a', 'hex'), 'csv');
+    try {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load({ type: 'csv-file', options: { path: csvPath, options: { encoding: 'gb18030' } } });
+      const rows = await engine.execute('SELECT * FROM "data"');
+      expect(rows.data).toEqual([{ name: '中文' }]);
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await removeTempFile(csvPath);
+    }
   });
 });

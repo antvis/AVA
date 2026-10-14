@@ -208,7 +208,7 @@ export interface CSVReadOptions {
   rejects_limit?: number;
 
   // ── encoding / compression ──────────────────
-  /** File encoding: 'utf-8' | 'utf-16' | 'latin-1'. Default 'utf-8' */
+  /** File encoding (default 'utf-8'). Others such as 'gb18030' require the DuckDB encodings extension. */
   encoding?: string;
   /** Compression method: 'none' | 'gzip' | 'zstd'. Default auto (from file extension) */
   compression?: string;
