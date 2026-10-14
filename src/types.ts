@@ -319,13 +319,40 @@ export interface ParquetSourceOptions {
 
 /**
  * Options for Excel file sources: a local file path or an http(s) URL.
- * Every sheet in the workbook is registered as its own view.
+ * Selected sheets are registered as separate views (all sheets when omitted).
  */
 export interface ExcelSourceOptions {
   /** Local file path or http(s) URL */
   path: string;
   /** HTTP headers for remote sources (e.g. Authorization) */
   headers?: Record<string, string>;
+  /** Per-sheet selections; omitted selects all, an empty list is invalid. */
+  sheets?: ExcelSheetOptions[];
+}
+
+/** Read settings for one Excel worksheet. */
+export interface ExcelSheetOptions extends ExcelReadOptions {
+  /** Exact worksheet name. */
+  sheet: string;
+}
+
+/**
+ * DuckDB read_xlsx reader options, applied independently to each sheet.
+ * https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files
+ */
+export interface ExcelReadOptions {
+  /** Inclusive A1 rectangle, e.g. B3:F100. */
+  range?: string;
+  /** Whether the first row contains column names. Defaults to true. */
+  header?: boolean;
+  /** DuckDB only: read every cell as VARCHAR. Defaults to false. */
+  all_varchar?: boolean;
+  /** DuckDB only: replace cells that fail type conversion with NULL. Defaults to false. */
+  ignore_errors?: boolean;
+  /** DuckDB only: stop at an empty row. Defaults to false with range, true without. */
+  stop_at_empty?: boolean;
+  /** DuckDB only: infer empty cells as VARCHAR instead of DOUBLE. Defaults to false. */
+  empty_as_varchar?: boolean;
 }
 
 /**

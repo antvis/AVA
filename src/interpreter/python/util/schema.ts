@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { excelOptionsSchema, excelSheetSchema } from '../../../util/excel';
+
 export const jsonValue: z.ZodType<unknown> = z.lazy(() =>
   z.union([z.string(), z.number().finite(), z.boolean(), z.null(), z.array(jsonValue), z.record(jsonValue)])
 );
@@ -39,6 +41,17 @@ const csvOptions = z
   })
   .strict();
 
+const excelOptions = excelOptionsSchema.extend({
+  sheets: z
+    .array(excelSheetSchema.pick({ sheet: true, range: true, header: true }))
+    .nonempty()
+    .refine(
+      (sheets) => new Set(sheets.map((sheet) => sheet.sheet)).size === sheets.length,
+      'Excel sheet names must be unique'
+    )
+    .optional(),
+});
+
 const fileOptions = z.object({ path: z.string().min(1), headers: z.record(z.string()).optional() }).strict();
 
 /** Validate and snapshot configuration; data loading runs in the generated script. */
@@ -51,7 +64,7 @@ export const sourceSchema = z
     z.object({ type: z.literal('json'), options: z.object({ data: z.array(z.record(jsonValue)) }).strict() }),
     z.object({ type: z.literal('csv-file'), options: fileOptions.extend({ options: csvOptions.optional() }) }),
     z.object({ type: z.literal('json-file'), options: fileOptions }),
-    z.object({ type: z.literal('excel'), options: fileOptions }),
+    z.object({ type: z.literal('excel'), options: excelOptions }),
     z.object({ type: z.literal('parquet'), options: fileOptions }),
   ])
   .superRefine(({ options }, ctx) => {

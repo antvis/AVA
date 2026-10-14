@@ -2,7 +2,7 @@
  * Shared SQL quoting/composition helpers and DuckDB reader options.
  */
 
-import type { CSVReadOptions, JSONReadOptions, FileFormat } from '../types';
+import type { CSVReadOptions, JSONReadOptions, ExcelReadOptions, FileFormat } from '../types';
 
 /** DuckDB reader function for each file format */
 export const READ_FN: Record<FileFormat, string> = {
@@ -55,9 +55,9 @@ function serializeOptionValue(value: unknown): string | null {
 
 /**
  * Serialize DuckDB reader options into a `, key=value, ...` SQL fragment for
- * read_csv/read_json. Only undefined values are skipped; unsupported values throw.
+ * read_csv/read_json/read_xlsx. Only undefined values are skipped; unsupported values throw.
  */
-export function serializeOptions(options?: CSVReadOptions | JSONReadOptions): string {
+export function serializeOptions(options?: CSVReadOptions | JSONReadOptions | ExcelReadOptions): string {
   if (!options) return '';
   const parts: string[] = [];
   for (const [key, value] of Object.entries(options)) {

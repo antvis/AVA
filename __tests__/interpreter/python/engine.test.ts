@@ -14,6 +14,24 @@ afterEach(() => {
 });
 
 describe('python/engine', () => {
+  it.each(['all_varchar', 'ignore_errors', 'stop_at_empty', 'empty_as_varchar'])(
+    'rejects DuckDB-only Excel setting %s before executing Python',
+    async (key) => {
+      const execute = vi.fn();
+      const engine = new PythonEngine({ model: 'unused' }, { execute });
+      await expect(
+        engine.load({
+          type: 'excel',
+          options: {
+            path: 'data.xlsx',
+            sheets: [{ sheet: 'Sales', [key]: false }],
+          },
+        })
+      ).rejects.toThrow('Unrecognized key');
+      expect(execute).not.toHaveBeenCalled();
+    }
+  );
+
   it('initializes the default executor once and preserves per-call buffer limits', async () => {
     const execute = vi.fn().mockResolvedValueOnce(metadata).mockResolvedValue(answer);
     const createExecutor = vi.spyOn(pythonExecutor, 'createPythonExecutor').mockReturnValue(execute);
