@@ -7,6 +7,8 @@ import * as path from 'path';
 
 import { describe, it, expect, afterEach } from 'vitest';
 
+import { writeTempFile, removeTempFile } from '../../../src/duckdb/util/file';
+import { sourceConfig } from '../../../src/cli/session/protocol';
 import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
 
@@ -16,6 +18,28 @@ describe('loaders/json-file', () => {
   afterEach(async () => {
     await engine?.dispose();
     engine = null;
+  });
+
+  it('passes CLI JSON options through to the NDJSON reader', async () => {
+    const file = await writeTempFile('{"id":1}\ninvalid\n{"id":2}\n', 'json');
+    try {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load(
+        sourceConfig.parse({
+          type: 'json-file',
+          options: {
+            path: file,
+            options: { format: 'newline_delimited', ignore_errors: true, columns: { id: 'VARCHAR' } },
+          },
+        })
+      );
+      const result = await engine.execute('SELECT id FROM data WHERE id IS NOT NULL ORDER BY id');
+      expect(result.data).toEqual([{ id: '1' }, { id: '2' }]);
+    } finally {
+      await engine?.dispose();
+      engine = null;
+      await removeTempFile(file);
+    }
   });
 
   it('loads a JSON file with a complete schema and original column order', async () => {

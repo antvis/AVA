@@ -17,6 +17,7 @@ export type {
   EngineConfig,
   DuckDBEngineOptions,
   DataSourceConfig,
+  JSONReadOptions,
   ClickHouseSourceOptions,
   Schema,
   TableSchema,

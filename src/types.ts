@@ -245,16 +245,62 @@ export interface CSVFileSourceOptions {
 }
 
 /**
+ * DuckDB read_json parameters, including shared JSON reader options.
+ * https://duckdb.org/docs/current/data/json/loading_json
+ * Optional fields use DuckDB defaults. These options apply only to DuckDB.
+ */
+export interface JSONReadOptions {
+  /** Infer columns and types. Default true */
+  auto_detect?: boolean;
+  /** Column names mapped to DuckDB types; omitted columns are excluded */
+  columns?: Record<string, string>;
+  /** Compression codec. Default auto_detect */
+  compression?: 'auto_detect' | 'none' | 'gzip' | 'zstd';
+  /** Date parsing pattern. Default 'iso' */
+  dateformat?: string;
+  /** Average field frequency below which objects become MAPs. Default 0.1 */
+  field_appearance_threshold?: number;
+  /** Include filename in SELECT *. Default false; also available as a virtual column */
+  filename?: boolean;
+  /** Input layout. read_json defaults to auto-detection */
+  format?: 'auto' | 'unstructured' | 'newline_delimited' | 'array';
+  /** Read Hive partitions from paths. Default auto-detected */
+  hive_partitioning?: boolean;
+  /** Skip parse errors; requires newline_delimited format. Default false */
+  ignore_errors?: boolean;
+  /** Subfield count above which STRUCT becomes MAP; -1 disables. Default 200 */
+  map_inference_threshold?: number;
+  /** Inference depth; -1 means unlimited. Default -1 */
+  maximum_depth?: number;
+  /** Object size limit in bytes. Default 16777216 */
+  maximum_object_size?: number;
+  /** File count used for inference. Default 32 */
+  maximum_sample_files?: number;
+  /** Unpack objects into columns. Default 'auto' */
+  records?: 'auto' | 'true' | 'false';
+  /** Objects sampled for inference; -1 scans all. Default 20480 */
+  sample_size?: number;
+  /** Timestamp parsing pattern. Default 'iso' */
+  timestampformat?: string;
+  /** Merge file schemas by column name. Default false */
+  union_by_name?: boolean;
+}
+
+/**
  * Options for inline JSON data sources (object array)
  */
 export interface JsonSourceOptions {
   data: any[];
+  /** Extra DuckDB read_json options */
+  options?: JSONReadOptions;
 }
 
 /**
  * Options for JSON file sources: a local file path or an http(s) URL
  */
 export interface JsonFileSourceOptions {
+  /** Extra DuckDB read_json options */
+  options?: JSONReadOptions;
   /** Local file path or http(s) URL */
   path: string;
   /** HTTP headers for remote sources (e.g. Authorization) */

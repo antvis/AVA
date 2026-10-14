@@ -13,7 +13,7 @@ import { READ_FN, escapeSql, serializeOptions } from '../../util/sql';
 
 import { getDuckDBSchema } from './schema';
 
-import type { CSVReadOptions, FileFormat, LoadedSource } from '../../types';
+import type { CSVReadOptions, JSONReadOptions, FileFormat, LoadedSource } from '../../types';
 
 const noopCleanup = async (): Promise<void> => {};
 
@@ -55,25 +55,24 @@ function isExtendedCSVEncoding(format: FileFormat, encoding?: string): boolean {
  * Build a LoadedSource that registers a local file as the single `data` view.
  * The view reads the file lazily, so the file must outlive the engine.
  * The file's directory is whitelisted so the engine can still read it after hardening.
- * `options` carries extra DuckDB reader options (only applied to the csv reader).
+ * `options` carries extra DuckDB reader options (applied to CSV and JSON readers).
  */
 export function fileSource(
   path: string,
   format: FileFormat,
   cleanup: () => Promise<void>,
-  options?: CSVReadOptions
+  options?: CSVReadOptions | JSONReadOptions
 ): LoadedSource {
   return {
     register: async (conn) => {
-      if (isExtendedCSVEncoding(format, options?.encoding)) {
+      if (isExtendedCSVEncoding(format, options && 'encoding' in options ? options.encoding : undefined)) {
         // Auto-install/load is disabled; prepare extended encodings before access is locked.
         await conn.run('INSTALL encodings');
         await conn.run('LOAD encodings');
       }
-      // csv/json default to auto_detect=true; for csv a user-supplied auto_detect
+      // csv/json default to auto_detect=true; a user-supplied auto_detect
       // overrides it because DuckDB applies later duplicate options over earlier ones.
-      const sniff =
-        format === 'parquet' ? '' : `, auto_detect=true${format === 'csv' ? serializeOptions(options) : ''}`;
+      const sniff = format === 'parquet' ? '' : `, auto_detect=true${serializeOptions(options)}`;
       await conn.run(`CREATE OR REPLACE VIEW data AS SELECT * FROM ${READ_FN[format]}('${escapeSql(path)}'${sniff})`);
       return ['data'];
     },
@@ -94,8 +93,8 @@ export interface FileLoaderOptions {
   path: string;
   /** HTTP headers for remote sources (e.g. Authorization) */
   headers?: Record<string, string>;
-  /** Extra DuckDB reader options (only applied to the csv reader) */
-  options?: CSVReadOptions;
+  /** Extra DuckDB reader options (applied to CSV and JSON readers) */
+  options?: CSVReadOptions | JSONReadOptions;
 }
 
 /**

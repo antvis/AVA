@@ -2,7 +2,7 @@
  * Shared SQL quoting/composition helpers and DuckDB reader options.
  */
 
-import type { CSVReadOptions, FileFormat } from '../types';
+import type { CSVReadOptions, JSONReadOptions, FileFormat } from '../types';
 
 /** DuckDB reader function for each file format */
 export const READ_FN: Record<FileFormat, string> = {
@@ -33,7 +33,7 @@ export function sqlIdentifier(name: string): string {
 
 /** Serialize a single DuckDB reader option value (string/number/boolean/array/map) */
 function serializeOptionValue(value: unknown): string | null {
-  if (typeof value === 'string') return value.length > 0 ? sqlStringLiteral(value) : null;
+  if (typeof value === 'string') return sqlStringLiteral(value);
   if (typeof value === 'boolean') return value ? 'true' : 'false';
   if (typeof value === 'number') return Number.isFinite(value) ? String(value) : null;
   if (Array.isArray(value) && value.every((item) => typeof item === 'string')) {
@@ -42,6 +42,7 @@ function serializeOptionValue(value: unknown): string | null {
   if (
     value &&
     typeof value === 'object' &&
+    (Object.getPrototypeOf(value) === Object.prototype || Object.getPrototypeOf(value) === null) &&
     Object.values(value).every((item) => typeof item === 'string')
   ) {
     const entries = Object.entries(value as Record<string, string>).map(
@@ -54,14 +55,16 @@ function serializeOptionValue(value: unknown): string | null {
 
 /**
  * Serialize DuckDB reader options into a `, key=value, ...` SQL fragment for
- * read_csv/read_json. Entries whose value cannot be serialized are skipped.
+ * read_csv/read_json. Only undefined values are skipped; unsupported values throw.
  */
-export function serializeOptions(options?: CSVReadOptions): string {
+export function serializeOptions(options?: CSVReadOptions | JSONReadOptions): string {
   if (!options) return '';
   const parts: string[] = [];
   for (const [key, value] of Object.entries(options)) {
+    if (value === undefined) continue;
     const serialized = serializeOptionValue(value);
-    if (serialized !== null) parts.push(`${key}=${serialized}`);
+    if (serialized === null) throw new Error(`Invalid DuckDB reader option "${key}": unsupported value`);
+    parts.push(`${sqlIdentifier(key)}=${serialized}`);
   }
   return parts.length > 0 ? `, ${parts.join(', ')}` : '';
 }

@@ -46,7 +46,9 @@ const sourceSchema = z.discriminatedUnion('type', [
   z
     .object({ type: z.literal('csv-file'), options: file.extend({ options: z.record(z.unknown()).optional() }) })
     .strict(),
-  z.object({ type: z.literal('json-file'), options: file }).strict(),
+  z
+    .object({ type: z.literal('json-file'), options: file.extend({ options: z.record(z.unknown()).optional() }) })
+    .strict(),
   z.object({ type: z.literal('parquet'), options: file }).strict(),
   z.object({ type: z.literal('excel'), options: file }).strict(),
   z.object({ type: z.literal('sqlite'), options: z.object({ path: text }).strict() }).strict(),
@@ -56,7 +58,12 @@ const sourceSchema = z.discriminatedUnion('type', [
       options: z.object({ csv: text, options: z.record(z.unknown()).optional() }).strict(),
     })
     .strict(),
-  z.object({ type: z.literal('json'), options: z.object({ data: z.array(z.record(z.unknown())) }).strict() }).strict(),
+  z
+    .object({
+      type: z.literal('json'),
+      options: z.object({ data: z.array(z.record(z.unknown())), options: z.record(z.unknown()).optional() }).strict(),
+    })
+    .strict(),
   z.object({ type: z.literal('text'), options: z.object({ text }).strict() }).strict(),
   z.object({ type: z.literal('mysql'), options: database }).strict(),
   z
