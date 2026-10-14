@@ -24,10 +24,6 @@
     "llm"
   ],
   "license": "MIT",
-  "publishConfig": {
-    "access": "public",
-    "tag": "beta"
-  },
   "main": "lib/index.js",
   "bin": {
     "ava": "lib/cli/index.js"
