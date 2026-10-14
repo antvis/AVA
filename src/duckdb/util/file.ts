@@ -39,6 +39,14 @@ export async function removeTempFile(filePath: string): Promise<void> {
 }
 
 /**
+ * Determine if the CSV encoding is extended and requires the 'encodings' extension.
+ * for example, 'GB18030'.
+ */
+function isExtendedCSVEncoding(format: FileFormat, encoding?: string): boolean {
+  return format === 'csv' && !!encoding && !['utf-8', 'utf-16', 'latin-1'].includes(encoding);
+}
+
+/**
  * Build a LoadedSource that registers a local file as the single `data` view.
  * The view reads the file lazily, so the file must outlive the engine.
  * The file's directory is whitelisted so the engine can still read it after hardening.
@@ -52,6 +60,11 @@ export function fileSource(
 ): LoadedSource {
   return {
     register: async (conn) => {
+      if (isExtendedCSVEncoding(format, options?.encoding)) {
+        // Auto-install/load is disabled; prepare extended encodings before access is locked.
+        await conn.run('INSTALL encodings');
+        await conn.run('LOAD encodings');
+      }
       // csv/json default to auto_detect=true; for csv a user-supplied auto_detect
       // overrides it because DuckDB applies later duplicate options over earlier ones.
       const sniff =
