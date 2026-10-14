@@ -10,10 +10,10 @@ function sourceCode(source: DataSourceConfig): string {
     case 'json-file':
       return "tables = {'data': pd.read_json(options['path'], orient='records', storage_options=options.get('headers') or None)}";
     case 'excel': {
-      const selected = source.options.sheets?.map(({ name, range, header }) => {
+      const selected = source.options.sheets?.map(({ sheet, range, header }) => {
         const bounds = range === undefined ? undefined : excelRange(range);
         return {
-          name,
+          sheet,
           read: {
             header: header === false ? null : 0,
             ...(bounds && {
@@ -27,8 +27,8 @@ function sourceCode(source: DataSourceConfig): string {
       return `with pd.ExcelFile(options['path'], storage_options=options.get('headers') or None) as workbook:
         selected = json.loads(${JSON.stringify(JSON.stringify(selected ?? null))})
         if selected is None:
-            selected = [{'name': name, 'read': {'header': 0}} for name in workbook.sheet_names]
-        tables = {sheet['name']: workbook.parse(sheet_name=sheet['name'], **sheet['read']) for sheet in selected}`;
+            selected = [{'sheet': sheet, 'read': {'header': 0}} for sheet in workbook.sheet_names]
+        tables = {sheet['sheet']: workbook.parse(sheet_name=sheet['sheet'], **sheet['read']) for sheet in selected}`;
     }
     case 'parquet':
       return "tables = {'data': pd.read_parquet(options['path'], storage_options=options.get('headers') or None)}";

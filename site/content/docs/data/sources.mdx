@@ -259,7 +259,7 @@ await ava.source({
 
 ## Excel
 
-Read a workbook from a local path or HTTP(S) URL. Each sheet becomes a separate table; call `schema()` to discover their names.
+Read an `.xlsx` workbook from a local path or HTTP(S) URL. Each selected worksheet becomes a separate table named after the sheet. Call `schema()` to inspect the resulting tables and columns.
 
 ```typescript
 await ava.source({
@@ -267,23 +267,54 @@ await ava.source({
   options: {
     path: './sales.xlsx',
     sheets: [
-      { name: 'Sales', range: 'A3:F100', header: true },
-      { name: 'Costs', range: 'B2:C50', header: false },
+      { sheet: 'Sales', range: 'A3:F100', header: true },
+      { sheet: 'Costs', range: 'B2:C50', header: false },
     ],
   },
 });
 ```
 
-| Field     | Type                     | Required | Meaning / default                                    |
-| --------- | ------------------------ | -------- | ---------------------------------------------------- |
-| `path`    | `string`                 | Yes      | Local file path or http(s) URL                       |
-| `headers` | `Record<string, string>` | No       | HTTP headers for remote sources (e.g. Authorization) |
+### Source options
 
-`sheets` is an optional non-empty list of `{ name, range?, header? }` objects. Each `name` must match an exact worksheet name and appear only once. Omit `sheets` to load all sheets with `header: true`; unknown names, duplicates, and empty selections fail instead of falling back to the entire workbook.
+| Field | Type | Required | Meaning / default |
+| --- | --- | --- | --- |
+| `path` | `string` | Yes | Local file path or HTTP(S) URL |
+| `headers` | `Record<string, string>` | No | HTTP headers for remote sources, such as Authorization |
+| `sheets` | `ExcelSheetOptions[]` | No | Sheets to load and their individual read settings; omitted loads all sheets with `header: true` |
 
-Each sheet has its own optional `range`, an inclusive A1 rectangle (for example, `B3:F100`). `header: true` uses its first row as column names; `false` keeps that row as data. When omitted, both engines use the first row as column names (`header: true`). File-level `range`/`header`, string-only sheet selections, unsupported options, and invalid ranges are rejected.
+### Sheet selection and reader options
 
-DuckDB rejects workbooks with sheet names containing literal XML entity text (such as `Sales &amp; Tax`) because its Excel extension can confuse them with another sheet. Rename these sheets or use the Python engine. Ordinary ampersands, quotes, and Unicode names are supported.
+Each entry in `sheets` contains a required `sheet` and optional `ExcelReadOptions` fields. Set these fields directly on the sheet entry, as shown above.
+
+| Field | Type | Default | Meaning |
+| --- | --- | --- | --- |
+| `sheet` | `string` | Required | Exact worksheet name; also used as the table name |
+| `range` | `string` | Inferred by the engine | Inclusive A1 rectangle, such as `B3:F100` |
+| `header` | `boolean` | `true` | Use the first row of the selected range as column names; `false` keeps it as data |
+| `all_varchar` | `boolean` | `false` | DuckDB only: read all cells as VARCHAR |
+| `ignore_errors` | `boolean` | `false` | DuckDB only: replace cells that fail type conversion with NULL |
+| `stop_at_empty` | `boolean` | `false` with `range`, otherwise `true` | DuckDB only: stop reading at the first empty row |
+| `empty_as_varchar` | `boolean` | `false` | DuckDB only: infer empty cells as VARCHAR instead of DOUBLE |
+
+A supplied `sheets` list must be non-empty, and every name must exist in the workbook and appear only once. Ranges must be valid, bounded A1 rectangles. Invalid selections and unsupported fields are rejected.
+
+### Engine behavior
+
+Both engines support `sheet`, `range`, and `header`. The Python engine rejects the four DuckDB-only options in the table above.
+
+DuckDB reader options follow [`read_xlsx`](https://duckdb.org/docs/current/core_extensions/excel#reading-xlsx-files), except that AVA defaults `header` to `true` instead of inferring it. For example, to preserve mixed cell types as text and continue past empty rows:
+
+```typescript
+await ava.source({
+  type: 'excel',
+  options: {
+    path: './sales.xlsx',
+    sheets: [{ sheet: 'Sales', all_varchar: true, stop_at_empty: false }],
+  },
+});
+```
+
+DuckDB rejects workbooks containing sheet names with literal XML entity text, such as `Sales &amp; Tax`, because its Excel extension can confuse them with another sheet. Rename those sheets or use the Python engine. Ordinary ampersands, quotes, and Unicode names are supported.
 
 ## Text
 

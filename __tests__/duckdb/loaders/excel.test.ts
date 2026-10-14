@@ -109,7 +109,7 @@ describe('loaders/excel', () => {
       type: 'excel',
       options: {
         path: xlsxPath,
-        sheets: [{ name: 'Sales', range: 'A1:B3', header: true }],
+        sheets: [{ sheet: 'Sales', range: 'A1:B3', header: true }],
       },
     });
     expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
@@ -124,7 +124,7 @@ describe('loaders/excel', () => {
       type: 'excel',
       options: {
         path: xlsxPath,
-        sheets: [{ name: 'Costs', range: 'A2:B3', header: false }],
+        sheets: [{ sheet: 'Costs', range: 'A2:B3', header: false }],
       },
     });
     const result = await engine.execute('SELECT * FROM "Costs"');
@@ -136,27 +136,30 @@ describe('loaders/excel', () => {
 
   it.each([
     { sheets: [] },
-    { sheets: [{ name: 'Missing' }] },
-    { sheets: [{ name: 'Sales', range: 'B3:A1' }] },
-    { sheets: [{ name: 'Sales', range: 'A0:B3' }] },
-    { sheets: [{ name: 'Sales', range: 'A1:XFE3' }] },
-    { sheets: [{ name: 'Sales', range: 'A1:A1048577' }] },
-    { sheets: [{ name: 'Sales', range: 'Sales!A1:B3' }] },
-    { sheets: [{ name: 'Sales' }, { name: 'Sales', header: false }] },
+    { sheets: [{ sheet: 'Missing' }] },
+    { sheets: [{ sheet: 'Sales', range: 'B3:A1' }] },
+    { sheets: [{ sheet: 'Sales', range: 'A0:B3' }] },
+    { sheets: [{ sheet: 'Sales', range: 'A1:XFE3' }] },
+    { sheets: [{ sheet: 'Sales', range: 'A1:A1048577' }] },
+    { sheets: [{ sheet: 'Sales', range: 'Sales!A1:B3' }] },
+    { sheets: [{ sheet: 'Sales' }, { sheet: 'Sales', header: false }] },
   ])('rejects invalid selection %j instead of reading all sheets', async (selection) => {
     engine = new DuckDBEngine(getLLMConfig());
     await expect(engine.load({ type: 'excel', options: { path: xlsxPath, ...selection } })).rejects.toThrow();
   });
 
-  it.each([{ sheets: ['Sales'] }, { range: 'A1:B3' }, { header: false }, { skip: 2 }])(
-    'rejects obsolete or unsupported configuration %j',
-    async (options) => {
-      engine = new DuckDBEngine(getLLMConfig());
-      await expect(
-        engine.load({ type: 'excel', options: { path: xlsxPath, ...options } as ExcelSourceOptions })
-      ).rejects.toThrow();
-    }
-  );
+  it.each([
+    { sheets: ['Sales'] },
+    { sheets: [{ sheet: 'Sales', all_varchar: 'true' }] },
+    { range: 'A1:B3' },
+    { header: false },
+    { skip: 2 },
+  ])('rejects obsolete or unsupported configuration %j', async (options) => {
+    engine = new DuckDBEngine(getLLMConfig());
+    await expect(
+      engine.load({ type: 'excel', options: { path: xlsxPath, ...options } as ExcelSourceOptions })
+    ).rejects.toThrow();
+  });
 
   it.each([
     ['销售 & "收入"', '销售 &amp; &quot;收入&quot;'],
@@ -174,7 +177,7 @@ describe('loaders/excel', () => {
       const file = path.join(directory, 'names.xlsx');
       zip.writeZip(file);
       engine = new DuckDBEngine(getLLMConfig());
-      const schema = await engine.load({ type: 'excel', options: { path: file, sheets: [{ name }] } });
+      const schema = await engine.load({ type: 'excel', options: { path: file, sheets: [{ sheet: name }] } });
       expect(schema.tables.map((table) => table.name)).toEqual([name]);
       expect((await engine.execute(`SELECT * FROM "${name.replace(/"/g, '""')}" LIMIT 1`)).data).toHaveLength(1);
     } finally {
@@ -196,7 +199,7 @@ describe('loaders/excel', () => {
       const file = path.join(directory, 'names.xlsx');
       zip.writeZip(file);
       engine = new DuckDBEngine(getLLMConfig());
-      await expect(engine.load({ type: 'excel', options: { path: file, sheets: [{ name: sheet }] } })).rejects.toThrow(
+      await expect(engine.load({ type: 'excel', options: { path: file, sheets: [{ sheet }] } })).rejects.toThrow(
         'cannot safely read Excel sheet'
       );
     } finally {
@@ -239,7 +242,7 @@ describe('loaders/excel', () => {
     it.each([undefined, true, false])('respects range, blank rows, and header=%s', async (header) => {
       const instance = new DuckDBEngine(getLLMConfig());
       try {
-        const options: ExcelSourceOptions = { path: file, sheets: [{ name: 'Sales', range: 'b3:c6', header }] };
+        const options: ExcelSourceOptions = { path: file, sheets: [{ sheet: 'Sales', range: 'b3:c6', header }] };
         const schema = await instance.load({ type: 'excel', options });
         expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
         if (header !== false) expect(schema.tables[0].fields.map((field) => field.name)).toEqual(['101', '202']);
@@ -255,6 +258,85 @@ describe('loaders/excel', () => {
       }
     });
 
+    it.each([true, false])('supports stop_at_empty=%s within a range', async (stop_at_empty) => {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load({
+        type: 'excel',
+        options: {
+          path: file,
+          sheets: [{ sheet: 'Sales', range: 'B3:C6', stop_at_empty }],
+        },
+      });
+      const result = await engine.execute('SELECT * FROM "Sales"');
+      expect(result.data.map((row) => Object.values(row))).toEqual(
+        stop_at_empty
+          ? [[1, 2]]
+          : [
+              [1, 2],
+              [null, null],
+              [3, 4],
+            ]
+      );
+    });
+
+    it('reads mixed types as strings with all_varchar', async () => {
+      engine = new DuckDBEngine(getLLMConfig());
+      const schema = await engine.load({
+        type: 'excel',
+        options: {
+          path: file,
+          sheets: [{ sheet: 'Sales', range: 'B3:C7', all_varchar: true }],
+        },
+      });
+      expect(schema.tables[0].fields.map((field) => field.type)).toEqual(['VARCHAR', 'VARCHAR']);
+      const result = await engine.execute('SELECT * FROM "Sales"');
+      expect(result.data.map((row) => Object.values(row))).toEqual([
+        ['1', '2'],
+        [null, null],
+        ['3', '4'],
+        ['Private notes', null],
+      ]);
+    });
+
+    it.each([true, false])('supports ignore_errors=%s for incompatible cells', async (ignore_errors) => {
+      engine = new DuckDBEngine(getLLMConfig());
+      await engine.load({
+        type: 'excel',
+        options: {
+          path: file,
+          sheets: [{ sheet: 'Sales', range: 'B3:C7', ignore_errors }],
+        },
+      });
+      const result = engine.execute('SELECT * FROM "Sales"');
+      if (ignore_errors) {
+        expect((await result).data.map((row) => Object.values(row))).toEqual([
+          [1, 2],
+          [null, null],
+          [3, 4],
+          [null, null],
+        ]);
+      } else {
+        await expect(result).rejects.toThrow();
+      }
+    });
+
+    it.each([true, false])(
+      'supports empty_as_varchar=%s for an empty cell in the first data row',
+      async (empty_as_varchar) => {
+        engine = new DuckDBEngine(getLLMConfig());
+        const schema = await engine.load({
+          type: 'excel',
+          options: {
+            path: file,
+            sheets: [{ sheet: 'Sales', range: 'B7:C7', header: false, empty_as_varchar }],
+          },
+        });
+        expect(schema.tables[0].fields.map((field) => field.type)).toEqual(
+          empty_as_varchar ? ['VARCHAR', 'VARCHAR'] : ['VARCHAR', 'DOUBLE']
+        );
+      }
+    );
+
     it('applies independent ranges and headers to two sheets', async () => {
       const instance = new DuckDBEngine(getLLMConfig());
       try {
@@ -263,8 +345,8 @@ describe('loaders/excel', () => {
           options: {
             path: file,
             sheets: [
-              { name: 'Sales', range: 'B3:C4', header: true },
-              { name: 'Costs', range: 'A2:B3', header: false },
+              { sheet: 'Sales', range: 'B3:C4', header: true },
+              { sheet: 'Costs', range: 'A2:B3', header: false },
             ],
           },
         });

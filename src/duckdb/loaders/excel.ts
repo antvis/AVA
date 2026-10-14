@@ -12,7 +12,7 @@ import { SaxesParser } from 'saxes';
 import { excelOptionsSchema } from '../../util/excel';
 import { downloadToTempFile, removeTempFile } from '../util/file';
 import { getDuckDBSchema } from '../util/schema';
-import { escapeSql, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
+import { escapeSql, serializeOptions, sqlIdentifier, sqlStringLiteral } from '../../util/sql';
 
 import type { ExcelSourceOptions, LoadedSource } from '../../types';
 
@@ -61,8 +61,8 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
       await conn.run('INSTALL excel');
       await conn.run('LOAD excel');
       const available = readSheetNames(filePath);
-      const selected = sheets ?? available.map((name) => ({ name, range: undefined, header: true }));
-      sheetNames = selected.map((sheet) => sheet.name);
+      const selected = sheets ?? available.map((sheet) => ({ sheet, header: true }));
+      sheetNames = selected.map(({ sheet }) => sheet);
       for (const sheet of sheetNames) {
         if (!available.includes(sheet)) throw new Error(`Excel sheet not found: ${sheet}`);
       }
@@ -74,12 +74,11 @@ export async function loadExcel(options: ExcelSourceOptions): Promise<LoadedSour
           );
         }
       }
-      for (const { name: sheet, range, header } of selected) {
-        const rangeStr = range === undefined ? '' : `, range=${sqlStringLiteral(range)}`;
+      for (const { sheet, ...readOptions } of selected) {
         await conn.run(
           `CREATE OR REPLACE VIEW ${sqlIdentifier(sheet)} AS SELECT * FROM read_xlsx('${escapeSql(
             filePath
-          )}', sheet=${sqlStringLiteral(sheet)}${rangeStr}, header=${header})`
+          )}', sheet=${sqlStringLiteral(sheet)}${serializeOptions(readOptions)})`
         );
       }
       return sheetNames;

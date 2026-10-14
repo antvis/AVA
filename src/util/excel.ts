@@ -22,9 +22,9 @@ export function excelRange(range: string) {
   };
 }
 
-const excelSheetSchema = z
+export const excelSheetSchema = z
   .object({
-    name: z.string().min(1),
+    sheet: z.string().min(1),
     range: z
       .string()
       .refine((value) => {
@@ -38,6 +38,10 @@ const excelSheetSchema = z
       .transform((value) => value.toUpperCase())
       .optional(),
     header: z.boolean().default(true),
+    all_varchar: z.boolean().optional(),
+    ignore_errors: z.boolean().optional(),
+    stop_at_empty: z.boolean().optional(),
+    empty_as_varchar: z.boolean().optional(),
   })
   .strict();
 
@@ -49,7 +53,7 @@ export const excelOptionsSchema = z
       .array(excelSheetSchema)
       .nonempty()
       .refine(
-        (sheets) => new Set(sheets.map((sheet) => sheet.name)).size === sheets.length,
+        (sheets) => new Set(sheets.map((sheet) => sheet.sheet)).size === sheets.length,
         'Excel sheet names must be unique'
       )
       .optional(),
