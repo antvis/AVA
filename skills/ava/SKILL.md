@@ -47,7 +47,7 @@ Use a data profile when you need column distributions, missing-value information
 ava profile "$DATASET_ID" --metrics row_count,null_count,min,max,mean > profile.json
 ```
 
-`--metrics` replaces the default metrics and applies to eligible columns across all tables; it cannot filter by table or column. For large remote tables, prefer targeted queries to avoid unnecessary full profiles.
+Each `profile` call recomputes statistics. `--metrics` replaces the default metrics and applies to eligible columns across all tables; it cannot filter by table or column. For large remote tables, prefer targeted queries to avoid unnecessary full profiles.
 
 Treat statistics, relationships, and business definitions that were not returned as unknown. Do not make assumptions.
 
