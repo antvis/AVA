@@ -152,10 +152,10 @@ export class DuckDBEngine implements AnalysisEngine {
     return profileTables(this.connection, schema, parsedOptions);
   }
 
-  async getDSL(query: string, context: DataContext, llm = this.llmConfig): Promise<string> {
+  async getDSL(query: string, context: DataContext, llm?: LLMConfig): Promise<string> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
-    return this.queryDialect.getDSL(query, context, llm);
+    return llm ? this.queryDialect.getDSL(query, context, llm) : this.queryDialect.getDSL(query, context);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

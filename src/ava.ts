@@ -254,7 +254,7 @@ export class AVA extends EventEmitter {
 
     emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END));
 
-    const usage = run.usage.getUsage();
+    const usage = run.usage.hasUnknownUsage ? undefined : run.usage.getUsage();
     return usage ? { ...result, usage } : result;
   }
 
@@ -330,7 +330,7 @@ export class AVA extends EventEmitter {
         withUsageCollector(this.llmConfig, run.usage)
       );
       if (spec) {
-        const usage = run.usage.getUsage();
+        const usage = run.usage.hasUnknownUsage ? undefined : run.usage.getUsage();
         result = { ...spec, html: await this.viz(spec), ...(usage ? { usage } : {}) };
       } else {
         result = null;
@@ -356,7 +356,7 @@ export class AVA extends EventEmitter {
   ): Promise<ChartSpec | null> {
     const run = createRunContext(parentRun);
     const result = await this.recommendWithLLM(analysisResult, withUsageCollector(this.llmConfig, run.usage));
-    const usage = run.usage.getUsage();
+    const usage = run.usage.hasUnknownUsage ? undefined : run.usage.getUsage();
     return result && usage ? { ...result, usage } : result;
   }
 

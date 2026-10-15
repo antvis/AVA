@@ -13,6 +13,6 @@ export async function workflow(
   await ava.source(source, {}, run);
   await ava.profile();
   const result = await ava.analyze(query, config, run);
-  const usage = run.usage.getUsage();
+  const usage = run.usage.hasUnknownUsage ? undefined : run.usage.getUsage();
   return usage ? { ...result, usage } : result;
 }

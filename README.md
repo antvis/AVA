@@ -113,6 +113,21 @@ Expected breakdown:
 
 Laptops contributed the largest decline, while office chairs delivered the largest increase.
 
+`analyze()` includes known token usage in `result.usage`. To aggregate usage across a workflow, pass the same
+`RunContext` to its AVA calls:
+
+```typescript
+import { createRunContext } from '@antv/ava';
+
+const run = createRunContext();
+await ava.source({ type: 'csv-file', options: { path: './sales.csv' } }, {}, run);
+const result = await ava.analyze('Compare sales by product.', {}, run);
+
+console.log(result.usage); // usage for this analysis
+console.log(run.usage.getUsage()); // usage across the workflow
+console.log(run.usage.hasUnknownUsage); // true if a model call did not report usage
+```
+
 <!-- Image placeholder: monthly sales comparison, 43.94% decline, and product contribution table. -->
 
 #### Visualize charts

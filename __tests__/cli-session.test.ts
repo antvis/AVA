@@ -126,6 +126,6 @@ describe('dataset engine and language', () => {
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;')
     );
     await datasets.withDataset((ava) => ava.translate('Sales'));
-    expect(getDSL).toHaveBeenLastCalledWith('Sales', { schema, profile });
+    expect(getDSL).toHaveBeenLastCalledWith('Sales', { schema, profile }, expect.anything());
   });
 });
