@@ -76,36 +76,41 @@ Registration affects the loaded SDK module only. See [Custom engines](/documenta
 
 ## source
 
-`source(config: DataSourceConfig): Promise<void>`
+`source(config: DataSourceConfig, metadata?: DataSourceMetadata): Promise<void>`
 
-| Parameter        | Type                   | Required | Default / behavior                                                                                                           |
-| ---------------- | ---------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `config`         | `DataSourceConfig`     | Yes      | Replaces the current source and disposes its engine.                                                                         |
-| `config.type`    | `SourceType`           | Yes      | One of the [13 source types](/documentation/data/sources/#connect-a-source).                                                 |
-| `config.options` | Source-specific object | Yes      | [Complete source parameter tables](/documentation/data/sources/#connect-a-source), including CSV and database configuration. |
+| Parameter | Type | Required | Default / behavior |
+| --- | --- | --- | --- |
+| `config` | `DataSourceConfig` | Yes | Replaces the current source and disposes its engine. |
+| `config.type` | `SourceType` | Yes | One of the [13 source types](/documentation/data/sources/#connect-a-source). |
+| `config.options` | Source-specific object | Yes | [Source parameters](/documentation/data/sources/#connect-a-source), including reader and connection options. |
+| `metadata` | `DataSourceMetadata` | No | `{}`; optional existing schema or profile. |
+| `metadata.schema` | `Schema` | No | Supplies structure instead of discovering it. |
+| `metadata.profile` | `Profile` | No | Supplies observations and, without an explicit schema, structure. |
 
-Returns no value. Call `schema()` to inspect the loaded source. Reloading clears the cached schema and profile.
+Loads data without schema discovery and clears previous metadata. Loading failure leaves no active source. Await pending operations before replacement. See [optional metadata](/documentation/data/schema/#supply-metadata) for precedence and validation.
 
 ## schema
 
-`schema(): Promise<Schema>` takes no parameters. Requires a loaded source. Returns tables and optional relations; see [schema and metadata](/documentation/data/schema/).
+`schema(): Promise<Schema>` requires a loaded source. Returns cached structure or discovers and caches it. Failed discovery can be retried. Analysis and profiling obtain schema as needed; direct `query()` does not. See [schema format](/documentation/data/schema/#schema-structure).
 
 ## profile
 
 `profile(options?: ProfileOptions): Promise<Profile>`
 
-| Parameter                            | Type                                | Required              | Default / behavior                                                                                                       |
-| ------------------------------------ | ----------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `options`                            | `ProfileOptions`                    | No                    | `{}`.                                                                                                                    |
-| `options.metrics`                    | `MetricConfig[]`                    | No                    | `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`. A supplied array replaces the defaults. |
-| `options.metrics[]`                  | Metric name or `{ id, ...options }` | When provided         | Supported names are listed below.                                                                                        |
-| `options.metrics[].id`               | `string`                            | For object form       | Metric name.                                                                                                             |
-| `options.metrics[].limit`            | `number`                            | No; `top_values` only | `3`; non-negative safe integer.                                                                                          |
-| `options.metrics[].maxDistinctRatio` | `number`                            | No; `top_values` only | `0.5`; finite number from `0` to `1`.                                                                                    |
+Requires a loaded source and engine support. Each call computes fresh statistics and replaces the retained profile, which analysis, translation, and suggestions can reuse.
 
-Supported built-in metric names: `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`, `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`. Other metrics accept no additional options. Unknown metrics and unknown option names are rejected. Availability depends on the engine's definitions and the field type.
+| Parameter | Type | Required | Default / behavior |
+| --- | --- | --- | --- |
+| `options` | `ProfileOptions` | No | `{}`. |
+| `options.metrics` | `MetricConfig[]` | No | `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`. A supplied array replaces the defaults. |
+| `options.metrics[]` | Metric name or `{ id, ...options }` | When provided | Supported names are listed below. |
+| `options.metrics[].id` | `string` | For object form | Metric name. |
+| `options.metrics[].limit` | `number` | No; `top_values` only | `3`; non-negative safe integer. |
+| `options.metrics[].maxDistinctRatio` | `number` | No; `top_values` only | `0.5`; finite number from `0` to `1`. |
 
-Requires a loaded source and an engine with `profile()`. Returns and caches a `Profile`; `metrics: []` skips metric computation. See [profiling](/documentation/data/schema/#profile-a-dataset) for the output format.
+Supported built-in metric names: `row_count`, `null_count`, `distinct_count`, `top_values`, `min`, `max`, `mean`, `duplicate_count`, `min_length`, `max_length`, `sum`, `stddev`, `median`. Other metrics accept no additional options. Unknown metrics and unknown option names are rejected when computation runs. Availability depends on the engine's definitions and the field type.
+
+`metrics: []` produces empty metric objects. Each call replaces all previous observations; metrics are not accumulated.
 
 ## analyze
 

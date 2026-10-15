@@ -57,7 +57,7 @@
   <a href="/documentation/engines/custom/">
     <img src="/logos/contribute.svg" alt="" width="28" height="28" />
     <strong>Custom extension</strong>
-    <span>Extend AVA in source</span>
+    <span>Register an engine</span>
   </a>
 </nav>
 
@@ -65,7 +65,7 @@ Choose a data source above, then use its example and parameter table below. CSV 
 
 ## Connect a source
 
-Create an AVA instance, then call `source({ type, options })`:
+Create an AVA instance, then call `source(config)` with the data location and reader settings:
 
 ```typescript
 import { AVA } from '@antv/ava';
@@ -87,7 +87,7 @@ const schema = await ava.schema();
 | `type`    | `SourceType`           | Yes      | `csv`, `csv-file`, `json`, `json-file`, `parquet`, `excel`, `text`, `sqlite`, `mysql`, `postgresql`, `mongodb`, `supabase`, or `clickhouse`. |
 | `options` | Source-specific object | Yes      | Use the matching table below. Field names are relative to `options`.                                                                         |
 
-`source()` returns no value. Calling it again replaces the current source and clears its cached schema and profile. Use `schema()` to inspect the actual table and field names, and call `await ava.dispose()` when finished.
+`source()` returns no value and prepares the data for execution. Schema discovery is deferred until `schema()` or another operation needs it. Calling `source()` again replaces the current source and clears its cached metadata. Use `schema()` to inspect table and field names, and call `await ava.dispose()` when finished.
 
 The examples use Node.js. Supabase and ClickHouse include their required constructor settings alongside the source call. For frontend applications, see [browser usage](/documentation/browser/).
 

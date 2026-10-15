@@ -14,7 +14,7 @@ await ava.source({
 });
 ```
 
-The engine discovers the schema and executes PostgreSQL queries through the Supabase Management API using read-only requests. Your application handles obtaining and refreshing the access token. Query results are returned to AVA and can be sent to the model for analysis summaries.
+The engine discovers schema on demand and executes PostgreSQL queries through the Supabase Management API using read-only requests. Your application handles obtaining and refreshing the access token. Query results are returned to AVA and can be sent to the model for analysis summaries.
 
 ## ClickHouse
 

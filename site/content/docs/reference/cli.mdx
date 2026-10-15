@@ -3,34 +3,43 @@
 After installing `@antv/ava`, use the `ava` binary (or `npx ava` for a local npm installation). Persistent sessions require macOS or Linux.
 
 ```bash
-export OPENAI_API_KEY="YOUR_API_KEY"
-export OPENAI_MODEL="gpt-4o-mini"
-ava source sales.csv
+ava source sales.csv > session.json
+DATASET_ID=$(node -p 'JSON.parse(require("fs").readFileSync("session.json", "utf8")).datasetId')
+ava schema "$DATASET_ID" > schema.json
 ```
 
-The source command prints a dataset ID. Use that returned ID in subsequent commands. Model settings are fixed when the dataset is loaded; set them before `source` if you plan to use AI commands.
+`source` returns a session ID after preparing the source. Schema discovery happens on demand; `schema` returns the source structure plus `language` (`name`, `fence`, and optional `instructions`) for writing queries. Repeated schema calls use the session's cached structure. Known queries can run without a separate schema call.
 
-## Explore and analyze
-
-Replace `DATASET_ID` below with the ID from `ava source`.
-
-```bash
-ava schema DATASET_ID
-ava profile DATASET_ID --metrics row_count,null_count,mean
-ava suggest DATASET_ID
-ava translate DATASET_ID "Total revenue by region"
-ava analyze DATASET_ID "Total revenue by region" --strategy direct
-ava query DATASET_ID --dsl @query.sql --max-rows 100
-ava dispose DATASET_ID
-```
-
-The CLI supports `direct`, `loop`, and `subset`. Its `--max-rows` accepts 1–10,000 (default 200), while the JavaScript API allows a higher hard limit.
+Structured source loading, schema, profile, query, and `viz` do not need a model key. Set `OPENAI_API_KEY` and optional `OPENAI_MODEL` / `OPENAI_BASE_URL` before creating a session if you plan to use AI commands or a text source. Session model settings cannot be changed afterward.
 
 ## Source inputs and engines
 
-`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Override with `--type` when needed.
+`ava source` accepts a file or URL, `@file` containing a source configuration, or `-` for standard input. File extensions infer CSV, JSON, Parquet, Excel, and SQLite sources. Override with `--type` for path inputs; configuration files and stdin already include their type.
 
-Use `--engine` to select an execution engine. The CLI infers Supabase and ClickHouse for matching source configurations; otherwise it defaults to DuckDB. This CLI inference differs from the JavaScript constructor.
+Use `--engine` to select an execution engine. The CLI infers Supabase and ClickHouse for matching source configurations; otherwise it defaults to DuckDB. This inference differs from the JavaScript constructor. The engine is fixed for the session. See [source configurations](/documentation/data/sources/) for connection and reader settings.
+
+Optional `--schema` and `--profile` flags accept inline JSON, `@file`, or `-`; see [metadata behavior](/documentation/data/schema/#supply-metadata). At most one source or metadata input may read stdin.
+
+## Explore and analyze
+
+Inspect statistics and execute a query:
+
+```bash
+ava profile "$DATASET_ID" --metrics row_count,null_count,mean > profile.json
+ava query "$DATASET_ID" --dsl @query.sql --max-rows 100 > result.json
+```
+
+`profile` recomputes statistics on each call. `--metrics` replaces the default metric list. For a few statistics on a large database, prefer targeted queries.
+
+With model settings configured at session creation, use these commands for natural-language work:
+
+```bash
+ava suggest "$DATASET_ID"
+ava translate "$DATASET_ID" "Total revenue by region"
+ava analyze "$DATASET_ID" "Total revenue by region" --strategy direct
+```
+
+These operations discover schema if needed and use an available profile. The CLI supports `direct`, `loop`, and `subset`. Its `--max-rows` accepts 1–10,000 (default 200), while the JavaScript API allows a higher hard limit.
 
 ## Charts without a dataset session
 
@@ -48,9 +57,9 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 
 | Command     | Positional inputs                      | Flags and defaults                                                                                                                                                                                    |
 | ----------- | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `source`    | `dataset`: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`; inferred from extension. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`; inferred as described above. |
+| `source`    | `dataset`: path, URL, `@file`, or `-`  | `-t` / `--type`: `csv-file`, `json-file`, `parquet`, `excel`, `sqlite`; inferred from extension. `--engine`: `duckdb`, `python`, `javascript`, `supabase`, `clickhouse`; inferred as described above. `--schema` / `--profile`: inline JSON, `@file`, or `-`; optional saved metadata. |
 | `schema`    | `dataset-id`                           | No additional flags.                                                                                                                                                                                  |
-| `profile`   | `dataset-id`                           | `--metrics`: comma-separated names; defaults to the [standard metric set](/documentation/reference/api/#profile). Empty string selects no metrics.                                                    |
+| `profile`   | `dataset-id`                           | `--metrics`: comma-separated names; defaults to the [standard metric set](/documentation/reference/api/#profile). Empty string computes a profile with no statistics.                                                    |
 | `suggest`   | `dataset-id`                           | `--count`: integer `1`–`100`; default `3`.                                                                                                                                                            |
 | `analyze`   | `dataset-id`, natural-language `query` | `--strategy`: `direct` (default), `loop`, `subset`; `--max-rows` and `--max-result-bytes` below.                                                                                                      |
 | `translate` | `dataset-id`, natural-language `query` | No additional flags.                                                                                                                                                                                  |
@@ -73,7 +82,15 @@ All commands accept `-h` / `--help` (boolean; optional). Every positional argume
 
 ## Session lifecycle
 
-Sessions expire after 30 idle minutes. `dispose` releases them immediately. Most commands return JSON; `source` prints a guide in terminals and JSON when piped. Errors go to standard error with exit code 1.
+Sessions expire after 30 idle minutes. Reload the source to obtain a new ID.
+
+Dispose of sessions when finished:
+
+```bash
+ava dispose "$DATASET_ID"
+```
+
+Most commands return JSON; `source` prints a guide in terminals and JSON when piped or redirected. Errors go to standard error with exit code 1. Schema discovery errors can occur after source creation; an existing session can still execute known queries or retry schema discovery.
 
 Run `ava --help` or `ava <command> --help` for command-specific options.
 

@@ -58,8 +58,8 @@ try {
 ```
 
 <Callout>
-  The public data-loading method is <code>source()</code>. It returns no value; call <code>schema()</code> separately to
-  inspect the loaded dataset.
+  Loading, schema discovery, and profiling are separate. <code>schema()</code> discovers structure on first use;
+  <code>profile()</code> computes and retains statistics. Analysis obtains schema when needed.
 </Callout>
 
 ## Cleanup and errors
@@ -69,6 +69,7 @@ try {
 ## Next steps
 
 - [Data sources](/documentation/data/sources/) — connect files, inline data, and databases.
+- [Schema & profiling](/documentation/data/schema/) — inspect structure and compute statistics.
 - [Browser usage](/documentation/browser/) — use the frontend entry point.
 - [CLI](/documentation/reference/cli/) — work from your terminal.
 

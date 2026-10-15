@@ -25,7 +25,7 @@ Set `engine.type` to `python`. These are all additional fields accepted on `engi
 
 ## Supported sources
 
-Inline CSV and JSON, plus CSV, JSON, Excel, and Parquet files are supported. Files can be local or HTTP(S) URLs. This engine does not accept text extraction or database sources.
+Inline CSV and JSON, plus CSV, JSON, Excel, and Parquet files are supported. Files can be local or HTTP(S) URLs. This engine does not accept text extraction or database sources. `source()` stores validated configuration; actual reads occur during execution or metadata computation. Each query reloads its input.
 
 ## Query bindings
 
