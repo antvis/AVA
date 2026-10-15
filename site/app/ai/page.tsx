@@ -40,7 +40,11 @@ export default function AIPage() {
                 type="button"
                 disabled={chat.busy}
                 onClick={() => setLocalConfigOpen(true)}
-                className="inline-flex items-center gap-1 align-baseline font-medium text-ink underline decoration-[color:var(--color-primary-dark)] underline-offset-4 hover:decoration-ink disabled:opacity-40"
+                className={`inline-flex items-center gap-1 rounded px-1 align-baseline font-medium underline underline-offset-4 transition-colors disabled:opacity-40 ${
+                  chat.ready
+                    ? 'text-ink decoration-[color:var(--color-primary-dark)] hover:decoration-ink'
+                    : 'bg-[#FEF3C7] text-[#92400E] decoration-[#92400E] hover:bg-[#FDE68A]'
+                }`}
               >
                 <svg
                   aria-hidden="true"
