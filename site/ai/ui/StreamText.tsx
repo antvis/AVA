@@ -19,6 +19,7 @@ export default function StreamText({ text, streaming }: { text: string; streamin
         [&_:is(a,[data-streamdown=link])]:text-[var(--color-ink)]
         [&_:is(a,[data-streamdown=link])]:decoration-[var(--color-primary-dark)]
         [&_:is(a,[data-streamdown=link])]:underline-offset-[3px]
+        [&_:is(table,th,td)]:text-[12px]
         [&_:is([data-streamdown=code-block],[data-streamdown=table-wrapper],code:not(pre_code))]:bg-[var(--color-field)]
         [&_:is([data-streamdown=code-block],[data-streamdown=table-wrapper],code:not(pre_code))]:border-[var(--color-line)]
         [&_:is([data-streamdown=code-block-body],th,td)]:border-[var(--color-line)]
