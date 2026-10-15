@@ -31,9 +31,14 @@ describe('session startup protocol', () => {
     });
     worker.send.mockImplementation(() => queueMicrotask(() => worker.emit('message', { ok: true, result: null })));
     vi.mocked(fork).mockReturnValueOnce(worker as unknown as ReturnType<typeof fork>);
-    const { datasetId } = await createSession(source, llm, 'python');
+    const { datasetId } = await createSession(source, llm, 'python', { schema });
     try {
-      expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({ source, llm, engine: 'python' });
+      expect(startupSchema.parse(worker.send.mock.calls[0][0])).toEqual({
+        source,
+        llm,
+        engine: 'python',
+        metadata: { schema },
+      });
       expect(worker.disconnect).toHaveBeenCalledOnce();
       expect(worker.unref).toHaveBeenCalledOnce();
     } finally {
@@ -46,6 +51,14 @@ describe('session startup protocol', () => {
     for (const engine of ['invalid', { type: 'python', execute: 'custom' }]) {
       expect(() => startupSchema.parse({ source, llm, engine })).toThrow();
     }
+  });
+
+  it('rejects invalid metadata at the startup boundary before spawning a worker', async () => {
+    vi.mocked(fork).mockClear();
+    const invalid = { schema: { ...schema, tables: [{ ...schema.tables[0], columnCount: -1 }] } };
+    expect(() => startupSchema.parse({ source, llm, metadata: invalid })).toThrow();
+    await expect(createSession(source, llm, 'javascript', invalid)).rejects.toThrow();
+    expect(fork).not.toHaveBeenCalled();
   });
 });
 
@@ -71,13 +84,16 @@ describe('dataset engine and language', () => {
   ])('selects $engine and exposes its language without changing the schema', async ({ source, engine, explicit }) => {
     const { getEngineClass } = await import('../src/engines');
     const Engine = getEngineClass(engine);
-    const load = vi.spyOn(Engine.prototype, 'load').mockResolvedValue(schema);
+    const load = vi.spyOn(Engine.prototype, 'load').mockResolvedValue(undefined);
+    const discover = vi.spyOn(Engine.prototype, 'schema').mockResolvedValue(schema);
 
     await datasets.createDataset(source, llm, explicit);
     const instance = await datasets.withDataset((ava) => Promise.resolve(ava.engine));
     expect(instance).toBeInstanceOf(Engine);
     expect(load).toHaveBeenCalledExactlyOnceWith(source);
+    expect(discover).not.toHaveBeenCalled();
     expect(await datasets.describeDataset()).toEqual({ ...schema, language: instance!.language });
+    expect(discover).toHaveBeenCalledOnce();
     if (engine === 'python') {
       expect(instance!.language.fence).toBe('python');
       expect(instance!.language.instructions).toContain('tables');
@@ -91,5 +107,25 @@ describe('dataset engine and language', () => {
     const result = await datasets.withDataset((ava) => ava.query('const result = [{ total: data[0].sales * 2 }];'));
     expect(result.data).toEqual([{ total: 20 }]);
     expect(result.rowCount).toBe(1);
+  });
+
+  it('forwards imported profiles through the dataset session to model context', async () => {
+    const profile = {
+      generatedAt: 1234,
+      tables: [
+        {
+          ...schema.tables[0],
+          metrics: { row_count: 1 },
+          fields: [{ ...schema.tables[0].fields[0], logicalType: 'numeric' as const, metrics: { sum: 10 } }],
+        },
+      ],
+      relations: [],
+    };
+    await datasets.createDataset(source, llm, 'javascript', { profile });
+    const getDSL = await datasets.withDataset(async (ava) =>
+      vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;')
+    );
+    await datasets.withDataset((ava) => ava.translate('Sales'));
+    expect(getDSL).toHaveBeenLastCalledWith('Sales', { schema, profile });
   });
 });

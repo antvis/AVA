@@ -38,6 +38,7 @@ describe('python/engine', () => {
     const engine = new PythonEngine({ model: 'unused' }, { queryTimeoutMs: 1234 });
     expect(createExecutor).toHaveBeenCalledExactlyOnceWith(1234);
     await engine.load(source);
+    await engine.schema();
     await engine.execute('result = df', { maxResultBytes: 100 });
     await engine.execute('result = df', { maxResultBytes: 200 });
     expect(createExecutor).toHaveBeenCalledTimes(1);
@@ -52,13 +53,12 @@ describe('python/engine', () => {
     const engine = new PythonEngine({ model: 'unused' }, { execute });
     const expectUnloaded = async () => {
       await expect(engine.execute('result = 1')).rejects.toThrow('No data loaded');
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
-      await expect(engine.getDSL('sum')).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
+      await expect(engine.getDSL('sum', { schema: { tables: [] } })).rejects.toThrow('No data loaded');
     };
     await expectUnloaded();
     await engine.load(source);
-    execute.mockRejectedValueOnce(new Error('load failed'));
-    await expect(engine.load(source)).rejects.toThrow('load failed');
+    await expect(engine.load({ type: 'json', options: {} } as never)).rejects.toThrow();
     await expectUnloaded();
     await engine.load(source);
     await engine.dispose();

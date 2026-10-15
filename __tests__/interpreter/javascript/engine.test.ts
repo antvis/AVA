@@ -22,7 +22,8 @@ describe('interpreter/javascript/engine', () => {
   it('loads data and executes JavaScript with bounded results', async () => {
     engine = new JavaScriptEngine(getLLMConfig());
     await expect(engine.execute('const result = 1;')).rejects.toThrow('No data loaded');
-    const schema = await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
+    await engine.load({ type: 'json', options: { data: [{ value: 10 }, { value: 20 }] } });
+    const schema = await engine.schema();
     expect(schema.tables[0].fields).toEqual([{ name: 'value', type: 'number' }]);
     expect((await engine.execute('const result = stat.sum(data, "value");')).data).toEqual([{ value: 30 }]);
     const result = await engine.execute('const result = data;', { maxRows: 1 });
@@ -59,10 +60,10 @@ describe('interpreter/javascript/engine', () => {
         { n: null, category: null, flag: null, day: null },
       ];
       try {
-        const load = vi.spyOn(JavaScriptEngine.prototype, 'load');
+        const discover = vi.spyOn(JavaScriptEngine.prototype, 'schema');
         await ava.source({ type: 'json', options: { data } });
-        const loaded = await load.mock.results[0].value;
-        load.mockRestore();
+        const loaded = await ava.schema();
+        discover.mockRestore();
         const before = JSON.stringify({ loaded, data });
         const result = await ava.profile({ metrics });
         const [table] = result.tables;
@@ -189,18 +190,22 @@ describe('interpreter/javascript/engine', () => {
     it('rejects unloaded/disposed/failed loads and invalid options', async () => {
       engine = new JavaScriptEngine(getLLMConfig());
       const config = { type: 'json' as const, options: { data: [] } };
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
       await engine.load(config);
       for (const limit of [NaN, -1]) {
-        await expect(engine.profile({ metrics: [{ id: 'top_values', limit }] })).rejects.toThrow('top_values.limit');
+        await expect(engine.profile(await engine.schema(), { metrics: [{ id: 'top_values', limit }] })).rejects.toThrow(
+          'top_values.limit'
+        );
       }
-      await expect(engine.profile({ metrics: ['missing'] })).rejects.toThrow('Unknown metric');
-      await expect(engine.profile({ metrics: [{ id: 'row_count', limit: 2 }] })).rejects.toThrow('Unknown option');
+      await expect(engine.profile(await engine.schema(), { metrics: ['missing'] })).rejects.toThrow('Unknown metric');
+      await expect(engine.profile(await engine.schema(), { metrics: [{ id: 'row_count', limit: 2 }] })).rejects.toThrow(
+        'Unknown option'
+      );
       await engine.dispose();
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
       await engine.load(config);
       await expect(engine.load({ type: 'csv-file', options: { path: 'unused' } })).rejects.toThrow('only supports');
-      await expect(engine.profile()).rejects.toThrow('No data loaded');
+      await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
     });
   });
 });

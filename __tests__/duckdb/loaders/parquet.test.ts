@@ -20,10 +20,11 @@ describe('loaders/parquet', () => {
 
   it('loads a Parquet file with a complete schema and original column order', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const schema = await engine.load({
+    await engine.load({
       type: 'parquet',
       options: { path: path.join(__dirname, '../../datasets/041_Airline.parquet') },
     });
+    const schema = await engine.schema();
 
     expect(schema).toEqual({
       tables: [

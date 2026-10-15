@@ -25,13 +25,14 @@ describe.skipIf(process.env.AVA_MONGODB_TEST !== '1')('loaders/mongodb', () => {
 
   it('loads MongoDB collections with an inferred schema', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const schema = await engine.load({
+    await engine.load({
       type: 'mongodb',
       options: {
         connection: mongoConnection(Number(process.env.AVA_MONGODB_TEST_PORT ?? 17017)),
         database: 'ava_mongodb_test',
       },
     });
+    const schema = await engine.schema();
 
     // init.js creates three collections; information_schema returns them alphabetically
     expect(schema.tables.map(({ name }) => name)).toEqual(['customers', 'order notes', 'orders']);

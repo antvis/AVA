@@ -90,6 +90,62 @@ describe('help and validation', () => {
 });
 
 describe('source', () => {
+  it.each(['schema', 'profile'])('imports --%s JSON before creating the session', async (kind) => {
+    const directory = await mkdtemp(join(tmpdir(), 'ava-cli-test-'));
+    try {
+      const schema = {
+        tables: [{ name: 'data', columnCount: 1, indexes: [], fields: [{ name: 'sales', type: 'BIGINT' }] }],
+      };
+      const metadata =
+        kind === 'schema'
+          ? { ...schema, language: { name: 'SQL', fence: 'sql' } }
+          : {
+              generatedAt: 1234,
+              tables: [
+                {
+                  ...schema.tables[0],
+                  metrics: { row_count: 1 },
+                  fields: [{ ...schema.tables[0].fields[0], logicalType: 'numeric', metrics: { sum: 10 } }],
+                },
+              ],
+            };
+      const file = join(directory, 'metadata.json');
+      await writeFile(file, JSON.stringify(metadata));
+      await execute(['source', 'sales.csv', `--${kind}`, `@${file}`]);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(
+        { type: 'csv-file', options: { path: resolve('sales.csv') } },
+        { model: 'gpt-4o-mini' },
+        undefined,
+        { [kind]: kind === 'schema' ? schema : metadata }
+      );
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('accepts schema and profile together', async () => {
+    const schema = { tables: [] };
+    const profile = { tables: [], generatedAt: 1234 };
+    await execute(['source', 'sales.csv', '--schema', JSON.stringify(schema), '--profile', JSON.stringify(profile)]);
+    expect(createSession).toHaveBeenCalledExactlyOnceWith(
+      { type: 'csv-file', options: { path: resolve('sales.csv') } },
+      { model: 'gpt-4o-mini' },
+      undefined,
+      { schema, profile }
+    );
+  });
+
+  it('rejects shared stdin and invalid metadata before creating a session', async () => {
+    await expect(run(['source', '-', '--schema', '-'])).rejects.toThrow('Only one input can use stdin');
+    await expect(run(['source', '-', '--profile', '-'])).rejects.toThrow('Only one input can use stdin');
+    await expect(run(['source', 'sales.csv', '--schema', '-', '--profile', '-'])).rejects.toThrow(
+      'Only one input can use stdin'
+    );
+    await expect(run(['source', 'sales.csv', '--schema', '{"tables":null}'])).rejects.toThrow();
+    await expect(run(['source', 'sales.csv', '--profile', '@missing'])).rejects.toThrow('Cannot read JSON');
+    expect(createSession).not.toHaveBeenCalled();
+  });
+
   it.each([
     ['sales.CSV', [], 'csv-file', resolve('sales.CSV')],
     ['https://example.com/sales.parquet?download=1', [], 'parquet', 'https://example.com/sales.parquet?download=1'],
@@ -99,6 +155,7 @@ describe('source', () => {
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
       { type, options: { path: expectedPath } },
       { model: 'gpt-4o-mini' },
+      undefined,
       undefined
     );
   });
@@ -110,7 +167,7 @@ describe('source', () => {
       const config = { type: 'json', options: { data: [{ sales: 10 }] } };
       await writeFile(file, JSON.stringify(config));
       await execute(['source', `@${file}`]);
-      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined);
+      expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, undefined, undefined);
       await expect(run(['source', `@${file}`, '--type', 'json-file'])).rejects.toThrow(
         '--type cannot be combined with a source config.'
       );
@@ -129,7 +186,7 @@ describe('source', () => {
         const config = { type: 'json', options: { data: [{ sales: 10 }] } };
         await writeFile(file, JSON.stringify(config));
         await execute(['source', `@${file}`, '--engine', engine]);
-        expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, engine);
+        expect(createSession).toHaveBeenCalledExactlyOnceWith(config, { model: 'gpt-4o-mini' }, engine, undefined);
       } finally {
         await rm(directory, { recursive: true, force: true });
       }
@@ -141,7 +198,8 @@ describe('source', () => {
     expect(createSession).toHaveBeenCalledExactlyOnceWith(
       { type: 'csv-file', options: { path: resolve('sales.csv') } },
       { model: 'gpt-4o-mini' },
-      'python'
+      'python',
+      undefined
     );
   });
 

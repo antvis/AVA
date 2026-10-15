@@ -147,6 +147,7 @@ describe('Subset strategy', () => {
     expect(prompt).toContain('unrelated');
     expect(prompt.match(/Maximum: 123/g)).toHaveLength(1);
     expect(prompt).toContain(stringifyProfile((engine.getDSL as ReturnType<typeof vi.fn>).mock.calls[0][1].profile));
+    expect(engine.profile).toHaveBeenCalledExactlyOnceWith(schema);
     expect(engine.getDSL).toHaveBeenCalledOnce();
     expect(engine.execute).toHaveBeenCalledOnce();
     expect(generateText).toHaveBeenCalledTimes(includeSummary ? 2 : 1);

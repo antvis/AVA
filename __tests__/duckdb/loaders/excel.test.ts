@@ -26,7 +26,8 @@ describe('loaders/excel', () => {
 
   it('loads both sheets with complete schemas and queryable data', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const schema = await engine.load({ type: 'excel', options: { path: xlsxPath } });
+    await engine.load({ type: 'excel', options: { path: xlsxPath } });
+    const schema = await engine.schema();
 
     expect(schema).toEqual({
       tables: [
@@ -105,13 +106,14 @@ describe('loaders/excel', () => {
 
   it('only exposes the selected sheet and inclusive range', async () => {
     engine = new DuckDBEngine(getLLMConfig());
-    const schema = await engine.load({
+    await engine.load({
       type: 'excel',
       options: {
         path: xlsxPath,
         sheets: [{ sheet: 'Sales', range: 'A1:B3', header: true }],
       },
     });
+    const schema = await engine.schema();
     expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
     expect(schema.tables[0].fields.map((field) => field.name)).toEqual(['order_id', 'order_date']);
     expect((await engine.execute('SELECT * FROM "Sales"')).data).toHaveLength(2);
@@ -177,7 +179,8 @@ describe('loaders/excel', () => {
       const file = path.join(directory, 'names.xlsx');
       zip.writeZip(file);
       engine = new DuckDBEngine(getLLMConfig());
-      const schema = await engine.load({ type: 'excel', options: { path: file, sheets: [{ sheet: name }] } });
+      await engine.load({ type: 'excel', options: { path: file, sheets: [{ sheet: name }] } });
+      const schema = await engine.schema();
       expect(schema.tables.map((table) => table.name)).toEqual([name]);
       expect((await engine.execute(`SELECT * FROM "${name.replace(/"/g, '""')}" LIMIT 1`)).data).toHaveLength(1);
     } finally {
@@ -243,7 +246,8 @@ describe('loaders/excel', () => {
       const instance = new DuckDBEngine(getLLMConfig());
       try {
         const options: ExcelSourceOptions = { path: file, sheets: [{ sheet: 'Sales', range: 'b3:c6', header }] };
-        const schema = await instance.load({ type: 'excel', options });
+        await instance.load({ type: 'excel', options });
+        const schema = await instance.schema();
         expect(schema.tables.map((table) => table.name)).toEqual(['Sales']);
         if (header !== false) expect(schema.tables[0].fields.map((field) => field.name)).toEqual(['101', '202']);
         const result = await instance.execute('SELECT * FROM "Sales"');
@@ -281,13 +285,14 @@ describe('loaders/excel', () => {
 
     it('reads mixed types as strings with all_varchar', async () => {
       engine = new DuckDBEngine(getLLMConfig());
-      const schema = await engine.load({
+      await engine.load({
         type: 'excel',
         options: {
           path: file,
           sheets: [{ sheet: 'Sales', range: 'B3:C7', all_varchar: true }],
         },
       });
+      const schema = await engine.schema();
       expect(schema.tables[0].fields.map((field) => field.type)).toEqual(['VARCHAR', 'VARCHAR']);
       const result = await engine.execute('SELECT * FROM "Sales"');
       expect(result.data.map((row) => Object.values(row))).toEqual([
@@ -324,13 +329,14 @@ describe('loaders/excel', () => {
       'supports empty_as_varchar=%s for an empty cell in the first data row',
       async (empty_as_varchar) => {
         engine = new DuckDBEngine(getLLMConfig());
-        const schema = await engine.load({
+        await engine.load({
           type: 'excel',
           options: {
             path: file,
             sheets: [{ sheet: 'Sales', range: 'B7:C7', header: false, empty_as_varchar }],
           },
         });
+        const schema = await engine.schema();
         expect(schema.tables[0].fields.map((field) => field.type)).toEqual(
           empty_as_varchar ? ['VARCHAR', 'VARCHAR'] : ['VARCHAR', 'DOUBLE']
         );
@@ -340,7 +346,7 @@ describe('loaders/excel', () => {
     it('applies independent ranges and headers to two sheets', async () => {
       const instance = new DuckDBEngine(getLLMConfig());
       try {
-        const schema = await instance.load({
+        await instance.load({
           type: 'excel',
           options: {
             path: file,
@@ -350,6 +356,7 @@ describe('loaders/excel', () => {
             ],
           },
         });
+        const schema = await instance.schema();
         expect(schema.tables.map((table) => table.name).sort()).toEqual(['Costs', 'Sales']);
         const sales = await instance.execute('SELECT * FROM "Sales"');
         expect(sales.data).toEqual([{ '101': 1, '202': 2 }]);

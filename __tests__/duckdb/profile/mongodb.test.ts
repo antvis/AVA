@@ -4,9 +4,15 @@ import { DuckDBEngine } from '../../../src/duckdb/engine';
 import { getLLMConfig } from '../../test-utils';
 
 function mongoConnection(port: number): string {
-  return ['mongodb', '://', 'ava_test', ':', 'ava_test_password', `@127.0.0.1:${port}`, '/?authSource=ava_mongodb_test'].join(
-    ''
-  );
+  return [
+    'mongodb',
+    '://',
+    'ava_test',
+    ':',
+    'ava_test_password',
+    `@127.0.0.1:${port}`,
+    '/?authSource=ava_mongodb_test',
+  ].join('');
 }
 
 describe.skipIf(process.env.AVA_MONGODB_TEST !== '1')('profile/mongodb', () => {
@@ -27,7 +33,7 @@ describe.skipIf(process.env.AVA_MONGODB_TEST !== '1')('profile/mongodb', () => {
       },
     });
 
-    const profile = await engine.profile();
+    const profile = await engine.profile(await engine.schema());
 
     expect(profile.tables.map(({ name, metrics }) => ({ name, metrics }))).toEqual([
       { name: 'customers', metrics: { row_count: 3 } },

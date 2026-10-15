@@ -17,14 +17,14 @@ describe('loaders/sqlite', () => {
 
   it('loads a SQLite file with a complete schema and queryable data', async () => {
     ava = new AVA({ llm: getLLMConfig() });
-    const load = vi.spyOn(DuckDBEngine.prototype, 'load');
+    const discover = vi.spyOn(DuckDBEngine.prototype, 'schema');
     await ava.source({
       type: 'sqlite',
       options: { path: join(__dirname, '../../datasets/sales.sqlite') },
     });
 
-    const schema = await load.mock.results[0].value;
-    load.mockRestore();
+    const schema = await ava.schema();
+    discover.mockRestore();
 
     expect(schema).toEqual({
       tables: [
@@ -183,10 +183,21 @@ it('profiles and queries actual storage types without dropping mixed values', as
     await ava.source({ type: 'sqlite', options: { path } });
     const profile = await ava.profile();
     const table = profile.tables.find((table) => table.name === 'measurements')!;
-    expect(table.fields.find((field) => field.name === 'amount')).toMatchObject({ type: 'VARCHAR', logicalType: 'string' });
-    expect(table.fields.find((field) => field.name === 'location')).toMatchObject({ type: 'VARCHAR', logicalType: 'string' });
-    expect(table.fields.find((field) => field.name === 'flexible')).toMatchObject({ type: 'BIGINT', logicalType: 'numeric' });
-    expect((await ava.engine!.execute(`
+    expect(table.fields.find((field) => field.name === 'amount')).toMatchObject({
+      type: 'VARCHAR',
+      logicalType: 'string',
+    });
+    expect(table.fields.find((field) => field.name === 'location')).toMatchObject({
+      type: 'VARCHAR',
+      logicalType: 'string',
+    });
+    expect(table.fields.find((field) => field.name === 'flexible')).toMatchObject({
+      type: 'BIGINT',
+      logicalType: 'numeric',
+    });
+    expect(
+      (
+        await ava.engine!.execute(`
       SELECT amount, location, CAST(flexible AS VARCHAR) AS flexible,
              hex(payload) AS payload, calculated,
              union_tag(mixed_blob) AS tag,
@@ -195,11 +206,57 @@ it('profiles and queries actual storage types without dropping mixed values', as
              union_extract(mixed_blob, 'integer_value') AS integer_value,
              union_extract(mixed_blob, 'real_value') AS real_value
       FROM measurements ORDER BY id
-    `)).data).toEqual([
-      { amount: '42', location: '(1,2)', flexible: '9007199254740993', payload: '00FF80', calculated: '42', tag: 'blob_value', blob_value: '00FF80', text_value: null, integer_value: null, real_value: null },
-      { amount: '', location: '(3,4)', flexible: '7', payload: '', calculated: '', tag: 'text_value', blob_value: null, text_value: 'hello', integer_value: null, real_value: null },
-      { amount: null, location: null, flexible: null, payload: null, calculated: null, tag: 'integer_value', blob_value: null, text_value: null, integer_value: 42, real_value: null },
-      { amount: '2.5', location: '(5,6)', flexible: '-3', payload: 'AB', calculated: '2.5', tag: 'real_value', blob_value: null, text_value: null, integer_value: null, real_value: 2.5 },
+    `)
+      ).data
+    ).toEqual([
+      {
+        amount: '42',
+        location: '(1,2)',
+        flexible: '9007199254740993',
+        payload: '00FF80',
+        calculated: '42',
+        tag: 'blob_value',
+        blob_value: '00FF80',
+        text_value: null,
+        integer_value: null,
+        real_value: null,
+      },
+      {
+        amount: '',
+        location: '(3,4)',
+        flexible: '7',
+        payload: '',
+        calculated: '',
+        tag: 'text_value',
+        blob_value: null,
+        text_value: 'hello',
+        integer_value: null,
+        real_value: null,
+      },
+      {
+        amount: null,
+        location: null,
+        flexible: null,
+        payload: null,
+        calculated: null,
+        tag: 'integer_value',
+        blob_value: null,
+        text_value: null,
+        integer_value: 42,
+        real_value: null,
+      },
+      {
+        amount: '2.5',
+        location: '(5,6)',
+        flexible: '-3',
+        payload: 'AB',
+        calculated: '2.5',
+        tag: 'real_value',
+        blob_value: null,
+        text_value: null,
+        integer_value: null,
+        real_value: 2.5,
+      },
     ]);
     expect((await ava.engine!.execute('SELECT * FROM empty_table')).data).toEqual([]);
     expect((await ava.engine!.execute('SELECT * FROM measurement_view')).data).toHaveLength(4);

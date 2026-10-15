@@ -62,10 +62,11 @@ describe('ClickHouseEngine', () => {
       return [];
     });
     const engine = new ClickHouseEngine(getLLMConfig());
-    const schema = await engine.load({
+    await engine.load({
       type: 'clickhouse',
       options: { host: 'localhost', port: 8123, database: 'default', user: 'default', password: '' },
     });
+    const schema = await engine.schema();
 
     expect(mockedCreateClient).toHaveBeenCalledWith(
       expect.objectContaining({ url: 'http://localhost:8123/', username: 'default', database: 'default' })
@@ -186,12 +187,12 @@ describe('ClickHouseEngine', () => {
       return [];
     });
     const engine = new ClickHouseEngine(getLLMConfig());
-    await expect(engine.profile()).rejects.toThrow('No data loaded');
+    await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
     await engine.load({
       type: 'clickhouse',
       options: { host: 'http://localhost:8123', database: 'default', username: 'default', password: '' },
     });
     await expect(engine.load({ type: 'csv-file', options: { path: 'unused' } })).rejects.toThrow('only supports');
-    await expect(engine.profile()).rejects.toThrow('No data loaded');
+    await expect(engine.profile({ tables: [] })).rejects.toThrow('No data loaded');
   });
 });

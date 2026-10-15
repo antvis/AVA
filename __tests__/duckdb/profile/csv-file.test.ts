@@ -20,7 +20,7 @@ describe('profile/csv-file', () => {
       options: { path: path.join(__dirname, '../../datasets/sales.csv') },
     });
 
-    const profile = await engine.profile({
+    const profile = await engine.profile(await engine.schema(), {
       metrics: [
         'row_count',
         'null_count',
@@ -88,6 +88,8 @@ describe('profile/csv-file', () => {
         max: Date.UTC(2025, 11, 31),
       },
     });
-    await expect(engine.profile({ metrics: ['custom_metric'] })).rejects.toThrow('Unknown metric: custom_metric');
+    await expect(engine.profile(await engine.schema(), { metrics: ['custom_metric'] })).rejects.toThrow(
+      'Unknown metric: custom_metric'
+    );
   });
 });
