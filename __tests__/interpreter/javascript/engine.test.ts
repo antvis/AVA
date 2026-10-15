@@ -12,6 +12,15 @@ import { getLLMConfig } from '../../test-utils';
 import type { Schema } from '../../../src/types';
 
 describe('interpreter/javascript/engine', () => {
+  it('requires a loaded source for schema discovery', async () => {
+    const engine = new JavaScriptEngine(getLLMConfig());
+    try {
+      await expect(engine.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   let engine: JavaScriptEngine | null = null;
 
   afterEach(async () => {

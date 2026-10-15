@@ -30,8 +30,9 @@ export const profileMetadataSchema = schemaStructure
   })
   .transform((value) => value as Profile);
 
-export function toProfile(metadata: DataSourceMetadata): Profile | undefined {
-  return metadata.profile === undefined ? undefined : profileMetadataSchema.parse(metadata.profile);
+export function toProfile(metadata: DataSourceMetadata): Profile | null {
+  const result = profileMetadataSchema.safeParse(metadata.profile);
+  return result.success ? result.data : null;
 }
 
 export function parseMetricConfig(config: MetricConfig): Exclude<MetricConfig, string> {

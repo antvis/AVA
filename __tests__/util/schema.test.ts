@@ -53,7 +53,7 @@ describe('extractDataSchema', () => {
 
 describe('toSchema', () => {
   it('prefers explicit schema and otherwise extracts profile structure', () => {
-    expect(toSchema({})).toBeUndefined();
+    expect(toSchema({})).toBeNull();
     expect(toSchema({ schema })).toEqual(schema);
     expect(toSchema({ profile })).toEqual(schema);
     const explicit = { ...schema, relations: [] };
@@ -66,14 +66,14 @@ describe('toSchema', () => {
     { tables: 'invalid' },
     { tables: [{ ...schema.tables[0], columnCount: -1 }] },
     { tables: [{ ...schema.tables[0], fields: [{ name: 'value', type: 123 }] }] },
-  ])('rejects invalid explicit schema without falling back to profile %#', (input) => {
-    expect(() => toSchema({ schema: input as never })).toThrow();
-    expect(() => toSchema({ schema: input as never, profile })).toThrow();
+  ])('returns null for invalid explicit schema without falling back to profile %#', (input) => {
+    expect(toSchema({ schema: input as never })).toBeNull();
+    expect(toSchema({ schema: input as never, profile })).toBeNull();
   });
 
   it('validates structure extracted from a profile', () => {
     const invalid = { ...profile, tables: [{ ...profile.tables[0], fields: 'invalid' }] };
-    expect(() => toSchema({ profile: invalid as never })).toThrow();
+    expect(toSchema({ profile: invalid as never })).toBeNull();
   });
 
   it('extracts pure structure from profiles and CLI schema output', () => {

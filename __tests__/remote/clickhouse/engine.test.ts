@@ -55,6 +55,36 @@ afterEach(() => {
 });
 
 describe('ClickHouseEngine', () => {
+  it('requires a loaded source for schema discovery', async () => {
+    const engine = new ClickHouseEngine(getLLMConfig());
+    try {
+      await expect(engine.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('skips ClickHouse catalog requests while still creating and disposing its client', async () => {
+    const schema: Schema = {
+      tables: [{ name: 'data', columnCount: 1, fields: [{ name: 'value', type: 'number' }], indexes: [] }],
+    };
+    const client = { query: vi.fn(), close: vi.fn() };
+    vi.mocked(createClient).mockReturnValue(client as never);
+    const engine = new ClickHouseEngine(getLLMConfig());
+    try {
+      expect(
+        await engine.load({ type: 'clickhouse', options: { url: 'http://localhost:8123', database: 'default' } })
+      ).toBeUndefined();
+      expect(client.query).not.toHaveBeenCalled();
+      client.query.mockResolvedValue({ json: async () => [{ m0: 2 }] });
+      expect((await engine.profile(schema, { metrics: ['row_count'] })).tables[0].metrics.row_count).toBe(2);
+      expect(client.query).toHaveBeenCalled();
+    } finally {
+      await engine.dispose();
+    }
+    expect(client.close).toHaveBeenCalledOnce();
+  });
+
   it('loads schema through the official client and normalizes connection options', async () => {
     const client = stubClient((query) => {
       if (query.includes('FROM system.tables')) return TABLE_ROWS;

@@ -72,6 +72,31 @@ afterEach(() => {
 });
 
 describe('SupabaseEngine', () => {
+  it('requires a loaded source for schema discovery', async () => {
+    const engine = new SupabaseEngine(getLLMConfig());
+    try {
+      await expect(engine.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
+  it('skips Supabase catalog requests while keeping query execution available', async () => {
+    const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => [{ value: 2 }] });
+    vi.stubGlobal('fetch', fetch);
+    const engine = new SupabaseEngine(getLLMConfig());
+    try {
+      expect(
+        await engine.load({ type: 'supabase', options: { accessToken: 'test', projectRef: 'test' } })
+      ).toBeUndefined();
+      expect(fetch).not.toHaveBeenCalled();
+      expect((await engine.execute('SELECT value FROM data')).data).toEqual([{ value: 2 }]);
+      expect(fetch).toHaveBeenCalledOnce();
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   describe('schema', () => {
     it.each([200, 503])('times out while reading an HTTP %s response body', async (status) => {
       vi.useFakeTimers();

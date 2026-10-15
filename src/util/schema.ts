@@ -39,9 +39,10 @@ export const schemaStructure = z.object({ tables: z.array(table), relations: z.a
 export const schemaMetadataSchema = schemaStructure.transform((value) => value as Schema);
 
 /** Prefer explicit structure; otherwise extract it from the profile. */
-export function toSchema(metadata: DataSourceMetadata): Schema | undefined {
+export function toSchema(metadata: DataSourceMetadata): Schema | null {
   const schema = metadata.schema !== undefined ? metadata.schema : metadata.profile;
-  return schema === undefined ? undefined : schemaMetadataSchema.parse(schema);
+  const result = schemaMetadataSchema.safeParse(schema);
+  return result.success ? result.data : null;
 }
 
 /**

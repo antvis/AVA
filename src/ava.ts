@@ -138,8 +138,8 @@ export class AVA extends EventEmitter {
       this.engine = await this.createEngine();
       try {
         await this.engine.load(config);
-        this.dataSchema = toSchema(metadata) ?? null;
-        this.dataProfile = toProfile(metadata) ?? null;
+        this.dataSchema = toSchema(metadata);
+        this.dataProfile = toProfile(metadata);
       } catch (error) {
         await this.dispose();
         throw error;

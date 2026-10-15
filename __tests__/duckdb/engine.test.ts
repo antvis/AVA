@@ -14,6 +14,15 @@ import { maxRows } from '../../src/util/result';
 import { getLLMConfig, skipLLMTests } from '../test-utils';
 
 describe('DuckDBEngine', () => {
+  it('requires a loaded source for schema discovery', async () => {
+    const engine = new DuckDBEngine(getLLMConfig());
+    try {
+      await expect(engine.schema()).rejects.toThrow('No data loaded');
+    } finally {
+      await engine.dispose();
+    }
+  });
+
   let engine: DuckDBEngine;
 
   beforeEach(() => {
