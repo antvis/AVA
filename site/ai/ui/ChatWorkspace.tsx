@@ -28,7 +28,11 @@ const ChatWorkspace: React.FC<{
   }
 
   return (
-    <main className="mx-[max(12px,calc((100%-1120px)/2))] pb-12 [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7] max-md:[&_p]:text-[13px]">
+    <main
+      className={`pb-12 [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7] max-md:[&_p]:text-[13px] ${
+        live ? 'mx-[max(12px,calc((100%-1320px)/2))]' : 'mx-[max(12px,calc((100%-1120px)/2))]'
+      }`}
+    >
       <div
         id="playground"
         style={{
@@ -47,6 +51,7 @@ const ChatWorkspace: React.FC<{
           <ChatPanel playback={playback} live={live} onArtifact={onArtifact} onRerun={onReplay} heading={heading} />
           {artifact && (
             <ArtifactPanel
+              key={artifact.id}
               artifact={artifact}
               live={!!live}
               tab={artifactTab}
