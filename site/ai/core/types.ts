@@ -1,4 +1,4 @@
-export interface PlaygroundDataset {
+export interface AIDataset {
   name: string;
   rows: Record<string, unknown>[];
 }

@@ -51,7 +51,7 @@ export const DICTATION_TEXT = QUESTION;
 
 // ── Sample dataset ────────────────────────────────────────
 
-// Shared sample dataset for the demo and interactive playground.
+// Shared sample dataset for the demo and interactive AI chat.
 export const MONTHLY_SALES = [
   { month: '2026-01-01', revenue: 120000, gross_profit: 36000 },
   { month: '2026-02-01', revenue: 135000, gross_profit: 41850 },

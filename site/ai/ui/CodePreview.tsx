@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from 'react';
 import type { ThemedToken } from 'shiki';
 import { highlightCode } from './utils';
 
-export default function CodePreview({ code, language }: { code: string; language: 'javascript' | 'sql' }) {
+export default function CodePreview({ code, language }: { code: string; language: 'javascript' | 'sql' | 'json' }) {
   const [highlighted, setHighlighted] = useState<{ code: string; language: string; tokens: ThemedToken[][] }>();
   useEffect(() => {
     let active = true;

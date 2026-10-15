@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 
 const Header: React.FC = () => {
   const pathname = usePathname();
-  const isAIPlayground = pathname === '/ai-playground' || pathname === '/ai-playground/';
+  const isAIPage = pathname === '/ai' || pathname === '/ai/';
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -76,9 +76,9 @@ const Header: React.FC = () => {
             Documentation
           </Link>
           <Link
-            href="/ai-playground"
+            href="/ai"
             className={`flex items-center gap-2 px-2 py-2 text-sm rounded-lg transition-colors ${
-              isAIPlayground
+              isAIPage
                 ? 'text-[color:var(--color-primary)] bg-[color:var(--color-primary)]/10'
                 : 'text-gray-600 hover:text-[color:var(--color-primary)] hover:bg-[color:var(--color-primary)]/10'
             }`}
@@ -91,7 +91,7 @@ const Header: React.FC = () => {
                 d="M13 10V3L4 14h7v7l9-11h-7z"
               />
             </svg>
-            AI Playground
+            AI
           </Link>
           <a
             href="https://github.com/antvis/AVA"

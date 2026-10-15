@@ -12,7 +12,7 @@ import { Header, Footer } from '../../components';
 import PageShell from '../../components/PageShell';
 import { DEFAULT_LLM_CONFIG, loadLLMConfig, saveLLMConfig } from '../../components/utils';
 
-export default function AIPlaygroundPage() {
+export default function AIPage() {
   const [config, setConfig] = useState<LLMConfig>(DEFAULT_LLM_CONFIG);
   const [localConfigOpen, setLocalConfigOpen] = useState(false);
   const chat = useChat({ config, onConfigure: () => setLocalConfigOpen(true) });
@@ -36,13 +36,15 @@ export default function AIPlaygroundPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-ink">Explore your data with AVA</h1>
           <div className="mt-3 grid gap-3 border-t border-line/70 pt-3 text-xs leading-5 text-ink-2 sm:grid-cols-2 sm:gap-8">
             <p>
-              <span className="font-medium text-ink">In this browser demo</span>
-              <br />
               <button
                 type="button"
                 disabled={chat.busy}
                 onClick={() => setLocalConfigOpen(true)}
-                className="inline-flex items-center gap-1 align-baseline font-medium text-ink underline decoration-[color:var(--color-primary-dark)] underline-offset-4 hover:decoration-ink disabled:opacity-40"
+                className={`inline-flex items-center gap-1 rounded px-1 align-baseline font-medium underline underline-offset-4 transition-colors disabled:opacity-40 ${
+                  chat.ready
+                    ? 'text-ink decoration-[color:var(--color-primary-dark)] hover:decoration-ink'
+                    : 'bg-[#FEF3C7] text-[#92400E] decoration-[#92400E] hover:bg-[#FDE68A]'
+                }`}
               >
                 <svg
                   aria-hidden="true"
@@ -68,7 +70,7 @@ export default function AIPlaygroundPage() {
               <nav aria-label="Full AVA capabilities" className="flex flex-wrap items-baseline gap-x-2">
                 <span>Use AVA through the</span>
                 <a
-                  href="#playground-skill-title"
+                  href="#ai-skill-title"
                   className="text-ink underline decoration-[color:var(--color-primary-dark)] underline-offset-4 hover:decoration-ink"
                 >
                   Agent Skill

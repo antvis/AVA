@@ -3,16 +3,17 @@ import { createHighlighterCore } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 import javascript from 'shiki/langs/javascript.mjs';
 import sql from 'shiki/langs/sql.mjs';
+import json from 'shiki/langs/json.mjs';
 import githubLight from 'shiki/themes/github-light.mjs';
 import type { Message } from './types';
-import type { PlaygroundUIMessage } from '../core/session';
+import type { AIUIMessage } from '../core/session';
 
 /* ------------------------------------------------------------------ */
 /* Message updates — preserve text and tool order                       */
 /* ------------------------------------------------------------------ */
 
 // This is a render projection; useChat owns the messages and their tool states.
-export function toDisplayMessage(source: PlaygroundUIMessage, datasetName: string): Message {
+export function toDisplayMessage(source: AIUIMessage, datasetName: string): Message {
   const message: Message = {
     role: source.role === 'user' ? 'user' : 'assistant',
     text: '',
@@ -64,30 +65,41 @@ export function toDisplayMessage(source: PlaygroundUIMessage, datasetName: strin
 /* Result tables — normalize rows and format values                     */
 /* ------------------------------------------------------------------ */
 
-/** JavaScript queries can return records, nested values, or scalar arrays. */
-export function resultRows(data: unknown[]): Record<string, unknown>[] {
-  return data.map((row) =>
-    row !== null && typeof row === 'object' && !Array.isArray(row) ? (row as Record<string, unknown>) : { value: row }
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isTable(value: unknown): value is Record<string, unknown>[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (row) =>
+        isRecord(row) &&
+        Object.values(row).every((cell) => cell === null || ['string', 'number', 'boolean'].includes(typeof cell))
+    )
   );
 }
 
-/** Split a structured query result into summary fields and named tables. */
-export function resultTables(data: unknown[]): { name?: string; rows: Record<string, unknown>[] }[] {
-  let rows = resultRows(data);
-  if (rows.length !== 1) return [{ rows }];
-  const wrapped = rows[0];
-  if (Object.keys(wrapped).length === 1 && wrapped.value !== null && typeof wrapped.value === 'object') {
-    rows = resultRows(Array.isArray(wrapped.value) ? wrapped.value : [wrapped.value]);
-    if (rows.length !== 1) return [{ rows }];
+/** Only tabular results become tables; preserve other structures as JSON. */
+export function resultTables(data: unknown): { name?: string; rows: Record<string, unknown>[] }[] | null {
+  if (isTable(data)) return [{ rows: data }];
+
+  // The JavaScript engine wraps non-array results in a single value row.
+  let candidate = data;
+  if (Array.isArray(data) && data.length === 1 && isRecord(data[0])) {
+    candidate = Object.keys(data[0]).length === 1 && 'value' in data[0] ? data[0].value : data[0];
   }
-  const entries = Object.entries(rows[0]);
-  const arrays = entries.filter(([, value]) => Array.isArray(value));
-  if (!arrays.length) return [{ rows }];
-  const summary = Object.fromEntries(entries.filter(([, value]) => !Array.isArray(value)));
-  return [
-    ...(Object.keys(summary).length ? [{ name: 'Summary', rows: [summary] }] : []),
-    ...arrays.map(([name, value]) => ({ name, rows: resultRows(value as unknown[]) })),
-  ];
+  if (isTable(candidate)) return [{ rows: candidate }];
+  if (Array.isArray(candidate) && candidate.every(isTable)) {
+    return candidate.map((rows) => ({ rows }));
+  }
+  if (isRecord(candidate)) {
+    const entries = Object.entries(candidate);
+    if (entries.length && entries.every(([, rows]) => isTable(rows))) {
+      return entries.map(([name, rows]) => ({ name, rows: rows as Record<string, unknown>[] }));
+    }
+  }
+  return null;
 }
 
 export function resultColumns(rows: Record<string, unknown>[]): string[] {
@@ -121,10 +133,10 @@ export function parseToken(draft: string): { kind: 'at' | 'slash'; query: string
 
 let highlighter: Promise<HighlighterCore> | undefined;
 
-export async function highlightCode(code: string, language: 'javascript' | 'sql') {
+export async function highlightCode(code: string, language: 'javascript' | 'sql' | 'json') {
   highlighter ??= createHighlighterCore({
     themes: [githubLight],
-    langs: [javascript, sql],
+    langs: [javascript, sql, json],
     engine: createJavaScriptRegexEngine(),
   });
   return (await highlighter).codeToTokens(code, { lang: language, theme: 'github-light' }).tokens;

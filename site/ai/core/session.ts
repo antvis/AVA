@@ -2,7 +2,7 @@ import { DirectChatTransport, generateId, isStepCount, ToolLoopAgent } from 'ai'
 import type { InferAgentUIMessage } from 'ai';
 import { AVA } from '@antv/ava/browser';
 import type { AnalysisResponse, LLMConfig } from '@antv/ava/browser';
-import type { PlaygroundDataset } from './types';
+import type { AIDataset } from './types';
 import { createModel } from './model';
 import { createTools } from './tools';
 import { uniqueStrings } from '../../lib/strings';
@@ -12,7 +12,7 @@ type AvaFactory = (config: LLMConfig) => AVA;
 
 export function createSession(
   config: LLMConfig,
-  dataset: PlaygroundDataset,
+  dataset: AIDataset,
   createAva: AvaFactory = (llm) => new AVA({ llm, engine: { type: 'javascript' } })
 ) {
   const model = createModel(config);
@@ -106,4 +106,4 @@ export function createSession(
   };
 }
 
-export type PlaygroundUIMessage = InferAgentUIMessage<ReturnType<typeof createSession>['agent']>;
+export type AIUIMessage = InferAgentUIMessage<ReturnType<typeof createSession>['agent']>;

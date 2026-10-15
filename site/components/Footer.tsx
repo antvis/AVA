@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 /**
  * Full footer. Navigation only points to pages that actually exist:
- * /playground, /documentation, and real GitHub / AntV ecosystem URLs —
+ * /ai, /documentation, and real GitHub / AntV ecosystem URLs —
  * no dead links to pages that have not been created yet.
  */
 
@@ -24,7 +24,7 @@ const NAV: { title: string; links: { label: string; href: string; external?: boo
     title: 'Developers',
     links: [
       { label: 'Documentation', href: '/documentation/' },
-      { label: 'AI Playground', href: '/ai-playground' },
+      { label: 'AI', href: '/ai' },
       { label: 'SDK', href: '/documentation/quickstart/' },
       { label: 'CLI', href: '/documentation/reference/cli/' },
       { label: 'Agent Skill', href: '/documentation/agent-skill/' },

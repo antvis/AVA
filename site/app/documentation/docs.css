@@ -102,13 +102,13 @@
 .docs-header-links span {
   margin-left: 6px;
 }
-.docs-header-links .docs-playground {
+.docs-header-links .docs-ai {
   background: var(--docs-ink);
   color: var(--color-surface);
   padding: 9px 15px;
   border-radius: 7px;
 }
-.docs-header-links .docs-playground:hover {
+.docs-header-links .docs-ai:hover {
   background: var(--docs-accent);
   color: var(--docs-ink);
 }
@@ -813,7 +813,7 @@
     gap: 12px;
     font-size: 12px;
   }
-  .docs-header-links .docs-playground {
+  .docs-header-links .docs-ai {
     padding: 8px 11px;
   }
   .docs-sidebar {

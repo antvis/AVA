@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import ChatPanel from './ChatPanel';
 import ArtifactPanel from './ArtifactPanel';
-import type { Message, LivePlayground, ChatPlayback, ArtifactDisplay, ArtifactTab } from './types';
+import type { Message, LiveChat, ChatPlayback, ArtifactDisplay, ArtifactTab } from './types';
 
 const ChatWorkspace: React.FC<{
   playback: ChatPlayback;
   activeArtifact?: Message['artifact'];
-  live?: LivePlayground;
+  live?: LiveChat;
   onReplay?: () => void;
   heading?: React.ReactNode;
   artifactDisplay?: ArtifactDisplay;
@@ -28,9 +28,15 @@ const ChatWorkspace: React.FC<{
   }
 
   return (
-    <main className="mx-[max(12px,calc((100%-1120px)/2))] pb-12 [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7] max-md:[&_p]:text-[13px]">
+    <main
+      className={`pb-12 [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7] max-md:[&_p]:text-[13px] ${
+        live
+          ? 'mx-[max(16px,calc((100%-1240px)/2))] 2xl:mx-[max(20px,calc((100%-1320px)/2))]'
+          : 'mx-[max(12px,calc((100%-1120px)/2))]'
+      }`}
+    >
       <div
-        id="playground"
+        id="ai"
         style={{
           background:
             'linear-gradient(var(--color-surface), var(--color-surface)) padding-box, linear-gradient(125deg, var(--color-primary-light), var(--color-line) 55%, var(--color-primary)) border-box',
@@ -47,6 +53,7 @@ const ChatWorkspace: React.FC<{
           <ChatPanel playback={playback} live={live} onArtifact={onArtifact} onRerun={onReplay} heading={heading} />
           {artifact && (
             <ArtifactPanel
+              key={artifact.id}
               artifact={artifact}
               live={!!live}
               tab={artifactTab}

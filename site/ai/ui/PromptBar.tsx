@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import type { LivePlayground } from './types';
+import type { LiveChat } from './types';
 import { parseToken } from './utils';
 import { PROMPT_SOURCES, PROMPT_COMMANDS, PROMPT_MODELS, ATTACH_FILES, DICTATION_TEXT } from './constants';
 
@@ -50,7 +50,7 @@ const PromptBar: React.FC<{
   busy?: boolean;
   onRerun?: () => void;
   replayReady?: boolean;
-  live?: LivePlayground;
+  live?: LiveChat;
 }> = ({ placeholder, onSend, busy, onRerun, replayReady, live }) => {
   const fileRef = useRef<HTMLInputElement>(null);
   const sources = live

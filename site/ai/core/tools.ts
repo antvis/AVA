@@ -1,9 +1,9 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 import type { AnalysisResponse, AVA } from '@antv/ava/browser';
-import type { PlaygroundDataset } from './types';
+import type { AIDataset } from './types';
 
-export function createTools({ ava, dataset }: { ava: AVA; dataset: PlaygroundDataset }) {
+export function createTools({ ava, dataset }: { ava: AVA; dataset: AIDataset }) {
   return {
     source: tool({
       description: 'Load the user-selected dataset into AVA. This resets previous query results.',

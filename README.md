@@ -15,7 +15,7 @@
   <a href="https://ava.antv.vision/documentation/">
     <img src="https://img.shields.io/badge/Docs-722ED1?style=for-the-badge" alt="Documentation" />
   </a>
-  <a href="https://ava.antv.vision/ai-playground/">
+  <a href="https://ava.antv.vision/ai/">
     <img src="https://img.shields.io/badge/AI%20Agent-EB2F96?style=for-the-badge" alt="AI Agent" />
   </a>
   <a href="https://ava.antv.vision/llms.txt">
@@ -254,7 +254,7 @@ ava dispose '<your-dataset-id>'
 - [Documentation](https://ava.antv.vision/documentation/) — Guides and examples
 - [Analysis strategies](https://ava.antv.vision/documentation/analysis/strategies/) — Direct, loop, and subset execution
 - [API Reference](https://ava.antv.vision/documentation/reference/api/) — Methods and configuration
-- [Playground](https://ava.antv.vision/ai-playground/) — Try out AVA in the browser environment
+- [AI](https://ava.antv.vision/ai/) — Try out AVA in the browser environment
 - [Benchmarks](https://ava.antv.vision/documentation/reference/benchmarks/) — Evaluation results
 - [Issues](https://github.com/antvis/AVA/issues) — Bug reports and feature requests
 

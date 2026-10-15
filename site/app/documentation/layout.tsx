@@ -27,8 +27,8 @@ export default function DocumentationLayout({ children }: { children: React.Reac
             <a href="https://github.com/antvis/AVA" className="docs-github">
               GitHub <span aria-hidden="true">↗</span>
             </a>
-            <Link href="/ai-playground/" className="docs-playground">
-              Playground <span aria-hidden="true">→</span>
+            <Link href="/ai/" className="docs-ai">
+              AI <span aria-hidden="true">→</span>
             </Link>
           </nav>
         </div>

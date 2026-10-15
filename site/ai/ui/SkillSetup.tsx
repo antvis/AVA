@@ -5,11 +5,11 @@ import { INSTALL_COMMANDS, INSTALL_PROMPT } from './constants';
 
 export default function SkillSetup() {
   return (
-    <section aria-labelledby="playground-skill-title" className="bg-surface px-6 py-16 md:py-20">
+    <section aria-labelledby="ai-skill-title" className="bg-surface px-6 py-16 md:py-20">
       <div className="mx-auto grid max-w-[1040px] items-start gap-10 md:grid-cols-[1fr_1.1fr] md:gap-16">
         <div>
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-2">AVA Agent Skill</span>
-          <h2 id="playground-skill-title" className="mt-4 text-3xl leading-tight text-ink md:text-4xl">
+          <h2 id="ai-skill-title" className="mt-4 text-3xl leading-tight text-ink md:text-4xl">
             Give your agent
             <br />
             visual analytics.
