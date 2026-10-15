@@ -2,7 +2,8 @@
 
 import GPTVisRenderer from '../../components/GPTVisRenderer';
 import CodePreview from './CodePreview';
-import { formatResultValue, resultColumns, resultTables } from './utils';
+import { resultTables } from './utils';
+import MetadataTable from './MetadataTable';
 import type { Message, ArtifactDisplay, ArtifactTab } from './types';
 
 export default function ArtifactPanel({
@@ -73,48 +74,17 @@ export default function ArtifactPanel({
             </>
           )}
           {activeTab === 'data' &&
-            tables.map(({ name, rows }, tableIndex) => {
-              const columns: NonNullable<ArtifactDisplay['columns']> =
-                display?.columns ?? resultColumns(rows).map((key) => ({ key, label: key }));
-              return (
-                <section key={name ?? tableIndex} className="mb-5 last:mb-0">
-                  {name && <h3 className="mb-2 text-xs font-semibold text-zinc-700">{name}</h3>}
-                  {rows.length === 0 ? (
-                    <p className="text-xs text-zinc-400">No rows.</p>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-[12px] tabular-nums">
-                        <caption className="sr-only">{name ?? 'Query results'}</caption>
-                        <thead>
-                          <tr className="border-b border-zinc-100 text-zinc-400">
-                            {columns.map((column) => (
-                              <th key={column.key} scope="col" className="py-1.5 pr-3 font-medium">
-                                {column.label}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {rows.map((row, index) => (
-                            <tr key={index} className="border-b border-zinc-50 text-zinc-700">
-                              {columns.map((column) => (
-                                <td
-                                  key={column.key}
-                                  className="max-w-sm whitespace-pre-wrap break-words py-1.5 pr-3 align-top"
-                                >
-                                  {formatResultValue(row[column.key])}
-                                  {column.suffix ?? ''}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </section>
-              );
-            })}
+            tables.map(({ name, rows }, tableIndex) => (
+              <section key={name ?? tableIndex} className="mb-5 last:mb-0">
+                {name && <h3 className="mb-2 text-xs font-semibold text-zinc-700">{name}</h3>}
+                <MetadataTable
+                  variant="result"
+                  caption={name ?? 'Query results'}
+                  rows={rows}
+                  columns={display?.columns}
+                />
+              </section>
+            ))}
           {activeTab === 'sql' && (
             <CodePreview code={artifact.code ?? 'No query generated yet.'} language={live ? 'javascript' : 'sql'} />
           )}

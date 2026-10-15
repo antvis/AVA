@@ -1,4 +1,4 @@
-import type { ToolStep } from '../core/types';
+import type { ToolStep } from './types';
 
 // ── Limits and defaults ────────────────────────────────────────
 

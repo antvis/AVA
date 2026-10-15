@@ -24,21 +24,21 @@ export function toDisplayMessage(source: PlaygroundUIMessage, datasetName: strin
       message.text += part.text;
     } else if (part.type === 'tool-analyze' && part.state === 'output-available') {
       message.artifact = {
+        id: `${source.id}:${part.toolCallId}`,
         title: 'query.js',
         description: part.output.query,
         code: part.output.sql,
         data: part.output.data,
       };
     } else if (part.type === 'tool-visualize' && part.state === 'output-available') {
-      const { result, syntax, html } = part.output;
+      const { result, syntax } = part.output;
       message.artifact = {
+        id: `${source.id}:${part.toolCallId}`,
         title: 'visualization.html',
         description: result.query,
         code: result.sql,
         data: result.data,
-        chart: true,
         syntax,
-        html,
       };
     }
   }

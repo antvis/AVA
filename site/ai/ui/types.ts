@@ -1,9 +1,32 @@
 import type { ReactNode } from 'react';
 import type { PlaygroundUIMessage } from '../core/session';
-import type { AnalysisUpdate, ToolStep } from '../core/types';
-export type { ToolDetailLine, ToolStep, ToolDiff, ToolDiffLine } from '../core/types';
+export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
+export type ToolStep = {
+  id?: string;
+  state?: 'running' | 'done' | 'failed';
+  icon: string;
+  label: string;
+  chip: string;
+  mono?: boolean;
+  detailMono?: boolean;
+  detail: ToolDetailLine[];
+};
+export type ToolDiff = { file: string; add: number; del?: number };
+export type ToolDiffLine = { text: string; tone: 'add' | 'del' | 'ctx' };
 
-export interface Message extends AnalysisUpdate {
+export interface AnalysisArtifact {
+  id: string;
+  title: string;
+  description: string;
+  syntax?: string;
+  code?: string;
+  data?: Record<string, unknown>[];
+}
+
+export interface Message {
+  artifact?: AnalysisArtifact;
+  diffs?: ToolDiff[];
+  diffLines?: Record<string, ToolDiffLine[]>;
   role: 'user' | 'assistant';
   text: string;
   parts?: PlaygroundUIMessage['parts'];

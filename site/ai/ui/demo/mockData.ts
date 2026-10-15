@@ -154,9 +154,9 @@ export const PRESET_MESSAGES: Message[] = [
     diffLines: RUN_DIFF_LINES,
     text: ASSISTANT_TEXT,
     artifact: {
+      id: 'demo-growth-quality',
       title: 'growth-quality.html',
       description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
-      chart: true,
       syntax: CHART_SYNTAX,
       code: ARTIFACT_SQL,
       data: ARTIFACT_DATA,

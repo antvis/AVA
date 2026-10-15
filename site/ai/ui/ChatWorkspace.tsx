@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import ChatPanel from './ChatPanel';
 import ArtifactPanel from './ArtifactPanel';
 import type { Message, LivePlayground, ChatPlayback, ArtifactDisplay, ArtifactTab } from './types';
@@ -13,17 +13,19 @@ const ChatWorkspace: React.FC<{
   heading?: React.ReactNode;
   artifactDisplay?: ArtifactDisplay;
 }> = ({ playback, activeArtifact, live, onReplay, heading, artifactDisplay }) => {
-  const [artifact, setArtifact] = useState(activeArtifact);
-  const [panelOpen, setPanelOpen] = useState(!!activeArtifact);
+  const latestId = activeArtifact?.id;
+  const [selection, setSelection] = useState<{ latestId?: string; selectedId: string | null }>({ selectedId: null });
   const [artifactTab, setArtifactTab] = useState<ArtifactTab>('chart');
-  const onArtifact = useCallback((message: Message) => {
-    setArtifact(message.artifact);
-    setPanelOpen(true);
-  }, []);
-  useEffect(() => {
-    setArtifact(activeArtifact);
-    setPanelOpen(!!activeArtifact);
-  }, [activeArtifact]);
+  const selectedId = selection.latestId === latestId ? selection.selectedId : latestId;
+  const artifact = selectedId
+    ? selectedId === latestId
+      ? activeArtifact
+      : playback.visible.find((message) => message.artifact?.id === selectedId)?.artifact
+    : undefined;
+
+  function onArtifact(message: Message) {
+    setSelection({ latestId, selectedId: message.artifact?.id ?? null });
+  }
 
   return (
     <main className="mx-[max(12px,calc((100%-1120px)/2))] pb-12 [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7] max-md:[&_p]:text-[13px]">
@@ -37,19 +39,19 @@ const ChatWorkspace: React.FC<{
       >
         <div
           className={`grid gap-4 p-3 max-md:p-1 transition-all duration-500 ${
-            panelOpen && artifact
+            artifact
               ? 'lg:grid-cols-[minmax(0,1fr)_minmax(320px,460px)] sm:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]'
               : 'grid-cols-1'
           }`}
         >
           <ChatPanel playback={playback} live={live} onArtifact={onArtifact} onRerun={onReplay} heading={heading} />
-          {panelOpen && artifact && (
+          {artifact && (
             <ArtifactPanel
               artifact={artifact}
               live={!!live}
               tab={artifactTab}
               onTabChange={setArtifactTab}
-              onClose={() => setPanelOpen(false)}
+              onClose={() => setSelection({ latestId, selectedId: null })}
               display={artifactDisplay}
             />
           )}

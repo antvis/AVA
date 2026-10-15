@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { LLMConfig } from '@antv/ava/browser';
 import { useChat as useAIChat } from '@ai-sdk/react';
 import type { PlaygroundUIMessage } from '../core/session';
@@ -25,44 +25,42 @@ export default function useChat({
   onConfigure: () => void;
 }): LivePlayground {
   const ready = !!config.apiKey?.trim() && (typeof config.model !== 'string' || !!config.model.trim());
-  const [working, setBusy] = useState(false);
+  const [workingSessionId, setWorkingSessionId] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [dataset, setDataset] = useState<PlaygroundDataset>({ name: DEFAULT_DATASET_NAME, rows: MONTHLY_SALES });
-  const running = useRef(false);
   const [generation, setGeneration] = useState(0);
   const session = useMemo(() => createSession(config, dataset), [config, dataset, generation]);
   const chat = useAIChat<PlaygroundUIMessage>({ id: session.id, transport: session.transport });
-  const busy = working || chat.status === 'submitted' || chat.status === 'streaming';
-  const mounted = useMemo(() => ({ current: true }), [session]);
-  const importing = useRef(false);
+  const busy = workingSessionId === session.id || chat.status === 'submitted' || chat.status === 'streaming';
+  const lifecycle = useMemo(() => ({ active: true, locked: false }), [session]);
   const [uploadMessage, setUploadMessage] = useState<Message | null>(null);
   useEffect(() => {
-    mounted.current = true;
+    lifecycle.active = true;
     return () => {
-      mounted.current = false;
+      lifecycle.active = false;
       void chat.stop();
       void session.dispose().catch(() => {});
     };
   }, [session, chat.stop]);
 
   function reset() {
-    if (running.current || busy) return;
+    if (lifecycle.locked || busy) return;
     setGeneration((value) => value + 1);
     setError('');
   }
 
   function patchUpload(update: (message: Message) => Message) {
-    if (mounted.current) setUploadMessage((previous) => (previous ? update(previous) : previous));
+    if (lifecycle.active) setUploadMessage((previous) => (previous ? update(previous) : previous));
   }
 
   async function suggest() {
-    if (running.current || importing.current || busy) return;
+    if (lifecycle.locked || busy) return;
     if (!ready) {
       onConfigure();
       return;
     }
-    running.current = true;
-    setBusy(true);
+    lifecycle.locked = true;
+    setWorkingSessionId(session.id);
     setError('');
     patchUpload((message) => ({ ...message, suggestionsLoading: true, suggestionsError: undefined }));
     try {
@@ -75,36 +73,34 @@ export default function useChat({
       }));
     } finally {
       patchUpload((message) => ({ ...message, suggestionsLoading: false }));
-      running.current = false;
-      if (mounted.current) {
+      lifecycle.locked = false;
+      if (lifecycle.active) {
         setError('');
-        setBusy(false);
+        setWorkingSessionId(null);
       }
     }
   }
 
   async function send(question: string) {
-    if (!question.trim() || running.current || importing.current || busy) return;
+    if (!question.trim() || lifecycle.locked || busy) return;
     if (!ready) {
       onConfigure();
       return;
     }
-    running.current = true;
-    setBusy(true);
+    lifecycle.locked = true;
     setError('');
     chat.clearError();
     try {
       await chat.sendMessage({ text: question });
     } finally {
-      running.current = false;
-      if (mounted.current) setBusy(false);
+      lifecycle.locked = false;
     }
   }
 
   async function attach(file: File) {
-    if (running.current || importing.current || busy) return;
-    importing.current = true;
-    setBusy(true);
+    if (lifecycle.locked || busy) return;
+    lifecycle.locked = true;
+    setWorkingSessionId(session.id);
     setError('');
 
     try {
@@ -124,7 +120,7 @@ export default function useChat({
         rows.some((row) => !row || typeof row !== 'object' || Array.isArray(row))
       )
         throw new Error('Upload a CSV, Excel or JSON array containing data records.');
-      if (!mounted.current) return;
+      if (!lifecycle.active) return;
       setDataset({ name: file.name, rows });
       const columns = new Set<string>();
       for (const row of rows) for (const key of Object.keys(row)) columns.add(key);
@@ -140,11 +136,11 @@ export default function useChat({
       };
       setUploadMessage(message);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      if (lifecycle.active) setError(err instanceof Error ? err.message : String(err));
     } finally {
-      importing.current = false;
-      if (mounted.current) {
-        setBusy(false);
+      lifecycle.locked = false;
+      if (lifecycle.active) {
+        setWorkingSessionId(null);
       }
     }
   }
