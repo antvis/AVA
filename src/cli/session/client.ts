@@ -12,10 +12,11 @@ import {
   responseSchema,
   sessionDirectory,
   socketPath,
+  startupSchema,
 } from './protocol';
 
 import type { Request } from './protocol';
-import type { DataSourceConfig, EngineConfig, LLMConfig } from '../../types';
+import type { DataSourceConfig, EngineConfig, LLMConfig, DataSourceMetadata } from '../../types';
 
 /**
  * Require a platform where Unix sockets inherit the private directory's access restrictions.
@@ -43,9 +44,11 @@ function createDatasetId(config: DataSourceConfig): string {
 export async function createSession(
   config: DataSourceConfig,
   llm: LLMConfig,
-  engine?: EngineConfig['type']
+  engine?: EngineConfig['type'],
+  metadata?: DataSourceMetadata
 ): Promise<{ datasetId: string }> {
   checkEnvironment();
+  const startup = startupSchema.parse({ source: config, llm, engine, metadata });
 
   const datasetId = createDatasetId(config);
   const directory = sessionDirectory(datasetId);
@@ -96,7 +99,7 @@ export async function createSession(
       worker.once('message', onMessage);
 
       try {
-        worker.send({ source: config, llm, engine }, (error) => {
+        worker.send(startup, (error) => {
           if (error) finish(error);
         });
       } catch (error) {

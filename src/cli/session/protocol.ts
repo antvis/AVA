@@ -4,6 +4,8 @@ import { join } from 'path';
 import { z } from 'zod';
 
 import { excelOptionsSchema } from '../../util/excel';
+import { profileMetadataSchema } from '../../util/profile';
+import { schemaMetadataSchema } from '../../util/schema';
 
 import type { DataSourceConfig } from '../../types';
 
@@ -125,7 +127,15 @@ export const requestSchema = z.discriminatedUnion('command', [
 export type Request = z.infer<typeof requestSchema>;
 
 export const startupSchema = z
-  .object({ source: sourceConfig, llm: modelSchema, engine: engineTypeSchema.optional() })
+  .object({
+    source: sourceConfig,
+    llm: modelSchema,
+    engine: engineTypeSchema.optional(),
+    metadata: z
+      .object({ schema: schemaMetadataSchema.optional(), profile: profileMetadataSchema.optional() })
+      .strict()
+      .optional(),
+  })
   .strict();
 
 export const responseSchema = z.union([

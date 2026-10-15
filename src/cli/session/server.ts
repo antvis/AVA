@@ -135,7 +135,7 @@ process.once('message', (message) => {
   void (async () => {
     const startup = startupSchema.parse(message);
     hasModel = Boolean(startup.llm.apiKey);
-    await createDataset(startup.source, { ...startup.llm, model: startup.llm.model }, startup.engine);
+    await createDataset(startup.source, { ...startup.llm, model: startup.llm.model }, startup.engine, startup.metadata);
     if (closing) return;
 
     server.listen(socketPath(id), () => {
