@@ -60,6 +60,7 @@ Do not read files, access the network, install packages, or print the answer.`,
   }
 
   async load(config: DataSourceConfig): Promise<void> {
+    this.source = null;
     this.source = sourceSchema.parse(config) as DataSourceConfig;
   }
 
