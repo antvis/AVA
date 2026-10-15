@@ -84,8 +84,7 @@ export const subsetAnalysis: AnalysisStrategy = async (query, config, runtime) =
 
   let context: DataContext;
   try {
-    const profile = runtime.context.profile ?? (await runtime.engine.profile?.(runtime.context.schema));
-    context = await selectSubsetContext(query, { ...runtime.context, profile }, runtime.llm.maxRetries);
+    context = await selectSubsetContext(query, runtime.context, runtime.llm.maxRetries);
   } catch (error) {
     emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END, { error: serializeError(error) }));
 

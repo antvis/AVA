@@ -64,11 +64,13 @@ describe('AVA', () => {
       expect(discover).not.toHaveBeenCalled();
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
+      const computeProfile = vi.spyOn(ava.engine!, 'profile');
 
       if (operation === 'analyze') await ava.analyze('Rows', { includeSummary: false });
       else if (operation === 'translate') await ava.translate('Rows');
       else await ava[operation]();
 
+      if (operation !== 'profile') expect(computeProfile).not.toHaveBeenCalled();
       expect(discover).toHaveBeenCalledOnce();
       const schema = await ava.schema();
       expect(schema.tables[0].fields[0].name).toBe('value');

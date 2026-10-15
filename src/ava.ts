@@ -73,9 +73,15 @@ export class AVA extends EventEmitter {
   /**
    * Data context.
    */
-  private async getContext(): Promise<DataContext> {
+  private async getContext(needProfile = false): Promise<DataContext> {
+    const schema = await this.schema();
+
+    if (needProfile && !this.dataProfile && this.engine?.profile) {
+      await this.profile();
+    }
+
     return {
-      schema: await this.schema(),
+      schema,
       profile: this.dataProfile ?? undefined,
     };
   }
@@ -221,7 +227,7 @@ export class AVA extends EventEmitter {
     try {
       const runtime = {
         emit: (event: AnalysisEvent) => emit(this, event),
-        context: await this.getContext(),
+        context: await this.getContext(config.strategy?.type === 'subset'),
         engine: this.engine,
         llm: this.llmConfig,
       };
