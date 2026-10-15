@@ -74,16 +74,20 @@ export default function ArtifactPanel({
             </>
           )}
           {activeTab === 'data' &&
-            tables.map(({ name, rows }, tableIndex) => (
-              <section key={name ?? tableIndex} className="mb-5 last:mb-0">
-                {name && <h3 className="mb-2 text-xs font-semibold text-zinc-700">{name}</h3>}
-                <MetadataTable
-                  variant="result"
-                  caption={name ?? 'Query results'}
-                  rows={rows}
-                  columns={display?.columns}
-                />
-              </section>
+            (tables ? (
+              tables.map(({ name, rows }, tableIndex) => (
+                <section key={name ?? tableIndex} className="mb-5 last:mb-0">
+                  {name && <h3 className="mb-2 text-xs font-semibold text-zinc-700">{name}</h3>}
+                  <MetadataTable
+                    variant="result"
+                    caption={name ?? 'Query results'}
+                    rows={rows}
+                    columns={display?.columns}
+                  />
+                </section>
+              ))
+            ) : (
+              <CodePreview code={JSON.stringify(artifact.data ?? [], null, 2)} language="json" />
             ))}
           {activeTab === 'sql' && (
             <CodePreview code={artifact.code ?? 'No query generated yet.'} language={live ? 'javascript' : 'sql'} />
