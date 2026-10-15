@@ -12,6 +12,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { withModelUsage } from '../util/usage';
 import { stringifyProfile, stringifySchema } from '../util/context';
 import { AnalysisEvent, AnalysisEventType } from '../event';
 import { serializeError } from '../util/error';
@@ -204,11 +205,11 @@ export const loopAnalysis: AnalysisStrategy = async (
     let action: string;
     let queries: string[] = [];
     try {
-      const response = await generateText({
+      const response = await generateText(withModelUsage({
         model: languageModel(llm),
         maxRetries: llm.maxRetries ?? 3,
         prompt,
-      });
+      }, llm));
       llm.onQueryUsage?.(response.usage);
 
       text = response.text.trim();
@@ -316,7 +317,7 @@ export const loopAnalysis: AnalysisStrategy = async (
   let finalText: string;
   let statement: string;
   try {
-    const finalResponse = await generateText({
+    const finalResponse = await generateText(withModelUsage({
       model: languageModel(llm),
       maxRetries: llm.maxRetries ?? 3,
       prompt: `${loopPrompt(engine.language, config.includeSummary !== false)}
@@ -334,7 +335,7 @@ export const loopAnalysis: AnalysisStrategy = async (
     The loop reached its step limit without a final executable statement. Use the complete history above and respond with exactly one [SQL] action containing one ${
       engine.language.name
     } statement.`,
-    });
+    }, llm));
     llm.onQueryUsage?.(finalResponse.usage);
 
     finalText = finalResponse.text.trim();

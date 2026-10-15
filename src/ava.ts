@@ -20,6 +20,7 @@ import {
   emit,
 } from './event';
 import { serializeError } from './util/error';
+import { createRunContext, withUsageCollector } from './util/usage';
 
 import type {
   AVAConfig,
@@ -39,6 +40,7 @@ import type {
   ProfileOptions,
   ExecutionOptions,
   ExecutionResult,
+  RunContext,
 } from './types';
 
 /**
@@ -102,7 +104,7 @@ export class AVA extends EventEmitter {
    * index.browser.ts), so this class never imports any engine implementation
    * directly — Node-only engines stay out of browser bundles.
    */
-  private async createEngine(): Promise<AnalysisEngine> {
+  private async createEngine(llmConfig: LLMConfig = this.llmConfig): Promise<AnalysisEngine> {
     const { type, ...options } = this.engineConfig;
 
     emit(this, new LifecycleEvent(LifecycleEventType.CREATE_START));
@@ -110,7 +112,7 @@ export class AVA extends EventEmitter {
     let engine: AnalysisEngine;
     try {
       const EngineClass = getEngineClass(type);
-      engine = new EngineClass(this.llmConfig, options);
+      engine = new EngineClass(llmConfig, options);
     } catch (error) {
       emit(this, new LifecycleEvent(LifecycleEventType.CREATE_END, { error: serializeError(error) }));
 
@@ -145,13 +147,14 @@ export class AVA extends EventEmitter {
    * Load a data source config into the engine.
    * Reloading disposes the previous engine and its resources.
    */
-  async source(config: DataSourceConfig, metadata: DataSourceMetadata = {}): Promise<void> {
+  async source(config: DataSourceConfig, metadata: DataSourceMetadata = {}, parentRun?: RunContext): Promise<void> {
+    const run = createRunContext(parentRun);
     emit(this, new ExecutionEvent(ExecutionEventType.LOAD_START, { type: config.type }));
 
     try {
       await this.dispose();
 
-      this.engine = await this.createEngine();
+      this.engine = await this.createEngine(withUsageCollector(this.llmConfig, run.usage));
       try {
         await this.engine.load(config);
         this.dataSchema = toSchema(metadata);
@@ -226,11 +229,12 @@ export class AVA extends EventEmitter {
    * The query is turned into SQL via LLM and executed by the configured engine.
    * Use visualize() separately to generate charts from the analysis result.
    */
-  async analyze(query: string, config: AnalysisConfig = {}): Promise<AnalysisResponse> {
+  async analyze(query: string, config: AnalysisConfig = {}, parentRun?: RunContext): Promise<AnalysisResponse> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    const run = createRunContext(parentRun);
     emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_START, { query }));
 
     let result: AnalysisResponse;
@@ -239,7 +243,7 @@ export class AVA extends EventEmitter {
         emit: (event: AnalysisEvent) => emit(this, event),
         context: await this.getContext(config.strategy?.type === 'subset'),
         engine: this.engine,
-        llm: this.llmConfig,
+        llm: withUsageCollector(this.llmConfig, run.usage),
       };
       result = await analyze(query, config, runtime);
     } catch (error) {
@@ -250,23 +254,25 @@ export class AVA extends EventEmitter {
 
     emit(this, new ExecutionEvent(ExecutionEventType.ANALYZE_END));
 
-    return result;
+    const usage = run.usage.getUsage();
+    return usage ? { ...result, usage } : result;
   }
 
   /**
    * Translate a natural-language query into DSL.
    * Use query() to execute the generated DSL.
    */
-  async translate(query: string): Promise<string> {
+  async translate(query: string, parentRun?: RunContext): Promise<string> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    const run = createRunContext(parentRun);
     emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query }));
 
     let dsl: string;
     try {
-      dsl = await this.engine.getDSL(query, await this.getContext());
+      dsl = await this.engine.getDSL(query, await this.getContext(), withUsageCollector(this.llmConfig, run.usage));
     } catch (error) {
       emit(this, new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 
@@ -310,13 +316,25 @@ export class AVA extends EventEmitter {
    * @param analysisResult - The result returned from analyze()
    * @returns VisualizeResponse, or null if no chart is needed. Generation errors propagate to the caller.
    */
-  async visualize(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<VisualizeResponse | null> {
+  async visualize(
+    analysisResult: Pick<AnalysisResponse, 'query' | 'data'>,
+    parentRun?: RunContext
+  ): Promise<VisualizeResponse | null> {
+    const run = createRunContext(parentRun);
     emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_START, { query: analysisResult.query }));
 
     let result: VisualizeResponse | null;
     try {
-      const spec = await this.recommend(analysisResult);
-      result = spec ? { ...spec, html: await this.viz(spec) } : null;
+      const spec = await this.recommendWithLLM(
+        analysisResult,
+        withUsageCollector(this.llmConfig, run.usage)
+      );
+      if (spec) {
+        const usage = run.usage.getUsage();
+        result = { ...spec, html: await this.viz(spec), ...(usage ? { usage } : {}) };
+      } else {
+        result = null;
+      }
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.VISUALIZE_END, { error: serializeError(error) }));
 
@@ -332,15 +350,28 @@ export class AVA extends EventEmitter {
    * Recommend a chart specification for the analysis result.
    * Combine a suitable chart type with GPT-Vis syntax for rendering.
    */
-  async recommend(analysisResult: Pick<AnalysisResponse, 'query' | 'data'>): Promise<ChartSpec | null> {
+  async recommend(
+    analysisResult: Pick<AnalysisResponse, 'query' | 'data'>,
+    parentRun?: RunContext
+  ): Promise<ChartSpec | null> {
+    const run = createRunContext(parentRun);
+    const result = await this.recommendWithLLM(analysisResult, withUsageCollector(this.llmConfig, run.usage));
+    const usage = run.usage.getUsage();
+    return result && usage ? { ...result, usage } : result;
+  }
+
+  private async recommendWithLLM(
+    analysisResult: Pick<AnalysisResponse, 'query' | 'data'>,
+    llm: LLMConfig
+  ): Promise<ChartSpec | null> {
     const { data, query } = analysisResult;
     if (!hasData(data)) return null;
 
     const dataInfo = Array.isArray(data) ? stringifySchema(extractDataSchema(data)) : JSON.stringify(data);
-    const chartType = await adviseChartType(query, dataInfo, this.llmConfig);
+    const chartType = await adviseChartType(query, dataInfo, llm);
     if (!chartType) return null;
 
-    const syntax = await generateVisualizationSyntax(chartType, data, query, this.llmConfig);
+    const syntax = await generateVisualizationSyntax(chartType, data, query, llm);
     return { chartType, syntax };
   }
 
@@ -354,16 +385,17 @@ export class AVA extends EventEmitter {
   /**
    * Suggest questions about the loaded data.
    */
-  async suggest(count: number = 3): Promise<SuggestResult[]> {
+  async suggest(count: number = 3, parentRun?: RunContext): Promise<SuggestResult[]> {
     if (!this.engine) {
       throw new Error('No data loaded. Please call source() first.');
     }
 
+    const run = createRunContext(parentRun);
     emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_START));
 
     let result: SuggestResult[];
     try {
-      result = await generateSuggestions(this.llmConfig, await this.getContext(), count);
+      result = await generateSuggestions(withUsageCollector(this.llmConfig, run.usage), await this.getContext(), count);
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.SUGGEST_END, { error: serializeError(error) }));
 

@@ -9,6 +9,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { withModelUsage } from '../util/usage';
 
 import type { LLMConfig, ChartType } from '../types';
 
@@ -430,11 +431,11 @@ title "2024 Q1 Sales Report"
 6. 不要生成 width height，图表会按照容器自适应大小
 7. 直接输出语法内容，不要用代码块包裹，不要有任何说明文字`;
 
-  const { text } = await generateText({
+  const { text } = await generateText(withModelUsage({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
-  });
+  }, llmConfig));
 
   // The LLM returns pure GPT-Vis syntax directly
   // Remove possible markdown code block wrappers (LLM may still wrap in ```...```)

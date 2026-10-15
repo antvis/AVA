@@ -1,6 +1,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { withModelUsage } from '../util/usage';
 import { AnalysisEvent, AnalysisEventType } from '../event';
 import { serializeError } from '../util/error';
 
@@ -20,11 +21,11 @@ IMPORTANT: Detect the language of the user query. You MUST write your summary in
 
 Provide a natural language summary of the result. If the result is tabular data, you can present it as a markdown table.`;
 
-  const { text } = await generateText({
+  const { text } = await generateText(withModelUsage({
     model: languageModel(llm),
     maxRetries: llm.maxRetries ?? 3,
     prompt,
-  });
+  }, llm));
 
   return text;
 }
@@ -41,7 +42,7 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { context,
     emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }));
 
     try {
-      sql = await engine.getDSL(translationQuery, context);
+      sql = await engine.getDSL(translationQuery, context, llm);
     } catch (error) {
       emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 

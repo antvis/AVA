@@ -9,9 +9,11 @@ import { registerEngine } from './engines';
 registerEngine('javascript', JavaScriptEngine);
 
 export { AVA } from './ava';
+export { UsageCollector, createRunContext } from './util/usage';
 export type { JavaScriptEngine } from './interpreter/javascript';
 export type {
   LLMConfig,
+  RunContext,
   AVAConfig,
   AnalysisConfig,
   EngineConfig,

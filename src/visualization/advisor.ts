@@ -6,6 +6,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
+import { withModelUsage } from '../util/usage';
 
 import { chartDefinitions } from './vis';
 
@@ -76,11 +77,11 @@ export async function adviseChartType(
 ): Promise<ChartType | null> {
   const prompt = buildAdvisorPrompt(query, dataInfoStr);
 
-  const { text } = await generateText({
+  const { text } = await generateText(withModelUsage({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
-  });
+  }, llmConfig));
 
   const raw = text
     .trim()

@@ -18,10 +18,12 @@ export { AVA } from './ava';
 export { registerEngine } from './engines';
 export type { EngineClass } from './engines';
 export { executionResult } from './util/result';
+export { UsageCollector, createRunContext } from './util/usage';
 
 export type { JavaScriptEngine } from './interpreter';
 export type {
   LLMConfig,
+  RunContext,
   AVAConfig,
   AnalysisConfig,
   EngineConfig,

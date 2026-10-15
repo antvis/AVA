@@ -74,11 +74,11 @@ export class SupabaseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, context: DataContext, llm?: LLMConfig): Promise<string> {
     if (!this.connection) {
       throw new Error('No data loaded. Please call source() first.');
     }
-    return this.queryDialect.getDSL(query, context);
+    return this.queryDialect.getDSL(query, context, llm);
   }
 
   async execute<T = Record<string, unknown>>(sql: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

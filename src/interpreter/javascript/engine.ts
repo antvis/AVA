@@ -9,6 +9,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../../util/model';
+import { withModelUsage } from '../../util/usage';
 import { extractDataSchema } from '../../util/schema';
 import { stringifyProfile, stringifySchema } from '../../util/context';
 import { executionResult, inferQuerySchema } from '../../util/result';
@@ -69,7 +70,7 @@ export class JavaScriptEngine implements AnalysisEngine {
     return profileTables(this.data, schema, parseProfileOptions(options, { metrics: DEFAULT_METRICS }));
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, context: DataContext, llm = this.llmConfig): Promise<string> {
     if (!this.data) {
       throw new Error('No data loaded. Please call source() first.');
     }
@@ -91,11 +92,11 @@ ${STAT_OPS_EXAMPLE}
 
 Now generate the code:`;
 
-    const { text } = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
+    const { text } = await generateText(withModelUsage({
+      model: languageModel(llm),
+      maxRetries: llm.maxRetries ?? 3,
       prompt,
-    });
+    }, llm));
 
     return text
       .trim()

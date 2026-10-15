@@ -5,6 +5,7 @@
 import type { ClickHouseClientConfigOptions } from '@clickhouse/client';
 import type { LanguageModelUsage, LanguageModel } from 'ai';
 import type { AnalysisEvent } from './event';
+import type { UsageCollector } from './util/usage';
 
 /**
  * Minimal structural type for a database connection used by LoadedSource.
@@ -32,6 +33,12 @@ export interface LLMConfig {
   maxRetries?: number;
   /** Optional callback for SQL-generation token usage */
   onQueryUsage?: (usage: LanguageModelUsage) => void;
+}
+
+/** Explicit execution scope for aggregating usage across nested AVA calls. */
+export interface RunContext {
+  runId: string;
+  usage: UsageCollector;
 }
 
 /**
@@ -749,7 +756,7 @@ export interface AnalysisEngine {
   /** Compute statistics for the loaded data. */
   profile?(schema: Schema, options?: ProfileOptions): Promise<Profile>;
   /** Generate the executable DSL (SQL) for a natural-language query */
-  getDSL(query: string, context: DataContext): Promise<string>;
+  getDSL(query: string, context: DataContext, llm?: LLMConfig): Promise<string>;
   /** Execute one DSL statement with a bounded result. */
   execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>>;
   /** Release resources (temp files, database connections) */
@@ -820,7 +827,7 @@ export type AnalysisStrategy = (
  */
 export interface QueryDialect<TContext = void> {
   /** Generate the executable DSL (SQL) for a natural-language query. */
-  getDSL(query: string, context: DataContext): Promise<string>;
+  getDSL(query: string, context: DataContext, llm?: LLMConfig): Promise<string>;
   /** Validate one read-only statement and return the DSL to execute, normalized if needed. */
   validateDSL(dsl: string, context: TContext): Promise<string>;
 }
@@ -837,6 +844,8 @@ export interface AnalysisResponse<T = Record<string, unknown>> extends Execution
   markdown?: string;
   /** The SQL executed for the analysis */
   sql?: string;
+  /** Known token usage from model calls made by this analysis. */
+  usage?: LanguageModelUsage;
 }
 
 /**
@@ -847,6 +856,8 @@ export interface ChartSpec {
   chartType: ChartType;
   /** GPT-Vis syntax */
   syntax: string;
+  /** Known token usage from model calls made to recommend and generate the chart. */
+  usage?: LanguageModelUsage;
 }
 
 /**

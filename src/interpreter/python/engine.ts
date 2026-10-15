@@ -4,6 +4,7 @@ import { generateText } from 'ai';
 import { z } from 'zod';
 
 import { languageModel } from '../../util/model';
+import { withModelUsage } from '../../util/usage';
 import { stringifyProfile, stringifySchema } from '../../util/context';
 import { executionResult, maxRows, maxResultBytes } from '../../util/result';
 import { DEFAULT_METRICS, parseProfileOptions, profileMetadataSchema } from '../../util/profile';
@@ -74,14 +75,14 @@ Do not read files, access the network, install packages, or print the answer.`,
     return { tables } as Schema;
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, context: DataContext, llm = this.llmConfig): Promise<string> {
     if (!this.source) throw new Error('No data loaded. Please call source() first.');
 
     const dataset = context.profile ? stringifyProfile(context.profile) : stringifySchema(context.schema);
 
-    const response = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
+    const response = await generateText(withModelUsage({
+      model: languageModel(llm),
+      maxRetries: llm.maxRetries ?? 3,
       prompt: `You are a data analysis expert. Generate Python code to answer the question.
 ${this.language.instructions}
 
@@ -91,9 +92,9 @@ ${dataset}
 User question: ${query}
 
 Return ONLY executable Python code without explanation.`,
-    });
+    }, llm));
 
-    this.llmConfig.onQueryUsage?.(response.usage);
+    llm.onQueryUsage?.(response.usage);
 
     return response.text
       .trim()

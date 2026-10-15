@@ -6,6 +6,7 @@ import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
 import { stringifyProfile, stringifySchema } from '../util/context';
+import { withModelUsage } from '../util/usage';
 
 import type { LLMConfig, DataContext, SuggestResult } from '../types';
 
@@ -50,11 +51,11 @@ Example format:
 
 Generate the JSON array now.`;
 
-  const { text } = await generateText({
+  const { text } = await generateText(withModelUsage({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
-  });
+  }, llmConfig));
 
   try {
     const jsonMatch = text.match(/\[[\s\S]*\]/);

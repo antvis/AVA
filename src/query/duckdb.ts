@@ -2,6 +2,7 @@ import { generateText } from 'ai';
 import { StatementType } from '@duckdb/node-api';
 
 import { languageModel } from '../util/model';
+import { withModelUsage } from '../util/usage';
 import { stringifyProfile, stringifySchema } from '../util/context';
 
 import type { DuckDBConnection } from '@duckdb/node-api';
@@ -10,7 +11,7 @@ import type { LLMConfig, QueryDialect, DataContext } from '../types';
 export class DuckDBQueryDialect implements QueryDialect<DuckDBConnection> {
   constructor(private readonly llmConfig: LLMConfig) {}
 
-  async getDSL(query: string, { schema, profile }: DataContext): Promise<string> {
+  async getDSL(query: string, { schema, profile }: DataContext, llm = this.llmConfig): Promise<string> {
     const prompt = `You are a SQL expert. Given the following dataset profile and user query, generate a SQL query to answer the question.
 
 Dataset Context:
@@ -20,12 +21,12 @@ User Query: ${query}
 
 Generate ONLY the SQL query without any explanation or markdown formatting. Reference the tables and fields by their exact names shown above (join tables when the question spans multiple tables). Use DuckDB SQL syntax.`;
 
-    const { text, usage } = await generateText({
-      model: languageModel(this.llmConfig),
-      maxRetries: this.llmConfig.maxRetries ?? 3,
+    const { text, usage } = await generateText(withModelUsage({
+      model: languageModel(llm),
+      maxRetries: llm.maxRetries ?? 3,
       prompt,
-    });
-    this.llmConfig.onQueryUsage?.(usage);
+    }, llm));
+    llm.onQueryUsage?.(usage);
 
     return text
       .trim()

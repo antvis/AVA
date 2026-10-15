@@ -1,15 +1,21 @@
 import { experimental_evaluate as evaluate } from 'ai';
 
 import { stringifySchema } from '../util/context';
+import { beginModelCall, getUsageCollector, languageModelUsage } from '../util/usage';
 import { AnalysisEvent, AnalysisEventType } from '../event';
 import { serializeError } from '../util/error';
 
 import { directAnalysis } from './direct';
 
-import type { AnalysisStrategy, DataContext } from '../types';
+import type { AnalysisRuntime, AnalysisStrategy, DataContext } from '../types';
 
 /** Select relevant profile details while preserving the complete schema. */
-export async function selectSubsetContext(query: string, context: DataContext, maxRetries = 3): Promise<DataContext> {
+export async function selectSubsetContext(
+  query: string,
+  context: DataContext,
+  maxRetries = 3,
+  llm?: AnalysisRuntime['llm']
+): Promise<DataContext> {
   const { schema, profile } = context;
   if (!schema.tables.length) throw new Error('Subset requires a non-empty schema');
   if (!profile) return context;
@@ -32,12 +38,14 @@ export async function selectSubsetContext(query: string, context: DataContext, m
     });
   });
 
+  const recordUsage = beginModelCall(llm ? getUsageCollector(llm) : undefined);
   const { answers } = await evaluate({
     model: 'typesafe-ai/jev',
     state: { question: query, schema: stringifySchema(schema) },
     questions,
     maxRetries,
     abortSignal: AbortSignal.timeout(120_000),
+    onEnd: ({ usage }) => recordUsage(languageModelUsage(usage)),
   });
   const selected = (id: string) => {
     const answer = answers[id];
@@ -84,7 +92,7 @@ export const subsetAnalysis: AnalysisStrategy = async (query, config, runtime) =
 
   let context: DataContext;
   try {
-    context = await selectSubsetContext(query, runtime.context, runtime.llm.maxRetries);
+    context = await selectSubsetContext(query, runtime.context, runtime.llm.maxRetries, runtime.llm);
   } catch (error) {
     emit(new AnalysisEvent(AnalysisEventType.SELECT_CONTEXT_END, { error: serializeError(error) }));
 

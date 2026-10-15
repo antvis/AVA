@@ -80,9 +80,9 @@ export class ClickHouseEngine implements AnalysisEngine {
     );
   }
 
-  async getDSL(query: string, context: DataContext): Promise<string> {
+  async getDSL(query: string, context: DataContext, llm?: LLMConfig): Promise<string> {
     if (!this.client) throw new Error('No data loaded. Please call source() first.');
-    return this.queryDialect.getDSL(query, context);
+    return this.queryDialect.getDSL(query, context, llm);
   }
 
   async execute<T = Record<string, unknown>>(dsl: string, options?: ExecutionOptions): Promise<ExecutionResult<T>> {

@@ -6,6 +6,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../../util/model';
+import { withModelUsage } from '../../util/usage';
 import { fileSource, removeTempFile, writeTempFile } from '../util/file';
 
 import type { LLMConfig, TextSourceOptions, LoadedSource } from '../../types';
@@ -25,11 +26,11 @@ ${text}
 
 Return ONLY the JSON array, no additional text or explanation. The response must be valid JSON that can be parsed directly.`;
 
-  const { text: responseText } = await generateText({
+  const { text: responseText } = await generateText(withModelUsage({
     model: languageModel(llmConfig),
     maxRetries: llmConfig.maxRetries ?? 3,
     prompt,
-  });
+  }, llmConfig));
 
   // Parse the whole response first, then fall back to extracting the JSON array
   try {
