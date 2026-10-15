@@ -70,19 +70,29 @@ export class AVA extends EventEmitter {
     this.engineConfig = config.engine ?? { type: 'duckdb' };
   }
 
+  private async getSchema(): Promise<Schema> {
+    this.dataSchema ??= await this.engine!.schema();
+    return this.dataSchema;
+  }
+
+  private async getProfile(options: ProfileOptions = {}): Promise<Profile> {
+    this.dataProfile = await this.engine!.profile!(await this.getSchema(), options);
+    return this.dataProfile;
+  }
+
   /**
    * Data context.
    */
   private async getContext(needProfile = false): Promise<DataContext> {
-    const schema = await this.schema();
+    const schema = await this.getSchema();
 
     if (needProfile && !this.dataProfile && this.engine?.profile) {
-      await this.profile();
+      await this.getProfile();
     }
 
     return {
       schema,
-      profile: this.dataProfile ?? undefined,
+      profile: this.dataProfile,
     };
   }
 
@@ -173,7 +183,7 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_START));
 
     try {
-      this.dataSchema ??= await this.engine.schema();
+      await this.getSchema();
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END, { error: serializeError(error) }));
 
@@ -182,7 +192,7 @@ export class AVA extends EventEmitter {
 
     emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END));
 
-    return this.dataSchema;
+    return this.dataSchema!;
   }
 
   /**
@@ -199,7 +209,7 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_START));
 
     try {
-      this.dataProfile = await this.engine.profile(await this.schema(), options);
+      await this.getProfile(options);
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
 
@@ -208,7 +218,7 @@ export class AVA extends EventEmitter {
 
     emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
 
-    return this.dataProfile;
+    return this.dataProfile!;
   }
 
   /**

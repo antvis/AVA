@@ -65,11 +65,17 @@ describe('AVA', () => {
       vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       vi.spyOn(suggestions, 'generateSuggestions').mockResolvedValue([]);
       const computeProfile = vi.spyOn(ava.engine!, 'profile');
+      const onSchema = vi.fn();
+      ava.on('schemastart', onSchema);
+      ava.on('schemaend', onSchema);
 
       if (operation === 'analyze') await ava.analyze('Rows', { includeSummary: false });
       else if (operation === 'translate') await ava.translate('Rows');
       else await ava[operation]();
 
+      expect(onSchema.mock.calls.map(([event]) => event.type)).toEqual(
+        operation === 'schema' ? ['schemastart', 'schemaend'] : []
+      );
       if (operation !== 'profile') expect(computeProfile).not.toHaveBeenCalled();
       expect(discover).toHaveBeenCalledOnce();
       const schema = await ava.schema();
@@ -113,25 +119,30 @@ describe('AVA', () => {
     }
   );
 
-  it('reports schema discovery failure once for both schema and profile', async () => {
-    ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
-    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
-    const onEvent = vi.fn();
-    for (const event of ['profilestart', 'schemastart', 'schemaend', 'profileend']) ava.on(event, onEvent);
-    const error = new Error('Discovery failed');
-    vi.spyOn(ava.engine!, 'schema').mockRejectedValueOnce(error);
-    const compute = vi.spyOn(ava.engine!, 'profile');
+  it.each(['profile', 'analyze', 'translate', 'suggest'] as const)(
+    'reports internal schema discovery failure only through %s',
+    async (operation) => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+      const onEvent = vi.fn();
+      ava.on('*', onEvent);
+      const error = new Error('Discovery failed');
+      vi.spyOn(ava.engine!, 'schema').mockRejectedValueOnce(error);
+      const compute = vi.spyOn(ava.engine!, 'profile');
 
-    await expect(ava.profile()).rejects.toBe(error);
-    const failure = { error: { name: 'Error', message: error.message } };
-    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
-      { type: 'profilestart', data: {} },
-      { type: 'schemastart', data: {} },
-      { type: 'schemaend', data: failure },
-      { type: 'profileend', data: failure },
-    ]);
-    expect(compute).not.toHaveBeenCalled();
-  });
+      const result = operation === 'analyze' || operation === 'translate' ? ava[operation]('Rows') : ava[operation]();
+      await expect(result).rejects.toBe(error);
+      const failure = { error: { name: 'Error', message: error.message } };
+      expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+        {
+          type: `${operation}start`,
+          data: operation === 'analyze' || operation === 'translate' ? { query: 'Rows' } : {},
+        },
+        { type: `${operation}end`, data: failure },
+      ]);
+      expect(compute).not.toHaveBeenCalled();
+    }
+  );
 
   it('profiles default and selected metrics for the loaded source', async () => {
     const onStart = vi.fn();
@@ -227,7 +238,7 @@ describe('AVA', () => {
       { type: 'translatestart', data: { query: 'Total value' } },
       { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data' } },
     ]);
-    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: undefined });
+    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: null });
     const profile = await ava.profile();
     await ava['translate']('Total value');
     expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile });
@@ -374,7 +385,7 @@ describe('AVA', () => {
       await ava.source(source);
       const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.translate('Rows');
-      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema: await ava.schema(), profile: undefined });
+      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema: await ava.schema(), profile: null });
     });
 
     it('keeps loaded data queryable after schema discovery fails and retries discovery', async () => {
@@ -482,7 +493,7 @@ describe('AVA source metadata', () => {
         await restored.source(source, { schema: expectedSchema, profile: undefined });
         const nextDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
         await restored.translate('Total');
-        expect(nextDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: undefined });
+        expect(nextDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: null });
         expect(discover).not.toHaveBeenCalled();
         await restored.source(source, {});
         expect(discover).not.toHaveBeenCalled();
@@ -512,7 +523,7 @@ describe('AVA source metadata', () => {
         expect(discover).toHaveBeenCalledOnce();
         const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
         await ava.translate('Rows');
-        expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: undefined });
+        expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null });
       }
 
       await ava.source(source, { schema, profile });
@@ -524,7 +535,7 @@ describe('AVA source metadata', () => {
       await ava.source(source);
       const nextDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.translate('Rows');
-      expect(nextDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: undefined });
+      expect(nextDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null });
     } finally {
       await ava.dispose();
     }
@@ -540,7 +551,7 @@ describe('AVA source metadata', () => {
       expect(discover).not.toHaveBeenCalled();
       const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.translate('Rows');
-      expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: undefined });
+      expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null });
     } finally {
       await ava.dispose();
     }

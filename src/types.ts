@@ -796,7 +796,7 @@ export type AnalysisStrategyConfig =
 export interface DataContext {
   schema: Schema;
   /** Complete structural metadata with optional statistics. */
-  profile?: Profile;
+  profile: Profile | null;
 }
 
 /** Runtime dependencies available to an analysis strategy. */
