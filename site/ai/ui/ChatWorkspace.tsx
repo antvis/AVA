@@ -30,7 +30,9 @@ const ChatWorkspace: React.FC<{
   return (
     <main
       className={`pb-12 [&_p]:max-w-[520px] [&_p]:text-[14px] [&_p]:leading-[1.7] max-md:[&_p]:text-[13px] ${
-        live ? 'mx-[max(12px,calc((100%-1320px)/2))]' : 'mx-[max(12px,calc((100%-1120px)/2))]'
+        live
+          ? 'mx-[max(16px,calc((100%-1240px)/2))] 2xl:mx-[max(20px,calc((100%-1320px)/2))]'
+          : 'mx-[max(12px,calc((100%-1120px)/2))]'
       }`}
     >
       <div
