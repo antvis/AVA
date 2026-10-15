@@ -203,7 +203,11 @@ describe('AVA subset profiling', () => {
       const selected = getDSL.mock.calls[0][1].profile!;
       expect(selected.tables[0].fields[1].metrics).toEqual({});
       await ava.translate('All fields');
-      expect(getDSL).toHaveBeenLastCalledWith('All fields', { schema: await ava.schema(), profile: full });
+      expect(getDSL).toHaveBeenLastCalledWith(
+        'All fields',
+        { schema: await ava.schema(), profile: full },
+        expect.anything()
+      );
 
       const refreshed = await ava.profile({ metrics: ['sum'] });
       await ava.analyze('Values after refresh', config);
@@ -217,7 +221,7 @@ describe('AVA subset profiling', () => {
       expect(getDSL).toHaveBeenLastCalledWith('Full refreshed profile', {
         schema: await ava.schema(),
         profile: refreshed,
-      });
+      }, expect.anything());
 
       await ava.source(source, { profile: full });
       const importedCompute = vi.spyOn(ava.engine!, 'profile');
@@ -264,7 +268,11 @@ describe('AVA subset profiling', () => {
       vi.mocked(evaluate).mockClear();
       onEnd.mockClear();
       await ava.analyze('Without profiling', config);
-      expect(nextDSL).toHaveBeenCalledWith('Without profiling', { schema: await ava.schema(), profile: null });
+      expect(nextDSL).toHaveBeenCalledWith(
+        'Without profiling',
+        { schema: await ava.schema(), profile: null },
+        expect.objectContaining({ model: expect.anything() })
+      );
       expect(evaluate).not.toHaveBeenCalled();
       expect(onEnd).toHaveBeenCalledExactlyOnceWith({ type: 'analyzeend', data: {} });
       expect(onProfile).not.toHaveBeenCalled();

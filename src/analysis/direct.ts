@@ -1,7 +1,7 @@
 import { generateText } from 'ai';
 
 import { languageModel } from '../util/model';
-import { withModelUsage } from '../util/usage';
+import { getUsageCollector, withModelUsage } from '../util/usage';
 import { AnalysisEvent, AnalysisEventType } from '../event';
 import { serializeError } from '../util/error';
 
@@ -42,7 +42,9 @@ export const directAnalysis: AnalysisStrategy = async (query, config, { context,
     emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_START, { query, attempt }));
 
     try {
-      sql = await engine.getDSL(translationQuery, context, llm);
+      sql = getUsageCollector(llm)
+        ? await engine.getDSL(translationQuery, context, llm)
+        : await engine.getDSL(translationQuery, context);
     } catch (error) {
       emit(new AnalysisEvent(AnalysisEventType.TRANSLATE_END, { error: serializeError(error) }));
 

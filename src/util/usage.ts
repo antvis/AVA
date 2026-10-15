@@ -139,6 +139,19 @@ export function languageModelUsage(usage: {
   };
 }
 
+export function getUsageCollector(llm: LLMConfig): UsageCollector | undefined {
+  return (llm as LLMConfig & { usageCollector?: UsageCollector }).usageCollector;
+}
+
+export function beginModelCall(usage?: UsageCollector): (tokenUsage?: LanguageModelUsage) => void {
+  if (!usage) return () => undefined;
+  const callId = `ava-call-${++callSequence}`;
+  usage.markUnknown(callId);
+  return (tokenUsage) => {
+    if (tokenUsage) usage.add(callId, tokenUsage);
+  };
+}
+
 type UsageAwareOptions = {
   [key: string]: unknown;
   onEnd?: (event: { totalUsage?: LanguageModelUsage; usage?: LanguageModelUsage }) => unknown;
@@ -160,17 +173,4 @@ export function withModelUsage<T extends UsageAwareOptions>(options: T, llm: LLM
       return onEnd?.(event);
     },
   } as T;
-}
-
-export function getUsageCollector(llm: LLMConfig): UsageCollector | undefined {
-  return (llm as LLMConfig & { usageCollector?: UsageCollector }).usageCollector;
-}
-
-export function beginModelCall(usage?: UsageCollector): (tokenUsage?: LanguageModelUsage) => void {
-  if (!usage) return () => undefined;
-  const callId = `ava-call-${++callSequence}`;
-  usage.markUnknown(callId);
-  return (tokenUsage) => {
-    if (tokenUsage) usage.add(callId, tokenUsage);
-  };
 }

@@ -238,10 +238,18 @@ describe('AVA', () => {
       { type: 'translatestart', data: { query: 'Total value' } },
       { type: 'translateend', data: { dsl: 'SELECT SUM(value) FROM data' } },
     ]);
-    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile: null });
+    expect(getDSL).toHaveBeenLastCalledWith(
+      'Total value',
+      { schema, profile: null },
+      expect.objectContaining({ model: expect.anything() })
+    );
     const profile = await ava.profile();
     await ava['translate']('Total value');
-    expect(getDSL).toHaveBeenLastCalledWith('Total value', { schema, profile });
+    expect(getDSL).toHaveBeenLastCalledWith(
+      'Total value',
+      { schema, profile },
+      expect.objectContaining({ model: expect.anything() })
+    );
     expect(execute).not.toHaveBeenCalled();
 
     const error = new Error('Translation failed');
@@ -385,7 +393,11 @@ describe('AVA', () => {
       await ava.source(source);
       const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.translate('Rows');
-      expect(getDSL).toHaveBeenLastCalledWith('Rows', { schema: await ava.schema(), profile: null });
+      expect(getDSL).toHaveBeenLastCalledWith(
+        'Rows',
+        { schema: await ava.schema(), profile: null },
+        expect.anything()
+      );
     });
 
     it('keeps loaded data queryable after schema discovery fails and retries discovery', async () => {
@@ -474,26 +486,42 @@ describe('AVA source metadata', () => {
         exported.tables[0].fields[0].name = 'changed by caller';
         exported.tables[0].metrics.row_count = 999;
         await restored.translate('Total');
-        expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: expectedProfile });
+        expect(getDSL).toHaveBeenLastCalledWith(
+          'Total',
+          { schema: expectedSchema, profile: expectedProfile },
+          expect.anything()
+        );
         const analysis = await restored.analyze('Total', {
           includeSummary: false,
           strategy: { type: 'direct', maxRetries: 0 },
         });
         expect(analysis.data).toEqual([{ total: 6 }]);
-        expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: expectedProfile });
+        expect(getDSL).toHaveBeenLastCalledWith(
+          'Total',
+          { schema: expectedSchema, profile: expectedProfile },
+          expect.anything()
+        );
         await restored.suggest();
-        expect(suggest).toHaveBeenLastCalledWith(llm, { schema: expectedSchema, profile: expectedProfile }, 3);
+        expect(suggest).toHaveBeenLastCalledWith(
+          expect.objectContaining(llm),
+          { schema: expectedSchema, profile: expectedProfile },
+          3
+        );
         expect(compute).not.toHaveBeenCalled();
         const recomputed = await restored.profile({ metrics: ['sum'] });
         expect(recomputed.tables[0].fields[0].metrics).toEqual({ sum: 6 });
         await restored.translate('Total');
-        expect(getDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: recomputed });
+        expect(getDSL).toHaveBeenLastCalledWith(
+          'Total',
+          { schema: expectedSchema, profile: recomputed },
+          expect.anything()
+        );
         expect(compute).toHaveBeenCalledExactlyOnceWith(expectedSchema, { metrics: ['sum'] });
 
         await restored.source(source, { schema: expectedSchema, profile: undefined });
         const nextDSL = vi.spyOn(restored.engine!, 'getDSL').mockResolvedValue(dsl);
         await restored.translate('Total');
-        expect(nextDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: null });
+        expect(nextDSL).toHaveBeenLastCalledWith('Total', { schema: expectedSchema, profile: null }, expect.anything());
         expect(discover).not.toHaveBeenCalled();
         await restored.source(source, {});
         expect(discover).not.toHaveBeenCalled();
@@ -523,7 +551,7 @@ describe('AVA source metadata', () => {
         expect(discover).toHaveBeenCalledOnce();
         const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
         await ava.translate('Rows');
-        expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null });
+        expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null }, expect.anything());
       }
 
       await ava.source(source, { schema, profile });
@@ -535,7 +563,7 @@ describe('AVA source metadata', () => {
       await ava.source(source);
       const nextDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.translate('Rows');
-      expect(nextDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null });
+      expect(nextDSL).toHaveBeenLastCalledWith('Rows', { schema, profile: null }, expect.anything());
     } finally {
       await ava.dispose();
     }
@@ -551,7 +579,7 @@ describe('AVA source metadata', () => {
       expect(discover).not.toHaveBeenCalled();
       const getDSL = vi.spyOn(ava.engine!, 'getDSL').mockResolvedValue('const result = data;');
       await ava.translate('Rows');
-      expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null });
+      expect(getDSL).toHaveBeenCalledWith('Rows', { schema, profile: null }, expect.anything());
     } finally {
       await ava.dispose();
     }
