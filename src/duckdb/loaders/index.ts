@@ -54,5 +54,7 @@ export async function loadSource(config: DataSourceConfig, llmConfig: LLMConfig)
       // ClickHouse is queried directly through ClickHouseEngine, not through
       // DuckDB ATTACH loaders.
       throw new Error('ClickHouse sources are handled by ClickHouseEngine, not the DuckDB engine');
+    case 'feishu-bitable':
+      throw new Error('Feishu Bitable sources are handled by FeishuBitableEngine, not the DuckDB engine');
   }
 }
