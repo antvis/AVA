@@ -76,6 +76,57 @@ describe('AVA', () => {
     }
   );
 
+  it.each(['schema', 'profile'] as const)(
+    'emits one %s end event per computation with its outcome',
+    async (operation) => {
+      ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+      await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+      const onEvent = vi.fn();
+      ava.on(`${operation}start`, onEvent);
+      ava.on(`${operation}end`, onEvent);
+      const error = new Error(`${operation} failed`);
+      vi.spyOn(ava.engine!, operation).mockRejectedValueOnce(error);
+
+      await expect(ava[operation]()).rejects.toBe(error);
+      expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+        { type: `${operation}start`, data: {} },
+        { type: `${operation}end`, data: { error: { name: 'Error', message: error.message } } },
+      ]);
+
+      onEvent.mockClear();
+      await ava[operation]();
+      expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+        { type: `${operation}start`, data: {} },
+        { type: `${operation}end`, data: {} },
+      ]);
+      if (operation === 'schema') {
+        onEvent.mockClear();
+        await ava.schema();
+        expect(onEvent).not.toHaveBeenCalled();
+      }
+    }
+  );
+
+  it('reports schema discovery failure once for both schema and profile', async () => {
+    ava = new AVA({ llm: getLLMConfig(), engine: { type: 'javascript' } });
+    await ava.source({ type: 'json', options: { data: [{ value: 2 }] } });
+    const onEvent = vi.fn();
+    for (const event of ['profilestart', 'schemastart', 'schemaend', 'profileend']) ava.on(event, onEvent);
+    const error = new Error('Discovery failed');
+    vi.spyOn(ava.engine!, 'schema').mockRejectedValueOnce(error);
+    const compute = vi.spyOn(ava.engine!, 'profile');
+
+    await expect(ava.profile()).rejects.toBe(error);
+    const failure = { error: { name: 'Error', message: error.message } };
+    expect(onEvent.mock.calls.map(([event]) => event)).toEqual([
+      { type: 'profilestart', data: {} },
+      { type: 'schemastart', data: {} },
+      { type: 'schemaend', data: failure },
+      { type: 'profileend', data: failure },
+    ]);
+    expect(compute).not.toHaveBeenCalled();
+  });
+
   it('profiles default and selected metrics for the loaded source', async () => {
     const onStart = vi.fn();
     const onEnd = vi.fn();

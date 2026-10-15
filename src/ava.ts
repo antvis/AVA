@@ -167,10 +167,16 @@ export class AVA extends EventEmitter {
     emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_START));
 
     try {
-      return (this.dataSchema ??= await this.engine.schema());
-    } finally {
-      emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END));
+      this.dataSchema ??= await this.engine.schema();
+    } catch (error) {
+      emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END, { error: serializeError(error) }));
+
+      throw error;
     }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.SCHEMA_END));
+
+    return this.dataSchema;
   }
 
   /**
@@ -188,14 +194,15 @@ export class AVA extends EventEmitter {
 
     try {
       this.dataProfile = await this.engine.profile(await this.schema(), options);
-      return this.dataProfile;
     } catch (error) {
       emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END, { error: serializeError(error) }));
 
       throw error;
-    } finally {
-      emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
     }
+
+    emit(this, new ExecutionEvent(ExecutionEventType.PROFILE_END));
+
+    return this.dataProfile;
   }
 
   /**
