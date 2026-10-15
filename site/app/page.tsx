@@ -1,9 +1,8 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Header, Footer, ConfigModal, loadLLMConfig, saveLLMConfig } from '../components'
-import { Banner, Playground } from '../components'
-import type { LLMConfig } from '@antv/ava/browser'
+import { Header, Footer } from '../components';
+import { Banner } from '../components';
+import DemoChat from '../ai/ui/demo/DemoChat';
 import {
   AnalyticsPipeline,
   TrustedAnalytics,
@@ -11,43 +10,25 @@ import {
   Integrate,
   OpenSource,
   FinalCTA,
-} from '../components/landing'
-import PageShell from '../components/PageShell'
+} from '../components/landing';
+import PageShell from '../components/PageShell';
 
 export default function Home() {
-  // LLM settings modal (shared with the interactive examples below)
-  const [isConfigOpen, setIsConfigOpen] = useState(false)
-  const [llmConfig, setLlmConfig] = useState<LLMConfig>(loadLLMConfig)
-
-  const handleSaveConfig = (config: LLMConfig) => {
-    setLlmConfig(config)
-    saveLLMConfig(config)
-  }
-
   return (
     <>
       {/* canvas + sheet — shared with other pages via PageShell */}
       <PageShell>
-          <Header onOpenConfig={() => setIsConfigOpen(true)} />
+        <Header />
 
-          {/* hero — was `.hero`: bordered plate with layered light-blue gradients */}
-          <div
-            className="relative mx-6 mb-16 rounded-[28px] border border-[#edf7fc] px-7 pb-[52px] pt-14
+        {/* hero — was `.hero`: bordered plate with layered light-blue gradients */}
+        <div
+          className="relative mx-6 mb-16 rounded-[28px] border border-[#edf7fc] px-7 pb-[52px] pt-14
               bg-[radial-gradient(ellipse_at_85%_80%,#cceaf680,transparent_50%),linear-gradient(150deg,#eef8ff,#f8fcfe_55%,#edfaff)]
               [&>section]:mt-0
               [&>section>div[aria-hidden]]:hidden
               [&>section>div:last-child]:m-0 [&>section>div:last-child]:pb-0
-              [&>main_p]:max-w-[520px] [&>main_p]:text-[14px] [&>main_p]:leading-[1.7]
               [&_.hero-rise_a]:rounded-[9px]
               [&>main]:mx-auto [&>main]:max-w-[1040px] [&>main]:pb-0
-              [&_#playground]:rounded-[25px] [&_#playground]:border-2 [&_#playground]:border-transparent
-              [&_#playground]:bg-[linear-gradient(#fff,#fff)_padding-box,linear-gradient(125deg,#c9e3f1,#d7eff8_55%,#bce8fb)_border-box]
-              [&_#playground]:shadow-[0_16px_45px_#589db312,0_3px_7px_#38749310]
-              [&_#playground>div]:p-3
-              [&_#playground_section]:h-[510px]
-              max-md:[&_#playground]:rounded-[18px]
-              max-md:[&_#playground>div]:p-1
-              max-md:[&_#playground_section]:h-[460px]
               max-md:[&>main]:mx-auto max-md:[&>main]:max-w-[1040px]
               max-md:[&_p]:text-[13px]
               max-md:[&_.hero-rise]:gap-2
@@ -57,23 +38,23 @@ export default function Home() {
               max-md:[&_h1>span:first-child>span:last-child]:whitespace-nowrap
               max-md:mx-2.5 max-md:rounded-[18px] max-md:px-3.5 max-md:pb-6 max-md:pt-10
               max-md:[&_.hero-rise_a]:px-4 max-md:[&_.hero-rise_a]:text-xs"
-          >
-            <Banner />
-            <Playground />
-          </div>
+        >
+          <Banner />
+          <DemoChat />
+        </div>
 
-          {/* feature sections */}
-          <div>
-            <AnalyticsPipeline />
-            <TrustedAnalytics />
-            <RealWorldData />
-            <Integrate />
-            <OpenSource />
-          </div>
+        {/* feature sections */}
+        <div>
+          <AnalyticsPipeline />
+          <TrustedAnalytics />
+          <RealWorldData />
+          <Integrate />
+          <OpenSource />
+        </div>
 
-          {/* closing — was `.closing`: radial brand washes over a light gradient */}
-          <div
-            className="overflow-hidden
+        {/* closing — was `.closing`: radial brand washes over a light gradient */}
+        <div
+          className="overflow-hidden
               bg-[radial-gradient(ellipse_at_12%_0%,color-mix(in_srgb,var(--color-primary)_26%,transparent),transparent_45%),
                 radial-gradient(ellipse_at_90%_100%,color-mix(in_srgb,var(--color-primary-light)_45%,transparent),transparent_55%),
                 linear-gradient(150deg,#f4fbfe,#f8fcfe_55%,#f2fafe)]
@@ -81,17 +62,11 @@ export default function Home() {
               max-md:[&>footer>div>div:first-child]:grid-cols-2
               max-md:[&>footer>div>div:first-child]:gap-7
               max-md:[&>footer>div>div:first-child>div]:col-span-full"
-          >
-            <FinalCTA />
-            <Footer />
-          </div>
+        >
+          <FinalCTA />
+          <Footer />
+        </div>
       </PageShell>
-      <ConfigModal
-        isOpen={isConfigOpen}
-        onClose={() => setIsConfigOpen(false)}
-        config={llmConfig}
-        onSave={handleSaveConfig}
-      />
     </>
-  )
+  );
 }

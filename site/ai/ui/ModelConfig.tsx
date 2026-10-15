@@ -1,15 +1,16 @@
-'use client'
+'use client';
 import React, { useState, useEffect } from 'react';
 import type { LLMConfig } from '@antv/ava/browser';
 
-interface ConfigModalProps {
+interface ModelConfigProps {
   isOpen: boolean;
+  disabled?: boolean;
   onClose: () => void;
   config: LLMConfig;
   onSave: (config: LLMConfig) => void;
 }
 
-const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSave }) => {
+const ModelConfig: React.FC<ModelConfigProps> = ({ isOpen, onClose, config, onSave, disabled = false }) => {
   const [localConfig, setLocalConfig] = useState(config);
 
   useEffect(() => {
@@ -25,16 +26,10 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6"
-        onClick={e => e.stopPropagation()}
-      >
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-gray-800">LLM Configuration</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -47,7 +42,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
             <input
               type="text"
               value={typeof localConfig.model === 'string' ? localConfig.model : localConfig.model.modelId}
-              onChange={e => setLocalConfig({ ...localConfig, model: e.target.value })}
+              onChange={(e) => setLocalConfig({ ...localConfig, model: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
               placeholder="e.g., ling-1t, gpt-4"
             />
@@ -58,7 +53,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
             <input
               type="password"
               value={localConfig.apiKey}
-              onChange={e => setLocalConfig({ ...localConfig, apiKey: e.target.value })}
+              onChange={(e) => setLocalConfig({ ...localConfig, apiKey: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
               placeholder="Your API key"
             />
@@ -69,7 +64,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
             <input
               type="text"
               value={localConfig.baseURL || ''}
-              onChange={e => setLocalConfig({ ...localConfig, baseURL: e.target.value })}
+              onChange={(e) => setLocalConfig({ ...localConfig, baseURL: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[color:var(--color-primary)]/50 focus:border-[color:var(--color-primary)] transition-all"
               placeholder="https://api.example.com/v1"
             />
@@ -85,6 +80,8 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
           </button>
           <button
             onClick={handleSave}
+            disabled={disabled}
+            title={disabled ? 'Wait for the current operation to finish' : undefined}
             className="flex-1 px-4 py-2.5 bg-[color:var(--color-primary)] hover:bg-[color:var(--color-primary-dark)] text-white rounded-xl transition-colors"
           >
             Save
@@ -95,4 +92,4 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
   );
 };
 
-export default ConfigModal;
+export default ModelConfig;

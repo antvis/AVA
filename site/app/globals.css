@@ -1,5 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
+@source '../node_modules/streamdown/dist/*.js';
+
+/* Streamdown's UI tokens follow the site's existing palette. */
+@theme inline {
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-ink);
+  --color-border: var(--color-line);
+  --color-muted: var(--color-field);
+  --color-muted-foreground: var(--color-ink-2);
+  --color-sidebar: var(--color-field);
+}
 
 html {
   /* Prevent vertical overscroll from revealing blank space at the page edges. */
@@ -331,6 +342,19 @@ body {
 }
 
 /* ---- Loading state (beautifului.dev pixel-grid loader) ---- */
+.response-loading-pixel {
+  opacity: 0.15;
+  animation: pixel-on 650ms ease-in-out infinite;
+}
+
+.response-loading-label {
+  color: transparent;
+  background-image: linear-gradient(90deg, var(--color-ink-3) 35%, var(--color-ink) 50%, var(--color-ink-3) 65%);
+  background-size: 200% 100%;
+  background-clip: text;
+  animation: shimmer-text 1.4s linear infinite;
+}
+
 @keyframes pixel-on {
   0%,
   100% {
@@ -353,6 +377,14 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .response-loading-pixel,
+  .response-loading-label {
+    animation: none;
+  }
+  .response-loading-label {
+    background: none;
+    color: var(--color-ink-2);
+  }
   .pixel-dot,
   .animate-pulse,
   .animate-ping {

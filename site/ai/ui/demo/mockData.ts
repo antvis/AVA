@@ -1,18 +1,7 @@
 import type { DualAxesConfig } from '@antv/gpt-vis';
-import type { Message, ToolStep, ToolDiff, ToolDiffLine } from './types';
+import type { Message, ToolStep, ToolDiff, ToolDiffLine } from '../types';
 
-// Illustrative monthly source data; the playground replays a demo, not a live analysis.
-const MONTHLY_SALES = [
-  { month: '2026-01-01', revenue: 120000, gross_profit: 36000 },
-  { month: '2026-02-01', revenue: 135000, gross_profit: 41850 },
-  { month: '2026-03-01', revenue: 148000, gross_profit: 44400 },
-  { month: '2026-04-01', revenue: 166000, gross_profit: 46480 },
-  { month: '2026-05-01', revenue: 182000, gross_profit: 47320 },
-  { month: '2026-06-01', revenue: 210000, gross_profit: 46200 },
-  { month: '2026-07-01', revenue: 238000, gross_profit: 45220 },
-  { month: '2026-08-01', revenue: 225000, gross_profit: 51750 },
-  { month: '2026-09-01', revenue: 260000, gross_profit: 70200 },
-];
+import { MONTHLY_SALES } from '../constants';
 
 /** One result set for the chart and its inspectable data table. */
 export const ARTIFACT_DATA = MONTHLY_SALES.map(({ month, revenue, gross_profit }) => ({
@@ -165,9 +154,12 @@ export const PRESET_MESSAGES: Message[] = [
     diffLines: RUN_DIFF_LINES,
     text: ASSISTANT_TEXT,
     artifact: {
+      id: 'demo-growth-quality',
       title: 'growth-quality.html',
       description: 'Revenue & gross margin · Jan–Sep 2026 · Dual Axes',
-      chart: true,
+      syntax: CHART_SYNTAX,
+      code: ARTIFACT_SQL,
+      data: ARTIFACT_DATA,
     },
   },
 ];
@@ -177,26 +169,3 @@ export const ARTIFACT_METRICS = [
   { label: 'Lowest margin', value: '19%', detail: 'July · period low' },
   { label: 'Margin recovery', value: '+8 pp', detail: 'Jul → Sep' },
 ];
-
-export const PROMPT_SOURCES = [
-  { key: 'attach', name: 'Add data files', desc: 'CSV, Excel, JSON or Parquet', glyph: 'clip', attach: true },
-  { key: 'data', name: 'Monthly sales', desc: 'monthly-sales-2026.csv · 9 rows', glyph: 'chart' },
-  { key: 'schema', name: 'Data schema', desc: 'Fields and types · ava.schema()', glyph: 'layers' },
-  { key: 'profile', name: 'Data profile', desc: 'Statistics and missing values · ava.profile()', glyph: 'chart' },
-];
-
-export const PROMPT_COMMANDS = [
-  { key: 'suggest', name: '/suggest', desc: 'Suggest questions about the loaded data' },
-  { key: 'analyze', name: '/analyze', desc: 'Translate, execute and summarize a question' },
-  { key: 'visualize', name: '/visualize', desc: 'Create a chart from analysis results' },
-  { key: 'profile', name: '/profile', desc: 'Inspect column statistics and data quality' },
-];
-
-export const PROMPT_MODELS = [
-  { key: 'configured', name: 'Configured LLM', tag: 'Custom' },
-  { key: 'demo', name: 'Demo playback', tag: 'Preview' },
-];
-
-export const ATTACH_FILES = ['monthly-sales-2026.csv', 'product-margins.xlsx', 'order-lines.parquet'];
-export const DICTATION_TEXT = QUESTION;
-export const SESSION = { name: 'AVA · Growth quality', path: 'Demo dataset · Jan–Sep 2026' };
