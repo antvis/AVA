@@ -3,7 +3,7 @@
 import { DATASET_PREVIEW_COLUMNS } from './constants';
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import type { Message, LivePlayground, ChatPlayback } from './types';
+import type { Message, LiveChat, ChatPlayback } from './types';
 import StreamText from './StreamText';
 import ToolTrace from './ToolTrace';
 import ToolPart from './ToolPart';
@@ -18,7 +18,7 @@ const ChatPanel: React.FC<{
   onRerun?: () => void;
   playback: ChatPlayback;
   heading?: React.ReactNode;
-  live?: LivePlayground;
+  live?: LiveChat;
 }> = ({ onArtifact, onRerun, playback, heading, live }) => {
   /* Follow new content until the user scrolls away from the bottom;
      scrolling back to the bottom resumes following. */

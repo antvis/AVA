@@ -1,7 +1,7 @@
 'use client';
 
 import { getToolName } from 'ai';
-import type { PlaygroundUIMessage } from '../core/session';
+import type { AIUIMessage } from '../core/session';
 import { MAX_TOOL_DETAIL_LENGTH, TOOL_STEPS } from './constants';
 import type { Message } from './types';
 import ToolRow from './ToolRow';
@@ -9,7 +9,7 @@ import FileDiffs from './FileDiffs';
 import SchemaTable from './SchemaTable';
 import MetadataTable from './MetadataTable';
 
-type ToolMessagePart = Extract<PlaygroundUIMessage['parts'][number], { type: `tool-${string}` | 'dynamic-tool' }>;
+type ToolMessagePart = Extract<AIUIMessage['parts'][number], { type: `tool-${string}` | 'dynamic-tool' }>;
 
 /** Render the SDK tool part without copying its execution state. */
 export default function ToolPart({

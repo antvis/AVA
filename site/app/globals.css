@@ -52,7 +52,7 @@ code, pre {
   }
 }
 
-/* Whisper-quiet scrollbars for the Playground panels */
+/* Whisper-quiet scrollbars for the AI panels */
 @layer utilities {
   /* Firefox only: modern scrollbar-* properties would make Chromium
      ignore the fine-grained ::-webkit-scrollbar rules below */
@@ -236,7 +236,7 @@ body {
   }
 }
 
-/* ---- Playground (codex-style agent run) ---- */
+/* ---- AI (codex-style agent run) ---- */
 @keyframes slide-in {
   from {
     opacity: 0;
@@ -268,7 +268,7 @@ body {
   }
 }
 
-/* Step row entrance — used by Playground steps trace */
+/* Step row entrance — used by AI steps trace */
 @keyframes step-in {
   from {
     opacity: 0;
@@ -392,7 +392,7 @@ body {
   }
 }
 
-/* ── Playground hero entrance motion ─────────────────────── */
+/* ── AI hero entrance motion ─────────────────────── */
 
 @keyframes hero-rise {
   from {

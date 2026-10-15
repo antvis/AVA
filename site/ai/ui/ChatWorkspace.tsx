@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import ChatPanel from './ChatPanel';
 import ArtifactPanel from './ArtifactPanel';
-import type { Message, LivePlayground, ChatPlayback, ArtifactDisplay, ArtifactTab } from './types';
+import type { Message, LiveChat, ChatPlayback, ArtifactDisplay, ArtifactTab } from './types';
 
 const ChatWorkspace: React.FC<{
   playback: ChatPlayback;
   activeArtifact?: Message['artifact'];
-  live?: LivePlayground;
+  live?: LiveChat;
   onReplay?: () => void;
   heading?: React.ReactNode;
   artifactDisplay?: ArtifactDisplay;
@@ -34,7 +34,7 @@ const ChatWorkspace: React.FC<{
       }`}
     >
       <div
-        id="playground"
+        id="ai"
         style={{
           background:
             'linear-gradient(var(--color-surface), var(--color-surface)) padding-box, linear-gradient(125deg, var(--color-primary-light), var(--color-line) 55%, var(--color-primary)) border-box',

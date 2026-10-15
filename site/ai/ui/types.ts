@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { PlaygroundUIMessage } from '../core/session';
+import type { AIUIMessage } from '../core/session';
 export type ToolDetailLine = { text: string; tone?: 'add' | 'del' | 'ctx' };
 export type ToolStep = {
   id?: string;
@@ -29,7 +29,7 @@ export interface Message {
   diffLines?: Record<string, ToolDiffLine[]>;
   role: 'user' | 'assistant';
   text: string;
-  parts?: PlaygroundUIMessage['parts'];
+  parts?: AIUIMessage['parts'];
   steps?: ToolStep[];
   live?: { rowsShown?: number; runningRow?: number | null };
   /** File attachments shown on the user's message bubble. */
@@ -44,7 +44,7 @@ export interface Message {
     preview: Record<string, unknown>[];
   };
 }
-export interface LivePlayground {
+export interface LiveChat {
   messages: Message[];
   busy: boolean;
   ready: boolean;

@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { LLMConfig } from '@antv/ava/browser';
 import { useChat as useAIChat } from '@ai-sdk/react';
-import type { PlaygroundUIMessage } from '../core/session';
-import type { Message, LivePlayground } from './types';
+import type { AIUIMessage } from '../core/session';
+import type { Message, LiveChat } from './types';
 import {
   MONTHLY_SALES,
   DEFAULT_DATASET_NAME,
@@ -14,7 +14,7 @@ import {
 } from './constants';
 import { createSession } from '../core/session';
 import { toDisplayMessage } from './utils';
-import type { PlaygroundDataset } from '../core/types';
+import type { AIDataset } from '../core/types';
 import { parseCSV, parseExcel } from '../../components/utils';
 
 export default function useChat({
@@ -23,14 +23,14 @@ export default function useChat({
 }: {
   config: LLMConfig;
   onConfigure: () => void;
-}): LivePlayground {
+}): LiveChat {
   const ready = !!config.apiKey?.trim() && (typeof config.model !== 'string' || !!config.model.trim());
   const [workingSessionId, setWorkingSessionId] = useState<string | null>(null);
   const [error, setError] = useState('');
-  const [dataset, setDataset] = useState<PlaygroundDataset>({ name: DEFAULT_DATASET_NAME, rows: MONTHLY_SALES });
+  const [dataset, setDataset] = useState<AIDataset>({ name: DEFAULT_DATASET_NAME, rows: MONTHLY_SALES });
   const [generation, setGeneration] = useState(0);
   const session = useMemo(() => createSession(config, dataset), [config, dataset, generation]);
-  const chat = useAIChat<PlaygroundUIMessage>({ id: session.id, transport: session.transport });
+  const chat = useAIChat<AIUIMessage>({ id: session.id, transport: session.transport });
   const busy = workingSessionId === session.id || chat.status === 'submitted' || chat.status === 'streaming';
   const lifecycle = useMemo(() => ({ active: true, locked: false }), [session]);
   const [uploadMessage, setUploadMessage] = useState<Message | null>(null);

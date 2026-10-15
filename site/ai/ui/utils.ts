@@ -5,14 +5,14 @@ import javascript from 'shiki/langs/javascript.mjs';
 import sql from 'shiki/langs/sql.mjs';
 import githubLight from 'shiki/themes/github-light.mjs';
 import type { Message } from './types';
-import type { PlaygroundUIMessage } from '../core/session';
+import type { AIUIMessage } from '../core/session';
 
 /* ------------------------------------------------------------------ */
 /* Message updates — preserve text and tool order                       */
 /* ------------------------------------------------------------------ */
 
 // This is a render projection; useChat owns the messages and their tool states.
-export function toDisplayMessage(source: PlaygroundUIMessage, datasetName: string): Message {
+export function toDisplayMessage(source: AIUIMessage, datasetName: string): Message {
   const message: Message = {
     role: source.role === 'user' ? 'user' : 'assistant',
     text: '',

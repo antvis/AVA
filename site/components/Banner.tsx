@@ -158,7 +158,7 @@ const RotatingVerse: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ */
-/* Banner — hero of the Playground page                                 */
+/* Banner — hero of the AI page                                 */
 /* ------------------------------------------------------------------ */
 
 const Banner: React.FC = () => (
@@ -283,10 +283,10 @@ const Banner: React.FC = () => (
             <span className="sr-only">(opens in a new tab)</span>
           </a>
           <Link
-            href="/ai-playground"
+            href="/ai"
             className="group inline-flex h-10 items-center gap-1.5 rounded-[9px] px-4 text-[13.5px] max-md:text-xs font-medium text-zinc-500 transition-colors duration-200 hover:text-[color:var(--color-primary-dark)] active:scale-[0.97]"
           >
-            AI Playground
+            AI
             <svg
               width="13"
               height="13"

@@ -43,6 +43,6 @@ DuckDB is the default Node.js engine. JavaScript supports browsers and Node.js; 
 
 - [Architecture and source map](https://ava.antv.vision/documentation/reference/architecture/): Map public capabilities to implementation modules.
 - [Benchmarks](https://ava.antv.vision/documentation/reference/benchmarks/): Evaluation results and instructions for reproducing them.
-- [AI Playground](https://ava.antv.vision/ai-playground/): Try browser-based visual analytics.
+- [AI](https://ava.antv.vision/ai/): Try browser-based visual analytics.
 - [GitHub repository](https://github.com/antvis/AVA): Source code and contribution information.
 - [Issues](https://github.com/antvis/AVA/issues): Bug reports and feature requests.
