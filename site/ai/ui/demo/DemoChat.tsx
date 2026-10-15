@@ -4,7 +4,7 @@ import { useState } from 'react';
 import ChatWorkspace from '../ChatWorkspace';
 import type { Message, ArtifactDisplay } from '../types';
 import useSimulatedStream from './useSimulatedStream';
-import { PRESET_MESSAGES, SESSION, ARTIFACT_METRICS } from './mockData';
+import { PRESET_MESSAGES, ARTIFACT_METRICS } from './mockData';
 
 const artifactDisplay: ArtifactDisplay = {
   columns: [
@@ -50,18 +50,6 @@ export default function DemoChat() {
         setActiveArtifact(null);
         setReplayKey((key) => key + 1);
       }}
-      heading={
-        <header className="flex items-center gap-2.5 px-5 py-3.5 border-b border-zinc-100">
-          <span className="relative flex w-2 h-2">
-            {!playback.finished && (
-              <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
-            )}
-            <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-500" />
-          </span>
-          <span className="text-sm font-semibold text-zinc-800">{SESSION.name}</span>
-          <span className="min-w-0 truncate text-[11px] text-zinc-400 font-mono">{SESSION.path}</span>
-        </header>
-      }
     />
   );
 }

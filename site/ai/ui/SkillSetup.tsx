@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import CopyCode from '../../components/docs/CopyCode';
 
-import { INSTALL_COMMANDS, INSTALL_PROMPT } from '../constants';
+import { INSTALL_COMMANDS, INSTALL_PROMPT } from './constants';
 
 export default function SkillSetup() {
   return (

@@ -1,7 +1,7 @@
 import type { DualAxesConfig } from '@antv/gpt-vis';
 import type { Message, ToolStep, ToolDiff, ToolDiffLine } from '../types';
 
-import { MONTHLY_SALES } from '../../constants';
+import { MONTHLY_SALES } from '../constants';
 
 /** One result set for the chart and its inspectable data table. */
 export const ARTIFACT_DATA = MONTHLY_SALES.map(({ month, revenue, gross_profit }) => ({
@@ -169,5 +169,3 @@ export const ARTIFACT_METRICS = [
   { label: 'Lowest margin', value: '19%', detail: 'July · period low' },
   { label: 'Margin recovery', value: '+8 pp', detail: 'Jul → Sep' },
 ];
-
-export const SESSION = { name: 'AVA · Growth quality', path: 'Demo dataset · Jan–Sep 2026' };

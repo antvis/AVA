@@ -6,69 +6,49 @@ import sql from 'shiki/langs/sql.mjs';
 import githubLight from 'shiki/themes/github-light.mjs';
 import type { Message } from './types';
 import type { PlaygroundUIMessage } from '../core/session';
-import { TOOL_STEPS, MAX_TOOL_DETAIL_LENGTH } from '../constants';
 
 /* ------------------------------------------------------------------ */
 /* Message updates — preserve text and tool order                       */
 /* ------------------------------------------------------------------ */
 
 // This is a render projection; useChat owns the messages and their tool states.
-export function toDisplayMessage(source: PlaygroundUIMessage, datasetName: string, busy: boolean): Message {
+export function toDisplayMessage(source: PlaygroundUIMessage, datasetName: string): Message {
   const message: Message = {
     role: source.role === 'user' ? 'user' : 'assistant',
     text: '',
-    parts: [],
-    steps: [],
+    parts: source.parts,
     ...(source.role === 'user' ? { attachments: [datasetName] } : {}),
   };
   for (const part of source.parts) {
     if (part.type === 'text') {
       message.text += part.text;
-      message.parts!.push({ type: 'text', text: part.text });
-    } else if (part.type.startsWith('tool-') && 'toolCallId' in part) {
-      const name = part.type.slice(5);
-      const failed = part.state === 'output-error' || part.state === 'output-denied';
-      const done = part.state === 'output-available';
-      const value = 'errorText' in part ? part.errorText : done ? part.output : part.input;
-      message.steps!.push({
-        ...TOOL_STEPS[name],
-        id: part.toolCallId,
-        state: failed || (!done && !busy) ? 'failed' : done ? 'done' : 'running',
-        detail: [
-          {
-            text: (typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? '').slice(
-              0,
-              MAX_TOOL_DETAIL_LENGTH
-            ),
-          },
-        ],
-      });
-      message.parts!.push({ type: 'tool', toolCallId: part.toolCallId });
-      if (part.type === 'tool-analyze' && part.state === 'output-available') {
-        message.artifact = {
-          title: 'analysis.js',
-          description: part.output.query,
-          code: part.output.sql,
-          data: part.output.data,
-        };
-      }
-      if (part.type === 'tool-visualize' && part.state === 'output-available') {
-        const { result, syntax, html } = part.output;
-        message.artifact = {
-          title: 'visualization.html',
-          description: result.query,
-          code: result.sql,
-          data: result.data,
-          chart: true,
-          syntax,
-          html,
-        };
-      }
+    } else if (part.type === 'tool-analyze' && part.state === 'output-available') {
+      message.artifact = {
+        title: 'query.js',
+        description: part.output.query,
+        code: part.output.sql,
+        data: part.output.data,
+      };
+    } else if (part.type === 'tool-visualize' && part.state === 'output-available') {
+      const { result, syntax, html } = part.output;
+      message.artifact = {
+        title: 'visualization.html',
+        description: result.query,
+        code: result.sql,
+        data: result.data,
+        chart: true,
+        syntax,
+        html,
+      };
     }
   }
   if (message.artifact) {
     const { code, syntax } = message.artifact;
-    const files = { 'analysis.js': code ?? '', ...(syntax ? { 'visualization.vis': syntax } : {}) };
+    const files = {
+      ...(code ? { 'query.js': code } : {}),
+      ...(syntax ? { 'visualization.vis': syntax } : {}),
+    };
+
     message.diffs = Object.entries(files).map(([file, content]) => ({ file, add: content.split('\n').length }));
     message.diffLines = Object.fromEntries(
       Object.entries(files).map(([file, content]) => [

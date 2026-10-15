@@ -1,4 +1,3 @@
-import { MAX_QUESTION_LENGTH, MAX_CHART_INSTRUCTIONS_LENGTH, SUGGESTION_COUNT } from '../constants';
 import { tool } from 'ai';
 import { z } from 'zod';
 import type { AnalysisResponse, AVA } from '@antv/ava/browser';
@@ -31,25 +30,34 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: PlaygroundDat
       description:
         'Analyze data with AVA using a complete natural-language query. Include filters, requested metrics and relevant follow-up context. AVA generates and executes the code and returns actual results.',
       inputSchema: z.object({
-        query: z.string().trim().min(1).max(MAX_QUESTION_LENGTH),
+        query: z.string().trim().min(1).max(8_000),
       }),
-      execute: ({ query }) => ava.analyze(query, { includeSummary: false }),
+      execute: ({ query }) => ava.analyze(query),
     }),
 
     visualize: tool({
       description:
-        'Create or update a chart from the last executed query. Requires a successful analyze call; reuses the result when changing only chart style.',
-      inputSchema: z.object({ instructions: z.string().max(MAX_CHART_INSTRUCTIONS_LENGTH) }),
+        'Create or update a chart. Pass data directly when the user has supplied chart-ready records; otherwise omit data to reuse the latest analysis. Explicit data takes precedence. Never invent data; call analyze first when calculations or transformations are needed.',
+      inputSchema: z.object({
+        instructions: z.string().max(4_000),
+        data: z.array(z.record(z.unknown())).optional(),
+      }),
       contextSchema: z.object({ latest: z.custom<AnalysisResponse>().optional() }),
-      execute: async ({ instructions }, { context }) => {
+      execute: async ({ instructions, data }, { context }) => {
         const { latest } = context;
-        if (!latest) throw new Error('Execute analyze before visualize.');
+        const result: Pick<AnalysisResponse, 'query' | 'data' | 'sql'> | undefined =
+          data !== undefined ? { query: instructions, data } : latest;
+
+        if (!result) throw new Error('Provide data or call analyze before visualize.');
+
         const chart = await ava.visualize({
-          query: `${latest.query}\nChart instructions: ${instructions}`,
-          data: latest.data,
+          query: data !== undefined ? instructions : `${result.query}\nChart instructions: ${instructions}`,
+          data: result.data,
         });
+
         if (!chart) throw new Error('No suitable chart could be generated.');
-        return { result: latest, ...chart };
+
+        return { result, ...chart };
       },
       toModelOutput: ({ output }) => ({
         type: 'text',
@@ -60,7 +68,7 @@ export function createTools({ ava, dataset }: { ava: AVA; dataset: PlaygroundDat
     suggest: tool({
       description: 'Suggest three useful analysis questions about the current dataset.',
       inputSchema: z.object({}),
-      execute: () => ava.suggest(SUGGESTION_COUNT),
+      execute: () => ava.suggest(3),
     }),
   };
 }

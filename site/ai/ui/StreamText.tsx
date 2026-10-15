@@ -26,7 +26,6 @@ export default function StreamText({ text, streaming }: { text: string; streamin
         [&_[data-streamdown=code-block-header]]:text-[var(--color-ink-2)]
         [&_pre]:text-[12px] [&_pre]:leading-[1.6]"
       isAnimating={streaming}
-      caret="block"
       controls={{ code: { copy: true, download: false }, table: false }}
       lineNumbers={false}
     >

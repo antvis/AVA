@@ -6,8 +6,8 @@ import type { LLMConfig } from '@antv/ava/browser';
 import ModelConfig from '../../ai/ui/ModelConfig';
 import ChatWorkspace from '../../ai/ui/ChatWorkspace';
 import SkillSetup from '../../ai/ui/SkillSetup';
-import { MAX_UPLOAD_SIZE_MB } from '../../ai/constants';
-import usePlaygroundChat from '../../ai/ui/usePlaygroundChat';
+import { MAX_UPLOAD_SIZE_MB } from '../../ai/ui/constants';
+import useChat from '../../ai/ui/useChat';
 import { Header, Footer } from '../../components';
 import PageShell from '../../components/PageShell';
 import { DEFAULT_LLM_CONFIG, loadLLMConfig, saveLLMConfig } from '../../components/utils';
@@ -15,7 +15,7 @@ import { DEFAULT_LLM_CONFIG, loadLLMConfig, saveLLMConfig } from '../../componen
 export default function AIPlaygroundPage() {
   const [config, setConfig] = useState<LLMConfig>(DEFAULT_LLM_CONFIG);
   const [localConfigOpen, setLocalConfigOpen] = useState(false);
-  const chat = usePlaygroundChat({ config, onConfigure: () => setLocalConfigOpen(true) });
+  const chat = useChat({ config, onConfigure: () => setLocalConfigOpen(true) });
   const activeArtifact = [...chat.messages].reverse().find((message) => message.artifact)?.artifact;
   useEffect(() => {
     setConfig(loadLLMConfig());

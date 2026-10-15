@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { LivePlayground } from './types';
 import { parseToken } from './utils';
-import { PROMPT_SOURCES, PROMPT_COMMANDS, PROMPT_MODELS, ATTACH_FILES, DICTATION_TEXT } from '../constants';
+import { PROMPT_SOURCES, PROMPT_COMMANDS, PROMPT_MODELS, ATTACH_FILES, DICTATION_TEXT } from './constants';
 
 const PIcon: React.FC<{ children: React.ReactNode; size?: number; strokeWidth?: number }> = ({
   children,

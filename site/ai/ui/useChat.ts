@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { LLMConfig } from '@antv/ava/browser';
-import { useChat } from '@ai-sdk/react';
+import { useChat as useAIChat } from '@ai-sdk/react';
 import type { PlaygroundUIMessage } from '../core/session';
 import type { Message, LivePlayground } from './types';
 import {
@@ -11,13 +11,13 @@ import {
   MAX_UPLOAD_SIZE_MB,
   MAX_UPLOAD_SIZE_BYTES,
   DATASET_PREVIEW_ROWS,
-} from '../constants';
-import { createPlaygroundSession } from '../core/session';
+} from './constants';
+import { createSession } from '../core/session';
 import { toDisplayMessage } from './utils';
 import type { PlaygroundDataset } from '../core/types';
 import { parseCSV, parseExcel } from '../../components/utils';
 
-export default function usePlaygroundChat({
+export default function useChat({
   config,
   onConfigure,
 }: {
@@ -30,8 +30,8 @@ export default function usePlaygroundChat({
   const [dataset, setDataset] = useState<PlaygroundDataset>({ name: DEFAULT_DATASET_NAME, rows: MONTHLY_SALES });
   const running = useRef(false);
   const [generation, setGeneration] = useState(0);
-  const session = useMemo(() => createPlaygroundSession(config, dataset), [config, dataset, generation]);
-  const chat = useChat<PlaygroundUIMessage>({ id: session.id, transport: session.transport });
+  const session = useMemo(() => createSession(config, dataset), [config, dataset, generation]);
+  const chat = useAIChat<PlaygroundUIMessage>({ id: session.id, transport: session.transport });
   const busy = working || chat.status === 'submitted' || chat.status === 'streaming';
   const mounted = useMemo(() => ({ current: true }), [session]);
   const importing = useRef(false);
@@ -155,11 +155,9 @@ export default function usePlaygroundChat({
   const messages = useMemo(
     () => [
       ...(uploadMessage ? [uploadMessage] : []),
-      ...chat.messages.map((message, index) =>
-        toDisplayMessage(message, dataset.name, busy && index === chat.messages.length - 1)
-      ),
+      ...chat.messages.map((message) => toDisplayMessage(message, dataset.name)),
     ],
-    [uploadMessage, chat.messages, dataset.name, busy]
+    [uploadMessage, chat.messages, dataset.name]
   );
   return {
     messages,

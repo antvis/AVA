@@ -21,8 +21,9 @@ export default function ArtifactPanel({
   display?: ArtifactDisplay;
 }) {
   const hasChart = !!artifact.syntax?.trim();
-  const activeTab = tab === 'chart' && !hasChart ? 'data' : tab;
+  const activeTab = (tab === 'chart' && !hasChart) || (tab === 'sql' && !artifact.code) ? 'data' : tab;
   const tables = resultTables(artifact.data ?? []);
+
   return (
     <section
       className={`overflow-hidden flex flex-col ${
@@ -48,7 +49,7 @@ export default function ArtifactPanel({
       <div className="flex-1 min-h-0 flex flex-col">
         <div className="flex items-center gap-1 border-b border-zinc-100 px-3 py-1.5">
           {(['chart', 'data', 'sql'] as const)
-            .filter((t) => t !== 'chart' || hasChart)
+            .filter((t) => (t !== 'chart' || hasChart) && (t !== 'sql' || !!artifact.code))
             .map((t) => (
               <button
                 key={t}

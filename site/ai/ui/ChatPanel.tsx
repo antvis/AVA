@@ -1,11 +1,13 @@
 'use client';
 
-import { DATASET_PREVIEW_COLUMNS } from '../constants';
+import { DATASET_PREVIEW_COLUMNS } from './constants';
 
 import React, { useEffect, useRef, useCallback } from 'react';
 import type { Message, LivePlayground, ChatPlayback } from './types';
 import StreamText from './StreamText';
 import ToolTrace from './ToolTrace';
+import ToolPart from './ToolPart';
+import { isToolUIPart } from 'ai';
 import AttachmentChip from './AttachmentChip';
 import ArtifactChip from './ArtifactChip';
 import PromptBar from './PromptBar';
@@ -98,6 +100,8 @@ const ChatPanel: React.FC<{
             </div>
           )}
           {visible.map((msg, i) => {
+            const lastTool = msg.parts?.findLast(isToolUIPart);
+
             if (msg.role === 'user')
               return (
                 <div key={i} className="flex flex-col items-end gap-1.5">
@@ -191,17 +195,19 @@ const ChatPanel: React.FC<{
                           />
                         </div>
                       ) : null;
-                    const step = msg.steps?.find((item) => item.id === part.toolCallId);
-                    if (!step) return null;
-                    const lastTool = step.id === msg.steps?.[msg.steps.length - 1]?.id;
-                    return (
-                      <ToolTrace
-                        key={partIndex}
-                        inline
-                        msg={{ ...msg, steps: [step], diffs: lastTool ? msg.diffs : undefined }}
-                        live={{ rowsShown: 1, runningRow: step.state === 'running' ? 0 : null }}
-                      />
-                    );
+                    if (isToolUIPart(part)) {
+                      return (
+                        <ToolPart
+                          key={part.toolCallId}
+                          part={part}
+                          active={streamingIdx === i}
+                          diffs={part === lastTool ? msg.diffs : undefined}
+                          diffLines={msg.diffLines}
+                        />
+                      );
+                    }
+
+                    return null;
                   })
                 ) : (
                   <>

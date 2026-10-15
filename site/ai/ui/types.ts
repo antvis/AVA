@@ -1,11 +1,12 @@
 import type { ReactNode } from 'react';
+import type { PlaygroundUIMessage } from '../core/session';
 import type { AnalysisUpdate, ToolStep } from '../core/types';
 export type { ToolDetailLine, ToolStep, ToolDiff, ToolDiffLine } from '../core/types';
 
 export interface Message extends AnalysisUpdate {
   role: 'user' | 'assistant';
   text: string;
-  parts?: ({ type: 'text'; text: string } | { type: 'tool'; toolCallId: string })[];
+  parts?: PlaygroundUIMessage['parts'];
   steps?: ToolStep[];
   live?: { rowsShown?: number; runningRow?: number | null };
   /** File attachments shown on the user's message bubble. */

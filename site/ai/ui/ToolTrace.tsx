@@ -24,7 +24,12 @@ const Icons: Record<string, React.ReactNode> = {
   ),
 };
 
-const ToolTrace: React.FC<{ msg: Message; live: Message['live']; inline?: boolean }> = ({ msg, live, inline }) => {
+const ToolTrace: React.FC<{
+  msg: Message;
+  live: Message['live'];
+  inline?: boolean;
+  detail?: React.ReactNode;
+}> = ({ msg, live, inline, detail }) => {
   const steps = msg.steps ?? [];
   const diffs = msg.diffs ?? [];
   const diffLines = msg.diffLines ?? {};
@@ -166,16 +171,17 @@ const ToolTrace: React.FC<{ msg: Message; live: Message['live']; inline?: boolea
                   >
                     <div className="min-h-0 overflow-hidden">
                       <div className="mt-0.5 mb-1 ml-2 flex flex-col gap-0.5 border-l border-line py-0.5 pl-3.5">
-                        {row.detail.map((line) => (
-                          <span
-                            key={line.text}
-                            className={`truncate text-[11.5px] leading-[1.6] ${row.detailMono ? 'font-mono' : ''} ${
-                              line.tone === 'add' ? 'text-green' : line.tone === 'del' ? 'text-red' : 'text-ink-2'
-                            }`}
-                          >
-                            {line.text}
-                          </span>
-                        ))}
+                        {detail ??
+                          row.detail.map((line) => (
+                            <span
+                              key={line.text}
+                              className={`truncate text-[11.5px] leading-[1.6] ${row.detailMono ? 'font-mono' : ''} ${
+                                line.tone === 'add' ? 'text-green' : line.tone === 'del' ? 'text-red' : 'text-ink-2'
+                              }`}
+                            >
+                              {line.text}
+                            </span>
+                          ))}
                       </div>
                     </div>
                   </div>
