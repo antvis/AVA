@@ -1,11 +1,18 @@
 import { getTenantAccessToken } from "./token";
 import { convertRecord,FeishuFieldType } from "./convert";
+import { parseBitableUrl } from "./url";
 
 import type { FeishuCell,FeishuField } from "./convert";
 import type { FeishuBitableSourceOptions } from "../../../types";
 
-function tableUrl(options:FeishuBitableSourceOptions,suffix:string):string{
-    return `https://open.feishu.cn/open-apis/bitable/v1/apps/${encodeURIComponent(options.appToken)}/tables/${encodeURIComponent(options.tableId)}${suffix}`;
+// function tableUrl(options:FeishuBitableSourceOptions,suffix:string):string{
+//     return `https://open.feishu.cn/open-apis/bitable/v1/apps/${encodeURIComponent(options.appToken)}/tables/${encodeURIComponent(options.tableId)}${suffix}`;
+// }
+
+const TEST_BITABLE_URL = 'https://my.feishu.cn/base/AXuDbVoV7aKqzpslXwscP41Wncc?table=tblehsChh5T3X69i&view=vewfxHhZEb';
+
+function tableUrl(table:{appToken:string;tableId:string},suffix:string):string{
+    return  `https://open.feishu.cn/open-apis/bitable/v1/apps/${encodeURIComponent(table.appToken)}/tables/${encodeURIComponent(able.tableId)}${suffix}`
 }
 
 async function getItem(token:string,url:string):Promise<any[]>{
@@ -23,10 +30,12 @@ async function getItem(token:string,url:string):Promise<any[]>{
 
 export async function readTable(options:FeishuBitableSourceOptions):Promise<Record<string,FeishuCell>[]>{
     const token = await getTenantAccessToken(options.appId,options.appSecret);
-    const fieldsItems = await getItem(token,tableUrl(options,'/fields'));
+    
+    const table = parseBitableUrl(TEST_BITABLE_URL)
+    const fieldsItems = await getItem(token,tableUrl(table,'/fields'));
     const fields:FeishuField[] = fieldsItems
         .filter((field)=>field.type === FeishuFieldType.Text || field.type === FeishuFieldType.Number || field.type === FeishuFieldType.DateTime)
         .map((field)=>({name:field.field_name,type:field.type}));
-    const records = await getItem(token,tableUrl(options,'/records'));
+    const records = await getItem(token,tableUrl(table,'/records'));
     return records.map((record)=>convertRecord(fields,record.fields));
 }
